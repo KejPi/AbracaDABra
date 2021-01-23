@@ -4,6 +4,8 @@
 
 audioFifo_t audioBuffer;
 
+
+
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
 //#define AUDIOOUTPUT_PORTAUDIO_NO_STARTUP_TIMER
 
@@ -39,7 +41,7 @@ AudioOutput::~AudioOutput()
     destroyTimer();
 }
 
-void AudioOutput::start(quint32 sRate, quint8 numCh)
+void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 {
     //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
 
@@ -92,7 +94,7 @@ void AudioOutput::start(quint32 sRate, quint8 numCh)
         minCount = INT64_MAX;
         maxCount = INT64_MIN;
         sum = 0;
-        memset((quint8 *)buf, 0, AUDIOOUTPUT_DBG_AVRG_SIZE*sizeof(qint64));
+        memset((uint8_t *)buf, 0, AUDIOOUTPUT_DBG_AVRG_SIZE*sizeof(int64_t));
         connect(dbgTimer, &QTimer::timeout, this, &AudioOutput::bufferMonitor);
     }
     dbgTimer->start();
@@ -158,7 +160,7 @@ void AudioOutput::stop()
 
 void AudioOutput::checkInputBuffer()
 {
-    quint64 count = bytesAvailable();
+    uint64_t count = bytesAvailable();
 
     qDebug() << Q_FUNC_INFO << count;
 
@@ -181,10 +183,10 @@ void AudioOutput::checkInputBuffer()
     }
 }
 
-qint64 AudioOutput::bytesAvailable() const
+int64_t AudioOutput::bytesAvailable() const
 {
     inFifoPtr->mutex.lock();
-    qint64 count = inFifoPtr->count;
+    int64_t count = inFifoPtr->count;
     inFifoPtr->mutex.unlock();
 
     return count;
@@ -387,7 +389,7 @@ AudioOutput::~AudioOutput()
     destroyTimer();
 }
 
-void AudioOutput::start(quint32 sRate, quint8 numCh)
+void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 {
     //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
 
@@ -446,7 +448,7 @@ void AudioOutput::start(quint32 sRate, quint8 numCh)
         minCount = INT64_MAX;
         maxCount = INT64_MIN;
         sum = 0;
-        memset((quint8 *)buf, 0, AUDIOOUTPUT_DBG_AVRG_SIZE*sizeof(qint64));
+        memset((uint8_t *)buf, 0, AUDIOOUTPUT_DBG_AVRG_SIZE*sizeof(int64_t));
         connect(dbgTimer, &QTimer::timeout, this, &AudioOutput::bufferMonitor);
     }
     dbgTimer->start();
@@ -520,7 +522,7 @@ void AudioOutput::stop()
 
 void AudioOutput::checkInputBuffer()
 {
-    quint64 count = bytesAvailable();
+    uint64_t count = bytesAvailable();
 
     qDebug() << Q_FUNC_INFO << count;
 
@@ -546,10 +548,10 @@ void AudioOutput::checkInputBuffer()
     }
 }
 
-qint64 AudioOutput::bytesAvailable() const
+int64_t AudioOutput::bytesAvailable() const
 {
     inFifoPtr->mutex.lock();
-    qint64 count = inFifoPtr->count;
+    int64_t count = inFifoPtr->count;
     inFifoPtr->mutex.unlock();
 
     return count;
@@ -664,7 +666,7 @@ AudioOutput::~AudioOutput()
     delete ioDevice;
 }
 
-void AudioOutput::start(quint32 sRate, quint8 numCh)
+void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 {
     stop();
 
@@ -692,7 +694,7 @@ void AudioOutput::start(quint32 sRate, quint8 numCh)
     audioOutput = new QAudioOutput(deviceInfo, format, this);
 
     // set buffer size to AUDIO_FIFO_MS/2 ms
-    audioOutput->setBufferSize(AUDIO_FIFO_CHUNK_MS * sRate/1000 * numCh * sizeof(quint16));
+    audioOutput->setBufferSize(AUDIO_FIFO_CHUNK_MS * sRate/1000 * numCh * sizeof(uint16_t));
     connect(audioOutput, &QAudioOutput::stateChanged, this, &AudioOutput::handleStateChanged);
 
     // start IO device
@@ -802,7 +804,7 @@ void AudioOutput::handleStateChanged(QAudio::State newState)
 
 void AudioOutput::checkInputBuffer()
 {
-    quint64 count = ioDevice->bytesAvailable();
+    uint64_t count = ioDevice->bytesAvailable();
 
     qDebug() << Q_FUNC_INFO << count;
 
@@ -846,10 +848,10 @@ void AudioIODevice::stop()
     close();
 }
 
-qint64 AudioIODevice::readData(char *data, qint64 len)
+int64_t AudioIODevice::readData(char *data, int64_t len)
 {
     inFifoPtr->mutex.lock();
-    qint64 count = inFifoPtr->count;
+    int64_t count = inFifoPtr->count;
     inFifoPtr->mutex.unlock();
 
     //qDebug() << Q_FUNC_INFO << len << count;
@@ -865,7 +867,7 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
         }
     }
 
-    qint64 bytesToEnd = AUDIO_FIFO_SIZE - inFifoPtr->tail;
+    int64_t bytesToEnd = AUDIO_FIFO_SIZE - inFifoPtr->tail;
     if (bytesToEnd < len)
     {
         memcpy(data, inFifoPtr->buffer+inFifoPtr->tail, bytesToEnd);
@@ -886,7 +888,7 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
     return len;
 }
 
-qint64 AudioIODevice::writeData(const char *data, qint64 len)
+int64_t AudioIODevice::writeData(const char *data, int64_t len)
 {
     Q_UNUSED(data);
     Q_UNUSED(len);
@@ -894,10 +896,10 @@ qint64 AudioIODevice::writeData(const char *data, qint64 len)
     return 0;
 }
 
-qint64 AudioIODevice::bytesAvailable() const
+int64_t AudioIODevice::bytesAvailable() const
 {
     inFifoPtr->mutex.lock();
-    qint64 count = inFifoPtr->count;
+    int64_t count = inFifoPtr->count;
     inFifoPtr->mutex.unlock();
 
     //qDebug() << Q_FUNC_INFO << count;

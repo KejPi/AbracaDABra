@@ -25,8 +25,8 @@ public slots:
 
 private:
     QList<MOTObject> motObjList;
-    int findMotObj(quint16 transportId);
-    int addMotObj(quint16 transportId, const quint8 *segment, quint16 segmenLen, bool lastFlag);
+    int findMotObj(uint16_t transportId);
+    int addMotObj(uint16_t transportId, const uint8_t *segment, uint16_t segmenLen, bool lastFlag);
     bool crc16check(const QByteArray & data);
 };
 

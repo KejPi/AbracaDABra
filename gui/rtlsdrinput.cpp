@@ -26,7 +26,7 @@ RtlSdrInput::~RtlSdrInput()
     }
 }
 
-void RtlSdrInput::tune(quint32 freq)
+void RtlSdrInput::tune(uint32_t freq)
 {
     frequency = freq;
     if (deviceRunning)
@@ -49,7 +49,7 @@ void RtlSdrInput::openDevice()
     int ret = 0;
 
     // Get all devices
-    quint32 deviceCount = rtlsdr_get_device_count();
+    uint32_t deviceCount = rtlsdr_get_device_count();
     if (deviceCount == 0)
     {
         qDebug() << "RTLSDR: No devices found";
@@ -61,7 +61,7 @@ void RtlSdrInput::openDevice()
     }
 
     //	Iterate over all found rtl-sdr devices and try to open it. Stops if one device is successfull opened.
-    for(quint32 n=0; n<deviceCount; ++n)
+    for(uint32_t n=0; n<deviceCount; ++n)
     {
         ret = rtlsdr_open(&device, n);
         if (ret >= 0)
@@ -86,7 +86,7 @@ void RtlSdrInput::openDevice()
     }
 
     // Get tuner gains
-    quint32 gainsCount = rtlsdr_get_tuner_gains(device, NULL);
+    uint32_t gainsCount = rtlsdr_get_tuner_gains(device, NULL);
     qDebug() << "RTL_SDR: Supported gain values" << gainsCount;
     int * gains = new int[gainsCount];
     //gains.resize(gainsCount);

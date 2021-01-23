@@ -15,14 +15,14 @@
 
 typedef union
 {
-    quint8 raw;
+    uint8_t raw;
     struct
     {
-        quint8 mpeg_surr_cfg : 3;  // [A decoder that does not support MPEG Surround shall ignore this parameter.]
-        quint8 ps_flag : 1;
-        quint8 aac_channel_mode : 1;
-        quint8 sbr_flag : 1;
-        quint8 dac_rate : 1;
+        uint8_t mpeg_surr_cfg : 3;  // [A decoder that does not support MPEG Surround shall ignore this parameter.]
+        uint8_t ps_flag : 1;
+        uint8_t aac_channel_mode : 1;
+        uint8_t sbr_flag : 1;
+        uint8_t dac_rate : 1;
     } bits;
 } audiodecAacHeader_t;
 
@@ -58,7 +58,7 @@ public slots:
     void inputData(QByteArray * inData);
 
 signals:
-    void startAudio(quint32 sampleRate, quint8 numChannels);
+    void startAudio(uint32_t sampleRate, uint8_t numChannels);
     void stopAudio();
     void audioParametersInfo(const struct AudioParameters & params);
 private:
@@ -79,11 +79,11 @@ private:
 #endif
 #ifdef AUDIO_DECODER_AAC_OUT
     FILE * aacOut;
-    void writeAACOutput(const char *data, quint16 dataLen);
+    void writeAACOutput(const char *data, uint16_t dataLen);
 #endif
 #ifdef AUDIO_DECODER_MP2_OUT
     FILE * mp2Out;
-    void writeMP2Output(const char *data, quint16 dataLen);
+    void writeMP2Output(const char *data, uint16_t dataLen);
 #endif
 
     void initFAAD();    

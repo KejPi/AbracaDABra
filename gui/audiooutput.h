@@ -37,11 +37,11 @@ public:
     void stop();
 
 public slots:
-    void start(quint32 sRate, quint8 numChannels);
+    void start(uint32_t sRate, uint8_t numChannels);
 
 private:
-    quint32 sampleRate;
-    quint8 numChannels;    
+    uint32_t sampleRate;
+    uint8_t numChannels;    
     QTimer * audioStartTimer;
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
     PaStream * audioOutput = nullptr;
@@ -65,15 +65,15 @@ private:
 #endif
 
 #if AUDIOOUTPUT_DBG_TIMER
-    qint64 minCount = INT64_MAX;
-    qint64 maxCount = INT64_MIN;
-    qint64 buf[AUDIOOUTPUT_DBG_AVRG_SIZE];
-    qint8 cntr = 0;
-    qint64 sum = 0;
+    int64_t minCount = INT64_MAX;
+    int64_t maxCount = INT64_MIN;
+    int64_t buf[AUDIOOUTPUT_DBG_AVRG_SIZE];
+    int8_t cntr = 0;
+    int64_t sum = 0;
     QTimer * dbgTimer;
     void bufferMonitor();
 #endif
-    qint64 bytesAvailable() const;
+    int64_t bytesAvailable() const;
 
 private slots:
     void checkInputBuffer();
@@ -92,9 +92,9 @@ public:
     void start();
     void stop();
 
-    qint64 readData(char *data, qint64 maxlen) override;
-    qint64 writeData(const char *data, qint64 len) override;
-    qint64 bytesAvailable() const override;
+    int64_t readData(char *data, int64_t maxlen) override;
+    int64_t writeData(const char *data, int64_t len) override;
+    int64_t bytesAvailable() const override;
 private:
     audioFifo_t * inFifoPtr = nullptr;
 };

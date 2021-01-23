@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-MOTObject::MOTObject(quint16 transportId, const quint8 *segment, quint16 segmenLen, bool lastFlag)
+MOTObject::MOTObject(uint16_t transportId, const uint8_t *segment, uint16_t segmenLen, bool lastFlag)
 {
     id = transportId;
 
@@ -22,8 +22,8 @@ MOTObject::MOTObject(quint16 transportId, const quint8 *segment, quint16 segmenL
 #if 0 // not implemented at the moment
     for (int n = 7; n<headerSize; ++n)
     {
-        quint8 PLI = (segment[n] >> 6) & 0x3;
-        quint8 paramId = segment[n] & 0x3F;
+        uint8_t PLI = (segment[n] >> 6) & 0x3;
+        uint8_t paramId = segment[n] & 0x3F;
         switch (PLI)
         {
         case 0:
@@ -48,7 +48,7 @@ void MOTObject::reset()
     body.clear();
 }
 
-void MOTObject::addBodySegment(const quint8 * segment, quint16 segmentNum, quint16 segmentSize, bool lastFlag)
+void MOTObject::addBodySegment(const uint8_t * segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
 {
     if ((segmentNum >= 8192) || (segmentSize == 0))
     {

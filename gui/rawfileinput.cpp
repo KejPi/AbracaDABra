@@ -60,7 +60,7 @@ void RawFileInput::openDevice(const QString & fileName, const RawFileInputFormat
     }
 }
 
-quint64 RawFileInput::getNumSamples()
+uint64_t RawFileInput::getNumSamples()
 {
     if (nullptr != inputFile)
     {
@@ -74,7 +74,7 @@ quint64 RawFileInput::getNumSamples()
             bytesPerSample = sizeof(uint16_t) * 1;
             break;
         }
-        quint64 numSamples = inputFile->size() / bytesPerSample;
+        uint64_t numSamples = inputFile->size() / bytesPerSample;
         qDebug("Number of samples: %lld => %f sec\n", numSamples, numSamples/2048e3);
         qDebug("Expected NULLs: %lld\n", numSamples/(2656+2552*76));
         return numSamples;
@@ -88,7 +88,7 @@ void RawFileInput::setFileFormat(const RawFileInputFormat &format)
     emit numberOfSamples(getNumSamples());
 }
 
-void RawFileInput::tune(quint32 freq)
+void RawFileInput::tune(uint32_t freq)
 {
     stop();
 

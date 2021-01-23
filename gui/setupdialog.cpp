@@ -104,18 +104,18 @@ void SetupDialog::on_openFileButton_clicked()
             {
                 ui->fileFormatCombo->setCurrentIndex(int(RawFileInputFormat::SAMPLE_FORMAT_S16));
                 qDebug() << "Selected file :" << fileName << "SAMPLE_FORMAT_S16";
-                //emit fileSelected(fileName, quint8(SAMPLE_FORMAT_S16));
+                //emit fileSelected(fileName, uint8_t(SAMPLE_FORMAT_S16));
             }
             else if (fileName.endsWith(".u8"))
             {
                 ui->fileFormatCombo->setCurrentIndex(int(RawFileInputFormat::SAMPLE_FORMAT_U8));
                 qDebug() << "Selected file :" << fileName << "SAMPLE_FORMAT_U8";
-                //emit fileSelected(fileName, quint8(SAMPLE_FORMAT_S16));
+                //emit fileSelected(fileName, uint8_t(SAMPLE_FORMAT_S16));
             }
             else
             {
                 qDebug() << "Selected file :" << fileName << "Sample format unknown";
-                //emit fileSelected(fileName, quint8(SAMPLE_FORMAT_U8));
+                //emit fileSelected(fileName, uint8_t(SAMPLE_FORMAT_U8));
             }
             emit rawFileSelected(fileName, RawFileInputFormat(ui->fileFormatCombo->currentIndex()));
         }

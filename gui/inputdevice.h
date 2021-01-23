@@ -52,12 +52,12 @@ public:
 
     virtual bool isAvailable() = 0;
 public slots:
-    virtual void tune(quint32 freq) = 0;
+    virtual void tune(uint32_t freq) = 0;
     virtual void stop() = 0;
 
 signals:
     void deviceReady();
-    void tuned(quint32 freq);
+    void tuned(uint32_t freq);
 };
 
 extern fifo_t inputBuffer;

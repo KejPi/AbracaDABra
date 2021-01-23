@@ -30,7 +30,7 @@ public:
     bool isAvailable() override;
 
 public slots:
-    void tune(quint32 freq) override;
+    void tune(uint32_t freq) override;
     void stop() override;
     void openDevice();
     void setGainAutoMode(bool enable = true);
@@ -40,7 +40,7 @@ signals:
     void gainListAvailable(const QList<int> * pList);
 
 private:
-    quint32 frequency;
+    uint32_t frequency;
     bool deviceUnplugged;
     bool deviceRunning;
     struct rtlsdr_dev *device;

@@ -36,7 +36,7 @@ public:
 public slots:
     void inputDeviceReady();
     void updateEnsembleInfo(const radioControlEnsembleInfo_t &ens);
-    void updateSyncStatus(quint8 sync);
+    void updateSyncStatus(uint8_t sync);
     void updateSnrLevel(float snr);
     void updateServiceList(const radioControlServiceListItem_t & serviceListItem);
     void updateDL(const QString &dl);
@@ -44,12 +44,12 @@ public slots:
     void updateAudioInfo(const AudioParameters &params);
     void updateDabTime(const QDateTime & d);
     void changeInputDevice(const InputDeviceId &d);
-    void tuneFinished(quint32 freq);
+    void tuneFinished(uint32_t freq);
     void enableFileLooping(bool ena) { fileLooping = ena; }
 
 signals:
-    void tune(quint32 freq);
-    void serviceRequested(quint32 freq, quint32 SId, quint8 SCIdS);
+    void tune(uint32_t freq);
+    void serviceRequested(uint32_t freq, uint32_t SId, uint8_t SCIdS);
 
 private slots:
     void on_channelCombo_currentIndexChanged(int index);
@@ -59,7 +59,7 @@ private slots:
     void onEndOfFile();
     void onRawFileStop();
     void serviceListCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
-    void serviceChanged(quint32 sid, quint8 scids);
+    void serviceChanged(uint32_t sid, uint8_t scids);
 
 protected:        
      void closeEvent(QCloseEvent *event);
@@ -94,8 +94,8 @@ private:
     bool isPlaying = false;
     bool fileLooping = false;
     bool deviceChangeRequested = false;
-    quint32 frequency = 0;
-    quint32 SId = 0;
+    uint32_t frequency = 0;
+    uint32_t SId = 0;
 
     QStandardItemModel * serviceListModel;
 

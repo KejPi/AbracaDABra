@@ -21,9 +21,9 @@ public slots:
 signals:
     void dlComplete(const QString & dl);
 private:
-    quint8 charset;
-    quint8 segmentCntr;
-    quint8 toggle;
+    uint8_t charset;
+    uint8_t segmentCntr;
+    uint8_t toggle;
     QByteArray label;
     QByteArray dlCommand;
     bool crc16check(const QByteArray & data);

@@ -17,15 +17,15 @@ void DLDecoder::reset()
 
 bool DLDecoder::crc16check(const QByteArray & data)
 {
-    quint16 crc = 0xFFFF;
-    quint16 mask = 0x1020;
+    uint16_t crc = 0xFFFF;
+    uint16_t mask = 0x1020;
 
     for (int n = 0; n < data.size()-2; ++n)
     {
         for (int bit = 7; bit >= 0; --bit)
         {
-            quint16 in = (data[n] >> bit) & 0x1;
-            quint16 tmp = in ^ ((crc>>15) & 0x1);
+            uint16_t in = (data[n] >> bit) & 0x1;
+            uint16_t tmp = in ^ ((crc>>15) & 0x1);
             crc <<= 1;
 
             crc ^= (tmp * mask);
@@ -33,7 +33,7 @@ bool DLDecoder::crc16check(const QByteArray & data)
         }
     }
 
-    quint16 invTxCRC = ~(quint16(data[data.size()-2] << 8) | quint8(data[data.size()-1]));
+    uint16_t invTxCRC = ~(uint16_t(data[data.size()-2] << 8) | uint8_t(data[data.size()-1]));
 
     return (crc == invTxCRC);
 }
@@ -72,17 +72,17 @@ void DLDecoder::newDataGroup(const QByteArray & dataGroup)
 
                 if (0 == (dataGroup[2] & 0xF0))
                 {  // DL+ tag command
-                    quint8 itemToggle = (dataGroup[2] >> 3) & 0x1;
-                    quint8 itemRunning = (dataGroup[2] >> 2) & 0x1;
-                    quint8 numTags = ((dataGroup[2]) & 0x3) + 1;
+                    uint8_t itemToggle = (dataGroup[2] >> 3) & 0x1;
+                    uint8_t itemRunning = (dataGroup[2] >> 2) & 0x1;
+                    uint8_t numTags = ((dataGroup[2]) & 0x3) + 1;
 
                     qDebug("DL+ Item toggle %d, Item Running %d, Num tags %d", itemToggle, itemRunning, numTags);
 
-                    for (quint8 t = 0; t<numTags; ++t)
+                    for (uint8_t t = 0; t<numTags; ++t)
                     {
-                        quint8 contentsType = dataGroup[3+3*t] & 0x7F;
-                        quint8 startMarker = dataGroup[4+3*t] & 0x7F;
-                        quint8 lengthMarker = dataGroup[5+3*t] & 0x7F;
+                        uint8_t contentsType = dataGroup[3+3*t] & 0x7F;
+                        uint8_t startMarker = dataGroup[4+3*t] & 0x7F;
+                        uint8_t lengthMarker = dataGroup[5+3*t] & 0x7F;
 
                         qDebug("DL+ tag %d, start %d, length %d", contentsType, startMarker, lengthMarker);
                     }
@@ -98,7 +98,7 @@ void DLDecoder::newDataGroup(const QByteArray & dataGroup)
         }
         else
         {
-            quint8 numChars = (dataGroup[0] & 0x0F) + 1;
+            uint8_t numChars = (dataGroup[0] & 0x0F) + 1;
 
             if (dataGroup[0] & 0x40)
             {   // first
@@ -121,7 +121,7 @@ void DLDecoder::newDataGroup(const QByteArray & dataGroup)
             // copy characters
 
             label.append(dataGroup.mid(2, numChars));
-            quint8 t = dataGroup[0] & 0x80;
+            uint8_t t = dataGroup[0] & 0x80;
             if (dataGroup[0] & 0x20)
             {   // last
 #if DLDECODER_VERBOSE>1

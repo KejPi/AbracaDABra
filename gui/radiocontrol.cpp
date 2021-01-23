@@ -7,7 +7,7 @@
 #include "radiocontrol.h"
 #include "dldecoder.h"
 
-const QMap<quint32, QString> RadioControl::DABChannelList =
+const QMap<uint32_t, QString> RadioControl::DABChannelList =
 {
     {174928 , "5A"},
     {176640 , "5B"},
@@ -58,7 +58,7 @@ const QMap<quint32, QString> RadioControl::DABChannelList =
     {239200 , "13F"}
 };
 
-const quint16 RadioControl::ebuLatin2UCS2[] =
+const uint16_t RadioControl::ebuLatin2UCS2[] =
 {   /* UCS2 == UTF16 for Basic Multilingual Plane 0x0000-0xFFFF */
     0x0000, 0x0118, 0x012E, 0x0172, 0x0102, 0x0116, 0x010E, 0x0218, /* 0x00 - 0x07 */
     0x021A, 0x010A, 0x000A, 0x000B, 0x0120, 0x0139, 0x017B, 0x0143, /* 0x08 - 0x0f */
@@ -94,7 +94,7 @@ const quint16 RadioControl::ebuLatin2UCS2[] =
     0x00FE, 0x014B, 0x0155, 0x0107, 0x015B, 0x017A, 0x0165, 0x0127, /* 0xf8 - 0xff */
 };
 
-const quint8 RadioControl::EEPCoderate[] =
+const uint8_t RadioControl::EEPCoderate[] =
 { // ETSI EN 300 401 V2.1.1 [6.2.1 Basic sub-channel organization] table 9 & 10
     0x14, 0x38, 0x12, 0x34,   // EEP 1-A..4-A : 1/4 3/8 1/2 3/4
     0x49, 0x47, 0x46, 0x45    // EEP 1-B..4-B : 4/9 4/7 4/6 4/5
@@ -203,7 +203,7 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
     {
         if (DABPROC_NSTAT_SUCCESS == pEvent->status)
         {
-            quint32 freq = quint32(pEvent->pData);
+            uint32_t freq = uint32_t(pEvent->pData);
 #if RADIO_CONTROL_VERBOSE > 1
             qDebug() << "Tune success" << freq;
 #endif
@@ -426,31 +426,31 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
         {
             // decode time
             // bits 30-14 MJD
-            qint32 mjd = (pData->dateHoursMinutes >> 14) & 0x01FFFF;
+            int32_t mjd = (pData->dateHoursMinutes >> 14) & 0x01FFFF;
             // bit 13 LSI
-            // quint8 lsi = (pData->dateHoursMinutes >> 13) & 0x01;
+            // uint8_t lsi = (pData->dateHoursMinutes >> 13) & 0x01;
             // bits 10-6 Hours
-            quint8 h = (pData->dateHoursMinutes >> 6) & 0x1F;
+            uint8_t h = (pData->dateHoursMinutes >> 6) & 0x1F;
             // bits 5-0 Minutes
             uint8_t minute = pData->dateHoursMinutes & 0x3F;
 
             // Convert Modified Julian Date (according to wikipedia)
-            qint32 J   = mjd + 2400001;
-            qint32 j   = J + 32044;
-            qint32 g   = j / 146097;
-            qint32 dg  = j % 146097;
-            qint32 c   = ((dg / 36524) + 1) * 3 / 4;
-            qint32 dc  = dg - c * 36524;
-            qint32 b   = dc / 1461;
-            qint32 db  = dc%1461;
-            qint32 a   = ((db / 365) + 1) * 3 / 4;
-            qint32 da  = db - a * 365;
-            qint32 y   = g * 400 + c * 100 + b * 4 + a;
-            qint32 m   = ((da * 5 + 308) / 153) - 2;
-            qint32 d   = da - ((m + 4) * 153 / 5) + 122;
-            qint32 Y   = y - 4800 + ((m + 2) / 12);
-            qint32 M   = ((m + 2) % 12) + 1;
-            qint32 D   = d + 1;
+            int32_t J   = mjd + 2400001;
+            int32_t j   = J + 32044;
+            int32_t g   = j / 146097;
+            int32_t dg  = j % 146097;
+            int32_t c   = ((dg / 36524) + 1) * 3 / 4;
+            int32_t dc  = dg - c * 36524;
+            int32_t b   = dc / 1461;
+            int32_t db  = dc%1461;
+            int32_t a   = ((db / 365) + 1) * 3 / 4;
+            int32_t da  = db - a * 365;
+            int32_t y   = g * 400 + c * 100 + b * 4 + a;
+            int32_t m   = ((da * 5 + 308) / 153) - 2;
+            int32_t d   = da - ((m + 4) * 153 / 5) + 122;
+            int32_t Y   = y - 4800 + ((m + 2) / 12);
+            int32_t M   = ((m + 2) % 12) + 1;
+            int32_t D   = d + 1;
 
             QDateTime dateAndTime = QDateTime(QDate(Y, M, D), QTime(h, minute), Qt::UTC).toOffsetFromUtc(60*(ensemble.LTO * 30));
 
@@ -511,7 +511,7 @@ void RadioControl::exit()
     dabProcRequest_Exit(dabProcHandle);
 }
 
-void RadioControl::tune(quint32 freq)
+void RadioControl::tune(uint32_t freq)
 {
     if (freq != frequency)
     {
@@ -521,7 +521,7 @@ void RadioControl::tune(quint32 freq)
     }
 }
 
-void RadioControl::start(quint32 freq)
+void RadioControl::start(uint32_t freq)
 {
     if (freq)
     {   // when input device tuned, freq is passed to be set in SDR
@@ -540,7 +540,7 @@ void RadioControl::start(quint32 freq)
     }
 }
 
-void RadioControl::tuneService(quint32 freq, quint32 SId, quint8 SCIdS)
+void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
 {
     //qDebug() << Q_FUNC_INFO << freq << frequency;
     if (freq == frequency)
@@ -579,7 +579,7 @@ void RadioControl::updateSyncLevel(dabProcSyncLevel_t s)
     }
 }
 
-radioControlServiceListIterator_t RadioControl::findService(quint32 SId)
+radioControlServiceListIterator_t RadioControl::findService(uint32_t SId)
 {
     radioControlServiceListIterator_t serviceIt;
     for (serviceIt = serviceList.begin(); serviceIt < serviceList.end(); ++serviceIt)
@@ -592,7 +592,7 @@ radioControlServiceListIterator_t RadioControl::findService(quint32 SId)
     return serviceIt;
 }
 
-radioControlServiceComponentListIterator_t RadioControl::findServiceComponent(const radioControlServiceListIterator_t & sIt, quint8 SCIdS)
+radioControlServiceComponentListIterator_t RadioControl::findServiceComponent(const radioControlServiceListIterator_t & sIt, uint8_t SCIdS)
 {
     radioControlServiceComponentListIterator_t scIt;
     for (scIt = sIt->serviceComponents.begin(); scIt < sIt->serviceComponents.end(); ++scIt)
@@ -605,7 +605,7 @@ radioControlServiceComponentListIterator_t RadioControl::findServiceComponent(co
     return scIt;
 }
 
-QString RadioControl::convertToQString(const char *c, quint8 charset, quint8 len)
+QString RadioControl::convertToQString(const char *c, uint8_t charset, uint8_t len)
 {
     QString out;
     switch (static_cast<DabCharset>(charset))
@@ -615,10 +615,10 @@ QString RadioControl::convertToQString(const char *c, quint8 charset, quint8 len
         break;
     case DabCharset::UCS2:
     {
-        quint8 ucsLen = len/2+1;
-        quint16 * temp = new quint16[ucsLen];
+        uint8_t ucsLen = len/2+1;
+        uint16_t * temp = new uint16_t[ucsLen];
         // BOM = 0xFEFF, DAB label is in big endian, writing it byte by byte
-        quint8 * bomPtr = (quint8 *) temp;
+        uint8_t * bomPtr = (uint8_t *) temp;
         *bomPtr++ = 0xFE;
         *bomPtr++ = 0xFF;
         memcpy(temp+1, c, len);
@@ -629,7 +629,7 @@ QString RadioControl::convertToQString(const char *c, quint8 charset, quint8 len
     case DabCharset::EBULATIN:
         while(*c)
         {
-            out.append(QChar(ebuLatin2UCS2[quint8(*c++)]));
+            out.append(QChar(ebuLatin2UCS2[uint8_t(*c++)]));
         }
         break;
     default:
@@ -641,10 +641,10 @@ QString RadioControl::convertToQString(const char *c, quint8 charset, quint8 len
     return out;
 }
 
-QString RadioControl::toShortLabel(QString & label, quint16 charField) const
+QString RadioControl::toShortLabel(QString & label, uint16_t charField) const
 {
     QString out("");
-    quint16 movingOne = 1 << 15;
+    uint16_t movingOne = 1 << 15;
     for (int n = 0; n< label.size(); ++n)
     {
         if (charField & movingOne)
@@ -656,7 +656,7 @@ QString RadioControl::toShortLabel(QString & label, quint16 charField) const
     return out;
 }
 
-QString RadioControl::getPtyName(const quint8 pty)
+QString RadioControl::getPtyName(const uint8_t pty)
 {
     if (pty >= PTyNames.size())
     {
@@ -691,7 +691,7 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         radioControlEvent_t * pEvent = new radioControlEvent_t;
         pEvent->type = RCTRL_EVENT_TUNE;
         pEvent->status = p->status;
-        pEvent->pData = intptr_t(*((quint32*) p->pData));
+        pEvent->pData = intptr_t(*((uint32_t*) p->pData));
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;
@@ -781,7 +781,7 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
             assert(sizeof(dabProc_NID_AUTO_NOTIFY_t) == p->len);
 
             dabProc_NID_AUTO_NOTIFY_t * notifyData = new dabProc_NID_AUTO_NOTIFY_t;
-            memcpy((quint8*)notifyData, p->pData, p->len);
+            memcpy((uint8_t*)notifyData, p->pData, p->len);
 
             radioControlEvent_t * pEvent = new radioControlEvent_t;
             pEvent->type = RCTRL_EVENT_AUTO_NOTIFICATION;

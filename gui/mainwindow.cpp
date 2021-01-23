@@ -329,7 +329,7 @@ void MainWindow::updateEnsembleInfo(const radioControlEnsembleInfo_t & ens)
                                   .arg(QString("%1").arg(ens.eid, 4, 16, QChar('0')).toUpper()));
 }
 
-void MainWindow::updateSyncStatus(quint8 sync)
+void MainWindow::updateSyncStatus(uint8_t sync)
 {
     if (RADIOCONTROL_SYNC_LEVEL2 > sync)
     {   // hide time when no sync
@@ -588,7 +588,7 @@ void MainWindow::on_channelCombo_currentIndexChanged(int index)
     emit tune(ui->channelCombo->itemData(index).toUInt());
 }
 
-void MainWindow::tuneFinished(quint32 freq)
+void MainWindow::tuneFinished(uint32_t freq)
 {  // this slot is called when tune is complete
     qDebug() << Q_FUNC_INFO << freq;
 
@@ -642,7 +642,7 @@ void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QMo
     emit serviceRequested(frequency, SId, 0);
 }
 
-void MainWindow::serviceChanged(quint32 sid, quint8 scids)
+void MainWindow::serviceChanged(uint32_t sid, uint8_t scids)
 {
     qDebug() << Q_FUNC_INFO;
     if (sid == SId)

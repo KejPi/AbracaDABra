@@ -9,23 +9,23 @@ class MOTObject
 
 public:
     explicit MOTObject(QObject *parent = nullptr);
-    MOTObject(quint16 transportId, const quint8 * segment, quint16 segmenLen, bool lastFlag);
-    quint16 getId() const { return id; }
-    void addBodySegment(const quint8 *segment, quint16 segmentNum, quint16 segmentSize, bool lastFlag);
+    MOTObject(uint16_t transportId, const uint8_t * segment, uint16_t segmenLen, bool lastFlag);
+    uint16_t getId() const { return id; }
+    void addBodySegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
     bool isBodyComplete() const { return bodyComplete; }
     void getBody(QByteArray & b);
     void reset();
 private:
-    quint16 id;
+    uint16_t id;
 
-    quint32 bodySize;
-    quint16 headerSize;
-    quint16 contentType;
-    quint16 contentSubType;
+    uint32_t bodySize;
+    uint16_t headerSize;
+    uint16_t contentType;
+    uint16_t contentSubType;
 
     QByteArrayList body;
 
-    quint16 numBodySegments;
+    uint16_t numBodySegments;
     bool bodyComplete;
 };
 

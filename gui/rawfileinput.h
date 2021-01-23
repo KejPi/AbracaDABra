@@ -24,20 +24,20 @@ public:
     bool isAvailable() override { return true; }   // raw file is always available
 
 public slots:
-    void tune(quint32 freq) override;
+    void tune(uint32_t freq) override;
     void stop() override;
     void openDevice(const QString & fileName, const RawFileInputFormat &format = RawFileInputFormat::SAMPLE_FORMAT_U8);
     void setFileFormat(const RawFileInputFormat &format);
 
 signals:
-    void numberOfSamples(quint64 nsamples);
+    void numberOfSamples(uint64_t nsamples);
     void endOfFile();
 
 private:
     RawFileInputFormat sampleFormat;
     QFile * inputFile;
     QTimer * inputTimer;
-    quint64 getNumSamples();
+    uint64_t getNumSamples();
     void rewind();
 
     friend void getSamples(float _Complex buffer[], uint16_t len);

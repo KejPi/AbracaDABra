@@ -257,7 +257,7 @@ void AudioDecoder::initFAAD()
      * it detects PS only by implicit signaling.
      */
 
-    quint8 coreSrIndex = 0;
+    uint8_t coreSrIndex = 0;
     if ((aacHeader.bits.dac_rate == 0) && (aacHeader.bits.sbr_flag == 1))
     {
         //audioFs = 16*2;
@@ -279,12 +279,12 @@ void AudioDecoder::initFAAD()
         coreSrIndex = 0x3;  // 48 kHz
     }
 
-    quint8 coreChannelConfig = aacHeader.bits.aac_channel_mode+1;
-    quint8 extensionSrIndex = 5 - 2*aacHeader.bits.dac_rate; // dac_rate ? 3 : 5
+    uint8_t coreChannelConfig = aacHeader.bits.aac_channel_mode+1;
+    uint8_t extensionSrIndex = 5 - 2*aacHeader.bits.dac_rate; // dac_rate ? 3 : 5
 
     // AAC LC
     int ascLen = 0;
-    quint8 asc[7];
+    uint8_t asc[7];
     asc[ascLen++] = 0b00010 << 3 | coreSrIndex >> 1;
     asc[ascLen++] = (coreSrIndex & 0x01) << 7 | coreChannelConfig << 3 | 0b100;
 
@@ -313,7 +313,7 @@ void AudioDecoder::initFAAD()
 
     qDebug("Output SR = %lu, channels = %d", outputSr, outputCh);
 
-    emit startAudio(quint32(outputSr), quint8(outputCh));
+    emit startAudio(uint32_t(outputSr), uint8_t(outputCh));
 }
 
 void AudioDecoder::inputData(QByteArray *inData)
@@ -353,7 +353,7 @@ void AudioDecoder::processMP2(QByteArray *inData)
     }
 //    if (inData->at(0) != 0)
 //    {
-//        qDebug() << "DRC =" << quint8(inData->at(0));
+//        qDebug() << "DRC =" << uint8_t(inData->at(0));
 //    }
 
 #ifdef AUDIO_DECODER_MP2_OUT
@@ -383,14 +383,14 @@ void AudioDecoder::processMP2(QByteArray *inData)
 
         qDebug("New MP2 format: %ld Hz, %d channels, encoding %d", rate, channels, enc);
 
-        emit startAudio(quint32(rate), quint8(channels));
+        emit startAudio(uint32_t(rate), uint8_t(channels));
 
         getFormatMP2();
     }
 
     // lets store data to FIFO
     outFifoPtr->mutex.lock();
-    quint64 count = outFifoPtr->count;
+    uint64_t count = outFifoPtr->count;
     while ((AUDIO_FIFO_SIZE - count) < size)
     {
         outFifoPtr->countChanged.wait(&outFifoPtr->mutex);
@@ -400,7 +400,7 @@ void AudioDecoder::processMP2(QByteArray *inData)
 
     // we know that size is available in buffer
 
-    quint64 bytesToEnd = AUDIO_FIFO_SIZE - outFifoPtr->head;
+    uint64_t bytesToEnd = AUDIO_FIFO_SIZE - outFifoPtr->head;
     if (bytesToEnd < size)
     {
         memcpy(outFifoPtr->buffer+outFifoPtr->head, outBuf, bytesToEnd);
@@ -458,27 +458,27 @@ void AudioDecoder::processMP2(QByteArray *inData)
     // wait for space in ouput buffer
     // mp2 frame = 24ms * 48kHz = 1152 samples (LR)
     outFifoPtr->mutex.lock();
-    quint64 count = outFifoPtr->count;
+    uint16_t count = outFifoPtr->count;
     while ((AUDIO_FIFO_SIZE - count) < 1152*sizeof(int16_t))
     {
-        //qDebug("%s %lld: %lld < %lld", Q_FUNC_INFO, AUDIO_FIFO_SIZE, qint64(AUDIO_FIFO_SIZE - count), bytesToWrite);
+        //qDebug("%s %lld: %lld < %lld", Q_FUNC_INFO, AUDIO_FIFO_SIZE, int64_t(AUDIO_FIFO_SIZE - count), bytesToWrite);
         outFifoPtr->countChanged.wait(&outFifoPtr->mutex);
         count = outFifoPtr->count;
     }
     outFifoPtr->mutex.unlock();
 
-    qint64 bytesAvailable = 1152*sizeof(int16_t);
+    int64_t bytesAvailable = 1152*sizeof(int16_t);
 
     // we know that there is enough room on buffer (bytesToWrite is available)
     // but this can be split by end
-    qint64 bytesToEnd = AUDIO_FIFO_SIZE - outFifoPtr->head;
+    int64_t bytesToEnd = AUDIO_FIFO_SIZE - outFifoPtr->head;
     if (bytesToEnd > bytesAvailable)
     {   // can only write bytesToWrite
         bytesToEnd = bytesAvailable;
     }
 
     const char * mp2Data = inData->data()+1;
-    qint64 bytesWritten = 0;
+    int64_t bytesWritten = 0;
     int ret = mpg123_decode(mp2DecoderHandle, (const unsigned char *)mp2Data, (inData->size() - 1), outFifoPtr->buffer+outFifoPtr->head, bytesToEnd, &size);
     if(MPG123_NEW_FORMAT == ret)
     {
@@ -488,7 +488,7 @@ void AudioDecoder::processMP2(QByteArray *inData)
 
         qDebug("New MP2 format: %ld Hz, %d channels, encoding %d", rate, channels, enc);
 
-        emit startAudio(quint32(rate), quint8(channels));
+        emit startAudio(uint32_t(rate), uint8_t(channels));
 
         getFormatMP2();
     }
@@ -522,10 +522,10 @@ void AudioDecoder::processMP2(QByteArray *inData)
 
             // waiting for space
             outFifoPtr->mutex.lock();
-            quint64 count = outFifoPtr->count;
+            uint16_t count = outFifoPtr->count;
             while ((AUDIO_FIFO_SIZE - count) < 1152*sizeof(int16_t))
             {
-                //qDebug("%s %lld: %lld < %lld", Q_FUNC_INFO, AUDIO_FIFO_SIZE, qint64(AUDIO_FIFO_SIZE - count), bytesToWrite);
+                //qDebug("%s %lld: %lld < %lld", Q_FUNC_INFO, AUDIO_FIFO_SIZE, int64_t(AUDIO_FIFO_SIZE - count), bytesToWrite);
                 outFifoPtr->countChanged.wait(&outFifoPtr->mutex);
                 count = outFifoPtr->count;
             }
@@ -592,7 +592,7 @@ void AudioDecoder::getFormatMP2()
 
 void AudioDecoder::processAAC(QByteArray *inData)
 {
-    quint8 header = *inData[0];
+    uint8_t header = *inData[0];
     if ((nullptr == aacDecoderHandle) || (header != aacHeader.raw))
     {
         aacHeader.raw = header;
@@ -606,7 +606,7 @@ void AudioDecoder::processAAC(QByteArray *inData)
     // decode audio
     const char * aacData = inData->data()+1;
     unsigned long len = inData->size()-1;
-    quint8* output_frame = (quint8*) NeAACDecDecode(aacDecoderHandle, &aacDecFrameInfo, (unsigned char *) aacData, len);
+    uint8_t* output_frame = (uint8_t*) NeAACDecDecode(aacDecoderHandle, &aacDecFrameInfo, (unsigned char *) aacData, len);
 
 #ifdef AUDIO_DECODER_AAC_OUT
     writeAACOutput(aacData, len);
@@ -635,18 +635,18 @@ void AudioDecoder::processAAC(QByteArray *inData)
 #endif
 
     // wait for space in ouput buffer
-    qint64 bytesToWrite = aacDecFrameInfo.samples*sizeof(int16_t);
+    int64_t bytesToWrite = aacDecFrameInfo.samples*sizeof(int16_t);
     outFifoPtr->mutex.lock();
-    quint64 count = outFifoPtr->count;
-    while (qint64(AUDIO_FIFO_SIZE - count) < bytesToWrite)
+    uint64_t count = outFifoPtr->count;
+    while (int64_t(AUDIO_FIFO_SIZE - count) < bytesToWrite)
     {
-        //qDebug("%s %lld: %lld < %lld", Q_FUNC_INFO, AUDIO_FIFO_SIZE, qint64(AUDIO_FIFO_SIZE - count), bytesToWrite);
+        //qDebug("%s %lld: %lld < %lld", Q_FUNC_INFO, AUDIO_FIFO_SIZE, int64_t(AUDIO_FIFO_SIZE - count), bytesToWrite);
         outFifoPtr->countChanged.wait(&outFifoPtr->mutex);
         count = outFifoPtr->count;
     }
     outFifoPtr->mutex.unlock();
 
-    qint64 bytesToEnd = AUDIO_FIFO_SIZE - outFifoPtr->head;
+    int64_t bytesToEnd = AUDIO_FIFO_SIZE - outFifoPtr->head;
     if (bytesToEnd < bytesToWrite)
     {
         memcpy(outFifoPtr->buffer+outFifoPtr->head, output_frame, bytesToEnd);
@@ -666,7 +666,7 @@ void AudioDecoder::processAAC(QByteArray *inData)
 }
 
 #ifdef AUDIO_DECODER_AAC_OUT
-void AudioDecoder::writeAACOutput(const char *data, quint16 dataLen)
+void AudioDecoder::writeAACOutput(const char *data, uint16_t dataLen)
 {
     uint8_t adts_sfreqidx;
     uint8_t audioFs;
@@ -793,7 +793,7 @@ void AudioDecoder::writeAACOutput(const char *data, quint16 dataLen)
 #endif
 
 #ifdef AUDIO_DECODER_MP2_OUT
-void AudioDecoder::writeMP2Output(const char *data, quint16 dataLen)
+void AudioDecoder::writeMP2Output(const char *data, uint16_t dataLen)
 {
     fwrite(data, sizeof(uint8_t), dataLen, mp2Out);
 }
