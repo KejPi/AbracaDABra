@@ -1,5 +1,5 @@
 #include "dldecoder.h"
-#include "radiocontrol.h"
+#include "dabtables.h"
 #include <QString>
 #include <QDebug>
 
@@ -128,7 +128,7 @@ void DLDecoder::newDataGroup(const QByteArray & dataGroup)
                 qDebug() << QString("DL[new=%1] (charset %2) [len=%3]: %4").arg(t != toggle).arg(charset).arg(label.size()).arg(QString(label));
 #endif
                 //emit dlComplete(charset, label);
-                emit dlComplete(RadioControl::convertToQString(label.data(), charset, label.size()));
+                emit dlComplete(DabTables::convertToQString(label.data(), charset, label.size()));
 
                 toggle = t;
                 reset();

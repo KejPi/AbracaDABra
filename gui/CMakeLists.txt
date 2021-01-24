@@ -248,7 +248,9 @@ if(ANDROID)
     main.cpp
     mainwindow.cpp
     mainwindow.h
-    mainwindow.ui   
+    mainwindow.ui
+    dabtables.h
+    dabtables.cpp
     radiocontrol.h
     radiocontrol.cpp
     inputdevice.h
@@ -283,6 +285,8 @@ else()
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    dabtables.h
+    dabtables.cpp
     radiocontrol.h
     radiocontrol.cpp
     inputdevice.h

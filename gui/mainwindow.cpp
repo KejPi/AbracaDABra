@@ -10,6 +10,7 @@
 
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include "dabtables.h"
 #include "radiocontrol.h"
 
 #define RTLSDR_INPUT 1
@@ -82,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent)
     signalQualityLayout->setSpacing(10);
 
     updateSnrLevel(0);
-    updateSyncStatus(RADIOCONTROL_SYNC_LEVEL0);
+    updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
 
     QToolButton * setupButton = new QToolButton();
     //setupButton->setFixedSize(26, 26);
@@ -116,8 +117,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // fill channel list
     //ui->channelCombo->addItem("", 0);
-    dabChannelList_t::const_iterator i = RadioControl::DABChannelList.constBegin();
-    while (i != RadioControl::DABChannelList.constEnd()) {
+    dabChannelList_t::const_iterator i = DabTables::channelList.constBegin();
+    while (i != DabTables::channelList.constEnd()) {
         ui->channelCombo->addItem(i.value(), i.key());
         ++i;
     }
@@ -331,7 +332,7 @@ void MainWindow::updateEnsembleInfo(const radioControlEnsembleInfo_t & ens)
 
 void MainWindow::updateSyncStatus(uint8_t sync)
 {
-    if (RADIOCONTROL_SYNC_LEVEL2 > sync)
+    if (DabSyncLevel::FullSync > DabSyncLevel(sync))
     {   // hide time when no sync
         timeLabel->setText("");
     }
@@ -518,7 +519,7 @@ void MainWindow::onChannelSelection()
     clearEnsembleInformationLabels();
     ui->frequencyLabel->setText("Tuning...  ");
 
-    updateSyncStatus(RADIOCONTROL_SYNC_LEVEL0);
+    updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
     updateSnrLevel(0);
 
     clearServiceList();
@@ -632,6 +633,8 @@ void MainWindow::onRawFileStop()
 
 void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
+    Q_UNUSED(previous);
+
     //qDebug() << Q_FUNC_INFO << current << previous;
 
     QVariant data = current.model()->data(current, Qt::UserRole);
@@ -708,7 +711,7 @@ void MainWindow::serviceChanged(uint32_t sid, uint8_t scids)
         ui->protectionLabel->setText(label);
         ui->protectionLabel->setToolTip(toolTip);
 
-        if (RADIOCONTROL_TMStreamAudio == servicePtr->serviceComponents.at(scids).TMId)
+        if (DabTMId::StreamAudio == servicePtr->serviceComponents.at(scids).TMId)
         {
             QString br = QString("%1 kbps").arg(servicePtr->serviceComponents.at(scids).streamAudio.bitRate);
             ui->audioBitrateLabel->setText(br);

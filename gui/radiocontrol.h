@@ -9,6 +9,7 @@
 #include <QTimer>
 #include <QThread>
 
+#include "dabtables.h"
 #include "rawfileinput.h"
 #include "dabProc.h"
 
@@ -18,74 +19,34 @@
 #define RADIO_CONTROL_N_CHANNELS_ENABLE  0
 #define RADIO_CONTROL_NOTIFICATION_PERIOD  3  // 2^3 = 8 DAB frames = 8*96ms = 768ms
 
-enum class DabCharset
+enum class RadioControlEvent
 {
-    EBULATIN = 0,
-    UCS2 = 6,
-    UTF8 = 15,
+    SYNC_STATUS = 0,
+    TUNE,
+    ENSEMBLE_INFO,
+    SERVICE_LIST,
+    SERVICE_COMPONENT_LIST,
+    SERVICE_SELECTION,
+    AUTO_NOTIFICATION,
+    DATAGROUP_DL,
+    DATAGROUP_MSC,
+    AUDIO_DATA,
 };
 
-enum class DabAudioMode
-{
-    DAB_AUDIO = 0x00,
-    DABPLUS_AUDIO = 0x3F,
-    AUDIO_UNDEF = 0xFF
-};
-
-Q_DECLARE_METATYPE(DabAudioMode);
-
-typedef enum
-{
-    RCTRL_EVENT_SYNC_STATUS = 0,
-    RCTRL_EVENT_TUNE,
-    RCTRL_EVENT_ENSEMBLE_INFO,
-    RCTRL_EVENT_SERVICE_LIST,
-    RCTRL_EVENT_SERVICE_COMPONENT_LIST,
-    RCTRL_EVENT_SERVICE_SELECTION,
-    RCTRL_EVENT_AUTO_NOTIFICATION,
-    RCTRL_EVENT_DATAGROUP_DL,
-    RCTRL_EVENT_DATAGROUP_MSC,
-    RCTRL_EVENT_AUDIO_DATA,
-} radioControlEventType_t;
-
-typedef QMap<uint32_t, QString> dabChannelList_t;
 //typedef QList<dabProcServiceListItem_t> dabProcServiceList_t;
 
-typedef enum
+enum class DabSyncLevel
 {
-    RADIOCONTROL_SYNC_LEVEL0 = 0,
-    RADIOCONTROL_SYNC_LEVEL1 = 1,
-    RADIOCONTROL_SYNC_LEVEL2 = 2,
-} radioControlSyncLevel_t;
+    NoSync = 0,
+    NullSync = 1,
+    FullSync = 2,
+};
 
-typedef enum
+enum class DabTMId
 {
-
-    RADIOCONTROL_TMStreamAudio = 0,
-    RADIOCONTROL_TMStreamData  = 1,
-    RADIOCONTROL_TMPacketData  = 3
-} radioControlTMId_t;
-
-enum class DabProtectionLevel
-{
-    PROTECTION_LEVEL_UNDEFINED = 0,
-    UEP_1 = 1,
-    UEP_2 = 2,
-    UEP_3 = 3,
-    UEP_4 = 4,
-    UEP_5 = 5,
-    UEP_MAX = UEP_5,
-
-    EEP_MIN = (UEP_MAX+1),
-    EEP_1A =  (0+EEP_MIN),
-    EEP_2A =  (1+EEP_MIN),
-    EEP_3A =  (2+EEP_MIN),
-    EEP_4A =  (3+EEP_MIN),
-
-    EEP_1B =  (4+EEP_MIN),
-    EEP_2B =  (5+EEP_MIN),
-    EEP_3B =  (6+EEP_MIN),
-    EEP_4B =  (7+EEP_MIN),
+    StreamAudio = 0,
+    StreamData  = 1,
+    PacketData  = 3
 };
 
 typedef struct
@@ -143,7 +104,7 @@ typedef struct
     // TMStreamAudio = 0,
     // TMStreamData  = 1,
     // TMPacketData  = 3
-    radioControlTMId_t TMId;       // TMId (Transport Mechanism Identifier)
+    DabTMId TMId;       // TMId (Transport Mechanism Identifier)
 
     union
     {
@@ -203,9 +164,15 @@ typedef struct
     QList<dabProcServiceCompListItem_t> list;
 } radioControlServiceComponentData_t;
 
+typedef struct {
+    QString label;
+    uint16_t SId;
+    uint8_t SCIdS;
+} radioControlAudioService_t;
+
 typedef struct Event
 {
-    radioControlEventType_t type;
+    RadioControlEvent type;
     dabProcNotificationStatus_t status;
     intptr_t pData;
 } radioControlEvent_t;
@@ -214,14 +181,6 @@ class RadioControl : public QObject
 {
     Q_OBJECT
 public:
-    static const dabChannelList_t DABChannelList;
-    static const uint16_t ebuLatin2UCS2[];
-    static const QStringList PTyNames;
-    static const uint8_t EEPCoderate[];
-    static QString convertToQString(const char *c, uint8_t charset, uint8_t len = 16);
-    static QString getPtyName(const uint8_t pty);
-
-
     explicit RadioControl(QObject *parent = nullptr);    
     ~RadioControl();
 
@@ -239,6 +198,7 @@ signals:
     void tuneDone(uint32_t freq);
     void ensembleInformation(const radioControlEnsembleInfo_t & ens);
     void serviceListItemAvailable(const radioControlServiceListItem_t & serviceListItem);
+    //void serviceListItemAvailable(const radioControlAudioService_t & audioService);
     void dlDataGroup(const QByteArray & dg);
     void mscDataGroup(const QByteArray & dg);
     void newService(uint32_t SId, uint8_t SCIdS);
@@ -248,6 +208,8 @@ signals:
     void tuneInputDevice(uint32_t freq);
 
 private:
+    static const uint8_t EEPCoderate[];
+
     dabProcHandle_t dabProcHandle;    
     dabProcSyncLevel_t sync;
     bool autoNotificationEna = false;
