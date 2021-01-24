@@ -113,7 +113,7 @@ void AudioOutput::bufferMonitor()
     sum+= count;
     float avrgMs = sum * 1000.0 / (sizeof(int16_t)*numChannels * AUDIOOUTPUT_DBG_AVRG_SIZE * sampleRate);
 
-    qDebug("Buffer monitor [%lld - %lld] : %6lld bytes => %6lld samples => %d [avrg %.2f] ms", minCount, maxCount,
+    qDebug("Buffer monitor [%lld - %lld] : %6lld bytes => %6lld samples => %4d [avrg %.2f] ms", minCount, maxCount,
            count, count >> 2, qRound((count>>2)*1000.0/sampleRate), avrgMs);
 }
 #endif
