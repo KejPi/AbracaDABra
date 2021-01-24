@@ -671,13 +671,14 @@ void MainWindow::serviceChanged(uint32_t sid, uint8_t scids)
         {   // service component not valid -> shoudl not happen
             return;
         }
-        // set service name in UI until infromation arrives from decoder
+        // set service name in UI until information arrives from decoder
         ui->serviceLabel->setText(servicePtr->label);
-        ui->serviceLabel->setToolTip(QString("<b>Service:</b> %1<br><b>Short label:</b> %2<br><b>SID:</b> 0x%3<br><b>SCId:</b> %4")
+        ui->serviceLabel->setToolTip(QString("<b>Service:</b> %1<br><b>Short label:</b> %2<br><b>SID:</b> 0x%3<br><b>SCId:</b> %4<br><b>Language:</b> %5")
                                      .arg(servicePtr->label)
                                      .arg(servicePtr->labelShort)
                                      .arg(QString("%1").arg(SId, 4, 16, QChar('0')).toUpper() )
-                                     .arg(scids));
+                                     .arg(scids)
+                                     .arg(DabTables::getLangName(servicePtr->serviceComponents.at(scids).lang)));
         ui->programTypeLabel->setText(servicePtr->pty);
 
         const radioControlServiceComponentListItem_t sc = servicePtr->serviceComponents.at(scids);

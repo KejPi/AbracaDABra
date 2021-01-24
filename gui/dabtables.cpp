@@ -87,6 +87,7 @@ const QStringList DabTables::PTyNames =
     "",
 };
 
+
 const uint16_t DabTables::ebuLatin2UCS2[] =
 {   /* UCS2 == UTF16 for Basic Multilingual Plane 0x0000-0xFFFF */
     0x0000, 0x0118, 0x012E, 0x0172, 0x0102, 0x0116, 0x010E, 0x0218, /* 0x00 - 0x07 */
@@ -174,3 +175,115 @@ QString DabTables::getPtyName(const uint8_t pty)
     }
     return PTyNames[pty];
 }
+
+QString DabTables::getLangName(int lang)
+{
+    switch (lang) {
+        case 0x00: return QString("Unknown/not applicable");
+        case 0x01: return QString("Albanian");
+        case 0x02: return QString("Breton");
+        case 0x03: return QString("Catalan");
+        case 0x04: return QString("Croatian");
+        case 0x05: return QString("Welsh");
+        case 0x06: return QString("Czech");
+        case 0x07: return QString("Danish");
+        case 0x08: return QString("German");
+        case 0x09: return QString("English");
+        case 0x0A: return QString("Spanish");
+        case 0x0B: return QString("Esperanto");
+        case 0x0C: return QString("Estonian");
+        case 0x0D: return QString("Basque");
+        case 0x0E: return QString("Faroese");
+        case 0x0F: return QString("French");
+        case 0x10: return QString("Frisian");
+        case 0x11: return QString("Irish");
+        case 0x12  : return QString("Gaelic");
+        case 0x13: return QString("Galician");
+        case 0x14: return QString("Icelandic");
+        case 0x15: return QString("Italian");
+        case 0x16: return QString("Lappish");
+        case 0x17: return QString("Latin");
+        case 0x18: return QString("Latvian");
+        case 0x19: return QString("Luxembourgian");
+        case 0x1A: return QString("Lithuanian");
+        case 0x1B: return QString("Hungarian");
+        case 0x1C: return QString("Maltese");
+        case 0x1D: return QString("Dutch");
+        case 0x1E: return QString("Norwegian");
+        case 0x1F: return QString("Occitan");
+        case 0x20: return QString("Polish");
+        case 0x21: return QString("Portuguese");
+        case 0x22: return QString("Romanian");
+        case 0x23: return QString("Romansh");
+        case 0x24: return QString("Serbian");
+        case 0x25: return QString("Slovak");
+        case 0x26: return QString("Slovene");
+        case 0x27: return QString("Finnish");
+        case 0x28: return QString("Swedish");
+        case 0x29: return QString("Turkish");
+        case 0x2A: return QString("Flemish");
+        case 0x2B: return QString("Walloon");
+        case 0x40: return QString("Background sound/clean feed");
+        case 0x45: return QString("Zulu");
+        case 0x46: return QString("Vietnamese");
+        case 0x47: return QString("Uzbek");
+        case 0x48: return QString("Urdu");
+        case 0x49: return QString("Ukranian");
+        case 0x4A: return QString("Thai");
+        case 0x4B: return QString("Telugu");
+        case 0x4C: return QString("Tatar");
+        case 0x4D: return QString("Tamil");
+        case 0x4E: return QString("Tadzhik");
+        case 0x4F: return QString("Swahili");
+        case 0x50: return QString("Sranan Tongo");
+        case 0x51: return QString("Somali");
+        case 0x52: return QString("Sinhalese");
+        case 0x53: return QString("Shona");
+        case 0x54: return QString("Serbo-Croat");
+        case 0x55: return QString("Rusyn");
+        case 0x56: return QString("Russian");
+        case 0x57: return QString("Quechua");
+        case 0x58: return QString("Pushtu");
+        case 0x59: return QString("Punjabi");
+        case 0x5A: return QString("Persian");
+        case 0x5B: return QString("Papiamento");
+        case 0x5C: return QString("Oriya");
+        case 0x5D: return QString("Nepali");
+        case 0x5E: return QString("Ndebele");
+        case 0x5F: return QString("Marathi");
+        case 0x60: return QString("Moldavian");
+        case 0x61: return QString("Malaysian");
+        case 0x62: return QString("Malagasay");
+        case 0x63: return QString("Macedonian");
+        case 0x64: return QString("Laotian");
+        case 0x65: return QString("Korean");
+        case 0x66: return QString("Khmer");
+        case 0x67: return QString("Kazakh");
+        case 0x68: return QString("Kannada");
+        case 0x69: return QString("Japanese");
+        case 0x6A: return QString("Indonesian");
+        case 0x6B: return QString("Hindi");
+        case 0x6C: return QString("Hebrew");
+        case 0x6D: return QString("Hausa");
+        case 0x6E: return QString("Gurani");
+        case 0x6F: return QString("Gujurati");
+        case 0x70: return QString("Greek");
+        case 0x71: return QString("Georgian");
+        case 0x72: return QString("Fulani");
+        case 0x73: return QString("Dari");
+        case 0x74: return QString("Chuvash");
+        case 0x75: return QString("Chinese");
+        case 0x76: return QString("Burmese");
+        case 0x77: return QString("Bulgarian");
+        case 0x78: return QString("Bengali");
+        case 0x79: return QString("Belorussian");
+        case 0x7A: return QString("Bambora");
+        case 0x7B: return QString("Azerbaijani");
+        case 0x7C: return QString("Assamese");
+        case 0x7D: return QString("Armenian");
+        case 0x7E: return QString("Arabic");
+        case 0x7F: return QString("Amharic");
+        default: return QString("Unknown");
+    }
+}
+

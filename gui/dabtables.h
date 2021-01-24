@@ -53,6 +53,7 @@ public:
     static const uint16_t ebuLatin2UCS2[];
     static QString convertToQString(const char *c, uint8_t charset, uint8_t len = 0);
     static QString getPtyName(const uint8_t pty);
+    static QString getLangName(int lang);
 };
 
 #endif // DABTABLES_H
