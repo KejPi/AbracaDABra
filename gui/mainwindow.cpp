@@ -40,6 +40,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
 
+    dlDecoder = new DLDecoder();
+    motDecoder = new MOTDecoder();
+
     ui->setupUi(this);
 
     // set UI
@@ -195,9 +198,6 @@ MainWindow::MainWindow(QWidget *parent)
     audioOutThr->setPriority(QThread::HighestPriority);
 #endif
 
-    dlDecoder = new DLDecoder();
-    motDecoder = new MOTDecoder();
-
     // Connect signals
     connect(radioControl, &RadioControl::ensembleInformation, this, &MainWindow::updateEnsembleInfo, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::syncStatus, this, &MainWindow::updateSyncStatus, Qt::QueuedConnection);
@@ -323,11 +323,16 @@ void MainWindow::inputDeviceReady()
 void MainWindow::updateEnsembleInfo(const radioControlEnsembleInfo_t & ens)
 {
     ui->ensembleLabel->setText(ens.label);
-    ui->ensembleLabel->setToolTip(QString("<b>Ensemble:</b> %1<br><b>Short label:</b> %2<br><b>ECC:</b> 0x%3<br><b>EID:</b> 0x%4")
+    ui->ensembleLabel->setToolTip(QString("<b>Ensemble:</b> %1<br>"
+                                          "<b>Short label:</b> %2<br>"
+                                          "<b>ECC:</b> 0x%3<br>"
+                                          "<b>EID:</b> 0x%4<br>"
+                                          "<b>Country:</b> %5")
                                   .arg(ens.label)
                                   .arg(ens.labelShort)
                                   .arg(QString("%1").arg(ens.ecc, 2, 16, QChar('0')).toUpper())
-                                  .arg(QString("%1").arg(ens.eid, 4, 16, QChar('0')).toUpper()));
+                                  .arg(QString("%1").arg(ens.eid, 4, 16, QChar('0')).toUpper())
+                                  .arg(DabTables::getCountryName(ens.ecc, ens.eid)));
 }
 
 void MainWindow::updateSyncStatus(uint8_t sync)
@@ -530,7 +535,9 @@ void MainWindow::onChannelSelection()
 void MainWindow::onServiceSelection()
 {
     clearServiceInformationLabels();
-    ui->dynamicLabel->setText("");
+    dlDecoder->reset();
+    ui->dynamicLabel->setText("");    
+    motDecoder->reset();
 #if USE_DAB_LOGO_SLS
     QPixmap pic;
     if (pic.load(":/resources/sls_logo.png"))
@@ -673,11 +680,17 @@ void MainWindow::serviceChanged(uint32_t sid, uint8_t scids)
         }
         // set service name in UI until information arrives from decoder
         ui->serviceLabel->setText(servicePtr->label);
-        ui->serviceLabel->setToolTip(QString("<b>Service:</b> %1<br><b>Short label:</b> %2<br><b>SID:</b> 0x%3<br><b>SCId:</b> %4<br><b>Language:</b> %5")
+        ui->serviceLabel->setToolTip(QString("<b>Service:</b> %1<br>"
+                                             "<b>Short label:</b> %2<br>"
+                                             "<b>SID:</b> 0x%3<br>"
+                                             "<b>SCIdS:</b> %4<br>"
+                                             "<b>Country:</b> %5<br>"
+                                             "<b>Language:</b> %6")
                                      .arg(servicePtr->label)
                                      .arg(servicePtr->labelShort)
                                      .arg(QString("%1").arg(SId, 4, 16, QChar('0')).toUpper() )
                                      .arg(scids)
+                                     .arg(DabTables::getCountryName(0xE2, sid))
                                      .arg(DabTables::getLangName(servicePtr->serviceComponents.at(scids).lang)));
         ui->programTypeLabel->setText(servicePtr->pty);
 
@@ -695,7 +708,9 @@ void MainWindow::serviceChanged(uint32_t sid, uint8_t scids)
             {  // EEP x+B
                 label = QString("EEP %1-%2").arg(int(sc.protection.level) - int(DabProtectionLevel::EEP_1B) + 1).arg("B");
             }
-            toolTip = QString("<B>Error protection</b><br>%1<br>Coderate: %2/%3<br>Capacity units: %4 CU")
+            toolTip = QString("<B>Error protection</b><br>"
+                              "%1<br>Coderate: %2/%3<br>"
+                              "Capacity units: %4 CU")
                                             .arg(label)
                                             .arg(sc.protection.codeRateUpper)
                                             .arg(sc.protection.codeRateLower)
@@ -704,7 +719,9 @@ void MainWindow::serviceChanged(uint32_t sid, uint8_t scids)
         else
         {  // UEP
             label = QString("UEP #%1").arg(sc.protection.uepIndex);
-            toolTip = QString("<B>Error protection</b><br>%1<br>Protection level: %2<br>Capacity units: %3 CU")
+            toolTip = QString("<B>Error protection</b><br>"
+                              "%1<br>Protection level: %2<br>"
+                              "Capacity units: %3 CU")
                                             .arg(label)
                                             .arg(int(sc.protection.level))
                                             .arg(sc.SubChSize);

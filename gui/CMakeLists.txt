@@ -162,10 +162,10 @@ endif()
 
 if (NOT USE_SYSTEM_MPG123)
     add_library (mpg123 STATIC IMPORTED)
-    set_property (TARGET mpg123 PROPERTY IMPORTED_LOCATION "${MPG123_PREFIX}/lib/libmpg123.a")
+    set_property (TARGET mpg123 PROPERTY IMPORTED_LOCATION "${MPG123_PREFIX}/libmpg123-0.dll")
     add_dependencies (mpg123 mpg123_external)
 
-    set (LIBMPG123_INCLUDE_DIRS "${MPG123_PREFIX}/include")
+    set (LIBMPG123_INCLUDE_DIRS "${MPG123_PREFIX}")
     set (LIBMPG123_LIBRARIES mpg123)
     set (MPG123_BUILTIN mpg123)
 endif()
@@ -182,7 +182,7 @@ endif()
 
 if (NOT USE_SYSTEM_PORTAUDIO)
     add_library (portaudio STATIC IMPORTED)
-    set_property (TARGET portaudio PROPERTY IMPORTED_LOCATION "${PORTAUDIO_PREFIX}/lib/libportaudio.dll.a")
+    set_property (TARGET portaudio PROPERTY IMPORTED_LOCATION "${PORTAUDIO_PREFIX}/lib/libportaudio.dll")
     add_dependencies (portaudio portaudio_external)
 
     set (PORTAUDIO_INCLUDE_DIRS "${PORTAUDIO_PREFIX}/include/")

@@ -164,8 +164,8 @@ void AudioOutput::checkInputBuffer()
 
     qDebug() << Q_FUNC_INFO << count;
 
-    // waiting for >4x AUDIO_FIFO_CHUNK_MS in buffer
-    if (count > 4 * AUDIO_FIFO_CHUNK_MS * sampleRate/1000 * numChannels * sizeof(int16_t))
+    // waiting for >3x AUDIO_FIFO_CHUNK_MS in buffer
+    if (count > 3 * AUDIO_FIFO_CHUNK_MS * sampleRate/1000 * numChannels * sizeof(int16_t))
     {
         if (1 == Pa_IsStreamActive(audioOutput))
         {
