@@ -44,7 +44,6 @@ endif(LIBUSB_WIN_PREBUILD)
 set (RTLSDR_PREFIX "${EXT_LIBS_DIR}/rtlsdr-prefix")
 set (FAAD2_PREFIX "${EXT_LIBS_DIR}/faad2-prefix")
 set (MPG123_PREFIX "${EXT_LIBS_DIR}/mpg123-prefix")
-set (RTAUDIO_PREFIX "${EXT_LIBS_DIR}/rtaudio-prefix")
 set (PORTAUDIO_PREFIX "${EXT_LIBS_DIR}/portaudio-prefix")
 
 
@@ -93,17 +92,6 @@ if (USE_SYSTEM_MPG123)
     if (NOT LIBMPG123_LIBRARIES)
         message (WARNING "libmpg123 not found. Build from source and install to: ${MPG123_PREFIX}")
         set (USE_SYSTEM_MPG123 OFF)
-    endif ()
-endif ()
-if (USE_SYSTEM_RTAUDIO)
-    find_library (RTAUDIO_LIBRARIES rtaudio)
-    if (NOT WIN32)
-        pkg_search_module(RTAUDIO rtaudio)
-        #find_path(RTAUDIO_INCLUDE_DIRS rtaudio/RtAudio.h)
-    endif()
-    if (NOT RTAUDIO_LIBRARIES)
-        message (WARNING "rtaudio not found. Build from source and install to: ${RTAUDIO_PREFIX}")
-        set (USE_SYSTEM_RTAUDIO OFF)
     endif ()
 endif ()
 if (USE_SYSTEM_PORTAUDIO)
@@ -168,16 +156,6 @@ if (NOT USE_SYSTEM_MPG123)
     set (LIBMPG123_INCLUDE_DIRS "${MPG123_PREFIX}")
     set (LIBMPG123_LIBRARIES mpg123)
     set (MPG123_BUILTIN mpg123)
-endif()
-
-if (NOT USE_SYSTEM_RTAUDIO)
-    add_library (rtaudio STATIC IMPORTED)
-    set_property (TARGET rtaudio PROPERTY IMPORTED_LOCATION "${RTAUDIO_PREFIX}/lib/librtaudio.dll.a")
-    add_dependencies (rtaudio rtaudio_external)
-
-    set (RTAUDIO_INCLUDE_DIRS "${RTAUDIO_PREFIX}/include/")
-    set (RTAUDIO_LIBRARIES rtaudio)
-    set (RTAUDIO_BUILTIN rtaudio)
 endif()
 
 if (NOT USE_SYSTEM_PORTAUDIO)
@@ -329,10 +307,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE "${LIBMPG123_LIBRARIES}" )
 # RTLSDR
 include_directories ( ${RTL_SDR_INCLUDE_DIRS} )
 target_link_libraries(${PROJECT_NAME} PRIVATE "${RTL_SDR_LIBRARIES}" )
-
-# RTAUDIO
-include_directories ( ${RTAUDIO_INCLUDE_DIRS} )
-target_link_libraries(${PROJECT_NAME} PRIVATE "${RTAUDIO_LIBRARIES}" )
 
 # PORTAUDIO
 include_directories ( ${PORTAUDIO_INCLUDE_DIRS} )

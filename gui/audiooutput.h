@@ -14,7 +14,6 @@
 
 #define AUDIOOUTPUT_DBG_TIMER 1
 #define AUDIOOUTPUT_DBG_AVRG_SIZE 32
-//#define AUDIOOUTPUT_USE_RTAUDIO
 #define AUDIOOUTPUT_USE_PORTAUDIO
 
 #ifdef AUDIOOUTPUT_USE_RTAUDIO
@@ -51,17 +50,8 @@ private:
                      const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *buffer);
     //    static void rtAudioErrorCb(RtAudioError::Type type, const std::string &errorText);
 #else
-#ifdef AUDIOOUTPUT_USE_RTAUDIO
-    RtAudio * audioOutput = nullptr;
-    audioFifo_t * inFifoPtr = nullptr;
-    unsigned int bufferFrames;
-    static int rtAudioCb(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
-                              double streamTime, RtAudioStreamStatus status, void * buffer);
-    static void rtAudioErrorCb(RtAudioError::Type type, const std::string &errorText);
-#else
     AudioIODevice * ioDevice;
     QAudioOutput * audioOutput;
-#endif
 #endif
 
 #if AUDIOOUTPUT_DBG_TIMER
