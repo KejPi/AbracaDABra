@@ -332,7 +332,7 @@ void MainWindow::updateEnsembleInfo(const radioControlEnsembleInfo_t & ens)
                                   .arg(ens.labelShort)
                                   .arg(QString("%1").arg(ens.ecc, 2, 16, QChar('0')).toUpper())
                                   .arg(QString("%1").arg(ens.eid, 4, 16, QChar('0')).toUpper())
-                                  .arg(DabTables::getCountryName(ens.ecc, ens.eid)));
+                                  .arg(DabTables::getCountryName(ens.ueid)));
 }
 
 void MainWindow::updateSyncStatus(uint8_t sync)
@@ -375,7 +375,7 @@ void MainWindow::updateSnrLevel(float snr)
 
 void MainWindow::updateServiceList(const radioControlServiceListItem_t & serviceListItem)
 {
-    if (serviceListItem.SId > 0xFFFF)
+    if (!RadioControl::isAudioService(serviceListItem.SId))
     {  // do nothing - data services not supported
         return;
     }
@@ -402,7 +402,7 @@ void MainWindow::updateServiceList(const radioControlServiceListItem_t & service
     item->setData(v, Qt::UserRole);
     QString tooltip = QString("<b>Short label:</b> %1<br><b>SID:</b> 0x%2")
             .arg(newServiceListItem->labelShort)
-            .arg( QString("%1").arg(newServiceListItem->SId, 4, 16, QChar('0')).toUpper() );
+            .arg( QString("%1").arg(newServiceListItem->SId & 0x0FFFF, 4, 16, QChar('0')).toUpper() );
     item->setData(tooltip, Qt::ToolTipRole);
     serviceListModel->appendRow(item);
     serviceListModel->sort(0);
@@ -688,9 +688,9 @@ void MainWindow::serviceChanged(uint32_t sid, uint8_t scids)
                                              "<b>Language:</b> %6")
                                      .arg(servicePtr->label)
                                      .arg(servicePtr->labelShort)
-                                     .arg(QString("%1").arg(SId, 4, 16, QChar('0')).toUpper() )
+                                     .arg(QString("%1").arg(SId & 0xFFFF, 4, 16, QChar('0')).toUpper() )
                                      .arg(scids)
-                                     .arg(DabTables::getCountryName(0xE2, sid))
+                                     .arg(DabTables::getCountryName(sid))
                                      .arg(DabTables::getLangName(servicePtr->serviceComponents.at(scids).lang)));
         ui->programTypeLabel->setText(servicePtr->pty);
 

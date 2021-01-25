@@ -152,7 +152,8 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
             for (QList<dabProcServiceListItem_t>::const_iterator it = pServiceList->constBegin(); it < pServiceList->constEnd(); ++it)
             {
                 radioControlServiceListItem_t item;
-                item.SId = it->sid;
+                uint32_t sid = it->sid;
+                item.SId = sid;
                 item.label = DabTables::convertToQString(it->label.str, it->label.charset);
                 item.labelShort = toShortLabel(item.label, it->label.charField);
                 if (it->pty & 0x80)
@@ -190,9 +191,6 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
                         || ((!it->ps) && (it->label.str[0] == '\0'))
                         || ((DabTMId::PacketData == DabTMId(it->TMId)) && (it->packetData.packetAddress < 0)))
                 {
-#if RADIO_CONTROL_VERBOSE
-                    qDebug("Service SID %4.4X not complete", pServiceComp->SId);
-#endif
                     requestUpdate = true;
                     break;
                 }

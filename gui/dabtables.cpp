@@ -288,21 +288,20 @@ QString DabTables::getLangName(int lang)
     }
 }
 
-QString DabTables::getCountryName(uint8_t ECC, uint32_t SId)
+QString DabTables::getCountryName(uint32_t SId)
 {
-    uint8_t countryId = 0;
+    int countryId = 0; // [ECC 8 bits | country code 4 bits]
 
     // ETSI EN 300 401 V2.1.1 (2017-01) [6.3.1  Basic service and service component definition ]
-    if (SId > 0xFFFF)
-    {
-        ECC = (SId >> 24) & 0xFF;
-        countryId = (SId >> 20) & 0x0F;
+    if (SId > 0x00FFFFFF)
+    {   // data service
+        countryId = (SId >> 20) & 0x0FFF;
     }
     else
-    {
-        countryId = (SId >> 12) & 0x0F;
+    {   // program service
+        countryId = (SId >> 12) & 0x0FFF;
     }
-    switch ((ECC<<4) | countryId)
+    switch (countryId)
     {
         case 0xA01:
         case 0xA02:

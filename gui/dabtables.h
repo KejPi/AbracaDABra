@@ -54,7 +54,7 @@ public:
     static QString convertToQString(const char *c, uint8_t charset, uint8_t len = 0);
     static QString getPtyName(const uint8_t pty);
     static QString getLangName(int lang);
-    static QString getCountryName(uint8_t ECC, uint32_t SId);
+    static QString getCountryName(uint32_t SId);
 };
 
 #endif // DABTABLES_H

@@ -136,6 +136,30 @@ typedef struct
 typedef QList<radioControlServiceComponentListItem_t> radioControlServiceComponentList_t;
 typedef QList<radioControlServiceComponentListItem_t>::iterator radioControlServiceComponentListIterator_t;
 
+//typedef struct {
+//    union
+//    {
+//        uint32_t value;
+//        struct {
+//            union {
+//                uint16_t sid;
+//                struct {
+//                    uint16_t ref : 12;
+//                    uint16_t countryID : 4;
+//                };
+//            };
+//            uint32_t zero : 8;
+//            uint32_t ECC : 8;
+//        } prog;
+//        struct {
+//            uint32_t ref : 20;
+//            uint32_t countryID : 4;
+//            uint32_t ECC : 8;
+//        } data;
+//    };
+//    bool isProgService() { return prog.zero == 0; }
+//} radioControlSId_t;
+
 typedef struct
 {
     uint32_t frequency;
@@ -183,6 +207,7 @@ class RadioControl : public QObject
 public:
     explicit RadioControl(QObject *parent = nullptr);    
     ~RadioControl();
+    static bool isAudioService(uint32_t sid) { return sid <= 0x00FFFFFF; }
 
 public slots:
     bool init();
