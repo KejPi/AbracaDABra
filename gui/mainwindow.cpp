@@ -684,15 +684,18 @@ void MainWindow::serviceChanged(uint32_t sid, uint8_t scids)
                                              "<b>Short label:</b> %2<br>"
                                              "<b>SID:</b> 0x%3<br>"
                                              "<b>SCIdS:</b> %4<br>"
-                                             "<b>Country:</b> %5<br>"
-                                             "<b>Language:</b> %6")
+                                             "<b>Language:</b> %5<br>"
+                                             "<b>Country:</b> %6")
                                      .arg(servicePtr->label)
                                      .arg(servicePtr->labelShort)
                                      .arg(QString("%1").arg(SId & 0xFFFF, 4, 16, QChar('0')).toUpper() )
-                                     .arg(scids)
-                                     .arg(DabTables::getCountryName(sid))
-                                     .arg(DabTables::getLangName(servicePtr->serviceComponents.at(scids).lang)));
-        ui->programTypeLabel->setText(servicePtr->pty);
+                                     .arg(scids)                                     
+                                     .arg(DabTables::getLangName(servicePtr->serviceComponents.at(scids).lang))
+                                     .arg(DabTables::getCountryName(sid)));
+        ui->programTypeLabel->setText(DabTables::getPtyName(servicePtr->pty.id));
+        ui->programTypeLabel->setToolTip(QString("<b>Programme Type</b><br>%1 (%2)")
+                                         .arg(DabTables::getPtyName(servicePtr->pty.id))
+                                         .arg(servicePtr->pty.dynamic ? "dynamic" : "static"));
 
         const radioControlServiceComponentListItem_t sc = servicePtr->serviceComponents.at(scids);
         QString label;

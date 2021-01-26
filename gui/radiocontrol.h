@@ -167,8 +167,15 @@ typedef struct
     // Data services use 32bit IDs, Programme services use 16 bits
     uint32_t SId;
     QString label;
-    QString labelShort;
-    QString pty;
+    QString labelShort;        
+    union {
+        uint8_t value;
+        struct {
+            uint8_t id : 6;
+            uint8_t unused : 1;
+            uint8_t dynamic : 1;
+        };
+    } pty;
 
     // CAId (Conditional Access Identifier): this 3-bit field shall identify the
     // Access Control System (ACS) used for the service

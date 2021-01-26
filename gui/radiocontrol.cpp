@@ -160,7 +160,7 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
                 {  // dynamic pty
                     // TODO:
                 }
-                item.pty = DabTables::getPtyName(it->pty & 0x1F);
+                item.pty.value = it->pty;
                 item.CAId = it->CAId;
                 item.numServiceComponents = it->numComponents;
                 serviceList.append(item);
