@@ -473,7 +473,6 @@ void AudioOutput::checkInputBuffer()
         }
     }
 }
-#endif // def AUDIOOUTPUT_USE_PORTAUDIO
 
 AudioIODevice::AudioIODevice(audioFifo_t *buffer, QObject *parent) : QIODevice(parent)
 {
@@ -548,3 +547,4 @@ int64_t AudioIODevice::bytesAvailable() const
 
     return count; // + QIODevice::bytesAvailable();
 }
+#endif // def AUDIOOUTPUT_USE_PORTAUDIO

@@ -12,13 +12,10 @@
 
 #include "audiofifo.h"
 
-#define AUDIOOUTPUT_DBG_TIMER 1
-#define AUDIOOUTPUT_DBG_AVRG_SIZE 32
 #define AUDIOOUTPUT_USE_PORTAUDIO
 
-#ifdef AUDIOOUTPUT_USE_RTAUDIO
-#include "rtaudio/RtAudio.h"
-#endif
+#define AUDIOOUTPUT_DBG_TIMER 1
+#define AUDIOOUTPUT_DBG_AVRG_SIZE 32
 
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
 #include "portaudio.h"
@@ -49,7 +46,6 @@ private:
     static bool isRunning;
     static int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
                      const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *buffer);
-    //    static void rtAudioErrorCb(RtAudioError::Type type, const std::string &errorText);
 #else
     AudioIODevice * ioDevice;
     QAudioOutput * audioOutput;
@@ -70,11 +66,12 @@ private slots:
     void checkInputBuffer();
     void initTimer();
     void destroyTimer();
-#if (!defined AUDIOOUTPUT_USE_RTAUDIO) && (!defined AUDIOOUTPUT_USE_PORTAUDIO)
+#if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
     void handleStateChanged(QAudio::State newState);
 #endif
 };
 
+#if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
 class AudioIODevice : public QIODevice
 {
 public:
@@ -89,5 +86,6 @@ public:
 private:
     audioFifo_t * inFifoPtr = nullptr;
 };
+#endif
 
 #endif // AUDIOOUTPUT_H
