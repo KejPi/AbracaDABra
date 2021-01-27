@@ -46,6 +46,7 @@ private:
     PaStream * audioOutput = nullptr;
     audioFifo_t * inFifoPtr = nullptr;
     unsigned int bufferFrames;
+    static bool isRunning;
     static int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
                      const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *buffer);
     //    static void rtAudioErrorCb(RtAudioError::Type type, const std::string &errorText);

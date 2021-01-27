@@ -9,6 +9,8 @@ audioFifo_t audioBuffer;
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
 //#define AUDIOOUTPUT_PORTAUDIO_NO_STARTUP_TIMER
 
+bool AudioOutput::isRunning = false;
+
 AudioOutput::AudioOutput(audioFifo_t * buffer)
 {
     inFifoPtr = buffer;
@@ -27,8 +29,13 @@ AudioOutput::AudioOutput(audioFifo_t * buffer)
 
 AudioOutput::~AudioOutput()
 {
+    isRunning = false;
     if (nullptr != audioOutput)
     {
+        if (Pa_IsStreamActive(audioOutput))
+        {
+            audioBuffer.countChanged.wakeAll();
+        }
         Pa_CloseStream(audioOutput);
     }
 
@@ -83,6 +90,7 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
     }
 #else
     initTimer();
+    AudioOutput::isRunning = true;
 #endif
 
 #if AUDIOOUTPUT_DBG_TIMER
@@ -145,9 +153,15 @@ void AudioOutput::destroyTimer()
 void AudioOutput::stop()
 {
     qDebug() << Q_FUNC_INFO;
+    AudioOutput::isRunning = false;
     if (nullptr != audioOutput)
     {
+        if (Pa_IsStreamActive(audioOutput))
+        {
+            audioBuffer.countChanged.wakeAll();
+        }
         Pa_CloseStream(audioOutput);
+
         audioOutput = nullptr;
     }
 
@@ -223,17 +237,18 @@ int AudioOutput::portAudioCb( const void *inputBuffer, void *outputBuffer, unsig
         }
     }
 #else
-//    while (count < bytesToRead)
-//    {
-//        inFifoPtr->countChanged.wait(&inFifoPtr->mutex);
-//        count = inFifoPtr->count;
-//    }
     if (count < bytesToRead)
     {
         qDebug() << "Not enough samples in buffer - trying to refill";
         while (count < 4*bytesToRead)
         {
             inFifoPtr->countChanged.wait(&inFifoPtr->mutex);
+            if (!AudioOutput::isRunning)
+            {
+                qDebug() << "PortAudio aborting stream from callback...";
+                inFifoPtr->mutex.unlock();
+                return paAbort;
+            }
             count = inFifoPtr->count;
         }
     }
@@ -259,7 +274,7 @@ int AudioOutput::portAudioCb( const void *inputBuffer, void *outputBuffer, unsig
     inFifoPtr->countChanged.wakeAll();
     inFifoPtr->mutex.unlock();
 
-    return 0;
+    return paContinue;
 }
 
 
