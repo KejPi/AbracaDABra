@@ -159,7 +159,7 @@ void RtlSdrInput::stop()
         worker->wait(2000);
         while  (!worker->isFinished())
         {
-            qDebug() << "Worker thread not finished after timeout...";
+            qDebug() << "Worker thread not finished after timeout - this should not happen :-(";
 
             // reset buffer - and tell the thread it is empty - buffer will be reset in any case
             pthread_mutex_lock(&inputBuffer.countMutex);
@@ -253,24 +253,21 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx)
         uint64_t count = inputBuffer.count;
         Q_ASSERT(count <= INPUT_FIFO_SIZE);
 
-        // input samples are IQ = [uint8_t uint8_t]
-        // going to transform them to [float float] = float _Complex
-        //on euint8_t will be transformed to one float
-        while ((INPUT_FIFO_SIZE  - count) < len*sizeof(float))
-        {
-            qDebug() << Q_FUNC_INFO << len << "waiting...";
-#if INPUT_USE_PTHREADS
-            pthread_cond_wait(&inputBuffer.countCondition, &inputBuffer.countMutex);
-#else
-            inputBuffer.countChanged.wait(&inputBuffer.mutex);
-#endif
-            count = inputBuffer.count;
-        }
 #if INPUT_USE_PTHREADS
         pthread_mutex_unlock(&inputBuffer.countMutex);
 #else
         inputBuffer.mutex.unlock();
 #endif
+
+        if ((INPUT_FIFO_SIZE - count) < len*sizeof(float))
+        {
+            qDebug() << Q_FUNC_INFO << "dropping" << len << "bytes...";
+        }
+
+        // input samples are IQ = [uint8_t uint8_t]
+        // going to transform them to [float float] = float _Complex
+        // on euint8_t will be transformed to one float
+
         // there is enough room in buffer
         uint64_t bytesTillEnd = INPUT_FIFO_SIZE - inputBuffer.head;
         uint8_t * inPtr = buf;
@@ -300,7 +297,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx)
             }
             inputBuffer.head = (len-samplesTillEnd)*sizeof(float);
         }        
-        //inputBuffer.head = (inputBuffer.head + len*sizeof(float)) % INPUT_FIFO_SIZE;
+
 #if INPUT_USE_PTHREADS
         pthread_mutex_lock(&inputBuffer.countMutex);
         inputBuffer.count = inputBuffer.count + len*sizeof(float);
