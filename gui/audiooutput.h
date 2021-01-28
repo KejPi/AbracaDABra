@@ -38,7 +38,6 @@ public slots:
 private:
     uint32_t sampleRate;
     uint8_t numChannels;    
-    QTimer * audioStartTimer;
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
     PaStream * outStream = nullptr;
     audioFifo_t * inFifoPtr = nullptr;
@@ -51,6 +50,7 @@ private:
     friend int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
                      const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx);
 #else
+    QTimer * audioStartTimer;
     AudioIODevice * ioDevice;
     QAudioOutput * audioOutput;
 #endif
@@ -67,10 +67,10 @@ private:
     int64_t bytesAvailable() const;
 
 private slots:
+#if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
     void checkInputBuffer();
     void initTimer();
     void destroyTimer();
-#if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
     void handleStateChanged(QAudio::State newState);
 #endif
 };
