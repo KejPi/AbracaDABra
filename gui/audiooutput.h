@@ -14,12 +14,13 @@
 
 #define AUDIOOUTPUT_USE_PORTAUDIO
 
-#define AUDIOOUTPUT_DBG_TIMER 1
-#define AUDIOOUTPUT_DBG_AVRG_SIZE 32
-
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
 #include "portaudio.h"
 #endif
+
+#define AUDIOOUTPUT_DBG_TIMER 1
+#define AUDIOOUTPUT_DBG_AVRG_SIZE 32
+//#define AUDIOOUTPUT_RAW_FILE_OUT
 
 
 class AudioIODevice;
@@ -36,8 +37,12 @@ public slots:
     void start(uint32_t sRate, uint8_t numChannels);
 
 private:
-    uint32_t sampleRate;
+    uint32_t sampleRate_kHz;
     uint8_t numChannels;    
+#ifdef AUDIOOUTPUT_RAW_FILE_OUT
+    FILE * rawOut;
+#endif
+
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
     PaStream * outStream = nullptr;
     audioFifo_t * inFifoPtr = nullptr;
