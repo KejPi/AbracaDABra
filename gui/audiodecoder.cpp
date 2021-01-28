@@ -661,7 +661,9 @@ void AudioDecoder::processAAC(QByteArray *inData)
 
     outFifoPtr->mutex.lock();
     outFifoPtr->count += bytesToWrite;
+#if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
     outFifoPtr->countChanged.wakeAll();
+#endif
     outFifoPtr->mutex.unlock();
 }
 

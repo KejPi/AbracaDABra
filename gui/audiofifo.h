@@ -14,7 +14,6 @@ struct AudioFifo
     int64_t count;
     int64_t head;
     int64_t tail;
-    uint8_t bytesPerFrame;
     uint8_t buffer[AUDIO_FIFO_SIZE];    
     QWaitCondition countChanged;
     QMutex mutex;    

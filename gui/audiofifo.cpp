@@ -6,6 +6,5 @@ void AudioFifo::reset()
     count = 0;
     head = 0;
     tail = 0;
-    bytesPerFrame = 0;
     mutex.unlock();
 };

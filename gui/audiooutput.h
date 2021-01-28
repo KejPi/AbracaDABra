@@ -40,12 +40,16 @@ private:
     uint8_t numChannels;    
     QTimer * audioStartTimer;
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
-    PaStream * audioOutput = nullptr;
+    PaStream * outStream = nullptr;
     audioFifo_t * inFifoPtr = nullptr;
     unsigned int bufferFrames;
-    static bool isRunning;
-    static int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
-                     const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *buffer);
+    uint8_t bytesPerFrame;
+    bool isMuted = true;
+
+    int portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames, PaStreamCallbackFlags statusFlags);
+
+    friend int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
+                     const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx);
 #else
     AudioIODevice * ioDevice;
     QAudioOutput * audioOutput;

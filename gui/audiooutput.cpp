@@ -7,15 +7,16 @@ audioFifo_t audioBuffer;
 
 
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
-//#define AUDIOOUTPUT_PORTAUDIO_NO_STARTUP_TIMER
+#define AUDIOOUTPUT_PORTAUDIO_NO_STARTUP_TIMER 0
 
-bool AudioOutput::isRunning = false;
+int portAudioCb( const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
+                 const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx);
 
 AudioOutput::AudioOutput(audioFifo_t * buffer)
 {
     inFifoPtr = buffer;
     audioStartTimer = nullptr;
-    audioOutput = nullptr;
+    outStream = nullptr;
 #if AUDIOOUTPUT_DBG_TIMER
     dbgTimer = nullptr;
 #endif
@@ -29,14 +30,13 @@ AudioOutput::AudioOutput(audioFifo_t * buffer)
 
 AudioOutput::~AudioOutput()
 {
-    isRunning = false;
-    if (nullptr != audioOutput)
+    if (nullptr != outStream)
     {
-        if (Pa_IsStreamActive(audioOutput))
+        if (Pa_IsStreamActive(outStream))
         {
-            audioBuffer.countChanged.wakeAll();
+            Pa_AbortStream(outStream);
         }
-        Pa_CloseStream(audioOutput);
+        Pa_CloseStream(outStream);
     }
 
     PaError err = Pa_Terminate();
@@ -57,11 +57,11 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
     sampleRate = sRate;
     numChannels = numCh;
 
-    inFifoPtr->bytesPerFrame = numCh * sizeof(int16_t);
+    bytesPerFrame = numCh * sizeof(int16_t);
     bufferFrames = AUDIO_FIFO_CHUNK_MS/2 * sampleRate/1000;   // 120 ms (FIFO size should be integer multiple of this)
 
     /* Open an audio I/O stream. */
-    PaError err = Pa_OpenDefaultStream( &audioOutput,
+    PaError err = Pa_OpenDefaultStream( &outStream,
                                         0,              /* no input channels */
                                         numCh,          /* stereo output */
                                         paInt16,        /* 16 bit floating point output */
@@ -73,8 +73,8 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
                                                            paFramesPerBufferUnspecified, which
                                                            tells PortAudio to pick the best,
                                                            possibly changing, buffer size.*/
-                                        AudioOutput::portAudioCb,    /* callback */
-                                        (void *) inFifoPtr );
+                                        portAudioCb,    /* callback */
+                                        (void *) this);
     if (err!=paNoError )
     {
         throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
@@ -83,14 +83,15 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
     qDebug() << Q_FUNC_INFO << "bufferFrames =" << bufferFrames;
 
 #if (AUDIOOUTPUT_PORTAUDIO_NO_STARTUP_TIMER)
-    PaError err = Pa_StartStream(audioOutput);
-    if( err != paNoError )
+    isMuted = true;
+
+    err = Pa_StartStream(audioOutput);
+    if(paNoError != err)
     {
         throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
     }
 #else
     initTimer();
-    AudioOutput::isRunning = true;
 #endif
 
 #if AUDIOOUTPUT_DBG_TIMER
@@ -153,16 +154,15 @@ void AudioOutput::destroyTimer()
 void AudioOutput::stop()
 {
     qDebug() << Q_FUNC_INFO;
-    AudioOutput::isRunning = false;
-    if (nullptr != audioOutput)
+    if (nullptr != outStream)
     {
-        if (Pa_IsStreamActive(audioOutput))
+        if (Pa_IsStreamActive(outStream))
         {
-            audioBuffer.countChanged.wakeAll();
+            Pa_StopStream(outStream);
         }
-        Pa_CloseStream(audioOutput);
+        Pa_CloseStream(outStream);
 
-        audioOutput = nullptr;
+        outStream = nullptr;
     }
 
 #if AUDIOOUTPUT_DBG_TIMER
@@ -181,13 +181,13 @@ void AudioOutput::checkInputBuffer()
     // waiting for >3x AUDIO_FIFO_CHUNK_MS in buffer
     if (count > 3 * AUDIO_FIFO_CHUNK_MS * sampleRate/1000 * numChannels * sizeof(int16_t))
     {
-        if (1 == Pa_IsStreamActive(audioOutput))
+        if (1 == Pa_IsStreamActive(outStream))
         {
             destroyTimer();
         }
         else
         {
-            PaError err = Pa_StartStream(audioOutput);
+            PaError err = Pa_StartStream(outStream);
             if( err != paNoError )
             {
                 throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
@@ -206,12 +206,17 @@ int64_t AudioOutput::bytesAvailable() const
     return count;
 }
 
-int AudioOutput::portAudioCb( const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
-                 const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *buffer)
+int portAudioCb( const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
+                 const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx)
 {
     Q_UNUSED(inputBuffer);
     Q_UNUSED(timeInfo);
 
+    return static_cast<AudioOutput*>(ctx)->portAudioCbPrivate(outputBuffer, nBufferFrames, statusFlags);
+}
+
+int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames, PaStreamCallbackFlags statusFlags)
+{
     //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
 
     if (statusFlags & paOutputUnderflow)
@@ -220,41 +225,26 @@ int AudioOutput::portAudioCb( const void *inputBuffer, void *outputBuffer, unsig
     }
 
     // read samples from input buffer
-    audioFifo_t * inFifoPtr = (audioFifo_t *) buffer;
-    uint64_t bytesToRead = inFifoPtr->bytesPerFrame * nBufferFrames;
+    uint64_t bytesToRead = bytesPerFrame * nBufferFrames;
 
     inFifoPtr->mutex.lock();
     uint64_t count = inFifoPtr->count;
+    inFifoPtr->mutex.unlock();
 
 #if (AUDIOOUTPUT_PORTAUDIO_NO_STARTUP_TIMER)
-    if (count < 3*bytesToRead)
-    {
-        qDebug() << "No enough samples in buffer - trying to refill";
-        while (count < 6*bytesToRead)
-        {
-            inFifoPtr->countChanged.wait(&inFifoPtr->mutex);
-            count = inFifoPtr->count;
-        }
+    if (count < bytesToRead)
+    {  // insert silence
+       memset(outputBuffer, 0, bytesToRead);
+       return paContinue;
     }
 #else
     if (count < bytesToRead)
-    {
-        qDebug() << "Not enough samples in buffer - trying to refill";
-        while (count < 4*bytesToRead)
-        {
-            inFifoPtr->countChanged.wait(&inFifoPtr->mutex);
-            if (!AudioOutput::isRunning)
-            {
-                qDebug() << "PortAudio aborting stream from callback...";
-                inFifoPtr->mutex.unlock();
-                return paAbort;
-            }
-            count = inFifoPtr->count;
-        }
+    {  // insert silence
+        qDebug() << "Inserting silence";
+        memset(outputBuffer, 0, bytesToRead);
+        return paContinue;
     }
 #endif
-
-    inFifoPtr->mutex.unlock();
 
     uint64_t bytesToEnd = AUDIO_FIFO_SIZE - inFifoPtr->tail;
     if (bytesToEnd < bytesToRead)
