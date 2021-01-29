@@ -252,7 +252,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             {
                 for (int c = 0; c < numChannels; ++c)
                 {
-                    *dataPtr = int16_t(roundf(gain * *dataPtr));
+                    *dataPtr = int16_t(qRound(gain * *dataPtr));
                     dataPtr++;
                 }
                 gain = gain-gDec;
@@ -296,7 +296,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
         {
             for (int c = 0; c < numChannels; ++c)
             {
-                *dataPtr = int16_t(roundf(gain * *dataPtr));
+                *dataPtr = int16_t(qRound(gain * *dataPtr));
                 dataPtr++;
             }
             gain = gain+gInc;
