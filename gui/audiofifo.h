@@ -4,8 +4,8 @@
 #include <QMutex>
 #include <QWaitCondition>
 
-#define AUDIO_FIFO_CHUNK_MS   (120)
-#define AUDIO_FIFO_MS         (16 * AUDIO_FIFO_CHUNK_MS)
+#define AUDIO_FIFO_CHUNK_MS   (60)
+#define AUDIO_FIFO_MS         (32 * AUDIO_FIFO_CHUNK_MS)
 #define AUDIO_FIFO_SIZE       (48 * AUDIO_FIFO_MS * 2 * sizeof(int16_t))  // FS - 48kHz, stereo, int16_t samples
 
 

@@ -59,14 +59,13 @@ AudioOutput::~AudioOutput()
 
 void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 {
-    //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
     stop();
 
     sampleRate_kHz = sRate/1000;
     numChannels = numCh;
 
     bytesPerFrame = numCh * sizeof(int16_t);
-    bufferFrames = AUDIO_FIFO_CHUNK_MS/2 * sampleRate_kHz;   // 120 ms (FIFO size should be integer multiple of this)
+    bufferFrames = AUDIO_FIFO_CHUNK_MS * sampleRate_kHz;   // 120 ms (FIFO size should be integer multiple of this)
 
     /* Open an audio I/O stream. */
     PaError err = Pa_OpenDefaultStream( &outStream,
@@ -87,8 +86,6 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
     {
         throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
     }
-
-    qDebug() << Q_FUNC_INFO << "bufferFrames =" << bufferFrames;
 
     isMuted = true;
 
@@ -219,10 +216,11 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             // mute
             uint32_t availableSamples = count/bytesPerFrame;
             qDebug("Muting... [available %u samples]", availableSamples);
-#if 1
+
+#if 1  // mute implementation
             Q_ASSERT(count == availableSamples*bytesPerFrame);
 
-            // copy all available sample to output buffer
+            // copy all available samples to output buffer
             uint64_t bytesToEnd = AUDIO_FIFO_SIZE - inFifoPtr->tail;
             if (bytesToEnd < count)
             {
@@ -374,7 +372,7 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
     audioOutput = new QAudioOutput(deviceInfo, format, this);
 
     // set buffer size to AUDIO_FIFO_MS/2 ms
-    audioOutput->setBufferSize(AUDIO_FIFO_CHUNK_MS * sRate/1000 * numCh * sizeof(uint16_t));
+    audioOutput->setBufferSize(AUDIO_FIFO_CHUNK_MS*2 * sRate/1000 * numCh * sizeof(uint16_t));
     connect(audioOutput, &QAudioOutput::stateChanged, this, &AudioOutput::handleStateChanged);
 
     // start IO device
@@ -421,7 +419,7 @@ void AudioOutput::initTimer()
         delete audioStartTimer;
     }
     audioStartTimer = new QTimer(this);
-    audioStartTimer->setInterval(AUDIO_FIFO_CHUNK_MS/2);
+    audioStartTimer->setInterval(AUDIO_FIFO_CHUNK_MS);
     connect(audioStartTimer, &QTimer::timeout, this, &AudioOutput::checkInputBuffer);
 
     // timer starts output when buffer is full enough
@@ -488,8 +486,8 @@ void AudioOutput::checkInputBuffer()
 
     qDebug() << Q_FUNC_INFO << count;
 
-    // waiting for 1/2 buffer full
-    if (count > 4 * AUDIO_FIFO_CHUNK_MS * sampleRate_kHz * numChannels * sizeof(int16_t))
+    // waiting for buffer full enough
+    if (count > 8 * AUDIO_FIFO_CHUNK_MS * sampleRate_kHz * numChannels * sizeof(int16_t))
     {
         switch (audioOutput->state())
         {
