@@ -27,6 +27,13 @@ enum class DabProtectionLevel
     EEP_4B =  (7+EEP_MIN),
 };
 
+enum class DabTMId
+{
+    StreamAudio = 0,
+    StreamData  = 1,
+    PacketData  = 3
+};
+
 enum class DabAudioMode
 {
     DAB_AUDIO = 0x00,

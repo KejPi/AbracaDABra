@@ -152,8 +152,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             for (QList<dabProcServiceListItem_t>::const_iterator it = pServiceList->constBegin(); it < pServiceList->constEnd(); ++it)
             {
                 RadioControlServiceListItem item;
-                uint32_t sid = it->sid;
-                item.SId = sid;
+                item.SId.value = it->sid;
                 item.label = DabTables::convertToQString(it->label.str, it->label.charset);
                 item.labelShort = toShortLabel(item.label, it->label.charField);
                 item.pty.s = it->pty.s;
@@ -240,7 +239,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                     item.packetData.packetAddress = it->packetData.packetAddress;
                     break;
                 default:
-                    qDebug("Service SID %4.4X: Unexpected transport mode %d", pServiceComp->SId, it->TMId);
+                    qDebug("Service SID %4.4X: Unexpected transport mode %d", pServiceComp->SId.value, it->TMId);
                     requestUpdate = true;
                 }
                 serviceIt->serviceComponents.append(item);
@@ -260,7 +259,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             if (requestUpdate)
             {
                 serviceIt->serviceComponents.clear();
-                dabGetServiceComponent(pServiceComp->SId);
+                dabGetServiceComponent(pServiceComp->SId.value);
             }
             else
             {   // service list item information is complete
@@ -268,7 +267,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         }
         else
         {  // SId not found
-            qDebug("Service SID %4.4X not in service list", pServiceComp->SId);
+            qDebug("Service SID %4.4X not in service list", pServiceComp->SId.value);
         }
         delete pServiceComp;
     }
@@ -283,7 +282,9 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 #endif
             emit serviceChanged();
 
-            radioControlServiceListIterator_t serviceIt = findService(pData->SId);
+            DabSId sid;
+            sid.value = pData->SId;
+            radioControlServiceListIterator_t serviceIt = findService(sid);
             if (serviceIt != serviceList.end())
             {   // service is in the list
                 radioControlServiceComponentListIterator_t scIt = findServiceComponent(serviceIt, pData->SCIdS);
@@ -478,12 +479,12 @@ void RadioControl::updateSyncLevel(dabProcSyncLevel_t s)
     }
 }
 
-radioControlServiceListIterator_t RadioControl::findService(uint32_t SId)
+radioControlServiceListIterator_t RadioControl::findService(DabSId SId)
 {
     radioControlServiceListIterator_t serviceIt;
     for (serviceIt = serviceList.begin(); serviceIt < serviceList.end(); ++serviceIt)
     {
-        if (SId ==  serviceIt->SId)
+        if (SId.value ==  serviceIt->SId.value)
         {  // found SId
             return serviceIt;
         }
@@ -591,7 +592,7 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         if (DABPROC_NSTAT_SUCCESS == p->status)
         {
             RadioControlServiceComponentData *pServiceCompList = new RadioControlServiceComponentData;
-            pServiceCompList->SId = pInfo->sid;
+            pServiceCompList->SId.value = pInfo->sid;
 
             dabProcServiceCompListItem_t item;
             for (int s = 0; s < pInfo->numServiceComponents; ++s)

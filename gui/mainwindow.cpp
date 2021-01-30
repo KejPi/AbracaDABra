@@ -38,8 +38,8 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    SId.value = 0;
     //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
-
     dlDecoder = new DLDecoder();
     motDecoder = new MOTDecoder();
 
@@ -385,7 +385,7 @@ void MainWindow::updateServiceList(const RadioControlServiceListEntry & slEntry)
         QStandardItem * item = serviceListModel->item(n, 0);
         QVariant data = item->data(Qt::UserRole);
         RadioControlServiceListEntry * servicePtr = reinterpret_cast<RadioControlServiceListEntry *>(data.value<void*>());
-        if ((servicePtr->SId == slEntry.SId) && (servicePtr->SCIdS == slEntry.SCIdS))
+        if ((servicePtr->SId.value == slEntry.SId.value) && (servicePtr->SCIdS == slEntry.SCIdS))
         {  // found - remove item
            delete servicePtr;
            serviceListModel->removeRows(n, 1);
@@ -402,12 +402,12 @@ void MainWindow::updateServiceList(const RadioControlServiceListEntry & slEntry)
     item->setData(v, Qt::UserRole);
     QString tooltip = QString("<b>Short label:</b> %1<br><b>SId:</b> 0x%2")
             .arg(newServiceListItem->labelShort)
-            .arg( QString("%1").arg(newServiceListItem->SId & 0x0FFFF, 4, 16, QChar('0')).toUpper() );
+            .arg( QString("%1").arg(newServiceListItem->SId.prog.countryServiceRef, 4, 16, QChar('0')).toUpper() );
     item->setData(tooltip, Qt::ToolTipRole);
     serviceListModel->appendRow(item);
     serviceListModel->sort(0);
 
-    if (newServiceListItem->SId == SId)
+    if (newServiceListItem->SId.value == SId.value)
     {
         ui->serviceListView->selectionModel()->setCurrentIndex(item->index(), QItemSelectionModel::Select | QItemSelectionModel::Current);
         ui->serviceListView->setFocus();
@@ -520,7 +520,7 @@ void MainWindow::updateAudioInfo(const struct AudioParameters & params)
 
 void MainWindow::onChannelSelection()
 {
-    SId = 0;
+    SId.value = 0;
     clearEnsembleInformationLabels();
     ui->frequencyLabel->setText("Tuning...  ");
 
@@ -651,12 +651,12 @@ void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QMo
     SCIdS = servicePtr->SCIdS;
 
     onServiceSelection();
-    emit serviceRequested(frequency, SId, SCIdS);
+    emit serviceRequested(frequency, SId.value, SCIdS);
 }
 
 void MainWindow::audioServiceChanged(const RadioControlAudioService &s)
 {
-    if (s.SId == SId)
+    if (s.SId.value == SId.value)
     {
         if (s.label.isEmpty())
         {   // service component not valid -> shoudl not happen
@@ -672,10 +672,10 @@ void MainWindow::audioServiceChanged(const RadioControlAudioService &s)
                                              "<b>Country:</b> %6")
                                      .arg(s.label)
                                      .arg(s.labelShort)
-                                     .arg(QString("%1").arg(s.SId & 0xFFFF, 4, 16, QChar('0')).toUpper() )
+                                     .arg(QString("%1").arg(s.SId.prog.countryServiceRef, 4, 16, QChar('0')).toUpper() )
                                      .arg(s.SCIdS)
                                      .arg(DabTables::getLangName(s.lang))
-                                     .arg(DabTables::getCountryName(s.SId)));
+                                     .arg(DabTables::getCountryName(s.SId.value)));
         if ((s.pty.d != 0) && (s.pty.d != s.pty.s))
         {   // dynamic PTy available != static PTy
             ui->programTypeLabel->setText(DabTables::getPtyName(s.pty.d));
@@ -879,7 +879,7 @@ void MainWindow::loadSettings()
             {
                 ui->channelCombo->setCurrentIndex(idx);
             }
-            SId = s->value("SId", 0).toInt();
+            SId.value = s->value("SId", 0).toInt();
         }
     }
 }
@@ -889,7 +889,7 @@ void MainWindow::saveSettings()
     QSettings * s = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
     s->setValue("inputDeviceId", int(inputDeviceId));
     s->setValue("channelIdx", ui->channelCombo->currentIndex());
-    s->setValue("SId", SId);
+    s->setValue("SId", SId.value);
     s->sync();
 }
 

@@ -95,7 +95,7 @@ private:
     bool fileLooping = false;
     bool deviceChangeRequested = false;
     uint32_t frequency = 0;
-    uint32_t SId = 0;
+    DabSId SId;
     uint32_t SCIdS = 0;
 
     QStandardItemModel * serviceListModel;

@@ -26,11 +26,20 @@ enum class DabSyncLevel
     FullSync = 2,
 };
 
-enum class DabTMId
-{
-    StreamAudio = 0,
-    StreamData  = 1,
-    PacketData  = 3
+struct DabSId {
+    union {
+        uint32_t value;
+        struct {
+            uint32_t countryServiceRef : 16;
+            uint32_t ecc : 8;
+            uint32_t zero : 8;
+        } prog;
+        struct {
+            uint32_t countryServiceRef : 24;
+            uint32_t ecc : 8;
+        } data;
+    };
+    bool isProgServiceId() { return prog.zero == 0; }
 };
 
 struct DabProtection {
@@ -51,7 +60,6 @@ struct DabPTy {
     uint8_t s;  // static
     uint8_t d;  // dynamic
 };
-
 
 struct RadioControlEnsemble
 {
@@ -82,20 +90,20 @@ struct RadioControlServiceListEntry
     uint32_t ueid;        // UEID of ensemble
 
     // Service
-    uint32_t SId;         // SId (contains ECC)
+    DabSId SId;           // SId (contains ECC)
     uint8_t SCIdS;        // service component ID within the service
 
     QString label;        // Service label
     QString labelShort;   // short label
     DabPTy pty;           // programme type
-    DabTMId TMId;
+    DabTMId TMId;         // Transport Mechanism Identifier
 };
 
 Q_DECLARE_METATYPE(RadioControlServiceListEntry)
 
 struct RadioControlAudioService
 {
-    uint32_t SId;        // service id: bits [23-16 EEC][15-0 SId]
+    DabSId SId;        // service id: bits [23-16 EEC][15-0 SId]
     uint8_t SCIdS;       // service component ID within the service
     QString label;       // label
     QString labelShort;  // short label
@@ -182,7 +190,7 @@ struct RadioControlServiceListItem
     uint32_t frequency;
     // Each service shall be identified by a Service Identifier (SId)
     // Data services use 32bit IDs, Programme services use 16 bits
-    uint32_t SId;
+    DabSId SId;
     QString label;
     QString labelShort;        
     DabPTy pty;
@@ -202,7 +210,7 @@ typedef QList<RadioControlServiceListItem>::iterator radioControlServiceListIter
 
 struct RadioControlServiceComponentData
 {
-    uint32_t SId;
+    DabSId SId;
     QList<dabProcServiceCompListItem_t> list;
 };
 
@@ -252,7 +260,7 @@ private:
     uint32_t frequency;
     RadioControlEnsemble ensemble;
     radioControlServiceList_t serviceList;
-    radioControlServiceListIterator_t findService(uint32_t SId);
+    radioControlServiceListIterator_t findService(DabSId SId);
     radioControlServiceComponentListIterator_t findServiceComponent(const radioControlServiceListIterator_t & sIt, uint8_t SCIdS);
 
     void updateSyncLevel(dabProcSyncLevel_t s);
