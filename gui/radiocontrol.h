@@ -88,6 +88,7 @@ struct RadioControlServiceListEntry
     QString label;        // Service label
     QString labelShort;   // short label
     DabPTy pty;           // programme type
+    DabTMId TMId;
 };
 
 Q_DECLARE_METATYPE(RadioControlServiceListEntry)

@@ -253,6 +253,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                 s.label = item.label;
                 s.labelShort = item.labelShort;
                 s.pty = serviceIt->pty;
+                s.TMId = item.TMId;
 
                 emit serviceListEntry(s);
             }

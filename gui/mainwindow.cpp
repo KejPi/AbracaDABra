@@ -375,7 +375,7 @@ void MainWindow::updateSnrLevel(float snr)
 
 void MainWindow::updateServiceList(const RadioControlServiceListEntry & slEntry)
 {
-    if (!RadioControl::isAudioService(slEntry.SId))
+    if (slEntry.TMId != DabTMId::StreamAudio)
     {  // do nothing - data services not supported
         return;
     }
