@@ -208,9 +208,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(radioControl, &RadioControl::dlDataGroup, dlDecoder, &DLDecoder::newDataGroup, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::mscDataGroup, motDecoder, &MOTDecoder::newDataGroup, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::newService, this, &MainWindow::serviceChanged, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::newService, dlDecoder, &DLDecoder::reset, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::newService, motDecoder, &MOTDecoder::reset, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::newAudioService, this, &MainWindow::audioServiceChanged, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::serviceChanged, dlDecoder, &DLDecoder::reset, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::serviceChanged, motDecoder, &MOTDecoder::reset, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::audioData, audioDecoder, &AudioDecoder::inputData, Qt::QueuedConnection);
     connect(dlDecoder, &DLDecoder::dlComplete, this, &MainWindow::updateDL, Qt::QueuedConnection);
     connect(motDecoder, &MOTDecoder::motObjectComplete, this, &MainWindow::updateSLS, Qt::QueuedConnection);   
@@ -648,117 +648,98 @@ void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QMo
     QVariant data = current.model()->data(current, Qt::UserRole);
     radioControlServiceListItem_t * servicePtr = reinterpret_cast<radioControlServiceListItem_t *>(data.value<void*>());
     SId = servicePtr->SId;
+    SCIdS = 0;
 
     onServiceSelection();
     emit serviceRequested(frequency, SId, 0);
 }
 
-void MainWindow::serviceChanged(uint32_t sid, uint8_t scids)
+void MainWindow::audioServiceChanged(const radioControlAudioService_t & s)
 {
-    qDebug() << Q_FUNC_INFO;
-    if (sid == SId)
+    if (s.SId == SId)
     {
-        radioControlServiceListItem_t * servicePtr = nullptr;
-        QStandardItem * item = nullptr;
-        for (int n = 0; n<serviceListModel->rowCount(); ++n)
-        {
-            item = serviceListModel->item(n, 0);
-            QVariant data = item->data(Qt::UserRole);
-            servicePtr = reinterpret_cast<radioControlServiceListItem_t *>(data.value<void*>());
-            if (servicePtr->SId == SId)
-            {  // found
-               break;
-            }
-        }
-        if (nullptr == servicePtr)
-        {   // not found -> should not happen
-            ui->serviceListView->clearSelection();
-            return;
-        }
-        if (servicePtr->serviceComponents.at(scids).label.isEmpty())
+        if (s.label.isEmpty())
         {   // service component not valid -> shoudl not happen
             return;
         }
         // set service name in UI until information arrives from decoder
-        ui->serviceLabel->setText(servicePtr->label);
+        ui->serviceLabel->setText(s.label);
         ui->serviceLabel->setToolTip(QString("<b>Service:</b> %1<br>"
                                              "<b>Short label:</b> %2<br>"
                                              "<b>SId:</b> 0x%3<br>"
                                              "<b>SCIdS:</b> %4<br>"
                                              "<b>Language:</b> %5<br>"
                                              "<b>Country:</b> %6")
-                                     .arg(servicePtr->label)
-                                     .arg(servicePtr->labelShort)
-                                     .arg(QString("%1").arg(SId & 0xFFFF, 4, 16, QChar('0')).toUpper() )
-                                     .arg(scids)                                     
-                                     .arg(DabTables::getLangName(servicePtr->serviceComponents.at(scids).lang))
-                                     .arg(DabTables::getCountryName(sid)));
-        if ((servicePtr->pty.d != 0) && (servicePtr->pty.d != servicePtr->pty.s))
+                                     .arg(s.label)
+                                     .arg(s.labelShort)
+                                     .arg(QString("%1").arg(s.SId & 0xFFFF, 4, 16, QChar('0')).toUpper() )
+                                     .arg(s.SCIdS)
+                                     .arg(DabTables::getLangName(s.lang))
+                                     .arg(DabTables::getCountryName(s.SId)));
+        if ((s.pty.d != 0) && (s.pty.d != s.pty.s))
         {   // dynamic PTy available != static PTy
-            ui->programTypeLabel->setText(DabTables::getPtyName(servicePtr->pty.d));
+            ui->programTypeLabel->setText(DabTables::getPtyName(s.pty.d));
             ui->programTypeLabel->setToolTip(QString("<b>Programme Type</b><br>"
                                                      "%1 (dynamic)<br>"
                                                      "%2 (static)")
-                                             .arg(DabTables::getPtyName(servicePtr->pty.d))
-                                             .arg(DabTables::getPtyName(servicePtr->pty.s)));
+                                             .arg(DabTables::getPtyName(s.pty.d))
+                                             .arg(DabTables::getPtyName(s.pty.s)));
 
         }
         else
         {
-            ui->programTypeLabel->setText(DabTables::getPtyName(servicePtr->pty.s));
+            ui->programTypeLabel->setText(DabTables::getPtyName(s.pty.s));
             ui->programTypeLabel->setToolTip(QString("<b>Programme Type</b><br>"
                                                      "%1")
-                                             .arg(DabTables::getPtyName(servicePtr->pty.s)));
+                                             .arg(DabTables::getPtyName(s.pty.s)));
 
         }
 
-        const radioControlServiceComponentListItem_t sc = servicePtr->serviceComponents.at(scids);
         QString label;
         QString toolTip;
-        if (servicePtr->serviceComponents.at(scids).isEEP())
+        if (s.protection.isEEP())
         {  // EEP
-            if (sc.protection.level < DabProtectionLevel::EEP_1B)
+            if (s.protection.level < DabProtectionLevel::EEP_1B)
             {  // EEP x-A
-                label = QString("EEP %1-%2").arg(int(sc.protection.level) - int(DabProtectionLevel::EEP_1A) + 1).arg("A");
+                label = QString("EEP %1-%2").arg(int(s.protection.level) - int(DabProtectionLevel::EEP_1A) + 1).arg("A");
 
             }
             else
             {  // EEP x+B
-                label = QString("EEP %1-%2").arg(int(sc.protection.level) - int(DabProtectionLevel::EEP_1B) + 1).arg("B");
+                label = QString("EEP %1-%2").arg(int(s.protection.level) - int(DabProtectionLevel::EEP_1B) + 1).arg("B");
             }
             toolTip = QString("<B>Error protection</b><br>"
                               "%1<br>Coderate: %2/%3<br>"
                               "Capacity units: %4 CU")
                                             .arg(label)
-                                            .arg(sc.protection.codeRateUpper)
-                                            .arg(sc.protection.codeRateLower)
-                                            .arg(sc.SubChSize);
+                                            .arg(s.protection.codeRateUpper)
+                                            .arg(s.protection.codeRateLower)
+                                            .arg(s.SubChSize);
         }
         else
         {  // UEP
-            label = QString("UEP #%1").arg(sc.protection.uepIndex);
+            label = QString("UEP #%1").arg(s.protection.uepIndex);
             toolTip = QString("<B>Error protection</b><br>"
                               "%1<br>Protection level: %2<br>"
                               "Capacity units: %3 CU")
                                             .arg(label)
-                                            .arg(int(sc.protection.level))
-                                            .arg(sc.SubChSize);
+                                            .arg(int(s.protection.level))
+                                            .arg(s.SubChSize);
         }
         ui->protectionLabel->setText(label);
         ui->protectionLabel->setToolTip(toolTip);
 
-        if (DabTMId::StreamAudio == servicePtr->serviceComponents.at(scids).TMId)
-        {
-            QString br = QString("%1 kbps").arg(servicePtr->serviceComponents.at(scids).streamAudio.bitRate);
-            ui->audioBitrateLabel->setText(br);
-            ui->audioBitrateLabel->setToolTip(QString("<b>Service bitrate</b><br>Audio & data: %1").arg(br));
-        }
-        else
-        {
-            ui->audioBitrateLabel->setText("");
-        }
-        ui->serviceListView->selectionModel()->setCurrentIndex(item->index(), QItemSelectionModel::Select | QItemSelectionModel::Current);
+        QString br = QString("%1 kbps").arg(s.bitRate);
+        ui->audioBitrateLabel->setText(br);
+        ui->audioBitrateLabel->setToolTip(QString("<b>Service bitrate</b><br>Audio & data: %1").arg(br));
+
+        //ui->serviceListView->selectionModel()->setCurrentIndex(item->index(), QItemSelectionModel::Select | QItemSelectionModel::Current);
         ui->serviceListView->setFocus();
+    }
+    else
+    {   // sid it not equal to selected sid -> should not happen
+        ui->serviceListView->clearSelection();
+        return;
     }
 }
 

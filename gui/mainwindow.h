@@ -59,7 +59,7 @@ private slots:
     void onEndOfFile();
     void onRawFileStop();
     void serviceListCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
-    void serviceChanged(uint32_t sid, uint8_t scids);
+    void audioServiceChanged(const radioControlAudioService_t &s);
 
 protected:        
      void closeEvent(QCloseEvent *event);
@@ -96,6 +96,7 @@ private:
     bool deviceChangeRequested = false;
     uint32_t frequency = 0;
     uint32_t SId = 0;
+    uint32_t SCIdS = 0;
 
     QStandardItemModel * serviceListModel;
 

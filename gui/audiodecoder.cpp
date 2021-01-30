@@ -72,11 +72,11 @@ AudioDecoder::~AudioDecoder()
 #endif
 }
 
-void AudioDecoder::start(const DabAudioMode &m)
+void AudioDecoder::start(const radioControlAudioService_t & s)
 {
     qDebug() << Q_FUNC_INFO;
     isRunning = true;
-    mode = m;
+    mode = s.ASCTy;
 }
 
 void AudioDecoder::stop()

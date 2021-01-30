@@ -251,7 +251,7 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
                 dabGetServiceComponent(pServiceComp->SId);
             }
             else
-            {  // service list item information is complete
+            {   // service list item information is complete
                 emit serviceListItemAvailable(*serviceIt);
             }
         }
@@ -270,16 +270,30 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
 #if RADIO_CONTROL_VERBOSE
             qDebug() << "RadioControlEvent::SERVICE_SELECTION success";
 #endif
+            emit serviceChanged();
+
             radioControlServiceListIterator_t serviceIt = findService(pData->SId);
             if (serviceIt != serviceList.end())
             {   // service is in the list
                 radioControlServiceComponentListIterator_t scIt = findServiceComponent(serviceIt, pData->SCIdS);
                 if (scIt != serviceIt->serviceComponents.end())
                 {   // service components exists in service
-                    emit newService(pData->SId, pData->SCIdS);
                     if (DabTMId::StreamAudio == scIt->TMId)
                     {   // audio service
-                        emit newAudioService(DabAudioMode(scIt->streamAudio.ASCTy));
+                        radioControlAudioService_t audioService;
+                        audioService.SId = serviceIt->SId;
+                        audioService.SCIdS = scIt->SCIdS;
+                        audioService.label = scIt->label;
+                        audioService.labelShort = scIt->labelShort;
+                        audioService.pty = serviceIt->pty;
+                        audioService.ASCTy = DabAudioMode(scIt->streamAudio.ASCTy);
+                        audioService.bitRate = scIt->streamAudio.bitRate;
+                        audioService.SubChSize = scIt->SubChSize;
+                        audioService.lang = scIt->lang;
+                        audioService.protection = scIt->protection;
+
+                        //emit newAudioService(DabAudioMode(scIt->streamAudio.ASCTy));
+                        emit newAudioService(audioService);
                     }
                 }
             }

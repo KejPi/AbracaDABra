@@ -53,7 +53,7 @@ public:
     ~AudioDecoder();
 
 public slots:
-    void start(const DabAudioMode & m);
+    void start(const radioControlAudioService_t &s);
     void stop();
     void inputData(QByteArray * inData);
 
