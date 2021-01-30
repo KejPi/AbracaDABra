@@ -436,8 +436,9 @@ void RadioControl::updateSyncLevel(dabProcSyncLevel_t s)
         sync = s;
         switch (sync)
         {
-        case DABPROC_SYNC_LEVEL_NO_SYNC:
+        case DABPROC_SYNC_LEVEL_NO_SYNC:            
             emit syncStatus(uint8_t(DabSyncLevel::NoSync));
+            emit snrLevel(0);
             break;
         case DABPROC_SYNC_LEVEL_ON_NULL:
             emit syncStatus(uint8_t(DabSyncLevel::NullSync));
