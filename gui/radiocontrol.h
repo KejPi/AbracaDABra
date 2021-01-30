@@ -168,13 +168,9 @@ typedef struct
     uint32_t SId;
     QString label;
     QString labelShort;        
-    union {
-        uint8_t value;
-        struct {
-            uint8_t id : 6;
-            uint8_t unused : 1;
-            uint8_t dynamic : 1;
-        };
+    struct {
+        uint8_t s;  // static
+        uint8_t d;  // dynamic
     } pty;
 
     // CAId (Conditional Access Identifier): this 3-bit field shall identify the

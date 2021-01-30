@@ -156,11 +156,8 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
                 item.SId = sid;
                 item.label = DabTables::convertToQString(it->label.str, it->label.charset);
                 item.labelShort = toShortLabel(item.label, it->label.charField);
-                if (it->pty & 0x80)
-                {  // dynamic pty
-                    // TODO:
-                }
-                item.pty.value = it->pty;
+                item.pty.s = it->pty.s;
+                item.pty.d = it->pty.d;
                 item.CAId = it->CAId;
                 item.numServiceComponents = it->numComponents;
                 serviceList.append(item);

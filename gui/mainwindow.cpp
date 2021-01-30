@@ -693,10 +693,24 @@ void MainWindow::serviceChanged(uint32_t sid, uint8_t scids)
                                      .arg(scids)                                     
                                      .arg(DabTables::getLangName(servicePtr->serviceComponents.at(scids).lang))
                                      .arg(DabTables::getCountryName(sid)));
-        ui->programTypeLabel->setText(DabTables::getPtyName(servicePtr->pty.id));
-        ui->programTypeLabel->setToolTip(QString("<b>Programme Type</b><br>%1 (%2)")
-                                         .arg(DabTables::getPtyName(servicePtr->pty.id))
-                                         .arg(servicePtr->pty.dynamic ? "dynamic" : "static"));
+        if ((servicePtr->pty.d != 0) && (servicePtr->pty.d != servicePtr->pty.s))
+        {   // dynamic PTy available != static PTy
+            ui->programTypeLabel->setText(DabTables::getPtyName(servicePtr->pty.d));
+            ui->programTypeLabel->setToolTip(QString("<b>Programme Type</b><br>"
+                                                     "%1 (dynamic)<br>"
+                                                     "%2 (static)")
+                                             .arg(DabTables::getPtyName(servicePtr->pty.d))
+                                             .arg(DabTables::getPtyName(servicePtr->pty.s)));
+
+        }
+        else
+        {
+            ui->programTypeLabel->setText(DabTables::getPtyName(servicePtr->pty.s));
+            ui->programTypeLabel->setToolTip(QString("<b>Programme Type</b><br>"
+                                                     "%1")
+                                             .arg(DabTables::getPtyName(servicePtr->pty.s)));
+
+        }
 
         const radioControlServiceComponentListItem_t sc = servicePtr->serviceComponents.at(scids);
         QString label;
