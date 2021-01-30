@@ -38,7 +38,7 @@ public slots:
     void updateEnsembleInfo(const RadioControlEnsemble &ens);
     void updateSyncStatus(uint8_t sync);
     void updateSnrLevel(float snr);
-    void updateServiceList(const RadioControlServiceListItem & serviceListItem);
+    void updateServiceList(const RadioControlServiceListEntry &slEntry);
     void updateDL(const QString &dl);
     void updateSLS(const QByteArray & b);
     void updateAudioInfo(const AudioParameters &params);

@@ -244,6 +244,17 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                     requestUpdate = true;
                 }
                 serviceIt->serviceComponents.append(item);
+
+                RadioControlServiceListEntry s;
+                s.frequency = ensemble.frequency;
+                s.ueid = ensemble.ueid;
+                s.SId = serviceIt->SId;
+                s.SCIdS = item.SCIdS;
+                s.label = item.label;
+                s.labelShort = item.labelShort;
+                s.pty = serviceIt->pty;
+
+                emit serviceListEntry(s);
             }
             if (requestUpdate)
             {
@@ -252,7 +263,6 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             }
             else
             {   // service list item information is complete
-                emit serviceListItemAvailable(*serviceIt);
             }
         }
         else

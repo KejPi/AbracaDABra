@@ -19,22 +19,6 @@
 #define RADIO_CONTROL_N_CHANNELS_ENABLE  0
 #define RADIO_CONTROL_NOTIFICATION_PERIOD  3  // 2^3 = 8 DAB frames = 8*96ms = 768ms
 
-enum class RadioControlEventType
-{
-    SYNC_STATUS = 0,
-    TUNE,
-    ENSEMBLE_INFO,
-    SERVICE_LIST,
-    SERVICE_COMPONENT_LIST,
-    SERVICE_SELECTION,
-    AUTO_NOTIFICATION,
-    DATAGROUP_DL,
-    DATAGROUP_MSC,
-    AUDIO_DATA,
-};
-
-//typedef QList<dabProcServiceListItem_t> dabProcServiceList_t;
-
 enum class DabSyncLevel
 {
     NoSync = 0,
@@ -48,6 +32,26 @@ enum class DabTMId
     StreamData  = 1,
     PacketData  = 3
 };
+
+struct DabProtection {
+    DabProtectionLevel level;
+    union {
+        struct {
+            uint8_t codeRateLower : 4;
+            uint8_t codeRateUpper : 3;
+            uint8_t fecScheme     : 1;
+        };
+        uint8_t codeRateFecValue;
+        uint8_t uepIndex;
+    };
+    bool isEEP() const { return level > DabProtectionLevel::UEP_MAX; }
+};
+
+struct DabPTy {
+    uint8_t s;  // static
+    uint8_t d;  // dynamic
+};
+
 
 struct RadioControlEnsemble
 {
@@ -71,23 +75,53 @@ struct RadioControlEnsemble
 
 Q_DECLARE_METATYPE(RadioControlEnsemble)
 
-struct DabProtection {
-    DabProtectionLevel level;
-    union {
-        struct {
-            uint8_t codeRateLower : 4;
-            uint8_t codeRateUpper : 3;
-            uint8_t fecScheme     : 1;
-        };
-        uint8_t codeRateFecValue;
-        uint8_t uepIndex;
-    };
-    bool isEEP() const { return level > DabProtectionLevel::UEP_MAX; }
+struct RadioControlServiceListEntry
+{
+    // Ensemble
+    uint32_t frequency;   // frequency of ensemble
+    uint32_t ueid;        // UEID of ensemble
+
+    // Service
+    uint32_t SId;         // SId (contains ECC)
+    uint8_t SCIdS;        // service component ID within the service
+
+    QString label;        // Service label
+    QString labelShort;   // short label
+    DabPTy pty;           // programme type
 };
 
-struct DabPTy {
-    uint8_t s;  // static
-    uint8_t d;  // dynamic
+Q_DECLARE_METATYPE(RadioControlServiceListEntry)
+
+struct RadioControlAudioService
+{
+    uint32_t SId;        // service id: bits [23-16 EEC][15-0 SId]
+    uint8_t SCIdS;       // service component ID within the service
+    QString label;       // label
+    QString labelShort;  // short label
+    DabPTy pty;   // programme type
+    DabAudioMode ASCTy;        // ASCTy (Audio Service Component Type)
+    uint16_t bitRate;
+    uint16_t SubChSize;  // subchannel size
+    int8_t lang;         // language [8.1.2] this 8-bit field shall indicate the language of the audio or data service component
+    struct DabProtection protection;
+};
+
+Q_DECLARE_METATYPE(RadioControlAudioService)
+
+//==================================================================
+
+enum class RadioControlEventType
+{
+    SYNC_STATUS = 0,
+    TUNE,
+    ENSEMBLE_INFO,
+    SERVICE_LIST,
+    SERVICE_COMPONENT_LIST,
+    SERVICE_SELECTION,
+    AUTO_NOTIFICATION,
+    DATAGROUP_DL,
+    DATAGROUP_MSC,
+    AUDIO_DATA,
 };
 
 struct RadioControlServiceComponentListItem
@@ -164,21 +198,6 @@ struct RadioControlServiceListItem
 typedef QList<RadioControlServiceListItem> radioControlServiceList_t;
 typedef QList<RadioControlServiceListItem>::iterator radioControlServiceListIterator_t;
 
-struct RadioControlAudioService
-{
-    uint32_t SId;        // service id: bits [23-16 EEC][15-0 SId]
-    uint8_t SCIdS;       // service component ID within the service
-    QString label;       // label
-    QString labelShort;  // short label
-    DabPTy pty;   // programme type
-    DabAudioMode ASCTy;        // ASCTy (Audio Service Component Type)
-    uint16_t bitRate;
-    uint16_t SubChSize;  // subchannel size
-    int8_t lang;         // language [8.1.2] this 8-bit field shall indicate the language of the audio or data service component
-    struct DabProtection protection;
-};
-
-Q_DECLARE_METATYPE(RadioControlAudioService)
 
 struct RadioControlServiceComponentData
 {
@@ -214,8 +233,7 @@ signals:
     void snrLevel(float snr);
     void tuneDone(uint32_t freq);
     void ensembleInformation(const RadioControlEnsemble & ens);
-    void serviceListItemAvailable(const RadioControlServiceListItem & serviceListItem);
-    //void serviceListItemAvailable(const radioControlAudioService_t & audioService);
+    void serviceListEntry(const RadioControlServiceListEntry & slEntry);
     void dlDataGroup(const QByteArray & dg);
     void mscDataGroup(const QByteArray & dg);
     void serviceChanged();
