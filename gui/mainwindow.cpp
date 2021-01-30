@@ -400,7 +400,7 @@ void MainWindow::updateServiceList(const radioControlServiceListItem_t & service
     QVariant v;
     v.setValue((void *)newServiceListItem);
     item->setData(v, Qt::UserRole);
-    QString tooltip = QString("<b>Short label:</b> %1<br><b>SID:</b> 0x%2")
+    QString tooltip = QString("<b>Short label:</b> %1<br><b>SId:</b> 0x%2")
             .arg(newServiceListItem->labelShort)
             .arg( QString("%1").arg(newServiceListItem->SId & 0x0FFFF, 4, 16, QChar('0')).toUpper() );
     item->setData(tooltip, Qt::ToolTipRole);
@@ -683,7 +683,7 @@ void MainWindow::serviceChanged(uint32_t sid, uint8_t scids)
         ui->serviceLabel->setText(servicePtr->label);
         ui->serviceLabel->setToolTip(QString("<b>Service:</b> %1<br>"
                                              "<b>Short label:</b> %2<br>"
-                                             "<b>SID:</b> 0x%3<br>"
+                                             "<b>SId:</b> 0x%3<br>"
                                              "<b>SCIdS:</b> %4<br>"
                                              "<b>Language:</b> %5<br>"
                                              "<b>Country:</b> %6")
