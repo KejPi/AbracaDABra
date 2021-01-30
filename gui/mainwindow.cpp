@@ -432,7 +432,7 @@ void MainWindow::updateSLS(const QByteArray & b)
     QPixmap pic;
     if (pic.loadFromData(b))
     {
-        qDebug() << "Valid picture recived :)";
+        qDebug() << "Valid picture recived" << pic.rect();
 
         QGraphicsScene * scene = ui->slsView->scene();
         if (nullptr == scene)
@@ -556,6 +556,7 @@ void MainWindow::onServiceSelection()
             slsPixmapItem->setPixmap(pic);
         }
         scene->setSceneRect(pic.rect());
+        ui->slsView->fitInViewTight(pic.rect(), Qt::KeepAspectRatio);
     }
     else
     {
