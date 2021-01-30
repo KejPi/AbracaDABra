@@ -58,12 +58,12 @@ bool RadioControl::init()
     return true;
 }
 
-void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
+void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 {
     //qDebug() << Q_FUNC_INFO << QThread::currentThreadId() << pEvent->type;
     switch (pEvent->type)
     {
-    case RadioControlEvent::SYNC_STATUS:
+    case RadioControlEventType::SYNC_STATUS:
     {
         dabProcSyncLevel_t s = static_cast<dabProcSyncLevel_t>(pEvent->pData);
 #if RADIO_CONTROL_VERBOSE
@@ -77,7 +77,7 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
         updateSyncLevel(s);
     }
         break;
-    case RadioControlEvent::TUNE:
+    case RadioControlEventType::TUNE:
     {
         if (DABPROC_NSTAT_SUCCESS == pEvent->status)
         {
@@ -102,7 +102,7 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
         }
     }
         break;
-    case RadioControlEvent::ENSEMBLE_INFO:
+    case RadioControlEventType::ENSEMBLE_INFO:
     {
         // process ensemble info
         dabProc_NID_ENSEMBLE_INFO_t * pInfo = (dabProc_NID_ENSEMBLE_INFO_t *) pEvent->pData;
@@ -134,7 +134,7 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
 //        }
     }
         break;
-    case RadioControlEvent::SERVICE_LIST:
+    case RadioControlEventType::SERVICE_LIST:
     {
 #if 1 // RADIO_CONTROL_VERBOSE
         qDebug() << "RadioControlEvent::SERVICE_LIST";
@@ -151,7 +151,7 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
         {
             for (QList<dabProcServiceListItem_t>::const_iterator it = pServiceList->constBegin(); it < pServiceList->constEnd(); ++it)
             {
-                radioControlServiceListItem_t item;
+                RadioControlServiceListItem item;
                 uint32_t sid = it->sid;
                 item.SId = sid;
                 item.label = DabTables::convertToQString(it->label.str, it->label.charset);
@@ -167,13 +167,13 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
         delete pServiceList;
     }
         break;
-    case RadioControlEvent::SERVICE_COMPONENT_LIST:
+    case RadioControlEventType::SERVICE_COMPONENT_LIST:
     {
 #if RADIO_CONTROL_VERBOSE
         qDebug() << "RadioControlEvent::SERVICE_COMPONENT_LIST";
 #endif
 
-        radioControlServiceComponentData_t * pServiceComp = (radioControlServiceComponentData_t *) pEvent->pData;
+        RadioControlServiceComponentData * pServiceComp = (RadioControlServiceComponentData *) pEvent->pData;
         // find service ID
         radioControlServiceListIterator_t serviceIt = findService(pServiceComp->SId);
         if (serviceIt < serviceList.end())
@@ -192,7 +192,7 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
                     break;
                 }
 
-                radioControlServiceComponentListItem_t item;
+                RadioControlServiceComponentListItem item;
                 item.SCIdS = it->SCIdS;
                 item.SubChId = it->SubChId;
                 item.SubChAddr = it->SubChAddr;
@@ -262,7 +262,7 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
         delete pServiceComp;
     }
         break;
-    case RadioControlEvent::SERVICE_SELECTION:
+    case RadioControlEventType::SERVICE_SELECTION:
     {
         dabProc_NID_SERVICE_SELECTION_t * pData = (dabProc_NID_SERVICE_SELECTION_t *) pEvent->pData;
         if (DABPROC_NSTAT_SUCCESS == pEvent->status)
@@ -280,7 +280,7 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
                 {   // service components exists in service
                     if (DabTMId::StreamAudio == scIt->TMId)
                     {   // audio service
-                        radioControlAudioService_t audioService;
+                        RadioControlAudioService audioService;
                         audioService.SId = serviceIt->SId;
                         audioService.SCIdS = scIt->SCIdS;
                         audioService.label = scIt->label;
@@ -305,7 +305,7 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
         delete pData;
     }
         break;
-    case RadioControlEvent::AUTO_NOTIFICATION:
+    case RadioControlEventType::AUTO_NOTIFICATION:
     {
         dabProc_NID_AUTO_NOTIFY_t * pData = (dabProc_NID_AUTO_NOTIFY_t *) pEvent->pData;
 
@@ -362,7 +362,7 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
         delete pData;
     }
         break;
-    case RadioControlEvent::DATAGROUP_DL:
+    case RadioControlEventType::DATAGROUP_DL:
     {
 #if RADIO_CONTROL_VERBOSE > 1
         qDebug() << "RadioControlEvent::DATAGROUP_DL";
@@ -372,7 +372,7 @@ void RadioControl::eventFromDab(radioControlEvent_t * pEvent)
         delete pData;
     }
         break;
-    case RadioControlEvent::DATAGROUP_MSC:
+    case RadioControlEventType::DATAGROUP_MSC:
     {
 #if RADIO_CONTROL_VERBOSE > 1
         qDebug() << "RadioControlEvent::DATAGROUP_MSC";
@@ -515,12 +515,12 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
     {
     case DABPROC_NID_SYNC_STATUS:
     {
-        radioControlEvent_t * pEvent = new radioControlEvent_t;
+        RadioControlEvent * pEvent = new RadioControlEvent;
 
         const dabProc_NID_SYNC_STATUS_t * pInfo = (const dabProc_NID_SYNC_STATUS_t *) p->pData;
         qDebug("DABPROC_NID_SYNC_STATUS: %d", pInfo->syncLevel);
 
-        pEvent->type = RadioControlEvent::SYNC_STATUS;
+        pEvent->type = RadioControlEventType::SYNC_STATUS;
         pEvent->status = p->status;
         pEvent->pData = intptr_t(pInfo->syncLevel);
         radioCtrl->emit_dabEvent(pEvent);
@@ -531,8 +531,8 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
 #if RADIO_CONTROL_VERBOSE
         qDebug("DABPROC_NID_TUNE: status %d", p->status);
 #endif
-        radioControlEvent_t * pEvent = new radioControlEvent_t;
-        pEvent->type = RadioControlEvent::TUNE;
+        RadioControlEvent * pEvent = new RadioControlEvent;
+        pEvent->type = RadioControlEventType::TUNE;
         pEvent->status = p->status;
         pEvent->pData = intptr_t(*((uint32_t*) p->pData));
         radioCtrl->emit_dabEvent(pEvent);
@@ -546,8 +546,8 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         dabProc_NID_ENSEMBLE_INFO_t * pEnsembleInfo = new dabProc_NID_ENSEMBLE_INFO_t;
         memcpy(pEnsembleInfo, p->pData, sizeof(dabProc_NID_ENSEMBLE_INFO_t));
 
-        radioControlEvent_t * pEvent = new radioControlEvent_t;
-        pEvent->type = RadioControlEvent::ENSEMBLE_INFO;
+        RadioControlEvent * pEvent = new RadioControlEvent;
+        pEvent->type = RadioControlEventType::ENSEMBLE_INFO;
         pEvent->status = p->status;
         pEvent->pData = intptr_t(pEnsembleInfo);
         radioCtrl->emit_dabEvent(pEvent);
@@ -567,8 +567,8 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
             pServiceList->append(item);
         }
 
-        radioControlEvent_t * pEvent = new radioControlEvent_t;
-        pEvent->type = RadioControlEvent::SERVICE_LIST;
+        RadioControlEvent * pEvent = new RadioControlEvent;
+        pEvent->type = RadioControlEventType::SERVICE_LIST;
         pEvent->status = p->status;
         pEvent->pData = intptr_t(pServiceList);
         radioCtrl->emit_dabEvent(pEvent);
@@ -579,7 +579,7 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         const dabProc_NID_SERVICE_COMPONENT_LIST_t * pInfo = (const dabProc_NID_SERVICE_COMPONENT_LIST_t * ) p->pData;
         if (DABPROC_NSTAT_SUCCESS == p->status)
         {
-            radioControlServiceComponentData_t *pServiceCompList = new radioControlServiceComponentData_t;
+            RadioControlServiceComponentData *pServiceCompList = new RadioControlServiceComponentData;
             pServiceCompList->SId = pInfo->sid;
 
             dabProcServiceCompListItem_t item;
@@ -589,8 +589,8 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
                 pServiceCompList->list.append(item);
             }
 
-            radioControlEvent_t * pEvent = new radioControlEvent_t;
-            pEvent->type = RadioControlEvent::SERVICE_COMPONENT_LIST;
+            RadioControlEvent * pEvent = new RadioControlEvent;
+            pEvent->type = RadioControlEventType::SERVICE_COMPONENT_LIST;
             pEvent->status = p->status;
             pEvent->pData = intptr_t(pServiceCompList);
             radioCtrl->emit_dabEvent(pEvent);
@@ -606,8 +606,8 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         dabProc_NID_SERVICE_SELECTION_t * pServSelectionInfo = new dabProc_NID_SERVICE_SELECTION_t;
         memcpy(pServSelectionInfo, p->pData, sizeof(dabProc_NID_SERVICE_SELECTION_t));
 
-        radioControlEvent_t * pEvent = new radioControlEvent_t;
-        pEvent->type = RadioControlEvent::SERVICE_SELECTION;
+        RadioControlEvent * pEvent = new RadioControlEvent;
+        pEvent->type = RadioControlEventType::SERVICE_SELECTION;
 
         pEvent->status = p->status;
         pEvent->pData = intptr_t(pServSelectionInfo);
@@ -626,8 +626,8 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
             dabProc_NID_AUTO_NOTIFY_t * notifyData = new dabProc_NID_AUTO_NOTIFY_t;
             memcpy((uint8_t*)notifyData, p->pData, p->len);
 
-            radioControlEvent_t * pEvent = new radioControlEvent_t;
-            pEvent->type = RadioControlEvent::AUTO_NOTIFICATION;
+            RadioControlEvent * pEvent = new RadioControlEvent;
+            pEvent->type = RadioControlEventType::AUTO_NOTIFICATION;
             pEvent->status = p->status;
             pEvent->pData = intptr_t(notifyData);
             radioCtrl->emit_dabEvent(pEvent);
@@ -654,8 +654,8 @@ void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
     {
         QByteArray * data = new QByteArray((const char *)p->pDgData, p->dgLen);
 
-        radioControlEvent_t * pEvent = new radioControlEvent_t;
-        pEvent->type = RadioControlEvent::DATAGROUP_DL;
+        RadioControlEvent * pEvent = new RadioControlEvent;
+        pEvent->type = RadioControlEventType::DATAGROUP_DL;
         pEvent->status = DABPROC_NSTAT_SUCCESS;
         pEvent->pData = intptr_t(data);
         radioCtrl->emit_dabEvent(pEvent);        
@@ -665,8 +665,8 @@ void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
     {
         QByteArray * data = new QByteArray((const char *)p->pDgData, p->dgLen);
 
-        radioControlEvent_t * pEvent = new radioControlEvent_t;
-        pEvent->type = RadioControlEvent::DATAGROUP_MSC;
+        RadioControlEvent * pEvent = new RadioControlEvent;
+        pEvent->type = RadioControlEventType::DATAGROUP_MSC;
         pEvent->status = DABPROC_NSTAT_SUCCESS;
         pEvent->pData = intptr_t(data);
         radioCtrl->emit_dabEvent(pEvent);

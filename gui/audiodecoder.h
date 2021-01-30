@@ -53,7 +53,7 @@ public:
     ~AudioDecoder();
 
 public slots:
-    void start(const radioControlAudioService_t &s);
+    void start(const RadioControlAudioService &s);
     void stop();
     void inputData(QByteArray * inData);
 

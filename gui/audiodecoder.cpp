@@ -72,7 +72,7 @@ AudioDecoder::~AudioDecoder()
 #endif
 }
 
-void AudioDecoder::start(const radioControlAudioService_t & s)
+void AudioDecoder::start(const RadioControlAudioService &s)
 {
     qDebug() << Q_FUNC_INFO;
     isRunning = true;

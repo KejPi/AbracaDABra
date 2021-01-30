@@ -320,7 +320,7 @@ void MainWindow::inputDeviceReady()
     ui->channelCombo->setEnabled(true);
 }
 
-void MainWindow::updateEnsembleInfo(const radioControlEnsembleInfo_t & ens)
+void MainWindow::updateEnsembleInfo(const RadioControlEnsemble &ens)
 {
     ui->ensembleLabel->setText(ens.label);
     ui->ensembleLabel->setToolTip(QString("<b>Ensemble:</b> %1<br>"
@@ -373,7 +373,7 @@ void MainWindow::updateSnrLevel(float snr)
 #endif
 }
 
-void MainWindow::updateServiceList(const radioControlServiceListItem_t & serviceListItem)
+void MainWindow::updateServiceList(const RadioControlServiceListItem & serviceListItem)
 {
     if (!RadioControl::isAudioService(serviceListItem.SId))
     {  // do nothing - data services not supported
@@ -384,7 +384,7 @@ void MainWindow::updateServiceList(const radioControlServiceListItem_t & service
     {
         QStandardItem * item = serviceListModel->item(n, 0);
         QVariant data = item->data(Qt::UserRole);
-        radioControlServiceListItem_t * servicePtr = reinterpret_cast<radioControlServiceListItem_t *>(data.value<void*>());
+        RadioControlServiceListItem * servicePtr = reinterpret_cast<RadioControlServiceListItem *>(data.value<void*>());
         if (servicePtr->SId == serviceListItem.SId)
         {  // found - remove item
            delete servicePtr;
@@ -394,7 +394,7 @@ void MainWindow::updateServiceList(const radioControlServiceListItem_t & service
     }    
     //QStandardItem *parentItem = serviceListModel->invisibleRootItem();
 
-    radioControlServiceListItem_t * newServiceListItem = new radioControlServiceListItem_t;
+    RadioControlServiceListItem * newServiceListItem = new RadioControlServiceListItem;
     *newServiceListItem = serviceListItem;
     QStandardItem *item = new QStandardItem(QString(newServiceListItem->label));
     QVariant v;
@@ -579,7 +579,7 @@ void MainWindow::clearServiceList()
     {
         QStandardItem * item = serviceListModel->item(n, 0);
         QVariant data = item->data(Qt::UserRole);
-        radioControlServiceListItem_t * servicePtr = reinterpret_cast<radioControlServiceListItem_t *>(data.value<void*>());
+        RadioControlServiceListItem * servicePtr = reinterpret_cast<RadioControlServiceListItem *>(data.value<void*>());
         delete servicePtr;
     }
 
@@ -646,7 +646,7 @@ void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QMo
     //qDebug() << Q_FUNC_INFO << current << previous;
 
     QVariant data = current.model()->data(current, Qt::UserRole);
-    radioControlServiceListItem_t * servicePtr = reinterpret_cast<radioControlServiceListItem_t *>(data.value<void*>());
+    RadioControlServiceListItem * servicePtr = reinterpret_cast<RadioControlServiceListItem *>(data.value<void*>());
     SId = servicePtr->SId;
     SCIdS = 0;
 
@@ -654,7 +654,7 @@ void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QMo
     emit serviceRequested(frequency, SId, 0);
 }
 
-void MainWindow::audioServiceChanged(const radioControlAudioService_t & s)
+void MainWindow::audioServiceChanged(const RadioControlAudioService &s)
 {
     if (s.SId == SId)
     {

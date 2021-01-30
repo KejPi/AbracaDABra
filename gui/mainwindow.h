@@ -35,10 +35,10 @@ public:
 
 public slots:
     void inputDeviceReady();
-    void updateEnsembleInfo(const radioControlEnsembleInfo_t &ens);
+    void updateEnsembleInfo(const RadioControlEnsemble &ens);
     void updateSyncStatus(uint8_t sync);
     void updateSnrLevel(float snr);
-    void updateServiceList(const radioControlServiceListItem_t & serviceListItem);
+    void updateServiceList(const RadioControlServiceListItem & serviceListItem);
     void updateDL(const QString &dl);
     void updateSLS(const QByteArray & b);
     void updateAudioInfo(const AudioParameters &params);
@@ -59,7 +59,7 @@ private slots:
     void onEndOfFile();
     void onRawFileStop();
     void serviceListCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
-    void audioServiceChanged(const radioControlAudioService_t &s);
+    void audioServiceChanged(const RadioControlAudioService &s);
 
 protected:        
      void closeEvent(QCloseEvent *event);
