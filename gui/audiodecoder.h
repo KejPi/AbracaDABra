@@ -70,6 +70,7 @@ private:
     NeAACDecHandle aacDecoderHandle;
     NeAACDecFrameInfo aacDecFrameInfo;
 
+    float mp2DRC = 0;
     mpg123_handle * mp2DecoderHandle;
 
     audioFifo_t * outFifoPtr;

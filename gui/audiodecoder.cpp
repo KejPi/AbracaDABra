@@ -342,7 +342,8 @@ void AudioDecoder::inputData(QByteArray *inData)
 
 void AudioDecoder::processMP2(QByteArray *inData)
 {
-    //qDebug() << Q_FUNC_INFO;
+#define MP2_FRAME_PCM_SAMPLES (2*1152)
+#define MP2_DRC_ENABLE        1
 
     if (nullptr == mp2DecoderHandle)
     {
@@ -351,84 +352,65 @@ void AudioDecoder::processMP2(QByteArray *inData)
         // reset FIFO
         outFifoPtr->reset();
     }
-//    if (inData->at(0) != 0)
-//    {
-//        qDebug() << "DRC =" << uint8_t(inData->at(0));
-//    }
 
 #ifdef AUDIO_DECODER_MP2_OUT
     writeMP2Output(inData->data()+1, inData->size()-1);
 #endif
 
-#if 1
-    // input data
-    const char * mp2Data = inData->data()+1;
-
-    // [ETSI TS 103 466 V1.2.1 (2019-09)]
-    // 5.2.9 Formatting of the audio bit stream
-    // It shall further divide this bit stream into audio frames, each corresponding to 1152 PCM audio samples,
-    // which is equivalent to a duration of 24 ms in the case of 48 kHz sampling frequency
-    // and 48 ms in the case of 24 kHz sampling frequency.
-#define MP2_FRAME_PCM_SAMPLES (2*1152)
-    int16_t * outBuf = new int16_t[MP2_FRAME_PCM_SAMPLES];
-
-    /* Feed input chunk and get first chunk of decoded audio. */
-    size_t size;
-    int ret = mpg123_decode(mp2DecoderHandle, (const unsigned char *)mp2Data, (inData->size() - 1), outBuf, MP2_FRAME_PCM_SAMPLES*sizeof(int16_t), &size);
-    if(MPG123_NEW_FORMAT == ret)
+    if (inData->size() > 1)
     {
-        long rate;
-        int channels, enc;
-        mpg123_getformat(mp2DecoderHandle, &rate, &channels, &enc);
+        // input data
+        const char * mp2Data = inData->data()+1;
 
-        qDebug("New MP2 format: %ld Hz, %d channels, encoding %d", rate, channels, enc);
+        // [ETSI TS 103 466 V1.2.1 (2019-09)]
+        // 5.2.9 Formatting of the audio bit stream
+        // It shall further divide this bit stream into audio frames, each corresponding to 1152 PCM audio samples,
+        // which is equivalent to a duration of 24 ms in the case of 48 kHz sampling frequency
+        // and 48 ms in the case of 24 kHz sampling frequency.
+        int16_t * outBuf = new int16_t[MP2_FRAME_PCM_SAMPLES];
 
-        emit startAudio(uint32_t(rate), uint8_t(channels));
-
-        getFormatMP2();
-    }
-
-    // lets store data to FIFO
-    outFifoPtr->mutex.lock();
-    uint64_t count = outFifoPtr->count;
-    while ((AUDIO_FIFO_SIZE - count) < size)
-    {
-        outFifoPtr->countChanged.wait(&outFifoPtr->mutex);
-        count = outFifoPtr->count;
-    }
-    outFifoPtr->mutex.unlock();
-
-    // we know that size is available in buffer
-
-    uint64_t bytesToEnd = AUDIO_FIFO_SIZE - outFifoPtr->head;
-    if (bytesToEnd < size)
-    {
-        memcpy(outFifoPtr->buffer+outFifoPtr->head, outBuf, bytesToEnd);
-        memcpy(outFifoPtr->buffer, outBuf+bytesToEnd, size - bytesToEnd);
-        outFifoPtr->head = (size - bytesToEnd);
-    }
-    else
-    {
-        memcpy(outFifoPtr->buffer+outFifoPtr->head, outBuf, size);
-        outFifoPtr->head += size;
-    }
-
-    outFifoPtr->mutex.lock();
-    outFifoPtr->count += size;
-    outFifoPtr->countChanged.wakeAll();
-    outFifoPtr->mutex.unlock();
-
-    // there should be nothing more to decode, but try to be sure
-    while(ret != MPG123_ERR && ret != MPG123_NEED_MORE)
-    {   // Get all decoded audio that is available now before feeding more input
-        ret = mpg123_decode(mp2DecoderHandle, NULL, 0, outBuf, MP2_FRAME_PCM_SAMPLES*sizeof(int16_t), &size);
-
-        if (0 == size)
+        /* Feed input chunk and get first chunk of decoded audio. */
+        size_t size;
+        int ret = mpg123_decode(mp2DecoderHandle, (const unsigned char *)mp2Data, (inData->size() - 1), outBuf, MP2_FRAME_PCM_SAMPLES*sizeof(int16_t), &size);
+        if(MPG123_NEW_FORMAT == ret)
         {
-            break;
+            long rate;
+            int channels, enc;
+            mpg123_getformat(mp2DecoderHandle, &rate, &channels, &enc);
+
+            qDebug("New MP2 format: %ld Hz, %d channels, encoding %d", rate, channels, enc);
+
+            emit startAudio(uint32_t(rate), uint8_t(channels));
+
+            getFormatMP2();
+
+            mp2DRC = 0;
         }
 
-        bytesToEnd = AUDIO_FIFO_SIZE - outFifoPtr->head;
+        // lets store data to FIFO
+        outFifoPtr->mutex.lock();
+        uint64_t count = outFifoPtr->count;
+        while ((AUDIO_FIFO_SIZE - count) < size)
+        {
+            outFifoPtr->countChanged.wait(&outFifoPtr->mutex);
+            count = outFifoPtr->count;
+        }
+        outFifoPtr->mutex.unlock();
+
+        // we know that size is available in buffer
+        uint64_t bytesToEnd = AUDIO_FIFO_SIZE - outFifoPtr->head;
+
+#if MP2_DRC_ENABLE
+        if (mp2DRC != 0)
+        {   // multiply buffer by gain
+            float gain = pow(10, mp2DRC * 0.0125);    // 0.0125 = 1/(4*20)
+            //qDebug("DRC = %fdB => %f", mp2DRC*0.25, gain);
+            for (int n = 0; n< int(size>>1); ++n)     // considering int16_t data => 2 bytes
+            {   // multiply all samples by gain
+                outBuf[n] = int16_t(qRound(outBuf[n] * gain));
+            }
+        }
+#endif // MP2_DRC_ENABLE
         if (bytesToEnd < size)
         {
             memcpy(outFifoPtr->buffer+outFifoPtr->head, outBuf, bytesToEnd);
@@ -445,113 +427,40 @@ void AudioDecoder::processMP2(QByteArray *inData)
         outFifoPtr->count += size;
         outFifoPtr->countChanged.wakeAll();
         outFifoPtr->mutex.unlock();
-    }
 
-    delete [] outBuf;
+        // there should be nothing more to decode, but try to be sure
+        while(ret != MPG123_ERR && ret != MPG123_NEED_MORE)
+        {   // Get all decoded audio that is available now before feeding more input
+            ret = mpg123_decode(mp2DecoderHandle, NULL, 0, outBuf, MP2_FRAME_PCM_SAMPLES*sizeof(int16_t), &size);
 
-#else
-    /* Feed input chunk and get first chunk of decoded audio. */
-    size_t size;
-
-    // mp2 frame = 24ms * 48kHz = 1152 samples (LR)
-
-    // wait for space in ouput buffer
-    // mp2 frame = 24ms * 48kHz = 1152 samples (LR)
-    outFifoPtr->mutex.lock();
-    uint16_t count = outFifoPtr->count;
-    while ((AUDIO_FIFO_SIZE - count) < 1152*sizeof(int16_t))
-    {
-        //qDebug("%s %lld: %lld < %lld", Q_FUNC_INFO, AUDIO_FIFO_SIZE, int64_t(AUDIO_FIFO_SIZE - count), bytesToWrite);
-        outFifoPtr->countChanged.wait(&outFifoPtr->mutex);
-        count = outFifoPtr->count;
-    }
-    outFifoPtr->mutex.unlock();
-
-    int64_t bytesAvailable = 1152*sizeof(int16_t);
-
-    // we know that there is enough room on buffer (bytesToWrite is available)
-    // but this can be split by end
-    int64_t bytesToEnd = AUDIO_FIFO_SIZE - outFifoPtr->head;
-    if (bytesToEnd > bytesAvailable)
-    {   // can only write bytesToWrite
-        bytesToEnd = bytesAvailable;
-    }
-
-    const char * mp2Data = inData->data()+1;
-    int64_t bytesWritten = 0;
-    int ret = mpg123_decode(mp2DecoderHandle, (const unsigned char *)mp2Data, (inData->size() - 1), outFifoPtr->buffer+outFifoPtr->head, bytesToEnd, &size);
-    if(MPG123_NEW_FORMAT == ret)
-    {
-        long rate;
-        int channels, enc;
-        mpg123_getformat(mp2DecoderHandle, &rate, &channels, &enc);
-
-        qDebug("New MP2 format: %ld Hz, %d channels, encoding %d", rate, channels, enc);
-
-        emit startAudio(uint32_t(rate), uint8_t(channels));
-
-        getFormatMP2();
-    }
-
-    bytesWritten += size;
-    bytesAvailable -= size;
-    outFifoPtr->head = (outFifoPtr->head + size) % AUDIO_FIFO_SIZE;
-
-    while(ret != MPG123_ERR && ret != MPG123_NEED_MORE)
-    {   // Get all decoded audio that is available now before feeding more input
-        if (bytesAvailable > 0)
-        {
-            bytesToEnd = AUDIO_FIFO_SIZE - outFifoPtr->head;
-            if (bytesToEnd > bytesAvailable)
-            {   // can only write bytesToWrite
-                bytesToEnd = bytesAvailable;
+            if (0 == size)
+            {
+                break;
             }
-            ret = mpg123_decode(mp2DecoderHandle, NULL, 0, outFifoPtr->buffer+outFifoPtr->head, bytesToEnd, &size);
-            bytesWritten += size;
-            bytesAvailable -= size;
-            outFifoPtr->head = (outFifoPtr->head + size) % AUDIO_FIFO_SIZE;
-        }
-        else
-        {
+
+            bytesToEnd = AUDIO_FIFO_SIZE - outFifoPtr->head;
+            if (bytesToEnd < size)
+            {
+                memcpy(outFifoPtr->buffer+outFifoPtr->head, outBuf, bytesToEnd);
+                memcpy(outFifoPtr->buffer, outBuf+bytesToEnd, size - bytesToEnd);
+                outFifoPtr->head = (size - bytesToEnd);
+            }
+            else
+            {
+                memcpy(outFifoPtr->buffer+outFifoPtr->head, outBuf, size);
+                outFifoPtr->head += size;
+            }
+
             outFifoPtr->mutex.lock();
-            outFifoPtr->count += bytesWritten;
+            outFifoPtr->count += size;
             outFifoPtr->countChanged.wakeAll();
             outFifoPtr->mutex.unlock();
-
-            bytesWritten = 0;
-
-            // waiting for space
-            outFifoPtr->mutex.lock();
-            uint16_t count = outFifoPtr->count;
-            while ((AUDIO_FIFO_SIZE - count) < 1152*sizeof(int16_t))
-            {
-                //qDebug("%s %lld: %lld < %lld", Q_FUNC_INFO, AUDIO_FIFO_SIZE, int64_t(AUDIO_FIFO_SIZE - count), bytesToWrite);
-                outFifoPtr->countChanged.wait(&outFifoPtr->mutex);
-                count = outFifoPtr->count;
-            }
-            outFifoPtr->mutex.unlock();
-
-            bytesAvailable = 1152*sizeof(int16_t);
-            bytesToEnd = AUDIO_FIFO_SIZE - outFifoPtr->head;
-            if (bytesToEnd > bytesAvailable)
-            {   // can only write bytesToWrite
-                bytesToEnd = bytesAvailable;
-            }
-            ret = mpg123_decode(mp2DecoderHandle, NULL, 0, outFifoPtr->buffer+outFifoPtr->head, bytesToEnd, &size);
-            bytesWritten += size;
-            bytesAvailable -= size;
-            outFifoPtr->head = (outFifoPtr->head + size) % AUDIO_FIFO_SIZE;
         }
-    }
 
-    if (bytesWritten > 0)
-    {
-        outFifoPtr->mutex.lock();
-        outFifoPtr->count += bytesWritten;
-        outFifoPtr->countChanged.wakeAll();
-        outFifoPtr->mutex.unlock();
+        delete [] outBuf;
     }
-#endif
+    // store DRC for next frame
+    mp2DRC = inData->at(0);
 }
 
 
