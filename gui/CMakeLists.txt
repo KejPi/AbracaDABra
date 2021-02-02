@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 include (CheckLibraryExists)
 include (CheckSymbolExists)
-#include (ExternalProject)
 if(NOT WIN32)
-include (FindPkgConfig)
+    include (FindPkgConfig)
 endif()
 
 set(TARGET AbracaDABra)
@@ -16,12 +15,11 @@ option (USE_SYSTEM_RTLSDR "Use system provided rtl-sdr" ON)
 option (USE_SYSTEM_LIBUSB "Use system provided libusb" ON)
 option (USE_SYSTEM_FAAD "Use system provided libfaad" ON)
 option (USE_SYSTEM_MPG123 "Use system provided libmpg123" ON)
-option (USE_SYSTEM_RTAUDIO "Use system provided rtaudio" ON)
 option (USE_SYSTEM_PORTAUDIO "Use system provided portaudio" ON)
 
 
 ### DAB library
-# This hes to be before Qt stuff
+# This has to be before Qt stuff
 set(BACKEND_DIR "${PROJECT_SOURCE_DIR}/../backend")
 set(BACKEND_INCLUDE_DIRS "${BACKEND_DIR}")
 add_subdirectory(${BACKEND_DIR} backend)
@@ -29,17 +27,7 @@ add_subdirectory(${BACKEND_DIR} backend)
 
 
 ## External libs
-if(WIN32)
-   #set (LIBUSB_WIN_PREBUILD ON)
-endif(WIN32)
-
 set (EXT_LIBS_DIR "${CMAKE_SOURCE_DIR}/../../dab_libs")
-
-if (LIBUSB_WIN_PREBUILD)
-    set (LIBUSB_PREFIX "${EXT_LIBS_DIR}/libusb")
-else(LIBUSB_WIN_PREBUILD)
-    set (LIBUSB_PREFIX "${EXT_LIBS_DIR}/libusb-prefix")
-endif(LIBUSB_WIN_PREBUILD)
 
 set (RTLSDR_PREFIX "${EXT_LIBS_DIR}/rtlsdr-prefix")
 set (FAAD2_PREFIX "${EXT_LIBS_DIR}/faad2-prefix")
@@ -48,83 +36,48 @@ set (PORTAUDIO_PREFIX "${EXT_LIBS_DIR}/portaudio-prefix")
 
 
 if (USE_SYSTEM_RTLSDR)
-    find_library (RTL_SDR_LIBRARIES rtlsdr)
+    find_library (RTL_SDR_LINK_LIBRARIES rtlsdr)
+    find_path(RTL_SDR_INCLUDE_DIRS rtl-sdr.h)
     if (NOT WIN32)
         pkg_search_module (RTL_SDR librtlsdr)
     endif()
-    find_path(RTL_SDR_INCLUDE_DIRS rtl-sdr.h)
-    if (NOT RTL_SDR_LIBRARIES)
+    if (NOT RTL_SDR_LINK_LIBRARIES)
         message (WARNING "librtlsdr not found. Build from source and install to: ${RTLSDR_PREFIX}")
         set (USE_SYSTEM_RTLSDR OFF)
     endif ()
 endif ()
-if (USE_SYSTEM_LIBUSB)
-    find_library (LIBUSB_LIBRARIES usb-1.0)
-    if (NOT WIN32)
-        pkg_search_module (LIBUSB libusb-1.0)
-    endif()
-    if (NOT LIBUSB_LIBRARIES)
-        if (LIBUSB_WIN_PREBUILD)
-            message (WARNING "libusb-1.0 not found. Download libusb prebuild libs for Win64 and copy to: ${LIBUSB_PREFIX}")
-        else (LIBUSB_WIN_PREBUILD)
-            message (WARNING "libusb-1.0 not found. Build from source and install to: ${LIBUSB_PREFIX}")
-        endif (LIBUSB_WIN_PREBUILD)
-        set (USE_SYSTEM_LIBUSB OFF)
-    endif ()
-endif ()
+
 if (USE_SYSTEM_FAAD)
-    find_library (LIBFAAD2_LIBRARIES faad)    
-    if (NOT WIN32)
-        pkg_search_module(LIBFAAD2 faad)
-        #find_path(LIBFAAD2_INCLUDE_DIRS neaacdec.h)
-    endif()
-    if (NOT LIBFAAD2_LIBRARIES)
+    find_library (LIBFAAD2_LINK_LIBRARIES faad)
+    find_path(LIBFAAD2_INCLUDE_DIRS neaacdec.h)
+    if (NOT LIBFAAD2_LINK_LIBRARIES)
         message (WARNING "libfaad not found. Build from source and install to: ${FAAD2_PREFIX}")
         set (USE_SYSTEM_FAAD OFF)
     endif ()
 endif ()
+
 if (USE_SYSTEM_MPG123)
-    find_library (LIBMPG123_LIBRARIES mpg123)
+    find_library (LIBMPG123_LINK_LIBRARIES mpg123)
+    find_path(LIBMPG123_INCLUDE_DIRS mpg123.h)
     if (NOT WIN32)
         pkg_search_module(LIBMPG123 mpg123)
-        #find_path(LIBFAAD2_INCLUDE_DIRS neaacdec.h)
     endif()
-    if (NOT LIBMPG123_LIBRARIES)
+    if (NOT LIBMPG123_LINK_LIBRARIES)
         message (WARNING "libmpg123 not found. Build from source and install to: ${MPG123_PREFIX}")
         set (USE_SYSTEM_MPG123 OFF)
     endif ()
 endif ()
+
 if (USE_SYSTEM_PORTAUDIO)
-    find_library (PORTAUDIO_LIBRARIES portaudio)
+    find_library (PORTAUDIO_LINK_LIBRARIES portaudio)
+    find_path(PORTAUDIO_INCLUDE_DIRS portaudio.h)
     if (NOT WIN32)
-        pkg_search_module(PORTAUDIO portaudio)
-        #find_path(PORTAUDIO_INCLUDE_DIRS portaudio.h)
+        pkg_search_module(PORTAUDIO portaudio-2.0)
     endif()
-    if (NOT PORTAUDIO_LIBRARIES)
+    if (NOT PORTAUDIO_LINK_LIBRARIES)
         message (WARNING "portaudio not found. Build from source and install to: ${PORTAUDIO_PREFIX}")
         set (USE_SYSTEM_PORTAUDIO OFF)
     endif ()
-endif ()
-
-if (NOT USE_SYSTEM_LIBUSB)
-    add_library (libusb STATIC IMPORTED)
-    set (LIBUSB_LIBRARIES libusb)
-
-    if (LIBUSB_WIN_PREBUILD)
-        set_property (TARGET libusb PROPERTY IMPORTED_LOCATION "${LIBUSB_PREFIX}/MinGW64/static/libusb-1.0.a")
-
-        set (RTLSDR_CMAKE_ARGS
-            -DLIBUSB_LIBRARIES:STRING=${LIBUSB_PREFIX}/MinGW64/static/libusb-1.0.a
-            -DLIBUSB_LIBRARIES:STRING=${LIBUSB_PREFIX}/lib/libusb-1.0.a
-            )
-    else (LIBUSB_WIN_PREBUILD)
-        set_property (TARGET libusb PROPERTY IMPORTED_LOCATION "${LIBUSB_PREFIX}/lib/libusb-1.0.a")
-
-        set (RTLSDR_CMAKE_ARGS
-            -DLIBUSB_INCLUDE_DIR:STRING=${LIBUSB_PREFIX}/include/libusb-1.0/
-            -DLIBUSB_LIBRARIES:STRING=${LIBUSB_PREFIX}/lib/libusb-1.0.a
-            )
-    endif (LIBUSB_WIN_PREBUILD)
 endif ()
 
 if (NOT USE_SYSTEM_RTLSDR)   
@@ -133,10 +86,8 @@ if (NOT USE_SYSTEM_RTLSDR)
     add_dependencies (rtlsdr rtlsdr_external)
 
     set (RTL_SDR_INCLUDE_DIRS "${RTLSDR_PREFIX}/include")
-    set (RTL_SDR_LIBRARIES rtlsdr ${LIBUSB_LIBRARIES})
-    set (RTL_SDR_BUILTIN rtlsdr)
+    set (RTL_SDR_LINK_LIBRARIES rtlsdr ${LIBUSB_LINK_LIBRARIES})
 endif ()
-
 
 if (NOT USE_SYSTEM_FAAD)
     add_library (faad2 STATIC IMPORTED)
@@ -144,8 +95,7 @@ if (NOT USE_SYSTEM_FAAD)
     add_dependencies (faad2 faad2_external)
 
     set (LIBFAAD2_INCLUDE_DIRS "${FAAD2_PREFIX}/include")
-    set (LIBFAAD2_LIBRARIES faad2)
-    set (FAAD2_BUILTIN faad2)
+    set (LIBFAAD2_LINK_LIBRARIES faad2)
 endif()
 
 if (NOT USE_SYSTEM_MPG123)
@@ -154,8 +104,7 @@ if (NOT USE_SYSTEM_MPG123)
     add_dependencies (mpg123 mpg123_external)
 
     set (LIBMPG123_INCLUDE_DIRS "${MPG123_PREFIX}")
-    set (LIBMPG123_LIBRARIES mpg123)
-    set (MPG123_BUILTIN mpg123)
+    set (LIBMPG123_LINK_LIBRARIES mpg123)
 endif()
 
 if (NOT USE_SYSTEM_PORTAUDIO)
@@ -164,8 +113,7 @@ if (NOT USE_SYSTEM_PORTAUDIO)
     add_dependencies (portaudio portaudio_external)
 
     set (PORTAUDIO_INCLUDE_DIRS "${PORTAUDIO_PREFIX}/include/")
-    set (PORTAUDIO_LIBRARIES portaudio)
-    set (PORTAUDIO_BUILTIN portaudio)
+    set (PORTAUDIO_LINK_LIBRARIES portaudio)
 endif()
 
 
@@ -177,19 +125,6 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# QtCreator supports the following variables for Android, which are identical to qmake Android variables.
-# Check http://doc.qt.io/qt-5/deployment-android.html for more information.
-# They need to be set before the find_package(Qt5 ...) call.
-
-#if(ANDROID)
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-#    if (ANDROID_ABI STREQUAL "armeabi-v7a")
-#        set(ANDROID_EXTRA_LIBS
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libcrypto.so
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libssl.so)
-#    endif()
-#endif()
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Multimedia REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia REQUIRED)
@@ -203,9 +138,9 @@ qt5_add_resources (RCC_SOURCES ${RESOURCES})
 # Set some Win32 Specific Settings
 if(WIN32)
     set(GUI_TYPE WIN32)
-
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources/appIcon.rc")
 endif(WIN32)
+
 # Set some Apple MacOS Specific settings
 if (APPLE)
     set(GUI_TYPE MACOSX_BUNDLE)
@@ -220,41 +155,7 @@ if (APPLE)
            MACOSX_PACKAGE_LOCATION "Resources")
 endif(APPLE)
 
-if(ANDROID)
-  add_library(${TARGET} SHARED
-    ${RCC_SOURCES}
-    main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
-    dabtables.h
-    dabtables.cpp
-    radiocontrol.h
-    radiocontrol.cpp
-    inputdevice.h
-    inputdevice.cpp
-    rawfileinput.h
-    rawfileinput.cpp
-    rtlsdrinput.h
-    rtlsdrinput.cpp
-    dldecoder.h
-    dldecoder.cpp
-    motdecoder.h
-    motdecoder.cpp
-    motobject.h
-    motobject.cpp
-    audiodecoder.h
-    audiodecoder.cpp
-    audiofifo.h
-    audiofifo.cpp
-    audiooutput.h
-    audiooutput.cpp
-    setupdialog.h
-    setupdialog.cpp
-    setupdialog.ui
-  )
-else()
-  add_executable(${TARGET}
+add_executable(${TARGET}
     ${GUI_TYPE}
     ${RCC_SOURCES}
     ${APP_ICON_MACOSX}
@@ -289,28 +190,26 @@ else()
     setupdialog.cpp
     setupdialog.ui
   )
-endif()
 
 ### DAB library
 include_directories ( ${BACKEND_INCLUDE_DIRS} )
 target_link_libraries(${PROJECT_NAME} PRIVATE dab)
-###
 
 # FAAD
 include_directories ( ${LIBFAAD2_INCLUDE_DIRS} )
-target_link_libraries(${PROJECT_NAME} PRIVATE "${LIBFAAD2_LIBRARIES}" )
+target_link_libraries(${PROJECT_NAME} PRIVATE "${LIBFAAD2_LINK_LIBRARIES}" )
 
 # MPG123
 include_directories ( ${LIBMPG123_INCLUDE_DIRS} )
-target_link_libraries(${PROJECT_NAME} PRIVATE "${LIBMPG123_LIBRARIES}" )
+target_link_libraries(${PROJECT_NAME} PRIVATE "${LIBMPG123_LINK_LIBRARIES}" )
 
 # RTLSDR
 include_directories ( ${RTL_SDR_INCLUDE_DIRS} )
-target_link_libraries(${PROJECT_NAME} PRIVATE "${RTL_SDR_LIBRARIES}" )
+target_link_libraries(${PROJECT_NAME} PRIVATE "${RTL_SDR_LINK_LIBRARIES}" )
 
 # PORTAUDIO
 include_directories ( ${PORTAUDIO_INCLUDE_DIRS} )
-target_link_libraries(${PROJECT_NAME} PRIVATE "${PORTAUDIO_LIBRARIES}" )
+target_link_libraries(${PROJECT_NAME} PRIVATE "${PORTAUDIO_LINK_LIBRARIES}" )
 
 include_directories ( ${CMAKE_SOURCE_DIR} )
 target_link_libraries(AbracaDABra PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia)
