@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QFile>
+#include <math.h>
 
 #include "audiodecoder.h"
 #include "audiooutput.h"

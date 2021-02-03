@@ -29,6 +29,17 @@ add_subdirectory(${BACKEND_DIR} backend)
 ## External libs
 set (EXT_LIBS_DIR "${CMAKE_SOURCE_DIR}/../../dab_libs")
 
+if(WIN32)
+   #set (LIBUSB_WIN_PREBUILD ON)
+endif(WIN32)
+
+if (LIBUSB_WIN_PREBUILD)
+    set (LIBUSB_PREFIX "${EXT_LIBS_DIR}/libusb")
+else(LIBUSB_WIN_PREBUILD)
+    set (LIBUSB_PREFIX "${EXT_LIBS_DIR}/libusb-prefix")
+endif(LIBUSB_WIN_PREBUILD)
+
+
 set (RTLSDR_PREFIX "${EXT_LIBS_DIR}/rtlsdr-prefix")
 set (FAAD2_PREFIX "${EXT_LIBS_DIR}/faad2-prefix")
 set (MPG123_PREFIX "${EXT_LIBS_DIR}/mpg123-prefix")
@@ -44,6 +55,21 @@ if (USE_SYSTEM_RTLSDR)
     if (NOT RTL_SDR_LINK_LIBRARIES)
         message (WARNING "librtlsdr not found. Build from source and install to: ${RTLSDR_PREFIX}")
         set (USE_SYSTEM_RTLSDR OFF)
+    endif ()
+endif ()
+
+if (USE_SYSTEM_LIBUSB)
+    find_library (LIBUSB_LINK_LIBRARIES usb-1.0)
+    if (NOT WIN32)
+        pkg_search_module (LIBUSB libusb-1.0)
+    endif()
+    if (NOT LIBUSB_LINK_LIBRARIES)
+        if (LIBUSB_WIN_PREBUILD)
+            message (WARNING "libusb-1.0 not found. Download libusb prebuild libs for Win64 and copy to: ${LIBUSB_PREFIX}")
+        else (LIBUSB_WIN_PREBUILD)
+            message (WARNING "libusb-1.0 not found. Build from source and install to: ${LIBUSB_PREFIX}")
+        endif (LIBUSB_WIN_PREBUILD)
+        set (USE_SYSTEM_LIBUSB OFF)
     endif ()
 endif ()
 
@@ -78,6 +104,19 @@ if (USE_SYSTEM_PORTAUDIO)
         message (WARNING "portaudio not found. Build from source and install to: ${PORTAUDIO_PREFIX}")
         set (USE_SYSTEM_PORTAUDIO OFF)
     endif ()
+endif ()
+
+
+if (NOT USE_SYSTEM_LIBUSB)
+    add_library (libusb STATIC IMPORTED)
+    set (LIBUSB_LINK_LIBRARIES libusb)
+
+    if (LIBUSB_WIN_PREBUILD)
+        set_property (TARGET libusb PROPERTY IMPORTED_LOCATION "${LIBUSB_PREFIX}/MinGW64/static/libusb-1.0.a")
+
+    else (LIBUSB_WIN_PREBUILD)
+        set_property (TARGET libusb PROPERTY IMPORTED_LOCATION "${LIBUSB_PREFIX}/lib/libusb-1.0.a")
+    endif (LIBUSB_WIN_PREBUILD)
 endif ()
 
 if (NOT USE_SYSTEM_RTLSDR)   
