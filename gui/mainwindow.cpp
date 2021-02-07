@@ -88,12 +88,17 @@ MainWindow::MainWindow(QWidget *parent)
     updateSnrLevel(0);
     updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
 
-    QToolButton * setupButton = new QToolButton();
+    QToolButton * setupButton = new QToolButton(this);
     //setupButton->setFixedSize(26, 26);
     //setupButton->setText(QString(QChar(0x2699)));
     setupButton->setText("...");
     setupButton->setToolTip("Settings");
     connect(setupButton, &QToolButton::clicked, setupDialog, &SetupDialog::show);
+#if 0
+    QMenu * menu = new QMenu(this);
+    menu->addAction("Test");
+    setupButton->setMenu(menu);
+#endif
 
     QGridLayout * layout = new QGridLayout(widget);
     layout->addWidget(timeLabel, 0,0, Qt::AlignVCenter | Qt::AlignLeft);
