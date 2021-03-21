@@ -90,13 +90,24 @@ MainWindow::MainWindow(QWidget *parent)
 
     QToolButton * setupButton = new QToolButton(this);
     //setupButton->setFixedSize(26, 26);
-    //setupButton->setText(QString(QChar(0x2699)));
-    setupButton->setText("...");
+    //setupButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    //setupButton->setText(QString(QChar(0x2699)));    // gear
+    //setupButton->setText(QString(QChar(0x22EE)));    // vertical ellipsis
+    //setupButton->setText(QString(QChar(0x2026)));    // horizontal ellipsis
+    //setupButton->setText(QString(QChar(0x22EF)));    // MIDLINE horizontal ellipsis
+    setupButton->setText(QString(QChar(0x205D)));    // TRICOLON
+    //setupButton->setText(QString(QChar(0x205E)));    // VERTICAL FOUR DOTS
+    //setupButton->setFixedWidth(setupButton->height());
+
+    //setupButton->setIcon(QIcon())
+    //setupButton->setText("...");
     setupButton->setToolTip("Settings");
+    //setupButton->setArrowType(Qt::DownArrow);
     connect(setupButton, &QToolButton::clicked, setupDialog, &SetupDialog::show);
 #if 0
     QMenu * menu = new QMenu(this);
-    menu->addAction("Test");
+    menu->addAction("Setup");
+    menu->addAction("Audio Device");
     setupButton->setMenu(menu);
 #endif
 

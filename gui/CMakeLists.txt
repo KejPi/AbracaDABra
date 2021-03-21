@@ -26,11 +26,27 @@ add_subdirectory(${BACKEND_DIR} backend)
 ###
 
 
-## External libs
-set (EXT_LIBS_DIR "${CMAKE_SOURCE_DIR}/../../dab_libs")
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    # 64 bits
+    message(STATUS "64 bit build detected")
+
+    ## External libs
+    set (EXT_LIBS_DIR "${CMAKE_SOURCE_DIR}/../../dab_libs")
+elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    # 32 bits
+    message(STATUS "32 bit build detected")
+
+    set(BUILD_32BIT ON)
+
+    ## External libs
+    set (EXT_LIBS_DIR "${CMAKE_SOURCE_DIR}/../../dab_libs_32bit")
+else()
+     message(FATAL_ERROR "Only 32bit or 64 bit platform is supported" )
+endif()
+
 
 if(WIN32)
-   #set (LIBUSB_WIN_PREBUILD ON)
+   set (LIBUSB_WIN_PREBUILD ON)
 endif(WIN32)
 
 if (LIBUSB_WIN_PREBUILD)
@@ -112,7 +128,11 @@ if (NOT USE_SYSTEM_LIBUSB)
     set (LIBUSB_LINK_LIBRARIES libusb)
 
     if (LIBUSB_WIN_PREBUILD)
-        set_property (TARGET libusb PROPERTY IMPORTED_LOCATION "${LIBUSB_PREFIX}/MinGW64/static/libusb-1.0.a")
+        if (BUILD_32BIT)
+            set_property (TARGET libusb PROPERTY IMPORTED_LOCATION "${LIBUSB_PREFIX}/MinGW32/static/libusb-1.0.a")
+        else (BUILD_32BIT)
+            set_property (TARGET libusb PROPERTY IMPORTED_LOCATION "${LIBUSB_PREFIX}/MinGW64/static/libusb-1.0.a")
+        endif(BUILD_32BIT)
 
     else (LIBUSB_WIN_PREBUILD)
         set_property (TARGET libusb PROPERTY IMPORTED_LOCATION "${LIBUSB_PREFIX}/lib/libusb-1.0.a")

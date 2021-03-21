@@ -5,25 +5,27 @@
 #include "rawfileinput.h"
 
 RawFileInput::RawFileInput(QObject *parent) : InputDevice(parent)
-{        
+{
+    worker = nullptr;
     inputTimer = nullptr;
-    inputFile = nullptr;
-    sampleFormat = RawFileInputFormat::SAMPLE_FORMAT_U8;
+    inputFile = nullptr;    
+    sampleFormat = RawFileInputFormat::SAMPLE_FORMAT_U8;    
 }
 
 RawFileInput::~RawFileInput()
 {
-    if (nullptr != inputTimer)
+    if (nullptr != worker)
     {
-        inputTimer->stop();
-        delete inputTimer;
+        worker->stop();
+        worker->quit();
+        worker->wait();
     }
 
     if (nullptr != inputFile)
     {
         inputFile->close();
         delete inputFile;
-    }
+    }   
 #if INPUT_USE_PTHREADS
     pthread_mutex_destroy(&inputBuffer.countMutex);
     pthread_cond_destroy(&inputBuffer.countCondition);
@@ -31,14 +33,7 @@ RawFileInput::~RawFileInput()
 }
 
 void RawFileInput::openDevice(const QString & fileName, const RawFileInputFormat &format)
-{    
-    if (nullptr != inputTimer)
-    {
-        inputTimer->stop();
-        delete inputTimer;
-        inputTimer = nullptr;
-    }
-
+{
     if (nullptr != inputFile)
     {
         inputFile->close();
@@ -90,31 +85,32 @@ void RawFileInput::setFileFormat(const RawFileInputFormat &format)
 
 void RawFileInput::tune(uint32_t freq)
 {
-    stop();
-
+    stop();    
     rewind();
 
     if (0 != freq)
     {
-        if (NULL == inputTimer)
-        {
-            inputTimer = new QTimer(this);
-            connect(inputTimer, &QTimer::timeout, this, &RawFileInput::readSamples);
-            // input never stops
-            connect(this, &RawFileInput::endOfFile, this, &RawFileInput::rewind);
-        }
+        worker = new RawFileWorker(inputFile, sampleFormat, this);
+        connect(worker, &RawFileWorker::endOfFile, this, &RawFileInput::endOfFile, Qt::QueuedConnection);
+        connect(worker, &RawFileWorker::finished, worker, &QObject::deleteLater);
+        worker->start();
+
+        inputTimer = new QTimer(this);
+        connect(inputTimer, &QTimer::timeout, worker, &RawFileWorker::trigger);
         inputTimer->start(INPUT_CHUNK_MS);
-        qDebug() << "Timer started" << inputTimer->isActive();
     }
     emit tuned(freq);
 }
 
 void RawFileInput::rewind()
 {
-    // go to file beginning
-    if (nullptr != inputFile)
-    {
-        inputFile->seek(0);
+    if (nullptr == worker)
+    {   // avoid multiple access - if thread is running, then no action
+        // go to file beginning
+        if (nullptr != inputFile)
+        {
+            inputFile->seek(0);
+        }
     }
 }
 
@@ -124,135 +120,177 @@ void RawFileInput::stop()
     {
         inputTimer->stop();
     }
+    if (nullptr != worker)
+    {
+        worker->stop();
+        worker->wait(INPUT_CHUNK_MS*2);
+        worker = nullptr;
+    }
 }
 
-void RawFileInput::readSamples()
+
+RawFileWorker::RawFileWorker(QFile *inFile, RawFileInputFormat sFormat, QObject *parent)
+    : QThread(parent)
+    , sampleFormat(sFormat)
+    , inputFile(inFile)
 {
-    //qDebug() << Q_FUNC_INFO;
-    uint64_t samplesRead = 0;
-
-    // get FIFO space
-#if INPUT_USE_PTHREADS
-    pthread_mutex_lock(&inputBuffer.countMutex);
-#else
-    inputBuffer.mutex.lock();
-#endif
-    uint64_t count = inputBuffer.count;
-    Q_ASSERT(count <= INPUT_FIFO_SIZE);
-
-    while ((INPUT_FIFO_SIZE - count) < INPUT_CHUNK_IQ_SAMPLES*sizeof(float)*2)
-    {
-
-#if INPUT_USE_PTHREADS
-        pthread_cond_wait(&inputBuffer.countCondition, &inputBuffer.countMutex);
-#else
-        inputBuffer.countChanged.wait(&inputBuffer.mutex);
-#endif
-        count = inputBuffer.count;
-    }
-#if INPUT_USE_PTHREADS
-    pthread_mutex_unlock(&inputBuffer.countMutex);
-#else
-    inputBuffer.mutex.unlock();
-#endif
-
-    // there is enough room in buffer
-    uint64_t bytesTillEnd = INPUT_FIFO_SIZE - inputBuffer.head;
-
-    switch (sampleFormat)
-    {
-    case RawFileInputFormat::SAMPLE_FORMAT_S16:
-    {
-        int16_t * tmpBuffer = new int16_t[INPUT_CHUNK_IQ_SAMPLES*2];
-        uint64_t bytesRead = inputFile->read((char *) tmpBuffer, INPUT_CHUNK_IQ_SAMPLES * 2 * sizeof(int16_t));
-
-        samplesRead = bytesRead >> 1;  // one sample is int16 (I or Q) => 2 bytes
-
-        int16_t * inPtr = tmpBuffer;
-        if (bytesTillEnd >= samplesRead * sizeof(float))
-        {
-            float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
-            for (uint64_t k=0; k < samplesRead; k++)
-            {   // convert to float
-                *outPtr++ = float(*inPtr++);  // I or Q
-            }
-        }
-        else
-        {
-            Q_ASSERT(sizeof(float) == 4);
-            uint64_t samplesTillEnd = (bytesTillEnd >> 2);
-            float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
-            for (uint64_t k=0; k < samplesTillEnd; k++)
-            {   // convert to float
-                *outPtr++ = float(*inPtr++);  // I or Q
-            }
-            outPtr = (float *)(inputBuffer.buffer);
-            for (uint64_t k=0; k<samplesRead-samplesTillEnd; k++)
-            {   // convert to float
-                *outPtr++ = float(*inPtr++);  // I or Q
-            }
-        }
-        delete [] tmpBuffer;
-    }
-        break;
-    case RawFileInputFormat::SAMPLE_FORMAT_U8:
-    {
-        uint8_t * tmpBuffer = new uint8_t[INPUT_CHUNK_IQ_SAMPLES*2];
-        uint64_t bytesRead = inputFile->read((char *) tmpBuffer, INPUT_CHUNK_IQ_SAMPLES * 2 * sizeof(uint8_t));
-
-        samplesRead = bytesRead;  // one sample is uint8 => 1 byte
-
-        uint8_t * inPtr = tmpBuffer;
-        if (bytesTillEnd >= samplesRead * sizeof(float))
-        {
-            float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
-            for (uint64_t k=0; k < samplesRead; k++)
-            {   // convert to float
-                *outPtr++ = float((*inPtr++ - 127)<<8);  // I or Q
-            }
-        }
-        else
-        {
-            Q_ASSERT(sizeof(float) == 4);
-            uint64_t samplesTillEnd = (bytesTillEnd >> 2);
-            float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
-            for (uint64_t k=0; k < samplesTillEnd; k++)
-            {   // convert to float
-                *outPtr++ = float(*inPtr++);  // I or Q
-            }
-            outPtr = (float *)(inputBuffer.buffer);
-            for (uint64_t k=0; k<samplesRead-samplesTillEnd; k++)
-            {   // convert to float
-                *outPtr++ = float((*inPtr++ - 127)<<8);  // I or Q
-            }
-        }
-        delete [] tmpBuffer;
-    }
-        break;
-    }
-
-    //qDebug() << Q_FUNC_INFO << samplesRead;
-
-    inputBuffer.head = (inputBuffer.head + samplesRead*sizeof(float)) % INPUT_FIFO_SIZE;
-#if INPUT_USE_PTHREADS
-    pthread_mutex_lock(&inputBuffer.countMutex);
-    inputBuffer.count = inputBuffer.count + samplesRead*sizeof(float);
-    //qDebug() << Q_FUNC_INFO << inputBuffer.count;
-    pthread_cond_signal(&inputBuffer.countCondition);
-    pthread_mutex_unlock(&inputBuffer.countMutex);
-#else
-    inputBuffer.mutex.lock();
-    inputBuffer.count = inputBuffer.count + samplesRead*sizeof(float);
-    inputBuffer.active = (samplesRead == INPUT_CHUNK_SAMPLES);
-    inputBuffer.countChanged.wakeAll();
-    inputBuffer.mutex.unlock();
-#endif
-
-    if (samplesRead < INPUT_CHUNK_IQ_SAMPLES*2)
-    {
-        qDebug() << "End of file";
-        emit endOfFile();
-        return;
-    }
+    stopRequest = false;
+    elapsedTimer.start();
 }
 
+void RawFileWorker::trigger()
+{
+    sem.release();
+}
+
+void RawFileWorker::stop()
+{
+    stopRequest = true;
+    sem.release();
+}
+
+void RawFileWorker::run()
+{
+    while(1)
+    {
+        sem.acquire();
+
+        if (stopRequest)
+        {   // stop request
+            return;
+        }
+
+        qint64 elapsed = elapsedTimer.elapsed();
+        int period = elapsed - lastTriggerTime;
+        lastTriggerTime = elapsed;
+
+        //qDebug() << Q_FUNC_INFO << elapsed << " ==> " << period;
+
+        uint64_t samplesRead = 0;
+        uint64_t input_chunk_iq_samples = period * 2048;
+
+        // get FIFO space
+#if INPUT_USE_PTHREADS
+        pthread_mutex_lock(&inputBuffer.countMutex);
+#else
+        inputBuffer.mutex.lock();
+#endif
+        uint64_t count = inputBuffer.count;
+        Q_ASSERT(count <= INPUT_FIFO_SIZE);
+
+        while ((INPUT_FIFO_SIZE - count) < input_chunk_iq_samples*sizeof(float)*2)
+        {
+
+#if INPUT_USE_PTHREADS
+            pthread_cond_wait(&inputBuffer.countCondition, &inputBuffer.countMutex);
+#else
+            inputBuffer.countChanged.wait(&inputBuffer.mutex);
+#endif
+            count = inputBuffer.count;
+        }
+#if INPUT_USE_PTHREADS
+        pthread_mutex_unlock(&inputBuffer.countMutex);
+#else
+        inputBuffer.mutex.unlock();
+#endif
+
+        // there is enough room in buffer
+        uint64_t bytesTillEnd = INPUT_FIFO_SIZE - inputBuffer.head;
+
+        switch (sampleFormat)
+        {
+        case RawFileInputFormat::SAMPLE_FORMAT_S16:
+        {
+            int16_t * tmpBuffer = new int16_t[input_chunk_iq_samples*2];
+            uint64_t bytesRead = inputFile->read((char *) tmpBuffer, input_chunk_iq_samples * 2 * sizeof(int16_t));
+
+            samplesRead = bytesRead >> 1;  // one sample is int16 (I or Q) => 2 bytes
+
+            int16_t * inPtr = tmpBuffer;
+            if (bytesTillEnd >= samplesRead * sizeof(float))
+            {
+                float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
+                for (uint64_t k=0; k < samplesRead; k++)
+                {   // convert to float
+                    *outPtr++ = float(*inPtr++);  // I or Q
+                }
+            }
+            else
+            {
+                Q_ASSERT(sizeof(float) == 4);
+                uint64_t samplesTillEnd = (bytesTillEnd >> 2);
+                float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
+                for (uint64_t k=0; k < samplesTillEnd; k++)
+                {   // convert to float
+                    *outPtr++ = float(*inPtr++);  // I or Q
+                }
+                outPtr = (float *)(inputBuffer.buffer);
+                for (uint64_t k=0; k<samplesRead-samplesTillEnd; k++)
+                {   // convert to float
+                    *outPtr++ = float(*inPtr++);  // I or Q
+                }
+            }
+            delete [] tmpBuffer;
+        }
+        break;
+        case RawFileInputFormat::SAMPLE_FORMAT_U8:
+        {
+            uint8_t * tmpBuffer = new uint8_t[input_chunk_iq_samples*2];
+            uint64_t bytesRead = inputFile->read((char *) tmpBuffer, input_chunk_iq_samples * 2 * sizeof(uint8_t));
+
+            samplesRead = bytesRead;  // one sample is uint8 => 1 byte
+
+            uint8_t * inPtr = tmpBuffer;
+            if (bytesTillEnd >= samplesRead * sizeof(float))
+            {
+                float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
+                for (uint64_t k=0; k < samplesRead; k++)
+                {   // convert to float
+                    *outPtr++ = float((*inPtr++ - 127)<<8);  // I or Q
+                }
+            }
+            else
+            {
+                Q_ASSERT(sizeof(float) == 4);
+                uint64_t samplesTillEnd = (bytesTillEnd >> 2);
+                float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
+                for (uint64_t k=0; k < samplesTillEnd; k++)
+                {   // convert to float
+                    *outPtr++ = float((*inPtr++ - 127)<<8);  // I or Q
+                }
+                outPtr = (float *)(inputBuffer.buffer);
+                for (uint64_t k=0; k<samplesRead-samplesTillEnd; k++)
+                {   // convert to float
+                    *outPtr++ = float((*inPtr++ - 127)<<8);  // I or Q
+                }
+            }
+            delete [] tmpBuffer;
+        }
+        break;
+        }
+
+        //qDebug() << Q_FUNC_INFO << samplesRead;
+
+        inputBuffer.head = (inputBuffer.head + samplesRead*sizeof(float)) % INPUT_FIFO_SIZE;
+#if INPUT_USE_PTHREADS
+        pthread_mutex_lock(&inputBuffer.countMutex);
+        inputBuffer.count = inputBuffer.count + samplesRead*sizeof(float);
+        //qDebug() << Q_FUNC_INFO << inputBuffer.count;
+        pthread_cond_signal(&inputBuffer.countCondition);
+        pthread_mutex_unlock(&inputBuffer.countMutex);
+#else
+        inputBuffer.mutex.lock();
+        inputBuffer.count = inputBuffer.count + samplesRead*sizeof(float);
+        inputBuffer.active = (samplesRead == INPUT_CHUNK_SAMPLES);
+        inputBuffer.countChanged.wakeAll();
+        inputBuffer.mutex.unlock();
+#endif
+
+        if (samplesRead < input_chunk_iq_samples*2)
+        {
+            qDebug() << "End of file";
+            inputFile->seek(0);
+            emit endOfFile();
+        }
+    }
+}

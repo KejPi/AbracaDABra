@@ -5,6 +5,10 @@
 #include <QString>
 #include <QFile>
 #include <QTimer>
+#include <QThread>
+#include <QElapsedTimer>
+#include <QSemaphore>
+
 
 #include "inputdevice.h"
 
@@ -12,6 +16,26 @@
 enum class RawFileInputFormat {
     SAMPLE_FORMAT_U8,
     SAMPLE_FORMAT_S16,
+};
+
+class RawFileWorker : public QThread
+{
+    Q_OBJECT
+public:
+    explicit RawFileWorker(QFile * inFile, RawFileInputFormat sFormat, QObject *parent = nullptr);
+    void trigger();
+    void stop();
+protected:
+    void run() override;
+signals:
+    void endOfFile();
+private:
+    QAtomicInt stopRequest = false;
+    QSemaphore sem;
+    QFile * inputFile = nullptr;
+    QElapsedTimer elapsedTimer;
+    qint64 lastTriggerTime = 0;
+    RawFileInputFormat sampleFormat;
 };
 
 
@@ -35,14 +59,11 @@ signals:
 
 private:
     RawFileInputFormat sampleFormat;
-    QFile * inputFile;
-    QTimer * inputTimer;
+    QFile * inputFile = nullptr;
+    RawFileWorker * worker = nullptr;
+    QTimer * inputTimer = nullptr;
     uint64_t getNumSamples();
     void rewind();
-
-    friend void getSamples(float _Complex buffer[], uint16_t len);
-private slots:
-    void readSamples();
 };
 
 
