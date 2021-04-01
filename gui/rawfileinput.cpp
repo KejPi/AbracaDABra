@@ -246,7 +246,7 @@ void RawFileWorker::run()
                 float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
                 for (uint64_t k=0; k < samplesRead; k++)
                 {   // convert to float
-                    *outPtr++ = float((*inPtr++ - 127)<<8);  // I or Q
+                    *outPtr++ = float((*inPtr++ - 128)<<8);  // I or Q
                 }
             }
             else
@@ -256,12 +256,12 @@ void RawFileWorker::run()
                 float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
                 for (uint64_t k=0; k < samplesTillEnd; k++)
                 {   // convert to float
-                    *outPtr++ = float((*inPtr++ - 127)<<8);  // I or Q
+                    *outPtr++ = float((*inPtr++ - 128)<<8);  // I or Q
                 }
                 outPtr = (float *)(inputBuffer.buffer);
                 for (uint64_t k=0; k<samplesRead-samplesTillEnd; k++)
                 {   // convert to float
-                    *outPtr++ = float((*inPtr++ - 127)<<8);  // I or Q
+                    *outPtr++ = float((*inPtr++ - 128)<<8);  // I or Q
                 }
             }
             delete [] tmpBuffer;
