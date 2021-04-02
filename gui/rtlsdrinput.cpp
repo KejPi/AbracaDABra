@@ -276,7 +276,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx)
             float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
             for (uint64_t k=0; k<len; k++)
             {   // convert to float
-                *outPtr++ = float((*inPtr++ - 128)<<8);  // I or Q
+                *outPtr++ = float(*inPtr++ - 128);  // I or Q
             }
             inputBuffer.head = (inputBuffer.head + len*sizeof(float));
         }
@@ -288,12 +288,12 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx)
             float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
             for (uint64_t k=0; k<samplesTillEnd; ++k)
             {   // convert to float
-                *outPtr++ = float((*inPtr++ - 128)<<8);  // I or Q
+                *outPtr++ = float(*inPtr++ - 128);  // I or Q
             }
             outPtr = (float *)(inputBuffer.buffer);
             for (uint64_t k=0; k<len-samplesTillEnd; ++k)
             {   // convert to float
-                *outPtr++ = float((*inPtr++ - 128)<<8);  // I or Q
+                *outPtr++ = float(*inPtr++ - 128);  // I or Q
             }
             inputBuffer.head = (len-samplesTillEnd)*sizeof(float);
         }        
