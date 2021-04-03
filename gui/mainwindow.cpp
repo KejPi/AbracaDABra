@@ -94,22 +94,36 @@ MainWindow::MainWindow(QWidget *parent)
     //setupButton->setText(QString(QChar(0x2699)));    // gear
     //setupButton->setText(QString(QChar(0x22EE)));    // vertical ellipsis
     //setupButton->setText(QString(QChar(0x2026)));    // horizontal ellipsis
-    //setupButton->setText(QString(QChar(0x22EF)));    // MIDLINE horizontal ellipsis
-    setupButton->setText(QString(QChar(0x205D)));    // TRICOLON
+    //setupButton->setText(QString(QChar(0x22EF)));    // MIDLINE horizontal ellipsis    
     //setupButton->setText(QString(QChar(0x205E)));    // VERTICAL FOUR DOTS
     //setupButton->setFixedWidth(setupButton->height());
 
     //setupButton->setIcon(QIcon())
-    //setupButton->setText("...");
-    setupButton->setToolTip("Settings");
+    //setupButton->setText("...");    
     //setupButton->setArrowType(Qt::DownArrow);
-    connect(setupButton, &QToolButton::clicked, setupDialog, &SetupDialog::show);
+
 #if 0
-    QMenu * menu = new QMenu(this);
-    menu->addAction("Setup");
-    menu->addAction("Audio Device");
+    setupAct = new QAction("Setup", this);
+    //setupAct->setStatusTip("Application settings");       // this is shown in status bar
+    connect(setupAct, &QAction::triggered, setupDialog, &SetupDialog::show);
+    scanAct = new QAction("Band scan", this);
+    //scanAct->setStatusTip("Seach for available service"); // this is shown in status bar
+
+    menu = new QMenu(this);
+    menu->addAction(setupAct);
+    menu->addAction(scanAct);
+
     setupButton->setMenu(menu);
+    //setupButton->setArrowType(Qt::UpArrow);
+    setupButton->setText(QString(QChar(0x22EF)));    // MIDLINE horizontal ellipsis
+    setupButton->setPopupMode(QToolButton::InstantPopup);
+#else
+    setupButton->setToolTip("Settings");
+    setupButton->setText(QString(QChar(0x205D)));    // TRICOLON
+    connect(setupButton, &QToolButton::clicked, setupDialog, &SetupDialog::show);
 #endif
+
+
 
     QGridLayout * layout = new QGridLayout(widget);
     layout->addWidget(timeLabel, 0,0, Qt::AlignVCenter | Qt::AlignLeft);
