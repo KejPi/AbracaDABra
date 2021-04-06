@@ -48,8 +48,7 @@ public slots:
     void enableFileLooping(bool ena) { fileLooping = ena; }
 
 signals:
-    void tune(uint32_t freq);
-    void serviceRequested(uint32_t freq, uint32_t SId, uint8_t SCIdS);
+    void serviceRequest(uint32_t freq, uint32_t SId, uint8_t SCIdS);
 
 private slots:
     void on_channelCombo_currentIndexChanged(int index);

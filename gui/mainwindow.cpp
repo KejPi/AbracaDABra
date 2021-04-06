@@ -234,7 +234,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControl, &RadioControl::snrLevel, this, &MainWindow::updateSnrLevel, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::dabTime, this, &MainWindow::updateDabTime, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::serviceListEntry, this, &MainWindow::updateServiceList, Qt::BlockingQueuedConnection);
-    connect(this, &MainWindow::serviceRequested, radioControl, &RadioControl::tuneService, Qt::QueuedConnection);
+
 
     connect(radioControl, &RadioControl::dlDataGroup, dlDecoder, &DLDecoder::newDataGroup, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::mscDataGroup, motDecoder, &MOTDecoder::newDataGroup, Qt::QueuedConnection);
@@ -245,13 +245,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(dlDecoder, &DLDecoder::dlComplete, this, &MainWindow::updateDL, Qt::QueuedConnection);
     connect(motDecoder, &MOTDecoder::motObjectComplete, this, &MainWindow::updateSLS, Qt::QueuedConnection);   
 
-    connect(this, &MainWindow::serviceRequested, audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
     connect(audioDecoder, &AudioDecoder::audioParametersInfo, this, &MainWindow::updateAudioInfo, Qt::QueuedConnection);
-
     connect(radioControl, &RadioControl::newAudioService, audioDecoder, &AudioDecoder::start, Qt::QueuedConnection);
 
     // audio output is controlled by signals from decoder
-    connect(this, &MainWindow::tune, audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
+    connect(this, &MainWindow::serviceRequest, audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
     connect(audioDecoder, &AudioDecoder::startAudio, audioOutput, &AudioOutput::start, Qt::QueuedConnection);
     connect(audioDecoder, &AudioDecoder::stopAudio, audioOutput, &AudioOutput::stop, Qt::QueuedConnection);
 
@@ -260,15 +258,14 @@ MainWindow::MainWindow(QWidget *parent)
     // 2. radiocontrol tuneInputDevice -> inputdevice tune (reset of inut bufer and tune FE)
     // 3. inputDevice tuned -> radiocontrol start (this starts DAB SDR)
     // 4. notification to HMI
-    connect(this, &MainWindow::tune, radioControl, &RadioControl::tune, Qt::QueuedConnection);
+    connect(this, &MainWindow::serviceRequest, radioControl, &RadioControl::tuneService, Qt::QueuedConnection);
+
     // these two signals have to be connected in initInputDevice() - left here as comment
     // connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
     // connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::tuneDone, this, &MainWindow::tuneFinished, Qt::QueuedConnection);
 
     // input device connections
-    // try to init RTL SDR
-    //initInputDevice(InputDeviceId::RTLSDR);
     initInputDevice(InputDeviceId::UNDEFINED);
 
     loadSettings();
@@ -309,7 +306,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     saveSettings();
 
     qDebug() << Q_FUNC_INFO << "stopping all processing";
-    emit tune(0);
+    emit serviceRequest(0,0,0);
     event->accept();
 }
 
@@ -462,7 +459,9 @@ void MainWindow::updateSLS(const QByteArray & b)
     QPixmap pic;
     if (pic.loadFromData(b))
     {
+#ifdef QT_DEBUG
         qDebug() << "Valid picture recived" << pic.rect();
+#endif
 
         QGraphicsScene * scene = ui->slsView->scene();
         if (nullptr == scene)
@@ -624,7 +623,7 @@ void MainWindow::on_channelCombo_currentIndexChanged(int index)
     // reset UI
     onChannelSelection();
 
-    emit tune(ui->channelCombo->itemData(index).toUInt());
+    emit serviceRequest(ui->channelCombo->itemData(index).toUInt(), 0, 0);
 }
 
 void MainWindow::tuneFinished(uint32_t freq)
@@ -681,7 +680,7 @@ void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QMo
     SCIdS = servicePtr->SCIdS;
 
     onServiceSelection();
-    emit serviceRequested(frequency, SId.value, SCIdS);
+    emit serviceRequest(frequency, SId.value, SCIdS);
 }
 
 void MainWindow::audioServiceChanged(const RadioControlAudioService &s)

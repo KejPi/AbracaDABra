@@ -231,7 +231,6 @@ public:
 
 public slots:
     bool init();
-    void tune(uint32_t freq);
     void start(uint32_t freq);
     void exit();
     void tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS);
@@ -258,6 +257,10 @@ private:
     dabProcSyncLevel_t sync;
     bool autoNotificationEna = false;
     uint32_t frequency;
+    struct {
+        uint32_t SId;
+        uint8_t SCIdS;
+    } serviceRequest;
     RadioControlEnsemble ensemble;
     radioControlServiceList_t serviceList;
     radioControlServiceListIterator_t findService(DabSId SId);

@@ -23,7 +23,7 @@ RadioControl::RadioControl(QObject *parent) : QObject(parent)
     dabProcHandle = NULL;
     frequency = 0;
     serviceList.clear();
-    //serviceList = NULL;
+    serviceRequest.SId = serviceRequest.SCIdS = 0;
 
     connect(this, &RadioControl::dabEvent, this, &RadioControl::eventFromDab, Qt::QueuedConnection);
 }
@@ -254,6 +254,11 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                 s.pty = serviceIt->pty;
                 s.TMId = item.TMId;
 
+                if ((serviceRequest.SId == serviceIt->SId.value) && (serviceRequest.SCIdS == item.SCIdS))
+                {
+                    dabServiceSelection(serviceRequest.SId, serviceRequest.SCIdS);
+                    serviceRequest.SId = 0;    // clear request
+                }
                 emit serviceListEntry(s);
             }
             if (requestUpdate)
@@ -410,16 +415,6 @@ void RadioControl::exit()
     dabProcRequest_Exit(dabProcHandle);
 }
 
-void RadioControl::tune(uint32_t freq)
-{
-    if (freq != frequency)
-    {
-        autoNotificationEna = false;
-        frequency = freq;
-        dabTune(0);
-    }
-}
-
 void RadioControl::start(uint32_t freq)
 {
     if (freq)
@@ -444,12 +439,21 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
     //qDebug() << Q_FUNC_INFO << freq << frequency;
     if (freq == frequency)
     {
-        dabServiceSelection(SId, SCIdS);
+        if (SId)
+        {   // clear request
+            serviceRequest.SId = 0;
+            dabServiceSelection(SId, SCIdS);
+        }
     }
     else
-    {
-        // TODO: tune and service selection
-    }
+    {   // TODO: service selection
+        autoNotificationEna = false;
+        frequency = freq;
+        serviceRequest.SId = SId;
+        serviceRequest.SCIdS = SCIdS;
+
+        dabTune(0);
+     }
 }
 
 void RadioControl::updateSyncLevel(dabProcSyncLevel_t s)

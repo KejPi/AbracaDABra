@@ -18,8 +18,10 @@
 #include "portaudio.h"
 #endif
 
+#ifdef QT_DEBUG
 #define AUDIOOUTPUT_DBG_TIMER 1
 #define AUDIOOUTPUT_DBG_AVRG_SIZE 32
+#endif
 //#define AUDIOOUTPUT_RAW_FILE_OUT
 
 
