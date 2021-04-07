@@ -142,8 +142,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->serviceLabel->setFont(f);
 
     // service list
+    serviceList = new ServiceList;
+
     serviceListModel = new QStandardItemModel;
-    ui->serviceListView->setModel(serviceListModel);    
+    slModel = new SLModel(serviceList, this);
+    connect(serviceList, &ServiceList::serviceAdded, slModel, &SLModel::addService);
+    //ui->serviceListView->setHeaderHidden(true);
+
+    //ui->serviceListView->setModel(serviceListModel);
+    ui->serviceListView->setModel(slModel);
     ui->serviceListView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->serviceListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     connect(ui->serviceListView->selectionModel(), &QItemSelectionModel::currentChanged, this, &MainWindow::serviceListCurrentChanged);
@@ -298,6 +305,8 @@ MainWindow::~MainWindow()
 
     clearServiceList();
 
+    delete serviceList;
+
     delete ui;
 }
 
@@ -407,38 +416,50 @@ void MainWindow::updateServiceList(const RadioControlServiceListEntry & slEntry)
         return;
     }
 
-    for (int n = 0; n<serviceListModel->rowCount(); ++n)
-    {
-        QStandardItem * item = serviceListModel->item(n, 0);
-        QVariant data = item->data(Qt::UserRole);
-        RadioControlServiceListEntry * servicePtr = reinterpret_cast<RadioControlServiceListEntry *>(data.value<void*>());
-        if ((servicePtr->SId.value == slEntry.SId.value) && (servicePtr->SCIdS == slEntry.SCIdS))
-        {  // found - remove item
-           delete servicePtr;
-           serviceListModel->removeRows(n, 1);
-           break;
-        }
-    }    
-    //QStandardItem *parentItem = serviceListModel->invisibleRootItem();
+    // add to service list
+    serviceList->addService(slEntry);
 
-    RadioControlServiceListEntry * newServiceListItem = new RadioControlServiceListEntry;
-    *newServiceListItem = slEntry;
-    QStandardItem *item = new QStandardItem(QString(newServiceListItem->label));
-    QVariant v;
-    v.setValue((void *)newServiceListItem);
-    item->setData(v, Qt::UserRole);
-    QString tooltip = QString("<b>Short label:</b> %1<br><b>SId:</b> 0x%2")
-            .arg(newServiceListItem->labelShort)
-            .arg( QString("%1").arg(newServiceListItem->SId.prog.countryServiceRef, 4, 16, QChar('0')).toUpper() );
-    item->setData(tooltip, Qt::ToolTipRole);
-    serviceListModel->appendRow(item);
-    serviceListModel->sort(0);
+//    for (int n = 0; n<serviceListModel->rowCount(); ++n)
+//    {
+//        QStandardItem * item = serviceListModel->item(n, 0);
+//        QVariant data = item->data(Qt::UserRole);
+//        RadioControlServiceListEntry * servicePtr = reinterpret_cast<RadioControlServiceListEntry *>(data.value<void*>());
+//        if ((servicePtr->SId.value == slEntry.SId.value) && (servicePtr->SCIdS == slEntry.SCIdS))
+//        {  // found - remove item
+//           delete servicePtr;
+//           serviceListModel->removeRows(n, 1);
+//           break;
+//        }
+//    }
+//    //QStandardItem *parentItem = serviceListModel->invisibleRootItem();
 
-    if (newServiceListItem->SId.value == SId.value)
-    {
-        ui->serviceListView->selectionModel()->setCurrentIndex(item->index(), QItemSelectionModel::Select | QItemSelectionModel::Current);
-        ui->serviceListView->setFocus();
-    }
+//    RadioControlServiceListEntry * newServiceListItem = new RadioControlServiceListEntry;
+//    *newServiceListItem = slEntry;
+//    QStandardItem *item = new QStandardItem(QString(newServiceListItem->label));
+//    QVariant v;
+//    v.setValue((void *)newServiceListItem);
+//    item->setData(v, Qt::UserRole);
+//    QString tooltip = QString("<b>Short label:</b> %1<br><b>SId:</b> 0x%2")
+//            .arg(newServiceListItem->labelShort)
+//            .arg( QString("%1").arg(newServiceListItem->SId.prog.countryServiceRef, 4, 16, QChar('0')).toUpper() );
+//    item->setData(tooltip, Qt::ToolTipRole);
+//    serviceListModel->appendRow(item);
+
+//    if (slEntry.SId.value & 0x1)
+//    {
+//        QStandardItem *item2 = new QStandardItem(QString("Test ensemble [11A]"));
+//        item->appendRow(item2);
+//        item2 = new QStandardItem(QString("Another ensemble [5D]"));
+//        item->appendRow(item2);
+//    }
+
+//    serviceListModel->sort(0);
+
+//    if (newServiceListItem->SId.value == SId.value)
+//    {
+//        ui->serviceListView->selectionModel()->setCurrentIndex(item->index(), QItemSelectionModel::Select | QItemSelectionModel::Current);
+//        ui->serviceListView->setFocus();
+//    }
 }
 
 void MainWindow::updateDL(const QString & dl)
@@ -459,10 +480,6 @@ void MainWindow::updateSLS(const QByteArray & b)
     QPixmap pic;
     if (pic.loadFromData(b))
     {
-#ifdef QT_DEBUG
-        qDebug() << "Valid picture recived" << pic.rect();
-#endif
-
         QGraphicsScene * scene = ui->slsView->scene();
         if (nullptr == scene)
         {
@@ -556,6 +573,8 @@ void MainWindow::onChannelSelection()
     updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
     updateSnrLevel(0);
 
+    printServiceList();
+
     clearServiceList();
 
     onServiceSelection();
@@ -620,10 +639,13 @@ void MainWindow::clearServiceList()
 
 void MainWindow::on_channelCombo_currentIndexChanged(int index)
 {
-    // reset UI
-    onChannelSelection();
+    if (frequency != ui->channelCombo->itemData(index).toUInt())
+    {
+        // reset UI
+        onChannelSelection();
 
-    emit serviceRequest(ui->channelCombo->itemData(index).toUInt(), 0, 0);
+        emit serviceRequest(ui->channelCombo->itemData(index).toUInt(), 0, 0);
+    }
 }
 
 void MainWindow::tuneFinished(uint32_t freq)
@@ -670,10 +692,36 @@ void MainWindow::onRawFileStop()
 
 void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
-    Q_UNUSED(previous);
-
+    //Q_UNUSED(previous);
     //qDebug() << Q_FUNC_INFO << current << previous;
+    const SLModel * model = reinterpret_cast<const SLModel*>(current.model());
+    if (model->isService(current))
+    {
+        //qDebug() << Q_FUNC_INFO << "isService ID =" << model->getId(current);
+        ServiceListConstIterator it = serviceList->findService(model->getId(current));
+        if (serviceList->serviceListEnd() != it)
+        {
+            SId = (*it)->SId();
+            SCIdS = (*it)->SCIdS();
+            frequency = (*it)->getEnsemble()->frequency();
 
+            // change combo
+            int idx = 0;
+            dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
+            while (it != DabTables::channelList.constEnd()) {
+                if (it++.key() == frequency)
+                {
+                    break;
+                }
+                ++idx;
+            }
+            ui->channelCombo->setCurrentIndex(idx);
+
+            onServiceSelection();
+            emit serviceRequest(frequency, SId.value, SCIdS);
+        }
+    }
+#if 0
     QVariant data = current.model()->data(current, Qt::UserRole);
     RadioControlServiceListEntry * servicePtr = reinterpret_cast<RadioControlServiceListEntry *>(data.value<void*>());
     SId = servicePtr->SId;
@@ -681,6 +729,7 @@ void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QMo
 
     onServiceSelection();
     emit serviceRequest(frequency, SId.value, SCIdS);
+#endif
 }
 
 void MainWindow::audioServiceChanged(const RadioControlAudioService &s)
@@ -895,30 +944,82 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
 void MainWindow::loadSettings()
 {
-    QSettings * s = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-    int inDevice = s->value("inputDeviceId", int(InputDeviceId::UNDEFINED)).toInt();
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+
+    // load servicelist
+    serviceList->load(settings);
+
+    int inDevice = settings.value("inputDeviceId", int(InputDeviceId::UNDEFINED)).toInt();
     if (InputDeviceId::UNDEFINED != static_cast<InputDeviceId>(inDevice))
-    {
+    {        
         // if input device has switched to what was stored and it is RTLSDR
         setupDialog->setInputDevice(static_cast<InputDeviceId>(inDevice));
         if ((static_cast<InputDeviceId>(inDevice) == inputDeviceId) && (InputDeviceId::RTLSDR == inputDeviceId))
         {   // channel is only restored for RTL SDR at the moment
-            int idx = s->value("channelIdx", 0).toInt();
-            if ((idx >= 0) && (idx < ui->channelCombo->count()))
+            SId.value = settings.value("SId", 0).toInt();
+            SCIdS = settings.value("SCIdS", 0).toInt();
+
+            // we need to find the item in model and select it
+            const SLModel * model = reinterpret_cast<const SLModel*>(ui->serviceListView->model());
+            QModelIndex index;
+            for (int r = 0; r < model->rowCount(); ++r)
             {
-                ui->channelCombo->setCurrentIndex(idx);
+                index = model->index(r, 0);
+                if (model->isService(index))
+                {
+                    ServiceListConstIterator it = serviceList->findService(model->getId(index));
+                    if (serviceList->serviceListEnd() != it)
+                    {
+                        if (((*it)->SId().value == SId.value) && ((*it)->SCIdS() == SCIdS) )
+                        {   // found
+                            ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
+                            ui->serviceListView->setFocus();
+                            break;
+                        }
+                    }
+                }
             }
-            SId.value = s->value("SId", 0).toInt();
         }
     }
 }
 
 void MainWindow::saveSettings()
 {
-    QSettings * s = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-    s->setValue("inputDeviceId", int(inputDeviceId));
-    s->setValue("channelIdx", ui->channelCombo->currentIndex());
-    s->setValue("SId", SId.value);
-    s->sync();
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+    settings.setValue("inputDeviceId", int(inputDeviceId));
+
+    QModelIndex current = ui->serviceListView->currentIndex();
+    const SLModel * model = reinterpret_cast<const SLModel*>(current.model());
+    if (model->isService(current))
+    {
+        ServiceListConstIterator it = serviceList->findService(model->getId(current));
+        if (serviceList->serviceListEnd() != it)
+        {
+            SId = (*it)->SId();
+            SCIdS = (*it)->SCIdS();
+            frequency = (*it)->getEnsemble()->frequency();
+
+            settings.setValue("SID", SId.value);
+            settings.setValue("SCIdS", SCIdS);
+            settings.setValue("Frequency", frequency);
+        }
+    }
+
+    serviceList->save(settings);
+
+    settings.sync();
+}
+
+void MainWindow::printServiceList()
+{
+    for (ServiceListConstIterator it = serviceList->serviceListBegin(); it != serviceList->serviceListEnd(); ++it)
+    {
+        qDebug("0x%X [%d] %s", (*it)->SId().value, (*it)->SCIdS(), (*it)->label().toLocal8Bit().data());
+        for (int e = 0; e < (*it)->numEnsembles(); ++e)
+        {
+            const EnsembleListItem * ensPtr = (*it)->getEnsemble(e);
+            qDebug("\t0x%X %s @ %d", ensPtr->ueid(), ensPtr->label().toLocal8Bit().data(), ensPtr->frequency());
+        }
+    }
 }
 

@@ -20,10 +20,20 @@
 #include "motdecoder.h"
 #include "audiodecoder.h"
 #include "audiooutput.h"
+#include "servicelist.h"
+#include "slmodel.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
+
+//enum class SLModelRole
+//{
+//    SID = Qt::UserRole+1,
+//    SCIDS,
+//    UEID,
+//    FREQ
+//};
 
 class MainWindow : public QMainWindow
 {
@@ -100,13 +110,17 @@ private:
     DabSId SId;
     uint32_t SCIdS = 0;
 
+    ServiceList * serviceList;
     QStandardItemModel * serviceListModel;
+    SLModel * slModel;
 
     void onServiceSelection();
     void onChannelSelection();
     void clearServiceList();
     void loadSettings();
     void saveSettings();
+
+    void printServiceList();
 };
 
 // this implementation allow scaling od SLS with the window

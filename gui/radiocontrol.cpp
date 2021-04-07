@@ -238,21 +238,32 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                     item.packetData.SCId = it->packetData.SCId;
                     item.packetData.packetAddress = it->packetData.packetAddress;
                     break;
-                default:
-                    qDebug("Service SID %4.4X: Unexpected transport mode %d", pServiceComp->SId.value, it->TMId);
-                    requestUpdate = true;
                 }
                 serviceIt->serviceComponents.append(item);
 
                 RadioControlServiceListEntry s;
-                s.frequency = ensemble.frequency;
-                s.ueid = ensemble.ueid;
+                s.ensemble.frequency = ensemble.frequency;
+                s.ensemble.ueid = ensemble.ueid;
+                s.ensemble.label = ensemble.label;
+                s.ensemble.labelShort = ensemble.labelShort;
                 s.SId = serviceIt->SId;
                 s.SCIdS = item.SCIdS;
                 s.label = item.label;
                 s.labelShort = item.labelShort;
                 s.pty = serviceIt->pty;
                 s.TMId = item.TMId;
+                switch (item.TMId)
+                {
+                case DabTMId::StreamAudio:
+                    s.bitRate = item.streamAudio.bitRate;
+                    break;
+                case DabTMId::StreamData:
+                    s.bitRate = item.streamData.bitRate;
+                    break;
+                case DabTMId::PacketData:
+                    s.bitRate = 0;
+                    break;
+                }
 
                 if ((serviceRequest.SId == serviceIt->SId.value) && (serviceRequest.SCIdS == item.SCIdS))
                 {

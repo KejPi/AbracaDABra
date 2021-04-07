@@ -86,8 +86,13 @@ Q_DECLARE_METATYPE(RadioControlEnsemble)
 struct RadioControlServiceListEntry
 {
     // Ensemble
-    uint32_t frequency;   // frequency of ensemble
-    uint32_t ueid;        // UEID of ensemble
+    struct
+    {
+        uint32_t frequency;   // frequency of ensemble
+        uint32_t ueid;        // UEID of ensemble
+        QString label;        // ensemble label
+        QString labelShort;   //
+    } ensemble;
 
     // Service
     DabSId SId;           // SId (contains ECC)
@@ -97,6 +102,7 @@ struct RadioControlServiceListEntry
     QString labelShort;   // short label
     DabPTy pty;           // programme type
     DabTMId TMId;         // Transport Mechanism Identifier
+    uint16_t bitRate;     // bitrate for Audio service and for Stream data service
 };
 
 Q_DECLARE_METATYPE(RadioControlServiceListEntry)

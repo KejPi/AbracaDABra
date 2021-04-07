@@ -245,9 +245,15 @@ add_executable(${TARGET}
     audiofifo.cpp
     audiooutput.h
     audiooutput.cpp
+    servicelist.h
+    servicelist.cpp    
+    slmodel.h
+    slmodel.cpp
+    slmodelitem.h
+    slmodelitem.cpp
     setupdialog.h
     setupdialog.cpp
-    setupdialog.ui
+    setupdialog.ui            
   )
 
 ### DAB library
