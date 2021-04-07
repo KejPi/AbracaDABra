@@ -138,8 +138,9 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         {
             QByteArray body;
             motObjList[motObjIdx].getBody(body);
-
+#if MOTDECODER_VERBOSE
             qDebug() << "MOT complete :)";
+#endif // MOTDECODER_VERBOSE
             emit motObjectComplete(body);
 
             //motObjList.removeAt(motObjIdx);
