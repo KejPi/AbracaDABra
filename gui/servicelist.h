@@ -74,6 +74,8 @@ public:
     bool operator==(const ServiceListItem & other);
     uint64_t getId() const { return calcId(m_sid.value, m_scids); }
     static uint64_t getId(const RadioControlServiceListEntry & item) { return calcId(item.SId.value, item.SCIdS); }
+#warning "Consider replacing RadioControlAudioService by RadioControlServiceListEntry"
+    static uint64_t getId(const RadioControlAudioService & item) { return calcId(item.SId.value, item.SCIdS); }
 private:    
     // Service
     DabSId m_sid;           // SId (contains ECC)

@@ -700,20 +700,30 @@ void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QMo
         {
             SId = (*it)->SId();
             SCIdS = (*it)->SCIdS();
-            frequency = (*it)->getEnsemble()->frequency();
+            uint32_t newFrequency = (*it)->getEnsemble()->frequency();
 
-            // change combo
-            int idx = 0;
-            dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
-            while (it != DabTables::channelList.constEnd()) {
-                if (it++.key() == frequency)
-                {
-                    break;
+            if (newFrequency != frequency)
+            {
+               frequency = newFrequency;
+
+                // change combo
+                int idx = 0;
+                dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
+                while (it != DabTables::channelList.constEnd()) {
+                    if (it++.key() == frequency)
+                    {
+                        break;
+                    }
+                    ++idx;
                 }
-                ++idx;
-            }
-            ui->channelCombo->setCurrentIndex(idx);
+                ui->channelCombo->setCurrentIndex(idx);
 
+                // reset UI
+                clearEnsembleInformationLabels();
+                ui->frequencyLabel->setText("Tuning...  ");
+                updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
+                updateSnrLevel(0);
+            }
             onServiceSelection();
             emit serviceRequest(frequency, SId.value, SCIdS);
         }
@@ -738,6 +748,7 @@ void MainWindow::audioServiceChanged(const RadioControlAudioService &s)
             return;
         }
         // set service name in UI until information arrives from decoder
+        ui->favoriteLabel->setActive(serviceList->isServiceFavorite(ServiceListItem::getId(s)));
         ui->serviceLabel->setText(s.label);
         ui->serviceLabel->setToolTip(QString("<b>Service:</b> %1<br>"
                                              "<b>Short label:</b> %2<br>"
@@ -828,8 +839,9 @@ void MainWindow::clearEnsembleInformationLabels()
 }
 
 void MainWindow::clearServiceInformationLabels()
-{
+{    
     ui->serviceLabel->setText("No service");
+    ui->favoriteLabel->setActive(false);
     ui->serviceLabel->setToolTip("No service playing");
     ui->programTypeLabel->setText("");
     ui->audioEncodingLabel->setText("");
