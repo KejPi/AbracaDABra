@@ -13,8 +13,6 @@
 #include "dabtables.h"
 #include "radiocontrol.h"
 
-#define RTLSDR_INPUT 1
-#define USE_DAB_LOGO_SLS 1
 #define USE_SLS_FRAME 1
 
 const QString appName("AbracaDABra");
@@ -177,7 +175,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->slsView->setMinimumSize(QSize(320, 240));
     ui->slsView->setFrameStyle(QFrame::NoFrame);
 #endif
-#if USE_DAB_LOGO_SLS
+
     QPixmap pic;
     if (pic.load(":/resources/sls_logo.png"))
     {
@@ -199,7 +197,6 @@ MainWindow::MainWindow(QWidget *parent)
     {
         qDebug() << "Unable to load :/resources/sls_logo.png";
     }
-#endif
     resize(minimumSizeHint());
 
     // threads
@@ -586,7 +583,6 @@ void MainWindow::onServiceSelection()
     dlDecoder->reset();
     ui->dynamicLabel->setText("");    
     motDecoder->reset();
-#if USE_DAB_LOGO_SLS
     QPixmap pic;
     if (pic.load(":/resources/sls_logo.png"))
     {
@@ -610,14 +606,6 @@ void MainWindow::onServiceSelection()
     {
         qDebug() << "Unable to load :/resources/sls_logo.png";
     }
-#else
-    QGraphicsScene * scene = ui->slsView->scene();
-    if (NULL != scene)
-    {
-        scene->clear();
-        delete scene;
-    }
-#endif
 }
 
 void MainWindow::clearServiceList()
@@ -956,7 +944,7 @@ void MainWindow::loadSettings()
         setupDialog->setInputDevice(static_cast<InputDeviceId>(inDevice));
         if ((static_cast<InputDeviceId>(inDevice) == inputDeviceId) && (InputDeviceId::RTLSDR == inputDeviceId))
         {   // channel is only restored for RTL SDR at the moment
-            SId.value = settings.value("SId", 0).toInt();
+            SId.value = settings.value("SID", 0).toInt();
             SCIdS = settings.value("SCIdS", 0).toInt();
 
             // we need to find the item in model and select it

@@ -27,14 +27,6 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-//enum class SLModelRole
-//{
-//    SID = Qt::UserRole+1,
-//    SCIDS,
-//    UEID,
-//    FREQ
-//};
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
