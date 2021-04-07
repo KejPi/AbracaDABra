@@ -28,13 +28,12 @@ class ServiceList : public QObject
 
 public:
     ServiceList(QObject * parent = 0);
-    ~ServiceList();
-
-    void clear();
+    ~ServiceList();    
 
     void addService(const RadioControlServiceListEntry & s);
     int numServices() const { return m_serviceList.size(); }
     int numEnsembles() const { return m_ensembleList.size(); }
+    void clear();
 
     ServiceListConstIterator serviceListBegin() const { return m_serviceList.cbegin();}
     ServiceListConstIterator serviceListEnd() const { return m_serviceList.cend();}
@@ -42,9 +41,8 @@ public:
     EnsembleListConstIterator ensembleListBegin() const { return m_ensembleList.cbegin();}
     EnsembleListConstIterator ensembleListEnd() const { return m_ensembleList.cend();}
     EnsembleListConstIterator findEnsemble(uint64_t id) const { return m_ensembleList.find(id); }
-
     void save(QSettings & settings);
-    void load(QSettings & settings);
+    void load(QSettings & settings);   
 signals:
     void serviceAdded(const ServiceListItem *);
     void ensembleAdded(const EnsembleListItem *);

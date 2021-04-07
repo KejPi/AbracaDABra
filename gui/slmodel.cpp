@@ -152,7 +152,13 @@ void SLModel::addEnsemble(const EnsembleListItem * e)
 
 void SLModel::clear()
 {
-
+    qDebug() << Q_FUNC_INFO;
+    beginResetModel();
+    // remove all items
+    delete rootItem;
+    // create new root
+    rootItem = new SLModelItem();
+    endResetModel();
 }
 
 void SLModel::sort(int column, Qt::SortOrder order)

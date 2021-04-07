@@ -74,8 +74,9 @@ private:
     QLabel * syncLabel;
     QLabel * snrLabel;
     QGraphicsPixmapItem * slsPixmapItem;
-//    QMenu * menu;
-//    QAction * setupAct;
+    QMenu * menu;
+    QAction * setupAct;
+    QAction * clearServiceListAct;
 //    QAction * scanAct;
 
     QThread * radioControlThr;

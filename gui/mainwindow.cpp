@@ -100,16 +100,18 @@ MainWindow::MainWindow(QWidget *parent)
     //setupButton->setText("...");    
     //setupButton->setArrowType(Qt::DownArrow);
 
-#if 0
+#if 1
     setupAct = new QAction("Setup", this);
     //setupAct->setStatusTip("Application settings");       // this is shown in status bar
     connect(setupAct, &QAction::triggered, setupDialog, &SetupDialog::show);
-    scanAct = new QAction("Band scan", this);
+    clearServiceListAct = new QAction("Clear service list", this);
+
+    //scanAct = new QAction("Band scan", this);
     //scanAct->setStatusTip("Seach for available service"); // this is shown in status bar
 
     menu = new QMenu(this);
     menu->addAction(setupAct);
-    menu->addAction(scanAct);
+    menu->addAction(clearServiceListAct);
 
     setupButton->setMenu(menu);
     //setupButton->setArrowType(Qt::UpArrow);
@@ -145,6 +147,8 @@ MainWindow::MainWindow(QWidget *parent)
     serviceListModel = new QStandardItemModel;
     slModel = new SLModel(serviceList, this);
     connect(serviceList, &ServiceList::serviceAdded, slModel, &SLModel::addService);
+    connect(clearServiceListAct, &QAction::triggered, serviceList, &ServiceList::clear);
+    connect(serviceList, &ServiceList::empty, slModel, &SLModel::clear);
     //ui->serviceListView->setHeaderHidden(true);
 
     //ui->serviceListView->setModel(serviceListModel);
