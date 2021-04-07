@@ -30,7 +30,7 @@ public:
     ServiceList(QObject * parent = 0);
     ~ServiceList();    
 
-    void addService(const RadioControlServiceListEntry & s);
+    void addService(const RadioControlServiceListEntry & s, bool fav = false);
     int numServices() const { return m_serviceList.size(); }
     int numEnsembles() const { return m_ensembleList.size(); }    
     void clear();
@@ -58,7 +58,7 @@ private:
 class ServiceListItem
 {
 public:
-    ServiceListItem(const RadioControlServiceListEntry & item);
+    ServiceListItem(const RadioControlServiceListEntry & item, bool fav = false);
 
     void addEnsemble(EnsembleListItem * ensPtr);
     void setFavorite(bool ena) { m_favorite = ena; }

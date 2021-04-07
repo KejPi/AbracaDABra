@@ -9,7 +9,7 @@ class SLModelItem
 {
 public:
     explicit SLModelItem(SLModelItem *parentItem = 0);
-    explicit SLModelItem(const ServiceListItem * sPtr, SLModelItem *parentItem = 0);
+    explicit SLModelItem(const ServiceListItem *sPtr, SLModelItem *parentItem = 0);
     explicit SLModelItem(const EnsembleListItem * ePtr, SLModelItem *parentItem = 0);
     ~SLModelItem();
 
@@ -22,8 +22,9 @@ public:
     int row() const;
     SLModelItem *parentItem();
     uint64_t getId() const;
-    bool isService() const;
+    bool isService() const;    
     bool isEnsemble() const;
+    bool isFavoriteService() const;
     void sort(Qt::SortOrder order);    
 
 private:

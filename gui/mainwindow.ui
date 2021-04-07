@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>553</width>
+    <width>629</width>
     <height>487</height>
    </rect>
   </property>
@@ -21,32 +21,58 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="5" column="0">
-     <widget class="QLabel" name="dynamicLabel">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>50</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>100</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>DL</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="serviceLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="serviceLabel">
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Service Name</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="FavoriteLabel" name="favoriteLabel">
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>☆</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="programTypeLabel">
+        <property name="text">
+         <string>Program Type</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="1" rowspan="4">
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
      </widget>
     </item>
-    <item row="2" column="2">
+    <item row="0" column="2">
      <layout class="QVBoxLayout" name="ensembleLayout">
       <item>
        <widget class="QLabel" name="ensembleLabel">
@@ -71,88 +97,7 @@
       </item>
      </layout>
     </item>
-    <item row="4" column="0">
-     <widget class="SLSView" name="slsView">
-      <property name="minimumSize">
-       <size>
-        <width>324</width>
-        <height>244</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="2" rowspan="3">
-     <widget class="QListView" name="serviceListView">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>180</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1" rowspan="5">
-     <widget class="Line" name="line">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="2">
-     <layout class="QHBoxLayout" name="channeLayout">
-      <item>
-       <widget class="QComboBox" name="channelCombo"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="frequencyLabel">
-        <property name="text">
-         <string>227.360 MHz</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="2" column="0">
-     <layout class="QVBoxLayout" name="serviceLayout">
-      <item>
-       <widget class="QLabel" name="serviceLabel">
-        <property name="font">
-         <font>
-          <pointsize>20</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Service Name</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="programTypeLabel">
-        <property name="text">
-         <string>Program Type</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="3" column="0">
+    <item row="1" column="0">
      <layout class="QHBoxLayout" name="audioLayout">
       <item>
        <widget class="QLabel" name="audioBitrateLabel">
@@ -196,6 +141,80 @@
       </item>
      </layout>
     </item>
+    <item row="1" column="2">
+     <layout class="QHBoxLayout" name="channeLayout">
+      <item>
+       <widget class="QComboBox" name="channelCombo"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="frequencyLabel">
+        <property name="text">
+         <string>227.360 MHz</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="0">
+     <widget class="SLSView" name="slsView">
+      <property name="minimumSize">
+       <size>
+        <width>324</width>
+        <height>244</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="dynamicLabel">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>DL</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2" rowspan="2">
+     <widget class="QListView" name="serviceListView">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>180</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -203,7 +222,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>553</width>
+     <width>629</width>
      <height>22</height>
     </rect>
    </property>
@@ -215,6 +234,11 @@
    <class>SLSView</class>
    <extends>QGraphicsView</extends>
    <header>mainwindow.h</header>
+  </customwidget>
+  <customwidget>
+   <class>FavoriteLabel</class>
+   <extends>QLabel</extends>
+   <header>favoritelabel.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

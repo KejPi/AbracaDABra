@@ -113,7 +113,8 @@ private:
     void loadSettings();
     void saveSettings();
 
-    void printServiceList();
+    void setFavoriteLabel(bool ena);
+    void favoriteToggled(bool checked);
 };
 
 // this implementation allow scaling od SLS with the window

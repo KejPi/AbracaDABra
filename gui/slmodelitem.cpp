@@ -15,7 +15,7 @@ SLModelItem::SLModelItem(const ServiceListItem *sPtr, SLModelItem *parent)
     m_servicePtr = sPtr;
 }
 
-SLModelItem::SLModelItem(const EnsembleListItem * ePtr, SLModelItem *parent)
+SLModelItem::SLModelItem(const EnsembleListItem *ePtr, SLModelItem *parent)
 {
     m_parentItem = parent;
     m_ensemblePtr = ePtr;
@@ -131,6 +131,11 @@ uint64_t SLModelItem::getId() const
 bool SLModelItem::isService() const
 {
     return (nullptr != m_servicePtr);
+}
+
+bool SLModelItem::isFavoriteService() const
+{
+    return ((nullptr != m_servicePtr) && m_servicePtr->isFavorite());
 }
 
 bool SLModelItem::isEnsemble() const

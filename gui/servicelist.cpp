@@ -27,7 +27,7 @@ void ServiceList::clear()
     emit empty();
 }
 
-void ServiceList::addService(const RadioControlServiceListEntry & s)
+void ServiceList::addService(const RadioControlServiceListEntry & s, bool fav)
 {
     bool newService = false;
     bool newEnsemble = false;
@@ -39,7 +39,7 @@ void ServiceList::addService(const RadioControlServiceListEntry & s)
     ServiceListIterator sit = m_serviceList.find(servId);
     if (m_serviceList.end() == sit)
     {  // not found
-        pService = new ServiceListItem(s);
+        pService = new ServiceListItem(s, fav);
         m_serviceList.insert(servId, pService);
         newService = true;
     }
@@ -106,6 +106,7 @@ void ServiceList::save(QSettings & settings)
         settings.setValue("SCIdS", (*it)->SCIdS());
         settings.setValue("Label", (*it)->label());
         settings.setValue("ShortLabel", (*it)->shortLabel());
+        settings.setValue("Fav", (*it)->isFavorite());
         settings.beginWriteArray("Ensemble", (*it)->numEnsembles());
         for (int e = 0; e < (*it)->numEnsembles(); ++e)
         {
@@ -145,6 +146,7 @@ void ServiceList::load(QSettings & settings)
         item.label = settings.value("Label").toString();
         item.labelShort = settings.value("ShortLabel").toString();
 
+        bool fav = settings.value("Fav").toBool();
         int numEns = settings.beginReadArray("Ensemble");
         for (int e = 0; e < numEns; ++e)
         {
@@ -164,21 +166,21 @@ void ServiceList::load(QSettings & settings)
             item.ensemble.label = settings.value("Label").toString();
             item.ensemble.labelShort = settings.value("ShortLabel").toString();
             //float snr = settings.value("SNR").toFloat();
-            addService(item);
+            addService(item, fav);
 
-        }
+        }       
         settings.endArray();
     }
     settings.endArray();
 }
 
-ServiceListItem::ServiceListItem(const RadioControlServiceListEntry & item)
+ServiceListItem::ServiceListItem(const RadioControlServiceListEntry & item, bool fav)
 {
     m_sid = item.SId;
     m_scids = item.SCIdS;
     m_label = item.label;
     m_shortLabel = item.labelShort;
-    m_favorite = false;
+    m_favorite = fav;
 }
 
 void ServiceListItem::addEnsemble(EnsembleListItem * ensPtr)

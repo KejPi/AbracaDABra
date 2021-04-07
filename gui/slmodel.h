@@ -31,9 +31,10 @@ public:
     uint64_t getId(const QModelIndex &index) const;
     bool isService(const QModelIndex &index) const;
     bool isEnsemble(const QModelIndex &index) const;
+    bool isFavoriteService(const QModelIndex &index) const;
 
 public slots:
-    void addService(const ServiceListItem * s);
+    void addService(const ServiceListItem *s);
     void addEnsemble(const EnsembleListItem * e);
     void clear();
 

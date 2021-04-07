@@ -242,6 +242,8 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
 
     // Connect signals
+    connect(ui->favoriteLabel, &FavoriteLabel::toggled, this, &MainWindow::favoriteToggled);
+
     connect(radioControl, &RadioControl::ensembleInformation, this, &MainWindow::updateEnsembleInfo, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::syncStatus, this, &MainWindow::updateSyncStatus, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::snrLevel, this, &MainWindow::updateSnrLevel, Qt::QueuedConnection);
@@ -578,8 +580,6 @@ void MainWindow::onChannelSelection()
 
     updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
     updateSnrLevel(0);
-
-    printServiceList();
 
     clearServiceList();
 
@@ -1007,16 +1007,12 @@ void MainWindow::saveSettings()
     settings.sync();
 }
 
-void MainWindow::printServiceList()
+
+void MainWindow::favoriteToggled(bool checked)
 {
-    for (ServiceListConstIterator it = serviceList->serviceListBegin(); it != serviceList->serviceListEnd(); ++it)
-    {
-        qDebug("0x%X [%d] %s", (*it)->SId().value, (*it)->SCIdS(), (*it)->label().toLocal8Bit().data());
-        for (int e = 0; e < (*it)->numEnsembles(); ++e)
-        {
-            const EnsembleListItem * ensPtr = (*it)->getEnsemble(e);
-            qDebug("\t0x%X %s @ %d", ensPtr->ueid(), ensPtr->label().toLocal8Bit().data(), ensPtr->frequency());
-        }
-    }
+    QModelIndex current = ui->serviceListView->currentIndex();
+    const SLModel * model = reinterpret_cast<const SLModel*>(current.model());
+    uint64_t id = model->getId(current);
+    serviceList->setServiceFavorite(id, checked);
 }
 

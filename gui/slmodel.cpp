@@ -2,6 +2,7 @@
 #include "slmodel.h"
 
 #include <QStringList>
+#include <QFlags>
 
 SLModel::SLModel(ServiceList *sl, QObject *parent)
     : QAbstractItemModel(parent)
@@ -45,6 +46,16 @@ bool SLModel::isService(const QModelIndex &index) const
     return item->isService();
 }
 
+bool SLModel::isFavoriteService(const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return false;
+
+    SLModelItem *item = static_cast<SLModelItem*>(index.internalPointer());
+
+    return item->isFavoriteService();
+}
+
 bool SLModel::isEnsemble(const QModelIndex &index) const
 {
     if (!index.isValid())
@@ -69,7 +80,7 @@ Qt::ItemFlags SLModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
-        return 0;
+        return QFlags<Qt::ItemFlag>();
     }
 
     return QAbstractItemModel::flags(index);
@@ -136,7 +147,7 @@ int SLModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-void SLModel::addService(const ServiceListItem * s)
+void SLModel::addService(const ServiceListItem *s)
 {  // new service in service list
     beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
     rootItem->appendChild(new SLModelItem(s, rootItem));
@@ -145,7 +156,7 @@ void SLModel::addService(const ServiceListItem * s)
     sort(0);
 }
 
-void SLModel::addEnsemble(const EnsembleListItem * e)
+void SLModel::addEnsemble(const EnsembleListItem *e)
 { // go through items and add ensemble
 
 }
