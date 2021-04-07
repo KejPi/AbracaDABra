@@ -32,9 +32,11 @@ public:
 
     void addService(const RadioControlServiceListEntry & s);
     int numServices() const { return m_serviceList.size(); }
-    int numEnsembles() const { return m_ensembleList.size(); }
+    int numEnsembles() const { return m_ensembleList.size(); }    
     void clear();
 
+    void setServiceFavorite(uint64_t servId, bool ena);
+    bool isServiceFavorite(uint64_t servId) const;
     ServiceListConstIterator serviceListBegin() const { return m_serviceList.cbegin();}
     ServiceListConstIterator serviceListEnd() const { return m_serviceList.cend();}
     ServiceListConstIterator findService(uint64_t id) const { return m_serviceList.find(id); }
@@ -59,12 +61,14 @@ public:
     ServiceListItem(const RadioControlServiceListEntry & item);
 
     void addEnsemble(EnsembleListItem * ensPtr);
+    void setFavorite(bool ena) { m_favorite = ena; }
 
     DabSId SId() const { return m_sid; }
     uint8_t SCIdS() const { return m_scids; }
     QString label() const { return m_label; }
     QString shortLabel() const { return m_shortLabel; }
     int numEnsembles() const { return m_ensembleList.size(); }
+    bool isFavorite() const { return m_favorite; }
     const EnsembleListItem * getEnsemble(int num = -1) const;
 
     bool operator==(const ServiceListItem & other);
@@ -76,6 +80,7 @@ private:
     uint8_t m_scids;        // service component ID within the service
     QString m_label;        // Service label
     QString m_shortLabel;   // Short label
+    bool m_favorite;        // Favorite service
     uint16_t m_bitRate;     // Service bitrate
 
     QList<EnsembleListItem *> m_ensembleList;

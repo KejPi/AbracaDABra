@@ -76,6 +76,25 @@ void ServiceList::addService(const RadioControlServiceListEntry & s)
     }
 }
 
+void ServiceList::setServiceFavorite(uint64_t servId, bool ena)
+{
+    ServiceListIterator sit = m_serviceList.find(servId);
+    if (m_serviceList.end() != sit)
+    {   // found
+        (*sit)->setFavorite(ena);
+    }
+}
+
+bool ServiceList::isServiceFavorite(uint64_t servId) const
+{
+    ServiceListConstIterator sit = m_serviceList.find(servId);
+    if (m_serviceList.end() != sit)
+    {   // found
+        return (*sit)->isFavorite();
+    }
+    return false;
+}
+
 void ServiceList::save(QSettings & settings)
 {
     settings.beginWriteArray("ServiceList", m_serviceList.size());
@@ -159,6 +178,7 @@ ServiceListItem::ServiceListItem(const RadioControlServiceListEntry & item)
     m_scids = item.SCIdS;
     m_label = item.label;
     m_shortLabel = item.labelShort;
+    m_favorite = false;
 }
 
 void ServiceListItem::addEnsemble(EnsembleListItem * ensPtr)
@@ -169,7 +189,6 @@ void ServiceListItem::addEnsemble(EnsembleListItem * ensPtr)
         m_ensembleList.append(ensPtr);
     }
 }
-
 
 bool ServiceListItem::operator==(const ServiceListItem & other)
 {

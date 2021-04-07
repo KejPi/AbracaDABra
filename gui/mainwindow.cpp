@@ -114,9 +114,14 @@ MainWindow::MainWindow(QWidget *parent)
     menu->addAction(clearServiceListAct);
 
     setupButton->setMenu(menu);
-    //setupButton->setArrowType(Qt::UpArrow);
+    //setupButton->setArrowType(Qt::DownArrow);
     setupButton->setText(QString(QChar(0x22EF)));    // MIDLINE horizontal ellipsis
     setupButton->setPopupMode(QToolButton::InstantPopup);
+
+    //setupButton->setStyleSheet(QString("QPushButton::menu-indicator{width:0px;}"));
+    //setupButton->setStyleSheet(QString("QPushButton::menu-indicator{image:none;}"));
+    //setupButton->setStyleSheet(QString("QToolButton::menu-arrow {image:none;}"));
+
 #else
     setupButton->setToolTip("Settings");
     setupButton->setText(QString(QChar(0x205D)));    // TRICOLON

@@ -1,4 +1,5 @@
 #include <QStringList>
+#include <QFont>
 
 #include "slmodelitem.h"
 #include "slmodel.h"
@@ -79,7 +80,22 @@ QVariant SLModelItem::data(int column, int role) const
             }
 
             break;
-        }
+//        case Qt::FontRole:
+//            QFont f = QFont();
+//            if (nullptr != m_servicePtr)
+//            {  // service item
+//                if (0x2431 == m_servicePtr->SId().value)
+//                {
+//                    f.setBold(true);
+//                }
+//                else
+//                {
+//                    f.setBold(false);
+//                }
+//                return QVariant(f);
+//            }
+//            break;
+        }        
     }
     return QVariant();
 }
