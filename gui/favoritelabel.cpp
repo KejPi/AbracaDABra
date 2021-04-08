@@ -2,22 +2,32 @@
 
 FavoriteLabel::FavoriteLabel(QWidget *parent) : QLabel(parent)
 {
-    setStyleSheet("color:rgb(127, 127 , 127)");
-    setText(QChar(0x2606));
+    // SVG does not work correctly on Win (blurry)
+    setScaledContents(false);
+    if (!picActive.load(":/resources/star20.png"))
+    {
+        QPixmap picActive(20,20);
+        picActive.fill(Qt::transparent);
+    }
+    if (!picNoactive.load(":/resources/starEmpty20.png"))
+    {
+        QPixmap picNoactive(20,20);
+        picNoactive.fill(Qt::transparent);
+    }
 }
 
 void FavoriteLabel::setActive(bool ena)
 {
     if (ena)
     {
-        setStyleSheet("color:rgb(0,0,0)");
-        setText(QChar(0x2605));
+        setPixmap(picActive);
+        setToolTip(QString("Click to remove service from favourites"));
     }
     else
     {
-        setStyleSheet("color:rgb(127,127,127)");
-        setText(QChar(0x2606));
-    }
+        setPixmap(picNoactive);
+        setToolTip(QString("Click to add service to favourites"));
+    }    
     active = ena;
 
 }

@@ -17,6 +17,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent*);
 private:
     bool active = false;
+    QPixmap picActive;
+    QPixmap picNoactive;
 };
 
 #endif // FAVORITELABEL_H

@@ -1,5 +1,6 @@
 #include <QStringList>
 #include <QFont>
+#include <QIcon>
 
 #include "slmodelitem.h"
 #include "slmodel.h"
@@ -13,12 +14,14 @@ SLModelItem::SLModelItem(const ServiceListItem *sPtr, SLModelItem *parent)
 {
     m_parentItem = parent;
     m_servicePtr = sPtr;
+    loadIcon();
 }
 
 SLModelItem::SLModelItem(const EnsembleListItem *ePtr, SLModelItem *parent)
 {
     m_parentItem = parent;
     m_ensemblePtr = ePtr;
+    loadIcon();
 }
 
 
@@ -50,7 +53,7 @@ int SLModelItem::columnCount() const
 
 QVariant SLModelItem::data(int column, int role) const
 {
-    if (column == 0)
+    if (0 == column)
     {
         switch (role)
         {
@@ -80,24 +83,41 @@ QVariant SLModelItem::data(int column, int role) const
             }
 
             break;
-//        case Qt::FontRole:
-//            QFont f = QFont();
-//            if (nullptr != m_servicePtr)
-//            {  // service item
-//                if (0x2431 == m_servicePtr->SId().value)
-//                {
-//                    f.setBold(true);
-//                }
-//                else
-//                {
-//                    f.setBold(false);
-//                }
-//                return QVariant(f);
-//            }
-//            break;
+        case Qt::DecorationRole:
+        {
+            if ((nullptr != m_servicePtr) && (m_servicePtr->isFavorite()))
+            {
+                return QVariant(favIcon);
+            }
+            else
+            {
+                return QVariant(noIcon);
+            }
+            return QVariant();
+        }
+        break;
         }        
     }
     return QVariant();
+}
+
+void SLModelItem::loadIcon()
+{
+    QPixmap nopic(20,20);
+    nopic.fill(Qt::transparent);
+    noIcon = QIcon(nopic);
+
+    QPixmap pic;
+    if (pic.load(":/resources/star.svg"))
+    {
+        favIcon = QIcon(pic);
+    }
+    else
+    {
+        favIcon = noIcon;
+        qDebug() << "Unable to load :/resources/star.svg";
+    }
+
 }
 
 SLModelItem *SLModelItem::parentItem()
@@ -161,13 +181,21 @@ void SLModelItem::sort(Qt::SortOrder order)
     if (Qt::AscendingOrder == order)
     {
         std::sort(m_childItems.begin(), m_childItems.end(), [](SLModelItem* a, SLModelItem* b) {
-            return a->label() < b->label();
+            if ((a->isFavoriteService() && b->isFavoriteService()) || (!a->isFavoriteService() && !b->isFavoriteService()))
+                return a->label() < b->label();
+            if (a->isFavoriteService())
+                return true;           
+            return false;
         });
     }
     else
     {
         std::sort(m_childItems.begin(), m_childItems.end(), [](SLModelItem* a, SLModelItem* b) {
-            return a->label() > b->label();
+            if ((a->isFavoriteService() && b->isFavoriteService()) || (!a->isFavoriteService() && !b->isFavoriteService()))
+                return a->label() > b->label();
+            if (b->isFavoriteService())
+                return true;
+            return false;
         });
     }
 }

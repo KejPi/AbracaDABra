@@ -1,6 +1,9 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
   <file>resources/sls_logo.png</file>
+  <file>resources/star.svg</file>
+  <file>resources/star20.png</file>
+  <file>resources/starEmpty20.png</file>
 </qresource>
 </RCC>
 

@@ -72,10 +72,11 @@ public:
     const EnsembleListItem * getEnsemble(int num = -1) const;
 
     bool operator==(const ServiceListItem & other);
-    uint64_t getId() const { return calcId(m_sid.value, m_scids); }
-    static uint64_t getId(const RadioControlServiceListEntry & item) { return calcId(item.SId.value, item.SCIdS); }
+    uint64_t getId() const { return getId(m_sid.value, m_scids); }
+    static uint64_t getId(const RadioControlServiceListEntry & item) { return getId(item.SId.value, item.SCIdS); }
 #warning "Consider replacing RadioControlAudioService by RadioControlServiceListEntry"
-    static uint64_t getId(const RadioControlAudioService & item) { return calcId(item.SId.value, item.SCIdS); }
+    static uint64_t getId(const RadioControlAudioService & item) { return getId(item.SId.value, item.SCIdS); }
+    static uint64_t getId(uint32_t sid, uint8_t scids) { return ((uint64_t(scids)<<32) | sid); }
 private:    
     // Service
     DabSId m_sid;           // SId (contains ECC)
@@ -88,9 +89,7 @@ private:
     QList<EnsembleListItem *> m_ensembleList;
 
     ServiceListItem() = delete;           // disabled
-    QList<EnsembleListItem *>::iterator findEnsemble(uint64_t id);
-
-    static uint64_t calcId(uint32_t sid, uint8_t scids) { return ((uint64_t(scids)<<32) | sid); }
+    QList<EnsembleListItem *>::iterator findEnsemble(uint64_t id);   
 };
 
 
@@ -110,8 +109,9 @@ public:
     int numServices() const { return m_serviceList.size(); }
     const ServiceListItem * getService(int num = 0) const;
 
-    uint64_t getId() const { return calcId(m_ueid, m_frequency); }
-    static uint64_t getId(const RadioControlServiceListEntry & item) { return calcId(item.ensemble.ueid, item.ensemble.frequency); }
+    uint64_t getId() const { return getId(m_ueid, m_frequency); }
+    static uint64_t getId(const RadioControlServiceListEntry & item) { return getId(item.ensemble.ueid, item.ensemble.frequency); }
+    static uint64_t getId(uint32_t ueid, uint32_t freq) { return ((uint64_t(freq)<<32) | ueid); }
 
     bool operator==(const EnsembleListItem & other);
 private:
@@ -126,7 +126,6 @@ private:
     EnsembleListItem() = delete;           // disabled
     QList<ServiceListItem *>::iterator findService(uint64_t id);
 
-    static uint64_t calcId(uint32_t ueid, uint32_t freq) { return ((uint64_t(freq)<<32) | ueid); }
 };
 
 

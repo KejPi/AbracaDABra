@@ -3,6 +3,7 @@
 
 #include <QList>
 #include <QVariant>
+#include <QIcon>
 #include "servicelist.h"
 
 class SLModelItem
@@ -33,8 +34,12 @@ private:
 
     const ServiceListItem * m_servicePtr = nullptr;
     const EnsembleListItem * m_ensemblePtr = nullptr;
+    QIcon favIcon;
+    QIcon noIcon;
 
     QString label();
+    void loadIcon();
+
 };
 
 #endif // SLMODELITEM_H

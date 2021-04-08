@@ -128,12 +128,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(setupButton, &QToolButton::clicked, setupDialog, &SetupDialog::show);
 #endif
 
-
-
     QGridLayout * layout = new QGridLayout(widget);
     layout->addWidget(timeLabel, 0,0, Qt::AlignVCenter | Qt::AlignLeft);
     layout->addLayout(signalQualityLayout, 0,1,Qt::AlignVCenter | Qt::AlignRight);
-    layout->addWidget(setupButton, 0,2,Qt::AlignVCenter | Qt::AlignRight);    
+    layout->addWidget(setupButton, 0,2,Qt::AlignVCenter | Qt::AlignRight);
+    //layout->addWidget(new QLabel(QChar(0x2699)), 0,3,Qt::AlignVCenter | Qt::AlignRight);
     layout->setColumnStretch(0, 100);
     layout->setSpacing(20);
     ui->statusbar->addWidget(widget,1);   
@@ -141,7 +140,6 @@ MainWindow::MainWindow(QWidget *parent)
     // set fonts
     QFont f;
     f.setPointSize(qRound(1.5 * ui->programTypeLabel->fontInfo().pointSize()));
-    //    f.setWeight(75);
     ui->ensembleLabel->setFont(f);
     f.setBold(true);
     ui->serviceLabel->setFont(f);
@@ -689,9 +687,17 @@ void MainWindow::onRawFileStop()
 
 void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
+    //if (current == previous) return;
     //Q_UNUSED(previous);
     //qDebug() << Q_FUNC_INFO << current << previous;
     const SLModel * model = reinterpret_cast<const SLModel*>(current.model());
+
+    //qDebug() << current << model->getId(current) << previous << model->getId(previous);
+    if (model->getId(current) == model->getId(previous))
+    {
+        return;
+    }
+
     if (model->isService(current))
     {
         //qDebug() << Q_FUNC_INFO << "isService ID =" << model->getId(current);
@@ -966,7 +972,8 @@ void MainWindow::loadSettings()
         if ((static_cast<InputDeviceId>(inDevice) == inputDeviceId) && (InputDeviceId::RTLSDR == inputDeviceId))
         {   // channel is only restored for RTL SDR at the moment
             SId.value = settings.value("SID", 0).toInt();
-            SCIdS = settings.value("SCIdS", 0).toInt();
+            SCIdS = settings.value("SCIdS", 0).toInt();            
+            uint64_t id = ServiceListItem::getId(SId.value, SCIdS);
 
             // we need to find the item in model and select it
             const SLModel * model = reinterpret_cast<const SLModel*>(ui->serviceListView->model());
@@ -974,18 +981,11 @@ void MainWindow::loadSettings()
             for (int r = 0; r < model->rowCount(); ++r)
             {
                 index = model->index(r, 0);
-                if (model->isService(index))
-                {
-                    ServiceListConstIterator it = serviceList->findService(model->getId(index));
-                    if (serviceList->serviceListEnd() != it)
-                    {
-                        if (((*it)->SId().value == SId.value) && ((*it)->SCIdS() == SCIdS) )
-                        {   // found
-                            ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
-                            ui->serviceListView->setFocus();
-                            break;
-                        }
-                    }
+                if (model->getId(index) == id)
+                {   // found
+                    ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
+                    ui->serviceListView->setFocus();
+                    break;
                 }
             }
         }
@@ -1022,9 +1022,24 @@ void MainWindow::saveSettings()
 
 void MainWindow::favoriteToggled(bool checked)
 {
-    QModelIndex current = ui->serviceListView->currentIndex();
+    QModelIndex current = ui->serviceListView->currentIndex();            
     const SLModel * model = reinterpret_cast<const SLModel*>(current.model());
     uint64_t id = model->getId(current);
     serviceList->setServiceFavorite(id, checked);
+
+    slModel->sort(0);
+
+    // find new position of current service and select it
+    QModelIndex index;
+    for (int r = 0; r < model->rowCount(); ++r)
+    {
+        index = model->index(r, 0);
+        if (model->getId(index) == id)
+        {   // found
+            ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
+            ui->serviceListView->setFocus();
+            break;
+        }
+    }
 }
 
