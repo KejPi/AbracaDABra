@@ -147,7 +147,6 @@ MainWindow::MainWindow(QWidget *parent)
     // service list
     serviceList = new ServiceList;
 
-    serviceListModel = new QStandardItemModel;
     slModel = new SLModel(serviceList, this);
     connect(serviceList, &ServiceList::serviceAdded, slModel, &SLModel::addService);
     connect(clearServiceListAct, &QAction::triggered, serviceList, &ServiceList::clear);
@@ -230,7 +229,7 @@ MainWindow::MainWindow(QWidget *parent)
     audioDecoderThr->start();
 
     audioOutput = new AudioOutput(&audioBuffer);
-#if (!defined AUDIOOUTPUT_USE_RTAUDIO) &&  (!defined AUDIOOUTPUT_USE_PORTAUDIO)
+#if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
     audioOutThr = new QThread(this);    
     audioOutThr->setObjectName("audioOutThr");
     audioOutput->moveToThread(audioOutThr);
@@ -308,8 +307,6 @@ MainWindow::~MainWindow()
 
     delete motDecoder;
     delete dlDecoder;
-
-    clearServiceList();
 
     delete serviceList;
 
@@ -424,48 +421,6 @@ void MainWindow::updateServiceList(const RadioControlServiceListEntry & slEntry)
 
     // add to service list
     serviceList->addService(slEntry);
-
-//    for (int n = 0; n<serviceListModel->rowCount(); ++n)
-//    {
-//        QStandardItem * item = serviceListModel->item(n, 0);
-//        QVariant data = item->data(Qt::UserRole);
-//        RadioControlServiceListEntry * servicePtr = reinterpret_cast<RadioControlServiceListEntry *>(data.value<void*>());
-//        if ((servicePtr->SId.value == slEntry.SId.value) && (servicePtr->SCIdS == slEntry.SCIdS))
-//        {  // found - remove item
-//           delete servicePtr;
-//           serviceListModel->removeRows(n, 1);
-//           break;
-//        }
-//    }
-//    //QStandardItem *parentItem = serviceListModel->invisibleRootItem();
-
-//    RadioControlServiceListEntry * newServiceListItem = new RadioControlServiceListEntry;
-//    *newServiceListItem = slEntry;
-//    QStandardItem *item = new QStandardItem(QString(newServiceListItem->label));
-//    QVariant v;
-//    v.setValue((void *)newServiceListItem);
-//    item->setData(v, Qt::UserRole);
-//    QString tooltip = QString("<b>Short label:</b> %1<br><b>SId:</b> 0x%2")
-//            .arg(newServiceListItem->labelShort)
-//            .arg( QString("%1").arg(newServiceListItem->SId.prog.countryServiceRef, 4, 16, QChar('0')).toUpper() );
-//    item->setData(tooltip, Qt::ToolTipRole);
-//    serviceListModel->appendRow(item);
-
-//    if (slEntry.SId.value & 0x1)
-//    {
-//        QStandardItem *item2 = new QStandardItem(QString("Test ensemble [11A]"));
-//        item->appendRow(item2);
-//        item2 = new QStandardItem(QString("Another ensemble [5D]"));
-//        item->appendRow(item2);
-//    }
-
-//    serviceListModel->sort(0);
-
-//    if (newServiceListItem->SId.value == SId.value)
-//    {
-//        ui->serviceListView->selectionModel()->setCurrentIndex(item->index(), QItemSelectionModel::Select | QItemSelectionModel::Current);
-//        ui->serviceListView->setFocus();
-//    }
 }
 
 void MainWindow::updateDL(const QString & dl)
@@ -579,8 +534,6 @@ void MainWindow::onChannelSelection()
     updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
     updateSnrLevel(0);
 
-    clearServiceList();
-
     onServiceSelection();
 }
 
@@ -613,23 +566,6 @@ void MainWindow::onServiceSelection()
     {
         qDebug() << "Unable to load :/resources/sls_logo.png";
     }
-}
-
-void MainWindow::clearServiceList()
-{
-    ui->serviceListView->setDisabled(true);
-    for (int n = 0; n < serviceListModel->rowCount(); ++n)
-    {
-        QStandardItem * item = serviceListModel->item(n, 0);
-        QVariant data = item->data(Qt::UserRole);
-        RadioControlServiceListEntry * servicePtr = reinterpret_cast<RadioControlServiceListEntry *>(data.value<void*>());
-        delete servicePtr;
-    }
-
-    // clear service list
-    serviceListModel->clear();
-
-    ui->serviceListView->setDisabled(false);
 }
 
 void MainWindow::on_channelCombo_currentIndexChanged(int index)

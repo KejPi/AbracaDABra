@@ -104,12 +104,10 @@ private:
     uint32_t SCIdS = 0;
 
     ServiceList * serviceList;
-    QStandardItemModel * serviceListModel;
     SLModel * slModel;
 
     void onServiceSelection();
     void onChannelSelection();
-    void clearServiceList();
     void loadSettings();
     void saveSettings();
 
