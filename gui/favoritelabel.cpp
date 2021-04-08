@@ -14,6 +14,7 @@ FavoriteLabel::FavoriteLabel(QWidget *parent) : QLabel(parent)
         QPixmap picNoactive(20,20);
         picNoactive.fill(Qt::transparent);
     }
+    setCursor(Qt::PointingHandCursor);
 }
 
 void FavoriteLabel::setActive(bool ena)
