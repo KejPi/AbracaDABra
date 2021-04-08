@@ -113,6 +113,7 @@ private:
 
     void setFavoriteLabel(bool ena);
     void favoriteToggled(bool checked);
+    void switchServiceSource();
 };
 
 // this implementation allow scaling od SLS with the window

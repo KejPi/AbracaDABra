@@ -180,7 +180,7 @@ MainWindow::MainWindow(QWidget *parent)
 #else
     ui->slsView->setMinimumSize(QSize(320, 240));
     ui->slsView->setFrameStyle(QFrame::NoFrame);
-#endif
+#endif    
 
     QPixmap pic;
     if (pic.load(":/resources/sls_logo.png"))
@@ -203,6 +203,18 @@ MainWindow::MainWindow(QWidget *parent)
     {
         qDebug() << "Unable to load :/resources/sls_logo.png";
     }
+
+    if (pic.load(":/resources/broadcast.png"))
+    {
+        ui->switchSourceLabel->setPixmap(pic);
+    }
+    else
+    {
+        qDebug() << "Unable to load :/resources/broadcast.png";
+    }
+    ui->switchSourceLabel->setToolTip("Click to change service source (ensemble)");
+    ui->switchSourceLabel->setHidden(true);
+
     resize(minimumSizeHint());
 
     // threads
@@ -240,6 +252,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Connect signals
     connect(ui->favoriteLabel, &FavoriteLabel::toggled, this, &MainWindow::favoriteToggled);
+    connect(ui->switchSourceLabel, &ClickableLabel::clicked, this, &MainWindow::switchServiceSource);
 
     connect(radioControl, &RadioControl::ensembleInformation, this, &MainWindow::updateEnsembleInfo, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::syncStatus, this, &MainWindow::updateSyncStatus, Qt::QueuedConnection);
@@ -542,7 +555,8 @@ void MainWindow::onServiceSelection()
     clearServiceInformationLabels();
     dlDecoder->reset();
     ui->dynamicLabel->setText("");    
-    motDecoder->reset();
+    ui->switchSourceLabel->setHidden(true);
+    motDecoder->reset();    
     QPixmap pic;
     if (pic.load(":/resources/sls_logo.png"))
     {
@@ -660,12 +674,13 @@ void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QMo
                 }
                 ui->channelCombo->setCurrentIndex(idx);
 
+
                 // reset UI
                 clearEnsembleInformationLabels();
                 ui->frequencyLabel->setText("Tuning...  ");
                 updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
                 updateSnrLevel(0);
-            }
+            }                                           
             onServiceSelection();
             emit serviceRequest(frequency, SId.value, SCIdS);
         }
@@ -690,7 +705,10 @@ void MainWindow::audioServiceChanged(const RadioControlAudioService &s)
             return;
         }
         // set service name in UI until information arrives from decoder
-        ui->favoriteLabel->setActive(serviceList->isServiceFavorite(ServiceListItem::getId(s)));
+        uint64_t id = ServiceListItem::getId(s);
+        ui->favoriteLabel->setActive(serviceList->isServiceFavorite(id));
+        ui->switchSourceLabel->setVisible(serviceList->numEnsembles(id)>1);
+
         ui->serviceLabel->setText(s.label);
         ui->serviceLabel->setToolTip(QString("<b>Service:</b> %1<br>"
                                              "<b>Short label:</b> %2<br>"
@@ -703,7 +721,8 @@ void MainWindow::audioServiceChanged(const RadioControlAudioService &s)
                                      .arg(QString("%1").arg(s.SId.prog.countryServiceRef, 4, 16, QChar('0')).toUpper() )
                                      .arg(s.SCIdS)
                                      .arg(DabTables::getLangName(s.lang))
-                                     .arg(DabTables::getCountryName(s.SId.value)));
+                                     .arg(DabTables::getCountryName(s.SId.value)));        
+
         if ((s.pty.d != 0) && (s.pty.d != s.pty.s))
         {   // dynamic PTy available != static PTy
             ui->programTypeLabel->setText(DabTables::getPtyName(s.pty.d));
@@ -979,3 +998,52 @@ void MainWindow::favoriteToggled(bool checked)
     }
 }
 
+void MainWindow::switchServiceSource()
+{
+    QModelIndex current = ui->serviceListView->currentIndex();
+    const SLModel * model = reinterpret_cast<const SLModel*>(current.model());
+    uint64_t id = model->getId(current);
+    ServiceListConstIterator it = serviceList->findService(id);
+    if (it != serviceList->serviceListEnd())
+    {
+        int newFrequency = 0;
+        for (int e =  0; e < (*it)->numEnsembles(); ++e)
+        {
+            if ((*it)->getEnsemble(e)->frequency() == frequency)
+            {   // found current ensemble
+                e = (e+1) % (*it)->numEnsembles();  // next ensemble
+                newFrequency = (*it)->getEnsemble(e)->frequency();
+                break;
+            }
+        }
+        if (newFrequency)
+        {
+            if (newFrequency != frequency)
+            {
+               frequency = newFrequency;
+
+                // change combo
+                int idx = 0;
+                dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
+                while (it != DabTables::channelList.constEnd()) {
+                    if (it++.key() == frequency)
+                    {
+                        break;
+                    }
+                    ++idx;
+                }
+                ui->channelCombo->setCurrentIndex(idx);
+
+
+                // reset UI
+                clearEnsembleInformationLabels();
+                ui->frequencyLabel->setText("Tuning...  ");
+                updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
+                updateSnrLevel(0);
+            }
+            frequency = newFrequency;
+            onServiceSelection();
+            emit serviceRequest(frequency, SId.value, SCIdS);
+        }
+    }
+}

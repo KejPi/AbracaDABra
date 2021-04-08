@@ -95,6 +95,23 @@ bool ServiceList::isServiceFavorite(uint64_t servId) const
     return false;
 }
 
+int ServiceList::numEnsembles(uint64_t servId) const
+{
+    if (0 == servId)
+    {
+        return m_ensembleList.size();
+    }
+    else
+    {
+        ServiceListConstIterator sit = m_serviceList.find(servId);
+        if (m_serviceList.end() != sit)
+        {   // found
+            return (*sit)->numEnsembles();
+        }
+        return 0;
+    }
+}
+
 void ServiceList::save(QSettings & settings)
 {
     settings.beginWriteArray("ServiceList", m_serviceList.size());

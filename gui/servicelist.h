@@ -32,7 +32,7 @@ public:
 
     void addService(const RadioControlServiceListEntry & s, bool fav = false);
     int numServices() const { return m_serviceList.size(); }
-    int numEnsembles() const { return m_ensembleList.size(); }    
+    int numEnsembles(uint64_t servId = 0) const;
     void clear();
 
     void setServiceFavorite(uint64_t servId, bool ena);
