@@ -28,11 +28,12 @@ class ServiceList : public QObject
 
 public:
     ServiceList(QObject * parent = 0);
-    ~ServiceList();    
+    ~ServiceList();
 
-    void addService(const RadioControlServiceListEntry & s, bool fav = false);
+    void addService(const RadioControlServiceListEntry & s, bool fav = false, int currentEns = 0);
     int numServices() const { return m_serviceList.size(); }
     int numEnsembles(uint64_t servId = 0) const;
+    int currentEnsembleIdx(uint64_t servId) const;
     void clear();
 
     void setServiceFavorite(uint64_t servId, bool ena);
@@ -58,7 +59,7 @@ private:
 class ServiceListItem
 {
 public:
-    ServiceListItem(const RadioControlServiceListEntry & item, bool fav = false);
+    ServiceListItem(const RadioControlServiceListEntry & item, bool fav = false, int currentEns = 0);
 
     void addEnsemble(EnsembleListItem * ensPtr);
     void setFavorite(bool ena) { m_favorite = ena; }
@@ -67,9 +68,11 @@ public:
     uint8_t SCIdS() const { return m_scids; }
     QString label() const { return m_label; }
     QString shortLabel() const { return m_shortLabel; }
-    int numEnsembles() const { return m_ensembleList.size(); }
+    int numEnsembles() const { return m_ensembleList.size(); }   
     bool isFavorite() const { return m_favorite; }
-    const EnsembleListItem * getEnsemble(int num = -1) const;
+    const EnsembleListItem * getEnsemble(int num = -1) const;         // returns ensemble idx (wraps over end of list)
+    const EnsembleListItem * switchEnsemble();                        // switches current ensemble, returns ensemble
+    uint32_t currentEnsembleIdx() const { return m_currentEnsemble; } // used to save service list
 
     bool operator==(const ServiceListItem & other);
     uint64_t getId() const { return getId(m_sid.value, m_scids); }
@@ -85,11 +88,12 @@ private:
     QString m_shortLabel;   // Short label
     bool m_favorite;        // Favorite service
     uint16_t m_bitRate;     // Service bitrate
+    int m_currentEnsemble;
 
     QList<EnsembleListItem *> m_ensembleList;
 
     ServiceListItem() = delete;           // disabled
-    QList<EnsembleListItem *>::iterator findEnsemble(uint64_t id);   
+    QList<EnsembleListItem *>::iterator findEnsemble(uint64_t id);
 };
 
 

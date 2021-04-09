@@ -705,10 +705,24 @@ void MainWindow::audioServiceChanged(const RadioControlAudioService &s)
             return;
         }
         // set service name in UI until information arrives from decoder
-        uint64_t id = ServiceListItem::getId(s);
-        ui->favoriteLabel->setActive(serviceList->isServiceFavorite(id));
-        ui->switchSourceLabel->setVisible(serviceList->numEnsembles(id)>1);
 
+        uint64_t id = ServiceListItem::getId(s);
+        ServiceListConstIterator it = serviceList->findService(id);
+        if (it != serviceList->serviceListEnd())
+        {
+            ui->favoriteLabel->setActive((*it)->isFavorite());
+            int numEns = (*it)->numEnsembles();
+            if (numEns > 1)
+            {
+                ui->switchSourceLabel->setVisible(true);
+                int current = (*it)->currentEnsembleIdx();
+                const EnsembleListItem * ens = (*it)->getEnsemble(current+1);  // get next ensemble
+                ui->switchSourceLabel->setToolTip(QString("<b>Ensemble %1/%2</b><br>Click for switching to:<br><i>%3</i>")
+                                                  .arg(current+1)
+                                                  .arg(numEns)
+                                                  .arg(ens->label()));
+            }
+        }
         ui->serviceLabel->setText(s.label);
         ui->serviceLabel->setToolTip(QString("<b>Service:</b> %1<br>"
                                              "<b>Short label:</b> %2<br>"
@@ -1006,16 +1020,8 @@ void MainWindow::switchServiceSource()
     ServiceListConstIterator it = serviceList->findService(id);
     if (it != serviceList->serviceListEnd())
     {
-        int newFrequency = 0;
-        for (int e =  0; e < (*it)->numEnsembles(); ++e)
-        {
-            if ((*it)->getEnsemble(e)->frequency() == frequency)
-            {   // found current ensemble
-                e = (e+1) % (*it)->numEnsembles();  // next ensemble
-                newFrequency = (*it)->getEnsemble(e)->frequency();
-                break;
-            }
-        }
+        // swith to next ensemble &  get ensemble frequency
+        uint32_t newFrequency = (*it)->switchEnsemble()->frequency();
         if (newFrequency)
         {
             if (newFrequency != frequency)

@@ -27,7 +27,7 @@ void ServiceList::clear()
     emit empty();
 }
 
-void ServiceList::addService(const RadioControlServiceListEntry & s, bool fav)
+void ServiceList::addService(const RadioControlServiceListEntry & s, bool fav, int currentEns)
 {
     bool newService = false;
     bool newEnsemble = false;
@@ -39,7 +39,7 @@ void ServiceList::addService(const RadioControlServiceListEntry & s, bool fav)
     ServiceListIterator sit = m_serviceList.find(servId);
     if (m_serviceList.end() == sit)
     {  // not found
-        pService = new ServiceListItem(s, fav);
+        pService = new ServiceListItem(s, fav, currentEns);
         m_serviceList.insert(servId, pService);
         newService = true;
     }
@@ -112,6 +112,16 @@ int ServiceList::numEnsembles(uint64_t servId) const
     }
 }
 
+int ServiceList::currentEnsembleIdx(uint64_t servId) const
+{
+    ServiceListConstIterator sit = m_serviceList.find(servId);
+    if (m_serviceList.end() != sit)
+    {   // found
+        return (*sit)->currentEnsembleIdx();
+    }
+    return 0;
+}
+
 void ServiceList::save(QSettings & settings)
 {
     settings.beginWriteArray("ServiceList", m_serviceList.size());
@@ -124,6 +134,7 @@ void ServiceList::save(QSettings & settings)
         settings.setValue("Label", (*it)->label());
         settings.setValue("ShortLabel", (*it)->shortLabel());
         settings.setValue("Fav", (*it)->isFavorite());
+        settings.setValue("LastEns", (*it)->currentEnsembleIdx());
         settings.beginWriteArray("Ensemble", (*it)->numEnsembles());
         for (int e = 0; e < (*it)->numEnsembles(); ++e)
         {
@@ -164,6 +175,7 @@ void ServiceList::load(QSettings & settings)
         item.labelShort = settings.value("ShortLabel").toString();
 
         bool fav = settings.value("Fav").toBool();
+        int currentEns = settings.value("LastEns").toInt();
         int numEns = settings.beginReadArray("Ensemble");
         for (int e = 0; e < numEns; ++e)
         {
@@ -183,7 +195,7 @@ void ServiceList::load(QSettings & settings)
             item.ensemble.label = settings.value("Label").toString();
             item.ensemble.labelShort = settings.value("ShortLabel").toString();
             //float snr = settings.value("SNR").toFloat();
-            addService(item, fav);
+            addService(item, fav, currentEns);
 
         }       
         settings.endArray();
@@ -191,13 +203,14 @@ void ServiceList::load(QSettings & settings)
     settings.endArray();
 }
 
-ServiceListItem::ServiceListItem(const RadioControlServiceListEntry & item, bool fav)
+ServiceListItem::ServiceListItem(const RadioControlServiceListEntry & item, bool fav, int currentEns)
 {
     m_sid = item.SId;
     m_scids = item.SCIdS;
     m_label = item.label;
     m_shortLabel = item.labelShort;
     m_favorite = fav;
+    m_currentEnsemble = currentEns;
 }
 
 void ServiceListItem::addEnsemble(EnsembleListItem * ensPtr)
@@ -207,6 +220,15 @@ void ServiceListItem::addEnsemble(EnsembleListItem * ensPtr)
     {
         m_ensembleList.append(ensPtr);
     }
+}
+
+const EnsembleListItem *  ServiceListItem::switchEnsemble()
+{
+    if (m_ensembleList.size() > 0)
+    {
+        m_currentEnsemble = (m_currentEnsemble + 1) % m_ensembleList.size();
+    }
+    return m_ensembleList.at(m_currentEnsemble);
 }
 
 bool ServiceListItem::operator==(const ServiceListItem & other)
@@ -232,24 +254,14 @@ const EnsembleListItem * ServiceListItem::getEnsemble(int num) const
 {
     if (num < 0)
     {   // best ensemble
-        if (m_ensembleList.size())
-        {
-            return m_ensembleList.at(0);
-        }
-//        EnsembleListItem * ensPtr = m_ensembleList.at(0);
-//        for (int e = 0; e < m_ensembleList.size(); ++e)
-//        {
-//            //if (m_ensembleList.at(e)->)
-//        }
+#warning "Best ensemble to be implemented"
+        return m_ensembleList.at(m_currentEnsemble);
     }
     else
-    {
-        if (num < m_ensembleList.size())
-        {
-            return m_ensembleList.at(num);
-        }
+    {   // wrapping over the end
+        return m_ensembleList.at(num % m_ensembleList.size());
     }
-    return nullptr;
+    return m_ensembleList.at(0);
 }
 
 
