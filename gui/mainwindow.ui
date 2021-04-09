@@ -172,10 +172,23 @@
     <item row="1" column="2">
      <layout class="QHBoxLayout" name="channeLayout">
       <item>
+       <widget class="QLabel" name="channelLabel">
+        <property name="toolTip">
+         <string>Current channel</string>
+        </property>
+        <property name="text">
+         <string>13F</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QComboBox" name="channelCombo"/>
       </item>
       <item>
        <widget class="QLabel" name="frequencyLabel">
+        <property name="toolTip">
+         <string>Current frequency</string>
+        </property>
         <property name="text">
          <string>227.360 MHz</string>
         </property>

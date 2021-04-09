@@ -74,10 +74,12 @@ private:
     QLabel * syncLabel;
     QLabel * snrLabel;
     QGraphicsPixmapItem * slsPixmapItem;
+
     QMenu * menu;
     QAction * setupAct;
     QAction * clearServiceListAct;
-//    QAction * scanAct;
+    QAction * scanAct;
+    QAction * switchModeAct;
 
     QThread * radioControlThr;
     RadioControl * radioControl;
@@ -99,6 +101,7 @@ private:
     bool isPlaying = false;
     bool fileLooping = false;
     bool deviceChangeRequested = false;
+    bool expertMode = false;
     uint32_t frequency = 0;
     DabSId SId;
     uint32_t SCIdS = 0;
@@ -114,6 +117,8 @@ private:
     void setFavoriteLabel(bool ena);
     void favoriteToggled(bool checked);
     void switchServiceSource();
+    void switchMode();
+    void setExpertMode(bool ena);
 };
 
 // this implementation allow scaling od SLS with the window

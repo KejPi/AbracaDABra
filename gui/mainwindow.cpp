@@ -87,46 +87,27 @@ MainWindow::MainWindow(QWidget *parent)
     updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
 
     QToolButton * setupButton = new QToolButton(this);
-    //setupButton->setFixedSize(26, 26);
-    //setupButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
-    //setupButton->setText(QString(QChar(0x2699)));    // gear
-    //setupButton->setText(QString(QChar(0x22EE)));    // vertical ellipsis
-    //setupButton->setText(QString(QChar(0x2026)));    // horizontal ellipsis
-    //setupButton->setText(QString(QChar(0x22EF)));    // MIDLINE horizontal ellipsis    
-    //setupButton->setText(QString(QChar(0x205E)));    // VERTICAL FOUR DOTS
-    //setupButton->setFixedWidth(setupButton->height());
-
-    //setupButton->setIcon(QIcon())
-    //setupButton->setText("...");    
-    //setupButton->setArrowType(Qt::DownArrow);
-
-#if 1
-    setupAct = new QAction("Setup", this);
+    setupAct = new QAction("Setup...", this);
     //setupAct->setStatusTip("Application settings");       // this is shown in status bar
     connect(setupAct, &QAction::triggered, setupDialog, &SetupDialog::show);
     clearServiceListAct = new QAction("Clear service list", this);
 
-    //scanAct = new QAction("Band scan", this);
+    scanAct = new QAction("Band scan...", this);
     //scanAct->setStatusTip("Seach for available service"); // this is shown in status bar
+
+    switchModeAct = new QAction("Expert mode", this);
+    connect(switchModeAct, &QAction::triggered, this, &MainWindow::switchMode);
 
     menu = new QMenu(this);
     menu->addAction(setupAct);
+    menu->addAction(scanAct);
+    menu->addAction(switchModeAct);
     menu->addAction(clearServiceListAct);
 
     setupButton->setMenu(menu);
     //setupButton->setArrowType(Qt::DownArrow);
     setupButton->setText(QString(QChar(0x22EF)));    // MIDLINE horizontal ellipsis
     setupButton->setPopupMode(QToolButton::InstantPopup);
-
-    //setupButton->setStyleSheet(QString("QPushButton::menu-indicator{width:0px;}"));
-    //setupButton->setStyleSheet(QString("QPushButton::menu-indicator{image:none;}"));
-    //setupButton->setStyleSheet(QString("QToolButton::menu-arrow {image:none;}"));
-
-#else
-    setupButton->setToolTip("Settings");
-    setupButton->setText(QString(QChar(0x205D)));    // TRICOLON
-    connect(setupButton, &QToolButton::clicked, setupDialog, &SetupDialog::show);
-#endif
 
     QGridLayout * layout = new QGridLayout(widget);
     layout->addWidget(timeLabel, 0,0, Qt::AlignVCenter | Qt::AlignLeft);
@@ -160,7 +141,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->serviceListView->selectionModel(), &QItemSelectionModel::currentChanged, this, &MainWindow::serviceListCurrentChanged);
 
     // fill channel list
-    //ui->channelCombo->addItem("", 0);
     dabChannelList_t::const_iterator i = DabTables::channelList.constBegin();
     while (i != DabTables::channelList.constEnd()) {
         ui->channelCombo->addItem(i.value(), i.key());
@@ -369,7 +349,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::inputDeviceReady()
 {
-    ui->channelCombo->setEnabled(true);
+    ui->channelCombo->setEnabled(true);    
 }
 
 void MainWindow::updateEnsembleInfo(const RadioControlEnsemble &ens)
@@ -666,10 +646,12 @@ void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QMo
                 int idx = 0;
                 dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
                 while (it != DabTables::channelList.constEnd()) {
-                    if (it++.key() == frequency)
+                    if (it.key() == frequency)
                     {
+                        ui->channelLabel->setText(it.value());
                         break;
                     }
+                    ++it;
                     ++idx;
                 }
                 ui->channelCombo->setCurrentIndex(idx);
@@ -842,6 +824,7 @@ void MainWindow::changeInputDevice(const InputDeviceId & d)
             // tune to 0
             ui->channelCombo->setCurrentIndex(-1);
             ui->channelCombo->setDisabled(true);  // enabled when device is ready
+            ui->channelLabel->setText("");
         }
         else
         { // device is not playing
@@ -866,6 +849,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         // do nothing
         inputDevice = nullptr;
         ui->channelCombo->setDisabled(true);   // it will be enabled when device is ready
+        ui->channelLabel->setText("");
         //setupDialog->setInputDevice(inputDeviceId); // this emits device change
         break;
     case InputDeviceId::RTLSDR:
@@ -932,6 +916,8 @@ void MainWindow::loadSettings()
 
     // load servicelist
     serviceList->load(settings);
+    expertMode = settings.value("ExpertMode").toBool();
+    setExpertMode(expertMode);
 
     int inDevice = settings.value("inputDeviceId", int(InputDeviceId::UNDEFINED)).toInt();
     if (InputDeviceId::UNDEFINED != static_cast<InputDeviceId>(inDevice))
@@ -982,6 +968,7 @@ void MainWindow::saveSettings()
             settings.setValue("Frequency", frequency);
         }
     }
+    settings.setValue("ExpertMode", expertMode);
 
     serviceList->save(settings);
 
@@ -1032,10 +1019,12 @@ void MainWindow::switchServiceSource()
                 int idx = 0;
                 dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
                 while (it != DabTables::channelList.constEnd()) {
-                    if (it++.key() == frequency)
+                    if (it.key() == frequency)
                     {
+                        ui->channelLabel->setText(it.value());
                         break;
                     }
+                    ++it;
                     ++idx;
                 }
                 ui->channelCombo->setCurrentIndex(idx);
@@ -1052,4 +1041,24 @@ void MainWindow::switchServiceSource()
             emit serviceRequest(frequency, SId.value, SCIdS);
         }
     }
+}
+
+void MainWindow::switchMode()
+{   // toggle expert mode
+    expertMode = !expertMode;
+    setExpertMode(expertMode);
+}
+
+void MainWindow::setExpertMode(bool ena)
+{
+    if (ena)
+    {
+        switchModeAct->setText("Basic mode");
+    }
+    else
+    {
+        switchModeAct->setText("Expert mode");
+    }
+    ui->channelCombo->setVisible(ena);
+    ui->channelLabel->setVisible(!ena);
 }
