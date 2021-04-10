@@ -257,7 +257,10 @@ add_executable(${TARGET}
     slmodelitem.cpp
     setupdialog.h
     setupdialog.cpp
-    setupdialog.ui            
+    setupdialog.ui
+    bandscandialog.h
+    bandscandialog.cpp
+    bandscandialog.ui
   )
 
 ### DAB library

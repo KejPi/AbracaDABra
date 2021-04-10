@@ -78,7 +78,7 @@ private:
     QMenu * menu;
     QAction * setupAct;
     QAction * clearServiceListAct;
-    QAction * scanAct;
+    QAction * bandScanAct;
     QAction * switchModeAct;
 
     QThread * radioControlThr;
@@ -119,6 +119,7 @@ private:
     void switchServiceSource();
     void switchMode();
     void setExpertMode(bool ena);
+    void bandScan();
 };
 
 // this implementation allow scaling od SLS with the window

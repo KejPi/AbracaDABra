@@ -12,6 +12,7 @@
 #include "./ui_mainwindow.h"
 #include "dabtables.h"
 #include "radiocontrol.h"
+#include "bandscandialog.h"
 
 #define USE_SLS_FRAME 1
 
@@ -92,15 +93,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(setupAct, &QAction::triggered, setupDialog, &SetupDialog::show);
     clearServiceListAct = new QAction("Clear service list", this);
 
-    scanAct = new QAction("Band scan...", this);
+    bandScanAct = new QAction("Band scan...", this);
     //scanAct->setStatusTip("Seach for available service"); // this is shown in status bar
+    connect(bandScanAct, &QAction::triggered, this, &MainWindow::bandScan);
 
     switchModeAct = new QAction("Expert mode", this);
     connect(switchModeAct, &QAction::triggered, this, &MainWindow::switchMode);
 
     menu = new QMenu(this);
     menu->addAction(setupAct);
-    menu->addAction(scanAct);
+    menu->addAction(bandScanAct);
     menu->addAction(switchModeAct);
     menu->addAction(clearServiceListAct);
 
@@ -1061,4 +1063,13 @@ void MainWindow::setExpertMode(bool ena)
     }
     ui->channelCombo->setVisible(ena);
     ui->channelLabel->setVisible(!ena);
+}
+
+void MainWindow::bandScan()
+{
+    //BandScanDialog * dialog = new BandScanDialog(this);
+//    dialog->setModal(true);
+//    dialog->show();
+    BandScanDialog dialog(this);
+    qDebug() << Q_FUNC_INFO << dialog.exec();
 }
