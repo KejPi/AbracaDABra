@@ -140,10 +140,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->serviceListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     connect(ui->serviceListView->selectionModel(), &QItemSelectionModel::currentChanged, this, &MainWindow::serviceListCurrentChanged);
 
-//    ui->serviceTreeView->setModel(slModel);
-//    ui->serviceTreeView->setSelectionMode(QAbstractItemView::SingleSelection);
-//    ui->serviceTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-//    ui->serviceTreeView->setHeaderHidden(true);
+    slTreeModel = new SLTreeModel(serviceList, this);
+    connect(serviceList, &ServiceList::serviceAddedToEnsemble, slTreeModel, &SLTreeModel::addEnsembleService);
+    ui->serviceTreeView->setModel(slTreeModel);
+    ui->serviceTreeView->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->serviceTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->serviceTreeView->setHeaderHidden(true);
 
     // fill channel list
     dabChannelList_t::const_iterator i = DabTables::channelList.constBegin();

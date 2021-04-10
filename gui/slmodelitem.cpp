@@ -4,6 +4,7 @@
 
 #include "slmodelitem.h"
 #include "slmodel.h"
+#include "dabtables.h"
 
 SLModelItem::SLModelItem(SLModelItem *parent)
 {
@@ -14,14 +15,12 @@ SLModelItem::SLModelItem(const ServiceListItem *sPtr, SLModelItem *parent)
 {
     m_parentItem = parent;
     m_servicePtr = sPtr;
-    loadIcon();
 }
 
 SLModelItem::SLModelItem(const EnsembleListItem *ePtr, SLModelItem *parent)
 {
     m_parentItem = parent;
     m_ensemblePtr = ePtr;
-    loadIcon();
 }
 
 
@@ -65,7 +64,7 @@ QVariant SLModelItem::data(int column, int role) const
 
             if (nullptr != m_ensemblePtr)
             {  // ensemble item
-                return QVariant(m_ensemblePtr->label());
+                return QVariant(m_ensemblePtr->label().trimmed());
             }
             break;
         case Qt::ToolTipRole:
@@ -79,45 +78,26 @@ QVariant SLModelItem::data(int column, int role) const
 
             if (nullptr != m_ensemblePtr)
             {  // ensemble item
-                return QVariant(QString("Frequency: %1").arg(m_ensemblePtr->frequency()));
+                return QVariant(QString("Channel %1<br>Frequency: %2 MHz")
+                                .arg(DabTables::channelList.value(m_ensemblePtr->frequency()))
+                                .arg(m_ensemblePtr->frequency()/1000.0));
             }
-
-            break;
         case Qt::DecorationRole:
         {
-            if ((nullptr != m_servicePtr) && (m_servicePtr->isFavorite()))
+            if (nullptr != m_ensemblePtr)
             {
-                return QVariant(favIcon);
-            }
-            else
-            {
-                return QVariant(noIcon);
+                QPixmap pic;
+                if (pic.load(":/resources/broadcast.svg"))
+                {
+                    return QVariant(QIcon(pic));
+                }
             }
             return QVariant();
         }
-        break;
+            break;
         }        
     }
     return QVariant();
-}
-
-void SLModelItem::loadIcon()
-{
-    QPixmap nopic(20,20);
-    nopic.fill(Qt::transparent);
-    noIcon = QIcon(nopic);
-
-    QPixmap pic;
-    if (pic.load(":/resources/star.svg"))
-    {
-        favIcon = QIcon(pic);
-    }
-    else
-    {
-        favIcon = noIcon;
-        qDebug() << "Unable to load :/resources/star.svg";
-    }
-
 }
 
 SLModelItem *SLModelItem::parentItem()
@@ -181,24 +161,55 @@ void SLModelItem::sort(Qt::SortOrder order)
     if (Qt::AscendingOrder == order)
     {
         std::sort(m_childItems.begin(), m_childItems.end(), [](SLModelItem* a, SLModelItem* b) {
-            if ((a->isFavoriteService() && b->isFavoriteService()) || (!a->isFavoriteService() && !b->isFavoriteService()))
+            if (a->isEnsemble())
+            {
+                return a->frequency() < b->frequency();
+            }
+            else
+            {
                 return a->label() < b->label();
-            if (a->isFavoriteService())
-                return true;           
-            return false;
+            }
         });
     }
     else
     {
         std::sort(m_childItems.begin(), m_childItems.end(), [](SLModelItem* a, SLModelItem* b) {
-            if ((a->isFavoriteService() && b->isFavoriteService()) || (!a->isFavoriteService() && !b->isFavoriteService()))
+            if (a->isEnsemble())
+            {
+                return a->frequency() > b->frequency();
+            }
+            else
+            {
                 return a->label() > b->label();
-            if (b->isFavoriteService())
-                return true;
-            return false;
+            }
         });
+    }
+
+    for (auto child : m_childItems)
+    {
+        child->sort(order);
     }
 }
 
+SLModelItem* SLModelItem::findChildId(uint64_t id) const
+{
+    for (auto item : m_childItems)
+    {
+        if (item->getId() == id)
+        {
+            return item;
+        }
+    }
+    return nullptr;
+}
+
+uint32_t SLModelItem::frequency() const
+{
+    if (nullptr != m_ensemblePtr)
+    {
+        return m_ensemblePtr->frequency();
+    }
+    return 0;
+}
 
 

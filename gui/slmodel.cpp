@@ -29,7 +29,7 @@ SLModel::~SLModel()
 int SLModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return m_serviceItems.size();
+    return 1;
 }
 
 QVariant SLModel::data(const QModelIndex &index, int role) const

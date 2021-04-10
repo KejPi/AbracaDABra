@@ -22,6 +22,7 @@
 #include "audiooutput.h"
 #include "servicelist.h"
 #include "slmodel.h"
+#include "sltreemodel.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -108,6 +109,7 @@ private:
 
     ServiceList * serviceList;
     SLModel * slModel;
+    SLTreeModel * slTreeModel;
 
     void onServiceSelection();
     void onChannelSelection();

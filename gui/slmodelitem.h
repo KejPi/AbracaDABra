@@ -3,7 +3,6 @@
 
 #include <QList>
 #include <QVariant>
-#include <QIcon>
 #include "servicelist.h"
 
 class SLModelItem
@@ -26,6 +25,8 @@ public:
     bool isService() const;    
     bool isEnsemble() const;
     bool isFavoriteService() const;
+    uint32_t frequency() const;
+    SLModelItem* findChildId(uint64_t id) const;
     void sort(Qt::SortOrder order);    
 
 private:
@@ -34,12 +35,8 @@ private:
 
     const ServiceListItem * m_servicePtr = nullptr;
     const EnsembleListItem * m_ensemblePtr = nullptr;
-    QIcon favIcon;
-    QIcon noIcon;
 
     QString label();
-    void loadIcon();
-
 };
 
 #endif // SLMODELITEM_H

@@ -13,12 +13,9 @@ SLTreeModel::~SLTreeModel()
     delete rootItem;
 }
 
-int SLTreeModel::columnCount(const QModelIndex &parent) const
+int SLTreeModel::columnCount(const QModelIndex & /*parent*/) const
 {
-    if (parent.isValid())
-        return static_cast<SLModelItem*>(parent.internalPointer())->columnCount();
-    else
-        return rootItem->columnCount();
+    return 1;
 }
 
 
@@ -83,14 +80,14 @@ Qt::ItemFlags SLTreeModel::flags(const QModelIndex &index) const
 }
 
 
-QVariant SLTreeModel::headerData(int section, Qt::Orientation orientation,
-                               int role) const
-{
-//    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-//        return rootItem->data(section);
+//QVariant SLTreeModel::headerData(int section, Qt::Orientation orientation,
+//                               int role) const
+//{
+////    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+////        return rootItem->data(section);
 
-    return QVariant();
-}
+//    return QVariant();
+//}
 
 
 QModelIndex SLTreeModel::index(int row, int column, const QModelIndex &parent)
@@ -143,17 +140,24 @@ int SLTreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-void SLTreeModel::addItem(const EnsembleListItem *e, const ServiceListItem *s)
+void SLTreeModel::addEnsembleService(const EnsembleListItem *e, const ServiceListItem *s)
 {  // new service in service list
-    if (nullptr != e)
-    {
+
+    SLModelItem * ensChild = rootItem->findChildId(e->getId());
+    if (nullptr == ensChild)
+    {   // not found ==> new ensemble
+        ensChild = new SLModelItem(e, rootItem);
         beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
-        rootItem->appendChild(new SLModelItem(e, rootItem));
+        rootItem->appendChild(ensChild);
         endInsertRows();
     }
-    beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
-    rootItem->appendChild(new SLModelItem(s, rootItem));
-    endInsertRows();
+    SLModelItem * serviceChild = ensChild->findChildId(s->getId());
+    if (nullptr == serviceChild)
+    {  // new service to be added
+        beginInsertRows(index(ensChild->row(), 1, QModelIndex()), ensChild->childCount(), ensChild->childCount());
+        ensChild->appendChild(new SLModelItem(s, ensChild));
+        endInsertRows();
+    }
 
     sort(0);
 }
