@@ -47,8 +47,8 @@ public:
     void save(QSettings & settings);
     void load(QSettings & settings);   
 signals:
+    void serviceAddedToEnsemble(const EnsembleListItem *, const ServiceListItem *);
     void serviceAdded(const ServiceListItem *);
-    void ensembleAdded(const EnsembleListItem *);
     void empty();
 
 private:
@@ -61,7 +61,7 @@ class ServiceListItem
 public:
     ServiceListItem(const RadioControlServiceListEntry & item, bool fav = false, int currentEns = 0);
 
-    void addEnsemble(EnsembleListItem * ensPtr);
+    bool addEnsemble(EnsembleListItem * ensPtr);     // returns true when new ensemble was added
     void setFavorite(bool ena) { m_favorite = ena; }
 
     DabSId SId() const { return m_sid; }
@@ -102,7 +102,7 @@ class EnsembleListItem
 public:
     EnsembleListItem(const RadioControlServiceListEntry & item);
 
-    void addService(ServiceListItem *servPtr);
+    bool addService(ServiceListItem *servPtr);          // returns true when new service was added
     void storeSnr(float snr) { m_lastSnr = snr; }
 
     uint32_t frequency() const { return m_frequency; }   // frequency of ensemble

@@ -134,13 +134,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(serviceList, &ServiceList::serviceAdded, slModel, &SLModel::addService);
     connect(clearServiceListAct, &QAction::triggered, serviceList, &ServiceList::clear);
     connect(serviceList, &ServiceList::empty, slModel, &SLModel::clear);
-    //ui->serviceListView->setHeaderHidden(true);
 
-    //ui->serviceListView->setModel(serviceListModel);
     ui->serviceListView->setModel(slModel);
     ui->serviceListView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->serviceListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     connect(ui->serviceListView->selectionModel(), &QItemSelectionModel::currentChanged, this, &MainWindow::serviceListCurrentChanged);
+
+//    ui->serviceTreeView->setModel(slModel);
+//    ui->serviceTreeView->setSelectionMode(QAbstractItemView::SingleSelection);
+//    ui->serviceTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+//    ui->serviceTreeView->setHeaderHidden(true);
 
     // fill channel list
     dabChannelList_t::const_iterator i = DabTables::channelList.constBegin();
@@ -630,54 +633,42 @@ void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QMo
         return;
     }
 
-    if (model->isService(current))
+    //qDebug() << Q_FUNC_INFO << "isService ID =" << model->getId(current);
+    ServiceListConstIterator it = serviceList->findService(model->getId(current));
+    if (serviceList->serviceListEnd() != it)
     {
-        //qDebug() << Q_FUNC_INFO << "isService ID =" << model->getId(current);
-        ServiceListConstIterator it = serviceList->findService(model->getId(current));
-        if (serviceList->serviceListEnd() != it)
+        SId = (*it)->SId();
+        SCIdS = (*it)->SCIdS();
+        uint32_t newFrequency = (*it)->getEnsemble()->frequency();
+
+        if (newFrequency != frequency)
         {
-            SId = (*it)->SId();
-            SCIdS = (*it)->SCIdS();
-            uint32_t newFrequency = (*it)->getEnsemble()->frequency();
+           frequency = newFrequency;
 
-            if (newFrequency != frequency)
-            {
-               frequency = newFrequency;
-
-                // change combo
-                int idx = 0;
-                dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
-                while (it != DabTables::channelList.constEnd()) {
-                    if (it.key() == frequency)
-                    {
-                        ui->channelLabel->setText(it.value());
-                        break;
-                    }
-                    ++it;
-                    ++idx;
+            // change combo
+            int idx = 0;
+            dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
+            while (it != DabTables::channelList.constEnd()) {
+                if (it.key() == frequency)
+                {
+                    ui->channelLabel->setText(it.value());
+                    break;
                 }
-                ui->channelCombo->setCurrentIndex(idx);
+                ++it;
+                ++idx;
+            }
+            ui->channelCombo->setCurrentIndex(idx);
 
 
-                // reset UI
-                clearEnsembleInformationLabels();
-                ui->frequencyLabel->setText("Tuning...  ");
-                updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
-                updateSnrLevel(0);
-            }                                           
-            onServiceSelection();
-            emit serviceRequest(frequency, SId.value, SCIdS);
+            // reset UI
+            clearEnsembleInformationLabels();
+            ui->frequencyLabel->setText("Tuning...  ");
+            updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
+            updateSnrLevel(0);
         }
+        onServiceSelection();
+        emit serviceRequest(frequency, SId.value, SCIdS);
     }
-#if 0
-    QVariant data = current.model()->data(current, Qt::UserRole);
-    RadioControlServiceListEntry * servicePtr = reinterpret_cast<RadioControlServiceListEntry *>(data.value<void*>());
-    SId = servicePtr->SId;
-    SCIdS = servicePtr->SCIdS;
-
-    onServiceSelection();
-    emit serviceRequest(frequency, SId.value, SCIdS);
-#endif
 }
 
 void MainWindow::audioServiceChanged(const RadioControlAudioService &s)
@@ -956,19 +947,16 @@ void MainWindow::saveSettings()
 
     QModelIndex current = ui->serviceListView->currentIndex();
     const SLModel * model = reinterpret_cast<const SLModel*>(current.model());
-    if (model->isService(current))
+    ServiceListConstIterator it = serviceList->findService(model->getId(current));
+    if (serviceList->serviceListEnd() != it)
     {
-        ServiceListConstIterator it = serviceList->findService(model->getId(current));
-        if (serviceList->serviceListEnd() != it)
-        {
-            SId = (*it)->SId();
-            SCIdS = (*it)->SCIdS();
-            frequency = (*it)->getEnsemble()->frequency();
+        SId = (*it)->SId();
+        SCIdS = (*it)->SCIdS();
+        frequency = (*it)->getEnsemble()->frequency();
 
-            settings.setValue("SID", SId.value);
-            settings.setValue("SCIdS", SCIdS);
-            settings.setValue("Frequency", frequency);
-        }
+        settings.setValue("SID", SId.value);
+        settings.setValue("SCIdS", SCIdS);
+        settings.setValue("Frequency", frequency);
     }
     settings.setValue("ExpertMode", expertMode);
 

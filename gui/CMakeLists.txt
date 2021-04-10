@@ -255,6 +255,8 @@ add_executable(${TARGET}
     slmodel.cpp
     slmodelitem.h
     slmodelitem.cpp
+    sltreemodel.h
+    sltreemodel.cpp
     setupdialog.h
     setupdialog.cpp
     setupdialog.ui

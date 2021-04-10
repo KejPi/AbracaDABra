@@ -1,24 +1,23 @@
-#ifndef SLMODEL_H
-#define SLMODEL_H
+#ifndef SLTREEMODEL_H
+#define SLTREEMODEL_H
 
 #include <QAbstractItemModel>
-#include <QModelIndex>
-#include <QVariant>
-#include <QList>
-#include <QIcon>
+#include <QObject>
+#include "SLModelItem.h"
 
 #include <servicelist.h>
 
-class SLModel : public QAbstractItemModel
+class SLTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
-
 public:
-    explicit SLModel(ServiceList * sl, QObject *parent = 0);
-    ~SLModel();
+    explicit SLTreeModel(ServiceList * sl, QObject *parent = 0);
+    ~SLTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
+    QVariant headerData(int section, Qt::Orientation orientation,
+                        int role = Qt::DisplayRole) const override;
     QModelIndex index(int row, int column,
                       const QModelIndex &parent = QModelIndex()) const override;
     QModelIndex parent(const QModelIndex &index) const override;
@@ -27,19 +26,17 @@ public:
     void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
 
     uint64_t getId(const QModelIndex &index) const;
+    bool isService(const QModelIndex &index) const;
+    bool isEnsemble(const QModelIndex &index) const;
     bool isFavoriteService(const QModelIndex &index) const;
 
 public slots:
-    void addService(const ServiceListItem *s);
+    void addItem(const EnsembleListItem *e, const ServiceListItem *s);
     void clear();
 
 private:
+    SLModelItem *rootItem;
     ServiceList * slPtr;
-
-    QList<const ServiceListItem *> m_serviceItems;
-
-    QIcon favIcon;
-    QIcon noIcon;
 };
 
-#endif // SLMODEL_H
+#endif // SLTREEMODEL_H

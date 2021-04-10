@@ -64,15 +64,13 @@ void ServiceList::addService(const RadioControlServiceListEntry & s, bool fav, i
 
     // we have ens and service item => lets link them together
     pService->addEnsemble(pEns);
-    pEns->addService(pService);
-
-    if (newService)
-    {   // new service
-        emit serviceAdded(pService);
+    if (pEns->addService(pService))
+    {   // new service in ensemble
+        emit serviceAddedToEnsemble(pEns, pService);
     }
-    if (newEnsemble)
-    {   // new ensemble
-        emit ensembleAdded(pEns);
+    if (newService)
+    {   // emit signal when new service is added
+        emit serviceAdded(pService);
     }
 }
 
@@ -213,13 +211,15 @@ ServiceListItem::ServiceListItem(const RadioControlServiceListEntry & item, bool
     m_currentEnsemble = currentEns;
 }
 
-void ServiceListItem::addEnsemble(EnsembleListItem * ensPtr)
+bool ServiceListItem::addEnsemble(EnsembleListItem * ensPtr)
 {
     QList<EnsembleListItem *>::iterator it = findEnsemble(ensPtr->getId());
     if (m_ensembleList.end() == it)
     {
         m_ensembleList.append(ensPtr);
+        return true;
     }
+    return false;
 }
 
 const EnsembleListItem *  ServiceListItem::switchEnsemble()
@@ -278,13 +278,15 @@ bool EnsembleListItem::operator==(const EnsembleListItem & other)
     return getId() == other.getId();
 }
 
-void EnsembleListItem::addService(ServiceListItem * servPtr)
+bool EnsembleListItem::addService(ServiceListItem * servPtr)
 {
     QList<ServiceListItem *>::iterator it = findService(servPtr->getId());
     if (m_serviceList.end() == it)
     {
         m_serviceList.append(servPtr);
+        return true;
     }
+    return false;
 }
 
 QList<ServiceListItem *>::iterator EnsembleListItem::findService(uint64_t id)

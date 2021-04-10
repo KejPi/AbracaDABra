@@ -1,49 +1,75 @@
-#include "slmodelitem.h"
 #include "slmodel.h"
-
-#include <QStringList>
 #include <QFlags>
 
 SLModel::SLModel(ServiceList *sl, QObject *parent)
     : QAbstractItemModel(parent)
     , slPtr(sl)
 {
-    rootItem = new SLModelItem();
+    QPixmap nopic(20,20);
+    nopic.fill(Qt::transparent);
+    noIcon = QIcon(nopic);
+
+    QPixmap pic;
+    if (pic.load(":/resources/star.svg"))
+    {
+        favIcon = QIcon(pic);
+    }
+    else
+    {
+        favIcon = noIcon;
+        qDebug() << "Unable to load :/resources/star.svg";
+    }
 }
 
 
 SLModel::~SLModel()
 {
-    delete rootItem;
 }
 
 int SLModel::columnCount(const QModelIndex &parent) const
 {
-    if (parent.isValid())
-        return static_cast<SLModelItem*>(parent.internalPointer())->columnCount();
-    else
-        return rootItem->columnCount();
+    Q_UNUSED(parent);
+    return m_serviceItems.size();
 }
-
 
 QVariant SLModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
         return QVariant();
 
-    SLModelItem *item = static_cast<SLModelItem*>(index.internalPointer());
+    const ServiceListItem * item = static_cast<ServiceListItem*>(index.internalPointer());
 
-    return item->data(index.column(), role);
-}
-
-bool SLModel::isService(const QModelIndex &index) const
-{
-    if (!index.isValid())
-        return false;
-
-    SLModelItem *item = static_cast<SLModelItem*>(index.internalPointer());
-
-    return item->isService();
+    if (0 == index.column())
+    {
+        switch (role)
+        {
+        case Qt::DisplayRole:
+            return QVariant(item->label());
+            break;
+        case Qt::ToolTipRole:
+        {
+            QString tooltip = QString("<b>Short label:</b> %1<br><b>SId:</b> 0x%2")
+                    .arg(item->shortLabel())
+                    .arg( QString("%1").arg(item->SId().prog.countryServiceRef, 4, 16, QChar('0')).toUpper() );
+            return QVariant(tooltip);
+        }
+            break;
+        case Qt::DecorationRole:
+        {
+            if (item->isFavorite())
+            {
+                return QVariant(favIcon);
+            }
+            else
+            {
+                return QVariant(noIcon);
+            }
+            return QVariant();
+        }
+        break;
+        }
+    }
+    return QVariant();
 }
 
 bool SLModel::isFavoriteService(const QModelIndex &index) const
@@ -51,19 +77,8 @@ bool SLModel::isFavoriteService(const QModelIndex &index) const
     if (!index.isValid())
         return false;
 
-    SLModelItem *item = static_cast<SLModelItem*>(index.internalPointer());
-
-    return item->isFavoriteService();
-}
-
-bool SLModel::isEnsemble(const QModelIndex &index) const
-{
-    if (!index.isValid())
-        return false;
-
-    SLModelItem *item = static_cast<SLModelItem*>(index.internalPointer());
-
-    return item->isEnsemble();
+    const ServiceListItem * item = static_cast<ServiceListItem*>(index.internalPointer());
+    return item->isFavorite();
 }
 
 uint64_t SLModel::getId(const QModelIndex &index) const
@@ -71,7 +86,7 @@ uint64_t SLModel::getId(const QModelIndex &index) const
     if (!index.isValid())
         return 0;
 
-    SLModelItem *item = static_cast<SLModelItem*>(index.internalPointer());
+    const ServiceListItem * item = static_cast<ServiceListItem*>(index.internalPointer());
 
     return item->getId();
 }
@@ -87,32 +102,20 @@ Qt::ItemFlags SLModel::flags(const QModelIndex &index) const
 }
 
 
-QVariant SLModel::headerData(int section, Qt::Orientation orientation,
-                               int role) const
-{
-//    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-//        return rootItem->data(section);
-
-    return QVariant();
-}
-
-
 QModelIndex SLModel::index(int row, int column, const QModelIndex &parent)
             const
 {
     if (!hasIndex(row, column, parent))
         return QModelIndex();
 
-    SLModelItem *parentItem;
+    if (parent.isValid())
+    {
+        return QModelIndex();
+    }
 
-    if (!parent.isValid())
-        parentItem = rootItem;
-    else
-        parentItem = static_cast<SLModelItem*>(parent.internalPointer());
-
-    SLModelItem *childItem = parentItem->child(row);
+    const ServiceListItem *childItem = m_serviceItems.at(row);
     if (childItem)
-        return createIndex(row, column, childItem);
+        return createIndex(row, column, (void *)childItem);
     else
         return QModelIndex();
 }
@@ -120,45 +123,26 @@ QModelIndex SLModel::index(int row, int column, const QModelIndex &parent)
 
 QModelIndex SLModel::parent(const QModelIndex &index) const
 {
-    if (!index.isValid())
-        return QModelIndex();
-
-    SLModelItem *childItem = static_cast<SLModelItem*>(index.internalPointer());
-    SLModelItem *parentItem = childItem->parentItem();
-
-    if (parentItem == rootItem)
-        return QModelIndex();
-
-    return createIndex(parentItem->row(), 0, parentItem);
+    Q_UNUSED(index);
+    return QModelIndex();
 }
 
 
 int SLModel::rowCount(const QModelIndex &parent) const
 {
-    SLModelItem *parentItem;
     if (parent.column() > 0)
         return 0;
 
-    if (!parent.isValid())
-        parentItem = rootItem;
-    else
-        parentItem = static_cast<SLModelItem*>(parent.internalPointer());
-
-    return parentItem->childCount();
+    return m_serviceItems.size();
 }
 
 void SLModel::addService(const ServiceListItem *s)
 {  // new service in service list
-    beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
-    rootItem->appendChild(new SLModelItem(s, rootItem));
+    beginInsertRows(QModelIndex(), m_serviceItems.size(), m_serviceItems.size());
+    m_serviceItems.append(s);
     endInsertRows();
 
     sort(0);
-}
-
-void SLModel::addEnsemble(const EnsembleListItem *e)
-{ // go through items and add ensemble
-
 }
 
 void SLModel::clear()
@@ -166,17 +150,33 @@ void SLModel::clear()
     qDebug() << Q_FUNC_INFO;
     beginResetModel();
     // remove all items
-    delete rootItem;
-    // create new root
-    rootItem = new SLModelItem();
+    m_serviceItems.clear();
     endResetModel();
 }
 
 void SLModel::sort(int column, Qt::SortOrder order)
 {
-    //qDebug() << Q_FUNC_INFO;
     Q_UNUSED(column);
-    rootItem->sort(order);
+    if (Qt::AscendingOrder == order)
+    {
+        std::sort(m_serviceItems.begin(), m_serviceItems.end(), [](const ServiceListItem * a, const ServiceListItem * b) {
+            if ((a->isFavorite() && b->isFavorite()) || (!a->isFavorite() && !b->isFavorite()))
+                return a->label() < b->label();
+            if (a->isFavorite())
+                return true;
+            return false;
+        });
+    }
+    else
+    {
+        std::sort(m_serviceItems.begin(), m_serviceItems.end(), [](const ServiceListItem * a, const ServiceListItem * b) {
+            if ((a->isFavorite() && b->isFavorite()) || (!a->isFavorite() && !b->isFavorite()))
+                return a->label() > b->label();
+            if (b->isFavorite())
+                return true;
+            return false;
+        });
+    }
 
     emit dataChanged(QModelIndex(), QModelIndex());
 }
