@@ -250,7 +250,12 @@ add_executable(${TARGET}
     audiooutput.h
     audiooutput.cpp
     servicelist.h
-    servicelist.cpp    
+    servicelist.cpp
+    ensemblelistitem.h
+    ensemblelistitem.cpp
+    servicelistitem.h
+    servicelistitem.cpp
+
     slmodel.h
     slmodel.cpp
     slmodelitem.h
