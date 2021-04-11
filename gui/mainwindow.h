@@ -124,9 +124,11 @@ private:
     void switchServiceSource();
     void switchMode();
     void setExpertMode(bool ena);
+    void stop();
     void bandScan();
-    void setMinumumSize();
+    void clearServiceList();
 
+    void setMinumumSize();
     void serviceTreeViewUpdateSelection();
     void serviceListViewUpdateSelection();
 };

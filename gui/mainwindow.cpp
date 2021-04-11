@@ -91,7 +91,9 @@ MainWindow::MainWindow(QWidget *parent)
     setupAct = new QAction("Setup...", this);
     //setupAct->setStatusTip("Application settings");       // this is shown in status bar
     connect(setupAct, &QAction::triggered, setupDialog, &SetupDialog::show);
+
     clearServiceListAct = new QAction("Clear service list", this);
+    connect(clearServiceListAct, &QAction::triggered, this, &MainWindow::clearServiceList);
 
     bandScanAct = new QAction("Band scan...", this);
     //scanAct->setStatusTip("Seach for available service"); // this is shown in status bar
@@ -132,7 +134,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     slModel = new SLModel(serviceList, this);
     connect(serviceList, &ServiceList::serviceAdded, slModel, &SLModel::addService);
-    connect(clearServiceListAct, &QAction::triggered, serviceList, &ServiceList::clear);
     connect(serviceList, &ServiceList::empty, slModel, &SLModel::clear);
 
     ui->serviceListView->setModel(slModel);
@@ -147,6 +148,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->serviceTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->serviceTreeView->setHeaderHidden(true);
     connect(ui->serviceTreeView, &QTreeView::clicked, this, &MainWindow::serviceListTreeClicked);
+    connect(serviceList, &ServiceList::empty, slTreeModel, &SLTreeModel::clear);
 
     // fill channel list
     dabChannelList_t::const_iterator i = DabTables::channelList.constBegin();
@@ -881,10 +883,8 @@ void MainWindow::changeInputDevice(const InputDeviceId & d)
         inputDeviceId = d;
         if (isPlaying)
         { // stop
-            // tune to 0
-            ui->channelCombo->setCurrentIndex(-1);
+            stop();
             ui->channelCombo->setDisabled(true);  // enabled when device is ready
-            ui->channelLabel->setText("");
         }
         else
         { // device is not playing
@@ -1185,6 +1185,34 @@ void MainWindow::bandScan()
     //BandScanDialog * dialog = new BandScanDialog(this);
 //    dialog->setModal(true);
 //    dialog->show();
-    BandScanDialog dialog(this);
-    qDebug() << Q_FUNC_INFO << dialog.exec();
+    BandScanDialog * dialog = new BandScanDialog(this);
+    connect(dialog, &BandScanDialog::finished, dialog, &QObject::deleteLater);
+    connect(dialog, &BandScanDialog::tune, radioControl, &RadioControl::tuneService, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::ensembleInformation, dialog, &BandScanDialog::ensembleFound, Qt::QueuedConnection);
+    //connect(radioControl, &RadioControl::serviceListEntry, dialog, &BandScanDialog::serviceFound, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::tuneDone, dialog, &BandScanDialog::tuneFinished, Qt::QueuedConnection);
+    connect(serviceList, &ServiceList::serviceAdded, dialog, &BandScanDialog::serviceFound);
+    connect(dialog, &BandScanDialog::scanStarts, this, &MainWindow::clearServiceList);
+
+    qDebug() << Q_FUNC_INFO << "start";
+    //dialog->exec();
+    dialog->open();
+    qDebug() << Q_FUNC_INFO << "stop";
 }
+
+void MainWindow::stop()
+{
+    if (isPlaying)
+    { // stop
+        // tune to 0
+        ui->channelCombo->setCurrentIndex(-1);
+        ui->channelLabel->setText("");
+    }
+}
+
+void MainWindow::clearServiceList()
+{
+    stop();
+    serviceList->clear();
+}
+

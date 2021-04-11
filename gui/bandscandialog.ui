@@ -9,15 +9,57 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>426</width>
-    <height>219</height>
+    <width>380</width>
+    <height>134</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Band scan</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="0" colspan="3">
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0" colspan="2">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="scanningLabel">
+         <property name="text">
+          <string>Scaning channel:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="progressChannel">
+         <property name="text">
+          <string>9A</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="progressLabel">
+       <property name="text">
+        <string>8/40</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0" colspan="2">
     <widget class="QProgressBar" name="progressBar">
      <property name="value">
       <number>24</number>
@@ -27,151 +69,53 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="2">
-    <layout class="QFormLayout" name="channelSelectionLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_start">
-       <property name="text">
-        <string>Start in channel:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="startComboBox"/>
-     </item>
+   <item row="2" column="0">
+    <layout class="QGridLayout" name="gridLayout">
      <item row="1" column="0">
-      <widget class="QLabel" name="labl_stop">
-       <property name="text">
-        <string>Stop in channel:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="stopComboBox"/>
-     </item>
-    </layout>
-   </item>
-   <item row="2" column="2">
-    <widget class="QGroupBox" name="currentChannelGroupBox">
-     <property name="title">
-      <string>Channel 9C</string>
-     </property>
-     <layout class="QFormLayout" name="formLayout_2">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_status">
-        <property name="text">
-         <string>Status:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_ensemble">
-        <property name="text">
-         <string>Ensemble:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="ensembleLabel">
-        <property name="text">
-         <string>Ensemble Label</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_services">
-        <property name="text">
-         <string>Services:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="numServices">
-        <property name="text">
-         <string>14</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="statusLabel">
-        <property name="text">
-         <string>Signal found</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <layout class="QFormLayout" name="resultLayout">
-     <item row="0" column="1">
-      <widget class="QLabel" name="numServicesFoundLabel">
-       <property name="text">
-        <string>23</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
       <widget class="QLabel" name="servicesFoundLabel">
        <property name="text">
         <string>Services found:</string>
        </property>
       </widget>
      </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="numServicesFoundLabel">
+       <property name="text">
+        <string>23</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="ensemblesFoundLabel">
+       <property name="text">
+        <string>Ensembles found:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="numEnsemblesFoundLabel">
+       <property name="text">
+        <string>2</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
-   <item row="3" column="1" colspan="2">
+   <item row="2" column="1">
     <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="2">
-    <widget class="QLabel" name="progressLabel">
-     <property name="text">
-      <string>Scaning channel: 8/40</string>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>BandScanDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>BandScanDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
