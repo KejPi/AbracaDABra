@@ -203,7 +203,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->switchSourceLabel->setToolTip("Click to change service source (ensemble)");
     ui->switchSourceLabel->setHidden(true);
 
-    resize(minimumSizeHint());
+    ui->serviceTreeView->setVisible(false);
+    setMinumumSize();
 
     // threads
     radioControl = new RadioControl();
@@ -1155,6 +1156,7 @@ void MainWindow::switchMode()
 
 void MainWindow::setExpertMode(bool ena)
 {
+    qDebug() << minimumSizeHint() << ui->centralwidget->layout()->minimumSize();
     if (ena)
     {
         switchModeAct->setText("Basic mode");
@@ -1165,6 +1167,17 @@ void MainWindow::setExpertMode(bool ena)
     }
     ui->channelCombo->setVisible(ena);
     ui->channelLabel->setVisible(!ena);
+    ui->serviceTreeView->setVisible(ena);
+    qDebug() << minimumSizeHint() << ui->centralwidget->layout()->minimumSize();
+    //resize(minimumSizeHint());
+    qDebug() << minimumSizeHint() << ui->centralwidget->layout()->minimumSize();
+
+    QTimer::singleShot(10, this, &MainWindow::setMinumumSize);
+}
+
+void MainWindow::setMinumumSize()
+{
+    resize(minimumSizeHint());
 }
 
 void MainWindow::bandScan()

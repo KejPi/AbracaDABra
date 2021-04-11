@@ -62,7 +62,7 @@ private slots:
     void onRawFileStop();
     void serviceListClicked(const QModelIndex &index);
     void serviceListTreeClicked(const QModelIndex &index);
-    void audioServiceChanged(const RadioControlAudioService &s);
+    void audioServiceChanged(const RadioControlAudioService &s);    
 
 protected:        
      void closeEvent(QCloseEvent *event);
@@ -125,6 +125,7 @@ private:
     void switchMode();
     void setExpertMode(bool ena);
     void bandScan();
+    void setMinumumSize();
 
     void serviceTreeViewUpdateSelection();
     void serviceListViewUpdateSelection();
