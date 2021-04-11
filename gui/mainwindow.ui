@@ -260,7 +260,7 @@
      <widget class="QTreeView" name="serviceTreeView">
       <property name="minimumSize">
        <size>
-        <width>180</width>
+        <width>200</width>
         <height>0</height>
        </size>
       </property>

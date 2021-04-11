@@ -82,19 +82,28 @@ QVariant SLModelItem::data(int column, int role) const
                                 .arg(DabTables::channelList.value(m_ensemblePtr->frequency()))
                                 .arg(m_ensemblePtr->frequency()/1000.0));
             }
-        case Qt::DecorationRole:
-        {
+        case Qt::FontRole:
             if (nullptr != m_ensemblePtr)
             {
-                QPixmap pic;
-                if (pic.load(":/resources/broadcast.svg"))
-                {
-                    return QVariant(QIcon(pic));
-                }
+                QFont f;
+                f.setBold(true);
+                return QVariant(f);
             }
             return QVariant();
-        }
-            break;
+         break;
+//        case Qt::DecorationRole:
+//        {
+//            if (nullptr != m_ensemblePtr)
+//            {
+//                QPixmap pic;
+//                if (pic.load(":/resources/broadcast.svg"))
+//                {
+//                    return QVariant(QIcon(pic));
+//                }
+//            }
+//            return QVariant();
+//        }
+//            break;
         }        
     }
     return QVariant();

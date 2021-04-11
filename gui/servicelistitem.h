@@ -23,7 +23,7 @@ public:
     int numEnsembles() const { return m_ensembleList.size(); }
     bool isFavorite() const { return m_favorite; }
     const EnsembleListItem * getEnsemble(int num = -1) const;         // returns ensemble idx (wraps over end of list)
-    const EnsembleListItem * switchEnsemble();                        // switches current ensemble, returns ensemble
+    const EnsembleListItem * switchEnsemble(uint64_t id = 0);                        // switches current ensemble, returns ensemble
     uint32_t currentEnsembleIdx() const { return m_currentEnsemble; } // used to save service list
 
     bool operator==(const ServiceListItem & other);

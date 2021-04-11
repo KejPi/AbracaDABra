@@ -60,7 +60,8 @@ private slots:
     void initInputDevice(const InputDeviceId &d);
     void onEndOfFile();
     void onRawFileStop();
-    void serviceListCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
+    void serviceListClicked(const QModelIndex &index);
+    void serviceListTreeClicked(const QModelIndex &index);
     void audioServiceChanged(const RadioControlAudioService &s);
 
 protected:        
@@ -106,6 +107,8 @@ private:
     uint32_t frequency = 0;
     DabSId SId;
     uint32_t SCIdS = 0;
+//    uint64_t serviceId = 0;
+//    uint64_t ensembleId = 0;
 
     ServiceList * serviceList;
     SLModel * slModel;
@@ -122,6 +125,9 @@ private:
     void switchMode();
     void setExpertMode(bool ena);
     void bandScan();
+
+    void serviceTreeViewUpdateSelection();
+    void serviceListViewUpdateSelection();
 };
 
 // this implementation allow scaling od SLS with the window

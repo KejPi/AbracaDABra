@@ -447,7 +447,7 @@ void RadioControl::start(uint32_t freq)
 
 void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
 {
-    //qDebug() << Q_FUNC_INFO << freq << frequency;
+    qDebug() << Q_FUNC_INFO << freq << frequency << SId << SCIdS;
     if (freq == frequency)
     {
         if (SId)

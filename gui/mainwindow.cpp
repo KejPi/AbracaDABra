@@ -138,7 +138,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->serviceListView->setModel(slModel);
     ui->serviceListView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->serviceListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    connect(ui->serviceListView->selectionModel(), &QItemSelectionModel::currentChanged, this, &MainWindow::serviceListCurrentChanged);
+    connect(ui->serviceListView, &QListView::clicked, this, &MainWindow::serviceListClicked);
 
     slTreeModel = new SLTreeModel(serviceList, this);
     connect(serviceList, &ServiceList::serviceAddedToEnsemble, slTreeModel, &SLTreeModel::addEnsembleService);
@@ -146,6 +146,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->serviceTreeView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->serviceTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->serviceTreeView->setHeaderHidden(true);
+    connect(ui->serviceTreeView, &QTreeView::clicked, this, &MainWindow::serviceListTreeClicked);
 
     // fill channel list
     dabChannelList_t::const_iterator i = DabTables::channelList.constBegin();
@@ -622,21 +623,18 @@ void MainWindow::onRawFileStop()
 }
 
 
-void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
+void MainWindow::serviceListClicked(const QModelIndex &index)
 {
-    //if (current == previous) return;
-    //Q_UNUSED(previous);
-    //qDebug() << Q_FUNC_INFO << current << previous;
-    const SLModel * model = reinterpret_cast<const SLModel*>(current.model());
+    const SLModel * model = reinterpret_cast<const SLModel*>(index.model());
 
     //qDebug() << current << model->getId(current) << previous << model->getId(previous);
-    if (model->getId(current) == model->getId(previous))
+    if (model->getId(index) == ServiceListItem::getId(SId.value, SCIdS))
     {
         return;
     }
 
     //qDebug() << Q_FUNC_INFO << "isService ID =" << model->getId(current);
-    ServiceListConstIterator it = serviceList->findService(model->getId(current));
+    ServiceListConstIterator it = serviceList->findService(model->getId(index));
     if (serviceList->serviceListEnd() != it)
     {
         SId = (*it)->SId();
@@ -670,6 +668,72 @@ void MainWindow::serviceListCurrentChanged(const QModelIndex &current, const QMo
         }
         onServiceSelection();
         emit serviceRequest(frequency, SId.value, SCIdS);
+
+        // synchronize tree view with service selection
+        serviceTreeViewUpdateSelection();
+    }
+}
+
+void MainWindow::serviceListTreeClicked(const QModelIndex &index)
+{
+    const SLTreeModel * model = reinterpret_cast<const SLTreeModel*>(index.model());
+
+    if (index.parent().isValid())
+    {   // service, not ensemle selected
+        // if both service ID and enseble ID are the same then return
+        uint64_t currentServiceId = ServiceListItem::getId(SId.value, SCIdS);
+        uint64_t currentEnsId = 0;
+        ServiceListConstIterator it = serviceList->findService(currentServiceId);
+        if (serviceList->serviceListEnd() != it)
+        {  // found
+            currentEnsId = (*it)->getEnsemble((*it)->currentEnsembleIdx())->getId();
+        }
+
+        if ((model->getId(index) == currentServiceId)
+                && model->getId(index.parent()) == currentEnsId)
+        {
+            return;
+        }
+
+        it = serviceList->findService(model->getId(index));
+        if (serviceList->serviceListEnd() != it)
+        {
+            SId = (*it)->SId();
+            SCIdS = (*it)->SCIdS();
+
+            uint32_t newFrequency = (*it)->switchEnsemble(model->getId(index.parent()))->frequency();
+            if (newFrequency != frequency)
+            {
+                frequency = newFrequency;
+
+                // change combo
+                int idx = 0;
+                dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
+                while (it != DabTables::channelList.constEnd()) {
+                    if (it.key() == frequency)
+                    {
+                        ui->channelLabel->setText(it.value());
+                        break;
+                    }
+                    ++it;
+                    ++idx;
+                }
+                ui->channelCombo->setCurrentIndex(idx);
+
+
+                // reset UI
+                clearEnsembleInformationLabels();
+                ui->frequencyLabel->setText("Tuning...  ");
+                updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
+                updateSnrLevel(0);
+            }
+            onServiceSelection();
+            qDebug() << "serviceRequest(frequency, SId.value, SCIdS)" << frequency << SId.value << SCIdS;
+            emit serviceRequest(frequency, SId.value, SCIdS);
+
+            // we need to find the item in model and select it
+            serviceListViewUpdateSelection();
+        }
     }
 }
 
@@ -772,7 +836,7 @@ void MainWindow::audioServiceChanged(const RadioControlAudioService &s)
         ui->audioBitrateLabel->setToolTip(QString("<b>Service bitrate</b><br>Audio & data: %1").arg(br));
 
         //ui->serviceListView->selectionModel()->setCurrentIndex(item->index(), QItemSelectionModel::Select | QItemSelectionModel::Current);
-        ui->serviceListView->setFocus();
+        //ui->serviceListView->setFocus();
     }
     else
     {   // sid it not equal to selected sid -> should not happen
@@ -921,9 +985,9 @@ void MainWindow::loadSettings()
         setupDialog->setInputDevice(static_cast<InputDeviceId>(inDevice));
         if ((static_cast<InputDeviceId>(inDevice) == inputDeviceId) && (InputDeviceId::RTLSDR == inputDeviceId))
         {   // channel is only restored for RTL SDR at the moment
-            SId.value = settings.value("SID", 0).toInt();
-            SCIdS = settings.value("SCIdS", 0).toInt();            
-            uint64_t id = ServiceListItem::getId(SId.value, SCIdS);
+            int sid = settings.value("SID", 0).toInt();
+            int scids = settings.value("SCIdS", 0).toInt();
+            uint64_t id = ServiceListItem::getId(sid, scids);
 
             // we need to find the item in model and select it
             const SLModel * model = reinterpret_cast<const SLModel*>(ui->serviceListView->model());
@@ -934,6 +998,7 @@ void MainWindow::loadSettings()
                 if (model->getId(index) == id)
                 {   // found
                     ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
+                    serviceListClicked(index);   // this selects service
                     ui->serviceListView->setFocus();
                     break;
                 }
@@ -1031,6 +1096,53 @@ void MainWindow::switchServiceSource()
             frequency = newFrequency;
             onServiceSelection();
             emit serviceRequest(frequency, SId.value, SCIdS);
+
+            // synchronize tree view with service selection
+            serviceTreeViewUpdateSelection();
+        }
+    }
+}
+
+void MainWindow::serviceTreeViewUpdateSelection()
+{
+    const SLTreeModel * model = reinterpret_cast<const SLTreeModel*>(ui->serviceTreeView->model());
+    uint64_t serviceId = ServiceListItem::getId(SId.value, SCIdS);
+    uint64_t ensembleId = 0;
+    ServiceListConstIterator it = serviceList->findService(serviceId);
+    if (serviceList->serviceListEnd() != it)
+    {  // found
+        ensembleId = (*it)->getEnsemble((*it)->currentEnsembleIdx())->getId();
+    }
+    for (int r = 0; r < model->rowCount(); ++r)
+    {   // go through ensembles
+        QModelIndex ensembleIndex = model->index(r, 0);
+        if (model->getId(ensembleIndex) == ensembleId)
+        {   // found ensemble
+            for (int s = 0; s < model->rowCount(ensembleIndex); ++s)
+            {   // go through services
+                QModelIndex serviceIndex = model->index(s, 0, ensembleIndex);
+                if (model->getId(serviceIndex) == serviceId)
+                {  // found
+                    ui->serviceTreeView->selectionModel()->setCurrentIndex(serviceIndex, QItemSelectionModel::Select | QItemSelectionModel::Current);
+                    return;
+                }
+            }
+        }
+    }
+}
+
+void MainWindow::serviceListViewUpdateSelection()
+{
+    const SLModel * model = reinterpret_cast<const SLModel*>(ui->serviceListView->model());
+    uint64_t id = ServiceListItem::getId(SId.value, SCIdS);
+    QModelIndex index;
+    for (int r = 0; r < model->rowCount(); ++r)
+    {
+        index = model->index(r, 0);
+        if (model->getId(index) == id)
+        {   // found
+            ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
+            return;
         }
     }
 }

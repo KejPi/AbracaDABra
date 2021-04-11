@@ -22,13 +22,28 @@ bool ServiceListItem::addEnsemble(EnsembleListItem * ensPtr)
     return false;
 }
 
-const EnsembleListItem *  ServiceListItem::switchEnsemble()
+const EnsembleListItem * ServiceListItem::switchEnsemble(uint64_t id)
 {
-    if (m_ensembleList.size() > 0)
+    if (0 == id)
     {
-        m_currentEnsemble = (m_currentEnsemble + 1) % m_ensembleList.size();
+        if (m_ensembleList.size() > 0)
+        {
+            m_currentEnsemble = (m_currentEnsemble + 1) % m_ensembleList.size();
+        }
+        return m_ensembleList.at(m_currentEnsemble);
     }
-    return m_ensembleList.at(m_currentEnsemble);
+    else
+    {
+        for (int n = 0; n < m_ensembleList.size(); ++n)
+        {
+            if (m_ensembleList.at(n)->getId() == id)
+            {
+                m_currentEnsemble = n;
+                break;
+            }
+        }
+        return m_ensembleList.at(m_currentEnsemble);
+    }
 }
 
 bool ServiceListItem::operator==(const ServiceListItem & other)
