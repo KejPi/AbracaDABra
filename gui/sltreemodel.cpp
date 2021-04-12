@@ -154,7 +154,7 @@ void SLTreeModel::addEnsembleService(const EnsembleListItem *e, const ServiceLis
     SLModelItem * serviceChild = ensChild->findChildId(s->getId());
     if (nullptr == serviceChild)
     {  // new service to be added
-        beginInsertRows(index(ensChild->row(), 1, QModelIndex()), ensChild->childCount(), ensChild->childCount());
+        beginInsertRows(index(ensChild->row(), 0, QModelIndex()), ensChild->childCount(), ensChild->childCount());
         ensChild->appendChild(new SLModelItem(s, ensChild));
         endInsertRows();
     }
@@ -164,7 +164,6 @@ void SLTreeModel::addEnsembleService(const EnsembleListItem *e, const ServiceLis
 
 void SLTreeModel::clear()
 {
-    qDebug() << Q_FUNC_INFO;
     beginResetModel();
     // remove all items
     delete rootItem;
@@ -175,7 +174,6 @@ void SLTreeModel::clear()
 
 void SLTreeModel::sort(int column, Qt::SortOrder order)
 {
-    //qDebug() << Q_FUNC_INFO;
     Q_UNUSED(column);
     rootItem->sort(order);
 

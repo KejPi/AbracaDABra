@@ -577,6 +577,8 @@ void MainWindow::on_channelCombo_currentIndexChanged(int index)
 {
     if (frequency != ui->channelCombo->itemData(index).toUInt())
     {
+        ui->channelLabel->setText(ui->channelCombo->currentText());
+
         // reset UI
         onChannelSelection();
 
@@ -1156,7 +1158,6 @@ void MainWindow::switchMode()
 
 void MainWindow::setExpertMode(bool ena)
 {
-    qDebug() << minimumSizeHint() << ui->centralwidget->layout()->minimumSize();
     if (ena)
     {
         switchModeAct->setText("Basic mode");
@@ -1168,9 +1169,6 @@ void MainWindow::setExpertMode(bool ena)
     ui->channelCombo->setVisible(ena);
     ui->channelLabel->setVisible(!ena);
     ui->serviceTreeView->setVisible(ena);
-    qDebug() << minimumSizeHint() << ui->centralwidget->layout()->minimumSize();
-    //resize(minimumSizeHint());
-    qDebug() << minimumSizeHint() << ui->centralwidget->layout()->minimumSize();
 
     QTimer::singleShot(10, this, &MainWindow::setMinumumSize);
 }
@@ -1182,22 +1180,56 @@ void MainWindow::setMinumumSize()
 
 void MainWindow::bandScan()
 {
-    //BandScanDialog * dialog = new BandScanDialog(this);
-//    dialog->setModal(true);
-//    dialog->show();
-    BandScanDialog * dialog = new BandScanDialog(this);
+    BandScanDialog * dialog = new BandScanDialog(this, Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
     connect(dialog, &BandScanDialog::finished, dialog, &QObject::deleteLater);
-    connect(dialog, &BandScanDialog::tune, radioControl, &RadioControl::tuneService, Qt::QueuedConnection);
+    connect(dialog, &BandScanDialog::tuneChannel, this, &MainWindow::tuneChannel);
     connect(radioControl, &RadioControl::ensembleInformation, dialog, &BandScanDialog::ensembleFound, Qt::QueuedConnection);
-    //connect(radioControl, &RadioControl::serviceListEntry, dialog, &BandScanDialog::serviceFound, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::tuneDone, dialog, &BandScanDialog::tuneFinished, Qt::QueuedConnection);
     connect(serviceList, &ServiceList::serviceAdded, dialog, &BandScanDialog::serviceFound);
     connect(dialog, &BandScanDialog::scanStarts, this, &MainWindow::clearServiceList);
+    connect(dialog, &BandScanDialog::finished, this, &MainWindow::bandScanFinished);
 
-    qDebug() << Q_FUNC_INFO << "start";
-    //dialog->exec();
     dialog->open();
-    qDebug() << Q_FUNC_INFO << "stop";
+}
+
+void MainWindow::bandScanFinished(int result)
+{
+    qDebug() << Q_FUNC_INFO;
+    switch (result)
+    {
+    case BandScanDialogResult::Done:
+    case BandScanDialogResult::Interrupted:
+    {
+        if (serviceList->numServices() > 0)
+        {   // going to select first service
+            const SLModel * model = reinterpret_cast<const SLModel*>(ui->serviceListView->model());
+            QModelIndex index = model->index(0, 0);
+            ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
+            serviceListClicked(index);   // this selects service
+            ui->serviceListView->setFocus();
+        }
+    }
+        break;
+    case BandScanDialogResult::Cancelled:
+        // do nothing
+        break;
+    }
+}
+
+void MainWindow::tuneChannel(uint32_t freq)
+{
+    // change combo - find combo index
+    int idx = 0;
+    dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
+    while (it != DabTables::channelList.constEnd()) {
+        if (it.key() == freq)
+        {
+            ui->channelCombo->setCurrentIndex(idx);
+            return;
+        }
+        ++it;
+        ++idx;
+    }
 }
 
 void MainWindow::stop()

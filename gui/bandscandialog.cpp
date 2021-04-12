@@ -4,30 +4,21 @@
 #include "ui_bandscandialog.h"
 #include "dabtables.h"
 
-BandScanDialog::BandScanDialog(QWidget *parent) :
-    QDialog(parent),
+BandScanDialog::BandScanDialog(QWidget *parent, Qt::WindowFlags f) :
+    QDialog(parent, f),
     ui(new Ui::BandScanDialog)
 {
     ui->setupUi(this);
+
+    setSizeGripEnabled(false);
 
     buttonStart = ui->buttonBox->button(QDialogButtonBox::Ok);
     buttonStart->setText("Start");
     connect(buttonStart, &QPushButton::clicked, this, &BandScanDialog::startScan);
 
     buttonStop = ui->buttonBox->button(QDialogButtonBox::Cancel);
-    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
-
-    //ui->buttonBox->button(QDialogButtonBox::Ok)->setText("Start");
-
-//    // fill channel list
-//    dabChannelList_t::const_iterator i = DabTables::channelList.constBegin();
-//    while (i != DabTables::channelList.constEnd()) {
-//        ui->startComboBox->addItem(i.value(), i.key());
-//        ui->stopComboBox->addItem(i.value(), i.key());
-//        ++i;
-//    }
-//    ui->startComboBox->setCurrentIndex(0);
-//    ui->stopComboBox->setCurrentIndex(ui->stopComboBox->count()-1);
+    buttonStop->setDefault(true);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &BandScanDialog::stopPressed);
 
     ui->numEnsemblesFoundLabel->setText(QString("%1").arg(numEnsemblesFound));
     ui->numServicesFoundLabel->setText(QString("%1").arg(numServicesFound));
@@ -37,6 +28,13 @@ BandScanDialog::BandScanDialog(QWidget *parent) :
     ui->progressLabel->setText(QString("0 / %1").arg(DabTables::channelList.size()));
     ui->progressChannel->setText("None");
 
+    ui->progressLabel->setVisible(false);
+    ui->progressChannel->setVisible(false);
+    ui->scanningLabel->setText("<span style=\"color:red\"><b>Warning:</b> Band scan deletes current service list and all favorites!</span>");
+
+
+    //layout()->setSizeConstraint( QLayout::SetFixedSize );
+    setFixedSize( sizeHint() );
 }
 
 BandScanDialog::~BandScanDialog()
@@ -52,52 +50,52 @@ BandScanDialog::~BandScanDialog()
     delete ui;        
 }
 
+void BandScanDialog::stopPressed()
+{
+    qDebug() << Q_FUNC_INFO;
+    if (isScanning)
+    {
+        // the state machine hase 3 possible states
+        // 1. wait for tune (event)
+        // 2. wait for enseble (timer or event)
+        // 3. wait for services (timer)
+        if (timer->isActive())
+        {   // state 2 and 3
+            timer->stop();
+            done(BandScanDialogResult::Interrupted);
+        }
+        // timer not running -> state 1
+        state = BandScanState::Interrupted;  // ==> it will be finished when tune is complete
+    }
+    else
+    {
+        done(BandScanDialogResult::Cancelled);
+    }
+}
 
 void BandScanDialog::startScan()
 {
     qDebug() << Q_FUNC_INFO;
 
-    scanning = true;
+    isScanning = true;
+
+    ui->scanningLabel->setText("Scanning channel:");
+    ui->progressLabel->setVisible(true);
+    ui->progressChannel->setVisible(true);
+
     buttonStart->setText("Scanning");
     buttonStart->setEnabled(false);
     buttonStop->setText("Stop");
+    buttonStop->setDefault(false);
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &BandScanDialog::scanStep);
 
     state = BandScanState::Init;
-    // this stops audio and tunes to 0
-    emit scanStarts();
 
-//    QThread::msleep(5000);
-
-//    emit tune(174928, 0, 0);
-
-//    QThread::msleep(6000);
-
-//    emit tune(188928, 0, 0);
-
-//    QThread::msleep(6000);
-
-//    emit tune(227360, 0, 0);
-
-//    int progress = 0;
-//    dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
-//    while (it != DabTables::channelList.constEnd())
-//    {
-//        int numEns = numEnsemblesFound;
-//        ui->progressLabel->setText(QString("%1 / %1").arg(++progress).arg(DabTables::channelList.size()));
-//        ui->progressBar->setValue(progress);
-//        ui->progressChannel->setText(it.value());
-
-//        emit tune(it.key(), 0, 0);
-//        QThread::msleep(3000);
-//        if (numEnsemblesFound > numEns)
-//        {  // signal -- wait for services
-//           QThread::msleep(3000);
-//        }
-//        ++it;
-//    }
+    // using timer for mainwindow to cleanup and tune to 0 potentially (no timeout in case)
+    timer->start(2000);
+    emit scanStarts();        
 }
 
 void BandScanDialog::scanStep()
@@ -105,6 +103,9 @@ void BandScanDialog::scanStep()
     if (BandScanState::Init == state)
     {  // first step
        channelIt = DabTables::channelList.constBegin();
+
+       // debug
+       //channelIt = DabTables::channelList.find(225648);
     }
     else
     {  // next step
@@ -114,7 +115,8 @@ void BandScanDialog::scanStep()
     if (DabTables::channelList.constEnd() == channelIt)
     {
         // scan finished
-        accept();
+        done(BandScanDialogResult::Done);
+        return;
     }
 
     ui->progressBar->setValue(ui->progressBar->value()+1);
@@ -123,16 +125,24 @@ void BandScanDialog::scanStep()
                                .arg(DabTables::channelList.size()));
     ui->progressChannel->setText(channelIt.value());
     state = BandScanState::WaitForTune;
-    emit tune(channelIt.key(), 0, 0);
+    emit tuneChannel(channelIt.key());
 }
 
 void BandScanDialog::tuneFinished(uint32_t freq)
 {
-    qDebug() << Q_FUNC_INFO << freq;
+     qDebug() << Q_FUNC_INFO << freq;
 
     if (BandScanState::Init == state)
     {
+        if (timer->isActive())
+        {
+            timer->stop();
+        }
         scanStep();
+    }
+    else if (BandScanState::Interrupted == state)
+    {   // exit
+        done(BandScanDialogResult::Interrupted);
     }
     else
     {   // tuned to some frequency -> wait for ensemble
@@ -143,7 +153,6 @@ void BandScanDialog::tuneFinished(uint32_t freq)
 
 void BandScanDialog::ensembleFound(const RadioControlEnsemble &ens)
 {
-    qDebug() << Q_FUNC_INFO << ens.label;
     timer->stop();
 
     ui->numEnsemblesFoundLabel->setText(QString("%1").arg(++numEnsemblesFound));
@@ -154,7 +163,6 @@ void BandScanDialog::ensembleFound(const RadioControlEnsemble &ens)
 
 void BandScanDialog::serviceFound(const ServiceListItem *s)
 {
-    qDebug() << Q_FUNC_INFO << s->label();
     ui->numServicesFoundLabel->setText(QString("%1").arg(++numServicesFound));
 }
 

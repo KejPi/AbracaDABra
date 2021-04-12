@@ -147,7 +147,6 @@ void SLModel::addService(const ServiceListItem *s)
 
 void SLModel::clear()
 {
-    qDebug() << Q_FUNC_INFO;
     beginResetModel();
     // remove all items
     m_serviceItems.clear();

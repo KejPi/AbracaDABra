@@ -125,7 +125,9 @@ private:
     void switchMode();
     void setExpertMode(bool ena);
     void stop();
+    void tuneChannel(uint32_t freq);
     void bandScan();
+    void bandScanFinished(int result);
     void clearServiceList();
 
     void setMinumumSize();
