@@ -87,7 +87,6 @@ MainWindow::MainWindow(QWidget *parent)
     updateSnrLevel(0);
     updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
 
-    QToolButton * setupButton = new QToolButton(this);
     setupAct = new QAction("Setup...", this);
     //setupAct->setStatusTip("Application settings");       // this is shown in status bar
     connect(setupAct, &QAction::triggered, setupDialog, &SetupDialog::show);
@@ -108,16 +107,25 @@ MainWindow::MainWindow(QWidget *parent)
     menu->addAction(switchModeAct);
     menu->addAction(clearServiceListAct);
 
-    setupButton->setMenu(menu);
-    //setupButton->setArrowType(Qt::DownArrow);
-    setupButton->setText(QString(QChar(0x22EF)));    // MIDLINE horizontal ellipsis
-    setupButton->setPopupMode(QToolButton::InstantPopup);
+    QPixmap pic;
+    ClickableLabel * settingsLabel = new ClickableLabel(this);
+    if (pic.load(":/resources/settings.png"))
+    {
+        settingsLabel->setPixmap(pic);
+    }
+    else
+    {
+        qDebug() << "Unable to load :/resources/broadcast.png";
+    }
+    settingsLabel->setMenu(menu);
+
+    //FavoriteLabel * muteLabel = new FavoriteLabel()
 
     QGridLayout * layout = new QGridLayout(widget);
     layout->addWidget(timeLabel, 0,0, Qt::AlignVCenter | Qt::AlignLeft);
     layout->addLayout(signalQualityLayout, 0,1,Qt::AlignVCenter | Qt::AlignRight);
-    layout->addWidget(setupButton, 0,2,Qt::AlignVCenter | Qt::AlignRight);
-    //layout->addWidget(new QLabel(QChar(0x2699)), 0,3,Qt::AlignVCenter | Qt::AlignRight);
+    layout->addWidget(settingsLabel, 0,2,Qt::AlignVCenter | Qt::AlignRight);
+    //layout->addWidget(muteLabel, 0,3, Qt::AlignVCenter | Qt::AlignRight);
     layout->setColumnStretch(0, 100);
     layout->setSpacing(20);
     ui->statusbar->addWidget(widget,1);   
@@ -172,7 +180,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->slsView->setFrameStyle(QFrame::NoFrame);
 #endif    
 
-    QPixmap pic;
     if (pic.load(":/resources/sls_logo.png"))
     {
         QGraphicsScene * scene = ui->slsView->scene();

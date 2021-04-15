@@ -6,5 +6,6 @@
         <file>resources/starEmpty20.png</file>
         <file>resources/broadcast.png</file>
         <file>resources/broadcast.svg</file>
+        <file>resources/settings.png</file>        
     </qresource>
 </RCC>
