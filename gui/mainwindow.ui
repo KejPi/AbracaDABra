@@ -163,7 +163,7 @@
          </widget>
         </item>
         <item>
-         <widget class="FavoriteLabel" name="favoriteLabel">
+         <widget class="ClickableLabel" name="favoriteLabel">
           <property name="maximumSize">
            <size>
             <width>30</width>
@@ -285,11 +285,6 @@
    <class>SLSView</class>
    <extends>QGraphicsView</extends>
    <header>mainwindow.h</header>
-  </customwidget>
-  <customwidget>
-   <class>FavoriteLabel</class>
-   <extends>QLabel</extends>
-   <header>favoritelabel.h</header>
   </customwidget>
   <customwidget>
    <class>ClickableLabel</class>

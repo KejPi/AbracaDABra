@@ -47,6 +47,15 @@ MainWindow::MainWindow(QWidget *parent)
     // set UI
     setWindowTitle("Abraca DAB Radio");
 
+    // favorites control
+    ui->favoriteLabel->setCheckable(true);
+    ui->favoriteLabel->setIcon(":/resources/starEmpty20.png", false);
+    ui->favoriteLabel->setIcon(":/resources/star20.png", true);
+    ui->favoriteLabel->setTooltip("Click to add service to favourites", false);
+    ui->favoriteLabel->setTooltip("Click to remove service from favourites", true);
+    ui->favoriteLabel->setChecked(false);
+
+
     setupDialog = new SetupDialog(this);
     connect(setupDialog, &SetupDialog::inputDeviceChanged, this, &MainWindow::changeInputDevice);
     connect(setupDialog, &SetupDialog::fileLoopingEnabled, this, &MainWindow::enableFileLooping);
@@ -109,23 +118,28 @@ MainWindow::MainWindow(QWidget *parent)
 
     QPixmap pic;
     ClickableLabel * settingsLabel = new ClickableLabel(this);
-    if (pic.load(":/resources/settings.png"))
-    {
-        settingsLabel->setPixmap(pic);
-    }
-    else
-    {
-        qDebug() << "Unable to load :/resources/broadcast.png";
-    }
+    settingsLabel->setIcon(":/resources/settings.png");
+    settingsLabel->setToolTip("Open menu");
     settingsLabel->setMenu(menu);
 
-    //FavoriteLabel * muteLabel = new FavoriteLabel()
+    ClickableLabel * muteLabel = new ClickableLabel(this);
+    muteLabel->setCheckable(true);
+    muteLabel->setIcon(":/resources/volume_on.png", false);
+    muteLabel->setIcon(":/resources/volume_off.png", true);
+    muteLabel->setTooltip("Mute audio", false);
+    muteLabel->setTooltip("Unmute audio", true);
+    muteLabel->setChecked(false);
+
+//    QFrame * line = new QFrame(this);
+//    line->setFrameShape(QFrame::VLine);
+//    line->setFrameShadow(QFrame::Sunken);
 
     QGridLayout * layout = new QGridLayout(widget);
-    layout->addWidget(timeLabel, 0,0, Qt::AlignVCenter | Qt::AlignLeft);
-    layout->addLayout(signalQualityLayout, 0,1,Qt::AlignVCenter | Qt::AlignRight);
-    layout->addWidget(settingsLabel, 0,2,Qt::AlignVCenter | Qt::AlignRight);
-    //layout->addWidget(muteLabel, 0,3, Qt::AlignVCenter | Qt::AlignRight);
+    layout->addWidget(timeLabel, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
+    layout->addLayout(signalQualityLayout, 0, 1, Qt::AlignVCenter | Qt::AlignRight);
+//    layout->addWidget(line, 0, 2, Qt::AlignVCenter | Qt::AlignHCenter);
+    layout->addWidget(muteLabel, 0, 3, Qt::AlignVCenter | Qt::AlignRight);
+    layout->addWidget(settingsLabel, 0, 4, Qt::AlignVCenter | Qt::AlignRight);
     layout->setColumnStretch(0, 100);
     layout->setSpacing(20);
     ui->statusbar->addWidget(widget,1);   
@@ -249,7 +263,7 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
 
     // Connect signals
-    connect(ui->favoriteLabel, &FavoriteLabel::toggled, this, &MainWindow::favoriteToggled);
+    connect(ui->favoriteLabel, &ClickableLabel::toggled, this, &MainWindow::favoriteToggled);
     connect(ui->switchSourceLabel, &ClickableLabel::clicked, this, &MainWindow::switchServiceSource);
 
     connect(radioControl, &RadioControl::ensembleInformation, this, &MainWindow::updateEnsembleInfo, Qt::QueuedConnection);
@@ -763,7 +777,7 @@ void MainWindow::audioServiceChanged(const RadioControlAudioService &s)
         ServiceListConstIterator it = serviceList->findService(id);
         if (it != serviceList->serviceListEnd())
         {
-            ui->favoriteLabel->setActive((*it)->isFavorite());
+            ui->favoriteLabel->setChecked((*it)->isFavorite());
             int numEns = (*it)->numEnsembles();
             if (numEns > 1)
             {
@@ -869,7 +883,7 @@ void MainWindow::clearEnsembleInformationLabels()
 void MainWindow::clearServiceInformationLabels()
 {    
     ui->serviceLabel->setText("No service");
-    ui->favoriteLabel->setActive(false);
+    ui->favoriteLabel->setChecked(false);
     ui->serviceLabel->setToolTip("No service playing");
     ui->programTypeLabel->setText("");
     ui->audioEncodingLabel->setText("");

@@ -223,8 +223,6 @@ add_executable(${TARGET}
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-    favoritelabel.h
-    favoritelabel.cpp
     clickablelabel.h
     clickablelabel.cpp
     dabtables.h
