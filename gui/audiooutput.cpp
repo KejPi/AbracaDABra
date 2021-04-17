@@ -11,10 +11,10 @@ int portAudioCb( const void *inputBuffer, void *outputBuffer, unsigned long nBuf
 
 AudioOutput::AudioOutput(audioFifo_t * buffer)
 {
-    inFifoPtr = buffer;
-    outStream = nullptr;
+    m_inFifoPtr = buffer;
+    m_outStream = nullptr;
 #if AUDIOOUTPUT_DBG_TIMER
-    dbgTimer = nullptr;
+    m_dbgTimer = nullptr;
 #endif
 
     PaError err = Pa_Initialize();
@@ -34,13 +34,13 @@ AudioOutput::AudioOutput(audioFifo_t * buffer)
 
 AudioOutput::~AudioOutput()
 {
-    if (nullptr != outStream)
+    if (nullptr != m_outStream)
     {
-        if (Pa_IsStreamActive(outStream))
+        if (Pa_IsStreamActive(m_outStream))
         {
-            Pa_AbortStream(outStream);
+            Pa_AbortStream(m_outStream);
         }
-        Pa_CloseStream(outStream);
+        Pa_CloseStream(m_outStream);
     }
 
     PaError err = Pa_Terminate();
@@ -61,19 +61,19 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 {
     stop();
 
-    sampleRate_kHz = sRate/1000;
-    numChannels = numCh;
+    m_sampleRate_kHz = sRate/1000;
+    m_numChannels = numCh;
 
-    bytesPerFrame = numCh * sizeof(int16_t);
-    bufferFrames = AUDIO_FIFO_CHUNK_MS * sampleRate_kHz;   // 120 ms (FIFO size should be integer multiple of this)
+    m_bytesPerFrame = numCh * sizeof(int16_t);
+    m_bufferFrames = AUDIO_FIFO_CHUNK_MS * m_sampleRate_kHz;   // 120 ms (FIFO size should be integer multiple of this)
 
     /* Open an audio I/O stream. */
-    PaError err = Pa_OpenDefaultStream( &outStream,
+    PaError err = Pa_OpenDefaultStream( &m_outStream,
                                         0,              /* no input channels */
                                         numCh,          /* stereo output */
                                         paInt16,        /* 16 bit floating point output */
                                         sRate,
-                                        bufferFrames,   /* frames per buffer, i.e. the number
+                                        m_bufferFrames,   /* frames per buffer, i.e. the number
                                                            of sample frames that PortAudio will
                                                            request from the callback. Many apps
                                                            may want to use
@@ -87,9 +87,9 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
         throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
     }
 
-    isMuted = true;
+    m_playbackState = StateMuted;
 
-    err = Pa_StartStream(outStream);
+    err = Pa_StartStream(m_outStream);
     if (paNoError != err)
     {
         throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
@@ -97,17 +97,17 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 
 #if AUDIOOUTPUT_DBG_TIMER
     // DBG counter for buffer monitoring
-    if (nullptr == dbgTimer)
+    if (nullptr == m_dbgTimer)
     {
-        dbgTimer = new QTimer(this);
-        dbgTimer->setInterval(1000);
-        minCount = INT64_MAX;
-        maxCount = INT64_MIN;
-        sum = 0;
-        memset((uint8_t *)buf, 0, AUDIOOUTPUT_DBG_AVRG_SIZE*sizeof(int64_t));
-        connect(dbgTimer, &QTimer::timeout, this, &AudioOutput::bufferMonitor);
+        m_dbgTimer = new QTimer(this);
+        m_dbgTimer->setInterval(1000);
+        m_minCount = INT64_MAX;
+        m_maxCount = INT64_MIN;
+        m_sum = 0;
+        memset((uint8_t *)m_dbgBuf, 0, AUDIOOUTPUT_DBG_AVRG_SIZE*sizeof(int64_t));
+        connect(m_dbgTimer, &QTimer::timeout, this, &AudioOutput::bufferMonitor);
     }
-    dbgTimer->start();
+    m_dbgTimer->start();
 #endif
 }
 
@@ -115,44 +115,51 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 void AudioOutput::bufferMonitor()
 {
     int64_t count = bytesAvailable();
-    if (count > maxCount) maxCount = count;
-    if (count < minCount) minCount = count;
-    sum -= buf[cntr];
-    buf[cntr++] = count;
-    cntr = cntr % AUDIOOUTPUT_DBG_AVRG_SIZE;
-    sum+= count;
-    float avrgMs = sum / (sizeof(int16_t)*numChannels * AUDIOOUTPUT_DBG_AVRG_SIZE * sampleRate_kHz);
+    if (count > m_maxCount) m_maxCount = count;
+    if (count < m_minCount) m_minCount = count;
+    m_sum -= m_dbgBuf[m_cntr];
+    m_dbgBuf[m_cntr++] = count;
+    m_cntr = m_cntr % AUDIOOUTPUT_DBG_AVRG_SIZE;
+    m_sum+= count;
+    float avrgMs = m_sum / (sizeof(int16_t)*m_numChannels * AUDIOOUTPUT_DBG_AVRG_SIZE * m_sampleRate_kHz);
 
-    qDebug("Buffer monitor [%lld - %lld] : %4lld [avrg %.2f] ms", minCount, maxCount, (count/bytesPerFrame)/sampleRate_kHz, avrgMs);
+    qDebug("Buffer monitor [%lld - %lld] : %4lld [avrg %.2f] ms", m_minCount, m_maxCount, (count/m_bytesPerFrame)/m_sampleRate_kHz, avrgMs);
 }
 #endif
 
 void AudioOutput::stop()
 {
     qDebug() << Q_FUNC_INFO;
-    if (nullptr != outStream)
+    if (nullptr != m_outStream)
     {
-        if (Pa_IsStreamActive(outStream))
+        if (Pa_IsStreamActive(m_outStream))
         {
-            Pa_StopStream(outStream);
+            Pa_StopStream(m_outStream);
         }
-        Pa_CloseStream(outStream);
-        outStream = nullptr;
+        Pa_CloseStream(m_outStream);
+        m_outStream = nullptr;
     }
 
 #if AUDIOOUTPUT_DBG_TIMER
-    delete dbgTimer;
-    dbgTimer = nullptr;
+    delete m_dbgTimer;
+    m_dbgTimer = nullptr;
 #endif
 }
 
 int64_t AudioOutput::bytesAvailable() const
 {
-    inFifoPtr->mutex.lock();
-    int64_t count = inFifoPtr->count;
-    inFifoPtr->mutex.unlock();
+    m_inFifoPtr->mutex.lock();
+    int64_t count = m_inFifoPtr->count;
+    m_inFifoPtr->mutex.unlock();
 
     return count;
+}
+
+void AudioOutput::mute(bool on)
+{
+    m_muteMutex.lock();
+    m_muteFlag = on;
+    m_muteMutex.unlock();
 }
 
 int portAudioCb( const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
@@ -175,139 +182,204 @@ int portAudioCb( const void *inputBuffer, void *outputBuffer, unsigned long nBuf
 
 int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames, PaStreamCallbackFlags statusFlags)
 {
-    //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
-
-#define FADE_TIME_MS 40
-
     if (statusFlags & paOutputUnderflow)
     {
         qDebug() << "Port Audio underflow!";
     }
 
     // read samples from input buffer
-    uint64_t bytesToRead = bytesPerFrame * nBufferFrames;
+    m_inFifoPtr->mutex.lock();
+    uint64_t count = m_inFifoPtr->count;
+    m_inFifoPtr->mutex.unlock();
 
-    inFifoPtr->mutex.lock();
-    uint64_t count = inFifoPtr->count;
-    inFifoPtr->mutex.unlock();
+    m_muteMutex.lock();
+    bool mute = m_muteFlag;
+    m_muteMutex.unlock();
 
-    if (isMuted)
-    {
-        if (count < 6*bytesToRead)
-        {   // insert silence
-            qDebug("Muted: Inserting silence [%lu ms]", nBufferFrames/sampleRate_kHz);
-            memset(outputBuffer, 0, bytesToRead);
-            return paContinue;
-        }
-    }
-    else
-    {
-        if (count < bytesToRead)  // threshold for mute
-        {   // mute
+    uint64_t bytesToRead = m_bytesPerFrame * nBufferFrames;
+    uint32_t availableSamples = nBufferFrames;
 
-            if (0 == count)
-            { // nothing to mute
-                qDebug("Hard mute [no samples available]");
+    if (StateMuted == m_playbackState)
+    {   // muted
+        // condition to unmute is enough samples && !muteFlag
+        if (count > 6*bytesToRead)
+        {   // enough samples => reading data from input fifo
+            if (mute)
+            {   // staying muted -> setting output buffer to 0
                 memset(outputBuffer, 0, bytesToRead);
-                isMuted = true;
+
+                // shifting buffer pointers
+                m_inFifoPtr->tail = (m_inFifoPtr->tail + bytesToRead) % AUDIO_FIFO_SIZE;
+                m_inFifoPtr->mutex.lock();
+                m_inFifoPtr->count -= bytesToRead;
+                m_inFifoPtr->countChanged.wakeAll();
+                m_inFifoPtr->mutex.unlock();
+
+                // done
                 return paContinue;
             }
 
-            // mute
-            uint32_t availableSamples = count/bytesPerFrame;
-            qDebug("Muting... [available %u samples]", availableSamples);
-
-#if 1  // mute implementation
-            Q_ASSERT(count == availableSamples*bytesPerFrame);
-
-            // copy all available samples to output buffer
-            uint64_t bytesToEnd = AUDIO_FIFO_SIZE - inFifoPtr->tail;
-            if (bytesToEnd < count)
+            uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
+            if (bytesToEnd < bytesToRead)
             {
-                memcpy((uint8_t*)outputBuffer, inFifoPtr->buffer+inFifoPtr->tail, bytesToEnd);
-                memcpy((uint8_t*)outputBuffer + bytesToEnd, inFifoPtr->buffer, (count - bytesToEnd));
-                inFifoPtr->tail = count - bytesToEnd;
+                memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
+                memcpy((uint8_t*)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (bytesToRead - bytesToEnd));
+                m_inFifoPtr->tail = bytesToRead - bytesToEnd;
             }
             else
             {
-                memcpy((uint8_t*) outputBuffer, inFifoPtr->buffer+inFifoPtr->tail, count);
-                inFifoPtr->tail += count;
+                memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToRead);
+                m_inFifoPtr->tail += bytesToRead;
+            }
+
+            m_inFifoPtr->mutex.lock();
+            m_inFifoPtr->count -= bytesToRead;
+            m_inFifoPtr->countChanged.wakeAll();
+            m_inFifoPtr->mutex.unlock();
+
+            // unmute request
+            m_playbackState = StateDoUnmute;
+        }
+        else
+        {   // not enough samples ==> inserting silence
+            qDebug("Muted: Inserting silence [%lu ms]", nBufferFrames/m_sampleRate_kHz);
+            memset(outputBuffer, 0, bytesToRead);
+
+            // done
+            return paContinue;
+        }
+    }
+    //if (StatePlaying == playbackState)
+    else  // cannot be anything else than StateMuted or StatePlaying
+    {   // playing
+
+        Q_ASSERT(StatePlaying == m_playbackState);
+
+        // condition to mute is not enough samples || muteFlag
+        if (count < bytesToRead)
+        {   // not enough samples -> reading what we have and filling rest with zeros
+            if (0 == count)
+            {   // nothing to play
+                qDebug("Hard mute [no samples available]");
+                memset(outputBuffer, 0, bytesToRead);
+                m_playbackState = StateMuted;
+                return paContinue;
+            }
+
+            // there are some samples available
+            availableSamples = count/m_bytesPerFrame;
+
+            Q_ASSERT(count == availableSamples*m_bytesPerFrame);
+
+            // copy all available samples to output buffer
+            uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
+            if (bytesToEnd < count)
+            {
+                memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
+                memcpy((uint8_t*)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (count - bytesToEnd));
+                m_inFifoPtr->tail = count - bytesToEnd;
+            }
+            else
+            {
+                memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, count);
+                m_inFifoPtr->tail += count;
             }
             // set rest of the samples to be 0
             memset((uint8_t*)outputBuffer+count, 0, bytesToRead-count);
 
-            // apply mute ramp
-            uint32_t fadeSamples = FADE_TIME_MS * sampleRate_kHz;
-            if (availableSamples < fadeSamples)
+            m_inFifoPtr->mutex.lock();
+            m_inFifoPtr->count -= count;
+            m_inFifoPtr->countChanged.wakeAll();
+            m_inFifoPtr->mutex.unlock();
+
+            m_playbackState = StateDoMute;  // mute
+        }
+        else
+        {   // reading samples
+            uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
+            if (bytesToEnd < bytesToRead)
             {
-                fadeSamples = availableSamples;
+                memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
+                memcpy((uint8_t*)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (bytesToRead - bytesToEnd));
+                m_inFifoPtr->tail = bytesToRead - bytesToEnd;
+            }
+            else
+            {
+                memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToRead);
+                m_inFifoPtr->tail += bytesToRead;
             }
 
-            uint32_t fadeBytes = fadeSamples * bytesPerFrame;
-            float gDec = 1.0/fadeSamples;
-            float gain = 1.0;
+            m_inFifoPtr->mutex.lock();
+            m_inFifoPtr->count -= bytesToRead;
+            m_inFifoPtr->countChanged.wakeAll();
+            m_inFifoPtr->mutex.unlock();
 
-            int16_t * dataPtr = (int16_t *) ((uint8_t * ) outputBuffer + (count - fadeBytes));
-            for (uint32_t n = 0; n < fadeSamples; ++n)
-            {
-                for (int c = 0; c < numChannels; ++c)
-                {
-                    *dataPtr = int16_t(qRound(gain * *dataPtr));
-                    dataPtr++;
-                }
-                gain = gain-gDec;
+            if (mute)
+            {   // mute requested
+                m_playbackState = StateDoMute;
             }
-
-            inFifoPtr->mutex.lock();
-            inFifoPtr->count -= count;
-            inFifoPtr->countChanged.wakeAll();
-            inFifoPtr->mutex.unlock();
-#else
-            memset(outputBuffer, 0, bytesToRead);
-#endif
-            isMuted = true;
-            return paContinue;
+            else
+            {   // done
+               return paContinue;
+            }
         }
     }
 
-    // normal operation
-    uint64_t bytesToEnd = AUDIO_FIFO_SIZE - inFifoPtr->tail;
-    if (bytesToEnd < bytesToRead)
-    {
-        memcpy((uint8_t*)outputBuffer, inFifoPtr->buffer+inFifoPtr->tail, bytesToEnd);
-        memcpy((uint8_t*)outputBuffer + bytesToEnd, inFifoPtr->buffer, (bytesToRead - bytesToEnd));
-        inFifoPtr->tail = bytesToRead - bytesToEnd;
-    }
-    else
-    {
-        memcpy((uint8_t*) outputBuffer, inFifoPtr->buffer+inFifoPtr->tail, bytesToRead);
-        inFifoPtr->tail += bytesToRead;
-    }
+    // at this point we have buffer that needs to be muted or unmuted
+    // it is indicated by playbackState variable
 
-    if (isMuted)
-    {   // apply unmute ramp
+    // unmute
+    if (StateDoUnmute == m_playbackState)
+    {   // unmute can be requested only when there is enough samples
         qDebug() << "Unmuting audio";
-        uint32_t fadeSamples = FADE_TIME_MS * sampleRate_kHz;
+        uint32_t fadeSamples = AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz;
         float gInc = 1.0/fadeSamples;
         float gain = 0;
 
         int16_t * dataPtr = (int16_t *) outputBuffer;
         for (uint32_t n = 0; n < fadeSamples; ++n)
         {
-            for (int c = 0; c < numChannels; ++c)
+            for (int c = 0; c < m_numChannels; ++c)
             {
                 *dataPtr = int16_t(qRound(gain * *dataPtr));
                 dataPtr++;
             }
             gain = gain+gInc;
         }
-        isMuted = false;
+
+        m_playbackState = StatePlaying; // playing
+
+        // done
+        return paContinue;
     }
 
-    inFifoPtr->mutex.lock();
-    inFifoPtr->count -= bytesToRead;
-    inFifoPtr->countChanged.wakeAll();
-    inFifoPtr->mutex.unlock();
+    // mute
+    if (StateDoMute == m_playbackState)
+    {   // mute can be requested when there is not enough samples or from HMI
+        qDebug("Muting... [available %u samples]", availableSamples);
+
+        uint32_t fadeSamples = AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz;
+        if (availableSamples < fadeSamples)
+        {
+            fadeSamples = availableSamples;
+        }
+
+        float gDec = 1.0/fadeSamples;
+        float gain = 1.0;
+
+        int16_t * dataPtr = (int16_t *) ((uint8_t * ) outputBuffer + (availableSamples - fadeSamples)*m_bytesPerFrame);
+        for (uint32_t n = 0; n < fadeSamples; ++n)
+        {
+            for (int c = 0; c < m_numChannels; ++c)
+            {
+                *dataPtr = int16_t(qRound(gain * *dataPtr));
+                dataPtr++;
+            }
+            gain = gain-gDec;
+        }
+
+        m_playbackState = StateMuted; // muted
+    }
 
     return paContinue;
 }
@@ -321,7 +393,7 @@ AudioOutput::AudioOutput(audioFifo_t * buffer)
     audioOutput = nullptr;
     audioStartTimer = nullptr;
 #if AUDIOOUTPUT_DBG_TIMER
-    dbgTimer = nullptr;
+    m_dbgTimer = nullptr;
 #endif
 }
 
@@ -334,10 +406,10 @@ AudioOutput::~AudioOutput()
     }
     destroyTimer();
 #if AUDIOOUTPUT_DBG_TIMER
-    if (nullptr != dbgTimer)
+    if (nullptr != m_dbgTimer)
     {
-        dbgTimer->stop();
-        delete dbgTimer;
+        m_dbgTimer->stop();
+        delete m_dbgTimer;
     }
 #endif
     ioDevice->close();
@@ -350,8 +422,8 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 
     qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
 
-    sampleRate_kHz = sRate/1000;
-    numChannels = numCh;
+    m_sampleRate_kHz = sRate/1000;
+    m_numChannels = numCh;
 
     QAudioFormat format;
     format.setSampleRate(sRate);
@@ -382,15 +454,15 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 
 #if AUDIOOUTPUT_DBG_TIMER
     // DBG counter for buffer monitoring
-    if (nullptr == dbgTimer)
+    if (nullptr == m_dbgTimer)
     {
-        dbgTimer = new QTimer(this);
-        dbgTimer->setInterval(1000);
-        minCount = INT64_MAX;
-        maxCount = INT64_MIN;
-        connect(dbgTimer, &QTimer::timeout, this, &AudioOutput::bufferMonitor);
+        m_dbgTimer = new QTimer(this);
+        m_dbgTimer->setInterval(1000);
+        m_minCount = INT64_MAX;
+        m_maxCount = INT64_MIN;
+        connect(m_dbgTimer, &QTimer::timeout, this, &AudioOutput::bufferMonitor);
     }
-    dbgTimer->start();
+    m_dbgTimer->start();
 #endif
 }
 
@@ -399,16 +471,16 @@ void AudioOutput::bufferMonitor()
 {
     int64_t count = ioDevice->bytesAvailable();
 
-    if (count > maxCount) maxCount = count;
-    if (count < minCount) minCount = count;
-    sum -= buf[cntr];
-    buf[cntr++] = count;
-    cntr = cntr % AUDIOOUTPUT_DBG_AVRG_SIZE;
-    sum+= count;
-    float avrgMs = sum / (sizeof(int16_t)*numChannels * AUDIOOUTPUT_DBG_AVRG_SIZE * sampleRate_kHz);
+    if (count > m_maxCount) m_maxCount = count;
+    if (count < m_minCount) m_minCount = count;
+    m_sum -= m_dbgBuf[m_cntr];
+    m_dbgBuf[m_cntr++] = count;
+    m_cntr = m_cntr % AUDIOOUTPUT_DBG_AVRG_SIZE;
+    m_sum+= count;
+    float avrgMs = m_sum / (sizeof(int16_t)*m_numChannels * AUDIOOUTPUT_DBG_AVRG_SIZE * m_sampleRate_kHz);
 
-    qDebug("Buffer monitor [%lld - %lld] : %lld bytes => %lld samples => %lld [avrg %.2f] ms", minCount, maxCount,
-           count, count >> 2, (count>>2)/sampleRate_kHz, avrgMs);
+    qDebug("Buffer monitor [%lld - %lld] : %lld bytes => %lld samples => %lld [avrg %.2f] ms", m_minCount, m_maxCount,
+           count, count >> 2, (count>>2)/m_sampleRate_kHz, avrgMs);
 }
 #endif
 
@@ -436,6 +508,18 @@ void AudioOutput::destroyTimer()
     }
 }
 
+void AudioOutput::mute(bool on)
+{
+    if (on)
+    {
+        audioOutput->setVolume(0);
+    }
+    else
+    {
+        audioOutput->setVolume(1.0);
+    }
+}
+
 void AudioOutput::stop()
 {
     qDebug() << Q_FUNC_INFO;
@@ -450,8 +534,8 @@ void AudioOutput::stop()
     ioDevice->stop();
 
 #if AUDIOOUTPUT_DBG_TIMER
-    delete dbgTimer;
-    dbgTimer = nullptr;
+    delete m_dbgTimer;
+    m_dbgTimer = nullptr;
 #endif
     destroyTimer();
 }
@@ -487,7 +571,7 @@ void AudioOutput::checkInputBuffer()
     qDebug() << Q_FUNC_INFO << count;
 
     // waiting for buffer full enough
-    if (count > 8 * AUDIO_FIFO_CHUNK_MS * sampleRate_kHz * numChannels * sizeof(int16_t))
+    if (count > 8 * AUDIO_FIFO_CHUNK_MS * m_sampleRate_kHz * m_numChannels * sizeof(int16_t))
     {
         switch (audioOutput->state())
         {

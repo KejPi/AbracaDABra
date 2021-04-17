@@ -24,12 +24,14 @@
 #endif
 //#define AUDIOOUTPUT_RAW_FILE_OUT
 
+#define AUDIOOUTPUT_FADE_TIME_MS 40
 
 class AudioIODevice;
 
 class AudioOutput : public QObject
 {
     Q_OBJECT
+
 public:
     AudioOutput(audioFifo_t *buffer);
     ~AudioOutput();
@@ -37,20 +39,31 @@ public:
 
 public slots:
     void start(uint32_t sRate, uint8_t numChannels);
+    void mute(bool on);
 
 private:
-    uint32_t sampleRate_kHz;
-    uint8_t numChannels;    
+    uint32_t m_sampleRate_kHz;
+    uint8_t m_numChannels;
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
     FILE * rawOut;
 #endif
 
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
-    PaStream * outStream = nullptr;
-    audioFifo_t * inFifoPtr = nullptr;
-    unsigned int bufferFrames;
-    uint8_t bytesPerFrame;
-    bool isMuted = true;
+    PaStream * m_outStream = nullptr;
+    audioFifo_t * m_inFifoPtr = nullptr;
+    unsigned int m_bufferFrames;
+    uint8_t m_bytesPerFrame;
+
+    enum
+    {
+        StatePlaying = 0,
+        StateMuted = 1,
+        StateDoMute = 2,
+        StateDoUnmute = 3,
+    } m_playbackState;
+
+    bool m_muteFlag = false;
+    QMutex m_muteMutex;
 
     int portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames, PaStreamCallbackFlags statusFlags);
 
@@ -63,12 +76,12 @@ private:
 #endif
 
 #if AUDIOOUTPUT_DBG_TIMER
-    int64_t minCount = INT64_MAX;
-    int64_t maxCount = INT64_MIN;
-    int64_t buf[AUDIOOUTPUT_DBG_AVRG_SIZE];
-    int8_t cntr = 0;
-    int64_t sum = 0;
-    QTimer * dbgTimer;
+    int64_t m_minCount = INT64_MAX;
+    int64_t m_maxCount = INT64_MIN;
+    int64_t m_dbgBuf[AUDIOOUTPUT_DBG_AVRG_SIZE];
+    int8_t m_cntr = 0;
+    int64_t m_sum = 0;
+    QTimer * m_dbgTimer;
     void bufferMonitor();
 #endif
     int64_t bytesAvailable() const;

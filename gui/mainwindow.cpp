@@ -128,7 +128,7 @@ MainWindow::MainWindow(QWidget *parent)
     muteLabel->setIcon(":/resources/volume_off.png", true);
     muteLabel->setTooltip("Mute audio", false);
     muteLabel->setTooltip("Unmute audio", true);
-    muteLabel->setChecked(false);
+    muteLabel->setChecked(false);   
 
 //    QFrame * line = new QFrame(this);
 //    line->setFrameShape(QFrame::VLine);
@@ -263,8 +263,9 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
 
     // Connect signals
+    connect(muteLabel, &ClickableLabel::toggled, audioOutput, &AudioOutput::mute, Qt::QueuedConnection);
     connect(ui->favoriteLabel, &ClickableLabel::toggled, this, &MainWindow::favoriteToggled);
-    connect(ui->switchSourceLabel, &ClickableLabel::clicked, this, &MainWindow::switchServiceSource);
+    connect(ui->switchSourceLabel, &ClickableLabel::clicked, this, &MainWindow::switchServiceSource);    
 
     connect(radioControl, &RadioControl::ensembleInformation, this, &MainWindow::updateEnsembleInfo, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::syncStatus, this, &MainWindow::updateSyncStatus, Qt::QueuedConnection);
