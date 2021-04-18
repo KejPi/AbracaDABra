@@ -17,6 +17,11 @@ class SetupDialog : public QDialog
 public:
     SetupDialog(QWidget *parent = nullptr);    
 
+    QString getInputFileName() const;
+    RawFileInputFormat getInputFileFormat() const;
+    bool isLoopActive() const;
+    void setInputFile(const QString &value, const RawFileInputFormat &format, bool loop);
+
 public slots:
     void setGainValues(const QList<int> * pList);
     void enableRtlSdrInput(bool ena);
@@ -35,18 +40,15 @@ signals:
 
 private slots:
     void on_gainCombo_currentIndexChanged(int index);
-
     void on_inputCombo_currentIndexChanged(int index);
-
     void on_openFileButton_clicked();
-
     void on_fileFormatCombo_currentIndexChanged(int index);
-
     void on_loopCheckbox_stateChanged(int arg1);
 
 private:
     Ui::SetupDialog *ui;
     bool openFileButton = false;
+    QString inputFileName;
 };
 
 #endif // SETUPDIALOG_H

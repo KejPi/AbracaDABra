@@ -1002,7 +1002,6 @@ void MainWindow::loadSettings()
     serviceList->load(settings);
     expertMode = settings.value("ExpertMode").toBool();
     setExpertMode(expertMode);
-
     int inDevice = settings.value("inputDeviceId", int(InputDeviceId::UNDEFINED)).toInt();
     if (InputDeviceId::UNDEFINED != static_cast<InputDeviceId>(inDevice))
     {        
@@ -1030,12 +1029,20 @@ void MainWindow::loadSettings()
             }
         }
     }
+
+    // load this afetr device is selected to configure file input correctly
+    setupDialog->setInputFile(settings.value("inputFileName", QVariant(QString(""))).toString(),
+                              RawFileInputFormat(settings.value("inputFileFormat", 0).toInt()),
+                              settings.value("inputFileLoop", false).toBool());
 }
 
 void MainWindow::saveSettings()
 {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
     settings.setValue("inputDeviceId", int(inputDeviceId));
+    settings.setValue("inputFileName", setupDialog->getInputFileName());
+    settings.setValue("inputFileFormat", int(setupDialog->getInputFileFormat()));
+    settings.setValue("inputFileLoop", setupDialog->isLoopActive());
 
     QModelIndex current = ui->serviceListView->currentIndex();
     const SLModel * model = reinterpret_cast<const SLModel*>(current.model());

@@ -12,6 +12,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 {
     ui->setupUi(this);
 
+    inputFileName = "";
+
     // remove question mark from titlebar
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
@@ -96,9 +98,15 @@ void SetupDialog::on_openFileButton_clicked()
 {
     if (openFileButton)
     {
-        QString fileName = QFileDialog::getOpenFileName(this, tr("Open IQ stream"), QDir::homePath()+"/Devel/stimuli", tr("Binary files (*.bin *.s16 *.u8 *.raw)"));
+        QString dir = QDir::homePath();
+        if (!inputFileName.isEmpty())
+        {
+            dir = QFileInfo(inputFileName).path();
+        }
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Open IQ stream"), dir, tr("Binary files (*.bin *.s16 *.u8 *.raw)"));
         if (!fileName.isEmpty())
         {
+            inputFileName = fileName;
             ui->fileNameLabel->setText(fileName);
             if (fileName.endsWith(".s16"))
             {
@@ -162,4 +170,36 @@ void SetupDialog::enableRtlSdrInput(bool ena)
 void SetupDialog::on_loopCheckbox_stateChanged(int arg1)
 {
     emit fileLoopingEnabled(Qt::Checked == Qt::CheckState(arg1));
+}
+
+QString SetupDialog::getInputFileName() const
+{
+    return inputFileName;
+}
+
+RawFileInputFormat SetupDialog::getInputFileFormat() const
+{
+    return RawFileInputFormat(ui->fileFormatCombo->currentIndex());
+}
+
+bool SetupDialog::isLoopActive() const
+{
+    return ui->loopCheckbox->isChecked();
+}
+
+void SetupDialog::setInputFile(const QString &value, const RawFileInputFormat &format, bool loop)
+{
+    inputFileName = value;
+    if (value.isEmpty())
+    {
+        ui->fileNameLabel->setText(NO_FILE);
+        // format has no meaning in this case
+    }
+    else
+    {
+        ui->fileNameLabel->setText(inputFileName);
+        ui->fileFormatCombo->setCurrentIndex(int(format));
+        emit rawFileSelected(inputFileName, RawFileInputFormat(format));
+    }
+    ui->loopCheckbox->setChecked(loop);
 }
