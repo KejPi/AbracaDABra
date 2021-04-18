@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QPainter>
 #include "clickablelabel.h"
 
 ClickableLabel::ClickableLabel(QWidget *parent)
@@ -43,12 +44,20 @@ void ClickableLabel::mouseReleaseEvent(QMouseEvent *)
 bool ClickableLabel::setIcon(const QString & file, bool checked)
 {
     QPixmap * pic = new QPixmap();
+
     if (!pic->load(file))
     {   // do nothing
         qDebug() << Q_FUNC_INFO << "Unable to load icon from file:"<< file;
         delete pic;
         return false;
     }
+
+    // this could be used to calculate transparent picture
+//    QPainter p;
+//    p.begin(pic);
+//    p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+//    p.fillRect(pic->rect(), QColor(0, 0, 0, 180));
+//    p.end();
 
     // we have picture loaded here
     if (checked)
