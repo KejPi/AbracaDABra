@@ -560,6 +560,8 @@ void MainWindow::onChannelSelection()
     updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
     updateSnrLevel(0);
 
+    // hide switch to avoid conflict with tuning -> will be enabled when tune is finished
+    ui->switchSourceLabel->setHidden(true);
     onServiceSelection();
 }
 
@@ -568,7 +570,6 @@ void MainWindow::onServiceSelection()
     clearServiceInformationLabels();
     dlDecoder->reset();
     ui->dynamicLabel->setText("");    
-    ui->switchSourceLabel->setHidden(true);
     motDecoder->reset();    
     QPixmap pic;
     if (pic.load(":/resources/sls_logo.png"))
@@ -618,6 +619,12 @@ void MainWindow::tuneFinished(uint32_t freq)
         ui->frequencyLabel->setText(QString("%1 MHz").arg(freq/1000.0, 3, 'f', 3, QChar('0')));
         isPlaying = true;
         setupDialog->enableFileSelection(false);
+
+        // if current service has alternatives show icon immediately to avoid UI blocking when audio does not work
+        if (serviceList->numEnsembles(ServiceListItem::getId(SId.value, SCIdS)) > 1)
+        {
+            ui->switchSourceLabel->setVisible(true);
+        }
     }
     else
     {   // this can only happen when device is changed
@@ -692,6 +699,13 @@ void MainWindow::serviceListClicked(const QModelIndex &index)
             ui->frequencyLabel->setText("Tuning...  ");
             updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
             updateSnrLevel(0);
+
+            // hide switch to avoid conflict with tuning -> will be enabled when tune is finished
+            ui->switchSourceLabel->setHidden(true);
+        }
+        else
+        {   // if new service has alternatives show icon immediately to avoid UI blocking when audio does not work
+            ui->switchSourceLabel->setVisible(serviceList->numEnsembles(ServiceListItem::getId(SId.value, SCIdS)) > 1);
         }
         onServiceSelection();
         emit serviceRequest(frequency, SId.value, SCIdS);
@@ -747,12 +761,18 @@ void MainWindow::serviceListTreeClicked(const QModelIndex &index)
                 }
                 ui->channelCombo->setCurrentIndex(idx);
 
-
                 // reset UI
                 clearEnsembleInformationLabels();
                 ui->frequencyLabel->setText("Tuning...  ");
                 updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
                 updateSnrLevel(0);
+
+                // hide switch to avoid conflict with tuning -> will be enabled when tune is finished
+                ui->switchSourceLabel->setHidden(true);
+            }
+            else
+            {   // if new service has alternatives show icon immediately to avoid UI blocking when audio does not work
+                ui->switchSourceLabel->setVisible(serviceList->numEnsembles(ServiceListItem::getId(SId.value, SCIdS)) > 1);
             }
             onServiceSelection();
             qDebug() << "serviceRequest(frequency, SId.value, SCIdS)" << frequency << SId.value << SCIdS;
@@ -1134,6 +1154,9 @@ void MainWindow::switchServiceSource()
                 ui->frequencyLabel->setText("Tuning...  ");
                 updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
                 updateSnrLevel(0);
+
+                // hide switch to avoid conflict with tuning -> will be enabled when tune is finished
+                ui->switchSourceLabel->setHidden(true);
             }
             frequency = newFrequency;
             onServiceSelection();
