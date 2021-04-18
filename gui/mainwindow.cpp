@@ -118,7 +118,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     QPixmap pic;
     ClickableLabel * settingsLabel = new ClickableLabel(this);
-    settingsLabel->setIcon(":/resources/settings.png");
+    settingsLabel->setIcon(":/resources/menu.png");
     settingsLabel->setToolTip("Open menu");
     settingsLabel->setMenu(menu);
 

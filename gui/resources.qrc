@@ -1,12 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>resources/sls_logo.png</file>
-        <file>resources/star.svg</file>
         <file>resources/star20.png</file>
         <file>resources/starEmpty20.png</file>
         <file>resources/broadcast.png</file>
-        <file>resources/settings.png</file>
         <file>resources/volume_off.png</file>
         <file>resources/volume_on.png</file>
+        <file>resources/menu.png</file>
     </qresource>
 </RCC>
