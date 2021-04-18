@@ -7,5 +7,6 @@
         <file>resources/volume_off.png</file>
         <file>resources/volume_on.png</file>
         <file>resources/menu.png</file>
+        <file>resources/star.svg</file>
     </qresource>
 </RCC>
