@@ -925,8 +925,11 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     if (nullptr != inputDevice)
     {
         delete inputDevice;
-        setupDialog->resetFilename();
+        //setupDialog->resetFilename();
+        // delete service list
+        serviceList->clear();
     }
+
     switch (d)
     {
     case InputDeviceId::UNDEFINED:
@@ -972,7 +975,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     case InputDeviceId::RAWFILE:
     {
         inputDevice = new RawFileInput();
-
         inputDeviceId = InputDeviceId::RAWFILE;
         setupDialog->enableRtlSdrInput(true);
         setupDialog->setInputDevice(inputDeviceId); // this emits device change
@@ -988,6 +990,14 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         // setup dialog
         connect(setupDialog, &SetupDialog::rawFileSelected, dynamic_cast<RawFileInput*>(inputDevice), &RawFileInput::openDevice);
         connect(setupDialog, &SetupDialog::sampleFormat, dynamic_cast<RawFileInput*>(inputDevice), &RawFileInput::setFileFormat);
+
+        QString filename = setupDialog->getInputFileName();
+        if (!filename.isEmpty())
+        {
+            RawFileInputFormat format = setupDialog->getInputFileFormat();
+            dynamic_cast<RawFileInput*>(inputDevice)->openDevice(filename, format);
+            enableFileLooping(setupDialog->isFileLoopActive());
+        }
         setupDialog->enableFileSelection(true);
     }
         break;
@@ -1042,7 +1052,7 @@ void MainWindow::saveSettings()
     settings.setValue("inputDeviceId", int(inputDeviceId));
     settings.setValue("inputFileName", setupDialog->getInputFileName());
     settings.setValue("inputFileFormat", int(setupDialog->getInputFileFormat()));
-    settings.setValue("inputFileLoop", setupDialog->isLoopActive());
+    settings.setValue("inputFileLoop", setupDialog->isFileLoopActive());
 
     QModelIndex current = ui->serviceListView->currentIndex();
     const SLModel * model = reinterpret_cast<const SLModel*>(current.model());

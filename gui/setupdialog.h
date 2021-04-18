@@ -19,7 +19,7 @@ public:
 
     QString getInputFileName() const;
     RawFileInputFormat getInputFileFormat() const;
-    bool isLoopActive() const;
+    bool isFileLoopActive() const;
     void setInputFile(const QString &value, const RawFileInputFormat &format, bool loop);
 
 public slots:

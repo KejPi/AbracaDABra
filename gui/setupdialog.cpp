@@ -182,7 +182,7 @@ RawFileInputFormat SetupDialog::getInputFileFormat() const
     return RawFileInputFormat(ui->fileFormatCombo->currentIndex());
 }
 
-bool SetupDialog::isLoopActive() const
+bool SetupDialog::isFileLoopActive() const
 {
     return ui->loopCheckbox->isChecked();
 }
