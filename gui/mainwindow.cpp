@@ -941,10 +941,13 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     if (nullptr != inputDevice)
     {
         delete inputDevice;
-        //setupDialog->resetFilename();
+
         // delete service list
         serviceList->clear();
     }
+
+    // disable band scan - will be enable when it makes sense (RTL-SDR at the moment)
+    bandScanAct->setDisabled(true);
 
     switch (d)
     {
@@ -977,6 +980,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(setupDialog, &SetupDialog::setGain, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setGain);
 
             static_cast<RtlSdrInput *>(inputDevice)->openDevice();
+
+            // enable band scan
+            bandScanAct->setEnabled(true);
         }
         else
         {
@@ -1014,7 +1020,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             dynamic_cast<RawFileInput*>(inputDevice)->openDevice(filename, format);
             enableFileLooping(setupDialog->isFileLoopActive());
         }
-        setupDialog->enableFileSelection(true);
+        setupDialog->enableFileSelection(true);                
     }
         break;
     }
