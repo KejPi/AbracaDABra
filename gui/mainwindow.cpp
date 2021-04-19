@@ -128,18 +128,14 @@ MainWindow::MainWindow(QWidget *parent)
     muteLabel->setIcon(":/resources/volume_off.png", true);
     muteLabel->setTooltip("Mute audio", false);
     muteLabel->setTooltip("Unmute audio", true);
-    muteLabel->setChecked(false);   
+    muteLabel->setChecked(false);
 
-//    QFrame * line = new QFrame(this);
-//    line->setFrameShape(QFrame::VLine);
-//    line->setFrameShadow(QFrame::Sunken);
 
     QGridLayout * layout = new QGridLayout(widget);
     layout->addWidget(timeLabel, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
     layout->addLayout(signalQualityLayout, 0, 1, Qt::AlignVCenter | Qt::AlignRight);
-//    layout->addWidget(line, 0, 2, Qt::AlignVCenter | Qt::AlignHCenter);
-    layout->addWidget(muteLabel, 0, 3, Qt::AlignVCenter | Qt::AlignRight);
-    layout->addWidget(settingsLabel, 0, 4, Qt::AlignVCenter | Qt::AlignRight);
+    layout->addWidget(muteLabel, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
+    layout->addWidget(settingsLabel, 0, 3, Qt::AlignVCenter | Qt::AlignRight);
     layout->setColumnStretch(0, 100);
     layout->setSpacing(20);
     ui->statusbar->addWidget(widget,1);   
