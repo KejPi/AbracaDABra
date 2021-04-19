@@ -79,7 +79,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     snrLabel = new QLabel();
 #ifdef __APPLE__
-    int width = snrLabel->fontMetrics().boundingRect("00.0 dB").width();
+    int width = snrLabel->fontMetrics().boundingRect("100.0 dB").width();
     snrLabel->setFixedWidth(width);
 #endif
     snrLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
