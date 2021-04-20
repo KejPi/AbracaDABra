@@ -549,7 +549,6 @@ void MainWindow::updateAudioInfo(const struct AudioParameters & params)
 
 void MainWindow::onChannelSelection()
 {
-    SId.value = 0;
     clearEnsembleInformationLabels();
     ui->frequencyLabel->setText("Tuning...  ");
 
@@ -597,6 +596,9 @@ void MainWindow::on_channelCombo_currentIndexChanged(int index)
     if (frequency != ui->channelCombo->itemData(index).toUInt())
     {
         ui->channelLabel->setText(ui->channelCombo->currentText());
+
+        // no service is selected
+        SId.value = 0;
 
         // reset UI
         onChannelSelection();
@@ -689,15 +691,8 @@ void MainWindow::serviceListClicked(const QModelIndex &index)
             }
             ui->channelCombo->setCurrentIndex(idx);
 
-
-            // reset UI
-            clearEnsembleInformationLabels();
-            ui->frequencyLabel->setText("Tuning...  ");
-            updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
-            updateSnrLevel(0);
-
-            // hide switch to avoid conflict with tuning -> will be enabled when tune is finished
-            ui->switchSourceLabel->setHidden(true);
+            // set UI to new channel tuning
+            onChannelSelection();
         }
         else
         {   // if new service has alternatives show icon immediately to avoid UI blocking when audio does not work
@@ -757,14 +752,8 @@ void MainWindow::serviceListTreeClicked(const QModelIndex &index)
                 }
                 ui->channelCombo->setCurrentIndex(idx);
 
-                // reset UI
-                clearEnsembleInformationLabels();
-                ui->frequencyLabel->setText("Tuning...  ");
-                updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
-                updateSnrLevel(0);
-
-                // hide switch to avoid conflict with tuning -> will be enabled when tune is finished
-                ui->switchSourceLabel->setHidden(true);
+                // set UI to new channel tuning
+                onChannelSelection();
             }
             else
             {   // if new service has alternatives show icon immediately to avoid UI blocking when audio does not work
@@ -1150,15 +1139,8 @@ void MainWindow::switchServiceSource()
                 }
                 ui->channelCombo->setCurrentIndex(idx);
 
-
-                // reset UI
-                clearEnsembleInformationLabels();
-                ui->frequencyLabel->setText("Tuning...  ");
-                updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
-                updateSnrLevel(0);
-
-                // hide switch to avoid conflict with tuning -> will be enabled when tune is finished
-                ui->switchSourceLabel->setHidden(true);
+                // set UI to new channel tuning
+                onChannelSelection();
             }
             frequency = newFrequency;
             onServiceSelection();
