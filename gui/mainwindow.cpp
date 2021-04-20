@@ -1190,7 +1190,7 @@ void MainWindow::serviceTreeViewUpdateSelection()
                 QModelIndex serviceIndex = model->index(s, 0, ensembleIndex);
                 if (model->getId(serviceIndex) == serviceId)
                 {  // found
-                    ui->serviceTreeView->selectionModel()->setCurrentIndex(serviceIndex, QItemSelectionModel::Select | QItemSelectionModel::Current);
+                    ui->serviceTreeView->selectionModel()->setCurrentIndex(serviceIndex, QItemSelectionModel::Clear | QItemSelectionModel::Select | QItemSelectionModel::Current);
                     return;
                 }
             }
@@ -1208,7 +1208,7 @@ void MainWindow::serviceListViewUpdateSelection()
         index = model->index(r, 0);
         if (model->getId(index) == id)
         {   // found
-            ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
+            ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Clear | QItemSelectionModel::Select | QItemSelectionModel::Current);
             return;
         }
     }
