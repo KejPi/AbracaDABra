@@ -151,12 +151,40 @@ void SLTreeModel::addEnsembleService(const EnsembleListItem *e, const ServiceLis
         rootItem->appendChild(ensChild);
         endInsertRows();
     }
-    SLModelItem * serviceChild = ensChild->findChildId(s->getId());
-    if (nullptr == serviceChild)
-    {  // new service to be added
-        beginInsertRows(index(ensChild->row(), 0, QModelIndex()), ensChild->childCount(), ensChild->childCount());
-        ensChild->appendChild(new SLModelItem(s, ensChild));
-        endInsertRows();
+
+    if (s->SCIdS() != 0)
+    {   // this part is to creates secondary service item as secont level service in the tree
+        // not tested much - only one stimuli for testing is available
+        // it expects that parent item is created first -> if not it will add secondary componemnt as normal service
+        uint64_t id = ServiceListItem::getId(s->SId().value, 0);
+        SLModelItem * serviceChild = ensChild->findChildId(id);
+        if (nullptr != serviceChild)
+        {   // primary service found
+            beginInsertRows(index(serviceChild->row(), 0, index(ensChild->row(), 0, QModelIndex())), serviceChild->childCount(), serviceChild->childCount());
+            serviceChild->appendChild(new SLModelItem(s, serviceChild));
+            endInsertRows();
+        }
+        else
+        {
+            qDebug() << Q_FUNC_INFO << "Service not found - adding secondary service as regular service";
+            serviceChild = ensChild->findChildId(s->getId());
+            if (nullptr == serviceChild)
+            {  // new service to be added
+                beginInsertRows(index(ensChild->row(), 0, QModelIndex()), ensChild->childCount(), ensChild->childCount());
+                ensChild->appendChild(new SLModelItem(s, ensChild));
+                endInsertRows();
+            }
+        }
+    }
+    else
+    {
+        SLModelItem * serviceChild = ensChild->findChildId(s->getId());
+        if (nullptr == serviceChild)
+        {  // new service to be added
+            beginInsertRows(index(ensChild->row(), 0, QModelIndex()), ensChild->childCount(), ensChild->childCount());
+            ensChild->appendChild(new SLModelItem(s, ensChild));
+            endInsertRows();
+        }
     }
 
     sort(0);
