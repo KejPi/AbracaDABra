@@ -967,6 +967,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
             connect(setupDialog, &SetupDialog::setAutoGain, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setGainAutoMode);
             connect(setupDialog, &SetupDialog::setGain, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setGain);
+            connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setDAGC);
 
             static_cast<RtlSdrInput *>(inputDevice)->openDevice();
 

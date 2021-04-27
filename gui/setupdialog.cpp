@@ -167,9 +167,9 @@ void SetupDialog::enableRtlSdrInput(bool ena)
     }
 }
 
-void SetupDialog::on_loopCheckbox_stateChanged(int arg1)
+void SetupDialog::on_loopCheckbox_stateChanged(int state)
 {
-    emit fileLoopingEnabled(Qt::Checked == Qt::CheckState(arg1));
+    emit fileLoopingEnabled(Qt::Checked == Qt::CheckState(state));
 }
 
 QString SetupDialog::getInputFileName() const
@@ -202,4 +202,9 @@ void SetupDialog::setInputFile(const QString &value, const RawFileInputFormat &f
         emit rawFileSelected(inputFileName, RawFileInputFormat(format));
     }
     ui->loopCheckbox->setChecked(loop);
+}
+
+void SetupDialog::on_dagcCheckBox_stateChanged(int state)
+{
+    emit setDAGC(Qt::Checked == Qt::CheckState(state));
 }

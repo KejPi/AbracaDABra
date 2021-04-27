@@ -35,6 +35,7 @@ public slots:
     void openDevice();
     void setGainAutoMode(bool enable = true);
     void setGain(int gainVal);
+    void setDAGC(bool ena);
 
 signals:
     void gainListAvailable(const QList<int> * pList);

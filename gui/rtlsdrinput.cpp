@@ -203,6 +203,19 @@ void RtlSdrInput::setGain(int gainVal)
     }
 }
 
+void RtlSdrInput::setDAGC(bool ena)
+{
+    int ret = rtlsdr_set_agc_mode(device, ena);
+    if (ret != 0)
+    {
+        qDebug() << "RTLSDR: Failed to set DAGC";
+    }
+    else
+    {
+        qDebug() << "RTLSDR: DAGC enable:" << ena;
+    }
+}
+
 void RtlSdrInput::readThreadStopped()
 {
     qDebug() << Q_FUNC_INFO << deviceRunning;

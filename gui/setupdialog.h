@@ -32,6 +32,7 @@ public slots:
 signals:
     void setAutoGain(bool);
     void setGain(int gain);
+    void setDAGC(bool ena);
     void inputDeviceChanged(const InputDeviceId & inputDevice);
     void sampleFormat(const RawFileInputFormat &format);
     void rawFileSelected(const QString & filename, const RawFileInputFormat &format);
@@ -43,7 +44,8 @@ private slots:
     void on_inputCombo_currentIndexChanged(int index);
     void on_openFileButton_clicked();
     void on_fileFormatCombo_currentIndexChanged(int index);
-    void on_loopCheckbox_stateChanged(int arg1);
+    void on_loopCheckbox_stateChanged(int state);
+    void on_dagcCheckBox_stateChanged(int state);
 
 private:
     Ui::SetupDialog *ui;
