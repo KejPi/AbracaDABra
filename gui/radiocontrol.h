@@ -188,8 +188,6 @@ struct RadioControlServiceComponentListItem
         } packetData;
     };    
 };
-typedef QList<RadioControlServiceComponentListItem> radioControlServiceComponentList_t;
-typedef QList<RadioControlServiceComponentListItem>::iterator radioControlServiceComponentListIterator_t;
 
 struct RadioControlServiceListItem
 {
@@ -206,12 +204,9 @@ struct RadioControlServiceListItem
     uint8_t CAId;
 
     uint8_t numServiceComponents;
-    radioControlServiceComponentList_t serviceComponents;
+    QList<RadioControlServiceComponentListItem> serviceComponents;
 
 };
-
-typedef QList<RadioControlServiceListItem> radioControlServiceList_t;
-typedef QList<RadioControlServiceListItem>::iterator radioControlServiceListIterator_t;
 
 
 struct RadioControlServiceComponentData
@@ -268,9 +263,9 @@ private:
         uint8_t SCIdS;
     } serviceRequest;
     RadioControlEnsemble ensemble;
-    radioControlServiceList_t serviceList;
-    radioControlServiceListIterator_t findService(DabSId SId);
-    radioControlServiceComponentListIterator_t findServiceComponent(const radioControlServiceListIterator_t & sIt, uint8_t SCIdS);
+    QList<RadioControlServiceListItem> serviceList;
+    QList<RadioControlServiceListItem>::iterator findService(DabSId SId);
+    QList<RadioControlServiceComponentListItem>::iterator findServiceComponent(const QList<RadioControlServiceListItem>::iterator & sIt, uint8_t SCIdS);
 
     void updateSyncLevel(dabProcSyncLevel_t s);
     QString toShortLabel(QString & label, uint16_t charField) const;

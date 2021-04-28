@@ -174,7 +174,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 
         RadioControlServiceComponentData * pServiceComp = (RadioControlServiceComponentData *) pEvent->pData;
         // find service ID
-        radioControlServiceListIterator_t serviceIt = findService(pServiceComp->SId);
+        QList<RadioControlServiceListItem>::iterator serviceIt = findService(pServiceComp->SId);
         if (serviceIt < serviceList.end())
         {   // SId found
             serviceIt->serviceComponents.clear();
@@ -300,10 +300,10 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 
             DabSId sid;
             sid.value = pData->SId;
-            radioControlServiceListIterator_t serviceIt = findService(sid);
+            QList<RadioControlServiceListItem>::iterator serviceIt = findService(sid);
             if (serviceIt != serviceList.end())
             {   // service is in the list
-                radioControlServiceComponentListIterator_t scIt = findServiceComponent(serviceIt, pData->SCIdS);
+                QList<RadioControlServiceComponentListItem>::iterator scIt = findServiceComponent(serviceIt, pData->SCIdS);
                 if (scIt != serviceIt->serviceComponents.end())
                 {   // service components exists in service
                     if (DabTMId::StreamAudio == scIt->TMId)
@@ -494,9 +494,9 @@ void RadioControl::updateSyncLevel(dabProcSyncLevel_t s)
     }
 }
 
-radioControlServiceListIterator_t RadioControl::findService(DabSId SId)
+QList<RadioControlServiceListItem>::iterator RadioControl::findService(DabSId SId)
 {
-    radioControlServiceListIterator_t serviceIt;
+    QList<RadioControlServiceListItem>::iterator serviceIt;
     for (serviceIt = serviceList.begin(); serviceIt < serviceList.end(); ++serviceIt)
     {
         if (SId.value ==  serviceIt->SId.value)
@@ -507,9 +507,10 @@ radioControlServiceListIterator_t RadioControl::findService(DabSId SId)
     return serviceIt;
 }
 
-radioControlServiceComponentListIterator_t RadioControl::findServiceComponent(const radioControlServiceListIterator_t & sIt, uint8_t SCIdS)
+QList<RadioControlServiceComponentListItem>::iterator
+                RadioControl::findServiceComponent(const QList<RadioControlServiceListItem>::iterator & sIt, uint8_t SCIdS)
 {
-    radioControlServiceComponentListIterator_t scIt;
+    QList<RadioControlServiceComponentListItem>::iterator scIt;
     for (scIt = sIt->serviceComponents.begin(); scIt < sIt->serviceComponents.end(); ++scIt)
     {
         if (SCIdS == scIt->SCIdS)
