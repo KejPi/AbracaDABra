@@ -80,40 +80,80 @@ struct RadioControlEnsemble
     QString label;
     QString labelShort;
 };
-
 Q_DECLARE_METATYPE(RadioControlEnsemble)
+
+struct RadioControlServiceComponent
+{
+    // Each service component shall be uniquely identified by the combination of the
+    // SId and the Service Component Identifier within the Service (SCIdS).
+    DabSId SId;
+    int8_t SCIdS;         // Service Component Identifier within the Service (SCIdS)
+    int8_t SubChId;       // SubChId (Sub-channel Identifier)
+    uint16_t SubChAddr;   // address 0-863
+    uint16_t SubChSize;   // subchannel size
+    int8_t ps;            // P/S (Primary/Secondary): this 1-bit flag shall indicate whether the service component is the primary one
+    int8_t lang;          // language [8.1.2] this 8-bit field shall indicate the language of the audio or data service component
+    DabPTy pty;           // Static and dynamic programme type [8.1.5]
+    uint8_t CAId;         // CAId (Conditional Access Identifier): this 3-bit field shall identify the
+                          // Access Control System (ACS) used for the service
+    int8_t CAflag;        // CA flag: this 1-bit field flag shall indicate whether access control applies to the service component
+
+    int8_t numUserApps;   // Number of user applications
+
+    QString label;        // Service label
+    QString labelShort;   // Short label
+
+    struct DabProtection protection;  // Protection infomation EEP/UEP/FEC scheme
+
+    // TMStreamAudio = 0,
+    // TMStreamData  = 1,
+    // TMPacketData  = 3
+    DabTMId TMId;       // TMId (Transport Mechanism Identifier)
+    union
+    {
+        struct  // TMId == 0
+        {
+            int8_t ASCTy;   // ASCTy (Audio Service Component Type)
+            uint16_t bitRate;
+        } streamAudio;
+        struct  // TMId == 1
+        {
+            int8_t DSCTy;   // DSCTy (Data Service Component Type)
+            uint16_t bitRate;
+        } streamData;
+        struct  // TMId == 3
+        {
+            int8_t DSCTy;           // DSCTy (Data Service Component Type)
+            uint16_t SCId;          // SCId (Service Component Identifier): this 12-bit field shall uniquely
+                                    // identify the service component within the ensemble
+            int8_t DGflag;          // DG flag: this 1-bit flag shall indicate whether data groups are used to transport the service component as follows:
+                                    //   0: data groups are used to transport the service component;
+                                    //   1: data groups are not used to transport the service component.
+            uint16_t packetAddress; // this 10-bit field shall define the address of the packet in which the service component is carried.
+        } packetData;
+    };
+    bool isAudioService() const { return DabTMId::StreamAudio == TMId; }
+    bool isDataStreamService() const { return DabTMId::StreamData == TMId; }
+    bool isDataPacketService() const { return DabTMId::PacketData == TMId; }
+};
+Q_DECLARE_METATYPE(RadioControlServiceComponent)
 
 struct RadioControlService
 {
-    // Ensemble
-    struct
-    {
-        uint32_t frequency;   // frequency of ensemble
-        uint32_t ueid;        // UEID of ensemble
-        QString label;        // ensemble label
-        QString labelShort;   //
-    } ensemble;
+    // Each service shall be identified by a Service Identifier (SId)
+    // Data services use 32bit IDs, Programme services use 16 bits
+    DabSId SId;
+    QString label;
+    QString labelShort;
+    DabPTy pty;
 
-    // Service
-    DabSId SId;           // SId (contains ECC)
-    uint8_t SCIdS;        // service component ID within the service
+    // CAId (Conditional Access Identifier): this 3-bit field shall identify the
+    // Access Control System (ACS) used for the service
+    uint8_t CAId;
 
-    QString label;        // Service label
-    QString labelShort;   // short label
-    DabPTy pty;           // programme type
-    DabTMId TMId;         // Transport Mechanism Identifier
-    DabAudioDataSCty ADSCTy;
-
-    uint16_t bitRate;     // bitrate for Audio service and for Stream data service
-    uint16_t subChSize;   // subchannel size
-    int8_t lang;          // language [8.1.2] this 8-bit field shall indicate the language of the audio or data service component
-    struct DabProtection protection;
-
-    bool isAudioService() const { return DabTMId::StreamAudio == TMId; }
+    QList<RadioControlServiceComponent> serviceComponents;
 };
-Q_DECLARE_METATYPE(RadioControlService)
 
-//==================================================================
 
 enum class RadioControlEventType
 {
@@ -129,142 +169,6 @@ enum class RadioControlEventType
     AUDIO_DATA,
 };
 
-struct RadioControlServiceComponentListItem
-{
-    // Each service component shall be uniquely identified by the combination of the
-    // SId and the Service Component Identifier within the Service (SCIdS).
-    int8_t SCIdS;         // Service Component Identifier within the Service (SCIdS)
-    int8_t SubChId;       // SubChId (Sub-channel Identifier)
-    uint16_t SubChAddr;     // address 0-863
-    uint16_t SubChSize;    // subchannel size
-    int8_t ps;            // P/S (Primary/Secondary): this 1-bit flag shall indicate whether the service component is the primary one
-    int8_t lang;          // language [8.1.2] this 8-bit field shall indicate the language of the audio or data service component
-
-    struct DabProtection protection;
-
-    int8_t CAflag;        // CA flag: this 1-bit field flag shall indicate whether access control applies to the service component
-
-    QString label;
-    QString labelShort;
-
-    int8_t numUserApps;
-
-    // TMStreamAudio = 0,
-    // TMStreamData  = 1,
-    // TMPacketData  = 3
-    DabTMId TMId;       // TMId (Transport Mechanism Identifier)
-
-    union
-    {
-        struct  // TMId == 0
-        {
-            int8_t ASCTy;   // ASCTy (Audio Service Component Type)
-            uint16_t bitRate;
-        } streamAudio;
-        struct  // TMId == 1
-        {
-            int8_t DSCTy;   // DSCTy (Data Service Component Type)
-            uint16_t bitRate;
-        } streamData;
-        struct  // TMId == 3
-        {
-            int8_t DSCTy;         // DSCTy (Data Service Component Type)
-            uint16_t SCId;         // SCId (Service Component Identifier): this 12-bit field shall uniquely
-                                   // identify the service component within the ensemble
-            int8_t DGflag;        // DG flag: this 1-bit flag shall indicate whether data groups are used to transport the service component as follows:
-                                   //   0: data groups are used to transport the service component;
-                                   //   1: data groups are not used to transport the service component.
-            uint16_t packetAddress; // this 10-bit field shall define the address of the packet in which the service component is carried.
-        } packetData;
-    };
-};
-
-struct RadioControlServiceListItem
-{
-    // Each service shall be identified by a Service Identifier (SId)
-    // Data services use 32bit IDs, Programme services use 16 bits
-    DabSId SId;
-    QString label;
-    QString labelShort;
-    DabPTy pty;
-
-    // CAId (Conditional Access Identifier): this 3-bit field shall identify the
-    // Access Control System (ACS) used for the service
-    uint8_t CAId;
-
-    uint8_t numServiceComponents;
-    QList<RadioControlServiceComponentListItem> serviceComponents;
-
-};
-
-struct RadioControlServiceComponent
-{
-    // Each service component shall be uniquely identified by the combination of the
-    // SId and the Service Component Identifier within the Service (SCIdS).
-    DabSId SId;
-    int8_t SCIdS;         // Service Component Identifier within the Service (SCIdS)
-    int8_t SubChId;       // SubChId (Sub-channel Identifier)
-    uint16_t SubChAddr;   // address 0-863
-    uint16_t SubChSize;   // subchannel size
-    int8_t ps;            // P/S (Primary/Secondary): this 1-bit flag shall indicate whether the service component is the primary one
-    int8_t lang;          // language [8.1.2] this 8-bit field shall indicate the language of the audio or data service component
-    DabPTy pty;
-
-    struct DabProtection protection;
-
-    uint8_t CAId;         // CAId (Conditional Access Identifier): this 3-bit field shall identify the
-                          // Access Control System (ACS) used for the service
-    int8_t CAflag;        // CA flag: this 1-bit field flag shall indicate whether access control applies to the service component
-
-    QString label;
-    QString labelShort;
-
-    int8_t numUserApps;
-
-    // TMStreamAudio = 0,
-    // TMStreamData  = 1,
-    // TMPacketData  = 3
-    DabTMId TMId;       // TMId (Transport Mechanism Identifier)
-
-    union
-    {
-        struct  // TMId == 0
-        {
-            int8_t ASCTy;   // ASCTy (Audio Service Component Type)
-            uint16_t bitRate;
-        } streamAudio;
-        struct  // TMId == 1
-        {
-            int8_t DSCTy;   // DSCTy (Data Service Component Type)
-            uint16_t bitRate;
-        } streamData;
-        struct  // TMId == 3
-        {
-            int8_t DSCTy;         // DSCTy (Data Service Component Type)
-            uint16_t SCId;         // SCId (Service Component Identifier): this 12-bit field shall uniquely
-                                   // identify the service component within the ensemble
-            int8_t DGflag;        // DG flag: this 1-bit flag shall indicate whether data groups are used to transport the service component as follows:
-                                   //   0: data groups are used to transport the service component;
-                                   //   1: data groups are not used to transport the service component.
-            uint16_t packetAddress; // this 10-bit field shall define the address of the packet in which the service component is carried.
-        } packetData;
-    };
-
-    bool isAudioService() const { return DabTMId::StreamAudio == TMId; }
-    bool isDataStreamService() const { return DabTMId::StreamData == TMId; }
-    bool isDataPacketService() const { return DabTMId::PacketData == TMId; }
-};
-Q_DECLARE_METATYPE(RadioControlServiceComponent)
-
-typedef QHash<uint8_t, RadioControlServiceComponent> RadioControlServiceComponentList;
-typedef QHash<uint32_t, RadioControlServiceComponentList> RadioControlServiceList;
-
-struct RadioControlServiceComponentData
-{
-    DabSId SId;
-    QList<dabProcServiceCompListItem_t> list;
-};
-
 struct RadioControlEvent
 {
     RadioControlEventType type;
@@ -272,13 +176,20 @@ struct RadioControlEvent
     intptr_t pData;
 };
 
+// this is used in events
+struct RadioControlServiceComponentData
+{
+    DabSId SId;
+    QList<dabProcServiceCompListItem_t> list;
+};
+
+
 class RadioControl : public QObject
 {
     Q_OBJECT
 public:
     explicit RadioControl(QObject *parent = nullptr);    
     ~RadioControl();
-    static bool isAudioService(uint32_t sid) { return sid <= 0x00FFFFFF; }
 
 public slots:
     bool init();
@@ -292,11 +203,11 @@ signals:
     void snrLevel(float snr);
     void tuneDone(uint32_t freq);
     void ensembleInformation(const RadioControlEnsemble & ens);
-    void serviceListEntry(const RadioControlService & slEntry);
+    void serviceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
     void dlDataGroup(const QByteArray & dg);
     void mscDataGroup(const QByteArray & dg);
     void serviceChanged();
-    void newService(const RadioControlService & s);
+    void newServiceSelection(const RadioControlServiceComponent & s);
     void audioData(QByteArray * pData);
     void dabTime(const QDateTime & dateAndTime);
     void tuneInputDevice(uint32_t freq);
@@ -312,15 +223,14 @@ private:
         uint32_t SId;
         uint8_t SCIdS;
     } serviceRequest;
+
     RadioControlEnsemble ensemble;
-    //RadioControlServiceList serviceList;
-    QList<RadioControlServiceListItem> serviceList;
-    QList<RadioControlServiceListItem>::iterator findService(DabSId SId);
-    QList<RadioControlServiceComponentListItem>::iterator findServiceComponent(const QList<RadioControlServiceListItem>::iterator & sIt, uint8_t SCIdS);
+    QList<RadioControlService> serviceList;
+    QList<RadioControlService>::iterator findService(DabSId SId);
+    QList<RadioControlServiceComponent>::iterator findServiceComponent(const QList<RadioControlService>::iterator & sIt, uint8_t SCIdS);
 
     void updateSyncLevel(dabProcSyncLevel_t s);
     QString toShortLabel(QString & label, uint16_t charField) const;
-    bool getServiceListEntry(RadioControlService * s, const DabSId & sid, const uint8_t scids);
 
     void emit_dabEvent(RadioControlEvent * pEvent) { emit dabEvent(pEvent); }
     void emit_audioData(QByteArray * pData) { emit audioData(pData); }

@@ -29,7 +29,7 @@ public:
     ServiceList(QObject * parent = 0);
     ~ServiceList();
 
-    void addService(const RadioControlService & s, bool fav = false, int currentEns = 0);
+    void addService(const RadioControlEnsemble &e, const RadioControlServiceComponent &s, bool fav = false, int currentEns = 0);
     int numServices() const { return m_serviceList.size(); }
     int numEnsembles(uint64_t servId = 0) const;
     int currentEnsembleIdx(uint64_t servId) const;

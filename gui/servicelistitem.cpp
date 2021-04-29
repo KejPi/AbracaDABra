@@ -1,7 +1,7 @@
 #include "servicelistitem.h"
 #include "ensemblelistitem.h"
 
-ServiceListItem::ServiceListItem(const RadioControlService & item, bool fav, int currentEns)
+ServiceListItem::ServiceListItem(const RadioControlServiceComponent &item, bool fav, int currentEns)
 {
     m_sid = item.SId;
     m_scids = item.SCIdS;

@@ -272,7 +272,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(radioControl, &RadioControl::dlDataGroup, dlDecoder, &DLDecoder::newDataGroup, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::mscDataGroup, motDecoder, &MOTDecoder::newDataGroup, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::newService, this, &MainWindow::serviceChanged, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::newServiceSelection, this, &MainWindow::serviceChanged, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::serviceChanged, dlDecoder, &DLDecoder::reset, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::serviceChanged, motDecoder, &MOTDecoder::reset, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::audioData, audioDecoder, &AudioDecoder::inputData, Qt::QueuedConnection);
@@ -280,7 +280,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(motDecoder, &MOTDecoder::motObjectComplete, this, &MainWindow::updateSLS, Qt::QueuedConnection);   
 
     connect(audioDecoder, &AudioDecoder::audioParametersInfo, this, &MainWindow::updateAudioInfo, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::newService, audioDecoder, &AudioDecoder::start, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::newServiceSelection, audioDecoder, &AudioDecoder::start, Qt::QueuedConnection);
 
     // audio output is controlled by signals from decoder
     connect(this, &MainWindow::serviceRequest, audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
@@ -434,7 +434,7 @@ void MainWindow::updateSnrLevel(float snr)
 #endif
 }
 
-void MainWindow::updateServiceList(const RadioControlService & slEntry)
+void MainWindow::updateServiceList(const RadioControlEnsemble &ens, const RadioControlServiceComponent &slEntry)
 {
     if (slEntry.TMId != DabTMId::StreamAudio)
     {  // do nothing - data services not supported
@@ -442,7 +442,7 @@ void MainWindow::updateServiceList(const RadioControlService & slEntry)
     }
 
     // add to service list
-    serviceList->addService(slEntry);
+    serviceList->addService(ens, slEntry);
 }
 
 void MainWindow::updateDL(const QString & dl)
@@ -769,7 +769,7 @@ void MainWindow::serviceListTreeClicked(const QModelIndex &index)
     }
 }
 
-void MainWindow::serviceChanged(const RadioControlService &s)
+void MainWindow::serviceChanged(const RadioControlServiceComponent &s)
 {
     if (s.isAudioService() && (s.SId.value == SId.value))
     {
@@ -848,7 +848,7 @@ void MainWindow::serviceChanged(const RadioControlService &s)
                                             .arg(label)
                                             .arg(s.protection.codeRateUpper)
                                             .arg(s.protection.codeRateLower)
-                                            .arg(s.subChSize);
+                                            .arg(s.SubChSize);
         }
         else
         {  // UEP
@@ -858,12 +858,12 @@ void MainWindow::serviceChanged(const RadioControlService &s)
                               "Capacity units: %3 CU")
                                             .arg(label)
                                             .arg(int(s.protection.level))
-                                            .arg(s.subChSize);
+                                            .arg(s.SubChSize);
         }
         ui->protectionLabel->setText(label);
         ui->protectionLabel->setToolTip(toolTip);
 
-        QString br = QString("%1 kbps").arg(s.bitRate);
+        QString br = QString("%1 kbps").arg(s.streamAudio.bitRate);
         ui->audioBitrateLabel->setText(br);
         ui->audioBitrateLabel->setToolTip(QString("<b>Service bitrate</b><br>Audio & data: %1").arg(br));
 

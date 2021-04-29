@@ -73,13 +73,13 @@ AudioDecoder::~AudioDecoder()
 #endif
 }
 
-void AudioDecoder::start(const RadioControlService &s)
+void AudioDecoder::start(const RadioControlServiceComponent &s)
 {
     qDebug() << Q_FUNC_INFO;
     if (s.isAudioService())
     {
         isRunning = true;
-        mode = s.ADSCTy;
+        mode = DabAudioDataSCty(s.streamAudio.ASCTy);
     }
 }
 

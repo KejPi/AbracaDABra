@@ -27,7 +27,7 @@ void ServiceList::clear()
     emit empty();
 }
 
-void ServiceList::addService(const RadioControlService & s, bool fav, int currentEns)
+void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlServiceComponent & s, bool fav, int currentEns)
 {
     bool newService = false;
     bool newEnsemble = false;
@@ -49,11 +49,11 @@ void ServiceList::addService(const RadioControlService & s, bool fav, int curren
     }
 
     EnsembleListItem * pEns = nullptr;
-    uint64_t ensId = EnsembleListItem::getId(s);
+    uint64_t ensId = EnsembleListItem::getId(e);
     EnsembleListIterator eit = m_ensembleList.find(ensId);
     if (m_ensembleList.end() == eit)
     {  // not found
-        pEns = new EnsembleListItem(s);
+        pEns = new EnsembleListItem(e);
         m_ensembleList.insert(ensId, pEns);
         newEnsemble = true;
     }
@@ -151,7 +151,9 @@ void ServiceList::save(QSettings & settings)
 void ServiceList::load(QSettings & settings)
 {
     int numServ = settings.beginReadArray("ServiceList");
-    RadioControlService item;
+    RadioControlServiceComponent item;
+    RadioControlEnsemble ens;
+
     for (int s = 0; s < numServ; ++s)
     {
         bool ok = true;
@@ -178,22 +180,22 @@ void ServiceList::load(QSettings & settings)
         for (int e = 0; e < numEns; ++e)
         {
             settings.setArrayIndex(e);
-            item.ensemble.ueid = settings.value("UEID").toUInt(&ok);
+            ens.ueid = settings.value("UEID").toUInt(&ok);
             if (!ok)
             {
                 qDebug() << "Problem loading service" << s << "ensemble UEID" << e;
                 continue;
             }
-            item.ensemble.frequency = settings.value("Frequency").toUInt(&ok);
+            ens.frequency = settings.value("Frequency").toUInt(&ok);
             if (!ok)
             {
                 qDebug() << "Problem loading service" << s << "ensemble frequency" << e;
                 continue;
             }
-            item.ensemble.label = settings.value("Label").toString();
-            item.ensemble.labelShort = settings.value("ShortLabel").toString();
+            ens.label = settings.value("Label").toString();
+            ens.labelShort = settings.value("ShortLabel").toString();
             //float snr = settings.value("SNR").toFloat();
-            addService(item, fav, currentEns);
+            addService(ens, item, fav, currentEns);
 
         }       
         settings.endArray();

@@ -11,7 +11,7 @@ class ServiceListItem;
 class EnsembleListItem
 {
 public:
-    EnsembleListItem(const RadioControlService & item);
+    EnsembleListItem(const RadioControlEnsemble &ens);
 
     bool addService(ServiceListItem *servPtr);          // returns true when new service was added
     void storeSnr(float snr) { m_lastSnr = snr; }
@@ -25,7 +25,7 @@ public:
     const ServiceListItem * getService(int num = 0) const;
 
     uint64_t getId() const { return getId(m_ueid, m_frequency); }
-    static uint64_t getId(const RadioControlService & item) { return getId(item.ensemble.ueid, item.ensemble.frequency); }
+    static uint64_t getId(const RadioControlEnsemble & ens) { return getId(ens.ueid, ens.frequency); }
     static uint64_t getId(uint32_t ueid, uint32_t freq) { return ((uint64_t(freq)<<32) | ueid); }
 
     bool operator==(const EnsembleListItem & other);

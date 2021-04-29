@@ -53,14 +53,14 @@ public:
     ~AudioDecoder();
 
 public slots:
-    void start(const RadioControlService &s);
+    void start(const RadioControlServiceComponent &s);
     void stop();
     void inputData(QByteArray * inData);
 
 signals:
     void startAudio(uint32_t sampleRate, uint8_t numChannels);
     void stopAudio();
-    void audioParametersInfo(const struct AudioParameters & params);
+    void audioParametersInfo(const AudioParameters & params);
 private:
     bool isRunning;
     DabAudioDataSCty mode;

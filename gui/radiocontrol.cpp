@@ -151,14 +151,13 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         {
             for (QList<dabProcServiceListItem_t>::const_iterator it = pServiceList->constBegin(); it < pServiceList->constEnd(); ++it)
             {
-                RadioControlServiceListItem item;
+                RadioControlService item;
                 item.SId.value = it->sid;
                 item.label = DabTables::convertToQString(it->label.str, it->label.charset);
                 item.labelShort = toShortLabel(item.label, it->label.charField);
                 item.pty.s = it->pty.s;
                 item.pty.d = it->pty.d;
                 item.CAId = it->CAId;
-                item.numServiceComponents = it->numComponents;
                 serviceList.append(item);
                 dabGetServiceComponent(it->sid);
             }
@@ -174,7 +173,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 
         RadioControlServiceComponentData * pServiceComp = (RadioControlServiceComponentData *) pEvent->pData;
         // find service ID
-        QList<RadioControlServiceListItem>::iterator serviceIt = findService(pServiceComp->SId);
+        QList<RadioControlService>::iterator serviceIt = findService(pServiceComp->SId);
         if (serviceIt < serviceList.end())
         {   // SId found
             serviceIt->serviceComponents.clear();
@@ -191,13 +190,16 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                     break;
                 }
 
-                RadioControlServiceComponentListItem item;
+                RadioControlServiceComponent item;
+                item.SId = serviceIt->SId;
                 item.SCIdS = it->SCIdS;
                 item.SubChId = it->SubChId;
                 item.SubChAddr = it->SubChAddr;
                 item.SubChSize = it->SubChSize;
                 item.CAflag = it->CAflag;
+                item.CAId = serviceIt->CAId;
                 item.lang = it->lang;
+                item.pty = serviceIt->pty;
                 item.protection.level = DabProtectionLevel(it->protectionLevel);
                 if (DabProtectionLevel::UEP_MAX < item.protection.level)
                 {  // eep protection - store coderate
@@ -241,16 +243,13 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                 }
                 serviceIt->serviceComponents.append(item);
 
-                RadioControlService s;
-                if (getServiceListEntry(&s, serviceIt->SId, item.SCIdS))
-                {
-                    emit serviceListEntry(s);
-                }
                 if ((serviceRequest.SId == serviceIt->SId.value) && (serviceRequest.SCIdS == item.SCIdS))
                 {
                     dabServiceSelection(serviceRequest.SId, serviceRequest.SCIdS);
                     serviceRequest.SId = 0;    // clear request
                 }
+
+                emit serviceListEntry(ensemble, item);
             }
             if (requestUpdate)
             {
@@ -280,17 +279,13 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 
             DabSId sid;
             sid.value = pData->SId;
-            QList<RadioControlServiceListItem>::iterator serviceIt = findService(sid);
+            QList<RadioControlService>::iterator serviceIt = findService(sid);
             if (serviceIt != serviceList.end())
             {   // service is in the list
-                QList<RadioControlServiceComponentListItem>::iterator scIt = findServiceComponent(serviceIt, pData->SCIdS);
+                QList<RadioControlServiceComponent>::iterator scIt = findServiceComponent(serviceIt, pData->SCIdS);
                 if (scIt != serviceIt->serviceComponents.end())
                 {   // service components exists in service
-                    RadioControlService s;
-                    if (getServiceListEntry(&s, serviceIt->SId, scIt->SCIdS))
-                    {
-                        emit newService(s);
-                    }
+                    emit newServiceSelection(*scIt);
                 }
 
             }
@@ -463,9 +458,9 @@ void RadioControl::updateSyncLevel(dabProcSyncLevel_t s)
     }
 }
 
-QList<RadioControlServiceListItem>::iterator RadioControl::findService(DabSId SId)
+QList<RadioControlService>::iterator RadioControl::findService(DabSId SId)
 {
-    QList<RadioControlServiceListItem>::iterator serviceIt;
+    QList<RadioControlService>::iterator serviceIt;
     for (serviceIt = serviceList.begin(); serviceIt < serviceList.end(); ++serviceIt)
     {
         if (SId.value ==  serviceIt->SId.value)
@@ -476,10 +471,10 @@ QList<RadioControlServiceListItem>::iterator RadioControl::findService(DabSId SI
     return serviceIt;
 }
 
-QList<RadioControlServiceComponentListItem>::iterator
-                RadioControl::findServiceComponent(const QList<RadioControlServiceListItem>::iterator & sIt, uint8_t SCIdS)
+QList<RadioControlServiceComponent>::iterator
+                RadioControl::findServiceComponent(const QList<RadioControlService>::iterator & sIt, uint8_t SCIdS)
 {
-    QList<RadioControlServiceComponentListItem>::iterator scIt;
+    QList<RadioControlServiceComponent>::iterator scIt;
     for (scIt = sIt->serviceComponents.begin(); scIt < sIt->serviceComponents.end(); ++scIt)
     {
         if (SCIdS == scIt->SCIdS)
@@ -490,47 +485,47 @@ QList<RadioControlServiceComponentListItem>::iterator
     return scIt;
 }
 
-bool RadioControl::getServiceListEntry(RadioControlService * s, const DabSId & sid, const uint8_t scids)
-{
-    QList<RadioControlServiceListItem>::iterator serviceIt = findService(sid);
-    if (serviceIt != serviceList.end())
-    {   // service is in the list
-        QList<RadioControlServiceComponentListItem>::iterator scIt = findServiceComponent(serviceIt, scids);
-        if (scIt != serviceIt->serviceComponents.end())
-        {   // service components exists in service
-            s->ensemble.frequency = ensemble.frequency;
-            s->ensemble.ueid = ensemble.ueid;
-            s->ensemble.label = ensemble.label;
-            s->ensemble.labelShort = ensemble.labelShort;
-            s->SId = serviceIt->SId;
-            s->SCIdS = scIt->SCIdS;
-            s->label = scIt->label;
-            s->labelShort = scIt->labelShort;
-            s->pty = serviceIt->pty;
-            s->TMId = scIt->TMId;
-            switch (scIt->TMId)
-            {
-            case DabTMId::StreamAudio:
-                s->bitRate = scIt->streamAudio.bitRate;
-                s->ADSCTy = DabAudioDataSCty(scIt->streamAudio.ASCTy);
-                break;
-            case DabTMId::StreamData:
-                s->bitRate = scIt->streamData.bitRate;
-                s->ADSCTy = DabAudioDataSCty(scIt->streamData.DSCTy);
-                break;
-            case DabTMId::PacketData:
-                s->bitRate = 0;
-                s->ADSCTy = DabAudioDataSCty::ADSCTY_UNDEF;
-                break;
-            }
-            s->subChSize = scIt->SubChSize;
-            s->lang = scIt->lang;
-            s->protection = scIt->protection;
-            return true;
-        }
-    }
-    return false;
-}
+//bool RadioControl::getServiceListEntry(RadioControlService * s, const DabSId & sid, const uint8_t scids)
+//{
+//    QList<RadioControlServiceListItem>::iterator serviceIt = findService(sid);
+//    if (serviceIt != serviceList.end())
+//    {   // service is in the list
+//        QList<RadioControlServiceComponentListItem>::iterator scIt = findServiceComponent(serviceIt, scids);
+//        if (scIt != serviceIt->serviceComponents.end())
+//        {   // service components exists in service
+//            s->ensemble.frequency = ensemble.frequency;
+//            s->ensemble.ueid = ensemble.ueid;
+//            s->ensemble.label = ensemble.label;
+//            s->ensemble.labelShort = ensemble.labelShort;
+//            s->SId = serviceIt->SId;
+//            s->SCIdS = scIt->SCIdS;
+//            s->label = scIt->label;
+//            s->labelShort = scIt->labelShort;
+//            s->pty = serviceIt->pty;
+//            s->TMId = scIt->TMId;
+//            switch (scIt->TMId)
+//            {
+//            case DabTMId::StreamAudio:
+//                s->bitRate = scIt->streamAudio.bitRate;
+//                s->ADSCTy = DabAudioDataSCty(scIt->streamAudio.ASCTy);
+//                break;
+//            case DabTMId::StreamData:
+//                s->bitRate = scIt->streamData.bitRate;
+//                s->ADSCTy = DabAudioDataSCty(scIt->streamData.DSCTy);
+//                break;
+//            case DabTMId::PacketData:
+//                s->bitRate = 0;
+//                s->ADSCTy = DabAudioDataSCty::ADSCTY_UNDEF;
+//                break;
+//            }
+//            s->subChSize = scIt->SubChSize;
+//            s->lang = scIt->lang;
+//            s->protection = scIt->protection;
+//            return true;
+//        }
+//    }
+//    return false;
+//}
 
 QString RadioControl::toShortLabel(QString & label, uint16_t charField) const
 {

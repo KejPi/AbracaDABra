@@ -1,12 +1,12 @@
 #include "ensemblelistitem.h"
 #include "servicelistitem.h"
 
-EnsembleListItem::EnsembleListItem(const RadioControlService & item)
+EnsembleListItem::EnsembleListItem(const RadioControlEnsemble & ens)
 {
-    m_frequency = item.ensemble.frequency;
-    m_ueid = item.ensemble.ueid;
-    m_label = item.ensemble.label;
-    m_shortLabel = item.ensemble.labelShort;
+    m_frequency = ens.frequency;
+    m_ueid = ens.ueid;
+    m_label = ens.label;
+    m_shortLabel = ens.labelShort;
 }
 
 bool EnsembleListItem::operator==(const EnsembleListItem & other)
