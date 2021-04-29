@@ -79,7 +79,7 @@ void AudioDecoder::start(const RadioControlServiceComponent &s)
     if (s.isAudioService())
     {
         isRunning = true;
-        mode = DabAudioDataSCty(s.streamAudio.ASCTy);
+        mode = s.streamAudioData.scType;
     }
 }
 

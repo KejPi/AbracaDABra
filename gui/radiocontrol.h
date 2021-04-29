@@ -111,16 +111,11 @@ struct RadioControlServiceComponent
     DabTMId TMId;       // TMId (Transport Mechanism Identifier)
     union
     {
-        struct  // TMId == 0
+        struct  // TMId == 0 or 1
         {
-            int8_t ASCTy;   // ASCTy (Audio Service Component Type)
+            DabAudioDataSCty scType;
             uint16_t bitRate;
-        } streamAudio;
-        struct  // TMId == 1
-        {
-            int8_t DSCTy;   // DSCTy (Data Service Component Type)
-            uint16_t bitRate;
-        } streamData;
+        } streamAudioData;
         struct  // TMId == 3
         {
             int8_t DSCTy;           // DSCTy (Data Service Component Type)

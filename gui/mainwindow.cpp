@@ -863,7 +863,7 @@ void MainWindow::serviceChanged(const RadioControlServiceComponent &s)
         ui->protectionLabel->setText(label);
         ui->protectionLabel->setToolTip(toolTip);
 
-        QString br = QString("%1 kbps").arg(s.streamAudio.bitRate);
+        QString br = QString("%1 kbps").arg(s.streamAudioData.bitRate);
         ui->audioBitrateLabel->setText(br);
         ui->audioBitrateLabel->setToolTip(QString("<b>Service bitrate</b><br>Audio & data: %1").arg(br));
 

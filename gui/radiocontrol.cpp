@@ -227,12 +227,12 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                 switch (item.TMId)
                 {
                 case DabTMId::StreamAudio:
-                    item.streamAudio.ASCTy = it->streamAudio.ASCTy;
-                    item.streamAudio.bitRate = it->streamAudio.bitRate;
+                    item.streamAudioData.scType = DabAudioDataSCty(it->streamAudio.ASCTy);
+                    item.streamAudioData.bitRate = it->streamAudio.bitRate;
                     break;
                 case DabTMId::StreamData:
-                    item.streamData.DSCTy = it->streamData.DSCTy;
-                    item.streamData.bitRate = it->streamData.bitRate;
+                    item.streamAudioData.scType = DabAudioDataSCty(it->streamData.DSCTy);
+                    item.streamAudioData.bitRate = it->streamData.bitRate;
                     break;
                 case DabTMId::PacketData:
                     item.packetData.DGflag = it->packetData.DGflag;
