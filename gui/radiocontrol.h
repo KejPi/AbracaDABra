@@ -171,14 +171,6 @@ struct RadioControlEvent
     intptr_t pData;
 };
 
-// this is used in events
-struct RadioControlServiceComponentData
-{
-    DabSId SId;
-    QList<dabProcServiceCompListItem_t> list;
-};
-
-
 class RadioControl : public QObject
 {
     Q_OBJECT

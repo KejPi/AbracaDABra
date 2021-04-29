@@ -29,9 +29,7 @@ RadioControl::RadioControl(QObject *parent) : QObject(parent)
 }
 
 RadioControl::~RadioControl()
-{
-
-    // this cancels dabProc thread
+{   // this cancels dabProc thread
     dabProcDeinit(&dabProcHandle);
 }
 
@@ -171,100 +169,106 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         qDebug() << "RadioControlEvent::SERVICE_COMPONENT_LIST";
 #endif
 
-        RadioControlServiceComponentData * pServiceComp = (RadioControlServiceComponentData *) pEvent->pData;
-        // find service ID
-        QList<RadioControlService>::iterator serviceIt = findService(pServiceComp->SId);
-        if (serviceIt < serviceList.end())
-        {   // SId found
-            serviceIt->serviceComponents.clear();
+        QList<dabProcServiceCompListItem_t> * pList = (QList<dabProcServiceCompListItem_t> *) pEvent->pData;
+        if (!pList->isEmpty())
+        {   // all service components belong to the same SId, reading sid from the first
+            DabSId sid;
+            sid.value = pList->at(0).SId;
 
-            bool requestUpdate = false;
-            for (QList<dabProcServiceCompListItem_t>::const_iterator it = pServiceComp->list.constBegin(); it < pServiceComp->list.constEnd(); ++it)
-            {
-                // first checking validity of data
-                if ((it->SubChAddr < 0)
-                        || ((!it->ps) && (it->label.str[0] == '\0'))
-                        || ((DabTMId::PacketData == DabTMId(it->TMId)) && (it->packetData.packetAddress < 0)))
-                {
-                    requestUpdate = true;
-                    break;
-                }
-
-                RadioControlServiceComponent item;
-                item.SId = serviceIt->SId;
-                item.SCIdS = it->SCIdS;
-                item.SubChId = it->SubChId;
-                item.SubChAddr = it->SubChAddr;
-                item.SubChSize = it->SubChSize;
-                item.CAflag = it->CAflag;
-                item.CAId = serviceIt->CAId;
-                item.lang = it->lang;
-                item.pty = serviceIt->pty;
-                item.protection.level = DabProtectionLevel(it->protectionLevel);
-                if (DabProtectionLevel::UEP_MAX < item.protection.level)
-                {  // eep protection - store coderate
-                    item.protection.codeRateFecValue = EEPCoderate[int(item.protection.level)-int(DabProtectionLevel::EEP_MIN)];
-                    item.protection.fecScheme = (it->fecScheme != 0);
-                }
-                else
-                {
-                    item.protection.uepIndex = it->uepIdx;       // UEP index or FEC scheme flag (union)
-                }
-
-                item.numUserApps = it->numUserApps;
-                item.ps = it->ps;
-                if (it->ps)
-                {  // primary: [8.1.14.3] The service component label shall not be signalled for primary service component
-                    item.label = serviceIt->label;
-                    item.labelShort = serviceIt->labelShort;
-                }
-                else
-                {
-                    item.label = DabTables::convertToQString(it->label.str, it->label.charset);
-                    item.labelShort = toShortLabel(item.label, it->label.charField);
-                }
-                item.TMId = DabTMId(it->TMId);
-                switch (item.TMId)
-                {
-                case DabTMId::StreamAudio:
-                    item.streamAudioData.scType = DabAudioDataSCty(it->streamAudio.ASCTy);
-                    item.streamAudioData.bitRate = it->streamAudio.bitRate;
-                    break;
-                case DabTMId::StreamData:
-                    item.streamAudioData.scType = DabAudioDataSCty(it->streamData.DSCTy);
-                    item.streamAudioData.bitRate = it->streamData.bitRate;
-                    break;
-                case DabTMId::PacketData:
-                    item.packetData.DGflag = it->packetData.DGflag;
-                    item.packetData.DSCTy = it->packetData.DSCTy;
-                    item.packetData.SCId = it->packetData.SCId;
-                    item.packetData.packetAddress = it->packetData.packetAddress;
-                    break;
-                }
-                serviceIt->serviceComponents.append(item);
-
-                if ((serviceRequest.SId == serviceIt->SId.value) && (serviceRequest.SCIdS == item.SCIdS))
-                {
-                    dabServiceSelection(serviceRequest.SId, serviceRequest.SCIdS);
-                    serviceRequest.SId = 0;    // clear request
-                }
-
-                emit serviceListEntry(ensemble, item);
-            }
-            if (requestUpdate)
-            {
+            // find service ID
+            QList<RadioControlService>::iterator serviceIt = findService(sid);
+            if (serviceIt < serviceList.end())
+            {   // SId found
                 serviceIt->serviceComponents.clear();
-                dabGetServiceComponent(pServiceComp->SId.value);
+
+                bool requestUpdate = false;
+                for (QList<dabProcServiceCompListItem_t>::const_iterator it = pList->constBegin(); it < pList->constEnd(); ++it)
+                {
+                    // first checking validity of data
+                    if ((it->SubChAddr < 0)
+                            || ((!it->ps) && (it->label.str[0] == '\0'))
+                            || ((DabTMId::PacketData == DabTMId(it->TMId)) && (it->packetData.packetAddress < 0)))
+                    {
+                        requestUpdate = true;
+                        break;
+                    }
+
+                    RadioControlServiceComponent item;
+                    item.SId = serviceIt->SId;
+                    item.SCIdS = it->SCIdS;
+                    item.SubChId = it->SubChId;
+                    item.SubChAddr = it->SubChAddr;
+                    item.SubChSize = it->SubChSize;
+                    item.CAflag = it->CAflag;
+                    item.CAId = serviceIt->CAId;
+                    item.lang = it->lang;
+                    item.pty = serviceIt->pty;
+                    item.protection.level = DabProtectionLevel(it->protectionLevel);
+                    if (DabProtectionLevel::UEP_MAX < item.protection.level)
+                    {  // eep protection - store coderate
+                        item.protection.codeRateFecValue = EEPCoderate[int(item.protection.level)-int(DabProtectionLevel::EEP_MIN)];
+                        item.protection.fecScheme = (it->fecScheme != 0);
+                    }
+                    else
+                    {
+                        item.protection.uepIndex = it->uepIdx;       // UEP index or FEC scheme flag (union)
+                    }
+
+                    item.numUserApps = it->numUserApps;
+                    item.ps = it->ps;
+                    if (it->ps)
+                    {  // primary: [8.1.14.3] The service component label shall not be signalled for primary service component
+                        item.label = serviceIt->label;
+                        item.labelShort = serviceIt->labelShort;
+                    }
+                    else
+                    {
+                        item.label = DabTables::convertToQString(it->label.str, it->label.charset);
+                        item.labelShort = toShortLabel(item.label, it->label.charField);
+                    }
+                    item.TMId = DabTMId(it->TMId);
+                    switch (item.TMId)
+                    {
+                    case DabTMId::StreamAudio:
+                        item.streamAudioData.scType = DabAudioDataSCty(it->streamAudio.ASCTy);
+                        item.streamAudioData.bitRate = it->streamAudio.bitRate;
+                        break;
+                    case DabTMId::StreamData:
+                        item.streamAudioData.scType = DabAudioDataSCty(it->streamData.DSCTy);
+                        item.streamAudioData.bitRate = it->streamData.bitRate;
+                        break;
+                    case DabTMId::PacketData:
+                        item.packetData.DGflag = it->packetData.DGflag;
+                        item.packetData.DSCTy = it->packetData.DSCTy;
+                        item.packetData.SCId = it->packetData.SCId;
+                        item.packetData.packetAddress = it->packetData.packetAddress;
+                        break;
+                    }
+                    serviceIt->serviceComponents.append(item);
+
+                    if ((serviceRequest.SId == serviceIt->SId.value) && (serviceRequest.SCIdS == item.SCIdS))
+                    {
+                        dabServiceSelection(serviceRequest.SId, serviceRequest.SCIdS);
+                        serviceRequest.SId = 0;    // clear request
+                    }
+
+                    emit serviceListEntry(ensemble, item);
+                }
+                if (requestUpdate)
+                {
+                    serviceIt->serviceComponents.clear();
+                    dabGetServiceComponent(sid.value);
+                }
+                else
+                { }  // service list item information is complete
             }
             else
-            {   // service list item information is complete
+            {  // SId not found
+                qDebug("Service SID %4.4X not in service list", sid.value);
             }
         }
-        else
-        {  // SId not found
-            qDebug("Service SID %4.4X not in service list", pServiceComp->SId.value);
-        }
-        delete pServiceComp;
+
+        delete pList;
     }
         break;
     case RadioControlEventType::SERVICE_SELECTION:
@@ -485,48 +489,6 @@ QList<RadioControlServiceComponent>::iterator
     return scIt;
 }
 
-//bool RadioControl::getServiceListEntry(RadioControlService * s, const DabSId & sid, const uint8_t scids)
-//{
-//    QList<RadioControlServiceListItem>::iterator serviceIt = findService(sid);
-//    if (serviceIt != serviceList.end())
-//    {   // service is in the list
-//        QList<RadioControlServiceComponentListItem>::iterator scIt = findServiceComponent(serviceIt, scids);
-//        if (scIt != serviceIt->serviceComponents.end())
-//        {   // service components exists in service
-//            s->ensemble.frequency = ensemble.frequency;
-//            s->ensemble.ueid = ensemble.ueid;
-//            s->ensemble.label = ensemble.label;
-//            s->ensemble.labelShort = ensemble.labelShort;
-//            s->SId = serviceIt->SId;
-//            s->SCIdS = scIt->SCIdS;
-//            s->label = scIt->label;
-//            s->labelShort = scIt->labelShort;
-//            s->pty = serviceIt->pty;
-//            s->TMId = scIt->TMId;
-//            switch (scIt->TMId)
-//            {
-//            case DabTMId::StreamAudio:
-//                s->bitRate = scIt->streamAudio.bitRate;
-//                s->ADSCTy = DabAudioDataSCty(scIt->streamAudio.ASCTy);
-//                break;
-//            case DabTMId::StreamData:
-//                s->bitRate = scIt->streamData.bitRate;
-//                s->ADSCTy = DabAudioDataSCty(scIt->streamData.DSCTy);
-//                break;
-//            case DabTMId::PacketData:
-//                s->bitRate = 0;
-//                s->ADSCTy = DabAudioDataSCty::ADSCTY_UNDEF;
-//                break;
-//            }
-//            s->subChSize = scIt->SubChSize;
-//            s->lang = scIt->lang;
-//            s->protection = scIt->protection;
-//            return true;
-//        }
-//    }
-//    return false;
-//}
-
 QString RadioControl::toShortLabel(QString & label, uint16_t charField) const
 {
     QString out("");
@@ -613,20 +575,19 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         const dabProc_NID_SERVICE_COMPONENT_LIST_t * pInfo = (const dabProc_NID_SERVICE_COMPONENT_LIST_t * ) p->pData;
         if (DABPROC_NSTAT_SUCCESS == p->status)
         {
-            RadioControlServiceComponentData *pServiceCompList = new RadioControlServiceComponentData;
-            pServiceCompList->SId.value = pInfo->sid;
+            QList<dabProcServiceCompListItem_t> * pList = new QList<dabProcServiceCompListItem_t>;
 
             dabProcServiceCompListItem_t item;
             for (int s = 0; s < pInfo->numServiceComponents; ++s)
             {
                 pInfo->getServiceComponentListItem(radioCtrl->dabProcHandle, s, &item);
-                pServiceCompList->list.append(item);
+                pList->append(item);
             }
 
             RadioControlEvent * pEvent = new RadioControlEvent;
             pEvent->type = RadioControlEventType::SERVICE_COMPONENT_LIST;
             pEvent->status = p->status;
-            pEvent->pData = intptr_t(pServiceCompList);
+            pEvent->pData = intptr_t(pList);
             radioCtrl->emit_dabEvent(pEvent);
         }
         else
@@ -709,8 +670,6 @@ void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
     default:
         qDebug() << "Unsupported data group type:" << p->dgType;
     }
-
-
 }
 
 void audioDataCb(dabProcAudioCBData_t * p, void * ctx)
