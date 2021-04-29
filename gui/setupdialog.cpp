@@ -208,3 +208,13 @@ void SetupDialog::on_dagcCheckBox_stateChanged(int state)
 {
     emit setDAGC(Qt::Checked == Qt::CheckState(state));
 }
+
+bool SetupDialog::getDAGCState() const
+{
+    return ui->dagcCheckBox->isChecked();
+}
+
+void SetupDialog::setDAGCState(bool ena)
+{
+    ui->dagcCheckBox->setChecked(ena);
+}

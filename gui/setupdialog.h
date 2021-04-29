@@ -21,6 +21,8 @@ public:
     RawFileInputFormat getInputFileFormat() const;
     bool isFileLoopActive() const;
     void setInputFile(const QString &value, const RawFileInputFormat &format, bool loop);
+    bool getDAGCState() const;
+    void setDAGCState(bool ena);
 
 public slots:
     void setGainValues(const QList<int> * pList);

@@ -970,6 +970,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setDAGC);
 
             static_cast<RtlSdrInput *>(inputDevice)->openDevice();
+            static_cast<RtlSdrInput *>(inputDevice)->setDAGC(setupDialog->getDAGCState());
 
             // enable band scan
             bandScanAct->setEnabled(true);
@@ -1056,6 +1057,7 @@ void MainWindow::loadSettings()
     setupDialog->setInputFile(settings.value("inputFileName", QVariant(QString(""))).toString(),
                               RawFileInputFormat(settings.value("inputFileFormat", 0).toInt()),
                               settings.value("inputFileLoop", false).toBool());
+    setupDialog->setDAGCState(settings.value("DAGC", false).toBool());
 }
 
 void MainWindow::saveSettings()
@@ -1065,6 +1067,7 @@ void MainWindow::saveSettings()
     settings.setValue("inputFileName", setupDialog->getInputFileName());
     settings.setValue("inputFileFormat", int(setupDialog->getInputFileFormat()));
     settings.setValue("inputFileLoop", setupDialog->isFileLoopActive());
+    settings.setValue("DAGC", setupDialog->getDAGCState());
 
     QModelIndex current = ui->serviceListView->currentIndex();
     const SLModel * model = reinterpret_cast<const SLModel*>(current.model());
