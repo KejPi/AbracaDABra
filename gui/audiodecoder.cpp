@@ -73,11 +73,14 @@ AudioDecoder::~AudioDecoder()
 #endif
 }
 
-void AudioDecoder::start(const RadioControlAudioService &s)
+void AudioDecoder::start(const RadioControlService &s)
 {
     qDebug() << Q_FUNC_INFO;
-    isRunning = true;
-    mode = s.ASCTy;
+    if (s.isAudioService())
+    {
+        isRunning = true;
+        mode = s.ADSCTy;
+    }
 }
 
 void AudioDecoder::stop()
@@ -327,10 +330,10 @@ void AudioDecoder::inputData(QByteArray *inData)
 
     switch (mode)
     {
-    case DabAudioMode::DAB_AUDIO:
+    case DabAudioDataSCty::DAB_AUDIO:
         processMP2(inData);
         break;
-    case DabAudioMode::DABPLUS_AUDIO:
+    case DabAudioDataSCty::DABPLUS_AUDIO:
         processAAC(inData);
         break;
     default:

@@ -1,7 +1,7 @@
 #include "ensemblelistitem.h"
 #include "servicelistitem.h"
 
-EnsembleListItem::EnsembleListItem(const RadioControlServiceListEntry & item)
+EnsembleListItem::EnsembleListItem(const RadioControlService & item)
 {
     m_frequency = item.ensemble.frequency;
     m_ueid = item.ensemble.ueid;

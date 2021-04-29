@@ -241,36 +241,16 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                 }
                 serviceIt->serviceComponents.append(item);
 
-                RadioControlServiceListEntry s;
-                s.ensemble.frequency = ensemble.frequency;
-                s.ensemble.ueid = ensemble.ueid;
-                s.ensemble.label = ensemble.label;
-                s.ensemble.labelShort = ensemble.labelShort;
-                s.SId = serviceIt->SId;
-                s.SCIdS = item.SCIdS;
-                s.label = item.label;
-                s.labelShort = item.labelShort;
-                s.pty = serviceIt->pty;
-                s.TMId = item.TMId;
-                switch (item.TMId)
+                RadioControlService s;
+                if (getServiceListEntry(&s, serviceIt->SId, item.SCIdS))
                 {
-                case DabTMId::StreamAudio:
-                    s.bitRate = item.streamAudio.bitRate;
-                    break;
-                case DabTMId::StreamData:
-                    s.bitRate = item.streamData.bitRate;
-                    break;
-                case DabTMId::PacketData:
-                    s.bitRate = 0;
-                    break;
+                    emit serviceListEntry(s);
                 }
-
                 if ((serviceRequest.SId == serviceIt->SId.value) && (serviceRequest.SCIdS == item.SCIdS))
                 {
                     dabServiceSelection(serviceRequest.SId, serviceRequest.SCIdS);
                     serviceRequest.SId = 0;    // clear request
                 }
-                emit serviceListEntry(s);
             }
             if (requestUpdate)
             {
@@ -306,24 +286,13 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                 QList<RadioControlServiceComponentListItem>::iterator scIt = findServiceComponent(serviceIt, pData->SCIdS);
                 if (scIt != serviceIt->serviceComponents.end())
                 {   // service components exists in service
-                    if (DabTMId::StreamAudio == scIt->TMId)
-                    {   // audio service
-                        RadioControlAudioService audioService;
-                        audioService.SId = serviceIt->SId;
-                        audioService.SCIdS = scIt->SCIdS;
-                        audioService.label = scIt->label;
-                        audioService.labelShort = scIt->labelShort;
-                        audioService.pty = serviceIt->pty;
-                        audioService.ASCTy = DabAudioMode(scIt->streamAudio.ASCTy);
-                        audioService.bitRate = scIt->streamAudio.bitRate;
-                        audioService.SubChSize = scIt->SubChSize;
-                        audioService.lang = scIt->lang;
-                        audioService.protection = scIt->protection;
-
-                        //emit newAudioService(DabAudioMode(scIt->streamAudio.ASCTy));
-                        emit newAudioService(audioService);
+                    RadioControlService s;
+                    if (getServiceListEntry(&s, serviceIt->SId, scIt->SCIdS))
+                    {
+                        emit newService(s);
                     }
                 }
+
             }
         }        
         else
@@ -519,6 +488,48 @@ QList<RadioControlServiceComponentListItem>::iterator
         }
     }
     return scIt;
+}
+
+bool RadioControl::getServiceListEntry(RadioControlService * s, const DabSId & sid, const uint8_t scids)
+{
+    QList<RadioControlServiceListItem>::iterator serviceIt = findService(sid);
+    if (serviceIt != serviceList.end())
+    {   // service is in the list
+        QList<RadioControlServiceComponentListItem>::iterator scIt = findServiceComponent(serviceIt, scids);
+        if (scIt != serviceIt->serviceComponents.end())
+        {   // service components exists in service
+            s->ensemble.frequency = ensemble.frequency;
+            s->ensemble.ueid = ensemble.ueid;
+            s->ensemble.label = ensemble.label;
+            s->ensemble.labelShort = ensemble.labelShort;
+            s->SId = serviceIt->SId;
+            s->SCIdS = scIt->SCIdS;
+            s->label = scIt->label;
+            s->labelShort = scIt->labelShort;
+            s->pty = serviceIt->pty;
+            s->TMId = scIt->TMId;
+            switch (scIt->TMId)
+            {
+            case DabTMId::StreamAudio:
+                s->bitRate = scIt->streamAudio.bitRate;
+                s->ADSCTy = DabAudioDataSCty(scIt->streamAudio.ASCTy);
+                break;
+            case DabTMId::StreamData:
+                s->bitRate = scIt->streamData.bitRate;
+                s->ADSCTy = DabAudioDataSCty(scIt->streamData.DSCTy);
+                break;
+            case DabTMId::PacketData:
+                s->bitRate = 0;
+                s->ADSCTy = DabAudioDataSCty::ADSCTY_UNDEF;
+                break;
+            }
+            s->subChSize = scIt->SubChSize;
+            s->lang = scIt->lang;
+            s->protection = scIt->protection;
+            return true;
+        }
+    }
+    return false;
 }
 
 QString RadioControl::toShortLabel(QString & label, uint16_t charField) const

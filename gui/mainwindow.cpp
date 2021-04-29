@@ -272,7 +272,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(radioControl, &RadioControl::dlDataGroup, dlDecoder, &DLDecoder::newDataGroup, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::mscDataGroup, motDecoder, &MOTDecoder::newDataGroup, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::newAudioService, this, &MainWindow::audioServiceChanged, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::newService, this, &MainWindow::serviceChanged, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::serviceChanged, dlDecoder, &DLDecoder::reset, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::serviceChanged, motDecoder, &MOTDecoder::reset, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::audioData, audioDecoder, &AudioDecoder::inputData, Qt::QueuedConnection);
@@ -280,7 +280,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(motDecoder, &MOTDecoder::motObjectComplete, this, &MainWindow::updateSLS, Qt::QueuedConnection);   
 
     connect(audioDecoder, &AudioDecoder::audioParametersInfo, this, &MainWindow::updateAudioInfo, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::newAudioService, audioDecoder, &AudioDecoder::start, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::newService, audioDecoder, &AudioDecoder::start, Qt::QueuedConnection);
 
     // audio output is controlled by signals from decoder
     connect(this, &MainWindow::serviceRequest, audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
@@ -434,7 +434,7 @@ void MainWindow::updateSnrLevel(float snr)
 #endif
 }
 
-void MainWindow::updateServiceList(const RadioControlServiceListEntry & slEntry)
+void MainWindow::updateServiceList(const RadioControlService & slEntry)
 {
     if (slEntry.TMId != DabTMId::StreamAudio)
     {  // do nothing - data services not supported
@@ -769,9 +769,9 @@ void MainWindow::serviceListTreeClicked(const QModelIndex &index)
     }
 }
 
-void MainWindow::audioServiceChanged(const RadioControlAudioService &s)
+void MainWindow::serviceChanged(const RadioControlService &s)
 {
-    if (s.SId.value == SId.value)
+    if (s.isAudioService() && (s.SId.value == SId.value))
     {
         if (s.label.isEmpty())
         {   // service component not valid -> shoudl not happen
@@ -848,7 +848,7 @@ void MainWindow::audioServiceChanged(const RadioControlAudioService &s)
                                             .arg(label)
                                             .arg(s.protection.codeRateUpper)
                                             .arg(s.protection.codeRateLower)
-                                            .arg(s.SubChSize);
+                                            .arg(s.subChSize);
         }
         else
         {  // UEP
@@ -858,7 +858,7 @@ void MainWindow::audioServiceChanged(const RadioControlAudioService &s)
                               "Capacity units: %3 CU")
                                             .arg(label)
                                             .arg(int(s.protection.level))
-                                            .arg(s.SubChSize);
+                                            .arg(s.subChSize);
         }
         ui->protectionLabel->setText(label);
         ui->protectionLabel->setToolTip(toolTip);

@@ -41,7 +41,7 @@ public slots:
     void updateEnsembleInfo(const RadioControlEnsemble &ens);
     void updateSyncStatus(uint8_t sync);
     void updateSnrLevel(float snr);
-    void updateServiceList(const RadioControlServiceListEntry &slEntry);
+    void updateServiceList(const RadioControlService &slEntry);
     void updateDL(const QString &dl);
     void updateSLS(const QByteArray & b);
     void updateAudioInfo(const AudioParameters &params);
@@ -62,7 +62,7 @@ private slots:
     void onRawFileStop();
     void serviceListClicked(const QModelIndex &index);
     void serviceListTreeClicked(const QModelIndex &index);
-    void audioServiceChanged(const RadioControlAudioService &s);    
+    void serviceChanged(const RadioControlService &s);
 
 protected:        
      void closeEvent(QCloseEvent *event);

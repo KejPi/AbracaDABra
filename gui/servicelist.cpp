@@ -27,7 +27,7 @@ void ServiceList::clear()
     emit empty();
 }
 
-void ServiceList::addService(const RadioControlServiceListEntry & s, bool fav, int currentEns)
+void ServiceList::addService(const RadioControlService & s, bool fav, int currentEns)
 {
     bool newService = false;
     bool newEnsemble = false;
@@ -151,7 +151,7 @@ void ServiceList::save(QSettings & settings)
 void ServiceList::load(QSettings & settings)
 {
     int numServ = settings.beginReadArray("ServiceList");
-    RadioControlServiceListEntry item;
+    RadioControlService item;
     for (int s = 0; s < numServ; ++s)
     {
         bool ok = true;

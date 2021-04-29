@@ -34,13 +34,17 @@ enum class DabTMId
     PacketData  = 3
 };
 
-enum class DabAudioMode
+// ETSI TS 101 756 V2.4.1 table 2a and 2b
+enum class DabAudioDataSCty
 {
-    DAB_AUDIO = 0x00,
-    DABPLUS_AUDIO = 0x3F,
-    AUDIO_UNDEF = 0xFF
+    DAB_AUDIO = 0,
+    TDC = 5,
+    MPEG2TS = 24,
+    MOT = 60,
+    PROPRIETARY_SERVICE = 61,
+    DABPLUS_AUDIO = 63,
+    ADSCTY_UNDEF = 0xFF
 };
-Q_DECLARE_METATYPE(DabAudioMode);
 
 enum class DabCharset
 {

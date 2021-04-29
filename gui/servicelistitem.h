@@ -11,7 +11,7 @@ class EnsembleListItem;
 class ServiceListItem
 {
 public:
-    ServiceListItem(const RadioControlServiceListEntry & item, bool fav = false, int currentEns = 0);
+    ServiceListItem(const RadioControlService & item, bool fav = false, int currentEns = 0);
 
     bool addEnsemble(EnsembleListItem * ensPtr);     // returns true when new ensemble was added
     void setFavorite(bool ena) { m_favorite = ena; }
@@ -28,9 +28,7 @@ public:
 
     bool operator==(const ServiceListItem & other);
     uint64_t getId() const { return getId(m_sid.value, m_scids); }
-    static uint64_t getId(const RadioControlServiceListEntry & item) { return getId(item.SId.value, item.SCIdS); }
-#warning "Consider replacing RadioControlAudioService by RadioControlServiceListEntry"
-    static uint64_t getId(const RadioControlAudioService & item) { return getId(item.SId.value, item.SCIdS); }
+    static uint64_t getId(const RadioControlService & item) { return getId(item.SId.value, item.SCIdS); }
     static uint64_t getId(uint32_t sid, uint8_t scids) { return ((uint64_t(scids)<<32) | sid); }
 private:
     // Service
