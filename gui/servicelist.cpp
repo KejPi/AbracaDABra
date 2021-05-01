@@ -122,10 +122,21 @@ int ServiceList::currentEnsembleIdx(uint64_t servId) const
 
 void ServiceList::save(QSettings & settings)
 {
-    settings.beginWriteArray("ServiceList", m_serviceList.size());
-    int n = 0;
-    for (ServiceListIterator it = m_serviceList.begin(); it != m_serviceList.end(); ++it)
+    // first sort service list by ID
+    // this is needed to restore secondary services correctly
+    QVector<uint64_t> idVect;
+    for (auto & s : m_serviceList)
     {
+        idVect.append(s->getId());
+    }
+    std::sort(idVect.begin(), idVect.end());
+
+    settings.beginWriteArray("ServiceList", m_serviceList.size());          
+    int n = 0;
+    for (auto id : idVect)
+    {
+        ServiceListIterator it = m_serviceList.find(id);
+
         settings.setArrayIndex(n++);
         settings.setValue("SID", (*it)->SId().value);
         settings.setValue("SCIdS", (*it)->SCIdS());
