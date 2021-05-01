@@ -37,7 +37,6 @@ private:
     QString m_label;        // Service label
     QString m_shortLabel;   // Short label
     bool m_favorite;        // Favorite service
-    uint16_t m_bitRate;     // Service bitrate
     int m_currentEnsemble;
 
     QList<EnsembleListItem *> m_ensembleList;
