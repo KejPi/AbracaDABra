@@ -2,7 +2,7 @@
 #define RADIOCONTROL_H
 
 #include <QObject>
-#include <QMap>
+#include <QHash>
 #include <QDateTime>
 #include <QStringList>
 #include <QDebug>
@@ -133,22 +133,6 @@ struct RadioControlServiceComponent
 };
 Q_DECLARE_METATYPE(RadioControlServiceComponent)
 
-struct RadioControlService
-{
-    // Each service shall be identified by a Service Identifier (SId)
-    // Data services use 32bit IDs, Programme services use 16 bits
-    DabSId SId;
-    QString label;
-    QString labelShort;
-    DabPTy pty;
-
-    // CAId (Conditional Access Identifier): this 3-bit field shall identify the
-    // Access Control System (ACS) used for the service
-    uint8_t CAId;
-
-    QList<RadioControlServiceComponent> serviceComponents;
-};
-
 
 enum class RadioControlEventType
 {
@@ -212,9 +196,8 @@ private:
     } serviceRequest;
 
     RadioControlEnsemble ensemble;
-    QList<RadioControlService> serviceList;
-    QList<RadioControlService>::iterator findService(DabSId SId);
-    QList<RadioControlServiceComponent>::iterator findServiceComponent(const QList<RadioControlService>::iterator & sIt, uint8_t SCIdS);
+    QHash<uint32_t, QList<RadioControlServiceComponent>> serviceList;
+    QList<RadioControlServiceComponent>::iterator findServiceComponent(QList<RadioControlServiceComponent> & scList, uint8_t SCIdS);
 
     void updateSyncLevel(dabProcSyncLevel_t s);
     QString toShortLabel(QString & label, uint16_t charField) const;
