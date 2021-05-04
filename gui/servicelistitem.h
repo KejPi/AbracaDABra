@@ -37,7 +37,7 @@ private:
     QString m_label;        // Service label
     QString m_shortLabel;   // Short label
     bool m_favorite;        // Favorite service
-    int m_currentEnsemble;  // currently selected ensemble
+    int m_currentEnsemble;
 
     QList<EnsembleListItem *> m_ensembleList;
 
