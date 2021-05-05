@@ -82,6 +82,7 @@ private:
     QAction * clearServiceListAct;
     QAction * bandScanAct;
     QAction * switchModeAct;
+    QAction * ensembleInfoAct;
 
     QThread * radioControlThr;
     RadioControl * radioControl;
@@ -123,6 +124,7 @@ private:
     void favoriteToggled(bool checked);
     void switchServiceSource();
     void switchMode();
+    void showEnsembleInfo();
     void setExpertMode(bool ena);
     void stop();
     void tuneChannel(uint32_t freq);

@@ -38,8 +38,9 @@ struct DabSId {
             uint32_t countryServiceRef : 24;
             uint32_t ecc : 8;
         } data;
-    };
-    bool isProgServiceId() { return prog.zero == 0; }
+    };   
+    DabSId(uint32_t sid = 0) { value = sid; }
+    bool isProgServiceId() const { return prog.zero == 0; }
 };
 
 struct DabProtection {
@@ -118,7 +119,7 @@ struct RadioControlServiceComponent
         } streamAudioData;
         struct  // TMId == 3
         {
-            int8_t DSCTy;           // DSCTy (Data Service Component Type)
+            DabAudioDataSCty DSCTy; // DSCTy (Data Service Component Type)
             uint16_t SCId;          // SCId (Service Component Identifier): this 12-bit field shall uniquely
                                     // identify the service component within the ensemble
             int8_t DGflag;          // DG flag: this 1-bit flag shall indicate whether data groups are used to transport the service component as follows:
@@ -183,6 +184,7 @@ public slots:
     void start(uint32_t freq);
     void exit();
     void tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS);
+    QString getEnsembleConfiguration();
 
 signals:
     void dabEvent(RadioControlEvent * pEvent);

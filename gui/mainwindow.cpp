@@ -110,10 +110,14 @@ MainWindow::MainWindow(QWidget *parent)
     switchModeAct = new QAction("Expert mode", this);
     connect(switchModeAct, &QAction::triggered, this, &MainWindow::switchMode);
 
+    ensembleInfoAct = new QAction("Ensemble Info", this);
+    connect(ensembleInfoAct, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
+
     menu = new QMenu(this);
     menu->addAction(setupAct);
     menu->addAction(bandScanAct);
     menu->addAction(switchModeAct);
+    menu->addAction(ensembleInfoAct);
     menu->addAction(clearServiceListAct);
 
     QPixmap pic;
@@ -1204,6 +1208,11 @@ void MainWindow::switchMode()
 {   // toggle expert mode
     expertMode = !expertMode;
     setExpertMode(expertMode);
+}
+
+void MainWindow::showEnsembleInfo()
+{
+    qDebug("%s\n", radioControl->getEnsembleConfiguration().toLocal8Bit().data());
 }
 
 void MainWindow::setExpertMode(bool ena)
