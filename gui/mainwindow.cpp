@@ -230,7 +230,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->switchSourceLabel->setHidden(true);
 
     ui->serviceTreeView->setVisible(false);
-    setMinumumSize();
+    resize(minimumSizeHint());
 
     // threads
     radioControl = new RadioControl();
@@ -1234,12 +1234,7 @@ void MainWindow::setExpertMode(bool ena)
     ui->channelLabel->setVisible(!ena);
     ui->serviceTreeView->setVisible(ena);
 
-    QTimer::singleShot(10, this, &MainWindow::setMinumumSize);
-}
-
-void MainWindow::setMinumumSize()
-{
-    resize(minimumSizeHint());
+    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
 }
 
 void MainWindow::bandScan()

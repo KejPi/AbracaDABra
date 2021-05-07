@@ -134,7 +134,6 @@ private:
     void bandScanFinished(int result);
     void clearServiceList();
 
-    void setMinumumSize();
     void serviceTreeViewUpdateSelection();
     void serviceListViewUpdateSelection();
 };
