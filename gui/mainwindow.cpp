@@ -111,7 +111,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(switchModeAct, &QAction::triggered, this, &MainWindow::switchMode);
 
     ensembleInfoAct = new QAction("Ensemble Info", this);
-    connect(ensembleInfoAct, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
 
     menu = new QMenu(this);
     menu->addAction(setupAct);
@@ -150,6 +149,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->ensembleLabel->setFont(f);
     f.setBold(true);
     ui->serviceLabel->setFont(f);
+
+    ensembleInfoDialog = new EnsembleInfoDialog(this);
+    connect(ensembleInfoAct, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
+
 
     // service list
     serviceList = new ServiceList;
@@ -1212,7 +1215,9 @@ void MainWindow::switchMode()
 
 void MainWindow::showEnsembleInfo()
 {
-    qDebug("%s\n", radioControl->getEnsembleConfiguration().toLocal8Bit().data());
+    QString info = radioControl->getEnsembleConfiguration(); //.toLocal8Bit().data();
+    ensembleInfoDialog->setEnsStructText(info);
+    ensembleInfoDialog->show();
 }
 
 void MainWindow::setExpertMode(bool ena)

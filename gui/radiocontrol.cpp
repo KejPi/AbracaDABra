@@ -112,8 +112,8 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             ensemble.LTO = pInfo->LTO;
             ensemble.intTable = pInfo->intTable;
             ensemble.alarm = pInfo->alarm;
-            ensemble.label = DabTables::convertToQString(pInfo->label.str, pInfo->label.charset);
-            ensemble.labelShort = toShortLabel(ensemble.label, pInfo->label.charField);
+            ensemble.label = DabTables::convertToQString(pInfo->label.str, pInfo->label.charset).trimmed();
+            ensemble.labelShort = toShortLabel(ensemble.label, pInfo->label.charField).trimmed();
             emit ensembleInformation(ensemble);
             // request service list
             dabGetServiceList();
@@ -492,8 +492,9 @@ QString RadioControl::getEnsembleConfiguration()
     QString output;
     QTextStream strOut(&output, QIODevice::Text);
 
-    strOut << "Ensemble:\n";
-    strOut << QString("\t0x%1\t'%2' [ '%3' ]     ECC = 0x%4, UTC %5 min, INT = %6, alarm announcements = %7\n")
+    strOut << "<dl>";
+    strOut << "<dt>Ensemble:</dt>";
+    strOut << QString("<dd>0x%1 <b>%2</b> [ <i>%3</i> ]  ECC = 0x%4, UTC %5 min, INT = %6, alarm announcements = %7</dd>")
               .arg(QString("%1").arg(ensemble.eid, 4, 16, QChar('0')).toUpper())
               .arg(ensemble.label)
               .arg(ensemble.labelShort)
@@ -501,13 +502,22 @@ QString RadioControl::getEnsembleConfiguration()
               .arg(ensemble.LTO*30)
               .arg(ensemble.intTable)
               .arg(ensemble.alarm);
+    strOut << "</dl>";
 
-    strOut << QString("Services (%1):\n").arg(serviceList.size());
+    strOut << "<dl>";
+    strOut << "<dt>";
+    strOut << QString("Services (%1):").arg(serviceList.size());
+    strOut << "</dt>";
+
     for (auto const & s : serviceList)
     {
+        strOut << "<dd>";
+
+        strOut << "<dl>";
+        strOut << "<dt>";
         if (s.SId.isProgServiceId())
         {   // programme service
-            strOut << QString("\t0x%1\t'%2' [ '%3' ]")
+            strOut << QString("0x%1 <b>%2</b> [ <i>%3</i> ]")
                               .arg(QString("%1").arg(s.SId.value, 4, 16, QChar('0')).toUpper())
                               .arg(s.label)
                               .arg(s.labelShort);
@@ -515,30 +525,29 @@ QString RadioControl::getEnsembleConfiguration()
             strOut << QString(" PTY: %1").arg(s.pty.s);
             if (s.pty.d != 0)
             {
-                strOut << QString(" (dynamic %1),").arg(s.pty.d);
+                strOut << QString(" (dynamic %1)").arg(s.pty.d);
             }
             else
             {
-                strOut << " (static),";
+                strOut << " (static)";
             }
         }
         else
         {   // data service
-            strOut << QString("\t0x%1\t'%2' [ '%3' ],")
+            strOut << QString("0x%1 <b>%2</b> [ <i>%3</i> ]")
                    .arg(QString("%1").arg(s.SId.value, 8, 16, QChar('0')).toUpper())
                    .arg(s.label)
                    .arg(s.labelShort);
         }
-        strOut << QString(" NumComponents %1").arg(s.serviceComponents.size());
         if (s.CAId)
         {
             strOut << QString(", CAId %1").arg(s.CAId);
         }
-        strOut << Qt::endl;
+        strOut << "</dt>";
 
         for (auto const & sc : s.serviceComponents)
         {
-            strOut << "\t\t";
+            strOut << "<dd>";
             if (sc.isDataPacketService())
             {
                 strOut << "DataComponent (MSC Packet Data)";
@@ -568,10 +577,10 @@ QString RadioControl::getEnsembleConfiguration()
             {
                 strOut << QString(" 0x%1").arg(QString("%1").arg(int(sc.streamAudioData.scType), 2, 16, QChar('0')).toUpper());
             }
+            strOut << "<br>";
 
-            strOut << Qt::endl;
-
-            strOut << QString("\t\t\tSubChId: %1, Language: %2, StartCU: %3, NumCU: %4")
+            strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+            strOut << QString("SubChId: %1, Language: %2, StartCU: %3, NumCU: %4,")
                       .arg(sc.SubChId)
                       .arg(sc.lang)
                       .arg(sc.SubChAddr)
@@ -603,16 +612,22 @@ QString RadioControl::getEnsembleConfiguration()
             {
                 strOut << QString(", Bitrate: %1kbps").arg(sc.streamAudioData.bitRate);
             }
-            strOut << Qt::endl;
             for (int a = 0; a < sc.numUserApps; ++a)
             {
-                strOut << QString("\t\t\t\tUserApp %1/%2:").arg(a+1).arg(sc.numUserApps);
-                strOut << Qt::endl;
+                strOut << "<br>";
+                strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                strOut << QString("UserApp %1/%2:").arg(a+1).arg(sc.numUserApps);
             }
+            strOut << "</dd>";
         }
+        strOut << "</dl>";
+        strOut << "</dd>";
     }
+    strOut << "</dl>";
 
     strOut.flush();  
+
 #if 0
 
     for (int n=0; n<infoPtr->numServices;++n)

@@ -266,6 +266,10 @@ add_executable(${TARGET}
     bandscandialog.h
     bandscandialog.cpp
     bandscandialog.ui
+
+    ensembleinfodialog.h
+    ensembleinfodialog.cpp
+    ensembleinfodialog.ui
   )
 
 ### DAB library

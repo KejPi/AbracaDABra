@@ -12,6 +12,7 @@
 #include <QGraphicsPixmapItem>
 
 #include "setupdialog.h"
+#include "ensembleinfodialog.h"
 #include "inputdevice.h"
 #include "rawfileinput.h"
 #include "rtlsdrinput.h"
@@ -71,6 +72,7 @@ protected:
 private:
     Ui::MainWindow *ui;
     SetupDialog * setupDialog;
+    EnsembleInfoDialog * ensembleInfoDialog;
     QProgressBar * snrProgress;
     QLabel  * timeLabel;
     QLabel * syncLabel;
