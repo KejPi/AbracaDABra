@@ -254,6 +254,15 @@ void RtlSdrWorker::run()
 
 void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx)
 {
+#define DOC_ENABLE 0
+#if DOC_ENABLE
+    static float dcI = 0.0;
+    static float Izm1 = 0.0;
+    static float dcQ = 0.0;
+    static float Qzm1 = 0.0;
+#define DC_C 1e-6
+#endif
+
     if (ctx)
     {
         // len is number of I and Q samples
@@ -289,7 +298,23 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx)
             float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
             for (uint64_t k=0; k<len; k++)
             {   // convert to float
+#if !DOC_ENABLE
                 *outPtr++ = float(*inPtr++ - 128);  // I or Q
+#else
+                float tmp = float(*inPtr++ - 128);  // I or Q
+                if (k & 0x1)
+                {  // Q
+                    dcQ = (tmp + Qzm1)*DC_C + dcQ - 2*DC_C*dcQ;
+                    Qzm1 = tmp;
+                    *outPtr++ = tmp - dcQ;
+                }
+                else
+                {  // I
+                    dcI = (tmp + Izm1)*DC_C + dcI - 2*DC_C*dcI;
+                    Izm1 = tmp;
+                    *outPtr++ = tmp - dcI;
+                }
+#endif
             }
             inputBuffer.head = (inputBuffer.head + len*sizeof(float));
         }
@@ -301,14 +326,49 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx)
             float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
             for (uint64_t k=0; k<samplesTillEnd; ++k)
             {   // convert to float
+#if !DOC_ENABLE
                 *outPtr++ = float(*inPtr++ - 128);  // I or Q
+#else
+                float tmp = float(*inPtr++ - 128);  // I or Q
+                if (k & 0x1)
+                {  // Q
+                    dcQ = (tmp + Qzm1)*DC_C + dcQ - 2*DC_C*dcQ;
+                    Qzm1 = tmp;
+                    *outPtr++ = tmp - dcQ;
+                }
+                else
+                {  // I
+                    dcI = (tmp + Izm1)*DC_C + dcI - 2*DC_C*dcI;
+                    Izm1 = tmp;
+                    *outPtr++ = tmp - dcI;
+                }
+#endif
             }
             outPtr = (float *)(inputBuffer.buffer);
             for (uint64_t k=0; k<len-samplesTillEnd; ++k)
             {   // convert to float
+#if !DOC_ENABLE
                 *outPtr++ = float(*inPtr++ - 128);  // I or Q
+#else
+                float tmp = float(*inPtr++ - 128);  // I or Q
+                if (k & 0x1)
+                {  // Q
+                    dcQ = (tmp + Qzm1)*DC_C + dcQ - 2*DC_C*dcQ;
+                    Qzm1 = tmp;
+                    *outPtr++ = tmp - dcQ;
+                }
+                else
+                {  // I
+                    dcI = (tmp + Izm1)*DC_C + dcI - 2*DC_C*dcI;
+                    Izm1 = tmp;
+                    *outPtr++ = tmp - dcI;
+                }
+#endif
             }
-            inputBuffer.head = (len-samplesTillEnd)*sizeof(float);
+            inputBuffer.head = (len-samplesTillEnd)*sizeof(float);            
+#if DOC_ENABLE
+            //qDebug() << dcI << dcQ;
+#endif
         }        
 
 #if INPUT_USE_PTHREADS
