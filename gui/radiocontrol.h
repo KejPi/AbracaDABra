@@ -190,6 +190,7 @@ signals:
     void dabEvent(RadioControlEvent * pEvent);
     void syncStatus(uint8_t sync);
     void snrLevel(float snr);
+    void freqOffset(float f);
     void tuneDone(uint32_t freq);
     void ensembleInformation(const RadioControlEnsemble & ens);
     void serviceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);

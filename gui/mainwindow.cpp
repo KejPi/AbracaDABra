@@ -111,6 +111,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(switchModeAct, &QAction::triggered, this, &MainWindow::switchMode);
 
     ensembleInfoAct = new QAction("Ensemble Info", this);
+    connect(ensembleInfoAct, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
 
     menu = new QMenu(this);
     menu->addAction(setupAct);
@@ -149,10 +150,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->ensembleLabel->setFont(f);
     f.setBold(true);
     ui->serviceLabel->setFont(f);
-
-    ensembleInfoDialog = new EnsembleInfoDialog(this);
-    connect(ensembleInfoAct, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
-
 
     // service list
     serviceList = new ServiceList;
@@ -1215,9 +1212,23 @@ void MainWindow::switchMode()
 
 void MainWindow::showEnsembleInfo()
 {
+    ensembleInfoAct->setDisabled(true);
+
+    EnsembleInfoDialog * ensembleInfoDialog;
+    ensembleInfoDialog = new EnsembleInfoDialog(this);
+    ensembleInfoDialog->setAttribute(Qt::WA_DeleteOnClose);
+    connect(ensembleInfoDialog, &EnsembleInfoDialog::destroyed, this, &MainWindow::onEnsembleInfoClose);
+    connect(radioControl, &RadioControl::snrLevel, ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::freqOffset, ensembleInfoDialog, &EnsembleInfoDialog::updateFreqOffset, Qt::QueuedConnection);
+
     QString info = radioControl->getEnsembleConfiguration(); //.toLocal8Bit().data();
     ensembleInfoDialog->setEnsStructText(info);
-    ensembleInfoDialog->show();
+    ensembleInfoDialog->show();        
+}
+
+void MainWindow::onEnsembleInfoClose()
+{
+    ensembleInfoAct->setEnabled(true);
 }
 
 void MainWindow::setExpertMode(bool ena)

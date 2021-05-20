@@ -16,6 +16,8 @@ public:
     explicit EnsembleInfoDialog(QWidget *parent = nullptr);
     ~EnsembleInfoDialog();
     void setEnsStructText(const QString & txt);
+    void updateSnr(float snr);
+    void updateFreqOffset(float offset);
 
 private:
     Ui::EnsembleInfoDialog *ui;

@@ -333,7 +333,10 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             int32_t M   = ((m + 2) % 12) + 1;
             int32_t D   = d + 1;
 
-            QDateTime dateAndTime = QDateTime(QDate(Y, M, D), QTime(h, minute), Qt::UTC).toOffsetFromUtc(60*(ensemble.LTO * 30));
+            int32_t sec = pData->secMsec >> 10;
+            int32_t msec = pData->secMsec & 0x3FF;
+
+            QDateTime dateAndTime = QDateTime(QDate(Y, M, D), QTime(h, minute, sec, msec), Qt::UTC).toOffsetFromUtc(60*(ensemble.LTO * 30));
 
             //qDebug() << dateAndTime;
 
@@ -348,6 +351,9 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         {
             emit snrLevel(0);
         }
+
+        emit freqOffset(pData->freqOffset*0.1);
+
 #if RADIO_CONTROL_VERBOSE > 0
         qDebug("AutoNotify: sync %d, freq offset = %f Hz, SNR = %f dB",
                pData->syncLevel, pData->freqOffset*0.1, pData->snr10/10.0);
