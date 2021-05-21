@@ -254,14 +254,22 @@ void RtlSdrWorker::run()
 
 void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx)
 {
-#define DOC_ENABLE 0
-#if DOC_ENABLE
+#define DOC_ENABLE 2
+#if (DOC_ENABLE == 1)
     static float dcI = 0.0;
     static float Izm1 = 0.0;
     static float dcQ = 0.0;
     static float Qzm1 = 0.0;
 #define DC_C 1e-6
 #endif
+#if (DOC_ENABLE == 2)
+    static float dcI = 0.0;
+    static float dcQ = 0.0;
+    int_fast32_t sumI = 0;
+    int_fast32_t sumQ = 0;
+    #define DC_C 0.05
+#endif
+
 
     if (ctx)
     {
@@ -298,9 +306,11 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx)
             float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
             for (uint64_t k=0; k<len; k++)
             {   // convert to float
-#if !DOC_ENABLE
+#if (DOC_ENABLE == 0)
                 *outPtr++ = float(*inPtr++ - 128);  // I or Q
 #else
+#if (DOC_ENABLE == 1)
+
                 float tmp = float(*inPtr++ - 128);  // I or Q
                 if (k & 0x1)
                 {  // Q
@@ -314,6 +324,21 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx)
                     Izm1 = tmp;
                     *outPtr++ = tmp - dcI;
                 }
+#else
+#if (DOC_ENABLE == 2)
+                int_fast8_t tmp = *inPtr++ - 128; // I or Q
+                if (k & 0x1)
+                {   // Q
+                    sumQ += tmp;
+                    *outPtr++ = float(tmp) - dcQ;
+                }
+                else
+                {  // I
+                    sumI += tmp;
+                    *outPtr++ = float(tmp) - dcI;
+                }
+#endif
+#endif
 #endif
             }
             inputBuffer.head = (inputBuffer.head + len*sizeof(float));
@@ -326,9 +351,10 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx)
             float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
             for (uint64_t k=0; k<samplesTillEnd; ++k)
             {   // convert to float
-#if !DOC_ENABLE
+#if (DOC_ENABLE == 0)
                 *outPtr++ = float(*inPtr++ - 128);  // I or Q
 #else
+#if (DOC_ENABLE == 1)
                 float tmp = float(*inPtr++ - 128);  // I or Q
                 if (k & 0x1)
                 {  // Q
@@ -342,14 +368,30 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx)
                     Izm1 = tmp;
                     *outPtr++ = tmp - dcI;
                 }
+#else
+#if (DOC_ENABLE == 2)
+                int_fast8_t tmp = *inPtr++ - 128; // I or Q
+                if (k & 0x1)
+                {   // Q
+                    sumQ += tmp;
+                    *outPtr++ = float(tmp) - dcQ;
+                }
+                else
+                {  // I
+                    sumI += tmp;
+                    *outPtr++ = float(tmp) - dcI;
+                }
+#endif
+#endif
 #endif
             }
             outPtr = (float *)(inputBuffer.buffer);
             for (uint64_t k=0; k<len-samplesTillEnd; ++k)
             {   // convert to float
-#if !DOC_ENABLE
+#if (DOC_ENABLE == 0)
                 *outPtr++ = float(*inPtr++ - 128);  // I or Q
 #else
+#if (DOC_ENABLE == 1)
                 float tmp = float(*inPtr++ - 128);  // I or Q
                 if (k & 0x1)
                 {  // Q
@@ -363,13 +405,35 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx)
                     Izm1 = tmp;
                     *outPtr++ = tmp - dcI;
                 }
+#else
+#if (DOC_ENABLE == 2)
+                int_fast8_t tmp = *inPtr++ - 128; // I or Q
+                if (k & 0x1)
+                {   // Q
+                    sumQ += tmp;
+                    *outPtr++ = float(tmp) - dcQ;
+                }
+                else
+                {  // I
+                    sumI += tmp;
+                    *outPtr++ = float(tmp) - dcI;
+                }
+#endif
+#endif
 #endif
             }
             inputBuffer.head = (len-samplesTillEnd)*sizeof(float);            
 #if DOC_ENABLE
             //qDebug() << dcI << dcQ;
 #endif
-        }        
+        }
+
+#if (DOC_ENABLE == 2)
+        //dcI = sumI * 1.0 / (len >> 1);
+        //dcQ = sumQ * 1.0 / (len >> 1);
+        dcI = sumI * DC_C / (len >> 1) + dcI - DC_C * dcI;
+        dcQ = sumQ * DC_C / (len >> 1) + dcQ - DC_C * dcQ;
+#endif
 
 #if INPUT_USE_PTHREADS
         pthread_mutex_lock(&inputBuffer.countMutex);
