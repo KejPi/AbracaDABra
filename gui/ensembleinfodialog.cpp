@@ -31,5 +31,5 @@ void EnsembleInfoDialog::updateSnr(float snr)
 
 void EnsembleInfoDialog::updateFreqOffset(float offset)
 {
-    ui->freqOffsetLabel->setText(QString("%1 Hz").arg(offset, 0, 'f', 2));
+    ui->freqOffsetLabel->setText(QString("%1 Hz").arg(offset, 0, 'f', 1));
 }
