@@ -79,6 +79,13 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QPushButton" name="dumpButton">
+       <property name="text">
+        <string>Dump raw data</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>

@@ -1221,6 +1221,14 @@ void MainWindow::showEnsembleInfo()
     connect(radioControl, &RadioControl::snrLevel, ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::freqOffset, ensembleInfoDialog, &EnsembleInfoDialog::updateFreqOffset, Qt::QueuedConnection);
 
+    if (dynamic_cast<RtlSdrInput*>(inputDevice))
+    {
+        connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::dumpToFileStart);
+        connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::dumpToFileStop);
+        connect(static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::dumpToFileState, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
+        ensembleInfoDialog->enableDumpToFile(true);
+    }
+
     QString info = radioControl->getEnsembleConfiguration(); //.toLocal8Bit().data();
     ensembleInfoDialog->setEnsStructText(info);
     ensembleInfoDialog->show();        

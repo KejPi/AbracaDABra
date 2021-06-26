@@ -12,6 +12,8 @@ class RtlSdrWorker : public QThread
     Q_OBJECT
 public:
     explicit RtlSdrWorker(struct rtlsdr_dev *d, QObject *parent = nullptr);
+    void dumpToFileStart(FILE * f);
+    void dumpToFileStop();
 protected:
     void run() override;
 signals:
@@ -19,6 +21,14 @@ signals:
 private:
     QObject *rtlSdrPtr;
     struct rtlsdr_dev *device;
+    std::atomic<bool> enaDumpToFile;
+    FILE * dumpFile;
+    QMutex fileMutex;
+
+    bool isDumpingIQ() const { return enaDumpToFile; }
+    void dumpBuffer(unsigned char *buf, uint32_t len);
+
+    friend void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx);
 };
 
 class RtlSdrInput : public InputDevice
@@ -37,9 +47,12 @@ public slots:
     void setGain(int gainVal);
     void setDAGC(bool ena);
 
+    void dumpToFileStart(const QString & filename);
+    void dumpToFileStop();
+
 signals:
     void gainListAvailable(const QList<int> * pList);
-
+    void dumpToFileState(bool ena);
 private:
     uint32_t frequency;
     bool deviceUnplugged;
@@ -48,10 +61,9 @@ private:
     RtlSdrWorker * worker;
     bool gainAutoMode;
     QList<int> * gainList;
+    FILE * dumpFile;
 
-    void run();
-
-    friend void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx);
+    void run();           
 private slots:
     void readThreadStopped();
 };
