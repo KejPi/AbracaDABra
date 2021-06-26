@@ -53,6 +53,7 @@ public slots:
 
 signals:
     void serviceRequest(uint32_t freq, uint32_t SId, uint8_t SCIdS);
+    void exit();
 
 private slots:
     void on_channelCombo_currentIndexChanged(int index);

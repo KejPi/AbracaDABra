@@ -303,6 +303,8 @@ MainWindow::MainWindow(QWidget *parent)
     // connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::tuneDone, this, &MainWindow::tuneFinished, Qt::QueuedConnection);
 
+    connect(this, &MainWindow::exit, radioControl, &RadioControl::exit, Qt::QueuedConnection);
+
     // input device connections
     initInputDevice(InputDeviceId::UNDEFINED);
 
@@ -345,6 +347,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     qDebug() << Q_FUNC_INFO << "stopping all processing";
     emit serviceRequest(0,0,0);
+    //QThread::sleep(1);
+    emit exit();
     event->accept();
 }
 
