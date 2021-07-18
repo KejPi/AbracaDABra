@@ -34,10 +34,13 @@ void SetupDialog::setGainValues(const QList<int> * pList)
 {
     ui->gainCombo->clear();
     ui->gainCombo->addItem("Auto");
+    ui->gainCombo->addItem("Software");
     for (int i=0; i<pList->size(); ++i)
     {
         ui->gainCombo->addItem(QString("%1").arg(pList->at(i)/10.0), pList->at(i));
-    }    
+    }
+
+    ui->gainCombo->setCurrentIndex(1);
 }
 
 void SetupDialog::resetFilename()
@@ -63,7 +66,11 @@ void SetupDialog::on_gainCombo_currentIndexChanged(int index)
 {
     if (index == 0)
     {  // auto gain
-        emit setAutoGain(true);
+        emit setGainMode(GainMode::Hardware);
+    }
+    else if (index == 1)
+    {  // software gain
+        emit setGainMode(GainMode::Software);
     }
     else
     {  // manual gain value

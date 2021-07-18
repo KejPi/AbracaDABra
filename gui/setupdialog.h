@@ -32,7 +32,7 @@ public slots:
     void enableFileSelection(bool ena);
 
 signals:
-    void setAutoGain(bool);
+    void setGainMode(GainMode mode);
     void setGain(int gain);
     void setDAGC(bool ena);
     void inputDeviceChanged(const InputDeviceId & inputDevice);

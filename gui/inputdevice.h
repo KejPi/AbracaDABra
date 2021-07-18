@@ -44,6 +44,12 @@ typedef struct ComplexFifo fifo_t;
 
 enum class InputDeviceId { UNDEFINED, RTLSDR, RAWFILE};
 
+enum class GainMode {
+    Hardware,
+    Software,
+    Manual
+};
+
 class InputDevice : public QObject
 {
     Q_OBJECT

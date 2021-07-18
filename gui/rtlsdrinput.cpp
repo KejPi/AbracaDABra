@@ -103,7 +103,7 @@ void RtlSdrInput::openDevice()
     emit gainListAvailable(gainList);
 
     // set automatic gain
-    setGainAutoMode(true);
+    setGainMode(GainMode::Software);
 
     deviceUnplugged = false;
 
@@ -138,8 +138,12 @@ void RtlSdrInput::run()
 
         rtlsdr_set_center_freq(device, frequency*1000);
 
+        // does nothing if not SW AGC
+        resetAgc();
+
         worker = new RtlSdrWorker(device, this);
         connect(worker, &RtlSdrWorker::readExit, this, &RtlSdrInput::readThreadStopped, Qt::QueuedConnection);
+        connect(worker, &RtlSdrWorker::agcChange, this, &RtlSdrInput::changeAgcGain, Qt::QueuedConnection);
         connect(worker, &RtlSdrWorker::finished, worker, &QObject::deleteLater);
         worker->start();
 
@@ -173,26 +177,30 @@ void RtlSdrInput::stop()
     }
 }
 
-void RtlSdrInput::setGainAutoMode(bool enable)
+void RtlSdrInput::setGainMode(GainMode mode)
 {
-    gainAutoMode = enable;
-    // set automatic gain 0 or manual 1
-    int ret = rtlsdr_set_tuner_gain_mode(device, (false == enable));
+    // set automatic gain 0 or manual 1        
+    int ret = rtlsdr_set_tuner_gain_mode(device, (GainMode::Hardware != mode));
     if (ret != 0)
     {
         qDebug() << "RTLSDR: Failed to set tuner gain";
     }
     else
     {
-        qDebug() << "RTLSDR: Tuner gain auto mode" << enable;
+        qDebug() << "RTLSDR: Tuner gain auto mode" << int(mode);
     }
+
+    gainMode = mode;
+
+    // does nothing in (GainMode::Software != mode)
+    resetAgc();
 }
 
 void RtlSdrInput::setGain(int gainVal)
 {
-    if (gainAutoMode)
+    if (gainMode == GainMode::Hardware)
     {   // set to manual mode
-        setGainAutoMode(false);
+        setGainMode(GainMode::Manual);
     }
     int ret = rtlsdr_set_tuner_gain(device, gainVal);
     if (ret != 0)
@@ -202,6 +210,15 @@ void RtlSdrInput::setGain(int gainVal)
     else
     {
         qDebug() << "RTLSDR: Tuner gain set to" << gainVal/10.0;
+    }
+}
+
+void RtlSdrInput::resetAgc()
+{
+    if (GainMode::Software == gainMode)
+    {
+        gainIdx = gainList->size() >> 1;
+        setGain(gainList->at(gainIdx));
     }
 }
 
@@ -215,6 +232,37 @@ void RtlSdrInput::setDAGC(bool ena)
     else
     {
         qDebug() << "RTLSDR: DAGC enable:" << ena;
+    }
+}
+
+void RtlSdrInput::changeAgcGain(int steps)
+{
+    if (GainMode::Software == gainMode)
+    {
+        int tmpIdx = gainIdx + steps;
+        if (tmpIdx < 0)
+        {
+            tmpIdx = 0;
+        }
+        if (tmpIdx >= gainList->size())
+        {
+            tmpIdx = gainList->size() - 1;
+        }
+        if (tmpIdx != gainIdx)
+        {
+            gainIdx = tmpIdx;
+            setGain(gainList->at(gainIdx));
+        }
+
+//        int gain = rtlsdr_get_tuner_gain(device);
+//        if (steps > 0)
+//        {
+//            qDebug() << "AGC UP" << gain;
+//        }
+//        else
+//        {
+//            qDebug() << "AGC DOWN" << gain;
+//        }
     }
 }
 
@@ -318,6 +366,14 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 #define DC_C 0.05
 #endif
 
+#define AGC_LEVEL 1
+#if (AGC_LEVEL==1)
+    static float agcLev = 0.0;
+    int maxCntr = 0;
+#define LEV_CATT 0.1
+#define LEV_CREL 0.0001
+#endif
+
     if (nullptr != ctx)
     {
         RtlSdrWorker * rtlSdrWorker = static_cast<RtlSdrWorker *>(ctx);
@@ -381,6 +437,22 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 #else
 #if (DOC_ENABLE == 2)
             int_fast8_t tmp = *inPtr++ - 128; // I or Q
+
+#if (AGC_LEVEL == 1)
+            int_fast8_t absTmp = abs(tmp);
+
+            if (absTmp >= 127)
+            {
+                maxCntr += 1;
+            }
+
+            float c = LEV_CREL;
+            if (absTmp > agcLev)
+            {
+                c = LEV_CATT;
+            }
+            agcLev = c * absTmp + agcLev - c * agcLev;
+#endif
             if (k & 0x1)
             {   // Q
                 sumQ += tmp;
@@ -425,6 +497,23 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 #else
 #if (DOC_ENABLE == 2)
             int_fast8_t tmp = *inPtr++ - 128; // I or Q
+
+#if (AGC_LEVEL == 1)
+            int_fast8_t absTmp = abs(tmp);
+
+            if (absTmp >= 127)
+            {
+                maxCntr += 1;
+            }
+
+            float c = LEV_CREL;
+            if (absTmp > agcLev)
+            {
+                c = LEV_CATT;
+            }
+            agcLev = c * absTmp + agcLev - c * agcLev;
+#endif
+
             if (k & 0x1)
             {   // Q
                 sumQ += tmp;
@@ -462,6 +551,22 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 #else
 #if (DOC_ENABLE == 2)
             int_fast8_t tmp = *inPtr++ - 128; // I or Q
+
+#if (AGC_LEVEL == 1)
+            int_fast8_t absTmp = abs(tmp);
+
+            if (absTmp >= 127)
+            {
+                maxCntr += 1;
+            }
+
+            float c = LEV_CREL;
+            if (absTmp > agcLev)
+            {
+                c = LEV_CATT;
+            }
+            agcLev = c * absTmp + agcLev - c * agcLev;
+#endif
             if (k & 0x1)
             {   // Q
                 sumQ += tmp;
@@ -479,6 +584,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
         inputBuffer.head = (len-samplesTillEnd)*sizeof(float);
 #if DOC_ENABLE
         //qDebug() << dcI << dcQ;
+        //qDebug() << agcLev << maxCntr;
 #endif
     }
 
@@ -487,6 +593,25 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
     //dcQ = sumQ * 1.0 / (len >> 1);
     dcI = sumI * DC_C / (len >> 1) + dcI - DC_C * dcI;
     dcQ = sumQ * DC_C / (len >> 1) + dcQ - DC_C * dcQ;
+#endif
+
+#if (AGC_LEVEL == 1)
+    if (agcLev < 50)
+    {
+        if (nullptr != ctx)
+        {
+            RtlSdrWorker * rtlSdrWorker = static_cast<RtlSdrWorker *>(ctx);
+            rtlSdrWorker->emitAgcChange(1);
+        }
+    }
+    if (maxCntr > 100)
+    {
+        if (nullptr != ctx)
+        {
+            RtlSdrWorker * rtlSdrWorker = static_cast<RtlSdrWorker *>(ctx);
+            rtlSdrWorker->emitAgcChange(-1);
+        }
+    }
 #endif
 
 #if INPUT_USE_PTHREADS

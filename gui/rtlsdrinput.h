@@ -18,6 +18,7 @@ protected:
     void run() override;
 signals:
     void readExit();
+    void agcChange(int steps);
 private:
     QObject *rtlSdrPtr;
     struct rtlsdr_dev *device;
@@ -27,6 +28,7 @@ private:
 
     bool isDumpingIQ() const { return enaDumpToFile; }
     void dumpBuffer(unsigned char *buf, uint32_t len);
+    void emitAgcChange(int steps) { emit agcChange(steps); }
 
     friend void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx);
 };
@@ -43,9 +45,12 @@ public slots:
     void tune(uint32_t freq) override;
     void stop() override;
     void openDevice();
-    void setGainAutoMode(bool enable = true);
+    void setGainMode(GainMode mode = GainMode::Hardware);
     void setGain(int gainVal);
     void setDAGC(bool ena);
+
+    void resetAgc();
+    void changeAgcGain(int steps);
 
     void dumpToFileStart(const QString & filename);
     void dumpToFileStop();
@@ -59,7 +64,8 @@ private:
     bool deviceRunning;
     struct rtlsdr_dev *device;
     RtlSdrWorker * worker;
-    bool gainAutoMode;
+    GainMode gainMode = GainMode::Hardware;
+    int gainIdx;
     QList<int> * gainList;
     FILE * dumpFile;
 
