@@ -357,8 +357,13 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 #endif
 
 #define AGC_LEVEL 1
-#if (AGC_LEVEL==1)
+#if (AGC_LEVEL > 0)
+#if (AGC_LEVEL == 1)
     static float agcLev = 0.0;
+#endif
+#if (AGC_LEVEL == 2)
+    int_fast8_t maxVal = 0;
+#endif
     int maxCntr = 0;
 #define LEV_CATT 0.1
 #define LEV_CREL 0.0001
@@ -428,20 +433,27 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 #if (DOC_ENABLE == 2)
             int_fast8_t tmp = *inPtr++ - 128; // I or Q
 
-#if (AGC_LEVEL == 1)
+#if (AGC_LEVEL > 0)
             int_fast8_t absTmp = abs(tmp);
 
             if (absTmp >= 127)
             {
                 maxCntr += 1;
             }
-
+#if (AGC_LEVEL == 1)
             float c = LEV_CREL;
             if (absTmp > agcLev)
             {
                 c = LEV_CATT;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
+#endif
+#if (AGC_LEVEL == 2)
+            if (absTmp > maxVal)
+            {
+                maxVal = absTmp;
+            }
+#endif
 #endif
             if (k & 0x1)
             {   // Q
@@ -488,20 +500,27 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 #if (DOC_ENABLE == 2)
             int_fast8_t tmp = *inPtr++ - 128; // I or Q
 
-#if (AGC_LEVEL == 1)
+#if (AGC_LEVEL > 0)
             int_fast8_t absTmp = abs(tmp);
 
             if (absTmp >= 127)
             {
                 maxCntr += 1;
             }
-
+#if (AGC_LEVEL == 1)
             float c = LEV_CREL;
             if (absTmp > agcLev)
             {
                 c = LEV_CATT;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
+#endif
+#if (AGC_LEVEL == 2)
+            if (absTmp > maxVal)
+            {
+                maxVal = absTmp;
+            }
+#endif
 #endif
 
             if (k & 0x1)
@@ -542,20 +561,27 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 #if (DOC_ENABLE == 2)
             int_fast8_t tmp = *inPtr++ - 128; // I or Q
 
-#if (AGC_LEVEL == 1)
+#if (AGC_LEVEL > 0)
             int_fast8_t absTmp = abs(tmp);
 
             if (absTmp >= 127)
             {
                 maxCntr += 1;
-            }
-
+            }            
+#if (AGC_LEVEL == 1)
             float c = LEV_CREL;
             if (absTmp > agcLev)
             {
                 c = LEV_CATT;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
+#endif
+#if (AGC_LEVEL == 2)
+            if (absTmp > maxVal)
+            {
+                maxVal = absTmp;
+            }
+#endif
 #endif
             if (k & 0x1)
             {   // Q
@@ -574,8 +600,14 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
         inputBuffer.head = (len-samplesTillEnd)*sizeof(float);
 #if DOC_ENABLE
         //qDebug() << dcI << dcQ;
-        //qDebug() << agcLev << maxCntr;
 #endif
+#if (AGC_LEVEL == 1)
+        qDebug() << agcLev << maxCntr;
+#endif
+#if (AGC_LEVEL == 2)
+        qDebug() << maxVal << maxCntr;
+#endif
+
     }
 
 #if (DOC_ENABLE == 2)
@@ -585,6 +617,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
     dcQ = sumQ * DC_C / (len >> 1) + dcQ - DC_C * dcQ;
 #endif
 
+#if (AGC_LEVEL > 0)
 #if (AGC_LEVEL == 1)
     if (agcLev < 50)
     {
@@ -594,7 +627,18 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
             rtlSdrWorker->emitAgcChange(1);
         }
     }
-    if (maxCntr > 100)
+#endif
+#if (AGC_LEVEL == 2)
+    if (maxVal < 110)
+    {
+        if (nullptr != ctx)
+        {
+            RtlSdrWorker * rtlSdrWorker = static_cast<RtlSdrWorker *>(ctx);
+            rtlSdrWorker->emitAgcChange(1);
+        }
+    }
+#endif
+    if (maxCntr > 10)
     {
         if (nullptr != ctx)
         {
