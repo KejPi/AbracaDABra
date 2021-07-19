@@ -45,12 +45,8 @@ public slots:
     void tune(uint32_t freq) override;
     void stop() override;
     void openDevice();
-    void setGainMode(GainMode mode = GainMode::Hardware);
-    void setGain(int gainVal);
+    void setGainMode(GainMode mode, int gainIdx = 0);
     void setDAGC(bool ena);
-
-    void resetAgc();
-    void changeAgcGain(int steps);
 
     void dumpToFileStart(const QString & filename);
     void dumpToFileStop();
@@ -70,8 +66,19 @@ private:
     FILE * dumpFile;
 
     void run();           
+
+    void resetAgc();
+
+    // private function
+    // gain is set from outside usin setGainMode() function
+    void setGain(int gIdx);
+
+    // used by friend
+    void changeAgcGain(int steps);
 private slots:
     void readThreadStopped();
+
+    friend class RtlSdrWorker;
 };
 
 

@@ -974,7 +974,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             // setup dialog
             connect(dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
             connect(setupDialog, &SetupDialog::setGainMode, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setGainMode);
-            connect(setupDialog, &SetupDialog::setGain, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setGain);
             connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setDAGC);
 
             static_cast<RtlSdrInput *>(inputDevice)->openDevice();
@@ -1066,6 +1065,7 @@ void MainWindow::loadSettings()
                               RawFileInputFormat(settings.value("inputFileFormat", 0).toInt()),
                               settings.value("inputFileLoop", false).toBool());
     setupDialog->setDAGCState(settings.value("DAGC", false).toBool());
+    setupDialog->setGainIdx(settings.value("gainIndex", 1).toInt());
 }
 
 void MainWindow::saveSettings()
@@ -1076,6 +1076,7 @@ void MainWindow::saveSettings()
     settings.setValue("inputFileFormat", int(setupDialog->getInputFileFormat()));
     settings.setValue("inputFileLoop", setupDialog->isFileLoopActive());
     settings.setValue("DAGC", setupDialog->getDAGCState());
+    settings.setValue("gainIndex", setupDialog->getGainIdx());
 
     QModelIndex current = ui->serviceListView->currentIndex();
     const SLModel * model = reinterpret_cast<const SLModel*>(current.model());

@@ -177,39 +177,53 @@ void RtlSdrInput::stop()
     }
 }
 
-void RtlSdrInput::setGainMode(GainMode mode)
+void RtlSdrInput::setGainMode(GainMode mode, int gainIdx)
 {
-    // set automatic gain 0 or manual 1        
-    int ret = rtlsdr_set_tuner_gain_mode(device, (GainMode::Hardware != mode));
-    if (ret != 0)
+    if (mode != gainMode)
     {
-        qDebug() << "RTLSDR: Failed to set tuner gain";
-    }
-    else
-    {
-        qDebug() << "RTLSDR: Tuner gain auto mode" << int(mode);
+        // set automatic gain 0 or manual 1
+        int ret = rtlsdr_set_tuner_gain_mode(device, (GainMode::Hardware != mode));
+        if (ret != 0)
+        {
+            qDebug() << "RTLSDR: Failed to set tuner gain";
+        }
+
+        gainMode = mode;
     }
 
-    gainMode = mode;
+    if (GainMode::Manual == gainMode)
+    {
+        setGain(gainIdx);
+    }
 
     // does nothing in (GainMode::Software != mode)
     resetAgc();
 }
 
-void RtlSdrInput::setGain(int gainVal)
+void RtlSdrInput::setGain(int gIdx)
 {
-    if (gainMode == GainMode::Hardware)
-    {   // set to manual mode
-        setGainMode(GainMode::Manual);
-    }
-    int ret = rtlsdr_set_tuner_gain(device, gainVal);
-    if (ret != 0)
+    // force index vaslidity
+    if (gIdx < 0)
     {
-        qDebug() << "RTLSDR: Failed to set tuner gain";
+        gIdx = 0;
     }
-    else
+    if (gIdx >= gainList->size())
     {
-        qDebug() << "RTLSDR: Tuner gain set to" << gainVal/10.0;
+        gIdx = gainList->size() - 1;
+    }
+
+    if (gIdx != gainIdx)
+    {
+        gainIdx = gIdx;
+        int ret = rtlsdr_set_tuner_gain(device, gainList->at(gainIdx));
+        if (ret != 0)
+        {
+            qDebug() << "RTLSDR: Failed to set tuner gain";
+        }
+        else
+        {
+            qDebug() << "RTLSDR: Tuner gain set to" << gainList->at(gainIdx)/10.0;
+        }
     }
 }
 
@@ -217,8 +231,7 @@ void RtlSdrInput::resetAgc()
 {
     if (GainMode::Software == gainMode)
     {
-        gainIdx = gainList->size() >> 1;
-        setGain(gainList->at(gainIdx));
+        setGain(gainList->size() >> 1);
     }
 }
 
@@ -239,30 +252,7 @@ void RtlSdrInput::changeAgcGain(int steps)
 {
     if (GainMode::Software == gainMode)
     {
-        int tmpIdx = gainIdx + steps;
-        if (tmpIdx < 0)
-        {
-            tmpIdx = 0;
-        }
-        if (tmpIdx >= gainList->size())
-        {
-            tmpIdx = gainList->size() - 1;
-        }
-        if (tmpIdx != gainIdx)
-        {
-            gainIdx = tmpIdx;
-            setGain(gainList->at(gainIdx));
-        }
-
-//        int gain = rtlsdr_get_tuner_gain(device);
-//        if (steps > 0)
-//        {
-//            qDebug() << "AGC UP" << gain;
-//        }
-//        else
-//        {
-//            qDebug() << "AGC DOWN" << gain;
-//        }
+          setGain(gainIdx + steps);
     }
 }
 

@@ -23,6 +23,8 @@ public:
     void setInputFile(const QString &value, const RawFileInputFormat &format, bool loop);
     bool getDAGCState() const;
     void setDAGCState(bool ena);
+    int getGainIdx() const;
+    void setGainIdx(int idx);
 
 public slots:
     void setGainValues(const QList<int> * pList);
@@ -32,8 +34,7 @@ public slots:
     void enableFileSelection(bool ena);
 
 signals:
-    void setGainMode(GainMode mode);
-    void setGain(int gain);
+    void setGainMode(GainMode mode, int gain = 0);
     void setDAGC(bool ena);
     void inputDeviceChanged(const InputDeviceId & inputDevice);
     void sampleFormat(const RawFileInputFormat &format);

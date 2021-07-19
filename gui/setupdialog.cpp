@@ -74,7 +74,7 @@ void SetupDialog::on_gainCombo_currentIndexChanged(int index)
     }
     else
     {  // manual gain value
-        emit setGain(ui->gainCombo->itemData(index).toInt());
+        emit setGainMode(GainMode::Manual, index-2);
     }
 }
 
@@ -224,4 +224,14 @@ bool SetupDialog::getDAGCState() const
 void SetupDialog::setDAGCState(bool ena)
 {
     ui->dagcCheckBox->setChecked(ena);
+}
+
+int SetupDialog::getGainIdx() const
+{
+    return ui->gainCombo->currentIndex();
+}
+
+void SetupDialog::setGainIdx(int idx)
+{
+    ui->gainCombo->setCurrentIndex(idx);
 }
