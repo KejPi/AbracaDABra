@@ -87,6 +87,12 @@ void RtlSdrInput::openDevice()
         throw 0;
     }
 
+    ret = rtlsdr_set_tuner_bandwidth(device, 1536000/2);
+    if (ret < 0)
+    {
+        qDebug() << "RTLSDR: Bandwidth setting failed";
+    }
+
     // Get tuner gains
     uint32_t gainsCount = rtlsdr_get_tuner_gains(device, NULL);
     qDebug() << "RTL_SDR: Supported gain values" << gainsCount;
@@ -602,10 +608,10 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
         //qDebug() << dcI << dcQ;
 #endif
 #if (AGC_LEVEL == 1)
-        qDebug() << agcLev << maxCntr;
+        //qDebug() << agcLev << maxCntr;
 #endif
 #if (AGC_LEVEL == 2)
-        qDebug() << maxVal << maxCntr;
+        //qDebug() << maxVal << maxCntr;
 #endif
 
     }
@@ -629,7 +635,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
     }
 #endif
 #if (AGC_LEVEL == 2)
-    if (maxVal < 110)
+    else if (maxVal < 110)
     {
         if (nullptr != ctx)
         {
@@ -638,7 +644,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
         }
     }
 #endif
-    if (maxCntr > 10)
+    else if (maxCntr > 100)
     {
         if (nullptr != ctx)
         {
