@@ -271,6 +271,46 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         delete pList;
     }
         break;
+    case RadioControlEventType::USER_APP_LIST:
+    {
+        QList<dabProcUserAppListItem_t> * pList = (QList<dabProcUserAppListItem_t> *) pEvent->pData;
+        if (!pList->isEmpty())
+        {   // all user apps belong to the same SId, reading sid from the first
+            DabSId sid(pList->at(0).SId);
+
+            // find service ID
+            QList<RadioControlService>::iterator serviceIt = findService(sid);
+            if (serviceIt != serviceList.end())
+            {   // SId found
+                // all user apps belong to the same SId+SCIdS, reading SCIdS from the first
+                QList<RadioControlServiceComponent>::iterator scIt = findServiceComponent(serviceIt, pList->at(0).SCIdS);
+                if (scIt != serviceIt->serviceComponents.end())
+                {   // service component found
+                    scIt->userApps.clear();
+                    for (auto const & userApp : *pList)
+                    {
+                        RadioControlUserApp newUserApp;
+                        newUserApp.label = DabTables::convertToQString(userApp.label.str, userApp.label.charset).trimmed();
+                        newUserApp.labelShort = toShortLabel(newUserApp.label, userApp.label.charField).trimmed();
+                        newUserApp.uaType = userApp.type;
+                        for (int n = 0; n < userApp.dataLen; ++n)
+                        {
+                            newUserApp.uaData.append(userApp.data[n]);
+                        }
+                        newUserApp.xpadData.value = 0;
+                        if ((scIt->isAudioService()) && (userApp.dataLen >= 2))
+                        {
+                            newUserApp.xpadData.value = (userApp.data[0] << 8) | userApp.data[1];
+                        }
+
+                        scIt->userApps.append(newUserApp);
+                    }
+                }
+            }
+        }
+        delete pList;
+    }
+        break;
     case RadioControlEventType::SERVICE_SELECTION:
     {
         dabProc_NID_SERVICE_SELECTION_t * pData = (dabProc_NID_SERVICE_SELECTION_t *) pEvent->pData;
@@ -774,6 +814,32 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         }
     }
         break;
+    case DABPROC_NID_USER_APP_LIST:
+    {
+        const dabProc_NID_USER_APP_LIST_t * pInfo = (const dabProc_NID_USER_APP_LIST_t * ) p->pData;
+        if (DABPROC_NSTAT_SUCCESS == p->status)
+        {
+            QList<dabProcUserAppListItem_t> * pList = new QList<dabProcUserAppListItem_t>;
+
+            dabProcUserAppListItem_t item;
+            for (int s = 0; s < pInfo->numUserApps; ++s)
+            {
+                pInfo->getUserAppListItem(radioCtrl->dabProcHandle, s, &item);
+                pList->append(item);
+            }
+
+            RadioControlEvent * pEvent = new RadioControlEvent;
+            pEvent->type = RadioControlEventType::USER_APP_LIST;
+            pEvent->status = p->status;
+            pEvent->pData = intptr_t(pList);
+            radioCtrl->emit_dabEvent(pEvent);
+        }
+        else
+        {
+            qDebug("SId %4.4X, SCIdS %4.4 not found", pInfo->SId, pInfo->SCIdS);
+        }
+    }
+    break;
     case DABPROC_NID_SERVICE_SELECTION:
     {
         dabProc_NID_SERVICE_SELECTION_t * pServSelectionInfo = new dabProc_NID_SERVICE_SELECTION_t;

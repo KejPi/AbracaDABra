@@ -83,6 +83,28 @@ struct RadioControlEnsemble
 };
 Q_DECLARE_METATYPE(RadioControlEnsemble)
 
+struct RadioControlUserApp
+{
+    QString label;        // Service label
+    QString labelShort;   // Short label
+    uint16_t uaType;      // User application type
+    union
+    {
+        uint16_t value;
+        struct             // X-PAD data for audio components
+        {
+            uint16_t DScTy : 6;
+            uint16_t rfu2 : 1;
+            uint16_t dgFlag : 1;
+            uint16_t xpadAppTy : 5;
+            uint16_t rfu1 : 1;
+            uint16_t CAOrgFlag : 1;
+            uint16_t CAflag : 1;
+        } bits;
+    } xpadData;
+    QVector<uint8_t> uaData;  // optional user application data
+};
+
 struct RadioControlServiceComponent
 {
     // Each service component shall be uniquely identified by the combination of the
@@ -100,6 +122,7 @@ struct RadioControlServiceComponent
     int8_t CAflag;        // CA flag: this 1-bit field flag shall indicate whether access control applies to the service component
 
     int8_t numUserApps;   // Number of user applications
+    QList<RadioControlUserApp> userApps;
 
     QString label;        // Service label
     QString labelShort;   // Short label
@@ -158,6 +181,7 @@ enum class RadioControlEventType
     ENSEMBLE_INFO,
     SERVICE_LIST,
     SERVICE_COMPONENT_LIST,
+    USER_APP_LIST,
     SERVICE_SELECTION,
     AUTO_NOTIFICATION,
     DATAGROUP_DL,
