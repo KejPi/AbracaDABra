@@ -121,7 +121,7 @@ struct RadioControlServiceComponent
                           // Access Control System (ACS) used for the service
     int8_t CAflag;        // CA flag: this 1-bit field flag shall indicate whether access control applies to the service component
 
-    int8_t numUserApps;   // Number of user applications
+    //int8_t numUserApps;   // Number of user applications
     QList<RadioControlUserApp> userApps;
 
     QString label;        // Service label
@@ -253,6 +253,7 @@ private:
     void dabGetEnsembleInfo() { dabProcRequest_GetEnsemble(dabProcHandle); }
     void dabGetServiceList() { dabProcRequest_GetServiceList(dabProcHandle); }
     void dabGetServiceComponent(uint32_t SId) { dabProcRequest_GetServiceComponents(dabProcHandle, SId); }
+    void dabGetUserApps(uint32_t SId, uint8_t SCIdS) { dabProcRequest_GetUserAppList(dabProcHandle, SId, SCIdS); }
     void dabEnableAutoNotification() { dabProcRequest_AutoNotify(dabProcHandle, RADIO_CONTROL_NOTIFICATION_PERIOD, 0); }
     void dabServiceSelection(uint32_t SId, uint8_t SCIdS) { dabProcRequest_ServiceSelection(dabProcHandle, SId, SCIdS); }
 

@@ -214,7 +214,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                         newServiceComp.protection.uepIndex = dabServiceComp.uepIdx;       // UEP index or FEC scheme flag (union)
                     }
 
-                    newServiceComp.numUserApps = dabServiceComp.numUserApps;
+                    //newServiceComp.numUserApps = dabServiceComp.numUserApps;
                     newServiceComp.ps = dabServiceComp.ps;
                     if (dabServiceComp.ps)
                     {  // primary: [8.1.14.3] The service component label shall not be signalled for primary service component
@@ -260,7 +260,12 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                     dabGetServiceComponent(sid.value);
                 }
                 else
-                { }  // service list item information is complete
+                {  // service list item information is complete
+                   for (auto const & serviceComp : serviceIt->serviceComponents)
+                   {
+                        dabGetUserApps(serviceIt->SId.value, serviceComp.SCIdS);
+                   }
+                }
             }
             else
             {  // SId not found
@@ -304,6 +309,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                         }
 
                         scIt->userApps.append(newUserApp);
+                        //qDebug() << serviceIt->SId.value << scIt->SCIdS << newUserApp.uaType;
                     }
                 }
             }
@@ -658,12 +664,29 @@ QString RadioControl::getEnsembleConfiguration()
             {
                 strOut << QString(", Bitrate: %1kbps").arg(sc.streamAudioData.bitRate);
             }
-            for (int a = 0; a < sc.numUserApps; ++a)
+            for (int a = 0; a < sc.userApps.size(); ++a)
             {
                 strOut << "<br>";
                 strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                 strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-                strOut << QString("UserApp %1/%2:").arg(a+1).arg(sc.numUserApps);
+                strOut << QString("UserApp %1/%2: Label: '%3' ['%4'], UAType: 0x%5")
+                          .arg(a+1).arg(sc.userApps.size())
+                          .arg(sc.userApps.at(a).label)
+                          .arg(sc.userApps.at(a).labelShort)
+                          .arg(sc.userApps.at(a).uaType, 1, 16, QLatin1Char('0'));
+                if (sc.isAudioService())
+                {
+                    strOut << QString(", X-PAD AppTy: %1, DSCTy: 0x%2, DG: %3")
+                              .arg(sc.userApps.at(a).xpadData.bits.xpadAppTy)
+                              .arg(QString("%1").arg(sc.userApps.at(a).xpadData.bits.DScTy, 1, 16, QLatin1Char('0')).toUpper())
+                              .arg(sc.userApps.at(a).xpadData.bits.dgFlag);
+                }
+                strOut << QString(", Data (%1) [").arg(sc.userApps.at(a).uaData.size());
+                for (int d = 0; d < sc.userApps.at(a).uaData.size(); ++d)
+                {
+                    strOut << QString("%1").arg(sc.userApps.at(a).uaData.at(d), 2, 16, QLatin1Char('0')).toUpper();
+                }
+                strOut << "]";
             }
             strOut << "</dd>";
         }
@@ -836,7 +859,7 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         }
         else
         {
-            qDebug("SId %4.4X, SCIdS %4.4 not found", pInfo->SId, pInfo->SCIdS);
+            qDebug("SId %4.4X, SCIdS %2.2X not found", pInfo->SId, pInfo->SCIdS);
         }
     }
     break;
