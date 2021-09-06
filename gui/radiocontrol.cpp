@@ -673,7 +673,7 @@ QString RadioControl::getEnsembleConfiguration()
                           .arg(a+1).arg(sc.userApps.size())
                           .arg(sc.userApps.at(a).label)
                           .arg(sc.userApps.at(a).labelShort)
-                          .arg(sc.userApps.at(a).uaType, 1, 16, QLatin1Char('0'));
+                          .arg(QString("%1").arg(sc.userApps.at(a).uaType, 1, 16, QLatin1Char('0')).toUpper());
                 if (sc.isAudioService())
                 {
                     strOut << QString(", X-PAD AppTy: %1, DSCTy: 0x%2, DG: %3")
@@ -697,36 +697,6 @@ QString RadioControl::getEnsembleConfiguration()
 
     strOut.flush();  
 
-#if 0
-
-    for (int n=0; n<infoPtr->numServices;++n)
-    {
-
-        for (int sc = 0; sc < infoPtr->service[n].numComponents; ++sc)
-        {
-
-                uint8_t numUserApps = scPtr->numUserApps;
-                printf("NumUserApps: %d\n", numUserApps);
-
-                if (numUserApps > 0)
-                {
-                    for (int ua=0; ua < numUserApps; ++ua)
-                    {
-                        printf("\t\t\t\tUserApp %d/%d: ", ua+1, numUserApps);
-                        printf("UAType: 0x%X [", scPtr->userApps[ua].type);
-                        for (int d = 0; d < scPtr->userApps[ua].dataLen; ++d)
-                        {
-                            printf("%2.2X", scPtr->userApps[ua].data[d]);
-                        }
-                        printf("], Label: '%s'\n", scPtr->userApps[ua].label.str);
-                    }
-                }
-            }
-
-            //printf("addr = %3d, ", n, infoPtr->subchannel[n].addr);
-        }
-    }
-#endif
     return output;
 }
 
