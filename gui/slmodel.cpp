@@ -35,7 +35,9 @@ int SLModel::columnCount(const QModelIndex &parent) const
 QVariant SLModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
+    {
         return QVariant();
+    }
 
     const ServiceListItem * item = static_cast<ServiceListItem*>(index.internalPointer());
 
@@ -75,7 +77,9 @@ QVariant SLModel::data(const QModelIndex &index, int role) const
 bool SLModel::isFavoriteService(const QModelIndex &index) const
 {
     if (!index.isValid())
+    {
         return false;
+    }
 
     const ServiceListItem * item = static_cast<ServiceListItem*>(index.internalPointer());
     return item->isFavorite();
@@ -84,7 +88,9 @@ bool SLModel::isFavoriteService(const QModelIndex &index) const
 uint64_t SLModel::getId(const QModelIndex &index) const
 {
     if (!index.isValid())
+    {
         return 0;
+    }
 
     const ServiceListItem * item = static_cast<ServiceListItem*>(index.internalPointer());
 
@@ -106,7 +112,9 @@ QModelIndex SLModel::index(int row, int column, const QModelIndex &parent)
             const
 {
     if (!hasIndex(row, column, parent))
+    {
         return QModelIndex();
+    }
 
     if (parent.isValid())
     {
@@ -115,9 +123,13 @@ QModelIndex SLModel::index(int row, int column, const QModelIndex &parent)
 
     const ServiceListItem *childItem = m_serviceItems.at(row);
     if (childItem)
+    {
         return createIndex(row, column, (void *)childItem);
+    }
     else
+    {
         return QModelIndex();
+    }
 }
 
 
@@ -131,7 +143,9 @@ QModelIndex SLModel::parent(const QModelIndex &index) const
 int SLModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.column() > 0)
+    {
         return 0;
+    }
 
     return m_serviceItems.size();
 }
@@ -160,9 +174,13 @@ void SLModel::sort(int column, Qt::SortOrder order)
     {
         std::sort(m_serviceItems.begin(), m_serviceItems.end(), [](const ServiceListItem * a, const ServiceListItem * b) {
             if ((a->isFavorite() && b->isFavorite()) || (!a->isFavorite() && !b->isFavorite()))
+            {
                 return a->label() < b->label();
+            }
             if (a->isFavorite())
+            {
                 return true;
+            }
             return false;
         });
     }
@@ -170,9 +188,13 @@ void SLModel::sort(int column, Qt::SortOrder order)
     {
         std::sort(m_serviceItems.begin(), m_serviceItems.end(), [](const ServiceListItem * a, const ServiceListItem * b) {
             if ((a->isFavorite() && b->isFavorite()) || (!a->isFavorite() && !b->isFavorite()))
+            {
                 return a->label() > b->label();
+            }
             if (b->isFavorite())
+            {
                 return true;
+            }
             return false;
         });
     }
