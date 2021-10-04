@@ -51,8 +51,8 @@ QVariant SLModel::data(const QModelIndex &index, int role) const
         case Qt::ToolTipRole:
         {
             QString tooltip = QString("<b>Short label:</b> %1<br><b>SId:</b> 0x%2")
-                    .arg(item->shortLabel())
-                    .arg( QString("%1").arg(item->SId().prog.countryServiceRef, 4, 16, QChar('0')).toUpper() );
+                    .arg(item->shortLabel(),
+                         QString("%1").arg(item->SId().prog.countryServiceRef, 4, 16, QChar('0')).toUpper() );
             return QVariant(tooltip);
         }
             break;
