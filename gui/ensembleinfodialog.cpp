@@ -25,7 +25,7 @@ EnsembleInfoDialog::~EnsembleInfoDialog()
     delete ui;
 }
 
-void EnsembleInfoDialog::setEnsStructText(const QString & txt)
+void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
 {
     ui->ensStructureTextEdit->setHtml(txt);
 }
@@ -82,6 +82,12 @@ void EnsembleInfoDialog::dumpToFileStateToggle(bool dumping)
         ui->dumpButton->setText("Dump raw data");
     }
     ui->dumpButton->setEnabled(true);
+}
+
+void EnsembleInfoDialog::showEvent(QShowEvent *event)
+{
+    emit requestEnsembleConfiguration();
+    event->accept();
 }
 
 void EnsembleInfoDialog::closeEvent(QCloseEvent *event)

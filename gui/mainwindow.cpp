@@ -1223,20 +1223,24 @@ void MainWindow::showEnsembleInfo()
     ensembleInfoDialog = new EnsembleInfoDialog(this);
     ensembleInfoDialog->setAttribute(Qt::WA_DeleteOnClose);
     connect(ensembleInfoDialog, &EnsembleInfoDialog::destroyed, this, &MainWindow::onEnsembleInfoClose);
+    connect(ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleConfiguration, radioControl, &RadioControl::getEnsembleConfiguration, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::snrLevel, ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::freqOffset, ensembleInfoDialog, &EnsembleInfoDialog::updateFreqOffset, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::ensembleConfiguration, ensembleInfoDialog, &EnsembleInfoDialog::refreshEnsembleConfiguration, Qt::QueuedConnection);
 
     if (dynamic_cast<RtlSdrInput*>(inputDevice))
     {
         connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::dumpToFileStart);
         connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::dumpToFileStop);
-        connect(static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::dumpToFileState, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
+        connect(static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::dumpToFileState, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);        
         ensembleInfoDialog->enableDumpToFile(true);
     }
 
-    QString info = radioControl->getEnsembleConfiguration(); //.toLocal8Bit().data();
-    ensembleInfoDialog->setEnsStructText(info);
-    ensembleInfoDialog->show();        
+    ensembleInfoDialog->show();
+    ensembleInfoDialog->raise();
+    ensembleInfoDialog->activateWindow();
+
+    radioControl->getEnsembleConfiguration();
 }
 
 void MainWindow::onEnsembleInfoClose()

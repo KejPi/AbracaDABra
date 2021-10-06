@@ -143,6 +143,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         }
         else
         {
+            requestsPending = 0;
             for (auto const & dabService : *pServiceList)
             {
                 QList<RadioControlService>::iterator servIt = findService(DabSId(dabService.sid));
@@ -158,6 +159,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                 newService.pty.d = dabService.pty.d;
                 newService.CAId = dabService.CAId;
                 serviceList.append(newService);
+                requestsPending++;
                 dabGetServiceComponent(dabService.sid);
             }
         }
@@ -261,9 +263,11 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                 }
                 else
                 {  // service list item information is complete
+                   requestsPending--;
                    for (auto const & serviceComp : serviceIt->serviceComponents)
                    {
-                        dabGetUserApps(serviceIt->SId.value, serviceComp.SCIdS);
+                       requestsPending++;
+                       dabGetUserApps(serviceIt->SId.value, serviceComp.SCIdS);
                    }
                 }
             }
@@ -308,10 +312,15 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                             newUserApp.xpadData.value = (userApp.data[0] << 8) | userApp.data[1];
                         }
 
-                        scIt->userApps.append(newUserApp);
+                        scIt->userApps.append(newUserApp);                        
                         //qDebug() << serviceIt->SId.value << scIt->SCIdS << newUserApp.uaType;
                     }
-                }
+                    if (--requestsPending == 0)
+                    {
+                        //qDebug() << "=== MCI complete";
+                        emit ensembleConfiguration(ensembleConfigurationString());
+                    }
+                }                
             }
         }
         delete pList;
@@ -480,6 +489,7 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
         frequency = freq;
         serviceRequest.SId = SId;
         serviceRequest.SCIdS = SCIdS;
+        emit ensembleConfiguration("");
 
         dabTune(0);
      }
@@ -539,7 +549,12 @@ QList<RadioControlServiceComponent>::iterator
     return scIt;
 }
 
-QString RadioControl::getEnsembleConfiguration()
+void RadioControl::getEnsembleConfiguration()
+{
+    emit ensembleConfiguration(ensembleConfigurationString());
+}
+
+QString RadioControl::ensembleConfigurationString() const
 {
     QString output;
     QTextStream strOut(&output, QIODevice::Text);
@@ -615,7 +630,7 @@ QString RadioControl::getEnsembleConfiguration()
                 strOut << QString(" SCIdS: %1,").arg(sc.SCIdS);
             }
 
-            strOut << QString(" Label: '%1' ['%2'],").arg(sc.label).arg(sc.labelShort);
+            strOut << QString(" Label: '%1' [ '%2' ],").arg(sc.label).arg(sc.labelShort);
             strOut << (sc.isAudioService() ? " ASCTy:" : " DSCTy:");
 
             if (sc.isDataPacketService())
@@ -669,7 +684,7 @@ QString RadioControl::getEnsembleConfiguration()
                 strOut << "<br>";
                 strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                 strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-                strOut << QString("UserApp %1/%2: Label: '%3' ['%4'], UAType: 0x%5")
+                strOut << QString("UserApp %1/%2: Label: '%3' [ '%4' ], UAType: 0x%5")
                           .arg(a+1).arg(sc.userApps.size())
                           .arg(sc.userApps.at(a).label)
                           .arg(sc.userApps.at(a).labelShort)

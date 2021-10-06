@@ -208,7 +208,7 @@ public slots:
     void start(uint32_t freq);
     void exit();
     void tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS);
-    QString getEnsembleConfiguration();
+    void getEnsembleConfiguration();
 
 signals:
     void dabEvent(RadioControlEvent * pEvent);
@@ -225,6 +225,7 @@ signals:
     void audioData(QByteArray * pData);
     void dabTime(const QDateTime & dateAndTime);
     void tuneInputDevice(uint32_t freq);
+    void ensembleConfiguration(const QString &);
 
 private:
     static const uint8_t EEPCoderate[];
@@ -238,6 +239,9 @@ private:
         uint8_t SCIdS;
     } serviceRequest;
 
+    // this is a counter of requests to check when the ensemble information is complete
+    int requestsPending = 0;
+
     RadioControlEnsemble ensemble;
     QList<RadioControlService> serviceList;
     QList<RadioControlService>::iterator findService(DabSId SId);
@@ -245,6 +249,7 @@ private:
 
     void updateSyncLevel(dabProcSyncLevel_t s);
     QString toShortLabel(QString & label, uint16_t charField) const;
+    QString ensembleConfigurationString() const;
 
     void emit_dabEvent(RadioControlEvent * pEvent) { emit dabEvent(pEvent); }
     void emit_audioData(QByteArray * pData) { emit audioData(pData); }

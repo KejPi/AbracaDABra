@@ -16,7 +16,7 @@ class EnsembleInfoDialog : public QDialog
 public:
     explicit EnsembleInfoDialog(QWidget *parent = nullptr);
     ~EnsembleInfoDialog();
-    void setEnsStructText(const QString & txt);
+    void refreshEnsembleConfiguration(const QString & txt);
     void updateSnr(float snr);
     void updateFreqOffset(float offset);
 
@@ -26,8 +26,10 @@ public:
 signals:
     void dumpToFileStart(const QString & filename);
     void dumpToFileStop();
+    void requestEnsembleConfiguration();
 
 protected:
+    void showEvent(QShowEvent *event);
     void closeEvent(QCloseEvent *event);
 
 private:
