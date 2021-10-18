@@ -363,13 +363,10 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 #define LEV_CREL 0.0001
 #endif
 
-    if (nullptr != ctx)
+    RtlSdrWorker * rtlSdrWorker = static_cast<RtlSdrWorker *>(ctx);
+    if (rtlSdrWorker->isDumpingIQ())
     {
-        RtlSdrWorker * rtlSdrWorker = static_cast<RtlSdrWorker *>(ctx);
-        if (rtlSdrWorker->isDumpingIQ())
-        {
-            rtlSdrWorker->dumpBuffer(buf, len);
-        }
+        rtlSdrWorker->dumpBuffer(buf, len);
     }
 
     // len is number of I and Q samples
@@ -547,20 +544,12 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
     // AGC correction
     if (maxVal >= 127)
     {
-        if (nullptr != ctx)
-        {
-            RtlSdrWorker * rtlSdrWorker = static_cast<RtlSdrWorker *>(ctx);
-            rtlSdrWorker->emitAgcChange(-1);
-        }
+       rtlSdrWorker->emitAgcChange(-1);
     }
     else if ((agcLev < 50) && (maxVal < 128/2))
     {   // (maxVal < 128/2) is required to avoid toggling => chnage gain only if there is 1 bit headroom
         // this could be problem on E4000 tuner with big AGC gain steps
-        if (nullptr != ctx)
-        {
-            RtlSdrWorker * rtlSdrWorker = static_cast<RtlSdrWorker *>(ctx);
-            rtlSdrWorker->emitAgcChange(1);
-        }
+        rtlSdrWorker->emitAgcChange(1);
     }
 #endif
 
