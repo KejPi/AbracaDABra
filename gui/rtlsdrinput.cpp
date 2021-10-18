@@ -308,8 +308,11 @@ RtlSdrWorker::RtlSdrWorker(struct rtlsdr_dev *d, QObject *parent) : QThread(pare
 
 void RtlSdrWorker::run()
 {
-
     qDebug() << "RTLSDRWorker thread start" << QThread::currentThreadId();
+
+    dcI = 0.0;
+    dcQ = 0.0;
+    agcLev = 0.0;
 
     rtlsdr_read_async(device, rtlsdrCb, (void*)this, 0, INPUT_CHUNK_IQ_SAMPLES*2*sizeof(uint8_t));
 
@@ -344,20 +347,15 @@ void RtlSdrWorker::dumpBuffer(unsigned char *buf, uint32_t len)
     fileMutex.unlock();
 }
 
-#define DOC_ENABLE 1   // enable DOC
-#define AGC_LEVEL 1    // enable AC
 void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 {
-#if (DOC_ENABLE > 0)
-    static float dcI = 0.0;
-    static float dcQ = 0.0;
+#if (RTLSDR_DOC_ENABLE > 0)
     int_fast32_t sumI = 0;
     int_fast32_t sumQ = 0;
 #define DC_C 0.05
 #endif
 
-#if (AGC_LEVEL > 0)
-    static float agcLev = 0.0;
+#if (RTLSDR_AGC_ENABLE > 0)
     int maxVal = 0;
 #define LEV_CATT 0.1
 #define LEV_CREL 0.0001
@@ -368,6 +366,15 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
     {
         rtlSdrWorker->dumpBuffer(buf, len);
     }
+
+    // retrieving memories
+#if (RTLSDR_DOC_ENABLE > 0)
+    float dcI = rtlSdrWorker->dcI;
+    float dcQ = rtlSdrWorker->dcQ;
+#endif
+#if (RTLSDR_AGC_ENABLE > 0)
+    float agcLev = rtlSdrWorker->agcLev;
+#endif
 
     // len is number of I and Q samples
     // get FIFO space
@@ -402,12 +409,12 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
         float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
         for (uint64_t k=0; k<len; k++)
         {   // convert to float
-#if (DOC_ENABLE == 0)
+#if (RTLSDR_DOC_ENABLE == 0)
             *outPtr++ = float(*inPtr++ - 128);  // I or Q
-#else // (DOC_ENABLE == 0)
+#else // (RTLSDR_DOC_ENABLE == 0)
             int_fast8_t tmp = *inPtr++ - 128; // I or Q
 
-#if (AGC_LEVEL > 0)
+#if (RTLSDR_AGC_ENABLE > 0)
             int_fast8_t absTmp = abs(tmp);
 
             // catch maximum value (used to avoid overflow)
@@ -423,7 +430,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 c = LEV_CATT;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
-#endif  // (AGC_LEVEL > 0)
+#endif  // (RTLSDR_AGC_ENABLE > 0)
 
             // subtract DC
             if (k & 0x1)
@@ -436,7 +443,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 sumI += tmp;
                 *outPtr++ = float(tmp) - dcI;
             }
-#endif  // (DOC_ENABLE == 0)
+#endif  // (RTLSDR_DOC_ENABLE == 0)
         }
         inputBuffer.head = (inputBuffer.head + len*sizeof(float));
     }
@@ -448,11 +455,11 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
         float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
         for (uint64_t k=0; k<samplesTillEnd; ++k)
         {   // convert to float
-#if (DOC_ENABLE == 0)
+#if (RTLSDR_DOC_ENABLE == 0)
             *outPtr++ = float(*inPtr++ - 128);  // I or Q
-#else // (DOC_ENABLE == 0)
+#else // (RTLSDR_DOC_ENABLE == 0)
             int_fast8_t tmp = *inPtr++ - 128; // I or Q
-#if (AGC_LEVEL > 0)            
+#if (RTLSDR_AGC_ENABLE > 0)
             int_fast8_t absTmp = abs(tmp);
 
             // catch maximum value (used to avoid overflow)
@@ -468,7 +475,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 c = LEV_CATT;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
-#endif // (AGC_LEVEL > 0)
+#endif // (RTLSDR_AGC_ENABLE > 0)
 
             // subtract DC
             if (k & 0x1)
@@ -481,18 +488,18 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 sumI += tmp;
                 *outPtr++ = float(tmp) - dcI;
             }
-#endif // (DOC_ENABLE == 0)
+#endif // (RTLSDR_DOC_ENABLE == 0)
         }
 
         outPtr = (float *)(inputBuffer.buffer);
         for (uint64_t k=0; k<len-samplesTillEnd; ++k)
         {   // convert to float
-#if (DOC_ENABLE == 0)
+#if (RTLSDR_DOC_ENABLE == 0)
             *outPtr++ = float(*inPtr++ - 128);  // I or Q
-#else  // (DOC_ENABLE == 0)
+#else  // (RTLSDR_DOC_ENABLE == 0)
             int_fast8_t tmp = *inPtr++ - 128; // I or Q
 
-#if (AGC_LEVEL > 0)
+#if (RTLSDR_AGC_ENABLE > 0)
             int_fast8_t absTmp = abs(tmp);
 
             // catch maximum value (used to avoid overflow)
@@ -508,7 +515,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 c = LEV_CATT;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
-#endif // (AGC_LEVEL > 0)
+#endif // (RTLSDR_AGC_ENABLE > 0)
 
             // subtract DC
             if (k & 0x1)
@@ -521,26 +528,29 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 sumI += tmp;
                 *outPtr++ = float(tmp) - dcI;
             }
-#endif  // (DOC_ENABLE == 0)
+#endif  // (RTLSDR_DOC_ENABLE == 0)
         }
         inputBuffer.head = (len-samplesTillEnd)*sizeof(float);
 
-#if DOC_ENABLE
+#if RTLSDR_DOC_ENABLE
         //qDebug() << dcI << dcQ;
 #endif
-#if (AGC_LEVEL > 0)
+#if (RTLSDR_AGC_ENABLE > 0)
         //qDebug() << agcLev << maxVal;
 #endif
 
     }
 
-#if (DOC_ENABLE > 0)
+#if (RTLSDR_DOC_ENABLE > 0)
     // calculate correction values for next input buffer
-    dcI = sumI * DC_C / (len >> 1) + dcI - DC_C * dcI;
-    dcQ = sumQ * DC_C / (len >> 1) + dcQ - DC_C * dcQ;
+    rtlSdrWorker->dcI = sumI * DC_C / (len >> 1) + dcI - DC_C * dcI;
+    rtlSdrWorker->dcQ = sumQ * DC_C / (len >> 1) + dcQ - DC_C * dcQ;
 #endif
 
-#if (AGC_LEVEL > 0)
+#if (RTLSDR_AGC_ENABLE > 0)
+    // store memory
+    rtlSdrWorker->agcLev = agcLev;
+
     // AGC correction
     if (maxVal >= 127)
     {

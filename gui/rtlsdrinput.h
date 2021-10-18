@@ -6,6 +6,8 @@
 #include <rtl-sdr.h>
 #include "inputdevice.h"
 
+#define RTLSDR_DOC_ENABLE 1    // enable DOC
+#define RTLSDR_AGC_ENABLE 1    // enable AGC
 
 class RtlSdrWorker : public QThread
 {
@@ -25,6 +27,13 @@ private:
     std::atomic<bool> enaDumpToFile;
     FILE * dumpFile;
     QMutex fileMutex;
+
+    // DOC memory
+    float dcI = 0.0;
+    float dcQ = 0.0;
+
+    // AGC memory
+    float agcLev = 0.0;
 
     bool isDumpingIQ() const { return enaDumpToFile; }
     void dumpBuffer(unsigned char *buf, uint32_t len);
