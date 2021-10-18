@@ -364,12 +364,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 
 #define AGC_LEVEL 1
 #if (AGC_LEVEL > 0)
-#if (AGC_LEVEL == 1)
     static float agcLev = 0.0;
-#endif
-#if (AGC_LEVEL == 2)
-    int_fast8_t maxVal = 0;
-#endif
     int maxCntr = 0;
 #define LEV_CATT 0.1
 #define LEV_CREL 0.0001
@@ -446,20 +441,12 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
             {
                 maxCntr += 1;
             }
-#if (AGC_LEVEL == 1)
             float c = LEV_CREL;
             if (absTmp > agcLev)
             {
                 c = LEV_CATT;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
-#endif
-#if (AGC_LEVEL == 2)
-            if (absTmp > maxVal)
-            {
-                maxVal = absTmp;
-            }
-#endif
 #endif
             if (k & 0x1)
             {   // Q
@@ -513,20 +500,12 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
             {
                 maxCntr += 1;
             }
-#if (AGC_LEVEL == 1)
             float c = LEV_CREL;
             if (absTmp > agcLev)
             {
                 c = LEV_CATT;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
-#endif
-#if (AGC_LEVEL == 2)
-            if (absTmp > maxVal)
-            {
-                maxVal = absTmp;
-            }
-#endif
 #endif
 
             if (k & 0x1)
@@ -574,20 +553,12 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
             {
                 maxCntr += 1;
             }            
-#if (AGC_LEVEL == 1)
             float c = LEV_CREL;
             if (absTmp > agcLev)
             {
                 c = LEV_CATT;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
-#endif
-#if (AGC_LEVEL == 2)
-            if (absTmp > maxVal)
-            {
-                maxVal = absTmp;
-            }
-#endif
 #endif
             if (k & 0x1)
             {   // Q
@@ -607,49 +578,32 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 #if DOC_ENABLE
         //qDebug() << dcI << dcQ;
 #endif
-#if (AGC_LEVEL == 1)
-        //qDebug() << agcLev << maxCntr;
-#endif
-#if (AGC_LEVEL == 2)
-        //qDebug() << maxVal << maxCntr;
+#if (AGC_LEVEL > 0)
+        qDebug() << agcLev << maxCntr;
 #endif
 
     }
 
 #if (DOC_ENABLE == 2)
-    //dcI = sumI * 1.0 / (len >> 1);
-    //dcQ = sumQ * 1.0 / (len >> 1);
     dcI = sumI * DC_C / (len >> 1) + dcI - DC_C * dcI;
     dcQ = sumQ * DC_C / (len >> 1) + dcQ - DC_C * dcQ;
 #endif
 
 #if (AGC_LEVEL > 0)
-#if (AGC_LEVEL == 1)
-    if (agcLev < 50)
-    {
-        if (nullptr != ctx)
-        {
-            RtlSdrWorker * rtlSdrWorker = static_cast<RtlSdrWorker *>(ctx);
-            rtlSdrWorker->emitAgcChange(1);
-        }
-    }
-#endif
-#if (AGC_LEVEL == 2)
-    else if (maxVal < 110)
-    {
-        if (nullptr != ctx)
-        {
-            RtlSdrWorker * rtlSdrWorker = static_cast<RtlSdrWorker *>(ctx);
-            rtlSdrWorker->emitAgcChange(1);
-        }
-    }
-#endif
-    else if (maxCntr > 100)
+    if (maxCntr > 0)
     {
         if (nullptr != ctx)
         {
             RtlSdrWorker * rtlSdrWorker = static_cast<RtlSdrWorker *>(ctx);
             rtlSdrWorker->emitAgcChange(-1);
+        }
+    }
+    else if (agcLev < 50)
+    {
+        if (nullptr != ctx)
+        {
+            RtlSdrWorker * rtlSdrWorker = static_cast<RtlSdrWorker *>(ctx);
+            rtlSdrWorker->emitAgcChange(1);
         }
     }
 #endif
