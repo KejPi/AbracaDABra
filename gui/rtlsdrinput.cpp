@@ -344,17 +344,11 @@ void RtlSdrWorker::dumpBuffer(unsigned char *buf, uint32_t len)
     fileMutex.unlock();
 }
 
+#define DOC_ENABLE 1   // enable DOC
+#define AGC_LEVEL 1    // enable AC
 void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 {
-#define DOC_ENABLE 2
-#if (DOC_ENABLE == 1)
-    static float dcI = 0.0;
-    static float Izm1 = 0.0;
-    static float dcQ = 0.0;
-    static float Qzm1 = 0.0;
-#define DC_C 1e-6
-#endif
-#if (DOC_ENABLE == 2)
+#if (DOC_ENABLE > 0)
     static float dcI = 0.0;
     static float dcQ = 0.0;
     int_fast32_t sumI = 0;
@@ -362,10 +356,9 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 #define DC_C 0.05
 #endif
 
-#define AGC_LEVEL 1
 #if (AGC_LEVEL > 0)
     static float agcLev = 0.0;
-    int maxCntr = 0;
+    int maxVal = 0;
 #define LEV_CATT 0.1
 #define LEV_CREL 0.0001
 #endif
@@ -402,7 +395,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 
     // input samples are IQ = [uint8_t uint8_t]
     // going to transform them to [float float] = float _Complex
-    // on euint8_t will be transformed to one float
+    // on uint8_t will be transformed to one float
 
     // there is enough room in buffer
     uint64_t bytesTillEnd = INPUT_FIFO_SIZE - inputBuffer.head;
@@ -414,40 +407,28 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
         {   // convert to float
 #if (DOC_ENABLE == 0)
             *outPtr++ = float(*inPtr++ - 128);  // I or Q
-#else
-#if (DOC_ENABLE == 1)
-
-            float tmp = float(*inPtr++ - 128);  // I or Q
-            if (k & 0x1)
-            {  // Q
-                dcQ = (tmp + Qzm1)*DC_C + dcQ - 2*DC_C*dcQ;
-                Qzm1 = tmp;
-                *outPtr++ = tmp - dcQ;
-            }
-            else
-            {  // I
-                dcI = (tmp + Izm1)*DC_C + dcI - 2*DC_C*dcI;
-                Izm1 = tmp;
-                *outPtr++ = tmp - dcI;
-            }
-#else
-#if (DOC_ENABLE == 2)
+#else // (DOC_ENABLE == 0)
             int_fast8_t tmp = *inPtr++ - 128; // I or Q
 
 #if (AGC_LEVEL > 0)
             int_fast8_t absTmp = abs(tmp);
 
-            if (absTmp >= 127)
+            // catch maximum value (used to avoid overflow)
+            if (absTmp > maxVal)
             {
-                maxCntr += 1;
+                maxVal = absTmp;
             }
+
+            // calculate signal level (rectifier, fast attack slow release)
             float c = LEV_CREL;
             if (absTmp > agcLev)
             {
                 c = LEV_CATT;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
-#endif
+#endif  // (AGC_LEVEL > 0)
+
+            // subtract DC
             if (k & 0x1)
             {   // Q
                 sumQ += tmp;
@@ -458,9 +439,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 sumI += tmp;
                 *outPtr++ = float(tmp) - dcI;
             }
-#endif
-#endif
-#endif
+#endif  // (DOC_ENABLE == 0)
         }
         inputBuffer.head = (inputBuffer.head + len*sizeof(float));
     }
@@ -474,40 +453,27 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
         {   // convert to float
 #if (DOC_ENABLE == 0)
             *outPtr++ = float(*inPtr++ - 128);  // I or Q
-#else
-#if (DOC_ENABLE == 1)
-            float tmp = float(*inPtr++ - 128);  // I or Q
-            if (k & 0x1)
-            {  // Q
-                dcQ = (tmp + Qzm1)*DC_C + dcQ - 2*DC_C*dcQ;
-                Qzm1 = tmp;
-                *outPtr++ = tmp - dcQ;
-            }
-            else
-            {  // I
-                dcI = (tmp + Izm1)*DC_C + dcI - 2*DC_C*dcI;
-                Izm1 = tmp;
-                *outPtr++ = tmp - dcI;
-            }
-#else
-#if (DOC_ENABLE == 2)
+#else // (DOC_ENABLE == 0)
             int_fast8_t tmp = *inPtr++ - 128; // I or Q
-
-#if (AGC_LEVEL > 0)
+#if (AGC_LEVEL > 0)            
             int_fast8_t absTmp = abs(tmp);
 
-            if (absTmp >= 127)
+            // catch maximum value (used to avoid overflow)
+            if (absTmp > maxVal)
             {
-                maxCntr += 1;
+                maxVal = absTmp;
             }
+
+            // calculate signal level (rectifier, fast attack slow release)
             float c = LEV_CREL;
             if (absTmp > agcLev)
             {
                 c = LEV_CATT;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
-#endif
+#endif // (AGC_LEVEL > 0)
 
+            // subtract DC
             if (k & 0x1)
             {   // Q
                 sumQ += tmp;
@@ -518,48 +484,36 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 sumI += tmp;
                 *outPtr++ = float(tmp) - dcI;
             }
-#endif
-#endif
-#endif
+#endif // (DOC_ENABLE == 0)
         }
+
         outPtr = (float *)(inputBuffer.buffer);
         for (uint64_t k=0; k<len-samplesTillEnd; ++k)
         {   // convert to float
 #if (DOC_ENABLE == 0)
             *outPtr++ = float(*inPtr++ - 128);  // I or Q
-#else
-#if (DOC_ENABLE == 1)
-            float tmp = float(*inPtr++ - 128);  // I or Q
-            if (k & 0x1)
-            {  // Q
-                dcQ = (tmp + Qzm1)*DC_C + dcQ - 2*DC_C*dcQ;
-                Qzm1 = tmp;
-                *outPtr++ = tmp - dcQ;
-            }
-            else
-            {  // I
-                dcI = (tmp + Izm1)*DC_C + dcI - 2*DC_C*dcI;
-                Izm1 = tmp;
-                *outPtr++ = tmp - dcI;
-            }
-#else
-#if (DOC_ENABLE == 2)
+#else  // (DOC_ENABLE == 0)
             int_fast8_t tmp = *inPtr++ - 128; // I or Q
 
 #if (AGC_LEVEL > 0)
             int_fast8_t absTmp = abs(tmp);
 
-            if (absTmp >= 127)
+            // catch maximum value (used to avoid overflow)
+            if (absTmp > maxVal)
             {
-                maxCntr += 1;
-            }            
+                maxVal = absTmp;
+            }
+
+            // calculate signal level (rectifier, fast attack slow release)
             float c = LEV_CREL;
             if (absTmp > agcLev)
             {
                 c = LEV_CATT;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
-#endif
+#endif // (AGC_LEVEL > 0)
+
+            // subtract DC
             if (k & 0x1)
             {   // Q
                 sumQ += tmp;
@@ -570,27 +524,28 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 sumI += tmp;
                 *outPtr++ = float(tmp) - dcI;
             }
-#endif
-#endif
-#endif
+#endif  // (DOC_ENABLE == 0)
         }
         inputBuffer.head = (len-samplesTillEnd)*sizeof(float);
+
 #if DOC_ENABLE
         //qDebug() << dcI << dcQ;
 #endif
 #if (AGC_LEVEL > 0)
-        qDebug() << agcLev << maxCntr;
+        //qDebug() << agcLev << maxVal;
 #endif
 
     }
 
-#if (DOC_ENABLE == 2)
+#if (DOC_ENABLE > 0)
+    // calculate correction values for next input buffer
     dcI = sumI * DC_C / (len >> 1) + dcI - DC_C * dcI;
     dcQ = sumQ * DC_C / (len >> 1) + dcQ - DC_C * dcQ;
 #endif
 
 #if (AGC_LEVEL > 0)
-    if (maxCntr > 0)
+    // AGC correction
+    if (maxVal >= 127)
     {
         if (nullptr != ctx)
         {
@@ -598,8 +553,9 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
             rtlSdrWorker->emitAgcChange(-1);
         }
     }
-    else if (agcLev < 50)
-    {
+    else if ((agcLev < 50) && (maxVal < 128/2))
+    {   // (maxVal < 128/2) is required to avoid toggling => chnage gain only if there is 1 bit headroom
+        // this could be problem on E4000 tuner with big AGC gain steps
         if (nullptr != ctx)
         {
             RtlSdrWorker * rtlSdrWorker = static_cast<RtlSdrWorker *>(ctx);
