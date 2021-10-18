@@ -87,11 +87,11 @@ void RtlSdrInput::openDevice()
         throw 0;
     }
 
-    ret = rtlsdr_set_tuner_bandwidth(device, 1536000/2);
-    if (ret < 0)
-    {
-        qDebug() << "RTLSDR: Bandwidth setting failed";
-    }
+//    ret = rtlsdr_set_tuner_bandwidth(device, 1536000/2);
+//    if (ret < 0)
+//    {
+//        qDebug() << "RTLSDR: Bandwidth setting failed";
+//    }
 
     // Get tuner gains
     uint32_t gainsCount = rtlsdr_get_tuner_gains(device, NULL);
