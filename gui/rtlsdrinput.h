@@ -83,7 +83,6 @@ private:
     void setGain(int gIdx);
 
     // used by friend
-    void changeAgcGain(int steps);
     void updateAgc(float level, int maxVal);
 private slots:
     void readThreadStopped();
