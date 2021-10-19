@@ -86,8 +86,6 @@ private:
     void updateAgc(float level, int maxVal);
 private slots:
     void readThreadStopped();
-
-    friend class RtlSdrWorker;
 };
 
 
