@@ -536,7 +536,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
         //qDebug() << dcI << dcQ;
 #endif
 #if (RTLSDR_AGC_ENABLE > 0)
-        //qDebug() << agcLev << maxVal;
+        qDebug() << agcLev << maxVal;
 #endif
 
     }
@@ -556,7 +556,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
     {
        rtlSdrWorker->emitAgcChange(-1);
     }
-    else if ((agcLev < 50) && (maxVal < 128/2))
+    else if ((agcLev < 50) && (maxVal < 100))
     {   // (maxVal < 128/2) is required to avoid toggling => chnage gain only if there is 1 bit headroom
         // this could be problem on E4000 tuner with big AGC gain steps
         rtlSdrWorker->emitAgcChange(1);
