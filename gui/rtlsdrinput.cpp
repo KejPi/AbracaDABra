@@ -409,9 +409,9 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
         float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
         for (uint64_t k=0; k<len; k++)
         {   // convert to float
-#if (RTLSDR_DOC_ENABLE == 0)
+#if ((RTLSDR_DOC_ENABLE == 0) && ((RTLSDR_AGC_ENABLE == 0)))
             *outPtr++ = float(*inPtr++ - 128);  // I or Q
-#else // (RTLSDR_DOC_ENABLE == 0)
+#else // ((RTLSDR_DOC_ENABLE == 0) && ((RTLSDR_AGC_ENABLE == 0)))
             int_fast8_t tmp = *inPtr++ - 128; // I or Q
 
 #if (RTLSDR_AGC_ENABLE > 0)
@@ -432,6 +432,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
             agcLev = c * absTmp + agcLev - c * agcLev;
 #endif  // (RTLSDR_AGC_ENABLE > 0)
 
+#if (RTLSDR_DOC_ENABLE > 0)
             // subtract DC
             if (k & 0x1)
             {   // Q
@@ -443,7 +444,8 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 sumI += tmp;
                 *outPtr++ = float(tmp) - dcI;
             }
-#endif  // (RTLSDR_DOC_ENABLE == 0)
+#endif  // RTLSDR_DOC_ENABLE
+#endif  // ((RTLSDR_DOC_ENABLE == 0) && ((RTLSDR_AGC_ENABLE == 0)))
         }
         inputBuffer.head = (inputBuffer.head + len*sizeof(float));
     }
@@ -455,10 +457,11 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
         float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
         for (uint64_t k=0; k<samplesTillEnd; ++k)
         {   // convert to float
-#if (RTLSDR_DOC_ENABLE == 0)
+#if ((RTLSDR_DOC_ENABLE == 0) && ((RTLSDR_AGC_ENABLE == 0)))
             *outPtr++ = float(*inPtr++ - 128);  // I or Q
-#else // (RTLSDR_DOC_ENABLE == 0)
+#else // ((RTLSDR_DOC_ENABLE == 0) && ((RTLSDR_AGC_ENABLE == 0)))
             int_fast8_t tmp = *inPtr++ - 128; // I or Q
+
 #if (RTLSDR_AGC_ENABLE > 0)
             int_fast8_t absTmp = abs(tmp);
 
@@ -475,8 +478,9 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 c = LEV_CATT;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
-#endif // (RTLSDR_AGC_ENABLE > 0)
+#endif  // (RTLSDR_AGC_ENABLE > 0)
 
+#if (RTLSDR_DOC_ENABLE > 0)
             // subtract DC
             if (k & 0x1)
             {   // Q
@@ -488,15 +492,16 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 sumI += tmp;
                 *outPtr++ = float(tmp) - dcI;
             }
-#endif // (RTLSDR_DOC_ENABLE == 0)
+#endif  // RTLSDR_DOC_ENABLE
+#endif  // ((RTLSDR_DOC_ENABLE == 0) && ((RTLSDR_AGC_ENABLE == 0)))
         }
 
         outPtr = (float *)(inputBuffer.buffer);
         for (uint64_t k=0; k<len-samplesTillEnd; ++k)
         {   // convert to float
-#if (RTLSDR_DOC_ENABLE == 0)
+#if ((RTLSDR_DOC_ENABLE == 0) && ((RTLSDR_AGC_ENABLE == 0)))
             *outPtr++ = float(*inPtr++ - 128);  // I or Q
-#else  // (RTLSDR_DOC_ENABLE == 0)
+#else // ((RTLSDR_DOC_ENABLE == 0) && ((RTLSDR_AGC_ENABLE == 0)))
             int_fast8_t tmp = *inPtr++ - 128; // I or Q
 
 #if (RTLSDR_AGC_ENABLE > 0)
@@ -515,8 +520,9 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 c = LEV_CATT;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
-#endif // (RTLSDR_AGC_ENABLE > 0)
+#endif  // (RTLSDR_AGC_ENABLE > 0)
 
+#if (RTLSDR_DOC_ENABLE > 0)
             // subtract DC
             if (k & 0x1)
             {   // Q
@@ -528,7 +534,8 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 sumI += tmp;
                 *outPtr++ = float(tmp) - dcI;
             }
-#endif  // (RTLSDR_DOC_ENABLE == 0)
+#endif  // RTLSDR_DOC_ENABLE
+#endif  // ((RTLSDR_DOC_ENABLE == 0) && ((RTLSDR_AGC_ENABLE == 0)))
         }
         inputBuffer.head = (len-samplesTillEnd)*sizeof(float);
 
@@ -536,7 +543,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
         //qDebug() << dcI << dcQ;
 #endif
 #if (RTLSDR_AGC_ENABLE > 0)
-        qDebug() << agcLev << maxVal;
+        //qDebug() << agcLev << maxVal;
 #endif
 
     }
@@ -557,7 +564,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
        rtlSdrWorker->emitAgcChange(-1);
     }
     else if ((agcLev < 50) && (maxVal < 100))
-    {   // (maxVal < 128/2) is required to avoid toggling => chnage gain only if there is 1 bit headroom
+    {   // (maxVal < 100) is required to avoid toggling => change gain only if there is some headroom
         // this could be problem on E4000 tuner with big AGC gain steps
         rtlSdrWorker->emitAgcChange(1);
     }
