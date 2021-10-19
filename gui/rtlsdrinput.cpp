@@ -149,7 +149,7 @@ void RtlSdrInput::run()
 
         worker = new RtlSdrWorker(device, this);
         connect(worker, &RtlSdrWorker::readExit, this, &RtlSdrInput::readThreadStopped, Qt::QueuedConnection);
-        connect(worker, &RtlSdrWorker::agcChange, this, &RtlSdrInput::changeAgcGain, Qt::QueuedConnection);
+        connect(worker, &RtlSdrWorker::agcLevel, this, &RtlSdrInput::updateAgc, Qt::QueuedConnection);
         connect(worker, &RtlSdrWorker::finished, worker, &QObject::deleteLater);
         worker->start();
 
@@ -254,11 +254,20 @@ void RtlSdrInput::setDAGC(bool ena)
     }
 }
 
-void RtlSdrInput::changeAgcGain(int steps)
+void RtlSdrInput::updateAgc(float level, int maxVal)
 {
     if (GainMode::Software == gainMode)
     {
-          setGain(gainIdx + steps);
+        // AGC correction
+        if (maxVal >= 127)
+        {
+           setGain(gainIdx-1);
+        }
+        else if ((level < 50) && (maxVal < 100))
+        {  // (maxVal < 100) is required to avoid toggling => change gain only if there is some headroom
+           // this could be problem on E4000 tuner with big AGC gain steps
+           setGain(gainIdx+1);
+        }
     }
 }
 
@@ -558,16 +567,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
     // store memory
     rtlSdrWorker->agcLev = agcLev;
 
-    // AGC correction
-    if (maxVal >= 127)
-    {
-       rtlSdrWorker->emitAgcChange(-1);
-    }
-    else if ((agcLev < 50) && (maxVal < 100))
-    {   // (maxVal < 100) is required to avoid toggling => change gain only if there is some headroom
-        // this could be problem on E4000 tuner with big AGC gain steps
-        rtlSdrWorker->emitAgcChange(1);
-    }
+    rtlSdrWorker->emitAgcLevel(agcLev, maxVal);
 #endif
 
 #if INPUT_USE_PTHREADS

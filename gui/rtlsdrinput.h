@@ -20,7 +20,7 @@ protected:
     void run() override;
 signals:
     void readExit();
-    void agcChange(int steps);
+    void agcLevel(float level, int maxVal);
 private:
     QObject *rtlSdrPtr;
     struct rtlsdr_dev *device;
@@ -37,7 +37,7 @@ private:
 
     bool isDumpingIQ() const { return enaDumpToFile; }
     void dumpBuffer(unsigned char *buf, uint32_t len);
-    void emitAgcChange(int steps) { emit agcChange(steps); }
+    void emitAgcLevel(float level, int maxVal) { emit agcLevel(level, maxVal); }
 
     friend void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx);
 };
@@ -84,6 +84,7 @@ private:
 
     // used by friend
     void changeAgcGain(int steps);
+    void updateAgc(float level, int maxVal);
 private slots:
     void readThreadStopped();
 
