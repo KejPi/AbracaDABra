@@ -404,6 +404,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
     if ((INPUT_FIFO_SIZE - count) < len*sizeof(float))
     {
         qDebug() << Q_FUNC_INFO << "dropping" << len << "bytes...";
+        return;
     }
 
     // input samples are IQ = [uint8_t uint8_t]
