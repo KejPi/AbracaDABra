@@ -105,6 +105,7 @@ void RtlTcpInput::tune(uint32_t freq)
     else
     {
         stop();
+        emit tuned(frequency);
     }
 }
 
@@ -299,79 +300,38 @@ void RtlTcpInput::openDevice()
         dongleInfo.magic[3] == '0')
     {
         const int * gains = unknown_gains;
+        int numGains = 0;
         switch(dongleInfo.tunerType)
         {
         case RTLSDR_TUNER_E4000:
             qDebug() << "RTLSDR_TUNER_E4000";
             gains = e4k_gains;
-            if (dongleInfo.tunerGainCount*sizeof(e4k_gains[0]) != sizeof(e4k_gains))
-            {
-                if (dongleInfo.tunerGainCount*sizeof(e4k_gains[0]) > sizeof(e4k_gains))
-                {
-                    dongleInfo.tunerGainCount = sizeof(e4k_gains)/sizeof(e4k_gains[0]);
-                }
-                qDebug() << "RTL_TCP WARNING: unexpected number of gain values reported by server" << dongleInfo.tunerGainCount;
-            }
+            numGains = *(&e4k_gains + 1) - e4k_gains;
             break;
         case RTLSDR_TUNER_FC0012:
             qDebug() << "RTLSDR_TUNER_FC0012";
             gains = fc0012_gains;
-            if (dongleInfo.tunerGainCount*sizeof(fc0012_gains[0]) != sizeof(fc0012_gains))
-            {
-                if (dongleInfo.tunerGainCount*sizeof(fc0012_gains[0]) > sizeof(fc0012_gains))
-                {
-                    dongleInfo.tunerGainCount = sizeof(fc0012_gains)/sizeof(fc0012_gains[0]);
-                }
-                qDebug() << "RTL_TCP WARNING: unexpected number of gain values reported by server" << dongleInfo.tunerGainCount;
-            }
+            numGains = *(&fc0012_gains + 1) - fc0012_gains;
             break;
         case RTLSDR_TUNER_FC0013:
             qDebug() << "RTLSDR_TUNER_FC0013";
             gains = fc0013_gains;
-            if (dongleInfo.tunerGainCount*sizeof(fc0013_gains[0]) != sizeof(fc0013_gains))
-            {
-                if (dongleInfo.tunerGainCount*sizeof(fc0013_gains[0]) > sizeof(fc0013_gains))
-                {
-                    dongleInfo.tunerGainCount = sizeof(fc0013_gains)/sizeof(fc0013_gains[0]);
-                }
-                qDebug() << "RTL_TCP WARNING: unexpected number of gain values reported by server" << dongleInfo.tunerGainCount;
-            }
+            numGains = *(&fc0013_gains + 1) - fc0013_gains;
             break;
         case RTLSDR_TUNER_FC2580:
             qDebug() << "RTLSDR_TUNER_FC2580";
             gains = fc2580_gains;
-            if (dongleInfo.tunerGainCount*sizeof(fc2580_gains[0]) != sizeof(fc2580_gains))
-            {
-                if (dongleInfo.tunerGainCount*sizeof(fc2580_gains[0]) > sizeof(fc2580_gains))
-                {
-                    dongleInfo.tunerGainCount = sizeof(fc2580_gains)/sizeof(fc2580_gains[0]);
-                }
-                qDebug() << "RTL_TCP WARNING: unexpected number of gain values reported by server" << dongleInfo.tunerGainCount;
-            }
+            numGains = *(&fc2580_gains + 1) - fc2580_gains;
             break;
         case RTLSDR_TUNER_R820T:
             qDebug() << "RTLSDR_TUNER_R820T";
             gains = r82xx_gains;
-            if (dongleInfo.tunerGainCount*sizeof(r82xx_gains[0]) != sizeof(r82xx_gains))
-            {
-                if (dongleInfo.tunerGainCount*sizeof(r82xx_gains[0]) > sizeof(r82xx_gains))
-                {
-                    dongleInfo.tunerGainCount = sizeof(r82xx_gains)/sizeof(r82xx_gains[0]);
-                }
-                qDebug() << "RTL_TCP WARNING: unexpected number of gain values reported by server" << dongleInfo.tunerGainCount;
-            }
+            numGains = *(&r82xx_gains + 1) - r82xx_gains;
             break;
         case RTLSDR_TUNER_R828D:
             qDebug() << "RTLSDR_TUNER_R828D";
             gains = r82xx_gains;
-            if (dongleInfo.tunerGainCount*sizeof(r82xx_gains[0]) != sizeof(r82xx_gains))
-            {
-                if (dongleInfo.tunerGainCount*sizeof(r82xx_gains[0]) > sizeof(r82xx_gains))
-                {
-                    dongleInfo.tunerGainCount = sizeof(r82xx_gains)/sizeof(r82xx_gains[0]);
-                }
-                qDebug() << "RTL_TCP WARNING: unexpected number of gain values reported by server" << dongleInfo.tunerGainCount;
-            }
+            numGains = *(&r82xx_gains + 1) - r82xx_gains;
             break;
         case RTLSDR_TUNER_UNKNOWN:
         default:
@@ -380,6 +340,16 @@ void RtlTcpInput::openDevice()
             dongleInfo.tunerGainCount = 0;
         }
         }
+
+        if (dongleInfo.tunerGainCount != numGains)
+        {
+            qDebug() << "RTL_TCP WARNING: unexpected number of gain values reported by server" << dongleInfo.tunerGainCount;
+            if (dongleInfo.tunerGainCount > numGains)
+            {
+                dongleInfo.tunerGainCount = numGains;
+            }
+        }
+
 
         if (nullptr != gainList)
         {

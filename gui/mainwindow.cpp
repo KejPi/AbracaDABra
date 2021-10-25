@@ -347,7 +347,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     qDebug() << Q_FUNC_INFO << "stopping all processing";
     emit serviceRequest(0,0,0);
-    QThread::sleep(1);
+    //QThread::sleep(1);
     emit exit();
     event->accept();
 }
@@ -1092,7 +1092,7 @@ void MainWindow::loadSettings()
         setupDialog->setInputDevice(static_cast<InputDeviceId>(inDevice));
         if ((static_cast<InputDeviceId>(inDevice) == inputDeviceId)
                 && ( (InputDeviceId::RTLSDR == inputDeviceId) || (InputDeviceId::RTLTCP == inputDeviceId)))
-        {   // channel is only restored for RTL SDR at the moment
+        {   // channel is only restored for RTL SDR and RTL TCP at the moment
             int sid = settings.value("SID", 0).toInt();
             int scids = settings.value("SCIdS", 0).toInt();
             uint64_t id = ServiceListItem::getId(sid, scids);
