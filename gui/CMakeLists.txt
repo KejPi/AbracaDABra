@@ -235,6 +235,8 @@ add_executable(${TARGET}
     rawfileinput.cpp
     rtlsdrinput.h
     rtlsdrinput.cpp
+    rtltcpinput.h
+    rtltcpinput.cpp
     dldecoder.h
     dldecoder.cpp
     motdecoder.h
@@ -291,6 +293,12 @@ target_link_libraries(${PROJECT_NAME} PRIVATE "${RTL_SDR_LINK_LIBRARIES}" )
 # PORTAUDIO
 include_directories ( ${PORTAUDIO_INCLUDE_DIRS} )
 target_link_libraries(${PROJECT_NAME} PRIVATE "${PORTAUDIO_LINK_LIBRARIES}" )
+
+# Set some Win32 Specific Settings
+if(WIN32)
+    # required fro sockets
+    target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32)
+endif(WIN32)
 
 include_directories ( ${CMAKE_SOURCE_DIR} )
 target_link_libraries(AbracaDABra PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia)

@@ -78,10 +78,10 @@ MainWindow::MainWindow(QWidget *parent)
     snrProgress->setToolTip(QString("DAB signal SNR"));
 
     snrLabel = new QLabel();
-#ifdef __APPLE__
+//#ifdef __APPLE__
     int width = snrLabel->fontMetrics().boundingRect("100.0 dB").width();
     snrLabel->setFixedWidth(width);
-#endif
+//#endif
     snrLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     snrLabel->setToolTip(QString("DAB signal SNR"));
 
@@ -992,6 +992,55 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         }
     }
         break;
+    case InputDeviceId::RTLTCP:
+    {
+        inputDevice = new RtlTcpInput();
+
+        // signals have to be connected before calling isAvailable
+        // RTL_TCP is opened immediately and starts receiving data
+
+        // HMI
+        connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
+
+        // setup dialog
+        connect(dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
+        connect(setupDialog, &SetupDialog::setGainMode, dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::setGainMode);
+        connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::setDAGC);
+
+        if (inputDevice->isAvailable())
+        {  // rtl tcp is available
+            inputDeviceId = InputDeviceId::RTLTCP;
+            //setupDialog->enableRtlSdrInput(true);
+            setupDialog->setInputDevice(inputDeviceId); // this emits device change
+
+            // tuning procedure
+            connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+            connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+            // HMI
+            //connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
+
+            // setup dialog
+            //connect(dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
+            //connect(setupDialog, &SetupDialog::setGainMode, dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::setGainMode);
+            //connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::setDAGC);
+
+            static_cast<RtlTcpInput *>(inputDevice)->openDevice();
+            static_cast<RtlTcpInput *>(inputDevice)->setDAGC(setupDialog->getDAGCState());
+
+            // enable band scan
+            bandScanAct->setEnabled(true);
+        }
+        else
+        {
+            delete inputDevice;
+            inputDevice = nullptr;
+            inputDeviceId = InputDeviceId::UNDEFINED;
+            setupDialog->enableRtlSdrInput(false);
+            setupDialog->setInputDevice(inputDeviceId); // this emits device change
+        }
+    }
+    break;
     case InputDeviceId::RAWFILE:
     {
         inputDevice = new RawFileInput();
