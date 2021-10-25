@@ -293,7 +293,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // tune procedure:
     // 1. mainwindow tune -> radiocontrol tune (this stops DAB SDR - tune to 0)
-    // 2. radiocontrol tuneInputDevice -> inputdevice tune (reset of inut bufer and tune FE)
+    // 2. radiocontrol tuneInputDevice -> inputdevice tune (reset of input bufer and tune FE)
     // 3. inputDevice tuned -> radiocontrol start (this starts DAB SDR)
     // 4. notification to HMI
     connect(this, &MainWindow::serviceRequest, radioControl, &RadioControl::tuneService, Qt::QueuedConnection);
@@ -347,7 +347,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     qDebug() << Q_FUNC_INFO << "stopping all processing";
     emit serviceRequest(0,0,0);
-    //QThread::sleep(1);
+    QThread::sleep(1);
     emit exit();
     event->accept();
 }
@@ -1007,6 +1007,10 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(setupDialog, &SetupDialog::setGainMode, dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::setGainMode);
         connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::setDAGC);
 
+        // tuning procedure
+        connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+        connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
+
         if (inputDevice->isAvailable())
         {  // rtl tcp is available
             inputDeviceId = InputDeviceId::RTLTCP;
@@ -1014,8 +1018,8 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             setupDialog->setInputDevice(inputDeviceId); // this emits device change
 
             // tuning procedure
-            connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
-            connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
+            //connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+            //connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
 
             // HMI
             //connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
@@ -1036,7 +1040,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             delete inputDevice;
             inputDevice = nullptr;
             inputDeviceId = InputDeviceId::UNDEFINED;
-            setupDialog->enableRtlSdrInput(false);
+            //setupDialog->enableRtlSdrInput(false);
             setupDialog->setInputDevice(inputDeviceId); // this emits device change
         }
     }
@@ -1084,9 +1088,10 @@ void MainWindow::loadSettings()
     int inDevice = settings.value("inputDeviceId", int(InputDeviceId::UNDEFINED)).toInt();
     if (InputDeviceId::UNDEFINED != static_cast<InputDeviceId>(inDevice))
     {        
-        // if input device has switched to what was stored and it is RTLSDR
+        // if input device has switched to what was stored and it is RTLSDR or RTLTCP
         setupDialog->setInputDevice(static_cast<InputDeviceId>(inDevice));
-        if ((static_cast<InputDeviceId>(inDevice) == inputDeviceId) && (InputDeviceId::RTLSDR == inputDeviceId))
+        if ((static_cast<InputDeviceId>(inDevice) == inputDeviceId)
+                && ( (InputDeviceId::RTLSDR == inputDeviceId) || (InputDeviceId::RTLTCP == inputDeviceId)))
         {   // channel is only restored for RTL SDR at the moment
             int sid = settings.value("SID", 0).toInt();
             int scids = settings.value("SCIdS", 0).toInt();
