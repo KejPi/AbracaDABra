@@ -124,7 +124,6 @@ private:
     uint32_t frequency;
     bool deviceUnplugged;
     SOCKET sock;
-    struct sockaddr_in serverAddr;
 
     RtlTcpWorker * worker;
     GainMode gainMode = GainMode::Hardware;

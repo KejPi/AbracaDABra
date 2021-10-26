@@ -86,8 +86,6 @@ RtlTcpInput::~RtlTcpInput()
     {
         delete gainList;
     }
-
-    qDebug() << "..." << Q_FUNC_INFO;
 }
 
 void RtlTcpInput::tune(uint32_t freq)
@@ -136,8 +134,6 @@ void RtlTcpInput::openDevice()
         return;
     }
 
-#if 1
-    bool ret = false;
     struct addrinfo hints;
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
@@ -145,36 +141,39 @@ void RtlTcpInput::openDevice()
     hints.ai_flags = 0;
     hints.ai_protocol = 0;          /* Any protocol */
 
+    QString port_str = QString().number(RTLTCP_PORT);
+
     struct addrinfo *result;
-
-    std::string port_str = std::to_string(RTLTCP_PORT);
-
-    int s = getaddrinfo(RTLTCP_ADDRESS, port_str.c_str(), &hints, &result);
-    if (s != 0) {
+    int s = getaddrinfo(RTLTCP_ADDRESS, port_str.toLatin1(), &hints, &result);
+    if (s != 0)
+    {
 #if defined(_WIN32)
-        char * ch_errstr = gai_strerrorA(s);
+        qDebug() << "RTLTCP: getaddrinfo error:" << gai_strerrorA(s);
 #else
-        const char * ch_errstr = gai_strerror(s);
+        qDebug() << "RTLTCP: getaddrinfo error:" << gai_strerror(s);
 #endif
-        QString errstr(ch_errstr);
-        qDebug() << "RTLTCP: getaddrinfo:" << errstr;
+        return;
     }
 
+    /* getaddrinfo() returns a list of address structures.
+       Try each address until we successfully connect(2).
+       If socket(2) (or connect(2)) fails, we (close the socket
+       and) try the next address. */
     struct addrinfo *rp;
-
     int sfd = -1;
-
     for (rp = result; rp != NULL; rp = rp->ai_next)
     {
         sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
-
         if (sfd == -1)
+        {
             continue;
+        }
 
+#if 0
         // set the socket in non-blocking mode
 #ifdef _WIN32
         unsigned long mode = 1;
-        int iResult = ioctlsocket(sfd, FIONBIO, &mode);
+        int res = ioctlsocket(sfd, FIONBIO, &mode);
 #else
         int oldflags = fcntl(sfd, F_GETFL, 0);
         if (oldflags == -1)
@@ -182,11 +181,11 @@ void RtlTcpInput::openDevice()
             return;
         }
         int flags = oldflags | O_NONBLOCK;
-        int iResult = fcntl(sfd, F_SETFL, flags);
+        int res = fcntl(sfd, F_SETFL, flags);
 #endif
-        if (iResult != 0)
+        if (res != 0)
         {
-            qDebug() << "RTLTCP: Failed to put socket into non-blocking mode with error: " << iResult;
+            qDebug() << "RTLTCP: Failed to put socket into non-blocking mode with error: " << res;
         }
 
         struct sockaddr_in *sa = (struct sockaddr_in *) rp->ai_addr;
@@ -196,13 +195,13 @@ void RtlTcpInput::openDevice()
         // set the socket back in blocking mode
 #ifdef _WIN32
         mode = 0;
-        iResult = ioctlsocket(sfd, FIONBIO, &mode);
+        res = ioctlsocket(sfd, FIONBIO, &mode);
 #else
-        iResult = fcntl(sfd, F_SETFL, oldflags);
+        res = fcntl(sfd, F_SETFL, oldflags);
 #endif
-        if (iResult != 0)
+        if (res != 0)
         {
-            qDebug() << "RTLTCP: Failed to put socket into blocking mode with error: " << iResult;
+            qDebug() << "RTLTCP: Failed to put socket into blocking mode with error: " << res;
         }
 
         fd_set Write;
@@ -222,12 +221,12 @@ void RtlTcpInput::openDevice()
         {
             int error=0;
             socklen_t size=sizeof(error);
-            iResult = 0;
+            res = 0;
 
 #ifndef _WIN32
-            iResult = ::getsockopt(sfd, SOL_SOCKET, SO_ERROR, &error, &size);
+            res = ::getsockopt(sfd, SOL_SOCKET, SO_ERROR, &error, &size);
 #endif
-            if(error > 0 && iResult == 0)
+            if(error > 0 && res == 0)
             {
                 qDebug() << "RTLTCP: Connection failed: \"" << strerror(error) << "\"";
             }
@@ -237,6 +236,15 @@ void RtlTcpInput::openDevice()
                 break; /* Success */
             }
         }
+#else
+        struct sockaddr_in *sa = (struct sockaddr_in *) rp->ai_addr;
+        qDebug() << "RTLTCP: Trying to connect to:" << inet_ntoa(sa->sin_addr);
+        if (0 == ::connect(sfd, rp->ai_addr, rp->ai_addrlen))
+        {   // connected
+            sock = sfd;
+            break; /* Success */
+        }
+#endif
 
 #if defined(_WIN32)
         closesocket(sfd);
@@ -245,40 +253,11 @@ void RtlTcpInput::openDevice()
 #endif
     }
 
-    if (rp == NULL) {               /* No address succeeded */
+    if (NULL == rp)
+    {   /* No address succeeded */
         qDebug() << "RTLSDR: Could not connect";
         return;
     }
-
-#else
-    if ((sock = ::socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    {        
-        qDebug() << "Cannot create socket:" << strerror(errno);
-        sock = INVALID_SOCKET;
-        return;
-    }
-
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(RTLTCP_PORT);
-
-    // Convert IPv4 and IPv6 addresses from text to binary form
-    if(inet_pton(AF_INET, RTLTCP_ADDRESS, &serverAddr.sin_addr)<=0)
-    {
-        printf("\nInvalid address/ Address not supported \n");
-        return;
-    }
-
-    if (::connect(sock, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
-    {
-        qDebug() << "Socket connection failed:"
-#if _WIN32
-                 << WSAGetLastError();
-#else
-                 << strerror(errno);
-#endif
-        return;
-    }
-#endif
 
     struct
     {
