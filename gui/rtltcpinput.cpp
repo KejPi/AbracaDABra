@@ -578,6 +578,27 @@ void RtlTcpWorker::run()
             }
             else if (-1 == ret)
             {
+#if _WIN32
+                if (WSAEINTR == WSAGetLastError())
+                {
+                    continue;
+                }
+                else if (WSAECONNABORTED == WSAGetLastError())
+                {   // disconnected => finish thread operation
+                    // when socket is diconnected under Win, recv returns -1 but error code is 0
+                    qDebug() << Q_FUNC_INFO << "RTLTCP: socket disconnected";
+                    goto worker_exit;
+                }
+                else if ((WSAECONNRESET == WSAGetLastError()) || (WSAEBADF == WSAGetLastError()))
+                {   // disconnected => finish thread operation
+                    qDebug() << "RTLTCP: socket read error:" << strerror(WSAGetLastError());
+                    goto worker_exit;
+                }
+                else
+                {
+                    qDebug() << "RTLTCP: socket read error:" << strerror(WSAGetLastError());
+                }
+#else
                 if ((EAGAIN == errno) || (EINTR == errno))
                 {
                     continue;
@@ -591,6 +612,7 @@ void RtlTcpWorker::run()
                 {
                     qDebug() << "RTLTCP: socket read error:" << strerror(errno);
                 }
+#endif
             }
             else
             {
