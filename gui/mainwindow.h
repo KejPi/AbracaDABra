@@ -108,6 +108,7 @@ private:
     bool fileLooping = false;
     bool deviceChangeRequested = false;
     bool expertMode = false;
+    bool exitRequested = false;
     uint32_t frequency = 0;
     DabSId SId;
     uint32_t SCIdS = 0;

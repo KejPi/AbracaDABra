@@ -343,13 +343,33 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    if (0 == frequency)
+    {  // in idle
+        qDebug() << Q_FUNC_INFO << "requesting exit";
+
+        saveSettings();
+
+        emit exit();
+        event->accept();
+    }
+    else
+    {
+        qDebug() << Q_FUNC_INFO << "going to IDLE";
+        exitRequested = true;
+        emit serviceRequest(0,0,0);
+        event->ignore();
+    }
+
+/*
     saveSettings();
 
     qDebug() << Q_FUNC_INFO << "stopping all processing";
+
     emit serviceRequest(0,0,0);
     //QThread::sleep(1);
     emit exit();
     event->accept();
+*/
 }
 
 
@@ -633,7 +653,13 @@ void MainWindow::tuneFinished(uint32_t freq)
         }
     }
     else
-    {   // this can only happen when device is changed
+    {   // this can only happen when device is changed, or ehen exit is requested
+        if (exitRequested)
+        {   // processing in IDLE, close window
+            close();
+            return;
+        }
+
         ui->frequencyLabel->setText("");
         isPlaying = false;
         setupDialog->enableFileSelection(true);
