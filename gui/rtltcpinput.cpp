@@ -1,5 +1,6 @@
 #include <QDir>
 #include <QDebug>
+#include <poll.h>
 
 #include "rtltcpinput.h"
 
@@ -267,7 +268,19 @@ void RtlTcpInput::openDevice()
     } dongleInfo;
 
     // get information about RTL stick
-    ::recv(sock, (char *) &dongleInfo, sizeof(dongleInfo), 0);
+    // ::recv(sock, (char *) &dongleInfo, sizeof(dongleInfo), 0) ;
+    struct pollfd fd;
+    fd.fd = sock;
+    fd.events = POLLIN;
+    if (poll(&fd, 1, 2000) > 0)
+    {
+        ::recv(sock, (char *) &dongleInfo, sizeof(dongleInfo), 0);
+    }
+    else
+    {   // -1 is error, 0 is timeout
+        qDebug() << "Unable to get RTL dongle infomation";
+        return;
+    }
 
     // Convert the byte order
     dongleInfo.tunerType = ntohl(dongleInfo.tunerType);
