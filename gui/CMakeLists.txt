@@ -237,6 +237,8 @@ add_executable(${TARGET}
     rtlsdrinput.cpp
     rtltcpinput.h
     rtltcpinput.cpp
+    rarttcpinput.h
+    rarttcpinput.cpp
     dldecoder.h
     dldecoder.cpp
     motdecoder.h
