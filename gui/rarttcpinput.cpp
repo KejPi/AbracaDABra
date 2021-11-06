@@ -132,9 +132,9 @@ void RartTcpInput::openDevice()
     if (s != 0)
     {
 #if defined(_WIN32)
-        qDebug() << "RTLTCP: getaddrinfo error:" << gai_strerrorA(s);
+        qDebug() << "RARTTCP: getaddrinfo error:" << gai_strerrorA(s);
 #else
-        qDebug() << "RTLTCP: getaddrinfo error:" << gai_strerror(s);
+        qDebug() << "RARTTCP: getaddrinfo error:" << gai_strerror(s);
 #endif
         return;
     }
@@ -169,11 +169,11 @@ void RartTcpInput::openDevice()
 #endif
         if (res != 0)
         {
-            qDebug() << "RTLTCP: Failed to put socket into non-blocking mode with error: " << res;
+            qDebug() << "RARTTCP: Failed to put socket into non-blocking mode with error: " << res;
         }
 
         struct sockaddr_in *sa = (struct sockaddr_in *) rp->ai_addr;
-        qDebug() << "RTLTCP: Try to connect to: " << inet_ntoa(sa->sin_addr);
+        qDebug() << "RARTTCP: Try to connect to: " << inet_ntoa(sa->sin_addr);
         ::connect(sfd, rp->ai_addr, rp->ai_addrlen);
 
         // set the socket back in blocking mode
@@ -185,7 +185,7 @@ void RartTcpInput::openDevice()
 #endif
         if (res != 0)
         {
-            qDebug() << "RTLTCP: Failed to put socket into blocking mode with error: " << res;
+            qDebug() << "RARTTCP: Failed to put socket into blocking mode with error: " << res;
         }
 
         fd_set Write;
@@ -212,7 +212,7 @@ void RartTcpInput::openDevice()
 #endif
             if(error > 0 && res == 0)
             {
-                qDebug() << "RTLTCP: Connection failed: \"" << strerror(error) << "\"";
+                qDebug() << "RARTTCP: Connection failed: \"" << strerror(error) << "\"";
             }
             else
             {
@@ -222,7 +222,7 @@ void RartTcpInput::openDevice()
         }
 #else
         struct sockaddr_in *sa = (struct sockaddr_in *) rp->ai_addr;
-        qDebug() << "RTLTCP: Trying to connect to:" << inet_ntoa(sa->sin_addr);
+        qDebug() << "RARTTCP: Trying to connect to:" << inet_ntoa(sa->sin_addr);
         if (0 == ::connect(sfd, rp->ai_addr, rp->ai_addrlen))
         {   // connected
             sock = sfd;
@@ -428,7 +428,7 @@ void RartTcpWorker::run()
             ssize_t ret = ::recv(sock, (char *) bufferIQ+read, RARTTCP_CHUNK_SIZE - read, 0);
             if (0 == ret)
             {   // disconnected => finish thread operation
-                qDebug() << Q_FUNC_INFO << "RTLTCP: socket disconnected";
+                qDebug() << Q_FUNC_INFO << "RARTTCP: socket disconnected";
                 goto worker_exit;
             }
             else if (-1 == ret)
@@ -441,17 +441,17 @@ void RartTcpWorker::run()
                 else if (WSAECONNABORTED == WSAGetLastError())
                 {   // disconnected => finish thread operation
                     // when socket is diconnected under Win, recv returns -1 but error code is 0
-                    qDebug() << Q_FUNC_INFO << "RTLTCP: socket disconnected";
+                    qDebug() << Q_FUNC_INFO << "RARTTCP: socket disconnected";
                     goto worker_exit;
                 }
                 else if ((WSAECONNRESET == WSAGetLastError()) || (WSAEBADF == WSAGetLastError()))
                 {   // disconnected => finish thread operation
-                    qDebug() << "RTLTCP: socket read error:" << strerror(WSAGetLastError());
+                    qDebug() << "RARTTCP: socket read error:" << strerror(WSAGetLastError());
                     goto worker_exit;
                 }
                 else
                 {
-                    qDebug() << "RTLTCP: socket read error:" << strerror(WSAGetLastError());
+                    qDebug() << "RARTTCP: socket read error:" << strerror(WSAGetLastError());
                 }
 #else
                 if ((EAGAIN == errno) || (EINTR == errno))
@@ -465,7 +465,7 @@ void RartTcpWorker::run()
                 }
                 else
                 {
-                    qDebug() << "RTLTCP: socket read error:" << strerror(errno);
+                    qDebug() << "RARTTCP: socket read error:" << strerror(errno);
                 }
 #endif
             }
@@ -526,33 +526,11 @@ void RartTcpWorker::dumpBuffer(unsigned char *buf, uint32_t len)
 
 void rarttcpCb(unsigned char *buf, uint32_t len, void * ctx)
 {
-#if 1
-#if (RTLTCP_DOC_ENABLE > 0)
-    int_fast32_t sumI = 0;
-    int_fast32_t sumQ = 0;
-#define DC_C 0.05
-#endif
-
-#if (RTLTCP_AGC_ENABLE > 0)
-    int maxVal = 0;
-#define LEV_CATT 0.1
-#define LEV_CREL 0.0001
-#endif
-
-    RartTcpWorker * rtlTcpWorker = static_cast<RartTcpWorker *>(ctx);
-    if (rtlTcpWorker->isDumpingIQ())
+    RartTcpWorker * rartTcpWorker = static_cast<RartTcpWorker *>(ctx);
+    if (rartTcpWorker->isDumpingIQ())
     {
-        rtlTcpWorker->dumpBuffer(buf, len);
+        rartTcpWorker->dumpBuffer(buf, len);
     }
-
-    // retrieving memories
-#if (RTLTCP_DOC_ENABLE > 0)
-    float dcI = rtlTcpWorker->dcI;
-    float dcQ = rtlTcpWorker->dcQ;
-#endif
-#if (RTLTCP_AGC_ENABLE > 0)
-    float agcLev = rtlTcpWorker->agcLev;
-#endif
 
     // len is number of I and Q samples
     // get FIFO space
@@ -588,43 +566,7 @@ void rarttcpCb(unsigned char *buf, uint32_t len, void * ctx)
         float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
         for (uint64_t k=0; k<len; k++)
         {   // convert to float
-#if ((RTLTCP_DOC_ENABLE == 0) && ((RTLTCP_AGC_ENABLE == 0)))
             *outPtr++ = float(*inPtr++ - 128);  // I or Q
-#else // ((RTLTCP_DOC_ENABLE == 0) && ((RTLTCP_AGC_ENABLE == 0)))
-            int_fast8_t tmp = *inPtr++ - 128; // I or Q
-
-#if (RTLTCP_AGC_ENABLE > 0)
-            int_fast8_t absTmp = abs(tmp);
-
-            // catch maximum value (used to avoid overflow)
-            if (absTmp > maxVal)
-            {
-                maxVal = absTmp;
-            }
-
-            // calculate signal level (rectifier, fast attack slow release)
-            float c = LEV_CREL;
-            if (absTmp > agcLev)
-            {
-                c = LEV_CATT;
-            }
-            agcLev = c * absTmp + agcLev - c * agcLev;
-#endif  // (RTLTCP_AGC_ENABLE > 0)
-
-#if (RTLTCP_DOC_ENABLE > 0)
-            // subtract DC
-            if (k & 0x1)
-            {   // Q
-                sumQ += tmp;
-                *outPtr++ = float(tmp) - dcQ;
-            }
-            else
-            {  // I
-                sumI += tmp;
-                *outPtr++ = float(tmp) - dcI;
-            }
-#endif  // RTLTCP_DOC_ENABLE
-#endif  // ((RTLTCP_DOC_ENABLE == 0) && ((RTLTCP_AGC_ENABLE == 0)))
         }
         inputBuffer.head = (inputBuffer.head + len*sizeof(float));
     }
@@ -636,109 +578,16 @@ void rarttcpCb(unsigned char *buf, uint32_t len, void * ctx)
         float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
         for (uint64_t k=0; k<samplesTillEnd; ++k)
         {   // convert to float
-#if ((RTLTCP_DOC_ENABLE == 0) && ((RTLTCP_AGC_ENABLE == 0)))
             *outPtr++ = float(*inPtr++ - 128);  // I or Q
-#else // ((RTLTCP_DOC_ENABLE == 0) && ((RTLTCP_AGC_ENABLE == 0)))
-            int_fast8_t tmp = *inPtr++ - 128; // I or Q
-
-#if (RTLTCP_AGC_ENABLE > 0)
-            int_fast8_t absTmp = abs(tmp);
-
-            // catch maximum value (used to avoid overflow)
-            if (absTmp > maxVal)
-            {
-                maxVal = absTmp;
-            }
-
-            // calculate signal level (rectifier, fast attack slow release)
-            float c = LEV_CREL;
-            if (absTmp > agcLev)
-            {
-                c = LEV_CATT;
-            }
-            agcLev = c * absTmp + agcLev - c * agcLev;
-#endif  // (RTLTCP_AGC_ENABLE > 0)
-
-#if (RTLTCP_DOC_ENABLE > 0)
-            // subtract DC
-            if (k & 0x1)
-            {   // Q
-                sumQ += tmp;
-                *outPtr++ = float(tmp) - dcQ;
-            }
-            else
-            {  // I
-                sumI += tmp;
-                *outPtr++ = float(tmp) - dcI;
-            }
-#endif  // RTLTCP_DOC_ENABLE
-#endif  // ((RTLTCP_DOC_ENABLE == 0) && ((RTLTCP_AGC_ENABLE == 0)))
         }
 
         outPtr = (float *)(inputBuffer.buffer);
         for (uint64_t k=0; k<len-samplesTillEnd; ++k)
         {   // convert to float
-#if ((RTLTCP_DOC_ENABLE == 0) && ((RTLTCP_AGC_ENABLE == 0)))
             *outPtr++ = float(*inPtr++ - 128);  // I or Q
-#else // ((RTLTCP_DOC_ENABLE == 0) && ((RTLTCP_AGC_ENABLE == 0)))
-            int_fast8_t tmp = *inPtr++ - 128; // I or Q
-
-#if (RTLTCP_AGC_ENABLE > 0)
-            int_fast8_t absTmp = abs(tmp);
-
-            // catch maximum value (used to avoid overflow)
-            if (absTmp > maxVal)
-            {
-                maxVal = absTmp;
-            }
-
-            // calculate signal level (rectifier, fast attack slow release)
-            float c = LEV_CREL;
-            if (absTmp > agcLev)
-            {
-                c = LEV_CATT;
-            }
-            agcLev = c * absTmp + agcLev - c * agcLev;
-#endif  // (RTLTCP_AGC_ENABLE > 0)
-
-#if (RTLTCP_DOC_ENABLE > 0)
-            // subtract DC
-            if (k & 0x1)
-            {   // Q
-                sumQ += tmp;
-                *outPtr++ = float(tmp) - dcQ;
-            }
-            else
-            {  // I
-                sumI += tmp;
-                *outPtr++ = float(tmp) - dcI;
-            }
-#endif  // RTLTCP_DOC_ENABLE
-#endif  // ((RTLTCP_DOC_ENABLE == 0) && ((RTLTCP_AGC_ENABLE == 0)))
         }
         inputBuffer.head = (len-samplesTillEnd)*sizeof(float);
-
-#if RTLTCP_DOC_ENABLE
-        //qDebug() << dcI << dcQ;
-#endif
-#if (RTLTCP_AGC_ENABLE > 0)
-        //qDebug() << agcLev << maxVal;
-#endif
-
     }
-
-#if (RTLTCP_DOC_ENABLE > 0)
-    // calculate correction values for next input buffer
-    rtlTcpWorker->dcI = sumI * DC_C / (len >> 1) + dcI - DC_C * dcI;
-    rtlTcpWorker->dcQ = sumQ * DC_C / (len >> 1) + dcQ - DC_C * dcQ;
-#endif
-
-#if (RTLTCP_AGC_ENABLE > 0)
-    // store memory
-    rtlTcpWorker->agcLev = agcLev;
-
-    rtlTcpWorker->emitAgcLevel(agcLev, maxVal);
-#endif
 
 #if INPUT_USE_PTHREADS
     pthread_mutex_lock(&inputBuffer.countMutex);
@@ -751,7 +600,6 @@ void rarttcpCb(unsigned char *buf, uint32_t len, void * ctx)
     inputBuffer.active = (len == INPUT_CHUNK_SAMPLES);
     inputBuffer.countChanged.wakeAll();
     inputBuffer.mutex.unlock();
-#endif
 #endif
 }
 
