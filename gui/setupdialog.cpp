@@ -20,6 +20,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->inputCombo->insertItem(int(InputDeviceId::UNDEFINED), "No device");
     ui->inputCombo->insertItem(int(InputDeviceId::RTLSDR), "RTL SDR");
     ui->inputCombo->insertItem(int(InputDeviceId::RTLTCP), "RTL TCP");
+    ui->inputCombo->insertItem(int(InputDeviceId::RARTTCP), "RaRT TCP");
     ui->inputCombo->insertItem(int(InputDeviceId::RAWFILE), "Raw file");
     ui->inputCombo->setCurrentIndex(-1);  // no selection
     resetFilename();
@@ -93,6 +94,11 @@ void SetupDialog::on_inputCombo_currentIndexChanged(int index)
         ui->rtlsdrFrame->setVisible(true);
         break;
     case InputDeviceId::RTLTCP:
+        ui->rawFileFrame->setVisible(false);
+        ui->rtlsdrFrame->setVisible(true);
+        break;
+    case InputDeviceId::RARTTCP:
+#warning "Fix this"
         ui->rawFileFrame->setVisible(false);
         ui->rtlsdrFrame->setVisible(true);
         break;

@@ -295,6 +295,7 @@ void RartTcpInput::openDevice()
             }
         }
 #endif
+        qDebug() << "Found RaRT TCP server";
 
         // need to create worker, server is pushing samples
         worker = new RartTcpWorker(sock, this);

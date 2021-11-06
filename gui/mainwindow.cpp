@@ -1071,6 +1071,56 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         }
     }
     break;
+    case InputDeviceId::RARTTCP:
+    {
+        inputDevice = new RartTcpInput();
+
+        // signals have to be connected before calling isAvailable
+        // RTL_TCP is opened immediately and starts receiving data
+
+        // HMI
+        connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
+
+        // setup dialog
+        // nothing at the moment
+
+        // tuning procedure
+        connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+        connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+        if (inputDevice->isAvailable())
+        {  // rtl tcp is available
+            inputDeviceId = InputDeviceId::RARTTCP;
+            //setupDialog->enableRtlSdrInput(true);
+            setupDialog->setInputDevice(inputDeviceId); // this emits device change
+
+            // tuning procedure
+            //connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+            //connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+            // HMI
+            //connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
+
+            // setup dialog
+            //connect(dynamic_cast<RartTcpInput*>(inputDevice), &RartTcpInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
+            //connect(setupDialog, &SetupDialog::setGainMode, dynamic_cast<RartTcpInput*>(inputDevice), &RartTcpInput::setGainMode);
+            //connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RartTcpInput*>(inputDevice), &RartTcpInput::setDAGC);
+
+            static_cast<RartTcpInput *>(inputDevice)->openDevice();
+
+            // enable band scan
+            bandScanAct->setEnabled(true);
+        }
+        else
+        {
+            delete inputDevice;
+            inputDevice = nullptr;
+            inputDeviceId = InputDeviceId::UNDEFINED;
+            //setupDialog->enableRtlSdrInput(false);
+            setupDialog->setInputDevice(inputDeviceId); // this emits device change
+        }
+    }
+    break;
     case InputDeviceId::RAWFILE:
     {
         inputDevice = new RawFileInput();

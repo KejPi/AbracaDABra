@@ -17,6 +17,7 @@
 #include "rawfileinput.h"
 #include "rtlsdrinput.h"
 #include "rtltcpinput.h"
+#include "rarttcpinput.h"
 #include "radiocontrol.h"
 #include "dldecoder.h"
 #include "motdecoder.h"
