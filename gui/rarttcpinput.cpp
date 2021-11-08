@@ -549,27 +549,27 @@ void rarttcpCb(unsigned char *buf, uint32_t len, void * ctx)
     inputBuffer.mutex.unlock();
 #endif
 
-    if ((INPUT_FIFO_SIZE - count) < len*sizeof(float))
+    uint32_t numSamples = len >> 1;  // number of I and Q samples, one I or Q sample is 2 bytes (int16)
+    if ((INPUT_FIFO_SIZE - count) < numSamples*sizeof(float))
     {
-        qDebug() << Q_FUNC_INFO << "dropping" << len << "bytes...";
+        qDebug() << Q_FUNC_INFO << "dropping" << numSamples << "samples...";
         return;
     }
 
-    // input samples are IQ = [uint8_t uint8_t]
+    // input samples are IQ = [int16_t int16_t]
     // going to transform them to [float float] = float _Complex
-    // on uint8_t will be transformed to one float
 
     // there is enough room in buffer
     uint64_t bytesTillEnd = INPUT_FIFO_SIZE - inputBuffer.head;
-    uint8_t * inPtr = buf;
-    if (bytesTillEnd >= len*sizeof(float))
+    int16_t * inPtr = (int16_t *) buf;
+    if (bytesTillEnd >= numSamples*sizeof(float))
     {
         float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
-        for (uint64_t k=0; k<len; k++)
+        for (uint64_t k=0; k<numSamples; k++)
         {   // convert to float
-            *outPtr++ = float(*inPtr++ - 128);  // I or Q
+            *outPtr++ = float(*inPtr++);  // I or Q
         }
-        inputBuffer.head = (inputBuffer.head + len*sizeof(float));
+        inputBuffer.head = (inputBuffer.head + numSamples*sizeof(float));
     }
     else
     {
@@ -579,20 +579,20 @@ void rarttcpCb(unsigned char *buf, uint32_t len, void * ctx)
         float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
         for (uint64_t k=0; k<samplesTillEnd; ++k)
         {   // convert to float
-            *outPtr++ = float(*inPtr++ - 128);  // I or Q
+            *outPtr++ = float(*inPtr++);  // I or Q
         }
 
         outPtr = (float *)(inputBuffer.buffer);
-        for (uint64_t k=0; k<len-samplesTillEnd; ++k)
+        for (uint64_t k=0; k<numSamples-samplesTillEnd; ++k)
         {   // convert to float
-            *outPtr++ = float(*inPtr++ - 128);  // I or Q
+            *outPtr++ = float(*inPtr++);  // I or Q
         }
-        inputBuffer.head = (len-samplesTillEnd)*sizeof(float);
+        inputBuffer.head = (numSamples-samplesTillEnd)*sizeof(float);
     }
 
 #if INPUT_USE_PTHREADS
     pthread_mutex_lock(&inputBuffer.countMutex);
-    inputBuffer.count = inputBuffer.count + len*sizeof(float);
+    inputBuffer.count = inputBuffer.count + numSamples*sizeof(float);
     pthread_cond_signal(&inputBuffer.countCondition);
     pthread_mutex_unlock(&inputBuffer.countMutex);
 #else
