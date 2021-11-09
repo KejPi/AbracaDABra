@@ -386,6 +386,8 @@ void RartTcpInput::dumpToFileStop()
 
 void RartTcpInput::sendCommand(const RartTcpCommand & cmd, uint32_t param)
 {
+    qDebug() << Q_FUNC_INFO;
+
     if (deviceUnplugged)
     {
         return;
