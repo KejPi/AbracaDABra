@@ -1167,8 +1167,10 @@ void MainWindow::loadSettings()
         // if input device has switched to what was stored and it is RTLSDR or RTLTCP
         setupDialog->setInputDevice(static_cast<InputDeviceId>(inDevice));
         if ((static_cast<InputDeviceId>(inDevice) == inputDeviceId)
-                && ( (InputDeviceId::RTLSDR == inputDeviceId) || (InputDeviceId::RTLTCP == inputDeviceId)))
-        {   // channel is only restored for RTL SDR and RTL TCP at the moment
+                && (    (InputDeviceId::RTLSDR == inputDeviceId)
+                     || (InputDeviceId::RTLTCP == inputDeviceId)
+                     || (InputDeviceId::RARTTCP == inputDeviceId)))
+        {   // channel is only restored for RTL SDR and RTL/RART TCP at the moment
             int sid = settings.value("SID", 0).toInt();
             int scids = settings.value("SCIdS", 0).toInt();
             uint64_t id = ServiceListItem::getId(sid, scids);
