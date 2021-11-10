@@ -1,6 +1,5 @@
 #include <QDir>
 #include <QDebug>
-#include <poll.h>
 
 #include "rarttcpinput.h"
 
@@ -251,7 +250,42 @@ void RartTcpInput::openDevice()
     } dongleInfo;
 
     // get information about RTL stick
-    // ::recv(sock, (char *) &dongleInfo, sizeof(dongleInfo), 0) ;
+    // get information about RTL stick
+#if defined(_WIN32)
+#if (_WIN32_WINNT >= 0x0600)
+    struct pollfd  fd;
+    fd.fd = sock;
+    fd.events = POLLIN;
+    if (WSAPoll(&fd, 1, 2000) > 0)
+    {
+        ::recv(sock, (char *) &dongleInfo, sizeof(dongleInfo), 0);
+    }
+    else
+    {   // -1 is error, 0 is timeout
+        qDebug() << "Unable to get RTL dongle infomation";
+        return;
+    }
+#else
+    // poll API does not exist :-(
+    fd_set readFd;
+    FD_ZERO(&readFd);
+    FD_SET(sock, &readFd);
+
+    // check if the socket is ready
+    TIMEVAL Timeout;
+    Timeout.tv_sec = 2;
+    Timeout.tv_usec = 0;
+    if (::select(sock+1, nullptr, &readFd, nullptr, &Timeout) > 0)
+    {
+        ::recv(sock, (char *) &dongleInfo, sizeof(dongleInfo), 0);
+    }
+    else
+    {   // -1 is error, 0 is timeout
+        qDebug() << "Unable to get RTL dongle infomation";
+        return;
+    }
+#endif
+#else
     struct pollfd fd;
     fd.fd = sock;
     fd.events = POLLIN;
@@ -264,6 +298,7 @@ void RartTcpInput::openDevice()
         qDebug() << "Unable to get RTL dongle infomation";
         return;
     }
+#endif
 
     // Convert the byte order
     dongleInfo.tunerType = ntohl(dongleInfo.tunerType);

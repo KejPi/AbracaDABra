@@ -20,6 +20,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <poll.h>
 
 #define SOCKET int
 #define INVALID_SOCKET (-1)
