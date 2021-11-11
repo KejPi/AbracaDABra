@@ -242,7 +242,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
         }
         else
         {   // not enough samples ==> inserting silence
-            qDebug("Muted: Inserting silence [%lu ms]", nBufferFrames/m_sampleRate_kHz);
+            //qDebug("Muted: Inserting silence [%lu ms]", nBufferFrames/m_sampleRate_kHz);
             memset(outputBuffer, 0, bytesToRead);
 
             // done
