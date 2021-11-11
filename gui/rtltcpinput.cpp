@@ -41,6 +41,8 @@ static SocketInitialiseWrapper socketInitialiseWrapper;
 
 RtlTcpInput::RtlTcpInput(QObject *parent) : InputDevice(parent)
 {
+    id = InputDeviceId::RTLTCP;
+
     deviceUnplugged = true;
     gainList = nullptr;
     dumpFile = nullptr;
@@ -535,23 +537,23 @@ void RtlTcpInput::readThreadStopped()
     deviceUnplugged = true;
 }
 
-void RtlTcpInput::dumpToFileStart(const QString & filename)
+void RtlTcpInput::startDumpToFile(const QString & filename)
 {
     dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "w");
     if (nullptr != dumpFile)
     {
         worker->dumpToFileStart(dumpFile);
-        emit dumpToFileState(true);
+        emit dumpingToFile(true);
     }
 }
 
-void RtlTcpInput::dumpToFileStop()
+void RtlTcpInput::stopDumpToFile()
 {
     worker->dumpToFileStop();
 
     fclose(dumpFile);
 
-    emit dumpToFileState(false);
+    emit dumpingToFile(false);
 }
 
 void RtlTcpInput::sendCommand(const RtlTcpCommand & cmd, uint32_t param)

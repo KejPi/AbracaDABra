@@ -52,18 +52,25 @@ enum class GainMode {
 
 class InputDevice : public QObject
 {
-    Q_OBJECT
+    Q_OBJECT    
 public:
     InputDevice(QObject *parent = nullptr);;
-
     virtual bool isAvailable() = 0;
+    const InputDeviceId getDeviceId() const { return id; }
+
 public slots:
     virtual void tune(uint32_t freq) = 0;
-    virtual void stop() = 0;
+    virtual void stop() = 0;    
+    virtual void startDumpToFile(const QString & filename)  { /* do nothing by default */ };
+    virtual void stopDumpToFile() { /* do nothing by default */ };
 
 signals:
     void deviceReady();
     void tuned(uint32_t freq);
+    void dumpingToFile(bool running);
+
+protected:
+    InputDeviceId id = InputDeviceId::UNDEFINED;
 };
 
 extern fifo_t inputBuffer;

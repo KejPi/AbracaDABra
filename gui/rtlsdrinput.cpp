@@ -7,6 +7,8 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx);
 
 RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
 {
+    id = InputDeviceId::RTLSDR;
+
     device = nullptr;
     deviceUnplugged = true;
     deviceRunning = false;
@@ -288,23 +290,23 @@ void RtlSdrInput::readThreadStopped()
     }
 }
 
-void RtlSdrInput::dumpToFileStart(const QString & filename)
+void RtlSdrInput::startDumpToFile(const QString & filename)
 {
     dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "w");
     if (nullptr != dumpFile)
     {
         worker->dumpToFileStart(dumpFile);
-        emit dumpToFileState(true);
+        emit dumpingToFile(true);
     }
 }
 
-void RtlSdrInput::dumpToFileStop()
+void RtlSdrInput::stopDumpToFile()
 {
     worker->dumpToFileStop();
 
     fclose(dumpFile);
 
-    emit dumpToFileState(false);
+    emit dumpingToFile(false);
 }
 
 RtlSdrWorker::RtlSdrWorker(struct rtlsdr_dev *d, QObject *parent) : QThread(parent)

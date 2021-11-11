@@ -115,12 +115,12 @@ public slots:
     void setGainMode(GainMode mode, int gainIdx = 0);
     void setDAGC(bool ena);
 
-    void dumpToFileStart(const QString & filename);
-    void dumpToFileStop();
+    void startDumpToFile(const QString & filename) override;
+    void stopDumpToFile() override;
 
 signals:
     void gainListAvailable(const QList<int> * pList);
-    void dumpToFileState(bool ena);
+
 private:    
     uint32_t frequency;
     bool deviceUnplugged;

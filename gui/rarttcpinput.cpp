@@ -29,6 +29,8 @@ static SocketInitialiseWrapper socketInitialiseWrapper;
 
 RartTcpInput::RartTcpInput(QObject *parent) : InputDevice(parent)
 {
+    id = InputDeviceId::RARTTCP;
+
     deviceUnplugged = true;
     dumpFile = nullptr;
     worker = nullptr;
@@ -400,23 +402,23 @@ void RartTcpInput::readThreadStopped()
     deviceUnplugged = true;
 }
 
-void RartTcpInput::dumpToFileStart(const QString & filename)
+void RartTcpInput::startDumpToFile(const QString & filename)
 {
     dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "w");
     if (nullptr != dumpFile)
     {
         worker->dumpToFileStart(dumpFile);
-        emit dumpToFileState(true);
+        emit dumpingToFile(true);
     }
 }
 
-void RartTcpInput::dumpToFileStop()
+void RartTcpInput::stopDumpToFile()
 {
     worker->dumpToFileStop();
 
     fclose(dumpFile);
 
-    emit dumpToFileState(false);
+    emit dumpingToFile(false);
 }
 
 void RartTcpInput::sendCommand(const RartTcpCommand & cmd, uint32_t param)

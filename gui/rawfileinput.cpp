@@ -6,6 +6,8 @@
 
 RawFileInput::RawFileInput(QObject *parent) : InputDevice(parent)
 {
+    id = InputDeviceId::RAWFILE;
+
     worker = nullptr;
     inputTimer = nullptr;
     inputFile = nullptr;    

@@ -1360,13 +1360,24 @@ void MainWindow::showEnsembleInfo()
     connect(radioControl, &RadioControl::freqOffset, ensembleInfoDialog, &EnsembleInfoDialog::updateFreqOffset, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::ensembleConfiguration, ensembleInfoDialog, &EnsembleInfoDialog::refreshEnsembleConfiguration, Qt::QueuedConnection);
 
-    if (dynamic_cast<RtlSdrInput*>(inputDevice))
+
+    if ((InputDeviceId::RTLSDR == inputDevice->getDeviceId())
+     || (InputDeviceId::RTLTCP == inputDevice->getDeviceId())
+     || (InputDeviceId::RARTTCP == inputDevice->getDeviceId()))
     {
-        connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::dumpToFileStart);
-        connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::dumpToFileStop);
-        connect(static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::dumpToFileState, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);        
+        connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, inputDevice, &InputDevice::startDumpToFile);
+        connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, inputDevice, &InputDevice::stopDumpToFile);
+        connect(inputDevice, &InputDevice::dumpingToFile, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
         ensembleInfoDialog->enableDumpToFile(true);
     }
+
+//    if (dynamic_cast<RtlSdrInput*>(inputDevice))
+//    {
+//        connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::startDumpToFile);
+//        connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::stopDumpToFile);
+//        connect(static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::dumpingToFile, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
+//        ensembleInfoDialog->enableDumpToFile(true);
+//    }
 
     ensembleInfoDialog->show();
     ensembleInfoDialog->raise();

@@ -88,11 +88,8 @@ public slots:
     void stop() override;
     void openDevice();
 
-    void dumpToFileStart(const QString & filename);
-    void dumpToFileStop();
-
-signals:
-    void dumpToFileState(bool ena);
+    void startDumpToFile(const QString & filename) override;
+    void stopDumpToFile() override;
 
 private:    
     uint32_t frequency;
