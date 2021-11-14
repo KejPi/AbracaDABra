@@ -163,28 +163,6 @@ void SetupDialog::setInputDevice(const InputDeviceId & inputDevice)
     ui->inputCombo->setCurrentIndex(int(inputDevice));
 }
 
-void SetupDialog::enableRtlSdrInput(bool ena)
-{
-    QStandardItemModel *model = qobject_cast<QStandardItemModel *>(ui->inputCombo->model());
-    Q_ASSERT(model != nullptr);
-
-    QStandardItem *item = model->item(int(InputDeviceId::RTLSDR));
-    if (ena)
-    {
-        item->setFlags(item->flags() | Qt::ItemIsEnabled);
-    }
-    else
-    {
-        item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
-        int currentIdx = ui->inputCombo->currentIndex();
-        if (int(InputDeviceId::RTLSDR) == currentIdx)
-        {
-            currentIdx = (currentIdx + 1) % ui->inputCombo->count();
-            ui->inputCombo->setCurrentIndex(currentIdx);
-        }
-    }
-}
-
 void SetupDialog::on_loopCheckbox_stateChanged(int state)
 {
     emit fileLoopingEnabled(Qt::Checked == Qt::CheckState(state));

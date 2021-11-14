@@ -1010,7 +1010,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         if (inputDevice->isAvailable())
         {  // rtl sdr is available
             inputDeviceId = InputDeviceId::RTLSDR;
-            setupDialog->enableRtlSdrInput(true);
             setupDialog->setInputDevice(inputDeviceId); // this emits device change
 
             // tuning procedure
@@ -1041,7 +1040,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             delete inputDevice;
             inputDevice = nullptr;
             inputDeviceId = InputDeviceId::UNDEFINED;
-            setupDialog->enableRtlSdrInput(false);
             setupDialog->setInputDevice(inputDeviceId); // this emits device change
         }
     }
@@ -1069,7 +1067,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         if (inputDevice->isAvailable())
         {  // rtl tcp is available
             inputDeviceId = InputDeviceId::RTLTCP;
-            //setupDialog->enableRtlSdrInput(true);
             setupDialog->setInputDevice(inputDeviceId); // this emits device change
 
             static_cast<RtlTcpInput *>(inputDevice)->openDevice();
@@ -1087,7 +1084,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             delete inputDevice;
             inputDevice = nullptr;
             inputDeviceId = InputDeviceId::UNDEFINED;
-            //setupDialog->enableRtlSdrInput(false);
             setupDialog->setInputDevice(inputDeviceId); // this emits device change
         }
     }
@@ -1113,7 +1109,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         if (inputDevice->isAvailable())
         {  // rtl tcp is available
             inputDeviceId = InputDeviceId::RARTTCP;
-            //setupDialog->enableRtlSdrInput(true);
             setupDialog->setInputDevice(inputDeviceId); // this emits device change
 
             static_cast<RartTcpInput *>(inputDevice)->openDevice();
@@ -1130,7 +1125,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             delete inputDevice;
             inputDevice = nullptr;
             inputDeviceId = InputDeviceId::UNDEFINED;
-            //setupDialog->enableRtlSdrInput(false);
             setupDialog->setInputDevice(inputDeviceId); // this emits device change
         }
     }
@@ -1139,7 +1133,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     {
         inputDevice = new RawFileInput();
         inputDeviceId = InputDeviceId::RAWFILE;
-        setupDialog->enableRtlSdrInput(true);
         setupDialog->setInputDevice(inputDeviceId); // this emits device change
 
         // tuning procedure

@@ -28,7 +28,6 @@ public:
 
 public slots:
     void setGainValues(const QList<int> * pList);
-    void enableRtlSdrInput(bool ena);
     void setInputDevice(const InputDeviceId & inputDevice);
     void resetFilename();
     void enableFileSelection(bool ena);
