@@ -359,8 +359,6 @@ void RtlSdrWorker::run()
     dcI = 0.0;
     dcQ = 0.0;
     agcLev = 0.0;
-
-
     wdogIsRunningFlag = false;  // first callback sets it to true
 
     rtlsdr_read_async(device, rtlsdrCb, (void*)this, 0, INPUT_CHUNK_IQ_SAMPLES*2*sizeof(uint8_t));

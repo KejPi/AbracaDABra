@@ -49,6 +49,10 @@ RtlTcpInput::RtlTcpInput(QObject *parent) : InputDevice(parent)
     worker = nullptr;
     frequency = 0;
     sock = INVALID_SOCKET;
+
+#if (RTLTCP_WDOG_ENABLE)
+    connect(&watchDogTimer, &QTimer::timeout, this, &RtlTcpInput::watchDogTimeout);
+#endif
 }
 
 RtlTcpInput::~RtlTcpInput()
@@ -397,6 +401,9 @@ void RtlTcpInput::openDevice()
         connect(worker, &RtlTcpWorker::agcLevel, this, &RtlTcpInput::updateAgc, Qt::QueuedConnection);
         connect(worker, &RtlTcpWorker::finished, this, &RtlTcpInput::readThreadStopped, Qt::QueuedConnection);
         connect(worker, &RtlTcpWorker::finished, worker, &QObject::deleteLater);
+#if (RTLTCP_WDOG_ENABLE)
+        watchDogTimer.start(1000 * RTLTCP_WDOG_TIMEOUT_SEC);
+#endif
         worker->start();
 
         // device connected
@@ -443,8 +450,8 @@ void RtlTcpInput::run()
 void RtlTcpInput::stop()
 {
     if (nullptr != worker)
-    {
-        worker->catureIQ(false);
+    {        
+        worker->catureIQ(false);        
     }
 }
 
@@ -530,6 +537,10 @@ void RtlTcpInput::readThreadStopped()
 #endif
     sock = INVALID_SOCKET;
 
+#if (RTLTCP_WDOG_ENABLE)
+    watchDogTimer.stop();
+#endif
+
     deviceUnplugged = true;
 
     // fill buffer (artificially to avoid blocking of the DAB processing thread)
@@ -537,6 +548,29 @@ void RtlTcpInput::readThreadStopped()
 
     emit error(InputDeviceErrorCode::DeviceDisconnected);
 }
+
+#if (RTLTCP_WDOG_ENABLE)
+void RtlTcpInput::watchDogTimeout()
+{
+    if (nullptr != worker)
+    {
+        if (!deviceUnplugged)
+        {
+            bool isRunning = worker->isRunning();
+            if (!isRunning)
+            {  // some problem in data input
+                qDebug() << Q_FUNC_INFO << "watchdog timeout";
+                inputBuffer.fillDummy();
+                emit error(InputDeviceErrorCode::NoDataAvailable);
+            }
+        }
+    }
+    else
+    {
+        watchDogTimer.stop();
+    }
+}
+#endif
 
 void RtlTcpInput::startDumpToFile(const QString & filename)
 {
@@ -590,6 +624,7 @@ void RtlTcpWorker::run()
     dcI = 0.0;
     dcQ = 0.0;
     agcLev = 0.0;
+    wdogIsRunningFlag = false;  // first callback sets it to true
 
     // read samples
     while (INVALID_SOCKET != sock)
@@ -647,6 +682,11 @@ void RtlTcpWorker::run()
             }
         } while (RTLTCP_CHUNK_SIZE > read);
 
+#if (RTLTCP_WDOG_ENABLE)
+        // reset watchDog flag, timer sets it to true
+        wdogIsRunningFlag = true;
+#endif
+
         // full chunk is read at this point
         if (enaCaptureIQ)
         {   // process data
@@ -692,6 +732,13 @@ void RtlTcpWorker::dumpBuffer(unsigned char *buf, uint32_t len)
         fwrite(buf, 1, len, dumpFile);
     }
     fileMutex.unlock();
+}
+
+bool RtlTcpWorker::isRunning()
+{
+    bool flag = wdogIsRunningFlag;
+    wdogIsRunningFlag = false;
+    return flag;
 }
 
 void rtltcpCb(unsigned char *buf, uint32_t len, void * ctx)

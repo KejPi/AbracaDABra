@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QThread>
+#include <QTimer>
 #include <rtl-sdr.h>
 #include "inputdevice.h"
 
@@ -33,6 +34,10 @@
 #define RTLTCP_DOC_ENABLE 1    // enable DOC
 #define RTLTCP_AGC_ENABLE 1    // enable AGC
 
+#define RTLTCP_WDOG_ENABLE 1        // enable watchdog timer
+#define RTLTCP_WDOG_TIMEOUT_SEC 1   // watchdow timeout in seconds
+
+
 class RtlTcpWorker : public QThread
 {
     Q_OBJECT
@@ -41,6 +46,7 @@ public:
     void dumpToFileStart(FILE * f);
     void dumpToFileStop();
     void catureIQ(bool ena);
+    bool isRunning();
 protected:
     void run() override;
 signals:
@@ -52,7 +58,8 @@ private:
     std::atomic<bool> enaDumpToFile;
     std::atomic<bool> enaCaptureIQ;
     FILE * dumpFile;
-    QMutex fileMutex;       
+    QMutex fileMutex;
+    std::atomic<bool> wdogIsRunningFlag;
 
     // DOC memory
     float dcI = 0.0;
@@ -126,7 +133,10 @@ private:
     SOCKET sock;
 
     RtlTcpWorker * worker;
-    GainMode gainMode = GainMode::Hardware;
+#if (RTLTCP_WDOG_ENABLE)
+    QTimer watchDogTimer;
+#endif
+    GainMode gainMode = GainMode::Hardware;    
     int gainIdx;
     QList<int> * gainList;
     FILE * dumpFile;
@@ -145,6 +155,9 @@ private:
     void sendCommand(const RtlTcpCommand & cmd, uint32_t param);
 private slots:
     void readThreadStopped();
+#if (RTLTCP_WDOG_ENABLE)
+    void watchDogTimeout();
+#endif
 };
 
 
