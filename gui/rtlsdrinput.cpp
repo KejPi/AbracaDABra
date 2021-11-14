@@ -150,8 +150,8 @@ void RtlSdrInput::run()
         resetAgc();
 
         worker = new RtlSdrWorker(device, this);
-        connect(worker, &RtlSdrWorker::readExit, this, &RtlSdrInput::readThreadStopped, Qt::QueuedConnection);
         connect(worker, &RtlSdrWorker::agcLevel, this, &RtlSdrInput::updateAgc, Qt::QueuedConnection);
+        connect(worker, &RtlSdrWorker::finished, this, &RtlSdrInput::readThreadStopped, Qt::QueuedConnection);
         connect(worker, &RtlSdrWorker::finished, worker, &QObject::deleteLater);
         worker->start();
 
@@ -333,8 +333,6 @@ void RtlSdrWorker::run()
     rtlsdr_read_async(device, rtlsdrCb, (void*)this, 0, INPUT_CHUNK_IQ_SAMPLES*2*sizeof(uint8_t));
 
     qDebug() << "RTLSDRWorker thread end" << QThread::currentThreadId();
-
-    emit readExit();
 }
 
 void RtlSdrWorker::dumpToFileStart(FILE * f)

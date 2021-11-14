@@ -19,7 +19,6 @@ public:
 protected:
     void run() override;
 signals:
-    void readExit();
     void agcLevel(float level, int maxVal);
 private:
     QObject *rtlSdrPtr;
