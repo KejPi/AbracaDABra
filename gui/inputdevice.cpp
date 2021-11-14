@@ -21,7 +21,7 @@ void ComplexFifo::fillDummy()
 
     count = INPUT_FIFO_SIZE;
 
-    pthread_cond_signal(&inputBuffer.countCondition);
+    pthread_cond_signal(&countCondition);
     pthread_mutex_unlock(&countMutex);
 }
 

@@ -93,12 +93,8 @@ RtlTcpInput::~RtlTcpInput()
 void RtlTcpInput::tune(uint32_t freq)
 {
     frequency = freq;
-    if (deviceUnplugged)
-    {
-        return;
-    }
 
-    if (frequency > 0)
+    if ((frequency > 0) && (!deviceUnplugged))
     {
         run();
     }
@@ -398,8 +394,8 @@ void RtlTcpInput::openDevice()
 
         // need to create worker, server is pushing samples
         worker = new RtlTcpWorker(sock, this);
-        connect(worker, &RtlTcpWorker::readExit, this, &RtlTcpInput::readThreadStopped, Qt::QueuedConnection);
         connect(worker, &RtlTcpWorker::agcLevel, this, &RtlTcpInput::updateAgc, Qt::QueuedConnection);
+        connect(worker, &RtlTcpWorker::finished, this, &RtlTcpInput::readThreadStopped, Qt::QueuedConnection);
         connect(worker, &RtlTcpWorker::finished, worker, &QObject::deleteLater);
         worker->start();
 
@@ -535,6 +531,11 @@ void RtlTcpInput::readThreadStopped()
     sock = INVALID_SOCKET;
 
     deviceUnplugged = true;
+
+    // fill buffer (artificially to avoid blocking of the DAB processing thread)
+    inputBuffer.fillDummy();
+
+    emit error(InputDeviceErrorCode::DeviceDisconnected);
 }
 
 void RtlTcpInput::startDumpToFile(const QString & filename)
@@ -584,8 +585,6 @@ RtlTcpWorker::RtlTcpWorker(SOCKET socket, QObject *parent) : QThread(parent)
 
 void RtlTcpWorker::run()
 {
-
-
     qDebug() << "RtlTcpWorker thread start" << QThread::currentThreadId() << sock;
 
     dcI = 0.0;
@@ -658,8 +657,6 @@ void RtlTcpWorker::run()
 worker_exit:
     // single exit point
     qDebug() << "RtlTcpWorker thread end" << QThread::currentThreadId();
-
-    emit readExit();
 }
 
 void RtlTcpWorker::catureIQ(bool ena)

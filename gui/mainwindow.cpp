@@ -699,11 +699,14 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
     case InputDeviceErrorCode::DeviceDisconnected:
         timeLabel->setText("Input device disconnected");
         // tune to 0
-        ui->channelCombo->setCurrentIndex(-1);
+        //ui->channelCombo->setCurrentIndex(-1);
+        setupDialog->setInputDevice(InputDeviceId::UNDEFINED);
+        break;
     case InputDeviceErrorCode::NoDataAvailable:
         timeLabel->setText("No input data");
         // force no device
         setupDialog->setInputDevice(InputDeviceId::UNDEFINED);
+        break;
     default:
         qDebug() << Q_FUNC_INFO << "InputDevice error" << int(errCode);
     }
