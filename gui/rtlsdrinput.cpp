@@ -46,12 +46,7 @@ void RtlSdrInput::tune(uint32_t freq)
     }
 }
 
-bool RtlSdrInput::isAvailable()
-{
-    return (0 != rtlsdr_get_device_count());
-}
-
-void RtlSdrInput::openDevice()
+bool RtlSdrInput::openDevice()
 {
     int ret = 0;
 
@@ -60,7 +55,7 @@ void RtlSdrInput::openDevice()
     if (deviceCount == 0)
     {
         qDebug() << "RTLSDR: No devices found";
-        return;
+        return false;
     }
     else
     {
@@ -81,7 +76,7 @@ void RtlSdrInput::openDevice()
     if (ret < 0)
     {
         qDebug() << "RTLSDR: Opening rtl-sdr failed";
-        return;
+        return false;
     }
 
     // Set sample rate
@@ -89,20 +84,13 @@ void RtlSdrInput::openDevice()
     if (ret < 0)
     {
         qDebug() << "RTLSDR: Setting sample rate failed";
-        throw 0;
+        return false;
     }
-
-//    ret = rtlsdr_set_tuner_bandwidth(device, 1536000/2);
-//    if (ret < 0)
-//    {
-//        qDebug() << "RTLSDR: Bandwidth setting failed";
-//    }
 
     // Get tuner gains
     uint32_t gainsCount = rtlsdr_get_tuner_gains(device, NULL);
     qDebug() << "RTL_SDR: Supported gain values" << gainsCount;
     int * gains = new int[gainsCount];
-    //gains.resize(gainsCount);
     gainsCount = rtlsdr_get_tuner_gains(device, gains);
 
     gainList = new QList<int>();
@@ -119,6 +107,8 @@ void RtlSdrInput::openDevice()
     deviceUnplugged = false;
 
     emit deviceReady();
+
+    return true;
 }
 
 void RtlSdrInput::run()
@@ -126,9 +116,8 @@ void RtlSdrInput::run()
     int ret;
 
     if(deviceUnplugged)
-    {
-        openDevice();
-        if (deviceUnplugged)
+    {        
+        if (!openDevice())
         {
             return;
         }

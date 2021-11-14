@@ -111,12 +111,11 @@ class RtlTcpInput : public InputDevice
 public:
     explicit RtlTcpInput(QObject *parent = nullptr);
     ~RtlTcpInput();
-    bool isAvailable() override;
+    bool openDevice() override;
 
 public slots:
     void tune(uint32_t freq) override;
     void stop() override;
-    void openDevice();
     void setGainMode(GainMode mode, int gainIdx = 0);
     void setDAGC(bool ena);
 

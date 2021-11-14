@@ -63,7 +63,7 @@ class InputDevice : public QObject
 public:
     InputDevice(QObject *parent = nullptr);
     ~InputDevice();
-    virtual bool isAvailable() = 0;
+    virtual bool openDevice() = 0;
     const InputDeviceId getDeviceId() const { return id; }
 
 public slots:

@@ -91,31 +91,11 @@ void RartTcpInput::tune(uint32_t freq)
     }
 }
 
-bool RartTcpInput::isAvailable()
-{
-    if (deviceUnplugged)
-    {
-        openDevice();
-        if (deviceUnplugged)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
-    else
-    {
-        return true;
-    }
-}
-
-void RartTcpInput::openDevice()
+bool RartTcpInput::openDevice()
 {
     if (!deviceUnplugged)
     {   // device already opened
-        return;
+        return true;
     }
 
     struct addrinfo hints;
@@ -136,7 +116,7 @@ void RartTcpInput::openDevice()
 #else
         qDebug() << "RARTTCP: getaddrinfo error:" << gai_strerror(s);
 #endif
-        return;
+        return false;
     }
 
     /* getaddrinfo() returns a list of address structures.
@@ -162,7 +142,7 @@ void RartTcpInput::openDevice()
         int oldflags = fcntl(sfd, F_GETFL, 0);
         if (oldflags == -1)
         {
-            return;
+            return false;
         }
         int flags = oldflags | O_NONBLOCK;
         int res = fcntl(sfd, F_SETFL, flags);
@@ -239,8 +219,8 @@ void RartTcpInput::openDevice()
 
     if (NULL == rp)
     {   /* No address succeeded */
-        qDebug() << "RTLSDR: Could not connect";
-        return;
+        qDebug() << "RARTTCP: Could not connect";
+        return false;
     }
 
     struct
@@ -264,7 +244,7 @@ void RartTcpInput::openDevice()
     else
     {   // -1 is error, 0 is timeout
         qDebug() << "Unable to get RTL dongle infomation";
-        return;
+        return false;
     }
 #else
     // poll API does not exist :-(
@@ -283,7 +263,7 @@ void RartTcpInput::openDevice()
     else
     {   // -1 is error, 0 is timeout
         qDebug() << "Unable to get RTL dongle infomation";
-        return;
+        return false;
     }
 #endif
 #else
@@ -297,7 +277,7 @@ void RartTcpInput::openDevice()
     else
     {   // -1 is error, 0 is timeout
         qDebug() << "Unable to get RTL dongle infomation";
-        return;
+        return false;
     }
 #endif
 
@@ -321,15 +301,6 @@ void RartTcpInput::openDevice()
             dongleInfo.tunerGainCount = 0;
         }
         }
-
-        if (dongleInfo.tunerGainCount != numGains)
-        {
-            qDebug() << "RTL_TCP WARNING: unexpected number of gain values reported by server" << dongleInfo.tunerGainCount;
-            if (dongleInfo.tunerGainCount > numGains)
-            {
-                dongleInfo.tunerGainCount = numGains;
-            }
-        }
 #endif
         qDebug() << "Found RaRT TCP server";
 
@@ -349,7 +320,9 @@ void RartTcpInput::openDevice()
     else
     {
         qDebug() << "RART_TCP: \"RaRT\" magic key not found. Server not supported";
-    }
+        return false;
+    }    
+    return true;
 }
 
 

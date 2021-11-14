@@ -109,31 +109,11 @@ void RtlTcpInput::tune(uint32_t freq)
     }
 }
 
-bool RtlTcpInput::isAvailable()
-{
-    if (deviceUnplugged)
-    {
-        openDevice();
-        if (deviceUnplugged)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
-    else
-    {
-        return true;
-    }
-}
-
-void RtlTcpInput::openDevice()
+bool RtlTcpInput::openDevice()
 {
     if (!deviceUnplugged)
     {   // device already opened
-        return;
+        return true;
     }
 
     struct addrinfo hints;
@@ -154,7 +134,7 @@ void RtlTcpInput::openDevice()
 #else
         qDebug() << "RTLTCP: getaddrinfo error:" << gai_strerror(s);
 #endif
-        return;
+        return false;
     }
 
     /* getaddrinfo() returns a list of address structures.
@@ -180,7 +160,7 @@ void RtlTcpInput::openDevice()
         int oldflags = fcntl(sfd, F_GETFL, 0);
         if (oldflags == -1)
         {
-            return;
+            return false;
         }
         int flags = oldflags | O_NONBLOCK;
         int res = fcntl(sfd, F_SETFL, flags);
@@ -258,7 +238,7 @@ void RtlTcpInput::openDevice()
     if (NULL == rp)
     {   /* No address succeeded */
         qDebug() << "RTLSDR: Could not connect";
-        return;
+        return false;
     }
 
     struct
@@ -281,7 +261,7 @@ void RtlTcpInput::openDevice()
     else
     {   // -1 is error, 0 is timeout
         qDebug() << "Unable to get RTL dongle infomation";
-        return;
+        return false;
     }
 #else
     // poll API does not exist :-(
@@ -300,7 +280,7 @@ void RtlTcpInput::openDevice()
     else
     {   // -1 is error, 0 is timeout
         qDebug() << "Unable to get RTL dongle infomation";
-        return;
+        return false;
     }
 #endif
 #else
@@ -314,7 +294,7 @@ void RtlTcpInput::openDevice()
     else
     {   // -1 is error, 0 is timeout
         qDebug() << "Unable to get RTL dongle infomation";
-        return;
+        return false;
     }
 #endif
 
@@ -413,7 +393,10 @@ void RtlTcpInput::openDevice()
     else
     {
         qDebug() << "RTL_TCP: \"RTL0\" magic key not found. Server not supported";
+        return false;
     }
+
+    return true;
 }
 
 

@@ -30,7 +30,7 @@ RawFileInput::~RawFileInput()
     }   
 }
 
-void RawFileInput::openDevice(const QString & fileName, const RawFileInputFormat &format)
+void RawFileInput::openFile(const QString & fileName, const RawFileInputFormat &format)
 {
     if (nullptr != inputFile)
     {

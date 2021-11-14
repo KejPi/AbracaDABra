@@ -181,6 +181,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->channelCombo->setCurrentIndex(-1);
     ui->channelCombo->setDisabled(true);
 
+    // disable service list - it is enabled when some valid device is selected1
+    ui->serviceListView->setEnabled(false);
+    ui->serviceTreeView->setEnabled(false);
+
+
     clearEnsembleInformationLabels();
     clearServiceInformationLabels();
     ui->dynamicLabel->setText("");
@@ -654,9 +659,6 @@ void MainWindow::tuneFinished(uint32_t freq)
     }
     else        
     {
-        ui->serviceListView->setEnabled(false);
-        ui->serviceTreeView->setEnabled(false);
-
         // this can only happen when device is changed, or ehen exit is requested
         if (exitRequested)
         {   // processing in IDLE, close window
@@ -698,8 +700,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
         break;
     case InputDeviceErrorCode::DeviceDisconnected:
         timeLabel->setText("Input device disconnected");
-        // tune to 0
-        //ui->channelCombo->setCurrentIndex(-1);
+        // force no device
         setupDialog->setInputDevice(InputDeviceId::UNDEFINED);
         break;
     case InputDeviceErrorCode::NoDataAvailable:
@@ -1003,29 +1004,35 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         ui->channelCombo->setDisabled(true);   // it will be enabled when device is ready
         ui->channelLabel->setText("");
         //setupDialog->setInputDevice(inputDeviceId); // this emits device change
+
+        ui->serviceListView->setEnabled(false);
+        ui->serviceTreeView->setEnabled(false);
+
         break;
     case InputDeviceId::RTLSDR:
     {
         inputDevice = new RtlSdrInput();
-        if (inputDevice->isAvailable())
+
+        // signals have to be connected before calling openDevice
+
+        // tuning procedure
+        connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+        connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+        // HMI
+        connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
+        connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
+
+        // setup dialog
+        connect(dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
+        connect(setupDialog, &SetupDialog::setGainMode, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setGainMode);
+        connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setDAGC);
+
+        if (inputDevice->openDevice())
         {  // rtl sdr is available
             inputDeviceId = InputDeviceId::RTLSDR;
             setupDialog->setInputDevice(inputDeviceId); // this emits device change
 
-            // tuning procedure
-            connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
-            connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
-
-            // HMI
-            connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
-            connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
-
-            // setup dialog
-            connect(dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
-            connect(setupDialog, &SetupDialog::setGainMode, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setGainMode);
-            connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setDAGC);
-
-            static_cast<RtlSdrInput *>(inputDevice)->openDevice();
             static_cast<RtlSdrInput *>(inputDevice)->setDAGC(setupDialog->getDAGCState());
 
             // enable band scan
@@ -1048,7 +1055,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     {
         inputDevice = new RtlTcpInput();
 
-        // signals have to be connected before calling isAvailable
+        // signals have to be connected before calling openDevice
         // RTL_TCP is opened immediately and starts receiving data
 
         // HMI
@@ -1064,12 +1071,11 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
         connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
 
-        if (inputDevice->isAvailable())
+        if (inputDevice->openDevice())
         {  // rtl tcp is available
             inputDeviceId = InputDeviceId::RTLTCP;
             setupDialog->setInputDevice(inputDeviceId); // this emits device change
 
-            static_cast<RtlTcpInput *>(inputDevice)->openDevice();
             static_cast<RtlTcpInput *>(inputDevice)->setDAGC(setupDialog->getDAGCState());
 
             // enable band scan
@@ -1106,12 +1112,10 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
         connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
 
-        if (inputDevice->isAvailable())
+        if (inputDevice->openDevice())
         {  // rtl tcp is available
             inputDeviceId = InputDeviceId::RARTTCP;
             setupDialog->setInputDevice(inputDeviceId); // this emits device change
-
-            static_cast<RartTcpInput *>(inputDevice)->openDevice();
 
             // enable band scan
             bandScanAct->setEnabled(true);
@@ -1144,14 +1148,14 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
         // setup dialog
-        connect(setupDialog, &SetupDialog::rawFileSelected, dynamic_cast<RawFileInput*>(inputDevice), &RawFileInput::openDevice);
+        connect(setupDialog, &SetupDialog::rawFileSelected, dynamic_cast<RawFileInput*>(inputDevice), &RawFileInput::openFile);
         connect(setupDialog, &SetupDialog::sampleFormat, dynamic_cast<RawFileInput*>(inputDevice), &RawFileInput::setFileFormat);
 
         QString filename = setupDialog->getInputFileName();
         if (!filename.isEmpty())
         {
             RawFileInputFormat format = setupDialog->getInputFileFormat();
-            dynamic_cast<RawFileInput*>(inputDevice)->openDevice(filename, format);
+            dynamic_cast<RawFileInput*>(inputDevice)->openFile(filename, format);
             enableFileLooping(setupDialog->isFileLoopActive());
         }
         setupDialog->enableFileSelection(true);

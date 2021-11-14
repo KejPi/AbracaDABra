@@ -85,12 +85,11 @@ class RartTcpInput : public InputDevice
 public:
     explicit RartTcpInput(QObject *parent = nullptr);
     ~RartTcpInput();
-    bool isAvailable() override;
+    bool openDevice() override;
 
 public slots:
     void tune(uint32_t freq) override;
     void stop() override;
-    void openDevice();
 
     void startDumpToFile(const QString & filename) override;
     void stopDumpToFile() override;

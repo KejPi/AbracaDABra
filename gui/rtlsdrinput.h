@@ -53,12 +53,11 @@ class RtlSdrInput : public InputDevice
 public:
     explicit RtlSdrInput(QObject *parent = nullptr);
     ~RtlSdrInput();
-    bool isAvailable() override;
+    bool openDevice() override;
 
 public slots:
     void tune(uint32_t freq) override;
     void stop() override;
-    void openDevice();
     void setGainMode(GainMode mode, int gainIdx = 0);
     void setDAGC(bool ena);
 
