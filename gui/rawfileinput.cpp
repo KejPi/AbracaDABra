@@ -28,10 +28,6 @@ RawFileInput::~RawFileInput()
         inputFile->close();
         delete inputFile;
     }   
-#if INPUT_USE_PTHREADS
-    pthread_mutex_destroy(&inputBuffer.countMutex);
-    pthread_cond_destroy(&inputBuffer.countCondition);
-#endif
 }
 
 void RawFileInput::openDevice(const QString & fileName, const RawFileInputFormat &format)
@@ -171,29 +167,17 @@ void RawFileWorker::run()
         uint64_t input_chunk_iq_samples = period * 2048;
 
         // get FIFO space
-#if INPUT_USE_PTHREADS
         pthread_mutex_lock(&inputBuffer.countMutex);
-#else
-        inputBuffer.mutex.lock();
-#endif
         uint64_t count = inputBuffer.count;
         Q_ASSERT(count <= INPUT_FIFO_SIZE);
 
         while ((INPUT_FIFO_SIZE - count) < input_chunk_iq_samples*sizeof(float)*2)
         {
 
-#if INPUT_USE_PTHREADS
             pthread_cond_wait(&inputBuffer.countCondition, &inputBuffer.countMutex);
-#else
-            inputBuffer.countChanged.wait(&inputBuffer.mutex);
-#endif
             count = inputBuffer.count;
         }
-#if INPUT_USE_PTHREADS
         pthread_mutex_unlock(&inputBuffer.countMutex);
-#else
-        inputBuffer.mutex.unlock();
-#endif
 
         // there is enough room in buffer
         uint64_t bytesTillEnd = INPUT_FIFO_SIZE - inputBuffer.head;
@@ -273,19 +257,11 @@ void RawFileWorker::run()
         //qDebug() << Q_FUNC_INFO << samplesRead;
 
         inputBuffer.head = (inputBuffer.head + samplesRead*sizeof(float)) % INPUT_FIFO_SIZE;
-#if INPUT_USE_PTHREADS
         pthread_mutex_lock(&inputBuffer.countMutex);
         inputBuffer.count = inputBuffer.count + samplesRead*sizeof(float);
         //qDebug() << Q_FUNC_INFO << inputBuffer.count;
         pthread_cond_signal(&inputBuffer.countCondition);
         pthread_mutex_unlock(&inputBuffer.countMutex);
-#else
-        inputBuffer.mutex.lock();
-        inputBuffer.count = inputBuffer.count + samplesRead*sizeof(float);
-        inputBuffer.active = (samplesRead == INPUT_CHUNK_SAMPLES);
-        inputBuffer.countChanged.wakeAll();
-        inputBuffer.mutex.unlock();
-#endif
 
         if (samplesRead < input_chunk_iq_samples*2)
         {

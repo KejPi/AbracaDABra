@@ -574,19 +574,11 @@ void rarttcpCb(unsigned char *buf, uint32_t len, void * ctx)
 
     // len is number of I and Q samples
     // get FIFO space
-#if INPUT_USE_PTHREADS
     pthread_mutex_lock(&inputBuffer.countMutex);
-#else
-    inputBuffer.mutex.lock();
-#endif
     uint64_t count = inputBuffer.count;
     Q_ASSERT(count <= INPUT_FIFO_SIZE);
 
-#if INPUT_USE_PTHREADS
     pthread_mutex_unlock(&inputBuffer.countMutex);
-#else
-    inputBuffer.mutex.unlock();
-#endif
 
     uint32_t numSamples = len >> 1;  // number of I and Q samples, one I or Q sample is 2 bytes (int16)
     if ((INPUT_FIFO_SIZE - count) < numSamples*sizeof(float))
@@ -629,17 +621,9 @@ void rarttcpCb(unsigned char *buf, uint32_t len, void * ctx)
         inputBuffer.head = (numSamples-samplesTillEnd)*sizeof(float);
     }
 
-#if INPUT_USE_PTHREADS
     pthread_mutex_lock(&inputBuffer.countMutex);
     inputBuffer.count = inputBuffer.count + numSamples*sizeof(float);
     pthread_cond_signal(&inputBuffer.countCondition);
     pthread_mutex_unlock(&inputBuffer.countMutex);
-#else
-    inputBuffer.mutex.lock();
-    inputBuffer.count = inputBuffer.count + len*sizeof(float);
-    inputBuffer.active = (len == INPUT_CHUNK_SAMPLES);
-    inputBuffer.countChanged.wakeAll();
-    inputBuffer.mutex.unlock();
-#endif
 }
 

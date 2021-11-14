@@ -699,7 +699,6 @@ void RtlTcpWorker::dumpBuffer(unsigned char *buf, uint32_t len)
 
 void rtltcpCb(unsigned char *buf, uint32_t len, void * ctx)
 {
-#if 1
 #if (RTLTCP_DOC_ENABLE > 0)
     int_fast32_t sumI = 0;
     int_fast32_t sumQ = 0;
@@ -729,19 +728,11 @@ void rtltcpCb(unsigned char *buf, uint32_t len, void * ctx)
 
     // len is number of I and Q samples
     // get FIFO space
-#if INPUT_USE_PTHREADS
     pthread_mutex_lock(&inputBuffer.countMutex);
-#else
-    inputBuffer.mutex.lock();
-#endif
     uint64_t count = inputBuffer.count;
     Q_ASSERT(count <= INPUT_FIFO_SIZE);
 
-#if INPUT_USE_PTHREADS
     pthread_mutex_unlock(&inputBuffer.countMutex);
-#else
-    inputBuffer.mutex.unlock();
-#endif
 
     if ((INPUT_FIFO_SIZE - count) < len*sizeof(float))
     {
@@ -913,18 +904,9 @@ void rtltcpCb(unsigned char *buf, uint32_t len, void * ctx)
     rtlTcpWorker->emitAgcLevel(agcLev, maxVal);
 #endif
 
-#if INPUT_USE_PTHREADS
     pthread_mutex_lock(&inputBuffer.countMutex);
     inputBuffer.count = inputBuffer.count + len*sizeof(float);
     pthread_cond_signal(&inputBuffer.countCondition);
     pthread_mutex_unlock(&inputBuffer.countMutex);
-#else
-    inputBuffer.mutex.lock();
-    inputBuffer.count = inputBuffer.count + len*sizeof(float);
-    inputBuffer.active = (len == INPUT_CHUNK_SAMPLES);
-    inputBuffer.countChanged.wakeAll();
-    inputBuffer.mutex.unlock();
-#endif
-#endif
 }
 

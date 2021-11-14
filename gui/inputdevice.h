@@ -22,7 +22,6 @@
 // total capacity is 8 input chunks
 #define INPUT_FIFO_SIZE           (INPUT_CHUNK_IQ_SAMPLES * (sizeof(float _Complex)) * 8)
 
-#define INPUT_USE_PTHREADS 1
 
 struct ComplexFifo
 {
@@ -30,15 +29,12 @@ struct ComplexFifo
     uint64_t head;
     uint64_t tail;
     uint8_t buffer[INPUT_FIFO_SIZE];
-#if INPUT_USE_PTHREADS
+
     pthread_mutex_t countMutex;
     pthread_cond_t countCondition;
-#else
-    QWaitCondition countChanged;
-    QMutex mutex;
-    bool active;
-#endif
+
     void reset();
+    void fillDummy();
 };
 typedef struct ComplexFifo fifo_t;
 
@@ -53,11 +49,10 @@ enum class GainMode
 
 enum class InputDeviceErrorCode
 {
-    EndOfFile = -1,
-    TcpConnectionLost = -2,
-    NoDataAvailable = -3,
-
-    Undefined = -10,
+    Undefined = 0,
+    EndOfFile = -1,                // Raw file input
+    DeviceDisconnected = -2,       // USB disconnected or socket disconnected
+    NoDataAvailable = -3,          // This can happen when TCP server is connected but stopped sending data for some reason
 };
 
 Q_DECLARE_METATYPE(InputDeviceErrorCode);
@@ -66,7 +61,8 @@ class InputDevice : public QObject
 {
     Q_OBJECT    
 public:
-    InputDevice(QObject *parent = nullptr);;
+    InputDevice(QObject *parent = nullptr);
+    ~InputDevice();
     virtual bool isAvailable() = 0;
     const InputDeviceId getDeviceId() const { return id; }
 
