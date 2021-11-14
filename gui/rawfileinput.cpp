@@ -82,7 +82,6 @@ uint64_t RawFileInput::getNumSamples()
 void RawFileInput::setFileFormat(const RawFileInputFormat &format)
 {
     sampleFormat = format;
-    emit numberOfSamples(getNumSamples());
 }
 
 void RawFileInput::tune(uint32_t freq)
@@ -93,7 +92,7 @@ void RawFileInput::tune(uint32_t freq)
     if (0 != freq)
     {
         worker = new RawFileWorker(inputFile, sampleFormat, this);
-        connect(worker, &RawFileWorker::endOfFile, this, &RawFileInput::endOfFile, Qt::QueuedConnection);
+        connect(worker, &RawFileWorker::endOfFile, this, &RawFileInput::onEndOfFile, Qt::QueuedConnection);
         connect(worker, &RawFileWorker::finished, worker, &QObject::deleteLater);
         worker->start();
 

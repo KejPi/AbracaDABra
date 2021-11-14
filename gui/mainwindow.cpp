@@ -670,17 +670,6 @@ void MainWindow::tuneFinished(uint32_t freq)
     }
 }
 
-void MainWindow::onEndOfFile()
-{
-    timeLabel->setText("End of file");
-    // tune to 0
-    if (!fileLooping)
-    {
-        ui->channelCombo->setCurrentIndex(-1);
-        setupDialog->enableFileSelection(true);
-    }
-}
-
 void MainWindow::onRawFileStop()
 {
     timeLabel->setText("End of file");
@@ -688,6 +677,24 @@ void MainWindow::onRawFileStop()
     ui->channelCombo->setCurrentIndex(-1);
 }
 
+void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
+{
+    qDebug() << Q_FUNC_INFO;
+
+    switch (errCode)
+    {
+    case InputDeviceErrorCode::EndOfFile:
+        timeLabel->setText("End of file");
+        // tune to 0
+        if (!fileLooping)
+        {
+            ui->channelCombo->setCurrentIndex(-1);
+            setupDialog->enableFileSelection(true);
+        }
+        break;
+    default: ;
+    }
+}
 
 void MainWindow::serviceListClicked(const QModelIndex &index)
 {
@@ -996,6 +1003,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // HMI
             connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
+            connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
             // setup dialog
             connect(dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
@@ -1027,6 +1035,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
         // HMI
         connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
+        connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
         // setup dialog
         connect(dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
@@ -1042,18 +1051,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             inputDeviceId = InputDeviceId::RTLTCP;
             //setupDialog->enableRtlSdrInput(true);
             setupDialog->setInputDevice(inputDeviceId); // this emits device change
-
-            // tuning procedure
-            //connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
-            //connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
-
-            // HMI
-            //connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
-
-            // setup dialog
-            //connect(dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
-            //connect(setupDialog, &SetupDialog::setGainMode, dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::setGainMode);
-            //connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::setDAGC);
 
             static_cast<RtlTcpInput *>(inputDevice)->openDevice();
             static_cast<RtlTcpInput *>(inputDevice)->setDAGC(setupDialog->getDAGCState());
@@ -1080,6 +1077,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
         // HMI
         connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
+        connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
         // setup dialog
         // nothing at the moment
@@ -1093,18 +1091,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             inputDeviceId = InputDeviceId::RARTTCP;
             //setupDialog->enableRtlSdrInput(true);
             setupDialog->setInputDevice(inputDeviceId); // this emits device change
-
-            // tuning procedure
-            //connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
-            //connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
-
-            // HMI
-            //connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
-
-            // setup dialog
-            //connect(dynamic_cast<RartTcpInput*>(inputDevice), &RartTcpInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
-            //connect(setupDialog, &SetupDialog::setGainMode, dynamic_cast<RartTcpInput*>(inputDevice), &RartTcpInput::setGainMode);
-            //connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RartTcpInput*>(inputDevice), &RartTcpInput::setDAGC);
 
             static_cast<RartTcpInput *>(inputDevice)->openDevice();
 
@@ -1134,7 +1120,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
         // HMI
         connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
-        connect(dynamic_cast<RawFileInput*>(inputDevice), &RawFileInput::endOfFile, this, &MainWindow::onEndOfFile);
+        connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
         // setup dialog
         connect(setupDialog, &SetupDialog::rawFileSelected, dynamic_cast<RawFileInput*>(inputDevice), &RawFileInput::openDevice);

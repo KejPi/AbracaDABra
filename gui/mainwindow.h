@@ -62,8 +62,8 @@ private slots:
     void clearEnsembleInformationLabels();
     void clearServiceInformationLabels();
     void initInputDevice(const InputDeviceId &d);
-    void onEndOfFile();
     void onRawFileStop();
+    void onInputDeviceError(const InputDeviceErrorCode errCode);
     void serviceListClicked(const QModelIndex &index);
     void serviceListTreeClicked(const QModelIndex &index);
     void serviceChanged(const RadioControlServiceComponent &s);

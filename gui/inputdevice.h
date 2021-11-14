@@ -44,11 +44,23 @@ typedef struct ComplexFifo fifo_t;
 
 enum class InputDeviceId { UNDEFINED, RTLSDR, RTLTCP, RARTTCP, RAWFILE};
 
-enum class GainMode {
+enum class GainMode
+{
     Hardware,
     Software,
     Manual
 };
+
+enum class InputDeviceErrorCode
+{
+    EndOfFile = -1,
+    TcpConnectionLost = -2,
+    NoDataAvailable = -3,
+
+    Undefined = -10,
+};
+
+Q_DECLARE_METATYPE(InputDeviceErrorCode);
 
 class InputDevice : public QObject
 {
@@ -68,6 +80,7 @@ signals:
     void deviceReady();
     void tuned(uint32_t freq);
     void dumpingToFile(bool running);
+    void error(const InputDeviceErrorCode errCode = InputDeviceErrorCode::Undefined);
 
 protected:
     InputDeviceId id = InputDeviceId::UNDEFINED;

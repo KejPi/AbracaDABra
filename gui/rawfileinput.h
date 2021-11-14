@@ -53,10 +53,6 @@ public slots:
     void openDevice(const QString & fileName, const RawFileInputFormat &format = RawFileInputFormat::SAMPLE_FORMAT_U8);
     void setFileFormat(const RawFileInputFormat &format);
 
-signals:
-    void numberOfSamples(uint64_t nsamples);
-    void endOfFile();
-
 private:
     RawFileInputFormat sampleFormat;
     QFile * inputFile = nullptr;
@@ -64,6 +60,7 @@ private:
     QTimer * inputTimer = nullptr;
     uint64_t getNumSamples();
     void rewind();
+    void onEndOfFile() { emit error(InputDeviceErrorCode::EndOfFile); }
 };
 
 
