@@ -14,6 +14,9 @@ RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
     deviceRunning = false;
     gainList = nullptr;
     dumpFile = nullptr;
+#if (RTLSDR_WDOG_ENABLE)
+    connect(&watchDogTimer, &QTimer::timeout, this, &RtlSdrInput::watchDogTimeout);
+#endif
 }
 
 RtlSdrInput::~RtlSdrInput()
@@ -153,6 +156,9 @@ void RtlSdrInput::run()
         connect(worker, &RtlSdrWorker::agcLevel, this, &RtlSdrInput::updateAgc, Qt::QueuedConnection);
         connect(worker, &RtlSdrWorker::finished, this, &RtlSdrInput::readThreadStopped, Qt::QueuedConnection);
         connect(worker, &RtlSdrWorker::finished, worker, &QObject::deleteLater);
+#if (RTLSDR_WDOG_ENABLE)
+        watchDogTimer.start(1000 * RTLSDR_WDOG_TIMEOUT_SEC);
+#endif
         worker->start();
 
         deviceRunning = true;
@@ -276,6 +282,10 @@ void RtlSdrInput::updateAgc(float level, int maxVal)
 void RtlSdrInput::readThreadStopped()
 {
     qDebug() << Q_FUNC_INFO << deviceRunning;
+#if (RTLSDR_WDOG_ENABLE)
+    watchDogTimer.stop();
+#endif
+
     if (deviceRunning)
     {
         qDebug() << "RTL-SDR is unplugged.";
@@ -294,6 +304,26 @@ void RtlSdrInput::readThreadStopped()
         run();
     }
 }
+
+#if (RTLSDR_WDOG_ENABLE)
+void RtlSdrInput::watchDogTimeout()
+{
+    if (nullptr != worker)
+    {
+        bool isRunning = worker->isRunning();
+        if (!isRunning)
+        {  // some problem in data input
+            qDebug() << Q_FUNC_INFO << "watchdog timeout";
+            inputBuffer.fillDummy();
+            emit error(InputDeviceErrorCode::NoDataAvailable);
+        }
+    }
+    else
+    {
+        watchDogTimer.stop();
+    }
+}
+#endif
 
 void RtlSdrInput::startDumpToFile(const QString & filename)
 {
@@ -319,7 +349,7 @@ RtlSdrWorker::RtlSdrWorker(struct rtlsdr_dev *d, QObject *parent) : QThread(pare
     enaDumpToFile = false;
     dumpFile = nullptr;
     rtlSdrPtr = parent;
-    device = d;
+    device = d;    
 }
 
 void RtlSdrWorker::run()
@@ -329,6 +359,9 @@ void RtlSdrWorker::run()
     dcI = 0.0;
     dcQ = 0.0;
     agcLev = 0.0;
+
+
+    wdogIsRunningFlag = false;  // first callback sets it to true
 
     rtlsdr_read_async(device, rtlsdrCb, (void*)this, 0, INPUT_CHUNK_IQ_SAMPLES*2*sizeof(uint8_t));
 
@@ -361,6 +394,13 @@ void RtlSdrWorker::dumpBuffer(unsigned char *buf, uint32_t len)
     fileMutex.unlock();
 }
 
+bool RtlSdrWorker::isRunning()
+{
+    bool flag = wdogIsRunningFlag;
+    wdogIsRunningFlag = false;
+    return flag;
+}
+
 void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 {
 #if (RTLSDR_DOC_ENABLE > 0)
@@ -380,6 +420,11 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
     {
         rtlSdrWorker->dumpBuffer(buf, len);
     }
+
+#if (RTLSDR_WDOG_ENABLE)
+    // reset watchDog flag, timer sets it to true
+    rtlSdrWorker->wdogIsRunningFlag = true;
+#endif
 
     // retrieving memories
 #if (RTLSDR_DOC_ENABLE > 0)

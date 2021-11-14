@@ -652,8 +652,12 @@ void MainWindow::tuneFinished(uint32_t freq)
             ui->switchSourceLabel->setVisible(true);
         }
     }
-    else
-    {   // this can only happen when device is changed, or ehen exit is requested
+    else        
+    {
+        ui->serviceListView->setEnabled(false);
+        ui->serviceTreeView->setEnabled(false);
+
+        // this can only happen when device is changed, or ehen exit is requested
         if (exitRequested)
         {   // processing in IDLE, close window
             close();
@@ -692,7 +696,16 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
             setupDialog->enableFileSelection(true);
         }
         break;
-    default: ;
+    case InputDeviceErrorCode::DeviceDisconnected:
+        timeLabel->setText("Input device disconnected");
+        // tune to 0
+        ui->channelCombo->setCurrentIndex(-1);
+    case InputDeviceErrorCode::NoDataAvailable:
+        timeLabel->setText("No input data");
+        // force no device
+        setupDialog->setInputDevice(InputDeviceId::UNDEFINED);
+    default:
+        qDebug() << Q_FUNC_INFO << "InputDevice error" << int(errCode);
     }
 }
 
@@ -973,7 +986,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         delete inputDevice;
 
         // delete service list
-        serviceList->clear();
+        //serviceList->clear();
     }
 
     // disable band scan - will be enable when it makes sense (RTL-SDR at the moment)
@@ -1015,6 +1028,10 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // enable band scan
             bandScanAct->setEnabled(true);
+
+            // enable service list
+            ui->serviceListView->setEnabled(true);
+            ui->serviceTreeView->setEnabled(true);
         }
         else
         {
@@ -1057,6 +1074,10 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // enable band scan
             bandScanAct->setEnabled(true);
+
+            // enable service list
+            ui->serviceListView->setEnabled(true);
+            ui->serviceTreeView->setEnabled(true);
         }
         else
         {
@@ -1096,6 +1117,10 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // enable band scan
             bandScanAct->setEnabled(true);
+
+            // enable service list
+            ui->serviceListView->setEnabled(true);
+            ui->serviceTreeView->setEnabled(true);
         }
         else
         {
@@ -1133,7 +1158,14 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             dynamic_cast<RawFileInput*>(inputDevice)->openDevice(filename, format);
             enableFileLooping(setupDialog->isFileLoopActive());
         }
-        setupDialog->enableFileSelection(true);                
+        setupDialog->enableFileSelection(true);
+
+        // clear service list
+        serviceList->clear();
+
+        // enable service list
+        ui->serviceListView->setEnabled(true);
+        ui->serviceTreeView->setEnabled(true);
     }
         break;
     }
