@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QThread>
+#include <QTimer>
 #include <stdio.h>
 #include "inputdevice.h"
 
@@ -30,6 +31,9 @@
 #define RARTTCP_ADDRESS "127.0.0.1"
 #define RARTTCP_CHUNK_SIZE (16384*100)
 
+#define RARTTCP_WDOG_ENABLE 1        // enable watchdog timer
+#define RARTTCP_WDOG_TIMEOUT_SEC 1   // watchdow timeout in seconds
+
 class RartTcpWorker : public QThread
 {
     Q_OBJECT
@@ -38,19 +42,19 @@ public:
     void dumpToFileStart(FILE * f);
     void dumpToFileStop();
     void catureIQ(bool ena);
+    bool isRunning();
 protected:
     void run() override;
 signals:
-    void readExit();
     void agcLevel(float level, int maxVal);
 private:
-    //QObject *rtlSdrPtr;
     SOCKET sock;
 
     std::atomic<bool> enaDumpToFile;
     std::atomic<bool> enaCaptureIQ;
+    std::atomic<bool> wdogIsRunningFlag;
     FILE * dumpFile;
-    QMutex fileMutex;       
+    QMutex fileMutex;           
 
     // DOC memory
     float dcI = 0.0;
@@ -97,6 +101,9 @@ private:
     SOCKET sock;
 
     RartTcpWorker * worker;
+#if (RARTTCP_WDOG_ENABLE)
+    QTimer watchDogTimer;
+#endif
     FILE * dumpFile;
 
     void run();
@@ -105,6 +112,9 @@ private:
     void sendCommand(const RartTcpCommand & cmd, uint32_t param);
 private slots:
     void readThreadStopped();
+#if (RARTTCP_WDOG_ENABLE)
+    void watchDogTimeout();
+#endif
 };
 
 

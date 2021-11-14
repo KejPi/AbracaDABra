@@ -52,14 +52,13 @@ protected:
 signals:
     void agcLevel(float level, int maxVal);
 private:
-    //QObject *rtlSdrPtr;
     SOCKET sock;
 
     std::atomic<bool> enaDumpToFile;
     std::atomic<bool> enaCaptureIQ;
+    std::atomic<bool> wdogIsRunningFlag;
     FILE * dumpFile;
     QMutex fileMutex;
-    std::atomic<bool> wdogIsRunningFlag;
 
     // DOC memory
     float dcI = 0.0;

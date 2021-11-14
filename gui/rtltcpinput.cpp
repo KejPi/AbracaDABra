@@ -401,11 +401,10 @@ void RtlTcpInput::openDevice()
         connect(worker, &RtlTcpWorker::agcLevel, this, &RtlTcpInput::updateAgc, Qt::QueuedConnection);
         connect(worker, &RtlTcpWorker::finished, this, &RtlTcpInput::readThreadStopped, Qt::QueuedConnection);
         connect(worker, &RtlTcpWorker::finished, worker, &QObject::deleteLater);
+        worker->start();
 #if (RTLTCP_WDOG_ENABLE)
         watchDogTimer.start(1000 * RTLTCP_WDOG_TIMEOUT_SEC);
 #endif
-        worker->start();
-
         // device connected
         deviceUnplugged = false;
 

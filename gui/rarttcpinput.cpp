@@ -36,6 +36,10 @@ RartTcpInput::RartTcpInput(QObject *parent) : InputDevice(parent)
     worker = nullptr;
     frequency = 0;
     sock = INVALID_SOCKET;
+
+#if (RARTTCP_WDOG_ENABLE)
+    connect(&watchDogTimer, &QTimer::timeout, this, &RartTcpInput::watchDogTimeout);
+#endif
 }
 
 RartTcpInput::~RartTcpInput()
@@ -76,12 +80,7 @@ RartTcpInput::~RartTcpInput()
 void RartTcpInput::tune(uint32_t freq)
 {
     frequency = freq;
-    if (deviceUnplugged)
-    {
-        return;
-    }
-
-    if (frequency > 0)
+    if ((frequency > 0) && (!deviceUnplugged))
     {
         run();
     }
@@ -336,10 +335,12 @@ void RartTcpInput::openDevice()
 
         // need to create worker, server is pushing samples
         worker = new RartTcpWorker(sock, this);
-        connect(worker, &RartTcpWorker::readExit, this, &RartTcpInput::readThreadStopped, Qt::QueuedConnection);
+        connect(worker, &RartTcpWorker::finished, this, &RartTcpInput::readThreadStopped, Qt::QueuedConnection);
         connect(worker, &RartTcpWorker::finished, worker, &QObject::deleteLater);
-        worker->start();
-
+        worker->start();        
+#if (RARTTCP_WDOG_ENABLE)
+        watchDogTimer.start(1000 * RARTTCP_WDOG_TIMEOUT_SEC);
+#endif
         // device connected
         deviceUnplugged = false;
 
@@ -399,8 +400,40 @@ void RartTcpInput::readThreadStopped()
 #endif
     sock = INVALID_SOCKET;
 
+#if (RTLTCP_WDOG_ENABLE)
+    watchDogTimer.stop();
+#endif
+
     deviceUnplugged = true;
+
+    // fill buffer (artificially to avoid blocking of the DAB processing thread)
+    inputBuffer.fillDummy();
+
+    emit error(InputDeviceErrorCode::DeviceDisconnected);
 }
+
+#if (RARTTCP_WDOG_ENABLE)
+void RartTcpInput::watchDogTimeout()
+{
+    if (nullptr != worker)
+    {
+        if (!deviceUnplugged)
+        {
+            bool isRunning = worker->isRunning();
+            if (!isRunning)
+            {  // some problem in data input
+                qDebug() << Q_FUNC_INFO << "watchdog timeout";
+                inputBuffer.fillDummy();
+                emit error(InputDeviceErrorCode::NoDataAvailable);
+            }
+        }
+    }
+    else
+    {
+        watchDogTimer.stop();
+    }
+}
+#endif
 
 void RartTcpInput::startDumpToFile(const QString & filename)
 {
@@ -451,13 +484,12 @@ RartTcpWorker::RartTcpWorker(SOCKET socket, QObject *parent) : QThread(parent)
 
 void RartTcpWorker::run()
 {
-
-
     qDebug() << "RartTcpWorker thread start" << QThread::currentThreadId() << sock;
 
     dcI = 0.0;
     dcQ = 0.0;
     agcLev = 0.0;
+    wdogIsRunningFlag = false;  // first callback sets it to true
 
     // read samples
     while (INVALID_SOCKET != sock)
@@ -515,6 +547,11 @@ void RartTcpWorker::run()
             }
         } while (RARTTCP_CHUNK_SIZE > read);
 
+#if (RARTTCP_WDOG_ENABLE)
+        // reset watchDog flag, timer sets it to true
+        wdogIsRunningFlag = true;
+#endif
+
         // full chunk is read at this point
         if (enaCaptureIQ)
         {   // process data
@@ -525,8 +562,6 @@ void RartTcpWorker::run()
 worker_exit:
     // single exit point
     qDebug() << "RartTcpWorker thread end" << QThread::currentThreadId();
-
-    emit readExit();
 }
 
 void RartTcpWorker::catureIQ(bool ena)
@@ -562,6 +597,13 @@ void RartTcpWorker::dumpBuffer(unsigned char *buf, uint32_t len)
         fwrite(buf, 1, len, dumpFile);
     }
     fileMutex.unlock();
+}
+
+bool RartTcpWorker::isRunning()
+{
+    bool flag = wdogIsRunningFlag;
+    wdogIsRunningFlag = false;
+    return flag;
 }
 
 void rarttcpCb(unsigned char *buf, uint32_t len, void * ctx)
