@@ -49,7 +49,6 @@ public:
 
 public slots:
     void tune(uint32_t freq) override;
-    void stop() override;
     void openFile(const QString & fileName, const RawFileInputFormat &format = RawFileInputFormat::SAMPLE_FORMAT_U8);
     void setFileFormat(const RawFileInputFormat &format);
 
@@ -59,6 +58,7 @@ private:
     RawFileWorker * worker = nullptr;
     QTimer * inputTimer = nullptr;
     uint64_t getNumSamples();
+    void stop();
     void rewind();
     void onEndOfFile() { emit error(InputDeviceErrorCode::EndOfFile); }
 };

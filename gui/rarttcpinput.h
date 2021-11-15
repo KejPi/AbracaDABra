@@ -87,8 +87,6 @@ public:
 
 public slots:
     void tune(uint32_t freq) override;
-    void stop() override;
-
     void startDumpToFile(const QString & filename) override;
     void stopDumpToFile() override;
 
@@ -104,6 +102,7 @@ private:
     FILE * dumpFile;
 
     void run();
+    void stop();
 
     // private function
     void sendCommand(const RartTcpCommand & cmd, uint32_t param);

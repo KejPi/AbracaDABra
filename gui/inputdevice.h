@@ -61,7 +61,6 @@ public:
 
 public slots:
     virtual void tune(uint32_t freq) = 0;
-    virtual void stop() = 0;    
     virtual void startDumpToFile(const QString & filename)  { /* do nothing by default */ };
     virtual void stopDumpToFile() { /* do nothing by default */ };
 

@@ -55,7 +55,6 @@ public:
 
 public slots:
     void tune(uint32_t freq) override;
-    void stop() override;
     void setGainMode(GainMode mode, int gainIdx = 0);
     void setDAGC(bool ena);
 
@@ -80,7 +79,7 @@ private:
     FILE * dumpFile;
 
     void run();           
-
+    void stop();
     void resetAgc();
 
     // private function
