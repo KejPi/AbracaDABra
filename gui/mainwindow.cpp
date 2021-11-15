@@ -184,6 +184,7 @@ MainWindow::MainWindow(QWidget *parent)
     // disable service list - it is enabled when some valid device is selected1
     ui->serviceListView->setEnabled(false);
     ui->serviceTreeView->setEnabled(false);
+    ui->favoriteLabel->setEnabled(false);
 
 
     clearEnsembleInformationLabels();
@@ -1007,6 +1008,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
         ui->serviceListView->setEnabled(false);
         ui->serviceTreeView->setEnabled(false);
+        ui->favoriteLabel->setEnabled(false);
 
         break;
     case InputDeviceId::RTLSDR:
@@ -1041,6 +1043,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             // enable service list
             ui->serviceListView->setEnabled(true);
             ui->serviceTreeView->setEnabled(true);
+            ui->favoriteLabel->setEnabled(true);
         }
         else
         {
@@ -1084,6 +1087,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             // enable service list
             ui->serviceListView->setEnabled(true);
             ui->serviceTreeView->setEnabled(true);
+            ui->favoriteLabel->setEnabled(true);
         }
         else
         {
@@ -1123,6 +1127,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             // enable service list
             ui->serviceListView->setEnabled(true);
             ui->serviceTreeView->setEnabled(true);
+            ui->favoriteLabel->setEnabled(true);
         }
         else
         {
@@ -1166,6 +1171,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         // enable service list
         ui->serviceListView->setEnabled(true);
         ui->serviceTreeView->setEnabled(true);
+        ui->favoriteLabel->setEnabled(true);
     }
         break;
     }
