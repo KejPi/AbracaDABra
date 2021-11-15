@@ -31,9 +31,10 @@
 #define RTLTCP_ADDRESS "127.0.0.1"
 #define RTLTCP_CHUNK_SIZE (16384*100)
 
-#define RTLTCP_DOC_ENABLE 1    // enable DOC
-#define RTLTCP_AGC_ENABLE 1    // enable AGC
-#define RTLTCP_WDOG_ENABLE 1   // enable watchdog timer
+#define RTLTCP_DOC_ENABLE 1         // enable DOC
+#define RTLTCP_AGC_ENABLE 1         // enable AGC
+#define RTLTCP_WDOG_ENABLE 1        // enable watchdog timer
+#define RTLTCP_START_COUNTER_INIT 2 // init value of the counter used to reset buffer after tune
 
 class RtlTcpWorker : public QThread
 {
@@ -56,6 +57,7 @@ private:
     std::atomic<bool> wdogIsRunningFlag;
     FILE * dumpFile;
     QMutex fileMutex;
+    int captureStartCntr;
 
     // DOC memory
     float dcI = 0.0;

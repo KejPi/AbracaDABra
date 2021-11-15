@@ -31,6 +31,7 @@
 #define RARTTCP_ADDRESS "127.0.0.1"
 #define RARTTCP_CHUNK_SIZE (16384*100)
 #define RARTTCP_WDOG_ENABLE 1        // enable watchdog timer
+#define RARTTCP_START_COUNTER_INIT 2 // init value of the counter used to reset buffer after tune
 
 class RartTcpWorker : public QThread
 {
@@ -53,6 +54,7 @@ private:
     std::atomic<bool> wdogIsRunningFlag;
     FILE * dumpFile;
     QMutex fileMutex;           
+    int captureStartCntr;
 
     // DOC memory
     float dcI = 0.0;

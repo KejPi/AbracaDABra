@@ -513,6 +513,11 @@ void RartTcpWorker::run()
         // full chunk is read at this point
         if (enaCaptureIQ)
         {   // process data
+            if (captureStartCntr > 0)
+            {   // clear buffer to avoid mixing of channels
+                captureStartCntr--;
+                memset(bufferIQ, 0, RARTTCP_CHUNK_SIZE);
+            }
             rarttcpCb(bufferIQ, RARTTCP_CHUNK_SIZE, this);
         }
     }
@@ -527,6 +532,7 @@ void RartTcpWorker::catureIQ(bool ena)
     if (ena)
     {
         inputBuffer.reset();
+        captureStartCntr = RARTTCP_START_COUNTER_INIT;
     }
     enaCaptureIQ = ena;
 }

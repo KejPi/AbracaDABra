@@ -658,6 +658,11 @@ void RtlTcpWorker::run()
         // full chunk is read at this point
         if (enaCaptureIQ)
         {   // process data
+            if (captureStartCntr > 0)
+            {   // clear buffer to avoid mixing of channels
+                captureStartCntr--;
+                memset(bufferIQ, 0, RTLTCP_CHUNK_SIZE);
+            }
             rtltcpCb(bufferIQ, RTLTCP_CHUNK_SIZE, this);
         }
     }
@@ -672,6 +677,7 @@ void RtlTcpWorker::catureIQ(bool ena)
     if (ena)
     {
         inputBuffer.reset();
+        captureStartCntr = RTLTCP_START_COUNTER_INIT;
     }
     enaCaptureIQ = ena;
 }
