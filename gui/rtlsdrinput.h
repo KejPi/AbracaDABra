@@ -9,9 +9,7 @@
 
 #define RTLSDR_DOC_ENABLE  1   // enable DOC
 #define RTLSDR_AGC_ENABLE  1   // enable AGC
-
-#define RTLSDR_WDOG_ENABLE 1        // enable watchdog timer
-#define RTLSDR_WDOG_TIMEOUT_SEC 1   // watchdow timeout in seconds
+#define RTLSDR_WDOG_ENABLE 1   // enable watchdog timer
 
 class RtlSdrWorker : public QThread
 {

@@ -33,10 +33,7 @@
 
 #define RTLTCP_DOC_ENABLE 1    // enable DOC
 #define RTLTCP_AGC_ENABLE 1    // enable AGC
-
-#define RTLTCP_WDOG_ENABLE 1        // enable watchdog timer
-#define RTLTCP_WDOG_TIMEOUT_SEC 1   // watchdow timeout in seconds
-
+#define RTLTCP_WDOG_ENABLE 1   // enable watchdog timer
 
 class RtlTcpWorker : public QThread
 {

@@ -30,9 +30,7 @@
 #define RARTTCP_PORT 1234
 #define RARTTCP_ADDRESS "127.0.0.1"
 #define RARTTCP_CHUNK_SIZE (16384*100)
-
 #define RARTTCP_WDOG_ENABLE 1        // enable watchdog timer
-#define RARTTCP_WDOG_TIMEOUT_SEC 1   // watchdow timeout in seconds
 
 class RartTcpWorker : public QThread
 {

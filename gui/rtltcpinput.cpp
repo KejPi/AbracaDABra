@@ -94,21 +94,6 @@ RtlTcpInput::~RtlTcpInput()
     }
 }
 
-void RtlTcpInput::tune(uint32_t freq)
-{
-    frequency = freq;
-
-    if ((frequency > 0) && (!deviceUnplugged))
-    {
-        run();
-    }
-    else
-    {
-        stop();
-        emit tuned(frequency);
-    }
-}
-
 bool RtlTcpInput::openDevice()
 {
     if (!deviceUnplugged)
@@ -383,7 +368,7 @@ bool RtlTcpInput::openDevice()
         connect(worker, &RtlTcpWorker::finished, worker, &QObject::deleteLater);
         worker->start();
 #if (RTLTCP_WDOG_ENABLE)
-        watchDogTimer.start(1000 * RTLTCP_WDOG_TIMEOUT_SEC);
+        watchDogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
 #endif
         // device connected
         deviceUnplugged = false;
@@ -399,20 +384,23 @@ bool RtlTcpInput::openDevice()
     return true;
 }
 
+void RtlTcpInput::tune(uint32_t freq)
+{
+    frequency = freq;
+
+    if ((frequency > 0) && (!deviceUnplugged))
+    {
+        run();
+    }
+    else
+    {
+        stop();
+    }
+    emit tuned(frequency);
+}
 
 void RtlTcpInput::run()
 {
-    int ret;
-
-    if(deviceUnplugged)
-    {
-        openDevice();
-        if (deviceUnplugged)
-        {
-            return;
-        }
-    }
-
     if (frequency != 0)
     {   // Tune to new frequency
         sendCommand(RtlTcpCommand::SET_FREQ, frequency*1000);
@@ -425,8 +413,6 @@ void RtlTcpInput::run()
             worker->catureIQ(true);
         }
     }
-
-    emit tuned(frequency);
 }
 
 void RtlTcpInput::stop()

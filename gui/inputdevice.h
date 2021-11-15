@@ -6,14 +6,6 @@
 #include <QWaitCondition>
 #include <pthread.h>
 
-//#define INPUT_CHUNKS              (10)
-//#define INPUT_CHUNK_MS            (40)
-//#define INPUT_CHUNK_SAMPLES       (2048 * INPUT_CHUNK_MS)
-
-//#define INPUT_PERIOD_MS           (INPUT_CHUNKS*INPUT_CHUNK_MS)   // timer period
-//#define INPUT_PERIOD_SAMPLES      (2048*INPUT_PERIOD_MS)          // complex samples
-//#define INPUT_FIFO_SIZE           (INPUT_PERIOD_SAMPLES * 8)             // complex samples
-
 // this is chunk that is received from input device to be stored in input FIFO
 #define INPUT_CHUNK_MS            (400)
 #define INPUT_CHUNK_IQ_SAMPLES    (2048 * INPUT_CHUNK_MS)
@@ -22,6 +14,7 @@
 // total capacity is 8 input chunks
 #define INPUT_FIFO_SIZE           (INPUT_CHUNK_IQ_SAMPLES * (sizeof(float _Complex)) * 8)
 
+#define INPUTDEVICE_WDOG_TIMEOUT_SEC 2   // watchdog timeout in seconds (if implemented and enabled)
 
 struct ComplexFifo
 {

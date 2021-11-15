@@ -36,12 +36,17 @@ RtlSdrInput::~RtlSdrInput()
 void RtlSdrInput::tune(uint32_t freq)
 {
     frequency = freq;
-    if (deviceRunning)
-    {
+    if ((deviceRunning) || (0 == freq))
+    {   // worker is running
+        //      sequence in this case is:
+        //      1) stop
+        //      2) wait for thread to finish
+        //      3) start new worker on new frequency
+        // ==> this way we can be sure that all buffers are reset and nothing left from previous channel
         stop();
     }
     else
-    {
+    {   // worker is not running
         run();
     }
 }
@@ -113,21 +118,10 @@ bool RtlSdrInput::openDevice()
 
 void RtlSdrInput::run()
 {
-    int ret;
-
-    if(deviceUnplugged)
-    {        
-        if (!openDevice())
-        {
-            return;
-        }
-    }
-
     // Reset endpoint before we start reading from it (mandatory)
-    ret = rtlsdr_reset_buffer(device);
-    if (ret < 0)
+    if (rtlsdr_reset_buffer(device) < 0)
     {
-        return;
+        emit error(InputDeviceErrorCode::Undefined);
     }
 
     // Reset buffer here - worker thread it not running, DAB waits for new data
@@ -146,27 +140,30 @@ void RtlSdrInput::run()
         connect(worker, &RtlSdrWorker::finished, this, &RtlSdrInput::readThreadStopped, Qt::QueuedConnection);
         connect(worker, &RtlSdrWorker::finished, worker, &QObject::deleteLater);
 #if (RTLSDR_WDOG_ENABLE)
-        watchDogTimer.start(1000 * RTLSDR_WDOG_TIMEOUT_SEC);
+        watchDogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
 #endif
         worker->start();
 
         deviceRunning = true;
     }
+    else
+    { /* tune to 0 => going to idle */  }
 
     emit tuned(frequency);
-    return;
 }
 
 void RtlSdrInput::stop()
 {
     if (deviceRunning)
-    {
-        deviceRunning = false;
-        qDebug() << Q_FUNC_INFO << deviceRunning;
+    {   // if devise is running, stop worker
+        deviceRunning = false;       // this flag say that we want to stop worker intentionally
+                                     // (checked in readThreadStopped() slot)
+
         rtlsdr_cancel_async(device);
+
         //worker->wait(QDeadlineTimer(2000));  // requires QT >=5.15
         worker->wait(2000);
-        while  (!worker->isFinished())
+        while (!worker->isFinished())
         {
             qDebug() << "Worker thread not finished after timeout - this should not happen :-(";
 
@@ -177,6 +174,10 @@ void RtlSdrInput::stop()
             pthread_mutex_unlock(&inputBuffer.countMutex);
             worker->wait(2000);
         }
+    }
+    else if (0 == frequency)
+    {   // going to idle
+        emit tuned(0);
     }
 }
 
@@ -276,9 +277,10 @@ void RtlSdrInput::readThreadStopped()
 #endif
 
     if (deviceRunning)
-    {
+    {   // if device should be running then it measn reading error thus device is disconnected
         qDebug() << "RTL-SDR is unplugged.";
         deviceUnplugged = true;
+        deviceRunning = false;
 
         // fill buffer (artificially to avoid blocking of the DAB processing thread)
         inputBuffer.fillDummy();
