@@ -15,6 +15,7 @@
 //#define AUDIO_DECODER_MP2_OUT
 
 #define AUDIO_DECODER_USE_FDKAAC 0
+#define AUDIO_DECODER_FDKAAC_CONCEALMENT 1
 
 
 enum class AudioCoding

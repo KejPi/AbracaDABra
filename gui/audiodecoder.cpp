@@ -591,10 +591,28 @@ void AudioDecoder::processAAC(QByteArray *inData)
 {
     dabAudioFrameHeader_t header;
     header.raw = *inData[0];
-    if (header.bits.conceal)
-    {   // concealment not supported => discarding
+    uint8_t conceal = header.bits.conceal;
+
+    if (conceal)
+    {
+#if (AUDIO_DECODER_USE_FDKAAC)
+        // clear concealment bit
+#if AUDIO_DECODER_FDKAAC_CONCEALMENT
+        header.bits.conceal = 0;
+        if ((nullptr == aacDecoderHandle) || (header.raw != aacHeader.raw))
+        {   // if concealment then this fram is not valid thus returning in case that it does it woul liead to reinit
+            return;
+        }
+#else
+        // concealment not supported => discarding
         return;
+#endif
+#else
+        // concealment not supported => discarding
+        return;
+#endif
     }
+
     if ((nullptr == aacDecoderHandle) || (header.raw != aacHeader.raw))
     {
         readAACHeader(header.raw);
@@ -628,7 +646,7 @@ void AudioDecoder::processAAC(QByteArray *inData)
     }
 
     // decode audio
-    result = aacDecoder_DecodeFrame(aacDecoderHandle, (INT_PCM*) outputFrame, outputFrameLen / sizeof(INT_PCM), 0);
+    result = aacDecoder_DecodeFrame(aacDecoderHandle, (INT_PCM*) outputFrame, outputFrameLen / sizeof(INT_PCM), AACDEC_CONCEAL * conceal);
     if(AAC_DEC_OK != result)
     {
         qDebug() << "Error decoding AAC frame: " << result;
