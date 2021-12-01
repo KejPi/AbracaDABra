@@ -17,19 +17,6 @@
 #define AUDIO_DECODER_USE_FDKAAC 0
 
 
-typedef union
-{
-    uint8_t raw;
-    struct
-    {
-        uint8_t mpeg_surr_cfg : 3;  // [A decoder that does not support MPEG Surround shall ignore this parameter.]
-        uint8_t ps_flag : 1;
-        uint8_t aac_channel_mode : 1;
-        uint8_t sbr_flag : 1;
-        uint8_t dac_rate : 1;
-    } bits;
-} audiodecAacHeader_t;
-
 enum class AudioCoding
 {
     MP2 = 0,
@@ -68,7 +55,7 @@ signals:
 private:
     bool isRunning;
     DabAudioDataSCty mode;
-    audiodecAacHeader_t aacHeader;    
+    dabAudioFrameHeader_t aacHeader;
     AudioParameters audioParameters;
 
 #if (AUDIO_DECODER_USE_FDKAAC)

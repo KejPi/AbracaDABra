@@ -930,7 +930,7 @@ void audioDataCb(dabProcAudioCBData_t * p, void * ctx)
 
     QByteArray * pData = new QByteArray;
     pData->clear();
-    pData->append(p->aacSfHeader);
+    pData->append(p->header.raw);
     pData->append((const char *) p->pAuData, p->auLen);
 
     radioCtrl->emit_audioData(pData);

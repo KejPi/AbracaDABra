@@ -589,10 +589,15 @@ void AudioDecoder::getFormatMP2()
 
 void AudioDecoder::processAAC(QByteArray *inData)
 {
-    uint8_t header = *inData[0];
-    if ((nullptr == aacDecoderHandle) || (header != aacHeader.raw))
+    dabAudioFrameHeader_t header;
+    header.raw = *inData[0];
+    if (header.bits.conceal)
+    {   // concealment not supported => discarding
+        return;
+    }
+    if ((nullptr == aacDecoderHandle) || (header.raw != aacHeader.raw))
     {
-        readAACHeader(header);
+        readAACHeader(header.raw);
         initAACDecoder();
 
         // reset FIFO
