@@ -610,7 +610,7 @@ void AudioDecoder::processAAC(QByteArray *inData)
     AAC_DECODER_ERROR result = aacDecoder_Fill(aacDecoderHandle, aacData, len, &bytesValid);
 
 #ifdef AUDIO_DECODER_AAC_OUT
-    writeAACOutput(aacData[0], len[0]);
+    writeAACOutput((char *) aacData[0], len[0]);
 #endif
 
     if(result != AAC_DEC_OK)
@@ -633,6 +633,15 @@ void AudioDecoder::processAAC(QByteArray *inData)
     {   // no output
         return;
     }
+
+#ifdef AUDIO_DECODER_RAW_OUT
+    if (rawOut)
+    {
+        fwrite(outputFrame, 1, outputFrameLen, rawOut);
+    }
+#endif
+
+    int64_t bytesToWrite = outputFrameLen;
 #else // AUDIO_DECODER_USE_FDKAAC
     const char * aacData = inData->data()+1;
     unsigned long len = inData->size()-1;
@@ -657,21 +666,18 @@ void AudioDecoder::processAAC(QByteArray *inData)
     {
         throw std::runtime_error(std::string(Q_FUNC_INFO) + ": NeAACDecDecode did not consume all bytes");
     }
-#endif // AUDIO_DECODER_USE_FDKAAC
 
 #ifdef AUDIO_DECODER_RAW_OUT
     if (rawOut)
     {
-        fwrite(output_frame, sizeof(int16_t), aacDecFrameInfo.samples, rawOut);
+        fwrite(outputFrame, sizeof(int16_t), aacDecFrameInfo.samples, rawOut);
     }
 #endif
 
-    // wait for space in ouput buffer    
-#if (AUDIO_DECODER_USE_FDKAAC)
-    int64_t bytesToWrite = outputFrameLen;
-#else
     int64_t bytesToWrite = aacDecFrameInfo.samples*sizeof(int16_t);
-#endif
+#endif // AUDIO_DECODER_USE_FDKAAC
+
+    // wait for space in ouput buffer    
     outFifoPtr->mutex.lock();
     uint64_t count = outFifoPtr->count;
     while (int64_t(AUDIO_FIFO_SIZE - count) < bytesToWrite)
