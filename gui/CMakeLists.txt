@@ -14,6 +14,7 @@ set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/../install/")
 option (USE_SYSTEM_RTLSDR "Use system provided rtl-sdr" ON)
 option (USE_SYSTEM_LIBUSB "Use system provided libusb" ON)
 option (USE_SYSTEM_FAAD "Use system provided libfaad" ON)
+option (USE_SYSTEM_FDKAAC "Use system provided libfdk-aac" ON)
 option (USE_SYSTEM_MPG123 "Use system provided libmpg123" ON)
 option (USE_SYSTEM_PORTAUDIO "Use system provided portaudio" ON)
 
@@ -58,6 +59,7 @@ endif(LIBUSB_WIN_PREBUILD)
 
 set (RTLSDR_PREFIX "${EXT_LIBS_DIR}/rtlsdr-prefix")
 set (FAAD2_PREFIX "${EXT_LIBS_DIR}/faad2-prefix")
+set (FDKAAC_PREFIX "${EXT_LIBS_DIR}/fdkaac-prefix")
 set (MPG123_PREFIX "${EXT_LIBS_DIR}/mpg123-prefix")
 set (PORTAUDIO_PREFIX "${EXT_LIBS_DIR}/portaudio-prefix")
 
@@ -95,6 +97,15 @@ if (USE_SYSTEM_FAAD)
     if (NOT LIBFAAD2_LINK_LIBRARIES)
         message (WARNING "libfaad not found. Build from source and install to: ${FAAD2_PREFIX}")
         set (USE_SYSTEM_FAAD OFF)
+    endif ()
+endif ()
+
+if (USE_SYSTEM_FDKAAC)
+    find_library (LIBFDKAAC_LINK_LIBRARIES fdk-aac)
+    find_path(LIBFDKAAC_INCLUDE_DIRS aacdecoder_lib.h)
+    if (NOT LIBFDKAAC_LINK_LIBRARIES)
+        message (WARNING "libfdk-aac not found. Build from source and install to: ${FDKAAC_PREFIX}")
+        set (USE_SYSTEM_FDKAAC OFF)
     endif ()
 endif ()
 
@@ -155,6 +166,15 @@ if (NOT USE_SYSTEM_FAAD)
 
     set (LIBFAAD2_INCLUDE_DIRS "${FAAD2_PREFIX}/include")
     set (LIBFAAD2_LINK_LIBRARIES faad2)
+endif()
+
+if (NOT USE_SYSTEM_FDKAAC)
+    add_library (fdk-aac STATIC IMPORTED)
+    set_property (TARGET fdk-aac PROPERTY IMPORTED_LOCATION "${FDKAAC_PREFIX}/lib/libfdk-aac.a")
+    add_dependencies (fdk-aac fdk-aac_external)
+
+    set (LIBFDKAAC_INCLUDE_DIRS "${FDKAAC_PREFIX}/include")
+    set (LIBFDKAAC_LINK_LIBRARIES fdk-aac)
 endif()
 
 if (NOT USE_SYSTEM_MPG123)
@@ -283,6 +303,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE dab)
 # FAAD
 include_directories ( ${LIBFAAD2_INCLUDE_DIRS} )
 target_link_libraries(${PROJECT_NAME} PRIVATE "${LIBFAAD2_LINK_LIBRARIES}" )
+
+# FDKAAC
+include_directories ( ${LIBFDKAAC_INCLUDE_DIRS} )
+target_link_libraries(${PROJECT_NAME} PRIVATE "${LIBFDKAAC_LINK_LIBRARIES}" )
 
 # MPG123
 include_directories ( ${LIBMPG123_INCLUDE_DIRS} )

@@ -8,10 +8,14 @@
 #include <mpg123.h>
 #include "radiocontrol.h"
 #include "audiofifo.h"
+#include <fdk-aac/aacdecoder_lib.h>
 
 //#define AUDIO_DECODER_RAW_OUT
 //#define AUDIO_DECODER_AAC_OUT
 //#define AUDIO_DECODER_MP2_OUT
+
+#define AUDIO_DECODER_USE_FDKAAC 0
+
 
 typedef union
 {
@@ -64,11 +68,19 @@ signals:
 private:
     bool isRunning;
     DabAudioDataSCty mode;
-    audiodecAacHeader_t aacHeader;
+    audiodecAacHeader_t aacHeader;    
     AudioParameters audioParameters;
 
+#if (AUDIO_DECODER_USE_FDKAAC)
+    HANDLE_AACDECODER aacDecoderHandle;
+    uint8_t *outputFrame = nullptr;
+    size_t outputFrameLen;
+#else
     NeAACDecHandle aacDecoderHandle;
     NeAACDecFrameInfo aacDecFrameInfo;
+#endif
+    int ascLen;
+    uint8_t asc[7];
 
     float mp2DRC = 0;
     mpg123_handle * mp2DecoderHandle;
@@ -87,7 +99,9 @@ private:
     void writeMP2Output(const char *data, uint16_t dataLen);
 #endif
 
-    void initFAAD();    
+    void readAACHeader(const uint8_t header);
+
+    void initAACDecoder();
     void processAAC(QByteArray *inData);
 
     void initMPG123();
