@@ -39,7 +39,7 @@ AudioDecoder::~AudioDecoder()
 {
     if (nullptr != aacDecoderHandle)
     {
-#if (AUDIO_DECODER_USE_FDKAAC)
+#if defined(AUDIO_DECODER_USE_FDKAAC)
         aacDecoder_Close(aacDecoderHandle);
         if (nullptr != outputFrame)
         {
@@ -97,7 +97,7 @@ void AudioDecoder::stop()
 
     if (nullptr != aacDecoderHandle)
     {
-#if (AUDIO_DECODER_USE_FDKAAC)
+#if defined(AUDIO_DECODER_USE_FDKAAC)
         aacDecoder_Close(aacDecoderHandle);
 #else
         NeAACDecClose(aacDecoderHandle);
@@ -285,7 +285,7 @@ void AudioDecoder::readAACHeader(const uint8_t header)
     }
 }
 
-#if (AUDIO_DECODER_USE_FDKAAC)
+#if defined(AUDIO_DECODER_USE_FDKAAC)
 void AudioDecoder::initAACDecoder()
 {
     if (nullptr != aacDecoderHandle)
@@ -352,7 +352,7 @@ void AudioDecoder::initAACDecoder()
     emit startAudio(uint32_t(aacHeader.bits.dac_rate ? 48000 : 32000), uint8_t(channels));
 
 }
-#else // (AUDIO_DECODER_USE_FDKAAC)
+#else // defined(AUDIO_DECODER_USE_FDKAAC)
 void AudioDecoder::initAACDecoder()
 {
     if (nullptr != aacDecoderHandle)
@@ -402,7 +402,7 @@ void AudioDecoder::initAACDecoder()
 
     emit startAudio(uint32_t(outputSr), uint8_t(outputCh));
 }
-#endif // (AUDIO_DECODER_USE_FDKAAC)
+#endif // defined(AUDIO_DECODER_USE_FDKAAC)
 
 void AudioDecoder::inputData(QByteArray *inData)
 {
@@ -595,7 +595,7 @@ void AudioDecoder::processAAC(QByteArray *inData)
 
     if (conceal)
     {
-#if (AUDIO_DECODER_USE_FDKAAC)
+#if defined(AUDIO_DECODER_USE_FDKAAC)
         // clear concealment bit
 #if AUDIO_DECODER_FDKAAC_CONCEALMENT
         header.bits.conceal = 0;
@@ -623,7 +623,7 @@ void AudioDecoder::processAAC(QByteArray *inData)
     }
 
     // decode audio    
-#if (AUDIO_DECODER_USE_FDKAAC)
+#if defined(AUDIO_DECODER_USE_FDKAAC)
     uint8_t * aacData[1] = {(uint8_t *) inData->data()+1};
     unsigned int len[1];
     len[0] = inData->size()-1;
@@ -665,7 +665,7 @@ void AudioDecoder::processAAC(QByteArray *inData)
 #endif
 
     int64_t bytesToWrite = outputFrameLen;
-#else // AUDIO_DECODER_USE_FDKAAC
+#else // defined AUDIO_DECODER_USE_FDKAAC
     const char * aacData = inData->data()+1;
     unsigned long len = inData->size()-1;
 
@@ -698,7 +698,7 @@ void AudioDecoder::processAAC(QByteArray *inData)
 #endif
 
     int64_t bytesToWrite = aacDecFrameInfo.samples*sizeof(int16_t);
-#endif // AUDIO_DECODER_USE_FDKAAC
+#endif // defined AUDIO_DECODER_USE_FDKAAC
 
     // wait for space in ouput buffer    
     outFifoPtr->mutex.lock();

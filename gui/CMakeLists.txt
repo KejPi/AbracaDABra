@@ -11,12 +11,15 @@ project(${TARGET} LANGUAGES CXX)
 
 set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/../install/")
 
-option (USE_SYSTEM_RTLSDR "Use system provided rtl-sdr" ON)
-option (USE_SYSTEM_LIBUSB "Use system provided libusb" ON)
-option (USE_SYSTEM_FAAD "Use system provided libfaad" ON)
-option (USE_SYSTEM_FDKAAC "Use system provided libfdk-aac" ON)
-option (USE_SYSTEM_MPG123 "Use system provided libmpg123" ON)
-option (USE_SYSTEM_PORTAUDIO "Use system provided portaudio" ON)
+# AAC decoder - default is FAAD2 but FDK-AAC can be used optionally
+option (USE_FDK_AAC           "Compile with fdk-aac library from Franhofer instead of faad2"   ON)
+
+option (USE_SYSTEM_RTLSDR     "Use system provided rtl-sdr"     ON)
+option (USE_SYSTEM_LIBUSB     "Use system provided libusb"      ON)
+option (USE_SYSTEM_FAAD       "Use system provided libfaad"     ON)
+option (USE_SYSTEM_FDKAAC     "Use system provided libfdk-aac"  ON)
+option (USE_SYSTEM_MPG123     "Use system provided libmpg123"   ON)
+option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   ON)
 
 
 ### DAB library
@@ -26,7 +29,7 @@ set(BACKEND_INCLUDE_DIRS "${BACKEND_DIR}")
 add_subdirectory(${BACKEND_DIR} backend)
 ###
 
-
+### 64bits ot 32 bits
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     # 64 bits
     message(STATUS "64 bit build detected")
@@ -47,12 +50,16 @@ endif()
 
 
 if(WIN32)
+   # libusb compiled from souce does not work for some reason
+   # rebuilt libs downloaded from https://libusb.info work
    set (LIBUSB_WIN_PREBUILD ON)
 endif(WIN32)
 
 if (LIBUSB_WIN_PREBUILD)
+    # downloaded prebuilt libs
     set (LIBUSB_PREFIX "${EXT_LIBS_DIR}/libusb")
 else(LIBUSB_WIN_PREBUILD)
+    # compiled libs - seems not to work under windows
     set (LIBUSB_PREFIX "${EXT_LIBS_DIR}/libusb-prefix")
 endif(LIBUSB_WIN_PREBUILD)
 
@@ -91,23 +98,27 @@ if (USE_SYSTEM_LIBUSB)
     endif ()
 endif ()
 
-if (USE_SYSTEM_FAAD)
-    find_library (LIBFAAD2_LINK_LIBRARIES faad)
-    find_path(LIBFAAD2_INCLUDE_DIRS neaacdec.h)
-    if (NOT LIBFAAD2_LINK_LIBRARIES)
-        message (WARNING "libfaad not found. Build from source and install to: ${FAAD2_PREFIX}")
-        set (USE_SYSTEM_FAAD OFF)
+if (USE_FDK_AAC)
+    message (STATUS "libfdk-aac used instead of libfaad2")
+    add_definitions(-DAUDIO_DECODER_USE_FDKAAC)
+    if (USE_SYSTEM_FDKAAC)
+        find_library (LIBFDKAAC_LINK_LIBRARIES fdk-aac)
+        find_path(LIBFDKAAC_INCLUDE_DIRS aacdecoder_lib.h)
+        if (NOT LIBFDKAAC_LINK_LIBRARIES)
+            message (WARNING "libfdk-aac not found. Build from source and install to: ${FDKAAC_PREFIX}")
+            set (USE_SYSTEM_FDKAAC OFF)
+        endif ()
     endif ()
-endif ()
-
-if (USE_SYSTEM_FDKAAC)
-    find_library (LIBFDKAAC_LINK_LIBRARIES fdk-aac)
-    find_path(LIBFDKAAC_INCLUDE_DIRS aacdecoder_lib.h)
-    if (NOT LIBFDKAAC_LINK_LIBRARIES)
-        message (WARNING "libfdk-aac not found. Build from source and install to: ${FDKAAC_PREFIX}")
-        set (USE_SYSTEM_FDKAAC OFF)
+else (USE_FDK_AAC)
+    if (USE_SYSTEM_FAAD)
+        find_library (LIBFAAD2_LINK_LIBRARIES faad)
+        find_path(LIBFAAD2_INCLUDE_DIRS neaacdec.h)
+        if (NOT LIBFAAD2_LINK_LIBRARIES)
+            message (WARNING "libfaad not found. Build from source and install to: ${FAAD2_PREFIX}")
+            set (USE_SYSTEM_FAAD OFF)
+        endif ()
     endif ()
-endif ()
+endif(USE_FDK_AAC)
 
 if (USE_SYSTEM_MPG123)
     find_library (LIBMPG123_LINK_LIBRARIES mpg123)
@@ -300,13 +311,15 @@ add_executable(${TARGET}
 include_directories ( ${BACKEND_INCLUDE_DIRS} )
 target_link_libraries(${PROJECT_NAME} PRIVATE dab)
 
-# FAAD
-include_directories ( ${LIBFAAD2_INCLUDE_DIRS} )
-target_link_libraries(${PROJECT_NAME} PRIVATE "${LIBFAAD2_LINK_LIBRARIES}" )
-
-# FDKAAC
-include_directories ( ${LIBFDKAAC_INCLUDE_DIRS} )
-target_link_libraries(${PROJECT_NAME} PRIVATE "${LIBFDKAAC_LINK_LIBRARIES}" )
+if (USE_FDK_AAC)
+    # FDKAAC
+    include_directories ( ${LIBFDKAAC_INCLUDE_DIRS} )
+    target_link_libraries(${PROJECT_NAME} PRIVATE "${LIBFDKAAC_LINK_LIBRARIES}" )
+else (USE_FDK_AAC)
+    # FAAD
+    include_directories ( ${LIBFAAD2_INCLUDE_DIRS} )
+    target_link_libraries(${PROJECT_NAME} PRIVATE "${LIBFAAD2_LINK_LIBRARIES}" )
+endif (USE_FDK_AAC)
 
 # MPG123
 include_directories ( ${LIBMPG123_INCLUDE_DIRS} )

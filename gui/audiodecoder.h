@@ -14,7 +14,8 @@
 //#define AUDIO_DECODER_AAC_OUT
 //#define AUDIO_DECODER_MP2_OUT
 
-#define AUDIO_DECODER_USE_FDKAAC 0
+// this is set from cmake
+//#define AUDIO_DECODER_USE_FDKAAC
 #define AUDIO_DECODER_FDKAAC_CONCEALMENT 1
 
 
@@ -59,7 +60,7 @@ private:
     dabAudioFrameHeader_t aacHeader;
     AudioParameters audioParameters;
 
-#if (AUDIO_DECODER_USE_FDKAAC)
+#if defined(AUDIO_DECODER_USE_FDKAAC)
     HANDLE_AACDECODER aacDecoderHandle;
     uint8_t *outputFrame = nullptr;
     size_t outputFrameLen;
