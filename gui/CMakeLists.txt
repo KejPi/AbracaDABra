@@ -311,6 +311,7 @@ add_executable(${TARGET}
 include_directories ( ${BACKEND_INCLUDE_DIRS} )
 target_link_libraries(${PROJECT_NAME} PRIVATE dab)
 
+# AAC libs
 if (USE_FDK_AAC)
     # FDKAAC
     include_directories ( ${LIBFDKAAC_INCLUDE_DIRS} )
