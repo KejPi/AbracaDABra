@@ -12,7 +12,7 @@ project(${TARGET} LANGUAGES CXX)
 set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/../install/")
 
 # AAC decoder - default is FAAD2 but FDK-AAC can be used optionally
-option (USE_FDK_AAC           "Compile with fdk-aac library from Franhofer instead of faad2"   ON)
+option (USE_FDK_AAC           "Compile with fdk-aac library from Franhofer instead of faad2" OFF)
 
 option (USE_SYSTEM_RTLSDR     "Use system provided rtl-sdr"     ON)
 option (USE_SYSTEM_LIBUSB     "Use system provided libusb"      ON)
@@ -20,7 +20,6 @@ option (USE_SYSTEM_FAAD       "Use system provided libfaad"     ON)
 option (USE_SYSTEM_FDKAAC     "Use system provided libfdk-aac"  ON)
 option (USE_SYSTEM_MPG123     "Use system provided libmpg123"   ON)
 option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   ON)
-
 
 ### DAB library
 # This has to be before Qt stuff
@@ -99,7 +98,7 @@ if (USE_SYSTEM_LIBUSB)
 endif ()
 
 if (USE_FDK_AAC)
-    message (STATUS "libfdk-aac used instead of libfaad2")
+    message (STATUS "libfdk-aac used instead of libfaad2 ${USE_FDK_AAC}")
     add_definitions(-DAUDIO_DECODER_USE_FDKAAC)
     if (USE_SYSTEM_FDKAAC)
         find_library (LIBFDKAAC_LINK_LIBRARIES fdk-aac)
