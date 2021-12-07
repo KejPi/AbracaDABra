@@ -4,11 +4,14 @@
 #include <QObject>
 #include <QByteArray>
 #include <QDataStream>
-#include <neaacdec.h>
 #include <mpg123.h>
+#if defined(AUDIO_DECODER_USE_FDKAAC)
+#include <fdk-aac/aacdecoder_lib.h>
+#else
+#include <neaacdec.h>
+#endif // defined(AUDIO_DECODER_USE_FDKAAC)
 #include "radiocontrol.h"
 #include "audiofifo.h"
-#include <fdk-aac/aacdecoder_lib.h>
 
 //#define AUDIO_DECODER_RAW_OUT
 //#define AUDIO_DECODER_AAC_OUT
