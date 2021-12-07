@@ -61,6 +61,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(setupDialog, &SetupDialog::fileLoopingEnabled, this, &MainWindow::enableFileLooping);
     connect(setupDialog, &SetupDialog::rawFileStop, this, &MainWindow::onRawFileStop);
 
+    ensembleInfoDialog = new EnsembleInfoDialog(this);
+
     // status bar
     QWidget * widget = new QWidget();
     timeLabel = new QLabel("");
@@ -279,6 +281,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControl, &RadioControl::dabTime, this, &MainWindow::updateDabTime, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::serviceListEntry, this, &MainWindow::updateServiceList, Qt::BlockingQueuedConnection);
 
+    connect(ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleConfiguration, radioControl, &RadioControl::getEnsembleConfiguration, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::snrLevel, ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::freqOffset, ensembleInfoDialog, &EnsembleInfoDialog::updateFreqOffset, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::ensembleConfiguration, ensembleInfoDialog, &EnsembleInfoDialog::refreshEnsembleConfiguration, Qt::QueuedConnection);
 
     connect(radioControl, &RadioControl::dlDataGroup, dlDecoder, &DLDecoder::newDataGroup, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::mscDataGroup, motDecoder, &MOTDecoder::newDataGroup, Qt::QueuedConnection);
@@ -997,6 +1003,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     // disable band scan - will be enable when it makes sense (RTL-SDR at the moment)
     bandScanAct->setDisabled(true);
 
+    // disable file dumping
+    ensembleInfoDialog->enableDumpToFile(false);
+
     switch (d)
     {
     case InputDeviceId::UNDEFINED:
@@ -1044,6 +1053,12 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             ui->serviceListView->setEnabled(true);
             ui->serviceTreeView->setEnabled(true);
             ui->favoriteLabel->setEnabled(true);
+
+            // ensemble info dialog
+            connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, inputDevice, &InputDevice::startDumpToFile);
+            connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, inputDevice, &InputDevice::stopDumpToFile);
+            connect(inputDevice, &InputDevice::dumpingToFile, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
+            ensembleInfoDialog->enableDumpToFile(true);
         }
         else
         {
@@ -1088,6 +1103,12 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             ui->serviceListView->setEnabled(true);
             ui->serviceTreeView->setEnabled(true);
             ui->favoriteLabel->setEnabled(true);
+
+            // ensemble info dialog
+            connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, inputDevice, &InputDevice::startDumpToFile);
+            connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, inputDevice, &InputDevice::stopDumpToFile);
+            connect(inputDevice, &InputDevice::dumpingToFile, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
+            ensembleInfoDialog->enableDumpToFile(true);
         }
         else
         {
@@ -1128,6 +1149,12 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             ui->serviceListView->setEnabled(true);
             ui->serviceTreeView->setEnabled(true);
             ui->favoriteLabel->setEnabled(true);
+
+            // ensemble info dialog
+            connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, inputDevice, &InputDevice::startDumpToFile);
+            connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, inputDevice, &InputDevice::stopDumpToFile);
+            connect(inputDevice, &InputDevice::dumpingToFile, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
+            ensembleInfoDialog->enableDumpToFile(true);
         }
         else
         {
@@ -1373,46 +1400,9 @@ void MainWindow::switchMode()
 
 void MainWindow::showEnsembleInfo()
 {
-    ensembleInfoAct->setDisabled(true);
-
-    EnsembleInfoDialog * ensembleInfoDialog;
-    ensembleInfoDialog = new EnsembleInfoDialog(this);
-    ensembleInfoDialog->setAttribute(Qt::WA_DeleteOnClose);
-    connect(ensembleInfoDialog, &EnsembleInfoDialog::destroyed, this, &MainWindow::onEnsembleInfoClose);
-    connect(ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleConfiguration, radioControl, &RadioControl::getEnsembleConfiguration, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::snrLevel, ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::freqOffset, ensembleInfoDialog, &EnsembleInfoDialog::updateFreqOffset, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::ensembleConfiguration, ensembleInfoDialog, &EnsembleInfoDialog::refreshEnsembleConfiguration, Qt::QueuedConnection);
-
-
-    if ((InputDeviceId::RTLSDR == inputDevice->getDeviceId())
-     || (InputDeviceId::RTLTCP == inputDevice->getDeviceId())
-     || (InputDeviceId::RARTTCP == inputDevice->getDeviceId()))
-    {
-        connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, inputDevice, &InputDevice::startDumpToFile);
-        connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, inputDevice, &InputDevice::stopDumpToFile);
-        connect(inputDevice, &InputDevice::dumpingToFile, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
-        ensembleInfoDialog->enableDumpToFile(true);
-    }
-
-//    if (dynamic_cast<RtlSdrInput*>(inputDevice))
-//    {
-//        connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::startDumpToFile);
-//        connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::stopDumpToFile);
-//        connect(static_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::dumpingToFile, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
-//        ensembleInfoDialog->enableDumpToFile(true);
-//    }
-
     ensembleInfoDialog->show();
     ensembleInfoDialog->raise();
     ensembleInfoDialog->activateWindow();
-
-    radioControl->getEnsembleConfiguration();
-}
-
-void MainWindow::onEnsembleInfoClose()
-{
-    ensembleInfoAct->setEnabled(true);
 }
 
 void MainWindow::setExpertMode(bool ena)

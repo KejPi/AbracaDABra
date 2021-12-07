@@ -75,6 +75,7 @@ protected:
 private:
     Ui::MainWindow *ui;
     SetupDialog * setupDialog;
+    EnsembleInfoDialog * ensembleInfoDialog;
     QProgressBar * snrProgress;
     QLabel  * timeLabel;
     QLabel * syncLabel;
@@ -130,7 +131,6 @@ private:
     void switchServiceSource();
     void switchMode();
     void showEnsembleInfo();
-    void onEnsembleInfoClose();
     void setExpertMode(bool ena);
     void stop();
     void tuneChannel(uint32_t freq);

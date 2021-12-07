@@ -28,6 +28,12 @@ EnsembleInfoDialog::~EnsembleInfoDialog()
 void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
 {
     ui->ensStructureTextEdit->setHtml(txt);
+
+    if (txt.isEmpty())
+    {  // empty ensemble configuration means tuning to new frequency
+        ui->snrLabel->setText("");
+        ui->freqOffsetLabel->setText("");
+    }
 }
 
 void EnsembleInfoDialog::updateSnr(float snr)
