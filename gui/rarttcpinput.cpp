@@ -395,7 +395,7 @@ void RartTcpInput::watchDogTimeout()
 
 void RartTcpInput::startDumpToFile(const QString & filename)
 {
-    dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "w");
+    dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "wb");
     if (nullptr != dumpFile)
     {
         worker->dumpToFileStart(dumpFile);

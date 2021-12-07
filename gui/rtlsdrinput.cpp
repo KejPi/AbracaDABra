@@ -318,7 +318,7 @@ void RtlSdrInput::watchDogTimeout()
 
 void RtlSdrInput::startDumpToFile(const QString & filename)
 {
-    dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "w");
+    dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "wb");
     if (nullptr != dumpFile)
     {
         worker->dumpToFileStart(dumpFile);
@@ -330,6 +330,7 @@ void RtlSdrInput::stopDumpToFile()
 {
     worker->dumpToFileStop();
 
+    fflush(dumpFile);
     fclose(dumpFile);
 
     emit dumpingToFile(false);
@@ -379,6 +380,7 @@ void RtlSdrWorker::dumpBuffer(unsigned char *buf, uint32_t len)
     if (nullptr != dumpFile)
     {
         fwrite(buf, 1, len, dumpFile);
+        //qDebug("Dumping %.1f MB / %.1f sec", bytesDumped/(1024*1024.0), (bytesDumped >> 12)*0.001);
     }
     fileMutex.unlock();
 }
