@@ -285,6 +285,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControl, &RadioControl::snrLevel, ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::freqOffset, ensembleInfoDialog, &EnsembleInfoDialog::updateFreqOffset, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::ensembleConfiguration, ensembleInfoDialog, &EnsembleInfoDialog::refreshEnsembleConfiguration, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::tuneDone, ensembleInfoDialog, &EnsembleInfoDialog::newFrequency, Qt::QueuedConnection);
 
     connect(radioControl, &RadioControl::dlDataGroup, dlDecoder, &DLDecoder::newDataGroup, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::mscDataGroup, motDecoder, &MOTDecoder::newDataGroup, Qt::QueuedConnection);
@@ -1252,6 +1253,8 @@ void MainWindow::loadSettings()
                               settings.value("inputFileLoop", false).toBool());
     setupDialog->setDAGCState(settings.value("DAGC", false).toBool());
     setupDialog->setGainIdx(settings.value("gainIndex", 1).toInt());
+
+    ensembleInfoDialog->setDumpPath(settings.value("dumpPath", QVariant(QDir::homePath())).toString());
 }
 
 void MainWindow::saveSettings()
@@ -1263,6 +1266,7 @@ void MainWindow::saveSettings()
     settings.setValue("inputFileLoop", setupDialog->isFileLoopActive());
     settings.setValue("DAGC", setupDialog->getDAGCState());
     settings.setValue("gainIndex", setupDialog->getGainIdx());
+    settings.setValue("dumpPath", ensembleInfoDialog->getDumpPath());
 
     QModelIndex current = ui->serviceListView->currentIndex();
     const SLModel * model = reinterpret_cast<const SLModel*>(current.model());

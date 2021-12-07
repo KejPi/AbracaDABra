@@ -14,6 +14,8 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
     // remove question mark from titlebar
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
+    dumpPath = QDir::homePath();
+
     ui->snrLabel->setText("");
     ui->freqOffsetLabel->setText("");
     enableDumpToFile(false);
@@ -57,13 +59,18 @@ void EnsembleInfoDialog::on_dumpButton_clicked()
     ui->dumpButton->setEnabled(false);
     if (!isDumping)
     {
-        QString f = QString("%1/%2.raw").arg(QDir::homePath()).arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
+        QString f = QString("%1/%2_%3.raw")
+                .arg(dumpPath)
+                .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"))
+                .arg(DabTables::channelList.value(frequency));
+
         QString fileName = QFileDialog::getSaveFileName(this,
                                                         tr("Dump IQ stream"),
                                                         QDir::toNativeSeparators(f),
                                                         tr("Binary files (*.raw)"));
         if (!fileName.isEmpty())
         {
+            dumpPath = QFileInfo(fileName).path(); // store path for next time
             emit dumpToFileStart(fileName);
         }
         else
@@ -120,6 +127,16 @@ void EnsembleInfoDialog::closeEvent(QCloseEvent *event)
         emit dumpToFileStop();
     }
     event->accept();
+}
+
+const QString &EnsembleInfoDialog::getDumpPath() const
+{
+    return dumpPath;
+}
+
+void EnsembleInfoDialog::setDumpPath(const QString &newDumpPath)
+{
+    dumpPath = newDumpPath;
 }
 
 
