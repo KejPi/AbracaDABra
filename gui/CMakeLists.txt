@@ -65,10 +65,13 @@ endif(LIBUSB_WIN_PREBUILD)
 
 set (RTLSDR_PREFIX "${EXT_LIBS_DIR}/rtlsdr-prefix")
 set (FAAD2_PREFIX "${EXT_LIBS_DIR}/faad2-prefix")
-set (FDKAAC_PREFIX "${EXT_LIBS_DIR}/fdkaac-prefix")
+set (FDKAAC_PREFIX "${EXT_LIBS_DIR}/fdk-aac-prefix")
 set (MPG123_PREFIX "${EXT_LIBS_DIR}/mpg123-prefix")
 set (PORTAUDIO_PREFIX "${EXT_LIBS_DIR}/portaudio-prefix")
 
+# This seems to work under Win
+#find_package(fdk-aac REQUIRED PATHS ${FDKAAC_PREFIX})
+#message (STATUS "fdk-aac: ${fdk-aac_FOUND}")
 
 if (USE_SYSTEM_RTLSDR)
     find_library (RTL_SDR_LINK_LIBRARIES rtlsdr)
@@ -179,8 +182,12 @@ if (NOT USE_SYSTEM_FAAD)
 endif()
 
 if (NOT USE_SYSTEM_FDKAAC)
-    add_library (fdk-aac STATIC IMPORTED)
-    set_property (TARGET fdk-aac PROPERTY IMPORTED_LOCATION "${FDKAAC_PREFIX}/lib/libfdk-aac.a")
+    add_library (fdk-aac STATIC IMPORTED)    
+    if(WIN32)
+        set_property (TARGET fdk-aac PROPERTY IMPORTED_LOCATION "${FDKAAC_PREFIX}/lib/libfdk-aac.dll.a")
+    else(WIN32)
+        set_property (TARGET fdk-aac PROPERTY IMPORTED_LOCATION "${FDKAAC_PREFIX}/lib/libfdk-aac.a")
+    endif(WIN32)
     add_dependencies (fdk-aac fdk-aac_external)
 
     set (LIBFDKAAC_INCLUDE_DIRS "${FDKAAC_PREFIX}/include")
