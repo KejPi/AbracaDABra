@@ -45,7 +45,8 @@ public:
 protected:
     void run() override;
 signals:
-    void agcLevel(float level, int maxVal);
+    void dumpedBytes(ssize_t bytes);
+
 private:
     SOCKET sock;
 
@@ -68,7 +69,6 @@ private:
 
     bool isDumpingIQ() const { return enaDumpToFile; }
     void dumpBuffer(unsigned char *buf, uint32_t len);
-    void emitAgcLevel(float level, int maxVal) { emit agcLevel(level, maxVal); }
 
     friend void rarttcpCb(unsigned char *buf, uint32_t len, void *ctx);
 };

@@ -67,7 +67,8 @@ public slots:
 signals:
     void deviceReady();
     void tuned(uint32_t freq);
-    void dumpingToFile(bool running);
+    void dumpingToFile(bool running, int bytesPerSample = 2);
+    void dumpedBytes(ssize_t bytes);
     void error(const InputDeviceErrorCode errCode = InputDeviceErrorCode::Undefined);
 
 protected:

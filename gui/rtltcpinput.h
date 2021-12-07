@@ -49,6 +49,7 @@ protected:
     void run() override;
 signals:
     void agcLevel(float level, int maxVal);
+    void dumpedBytes(ssize_t bytes);
 private:
     SOCKET sock;
 

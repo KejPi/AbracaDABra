@@ -137,6 +137,7 @@ void RtlSdrInput::run()
 
         worker = new RtlSdrWorker(device, this);
         connect(worker, &RtlSdrWorker::agcLevel, this, &RtlSdrInput::updateAgc, Qt::QueuedConnection);
+        connect(worker, &RtlSdrWorker::dumpedBytes, this, &InputDevice::dumpedBytes, Qt::QueuedConnection);
         connect(worker, &RtlSdrWorker::finished, this, &RtlSdrInput::readThreadStopped, Qt::QueuedConnection);
         connect(worker, &RtlSdrWorker::finished, worker, &QObject::deleteLater);
 #if (RTLSDR_WDOG_ENABLE)
@@ -379,8 +380,8 @@ void RtlSdrWorker::dumpBuffer(unsigned char *buf, uint32_t len)
     fileMutex.lock();
     if (nullptr != dumpFile)
     {
-        fwrite(buf, 1, len, dumpFile);
-        //qDebug("Dumping %.1f MB / %.1f sec", bytesDumped/(1024*1024.0), (bytesDumped >> 12)*0.001);
+        ssize_t bytes = fwrite(buf, 1, len, dumpFile);
+        emit dumpedBytes(bytes);
     }
     fileMutex.unlock();
 }

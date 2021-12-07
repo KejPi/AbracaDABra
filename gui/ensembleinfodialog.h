@@ -21,7 +21,9 @@ public:
     void updateFreqOffset(float offset);
 
     void enableDumpToFile(bool ena);
-    void dumpToFileStateToggle(bool dumping);
+    void dumpToFileStateToggle(bool dumping, int bytesPerSample);
+
+    void updateDumpStatus(ssize_t bytes);
 
 signals:
     void dumpToFileStart(const QString & filename);
@@ -36,6 +38,8 @@ private:
     Ui::EnsembleInfoDialog *ui;
 
     bool isDumping = false;
+    ssize_t bytesDumped = 0;
+    int bytesToTimeShiftFactor = 12;
 
 private slots:
     void on_dumpButton_clicked();

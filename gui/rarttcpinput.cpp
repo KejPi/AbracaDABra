@@ -399,7 +399,7 @@ void RartTcpInput::startDumpToFile(const QString & filename)
     if (nullptr != dumpFile)
     {
         worker->dumpToFileStart(dumpFile);
-        emit dumpingToFile(true);
+        emit dumpingToFile(true, 4);
     }
 }
 
@@ -558,7 +558,8 @@ void RartTcpWorker::dumpBuffer(unsigned char *buf, uint32_t len)
     fileMutex.lock();
     if (nullptr != dumpFile)
     {
-        fwrite(buf, 1, len, dumpFile);
+        ssize_t bytes = fwrite(buf, 1, len, dumpFile);
+        emit dumpedBytes(bytes);
     }
     fileMutex.unlock();
 }

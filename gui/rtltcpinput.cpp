@@ -703,7 +703,8 @@ void RtlTcpWorker::dumpBuffer(unsigned char *buf, uint32_t len)
     fileMutex.lock();
     if (nullptr != dumpFile)
     {
-        fwrite(buf, 1, len, dumpFile);
+        ssize_t bytes = fwrite(buf, 1, len, dumpFile);
+        emit dumpedBytes(bytes);
     }
     fileMutex.unlock();
 }

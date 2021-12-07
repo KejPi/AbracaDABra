@@ -16,8 +16,7 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
 
     ui->snrLabel->setText("");
     ui->freqOffsetLabel->setText("");
-    //ui->dabTimeLabel->setText("");
-    ui->dumpButton->setVisible(false);
+    enableDumpToFile(false);
 }
 
 EnsembleInfoDialog::~EnsembleInfoDialog()
@@ -49,6 +48,8 @@ void EnsembleInfoDialog::updateFreqOffset(float offset)
 void EnsembleInfoDialog::enableDumpToFile(bool ena)
 {
     ui->dumpButton->setVisible(ena);
+    ui->dumpSizeLabel->setVisible(false);
+    ui->dumpTimeLabel->setVisible(false);
 }
 
 void EnsembleInfoDialog::on_dumpButton_clicked()
@@ -76,18 +77,34 @@ void EnsembleInfoDialog::on_dumpButton_clicked()
     }
 }
 
-void EnsembleInfoDialog::dumpToFileStateToggle(bool dumping)
+void EnsembleInfoDialog::dumpToFileStateToggle(bool dumping, int bytesPerSample)
 {
     isDumping = dumping;
     if (dumping)
     {
         ui->dumpButton->setText("Stop dumping");
+        bytesDumped = 0;
+
+        // default is bytes/2048/2 => 2 bytes per sample, 2048 samples per milisecond => 2^-12
+        bytesToTimeShiftFactor = 12 + (4 == bytesPerSample);
+        ui->dumpSizeLabel->setText("");
+        ui->dumpTimeLabel->setText("");
     }
     else
     {
         ui->dumpButton->setText("Dump raw data");
     }
+    ui->dumpSizeLabel->setVisible(dumping);
+    ui->dumpTimeLabel->setVisible(dumping);
     ui->dumpButton->setEnabled(true);
+}
+
+void EnsembleInfoDialog::updateDumpStatus(ssize_t bytes)
+{
+    bytesDumped += bytes;
+    ui->dumpSizeLabel->setText(QString::number(double(bytesDumped/(1024*1024.0)),'f', 1) + " MB");
+    int timeMs = bytesDumped >> bytesToTimeShiftFactor;
+    ui->dumpTimeLabel->setText(QString::number(double(timeMs * 0.001),'f', 1) + " sec");
 }
 
 void EnsembleInfoDialog::showEvent(QShowEvent *event)

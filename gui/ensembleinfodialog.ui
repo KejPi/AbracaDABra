@@ -13,8 +13,8 @@
   <property name="windowTitle">
    <string>Ensemble Information</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <layout class="QGridLayout" name="gridLayout">
@@ -22,7 +22,6 @@
         <widget class="QLabel" name="freqOffset">
          <property name="font">
           <font>
-           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -55,7 +54,6 @@
         <widget class="QLabel" name="snr">
          <property name="font">
           <font>
-           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -80,15 +78,37 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="dumpButton">
-       <property name="text">
-        <string>Dump raw data</string>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="dumpProgressLayout">
+       <item>
+        <widget class="QLabel" name="dumpTimeLabel">
+         <property name="text">
+          <string>22.7 sec</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="dumpSizeLabel">
+         <property name="text">
+          <string>54.8 MB</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="dumpLayout">
+       <item>
+        <widget class="QPushButton" name="dumpButton">
+         <property name="text">
+          <string>Dump raw data</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
-   <item>
+   <item row="1" column="0">
     <widget class="QTextEdit" name="ensStructureTextEdit">
      <property name="minimumSize">
       <size>
