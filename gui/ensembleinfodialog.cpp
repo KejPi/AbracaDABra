@@ -1,6 +1,7 @@
 #include <QFileDialog>
 #include <QDateTime>
 #include <QDebug>
+#include <QMenu>
 
 #include "ensembleinfodialog.h"
 #include "ui_ensembleinfodialog.h"
@@ -20,6 +21,9 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
 
     ui->snr->setText("");
     ui->freqOffset->setText("");
+    ui->FIBframe->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->FIBframe, &QWidget::customContextMenuRequested, this, &EnsembleInfoDialog::fibFrameContextMenu);
+
     enableDumpToFile(false);
 }
 
@@ -174,4 +178,23 @@ void EnsembleInfoDialog::setDumpPath(const QString &newDumpPath)
     dumpPath = newDumpPath;
 }
 
+void EnsembleInfoDialog::fibFrameContextMenu(const QPoint& pos)
+{
+    QPoint globalPos = ui->FIBframe->mapToGlobal(pos);
+    QMenu menu(this);
+    menu.addAction("Reset FIB statistics");
+    QAction* selectedItem = menu.exec(globalPos);
+    if (selectedItem)
+    {   // item was chosen, only 1 was available => do actions
+        fibCounter = 0;
+        fibErrorCounter = 0;
+        ui->fibCount->setText("0");
+        ui->fibErrCount->setText("0");
+        ui->fibErrRate->setText("N/A");
+    }
+    else
+    {  // nothing was chosen
+    }
+
+}
 

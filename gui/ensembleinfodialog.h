@@ -36,9 +36,8 @@ signals:
     void requestEnsembleConfiguration();
 
 protected:
-    void showEvent(QShowEvent *event);
-    void closeEvent(QCloseEvent *event);
-
+    void showEvent(QShowEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
 private:
     Ui::EnsembleInfoDialog *ui;
 
@@ -53,6 +52,7 @@ private:
 
 private slots:
     void on_dumpButton_clicked();
+    void fibFrameContextMenu(const QPoint &pos);
 
 };
 
