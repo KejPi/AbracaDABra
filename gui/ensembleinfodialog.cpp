@@ -24,6 +24,9 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
     ui->FIBframe->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->FIBframe, &QWidget::customContextMenuRequested, this, &EnsembleInfoDialog::fibFrameContextMenu);
 
+    ui->MSCframe->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->MSCframe, &QWidget::customContextMenuRequested, this, &EnsembleInfoDialog::mscFrameContextMenu);
+
     enableDumpToFile(false);
 }
 
@@ -42,13 +45,8 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
         ui->freqOffset->setText("N/A");
         ui->agcGain->setText("N/A");
 
-        fibCounter = 0;
-        fibErrorCounter = 0;
-        ui->fibCount->setText("0");
-        ui->fibErrCount->setText("0");
-        ui->fibErrRate->setText("N/A");
-
-
+        resetFibStat();
+        resetMscStat();
     }
 }
 
@@ -153,6 +151,35 @@ void EnsembleInfoDialog::updateFIBstatus(int fibCntr, int fibErrCount)
     ui->fibErrRate->setText(QString::number(double(fibErrorCounter)/fibCounter,'e', 4));
 }
 
+void EnsembleInfoDialog::updateMSCstatus(int crcOkCount, int crcErrCount)
+{
+    crcCounter += (crcOkCount + crcErrCount);
+    crcCounter &= 0x7FFFFFFF;       // wrapping
+    crcErrorCounter += crcErrCount;
+    crcErrorCounter &= 0x7FFFFFFF;  // wrapping
+    ui->crcCount->setText(QString::number(crcCounter));
+    ui->crcErrCount->setText(QString::number(crcErrorCounter));
+    ui->crcErrRate->setText(QString::number(double(crcErrorCounter)/crcCounter,'e', 4));
+}
+
+void EnsembleInfoDialog::resetFibStat()
+{
+    fibCounter = 0;
+    fibErrorCounter = 0;
+    ui->fibCount->setText("0");
+    ui->fibErrCount->setText("0");
+    ui->fibErrRate->setText("N/A");
+}
+
+void EnsembleInfoDialog::resetMscStat()
+{
+    crcCounter = 0;
+    crcErrorCounter = 0;
+    ui->crcCount->setText("0");
+    ui->crcErrCount->setText("0");
+    ui->crcErrRate->setText("N/A");
+}
+
 void EnsembleInfoDialog::showEvent(QShowEvent *event)
 {
     emit requestEnsembleConfiguration();
@@ -186,15 +213,26 @@ void EnsembleInfoDialog::fibFrameContextMenu(const QPoint& pos)
     QAction* selectedItem = menu.exec(globalPos);
     if (selectedItem)
     {   // item was chosen, only 1 was available => do actions
-        fibCounter = 0;
-        fibErrorCounter = 0;
-        ui->fibCount->setText("0");
-        ui->fibErrCount->setText("0");
-        ui->fibErrRate->setText("N/A");
+        resetFibStat();
     }
     else
     {  // nothing was chosen
     }
-
 }
+
+void EnsembleInfoDialog::mscFrameContextMenu(const QPoint &pos)
+{
+    QPoint globalPos = ui->MSCframe->mapToGlobal(pos);
+    QMenu menu(this);
+    menu.addAction("Reset MSC statistics");
+    QAction* selectedItem = menu.exec(globalPos);
+    if (selectedItem)
+    {   // item was chosen, only 1 was available => do actions
+        resetMscStat();
+    }
+    else
+    {  // nothing was chosen
+    }
+}
+
 

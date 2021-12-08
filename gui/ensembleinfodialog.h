@@ -27,7 +27,9 @@ public:
     void updateDumpStatus(ssize_t bytes);
     void updateAgcGain(int gain10);
     void updateFIBstatus(int fibCount, int fibErrCount);
-
+    void updateMSCstatus(int crcOkCount, int crcErrCount);
+    void resetFibStat();
+    void resetMscStat();
     void newFrequency(quint32 f) { frequency = f; }
 
 signals:
@@ -49,11 +51,13 @@ private:
 
     quint32 fibCounter;
     quint32 fibErrorCounter;
+    quint32 crcCounter;
+    quint32 crcErrorCounter;
 
 private slots:
     void on_dumpButton_clicked();
     void fibFrameContextMenu(const QPoint &pos);
-
+    void mscFrameContextMenu(const QPoint &pos);
 };
 
 #endif // ENSEMBLEINFODIALOG_H

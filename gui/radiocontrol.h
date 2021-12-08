@@ -219,6 +219,7 @@ signals:
     void snrLevel(float snr);
     void freqOffset(float f);
     void fibCounter(int expected, int errors);
+    void mscCounter(int correct, int errors);
     void tuneDone(uint32_t freq);
     void ensembleInformation(const RadioControlEnsemble & ens);
     void serviceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
