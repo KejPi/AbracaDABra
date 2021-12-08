@@ -18,6 +18,9 @@
 #define RADIO_CONTROL_VERBOSE  0
 #define RADIO_CONTROL_N_CHANNELS_ENABLE  0
 #define RADIO_CONTROL_NOTIFICATION_PERIOD  3  // 2^3 = 8 DAB frames = 8*96ms = 768ms
+// number of FIB expeted to be received during noticication period
+// there are 12 FIB's in one DAB frame
+#define RADIO_CONTROL_NOTIFICATION_FIB_EXPECTED  (12*(1 << RADIO_CONTROL_NOTIFICATION_PERIOD))
 
 enum class DabSyncLevel
 {
@@ -215,6 +218,7 @@ signals:
     void syncStatus(uint8_t sync);
     void snrLevel(float snr);
     void freqOffset(float f);
+    void fibCounter(int expected, int errors);
     void tuneDone(uint32_t freq);
     void ensembleInformation(const RadioControlEnsemble & ens);
     void serviceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);

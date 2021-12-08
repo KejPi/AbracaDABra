@@ -26,7 +26,7 @@ public:
     void dumpToFileStateToggle(bool dumping, int bytesPerSample);
     void updateDumpStatus(ssize_t bytes);
     void updateAgcGain(int gain10);
-    void updateFIBstatus(quint32 fibCntr, quint32 fibErrCntr);
+    void updateFIBstatus(int fibCount, int fibErrCount);
 
     void newFrequency(quint32 f) { frequency = f; }
 
@@ -47,6 +47,9 @@ private:
     int bytesToTimeShiftFactor = 12;
     quint32 frequency;
     QString dumpPath;
+
+    quint32 fibCounter;
+    quint32 fibErrorCounter;
 
 private slots:
     void on_dumpButton_clicked();

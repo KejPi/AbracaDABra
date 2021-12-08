@@ -37,6 +37,14 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
         ui->snr->setText("N/A");
         ui->freqOffset->setText("N/A");
         ui->agcGain->setText("N/A");
+
+        fibCounter = 0;
+        fibErrorCounter = 0;
+        ui->fibCount->setText("0");
+        ui->fibErrCount->setText("0");
+        ui->fibErrRate->setText("N/A");
+
+
     }
 }
 
@@ -130,8 +138,15 @@ void EnsembleInfoDialog::updateAgcGain(int gain10)
     ui->agcGain->setText(QString::number(double(gain10 * 0.1),'f', 1) + " dB");
 }
 
-void EnsembleInfoDialog::updateFIBstatus(quint32 fibCntr, quint32 fibErrCntr)
+void EnsembleInfoDialog::updateFIBstatus(int fibCntr, int fibErrCount)
 {
+    fibCounter += (fibCntr - fibErrCount);
+    fibCounter &= 0x7FFFFFFF;       // wrapping
+    fibErrorCounter += fibErrCount;
+    fibErrorCounter &= 0x7FFFFFFF;  // wrapping
+    ui->fibCount->setText(QString::number(fibCounter));
+    ui->fibErrCount->setText(QString::number(fibErrorCounter));
+    ui->fibErrRate->setText(QString::number(double(fibErrorCounter)/fibCounter,'e', 4));
 }
 
 void EnsembleInfoDialog::showEvent(QShowEvent *event)

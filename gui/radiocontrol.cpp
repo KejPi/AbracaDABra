@@ -408,6 +408,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         }
 
         emit freqOffset(pData->freqOffset*0.1);
+        emit fibCounter(RADIO_CONTROL_NOTIFICATION_FIB_EXPECTED, pData->fibErrorCntr);
 
 #if RADIO_CONTROL_VERBOSE > 0
         qDebug("AutoNotify: sync %d, freq offset = %.1f Hz, SNR = %.1f dB",
