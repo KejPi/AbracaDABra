@@ -25,6 +25,8 @@ public:
     void enableDumpToFile(bool ena);
     void dumpToFileStateToggle(bool dumping, int bytesPerSample);
     void updateDumpStatus(ssize_t bytes);
+    void updateAgcGain(int gain10);
+    void updateFIBstatus(quint32 fibCntr, quint32 fibErrCntr);
 
     void newFrequency(quint32 f) { frequency = f; }
 

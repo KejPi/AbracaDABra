@@ -16,6 +16,8 @@
 
 #define INPUTDEVICE_WDOG_TIMEOUT_SEC 2   // watchdog timeout in seconds (if implemented and enabled)
 
+#define INPUTDEVICE_AGC_GAIN_NA  0x0FFF  // this value signalizes that AGC gain is not available (e.g. hardware AGC)
+
 struct ComplexFifo
 {
     uint64_t count;
@@ -69,6 +71,7 @@ signals:
     void tuned(uint32_t freq);
     void dumpingToFile(bool running, int bytesPerSample = 2);
     void dumpedBytes(ssize_t bytes);
+    void agcGain(int gain10);
     void error(const InputDeviceErrorCode errCode = InputDeviceErrorCode::Undefined);
 
 protected:

@@ -5,6 +5,8 @@
 #include "ensembleinfodialog.h"
 #include "ui_ensembleinfodialog.h"
 
+#include "inputdevice.h"   // needed for AGC gain
+
 EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::EnsembleInfoDialog)
@@ -16,8 +18,8 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
 
     dumpPath = QDir::homePath();
 
-    ui->snrLabel->setText("");
-    ui->freqOffsetLabel->setText("");
+    ui->snr->setText("");
+    ui->freqOffset->setText("");
     enableDumpToFile(false);
 }
 
@@ -32,26 +34,29 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
 
     if (txt.isEmpty())
     {  // empty ensemble configuration means tuning to new frequency
-        ui->snrLabel->setText("");
-        ui->freqOffsetLabel->setText("");
+        ui->snr->setText("N/A");
+        ui->freqOffset->setText("N/A");
+        ui->agcGain->setText("N/A");
     }
 }
 
 void EnsembleInfoDialog::updateSnr(float snr)
 {
-    ui->snrLabel->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
+    ui->snr->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
 }
 
 void EnsembleInfoDialog::updateFreqOffset(float offset)
 {
-    ui->freqOffsetLabel->setText(QString("%1 Hz").arg(offset, 0, 'f', 1));
+    ui->freqOffset->setText(QString("%1 Hz").arg(offset, 0, 'f', 1));
 }
 
 void EnsembleInfoDialog::enableDumpToFile(bool ena)
 {
-    ui->dumpButton->setVisible(ena);
+    ui->dumpButton->setVisible(ena);   
+    ui->dumpSize->setText("");
+    ui->dumpLength->setText("");
+    ui->dumpLengthLabel->setVisible(false);
     ui->dumpSizeLabel->setVisible(false);
-    ui->dumpTimeLabel->setVisible(false);
 }
 
 void EnsembleInfoDialog::on_dumpButton_clicked()
@@ -94,24 +99,39 @@ void EnsembleInfoDialog::dumpToFileStateToggle(bool dumping, int bytesPerSample)
 
         // default is bytes/2048/2 => 2 bytes per sample, 2048 samples per milisecond => 2^-12
         bytesToTimeShiftFactor = 12 + (4 == bytesPerSample);
-        ui->dumpSizeLabel->setText("");
-        ui->dumpTimeLabel->setText("");
     }
     else
     {
         ui->dumpButton->setText("Dump raw data");
     }
+    ui->dumpSize->setText("");
+    ui->dumpLength->setText("");
+
+    ui->dumpLengthLabel->setVisible(dumping);
     ui->dumpSizeLabel->setVisible(dumping);
-    ui->dumpTimeLabel->setVisible(dumping);
     ui->dumpButton->setEnabled(true);
 }
 
 void EnsembleInfoDialog::updateDumpStatus(ssize_t bytes)
 {
     bytesDumped += bytes;
-    ui->dumpSizeLabel->setText(QString::number(double(bytesDumped/(1024*1024.0)),'f', 1) + " MB");
+    ui->dumpSize->setText(QString::number(double(bytesDumped/(1024*1024.0)),'f', 1) + " MB");
     int timeMs = bytesDumped >> bytesToTimeShiftFactor;
-    ui->dumpTimeLabel->setText(QString::number(double(timeMs * 0.001),'f', 1) + " sec");
+    ui->dumpLength->setText(QString::number(double(timeMs * 0.001),'f', 1) + " sec");
+}
+
+void EnsembleInfoDialog::updateAgcGain(int gain10)
+{
+    if (INPUTDEVICE_AGC_GAIN_NA == gain10)
+    {   // gain is not available (input device in HW mode)
+        ui->agcGain->setText("N/A");
+        return;
+    }
+    ui->agcGain->setText(QString::number(double(gain10 * 0.1),'f', 1) + " dB");
+}
+
+void EnsembleInfoDialog::updateFIBstatus(quint32 fibCntr, quint32 fibErrCntr)
+{
 }
 
 void EnsembleInfoDialog::showEvent(QShowEvent *event)

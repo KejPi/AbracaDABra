@@ -438,6 +438,10 @@ void RtlTcpInput::setGainMode(GainMode mode, int gainIdx)
         setGain(gainIdx);
     }
 
+    if (GainMode::Hardware == gainMode)
+    {   // signalize that gain is not available
+        emit agcGain(INPUTDEVICE_AGC_GAIN_NA);
+    }
     // does nothing in (GainMode::Software != mode)
     resetAgc();
 }
@@ -458,7 +462,8 @@ void RtlTcpInput::setGain(int gIdx)
     {
         gainIdx = gIdx;
         sendCommand(RtlTcpCommand::SET_GAIN_IDX, gainIdx);
-        qDebug() << "RTL_TCP: Tuner gain set to" << gainList->at(gainIdx)/10.0;
+        //qDebug() << "RTL_TCP: Tuner gain set to" << gainList->at(gainIdx)/10.0;
+        emit agcGain(gainList->at(gainIdx));
     }
 }
 
