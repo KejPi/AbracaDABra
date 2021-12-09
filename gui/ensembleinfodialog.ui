@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>873</width>
-    <height>581</height>
+    <width>759</width>
+    <height>693</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <item>
       <widget class="QFrame" name="signalFrame">
        <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
+        <enum>QFrame::Box</enum>
        </property>
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
@@ -39,6 +39,7 @@
          <widget class="QLabel" name="freqOffsetLabel">
           <property name="font">
            <font>
+            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -67,6 +68,7 @@
          <widget class="QLabel" name="agcGainLabel">
           <property name="font">
            <font>
+            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -89,6 +91,7 @@
          <widget class="QLabel" name="snrLabel">
           <property name="font">
            <font>
+            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -103,7 +106,7 @@
      <item>
       <widget class="QFrame" name="FIBframe">
        <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
+        <enum>QFrame::Box</enum>
        </property>
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
@@ -123,6 +126,7 @@
          <widget class="QLabel" name="fibErrCountLabel">
           <property name="font">
            <font>
+            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -135,6 +139,7 @@
          <widget class="QLabel" name="fibErrRateLabel">
           <property name="font">
            <font>
+            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -157,6 +162,7 @@
          <widget class="QLabel" name="fibCountLabel">
           <property name="font">
            <font>
+            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -187,7 +193,7 @@
      <item>
       <widget class="QFrame" name="MSCframe">
        <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
+        <enum>QFrame::Box</enum>
        </property>
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
@@ -207,6 +213,7 @@
          <widget class="QLabel" name="crcErrCountLabel">
           <property name="font">
            <font>
+            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -219,6 +226,7 @@
          <widget class="QLabel" name="crcErrRateLabel">
           <property name="font">
            <font>
+            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -241,6 +249,7 @@
          <widget class="QLabel" name="crcCountLabel">
           <property name="font">
            <font>
+            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -296,6 +305,7 @@
           <widget class="QLabel" name="dumpLengthLabel">
            <property name="font">
             <font>
+             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -324,6 +334,7 @@
           <widget class="QLabel" name="dumpSizeLabel">
            <property name="font">
             <font>
+             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
