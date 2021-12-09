@@ -19,13 +19,14 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
 
     dumpPath = QDir::homePath();
 
-    ui->snr->setText("");
-    ui->freqOffset->setText("");
+    clearFreqInfo();
+    clearSignalInfo();
+    clearServiceInfo();
+    resetFibStat();
+    resetMscStat();
+
     ui->FIBframe->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->FIBframe, &QWidget::customContextMenuRequested, this, &EnsembleInfoDialog::fibFrameContextMenu);
-
-    ui->MSCframe->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->MSCframe, &QWidget::customContextMenuRequested, this, &EnsembleInfoDialog::mscFrameContextMenu);
 
     enableDumpToFile(false);
 }
@@ -41,9 +42,8 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
 
     if (txt.isEmpty())
     {  // empty ensemble configuration means tuning to new frequency
-        ui->snr->setText("N/A");
-        ui->freqOffset->setText("N/A");
-        ui->agcGain->setText("N/A");
+       clearSignalInfo();
+       clearServiceInfo();
 
         resetFibStat();
         resetMscStat();
@@ -180,6 +180,39 @@ void EnsembleInfoDialog::resetMscStat()
     ui->crcErrRate->setText("N/A");
 }
 
+void EnsembleInfoDialog::newFrequency(quint32 f)
+{
+    frequency = f;
+    if (frequency)
+    {
+        ui->freq->setText(QString::number(frequency) + " kHz");
+        ui->channel->setText(DabTables::channelList.value(frequency));
+    }
+    else
+    {
+        clearFreqInfo();
+        clearServiceInfo();
+        resetMscStat();
+        resetFibStat();
+    }
+}
+
+void EnsembleInfoDialog::serviceChanged(const RadioControlServiceComponent &s)
+{
+    if (s.label.isEmpty())
+    {   // service component not valid -> shoudl not happen
+        clearServiceInfo();
+        return;
+    }
+
+    ui->service->setText(QString("%1").arg(s.label, 16));
+    ui->serviceID->setText("0x"+QString("%1").arg(s.SId.prog.countryServiceRef, 4, 16, QChar('0')).toUpper());
+    ui->scids->setText(QString::number(s.SCIdS));
+    ui->subChannel->setText(QString::number(s.SubChId));
+    ui->startCU->setText(QString::number(s.SubChAddr));
+    ui->numCU->setText(QString::number(s.SubChSize));
+}
+
 void EnsembleInfoDialog::showEvent(QShowEvent *event)
 {
     emit requestEnsembleConfiguration();
@@ -210,29 +243,44 @@ void EnsembleInfoDialog::fibFrameContextMenu(const QPoint& pos)
     QPoint globalPos = ui->FIBframe->mapToGlobal(pos);
     QMenu menu(this);
     menu.addAction("Reset FIB statistics");
-    QAction* selectedItem = menu.exec(globalPos);
-    if (selectedItem)
-    {   // item was chosen, only 1 was available => do actions
-        resetFibStat();
-    }
-    else
+    QAction * mscResetAction = menu.addAction("Reset MSC statistics");
+    QAction * selectedItem = menu.exec(globalPos);
+    if (nullptr == selectedItem)
     {  // nothing was chosen
+       return;
     }
-}
 
-void EnsembleInfoDialog::mscFrameContextMenu(const QPoint &pos)
-{
-    QPoint globalPos = ui->MSCframe->mapToGlobal(pos);
-    QMenu menu(this);
-    menu.addAction("Reset MSC statistics");
-    QAction* selectedItem = menu.exec(globalPos);
-    if (selectedItem)
-    {   // item was chosen, only 1 was available => do actions
+    if (selectedItem == mscResetAction)
+    {   // msc reset
         resetMscStat();
     }
     else
-    {  // nothing was chosen
+    {   // fib reset
+        resetFibStat();
     }
+}
+
+void EnsembleInfoDialog::clearServiceInfo()
+{
+    ui->service->setText(QString("%1").arg("", 16));
+    ui->serviceID->setText("");
+    ui->scids->setText("");
+    ui->subChannel->setText("");
+    ui->startCU->setText("");
+    ui->numCU->setText("");
+}
+
+void EnsembleInfoDialog::clearSignalInfo()
+{
+    ui->snr->setText("N/A");
+    ui->freqOffset->setText("N/A");
+    ui->agcGain->setText("N/A");
+}
+
+void EnsembleInfoDialog::clearFreqInfo()
+{
+    ui->freq->setText("");
+    ui->channel->setText("");
 }
 
 

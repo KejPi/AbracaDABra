@@ -30,7 +30,8 @@ public:
     void updateMSCstatus(int crcOkCount, int crcErrCount);
     void resetFibStat();
     void resetMscStat();
-    void newFrequency(quint32 f) { frequency = f; }
+    void newFrequency(quint32 f);
+    void serviceChanged(const RadioControlServiceComponent &s);
 
 signals:
     void dumpToFileStart(const QString & filename);
@@ -57,7 +58,9 @@ private:
 private slots:
     void on_dumpButton_clicked();
     void fibFrameContextMenu(const QPoint &pos);
-    void mscFrameContextMenu(const QPoint &pos);
+    void clearServiceInfo();
+    void clearSignalInfo();
+    void clearFreqInfo();
 };
 
 #endif // ENSEMBLEINFODIALOG_H
