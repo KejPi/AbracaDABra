@@ -62,11 +62,10 @@ void EnsembleInfoDialog::updateFreqOffset(float offset)
 
 void EnsembleInfoDialog::enableDumpToFile(bool ena)
 {
-    ui->dumpButton->setVisible(ena);   
+    ui->dumpButton->setVisible(ena);       
     ui->dumpSize->setText("");
     ui->dumpLength->setText("");
-    ui->dumpLengthLabel->setVisible(false);
-    ui->dumpSizeLabel->setVisible(false);
+    showDumpingStat(false);
 }
 
 void EnsembleInfoDialog::on_dumpButton_clicked()
@@ -117,8 +116,7 @@ void EnsembleInfoDialog::dumpToFileStateToggle(bool dumping, int bytesPerSample)
     ui->dumpSize->setText("");
     ui->dumpLength->setText("");
 
-    ui->dumpLengthLabel->setVisible(dumping);
-    ui->dumpSizeLabel->setVisible(dumping);
+    showDumpingStat(dumping);
     ui->dumpButton->setEnabled(true);
 }
 
@@ -217,6 +215,9 @@ void EnsembleInfoDialog::showEvent(QShowEvent *event)
 {
     emit requestEnsembleConfiguration();
     event->accept();
+
+    // set to minimum size
+    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
 }
 
 void EnsembleInfoDialog::closeEvent(QCloseEvent *event)
@@ -281,6 +282,13 @@ void EnsembleInfoDialog::clearFreqInfo()
 {
     ui->freq->setText("");
     ui->channel->setText("");
+}
+
+void EnsembleInfoDialog::showDumpingStat(bool ena)
+{
+    ui->dumpLengthLabel->setVisible(ena);
+    ui->dumpSizeLabel->setVisible(ena);
+    ui->dumpVLine->setVisible(ena);
 }
 
 

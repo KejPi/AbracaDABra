@@ -61,6 +61,7 @@ private slots:
     void clearServiceInfo();
     void clearSignalInfo();
     void clearFreqInfo();
+    void showDumpingStat(bool ena);
 };
 
 #endif // ENSEMBLEINFODIALOG_H
