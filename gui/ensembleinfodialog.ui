@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>883</width>
-    <height>693</height>
+    <width>648</width>
+    <height>666</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,149 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_18">
      <item>
-      <widget class="QFrame" name="FIBframe_2">
+      <widget class="QFrame" name="signalFrame">
+       <property name="frameShape">
+        <enum>QFrame::Box</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLabel" name="freqLabel">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Frequency:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="freq">
+            <property name="text">
+             <string>227360 kHz</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
+           <widget class="QLabel" name="channelLabel">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Channel:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="channel">
+            <property name="text">
+             <string>12C</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_9">
+          <item>
+           <widget class="QLabel" name="snrLabel">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>SNR:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="snr">
+            <property name="text">
+             <string>18.8 dB</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_10">
+          <item>
+           <widget class="QLabel" name="freqOffsetLabel">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Frequency offset:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="freqOffset">
+            <property name="text">
+             <string>12345 Hz</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_11">
+          <item>
+           <widget class="QLabel" name="agcGainLabel">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>AGC gain:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="agcGain">
+            <property name="text">
+             <string>36.4 dB</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="serviceFrame">
        <property name="frameShape">
         <enum>QFrame::Box</enum>
        </property>
@@ -173,148 +315,6 @@
            <widget class="QLabel" name="numCU">
             <property name="text">
              <string>88</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QFrame" name="signalFrame">
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QLabel" name="freqLabel">
-            <property name="font">
-             <font>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Frequency:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="freq">
-            <property name="text">
-             <string>227360 kHz</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_8">
-          <item>
-           <widget class="QLabel" name="channelLabel">
-            <property name="font">
-             <font>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Channel:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="channel">
-            <property name="text">
-             <string>12C</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_9">
-          <item>
-           <widget class="QLabel" name="snrLabel">
-            <property name="font">
-             <font>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>SNR:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="snr">
-            <property name="text">
-             <string>18.8 dB</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_10">
-          <item>
-           <widget class="QLabel" name="freqOffsetLabel">
-            <property name="font">
-             <font>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Frequency offset:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="freqOffset">
-            <property name="text">
-             <string>12345 Hz</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_11">
-          <item>
-           <widget class="QLabel" name="agcGainLabel">
-            <property name="font">
-             <font>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>AGC gain:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="agcGain">
-            <property name="text">
-             <string>36.4 dB</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -500,7 +500,7 @@
     <widget class="QTextEdit" name="ensStructureTextEdit">
      <property name="minimumSize">
       <size>
-       <width>700</width>
+       <width>550</width>
        <height>400</height>
       </size>
      </property>

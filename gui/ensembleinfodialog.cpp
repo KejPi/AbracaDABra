@@ -25,6 +25,12 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
     resetFibStat();
     resetMscStat();
 
+    // 16x '_' (max label size is 16 characters)
+    int minWidth = 1.7 * ui->service->fontMetrics().boundingRect("________________").width();
+    ui->FIBframe->setMinimumWidth(minWidth);
+    ui->serviceFrame->setMinimumWidth(minWidth);
+    ui->signalFrame->setMinimumWidth(minWidth);
+
     ui->FIBframe->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->FIBframe, &QWidget::customContextMenuRequested, this, &EnsembleInfoDialog::fibFrameContextMenu);
 
