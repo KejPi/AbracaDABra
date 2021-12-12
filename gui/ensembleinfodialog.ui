@@ -208,7 +208,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="serviceID">
+           <widget class="QLabel" name="serviceId">
             <property name="text">
              <string>0x2456</string>
             </property>

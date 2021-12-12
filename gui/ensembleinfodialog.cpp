@@ -34,6 +34,46 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
     ui->FIBframe->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->FIBframe, &QWidget::customContextMenuRequested, this, &EnsembleInfoDialog::fibFrameContextMenu);
 
+    // set tooltips
+    ui->freqLabel->setToolTip("Tuned frequency");
+    ui->freq->setToolTip("Tuned frequency");
+    ui->channelLabel->setToolTip("Tuned DAB channel");
+    ui->channel->setToolTip("Tuned DAB channel");
+    ui->freqOffsetLabel->setToolTip("Estimated frequency offset");
+    ui->freqOffset->setToolTip("Estimated frequency offset");
+    ui->snrLabel->setToolTip("Estimated SNR");
+    ui->snr->setToolTip("Estimated SNR");
+    ui->agcGainLabel->setToolTip("Current AGC gain<br>(only in software mode)");
+    ui->agcGain->setToolTip("Current AGC gain<br>(only in software mode)");
+
+    ui->serviceLabel->setToolTip("Current service name");
+    ui->service->setToolTip("Current service name");
+    ui->serviceIdLabel->setToolTip("Current Service Identifier");
+    ui->serviceId->setToolTip("Current Service Identifier");
+    ui->scidsLabel->setToolTip("Service Component Identifier within the Service");
+    ui->scids->setToolTip("Service Component Identifier within the Service");
+    ui->numCULabel->setToolTip("Number of capacity units used by sub-channel");
+    ui->numCU->setToolTip("Number of capacity units used by sub-channel");
+    ui->startCULabel->setToolTip("First capacity unit used by sub-channel");
+    ui->startCU->setToolTip("First capacity unit used by sub-channel");
+    ui->subChannelLabel->setToolTip("Sub-channel Identifier");
+    ui->subChannel->setToolTip("Sub-channel Identifier");
+
+    ui->fibCountLabel->setToolTip("Total number of FIB's");
+    ui->fibCount->setToolTip("Total number of FIB's");
+    ui->fibErrCountLabel->setToolTip("Number of FIB's with CRC error");
+    ui->fibErrCount->setToolTip("Number of FIB's with CRC error");
+    ui->fibErrRateLabel->setToolTip("FIB error rate");
+    ui->fibErrRate->setToolTip("FIB error rate");
+    ui->crcCountLabel->setToolTip("Total number of audio frames (AU for DAB+)");
+    ui->crcCount->setToolTip("Total number of audio frames (AU for DAB+)");
+    ui->crcErrCountLabel->setToolTip("Total number of audio frames with CRC error (AU for DAB+)");
+    ui->crcErrCount->setToolTip("Total number of audio frames with CRC error (AU for DAB+)");
+    ui->crcErrRateLabel->setToolTip("Audio frame (AU for DAB+) error rate");
+    ui->crcErrRate->setToolTip("Audio frame (AU for DAB+) error rate");
+
+    ui->dumpButton->setToolTip("Dump raw IQ stream to file");
+
     enableDumpToFile(false);
 }
 
@@ -210,7 +250,7 @@ void EnsembleInfoDialog::serviceChanged(const RadioControlServiceComponent &s)
     }
 
     ui->service->setText(QString("%1").arg(s.label, 16));
-    ui->serviceID->setText("0x"+QString("%1").arg(s.SId.prog.countryServiceRef, 4, 16, QChar('0')).toUpper());
+    ui->serviceId->setText("0x"+QString("%1").arg(s.SId.prog.countryServiceRef, 4, 16, QChar('0')).toUpper());
     ui->scids->setText(QString::number(s.SCIdS));
     ui->subChannel->setText(QString::number(s.SubChId));
     ui->startCU->setText(QString::number(s.SubChAddr));
@@ -270,7 +310,7 @@ void EnsembleInfoDialog::fibFrameContextMenu(const QPoint& pos)
 void EnsembleInfoDialog::clearServiceInfo()
 {
     ui->service->setText(QString("%1").arg("", 16));
-    ui->serviceID->setText("");
+    ui->serviceId->setText("");
     ui->scids->setText("");
     ui->subChannel->setText("");
     ui->startCU->setText("");
