@@ -98,9 +98,8 @@ void SetupDialog::on_inputCombo_currentIndexChanged(int index)
         ui->rtlsdrFrame->setVisible(true);
         break;
     case InputDeviceId::RARTTCP:
-#warning "Fix this"
         ui->rawFileFrame->setVisible(false);
-        ui->rtlsdrFrame->setVisible(true);
+        ui->rtlsdrFrame->setVisible(false);
         break;
     case InputDeviceId::RAWFILE:
         ui->rawFileFrame->setVisible(true);

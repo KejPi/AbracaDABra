@@ -225,6 +225,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Multimedia REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia REQUIRED)
 
+# Prepartion for porting to Qt6
+#add_compile_definitions(QT_DISABLE_DEPRECATED_BEFORE=0x050F00)
+
 ## Pictures
 list (APPEND RESOURCES resources.qrc)
 qt5_add_resources (RCC_SOURCES ${RESOURCES})
