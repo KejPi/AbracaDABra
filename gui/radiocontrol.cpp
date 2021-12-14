@@ -892,14 +892,14 @@ void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
 {
     if (0 == p->dgLen)
     {   // do nothing - empty data group
-        qDebug("Empty data group type %d received\n", p->dgType);
+        qDebug("Empty data group type %d received\n", p->xpadAppType);
         return;
     }
 
     RadioControl * radioCtrl = (RadioControl * ) ctx;
-    switch (p->dgType)
-    {
-    case DABPROC_DATAGROUP_DL:
+    switch (p->xpadAppType)
+    { // [7.4.3] Application types 2 and 3 shall be used for the dynamic label (see clause 7.4.5.2).
+    case 2:
     {
         QByteArray * data = new QByteArray((const char *)p->pDgData, p->dgLen);
 
@@ -910,8 +910,9 @@ void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
         radioCtrl->emit_dabEvent(pEvent);        
     }
         break;
-    case DABPROC_DATAGROUP_MOT:
+    case 12:
     {
+#warning "Assign correct app types"
         QByteArray * data = new QByteArray((const char *)p->pDgData, p->dgLen);
 
         RadioControlEvent * pEvent = new RadioControlEvent;
@@ -922,7 +923,7 @@ void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
     }
         break;
     default:
-        qDebug() << "Unsupported data group type:" << p->dgType;
+        qDebug() << "Unsupported XPAD application type:" << p->xpadAppType;
     }
 }
 
