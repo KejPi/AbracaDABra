@@ -141,7 +141,7 @@ QString DabTables::convertToQString(const char *c, uint8_t charset, uint8_t len)
     case DabCharset::UCS2:
     {
         uint8_t ucsLen = len/2+1;
-        uint16_t * temp = new uint16_t[ucsLen];
+        char16_t * temp = new char16_t[ucsLen];
         // BOM = 0xFEFF, DAB label is in big endian, writing it byte by byte
         uint8_t * bomPtr = (uint8_t *) temp;
         *bomPtr++ = 0xFE;
