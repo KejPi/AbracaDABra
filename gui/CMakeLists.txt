@@ -230,7 +230,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia REQUIRED)
 
 ## Pictures
 list (APPEND RESOURCES resources.qrc)
-qt5_add_resources (RCC_SOURCES ${RESOURCES})
+qt_add_resources (RCC_SOURCES ${RESOURCES})
 
 #add_executable(dabGui MACOSX_BUNDLE main.cpp ${APP_ICON_MACOSX})
 

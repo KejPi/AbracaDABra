@@ -5,9 +5,6 @@
 #include <QObject>
 #include <QWaitCondition>
 #include <QMutex>
-
-#include <QAudioDeviceInfo>
-#include <QAudioOutput>
 #include <QTimer>
 
 #include "audiofifo.h"
@@ -16,6 +13,9 @@
 
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
 #include "portaudio.h"
+#else
+#include <QAudioDeviceInfo>
+#include <QAudioOutput>
 #endif
 
 #ifdef QT_DEBUG
