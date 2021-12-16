@@ -279,6 +279,8 @@ add_executable(${TARGET}
     rtltcpinput.cpp
     rarttcpinput.h
     rarttcpinput.cpp
+    mscdatagroup.h
+    mscdatagroup.cpp
     dldecoder.h
     dldecoder.cpp
     motdecoder.h
