@@ -48,9 +48,10 @@ enum class DabAudioDataSCty
 
 enum class DabCharset
 {
-    EBULATIN = 0,
-    UCS2 = 6,
-    UTF8 = 15,
+    EBULATIN = 0x0,       // [TSI TS 101 756 V2.4.1 Table 1 & 19]
+    LATIN1 = 0x4,         // [TSI TS 101 756 V2.4.1 Table 19]
+    UCS2 = 0x6,           // [TSI TS 101 756 V2.4.1 Table 1]
+    UTF8 = 0xF,           // [TSI TS 101 756 V2.4.1 Table 1 & 19]
 };
 
 typedef QMap<uint32_t, QString> dabChannelList_t;
