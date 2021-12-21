@@ -151,11 +151,14 @@ QString DabTables::convertToQString(const char *c, uint8_t charset, uint8_t len)
         delete [] temp;
     }
         break;
-    case DabCharset::EBULATIN:
-        while(*c)
+    case DabCharset::EBULATIN:        
+    {
+        int n = 0;
+        while (*c && (n++ < len))
         {
             out.append(QChar(ebuLatin2UCS2[uint8_t(*c++)]));
         }
+    }
         break;
     case DabCharset::LATIN1:
         out = out.fromLatin1(c, len);
