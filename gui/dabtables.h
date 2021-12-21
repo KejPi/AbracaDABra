@@ -54,6 +54,24 @@ enum class DabCharset
     UTF8 = 0xF,           // [TSI TS 101 756 V2.4.1 Table 1 & 19]
 };
 
+enum class DabMotExtParameter
+{
+    PermitOutdatedVersions = 0x01,
+    TriggerTime = 0x05,
+    RetransmissionDistance = 0x07,
+    Expiration = 0x09,
+    Priority = 0x0A,
+    Label = 0x0B,
+    ContentName = 0x0C,
+    UniqueBodyVersion = 0x0D,
+    MimeType = 0x10,
+    CompressionType = 0x11,
+    AdditionalHeader = 0x20,
+    ProfileSubset = 0x21,
+    CAInfo = 0x23,
+    CAReplacementObject = 0x24
+};
+
 typedef QMap<uint32_t, QString> dabChannelList_t;
 
 class DabTables
