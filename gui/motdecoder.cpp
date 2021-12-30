@@ -32,16 +32,23 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
 
     // [ETSI EN 301 234, 5.1.1 Segmentation header]
     uint8_t repetitionCount = (*dataFieldIt >> 5) & 0x7;
+
+    // [ETSI EN 301 234, 5.1 Segmentation of MOT entities]
+    // MOT entities will be split up in segments with equal size.
+    // Only the last segment may have a smaller size (to carry the remaining bytes of the MOT entity).
     uint16_t segmentSize = (*dataFieldIt++ << 8) & 0x1FFF;
     segmentSize += *dataFieldIt++;
+
 #if MOTDECODER_VERBOSE
     qDebug() << "Segment number = "<< segmentNum << ", last = " << lastFlag;
     qDebug() << "Segment size = " << segmentSize << ", Repetition count = " << repetitionCount;
 #endif
+
     switch (mscDataGroup.getType())
     {
     case 3:
-    {
+    {   // [ETSI EN 301 234, 5.1.4 Segmentation of the MOT header]
+        // The segments of the MOT header shall be transported in MSC Data group type 3.
         if (mscDataGroup.getSegmentNum() == 0)
         {  // multiple header segment not suported at the moment
             int motObjIdx = findMotObj(mscDataGroup.getTransportId());
@@ -56,7 +63,11 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
     }
         break;
     case 4:
-    {
+    {   // [ETSI EN 301 234, 5.1.2 Segmentation of the MOT body]
+        // If conditional access on MOT level is applied, then scrambled MOT body segments
+        // shall be transported in MSC data group type 5. In all other cases (no scrambling on MOT level
+        // or unscrambled MOT body segments) the segments of the MOT body shall be transported in MSC data group type 4.
+
         int motObjIdx = findMotObj(mscDataGroup.getTransportId());
         if (motObjIdx < 0)
         {  // does not exist in list -> body without header
@@ -80,8 +91,14 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         }
     }
         break;
-    default:
+    case 6:
+    case 7:
         // directory not supported
+        // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]
+        // The segments of an uncompressed MOT directory shall be transported in MSC Data Group type 6.
+        // The segments of a compressed MOT directory shall be transported in MSC Data Group type 7.
+        break;
+    default:
         return;
     }
 }

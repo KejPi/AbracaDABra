@@ -15,13 +15,19 @@ public:
     bool isBodyComplete() const { return bodyComplete; }
     void getBody(QByteArray & b);
     void reset();
+
+    struct {
+        uint16_t contentType;
+        uint16_t contentSubType;
+        QString ContentName;
+        QString MimeType;
+
+    } headerParams;
 private:
     uint16_t id;
 
     uint32_t bodySize;
     uint16_t headerSize;
-    uint16_t contentType;
-    uint16_t contentSubType;
 
     QByteArrayList body;
 
