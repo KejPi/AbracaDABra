@@ -46,7 +46,7 @@ private:
 
     QHash<int, QByteArray> userAppParams;
 
-    bool parseHeader(const QByteArray &data);
+    bool parseHeader(const QByteArray &headerData);
 };
 
 #endif // MOTOBJECT_H

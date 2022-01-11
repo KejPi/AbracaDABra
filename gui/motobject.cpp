@@ -106,30 +106,33 @@ MOTObject::MOTObject(uint_fast32_t transportId)
     objectIsComplete = false;
 }
 
-bool MOTObject::parseHeader(const QByteArray & data)
+bool MOTObject::parseHeader(const QByteArray & headerData)
 {
     // [ETSI EN 301 234, 6.1 Header core]
     // minium header size is 56 bits => 7 bytes (header core)
-    if (data.size() < 7)
+    if (headerData.size() < 7)
     {
         qDebug() << "Unexpected header length";
         return false;
     }
 
+    // unsigned required
+    const uint8_t * dataPtr = reinterpret_cast<const uint8_t *>(headerData.constBegin());
+
     // we know that at least header core was received
     // first check header size
-    int headerSize = ((data[3] & 0x0F) << 9) | (data[4] << 1) | ((data[5] >> 7) & 0x01);
+    int headerSize = ((dataPtr[3] & 0x0F) << 9) | (dataPtr[4] << 1) | ((dataPtr[5] >> 7) & 0x01);
 
     // check is headerSize matches
-    if (headerSize < data.size())
+    if (headerSize < headerData.size())
     {   // header size is not correct -> probably not received yet, but it should not happen
         return false;
     }
 
     // it seems to be OK, we can parse the information
-    bodySize = (uint8_t(data[0]) << 20) | (uint8_t(data[1]) << 12) | (uint8_t(data[2]) << 4) | ((uint8_t(data[3]) >> 4) & 0x0F);
-    headerParams.contentType = (uint8_t(data[5]) >> 1) & 0x3F;
-    headerParams.contentSubType = ((uint8_t(data[5]) & 0x01) << 8) | uint8_t(data[6]);
+    bodySize = (dataPtr[0] << 20) | (dataPtr[1] << 12) | (dataPtr[2] << 4) | ((dataPtr[3] >> 4) & 0x0F);
+    headerParams.contentType = (dataPtr[5] >> 1) & 0x3F;
+    headerParams.contentSubType = ((dataPtr[5] & 0x01) << 8) | dataPtr[6];
 
 #if MOTOBJECT_VERBOSE
     qDebug() << bodySize << headerSize << headerParams.contentType << headerParams.contentSubType;
@@ -137,7 +140,7 @@ bool MOTObject::parseHeader(const QByteArray & data)
     QString header;
     for (int d = 0; d < headerSize-7; ++d)
     {
-        header += QString("%1 ").arg((uint8_t) data[d+7], 2, 16, QLatin1Char('0'));
+        header += QString("%1 ").arg((uint8_t) dataPtr[d+7], 2, 16, QLatin1Char('0'));
     }
     qDebug() << header;
 #endif // MOTOBJECT_VERBOSE
@@ -146,8 +149,8 @@ bool MOTObject::parseHeader(const QByteArray & data)
     int n = 7;
     while (n<headerSize)
     {
-        uint8_t PLI = (data[n] >> 6) & 0x03;
-        uint8_t paramId = data[n++] & 0x3F;
+        uint8_t PLI = (dataPtr[n] >> 6) & 0x03;
+        uint8_t paramId = dataPtr[n++] & 0x3F;
         uint_fast8_t dataFieldLen = 0;
 
         switch (PLI)
@@ -164,13 +167,13 @@ bool MOTObject::parseHeader(const QByteArray & data)
         case 3:
             if (n+1 < headerSize)
             {
-                uint16_t dataLengthIndicator = data[n] & 0x7F;
-                if (data[n++] & 0x80)
+                uint16_t dataLengthIndicator = dataPtr[n] & 0x7F;
+                if (dataPtr[n++] & 0x80)
                 {
                     if (n < headerSize)
                     {
                         dataLengthIndicator <<= 8;
-                        dataLengthIndicator |= data[n++];
+                        dataLengthIndicator |= dataPtr[n++];
                     }
                     else
                     {   // somethign is wrong
@@ -191,7 +194,7 @@ bool MOTObject::parseHeader(const QByteArray & data)
             QString dataStr;
             for (int d = 0; d < dataFieldLen; ++d)
             {
-                dataStr += QString("%1 ").arg((uint8_t) data.at(n+d), 2, 16, QLatin1Char('0'));
+                dataStr += QString("%1 ").arg((uint8_t) dataPtr[n+d], 2, 16, QLatin1Char('0'));
             }
             qDebug("%s: PLI=%d, ParamID = 0x%2.2X, DataLength = %d: DataField = %s",
                    Q_FUNC_INFO, PLI, paramId, dataFieldLen, dataStr.toStdString().c_str());
@@ -201,7 +204,7 @@ bool MOTObject::parseHeader(const QByteArray & data)
             {
             case DabMotExtParameter::ContentName:
                 // One MOT parameter is mandatory for both content provider and MOT decoder: ContentName.
-                headerParams.ContentName = DabTables::convertToQString(((const char*) data)+n+1, ((data[n] >> 4) & 0x0F), dataFieldLen-1);
+                headerParams.ContentName = DabTables::convertToQString(((const char*) dataPtr)+n+1, ((dataPtr[n] >> 4) & 0x0F), dataFieldLen-1);
 #if MOTOBJECT_VERBOSE
                 qDebug() << headerParams.ContentName;
 #endif
@@ -235,7 +238,7 @@ bool MOTObject::parseHeader(const QByteArray & data)
                 else
                 { /* paramId does not exist */ }
 
-                userAppParams.insert(paramId, QByteArray( ((const char *)data)+n, dataFieldLen));
+                userAppParams.insert(paramId, QByteArray( ((const char *)dataPtr)+n, dataFieldLen));
                 break;
             }
 

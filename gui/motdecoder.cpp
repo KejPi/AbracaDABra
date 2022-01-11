@@ -27,17 +27,16 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
     { /* datagroup was valid */ }
 
     // unsigned required
-    //QByteArray::const_iterator dataFieldIt = mscDataGroup.dataFieldConstBegin();
-    const uint8_t * dataFieldIt = reinterpret_cast<const uint8_t *>(mscDataGroup.dataFieldConstBegin());
+    const uint8_t * dataFieldPtr = reinterpret_cast<const uint8_t *>(mscDataGroup.dataFieldConstBegin());
 
     // [ETSI EN 301 234, 5.1.1 Segmentation header]
-    uint8_t repetitionCount = (*dataFieldIt >> 5) & 0x7;
+    uint8_t repetitionCount = (*dataFieldPtr >> 5) & 0x7;
 
     // [ETSI EN 301 234, 5.1 Segmentation of MOT entities]
     // MOT entities will be split up in segments with equal size.
     // Only the last segment may have a smaller size (to carry the remaining bytes of the MOT entity).
-    uint16_t segmentSize = (*dataFieldIt++ << 8) & 0x1FFF;
-    segmentSize += *dataFieldIt++;
+    uint16_t segmentSize = (*dataFieldPtr++ << 8) & 0x1FFF;
+    segmentSize += *dataFieldPtr++;
 
 #if MOTDECODER_VERBOSE
     qDebug() << "Segment number = "<< mscDataGroup.getSegmentNum() << ", last = " << mscDataGroup.getLastFlag();
@@ -67,7 +66,7 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         {  /* do nothing - it already exists, just adding next segment */ }
 
         // add header segment
-        motObjList[motObjIdx].addSegment((const uint8_t *) dataFieldIt, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag(), true);
+        motObjList[motObjIdx].addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag(), true);
     }
         break;
     case 4:
@@ -85,7 +84,7 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
 #endif
             motObjIdx = addMotObj(MOTObject(mscDataGroup.getTransportId()));
         }
-        motObjList[motObjIdx].addSegment((const uint8_t *) dataFieldIt, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
+        motObjList[motObjIdx].addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
 
         if (motObjList[motObjIdx].isComplete())
         {
