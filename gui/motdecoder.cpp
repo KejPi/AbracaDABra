@@ -89,11 +89,11 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
 
         if (motObjList[motObjIdx].isComplete())
         {
-            QVector<uint8_t> body = motObjList[motObjIdx].getBody();
+            QByteArray body = motObjList[motObjIdx].getBody();
 #if MOTDECODER_VERBOSE
             qDebug() << "MOT complete :)";
 #endif // MOTDECODER_VERBOSE
-            emit motObjectComplete(QByteArray((const char *) body.data(), body.size()));
+            emit motObjectComplete(body);
         }
     }
         break;
