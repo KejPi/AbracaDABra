@@ -3,36 +3,50 @@
 
 #include <QObject>
 #include <QByteArrayList>
+#include <QHash>
+
+#define MOTOBJECT_VERBOSE 1
+
+class MOTEntity
+{
+public:
+    MOTEntity();
+    bool isComplete() const;
+    int size();
+    void addSegment(const uint8_t * segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
+    QByteArray getData();
+    void reset();
+private:
+    QByteArrayList segments;
+    int_fast32_t numSegments;
+};
 
 class MOTObject
 {
 
-public:
-    explicit MOTObject(QObject *parent = nullptr);
-    MOTObject(uint16_t transportId, const uint8_t * segment, uint16_t segmenLen, bool lastFlag);
+public:    
+    MOTObject(uint_fast32_t transportId);
     uint16_t getId() const { return id; }
-    void addBodySegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
-    bool isBodyComplete() const { return bodyComplete; }
-    void getBody(QByteArray & b);
-    void reset();
+    bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag, bool isHeader = false);
+    bool isComplete() const { return objectIsComplete; };
+    QByteArray getBody();
+private:
+    uint_fast32_t id;
+    int32_t bodySize;
+    bool objectIsComplete;
+
+    MOTEntity header;
+    MOTEntity body;
 
     struct {
         uint16_t contentType;
         uint16_t contentSubType;
         QString ContentName;
-        QString MimeType;
-
     } headerParams;
-private:
-    uint16_t id;
 
-    uint32_t bodySize;
-    uint16_t headerSize;
+    QHash<int, QByteArray> userAppParams;
 
-    QByteArrayList body;
-
-    uint16_t numBodySegments;
-    bool bodyComplete;
+    bool parseHeader(const QByteArray &data);
 };
 
 #endif // MOTOBJECT_H

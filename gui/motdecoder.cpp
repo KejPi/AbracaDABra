@@ -40,7 +40,7 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
     segmentSize += *dataFieldIt++;
 
 #if MOTDECODER_VERBOSE
-    qDebug() << "Segment number = "<< segmentNum << ", last = " << lastFlag;
+    qDebug() << "Segment number = "<< mscDataGroup.getSegmentNum() << ", last = " << mscDataGroup.getLastFlag();
     qDebug() << "Segment size = " << segmentSize << ", Repetition count = " << repetitionCount;
 #endif
 
@@ -49,17 +49,25 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
     case 3:
     {   // [ETSI EN 301 234, 5.1.4 Segmentation of the MOT header]
         // The segments of the MOT header shall be transported in MSC Data group type 3.
-        if (mscDataGroup.getSegmentNum() == 0)
-        {  // multiple header segment not suported at the moment
-            int motObjIdx = findMotObj(mscDataGroup.getTransportId());
-            if (motObjIdx < 0)
-            {  // does not exist in list
+
+        // this is header mode
+        int motObjIdx = findMotObj(mscDataGroup.getTransportId());
+        if (motObjIdx < 0)
+        {  // object does not exist in list
 #if MOTDECODER_VERBOSE
-                qDebug() << "New MOT object";
+            qDebug() << "New MOT object";
 #endif
-                addMotObj(mscDataGroup.getTransportId(), (const uint8_t *) dataFieldIt, segmentSize, mscDataGroup.getLastFlag());
-            }
+            // all existing object shall be removed, only one MOT object is transmitted in header mode
+            motObjList.clear();
+
+            // add new object to list
+            motObjIdx = addMotObj(MOTObject(mscDataGroup.getTransportId()));
         }
+        else
+        {  /* do nothing - it already exists, just adding next segment */ }
+
+        // add header segment
+        motObjList[motObjIdx].addSegment((const uint8_t *) dataFieldIt, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag(), true);
     }
         break;
     case 4:
@@ -70,24 +78,19 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
 
         int motObjIdx = findMotObj(mscDataGroup.getTransportId());
         if (motObjIdx < 0)
-        {  // does not exist in list -> body without header
-#if MOTDECODER_VERBOSE
-            qDebug() << "Body without header, ignoring";
-#endif
-            break;
+        {   // does not exist in list -> body without header
+            // add new object to list
+            motObjIdx = addMotObj(MOTObject(mscDataGroup.getTransportId()));
         }
-        motObjList[motObjIdx].addBodySegment((const uint8_t *) dataFieldIt, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
+        motObjList[motObjIdx].addSegment((const uint8_t *) dataFieldIt, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
 
-        if (motObjList[motObjIdx].isBodyComplete())
+        if (motObjList[motObjIdx].isComplete())
         {
-            QByteArray body;
-            motObjList[motObjIdx].getBody(body);
+            QByteArray body = motObjList[motObjIdx].getBody();
 #if MOTDECODER_VERBOSE
             qDebug() << "MOT complete :)";
 #endif // MOTDECODER_VERBOSE
             emit motObjectComplete(body);
-
-            //motObjList.removeAt(motObjIdx);
         }
     }
         break;
@@ -97,6 +100,7 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]
         // The segments of an uncompressed MOT directory shall be transported in MSC Data Group type 6.
         // The segments of a compressed MOT directory shall be transported in MSC Data Group type 7.
+        qDebug() << "MOT directory not supported";
         break;
     default:
         return;
@@ -138,13 +142,9 @@ int MOTDecoder::findMotObj(uint16_t transportId)
     return -1;
 }
 
-int MOTDecoder::addMotObj(uint16_t transportId, const uint8_t *segment, uint16_t segmenLen, bool lastFlag)
+int MOTDecoder::addMotObj(const MOTObject & obj)
 {
-    motObjList.append(MOTObject(transportId, segment, segmenLen, lastFlag));
-    if (motObjList.size() > 8)
-    {  // remove the oldest
-        motObjList.removeFirst();
-    }
+    motObjList.append(obj);
     return motObjList.size()-1;
 }
 

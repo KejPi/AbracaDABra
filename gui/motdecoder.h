@@ -6,7 +6,7 @@
 
 #include "motobject.h"
 
-#define MOTDECODER_VERBOSE 0
+#define MOTDECODER_VERBOSE 1
 
 typedef QList<MOTObject>::Iterator motObjListIterator;
 class MOTDecoder : public QObject
@@ -26,7 +26,7 @@ public slots:
 private:
     QList<MOTObject> motObjList;
     int findMotObj(uint16_t transportId);
-    int addMotObj(uint16_t transportId, const uint8_t *segment, uint16_t segmenLen, bool lastFlag);
+    int addMotObj(const MOTObject & obj);
     bool crc16check(const QByteArray & data);
 };
 
