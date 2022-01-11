@@ -55,7 +55,7 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         if (motObjIdx < 0)
         {  // object does not exist in list
 #if MOTDECODER_VERBOSE
-            qDebug() << "New MOT header" << mscDataGroup.getTransportId();
+            qDebug() << "New MOT header ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << motObjList.size();;
 #endif
             // all existing object shall be removed, only one MOT object is transmitted in header mode
             motObjList.clear();
@@ -81,7 +81,7 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         {   // does not exist in list -> body without header
             // add new object to list
 #if MOTDECODER_VERBOSE
-            qDebug() << "New MOT object" << mscDataGroup.getTransportId();
+            qDebug() << "New MOT object ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << motObjList.size();
 #endif
             motObjIdx = addMotObj(MOTObject(mscDataGroup.getTransportId()));
         }
