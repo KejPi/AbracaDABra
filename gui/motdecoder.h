@@ -8,7 +8,6 @@
 
 #define MOTDECODER_VERBOSE 1
 
-typedef QList<MOTObject>::Iterator motObjListIterator;
 class MOTDecoder : public QObject
 {
     Q_OBJECT

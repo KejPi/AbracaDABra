@@ -7,6 +7,8 @@
 
 #define MOTOBJECT_VERBOSE 1
 
+typedef QVector<uint8_t> uint8Vector_t;
+
 class MOTEntity
 {
 public:
@@ -14,10 +16,10 @@ public:
     bool isComplete() const;
     int size();
     void addSegment(const uint8_t * segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
-    QByteArray getData();
+    uint8Vector_t getData();
     void reset();
 private:
-    QByteArrayList segments;
+    QList<uint8Vector_t> segments;
     int_fast32_t numSegments;
 };
 
@@ -29,7 +31,7 @@ public:
     uint16_t getId() const { return id; }
     bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag, bool isHeader = false);
     bool isComplete() const { return objectIsComplete; };
-    QByteArray getBody();
+    QVector<uint8_t> getBody();
 private:
     uint_fast32_t id;
     int32_t bodySize;
@@ -44,9 +46,9 @@ private:
         QString ContentName;
     } headerParams;
 
-    QHash<int, QByteArray> userAppParams;
+    QHash<int, uint8Vector_t> userAppParams;
 
-    bool parseHeader(const QByteArray &data);
+    bool parseHeader(const uint8Vector_t &headerData);
 };
 
 #endif // MOTOBJECT_H
