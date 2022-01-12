@@ -4,12 +4,20 @@
 
 MOTDecoder::MOTDecoder(QObject *parent) : QObject(parent)
 {
+    directory = nullptr;
+}
 
+MOTDecoder::~MOTDecoder()
+{
+    if (nullptr != directory)
+    {
+        delete directory;
+    }
 }
 
 void MOTDecoder::reset()
 {
-    carousel.clear();
+    objCache.clear();
 }
 
 void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
@@ -50,23 +58,24 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         // The segments of the MOT header shall be transported in MSC Data group type 3.
 
         // this is header mode
-        int motObjIdx = findMotObj(mscDataGroup.getTransportId());
-        if (motObjIdx < 0)
-        {  // object does not exist in list
+        MOTObject * objPtr = objCache.findMotObj(mscDataGroup.getTransportId());
+        if (nullptr == objPtr)
+        {  // object does not exist in cache
 #if MOTDECODER_VERBOSE
-            qDebug() << "New MOT header ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << carousel.size();;
+            qDebug() << "New MOT header ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << objCache.size();;
 #endif
             // all existing object shall be removed, only one MOT object is transmitted in header mode
-            carousel.clear();
+            objCache.clear();
 
             // add new object to list
-            motObjIdx = addMotObj(MOTObject(mscDataGroup.getTransportId()));
+
+            objPtr = objCache.addMotObj(new MOTObject(mscDataGroup.getTransportId()));
         }
         else
         {  /* do nothing - it already exists, just adding next segment */ }
 
         // add header segment
-        carousel[motObjIdx].addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag(), true);
+        objPtr->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag(), true);
     }
         break;
     case 4:
@@ -75,20 +84,20 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         // shall be transported in MSC data group type 5. In all other cases (no scrambling on MOT level
         // or unscrambled MOT body segments) the segments of the MOT body shall be transported in MSC data group type 4.
 
-        int motObjIdx = findMotObj(mscDataGroup.getTransportId());
-        if (motObjIdx < 0)
-        {   // does not exist in list -> body without header
-            // add new object to list
+        MOTObject * objPtr = objCache.findMotObj(mscDataGroup.getTransportId());
+        if (nullptr == objPtr)
+        {   // does not exist in cache -> body without header
+            // add new object to cache
 #if MOTDECODER_VERBOSE
-            qDebug() << "New MOT object ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << carousel.size();
+            qDebug() << "New MOT object ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << objCache.size();
 #endif
-            motObjIdx = addMotObj(MOTObject(mscDataGroup.getTransportId()));
+            objPtr = objCache.addMotObj(new MOTObject(mscDataGroup.getTransportId()));
         }
-        carousel[motObjIdx].addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
+        objPtr->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
 
-        if (carousel[motObjIdx].isComplete())
+        if (objPtr->isComplete())
         {
-            QByteArray body = carousel[motObjIdx].getBody();
+            QByteArray body = objPtr->getBody();
 #if MOTDECODER_VERBOSE
             qDebug() << "MOT complete :)";
 #endif // MOTDECODER_VERBOSE
@@ -97,12 +106,19 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
     }
         break;
     case 6:
-    case 7:
-        // directory not supported
         // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]
         // The segments of an uncompressed MOT directory shall be transported in MSC Data Group type 6.
+        if (nullptr != directory)
+        {
+            delete directory;
+        }
+        directory = new MOTDirectory(mscDataGroup.getTransportId());
+        directory->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
+        break;
+    case 7:
+        // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]
         // The segments of a compressed MOT directory shall be transported in MSC Data Group type 7.
-        qDebug() << "MOT directory not supported";
+        qDebug() << "Compressed MOT directory not supported";
         break;
     default:
         return;
@@ -132,22 +148,56 @@ bool MOTDecoder::crc16check(const QByteArray & data)
     return (crc == invTxCRC);
 }
 
-int MOTDecoder::findMotObj(uint16_t transportId)
+//=================================================================================
+MOTObjectCache::MOTObjectCache()
 {
-    for (int n = 0; n<carousel.size(); ++n)
-    {
-        if (carousel[n].getId() == transportId)
-        {
-            return n;
-        }
-    }
-    return -1;
 }
 
-int MOTDecoder::addMotObj(const MOTObject & obj)
+MOTObjectCache::~MOTObjectCache()
 {
-    carousel.append(obj);
-    return carousel.size()-1;
+    clear();
 }
+
+void MOTObjectCache::clear()
+{
+    for (int n = 0; n<cache.size(); ++n)
+    {
+        delete cache[n];
+    }
+
+    cache.clear();
+}
+
+MOTObject * MOTObjectCache::findMotObj(uint16_t transportId)
+{
+    for (int n = 0; n<cache.size(); ++n)
+    {
+        if (cache[n]->getId() == transportId)
+        {
+            return cache[n];
+        }
+    }
+    return nullptr;
+}
+
+void MOTObjectCache::deleteMotObj(uint16_t transportId)
+{
+    for (int n = 0; n<cache.size(); ++n)
+    {
+        if (cache[n]->getId() == transportId)
+        {
+            delete cache[n];
+            cache.removeAt(n);
+            return;
+        }
+    }
+}
+
+MOTObject * MOTObjectCache::addMotObj(MOTObject *obj)
+{
+    cache.append(obj);
+    return obj;
+}
+
 
 

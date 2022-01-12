@@ -49,4 +49,16 @@ private:
     bool parseHeader(const QByteArray &headerData);
 };
 
+class MOTDirectory
+{
+public:
+    MOTDirectory(uint_fast32_t transportId);
+    bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
+private:
+    uint_fast32_t id;
+    MOTEntity dir;
+
+    bool parse(const QByteArray &dirData);
+};
+
 #endif // MOTOBJECT_H

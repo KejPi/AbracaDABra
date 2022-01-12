@@ -308,3 +308,153 @@ QByteArray MOTObject::getBody()
 
     return QByteArray();
 }
+
+MOTDirectory::MOTDirectory(uint_fast32_t transportId)
+{
+    id = transportId;
+}
+
+bool MOTDirectory::addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
+{
+    dir.addSegment(segment, segmentNum, segmentSize, lastFlag);
+    if (dir.isComplete())
+    {
+        qDebug() << "MOT directory is complete";
+        if (!parse(dir.getData()))
+        {   // something is wrong - header could not be parsed, objects is not complete
+            qDebug() << "MOT directory parsing failed";
+        }
+    }
+    else
+    {
+        qDebug() << "MOT directory segment received, not complete yet";
+    }
+
+    return true;
+}
+
+bool MOTDirectory::parse(const QByteArray &dirData)
+{
+    // [ETSI EN 301 234, 7.2.3 MOT directory coding]
+    // minimum dir size 13 bytes
+    if (dirData.size() < 13)
+    {
+        qDebug() << "Unexpected MOT directory length";
+        return false;
+    }
+
+    // unsigned required
+    const uint8_t * dataPtr = reinterpret_cast<const uint8_t *>(dirData.constBegin());
+
+    // we know that at least directory without extension received
+    // first check directory size
+    int dirSize = ((dataPtr[0] & 0x3F) << 24) | (dataPtr[1] << 16) | (dataPtr[2] << 8) | dataPtr[3];
+
+    // check is dirSize matches
+    if (dirSize < dirData.size())
+    {   // header size is not correct -> probably not received yet, but it should not happen
+        return false;
+    }
+
+    QString dirStr;
+    for (int d = 0; d < dirSize; ++d)
+    {
+        dirStr += QString("%1 ").arg((uint8_t) dataPtr[d], 2, 16, QLatin1Char('0'));
+    }
+    qDebug() << dirStr;
+
+    int numberOfObjects = (dataPtr[4] << 8) | dataPtr[5];
+    int dataCarouselPeriod = (dataPtr[6] << 16) | (dataPtr[7] << 8) | dataPtr[8];
+    int segmentSize = ((dataPtr[9] & 0x1F) << 8) | dataPtr[10];
+    int directoryExtensionLength = (dataPtr[11] << 8) | dataPtr[12];
+
+    qDebug("\tDirectorySize = %d\n"
+           "\tNumberOfObjects = %d\n"
+           "\tDataCarouselPeriod = %d\n"
+           "\tSegmentSize = %d\n"
+           "\tDirectoryExtensionLength = %d\n",
+           dirSize, numberOfObjects, dataCarouselPeriod, segmentSize, directoryExtensionLength);
+
+    bool ret = true;
+    int n = 13;
+    while (n<13+directoryExtensionLength)
+    {
+        uint8_t PLI = (dataPtr[n] >> 6) & 0x03;
+        uint8_t paramId = dataPtr[n++] & 0x3F;
+        uint_fast8_t dataFieldLen = 0;
+
+        switch (PLI)
+        {
+        case 0:
+            // do nothing here
+            break;
+        case 1:
+            dataFieldLen = 1;
+            break;
+        case 2:
+            dataFieldLen = 4;
+            break;
+        case 3:
+            if (n+1 < directoryExtensionLength)
+            {
+                uint16_t dataLengthIndicator = dataPtr[n] & 0x7F;
+                if (dataPtr[n++] & 0x80)
+                {
+                    if (n < directoryExtensionLength)
+                    {
+                        dataLengthIndicator <<= 8;
+                        dataLengthIndicator |= dataPtr[n++];
+                    }
+                    else
+                    {   // somethign is wrong
+                        ret = false;
+                        break;
+                    }
+                }
+                dataFieldLen = dataLengthIndicator;
+            }
+            break;
+        }
+
+        // segment[n] is first byte of data field if dataFieldLen > 0
+
+        if (n + dataFieldLen <= directoryExtensionLength)
+        {
+#if MOTOBJECT_VERBOSE
+            QString dataStr;
+            for (int d = 0; d < dataFieldLen; ++d)
+            {
+                dataStr += QString("%1 ").arg((uint8_t) dataPtr[n+d], 2, 16, QLatin1Char('0'));
+            }
+            qDebug("%s: PLI=%d, ParamID = 0x%2.2X, DataLength = %d: DataField = %s",
+                   Q_FUNC_INFO, PLI, paramId, dataFieldLen, dataStr.toStdString().c_str());
+#endif // MOTOBJECT_VERBOSE
+        }
+        else
+        {   // something went wrong
+            ret = false;
+        }
+
+        n += dataFieldLen;
+    }
+
+    // directory extension is parsed here
+    qDebug() << "\tReading MOT objects";
+    int numObjRead = 0;
+    while (n < dirSize)
+    {
+        if (numObjRead++ >= numberOfObjects)
+        {   // something is wrong - this is a protection condition
+            qDebug() << "Unexpected number of objects in MOT directory";
+            break;
+        }
+
+        int transfID = (dataPtr[n] << 8) | dataPtr[n+1];
+        int headerSize = ((dataPtr[n+2+3] & 0x0F) << 9) | (dataPtr[n+2+4] << 1) | ((dataPtr[n+2+5] >> 7) & 0x01);
+        qDebug() << "\t* ID" << transfID << "| header size " << headerSize;
+
+        n += 2 + headerSize;
+    }
+
+    return true;
+}
