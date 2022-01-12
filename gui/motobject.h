@@ -7,6 +7,8 @@
 
 #define MOTOBJECT_VERBOSE 1
 
+
+
 class MOTEntity
 {
 public:
@@ -49,16 +51,39 @@ private:
     bool parseHeader(const QByteArray &headerData);
 };
 
+class MOTObjectCache
+{
+public:
+    MOTObjectCache();
+    ~MOTObjectCache();
+    void clear();
+    int size() const { return cache.size(); }
+    MOTObject * findMotObj(uint16_t transportId);   // find MOT object in the cache
+    MOTObject * moveMotObj(uint16_t transportId);   // move MOT object from the cache, calling function overtakes the ownership
+    MOTObject * addMotObj(MOTObject *obj);          // add MOT boject to cache
+    void deleteMotObj(uint16_t transportId);        // delete mote object from the cache, this deletes the object completely
+private:
+    QList<MOTObject*> cache;
+};
+
+
 class MOTDirectory
 {
 public:
-    MOTDirectory(uint_fast32_t transportId);
+    MOTDirectory(uint_fast32_t transportId, MOTObjectCache * cachePtr);
+    ~MOTDirectory();
     bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
+    void addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
+    uint_fast32_t getTransportId() const { return id; }
+
 private:
     uint_fast32_t id;
     MOTEntity dir;
+    MOTObjectCache * cache;
+    MOTObjectCache * carousel;
 
     bool parse(const QByteArray &dirData);
 };
+
 
 #endif // MOTOBJECT_H

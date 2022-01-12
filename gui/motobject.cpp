@@ -309,9 +309,17 @@ QByteArray MOTObject::getBody()
     return QByteArray();
 }
 
-MOTDirectory::MOTDirectory(uint_fast32_t transportId)
+MOTDirectory::MOTDirectory(uint_fast32_t transportId, MOTObjectCache * cachePtr)
 {
     id = transportId;
+    cache = cachePtr;
+
+    carousel = new MOTObjectCache;
+}
+
+MOTDirectory::~MOTDirectory()
+{
+    delete carousel;
 }
 
 bool MOTDirectory::addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
@@ -331,6 +339,28 @@ bool MOTDirectory::addSegment(const uint8_t *segment, uint16_t segmentNum, uint1
     }
 
     return true;
+}
+
+void MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
+{
+    // first find if object already exists in carousel
+    MOTObject * objPtr = carousel->findMotObj(transportId);
+    if (nullptr == objPtr)
+    {  // object does not exist in carousel - this should not happen for current directory
+#if MOTOBJECT_VERBOSE
+        qDebug() << "New MOT object" << transportId << "number of objects in carousel" << carousel->size();
+#endif
+        // add new object to cache
+        objPtr = carousel->addMotObj(new MOTObject(transportId));
+    }
+    else
+    {  /* do nothing - it already exists, just adding next segment */ }
+
+    objPtr->addSegment(segment, segmentNum, segmentSize, lastFlag);
+    if (objPtr->isComplete())
+    {
+        qDebug() << "MOT complete: ID" << transportId;
+    }
 }
 
 bool MOTDirectory::parse(const QByteArray &dirData)
@@ -418,7 +448,7 @@ bool MOTDirectory::parse(const QByteArray &dirData)
 
         // segment[n] is first byte of data field if dataFieldLen > 0
 
-        if (n + dataFieldLen <= directoryExtensionLength)
+        if (n + dataFieldLen <= 13+directoryExtensionLength)
         {
 #if MOTOBJECT_VERBOSE
             QString dataStr;
@@ -440,6 +470,9 @@ bool MOTDirectory::parse(const QByteArray &dirData)
 
     // directory extension is parsed here
     qDebug() << "\tReading MOT objects";
+
+    carousel->clear();
+
     int numObjRead = 0;
     while (n < dirSize)
     {
@@ -449,12 +482,99 @@ bool MOTDirectory::parse(const QByteArray &dirData)
             break;
         }
 
-        int transfID = (dataPtr[n] << 8) | dataPtr[n+1];
+        int objTransportID = (dataPtr[n] << 8) | dataPtr[n+1];
         int headerSize = ((dataPtr[n+2+3] & 0x0F) << 9) | (dataPtr[n+2+4] << 1) | ((dataPtr[n+2+5] >> 7) & 0x01);
-        qDebug() << "\t* ID" << transfID << "| header size " << headerSize;
+        qDebug() << "\t* ID" << objTransportID << "| header size " << headerSize;
 
+        // transfer MOT objects from cache to carousel
+        MOTObject * objPtr = cache->moveMotObj(objTransportID);
+        if (nullptr != objPtr)
+        {   // found in cache -> add to carousel
+            qDebug() << "Moving object from the cache: ID" << objTransportID;
+            carousel->addMotObj(objPtr);
+        }
+        else
+        {   // not found create new object in carousel
+            qDebug() << "Object not found in the cache: ID" << objTransportID;
+            objPtr = carousel->addMotObj(new MOTObject(objTransportID));
+        }
+        // add header segment
+        // number 0, last = true, size is the rest of the directory, object takes what it needs
+        objPtr->addSegment((const uint8_t *) (dataPtr + n + 2), 0, headerSize, true, true);
         n += 2 + headerSize;
     }
 
-    return true;
+    // done -> delete all remaining objects from the cache
+    cache->clear();
+
+    return ret;
 }
+
+//=================================================================================
+MOTObjectCache::MOTObjectCache()
+{
+}
+
+MOTObjectCache::~MOTObjectCache()
+{
+    clear();
+}
+
+void MOTObjectCache::clear()
+{
+    for (int n = 0; n<cache.size(); ++n)
+    {
+        delete cache[n];
+    }
+
+    cache.clear();
+}
+
+MOTObject * MOTObjectCache::findMotObj(uint16_t transportId)
+{
+    for (int n = 0; n<cache.size(); ++n)
+    {
+        if (cache[n]->getId() == transportId)
+        {
+            return cache[n];
+        }
+    }
+    return nullptr;
+}
+
+MOTObject * MOTObjectCache::moveMotObj(uint16_t transportId)
+{
+    for (int n = 0; n<cache.size(); ++n)
+    {
+        if (cache[n]->getId() == transportId)
+        {
+            MOTObject * ret = cache[n];
+            cache.removeAt(n);
+            return ret;
+        }
+    }
+
+    // not found
+    return nullptr;
+}
+
+void MOTObjectCache::deleteMotObj(uint16_t transportId)
+{
+    for (int n = 0; n<cache.size(); ++n)
+    {
+        if (cache[n]->getId() == transportId)
+        {
+            delete cache[n];
+            cache.removeAt(n);
+            return;
+        }
+    }
+}
+
+MOTObject * MOTObjectCache::addMotObj(MOTObject *obj)
+{
+    cache.append(obj);
+    return obj;
+}
+
+

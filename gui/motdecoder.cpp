@@ -5,6 +5,7 @@
 MOTDecoder::MOTDecoder(QObject *parent) : QObject(parent)
 {
     directory = nullptr;
+    objCache = new MOTObjectCache;
 }
 
 MOTDecoder::~MOTDecoder()
@@ -13,11 +14,12 @@ MOTDecoder::~MOTDecoder()
     {
         delete directory;
     }
+    delete objCache;
 }
 
 void MOTDecoder::reset()
 {
-    objCache.clear();
+    objCache->clear();
 }
 
 void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
@@ -58,18 +60,17 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         // The segments of the MOT header shall be transported in MSC Data group type 3.
 
         // this is header mode
-        MOTObject * objPtr = objCache.findMotObj(mscDataGroup.getTransportId());
+        MOTObject * objPtr = objCache->findMotObj(mscDataGroup.getTransportId());
         if (nullptr == objPtr)
         {  // object does not exist in cache
 #if MOTDECODER_VERBOSE
-            qDebug() << "New MOT header ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << objCache.size();;
+            qDebug() << "New MOT header ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << objCache->size();
 #endif
             // all existing object shall be removed, only one MOT object is transmitted in header mode
-            objCache.clear();
+            objCache->clear();
 
-            // add new object to list
-
-            objPtr = objCache.addMotObj(new MOTObject(mscDataGroup.getTransportId()));
+            // add new object to cache
+            objPtr = objCache->addMotObj(new MOTObject(mscDataGroup.getTransportId()));
         }
         else
         {  /* do nothing - it already exists, just adding next segment */ }
@@ -84,24 +85,34 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         // shall be transported in MSC data group type 5. In all other cases (no scrambling on MOT level
         // or unscrambled MOT body segments) the segments of the MOT body shall be transported in MSC data group type 4.
 
-        MOTObject * objPtr = objCache.findMotObj(mscDataGroup.getTransportId());
-        if (nullptr == objPtr)
-        {   // does not exist in cache -> body without header
-            // add new object to cache
-#if MOTDECODER_VERBOSE
-            qDebug() << "New MOT object ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << objCache.size();
-#endif
-            objPtr = objCache.addMotObj(new MOTObject(mscDataGroup.getTransportId()));
+        // first check if we are in direcory mode
+        if (nullptr != directory)
+        {  // directory mode
+            directory->addObjectSegment(mscDataGroup.getTransportId(), (const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(),
+                                        segmentSize, mscDataGroup.getLastFlag());
         }
-        objPtr->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
-
-        if (objPtr->isComplete())
-        {
-            QByteArray body = objPtr->getBody();
+        else
+        {   // this can be euth directory mode but directoy was not recieved yet or it can be header mode
+            // Header mode is handled within the cache
+            MOTObject * objPtr = objCache->findMotObj(mscDataGroup.getTransportId());
+            if (nullptr == objPtr)
+            {   // does not exist in cache -> body without header
+                // add new object to cache
 #if MOTDECODER_VERBOSE
-            qDebug() << "MOT complete :)";
+                qDebug() << "New MOT object ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << objCache->size();
+#endif
+                objPtr = objCache->addMotObj(new MOTObject(mscDataGroup.getTransportId()));
+            }
+            objPtr->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
+
+            if (objPtr->isComplete())
+            {
+                QByteArray body = objPtr->getBody();
+#if MOTDECODER_VERBOSE
+                qDebug() << "MOT complete :)";
 #endif // MOTDECODER_VERBOSE
-            emit motObjectComplete(body);
+                emit motObjectComplete(body);
+            }
         }
     }
         break;
@@ -109,11 +120,25 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]
         // The segments of an uncompressed MOT directory shall be transported in MSC Data Group type 6.
         if (nullptr != directory)
-        {
-            delete directory;
+        {   // some directory exists
+            // lets check if the segment belong to current directory
+            if (directory->getTransportId() != mscDataGroup.getTransportId())
+            {   // new directory
+                delete directory;
+                directory = new MOTDirectory(mscDataGroup.getTransportId(), objCache);
+            }
+            else
+            { /* segment belongs to existing directory */ }
         }
-        directory = new MOTDirectory(mscDataGroup.getTransportId());
-        directory->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
+        else
+        {   // directory does not exist -> creating new directory
+            directory = new MOTDirectory(mscDataGroup.getTransportId(), objCache);
+        }
+
+        if (directory->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag()))
+        {
+            qDebug() << "MOT Directory is complete";
+        }
         break;
     case 7:
         // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]
@@ -124,80 +149,4 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         return;
     }
 }
-
-bool MOTDecoder::crc16check(const QByteArray & data)
-{
-    uint16_t crc = 0xFFFF;
-    uint16_t mask = 0x1020;
-
-    for (int n = 0; n < data.size()-2; ++n)
-    {
-        for (int bit = 7; bit >= 0; --bit)
-        {
-            uint16_t in = (data[n] >> bit) & 0x1;
-            uint16_t tmp = in ^ ((crc>>15) & 0x1);
-            crc <<= 1;
-
-            crc ^= (tmp * mask);
-            crc += tmp;
-        }
-    }
-
-    uint16_t invTxCRC = ~(uint16_t(data[data.size()-2] << 8) | uint8_t(data[data.size()-1]));
-
-    return (crc == invTxCRC);
-}
-
-//=================================================================================
-MOTObjectCache::MOTObjectCache()
-{
-}
-
-MOTObjectCache::~MOTObjectCache()
-{
-    clear();
-}
-
-void MOTObjectCache::clear()
-{
-    for (int n = 0; n<cache.size(); ++n)
-    {
-        delete cache[n];
-    }
-
-    cache.clear();
-}
-
-MOTObject * MOTObjectCache::findMotObj(uint16_t transportId)
-{
-    for (int n = 0; n<cache.size(); ++n)
-    {
-        if (cache[n]->getId() == transportId)
-        {
-            return cache[n];
-        }
-    }
-    return nullptr;
-}
-
-void MOTObjectCache::deleteMotObj(uint16_t transportId)
-{
-    for (int n = 0; n<cache.size(); ++n)
-    {
-        if (cache[n]->getId() == transportId)
-        {
-            delete cache[n];
-            cache.removeAt(n);
-            return;
-        }
-    }
-}
-
-MOTObject * MOTObjectCache::addMotObj(MOTObject *obj)
-{
-    cache.append(obj);
-    return obj;
-}
-
-
 
