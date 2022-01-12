@@ -9,7 +9,7 @@ MOTDecoder::MOTDecoder(QObject *parent) : QObject(parent)
 
 void MOTDecoder::reset()
 {
-    motObjList.clear();
+    carousel.clear();
 }
 
 void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
@@ -54,10 +54,10 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         if (motObjIdx < 0)
         {  // object does not exist in list
 #if MOTDECODER_VERBOSE
-            qDebug() << "New MOT header ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << motObjList.size();;
+            qDebug() << "New MOT header ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << carousel.size();;
 #endif
             // all existing object shall be removed, only one MOT object is transmitted in header mode
-            motObjList.clear();
+            carousel.clear();
 
             // add new object to list
             motObjIdx = addMotObj(MOTObject(mscDataGroup.getTransportId()));
@@ -66,7 +66,7 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         {  /* do nothing - it already exists, just adding next segment */ }
 
         // add header segment
-        motObjList[motObjIdx].addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag(), true);
+        carousel[motObjIdx].addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag(), true);
     }
         break;
     case 4:
@@ -80,15 +80,15 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         {   // does not exist in list -> body without header
             // add new object to list
 #if MOTDECODER_VERBOSE
-            qDebug() << "New MOT object ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << motObjList.size();
+            qDebug() << "New MOT object ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << carousel.size();
 #endif
             motObjIdx = addMotObj(MOTObject(mscDataGroup.getTransportId()));
         }
-        motObjList[motObjIdx].addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
+        carousel[motObjIdx].addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
 
-        if (motObjList[motObjIdx].isComplete())
+        if (carousel[motObjIdx].isComplete())
         {
-            QByteArray body = motObjList[motObjIdx].getBody();
+            QByteArray body = carousel[motObjIdx].getBody();
 #if MOTDECODER_VERBOSE
             qDebug() << "MOT complete :)";
 #endif // MOTDECODER_VERBOSE
@@ -134,9 +134,9 @@ bool MOTDecoder::crc16check(const QByteArray & data)
 
 int MOTDecoder::findMotObj(uint16_t transportId)
 {
-    for (int n = 0; n<motObjList.size(); ++n)
+    for (int n = 0; n<carousel.size(); ++n)
     {
-        if (motObjList[n].getId() == transportId)
+        if (carousel[n].getId() == transportId)
         {
             return n;
         }
@@ -146,8 +146,8 @@ int MOTDecoder::findMotObj(uint16_t transportId)
 
 int MOTDecoder::addMotObj(const MOTObject & obj)
 {
-    motObjList.append(obj);
-    return motObjList.size()-1;
+    carousel.append(obj);
+    return carousel.size()-1;
 }
 
 

@@ -24,7 +24,7 @@ public slots:
     void reset();   
 
 private:
-    QList<MOTObject> motObjList;
+    QList<MOTObject> carousel;
     int findMotObj(uint16_t transportId);
     int addMotObj(const MOTObject & obj);
     bool crc16check(const QByteArray & data);

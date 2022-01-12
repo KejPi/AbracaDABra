@@ -204,7 +204,7 @@ bool MOTObject::parseHeader(const QByteArray & headerData)
             {
             case DabMotExtParameter::ContentName:
                 // One MOT parameter is mandatory for both content provider and MOT decoder: ContentName.
-                headerParams.ContentName = DabTables::convertToQString(((const char*) dataPtr)+n+1, ((dataPtr[n] >> 4) & 0x0F), dataFieldLen-1);
+                headerParams.ContentName = DabTables::convertToQString((const char*) (dataPtr+n+1), ((dataPtr[n] >> 4) & 0x0F), dataFieldLen-1);
 #if MOTOBJECT_VERBOSE
                 qDebug() << headerParams.ContentName;
 #endif
@@ -238,7 +238,7 @@ bool MOTObject::parseHeader(const QByteArray & headerData)
                 else
                 { /* paramId does not exist */ }
 
-                userAppParams.insert(paramId, QByteArray( ((const char *)dataPtr)+n, dataFieldLen));
+                userAppParams.insert(paramId, QByteArray( (const char *)(dataPtr+n), dataFieldLen));
                 break;
             }
 
