@@ -104,6 +104,7 @@ MOTObject::MOTObject(uint_fast32_t transportId)
     id = transportId;
     bodySize = -1;
     objectIsComplete = false;
+    objectIsObsolete = false;
 }
 
 bool MOTObject::parseHeader(const QByteArray & headerData)
@@ -312,14 +313,15 @@ QByteArray MOTObject::getBody()
 MOTDirectory::MOTDirectory(uint_fast32_t transportId, MOTObjectCache * cachePtr)
 {
     id = transportId;
-    cache = cachePtr;
 
-    carousel = new MOTObjectCache;
+    // cache becomes carousel in MOT directory
+    // decoder is still adding segments, even segments that do not exist in directoy yet
+    // crousel/cache maintenence is performed when new directory is received
+    carousel = cachePtr;
 }
 
 MOTDirectory::~MOTDirectory()
 {
-    delete carousel;
 }
 
 bool MOTDirectory::addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
@@ -471,7 +473,8 @@ bool MOTDirectory::parse(const QByteArray &dirData)
     // directory extension is parsed here
     qDebug() << "\tReading MOT objects";
 
-    carousel->clear();
+    // set all object in carousel obsolete
+    carousel->markAllObsolete();
 
     int numObjRead = 0;
     while (n < dirSize)
@@ -486,26 +489,24 @@ bool MOTDirectory::parse(const QByteArray &dirData)
         int headerSize = ((dataPtr[n+2+3] & 0x0F) << 9) | (dataPtr[n+2+4] << 1) | ((dataPtr[n+2+5] >> 7) & 0x01);
         qDebug() << "\t* ID" << objTransportID << "| header size " << headerSize;
 
-        // transfer MOT objects from cache to carousel
-        MOTObject * objPtr = cache->moveMotObj(objTransportID);
-        if (nullptr != objPtr)
-        {   // found in cache -> add to carousel
-            qDebug() << "Moving object from the cache: ID" << objTransportID;
-            carousel->addMotObj(objPtr);
-        }
-        else
+        // mark all objects in directory as active (non-obsolete)
+        MOTObject * objPtr = carousel->markObjObsolete(objTransportID, false);
+        if (nullptr == objPtr)
         {   // not found create new object in carousel
             qDebug() << "Object not found in the cache: ID" << objTransportID;
             objPtr = carousel->addMotObj(new MOTObject(objTransportID));
         }
+        else
+        { /* do nothing - object is marked as active (non-obsolete) */ }
+
         // add header segment
         // number 0, last = true, size is the rest of the directory, object takes what it needs
         objPtr->addSegment((const uint8_t *) (dataPtr + n + 2), 0, headerSize, true, true);
         n += 2 + headerSize;
     }
 
-    // done -> delete all remaining objects from the cache
-    cache->clear();
+    // done -> delete all remaining obsolete objects
+    carousel->deleteObsolete();
 
     return ret;
 }
@@ -542,22 +543,6 @@ MOTObject * MOTObjectCache::findMotObj(uint16_t transportId)
     return nullptr;
 }
 
-MOTObject * MOTObjectCache::moveMotObj(uint16_t transportId)
-{
-    for (int n = 0; n<cache.size(); ++n)
-    {
-        if (cache[n]->getId() == transportId)
-        {
-            MOTObject * ret = cache[n];
-            cache.removeAt(n);
-            return ret;
-        }
-    }
-
-    // not found
-    return nullptr;
-}
-
 void MOTObjectCache::deleteMotObj(uint16_t transportId)
 {
     for (int n = 0; n<cache.size(); ++n)
@@ -577,4 +562,41 @@ MOTObject * MOTObjectCache::addMotObj(MOTObject *obj)
     return obj;
 }
 
+void MOTObjectCache::markAllObsolete()
+{
+    for (int n = 0; n<cache.size(); ++n)
+    {
+        cache[n]->setObsolete(true);
+    }
+}
+
+MOTObject * MOTObjectCache::markObjObsolete(uint16_t transportId, bool obsolete)
+{
+    for (int n = 0; n<cache.size(); ++n)
+    {
+        if (cache[n]->getId() == transportId)
+        {
+            cache[n]->setObsolete(obsolete);
+            return cache[n];
+        }
+    }
+    return nullptr;
+}
+
+void MOTObjectCache::deleteObsolete()
+{
+    QList<MOTObject*>::iterator it = cache.begin();
+    while (it != cache.end())
+    {
+        if ((*it)->isObsolete())
+        {
+            delete *it;
+            it = cache.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}
 
