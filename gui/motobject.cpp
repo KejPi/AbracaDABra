@@ -320,10 +320,6 @@ MOTDirectory::MOTDirectory(uint_fast32_t transportId, MOTObjectCache * cachePtr)
     carousel = cachePtr;
 }
 
-MOTDirectory::~MOTDirectory()
-{
-}
-
 bool MOTDirectory::addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
 {
     dir.addSegment(segment, segmentNum, segmentSize, lastFlag);

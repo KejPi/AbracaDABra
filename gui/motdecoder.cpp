@@ -11,7 +11,7 @@ MOTDecoder::MOTDecoder(QObject *parent) : QObject(parent)
 MOTDecoder::~MOTDecoder()
 {
     if (nullptr != directory)
-    {
+    {   // delete existing MOT directory
         delete directory;
     }
     delete objCache;
@@ -19,6 +19,11 @@ MOTDecoder::~MOTDecoder()
 
 void MOTDecoder::reset()
 {
+    if (nullptr != directory)
+    {   // delete existing MOT directory
+        delete directory;
+        directory = nullptr;
+    }
     objCache->clear();
 }
 

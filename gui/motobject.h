@@ -86,7 +86,6 @@ class MOTDirectory
 {
 public:
     MOTDirectory(uint_fast32_t transportId, MOTObjectCache * cachePtr);
-    ~MOTDirectory();
     bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
     void addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
     uint_fast32_t getTransportId() const { return id; }
