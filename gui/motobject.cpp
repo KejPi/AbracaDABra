@@ -508,6 +508,14 @@ bool MOTDirectory::parse(const QByteArray &dirData)
     // done -> delete all remaining obsolete objects
     carousel->deleteObsolete();
 
+#if MOTOBJECT_VERBOSE
+    qDebug() << "MOT directory carousel contents:";
+    for (MOTObjectCache::const_iterator it = carousel->cbegin(); it < carousel->cend(); ++it)
+    {
+        qDebug("\tID: %d, isComplete = %d", (*it)->getId(), (*it)->isComplete());
+    }
+#endif //MOTOBJECT_VERBOSE
+
     return ret;
 }
 

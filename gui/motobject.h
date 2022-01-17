@@ -53,9 +53,10 @@ private:
     bool parseHeader(const QByteArray &headerData);
 };
 
+
 class MOTObjectCache
 {
-public:
+public:   
     MOTObjectCache();
     ~MOTObjectCache();
     void clear();
@@ -67,6 +68,15 @@ public:
     void markAllObsolete();
     MOTObject *markObjObsolete(uint16_t transportId, bool obsolete = true);
     void deleteObsolete();
+
+    // iterator access
+    typedef QList<MOTObject*>::iterator iterator;
+    typedef QList<MOTObject*>::const_iterator const_iterator;
+
+    MOTObjectCache::iterator begin() { return cache.begin(); }
+    MOTObjectCache::iterator end() { return cache.end(); }
+    MOTObjectCache::const_iterator cbegin() const { return cache.cbegin(); }
+    MOTObjectCache::const_iterator cend() const { return cache.cend(); }
 private:
     QList<MOTObject*> cache;
 };
