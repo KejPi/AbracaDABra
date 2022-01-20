@@ -205,7 +205,7 @@ bool MOTObject::parseHeader(const QByteArray & headerData)
             {
             case DabMotExtParameter::ContentName:
                 // One MOT parameter is mandatory for both content provider and MOT decoder: ContentName.
-                headerParams.ContentName = DabTables::convertToQString((const char*) (dataPtr+n+1), ((dataPtr[n] >> 4) & 0x0F), dataFieldLen-1);
+                headerParams.contentName = DabTables::convertToQString((const char*) (dataPtr+n+1), ((dataPtr[n] >> 4) & 0x0F), dataFieldLen-1);
 #if MOTOBJECT_VERBOSE
                 qDebug() << headerParams.ContentName;
 #endif

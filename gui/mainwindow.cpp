@@ -41,6 +41,8 @@ MainWindow::MainWindow(QWidget *parent)
     //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
     dlDecoder = new DLDecoder();
     motDecoder = new MOTDecoder();
+    slideShowApp = new SlideShowApp();
+    connect(motDecoder, &MOTDecoder::newMOTObject, slideShowApp, &SlideShowApp::onNewMOTObject);
 
     ui->setupUi(this);
 
@@ -352,6 +354,7 @@ MainWindow::~MainWindow()
 
     delete motDecoder;
     delete dlDecoder;
+    delete slideShowApp;
 
     delete serviceList;
 

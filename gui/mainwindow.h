@@ -21,6 +21,7 @@
 #include "radiocontrol.h"
 #include "dldecoder.h"
 #include "motdecoder.h"
+#include "userapplication.h"
 #include "audiodecoder.h"
 #include "audiooutput.h"
 #include "servicelist.h"
@@ -94,6 +95,7 @@ private:
 
     DLDecoder * dlDecoder;
     MOTDecoder * motDecoder;
+    SlideShowApp * slideShowApp;
 
     InputDeviceId inputDeviceId = InputDeviceId::UNDEFINED;
     InputDevice * inputDevice = nullptr;

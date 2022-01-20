@@ -5,7 +5,7 @@
 #include <QByteArrayList>
 #include <QHash>
 
-#define MOTOBJECT_VERBOSE 1
+#define MOTOBJECT_VERBOSE 0
 
 
 
@@ -33,6 +33,14 @@ public:
     QByteArray getBody();
     bool isObsolete() const { return objectIsObsolete; }
     void setObsolete(bool obsolete) { objectIsComplete = obsolete; };
+
+    struct {
+        uint16_t contentType;
+        uint16_t contentSubType;
+        QString contentName;
+    } headerParams;
+    QHash<int, QByteArray> userAppParams;
+
 private:
     uint_fast32_t id;
     int32_t bodySize;
@@ -41,14 +49,6 @@ private:
 
     MOTEntity header;
     MOTEntity body;
-
-    struct {
-        uint16_t contentType;
-        uint16_t contentSubType;
-        QString ContentName;
-    } headerParams;
-
-    QHash<int, QByteArray> userAppParams;
 
     bool parseHeader(const QByteArray &headerData);
 };

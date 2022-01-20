@@ -117,6 +117,9 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
                 qDebug() << "MOT complete :)";
 #endif // MOTDECODER_VERBOSE
                 emit motObjectComplete(body);
+                emit newMOTObject(*objPtr);
+
+                objCache->deleteMotObj(objPtr->getId());
             }
         }
     }

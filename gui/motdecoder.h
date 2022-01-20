@@ -6,7 +6,7 @@
 
 #include "motobject.h"
 
-#define MOTDECODER_VERBOSE 1
+#define MOTDECODER_VERBOSE 0
 
 class MOTDecoder : public QObject
 {
@@ -18,6 +18,7 @@ public:
 
 signals:
     void motObjectComplete(const QByteArray & b);
+    void newMOTObject(const MOTObject & obj);
 
 public slots:
     void newDataGroup(const QByteArray &dataGroup);

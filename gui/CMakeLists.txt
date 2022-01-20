@@ -316,6 +316,9 @@ add_executable(${TARGET}
     ensembleinfodialog.h
     ensembleinfodialog.cpp
     ensembleinfodialog.ui
+
+    userapplication.h
+    userapplication.cpp
   )
 
 ### DAB library
