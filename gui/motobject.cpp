@@ -99,7 +99,8 @@ QByteArray MOTEntity::getData()
     return segments.join();
 }
 
-MOTObject::MOTObject(uint_fast32_t transportId)
+
+MOTObjectData::MOTObjectData(int_fast32_t transportId)
 {
     id = transportId;
     bodySize = -1;
@@ -107,14 +108,40 @@ MOTObject::MOTObject(uint_fast32_t transportId)
     objectIsObsolete = false;
 }
 
-bool MOTObject::parseHeader(const QByteArray & headerData)
+MOTObjectData::MOTObjectData(const MOTObjectData &other) : QSharedData(other)
 {
+    id = other.id;
+    bodySize = other.bodySize;
+    objectIsComplete = other.objectIsComplete;
+    objectIsObsolete = other.objectIsObsolete;
+
+    contentType = other.contentType;
+    contentSubType = other.contentSubType;
+    contentName = other.contentName;
+
+    header = other.header;
+    body = other.body;
+
+    userAppParams = other.userAppParams;
+}
+
+
+MOTObject::MOTObject(int_fast32_t transportId)
+{
+    d = new MOTObjectData(transportId);
+}
+
+void MOTObjectData::parseHeader()
+{
+    const QByteArray headerData = header.getData();
+
     // [ETSI EN 301 234, 6.1 Header core]
     // minium header size is 56 bits => 7 bytes (header core)
     if (headerData.size() < 7)
     {
         qDebug() << "Unexpected header length";
-        return false;
+        objectIsComplete = false;
+        bodySize = -1;
     }
 
     // unsigned required
@@ -127,7 +154,8 @@ bool MOTObject::parseHeader(const QByteArray & headerData)
     // check is headerSize matches
     if (headerSize < headerData.size())
     {   // header size is not correct -> probably not received yet, but it should not happen
-        return false;
+        objectIsComplete = false;
+        bodySize = -1;
     }
 
     // it seems to be OK, we can parse the information
@@ -136,7 +164,7 @@ bool MOTObject::parseHeader(const QByteArray & headerData)
     contentSubType = ((dataPtr[5] & 0x01) << 8) | dataPtr[6];
 
 #if MOTOBJECT_VERBOSE
-    qDebug() << bodySize << headerSize << headerParams.contentType << headerParams.contentSubType;
+    qDebug() << bodySize << headerSize << contentType << contentSubType;
 
     QString header;
     for (int d = 0; d < headerSize-7; ++d)
@@ -146,7 +174,7 @@ bool MOTObject::parseHeader(const QByteArray & headerData)
     qDebug() << header;
 #endif // MOTOBJECT_VERBOSE
 
-    bool ret = true;
+    bool isOk = true;
     int n = 7;
     while (n<headerSize)
     {
@@ -178,7 +206,7 @@ bool MOTObject::parseHeader(const QByteArray & headerData)
                     }
                     else
                     {   // somethign is wrong
-                        ret = false;
+                        isOk = false;
                         break;
                     }
                 }
@@ -220,13 +248,13 @@ bool MOTObject::parseHeader(const QByteArray & headerData)
                 // ignoring scrembled data
                 qDebug() << "MOT CA scrambled ignoring";
                 bodySize = -1;
-                ret = false;
+                isOk = false;
                 break;
             case DabMotExtParameter::CompressionType:
                 // ignoring compressed data
                 qDebug() << "MOT compressed ignoring";
                 bodySize = -1;
-                ret = false;
+                isOk = false;
                 break;
 
             default:
@@ -246,65 +274,70 @@ bool MOTObject::parseHeader(const QByteArray & headerData)
         }
         else
         {   // something went wrong
-            ret = false;
+            isOk = false;
         }
 
         n += dataFieldLen;
     }
 
-    return ret;
+    if (!isOk)
+    {
+        objectIsComplete = false;
+        bodySize = -1;
+    }
 }
 
 bool MOTObject::addSegment(const uint8_t * segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag, bool isHeader)
 {
     if (isHeader)
     {
-        header.addSegment(segment, segmentNum, segmentSize, lastFlag);
+        d->header.addSegment(segment, segmentNum, segmentSize, lastFlag);
         // lets check is header is complete
-        if (header.isComplete())
+        if (d->header.isComplete())
         {   // header is complete -> lets set parameters for the object
-            if (!parseHeader(header.getData()))
-            {   // something is wrong - header could not be parsed, objects is not complete
-                objectIsComplete = false;
-                bodySize = -1;
-            }
+            d->parseHeader();
+//            if (!parseHeader(d->header.getData()))
+//            {   // something is wrong - header could not be parsed, objects is not complete
+//                d->objectIsComplete = false;
+//                d->bodySize = -1;
+//            }
         }
         else
         { /* header not complete yet */ }
     }
     else
     {
-        body.addSegment(segment, segmentNum, segmentSize, lastFlag);
+        d->body.addSegment(segment, segmentNum, segmentSize, lastFlag);
     }
 
-    if (bodySize >= 0)
+    if (d->bodySize >= 0)
     {   // header was already received
         // lets check if we already have complete MOT object
-        if (body.isComplete())
+        if (d->body.isComplete())
         {
-            if (body.size() == bodySize)
+            if (d->body.size() == d->bodySize)
             {   // correct, MOT object is complete
-                objectIsComplete = true;
+                d->objectIsComplete = true;
             }
             else
             {   // [ETSI EN 301 234, 6.1 Header core]
                 // BodySize: This 28-bit field, coded as an unsigned binary number, indicates the total size of the body in bytes.
                 // If the body size signalled by this parameter does not correspond to the size of the reassembled MOT body, then the
                 // MOT body shall be discarded.
-                body.reset();
-                objectIsComplete = false;
+                d->body.reset();
+                d->objectIsComplete = false;
             }
         }
     }
 
-    return objectIsComplete;
+    return d->objectIsComplete;
 }
 
 QByteArray MOTObject::getBody()
 {
-    if (objectIsComplete)
+    if (d->objectIsComplete)
     {   // MOT object is complete
-        return body.getData();
+        return d->body.getData();
     }
 
     return QByteArray();
@@ -312,17 +345,17 @@ QByteArray MOTObject::getBody()
 
 uint16_t MOTObject::getContentType() const
 {
-    return contentType;
+    return d->contentType;
 }
 
 uint16_t MOTObject::getContentSubType() const
 {
-    return contentSubType;
+    return d->contentSubType;
 }
 
 const QString &MOTObject::getContentName() const
 {
-    return contentName;
+    return d->contentName;
 }
 
 MOTDirectory::MOTDirectory(uint_fast32_t transportId, MOTObjectCache * cachePtr)
@@ -364,7 +397,7 @@ void MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *se
         qDebug() << "New MOT object" << transportId << "number of objects in carousel" << carousel->size();
 #endif
         // add new object to cache
-        objPtr = carousel->addMotObj(new MOTObject(transportId));
+        objPtr = carousel->addMotObj(MOTObject(transportId));
     }
     else
     {  /* do nothing - it already exists, just adding next segment */ }
@@ -505,7 +538,7 @@ bool MOTDirectory::parse(const QByteArray &dirData)
         if (nullptr == objPtr)
         {   // not found create new object in carousel
             qDebug() << "Object not found in the cache: ID" << objTransportID;
-            objPtr = carousel->addMotObj(new MOTObject(objTransportID));
+            objPtr = carousel->addMotObj(MOTObject(objTransportID));
         }
         else
         { /* do nothing - object is marked as active (non-obsolete) */ }
@@ -523,7 +556,7 @@ bool MOTDirectory::parse(const QByteArray &dirData)
     qDebug() << "MOT directory carousel contents:";
     for (MOTObjectCache::const_iterator it = carousel->cbegin(); it < carousel->cend(); ++it)
     {
-        qDebug("\tID: %d, isComplete = %d", (*it)->getId(), (*it)->isComplete());
+        qDebug("\tID: %d, isComplete = %d", it->getId(), it->isComplete());
     }
 #endif //MOTOBJECT_VERBOSE
 
@@ -542,74 +575,69 @@ MOTObjectCache::~MOTObjectCache()
 
 void MOTObjectCache::clear()
 {
-    for (int n = 0; n<cache.size(); ++n)
-    {
-        delete cache[n];
-    }
-
     cache.clear();
 }
 
-MOTObject * MOTObjectCache::findMotObj(uint16_t transportId)
+MOTObjectCache::iterator MOTObjectCache::findMotObj(uint16_t transportId)
 {
-    for (int n = 0; n<cache.size(); ++n)
+    MOTObjectCache::iterator it;
+    for (it = cache.begin(); it < cache.end(); ++it)
     {
-        if (cache[n]->getId() == transportId)
+        if (it->getId() == transportId)
         {
-            return cache[n];
+            return it;
         }
     }
-    return nullptr;
+    return it;
 }
 
 void MOTObjectCache::deleteMotObj(uint16_t transportId)
 {
     for (int n = 0; n<cache.size(); ++n)
     {
-        if (cache[n]->getId() == transportId)
+        if (cache[n].getId() == transportId)
         {
-            delete cache[n];
             cache.removeAt(n);
             return;
         }
     }
 }
 
-MOTObject * MOTObjectCache::addMotObj(MOTObject *obj)
+MOTObjectCache::iterator MOTObjectCache::addMotObj(const MOTObject & obj)
 {
     cache.append(obj);
-    return obj;
+    return --(cache.end());
 }
 
 void MOTObjectCache::markAllObsolete()
 {
     for (int n = 0; n<cache.size(); ++n)
     {
-        cache[n]->setObsolete(true);
+        cache[n].setObsolete(true);
     }
 }
 
-MOTObject * MOTObjectCache::markObjObsolete(uint16_t transportId, bool obsolete)
+MOTObjectCache::iterator MOTObjectCache::markObjObsolete(uint16_t transportId, bool obsolete)
 {
-    for (int n = 0; n<cache.size(); ++n)
+    MOTObjectCache::iterator it;
+    for (it = cache.begin(); it < cache.end(); ++it)
     {
-        if (cache[n]->getId() == transportId)
+        if (it->getId() == transportId)
         {
-            cache[n]->setObsolete(obsolete);
-            return cache[n];
+            it->setObsolete(obsolete);
+            return it;
         }
     }
-    return nullptr;
+    return it;
 }
 
 void MOTObjectCache::deleteObsolete()
 {
-    QList<MOTObject*>::iterator it = cache.begin();
+    QList<MOTObject>::iterator it = cache.begin();
     while (it != cache.end())
     {
-        if ((*it)->isObsolete())
+        if (it->isObsolete())
         {
-            delete *it;
             it = cache.erase(it);
         }
         else

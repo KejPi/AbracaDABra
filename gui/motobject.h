@@ -8,8 +8,6 @@
 
 #define MOTOBJECT_VERBOSE 0
 
-
-
 class MOTEntity
 {
 public:
@@ -24,33 +22,14 @@ private:
     int_fast32_t numSegments;
 };
 
-//class MOTObjectData : public QSharedData
-//{
-
-//};
-
-class MOTObject
+class MOTObjectData : public QSharedData
 {
-public:    
-    MOTObject(uint_fast32_t transportId);
-    uint16_t getId() const { return id; }
-    bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag, bool isHeader = false);
-    bool isComplete() const { return objectIsComplete; };
-    QByteArray getBody();
-    bool isObsolete() const { return objectIsObsolete; }
-    void setObsolete(bool obsolete) { objectIsComplete = obsolete; };
+public:
+    MOTObjectData(int_fast32_t transportId);
+    MOTObjectData(const MOTObjectData &other);
+    ~MOTObjectData() { }
 
-    uint16_t getContentType() const;
-    uint16_t getContentSubType() const;
-    const QString &getContentName() const;
-
-    // iterator access to user parameters
-    typedef QHash<int, QByteArray>::const_iterator paramsIterator;
-
-    MOTObject::paramsIterator paramsBegin() const { return userAppParams.cbegin(); }
-    MOTObject::paramsIterator paramsEnd() const { return userAppParams.cend(); }
-private:
-    uint_fast32_t id;
+    int_fast32_t id;
     int32_t bodySize;
     bool objectIsComplete;
     bool objectIsObsolete;   // this is used to remove obosolete obcect when new MOT directory is received
@@ -59,13 +38,39 @@ private:
     uint16_t contentSubType;
     QString contentName;
 
-
     MOTEntity header;
     MOTEntity body;
 
     QHash<int, QByteArray> userAppParams;
 
-    bool parseHeader(const QByteArray &headerData);
+    void parseHeader();
+};
+
+class MOTObject
+{
+public:    
+    MOTObject(int_fast32_t transportId);
+
+    MOTObject(const MOTObject &other) : d (other.d) { }
+
+    uint16_t getId() const { return d->id; }
+    bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag, bool isHeader = false);
+    bool isComplete() const { return d->objectIsComplete; };
+    QByteArray getBody();
+    bool isObsolete() const { return d->objectIsObsolete; }
+    void setObsolete(bool obsolete) { d->objectIsComplete = obsolete; };
+
+    uint16_t getContentType() const;
+    uint16_t getContentSubType() const;
+    const QString &getContentName() const;
+
+    // iterator access to user parameters
+    typedef QHash<int, QByteArray>::const_iterator paramsIterator;
+
+    MOTObject::paramsIterator paramsBegin() const { return d->userAppParams.cbegin(); }
+    MOTObject::paramsIterator paramsEnd() const { return d->userAppParams.cend(); }
+private:
+    QSharedDataPointer<MOTObjectData> d;
 };
 
 
@@ -76,24 +81,25 @@ public:
     ~MOTObjectCache();
     void clear();
     int size() const { return cache.size(); }
-    MOTObject * findMotObj(uint16_t transportId);   // find MOT object in the cache
-    MOTObject * addMotObj(MOTObject *obj);          // add MOT boject to cache
+
+    // iterator access
+    typedef QList<MOTObject>::iterator iterator;
+    typedef QList<MOTObject>::const_iterator const_iterator;
+
+    MOTObjectCache::iterator findMotObj(uint16_t transportId);   // find MOT object in the cache
+    MOTObjectCache::iterator addMotObj(const MOTObject &obj);          // add MOT boject to cache
     void deleteMotObj(uint16_t transportId);        // delete mote object from the cache, this deletes the object completely
 
     void markAllObsolete();
-    MOTObject *markObjObsolete(uint16_t transportId, bool obsolete = true);
+    MOTObjectCache::iterator markObjObsolete(uint16_t transportId, bool obsolete = true);
     void deleteObsolete();
-
-    // iterator access
-    typedef QList<MOTObject*>::iterator iterator;
-    typedef QList<MOTObject*>::const_iterator const_iterator;
 
     MOTObjectCache::iterator begin() { return cache.begin(); }
     MOTObjectCache::iterator end() { return cache.end(); }
     MOTObjectCache::const_iterator cbegin() const { return cache.cbegin(); }
     MOTObjectCache::const_iterator cend() const { return cache.cend(); }
 private:
-    QList<MOTObject*> cache;
+    QList<MOTObject> cache;
 };
 
 

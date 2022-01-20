@@ -65,8 +65,8 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         // The segments of the MOT header shall be transported in MSC Data group type 3.
 
         // this is header mode
-        MOTObject * objPtr = objCache->findMotObj(mscDataGroup.getTransportId());
-        if (nullptr == objPtr)
+        MOTObjectCache::iterator objIt = objCache->findMotObj(mscDataGroup.getTransportId());
+        if (objCache->end() == objIt)
         {  // object does not exist in cache
 #if MOTDECODER_VERBOSE
             qDebug() << "New MOT header ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << objCache->size();
@@ -75,13 +75,13 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
             objCache->clear();
 
             // add new object to cache
-            objPtr = objCache->addMotObj(new MOTObject(mscDataGroup.getTransportId()));
+            objIt = objCache->addMotObj(MOTObject(mscDataGroup.getTransportId()));
         }
         else
         {  /* do nothing - it already exists, just adding next segment */ }
 
         // add header segment
-        objPtr->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag(), true);
+        objIt->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag(), true);
     }
         break;
     case 4:
@@ -99,27 +99,27 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         else
         {   // this can be euth directory mode but directoy was not recieved yet or it can be header mode
             // Header mode is handled within the cache
-            MOTObject * objPtr = objCache->findMotObj(mscDataGroup.getTransportId());
-            if (nullptr == objPtr)
+            MOTObjectCache::iterator objIt = objCache->findMotObj(mscDataGroup.getTransportId());
+            if (objCache->end() == objIt)
             {   // does not exist in cache -> body without header
                 // add new object to cache
 #if MOTDECODER_VERBOSE
                 qDebug() << "New MOT object ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << objCache->size();
 #endif
-                objPtr = objCache->addMotObj(new MOTObject(mscDataGroup.getTransportId()));
+                objIt = objCache->addMotObj(MOTObject(mscDataGroup.getTransportId()));
             }
-            objPtr->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
+            objIt->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
 
-            if (objPtr->isComplete())
+            if (objIt->isComplete())
             {
-                QByteArray body = objPtr->getBody();
+                QByteArray body = objIt->getBody();
 #if MOTDECODER_VERBOSE
                 qDebug() << "MOT complete :)";
 #endif // MOTDECODER_VERBOSE
                 emit motObjectComplete(body);
-                emit newMOTObject(*objPtr);
+                emit newMOTObject(*objIt);
 
-                objCache->deleteMotObj(objPtr->getId());
+                objCache->deleteMotObj(objIt->getId());
             }
         }
     }
