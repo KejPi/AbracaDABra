@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QByteArrayList>
 #include <QHash>
+#include <QSharedData>
 
 #define MOTOBJECT_VERBOSE 0
 
@@ -23,6 +24,11 @@ private:
     int_fast32_t numSegments;
 };
 
+//class MOTObjectData : public QSharedData
+//{
+
+//};
+
 class MOTObject
 {
 public:    
@@ -34,21 +40,30 @@ public:
     bool isObsolete() const { return objectIsObsolete; }
     void setObsolete(bool obsolete) { objectIsComplete = obsolete; };
 
-    struct {
-        uint16_t contentType;
-        uint16_t contentSubType;
-        QString contentName;
-    } headerParams;
-    QHash<int, QByteArray> userAppParams;
+    uint16_t getContentType() const;
+    uint16_t getContentSubType() const;
+    const QString &getContentName() const;
 
+    // iterator access to user parameters
+    typedef QHash<int, QByteArray>::const_iterator paramsIterator;
+
+    MOTObject::paramsIterator paramsBegin() const { return userAppParams.cbegin(); }
+    MOTObject::paramsIterator paramsEnd() const { return userAppParams.cend(); }
 private:
     uint_fast32_t id;
     int32_t bodySize;
     bool objectIsComplete;
     bool objectIsObsolete;   // this is used to remove obosolete obcect when new MOT directory is received
 
+    uint16_t contentType;
+    uint16_t contentSubType;
+    QString contentName;
+
+
     MOTEntity header;
     MOTEntity body;
+
+    QHash<int, QByteArray> userAppParams;
 
     bool parseHeader(const QByteArray &headerData);
 };

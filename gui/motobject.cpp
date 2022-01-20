@@ -132,8 +132,8 @@ bool MOTObject::parseHeader(const QByteArray & headerData)
 
     // it seems to be OK, we can parse the information
     bodySize = (dataPtr[0] << 20) | (dataPtr[1] << 12) | (dataPtr[2] << 4) | ((dataPtr[3] >> 4) & 0x0F);
-    headerParams.contentType = (dataPtr[5] >> 1) & 0x3F;
-    headerParams.contentSubType = ((dataPtr[5] & 0x01) << 8) | dataPtr[6];
+    contentType = (dataPtr[5] >> 1) & 0x3F;
+    contentSubType = ((dataPtr[5] & 0x01) << 8) | dataPtr[6];
 
 #if MOTOBJECT_VERBOSE
     qDebug() << bodySize << headerSize << headerParams.contentType << headerParams.contentSubType;
@@ -205,9 +205,9 @@ bool MOTObject::parseHeader(const QByteArray & headerData)
             {
             case DabMotExtParameter::ContentName:
                 // One MOT parameter is mandatory for both content provider and MOT decoder: ContentName.
-                headerParams.contentName = DabTables::convertToQString((const char*) (dataPtr+n+1), ((dataPtr[n] >> 4) & 0x0F), dataFieldLen-1);
+                contentName = DabTables::convertToQString((const char*) (dataPtr+n+1), ((dataPtr[n] >> 4) & 0x0F), dataFieldLen-1);
 #if MOTOBJECT_VERBOSE
-                qDebug() << headerParams.ContentName;
+                qDebug() << contentName;
 #endif
                 break;
 
@@ -308,6 +308,21 @@ QByteArray MOTObject::getBody()
     }
 
     return QByteArray();
+}
+
+uint16_t MOTObject::getContentType() const
+{
+    return contentType;
+}
+
+uint16_t MOTObject::getContentSubType() const
+{
+    return contentSubType;
+}
+
+const QString &MOTObject::getContentName() const
+{
+    return contentName;
 }
 
 MOTDirectory::MOTDirectory(uint_fast32_t transportId, MOTObjectCache * cachePtr)

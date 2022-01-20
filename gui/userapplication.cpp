@@ -16,14 +16,14 @@ SlideShowApp::SlideShowApp(QObject *parent) : UserApplication(parent)
 
 void SlideShowApp::onNewMOTObject(const MOTObject & obj)
 {
-    qDebug() << Q_FUNC_INFO << obj.getId() << obj.headerParams.contentName;
+    qDebug() << Q_FUNC_INFO << obj.getId() << obj.getContentName();
 
     // ETSI TS 101 756 V2.4.1 Table 17: Content type and content subtypes
-    switch (obj.headerParams.contentType)
+    switch (obj.getContentType())
     {
     case 2:
     {
-        switch (obj.headerParams.contentSubType)
+        switch (obj.getContentSubType())
         {
         case 1:
             qDebug() << "Image / JFIF (JPEG)";
@@ -32,12 +32,12 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
             qDebug() << "Image / PNG";
             break;
         default:
-            qDebug() << "Image /" << obj.headerParams.contentSubType << "not supported by Slideshow application";
+            qDebug() << "Image /" << obj.getContentSubType() << "not supported by Slideshow application";
         }
     }
         break;
     case 5:
-        switch (obj.headerParams.contentSubType)
+        switch (obj.getContentSubType())
         {
         case 0:
             qDebug() << "MOT transport / Header update";
@@ -46,17 +46,17 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
             qDebug() << "MOT transport / Header only";
             break;
         default:
-            qDebug() << "MOT transport /" << obj.headerParams.contentSubType << "not supported by Slideshow application";
+            qDebug() << "MOT transport /" << obj.getContentSubType() << "not supported by Slideshow application";
         }
         break;
     default:
     {
-        qDebug() << "ContentType" << obj.headerParams.contentType << "not supported by Slideshow application";
+        qDebug() << "ContentType" << obj.getContentSubType() << "not supported by Slideshow application";
     }
     }
 
-   QHash<int, QByteArray>::const_iterator it = obj.userAppParams.constBegin();
-    while (it != obj.userAppParams.constEnd())
+    MOTObject::paramsIterator it = obj.paramsBegin();
+    while (it != obj.paramsEnd())
     {
         switch (Parameter(it.key()))
         {
