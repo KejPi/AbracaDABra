@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QPixmap>
+#include <QHash>
 #include "radiocontrol.h"
 #include "motdecoder.h"
 
@@ -61,6 +62,7 @@ private:
     int slideID;
 };
 
+
 class SlideShowApp : public UserApplication
 {
     Q_OBJECT
@@ -74,6 +76,22 @@ class SlideShowApp : public UserApplication
         ClickThroughURL = 0x27,
         AlternativeLocationURL = 0x28,
         Alert = 0x29
+    };
+
+    class Category
+    {
+    public:
+        Category(QString & categoryTitle);
+        const QString &getTitle() const;
+        void setTitle(const QString &newTitle);
+        void insertSlide(Slide * s);
+        bool removeSlide(int id);
+        Slide * getSlide(int id);
+        Slide * getNextSlide(bool moveForward = true);
+    private:
+        int currentSlide;
+        QString title;
+        QMap<int, Slide*> slides;
     };
 
 public:
@@ -90,7 +108,8 @@ signals:
 
 private:
     MOTDecoder * decoder;
-
+    QHash<QString, Slide> cache;
+    QHash<int, Category> catSls;
 };
 
 #endif // USERAPPLICATION_H

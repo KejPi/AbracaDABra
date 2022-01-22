@@ -44,8 +44,14 @@ void SlideShowApp::stop()
     if (nullptr != decoder)
     {
         delete decoder;
+        decoder = nullptr;
     }
     isRunning = false;    
+
+    // clear cache
+    cache.clear();
+
+    // ask HMI to clear SLS
     emit resetTerminal();
 }
 
@@ -92,15 +98,6 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
             qDebug() << "Image /" << obj.getContentSubType() << "not supported by Slideshow application";
             return;
         }
-
-        // we can try to load data to Slide
-        if (!slide.setPixmap(obj.getBody()))
-        {   // loading of data failed
-            return;
-        }
-        else
-        { /* slide body is correct -> lets continue with params processing */ }
-
         slide.setContentName(obj.getContentName());
     }
         break;
@@ -229,9 +226,164 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         ++it;
     }
 
+    // now we have parsed params -> check for potential request to decategorize
+    if (0 == slide.getCategoryID())
+    {   // decategorize
+        // An 8-bit number that uniquely identifies a Category. CategoryID shall not be 0x00,
+        // except to remove a previously delivered slide from a category.
+
+        // ETSI TS 101 499 V3.1.1 [6.2.2 ContentName]
+        // This parameter is used for uniquely identifying the object for the purposes of cache management.
+
+        // first check if item is already in cache
+        QHash<QString, Slide>::const_iterator cacheIt = cache.constFind(slide.getContentName());
+        if (cache.cend() != cacheIt)
+        {   // item is in the cache -> decategorize and delete from cache
+            qDebug() << "Item" << obj.getContentName() << "is already in cache";
+
+            // decategorized slides are not kept in cache
+            // get old category ID and item ID
+            int catID = cacheIt->getCategoryID();
+            int slideID = cacheIt->getSlideID();
+
+            QHash<int, Category>::iterator catIt = catSls.find(catID);
+            if (catSls.end() != catIt)
+            {   // category found -> remove slide
+                if (catIt->removeSlide(slideID))
+                {   // category is empty -> removing category
+                    catSls.erase(catIt);
+                }
+                else
+                { /* there is still somethign in category */ }
+            }
+
+            // delete slide from cache
+            cache.erase(cacheIt);
+        }
+        else
+        { /* item was is not in cache - do nothing */ }
+
+        // we can try to load data to Slide
+        if (!slide.setPixmap(obj.getBody()))
+        {   // loading of data failed
+            return;
+        }
+        else
+        { /* slide body is correct */ }
+    }
+    else
+    {   // ETSI TS 101 499 V3.1.1 [6.2.2 ContentName]
+        // This parameter is used for uniquely identifying the object for the purposes of cache management.
+
+        // first check if item is already in cache
+        if (cache.contains(obj.getContentName()))
+        {   // item is already received
+            qDebug() << "Item" << obj.getContentName() << "is already in cache";
+            return;
+        }
+        else
+        { /* item was is not in cache yet */ }
+
+        // we can try to load data to Slide
+        if (!slide.setPixmap(obj.getBody()))
+        {   // loading of data failed
+            return;
+        }
+        else
+        { /* slide body is correct */ }
+
+        // adding new slide to cache
+        cache.insert(slide.getContentName(), slide);
+
+        qDebug() << "Cache contains" << cache.size() << "slides";
+    }
+
     // emit slide to HMI
     emit newSlide(slide);
 }
+
+SlideShowApp::Category::Category(QString & categoryTitle) : title(categoryTitle)
+{
+    currentSlide = 0;   // this is invalid slide ID
+}
+
+const QString &SlideShowApp::Category::getTitle() const
+{
+    return title;
+}
+
+void SlideShowApp::Category::setTitle(const QString &newTitle)
+{
+    title = newTitle;
+}
+
+void SlideShowApp::Category::insertSlide(Slide * s)
+{
+    slides.insert(s->getSlideID(), s);
+}
+
+// returns true when category is empty
+bool SlideShowApp::Category::removeSlide(int id)
+{
+    slides.remove(id);
+
+    return (0 == slides.size());
+}
+
+Slide * SlideShowApp::Category::getSlide(int id)
+{
+    QMap<int,Slide*>::const_iterator it = slides.constFind(id);
+    if (slides.cend() != it)
+    {  // found
+        return *it;
+    }
+    else
+    { /* not found */ }
+
+    return nullptr;
+}
+
+Slide * SlideShowApp::Category::getNextSlide(bool moveForward)
+{
+    QMap<int,Slide*>::const_iterator it = slides.constFind(currentSlide);
+    if (slides.cend() != it)
+    {   // found
+        // go to next slide
+        if (moveForward)
+        {
+            if (slides.cend() == ++it)
+            {   // it was last slide, return first slide
+                it = slides.constBegin();
+            }
+        }
+        else
+        {
+            if (slides.cbegin() == it)
+            {   // current slide is first
+                it = slides.constEnd();
+            }
+            else
+            { }
+            --it;
+
+        }
+        currentSlide = it.key();
+        return *it;
+    }
+    else
+    {  // invalid current slide - returning first slide
+        it = slides.constBegin();
+        if (slides.cend() != it)
+        {  // found at lest one
+            currentSlide = it.key();
+            return *it;
+        }
+    }
+
+    // this may happen when category is empty
+    return nullptr;
+}
+
 
 Slide::Slide()
 {
@@ -313,3 +465,4 @@ void Slide::setAlternativeLocationURL(const QString &newAlternativeLocationURL)
 {
     alternativeLocationURL = newAlternativeLocationURL;
 }
+

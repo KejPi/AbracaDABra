@@ -48,6 +48,7 @@ public slots:
     void updateServiceList(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
     void updateDL(const QString &dl);
     void updateSLS(const Slide & slide);
+    void resetSLS();
     void updateAudioInfo(const AudioParameters &params);
     void updateDabTime(const QDateTime & d);
     void changeInputDevice(const InputDeviceId &d);
@@ -56,6 +57,7 @@ public slots:
 
 signals:
     void serviceRequest(uint32_t freq, uint32_t SId, uint8_t SCIdS);
+    void stopUserApps();
     void exit();
 
 private slots:

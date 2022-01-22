@@ -328,8 +328,10 @@ MainWindow::MainWindow(QWidget *parent)
     slideShowApp->moveToThread(radioControlThr);
     connect(radioControlThr, &QThread::finished, slideShowApp, &QObject::deleteLater);       
     connect(radioControl, &RadioControl::newServiceSelection, slideShowApp, &SlideShowApp::start);
-    connect(radioControl, &RadioControl::serviceChanged, slideShowApp, &SlideShowApp::restart);
+    connect(radioControl, &RadioControl::serviceChanged, slideShowApp, &SlideShowApp::start);
     connect(slideShowApp, &SlideShowApp::newSlide, this, &MainWindow::updateSLS, Qt::QueuedConnection);
+    connect(slideShowApp, &SlideShowApp::resetTerminal, this, &MainWindow::resetSLS, Qt::QueuedConnection);
+    connect(this, &MainWindow::stopUserApps, slideShowApp, &SlideShowApp::stop, Qt::QueuedConnection);
 
     // input device connections
     initInputDevice(InputDeviceId::UNDEFINED);
@@ -627,12 +629,16 @@ void MainWindow::onChannelSelection()
 }
 
 void MainWindow::onServiceSelection()
-{
+{        
     clearServiceInformationLabels();
     dlDecoder->reset();
     ui->dynamicLabel->setText("");    
-#warning "SlideShow app reset"
-    // motDecoder->reset();
+
+    emit stopUserApps();
+}
+
+void MainWindow::resetSLS()
+{
     QPixmap pic;
     if (pic.load(":/resources/sls_logo.png"))
     {
