@@ -24,7 +24,7 @@ const QStringList syncLevelTooltip = {"DAB signal not detected<br>Looking for si
 const QStringList snrProgressStylesheet = {
     QString::fromUtf8("QProgressBar::chunk {background-color: #ff4b4b; }"),  // red
     QString::fromUtf8("QProgressBar::chunk {background-color: #ffb527; }"),  // yellow
-    QString::fromUtf8("QProgressBar::chunk {background-color: #81bc00; }")   // green
+    QString::fromUtf8("QProgressBar::chunk {background-color: #5bc214; }")   // green
 };
 
 enum class SNR10Threhold
@@ -92,6 +92,7 @@ MainWindow::MainWindow(QWidget *parent)
     QHBoxLayout * signalQualityLayout = new QHBoxLayout();
     signalQualityLayout->addWidget(syncLabel);
     signalQualityLayout->addWidget(snrProgress);
+    signalQualityLayout->setAlignment(snrProgress, Qt::AlignCenter);
     signalQualityLayout->setStretch(0, 100);
     signalQualityLayout->setAlignment(syncLabel, Qt::AlignCenter);
     signalQualityLayout->addWidget(snrLabel);
