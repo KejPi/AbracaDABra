@@ -15,6 +15,7 @@ const uint8_t RadioControl::EEPCoderate[] =
 
 
 void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx);
+void dynamicLabelCb(dabProcDynamicLabelCBData_t * p, void * ctx);
 void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx);
 void audioDataCb(dabProcAudioCBData_t * p, void * ctx);
 
@@ -40,6 +41,7 @@ bool RadioControl::init()
     {
         dabProcRegisterInputFcn(dabProcHandle, getSamples);
         dabProcRegisterNotificationCb(dabProcHandle, dabNotificationCb, (void *) this);
+        dabProcRegisterDynamicLabelCb(dabProcHandle, dynamicLabelCb, (void*) this);
         dabProcRegisterDataGroupCb(dabProcHandle, dataGroupCb, (void*) this);
         dabProcRegisterAudioCb(dabProcHandle, audioDataCb, this);
         // this starts dab processing thread and retunrs
@@ -888,6 +890,24 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
     }
 }
 
+void dynamicLabelCb(dabProcDynamicLabelCBData_t * p, void * ctx)
+{
+    if (0 == p->len)
+    {   // do nothing - empty data group
+        qDebug("Empty DL data received\n");
+        return;
+    }
+    RadioControl * radioCtrl = (RadioControl * ) ctx;
+
+    QByteArray * data = new QByteArray((const char *)p->pData, p->len);
+
+    RadioControlEvent * pEvent = new RadioControlEvent;
+    pEvent->type = RadioControlEventType::DATAGROUP_DL;
+    pEvent->status = DABPROC_NSTAT_SUCCESS;
+    pEvent->pData = intptr_t(data);
+    radioCtrl->emit_dabEvent(pEvent);
+}
+
 void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
 {
     if (0 == p->dgLen)
@@ -897,19 +917,9 @@ void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
     }
 
     RadioControl * radioCtrl = (RadioControl * ) ctx;
-    switch (p->userAppType)
-    { // [7.4.3] Application types 2 and 3 shall be used for the dynamic label (see clause 7.4.5.2).
-    case -1:
-    {
-        QByteArray * data = new QByteArray((const char *)p->pDgData, p->dgLen);
 
-        RadioControlEvent * pEvent = new RadioControlEvent;
-        pEvent->type = RadioControlEventType::DATAGROUP_DL;
-        pEvent->status = DABPROC_NSTAT_SUCCESS;
-        pEvent->pData = intptr_t(data);
-        radioCtrl->emit_dabEvent(pEvent);        
-    }
-        break;
+    switch (p->userAppType)        
+    { // [7.4.3] Application types 2 and 3 shall be used for the dynamic label (see clause 7.4.5.2).
     case 0x02:
     {
 #warning "Assign correct app types"

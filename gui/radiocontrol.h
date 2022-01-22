@@ -176,6 +176,11 @@ struct RadioControlService
     QList<RadioControlServiceComponent> serviceComponents;
 };
 
+struct RadioControlUserAppData
+{
+    DabUserApplicationType userAppType;
+    QByteArray data;
+};
 
 enum class RadioControlEventType
 {
@@ -268,6 +273,7 @@ private:
     void dabServiceSelection(uint32_t SId, uint8_t SCIdS) { dabProcRequest_ServiceSelection(dabProcHandle, SId, SCIdS); }
 
     friend void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx);
+    friend void dynamicLabelCb(dabProcDynamicLabelCBData_t * p, void * ctx);
     friend void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx);
     friend void audioDataCb(dabProcAudioCBData_t * p, void * ctx);        
 private slots:
