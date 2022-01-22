@@ -899,7 +899,7 @@ void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
     RadioControl * radioCtrl = (RadioControl * ) ctx;
     switch (p->userAppType)
     { // [7.4.3] Application types 2 and 3 shall be used for the dynamic label (see clause 7.4.5.2).
-    case 0xFFFF:
+    case -1:
     {
         QByteArray * data = new QByteArray((const char *)p->pDgData, p->dgLen);
 
