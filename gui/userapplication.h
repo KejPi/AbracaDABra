@@ -2,6 +2,7 @@
 #define USERAPPLICATION_H
 
 #include <QObject>
+#include <QPixmap>
 #include "radiocontrol.h"
 #include "motdecoder.h"
 
@@ -17,9 +18,47 @@ public:
     virtual void stop() = 0;
     virtual void restart() = 0;    
 
+signals:
+    void resetTerminal();
+
 protected:
     bool isRunning;
     RadioControl * radioControl;
+};
+
+class Slide
+{
+public:
+    Slide();
+    QPixmap getPixmap() const;
+    bool setPixmap(const QByteArray &data);
+
+    const QString &getContentName() const;
+    void setContentName(const QString &newContentName);
+
+    const QString &getCategoryTitle() const;
+    void setCategoryTitle(const QString &newCategoryTitle);
+
+    const QString &getClickThroughURL() const;
+    void setClickThroughURL(const QString &newClickThroughURL);
+
+    int getCategoryID() const;
+    void setCategoryID(int newCategoryID);
+
+    int getSlideID() const;
+    void setSlideID(int newSlideID);
+
+    const QString &getAlternativeLocationURL() const;
+    void setAlternativeLocationURL(const QString &newAlternativeLocationURL);
+
+private:
+    QPixmap pixmap;
+    QString contentName;
+    QString categoryTitle;
+    QString clickThroughURL;
+    QString alternativeLocationURL;
+    int categoryID;
+    int slideID;
 };
 
 class SlideShowApp : public UserApplication
@@ -47,7 +86,7 @@ public:
     void restart() override;
 
 signals:
-    void newSlide(const QByteArray & data);
+    void newSlide(const Slide & slide);
 
 private:
     MOTDecoder * decoder;

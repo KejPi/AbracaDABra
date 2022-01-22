@@ -511,28 +511,24 @@ void MainWindow::updateDL(const QString & dl)
     }
 }
 
-void MainWindow::updateSLS(const QByteArray & b)
+void MainWindow::updateSLS(const Slide &slide)
 {
-    QPixmap pic;
-    if (pic.loadFromData(b))
+    QGraphicsScene * scene = ui->slsView->scene();
+    if (nullptr == scene)
     {
-        QGraphicsScene * scene = ui->slsView->scene();
-        if (nullptr == scene)
-        {
-            //qDebug() << Q_FUNC_INFO << "New graphisc scene";
-            scene = new QGraphicsScene(this);
-            slsPixmapItem = scene->addPixmap(pic);
+        //qDebug() << Q_FUNC_INFO << "New graphisc scene";
+        scene = new QGraphicsScene(this);
+        slsPixmapItem = scene->addPixmap(slide.getPixmap());
 
-            ui->slsView->setScene(scene);
-        }
-        else
-        {
-            slsPixmapItem->setPixmap(pic);
-        }
-
-        scene->setSceneRect(pic.rect());
-        ui->slsView->fitInViewTight(pic.rect(), Qt::KeepAspectRatio);
+        ui->slsView->setScene(scene);
     }
+    else
+    {
+        slsPixmapItem->setPixmap(slide.getPixmap());
+    }
+
+    scene->setSceneRect(slide.getPixmap().rect());
+    ui->slsView->fitInViewTight(slide.getPixmap().rect(), Qt::KeepAspectRatio);
 }
 
 void MainWindow::updateDabTime(const QDateTime & d)

@@ -9,7 +9,6 @@ UserApplication::UserApplication(RadioControl * radioControlPtr, QObject *parent
     isRunning = false;
 }
 
-
 SlideShowApp::SlideShowApp(RadioControl * radioControlPtr, QObject *parent) : UserApplication(radioControlPtr, parent)
 {   
     decoder = nullptr;
@@ -46,35 +45,39 @@ void SlideShowApp::stop()
     {
         delete decoder;
     }
-    isRunning = false;
+    isRunning = false;    
+    emit resetTerminal();
 }
 
 void SlideShowApp::restart()
 {
-
+    stop();
+    start();
 }
 
 void SlideShowApp::onUserAppData(const RadioControlUserAppData & data)
 {
-    qDebug() << Q_FUNC_INFO << "userApp" << int(data.userAppType);
-    if ((!isRunning) || (DabUserApplicationType::SlideShow != data.userAppType))
-    {   // do nothing
-        return;
+    if ((DabUserApplicationType::SlideShow == data.userAppType) && (isRunning))
+    {
+        // application is running and user application type matches
+        // data is for this application
+        // send data to decoder
+        decoder->newDataGroup(data.data);
     }
-
-    // application is running and user application type matches
-    // data is for this application
-    // send data to decoder
-    decoder->newDataGroup(data.data);
+    else
+    { /* do nothing */ }
 }
 
 void SlideShowApp::onNewMOTObject(const MOTObject & obj)
 {
     qDebug() << Q_FUNC_INFO << obj.getId() << obj.getContentName();
 
+    Slide slide;
+
     // ETSI TS 101 756 V2.4.1 Table 17: Content type and content subtypes
     switch (obj.getContentType())
     {
+    // this is not necessary
     case 2:
     {
         switch (obj.getContentSubType())
@@ -87,7 +90,18 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
             break;
         default:
             qDebug() << "Image /" << obj.getContentSubType() << "not supported by Slideshow application";
+            return;
         }
+
+        // we can try to load data to Slide
+        if (!slide.setPixmap(obj.getBody()))
+        {   // loading of data failed
+            return;
+        }
+        else
+        { /* slide body is correct -> lets continue with params processing */ }
+
+        slide.setContentName(obj.getContentName());
     }
         break;
     case 5:
@@ -101,11 +115,13 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
             break;
         default:
             qDebug() << "MOT transport /" << obj.getContentSubType() << "not supported by Slideshow application";
+            return;
         }
         break;
     default:
     {
         qDebug() << "ContentType" << obj.getContentSubType() << "not supported by Slideshow application";
+        return;
     }
     }
 
@@ -168,20 +184,25 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
             if (it.value().size() >= 2)
             {
                 qDebug("CategoryID: %d/%d", uint8_t(it.value().at(0)), uint8_t(it.value().at(1)));
+                slide.setCategoryID(uint8_t(it.value().at(0)));
+                slide.setSlideID(uint8_t(it.value().at(1)));
             }
             else
             {   // unexpected length
                qDebug() << "CategoryID: error";
             }
             break;
-        case Parameter::CategoryTitle:
-            qDebug() << "CategoryTitle:" << DabTables::convertToQString(it.value().data(), uint8_t(DabCharset::UTF8), it.value().size());
+        case Parameter::CategoryTitle:            
+            slide.setCategoryTitle(DabTables::convertToQString(it.value().data(), uint8_t(DabCharset::UTF8), it.value().size()));
+            qDebug() << "CategoryTitle:" << slide.getCategoryTitle();
             break;
         case Parameter::ClickThroughURL:
-            qDebug() << "ClickThroughURL:" << DabTables::convertToQString(it.value().data(), uint8_t(DabCharset::UTF8), it.value().size());
+            slide.setClickThroughURL(DabTables::convertToQString(it.value().data(), uint8_t(DabCharset::UTF8), it.value().size()));
+            qDebug() << "ClickThroughURL:" << slide.getClickThroughURL();
             break;
         case Parameter::AlternativeLocationURL:
-            qDebug() << "AlternativeLocationURL:" << DabTables::convertToQString(it.value().data(), uint8_t(DabCharset::UTF8), it.value().size());
+            slide.setAlternativeLocationURL(DabTables::convertToQString(it.value().data(), uint8_t(DabCharset::UTF8), it.value().size()));
+            qDebug() << "AlternativeLocationURL:" << slide.getAlternativeLocationURL();
             break;
         case Parameter::Alert:
             if (it.value().size() >= 1)
@@ -202,5 +223,80 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
     }
 
     // emit slide to HMI
-    emit newSlide(obj.getBody());
+    emit newSlide(slide);
+}
+
+Slide::Slide()
+{
+
+}
+
+QPixmap Slide::getPixmap() const
+{
+    return pixmap;
+}
+
+bool Slide::setPixmap(const QByteArray &data)
+{
+    return pixmap.loadFromData(data);
+}
+
+const QString &Slide::getContentName() const
+{
+    return contentName;
+}
+
+void Slide::setContentName(const QString &newContentName)
+{
+    contentName = newContentName;
+}
+
+const QString &Slide::getCategoryTitle() const
+{
+    return categoryTitle;
+}
+
+void Slide::setCategoryTitle(const QString &newCategoryTitle)
+{
+    categoryTitle = newCategoryTitle;
+}
+
+int Slide::getCategoryID() const
+{
+    return categoryID;
+}
+
+const QString &Slide::getClickThroughURL() const
+{
+    return clickThroughURL;
+}
+
+void Slide::setClickThroughURL(const QString &newClickThroughURL)
+{
+    clickThroughURL = newClickThroughURL;
+}
+
+void Slide::setCategoryID(int newCategoryID)
+{
+    categoryID = newCategoryID;
+}
+
+int Slide::getSlideID() const
+{
+    return slideID;
+}
+
+void Slide::setSlideID(int newSlideID)
+{
+    slideID = newSlideID;
+}
+
+const QString &Slide::getAlternativeLocationURL() const
+{
+    return alternativeLocationURL;
+}
+
+void Slide::setAlternativeLocationURL(const QString &newAlternativeLocationURL)
+{
+    alternativeLocationURL = newAlternativeLocationURL;
 }

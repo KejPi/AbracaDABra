@@ -47,7 +47,7 @@ public slots:
     void updateSnrLevel(float snr);
     void updateServiceList(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
     void updateDL(const QString &dl);
-    void updateSLS(const QByteArray & b);
+    void updateSLS(const Slide & slide);
     void updateAudioInfo(const AudioParameters &params);
     void updateDabTime(const QDateTime & d);
     void changeInputDevice(const InputDeviceId &d);
