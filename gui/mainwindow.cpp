@@ -529,6 +529,23 @@ void MainWindow::updateSLS(const Slide &slide)
 
     scene->setSceneRect(slide.getPixmap().rect());
     ui->slsView->fitInViewTight(slide.getPixmap().rect(), Qt::KeepAspectRatio);
+
+    // update tool tip
+    QString toolTip = QString("<b>ContentName:</b> %1").arg(slide.getContentName());
+    if (0 != slide.getCategoryID())
+    {
+        toolTip += QString("<br><b>Category:</b> %1 (%2)").arg(slide.getCategoryTitle())
+                                                          .arg(slide.getCategoryID());
+    }
+    else
+    { /* no catSLS */ }
+    if (!slide.getClickThroughURL().isEmpty())
+    {
+        toolTip += QString("<br><b>ClickThroughURL:</b> %1").arg(slide.getClickThroughURL());
+    }
+    else
+    { /* not present */ }
+    ui->slsView->setToolTip(toolTip);
 }
 
 void MainWindow::updateDabTime(const QDateTime & d)
@@ -639,6 +656,8 @@ void MainWindow::onServiceSelection()
     {
         qDebug() << "Unable to load :/resources/sls_logo.png";
     }
+
+    ui->slsView->setToolTip("");
 }
 
 void MainWindow::on_channelCombo_currentIndexChanged(int index)

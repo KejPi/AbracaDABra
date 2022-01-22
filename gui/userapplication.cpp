@@ -108,9 +108,16 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         switch (obj.getContentSubType())
         {
         case 0:
-            qDebug() << "MOT transport / Header update";
+            qDebug() << "MOT transport / Header update";            
+            // ETSI TS 101 499 V3.1.1 [6.2.3]
+            // The MOT transport ContentSubType Header update is used to signal an update to parameters
+            // of a previously received object.
             break;
         case 1:
+            // ETSI TS 101 499 V3.1.1 [6.2.3]
+            // The MOT transport ContentSubType Header only is used to signal an object with no associated
+            // body data. It should thus only be relevant to IP-connected devices which can acquire
+            // the image data over IP.
             qDebug() << "MOT transport / Header only";
             break;
         default:
@@ -228,7 +235,13 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
 
 Slide::Slide()
 {
-
+    pixmap = QPixmap(0,0);         // this creates NULL pixmap
+    contentName = QString("");
+    categoryTitle = QString("");
+    clickThroughURL = QString("");
+    alternativeLocationURL = QString("");
+    categoryID = 0;
+    slideID = 0;
 }
 
 QPixmap Slide::getPixmap() const
