@@ -94,7 +94,7 @@ void MOTEntity::reset()
     numSegments = -1;
 }
 
-QByteArray MOTEntity::getData()
+QByteArray MOTEntity::getData() const
 {
     return segments.join();
 }
@@ -333,7 +333,7 @@ bool MOTObject::addSegment(const uint8_t * segment, uint16_t segmentNum, uint16_
     return d->objectIsComplete;
 }
 
-QByteArray MOTObject::getBody()
+QByteArray MOTObject::getBody() const
 {
     if (d->objectIsComplete)
     {   // MOT object is complete

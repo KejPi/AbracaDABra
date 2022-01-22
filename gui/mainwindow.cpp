@@ -40,9 +40,6 @@ MainWindow::MainWindow(QWidget *parent)
     SId.value = 0;
     //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
     dlDecoder = new DLDecoder();
-    motDecoder = new MOTDecoder();
-    slideShowApp = new SlideShowApp();
-    connect(motDecoder, &MOTDecoder::newMOTObject, slideShowApp, &SlideShowApp::onNewMOTObject);
 
     ui->setupUi(this);
 
@@ -295,13 +292,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControl, &RadioControl::newServiceSelection, ensembleInfoDialog, &EnsembleInfoDialog::serviceChanged, Qt::QueuedConnection);
 
     connect(radioControl, &RadioControl::dlDataGroup, dlDecoder, &DLDecoder::newDataGroup, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::mscDataGroup, motDecoder, &MOTDecoder::newDataGroup, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::newServiceSelection, this, &MainWindow::serviceChanged, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::serviceChanged, dlDecoder, &DLDecoder::reset, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::serviceChanged, motDecoder, &MOTDecoder::reset, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::audioData, audioDecoder, &AudioDecoder::inputData, Qt::QueuedConnection);
     connect(dlDecoder, &DLDecoder::dlComplete, this, &MainWindow::updateDL, Qt::QueuedConnection);
-    connect(motDecoder, &MOTDecoder::motObjectComplete, this, &MainWindow::updateSLS, Qt::QueuedConnection);   
 
     connect(audioDecoder, &AudioDecoder::audioParametersInfo, this, &MainWindow::updateAudioInfo, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::newServiceSelection, audioDecoder, &AudioDecoder::start, Qt::QueuedConnection);
@@ -324,6 +318,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControl, &RadioControl::tuneDone, this, &MainWindow::tuneFinished, Qt::QueuedConnection);
 
     connect(this, &MainWindow::exit, radioControl, &RadioControl::exit, Qt::QueuedConnection);
+
+    // user applications
+
+    // slide show application is created by default
+    // ETSI TS 101 499 V3.1.1  [5.1.1]
+    // The application should be automatically started when a SlideShow service is discovered for the current radio service
+    slideShowApp = new SlideShowApp(radioControl);
+    slideShowApp->moveToThread(radioControlThr);
+    connect(radioControlThr, &QThread::finished, slideShowApp, &QObject::deleteLater);       
+    connect(radioControl, &RadioControl::newServiceSelection, slideShowApp, &SlideShowApp::start);
+    connect(radioControl, &RadioControl::serviceChanged, slideShowApp, &SlideShowApp::restart);
+    connect(slideShowApp, &SlideShowApp::newSlide, this, &MainWindow::updateSLS, Qt::QueuedConnection);
 
     // input device connections
     initInputDevice(InputDeviceId::UNDEFINED);
@@ -353,9 +359,7 @@ MainWindow::~MainWindow()
     delete audioOutThr;
 #endif
 
-    delete motDecoder;
     delete dlDecoder;
-    delete slideShowApp;
 
     delete serviceList;
 
@@ -614,7 +618,8 @@ void MainWindow::onServiceSelection()
     clearServiceInformationLabels();
     dlDecoder->reset();
     ui->dynamicLabel->setText("");    
-    motDecoder->reset();    
+#warning "SlideShow app reset"
+    // motDecoder->reset();
     QPixmap pic;
     if (pic.load(":/resources/sls_logo.png"))
     {

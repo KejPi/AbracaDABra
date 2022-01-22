@@ -193,7 +193,7 @@ enum class RadioControlEventType
     SERVICE_SELECTION,
     AUTO_NOTIFICATION,
     DATAGROUP_DL,
-    DATAGROUP_MSC,
+    USERAPP_DATA,
     AUDIO_DATA,
 };
 
@@ -229,7 +229,7 @@ signals:
     void ensembleInformation(const RadioControlEnsemble & ens);
     void serviceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
     void dlDataGroup(const QByteArray & dg);
-    void mscDataGroup(const QByteArray & dg);
+    void userAppData(const RadioControlUserAppData & data);
     void serviceChanged();
     void newServiceSelection(const RadioControlServiceComponent & s);
     void audioData(QByteArray * pData);

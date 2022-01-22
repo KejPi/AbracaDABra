@@ -94,7 +94,6 @@ private:
     RadioControl * radioControl;
 
     DLDecoder * dlDecoder;
-    MOTDecoder * motDecoder;
     SlideShowApp * slideShowApp;
 
     InputDeviceId inputDeviceId = InputDeviceId::UNDEFINED;

@@ -46,6 +46,18 @@ enum class DabAudioDataSCty
     ADSCTY_UNDEF = 0xFF
 };
 
+// ETSI TS 101 756 V2.4.1 table 16
+enum class DabUserApplicationType
+{
+    SlideShow = 0x2,
+    TPEG = 0x4,
+    SPI = 0x7,
+    DMB = 0x9,
+    Filecasting = 0xD,
+    FIS = 0xE,
+    Journaline = 0x44A
+};
+
 enum class DabCharset
 {
     EBULATIN = 0x0,       // [TSI TS 101 756 V2.4.1 Table 1 & 19]

@@ -3,15 +3,69 @@
 #include "userapplication.h"
 #include "dabtables.h"
 
-UserApplication::UserApplication(QObject *parent) : QObject(parent)
+UserApplication::UserApplication(RadioControl * radioControlPtr, QObject *parent) :
+    QObject(parent), radioControl(radioControlPtr)
+{    
+    isRunning = false;
+}
+
+
+SlideShowApp::SlideShowApp(RadioControl * radioControlPtr, QObject *parent) : UserApplication(radioControlPtr, parent)
+{   
+    decoder = nullptr;
+    connect(radioControl, &RadioControl::userAppData, this, &SlideShowApp::onUserAppData);
+}
+
+SlideShowApp::~SlideShowApp()
+{
+    if (nullptr != decoder)
+    {
+        delete decoder;
+    }
+}
+
+void SlideShowApp::start()
+{   // does nothing is application is alraeady running
+    if (isRunning)
+    {   // do nothign, application is running
+        return;
+    }
+    else
+    { /* not running */ }
+
+    // create new decoder
+    decoder = new MOTDecoder();
+    connect(decoder, &MOTDecoder::newMOTObject, this, &SlideShowApp::onNewMOTObject);
+
+    isRunning = true;
+}
+
+void SlideShowApp::stop()
+{
+    if (nullptr != decoder)
+    {
+        delete decoder;
+    }
+    isRunning = false;
+}
+
+void SlideShowApp::restart()
 {
 
 }
 
-
-SlideShowApp::SlideShowApp(QObject *parent) : UserApplication(parent)
+void SlideShowApp::onUserAppData(const RadioControlUserAppData & data)
 {
+    qDebug() << Q_FUNC_INFO << "userApp" << int(data.userAppType);
+    if ((!isRunning) || (DabUserApplicationType::SlideShow != data.userAppType))
+    {   // do nothing
+        return;
+    }
 
+    // application is running and user application type matches
+    // data is for this application
+    // send data to decoder
+    decoder->newDataGroup(data.data);
 }
 
 void SlideShowApp::onNewMOTObject(const MOTObject & obj)
@@ -130,7 +184,15 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
             qDebug() << "AlternativeLocationURL:" << DabTables::convertToQString(it.value().data(), uint8_t(DabCharset::UTF8), it.value().size());
             break;
         case Parameter::Alert:
-            qDebug() << "Alert:";
+            if (it.value().size() >= 1)
+            {
+                qDebug() << "Alert: %d" << uint8_t(it.value().at(0));
+            }
+            else
+            {   // unexpected length
+               qDebug() << "Alert: error";
+            }
+
             break;
         default:
             qDebug() << "Parameter"<< it.key() << "not supported by Slideshow application";
@@ -138,4 +200,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
 
         ++it;
     }
+
+    // emit slide to HMI
+    emit newSlide(obj.getBody());
 }

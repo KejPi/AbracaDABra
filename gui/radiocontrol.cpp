@@ -431,13 +431,14 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         delete pData;
     }
         break;
-    case RadioControlEventType::DATAGROUP_MSC:
+    case RadioControlEventType::USERAPP_DATA:
     {
 #if RADIO_CONTROL_VERBOSE > 1
         qDebug() << "RadioControlEvent::DATAGROUP_MSC";
 #endif
-        QByteArray * pData = (QByteArray *) pEvent->pData;
-        emit mscDataGroup(*pData);
+        RadioControlUserAppData * pData = (RadioControlUserAppData *) pEvent->pData;
+        emit userAppData(*pData);
+
         delete pData;
     }
         break;
@@ -917,7 +918,7 @@ void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
     }
 
     RadioControl * radioCtrl = (RadioControl * ) ctx;
-
+#if 0
     switch (p->userAppType)        
     { // [7.4.3] Application types 2 and 3 shall be used for the dynamic label (see clause 7.4.5.2).
     case 0x02:
@@ -935,6 +936,19 @@ void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
     default:
         qDebug() << "Unsupported XPAD application type:" << p->userAppType;
     }
+#else
+    RadioControlUserAppData * pData = new RadioControlUserAppData;
+    pData->userAppType = DabUserApplicationType(p->userAppType);
+
+    // copy data to QByteArray
+    pData->data = QByteArray((const char *)p->pDgData, p->dgLen);
+
+    RadioControlEvent * pEvent = new RadioControlEvent;
+    pEvent->type = RadioControlEventType::USERAPP_DATA;
+    pEvent->status = DABPROC_NSTAT_SUCCESS;
+    pEvent->pData = intptr_t(pData);
+    radioCtrl->emit_dabEvent(pEvent);
+#endif
 }
 
 void audioDataCb(dabProcAudioCBData_t * p, void * ctx)

@@ -15,7 +15,7 @@ public:
     bool isComplete() const;
     int size();
     void addSegment(const uint8_t * segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
-    QByteArray getData();
+    QByteArray getData() const;
     void reset();
 private:
     QByteArrayList segments;
@@ -56,7 +56,7 @@ public:
     uint16_t getId() const { return d->id; }
     bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag, bool isHeader = false);
     bool isComplete() const { return d->objectIsComplete; };
-    QByteArray getBody();
+    QByteArray getBody() const;
     bool isObsolete() const { return d->objectIsObsolete; }
     void setObsolete(bool obsolete) { d->objectIsComplete = obsolete; };
 

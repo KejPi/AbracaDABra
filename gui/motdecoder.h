@@ -17,7 +17,6 @@ public:
     ~MOTDecoder();
 
 signals:
-    void motObjectComplete(const QByteArray & b);
     void newMOTObject(const MOTObject & obj);
 
 public slots:
