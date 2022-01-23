@@ -116,6 +116,9 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
             // body data. It should thus only be relevant to IP-connected devices which can acquire
             // the image data over IP.
             qDebug() << "MOT transport / Header only";
+
+            // ignoring this
+            return;
             break;
         default:
             qDebug() << "MOT transport /" << obj.getContentSubType() << "not supported by Slideshow application";
@@ -227,7 +230,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
     }
 
     // now we have parsed params -> check for potential request to decategorize
-    if (0 == slide.getCategoryID())
+    if (slide.isDecategorizeRequested())
     {   // decategorize
         // An 8-bit number that uniquely identifies a Category. CategoryID shall not be 0x00,
         // except to remove a previously delivered slide from a category.
@@ -276,7 +279,8 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         // This parameter is used for uniquely identifying the object for the purposes of cache management.
 
         // first check if item is already in cache
-        if (cache.contains(obj.getContentName()))
+        QHash<QString, Slide>::const_iterator cacheIt = cache.constFind(slide.getContentName());
+        if (cache.cend() != cacheIt)
         {   // item is already received
             qDebug() << "Item" << obj.getContentName() << "is already in cache";
             return;
@@ -293,7 +297,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         { /* slide body is correct */ }
 
         // adding new slide to cache
-        cache.insert(slide.getContentName(), slide);
+        cache.insert(slide.getContentName(), slide);      
 
         qDebug() << "Cache contains" << cache.size() << "slides";
     }
@@ -396,6 +400,11 @@ Slide::Slide()
     slideID = 0;
 }
 
+Slide::~Slide()
+{
+    qDebug() << Q_FUNC_INFO << contentName;
+}
+
 QPixmap Slide::getPixmap() const
 {
     return pixmap;
@@ -466,3 +475,16 @@ void Slide::setAlternativeLocationURL(const QString &newAlternativeLocationURL)
     alternativeLocationURL = newAlternativeLocationURL;
 }
 
+bool Slide::isDecategorizeRequested() const
+{
+    return ((0 == categoryID) && (0 == slideID));
+}
+
+bool Slide::operator==(const Slide & other) const
+{
+    return ( (other.contentName == contentName)
+            && (other.categoryID == categoryID)
+            && (other.slideID == slideID)
+            && (other.categoryTitle == categoryTitle)
+           );
+}

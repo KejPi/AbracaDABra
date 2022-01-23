@@ -31,6 +31,7 @@ class Slide
 {
 public:
     Slide();
+    ~Slide();
     QPixmap getPixmap() const;
     bool setPixmap(const QByteArray &data);
 
@@ -51,6 +52,10 @@ public:
 
     const QString &getAlternativeLocationURL() const;
     void setAlternativeLocationURL(const QString &newAlternativeLocationURL);
+
+    bool isDecategorizeRequested() const;
+
+    bool operator==(const Slide & other) const;
 
 private:
     QPixmap pixmap;
