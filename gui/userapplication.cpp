@@ -300,6 +300,24 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         cache.insert(slide.getContentName(), slide);      
 
         qDebug() << "Cache contains" << cache.size() << "slides";
+
+        QHash<int, Category>::iterator catIt = catSls.find(slide.getCategoryID());
+        if (catSls.end() != catIt)
+        {   // category already exists
+            qDebug() << "Category" << catIt->getTitle() << "exists, adding slide ID" << slide.getSlideID();
+            catIt->insertSlide(slide);
+        }
+        else
+        {   // category does not exist yet
+            QString catName = slide.getCategoryTitle();
+            Category newCat = Category(catName);
+            newCat.insertSlide(slide);
+            catSls.insert(slide.getCategoryID(), newCat);
+
+            qDebug() << "New category" << catName << "created";
+        }
+
+
     }
 
     // emit slide to HMI
@@ -321,9 +339,9 @@ void SlideShowApp::Category::setTitle(const QString &newTitle)
     title = newTitle;
 }
 
-void SlideShowApp::Category::insertSlide(Slide * s)
+void SlideShowApp::Category::insertSlide(const Slide &s)
 {
-    slides.insert(s->getSlideID(), s);
+    slides.insert(s.getSlideID(), s);
 }
 
 // returns true when category is empty
@@ -334,9 +352,9 @@ bool SlideShowApp::Category::removeSlide(int id)
     return (0 == slides.size());
 }
 
-Slide * SlideShowApp::Category::getSlide(int id)
+Slide SlideShowApp::Category::getSlide(int id)
 {
-    QMap<int,Slide*>::const_iterator it = slides.constFind(id);
+    QMap<int,Slide>::const_iterator it = slides.constFind(id);
     if (slides.cend() != it)
     {  // found
         return *it;
@@ -344,12 +362,12 @@ Slide * SlideShowApp::Category::getSlide(int id)
     else
     { /* not found */ }
 
-    return nullptr;
+    return Slide();
 }
 
-Slide * SlideShowApp::Category::getNextSlide(bool moveForward)
+Slide SlideShowApp::Category::getNextSlide(bool moveForward)
 {
-    QMap<int,Slide*>::const_iterator it = slides.constFind(currentSlide);
+    QMap<int,Slide>::const_iterator it = slides.constFind(currentSlide);
     if (slides.cend() != it)
     {   // found
         // go to next slide
@@ -385,11 +403,11 @@ Slide * SlideShowApp::Category::getNextSlide(bool moveForward)
     }
 
     // this may happen when category is empty
-    return nullptr;
+    return Slide();
 }
 
 
-Slide::Slide()
+SlideData::SlideData()
 {
     pixmap = QPixmap(0,0);         // this creates NULL pixmap
     contentName = QString("");
@@ -400,91 +418,102 @@ Slide::Slide()
     slideID = 0;
 }
 
-Slide::~Slide()
+SlideData::SlideData(const SlideData & other) :
+    pixmap(other.pixmap),
+    contentName(other.contentName),
+    categoryTitle(other.categoryTitle),
+    clickThroughURL(other.clickThroughURL),
+    alternativeLocationURL(other.alternativeLocationURL),
+    categoryID(other.categoryID),
+    slideID(other.slideID)
 {
-    qDebug() << Q_FUNC_INFO << contentName;
+}
+
+Slide::Slide()
+{
+    d = new SlideData();
 }
 
 QPixmap Slide::getPixmap() const
 {
-    return pixmap;
+    return d->pixmap;
 }
 
 bool Slide::setPixmap(const QByteArray &data)
 {
-    return pixmap.loadFromData(data);
+    return d->pixmap.loadFromData(data);
 }
 
 const QString &Slide::getContentName() const
 {
-    return contentName;
+    return d->contentName;
 }
 
 void Slide::setContentName(const QString &newContentName)
 {
-    contentName = newContentName;
+    d->contentName = newContentName;
 }
 
 const QString &Slide::getCategoryTitle() const
 {
-    return categoryTitle;
+    return d->categoryTitle;
 }
 
 void Slide::setCategoryTitle(const QString &newCategoryTitle)
 {
-    categoryTitle = newCategoryTitle;
+    d->categoryTitle = newCategoryTitle;
 }
 
 int Slide::getCategoryID() const
 {
-    return categoryID;
+    return d->categoryID;
 }
 
 const QString &Slide::getClickThroughURL() const
 {
-    return clickThroughURL;
+    return d->clickThroughURL;
 }
 
 void Slide::setClickThroughURL(const QString &newClickThroughURL)
 {
-    clickThroughURL = newClickThroughURL;
+    d->clickThroughURL = newClickThroughURL;
 }
 
 void Slide::setCategoryID(int newCategoryID)
 {
-    categoryID = newCategoryID;
+    d->categoryID = newCategoryID;
 }
 
 int Slide::getSlideID() const
 {
-    return slideID;
+    return d->slideID;
 }
 
 void Slide::setSlideID(int newSlideID)
 {
-    slideID = newSlideID;
+    d->slideID = newSlideID;
 }
 
 const QString &Slide::getAlternativeLocationURL() const
 {
-    return alternativeLocationURL;
+    return d->alternativeLocationURL;
 }
 
 void Slide::setAlternativeLocationURL(const QString &newAlternativeLocationURL)
 {
-    alternativeLocationURL = newAlternativeLocationURL;
+    d->alternativeLocationURL = newAlternativeLocationURL;
 }
 
 bool Slide::isDecategorizeRequested() const
 {
-    return ((0 == categoryID) && (0 == slideID));
+    return ((0 == d->categoryID) && (0 == d->slideID));
 }
 
 bool Slide::operator==(const Slide & other) const
 {
-    return ( (other.contentName == contentName)
-            && (other.categoryID == categoryID)
-            && (other.slideID == slideID)
-            && (other.categoryTitle == categoryTitle)
+    return ( (other.d->contentName == d->contentName)
+            && (other.d->categoryID == d->categoryID)
+            && (other.d->slideID == d->slideID)
+            && (other.d->categoryTitle == d->categoryTitle)
            );
 }

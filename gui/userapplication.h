@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QPixmap>
 #include <QHash>
+#include <QSharedData>
 #include "radiocontrol.h"
 #include "motdecoder.h"
 
@@ -27,11 +28,28 @@ protected:
     RadioControl * radioControl;
 };
 
+class SlideData : public QSharedData
+{
+public:
+    SlideData();
+    SlideData(const SlideData & other);
+    ~SlideData() {}
+
+    QPixmap pixmap;
+    QString contentName;
+    QString categoryTitle;
+    QString clickThroughURL;
+    QString alternativeLocationURL;
+    int categoryID;
+    int slideID;
+};
+
 class Slide
 {
 public:
-    Slide();
-    ~Slide();
+    Slide();    
+    Slide(const Slide &other) : d (other.d) { }
+
     QPixmap getPixmap() const;
     bool setPixmap(const QByteArray &data);
 
@@ -54,17 +72,12 @@ public:
     void setAlternativeLocationURL(const QString &newAlternativeLocationURL);
 
     bool isDecategorizeRequested() const;
+    bool isEmpty() const { return d->contentName.isEmpty(); }
 
     bool operator==(const Slide & other) const;
 
 private:
-    QPixmap pixmap;
-    QString contentName;
-    QString categoryTitle;
-    QString clickThroughURL;
-    QString alternativeLocationURL;
-    int categoryID;
-    int slideID;
+    QSharedDataPointer<SlideData> d;
 };
 
 
@@ -89,14 +102,14 @@ class SlideShowApp : public UserApplication
         Category(QString & categoryTitle);
         const QString &getTitle() const;
         void setTitle(const QString &newTitle);
-        void insertSlide(Slide * s);
+        void insertSlide(const Slide & s);
         bool removeSlide(int id);
-        Slide * getSlide(int id);
-        Slide * getNextSlide(bool moveForward = true);
+        Slide getSlide(int id);
+        Slide getNextSlide(bool moveForward = true);
     private:
         int currentSlide;
         QString title;
-        QMap<int, Slide*> slides;
+        QMap<int, Slide> slides;
     };
 
 public:
