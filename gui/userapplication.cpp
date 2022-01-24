@@ -244,21 +244,8 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         {   // item is in the cache -> decategorize and delete from cache
             qDebug() << "Item" << obj.getContentName() << "is already in cache";
 
-            // decategorized slides are not kept in cache
-            // get old category ID and item ID
-            int catID = cacheIt->getCategoryID();
-            int slideID = cacheIt->getSlideID();
-
-            QHash<int, Category>::iterator catIt = catSls.find(catID);
-            if (catSls.end() != catIt)
-            {   // category found -> remove slide
-                if (catIt->removeSlide(slideID))
-                {   // category is empty -> removing category
-                    catSls.erase(catIt);
-                }
-                else
-                { /* there is still somethign in category */ }
-            }
+            // remove old slide from category
+            removeSlideFromCategory(*cacheIt);
 
             // delete slide from cache
             cache.erase(cacheIt);
@@ -283,7 +270,25 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         if (cache.cend() != cacheIt)
         {   // item is already received
             qDebug() << "Item" << obj.getContentName() << "is already in cache";
-            return;
+
+            // ETSI TS 101 499 V3.1.1 [6.3 Updating parameters]
+            // The CategoryID/SlideID parameter is used to change the category and/or ordering of a previously delivered slide or to decategorize the slide.
+            // The slide being updated shall receive the updated CategoryID/SlideID value. Any other slide with the same CategoryID/SlideID value shall be decategorized.
+
+            // check if categoryID and slideID matchech previously received slide
+            if ((cacheIt->getCategoryID() != slide.getCategoryID()) || (cacheIt->getSlideID() != slide.getSlideID()))
+            {   // change of category
+                qDebug() << "Changing slide category";
+                // remove old slide from category
+                removeSlideFromCategory(*cacheIt);
+
+                // delete old slide from cache
+                cache.erase(cacheIt);
+            }
+            else
+            {   // new slide is identical - do nothing
+                return;
+            }
         }
         else
         { /* item was is not in cache yet */ }
@@ -301,27 +306,89 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
 
         qDebug() << "Cache contains" << cache.size() << "slides";
 
-        QHash<int, Category>::iterator catIt = catSls.find(slide.getCategoryID());
-        if (catSls.end() != catIt)
-        {   // category already exists
-            qDebug() << "Category" << catIt->getTitle() << "exists, adding slide ID" << slide.getSlideID();
-            catIt->insertSlide(slide);
-        }
-        else
-        {   // category does not exist yet
-            QString catName = slide.getCategoryTitle();
-            Category newCat = Category(catName);
-            newCat.insertSlide(slide);
-            catSls.insert(slide.getCategoryID(), newCat);
+        // adding new slide to category
+        addSlideToCategory(slide);
 
-            qDebug() << "New category" << catName << "created";
+//---------------------------------
+        // print categories
+        qDebug() << "Categories:";
+        for (QHash<int, Category>::iterator catSlsIt = catSls.begin(); catSlsIt != catSls.end(); ++catSlsIt)
+        {
+            qDebug() << catSlsIt->getTitle() << "[" << catSlsIt.key() << "]";
+            QString slideName = catSlsIt->getFirstSlide();
+            for (int n = 0; n < catSlsIt->size(); ++n)
+            {
+                QHash<QString, Slide>::const_iterator cacheIt = cache.constFind(slideName);
+                if (cache.cend() != cacheIt)
+                {   // item is in cache
+                    qDebug() << QString("   Slide %1/%2: %3 [%4]")
+                                .arg(n+1).arg(catSlsIt->size()).arg(slideName).arg(cacheIt->getSlideID());
+                }
+                else
+                {
+                    qDebug() << "   Slide #" << n << slideName << "in not in cache";
+                }
+                slideName = catSlsIt->getNextSlide();
+            }
         }
-
+//---------------------------------
 
     }
 
     // emit slide to HMI
     emit newSlide(slide);
+}
+
+void SlideShowApp::addSlideToCategory(const Slide & slide)
+{
+    QHash<int, Category>::iterator catIt = catSls.find(slide.getCategoryID());
+    if (catSls.end() != catIt)
+    {   // category already exists
+        qDebug() << "Category" << catIt->getTitle() << "exists, adding slide ID" << slide.getSlideID();
+        catIt->insertSlide(slide);
+
+        // ETSI TS 101 499 V3.1.1 [5.3.5.3 Category Title]
+        // A CategoryTitle is updated by providing an object with an existing CategoryID and
+        // a new value for CategoryTitle.
+        if (catIt->getTitle() != slide.getCategoryTitle())
+        {   // rename category
+            catIt->setTitle(slide.getCategoryTitle());
+
+            emit newCategory(catIt.key(), catIt->getTitle());
+        }
+        else
+        { /* do nothing */ }
+    }
+    else
+    {   // category does not exist yet
+        QString catName = slide.getCategoryTitle();
+        Category newCat = Category(catName);
+        newCat.insertSlide(slide);
+        catSls.insert(slide.getCategoryID(), newCat);
+
+        qDebug() << "New category" << catName << "created";
+
+        emit newCategory(slide.getCategoryID(), newCat.getTitle());
+    }
+}
+
+void SlideShowApp::removeSlideFromCategory(const Slide & slide)
+{
+    // remove slide from current category
+    QHash<int, Category>::iterator catSlsIt = catSls.find(slide.getCategoryID());
+    if (catSlsIt != catSls.end())
+    {
+        catSlsIt->removeSlide(slide.getSlideID());
+        if (0 == catSlsIt->size())
+        {   // category is empty -> removing category
+            emit categoryRemoved(catSlsIt.key());
+            catSls.erase(catSlsIt);
+        }
+        else
+        { /* there is still something in category */ }
+    }
+    else
+    { /* category not found */ }
 }
 
 SlideShowApp::Category::Category(QString & categoryTitle) : title(categoryTitle)
@@ -341,33 +408,31 @@ void SlideShowApp::Category::setTitle(const QString &newTitle)
 
 void SlideShowApp::Category::insertSlide(const Slide &s)
 {
-    slides.insert(s.getSlideID(), s);
+    slides.insert(s.getSlideID(), s.getContentName());
 }
 
 // returns true when category is empty
-bool SlideShowApp::Category::removeSlide(int id)
+void SlideShowApp::Category::removeSlide(int id)
 {
     slides.remove(id);
-
-    return (0 == slides.size());
 }
 
-Slide SlideShowApp::Category::getSlide(int id)
+QString SlideShowApp::Category::getFirstSlide()
 {
-    QMap<int,Slide>::const_iterator it = slides.constFind(id);
-    if (slides.cend() != it)
-    {  // found
-        return *it;
+    if (0 != slides.size())
+    {
+        currentSlide = slides.constBegin().key();
+        return slides.first();
     }
     else
-    { /* not found */ }
+    { /* empty category */ }
 
-    return Slide();
+    return QString();
 }
 
-Slide SlideShowApp::Category::getNextSlide(bool moveForward)
+QString SlideShowApp::Category::getNextSlide(bool moveForward)
 {
-    QMap<int,Slide>::const_iterator it = slides.constFind(currentSlide);
+    QMap<int,QString>::const_iterator it = slides.constFind(currentSlide);
     if (slides.cend() != it)
     {   // found
         // go to next slide
@@ -403,7 +468,7 @@ Slide SlideShowApp::Category::getNextSlide(bool moveForward)
     }
 
     // this may happen when category is empty
-    return Slide();
+    return QString();
 }
 
 
@@ -427,6 +492,7 @@ SlideData::SlideData(const SlideData & other) :
     categoryID(other.categoryID),
     slideID(other.slideID)
 {
+    //qDebug() << Q_FUNC_INFO << contentName;
 }
 
 Slide::Slide()
@@ -517,3 +583,4 @@ bool Slide::operator==(const Slide & other) const
             && (other.d->categoryTitle == d->categoryTitle)
            );
 }
+

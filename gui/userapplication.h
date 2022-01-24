@@ -80,7 +80,6 @@ private:
     QSharedDataPointer<SlideData> d;
 };
 
-
 class SlideShowApp : public UserApplication
 {
     Q_OBJECT
@@ -96,21 +95,7 @@ class SlideShowApp : public UserApplication
         Alert = 0x29
     };
 
-    class Category
-    {
-    public:
-        Category(QString & categoryTitle);
-        const QString &getTitle() const;
-        void setTitle(const QString &newTitle);
-        void insertSlide(const Slide & s);
-        bool removeSlide(int id);
-        Slide getSlide(int id);
-        Slide getNextSlide(bool moveForward = true);
-    private:
-        int currentSlide;
-        QString title;
-        QMap<int, Slide> slides;
-    };
+    class Category;
 
 public:
     SlideShowApp(RadioControl * radioControlPtr, QObject *parent = nullptr);
@@ -123,11 +108,36 @@ public:
 
 signals:
     void newSlide(const Slide & slide);
+    void newCategory(int id, const QString & title);
+    void categoryRemoved(int id);
 
 private:
     MOTDecoder * decoder;
-    QHash<QString, Slide> cache;
+    QHash<QString, Slide> cache;   
     QHash<int, Category> catSls;
+
+    void addSlideToCategory(const Slide & slide);
+    void removeSlideFromCategory(const Slide & slide);
 };
+
+class SlideShowApp::Category
+{
+public:
+    Category(QString & categoryTitle);
+    const QString &getTitle() const;
+    void setTitle(const QString &newTitle);
+    void insertSlide(const Slide & s);
+    void removeSlide(int id);
+    int size() const { return slides.size(); }
+    QString getFirstSlide();
+    QString getNextSlide(bool moveForward = true);
+
+private:
+    int currentSlide;
+    QString title;
+    QMap<int, QString> slides;
+};
+
+
 
 #endif // USERAPPLICATION_H
