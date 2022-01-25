@@ -113,7 +113,7 @@ signals:
 private:
     MOTDecoder * decoder;
     QHash<QString, Slide> cache;   
-    QHash<int, Category> catSls;
+    QHash<int, Category *> catSls;
 
     void addSlideToCategory(const Slide & slide);
     void removeSlideFromCategory(const Slide & slide);

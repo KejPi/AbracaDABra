@@ -21,6 +21,12 @@ SlideShowApp::~SlideShowApp()
     {
         delete decoder;
     }
+
+    // delete all categories
+    for (QHash<int, Category*>::const_iterator it = catSls.cbegin(); it != catSls.cend(); ++it)
+    {
+        delete *it;
+    }
 }
 
 void SlideShowApp::start()
@@ -312,23 +318,23 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
 //---------------------------------
         // print categories
         qDebug() << "Categories:";
-        for (QHash<int, Category>::iterator catSlsIt = catSls.begin(); catSlsIt != catSls.end(); ++catSlsIt)
+        for (QHash<int, Category*>::iterator catSlsIt = catSls.begin(); catSlsIt != catSls.end(); ++catSlsIt)
         {
-            qDebug() << catSlsIt->getTitle() << "[" << catSlsIt.key() << "]";
-            QString slideName = catSlsIt->getFirstSlide();
-            for (int n = 0; n < catSlsIt->size(); ++n)
+            qDebug() << (*catSlsIt)->getTitle() << "[" << catSlsIt.key() << "]";
+            QString slideName = (*catSlsIt)->getFirstSlide();
+            for (int n = 0; n < (*catSlsIt)->size(); ++n)
             {
                 QHash<QString, Slide>::const_iterator cacheIt = cache.constFind(slideName);
                 if (cache.cend() != cacheIt)
                 {   // item is in cache
                     qDebug() << QString("   Slide %1/%2: %3 [%4]")
-                                .arg(n+1).arg(catSlsIt->size()).arg(slideName).arg(cacheIt->getSlideID());
+                                .arg(n+1).arg((*catSlsIt)->size()).arg(slideName).arg(cacheIt->getSlideID());
                 }
                 else
                 {
                     qDebug() << "   Slide #" << n << slideName << "in not in cache";
                 }
-                slideName = catSlsIt->getNextSlide();
+                slideName = (*catSlsIt)->getNextSlide();
             }
         }
 //---------------------------------
@@ -341,20 +347,20 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
 
 void SlideShowApp::addSlideToCategory(const Slide & slide)
 {
-    QHash<int, Category>::iterator catIt = catSls.find(slide.getCategoryID());
+    QHash<int, Category*>::iterator catIt = catSls.find(slide.getCategoryID());
     if (catSls.end() != catIt)
     {   // category already exists
-        qDebug() << "Category" << catIt->getTitle() << "exists, adding slide ID" << slide.getSlideID();
-        catIt->insertSlide(slide);
+        qDebug() << "Category" << (*catIt)->getTitle() << "exists, adding slide ID" << slide.getSlideID();
+        (*catIt)->insertSlide(slide);
 
         // ETSI TS 101 499 V3.1.1 [5.3.5.3 Category Title]
         // A CategoryTitle is updated by providing an object with an existing CategoryID and
         // a new value for CategoryTitle.
-        if (catIt->getTitle() != slide.getCategoryTitle())
+        if ((*catIt)->getTitle() != slide.getCategoryTitle())
         {   // rename category
-            catIt->setTitle(slide.getCategoryTitle());
+            (*catIt)->setTitle(slide.getCategoryTitle());
 
-            emit newCategory(catIt.key(), catIt->getTitle());
+            emit newCategory(catIt.key(), (*catIt)->getTitle());
         }
         else
         { /* do nothing */ }
@@ -362,26 +368,27 @@ void SlideShowApp::addSlideToCategory(const Slide & slide)
     else
     {   // category does not exist yet
         QString catName = slide.getCategoryTitle();
-        Category newCat = Category(catName);
-        newCat.insertSlide(slide);
+        Category * newCat = new  Category(catName);
+        newCat->insertSlide(slide);
         catSls.insert(slide.getCategoryID(), newCat);
 
         qDebug() << "New category" << catName << "created";
 
-        emit newCategory(slide.getCategoryID(), newCat.getTitle());
+        emit newCategory(slide.getCategoryID(), newCat->getTitle());
     }
 }
 
 void SlideShowApp::removeSlideFromCategory(const Slide & slide)
 {
     // remove slide from current category
-    QHash<int, Category>::iterator catSlsIt = catSls.find(slide.getCategoryID());
+    QHash<int, Category*>::iterator catSlsIt = catSls.find(slide.getCategoryID());
     if (catSlsIt != catSls.end())
     {
-        catSlsIt->removeSlide(slide.getSlideID());
-        if (0 == catSlsIt->size())
+        (*catSlsIt)->removeSlide(slide.getSlideID());
+        if (0 == (*catSlsIt)->size())
         {   // category is empty -> removing category
             emit categoryRemoved(catSlsIt.key());
+            delete (*catSlsIt);
             catSls.erase(catSlsIt);
         }
         else
