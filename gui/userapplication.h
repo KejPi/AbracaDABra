@@ -93,8 +93,7 @@ class SlideShowApp : public UserApplication
         ClickThroughURL = 0x27,
         AlternativeLocationURL = 0x28,
         Alert = 0x29
-    };
-
+    };       
     class Category;
 
 public:
@@ -108,7 +107,7 @@ public:
 
 signals:
     void newSlide(const Slide & slide);
-    void newCategory(int id, const QString & title);
+    void newCategory(int catId, const QString & title);
     void categoryRemoved(int id);
 
 private:
@@ -126,16 +125,24 @@ public:
     Category(QString & categoryTitle);
     const QString &getTitle() const;
     void setTitle(const QString &newTitle);
-    void insertSlide(const Slide & s);
-    void removeSlide(int id);
-    int size() const { return slides.size(); }
-    QString getFirstSlide();
+    int insertSlide(const Slide & s);
+    int removeSlide(int id);
+    int size() const;
+    QString getFirstSlide();    
     QString getNextSlide(bool moveForward = true);
-
+    int getCurrentIndex() const;
 private:
+    struct slideItem
+    {
+        int id;
+        QString contentName;
+    };
+
     int currentSlide;
+    int currentSlideIdx;
     QString title;
-    QMap<int, QString> slides;
+    //QMap<int, QString> slides;
+    QList<slideItem> slidesList;
 };
 
 

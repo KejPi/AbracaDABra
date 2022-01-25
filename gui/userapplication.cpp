@@ -391,85 +391,6 @@ void SlideShowApp::removeSlideFromCategory(const Slide & slide)
     { /* category not found */ }
 }
 
-SlideShowApp::Category::Category(QString & categoryTitle) : title(categoryTitle)
-{
-    currentSlide = 0;   // this is invalid slide ID
-}
-
-const QString &SlideShowApp::Category::getTitle() const
-{
-    return title;
-}
-
-void SlideShowApp::Category::setTitle(const QString &newTitle)
-{
-    title = newTitle;
-}
-
-void SlideShowApp::Category::insertSlide(const Slide &s)
-{
-    slides.insert(s.getSlideID(), s.getContentName());
-}
-
-// returns true when category is empty
-void SlideShowApp::Category::removeSlide(int id)
-{
-    slides.remove(id);
-}
-
-QString SlideShowApp::Category::getFirstSlide()
-{
-    if (0 != slides.size())
-    {
-        currentSlide = slides.constBegin().key();
-        return slides.first();
-    }
-    else
-    { /* empty category */ }
-
-    return QString();
-}
-
-QString SlideShowApp::Category::getNextSlide(bool moveForward)
-{
-    QMap<int,QString>::const_iterator it = slides.constFind(currentSlide);
-    if (slides.cend() != it)
-    {   // found
-        // go to next slide
-        if (moveForward)
-        {
-            if (slides.cend() == ++it)
-            {   // it was last slide, return first slide
-                it = slides.constBegin();
-            }
-        }
-        else
-        {
-            if (slides.cbegin() == it)
-            {   // current slide is first
-                it = slides.constEnd();
-            }
-            else
-            { }
-            --it;
-
-        }
-        currentSlide = it.key();
-        return *it;
-    }
-    else
-    {  // invalid current slide - returning first slide
-        it = slides.constBegin();
-        if (slides.cend() != it)
-        {  // found at lest one
-            currentSlide = it.key();
-            return *it;
-        }
-    }
-
-    // this may happen when category is empty
-    return QString();
-}
 
 
 SlideData::SlideData()
@@ -584,3 +505,225 @@ bool Slide::operator==(const Slide & other) const
            );
 }
 
+SlideShowApp::Category::Category(QString & categoryTitle) :
+    title(categoryTitle)
+{
+    currentSlide = 0;   // this is invalid slide ID
+    currentSlideIdx = -1;
+}
+
+const QString &SlideShowApp::Category::getTitle() const
+{
+    return title;
+}
+
+void SlideShowApp::Category::setTitle(const QString &newTitle)
+{
+    title = newTitle;
+}
+
+// function returns position of inserted slide
+int SlideShowApp::Category::insertSlide(const Slide &s)
+{
+#if 0
+    slides.insert(s.getSlideID(), s.getContentName());
+
+    // find the position
+    QMap<int, QString>::const_iterator it = slides.constFind(s.getSlideID());
+    return std::distance(slides.cbegin(), it) + 1;
+#else
+    slideItem item = { s.getSlideID(), s.getContentName() };
+
+    for (int idx = 0; idx < slidesList.size(); ++idx)
+    {
+        if (slidesList.at(idx).id == item.id)
+        {   // replace item
+            slidesList.replace(idx, item);
+            return idx;
+        }
+        if (slidesList.at(idx).id < item.id)
+        {
+            slidesList.insert(idx, item);
+            if (currentSlideIdx >= idx)
+            {
+                currentSlideIdx += 1;
+            }
+            return idx;
+        }
+     }
+
+     // if it comes here we need to append the item
+    slidesList.append(item);
+    return slidesList.size()-1;
+#endif
+}
+
+// function returns position of removed slide
+int SlideShowApp::Category::removeSlide(int id)
+{
+#if 0
+    if (0 == slides.size())
+    {   // no items in category
+        return 0;
+    }
+
+    // find index of slide to be removed
+    QMap<int,QString>::const_iterator it = slides.constFind(id);
+    int idx = std::distance(slides.cbegin(), it);
+
+    if (id == currentSlide)
+    {   // current slide is being removed -> need to shift current slide
+        it = slides.constFind(currentSlide);
+        if (slides.cend() == ++it)
+        {   // it was last slide, get first slide
+            it = slides.constBegin();
+        }
+        currentSlide = it.key();
+    }
+    slides.remove(id);
+
+    if (0 == slides.size())
+    {   // category is empty - settign current slide to 0 that is invalid ID
+        currentSlide = 0;
+    }
+
+    return idx+1;
+#else
+    if (0 == slidesList.size())
+    {   // no items in category -> this shoudl not happen
+        return -1;
+    }
+
+    // find the slide in category
+    for (int idx = 0; idx < slidesList.size(); ++idx)
+    {
+        if (slidesList.at(idx).id == id)
+        {   // found
+            slidesList.remove(idx);
+
+            // update current index
+            if (currentSlideIdx == idx)
+            {   // removed current -> emit signal
+                qDebug() << "Current slide removed";
+            }
+            if (currentSlideIdx > idx)
+            {   // decrement current
+                if (--currentSlideIdx < 0)
+                {   // removed current -> setting current to last
+                    currentSlideIdx = slidesList.size()-1;
+                }
+            }
+            qDebug() << "Current slide is" << currentSlideIdx;
+            return idx;
+        }
+    }
+
+    // not found
+    return -1;
+#endif
+}
+
+QString SlideShowApp::Category::getFirstSlide()
+{
+#if 0
+    if (0 != slides.size())
+    {
+        currentSlide = slides.constBegin().key();
+        currentSlideIdx = 1;
+        return slides.first();
+    }
+    else
+    { /* empty category */ }
+
+    return QString();
+#else
+    if (!slidesList.isEmpty())
+    {
+        currentSlideIdx = 0;
+        return slidesList.at(0).contentName;
+    }
+    else
+    { /* empty category */ }
+
+    return QString();
+#endif
+}
+
+QString SlideShowApp::Category::getNextSlide(bool moveForward)
+{
+#if 0
+    QMap<int,QString>::const_iterator it = slides.constFind(currentSlide);
+    if (slides.cend() != it)
+    {   // found
+        // go to next slide
+        if (moveForward)
+        {
+            if (slides.cend() == ++it)
+            {   // it was last slide, return first slide
+                it = slides.constBegin();
+            }
+        }
+        else
+        {
+            if (slides.cbegin() == it)
+            {   // current slide is first
+                it = slides.constEnd();
+            }
+            else
+            { }
+            --it;
+
+        }
+        currentSlide = it.key();
+        return *it;
+    }
+    else
+    {  // invalid current slide - returning first slide
+        it = slides.constBegin();
+        if (slides.cend() != it)
+        {  // found at lest one
+            currentSlide = it.key();
+            return *it;
+        }
+    }
+
+    // this may happen when category is empty
+    return QString();
+#else
+    if (slidesList.isEmpty())
+    {
+        return QString();
+    }
+
+    if (moveForward)
+    {
+        if (++currentSlideIdx >= slidesList.size())
+        {
+            currentSlideIdx = 0;
+        }
+    }
+    else
+    {
+        if (--currentSlideIdx < 0)
+        {
+            currentSlideIdx = slidesList.size()-1;
+        }
+    }
+
+    return slidesList.at(currentSlideIdx).contentName;
+#endif
+}
+
+int SlideShowApp::Category::size() const
+{
+#if 0
+    return slides.size();
+#else
+    return slidesList.size();
+#endif
+}
+
+int SlideShowApp::Category::getCurrentIndex() const
+{
+    return currentSlideIdx;
+}
