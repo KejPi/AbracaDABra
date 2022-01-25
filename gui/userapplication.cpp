@@ -235,6 +235,14 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         ++it;
     }
 
+    // we can try to load data to Slide
+    if (!slide.setPixmap(obj.getBody()))
+    {   // loading of data failed
+        return;
+    }
+    else
+    { /* slide body is correct */ }
+
     // now we have parsed params -> check for potential request to decategorize
     if (slide.isDecategorizeRequested())
     {   // decategorize
@@ -258,14 +266,6 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         }
         else
         { /* item was is not in cache - do nothing */ }
-
-        // we can try to load data to Slide
-        if (!slide.setPixmap(obj.getBody()))
-        {   // loading of data failed
-            return;
-        }
-        else
-        { /* slide body is correct */ }
     }
     else
     {   // ETSI TS 101 499 V3.1.1 [6.2.2 ContentName]
@@ -292,23 +292,16 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
                 cache.erase(cacheIt);
             }
             else
-            {   // new slide is identical - do nothing
+            {   // new slide is identical - emit it for SLS
+                emit newSlide(slide);
                 return;
             }
         }
         else
         { /* item was is not in cache yet */ }
 
-        // we can try to load data to Slide
-        if (!slide.setPixmap(obj.getBody()))
-        {   // loading of data failed
-            return;
-        }
-        else
-        { /* slide body is correct */ }
-
         // adding new slide to cache
-        cache.insert(slide.getContentName(), slide);      
+        cache.insert(slide.getContentName(), slide);
 
         qDebug() << "Cache contains" << cache.size() << "slides";
 
