@@ -113,7 +113,6 @@ signals:
 
     // catSLS signals
     void categoryUpdate(int catId, const QString & title);
-    void removedCatSlide(int catId, int slideIdx, int numSlidesInCategory);
     void catSlide(const Slide & slide, int catId, int slideIdx, int numSlides);
 private:
     MOTDecoder * decoder;

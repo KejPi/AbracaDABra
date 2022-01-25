@@ -319,6 +319,10 @@ add_executable(${TARGET}
 
     userapplication.h
     userapplication.cpp
+
+    catslsdialog.h
+    catslsdialog.cpp
+    catslsdialog.ui
   )
 
 ### DAB library

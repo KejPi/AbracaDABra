@@ -333,6 +333,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(slideShowApp, &SlideShowApp::resetTerminal, this, &MainWindow::resetSLS, Qt::QueuedConnection);
     connect(this, &MainWindow::stopUserApps, slideShowApp, &SlideShowApp::stop, Qt::QueuedConnection);
 
+    catSlsDialog = new CatSLSDialog(this);
+    connect(slideShowApp, &SlideShowApp::categoryUpdate, catSlsDialog, &CatSLSDialog::onCategoryUpdate, Qt::QueuedConnection);
+    connect(slideShowApp, &SlideShowApp::catSlide, catSlsDialog, &CatSLSDialog::onCatSlide, Qt::QueuedConnection);
+    connect(catSlsDialog, &CatSLSDialog::getCurrentCatSlide, slideShowApp, &SlideShowApp::getCurrentCatSlide, Qt::QueuedConnection);
+
     // input device connections
     initInputDevice(InputDeviceId::UNDEFINED);
 

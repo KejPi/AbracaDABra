@@ -13,6 +13,7 @@
 
 #include "setupdialog.h"
 #include "ensembleinfodialog.h"
+#include "catslsdialog.h"
 #include "inputdevice.h"
 #include "rawfileinput.h"
 #include "rtlsdrinput.h"
@@ -79,6 +80,7 @@ private:
     Ui::MainWindow *ui;
     SetupDialog * setupDialog;
     EnsembleInfoDialog * ensembleInfoDialog;
+    CatSLSDialog * catSlsDialog;
     QProgressBar * snrProgress;
     QLabel  * timeLabel;
     QLabel * syncLabel;
