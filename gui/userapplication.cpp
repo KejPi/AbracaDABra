@@ -321,7 +321,8 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         for (QHash<int, Category*>::iterator catSlsIt = catSls.begin(); catSlsIt != catSls.end(); ++catSlsIt)
         {
             qDebug() << (*catSlsIt)->getTitle() << "[" << catSlsIt.key() << "]";
-            QString slideName = (*catSlsIt)->getFirstSlide();
+            qDebug() << "Current slide is:" << (*catSlsIt)->getCurrentIndex();
+            QString slideName = (*catSlsIt)->getCurrentSlide();
             for (int n = 0; n < (*catSlsIt)->size(); ++n)
             {
                 QHash<QString, Slide>::const_iterator cacheIt = cache.constFind(slideName);
@@ -333,7 +334,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
                 else
                 {
                     qDebug() << "   Slide #" << n << slideName << "in not in cache";
-                }
+                }                
                 slideName = (*catSlsIt)->getNextSlide();
             }
         }
@@ -548,8 +549,8 @@ int SlideShowApp::Category::insertSlide(const Slide &s)
             slidesList.replace(idx, item);
             return idx;
         }
-        if (slidesList.at(idx).id < item.id)
-        {
+        if (slidesList.at(idx).id > item.id)
+        {   // insert here
             slidesList.insert(idx, item);
             if (currentSlideIdx >= idx)
             {
@@ -560,7 +561,12 @@ int SlideShowApp::Category::insertSlide(const Slide &s)
      }
 
      // if it comes here we need to append the item
+    // it could be last or ieven very first slide
     slidesList.append(item);
+    if (currentSlideIdx < 0)
+    {   // set current index
+        currentSlideIdx = 0;
+    }
     return slidesList.size()-1;
 #endif
 }
@@ -607,6 +613,11 @@ int SlideShowApp::Category::removeSlide(int id)
         if (slidesList.at(idx).id == id)
         {   // found
             slidesList.remove(idx);
+            if (slidesList.isEmpty())
+            {   // empty category
+                currentSlideIdx = -1;
+                return idx;
+            }
 
             // update current index
             if (currentSlideIdx == idx)
@@ -630,7 +641,7 @@ int SlideShowApp::Category::removeSlide(int id)
 #endif
 }
 
-QString SlideShowApp::Category::getFirstSlide()
+QString SlideShowApp::Category::getCurrentSlide()
 {
 #if 0
     if (0 != slides.size())
@@ -646,8 +657,7 @@ QString SlideShowApp::Category::getFirstSlide()
 #else
     if (!slidesList.isEmpty())
     {
-        currentSlideIdx = 0;
-        return slidesList.at(0).contentName;
+        return slidesList.at(currentSlideIdx).contentName;
     }
     else
     { /* empty category */ }

@@ -6,7 +6,7 @@
 #define XPAD_DL_NUM_DG_MAX (8)
 #define XPAD_DL_LEN_MAX  (XPAD_DL_NUM_DG_MAX*16)
 
-#define DLDECODER_VERBOSE 1
+#define DLDECODER_VERBOSE 0
 
 class DLDecoder : public QObject
 {

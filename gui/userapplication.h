@@ -128,7 +128,7 @@ public:
     int insertSlide(const Slide & s);
     int removeSlide(int id);
     int size() const;
-    QString getFirstSlide();    
+    QString getCurrentSlide();
     QString getNextSlide(bool moveForward = true);
     int getCurrentIndex() const;
 private:
