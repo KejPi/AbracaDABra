@@ -329,7 +329,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControlThr, &QThread::finished, slideShowApp, &QObject::deleteLater);       
     connect(radioControl, &RadioControl::newServiceSelection, slideShowApp, &SlideShowApp::start);
     connect(radioControl, &RadioControl::serviceChanged, slideShowApp, &SlideShowApp::start);
-    connect(slideShowApp, &SlideShowApp::newSlide, this, &MainWindow::updateSLS, Qt::QueuedConnection);
+    connect(slideShowApp, &SlideShowApp::currentSlide, this, &MainWindow::updateSLS, Qt::QueuedConnection);
     connect(slideShowApp, &SlideShowApp::resetTerminal, this, &MainWindow::resetSLS, Qt::QueuedConnection);
     connect(this, &MainWindow::stopUserApps, slideShowApp, &SlideShowApp::stop, Qt::QueuedConnection);
 

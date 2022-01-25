@@ -105,11 +105,16 @@ public:
     void stop() override;
     void restart() override;
 
-signals:
-    void newSlide(const Slide & slide);
-    void newCategory(int catId, const QString & title);
-    void categoryRemoved(int id);
+    void getCurrentCatSlide(int catId);
 
+signals:
+    // this signal is emitted anytime when new slide is received
+    void currentSlide(const Slide & slide);
+
+    // catSLS signals
+    void categoryUpdate(int catId, const QString & title);
+    void removedCatSlide(int catId, int slideIdx, int numSlidesInCategory);
+    void catSlide(const Slide & slide, int catId, int slideIdx, int numSlides);
 private:
     MOTDecoder * decoder;
     QHash<QString, Slide> cache;   
@@ -128,7 +133,7 @@ public:
     int insertSlide(const Slide & s);
     int removeSlide(int id);
     int size() const;
-    QString getCurrentSlide();
+    QString getCurrentSlide() const;
     QString getNextSlide(bool moveForward = true);
     int getCurrentIndex() const;
 private:

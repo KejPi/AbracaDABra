@@ -287,7 +287,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
             }
             else
             {   // new slide is identical - emit it for SLS
-                emit newSlide(slide);
+                emit currentSlide(slide);
                 return;
             }
         }
@@ -308,7 +308,8 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         for (QHash<int, Category>::iterator catSlsIt = catSls.begin(); catSlsIt != catSls.end(); ++catSlsIt)
         {
             qDebug() << catSlsIt->getTitle() << "[" << catSlsIt.key() << "]";
-            QString slideName = catSlsIt->getFirstSlide();
+            qDebug() << "Current slide index is" << catSlsIt->getCurrentIndex();
+            QString slideName = catSlsIt->getCurrentSlide();
             for (int n = 0; n < catSlsIt->size(); ++n)
             {
                 QHash<QString, Slide>::const_iterator cacheIt = cache.constFind(slideName);
@@ -329,7 +330,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
     }
 
     // emit slide to HMI
-    emit newSlide(slide);
+    emit currentSlide(slide);
 }
 
 void SlideShowApp::addSlideToCategory(const Slide & slide)
@@ -346,8 +347,6 @@ void SlideShowApp::addSlideToCategory(const Slide & slide)
         if (catIt->getTitle() != slide.getCategoryTitle())
         {   // rename category
             catIt->setTitle(slide.getCategoryTitle());
-
-            emit newCategory(catIt.key(), catIt->getTitle());
         }
         else
         { /* do nothing */ }
@@ -360,9 +359,9 @@ void SlideShowApp::addSlideToCategory(const Slide & slide)
         catSls.insert(slide.getCategoryID(), newCat);
 
         qDebug() << "New category" << catName << "created";
+    }    
 
-        emit newCategory(slide.getCategoryID(), newCat.getTitle());
-    }
+    emit categoryUpdate(slide.getCategoryID(), slide.getCategoryTitle());
 }
 
 void SlideShowApp::removeSlideFromCategory(const Slide & slide)
@@ -374,8 +373,9 @@ void SlideShowApp::removeSlideFromCategory(const Slide & slide)
         catSlsIt->removeSlide(slide.getSlideID());
         if (0 == catSlsIt->size())
         {   // category is empty -> removing category
-            emit categoryRemoved(catSlsIt.key());
             catSls.erase(catSlsIt);
+
+            emit categoryUpdate(slide.getCategoryID(), QString());
         }
         else
         { /* there is still something in category */ }
@@ -384,7 +384,24 @@ void SlideShowApp::removeSlideFromCategory(const Slide & slide)
     { /* category not found */ }
 }
 
-
+void SlideShowApp::getCurrentCatSlide(int catId)
+{
+    QHash<int, SlideShowApp::Category>::const_iterator catSlsIt = catSls.constFind(catId);
+    if (catSlsIt != catSls.cend())
+    { // category found
+        QHash<QString, Slide>::const_iterator cacheIt = cache.constFind(catSlsIt->getCurrentSlide());
+        if (cache.cend() != cacheIt)
+        {   // found in cache
+            emit catSlide(cacheIt.value(), catId, catSlsIt->getCurrentIndex(), catSlsIt->size());
+        }
+        else
+        { /* not found in cache - this should not happen */ }
+    }
+    else
+    { // category not found
+        emit categoryUpdate(catId, QString());
+    }
+}
 
 SlideData::SlideData()
 {
@@ -546,7 +563,7 @@ int SlideShowApp::Category::insertSlide(const Slide &s)
      }
 
      // if it comes here we need to append the item
-    // it could be last or ieven very first slide
+    // it could be last or even very first slide
     slidesList.append(item);
     if (currentSlideIdx < 0)
     {   // set current index
@@ -626,7 +643,7 @@ int SlideShowApp::Category::removeSlide(int id)
 #endif
 }
 
-QString SlideShowApp::Category::getCurrentSlide()
+QString SlideShowApp::Category::getCurrentSlide() const
 {
 #if 0
     if (0 != slides.size())
