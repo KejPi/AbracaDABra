@@ -403,6 +403,25 @@ void SlideShowApp::getCurrentCatSlide(int catId)
     }
 }
 
+void SlideShowApp::getNextCatSlide(int catId, bool forward)
+{
+    QHash<int, SlideShowApp::Category>::iterator catSlsIt = catSls.find(catId);
+    if (catSlsIt != catSls.end())
+    { // category found
+        QHash<QString, Slide>::const_iterator cacheIt = cache.constFind(catSlsIt->getNextSlide(forward));
+        if (cache.cend() != cacheIt)
+        {   // found in cache
+            emit catSlide(cacheIt.value(), catId, catSlsIt->getCurrentIndex(), catSlsIt->size());
+        }
+        else
+        { /* not found in cache - this should not happen */ }
+    }
+    else
+    { // category not found
+        emit categoryUpdate(catId, QString());
+    }
+}
+
 SlideData::SlideData()
 {
     pixmap = QPixmap(0,0);         // this creates NULL pixmap

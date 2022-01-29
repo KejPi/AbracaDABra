@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>897</width>
+    <width>916</width>
     <height>485</height>
    </rect>
   </property>
@@ -21,6 +21,16 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="1" rowspan="4">
+     <widget class="QFrame" name="verticalLine">
+      <property name="frameShape">
+       <enum>QFrame::VLine</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="serviceLayout">
       <item>
@@ -91,50 +101,6 @@
        </widget>
       </item>
      </layout>
-    </item>
-    <item row="0" column="1" rowspan="4">
-     <widget class="QFrame" name="verticalLine">
-      <property name="frameShape">
-       <enum>QFrame::VLine</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Sunken</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <layout class="QVBoxLayout" name="ensembleLayout">
-      <item>
-       <widget class="QLabel" name="ensembleLabel">
-        <property name="font">
-         <font>
-          <pointsize>20</pointsize>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Ensemble Name</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="ensembleInfoLabel">
-        <property name="text">
-         <string>Ensemble information</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="0" column="3" rowspan="4">
-     <widget class="QTreeView" name="serviceTreeView">
-      <property name="minimumSize">
-       <size>
-        <width>200</width>
-        <height>0</height>
-       </size>
-      </property>
-     </widget>
     </item>
     <item row="1" column="0">
      <layout class="QHBoxLayout" name="audioLayout">
@@ -210,12 +176,18 @@
       </item>
      </layout>
     </item>
-    <item row="2" column="0">
-     <widget class="SLSView" name="slsView">
+    <item row="0" column="3" rowspan="4">
+     <widget class="QTreeView" name="serviceTreeView">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="minimumSize">
        <size>
-        <width>324</width>
-        <height>244</height>
+        <width>200</width>
+        <height>0</height>
        </size>
       </property>
      </widget>
@@ -267,6 +239,40 @@
       </property>
      </widget>
     </item>
+    <item row="2" column="0">
+     <widget class="SLSView" name="slsView">
+      <property name="minimumSize">
+       <size>
+        <width>324</width>
+        <height>244</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <layout class="QVBoxLayout" name="ensembleLayout">
+      <item>
+       <widget class="QLabel" name="ensembleLabel">
+        <property name="font">
+         <font>
+          <pointsize>20</pointsize>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Ensemble Name</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="ensembleInfoLabel">
+        <property name="text">
+         <string>Ensemble information</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -274,7 +280,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>897</width>
+     <width>916</width>
      <height>24</height>
     </rect>
    </property>

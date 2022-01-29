@@ -115,12 +115,16 @@ MainWindow::MainWindow(QWidget *parent)
     ensembleInfoAct = new QAction("Ensemble Info", this);
     connect(ensembleInfoAct, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
 
+    catSlsAct = new QAction("Categorized SLS", this);
+    connect(catSlsAct, &QAction::triggered, this, &MainWindow::showCatSLS);
+
     menu = new QMenu(this);
     menu->addAction(setupAct);
     menu->addAction(bandScanAct);
     menu->addAction(switchModeAct);
     menu->addAction(ensembleInfoAct);
     menu->addAction(clearServiceListAct);
+    menu->addAction(catSlsAct);
 
     QPixmap pic;
     ClickableLabel * settingsLabel = new ClickableLabel(this);
@@ -336,7 +340,9 @@ MainWindow::MainWindow(QWidget *parent)
     catSlsDialog = new CatSLSDialog(this);
     connect(slideShowApp, &SlideShowApp::categoryUpdate, catSlsDialog, &CatSLSDialog::onCategoryUpdate, Qt::QueuedConnection);
     connect(slideShowApp, &SlideShowApp::catSlide, catSlsDialog, &CatSLSDialog::onCatSlide, Qt::QueuedConnection);
+    connect(slideShowApp, &SlideShowApp::resetTerminal, catSlsDialog, &CatSLSDialog::reset, Qt::QueuedConnection);
     connect(catSlsDialog, &CatSLSDialog::getCurrentCatSlide, slideShowApp, &SlideShowApp::getCurrentCatSlide, Qt::QueuedConnection);
+    connect(catSlsDialog, &CatSLSDialog::getNextCatSlide, slideShowApp, &SlideShowApp::getNextCatSlide, Qt::QueuedConnection);    
 
     // input device connections
     initInputDevice(InputDeviceId::UNDEFINED);
@@ -535,6 +541,7 @@ void MainWindow::updateSLS(const Slide &slide)
     }
 
     scene->setSceneRect(slide.getPixmap().rect());
+    scene->setBackgroundBrush(Qt::black);
     ui->slsView->fitInViewTight(slide.getPixmap().rect(), Qt::KeepAspectRatio);
 
     // update tool tip
@@ -661,6 +668,7 @@ void MainWindow::resetSLS()
             slsPixmapItem->setPixmap(pic);
         }
         scene->setSceneRect(pic.rect());
+        scene->setBackgroundBrush(Qt::white);
         ui->slsView->fitInViewTight(pic.rect(), Qt::KeepAspectRatio);
     }
     else
@@ -1451,6 +1459,13 @@ void MainWindow::showEnsembleInfo()
     ensembleInfoDialog->show();
     ensembleInfoDialog->raise();
     ensembleInfoDialog->activateWindow();
+}
+
+void MainWindow::showCatSLS()
+{
+    catSlsDialog->show();
+    catSlsDialog->raise();
+    catSlsDialog->activateWindow();
 }
 
 void MainWindow::setExpertMode(bool ena)

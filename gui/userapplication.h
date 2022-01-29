@@ -106,7 +106,7 @@ public:
     void restart() override;
 
     void getCurrentCatSlide(int catId);
-
+    void getNextCatSlide(int catId, bool forward = true);
 signals:
     // this signal is emitted anytime when new slide is received
     void currentSlide(const Slide & slide);

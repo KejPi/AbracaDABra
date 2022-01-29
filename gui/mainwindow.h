@@ -93,6 +93,7 @@ private:
     QAction * bandScanAct;
     QAction * switchModeAct;
     QAction * ensembleInfoAct;
+    QAction * catSlsAct;
 
     QThread * radioControlThr;
     RadioControl * radioControl;
@@ -136,6 +137,7 @@ private:
     void switchServiceSource();
     void switchMode();
     void showEnsembleInfo();
+    void showCatSLS();
     void setExpertMode(bool ena);
     void stop();
     void tuneChannel(uint32_t freq);
