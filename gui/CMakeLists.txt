@@ -320,6 +320,9 @@ add_executable(${TARGET}
     userapplication.h
     userapplication.cpp
 
+    slsview.h
+    slsview.cpp
+
     catslsdialog.h
     catslsdialog.cpp
     catslsdialog.ui
