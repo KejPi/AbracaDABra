@@ -71,7 +71,6 @@ private slots:
 
 protected:        
      void closeEvent(QCloseEvent *event);
-     void showEvent(QShowEvent *event);
      void resizeEvent(QResizeEvent *event);
 private:
     Ui::MainWindow *ui;

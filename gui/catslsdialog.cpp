@@ -26,30 +26,6 @@ CatSLSDialog::~CatSLSDialog()
     delete ui;
 }
 
-void CatSLSDialog::showEvent(QShowEvent *event)
-{
-    QGraphicsScene * scene = ui->slsView->scene();
-    if (nullptr != scene)
-    {
-        ui->slsView->fitInViewTight(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
-    }
-
-    //event->accept();
-    QDialog::showEvent(event);
-}
-
-void CatSLSDialog::resizeEvent(QResizeEvent *event)
-{
-    QGraphicsScene * scene = ui->slsView->scene();
-    if (nullptr != scene)
-    {
-        ui->slsView->fitInViewTight(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
-    }
-
-    //event->accept();
-    QDialog::resizeEvent(event);
-}
-
 void CatSLSDialog::reset()
 {
     ui->slideCountLabel->setText("");

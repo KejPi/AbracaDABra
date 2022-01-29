@@ -39,12 +39,6 @@ signals:
     //! @brief Signal to get next slide in category (when user presses back/fwd button)
     void getNextCatSlide(int catId, bool forward);
 
-protected:
-    //! @brief Reimplemented method, used to fit SLS picture in view
-    void showEvent(QShowEvent *event);
-
-    //! @brief Reimplemented method, used to fit SLS picture in view
-    void resizeEvent(QResizeEvent *event);
 private:
     //! @brief User interface
     Ui::CatSLSDialog *ui;

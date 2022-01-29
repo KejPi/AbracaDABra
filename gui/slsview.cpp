@@ -108,3 +108,25 @@ void SLSView::showSlide(const Slide & slide)
 
     setToolTip(toolTip);
 }
+
+void SLSView::resizeEvent(QResizeEvent *event)
+{
+    QGraphicsScene * sc = scene();
+    if (nullptr != sc)
+    {
+        fitInViewTight(sc->itemsBoundingRect(), Qt::KeepAspectRatio);
+    }
+
+    QGraphicsView::resizeEvent(event);
+}
+
+void SLSView::showEvent(QShowEvent *event)
+{
+    QGraphicsScene * sc = scene();
+    if (nullptr != sc)
+    {
+        fitInViewTight(sc->itemsBoundingRect(), Qt::KeepAspectRatio);
+    }
+
+    QGraphicsView::showEvent(event);
+}

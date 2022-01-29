@@ -384,18 +384,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 */
 }
 
-
-void MainWindow::showEvent(QShowEvent *event)
-{
-    QGraphicsScene * scene = ui->slsView->scene();
-    if (nullptr != scene)
-    {
-        ui->slsView->fitInViewTight(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
-    }
-
-    QMainWindow::showEvent(event);
-}
-
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     if (ui->dynamicLabel->width() < ui->dynamicLabel->fontMetrics().boundingRect(ui->dynamicLabel->text()).width())
@@ -405,12 +393,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     else
     {
         ui->dynamicLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    }
-
-    QGraphicsScene * scene = ui->slsView->scene();
-    if (nullptr != scene)
-    {
-        ui->slsView->fitInViewTight(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
     }
 
     QMainWindow::resizeEvent(event);

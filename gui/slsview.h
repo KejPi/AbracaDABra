@@ -24,6 +24,10 @@ public:
     //! @brief This method implements fintInViw without borders
     void fitInViewTight(const QRectF &rect, Qt::AspectRatioMode aspectRatioMode);
 
+protected:
+    void resizeEvent(QResizeEvent *event);
+    void showEvent(QShowEvent *event);
+
 private:
     //! @brief Used to store current pixmap
     QGraphicsPixmapItem * pixmapItem;
