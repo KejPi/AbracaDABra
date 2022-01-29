@@ -8,8 +8,6 @@
 #include <QCloseEvent>
 #include <QLabel>
 #include <QProgressBar>
-#include <QGraphicsView>
-#include <QGraphicsPixmapItem>
 
 #include "setupdialog.h"
 #include "ensembleinfodialog.h"
@@ -49,8 +47,6 @@ public slots:
     void updateSnrLevel(float snr);
     void updateServiceList(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
     void updateDL(const QString &dl);
-    void updateSLS(const Slide & slide);
-    void resetSLS();
     void updateAudioInfo(const AudioParameters &params);
     void updateDabTime(const QDateTime & d);
     void changeInputDevice(const InputDeviceId &d);
@@ -86,7 +82,6 @@ private:
     QLabel  * timeLabel;
     QLabel * syncLabel;
     QLabel * snrLabel;
-    QGraphicsPixmapItem * slsPixmapItem;
 
     QMenu * menu;
     QAction * setupAct;

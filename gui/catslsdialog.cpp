@@ -58,29 +58,7 @@ void CatSLSDialog::reset()
     QStandardItemModel * model = qobject_cast<QStandardItemModel*>(ui->categoryView->model());
     model->clear();
 
-    QPixmap pic;
-    if (pic.load(":/resources/sls_logo.png"))
-    {
-        QGraphicsScene * scene = ui->slsView->scene();
-        if (nullptr == scene)
-        {
-            scene = new QGraphicsScene(this);
-            slsPixmapItem = scene->addPixmap(pic);
-
-            ui->slsView->setScene(scene);
-        }
-        else
-        {
-            slsPixmapItem->setPixmap(pic);
-        }
-        scene->setSceneRect(pic.rect());
-        scene->setBackgroundBrush(Qt::white);
-        ui->slsView->fitInViewTight(pic.rect(), Qt::KeepAspectRatio);
-    }
-    else
-    {
-        qDebug() << "Unable to load :/resources/sls_logo.png";
-    }
+    ui->slsView->reset();
 }
 
 void CatSLSDialog::onCategoryUpdate(int catId, const QString & title)
@@ -150,23 +128,7 @@ void CatSLSDialog::onCatSlide(const Slide & slide, int catId, int slideIdx, int 
         ui->backButton->setEnabled(false);
     }
 
-    QGraphicsScene * scene = ui->slsView->scene();
-    if (nullptr == scene)
-    {
-        //qDebug() << Q_FUNC_INFO << "New graphisc scene";
-        scene = new QGraphicsScene(this);
-        slsPixmapItem = scene->addPixmap(slide.getPixmap());
-
-        ui->slsView->setScene(scene);
-    }
-    else
-    {
-        slsPixmapItem->setPixmap(slide.getPixmap());
-    }
-
-    scene->setSceneRect(slide.getPixmap().rect());
-    scene->setBackgroundBrush(Qt::black);
-    ui->slsView->fitInViewTight(slide.getPixmap().rect(), Qt::KeepAspectRatio);
+    ui->slsView->showSlide(slide);
 }
 
 void CatSLSDialog::onBackButtonClicked()

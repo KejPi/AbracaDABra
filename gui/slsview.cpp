@@ -2,6 +2,37 @@
 
 SLSView::SLSView(QWidget *parent) : QGraphicsView(parent)
 {
+    reset();
+}
+
+void SLSView::reset()
+{
+    QPixmap pic;
+    if (pic.load(":/resources/sls_logo.png"))
+    {
+        QGraphicsScene * sc = scene();
+        if (nullptr == sc)
+        {
+            //qDebug() << Q_FUNC_INFO << "New graphisc scene";
+            sc = new QGraphicsScene(this);
+            pixmapItem = sc->addPixmap(pic);
+
+            setScene(sc);
+        }
+        else
+        {
+            pixmapItem->setPixmap(pic);
+        }
+        sc->setSceneRect(pic.rect());
+        sc->setBackgroundBrush(Qt::white);
+        fitInViewTight(pic.rect(), Qt::KeepAspectRatio);
+    }
+    else
+    {
+        qDebug() << "Unable to load :/resources/sls_logo.png";
+    }
+
+    setToolTip("");
 }
 
 void SLSView::fitInViewTight(const QRectF &rect, Qt::AspectRatioMode aspectRatioMode)
@@ -38,4 +69,42 @@ void SLSView::fitInViewTight(const QRectF &rect, Qt::AspectRatioMode aspectRatio
     // Scale and center on the center of \a rect.
     scale(xratio, yratio);
     centerOn(rect.center());
+}
+
+void SLSView::showSlide(const Slide & slide)
+{
+    QGraphicsScene * sc = scene();
+    if (nullptr == sc)
+    {
+        //qDebug() << Q_FUNC_INFO << "New graphisc scene";
+        sc = new QGraphicsScene(this);
+        pixmapItem = sc->addPixmap(slide.getPixmap());
+        setScene(sc);
+    }
+    else
+    {
+        pixmapItem->setPixmap(slide.getPixmap());
+    }
+
+    sc->setSceneRect(slide.getPixmap().rect());
+    sc->setBackgroundBrush(Qt::black);
+    fitInViewTight(slide.getPixmap().rect(), Qt::KeepAspectRatio);
+
+    // update tool tip
+    QString toolTip = QString("<b>ContentName:</b> %1").arg(slide.getContentName());
+    if (0 != slide.getCategoryID())
+    {
+        toolTip += QString("<br><b>Category:</b> %1 (%2)").arg(slide.getCategoryTitle())
+                                                          .arg(slide.getCategoryID());
+    }
+    else
+    { /* no catSLS */ }
+    if (!slide.getClickThroughURL().isEmpty())
+    {
+        toolTip += QString("<br><b>ClickThroughURL:</b> %1").arg(slide.getClickThroughURL());
+    }
+    else
+    { /* not present */ }
+
+    setToolTip(toolTip);
 }

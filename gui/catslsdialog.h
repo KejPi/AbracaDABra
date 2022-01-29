@@ -49,9 +49,6 @@ private:
     //! @brief User interface
     Ui::CatSLSDialog *ui;
 
-    //! This is the object to store picture to
-    QGraphicsPixmapItem * slsPixmapItem;
-
 private slots:
     //! @brief Slot when slide back button is clicked
     void onBackButtonClicked();

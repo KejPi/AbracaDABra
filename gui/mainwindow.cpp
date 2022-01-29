@@ -14,7 +14,6 @@
 #include "radiocontrol.h"
 #include "bandscandialog.h"
 
-#define USE_SLS_FRAME 1
 
 const QString appName("AbracaDABra");
 const QStringList syncLevelLabels = {"No signal", "Signal found", "Sync"};
@@ -199,33 +198,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->audioEncodingLabel->setToolTip("Audio coding");
 
-#if USE_SLS_FRAME
     ui->slsView->setMinimumSize(QSize(322, 242));
-#else
-    ui->slsView->setMinimumSize(QSize(320, 240));
-    ui->slsView->setFrameStyle(QFrame::NoFrame);
-#endif    
-
-    if (pic.load(":/resources/sls_logo.png"))
-    {
-        QGraphicsScene * scene = ui->slsView->scene();
-        if (nullptr == scene)
-        {
-            scene = new QGraphicsScene(this);
-            slsPixmapItem = scene->addPixmap(pic);
-
-            ui->slsView->setScene(scene);
-        }
-        else
-        {
-            slsPixmapItem->setPixmap(pic);
-        }
-        scene->setSceneRect(pic.rect());
-    }
-    else
-    {
-        qDebug() << "Unable to load :/resources/sls_logo.png";
-    }
+    ui->slsView->reset();
 
     if (pic.load(":/resources/broadcast.png"))
     {
@@ -333,8 +307,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControlThr, &QThread::finished, slideShowApp, &QObject::deleteLater);       
     connect(radioControl, &RadioControl::newServiceSelection, slideShowApp, &SlideShowApp::start);
     connect(radioControl, &RadioControl::serviceChanged, slideShowApp, &SlideShowApp::start);
-    connect(slideShowApp, &SlideShowApp::currentSlide, this, &MainWindow::updateSLS, Qt::QueuedConnection);
-    connect(slideShowApp, &SlideShowApp::resetTerminal, this, &MainWindow::resetSLS, Qt::QueuedConnection);
+    connect(slideShowApp, &SlideShowApp::currentSlide, ui->slsView, &SLSView::showSlide, Qt::QueuedConnection);
+    connect(slideShowApp, &SlideShowApp::resetTerminal, ui->slsView, &SLSView::reset, Qt::QueuedConnection);
     connect(this, &MainWindow::stopUserApps, slideShowApp, &SlideShowApp::stop, Qt::QueuedConnection);
 
     catSlsDialog = new CatSLSDialog(this);
@@ -524,44 +498,6 @@ void MainWindow::updateDL(const QString & dl)
     }
 }
 
-void MainWindow::updateSLS(const Slide &slide)
-{
-    QGraphicsScene * scene = ui->slsView->scene();
-    if (nullptr == scene)
-    {
-        //qDebug() << Q_FUNC_INFO << "New graphisc scene";
-        scene = new QGraphicsScene(this);
-        slsPixmapItem = scene->addPixmap(slide.getPixmap());
-
-        ui->slsView->setScene(scene);
-    }
-    else
-    {
-        slsPixmapItem->setPixmap(slide.getPixmap());
-    }
-
-    scene->setSceneRect(slide.getPixmap().rect());
-    scene->setBackgroundBrush(Qt::black);
-    ui->slsView->fitInViewTight(slide.getPixmap().rect(), Qt::KeepAspectRatio);
-
-    // update tool tip
-    QString toolTip = QString("<b>ContentName:</b> %1").arg(slide.getContentName());
-    if (0 != slide.getCategoryID())
-    {
-        toolTip += QString("<br><b>Category:</b> %1 (%2)").arg(slide.getCategoryTitle())
-                                                          .arg(slide.getCategoryID());
-    }
-    else
-    { /* no catSLS */ }
-    if (!slide.getClickThroughURL().isEmpty())
-    {
-        toolTip += QString("<br><b>ClickThroughURL:</b> %1").arg(slide.getClickThroughURL());
-    }
-    else
-    { /* not present */ }
-    ui->slsView->setToolTip(toolTip);
-}
-
 void MainWindow::updateDabTime(const QDateTime & d)
 {
     timeLabel->setText(d.toString(QString("dddd, dd.MM.yyyy, hh:mm")));
@@ -647,36 +583,6 @@ void MainWindow::onServiceSelection()
     ui->dynamicLabel->setText("");    
 
     emit stopUserApps();
-}
-
-void MainWindow::resetSLS()
-{
-    QPixmap pic;
-    if (pic.load(":/resources/sls_logo.png"))
-    {
-        QGraphicsScene * scene = ui->slsView->scene();
-        if (nullptr == scene)
-        {
-            //qDebug() << Q_FUNC_INFO << "New graphisc scene";
-            scene = new QGraphicsScene(this);
-            slsPixmapItem = scene->addPixmap(pic);
-
-            ui->slsView->setScene(scene);
-        }
-        else
-        {
-            slsPixmapItem->setPixmap(pic);
-        }
-        scene->setSceneRect(pic.rect());
-        scene->setBackgroundBrush(Qt::white);
-        ui->slsView->fitInViewTight(pic.rect(), Qt::KeepAspectRatio);
-    }
-    else
-    {
-        qDebug() << "Unable to load :/resources/sls_logo.png";
-    }
-
-    ui->slsView->setToolTip("");
 }
 
 void MainWindow::on_channelCombo_currentIndexChanged(int index)
