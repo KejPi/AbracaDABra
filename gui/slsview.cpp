@@ -95,8 +95,7 @@ void SLSView::showSlide(const Slide & slide)
     fitInViewTight(slide.getPixmap().rect(), Qt::KeepAspectRatio);
 
     // update tool tip
-    // this disables automatic lines breaks
-    QString toolTip = QString("<p style='white-space:pre'>");
+    QString toolTip;
 
     clickThroughURL = slide.getClickThroughURL();
     if (!clickThroughURL.isEmpty())
@@ -116,7 +115,14 @@ void SLSView::showSlide(const Slide & slide)
     else
     { /* no catSLS */ }
 
-    setToolTip(toolTip);
+    if (toolTip.isEmpty())
+    {
+        setToolTip(toolTip);
+    }
+    else
+    {    // this disables automatic lines breaks
+        setToolTip(QString("<p style='white-space:pre'>") + toolTip);
+    }
 }
 
 void SLSView::resizeEvent(QResizeEvent *event)
