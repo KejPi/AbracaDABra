@@ -1,3 +1,6 @@
+#include <QMouseEvent>
+#include <QDesktopServices>
+#include <QUrl>
 #include "slsview.h"
 
 SLSView::SLSView(QWidget *parent) : QGraphicsView(parent)
@@ -33,6 +36,8 @@ void SLSView::reset()
     }
 
     setToolTip("");
+    setCursor(Qt::ArrowCursor);
+    clickThroughURL.clear();
 }
 
 void SLSView::fitInViewTight(const QRectF &rect, Qt::AspectRatioMode aspectRatioMode)
@@ -76,7 +81,6 @@ void SLSView::showSlide(const Slide & slide)
     QGraphicsScene * sc = scene();
     if (nullptr == sc)
     {
-        //qDebug() << Q_FUNC_INFO << "New graphisc scene";
         sc = new QGraphicsScene(this);
         pixmapItem = sc->addPixmap(slide.getPixmap());
         setScene(sc);
@@ -91,20 +95,26 @@ void SLSView::showSlide(const Slide & slide)
     fitInViewTight(slide.getPixmap().rect(), Qt::KeepAspectRatio);
 
     // update tool tip
-    QString toolTip = QString("<b>ContentName:</b> %1").arg(slide.getContentName());
+    // this disables automatic lines breaks
+    QString toolTip = QString("<p style='white-space:pre'>");
+
+    clickThroughURL = slide.getClickThroughURL();
+    if (!clickThroughURL.isEmpty())
+    {
+        toolTip = QString("%1<br><br>").arg(clickThroughURL);
+
+        setCursor(Qt::PointingHandCursor);
+    }
+    else
+    {   // not present
+        setCursor(Qt::ArrowCursor);
+    }
     if (0 != slide.getCategoryID())
     {
-        toolTip += QString("<br><b>Category:</b> %1 (%2)").arg(slide.getCategoryTitle())
-                                                          .arg(slide.getCategoryID());
+        toolTip += QString("<b>Category:</b> %1").arg(slide.getCategoryTitle());
     }
     else
     { /* no catSLS */ }
-    if (!slide.getClickThroughURL().isEmpty())
-    {
-        toolTip += QString("<br><b>ClickThroughURL:</b> %1").arg(slide.getClickThroughURL());
-    }
-    else
-    { /* not present */ }
 
     setToolTip(toolTip);
 }
@@ -129,4 +139,23 @@ void SLSView::showEvent(QShowEvent *event)
     }
 
     QGraphicsView::showEvent(event);
+}
+
+void SLSView::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (!clickThroughURL.isEmpty())
+    {   // if clickThroughURL is set
+        qDebug() << Q_FUNC_INFO << event->position()
+                 << ((event->position().x() >=0) && (event->position().y() >= 0) &&
+                    (event->position().x() < width()) && (event->position().y() < height()));
+
+        if ((event->position().x() >=0) && (event->position().y() >= 0) &&
+                (event->position().x() < width()) && (event->position().y() < height()))
+        {   // release was on the slide view
+            QDesktopServices::openUrl(QUrl(clickThroughURL, QUrl::TolerantMode));
+        }
+        else
+        { /* mouse was released outside teh view */ }
+    }
+    QGraphicsView::mouseReleaseEvent(event);
 }

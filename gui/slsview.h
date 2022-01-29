@@ -25,12 +25,21 @@ public:
     void fitInViewTight(const QRectF &rect, Qt::AspectRatioMode aspectRatioMode);
 
 protected:
+    //! @brief Reimplemented to scale image correctly
     void resizeEvent(QResizeEvent *event);
+
+    //! @brief Reimplemented to scale image correctly
     void showEvent(QShowEvent *event);
+
+    //! @brief Reimplemented to catch clicks when slide has defined ClickThroughURL
+    void mouseReleaseEvent(QMouseEvent *event);
 
 private:
     //! @brief Used to store current pixmap
     QGraphicsPixmapItem * pixmapItem;
+
+    //! @brief URL of current slide
+    QString clickThroughURL;
 };
 
 #endif // SLSVIEW_H
