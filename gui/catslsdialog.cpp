@@ -39,8 +39,6 @@ void CatSLSDialog::reset()
 
 void CatSLSDialog::onCategoryUpdate(int catId, const QString & title)
 {
-    qDebug() << Q_FUNC_INFO << "Category" << title << "["<< catId <<  "] updated";
-
     // find category
     QStandardItemModel * model = qobject_cast<QStandardItemModel*>(ui->categoryView->model());
     QModelIndexList list = model->match(model->index(0, 0), Qt::UserRole, catId);
@@ -84,8 +82,6 @@ void CatSLSDialog::onCategoryUpdate(int catId, const QString & title)
 
 void CatSLSDialog::onCatSlide(const Slide & slide, int catId, int slideIdx, int numSlides)
 {
-    qDebug() << Q_FUNC_INFO << "New slide"<< slide.getContentName() << "category"<< catId << slideIdx+1 << "/" << numSlides;
-
     if (ui->categoryView->currentIndex().data(Qt::UserRole).toUInt() != catId)
     {   // do nothing, category is not selected
         return;

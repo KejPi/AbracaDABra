@@ -54,6 +54,7 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
     segmentSize += *dataFieldPtr++;
 
 #if MOTDECODER_VERBOSE
+    qDebug() << "Data group type =" << mscDataGroup.getType();
     qDebug() << "Segment number = "<< mscDataGroup.getSegmentNum() << ", last = " << mscDataGroup.getLastFlag();
     qDebug() << "Segment size = " << segmentSize << ", Repetition count = " << repetitionCount;
 #endif
@@ -63,7 +64,6 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
     case 3:
     {   // [ETSI EN 301 234, 5.1.4 Segmentation of the MOT header]
         // The segments of the MOT header shall be transported in MSC Data group type 3.
-
         // this is header mode
         MOTObjectCache::iterator objIt = objCache->findMotObj(mscDataGroup.getTransportId());
         if (objCache->end() == objIt)

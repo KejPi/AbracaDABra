@@ -21,11 +21,17 @@ bool MOTEntity::isComplete() const
     // [ETSI EN 301 234, 5.1 Segmentation of MOT entities]
     // MOT entities will be split up in segments with equal size. Only the last segment may have a smaller size
     // (to carry the remaining bytes of the MOT entity). Every MOT entity (e.g. every MOT body) can use a different segmentation size.
-    int lastSegmentSize = segments[numSegments - 1].size();
+    int lastSegmentSize = segments.last().size();
     bool ret = true;
+
+    if (numSegments != segments.size())
+    {
+        qDebug() << "numSegments != segments.size()";
+    }
+
     for (int n = 0; n < numSegments-1; ++n)
     {
-        if (segments[n].size() < lastSegmentSize)
+        if (segments.at(n).size() < lastSegmentSize)
         {  // some segment is smaller than last segment thus not received
             ret = false;
             break;
@@ -390,20 +396,20 @@ bool MOTDirectory::addSegment(const uint8_t *segment, uint16_t segmentNum, uint1
 void MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
 {
     // first find if object already exists in carousel
-    MOTObject * objPtr = carousel->findMotObj(transportId);
-    if (nullptr == objPtr)
+    MOTObjectCache::iterator it = carousel->findMotObj(transportId);
+    if (carousel->end() == it)
     {  // object does not exist in carousel - this should not happen for current directory
 #if MOTOBJECT_VERBOSE
         qDebug() << "New MOT object" << transportId << "number of objects in carousel" << carousel->size();
 #endif
         // add new object to cache
-        objPtr = carousel->addMotObj(MOTObject(transportId));
+        it = carousel->addMotObj(MOTObject(transportId));
     }
     else
     {  /* do nothing - it already exists, just adding next segment */ }
 
-    objPtr->addSegment(segment, segmentNum, segmentSize, lastFlag);
-    if (objPtr->isComplete())
+    it->addSegment(segment, segmentNum, segmentSize, lastFlag);
+    if (it->isComplete())
     {
         qDebug() << "MOT complete: ID" << transportId;
     }
@@ -534,18 +540,18 @@ bool MOTDirectory::parse(const QByteArray &dirData)
         qDebug() << "\t* ID" << objTransportID << "| header size " << headerSize;
 
         // mark all objects in directory as active (non-obsolete)
-        MOTObject * objPtr = carousel->markObjObsolete(objTransportID, false);
-        if (nullptr == objPtr)
+        MOTObjectCache::iterator it = carousel->markObjObsolete(objTransportID, false);
+        if (carousel->end() == it)
         {   // not found create new object in carousel
             qDebug() << "Object not found in the cache: ID" << objTransportID;
-            objPtr = carousel->addMotObj(MOTObject(objTransportID));
+            it = carousel->addMotObj(MOTObject(objTransportID));
         }
         else
         { /* do nothing - object is marked as active (non-obsolete) */ }
 
         // add header segment
         // number 0, last = true, size is the rest of the directory, object takes what it needs
-        objPtr->addSegment((const uint8_t *) (dataPtr + n + 2), 0, headerSize, true, true);
+        it->addSegment((const uint8_t *) (dataPtr + n + 2), 0, headerSize, true, true);
         n += 2 + headerSize;
     }
 
@@ -618,7 +624,7 @@ void MOTObjectCache::markAllObsolete()
 }
 
 MOTObjectCache::iterator MOTObjectCache::markObjObsolete(uint16_t transportId, bool obsolete)
-{
+{   
     MOTObjectCache::iterator it;
     for (it = cache.begin(); it < cache.end(); ++it)
     {
