@@ -49,10 +49,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->favoriteLabel->setCheckable(true);
     ui->favoriteLabel->setIcon(":/resources/starEmpty20.png", false);
     ui->favoriteLabel->setIcon(":/resources/star20.png", true);
-    ui->favoriteLabel->setTooltip("Click to add service to favourites", false);
-    ui->favoriteLabel->setTooltip("Click to remove service from favourites", true);
+    ui->favoriteLabel->setTooltip("Add service to favourites", false);
+    ui->favoriteLabel->setTooltip("Remove service from favourites", true);
     ui->favoriteLabel->setChecked(false);
-
 
     setupDialog = new SetupDialog(this);
     connect(setupDialog, &SetupDialog::inputDeviceChanged, this, &MainWindow::changeInputDevice);
@@ -114,16 +113,12 @@ MainWindow::MainWindow(QWidget *parent)
     ensembleInfoAct = new QAction("Ensemble Info", this);
     connect(ensembleInfoAct, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
 
-    catSlsAct = new QAction("Categorized SLS", this);
-    connect(catSlsAct, &QAction::triggered, this, &MainWindow::showCatSLS);
-
     menu = new QMenu(this);
     menu->addAction(setupAct);
     menu->addAction(bandScanAct);
     menu->addAction(switchModeAct);
     menu->addAction(ensembleInfoAct);
     menu->addAction(clearServiceListAct);
-    menu->addAction(catSlsAct);
 
     QPixmap pic;
     ClickableLabel * settingsLabel = new ClickableLabel(this);
@@ -201,6 +196,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui->slsView->setMinimumSize(QSize(322, 242));
     ui->slsView->reset();
 
+    if (pic.load(":/resources/catSls.png"))
+    {
+        ui->catSlsLabel->setPixmap(pic);
+    }
+    else
+    {
+        qDebug() << "Unable to load :/resources/catSls.png";
+    }
+    ui->catSlsLabel->setToolTip("Browse categorized slides");
+    ui->catSlsLabel->setHidden(true);
+
     if (pic.load(":/resources/broadcast.png"))
     {
         ui->switchSourceLabel->setPixmap(pic);
@@ -209,7 +215,7 @@ MainWindow::MainWindow(QWidget *parent)
     {
         qDebug() << "Unable to load :/resources/broadcast.png";
     }
-    ui->switchSourceLabel->setToolTip("Click to change service source (ensemble)");
+    ui->switchSourceLabel->setToolTip("Change service source (ensemble)");
     ui->switchSourceLabel->setHidden(true);
 
     ui->serviceTreeView->setVisible(false);
@@ -251,7 +257,8 @@ MainWindow::MainWindow(QWidget *parent)
     // Connect signals
     connect(muteLabel, &ClickableLabel::toggled, audioOutput, &AudioOutput::mute, Qt::QueuedConnection);
     connect(ui->favoriteLabel, &ClickableLabel::toggled, this, &MainWindow::favoriteToggled);
-    connect(ui->switchSourceLabel, &ClickableLabel::clicked, this, &MainWindow::switchServiceSource);    
+    connect(ui->switchSourceLabel, &ClickableLabel::clicked, this, &MainWindow::switchServiceSource);
+    connect(ui->catSlsLabel, &ClickableLabel::clicked, this, &MainWindow::showCatSLS);
 
     connect(radioControl, &RadioControl::ensembleInformation, this, &MainWindow::updateEnsembleInfo, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::syncStatus, this, &MainWindow::updateSyncStatus, Qt::QueuedConnection);
@@ -309,6 +316,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControl, &RadioControl::serviceChanged, slideShowApp, &SlideShowApp::start);
     connect(slideShowApp, &SlideShowApp::currentSlide, ui->slsView, &SLSView::showSlide, Qt::QueuedConnection);
     connect(slideShowApp, &SlideShowApp::resetTerminal, ui->slsView, &SLSView::reset, Qt::QueuedConnection);
+    connect(slideShowApp, &SlideShowApp::catSlsAvailable, ui->catSlsLabel, &ClickableLabel::setVisible, Qt::QueuedConnection);
     connect(this, &MainWindow::stopUserApps, slideShowApp, &SlideShowApp::stop, Qt::QueuedConnection);
 
     catSlsDialog = new CatSLSDialog(this);
@@ -891,6 +899,7 @@ void MainWindow::clearServiceInformationLabels()
 {    
     ui->serviceLabel->setText("No service");
     ui->favoriteLabel->setChecked(false);
+    ui->catSlsLabel->setHidden(true);
     ui->serviceLabel->setToolTip("No service playing");
     ui->programTypeLabel->setText("");
     ui->audioEncodingLabel->setText("");
@@ -901,7 +910,6 @@ void MainWindow::clearServiceInformationLabels()
     ui->protectionLabel->setToolTip("");
     ui->audioBitrateLabel->setText("");
     ui->audioBitrateLabel->setToolTip("");
-
 }
 
 void MainWindow::changeInputDevice(const InputDeviceId & d)

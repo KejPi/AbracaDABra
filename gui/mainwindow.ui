@@ -55,6 +55,13 @@
          </widget>
         </item>
         <item>
+         <widget class="ClickableLabel" name="catSlsLabel">
+          <property name="text">
+           <string>SLS</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="ClickableLabel" name="switchSourceLabel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">

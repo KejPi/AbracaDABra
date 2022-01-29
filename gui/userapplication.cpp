@@ -51,6 +51,9 @@ void SlideShowApp::stop()
     // clear cache
     cache.clear();
 
+    // clear categories
+    catSls.clear();
+
     // ask HMI to clear SLS
     emit resetTerminal();
 }
@@ -359,6 +362,11 @@ void SlideShowApp::addSlideToCategory(const Slide & slide)
         catSls.insert(slide.getCategoryID(), newCat);
 
         qDebug() << "New category" << catName << "created";
+
+        if (1 == catSls.size())
+        {  // this is the first category -> signal that CatSLS is available
+            emit catSlsAvailable(true);
+        }
     }    
 
     emit categoryUpdate(slide.getCategoryID(), slide.getCategoryTitle());
@@ -376,6 +384,11 @@ void SlideShowApp::removeSlideFromCategory(const Slide & slide)
             catSls.erase(catSlsIt);
 
             emit categoryUpdate(slide.getCategoryID(), QString());
+
+            if (catSls.isEmpty())
+            {  // there are no more categories -> disable catSls
+                emit catSlsAvailable(false);
+            }
         }
         else
         { /* there is still something in category */ }

@@ -88,7 +88,6 @@ private:
     QAction * bandScanAct;
     QAction * switchModeAct;
     QAction * ensembleInfoAct;
-    QAction * catSlsAct;
 
     QThread * radioControlThr;
     RadioControl * radioControl;

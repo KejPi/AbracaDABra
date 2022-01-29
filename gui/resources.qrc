@@ -8,5 +8,6 @@
         <file>resources/volume_on.png</file>
         <file>resources/menu.png</file>
         <file>resources/star.svg</file>
+        <file>resources/catSls.png</file>
     </qresource>
 </RCC>

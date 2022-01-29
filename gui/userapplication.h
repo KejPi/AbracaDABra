@@ -114,6 +114,8 @@ signals:
     // catSLS signals
     void categoryUpdate(int catId, const QString & title);
     void catSlide(const Slide & slide, int catId, int slideIdx, int numSlides);
+
+    void catSlsAvailable(bool isAvailable);
 private:
     MOTDecoder * decoder;
     QHash<QString, Slide> cache;   
