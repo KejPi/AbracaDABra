@@ -95,6 +95,14 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         {  // directory mode
             directory->addObjectSegment(mscDataGroup.getTransportId(), (const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(),
                                         segmentSize, mscDataGroup.getLastFlag());
+
+#if 0       // this could be used in theory for SLS that violates standard and uses MOT directory in transmission
+            MOTObjectCache::iterator objIt = objCache->findMotObj(mscDataGroup.getTransportId());
+            if (objIt->isComplete())
+            {
+                emit newMOTObject(*objIt);
+            }
+#endif
         }
         else
         {   // this can be euth directory mode but directoy was not recieved yet or it can be header mode
