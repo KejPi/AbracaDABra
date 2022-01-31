@@ -8,6 +8,7 @@
 #include <QCloseEvent>
 #include <QLabel>
 #include <QProgressBar>
+#include <QHBoxLayout>
 
 #include "setupdialog.h"
 #include "ensembleinfodialog.h"
@@ -32,6 +33,8 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+class DLPlusObjectUI;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -47,6 +50,9 @@ public slots:
     void updateSnrLevel(float snr);
     void updateServiceList(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
     void updateDL(const QString &dl);
+    void onDlPlusObjReceived(const DLPlusObject & object);
+    void onDlPlusItemToggle();
+    void onDlPlusItemRunning(bool isRunning);
     void updateAudioInfo(const AudioParameters &params);
     void updateDabTime(const QDateTime & d);
     void changeInputDevice(const InputDeviceId &d);
@@ -121,6 +127,8 @@ private:
     SLModel * slModel;
     SLTreeModel * slTreeModel;
 
+    QMap<DLPlusContentType, DLPlusObjectUI*> dlObjCache;
+
     void onServiceSelection();
     void onChannelSelection();
     void loadSettings();
@@ -142,5 +150,25 @@ private:
     void serviceTreeViewUpdateSelection();
     void serviceListViewUpdateSelection();
 };
+
+class DLPlusObjectUI
+{
+public:
+    DLPlusObjectUI(const DLPlusObject & obj);
+    ~DLPlusObjectUI();
+    QHBoxLayout *getLayout() const;
+    void update(const DLPlusObject & obj);
+
+    const DLPlusObject &getDlPlusObject() const;
+
+private:
+    DLPlusObject dlPlusObject;
+    QHBoxLayout* layout;
+    QLabel * tagLabel;
+    QLabel * tagText;
+
+    QString getLabel(DLPlusContentType type) const;
+};
+
 
 #endif // MAINWINDOW_H

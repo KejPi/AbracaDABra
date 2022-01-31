@@ -45,6 +45,8 @@ MainWindow::MainWindow(QWidget *parent)
     // set UI
     setWindowTitle("Abraca DAB Radio");
 
+    ui->dlPlusButton->setHidden(true);
+
     // favorites control
     ui->favoriteLabel->setCheckable(true);
     ui->favoriteLabel->setIcon(":/resources/starEmpty20.png", false);
@@ -280,7 +282,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControl, &RadioControl::newServiceSelection, this, &MainWindow::serviceChanged, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::serviceChanged, dlDecoder, &DLDecoder::reset, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::audioData, audioDecoder, &AudioDecoder::inputData, Qt::QueuedConnection);
-    connect(dlDecoder, &DLDecoder::dlComplete, this, &MainWindow::updateDL, Qt::QueuedConnection);
+
+    // DL(+)
+    connect(dlDecoder, &DLDecoder::dlComplete, this, &MainWindow::updateDL);
+    connect(dlDecoder, &DLDecoder::dlPlusObject, this, &MainWindow::onDlPlusObjReceived);
+    connect(dlDecoder, &DLDecoder::dlItemToggle, this, &MainWindow::onDlPlusItemToggle);
+    connect(dlDecoder, &DLDecoder::dlItemRunning, this, &MainWindow::onDlPlusItemRunning);
 
     connect(audioDecoder, &AudioDecoder::audioParametersInfo, this, &MainWindow::updateAudioInfo, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::newServiceSelection, audioDecoder, &AudioDecoder::start, Qt::QueuedConnection);
@@ -568,11 +575,17 @@ void MainWindow::onChannelSelection()
 
 void MainWindow::onServiceSelection()
 {        
+    emit stopUserApps();
+
     clearServiceInformationLabels();
     dlDecoder->reset();
     ui->dynamicLabel->setText("");    
 
-    emit stopUserApps();
+    for (auto objPtr : dlObjCache)
+    {
+        delete objPtr;
+    }
+    dlObjCache.clear();
 }
 
 void MainWindow::on_channelCombo_currentIndexChanged(int index)
@@ -1451,3 +1464,193 @@ void MainWindow::clearServiceList()
     serviceList->clear();
 }
 
+void MainWindow::onDlPlusObjReceived(const DLPlusObject & object)
+{
+    if (object.isDummy())
+    {   // dummy object = do nothing
+        return;
+    }
+    else
+    { /* no dummy object */ }
+
+    if (object.isDelete())
+    {   // [ETSI TS 102 980 V2.1.2] 5.3.2 Deleting objects
+        // Objects are deleted by transmitting a "delete" object
+#if DLDECODER_VERBOSE>0
+        qDebug() << "      delete object" << object.getType();
+#endif
+        const auto it = dlObjCache.constFind(object.getType());
+        if (it != dlObjCache.cend())
+        {   // object type found in cache
+            DLPlusObjectUI* uiObj = dlObjCache.take(object.getType());
+            delete uiObj;
+        }
+        else
+        { /* not in cache, do nothing */ }
+    }
+    else
+    {
+#if DLDECODER_VERBOSE>0
+        qDebug() << "    " << object.getType() << "=>" << object.getTag();
+#endif
+        auto it = dlObjCache.find(object.getType());
+        if (it != dlObjCache.end())
+        {   // object type found in cahe
+            (*it)->update(object);
+        }
+        else
+        {   // not in cache yet -> insert
+            DLPlusObjectUI * uiObj = new DLPlusObjectUI(object);
+            it = dlObjCache.insert(object.getType(), uiObj);
+
+            // we want it sorted -> need to find the position
+            int index = std::distance(dlObjCache.begin(), it);
+
+            QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(ui->dlPlusFrame->layout());
+            layout->insertLayout(index, uiObj->getLayout());
+        }
+    }
+}
+
+void MainWindow::onDlPlusItemToggle()
+{
+    qDebug() << Q_FUNC_INFO;
+    // delete all ITEMS.*
+    auto it = dlObjCache.cbegin();
+    while (it != dlObjCache.cend())
+    {
+        if (it.key() < DLPlusContentType::INFO_NEWS)
+        {
+            DLPlusObjectUI* uiObj = it.value();
+            delete uiObj;
+            it = dlObjCache.erase(it);
+        }
+        else
+        {   // no more items ot ITEM type in cache
+            break;
+        }
+    }
+}
+
+void MainWindow::onDlPlusItemRunning(bool isRunning)
+{
+    qDebug() << Q_FUNC_INFO << isRunning;
+}
+
+DLPlusObjectUI::DLPlusObjectUI(const DLPlusObject &obj) : dlPlusObject(obj)
+{
+    qDebug() << Q_FUNC_INFO;
+
+    layout = new QHBoxLayout();
+    tagLabel = new QLabel(QString("<b>%1:  </b>").arg(getLabel(obj.getType())));
+    tagLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Minimum);
+    tagLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    layout->addWidget(tagLabel);
+    tagText = new QLabel(obj.getTag());
+    tagText->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
+    tagText->setWordWrap(true);
+    tagText->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    layout->addWidget(tagText);
+}
+
+DLPlusObjectUI::~DLPlusObjectUI()
+{
+    qDebug() << Q_FUNC_INFO;
+    delete tagLabel;
+    delete tagText;
+    delete layout;
+}
+
+QHBoxLayout *DLPlusObjectUI::getLayout() const
+{
+    return layout;
+}
+
+void DLPlusObjectUI::update(const DLPlusObject &obj)
+{
+    if (obj != dlPlusObject)
+    {
+        dlPlusObject = obj;
+        tagText->setText(obj.getTag());
+    }
+}
+
+const DLPlusObject &DLPlusObjectUI::getDlPlusObject() const
+{
+    return dlPlusObject;
+}
+
+QString DLPlusObjectUI::getLabel(DLPlusContentType type) const
+{
+    QString label;
+
+    switch (type)
+    {
+    case DLPlusContentType::DUMMY: label = "DUMMY"; break;
+    case DLPlusContentType::ITEM_TITLE: label = "Title"; break;
+    case DLPlusContentType::ITEM_ALBUM: label = "Album"; break;
+    case DLPlusContentType::ITEM_TRACKNUMBER: label = "Track Number:"; break;
+    case DLPlusContentType::ITEM_ARTIST: label = "Artist"; break;
+    case DLPlusContentType::ITEM_COMPOSITION: label = "Composition"; break;
+    case DLPlusContentType::ITEM_MOVEMENT: label = "Movement"; break;
+    case DLPlusContentType::ITEM_CONDUCTOR: label = "Conductor"; break;
+    case DLPlusContentType::ITEM_COMPOSER: label = "Composer"; break;
+    case DLPlusContentType::ITEM_BAND: label = "Band"; break;
+    case DLPlusContentType::ITEM_COMMENT: label = "Comment"; break;
+    case DLPlusContentType::ITEM_GENRE: label = "Genre"; break;
+    case DLPlusContentType::INFO_NEWS: label = "News"; break;
+    case DLPlusContentType::INFO_NEWS_LOCAL: label = "News (local)"; break;
+    case DLPlusContentType::INFO_STOCKMARKET: label = "Stock Market"; break;
+    case DLPlusContentType::INFO_SPORT: label = "Sport"; break;
+    case DLPlusContentType::INFO_LOTTERY: label = "Lottery"; break;
+    case DLPlusContentType::INFO_HOROSCOPE: label = "INFO_HOROSCOPE"; break;
+    case DLPlusContentType::INFO_DAILY_DIVERSION: label = "INFO_DAILY_DIVERSION"; break;
+    case DLPlusContentType::INFO_HEALTH: label = "INFO_HEALTH"; break;
+    case DLPlusContentType::INFO_EVENT: label = "INFO_EVENT"; break;
+    case DLPlusContentType::INFO_SCENE: label = "INFO_SCENE"; break;
+    case DLPlusContentType::INFO_CINEMA: label = "INFO_CINEMA"; break;
+    case DLPlusContentType::INFO_TV: label = "INFO_TV"; break;
+    case DLPlusContentType::INFO_DATE_TIME: label = "INFO_DATE_TIME"; break;
+    case DLPlusContentType::INFO_WEATHER: label = "Weather"; break;
+    case DLPlusContentType::INFO_TRAFFIC: label = "Traffic"; break;
+    case DLPlusContentType::INFO_ALARM: label = "Alarm"; break;
+    case DLPlusContentType::INFO_ADVERTISEMENT: label = "INFO_ADVERTISEMENT"; break;
+    case DLPlusContentType::INFO_URL: label = "URL"; break;
+    case DLPlusContentType::INFO_OTHER: label = "Other"; break;
+    case DLPlusContentType::STATIONNAME_SHORT: label = "Station (short)"; break;
+    case DLPlusContentType::STATIONNAME_LONG: label = "Station"; break;
+    case DLPlusContentType::PROGRAMME_NOW: label = "Now"; break;
+    case DLPlusContentType::PROGRAMME_NEXT: label = "Next"; break;
+    case DLPlusContentType::PROGRAMME_PART: label = "Programme Part"; break;
+    case DLPlusContentType::PROGRAMME_HOST: label = "Host"; break;
+    case DLPlusContentType::PROGRAMME_EDITORIAL_STAFF: label = "PROGRAMME_EDITORIAL_STAFF"; break;
+    case DLPlusContentType::PROGRAMME_FREQUENCY: label = "Frequency"; break;
+    case DLPlusContentType::PROGRAMME_HOMEPAGE: label = "Homepage"; break;
+    case DLPlusContentType::PROGRAMME_SUBCHANNEL: label = "Subchannel"; break;
+    case DLPlusContentType::PHONE_HOTLINE: label = "Phone (Hotline)"; break;
+    case DLPlusContentType::PHONE_STUDIO: label = "Phone (Studio)"; break;
+    case DLPlusContentType::PHONE_OTHER: label = "Phone (Other)"; break;
+    case DLPlusContentType::SMS_STUDIO: label = "SMS (Studio)"; break;
+    case DLPlusContentType::SMS_OTHER: label = "SMS (Other)"; break;
+    case DLPlusContentType::EMAIL_HOTLINE: label = "E-mail (Hotline)"; break;
+    case DLPlusContentType::EMAIL_STUDIO: label = "E-mail (Studio)"; break;
+    case DLPlusContentType::EMAIL_OTHER: label = "E-mail (Other)"; break;
+    case DLPlusContentType::MMS_OTHER: label = "MMS"; break;
+    case DLPlusContentType::CHAT: label = "Chat"; break;
+    case DLPlusContentType::CHAT_CENTER: label = "CHAT_CENTER"; break;
+    case DLPlusContentType::VOTE_QUESTION: label = "VOTE_QUESTION"; break;
+    case DLPlusContentType::VOTE_CENTRE: label = "VOTE_CENTRE"; break;
+        // rfu = 54
+        // rfu = 55
+    case DLPlusContentType::PRIVATE_1: label = "PRIVATE_1"; break;
+    case DLPlusContentType::PRIVATE_2: label = "PRIVATE_2"; break;
+    case DLPlusContentType::PRIVATE_3: label = "PRIVATE_3"; break;
+    case DLPlusContentType::DESCRIPTOR_PLACE: label = "DESCRIPTOR_PLACE"; break;
+    case DLPlusContentType::DESCRIPTOR_APPOINTMENT: label = "DESCRIPTOR_APPOINTMENT"; break;
+    case DLPlusContentType::DESCRIPTOR_IDENTIFIER: label = "DESCRIPTOR_IDENTIFIER"; break;
+    case DLPlusContentType::DESCRIPTOR_PURCHASE: label = "DESCRIPTOR_PURCHASE"; break;
+    case DLPlusContentType::DESCRIPTOR_GET_DATA: label = "DESCRIPTOR_GET_DATA"; break;
+    }
+
+    return label;
+}

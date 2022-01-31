@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>916</width>
-    <height>485</height>
+    <width>901</width>
+    <height>663</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -21,16 +21,6 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="1" rowspan="4">
-     <widget class="QFrame" name="verticalLine">
-      <property name="frameShape">
-       <enum>QFrame::VLine</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Sunken</enum>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="serviceLayout">
       <item>
@@ -109,6 +99,56 @@
       </item>
      </layout>
     </item>
+    <item row="0" column="1" rowspan="5">
+     <widget class="QFrame" name="verticalLine">
+      <property name="frameShape">
+       <enum>QFrame::VLine</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <layout class="QVBoxLayout" name="ensembleLayout">
+      <item>
+       <widget class="QLabel" name="ensembleLabel">
+        <property name="font">
+         <font>
+          <pointsize>20</pointsize>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Ensemble Name</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="ensembleInfoLabel">
+        <property name="text">
+         <string>Ensemble information</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="3" rowspan="5">
+     <widget class="QTreeView" name="serviceTreeView">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>200</width>
+        <height>0</height>
+       </size>
+      </property>
+     </widget>
+    </item>
     <item row="1" column="0">
      <layout class="QHBoxLayout" name="audioLayout">
       <item>
@@ -183,23 +223,17 @@
       </item>
      </layout>
     </item>
-    <item row="0" column="3" rowspan="4">
-     <widget class="QTreeView" name="serviceTreeView">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
+    <item row="2" column="0">
+     <widget class="SLSView" name="slsView">
       <property name="minimumSize">
        <size>
-        <width>200</width>
-        <height>0</height>
+        <width>324</width>
+        <height>244</height>
        </size>
       </property>
      </widget>
     </item>
-    <item row="2" column="2" rowspan="2">
+    <item row="2" column="2" rowspan="3">
      <widget class="QListView" name="serviceListView">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
@@ -222,63 +256,101 @@
      </widget>
     </item>
     <item row="3" column="0">
-     <widget class="QLabel" name="dynamicLabel">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>50</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>100</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>DL</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="SLSView" name="slsView">
-      <property name="minimumSize">
-       <size>
-        <width>324</width>
-        <height>244</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <layout class="QVBoxLayout" name="ensembleLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QLabel" name="ensembleLabel">
-        <property name="font">
-         <font>
-          <pointsize>20</pointsize>
-          <bold>false</bold>
-         </font>
+       <widget class="QLabel" name="dynamicLabel">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>100</height>
+         </size>
         </property>
         <property name="text">
-         <string>Ensemble Name</string>
+         <string>DL</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="ensembleInfoLabel">
+       <widget class="QPushButton" name="dlPlusButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>24</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="text">
-         <string>Ensemble information</string>
+         <string>˅</string>
         </property>
        </widget>
       </item>
      </layout>
+    </item>
+    <item row="4" column="0">
+     <widget class="QFrame" name="dlPlusFrame">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>150</height>
+       </size>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -287,7 +359,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>916</width>
+     <width>901</width>
      <height>24</height>
     </rect>
    </property>
