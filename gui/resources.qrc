@@ -9,5 +9,7 @@
         <file>resources/menu.png</file>
         <file>resources/star.svg</file>
         <file>resources/catSls.png</file>
+        <file>resources/down.png</file>
+        <file>resources/up.png</file>
     </qresource>
 </RCC>

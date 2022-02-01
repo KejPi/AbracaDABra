@@ -149,6 +149,9 @@ private:
 
     void serviceTreeViewUpdateSelection();
     void serviceListViewUpdateSelection();
+
+    void onDLPlusToggle(bool toggle);
+
 };
 
 class DLPlusObjectUI

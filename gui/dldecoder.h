@@ -35,6 +35,8 @@ enum class DLPlusContentType
     INFO_SCENE = 21,
     INFO_CINEMA = 22,
     INFO_TV = 23,
+    // [ETSI TS 102 980 V2.1.2] Annex A (normative): List of DL Plus content types
+    // NOTE 6 : Intended for RT+ receivers; DL Plus equipped receivers ignore this content type.
     INFO_DATE_TIME = 24,
     INFO_WEATHER = 25,
     INFO_TRAFFIC = 26,
@@ -49,8 +51,12 @@ enum class DLPlusContentType
     PROGRAMME_PART = 35,
     PROGRAMME_HOST = 36,
     PROGRAMME_EDITORIAL_STAFF = 37,
+    // [ETSI TS 102 980 V2.1.2] Annex A (normative): List of DL Plus content types
+    // NOTE 6 : Intended for RT+ receivers; DL Plus equipped receivers ignore this content type.
     PROGRAMME_FREQUENCY = 38,
     PROGRAMME_HOMEPAGE = 39,
+    // [ETSI TS 102 980 V2.1.2] Annex A (normative): List of DL Plus content types
+    // NOTE 6 : Intended for RT+ receivers; DL Plus equipped receivers ignore this content type.
     PROGRAMME_SUBCHANNEL = 40,
     PHONE_HOTLINE  = 41,
     PHONE_STUDIO  = 42,
