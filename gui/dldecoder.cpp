@@ -277,7 +277,7 @@ void DLDecoder::parseDLPlusCommand()
         { /* there is enough data available */ }
 
 #if DLDECODER_VERBOSE>0
-        qDebug("DL+ Item toggle %d, Item Running %d, Num tags %d", itToggle, itRunning, numTags);
+        qDebug("DL+ Item toggle %d, Item Running %d, Num tags %d [0x%2.2X]", itToggle, itRunning, numTags, dlCommand.at(0));
 #endif
 
         // each tag is 24 bits

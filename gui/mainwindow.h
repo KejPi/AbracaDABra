@@ -9,6 +9,8 @@
 #include <QLabel>
 #include <QProgressBar>
 #include <QHBoxLayout>
+#include <QDesktopServices>
+#include <QUrl>
 
 #include "setupdialog.h"
 #include "ensembleinfodialog.h"
@@ -161,7 +163,7 @@ public:
     ~DLPlusObjectUI();
     QHBoxLayout *getLayout() const;
     void update(const DLPlusObject & obj);
-
+    void setVisible(bool visible);
     const DLPlusObject &getDlPlusObject() const;
 
 private:

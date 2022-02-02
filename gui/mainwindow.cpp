@@ -7,6 +7,8 @@
 #include <QToolButton>
 #include <QFormLayout>
 #include <QSettings>
+#include <QDesktopServices>
+#include <QUrl>
 
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
@@ -1565,6 +1567,19 @@ void MainWindow::onDlPlusItemToggle()
 void MainWindow::onDlPlusItemRunning(bool isRunning)
 {
     qDebug() << Q_FUNC_INFO << isRunning;
+
+    auto it = dlObjCache.cbegin();
+    while (it != dlObjCache.cend())
+    {
+        if (it.key() < DLPlusContentType::INFO_NEWS)
+        {
+            it.value()->setVisible(isRunning);
+        }
+        else
+        {   // no more items ot ITEM type in cache
+            break;
+        }
+    }
 }
 
 DLPlusObjectUI::DLPlusObjectUI(const DLPlusObject &obj) : dlPlusObject(obj)
@@ -1583,7 +1598,31 @@ DLPlusObjectUI::DLPlusObjectUI(const DLPlusObject &obj) : dlPlusObject(obj)
         tagLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Minimum);
         tagLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         layout->addWidget(tagLabel);
-        tagText = new QLabel(obj.getTag());
+
+
+        switch (obj.getType())
+        {
+        case DLPlusContentType::PROGRAMME_HOMEPAGE:
+        case DLPlusContentType::INFO_URL:           
+            tagText = new QLabel(QString("<a href=\"%1\">%1</a>").arg(obj.getTag()));
+            QObject::connect(
+                        tagText, &QLabel::linkActivated,
+                        [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
+                    );
+            break;
+        case DLPlusContentType::EMAIL_HOTLINE:
+        case DLPlusContentType::EMAIL_STUDIO:
+        case DLPlusContentType::EMAIL_OTHER:
+            tagText = new QLabel(QString("<a href=\"mailto:%1\">%1</a>").arg(obj.getTag()));
+            QObject::connect(
+                        tagText, &QLabel::linkActivated,
+                        [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
+                    );
+            break;
+        default:
+            tagText = new QLabel(obj.getTag());
+        }
+
         tagText->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
         tagText->setWordWrap(true);
         tagText->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -1593,7 +1632,7 @@ DLPlusObjectUI::DLPlusObjectUI(const DLPlusObject &obj) : dlPlusObject(obj)
 
 DLPlusObjectUI::~DLPlusObjectUI()
 {
-    qDebug() << Q_FUNC_INFO;
+
     if (nullptr != layout)
     {
         delete tagLabel;
@@ -1614,6 +1653,12 @@ void DLPlusObjectUI::update(const DLPlusObject &obj)
         dlPlusObject = obj;
         tagText->setText(obj.getTag());
     }
+}
+
+void DLPlusObjectUI::setVisible(bool visible)
+{
+    tagLabel->setVisible(visible);
+    tagText->setVisible(visible);
 }
 
 const DLPlusObject &DLPlusObjectUI::getDlPlusObject() const
