@@ -499,6 +499,21 @@ void MainWindow::updateServiceList(const RadioControlEnsemble &ens, const RadioC
 
 void MainWindow::updateDL(const QString & dl)
 {
+    if (dl.indexOf(QChar(0x0A)) >= 0)
+    {
+        qDebug() << Q_FUNC_INFO << "control character 0x0A (preferred line break) found";
+    }
+    if (dl.indexOf(QChar(0x0B)) >= 0)
+    {
+        qDebug() << Q_FUNC_INFO << "control character 0x0B (end of a headline) found";
+    }
+    if (dl.indexOf(QChar(0x1F)) >= 0)
+    {
+        qDebug() << Q_FUNC_INFO << "control character 0x1F (preferred word break) found";
+    }
+
+
+
     ui->dynamicLabel->setText(dl);
     if (ui->dynamicLabel->width() < ui->dynamicLabel->fontMetrics().boundingRect(dl).width())
     {
@@ -1489,6 +1504,8 @@ void MainWindow::clearServiceList()
 
 void MainWindow::onDlPlusObjReceived(const DLPlusObject & object)
 {
+    //qDebug() << Q_FUNC_INFO << object.getType() << object.getTag();
+
     ui->dlPlusLabel->setVisible(true);
     if (DLPlusContentType::DUMMY == object.getType())
     {   // dummy object = do nothing
@@ -1503,9 +1520,8 @@ void MainWindow::onDlPlusObjReceived(const DLPlusObject & object)
     if (object.isDelete())
     {   // [ETSI TS 102 980 V2.1.2] 5.3.2 Deleting objects
         // Objects are deleted by transmitting a "delete" object
-#if DLDECODER_VERBOSE>0
-        qDebug() << "      delete object" << object.getType();
-#endif
+        qDebug() << "DL+ delete object" << object.getType();
+
         const auto it = dlObjCache.constFind(object.getType());
         if (it != dlObjCache.cend())
         {   // object type found in cache
@@ -1517,9 +1533,6 @@ void MainWindow::onDlPlusObjReceived(const DLPlusObject & object)
     }
     else
     {
-#if DLDECODER_VERBOSE>0
-        qDebug() << "    " << object.getType() << "=>" << object.getTag();
-#endif
         auto it = dlObjCache.find(object.getType());
         if (it != dlObjCache.end())
         {   // object type found in cahe
@@ -1546,7 +1559,7 @@ void MainWindow::onDlPlusObjReceived(const DLPlusObject & object)
 
 void MainWindow::onDlPlusItemToggle()
 {
-    qDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
     // delete all ITEMS.*
     auto it = dlObjCache.cbegin();
     while (it != dlObjCache.cend())
@@ -1574,6 +1587,7 @@ void MainWindow::onDlPlusItemRunning(bool isRunning)
         if (it.key() < DLPlusContentType::INFO_NEWS)
         {
             it.value()->setVisible(isRunning);
+            ++it;
         }
         else
         {   // no more items ot ITEM type in cache
@@ -1584,7 +1598,7 @@ void MainWindow::onDlPlusItemRunning(bool isRunning)
 
 DLPlusObjectUI::DLPlusObjectUI(const DLPlusObject &obj) : dlPlusObject(obj)
 {
-    qDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
 
     layout = new QHBoxLayout();
     QString label = getLabel(obj.getType());

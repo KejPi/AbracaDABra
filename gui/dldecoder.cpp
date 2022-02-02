@@ -103,6 +103,19 @@ void DLDecoder::newDataGroup(const QByteArray & dataGroup)
     {
         if (assembleDL(dataGroup))
         {   // message is complete
+            if (label.lastIndexOf(0x0A) >= 0)
+            {
+                qDebug() << Q_FUNC_INFO << "control character 0x0A (preferred line break) found";
+            }
+            if (label.lastIndexOf(0x0B) >= 0)
+            {
+                qDebug() << Q_FUNC_INFO << "control character 0x0B (end of a headline) found";
+            }
+            if (label.lastIndexOf(0x1F) >= 0)
+            {
+                qDebug() << Q_FUNC_INFO << "control character 0x1F (preferred word break) found";
+            }
+
             message = DabTables::convertToQString(label.data(), charset, label.size());
             emit dlComplete(message);
             int8_t t = (dataGroup.at(0) & 0x80) != 0;
@@ -276,7 +289,7 @@ void DLDecoder::parseDLPlusCommand()
         else
         { /* there is enough data available */ }
 
-#if DLDECODER_VERBOSE>0
+#if DLDECODER_VERBOSE>1
         qDebug("DL+ Item toggle %d, Item Running %d, Num tags %d [0x%2.2X]", itToggle, itRunning, numTags, dlCommand.at(0));
 #endif
 
@@ -317,6 +330,63 @@ void DLDecoder::parseDLPlusCommand()
     default:
         qDebug() << "DL+ unsupported command ID" << cid;
     }
+}
+
+DLPlusObject::DLPlusObject()
+{
+    tag.clear();
+    type = DLPlusContentType::DUMMY;
+}
+
+DLPlusObject::DLPlusObject(const QString &newTag, DLPlusContentType newType) :
+    tag(newTag),
+    type(newType)
+{ }
+
+DLPlusContentType DLPlusObject::getType() const
+{
+    return type;
+}
+
+void DLPlusObject::setType(DLPlusContentType newType)
+{
+    type = newType;
+}
+
+const QString &DLPlusObject::getTag() const
+{
+    return tag;
+}
+
+void DLPlusObject::setTag(const QString &newTag)
+{
+    tag = newTag;
+}
+
+bool DLPlusObject::isDelete() const
+{
+    return (tag.size() == 1) && (tag.at(0) == QChar(' '));
+}
+
+bool DLPlusObject::isItem() const
+{
+    return ((type > DLPlusContentType::DUMMY) && (type < DLPlusContentType::INFO_NEWS));
+}
+
+bool DLPlusObject::isDummy() const
+{
+    return (DLPlusContentType::DUMMY == type);
+}
+
+bool DLPlusObject::operator==(const DLPlusObject &other) const
+{
+    return ((other.type == type) && (other.tag == tag));
+
+}
+
+bool DLPlusObject::operator!=(const DLPlusObject &other) const
+{
+    return ((other.type != type) || (other.tag != tag));
 }
 
 QDebug operator<<(QDebug debug, DLPlusContentType type)
@@ -391,61 +461,4 @@ QDebug operator<<(QDebug debug, DLPlusContentType type)
     }
 
     return debug;
-}
-
-DLPlusObject::DLPlusObject()
-{
-    tag.clear();
-    type = DLPlusContentType::DUMMY;
-}
-
-DLPlusObject::DLPlusObject(const QString &newTag, DLPlusContentType newType) :
-    tag(newTag),
-    type(newType)
-{ }
-
-DLPlusContentType DLPlusObject::getType() const
-{
-    return type;
-}
-
-void DLPlusObject::setType(DLPlusContentType newType)
-{
-    type = newType;
-}
-
-const QString &DLPlusObject::getTag() const
-{
-    return tag;
-}
-
-void DLPlusObject::setTag(const QString &newTag)
-{
-    tag = newTag;
-}
-
-bool DLPlusObject::isDelete() const
-{
-    return (tag.size() == 1) && (tag.at(0) == QChar(' '));
-}
-
-bool DLPlusObject::isItem() const
-{
-    return ((type > DLPlusContentType::DUMMY) && (type < DLPlusContentType::INFO_NEWS));
-}
-
-bool DLPlusObject::isDummy() const
-{
-    return (DLPlusContentType::DUMMY == type);
-}
-
-bool DLPlusObject::operator==(const DLPlusObject &other) const
-{
-    return ((other.type == type) && (other.tag == tag));
-
-}
-
-bool DLPlusObject::operator!=(const DLPlusObject &other) const
-{
-    return ((other.type != type) || (other.tag != tag));
 }
