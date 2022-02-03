@@ -612,6 +612,7 @@ void MainWindow::onServiceSelection()
     ui->dynamicLabel->setText("");    
     ui->dlPlusLabel->setVisible(false);
     ui->dlPlusLabel->setChecked(false);
+    onDLPlusToggle(false);
 
     for (auto objPtr : dlObjCache)
     {
@@ -1579,8 +1580,7 @@ void MainWindow::onDlPlusItemToggle()
 
 void MainWindow::onDlPlusItemRunning(bool isRunning)
 {
-    qDebug() << Q_FUNC_INFO << isRunning;
-
+    //qDebug() << Q_FUNC_INFO << isRunning;
     auto it = dlObjCache.cbegin();
     while (it != dlObjCache.cend())
     {

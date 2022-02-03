@@ -8,6 +8,8 @@
 #include "radiocontrol.h"
 #include "motdecoder.h"
 
+#define USER_APPLICATION_VERBOSE 1
+
 class UserApplication : public QObject
 {
     Q_OBJECT
@@ -147,7 +149,6 @@ private:
     int currentSlide;
     int currentSlideIdx;
     QString title;
-    //QMap<int, QString> slides;
     QList<slideItem> slidesList;
 };
 

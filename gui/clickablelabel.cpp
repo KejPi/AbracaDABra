@@ -103,8 +103,6 @@ void ClickableLabel::setChecked(bool checked)
     {  // changing state
         m_checked = checked;
         update();
-
-        emit toggled(m_checked);
     }
 }
 
