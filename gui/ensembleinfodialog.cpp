@@ -1,4 +1,5 @@
 #include <QFileDialog>
+#include <QScrollBar>
 #include <QDateTime>
 #include <QDebug>
 #include <QMenu>
@@ -87,12 +88,20 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
     ui->ensStructureTextEdit->setHtml(txt);
 
     if (txt.isEmpty())
-    {  // empty ensemble configuration means tuning to new frequency
-       clearSignalInfo();
-       clearServiceInfo();
+    {   // empty ensemble configuration means tuning to new frequency
+        clearSignalInfo();
+        clearServiceInfo();
 
         resetFibStat();
         resetMscStat();
+    }
+    else
+    {
+
+        ui->ensStructureTextEdit->setMinimumWidth(ui->ensStructureTextEdit->document()->idealWidth()
+                        + ui->ensStructureTextEdit->contentsMargins().left()
+                        + ui->ensStructureTextEdit->contentsMargins().right()
+                        + ui->ensStructureTextEdit->verticalScrollBar()->width());
     }
 }
 
@@ -259,11 +268,13 @@ void EnsembleInfoDialog::serviceChanged(const RadioControlServiceComponent &s)
 
 void EnsembleInfoDialog::showEvent(QShowEvent *event)
 {
+    // calculate width
+
     emit requestEnsembleConfiguration();
     event->accept();
 
     // set to minimum size
-    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
+    QTimer::singleShot(1, this, [this](){ resize(minimumSizeHint()); } );
 }
 
 void EnsembleInfoDialog::closeEvent(QCloseEvent *event)
