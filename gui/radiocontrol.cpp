@@ -63,6 +63,8 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
     //qDebug() << Q_FUNC_INFO << QThread::currentThreadId() << pEvent->type;
     switch (pEvent->type)
     {
+    case RadioControlEventType::AUDIO_DATA:
+        break;
     case RadioControlEventType::SYNC_STATUS:
     {
         dabProcSyncLevel_t s = static_cast<dabProcSyncLevel_t>(pEvent->pData);
@@ -230,6 +232,8 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                         newServiceComp.label = DabTables::convertToQString(dabServiceComp.label.str, dabServiceComp.label.charset).trimmed();
                         newServiceComp.labelShort = toShortLabel(newServiceComp.label, dabServiceComp.label.charField).trimmed();
                     }
+
+                    newServiceComp.autoEnabled = false;
                     newServiceComp.TMId = DabTMId(dabServiceComp.TMId);
                     switch (newServiceComp.TMId)
                     {
@@ -303,7 +307,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                         RadioControlUserApp newUserApp;
                         newUserApp.label = DabTables::convertToQString(userApp.label.str, userApp.label.charset).trimmed();
                         newUserApp.labelShort = toShortLabel(newUserApp.label, userApp.label.charField).trimmed();
-                        newUserApp.uaType = userApp.type;
+                        newUserApp.uaType = DabUserApplicationType(userApp.type);
                         for (int n = 0; n < userApp.dataLen; ++n)
                         {
                             newUserApp.uaData.append(userApp.data[n]);
@@ -343,15 +347,72 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             {   // service is in the list
                 QList<RadioControlServiceComponent>::iterator scIt = findServiceComponent(serviceIt, pData->SCIdS);
                 if (scIt != serviceIt->serviceComponents.end())
-                {   // service components exists in service
-                    emit newServiceSelection(*scIt);
+                {   // service components exists in service                                                           
+                    if (!scIt->autoEnabled)
+                    {   // if not data service that is autoimatically enabled
+                        // store current service
+                        currentService.SId = pData->SId;
+                        currentService.SCIdS = pData->SCIdS;
+                        emit newServiceSelection(*scIt);
+                    }
                 }
 
+                if (0 == pData->SCIdS)
+                {   // primary service component
+                    // ETSI EN 300 401 V2.1.1 [6.3.7 Locating service components]
+                    // Receivers shall be prepared to present content from secondary service components according their capabilities,
+                    // e.g. a SlideShow may be carried in a secondary packet data service component instead of X-PAD.
+
+                    for (scIt = serviceIt->serviceComponents.begin(); scIt != serviceIt->serviceComponents.end(); ++scIt)
+                    {  // check all service components
+                        if (scIt->SCIdS != 0)
+                        {   // not primary
+                            // go through user apps and enable SLS if available
+                            for (auto & ua : scIt->userApps)
+                            {
+                                if (DabUserApplicationType::SlideShow == ua.uaType)
+                                {
+                                    qDebug() << "Found secondary service with SLS" << pData->SId << scIt->SCIdS;
+                                    scIt->autoEnabled = true;
+                                    dabServiceSelection(pData->SId, scIt->SCIdS);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }        
         else
         {
             qDebug() << "RadioControlEvent::SERVICE_SELECTION error" << pEvent->status;
+        }
+        delete pData;
+    }
+        break;
+
+    case RadioControlEventType::SERVICE_STOP:
+    {
+        dabProc_NID_SERVICE_STOP_t * pData = (dabProc_NID_SERVICE_STOP_t *) pEvent->pData;
+        if (DABPROC_NSTAT_SUCCESS == pEvent->status)
+        {
+#if RADIO_CONTROL_VERBOSE
+            qDebug() << "RadioControlEvent::SERVICE_STOP success";
+#endif
+
+            QList<RadioControlService>::iterator serviceIt = findService(pData->SId);
+            if (serviceIt != serviceList.end())
+            {   // service is in the list
+                QList<RadioControlServiceComponent>::iterator scIt = findServiceComponent(serviceIt, pData->SCIdS);
+                if (scIt != serviceIt->serviceComponents.end())
+                {   // found service component
+                    scIt->autoEnabled = false;
+                    qDebug() << "RadioControlEvent::SERVICE_STOP" << pData->SId << pData->SCIdS;
+                }
+            }
+        }
+        else
+        {
+            qDebug() << "RadioControlEvent::SERVICE_STOP error" << pEvent->status;
         }
         delete pData;
     }
@@ -485,13 +546,36 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
         if (SId)
         {   // clear request
             serviceRequest.SId = 0;
+
+            // remove automatically enabled data services
+            QList<RadioControlService>::iterator serviceIt = findService(currentService.SId);
+            if (serviceIt != serviceList.end())
+            {   // service is in the list
+                for (auto & sc : serviceIt->serviceComponents)
+                {
+                    if (sc.autoEnabled)
+                    {   // request stop
+                        dabServiceStop(currentService.SId, sc.SCIdS);
+                    }
+                }
+            }
+            else
+            { /* this should not happen */ }
+
+            // reset current service
+            currentService.SId = 0;
+
             dabServiceSelection(SId, SCIdS);
         }
     }
     else
-    {   // TODO: service selection
+    {   // service selection will be done after tune
         autoNotificationEna = false;
         frequency = freq;
+
+        // reset current service - tuning resets dab process
+        currentService.SId = 0;
+
         serviceRequest.SId = SId;
         serviceRequest.SCIdS = SCIdS;
         emit ensembleConfiguration("");
@@ -693,7 +777,7 @@ QString RadioControl::ensembleConfigurationString() const
                           .arg(a+1).arg(sc.userApps.size())
                           .arg(sc.userApps.at(a).label)
                           .arg(sc.userApps.at(a).labelShort)
-                          .arg(QString("%1").arg(sc.userApps.at(a).uaType, 1, 16, QLatin1Char('0')).toUpper());
+                          .arg(QString("%1").arg(int(sc.userApps.at(a).uaType), 1, 16, QLatin1Char('0')).toUpper());
                 if (sc.isAudioService())
                 {
                     strOut << QString(", X-PAD AppTy: %1, DSCTy: 0x%2, DG: %3")
@@ -863,6 +947,19 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
 
         pEvent->status = p->status;
         pEvent->pData = intptr_t(pServSelectionInfo);
+        radioCtrl->emit_dabEvent(pEvent);
+    }
+        break;
+    case DABPROC_NID_SERVICE_STOP:
+    {
+        dabProc_NID_SERVICE_STOP_t * pServStopInfo = new dabProc_NID_SERVICE_STOP_t;
+        memcpy(pServStopInfo, p->pData, sizeof(dabProc_NID_SERVICE_STOP_t));
+
+        RadioControlEvent * pEvent = new RadioControlEvent;
+        pEvent->type = RadioControlEventType::SERVICE_STOP;
+
+        pEvent->status = p->status;
+        pEvent->pData = intptr_t(pServStopInfo);
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;

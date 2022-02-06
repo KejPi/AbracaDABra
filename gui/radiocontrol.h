@@ -90,7 +90,7 @@ struct RadioControlUserApp
 {
     QString label;        // Service label
     QString labelShort;   // Short label
-    uint16_t uaType;      // User application type
+    DabUserApplicationType uaType;      // User application type
     union
     {
         uint16_t value;
@@ -154,6 +154,8 @@ struct RadioControlServiceComponent
             uint16_t packetAddress; // this 10-bit field shall define the address of the packet in which the service component is carried.
         } packetData;
     };
+    bool autoEnabled;
+
     bool isAudioService() const { return DabTMId::StreamAudio == TMId; }
     bool isDataStreamService() const { return DabTMId::StreamData == TMId; }
     bool isDataPacketService() const { return DabTMId::PacketData == TMId; }
@@ -191,6 +193,7 @@ enum class RadioControlEventType
     SERVICE_COMPONENT_LIST,
     USER_APP_LIST,
     SERVICE_SELECTION,
+    SERVICE_STOP,
     AUTO_NOTIFICATION,
     DATAGROUP_DL,
     USERAPP_DATA,
@@ -248,6 +251,10 @@ private:
         uint32_t SId;
         uint8_t SCIdS;
     } serviceRequest;
+    struct {
+        uint32_t SId;
+        uint8_t SCIdS;
+    } currentService;
 
     // this is a counter of requests to check when the ensemble information is complete
     int requestsPending = 0;
@@ -271,6 +278,7 @@ private:
     void dabGetUserApps(uint32_t SId, uint8_t SCIdS) { dabProcRequest_GetUserAppList(dabProcHandle, SId, SCIdS); }
     void dabEnableAutoNotification() { dabProcRequest_AutoNotify(dabProcHandle, RADIO_CONTROL_NOTIFICATION_PERIOD, 0); }
     void dabServiceSelection(uint32_t SId, uint8_t SCIdS) { dabProcRequest_ServiceSelection(dabProcHandle, SId, SCIdS); }
+    void dabServiceStop(uint32_t SId, uint8_t SCIdS) { dabProcRequest_ServiceStop(dabProcHandle, SId, SCIdS); }
 
     friend void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx);
     friend void dynamicLabelCb(dabProcDynamicLabelCBData_t * p, void * ctx);
