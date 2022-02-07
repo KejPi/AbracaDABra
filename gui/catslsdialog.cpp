@@ -28,6 +28,8 @@ CatSLSDialog::~CatSLSDialog()
 
 void CatSLSDialog::reset()
 {
+    hide();
+
     ui->slideCountLabel->setText("");
     ui->fwdButton->setEnabled(false);
     ui->backButton->setEnabled(false);
