@@ -91,19 +91,12 @@ struct RadioControlUserApp
     QString label;        // Service label
     QString labelShort;   // Short label
     DabUserApplicationType uaType;      // User application type
-    union
-    {
-        uint16_t value;
-        struct             // X-PAD data for audio components
-        {
-            uint16_t DScTy : 6;
-            uint16_t rfu2 : 1;
-            uint16_t dgFlag : 1;
-            uint16_t xpadAppTy : 5;
-            uint16_t rfu1 : 1;
-            uint16_t CAOrgFlag : 1;
-            uint16_t CAflag : 1;
-        } bits;
+    struct {
+        int8_t DScTy;
+        int8_t xpadAppTy;
+        bool dgFlag;
+        bool CAOrgFlag;
+        bool CAflag;
     } xpadData;
     QVector<uint8_t> uaData;  // optional user application data
 };
@@ -194,6 +187,7 @@ enum class RadioControlEventType
     USER_APP_LIST,
     SERVICE_SELECTION,
     SERVICE_STOP,
+    XPAD_APP_START_STOP,
     AUTO_NOTIFICATION,
     DATAGROUP_DL,
     USERAPP_DATA,
@@ -220,6 +214,7 @@ public slots:
     void exit();
     void tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS);
     void getEnsembleConfiguration();
+    void startUserApplication(DabUserApplicationType uaType, bool start);
 
 signals:
     void dabEvent(RadioControlEvent * pEvent);
@@ -263,6 +258,8 @@ private:
     QList<RadioControlService> serviceList;
     QList<RadioControlService>::iterator findService(DabSId SId);
     QList<RadioControlServiceComponent>::iterator findServiceComponent(const QList<RadioControlService>::iterator & sIt, uint8_t SCIdS);
+    bool getCurrentAudioServiceComponent(QList<RadioControlServiceComponent>::iterator & scIt);
+    bool cgetCurrentAudioServiceComponent(QList<RadioControlServiceComponent>::const_iterator & scIt);
 
     void updateSyncLevel(dabProcSyncLevel_t s);
     QString toShortLabel(QString & label, uint16_t charField) const;
@@ -279,6 +276,7 @@ private:
     void dabEnableAutoNotification() { dabProcRequest_AutoNotify(dabProcHandle, RADIO_CONTROL_NOTIFICATION_PERIOD, 0); }
     void dabServiceSelection(uint32_t SId, uint8_t SCIdS) { dabProcRequest_ServiceSelection(dabProcHandle, SId, SCIdS); }
     void dabServiceStop(uint32_t SId, uint8_t SCIdS) { dabProcRequest_ServiceStop(dabProcHandle, SId, SCIdS); }
+    void dabXPadAppStart(uint8_t appType, bool start) { dabProcRequest_XPadAppStart(dabProcHandle, appType, start); }
 
     friend void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx);
     friend void dynamicLabelCb(dabProcDynamicLabelCBData_t * p, void * ctx);

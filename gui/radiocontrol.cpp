@@ -312,10 +312,14 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                         {
                             newUserApp.uaData.append(userApp.data[n]);
                         }
-                        newUserApp.xpadData.value = 0;
                         if ((scIt->isAudioService()) && (userApp.dataLen >= 2))
                         {
-                            newUserApp.xpadData.value = (userApp.data[0] << 8) | userApp.data[1];
+                            //newUserApp.xpadData.value = (userApp.data[0] << 8) | userApp.data[1];
+                            newUserApp.xpadData.CAflag = (0 != (userApp.data[0] & 0x80));
+                            newUserApp.xpadData.CAOrgFlag = (0!= (userApp.data[0] & 0x40));
+                            newUserApp.xpadData.xpadAppTy = userApp.data[0]  & 0x1F;
+                            newUserApp.xpadData.dgFlag = (0 != (userApp.data[1] & 0x80));
+                            newUserApp.xpadData.DScTy = userApp.data[1] & 0x3F;
                         }
 
                         scIt->userApps.append(newUserApp);                        
@@ -326,6 +330,9 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                         //qDebug() << "=== MCI complete";
                         emit ensembleConfiguration(ensembleConfigurationString());
                     }
+
+                    // enable SLS automatically - if available
+                    startUserApplication(DabUserApplicationType::SlideShow, true);
                 }                
             }
         }
@@ -354,30 +361,9 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                         currentService.SId = pData->SId;
                         currentService.SCIdS = pData->SCIdS;
                         emit newServiceSelection(*scIt);
-                    }
-                }
 
-                if (0 == pData->SCIdS)
-                {   // primary service component
-                    // ETSI EN 300 401 V2.1.1 [6.3.7 Locating service components]
-                    // Receivers shall be prepared to present content from secondary service components according their capabilities,
-                    // e.g. a SlideShow may be carried in a secondary packet data service component instead of X-PAD.
-
-                    for (scIt = serviceIt->serviceComponents.begin(); scIt != serviceIt->serviceComponents.end(); ++scIt)
-                    {  // check all service components
-                        if (scIt->SCIdS != 0)
-                        {   // not primary
-                            // go through user apps and enable SLS if available
-                            for (auto & ua : scIt->userApps)
-                            {
-                                if (DabUserApplicationType::SlideShow == ua.uaType)
-                                {
-                                    qDebug() << "Found secondary service with SLS" << pData->SId << scIt->SCIdS;
-                                    scIt->autoEnabled = true;
-                                    dabServiceSelection(pData->SId, scIt->SCIdS);
-                                }
-                            }
-                        }
+                        // enable SLS automatically - if available
+                        startUserApplication(DabUserApplicationType::SlideShow, true);
                     }
                 }
             }
@@ -416,6 +402,22 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         }
         delete pData;
     }
+        break;
+    case RadioControlEventType::XPAD_APP_START_STOP:
+    {
+        dabProc_NID_XPAD_APP_START_STOP_t * pData = (dabProc_NID_XPAD_APP_START_STOP_t *) pEvent->pData;
+        if (DABPROC_NSTAT_SUCCESS == pEvent->status)
+        {
+#if RADIO_CONTROL_VERBOSE
+            qDebug() << "RadioControlEvent::XPAD_APP_START_STOP success";
+#endif
+        }
+        else
+        {
+            qDebug() << "RadioControlEvent::XPAD_APP_START_STOP error" << pEvent->status;
+        }
+        delete pData;
+     }
         break;
     case RadioControlEventType::AUTO_NOTIFICATION:
     {
@@ -638,9 +640,89 @@ QList<RadioControlServiceComponent>::iterator
     return scIt;
 }
 
+bool RadioControl::getCurrentAudioServiceComponent(QList<RadioControlServiceComponent>::iterator &scIt)
+{
+    for (auto & service : serviceList)
+    {
+        if (service.SId.value == currentService.SId)
+        {
+            for (scIt = service.serviceComponents.begin(); scIt != service.serviceComponents.end(); ++scIt)
+            {
+                if (currentService.SCIdS == scIt->SCIdS)
+                {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool RadioControl::cgetCurrentAudioServiceComponent(QList<RadioControlServiceComponent>::const_iterator & scIt)
+{
+    for (const auto & service : serviceList)
+    {
+        if (service.SId.value == currentService.SId)
+        {
+            for (scIt = service.serviceComponents.cbegin(); scIt != service.serviceComponents.cend(); ++scIt)
+            {
+                if (currentService.SCIdS == scIt->SCIdS)
+                {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
 void RadioControl::getEnsembleConfiguration()
 {
     emit ensembleConfiguration(ensembleConfigurationString());
+}
+
+void RadioControl::startUserApplication(DabUserApplicationType uaType, bool start)
+{
+    QList<RadioControlServiceComponent>::const_iterator scIt;
+    if (cgetCurrentAudioServiceComponent(scIt))
+    {   // found
+        // first check XPAD applications
+        for (const auto & ua : scIt->userApps)
+        {
+            if (uaType == ua.uaType)
+            {
+                qDebug() << "Found XPAD app" << int(uaType);
+                dabXPadAppStart(ua.xpadData.xpadAppTy, 1);
+                return;
+            }
+        }
+
+        // not found in XPAD - try secondary data services
+        QList<RadioControlService>::iterator serviceIt = findService(currentService.SId);
+        for (auto & sc : serviceIt->serviceComponents)
+        {
+            if (!sc.isAudioService())
+            {   // service component is audio service
+                for (auto & ua : sc.userApps)
+                {   // go through user applications
+                    if (uaType == ua.uaType)
+                    {
+                        qDebug() << "Found secondary service with SLS" << sc.SId.value << sc.SCIdS;
+                        sc.autoEnabled = start;
+                        if (start)
+                        {
+                            dabServiceSelection(sc.SId.value, sc.SCIdS);
+                        }
+                        else
+                        {
+                            dabServiceStop(sc.SId.value, sc.SCIdS);
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+    }
 }
 
 QString RadioControl::ensembleConfigurationString() const
@@ -781,9 +863,9 @@ QString RadioControl::ensembleConfigurationString() const
                 if (sc.isAudioService())
                 {
                     strOut << QString(", X-PAD AppTy: %1, DSCTy: 0x%2, DG: %3")
-                              .arg(sc.userApps.at(a).xpadData.bits.xpadAppTy)
-                              .arg(QString("%1").arg(sc.userApps.at(a).xpadData.bits.DScTy, 1, 16, QLatin1Char('0')).toUpper())
-                              .arg(sc.userApps.at(a).xpadData.bits.dgFlag);
+                              .arg(sc.userApps.at(a).xpadData.xpadAppTy)
+                              .arg(QString("%1").arg(sc.userApps.at(a).xpadData.DScTy, 1, 16, QLatin1Char('0')).toUpper())
+                              .arg(sc.userApps.at(a).xpadData.dgFlag);
                 }
                 strOut << QString(", Data (%1) [").arg(sc.userApps.at(a).uaData.size());
                 for (int d = 0; d < sc.userApps.at(a).uaData.size(); ++d)
@@ -957,6 +1039,19 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
 
         RadioControlEvent * pEvent = new RadioControlEvent;
         pEvent->type = RadioControlEventType::SERVICE_STOP;
+
+        pEvent->status = p->status;
+        pEvent->pData = intptr_t(pServStopInfo);
+        radioCtrl->emit_dabEvent(pEvent);
+    }
+        break;
+    case DABPROC_NID_XPAD_APP_START_STOP:
+    {
+        dabProc_NID_XPAD_APP_START_STOP_t * pServStopInfo = new dabProc_NID_XPAD_APP_START_STOP_t;
+        memcpy(pServStopInfo, p->pData, sizeof(dabProc_NID_XPAD_APP_START_STOP_t));
+
+        RadioControlEvent * pEvent = new RadioControlEvent;
+        pEvent->type = RadioControlEventType::XPAD_APP_START_STOP;
 
         pEvent->status = p->status;
         pEvent->pData = intptr_t(pServStopInfo);
