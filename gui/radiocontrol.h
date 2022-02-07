@@ -256,10 +256,18 @@ private:
 
     RadioControlEnsemble ensemble;
     QList<RadioControlService> serviceList;
-    QList<RadioControlService>::iterator findService(DabSId SId);
-    QList<RadioControlServiceComponent>::iterator findServiceComponent(const QList<RadioControlService>::iterator & sIt, uint8_t SCIdS);
-    bool getCurrentAudioServiceComponent(QList<RadioControlServiceComponent>::iterator & scIt);
-    bool cgetCurrentAudioServiceComponent(QList<RadioControlServiceComponent>::const_iterator & scIt);
+
+    typedef QList<RadioControlService>::iterator serviceIterator;
+    typedef QList<RadioControlService>::const_iterator serviceConstIterator;
+    typedef QList<RadioControlServiceComponent>::iterator serviceComponentIterator;
+    typedef QList<RadioControlServiceComponent>::const_iterator serviceComponentConstIterator;
+
+    serviceIterator findService(DabSId SId);
+    serviceConstIterator cfindService(DabSId SId) const;
+    serviceComponentIterator findServiceComponent(const serviceIterator & sIt, uint8_t SCIdS);
+    serviceComponentConstIterator cfindServiceComponent(const serviceConstIterator & sIt, uint8_t SCIdS) const;
+    bool getCurrentAudioServiceComponent(serviceComponentIterator & scIt);
+    bool cgetCurrentAudioServiceComponent(serviceComponentConstIterator & scIt) const;
 
     void updateSyncLevel(dabProcSyncLevel_t s);
     QString toShortLabel(QString & label, uint16_t charField) const;

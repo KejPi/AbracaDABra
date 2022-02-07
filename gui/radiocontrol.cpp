@@ -150,7 +150,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             requestsPending = 0;
             for (auto const & dabService : *pServiceList)
             {
-                QList<RadioControlService>::iterator servIt = findService(DabSId(dabService.sid));
+                serviceConstIterator servIt = cfindService(DabSId(dabService.sid));
                 if (servIt != serviceList.end())
                 {   // delete existing service
                     serviceList.erase(servIt);
@@ -182,7 +182,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             DabSId sid(pList->at(0).SId);
 
             // find service ID
-            QList<RadioControlService>::iterator serviceIt = findService(sid);
+            serviceIterator serviceIt = findService(sid);
             if (serviceIt != serviceList.end())
             {   // SId found
                 serviceIt->serviceComponents.clear();
@@ -294,11 +294,11 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             DabSId sid(pList->at(0).SId);
 
             // find service ID
-            QList<RadioControlService>::iterator serviceIt = findService(sid);
+            serviceIterator serviceIt = findService(sid);
             if (serviceIt != serviceList.end())
             {   // SId found
                 // all user apps belong to the same SId+SCIdS, reading SCIdS from the first
-                QList<RadioControlServiceComponent>::iterator scIt = findServiceComponent(serviceIt, pList->at(0).SCIdS);
+                serviceComponentIterator scIt = findServiceComponent(serviceIt, pList->at(0).SCIdS);
                 if (scIt != serviceIt->serviceComponents.end())
                 {   // service component found
                     scIt->userApps.clear();
@@ -349,10 +349,10 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 #endif
             emit serviceChanged();
 
-            QList<RadioControlService>::iterator serviceIt = findService(pData->SId);
-            if (serviceIt != serviceList.end())
+            serviceConstIterator serviceIt = cfindService(pData->SId);
+            if (serviceIt != serviceList.cend())
             {   // service is in the list
-                QList<RadioControlServiceComponent>::iterator scIt = findServiceComponent(serviceIt, pData->SCIdS);
+                serviceComponentConstIterator scIt = cfindServiceComponent(serviceIt, pData->SCIdS);
                 if (scIt != serviceIt->serviceComponents.end())
                 {   // service components exists in service                                                           
                     if (!scIt->autoEnabled)
@@ -385,10 +385,10 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             qDebug() << "RadioControlEvent::SERVICE_STOP success";
 #endif
 
-            QList<RadioControlService>::iterator serviceIt = findService(pData->SId);
+            serviceIterator serviceIt = findService(pData->SId);
             if (serviceIt != serviceList.end())
             {   // service is in the list
-                QList<RadioControlServiceComponent>::iterator scIt = findServiceComponent(serviceIt, pData->SCIdS);
+                serviceComponentIterator scIt = findServiceComponent(serviceIt, pData->SCIdS);
                 if (scIt != serviceIt->serviceComponents.end())
                 {   // found service component
                     scIt->autoEnabled = false;
@@ -550,7 +550,7 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
             serviceRequest.SId = 0;
 
             // remove automatically enabled data services
-            QList<RadioControlService>::iterator serviceIt = findService(currentService.SId);
+            serviceConstIterator serviceIt = cfindService(currentService.SId);
             if (serviceIt != serviceList.end())
             {   // service is in the list
                 for (auto & sc : serviceIt->serviceComponents)
@@ -613,9 +613,9 @@ void RadioControl::updateSyncLevel(dabProcSyncLevel_t s)
     }
 }
 
-QList<RadioControlService>::iterator RadioControl::findService(DabSId SId)
+RadioControl::serviceIterator RadioControl::findService(DabSId SId)
 {
-    QList<RadioControlService>::iterator serviceIt;
+    serviceIterator serviceIt;
     for (serviceIt = serviceList.begin(); serviceIt < serviceList.end(); ++serviceIt)
     {
         if (SId.value ==  serviceIt->SId.value)
@@ -626,10 +626,22 @@ QList<RadioControlService>::iterator RadioControl::findService(DabSId SId)
     return serviceIt;
 }
 
-QList<RadioControlServiceComponent>::iterator
-                RadioControl::findServiceComponent(const QList<RadioControlService>::iterator & sIt, uint8_t SCIdS)
+RadioControl::serviceConstIterator RadioControl::cfindService(DabSId SId) const
 {
-    QList<RadioControlServiceComponent>::iterator scIt;
+    serviceConstIterator serviceIt;
+    for (serviceIt = serviceList.cbegin(); serviceIt < serviceList.cend(); ++serviceIt)
+    {
+        if (SId.value ==  serviceIt->SId.value)
+        {  // found SId
+            return serviceIt;
+        }
+    }
+    return serviceIt;
+}
+
+RadioControl::serviceComponentIterator RadioControl::findServiceComponent(const serviceIterator & sIt, uint8_t SCIdS)
+{
+    serviceComponentIterator scIt;
     for (scIt = sIt->serviceComponents.begin(); scIt < sIt->serviceComponents.end(); ++scIt)
     {
         if (SCIdS == scIt->SCIdS)
@@ -640,7 +652,20 @@ QList<RadioControlServiceComponent>::iterator
     return scIt;
 }
 
-bool RadioControl::getCurrentAudioServiceComponent(QList<RadioControlServiceComponent>::iterator &scIt)
+RadioControl::serviceComponentConstIterator RadioControl::cfindServiceComponent(const serviceConstIterator & sIt, uint8_t SCIdS) const
+{
+    serviceComponentConstIterator scIt;
+    for (scIt = sIt->serviceComponents.cbegin(); scIt < sIt->serviceComponents.cend(); ++scIt)
+    {
+        if (SCIdS == scIt->SCIdS)
+        {
+            return scIt;
+        }
+    }
+    return scIt;
+}
+
+bool RadioControl::getCurrentAudioServiceComponent(serviceComponentIterator &scIt)
 {
     for (auto & service : serviceList)
     {
@@ -658,7 +683,7 @@ bool RadioControl::getCurrentAudioServiceComponent(QList<RadioControlServiceComp
     return false;
 }
 
-bool RadioControl::cgetCurrentAudioServiceComponent(QList<RadioControlServiceComponent>::const_iterator & scIt)
+bool RadioControl::cgetCurrentAudioServiceComponent(serviceComponentConstIterator &scIt) const
 {
     for (const auto & service : serviceList)
     {
@@ -698,7 +723,7 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
         }
 
         // not found in XPAD - try secondary data services
-        QList<RadioControlService>::iterator serviceIt = findService(currentService.SId);
+        serviceIterator serviceIt = findService(currentService.SId);
         for (auto & sc : serviceIt->serviceComponents)
         {
             if (!sc.isAudioService())
