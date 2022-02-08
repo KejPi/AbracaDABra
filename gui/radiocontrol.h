@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QMap>
+#include <QHash>
 #include <QDateTime>
 #include <QStringList>
 #include <QDebug>
@@ -44,6 +45,7 @@ struct DabSId {
     };   
     DabSId(uint32_t sid = 0) { value = sid; }
     bool isProgServiceId() const { return prog.zero == 0; }
+    operator uint32_t() const { return value; }
 };
 
 struct DabProtection {
@@ -92,13 +94,13 @@ struct RadioControlUserApp
     QString labelShort;   // Short label
     DabUserApplicationType uaType;      // User application type
     struct {
-        int8_t DScTy;
+        DabAudioDataSCty DScTy;
         int8_t xpadAppTy;
         bool dgFlag;
         bool CAOrgFlag;
         bool CAflag;
     } xpadData;
-    QVector<uint8_t> uaData;  // optional user application data
+    QList<uint8_t> uaData;  // optional user application data
 };
 
 struct RadioControlServiceComponent
@@ -115,10 +117,10 @@ struct RadioControlServiceComponent
     DabPTy pty;           // Static and dynamic programme type [8.1.5]
     uint8_t CAId;         // CAId (Conditional Access Identifier): this 3-bit field shall identify the
                           // Access Control System (ACS) used for the service
-    int8_t CAflag;        // CA flag: this 1-bit field flag shall indicate whether access control applies to the service component
+    bool CAflag;          // CA flag: this 1-bit field flag shall indicate whether access control applies to the service component
 
-    //int8_t numUserApps;   // Number of user applications
-    QList<RadioControlUserApp> userApps;
+    //int8_t numUserApps;   // Number of user applications    
+    QHash<DabUserApplicationType,RadioControlUserApp> userApps;
 
     QString label;        // Service label
     QString labelShort;   // Short label
@@ -141,12 +143,14 @@ struct RadioControlServiceComponent
             DabAudioDataSCty DSCTy; // DSCTy (Data Service Component Type)
             uint16_t SCId;          // SCId (Service Component Identifier): this 12-bit field shall uniquely
                                     // identify the service component within the ensemble
-            int8_t DGflag;          // DG flag: this 1-bit flag shall indicate whether data groups are used to transport the service component as follows:
+            bool DGflag;            // DG flag: this 1-bit flag shall indicate whether data groups are used to transport the service component as follows:
                                     //   0: data groups are used to transport the service component;
                                     //   1: data groups are not used to transport the service component.
             uint16_t packetAddress; // this 10-bit field shall define the address of the packet in which the service component is carried.
         } packetData;
     };
+
+    // this is used to track automatic enabling of data services (like SLS in secondary data service)
     bool autoEnabled;
 
     bool isAudioService() const { return DabTMId::StreamAudio == TMId; }
@@ -154,6 +158,9 @@ struct RadioControlServiceComponent
     bool isDataPacketService() const { return DabTMId::PacketData == TMId; }
 };
 Q_DECLARE_METATYPE(RadioControlServiceComponent)
+
+typedef QHash<uint8_t, RadioControlServiceComponent> RadioControlServiceCompList;
+
 
 struct RadioControlService
 {
@@ -168,8 +175,10 @@ struct RadioControlService
     // Access Control System (ACS) used for the service
     uint8_t CAId;
 
-    QList<RadioControlServiceComponent> serviceComponents;
+    RadioControlServiceCompList serviceComponents;
 };
+
+typedef QHash<uint32_t, RadioControlService> RadioControlServiceList;
 
 struct RadioControlUserAppData
 {
@@ -255,17 +264,13 @@ private:
     int requestsPending = 0;
 
     RadioControlEnsemble ensemble;
-    QList<RadioControlService> serviceList;
+    RadioControlServiceList serviceList;
 
-    typedef QList<RadioControlService>::iterator serviceIterator;
-    typedef QList<RadioControlService>::const_iterator serviceConstIterator;
-    typedef QList<RadioControlServiceComponent>::iterator serviceComponentIterator;
-    typedef QList<RadioControlServiceComponent>::const_iterator serviceComponentConstIterator;
+    typedef RadioControlServiceCompList::iterator serviceComponentIterator;
+    typedef RadioControlServiceCompList::const_iterator serviceComponentConstIterator;
+    typedef RadioControlServiceList::iterator serviceIterator;
+    typedef RadioControlServiceList::const_iterator serviceConstIterator;
 
-    serviceIterator findService(DabSId SId);
-    serviceConstIterator cfindService(DabSId SId) const;
-    serviceComponentIterator findServiceComponent(const serviceIterator & sIt, uint8_t SCIdS);
-    serviceComponentConstIterator cfindServiceComponent(const serviceConstIterator & sIt, uint8_t SCIdS) const;
     bool getCurrentAudioServiceComponent(serviceComponentIterator & scIt);
     bool cgetCurrentAudioServiceComponent(serviceComponentConstIterator & scIt) const;
 

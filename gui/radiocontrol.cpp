@@ -150,7 +150,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             requestsPending = 0;
             for (auto const & dabService : *pServiceList)
             {
-                serviceConstIterator servIt = cfindService(DabSId(dabService.sid));
+                serviceConstIterator servIt = serviceList.constFind(dabService.sid);
                 if (servIt != serviceList.end())
                 {   // delete existing service
                     serviceList.erase(servIt);
@@ -162,7 +162,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                 newService.pty.s = dabService.pty.s;
                 newService.pty.d = dabService.pty.d;
                 newService.CAId = dabService.CAId;
-                serviceList.append(newService);
+                serviceList.insert(dabService.sid, newService);
                 requestsPending++;
                 dabGetServiceComponent(dabService.sid);
             }
@@ -182,7 +182,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             DabSId sid(pList->at(0).SId);
 
             // find service ID
-            serviceIterator serviceIt = findService(sid);
+            serviceIterator serviceIt = serviceList.find(sid);
             if (serviceIt != serviceList.end())
             {   // SId found
                 serviceIt->serviceComponents.clear();
@@ -205,7 +205,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                     newServiceComp.SubChId = dabServiceComp.SubChId;
                     newServiceComp.SubChAddr = dabServiceComp.SubChAddr;
                     newServiceComp.SubChSize = dabServiceComp.SubChSize;
-                    newServiceComp.CAflag = dabServiceComp.CAflag;
+                    newServiceComp.CAflag = (0 != dabServiceComp.CAflag);
                     newServiceComp.CAId = serviceIt->CAId;
                     newServiceComp.lang = dabServiceComp.lang;
                     newServiceComp.pty = serviceIt->pty;
@@ -246,13 +246,13 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                         newServiceComp.streamAudioData.bitRate = dabServiceComp.streamData.bitRate;
                         break;
                     case DabTMId::PacketData:
-                        newServiceComp.packetData.DGflag = dabServiceComp.packetData.DGflag;
+                        newServiceComp.packetData.DGflag = (0 != dabServiceComp.packetData.DGflag);
                         newServiceComp.packetData.DSCTy = DabAudioDataSCty(dabServiceComp.packetData.DSCTy);
                         newServiceComp.packetData.SCId = dabServiceComp.packetData.SCId;
                         newServiceComp.packetData.packetAddress = dabServiceComp.packetData.packetAddress;
                         break;
                     }
-                    serviceIt->serviceComponents.append(newServiceComp);
+                    serviceIt->serviceComponents.insert(newServiceComp.SCIdS, newServiceComp);
 
                     if ((serviceRequest.SId == serviceIt->SId.value) && (serviceRequest.SCIdS == newServiceComp.SCIdS))
                     {
@@ -270,7 +270,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                 else
                 {  // service list item information is complete
                    requestsPending--;
-                   for (auto const & serviceComp : serviceIt->serviceComponents)
+                   for (auto const & serviceComp : qAsConst(serviceIt->serviceComponents))
                    {
                        requestsPending++;
                        dabGetUserApps(serviceIt->SId.value, serviceComp.SCIdS);
@@ -294,11 +294,11 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             DabSId sid(pList->at(0).SId);
 
             // find service ID
-            serviceIterator serviceIt = findService(sid);
+            serviceIterator serviceIt = serviceList.find(sid);
             if (serviceIt != serviceList.end())
             {   // SId found
                 // all user apps belong to the same SId+SCIdS, reading SCIdS from the first
-                serviceComponentIterator scIt = findServiceComponent(serviceIt, pList->at(0).SCIdS);
+                serviceComponentIterator scIt = serviceIt->serviceComponents.find(pList->at(0).SCIdS);
                 if (scIt != serviceIt->serviceComponents.end())
                 {   // service component found
                     scIt->userApps.clear();
@@ -319,20 +319,20 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                             newUserApp.xpadData.CAOrgFlag = (0!= (userApp.data[0] & 0x40));
                             newUserApp.xpadData.xpadAppTy = userApp.data[0]  & 0x1F;
                             newUserApp.xpadData.dgFlag = (0 != (userApp.data[1] & 0x80));
-                            newUserApp.xpadData.DScTy = userApp.data[1] & 0x3F;
+                            newUserApp.xpadData.DScTy = DabAudioDataSCty(userApp.data[1] & 0x3F);
                         }
 
-                        scIt->userApps.append(newUserApp);                        
+                        scIt->userApps.insert(newUserApp.uaType, newUserApp);
                         //qDebug() << serviceIt->SId.value << scIt->SCIdS << newUserApp.uaType;
                     }
                     if (--requestsPending == 0)
                     {
-                        //qDebug() << "=== MCI complete";
+                        // enable SLS automatically - if available
+                        startUserApplication(DabUserApplicationType::SlideShow, true);
+
+                        qDebug() << "=== MCI complete";
                         emit ensembleConfiguration(ensembleConfigurationString());
                     }
-
-                    // enable SLS automatically - if available
-                    startUserApplication(DabUserApplicationType::SlideShow, true);
                 }                
             }
         }
@@ -349,10 +349,10 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 #endif
             emit serviceChanged();
 
-            serviceConstIterator serviceIt = cfindService(pData->SId);
+            serviceConstIterator serviceIt = serviceList.constFind(pData->SId);
             if (serviceIt != serviceList.cend())
             {   // service is in the list
-                serviceComponentConstIterator scIt = cfindServiceComponent(serviceIt, pData->SCIdS);
+                serviceComponentConstIterator scIt = serviceIt->serviceComponents.constFind(pData->SCIdS);
                 if (scIt != serviceIt->serviceComponents.end())
                 {   // service components exists in service                                                           
                     if (!scIt->autoEnabled)
@@ -385,10 +385,10 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             qDebug() << "RadioControlEvent::SERVICE_STOP success";
 #endif
 
-            serviceIterator serviceIt = findService(pData->SId);
+            serviceIterator serviceIt = serviceList.find(pData->SId);
             if (serviceIt != serviceList.end())
             {   // service is in the list
-                serviceComponentIterator scIt = findServiceComponent(serviceIt, pData->SCIdS);
+                serviceComponentIterator scIt = serviceIt->serviceComponents.find(pData->SCIdS);
                 if (scIt != serviceIt->serviceComponents.end())
                 {   // found service component
                     scIt->autoEnabled = false;
@@ -550,8 +550,8 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
             serviceRequest.SId = 0;
 
             // remove automatically enabled data services
-            serviceConstIterator serviceIt = cfindService(currentService.SId);
-            if (serviceIt != serviceList.end())
+            serviceConstIterator serviceIt = serviceList.constFind(currentService.SId);
+            if (serviceIt != serviceList.cend())
             {   // service is in the list
                 for (auto & sc : serviceIt->serviceComponents)
                 {
@@ -613,71 +613,14 @@ void RadioControl::updateSyncLevel(dabProcSyncLevel_t s)
     }
 }
 
-RadioControl::serviceIterator RadioControl::findService(DabSId SId)
-{
-    serviceIterator serviceIt;
-    for (serviceIt = serviceList.begin(); serviceIt < serviceList.end(); ++serviceIt)
-    {
-        if (SId.value ==  serviceIt->SId.value)
-        {  // found SId
-            return serviceIt;
-        }
-    }
-    return serviceIt;
-}
-
-RadioControl::serviceConstIterator RadioControl::cfindService(DabSId SId) const
-{
-    serviceConstIterator serviceIt;
-    for (serviceIt = serviceList.cbegin(); serviceIt < serviceList.cend(); ++serviceIt)
-    {
-        if (SId.value ==  serviceIt->SId.value)
-        {  // found SId
-            return serviceIt;
-        }
-    }
-    return serviceIt;
-}
-
-RadioControl::serviceComponentIterator RadioControl::findServiceComponent(const serviceIterator & sIt, uint8_t SCIdS)
-{
-    serviceComponentIterator scIt;
-    for (scIt = sIt->serviceComponents.begin(); scIt < sIt->serviceComponents.end(); ++scIt)
-    {
-        if (SCIdS == scIt->SCIdS)
-        {
-            return scIt;
-        }
-    }
-    return scIt;
-}
-
-RadioControl::serviceComponentConstIterator RadioControl::cfindServiceComponent(const serviceConstIterator & sIt, uint8_t SCIdS) const
-{
-    serviceComponentConstIterator scIt;
-    for (scIt = sIt->serviceComponents.cbegin(); scIt < sIt->serviceComponents.cend(); ++scIt)
-    {
-        if (SCIdS == scIt->SCIdS)
-        {
-            return scIt;
-        }
-    }
-    return scIt;
-}
-
 bool RadioControl::getCurrentAudioServiceComponent(serviceComponentIterator &scIt)
 {
     for (auto & service : serviceList)
     {
         if (service.SId.value == currentService.SId)
         {
-            for (scIt = service.serviceComponents.begin(); scIt != service.serviceComponents.end(); ++scIt)
-            {
-                if (currentService.SCIdS == scIt->SCIdS)
-                {
-                    return true;
-                }
-            }
+            scIt = service.serviceComponents.find(currentService.SCIdS);
+            return (service.serviceComponents.end() != scIt);
         }
     }
     return false;
@@ -689,13 +632,8 @@ bool RadioControl::cgetCurrentAudioServiceComponent(serviceComponentConstIterato
     {
         if (service.SId.value == currentService.SId)
         {
-            for (scIt = service.serviceComponents.cbegin(); scIt != service.serviceComponents.cend(); ++scIt)
-            {
-                if (currentService.SCIdS == scIt->SCIdS)
-                {
-                    return true;
-                }
-            }
+            scIt = service.serviceComponents.constFind(currentService.SCIdS);
+            return (service.serviceComponents.cend() != scIt);
         }
     }
     return false;
@@ -708,45 +646,43 @@ void RadioControl::getEnsembleConfiguration()
 
 void RadioControl::startUserApplication(DabUserApplicationType uaType, bool start)
 {
-    QList<RadioControlServiceComponent>::const_iterator scIt;
+    serviceComponentConstIterator scIt;
     if (cgetCurrentAudioServiceComponent(scIt))
     {   // found
         // first check XPAD applications
-        for (const auto & ua : scIt->userApps)
+        QHash<DabUserApplicationType,RadioControlUserApp>::const_iterator uaIt = scIt->userApps.constFind(uaType);
+        if (scIt->userApps.cend() != uaIt)
         {
-            if (uaType == ua.uaType)
-            {
-                qDebug() << "Found XPAD app" << int(uaType);
-                dabXPadAppStart(ua.xpadData.xpadAppTy, 1);
-                return;
-            }
+            qDebug() << "Found XPAD app" << int(uaType);
+            dabXPadAppStart(uaIt->xpadData.xpadAppTy, 1);
+            return;
         }
 
         // not found in XPAD - try secondary data services
-        serviceIterator serviceIt = findService(currentService.SId);
+        serviceIterator serviceIt = serviceList.find(currentService.SId);
         for (auto & sc : serviceIt->serviceComponents)
         {
             if (!sc.isAudioService())
-            {   // service component is audio service
-                for (auto & ua : sc.userApps)
-                {   // go through user applications
-                    if (uaType == ua.uaType)
+            {   // service component is not audio service
+                uaIt = sc.userApps.constFind(uaType);
+                if (sc.userApps.cend() != uaIt)
+                {
+                    qDebug() << "Found secondary service with SLS" << sc.SId.value << sc.SCIdS;
+                    sc.autoEnabled = start;
+                    if (start)
                     {
-                        qDebug() << "Found secondary service with SLS" << sc.SId.value << sc.SCIdS;
-                        sc.autoEnabled = start;
-                        if (start)
-                        {
-                            dabServiceSelection(sc.SId.value, sc.SCIdS);
-                        }
-                        else
-                        {
-                            dabServiceStop(sc.SId.value, sc.SCIdS);
-                        }
-                        return;
+                        dabServiceSelection(sc.SId.value, sc.SCIdS);
                     }
+                    else
+                    {
+                        dabServiceStop(sc.SId.value, sc.SCIdS);
+                    }
+                    return;
                 }
             }
         }
+
+        // TODO: not found - try ensemble
     }
 }
 
@@ -826,20 +762,51 @@ QString RadioControl::ensembleConfigurationString() const
                 strOut << QString(" SCIdS: %1,").arg(sc.SCIdS);
             }
 
-            strOut << QString(" Label: '%1' [ '%2' ],").arg(sc.label).arg(sc.labelShort);
-            strOut << (sc.isAudioService() ? " ASCTy:" : " DSCTy:");
+            strOut << QString(" Label: '%1' [ '%2' ], ").arg(sc.label).arg(sc.labelShort);
+
+            DabAudioDataSCty scType;
+            if (sc.isDataPacketService())
+            {
+                scType = sc.packetData.DSCTy;
+            }
+            else
+            {
+                scType = sc.streamAudioData.scType;
+            }
+
+            switch (scType)
+            {
+            case DabAudioDataSCty::DAB_AUDIO:
+                strOut << QString("ASCTy: 0x%2 (MP2)").arg(QString::number(int(scType), 16).toUpper());
+                break;
+            case DabAudioDataSCty::DABPLUS_AUDIO:
+                strOut << QString("ASCTy: 0x%2 (AAC)").arg(QString::number(int(scType), 16).toUpper());
+                break;
+            case DabAudioDataSCty::TDC:
+                strOut << QString("DSCTy: 0x%2 (TDC)").arg(QString::number(int(scType), 16).toUpper());
+                break;
+            case DabAudioDataSCty::MPEG2TS:
+                strOut << QString("DSCTy: 0x%2 (MPEG2TS)").arg(QString::number(int(scType), 16).toUpper());
+                break;
+            case DabAudioDataSCty::MOT:
+                strOut << QString("DSCTy: 0x%2 (MOT)").arg(QString::number(int(scType), 16).toUpper());
+                break;
+            case DabAudioDataSCty::PROPRIETARY_SERVICE:
+                strOut << QString("DSCTy: 0x%2 (Proprietary)").arg(QString::number(int(scType), 16).toUpper());
+                break;
+            default:
+                strOut << QString("DSCTy: 0x%2 (unknown)").arg(QString::number(int(scType), 16).toUpper());
+                break;
+            }
 
             if (sc.isDataPacketService())
             {
-                strOut << QString(" 0x%1, DG: %2, PacketAddr: %3")
-                          .arg(QString("%1").arg(int(sc.packetData.DSCTy), 2, 16, QChar('0')).toUpper())
+                strOut << QString(", DG: %1, PacketAddr: %2")
                           .arg(sc.packetData.DGflag)
                           .arg(sc.packetData.packetAddress);
             }
             else
-            {
-                strOut << QString(" 0x%1").arg(QString("%1").arg(int(sc.streamAudioData.scType), 2, 16, QChar('0')).toUpper());
-            }
+            {  /* do nothing */ }
             strOut << "<br>";
 
             strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -875,27 +842,72 @@ QString RadioControl::ensembleConfigurationString() const
             {
                 strOut << QString(", Bitrate: %1kbps").arg(sc.streamAudioData.bitRate);
             }
-            for (int a = 0; a < sc.userApps.size(); ++a)
+            int uaCntr = 1;
+            for (const auto & ua : sc.userApps)
             {
                 strOut << "<br>";
                 strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                 strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-                strOut << QString("UserApp %1/%2: Label: '%3' [ '%4' ], UAType: 0x%5")
-                          .arg(a+1).arg(sc.userApps.size())
-                          .arg(sc.userApps.at(a).label)
-                          .arg(sc.userApps.at(a).labelShort)
-                          .arg(QString("%1").arg(int(sc.userApps.at(a).uaType), 1, 16, QLatin1Char('0')).toUpper());
+                strOut << QString("UserApp %1/%2: Label: '%3' [ '%4' ], ")
+                          .arg(uaCntr++).arg(sc.userApps.size())
+                          .arg(ua.label)
+                          .arg(ua.labelShort);
+
+                switch (ua.uaType)
+                {
+                case DabUserApplicationType::SlideShow:
+                    strOut << QString("UAType: 0x%1 (SlideShow)").arg(QString::number(int(ua.uaType), 16).toUpper());
+                    break;
+                case DabUserApplicationType::TPEG:
+                    strOut << QString("UAType: 0x%1 (TPEG)").arg(QString::number(int(ua.uaType), 16).toUpper());
+                    break;
+                case DabUserApplicationType::SPI:
+                    strOut << QString("UAType: 0x%1 (SPI)").arg(QString::number(int(ua.uaType), 16).toUpper());
+                    break;
+                case DabUserApplicationType::DMB:
+                    strOut << QString("UAType: 0x%1 (DMB)").arg(QString::number(int(ua.uaType), 16).toUpper());
+                    break;
+                case DabUserApplicationType::Filecasting:
+                    strOut << QString("UAType: 0x%1 (Filecasting)").arg(QString::number(int(ua.uaType), 16).toUpper());
+                    break;
+                case DabUserApplicationType::FIS:
+                    strOut << QString("UAType: 0x%1 (FIS)").arg(QString::number(int(ua.uaType), 16).toUpper());
+                    break;
+                case DabUserApplicationType::Journaline:
+                    strOut << QString("UAType: 0x%1 (Journaline)").arg(QString::number(int(ua.uaType), 16).toUpper());
+                    break;
+                default:
+                    strOut << QString("UAType: 0x%1 (unknown)").arg(QString::number(int(ua.uaType), 16).toUpper());
+                    break;
+                }
+
                 if (sc.isAudioService())
                 {
-                    strOut << QString(", X-PAD AppTy: %1, DSCTy: 0x%2, DG: %3")
-                              .arg(sc.userApps.at(a).xpadData.xpadAppTy)
-                              .arg(QString("%1").arg(sc.userApps.at(a).xpadData.DScTy, 1, 16, QLatin1Char('0')).toUpper())
-                              .arg(sc.userApps.at(a).xpadData.dgFlag);
+                    strOut << QString(", X-PAD AppTy: %1, ").arg(ua.xpadData.xpadAppTy);
+                    switch (ua.xpadData.DScTy)
+                    {
+                    case DabAudioDataSCty::TDC:
+                        strOut << QString("DSCTy: 0x%2 (TDC)").arg(QString::number(int(ua.xpadData.DScTy), 16).toUpper());
+                        break;
+                    case DabAudioDataSCty::MPEG2TS:
+                        strOut << QString("DSCTy: 0x%2 (MPEG2TS)").arg(QString::number(int(ua.xpadData.DScTy), 16).toUpper());
+                        break;
+                    case DabAudioDataSCty::MOT:
+                        strOut << QString("DSCTy: 0x%2 (MOT)").arg(QString::number(int(ua.xpadData.DScTy), 16).toUpper());
+                        break;
+                    case DabAudioDataSCty::PROPRIETARY_SERVICE:
+                        strOut << QString("DSCTy: 0x%2 (Proprietary)").arg(QString::number(int(ua.xpadData.DScTy), 16).toUpper());
+                        break;
+                    default:
+                        strOut << QString("DSCTy: 0x%2 (unknown)").arg(QString::number(int(ua.xpadData.DScTy), 16).toUpper());
+                        break;
+                    }
+                    strOut << QString(", DG: %3").arg(ua.xpadData.dgFlag);
                 }
-                strOut << QString(", Data (%1) [").arg(sc.userApps.at(a).uaData.size());
-                for (int d = 0; d < sc.userApps.at(a).uaData.size(); ++d)
+                strOut << QString(", Data (%1) [").arg(ua.uaData.size());
+                for (int d = 0; d < ua.uaData.size(); ++d)
                 {
-                    strOut << QString("%1").arg(sc.userApps.at(a).uaData.at(d), 2, 16, QLatin1Char('0')).toUpper();
+                    strOut << QString("%1").arg(ua.uaData.at(d), 2, 16, QLatin1Char('0')).toUpper();
                 }
                 strOut << "]";
             }
