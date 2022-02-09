@@ -76,3 +76,23 @@ void getSamples(float _Complex buffer[], uint16_t numSamples)
     pthread_cond_signal(&inputBuffer.countCondition);
     pthread_mutex_unlock(&inputBuffer.countMutex);
 }
+
+void skipSamples(float _Complex buffer[], uint16_t numSamples)
+{
+    (void) buffer;
+
+    // input read -> lets store it to FIFO
+    pthread_mutex_lock(&inputBuffer.countMutex);
+    uint64_t count = inputBuffer.count;
+    while (count < numSamples*sizeof(float _Complex))
+    {
+        pthread_cond_wait(&inputBuffer.countCondition, &inputBuffer.countMutex);
+        count = inputBuffer.count;
+    }
+
+    inputBuffer.tail = (inputBuffer.tail + numSamples*sizeof(float _Complex)) % INPUT_FIFO_SIZE;
+
+    inputBuffer.count = inputBuffer.count - numSamples*sizeof(float _Complex);
+    pthread_cond_signal(&inputBuffer.countCondition);
+    pthread_mutex_unlock(&inputBuffer.countMutex);
+}

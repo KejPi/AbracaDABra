@@ -40,6 +40,7 @@ bool RadioControl::init()
     if (EXIT_SUCCESS == dabProcInit(&dabProcHandle))
     {
         dabProcRegisterInputFcn(dabProcHandle, getSamples);
+        dabProcRegisterDummyInputFcn(dabProcHandle, skipSamples);
         dabProcRegisterNotificationCb(dabProcHandle, dabNotificationCb, (void *) this);
         dabProcRegisterDynamicLabelCb(dabProcHandle, dynamicLabelCb, (void*) this);
         dabProcRegisterDataGroupCb(dabProcHandle, dataGroupCb, (void*) this);
@@ -151,7 +152,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             for (auto const & dabService : *pServiceList)
             {
                 serviceConstIterator servIt = serviceList.constFind(dabService.sid);
-                if (servIt != serviceList.end())
+                if (servIt != serviceList.cend())
                 {   // delete existing service
                     serviceList.erase(servIt);
                 }

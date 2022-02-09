@@ -80,5 +80,6 @@ protected:
 
 extern fifo_t inputBuffer;
 void getSamples(float _Complex buffer[], uint16_t len);
+void skipSamples(float _Complex buffer[], uint16_t numSamples);
 
 #endif // INPUTDEVICE_H

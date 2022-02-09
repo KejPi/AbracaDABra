@@ -159,7 +159,7 @@ struct RadioControlServiceComponent
 };
 Q_DECLARE_METATYPE(RadioControlServiceComponent)
 
-typedef QHash<uint8_t, RadioControlServiceComponent> RadioControlServiceCompList;
+typedef QMap<uint8_t, RadioControlServiceComponent> RadioControlServiceCompList;
 
 
 struct RadioControlService
@@ -178,7 +178,7 @@ struct RadioControlService
     RadioControlServiceCompList serviceComponents;
 };
 
-typedef QHash<uint32_t, RadioControlService> RadioControlServiceList;
+typedef QMap<uint32_t, RadioControlService> RadioControlServiceList;
 
 struct RadioControlUserAppData
 {
