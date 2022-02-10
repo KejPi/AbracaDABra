@@ -365,6 +365,9 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 
                         // enable SLS automatically - if available
                         startUserApplication(DabUserApplicationType::SlideShow, true);
+
+#warning "Remove automatic SPI - this is for debug only"
+                        startUserApplication(DabUserApplicationType::SPI, true);
                     }
                 }
             }
@@ -668,7 +671,6 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
                 uaIt = sc.userApps.constFind(uaType);
                 if (sc.userApps.cend() != uaIt)
                 {
-                    qDebug() << "Found secondary service with SLS" << sc.SId.value << sc.SCIdS;
                     sc.autoEnabled = start;
                     if (start)
                     {
@@ -684,6 +686,33 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
         }
 
         // TODO: not found - try ensemble
+#warning "Debug - remove or make implementation clean"
+        for (auto & service : serviceList)
+        {
+            if (!service.SId.isProgServiceId())
+            {   // data service
+                for (auto & sc : service.serviceComponents)
+                {
+                    if (!sc.isAudioService())
+                    {   // service component is not audio service
+                        uaIt = sc.userApps.constFind(uaType);
+                        if (sc.userApps.cend() != uaIt)
+                        {
+                            sc.autoEnabled = start;
+                            if (start)
+                            {
+                                dabServiceSelection(sc.SId.value, sc.SCIdS);
+                            }
+                            else
+                            {
+                                dabServiceStop(sc.SId.value, sc.SCIdS);
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -1148,25 +1177,6 @@ void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
     }
 
     RadioControl * radioCtrl = (RadioControl * ) ctx;
-#if 0
-    switch (p->userAppType)        
-    { // [7.4.3] Application types 2 and 3 shall be used for the dynamic label (see clause 7.4.5.2).
-    case 0x02:
-    {
-#warning "Assign correct app types"
-        QByteArray * data = new QByteArray((const char *)p->pDgData, p->dgLen);
-
-        RadioControlEvent * pEvent = new RadioControlEvent;
-        pEvent->type = RadioControlEventType::DATAGROUP_MSC;
-        pEvent->status = DABPROC_NSTAT_SUCCESS;
-        pEvent->pData = intptr_t(data);
-        radioCtrl->emit_dabEvent(pEvent);
-    }
-        break;
-    default:
-        qDebug() << "Unsupported XPAD application type:" << p->userAppType;
-    }
-#else
     RadioControlUserAppData * pData = new RadioControlUserAppData;
     pData->userAppType = DabUserApplicationType(p->userAppType);
 
@@ -1177,8 +1187,7 @@ void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
     pEvent->type = RadioControlEventType::USERAPP_DATA;
     pEvent->status = DABPROC_NSTAT_SUCCESS;
     pEvent->pData = intptr_t(pData);
-    radioCtrl->emit_dabEvent(pEvent);
-#endif
+    radioCtrl->emit_dabEvent(pEvent);        
 }
 
 void audioDataCb(dabProcAudioCBData_t * p, void * ctx)
