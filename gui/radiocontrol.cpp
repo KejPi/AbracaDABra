@@ -181,6 +181,9 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         if (!pList->isEmpty())
         {   // all service components belong to the same SId, reading sid from the first
             DabSId sid(pList->at(0).SId);
+#if RADIO_CONTROL_VERBOSE
+            qDebug("RadioControlEvent::SERVICE_COMPONENT_LIST %8.8X", sid.value);
+#endif
 
             // find service ID
             serviceIterator serviceIt = serviceList.find(sid);
@@ -189,12 +192,17 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                 serviceIt->serviceComponents.clear();
 
                 bool requestUpdate = false;
+                // ETSI EN 300 401 V2.1.1 (2017-01) [8.1.1]
+                // The type 1 and 2 FIGs, which define the various labels, are also in the unique information category.
+                // They shall be signalled for all services and service components that require selection by a user.
+                // ==> audio components
                 for (auto const & dabServiceComp : *pList)
                 {
                     // first checking validity of data
                     if ((dabServiceComp.SubChAddr < 0)
-                            || ((!dabServiceComp.ps) && (dabServiceComp.label.str[0] == '\0'))
-                            || ((DabTMId::PacketData == DabTMId(dabServiceComp.TMId)) && (dabServiceComp.packetData.packetAddress < 0)))
+                       || ((DabTMId::StreamAudio == DabTMId(dabServiceComp.TMId)) && (!dabServiceComp.ps) && (dabServiceComp.label.str[0] == '\0'))
+                       || ((DabTMId::PacketData == DabTMId(dabServiceComp.TMId)) && (dabServiceComp.packetData.packetAddress < 0))
+                       || ((DabTMId::StreamAudio != DabTMId(dabServiceComp.TMId)) && (dabServiceComp.numUserApps <= 0)))  // user app for data services
                     {
                         requestUpdate = true;
                         break;
@@ -366,8 +374,12 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                         // enable SLS automatically - if available
                         startUserApplication(DabUserApplicationType::SlideShow, true);
 
+//#warning "Remove automatic Journaline - this is for debug only"
+//                        startUserApplication(DabUserApplicationType::Journaline, true);
 #warning "Remove automatic SPI - this is for debug only"
                         startUserApplication(DabUserApplicationType::SPI, true);
+#warning "Remove automatic TPEG - this is for debug only"
+                        startUserApplication(DabUserApplicationType::TPEG, true);
                     }
                 }
             }
