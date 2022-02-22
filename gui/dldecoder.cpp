@@ -103,18 +103,18 @@ void DLDecoder::newDataGroup(const QByteArray & dataGroup)
     {
         if (assembleDL(dataGroup))
         {   // message is complete
-            if (label.lastIndexOf(0x0A) >= 0)
-            {
-                qDebug() << Q_FUNC_INFO << "control character 0x0A (preferred line break) found";
-            }
-            if (label.lastIndexOf(0x0B) >= 0)
-            {
-                qDebug() << Q_FUNC_INFO << "control character 0x0B (end of a headline) found";
-            }
-            if (label.lastIndexOf(0x1F) >= 0)
-            {
-                qDebug() << Q_FUNC_INFO << "control character 0x1F (preferred word break) found";
-            }
+//            if (label.lastIndexOf(0x0A) >= 0)
+//            {
+//                qDebug() << Q_FUNC_INFO << "control character 0x0A (preferred line break) found";
+//            }
+//            if (label.lastIndexOf(0x0B) >= 0)
+//            {
+//                qDebug() << Q_FUNC_INFO << "control character 0x0B (end of a headline) found";
+//            }
+//            if (label.lastIndexOf(0x1F) >= 0)
+//            {
+//                qDebug() << Q_FUNC_INFO << "control character 0x1F (preferred word break) found";
+//            }
 
             message = DabTables::convertToQString(label.data(), charset, label.size());
             emit dlComplete(message);

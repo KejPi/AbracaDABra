@@ -499,23 +499,18 @@ void MainWindow::updateServiceList(const RadioControlEnsemble &ens, const RadioC
 
 void MainWindow::updateDL(const QString & dl)
 {
-    if (dl.indexOf(QChar(0x0A)) >= 0)
-    {
-        qDebug() << Q_FUNC_INFO << "control character 0x0A (preferred line break) found";
-    }
-    if (dl.indexOf(QChar(0x0B)) >= 0)
-    {
-        qDebug() << Q_FUNC_INFO << "control character 0x0B (end of a headline) found";
-    }
-    if (dl.indexOf(QChar(0x1F)) >= 0)
-    {
-        qDebug() << Q_FUNC_INFO << "control character 0x1F (preferred word break) found";
-    }
+    QString label = dl;
 
+    label.replace(QRegularExpression(QString(QChar(0x0A))), "<br/>");
+    if (label.indexOf(QChar(0x0B)) >= 0)
+    {
+        label.prepend("<b>");
+        label.replace(label.indexOf(QChar(0x0B)), 1, "</b>");
+    }
+    label.remove(QChar(0x1F));
 
-
-    ui->dynamicLabel->setText(dl);
-    if (ui->dynamicLabel->width() < ui->dynamicLabel->fontMetrics().boundingRect(dl).width())
+    ui->dynamicLabel->setText(label);
+    if (ui->dynamicLabel->width() < ui->dynamicLabel->fontMetrics().boundingRect(label).width())
     {
         ui->dynamicLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     }
