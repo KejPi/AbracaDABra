@@ -544,9 +544,12 @@ void RadioControl::start(uint32_t freq)
         // when frequency is 0 then we are done (input device is in idle)
         frequency = freq;
         sync = DABPROC_SYNC_LEVEL_NO_SYNC;
-        emit syncStatus(uint8_t(DabSyncLevel::NoSync));
+        emit syncStatus(uint8_t(DabSyncLevel::NoSync));        
         serviceList.clear();
         ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
+        ensemble.label.clear();
+        ensemble.labelShort.clear();
+        ensemble.frequency = 0;
         dabTune(freq);
     }
     else
@@ -730,6 +733,11 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
 
 QString RadioControl::ensembleConfigurationString() const
 {
+    if (0 == serviceList.size())
+    {
+        return QString("");
+    }
+
     QString output;
     QTextStream strOut(&output, QIODevice::Text);
 
