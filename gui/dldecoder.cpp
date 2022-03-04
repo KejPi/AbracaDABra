@@ -22,8 +22,7 @@ void DLDecoder::reset()
     itemToggle = -1;
     itemRunnning = -1;
 
-
-    //emit resetTerminal();
+    emit resetTerminal();
 }
 
 bool DLDecoder::crc16check(const QByteArray & data)

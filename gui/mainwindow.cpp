@@ -300,9 +300,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     // DL(+)       
     connect(dlDecoder, &DLDecoder::dlComplete, this, &MainWindow::updateDL);
-    connect(dlDecoder, &DLDecoder::dlPlusObject, this, &MainWindow::onDlPlusObjReceived);
-    connect(dlDecoder, &DLDecoder::dlItemToggle, this, &MainWindow::onDlPlusItemToggle);
-    connect(dlDecoder, &DLDecoder::dlItemRunning, this, &MainWindow::onDlPlusItemRunning);
+    connect(dlDecoder, &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived);
+    connect(dlDecoder, &DLDecoder::dlItemToggle, this, &MainWindow::onDLPlusItemToggle);
+    connect(dlDecoder, &DLDecoder::dlItemRunning, this, &MainWindow::onDLPlusItemRunning);
+    connect(dlDecoder, &DLDecoder::resetTerminal, this, &MainWindow::onDLReset);
 
     connect(audioDecoder, &AudioDecoder::audioParametersInfo, this, &MainWindow::updateAudioInfo, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::newServiceSelection, audioDecoder, &AudioDecoder::start, Qt::QueuedConnection);
@@ -604,16 +605,6 @@ void MainWindow::onServiceSelection()
 
     clearServiceInformationLabels();
     dlDecoder->reset();
-    ui->dynamicLabel->setText("");    
-    ui->dlPlusLabel->setVisible(false);
-    ui->dlPlusLabel->setChecked(false);
-    onDLPlusToggle(false);
-
-    for (auto objPtr : dlObjCache)
-    {
-        delete objPtr;
-    }
-    dlObjCache.clear();
 }
 
 void MainWindow::on_channelCombo_currentIndexChanged(int index)
@@ -1498,7 +1489,7 @@ void MainWindow::clearServiceList()
     serviceList->clear();
 }
 
-void MainWindow::onDlPlusObjReceived(const DLPlusObject & object)
+void MainWindow::onDLPlusObjReceived(const DLPlusObject & object)
 {
     //qDebug() << Q_FUNC_INFO << object.getType() << object.getTag();
 
@@ -1553,7 +1544,7 @@ void MainWindow::onDlPlusObjReceived(const DLPlusObject & object)
     }
 }
 
-void MainWindow::onDlPlusItemToggle()
+void MainWindow::onDLPlusItemToggle()
 {
     //qDebug() << Q_FUNC_INFO;
     // delete all ITEMS.*
@@ -1573,7 +1564,7 @@ void MainWindow::onDlPlusItemToggle()
     }
 }
 
-void MainWindow::onDlPlusItemRunning(bool isRunning)
+void MainWindow::onDLPlusItemRunning(bool isRunning)
 {
     //qDebug() << Q_FUNC_INFO << isRunning;
     auto it = dlObjCache.cbegin();
@@ -1589,6 +1580,20 @@ void MainWindow::onDlPlusItemRunning(bool isRunning)
             break;
         }
     }
+}
+
+void MainWindow::onDLReset()
+{
+    ui->dynamicLabel->setText("");
+    ui->dlPlusLabel->setVisible(false);
+    ui->dlPlusLabel->setChecked(false);
+    onDLPlusToggle(false);
+
+    for (auto objPtr : dlObjCache)
+    {
+        delete objPtr;
+    }
+    dlObjCache.clear();
 }
 
 DLPlusObjectUI::DLPlusObjectUI(const DLPlusObject &obj) : dlPlusObject(obj)

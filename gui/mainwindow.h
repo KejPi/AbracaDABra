@@ -52,9 +52,10 @@ public slots:
     void updateSnrLevel(float snr);
     void updateServiceList(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
     void updateDL(const QString &dl);
-    void onDlPlusObjReceived(const DLPlusObject & object);
-    void onDlPlusItemToggle();
-    void onDlPlusItemRunning(bool isRunning);
+    void onDLPlusObjReceived(const DLPlusObject & object);
+    void onDLPlusItemToggle();
+    void onDLPlusItemRunning(bool isRunning);
+    void onDLReset();
     void updateAudioInfo(const AudioParameters &params);
     void updateDabTime(const QDateTime & d);
     void changeInputDevice(const InputDeviceId &d);
