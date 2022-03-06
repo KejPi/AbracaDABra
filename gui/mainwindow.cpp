@@ -114,7 +114,7 @@ MainWindow::MainWindow(QWidget *parent)
     switchModeAct = new QAction("Expert mode", this);
     connect(switchModeAct, &QAction::triggered, this, &MainWindow::switchMode);
 
-    ensembleInfoAct = new QAction("Ensemble Info", this);
+    ensembleInfoAct = new QAction("Ensemble information", this);
     connect(ensembleInfoAct, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
 
     aboutAct = new QAction("About", this);
