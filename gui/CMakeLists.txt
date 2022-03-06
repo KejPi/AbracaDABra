@@ -7,7 +7,9 @@ endif()
 
 set(TARGET AbracaDABra)
 
-project(${TARGET} LANGUAGES CXX)
+project(${TARGET}
+    VERSION 0.99
+    LANGUAGES CXX)
 
 set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/../install/")
 
@@ -20,6 +22,20 @@ option (USE_SYSTEM_FAAD       "Use system provided libfaad"     ON)
 option (USE_SYSTEM_FDKAAC     "Use system provided libfdk-aac"  ON)
 option (USE_SYSTEM_MPG123     "Use system provided libmpg123"   ON)
 option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   ON)
+
+## Version
+set(PROJECT_VERSION_RELEASE OFF)
+#string(TIMESTAMP PROJECT_BUILD_DATE "%Y-%m-%d %H:%M")
+execute_process(COMMAND git log --pretty=format:%h -n 1
+                OUTPUT_VARIABLE PROJECT_GIT_REV
+                ERROR_QUIET)
+
+# Check whether we got any revision
+if ("${PROJECT_GIT_REV}" STREQUAL "")
+    set(PROJECT_GIT_REV "N/A")
+endif()
+
+# message("${PROJECT_VERSION} ${VERSION_RELEASE} ${PROJECT_GIT_REV} ${BUILD_TIME}")
 
 ### DAB library
 # This has to be before Qt stuff
@@ -254,11 +270,14 @@ if (APPLE)
            MACOSX_PACKAGE_LOCATION "Resources")
 endif(APPLE)
 
+configure_file (config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
+
 add_executable(${TARGET}
     ${GUI_TYPE}
     ${RCC_SOURCES}
     ${APP_ICON_MACOSX}
     ${APP_ICON_RESOURCE_WINDOWS}
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h
     main.cpp
     mainwindow.cpp
     mainwindow.h
@@ -331,6 +350,9 @@ add_executable(${TARGET}
     aboutdialog.cpp
     aboutdialog.ui
   )
+
+# config.h
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 ### DAB library
 include_directories ( ${BACKEND_INCLUDE_DIRS} )
