@@ -14,6 +14,7 @@
 
 #include "setupdialog.h"
 #include "ensembleinfodialog.h"
+#include "aboutdialog.h"
 #include "slsview.h"
 #include "catslsdialog.h"
 #include "inputdevice.h"
@@ -68,7 +69,7 @@ signals:
     void exit();
 
 private slots:
-    void on_channelCombo_currentIndexChanged(int index);
+    void onChannelChange(int index);
     void clearEnsembleInformationLabels();
     void clearServiceInformationLabels();
     void initInputDevice(const InputDeviceId &d);
@@ -86,6 +87,7 @@ private:
     SetupDialog * setupDialog;
     EnsembleInfoDialog * ensembleInfoDialog;
     CatSLSDialog * catSlsDialog;
+    //AboutDialog * aboutDialog;
     QProgressBar * snrProgress;
     QLabel  * timeLabel;
     QLabel * syncLabel;
@@ -97,6 +99,7 @@ private:
     QAction * bandScanAct;
     QAction * switchModeAct;
     QAction * ensembleInfoAct;
+    QAction * aboutAct;
 
     QThread * radioControlThr;
     RadioControl * radioControl;
@@ -142,6 +145,7 @@ private:
     void switchServiceSource();
     void switchMode();
     void showEnsembleInfo();
+    void showAboutDialog();
     void showCatSLS();
     void setExpertMode(bool ena);
     void stop();

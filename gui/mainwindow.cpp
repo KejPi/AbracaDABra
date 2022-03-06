@@ -9,6 +9,7 @@
 #include <QSettings>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QMessageBox>
 
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
@@ -43,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
     dlDecoder = new DLDecoder();
 
     ui->setupUi(this);
+    connect(ui->channelCombo, &QComboBox::currentIndexChanged, this, &MainWindow::onChannelChange);
 
     // set UI
     setWindowTitle("Abraca DAB Radio");
@@ -105,7 +107,7 @@ MainWindow::MainWindow(QWidget *parent)
     clearServiceListAct = new QAction("Clear service list", this);
     connect(clearServiceListAct, &QAction::triggered, this, &MainWindow::clearServiceList);
 
-    bandScanAct = new QAction("Band scan...", this);
+    bandScanAct = new QAction("Band scan", this);
     //scanAct->setStatusTip("Seach for available service"); // this is shown in status bar
     connect(bandScanAct, &QAction::triggered, this, &MainWindow::bandScan);
 
@@ -115,12 +117,16 @@ MainWindow::MainWindow(QWidget *parent)
     ensembleInfoAct = new QAction("Ensemble Info", this);
     connect(ensembleInfoAct, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
 
+    aboutAct = new QAction("About", this);
+    connect(aboutAct, &QAction::triggered, this, &MainWindow::showAboutDialog);
+
     menu = new QMenu(this);
     menu->addAction(setupAct);
     menu->addAction(bandScanAct);
     menu->addAction(switchModeAct);
     menu->addAction(ensembleInfoAct);
     menu->addAction(clearServiceListAct);
+    menu->addAction(aboutAct);
 
     QPixmap pic;
     ClickableLabel * settingsLabel = new ClickableLabel(this);
@@ -607,7 +613,7 @@ void MainWindow::onServiceSelection()
     dlDecoder->reset();
 }
 
-void MainWindow::on_channelCombo_currentIndexChanged(int index)
+void MainWindow::onChannelChange(int index)
 {
     if (frequency != ui->channelCombo->itemData(index).toUInt())
     {
@@ -1393,6 +1399,13 @@ void MainWindow::showEnsembleInfo()
     ensembleInfoDialog->show();
     ensembleInfoDialog->raise();
     ensembleInfoDialog->activateWindow();
+}
+
+void MainWindow::showAboutDialog()
+{
+    //QMessageBox::aboutQt(this, tr("About QT"));
+    AboutDialog aboutDialog(this);
+    aboutDialog.exec();
 }
 
 void MainWindow::showCatSLS()

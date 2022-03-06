@@ -326,6 +326,10 @@ add_executable(${TARGET}
     catslsdialog.h
     catslsdialog.cpp
     catslsdialog.ui
+
+    aboutdialog.h
+    aboutdialog.cpp
+    aboutdialog.ui
   )
 
 ### DAB library
