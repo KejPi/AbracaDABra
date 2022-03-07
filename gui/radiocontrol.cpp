@@ -151,7 +151,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             requestsPending = 0;
             for (auto const & dabService : *pServiceList)
             {
-                DabSId sid(dabService.sid, ensemble.ecc);
+                DabSId sid(dabService.sid, ensemble.ecc());
                 serviceConstIterator servIt = serviceList.constFind(sid.value());
                 if (servIt != serviceList.cend())
                 {   // delete existing service
@@ -181,7 +181,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         QList<dabProcServiceCompListItem_t> * pList = (QList<dabProcServiceCompListItem_t> *) pEvent->pData;
         if (!pList->isEmpty())
         {   // all service components belong to the same SId, reading sid from the first            
-            DabSId sid(pList->at(0).SId, ensemble.ecc);
+            DabSId sid(pList->at(0).SId, ensemble.ecc());
 #if RADIO_CONTROL_VERBOSE
             qDebug("RadioControlEvent::SERVICE_COMPONENT_LIST %8.8X", sid.value);
 #endif
@@ -301,7 +301,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         QList<dabProcUserAppListItem_t> * pList = (QList<dabProcUserAppListItem_t> *) pEvent->pData;
         if (!pList->isEmpty())
         {   // all user apps belong to the same SId, reading sid from the first
-            DabSId sid(pList->at(0).SId, ensemble.ecc);
+            DabSId sid(pList->at(0).SId, ensemble.ecc());
 
             // find service ID
             serviceIterator serviceIt = serviceList.find(sid.value());
@@ -745,10 +745,10 @@ QString RadioControl::ensembleConfigurationString() const
     strOut << "<dl>";
     strOut << "<dt>Ensemble:</dt>";
     strOut << QString("<dd>0x%1 <b>%2</b> [ <i>%3</i> ]  ECC = 0x%4, UTC %5 min, INT = %6, alarm announcements = %7</dd>")
-              .arg(QString("%1").arg(ensemble.eid, 4, 16, QChar('0')).toUpper())
+              .arg(QString("%1").arg(ensemble.eid(), 4, 16, QChar('0')).toUpper())
               .arg(ensemble.label)
               .arg(ensemble.labelShort)
-              .arg(QString("%1").arg(ensemble.ecc, 2, 16, QChar('0')).toUpper())
+              .arg(QString("%1").arg(ensemble.ecc(), 2, 16, QChar('0')).toUpper())
               .arg(ensemble.LTO*30)
               .arg(ensemble.intTable)
               .arg(ensemble.alarm);

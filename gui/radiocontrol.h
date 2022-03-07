@@ -78,21 +78,16 @@ struct DabPTy {
 struct RadioControlEnsemble
 {
     uint32_t frequency;
-    union
-    {
-        uint32_t ueid;
-        struct
-        {
-            uint32_t eid : 16;
-            uint32_t ecc : 8;
-        };
-    };
+    uint32_t ueid;
     int8_t LTO;       // Ensemble LTO (Local Time Offset): Local Time Offset (LTO) for the ensemble.
                       // It is expressed in multiples of half hours in the range -15,5 hours to +15,5 hours
     uint8_t intTable;  // Inter. (International) Table Id: this 8-bit field shall be used to select an international table
     uint8_t alarm;
     QString label;
     QString labelShort;
+
+    uint16_t eid() const { return ueid & 0x0000FFFF; }
+    uint8_t ecc() const { return (ueid >> 16); }
 };
 Q_DECLARE_METATYPE(RadioControlEnsemble)
 

@@ -449,8 +449,8 @@ void MainWindow::updateEnsembleInfo(const RadioControlEnsemble &ens)
                                           "<b>Country:</b> %5")
                                   .arg(ens.label)
                                   .arg(ens.labelShort)
-                                  .arg(QString("%1").arg(ens.ecc, 2, 16, QChar('0')).toUpper())
-                                  .arg(QString("%1").arg(ens.eid, 4, 16, QChar('0')).toUpper())
+                                  .arg(QString("%1").arg(ens.ecc(), 2, 16, QChar('0')).toUpper())
+                                  .arg(QString("%1").arg(ens.eid(), 4, 16, QChar('0')).toUpper())
                                   .arg(DabTables::getCountryName(ens.ueid)));
 }
 
