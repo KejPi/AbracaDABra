@@ -72,7 +72,7 @@ QVariant SLModelItem::data(int column, int role) const
             {  // service item
                 QString tooltip = QString("<b>Short label:</b> %1<br><b>SId:</b> 0x%2")
                         .arg(m_servicePtr->shortLabel())
-                        .arg( QString("%1").arg(m_servicePtr->SId().prog.countryServiceRef, 4, 16, QChar('0')).toUpper() );
+                        .arg( QString("%1").arg(m_servicePtr->SId().countryServiceRef(), 4, 16, QChar('0')).toUpper() );
                 return QVariant(tooltip);
             }
 

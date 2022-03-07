@@ -30,22 +30,30 @@ enum class DabSyncLevel
     FullSync = 2,
 };
 
-struct DabSId {
-    union {
-        uint32_t value;
-        struct {
-            uint32_t countryServiceRef : 16;
-            uint32_t ecc : 8;
-            uint32_t zero : 8;
-        } prog;
-        struct {
-            uint32_t countryServiceRef : 24;
-            uint32_t ecc : 8;
-        } data;
-    };   
-    DabSId(uint32_t sid = 0) { value = sid; }
-    bool isProgServiceId() const { return prog.zero == 0; }
-    operator uint32_t() const { return value; }
+class DabSId {
+public:
+    DabSId() : eccsid(0), ecc(0) {};
+    DabSId(uint32_t sid, uint8_t ensEcc = 0) { set(sid, ensEcc); }
+    bool isProgServiceId() const { return 0 == (eccsid & 0xFF000000); }
+    uint32_t value() const { return eccsid; }
+    void set(uint32_t sid, uint8_t ensEcc = 0)
+    {
+        if (0 == (sid & 0xFF000000))
+        {   // programme service ID
+            ecc = (sid >> 16);
+            if (0 == ecc) { ecc = ensEcc; }
+            eccsid = (ecc << 16) | (sid & 0x0000FFFF);
+        }
+        else
+        {   // data service ID
+            ecc = (sid >> 24);
+            eccsid = sid;
+        }
+    }
+    uint32_t countryServiceRef() const { return (isProgServiceId() ? (eccsid & 0x0000FFFF) : (eccsid & 0x00FFFFFF));  }
+private:
+    uint32_t eccsid;
+    uint8_t ecc;
 };
 
 struct DabProtection {

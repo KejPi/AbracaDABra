@@ -39,7 +39,6 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-    SId.value = 0;
     //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
     dlDecoder = new DLDecoder();
 
@@ -620,7 +619,7 @@ void MainWindow::onChannelChange(int index)
         ui->channelLabel->setText(ui->channelCombo->currentText());
 
         // no service is selected
-        SId.value = 0;
+        SId.set(0);
 
         // reset UI
         onChannelSelection();
@@ -641,7 +640,7 @@ void MainWindow::tuneFinished(uint32_t freq)
         setupDialog->enableFileSelection(false);
 
         // if current service has alternatives show icon immediately to avoid UI blocking when audio does not work
-        if (serviceList->numEnsembles(ServiceListItem::getId(SId.value, SCIdS)) > 1)
+        if (serviceList->numEnsembles(ServiceListItem::getId(SId.value(), SCIdS)) > 1)
         {
             ui->switchSourceLabel->setVisible(true);
         }
@@ -707,7 +706,7 @@ void MainWindow::serviceListClicked(const QModelIndex &index)
     const SLModel * model = reinterpret_cast<const SLModel*>(index.model());
 
     //qDebug() << current << model->getId(current) << previous << model->getId(previous);
-    if (model->getId(index) == ServiceListItem::getId(SId.value, SCIdS))
+    if (model->getId(index) == ServiceListItem::getId(SId.value(), SCIdS))
     {
         return;
     }
@@ -743,10 +742,10 @@ void MainWindow::serviceListClicked(const QModelIndex &index)
         }
         else
         {   // if new service has alternatives show icon immediately to avoid UI blocking when audio does not work
-            ui->switchSourceLabel->setVisible(serviceList->numEnsembles(ServiceListItem::getId(SId.value, SCIdS)) > 1);
+            ui->switchSourceLabel->setVisible(serviceList->numEnsembles(ServiceListItem::getId(SId.value(), SCIdS)) > 1);
         }
         onServiceSelection();
-        emit serviceRequest(frequency, SId.value, SCIdS);
+        emit serviceRequest(frequency, SId.value(), SCIdS);
 
         // synchronize tree view with service selection
         serviceTreeViewUpdateSelection();
@@ -760,7 +759,7 @@ void MainWindow::serviceListTreeClicked(const QModelIndex &index)
     if (index.parent().isValid())
     {   // service, not ensemle selected
         // if both service ID and enseble ID are the same then return
-        uint64_t currentServiceId = ServiceListItem::getId(SId.value, SCIdS);
+        uint64_t currentServiceId = ServiceListItem::getId(SId.value(), SCIdS);
         uint64_t currentEnsId = 0;
         ServiceListConstIterator it = serviceList->findService(currentServiceId);
         if (serviceList->serviceListEnd() != it)
@@ -804,11 +803,11 @@ void MainWindow::serviceListTreeClicked(const QModelIndex &index)
             }
             else
             {   // if new service has alternatives show icon immediately to avoid UI blocking when audio does not work
-                ui->switchSourceLabel->setVisible(serviceList->numEnsembles(ServiceListItem::getId(SId.value, SCIdS)) > 1);
+                ui->switchSourceLabel->setVisible(serviceList->numEnsembles(ServiceListItem::getId(SId.value(), SCIdS)) > 1);
             }
             onServiceSelection();
-            qDebug() << "serviceRequest(frequency, SId.value, SCIdS)" << frequency << SId.value << SCIdS;
-            emit serviceRequest(frequency, SId.value, SCIdS);
+            qDebug() << "serviceRequest(frequency, SId.value, SCIdS)" << frequency << SId.value() << SCIdS;
+            emit serviceRequest(frequency, SId.value(), SCIdS);
 
             // we need to find the item in model and select it
             serviceListViewUpdateSelection();
@@ -818,7 +817,7 @@ void MainWindow::serviceListTreeClicked(const QModelIndex &index)
 
 void MainWindow::serviceChanged(const RadioControlServiceComponent &s)
 {
-    if (s.isAudioService() && (s.SId.value == SId.value))
+    if (s.isAudioService() && (s.SId.value() == SId.value()))
     {
         if (s.label.isEmpty())
         {   // service component not valid -> shoudl not happen
@@ -852,10 +851,10 @@ void MainWindow::serviceChanged(const RadioControlServiceComponent &s)
                                              "<b>Country:</b> %6")
                                      .arg(s.label)
                                      .arg(s.labelShort)
-                                     .arg(QString("%1").arg(s.SId.prog.countryServiceRef, 4, 16, QChar('0')).toUpper() )
+                                     .arg(QString("%1").arg(s.SId.countryServiceRef(), 4, 16, QChar('0')).toUpper() )
                                      .arg(s.SCIdS)
                                      .arg(DabTables::getLangName(s.lang))
-                                     .arg(DabTables::getCountryName(s.SId.value)));        
+                                     .arg(DabTables::getCountryName(s.SId.value())));
 
         if ((s.pty.d != 0) && (s.pty.d != s.pty.s))
         {   // dynamic PTy available != static PTy
@@ -1260,7 +1259,7 @@ void MainWindow::saveSettings()
         SCIdS = (*it)->SCIdS();
         frequency = (*it)->getEnsemble()->frequency();
 
-        settings.setValue("SID", SId.value);
+        settings.setValue("SID", SId.value());
         settings.setValue("SCIdS", SCIdS);
         settings.setValue("Frequency", frequency);
     }
@@ -1330,7 +1329,7 @@ void MainWindow::switchServiceSource()
             }
             frequency = newFrequency;
             onServiceSelection();
-            emit serviceRequest(frequency, SId.value, SCIdS);
+            emit serviceRequest(frequency, SId.value(), SCIdS);
 
             // synchronize tree view with service selection
             serviceTreeViewUpdateSelection();
@@ -1341,7 +1340,7 @@ void MainWindow::switchServiceSource()
 void MainWindow::serviceTreeViewUpdateSelection()
 {
     const SLTreeModel * model = reinterpret_cast<const SLTreeModel*>(ui->serviceTreeView->model());
-    uint64_t serviceId = ServiceListItem::getId(SId.value, SCIdS);
+    uint64_t serviceId = ServiceListItem::getId(SId.value(), SCIdS);
     uint64_t ensembleId = 0;
     ServiceListConstIterator it = serviceList->findService(serviceId);
     if (serviceList->serviceListEnd() != it)
@@ -1369,7 +1368,7 @@ void MainWindow::serviceTreeViewUpdateSelection()
 void MainWindow::serviceListViewUpdateSelection()
 {
     const SLModel * model = reinterpret_cast<const SLModel*>(ui->serviceListView->model());
-    uint64_t id = ServiceListItem::getId(SId.value, SCIdS);
+    uint64_t id = ServiceListItem::getId(SId.value(), SCIdS);
     QModelIndex index;
     for (int r = 0; r < model->rowCount(); ++r)
     {

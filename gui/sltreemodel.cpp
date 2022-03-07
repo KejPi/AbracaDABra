@@ -186,7 +186,7 @@ void SLTreeModel::addEnsembleService(const EnsembleListItem *e, const ServiceLis
     {   // this part is to creates secondary service item as secont level service in the tree
         // not tested much - only one stimuli for testing is available
         // it expects that parent item is created first -> if not it will add secondary componemnt as normal service
-        uint64_t id = ServiceListItem::getId(s->SId().value, 0);
+        uint64_t id = ServiceListItem::getId(s->SId().value(), 0);
         SLModelItem * serviceChild = ensChild->findChildId(id);
         if (nullptr != serviceChild)
         {   // primary service found

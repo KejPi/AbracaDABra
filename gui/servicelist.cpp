@@ -32,7 +32,7 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     bool newService = false;
     bool newEnsemble = false;
 
-    qDebug("\tService: %s SID = 0x%X, SCIdS = %d", s.label.toLocal8Bit().data(), s.SId.value, s.SCIdS);
+    qDebug("\tService: %s SID = 0x%X, SCIdS = %d", s.label.toLocal8Bit().data(), s.SId.value(), s.SCIdS);
 
     ServiceListItem * pService = nullptr;
     uint64_t servId = ServiceListItem::getId(s);
@@ -138,7 +138,7 @@ void ServiceList::save(QSettings & settings)
         ServiceListIterator it = m_serviceList.find(id);
 
         settings.setArrayIndex(n++);
-        settings.setValue("SID", (*it)->SId().value);
+        settings.setValue("SID", (*it)->SId().value());
         settings.setValue("SCIdS", (*it)->SCIdS());
         settings.setValue("Label", (*it)->label());
         settings.setValue("ShortLabel", (*it)->shortLabel());
@@ -170,7 +170,7 @@ void ServiceList::load(QSettings & settings)
         bool ok = true;
         settings.setArrayIndex(s);
         // filling only what is necessary
-        item.SId.value = settings.value("SID").toUInt(&ok);
+        item.SId.set(settings.value("SID").toUInt(&ok));
         if (!ok)
         {
             qDebug() << "Problem loading SID item:" << s;

@@ -151,21 +151,22 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             requestsPending = 0;
             for (auto const & dabService : *pServiceList)
             {
-                serviceConstIterator servIt = serviceList.constFind(dabService.sid);
+                DabSId sid(dabService.sid, ensemble.ecc);
+                serviceConstIterator servIt = serviceList.constFind(sid.value());
                 if (servIt != serviceList.cend())
                 {   // delete existing service
                     serviceList.erase(servIt);
                 }
                 RadioControlService newService;
-                newService.SId.value = dabService.sid;
+                newService.SId = sid;
                 newService.label = DabTables::convertToQString(dabService.label.str, dabService.label.charset).trimmed();
                 newService.labelShort = toShortLabel(newService.label, dabService.label.charField).trimmed();
                 newService.pty.s = dabService.pty.s;
                 newService.pty.d = dabService.pty.d;
                 newService.CAId = dabService.CAId;
-                serviceList.insert(dabService.sid, newService);
+                serviceList.insert(sid.value(), newService);
                 requestsPending++;
-                dabGetServiceComponent(dabService.sid);
+                dabGetServiceComponent(sid.value());
             }
         }
         delete pServiceList;
@@ -179,14 +180,14 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 
         QList<dabProcServiceCompListItem_t> * pList = (QList<dabProcServiceCompListItem_t> *) pEvent->pData;
         if (!pList->isEmpty())
-        {   // all service components belong to the same SId, reading sid from the first
-            DabSId sid(pList->at(0).SId);
+        {   // all service components belong to the same SId, reading sid from the first            
+            DabSId sid(pList->at(0).SId, ensemble.ecc);
 #if RADIO_CONTROL_VERBOSE
             qDebug("RadioControlEvent::SERVICE_COMPONENT_LIST %8.8X", sid.value);
 #endif
 
             // find service ID
-            serviceIterator serviceIt = serviceList.find(sid);
+            serviceIterator serviceIt = serviceList.find(sid.value());
             if (serviceIt != serviceList.end())
             {   // SId found
                 serviceIt->serviceComponents.clear();
@@ -263,7 +264,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                     }
                     serviceIt->serviceComponents.insert(newServiceComp.SCIdS, newServiceComp);
 
-                    if ((serviceRequest.SId == serviceIt->SId.value) && (serviceRequest.SCIdS == newServiceComp.SCIdS))
+                    if ((serviceRequest.SId == serviceIt->SId.value()) && (serviceRequest.SCIdS == newServiceComp.SCIdS))
                     {
                         dabServiceSelection(serviceRequest.SId, serviceRequest.SCIdS);
                         serviceRequest.SId = 0;    // clear request
@@ -274,7 +275,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                 if (requestUpdate)
                 {
                     serviceIt->serviceComponents.clear();
-                    dabGetServiceComponent(sid.value);
+                    dabGetServiceComponent(sid.value());
                 }
                 else
                 {  // service list item information is complete
@@ -282,13 +283,13 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                    for (auto const & serviceComp : qAsConst(serviceIt->serviceComponents))
                    {
                        requestsPending++;
-                       dabGetUserApps(serviceIt->SId.value, serviceComp.SCIdS);
+                       dabGetUserApps(serviceIt->SId.value(), serviceComp.SCIdS);
                    }
                 }
             }
             else
             {  // SId not found
-                qDebug("Service SID %4.4X not in service list", sid.value);
+                qDebug("Service SID %8.8X not in service list", sid.value());
             }
         }
 
@@ -300,10 +301,10 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         QList<dabProcUserAppListItem_t> * pList = (QList<dabProcUserAppListItem_t> *) pEvent->pData;
         if (!pList->isEmpty())
         {   // all user apps belong to the same SId, reading sid from the first
-            DabSId sid(pList->at(0).SId);
+            DabSId sid(pList->at(0).SId, ensemble.ecc);
 
             // find service ID
-            serviceIterator serviceIt = serviceList.find(sid);
+            serviceIterator serviceIt = serviceList.find(sid.value());
             if (serviceIt != serviceList.end())
             {   // SId found
                 // all user apps belong to the same SId+SCIdS, reading SCIdS from the first
@@ -636,7 +637,7 @@ bool RadioControl::getCurrentAudioServiceComponent(serviceComponentIterator &scI
 {
     for (auto & service : serviceList)
     {
-        if (service.SId.value == currentService.SId)
+        if (service.SId.value() == currentService.SId)
         {
             scIt = service.serviceComponents.find(currentService.SCIdS);
             return (service.serviceComponents.end() != scIt);
@@ -649,7 +650,7 @@ bool RadioControl::cgetCurrentAudioServiceComponent(serviceComponentConstIterato
 {
     for (const auto & service : serviceList)
     {
-        if (service.SId.value == currentService.SId)
+        if (service.SId.value() == currentService.SId)
         {
             scIt = service.serviceComponents.constFind(currentService.SCIdS);
             return (service.serviceComponents.cend() != scIt);
@@ -689,11 +690,11 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
                     sc.autoEnabled = start;
                     if (start)
                     {
-                        dabServiceSelection(sc.SId.value, sc.SCIdS);
+                        dabServiceSelection(sc.SId.value(), sc.SCIdS);
                     }
                     else
                     {
-                        dabServiceStop(sc.SId.value, sc.SCIdS);
+                        dabServiceStop(sc.SId.value(), sc.SCIdS);
                     }
                     return;
                 }
@@ -716,11 +717,11 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
                             sc.autoEnabled = start;
                             if (start)
                             {
-                                dabServiceSelection(sc.SId.value, sc.SCIdS);
+                                dabServiceSelection(sc.SId.value(), sc.SCIdS);
                             }
                             else
                             {
-                                dabServiceStop(sc.SId.value, sc.SCIdS);
+                                dabServiceStop(sc.SId.value(), sc.SCIdS);
                             }
                             return;
                         }
@@ -767,7 +768,7 @@ QString RadioControl::ensembleConfigurationString() const
         if (s.SId.isProgServiceId())
         {   // programme service
             strOut << QString("0x%1 <b>%2</b> [ <i>%3</i> ]")
-                              .arg(QString("%1").arg(s.SId.value, 4, 16, QChar('0')).toUpper())
+                              .arg(QString("%1").arg(s.SId.value(), 4, 16, QChar('0')).toUpper())
                               .arg(s.label)
                               .arg(s.labelShort);
 
@@ -784,7 +785,7 @@ QString RadioControl::ensembleConfigurationString() const
         else
         {   // data service
             strOut << QString("0x%1 <b>%2</b> [ <i>%3</i> ]")
-                   .arg(QString("%1").arg(s.SId.value, 8, 16, QChar('0')).toUpper())
+                   .arg(QString("%1").arg(s.SId.value(), 8, 16, QChar('0')).toUpper())
                    .arg(s.label)
                    .arg(s.labelShort);
         }

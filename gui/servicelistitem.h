@@ -27,8 +27,8 @@ public:
     uint32_t currentEnsembleIdx() const { return m_currentEnsemble; } // used to save service list
 
     bool operator==(const ServiceListItem & other);
-    uint64_t getId() const { return getId(m_sid.value, m_scids); }
-    static uint64_t getId(const RadioControlServiceComponent & item) { return getId(item.SId.value, item.SCIdS); }
+    uint64_t getId() const { return getId(m_sid.value(), m_scids); }
+    static uint64_t getId(const RadioControlServiceComponent & item) { return getId(item.SId.value(), item.SCIdS); }
     static uint64_t getId(uint32_t sid, uint8_t scids) { return ((uint64_t(scids)<<32) | sid); }
 private:
     // Service
