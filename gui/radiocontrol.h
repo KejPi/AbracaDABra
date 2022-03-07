@@ -32,28 +32,28 @@ enum class DabSyncLevel
 
 class DabSId {
 public:
-    DabSId() : eccsid(0), ecc(0) {};
+    DabSId() : eccsid(0) {};
     DabSId(uint32_t sid, uint8_t ensEcc = 0) { set(sid, ensEcc); }
     bool isProgServiceId() const { return 0 == (eccsid & 0xFF000000); }
     uint32_t value() const { return eccsid; }
+    uint16_t progSId() const { return uint16_t(eccsid); }
+    uint8_t ecc() const { return uint8_t(eccsid >> 16);}
     void set(uint32_t sid, uint8_t ensEcc = 0)
     {
         if (0 == (sid & 0xFF000000))
         {   // programme service ID
-            ecc = (sid >> 16);
+            uint8_t ecc = (sid >> 16);
             if (0 == ecc) { ecc = ensEcc; }
             eccsid = (ecc << 16) | (sid & 0x0000FFFF);
         }
         else
         {   // data service ID
-            ecc = (sid >> 24);
             eccsid = sid;
         }
     }
     uint32_t countryServiceRef() const { return (isProgServiceId() ? (eccsid & 0x0000FFFF) : (eccsid & 0x00FFFFFF));  }
 private:
     uint32_t eccsid;
-    uint8_t ecc;
 };
 
 struct DabProtection {
@@ -86,7 +86,7 @@ struct RadioControlEnsemble
     QString label;
     QString labelShort;
 
-    uint16_t eid() const { return ueid & 0x0000FFFF; }
+    uint16_t eid() const { return uint16_t(ueid); }
     uint8_t ecc() const { return (ueid >> 16); }
 };
 Q_DECLARE_METATYPE(RadioControlEnsemble)

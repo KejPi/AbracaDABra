@@ -767,10 +767,11 @@ QString RadioControl::ensembleConfigurationString() const
         strOut << "<dt>";
         if (s.SId.isProgServiceId())
         {   // programme service
-            strOut << QString("0x%1 <b>%2</b> [ <i>%3</i> ]")
-                              .arg(QString("%1").arg(s.SId.value(), 4, 16, QChar('0')).toUpper())
+            strOut << QString("0x%1 <b>%2</b> [ <i>%3</i> ] ECC = 0x%4,")
+                              .arg(QString("%1").arg(s.SId.progSId(), 4, 16, QChar('0')).toUpper())
                               .arg(s.label)
-                              .arg(s.labelShort);
+                              .arg(s.labelShort)
+                              .arg(QString("%1").arg(s.SId.ecc(), 2, 16, QChar('0')).toUpper());
 
             strOut << QString(" PTY: %1").arg(s.pty.s);
             if (s.pty.d != 0)
