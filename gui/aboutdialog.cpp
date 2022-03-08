@@ -17,7 +17,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     ui->version->setText(QString("Version %1+, revision %2")
 #endif
                          .arg(PROJECT_VER).arg(PROJECT_GIT_REV));
-    ui->qtVersion->setText(QString("Based on QT %1").arg(QT_VERSION_STR));
+    ui->qtVersion->setText(QString("Based on Qt %1").arg(QT_VERSION_STR));
     ui->libraries->setText("AbracaDABra uses following libraries (special thanks to):"
                            "<ul>"
 #ifdef USE_FFTS
