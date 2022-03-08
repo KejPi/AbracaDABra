@@ -9,6 +9,8 @@
 
 #cmakedefine PROJECT_VERSION_RELEASE
 
+#cmakedefine AUDIO_DECODER_USE_FDKAAC 1
+
 #endif // CONFIG_H
 
 

@@ -2,13 +2,13 @@
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 #include "config.h"
+#include "backend/config.h"
 
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
-
     ui->appName->setText("<b>Abraca DAB radio</b>");
     ui->author->setText("Developed by Petr Kopecký (<a href=\"mailto:xkejpi@gmail.com\">xkejpi@gmail.com</a>)");
 #ifdef PROJECT_VERSION_RELEASE
@@ -20,12 +20,21 @@ AboutDialog::AboutDialog(QWidget *parent) :
     ui->qtVersion->setText(QString("Based on QT %1").arg(QT_VERSION_STR));
     ui->libraries->setText("AbracaDABra uses following libraries (special thanks to):"
                            "<ul>"
+#ifdef USE_FFTS
                            "<li><a href=\"https://github.com/anthonix/ffts\">FFTS</a> by Anthony Blake</li>"
-                           "<li><a href=\"https://github.com/anthonix/ffts\">KISS FFT</a> by Mark Borgerding</li>"
+#endif
+#ifdef USE_KISS_FFT
+                           "<li><a href=\"https://github.com/mborgerding/kissfft\">KISS FFT</a> by Mark Borgerding</li>"
+#endif // USE_KISS_FFT
                            "<li><a href=\"https://github.com/Opendigitalradio/ka9q-fec\">FEC</a> by Phil Karn, KA9Q</li>"
                            "<li><a href=\"https://osmocom.org/projects/rtl-sdr/wiki/Rtl-sdr\">rtl-sdr</a> by Steve Markgraf, Dimitri Stolnikov, and Hoernchen, with contributions by Kyle Keen, Christian Vogel and Harald Welte.</li>"
                            "<li><a href=\"https://www.mpg123.dec\">mpg123</a> by Michael Hipp, Thomas Orgis and others</li>"
+#if AUDIO_DECODER_USE_FDKAAC
+                           "<li><a href=\"https://github.com/mstorsjo/fdk-aac\">fdk-aac</a> Copyright © 1995 - 2018 Fraunhofer-Gesellschaft "
+                           "zur Förderung der angewandten Forschung e.V.</li>"
+#else
                            "<li><a href=\"https://github.com/knik0/faad2\">FAAD2</a> Copyright © 2003-2005 M. Bakker, Nero AG</li>"
+#endif
                            "<li><a href=\"http://www.portaudio.com\">PortAudio</a> Copyright © 1999-2011 Ross Bencina and Phil Burk</li>"
                            "</ul>");
     ui->disclaimer->setText("<p>Copyright © 2019-2022 Petr Kopecký</p>"

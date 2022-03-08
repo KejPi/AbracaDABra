@@ -119,7 +119,7 @@ endif ()
 
 if (USE_FDK_AAC)
     message (STATUS "libfdk-aac used instead of libfaad2 ${USE_FDK_AAC}")
-    add_definitions(-DAUDIO_DECODER_USE_FDKAAC)
+    set(AUDIO_DECODER_USE_FDKAAC ON)
     if (USE_SYSTEM_FDKAAC)
         find_library (LIBFDKAAC_LINK_LIBRARIES fdk-aac)
         find_path(LIBFDKAAC_INCLUDE_DIRS fdk-aac/aacdecoder_lib.h)

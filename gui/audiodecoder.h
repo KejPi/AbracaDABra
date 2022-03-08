@@ -5,6 +5,7 @@
 #include <QByteArray>
 #include <QDataStream>
 #include <mpg123.h>
+#include "config.h"
 #if defined(AUDIO_DECODER_USE_FDKAAC)
 #include <fdk-aac/aacdecoder_lib.h>
 #else
