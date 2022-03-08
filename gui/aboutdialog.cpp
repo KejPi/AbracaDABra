@@ -10,7 +10,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     ui->setupUi(this);
 
     ui->appName->setText("<b>Abraca DAB radio</b>");
-    ui->author->setText("Developed by Petr Kopecky (<a href=\"mailto:xkejpi@gmail.com\">xkejpi@gmail.com</a>)");
+    ui->author->setText("Developed by Petr Kopecký (<a href=\"mailto:xkejpi@gmail.com\">xkejpi@gmail.com</a>)");
 #ifdef PROJECT_VERSION_RELEASE
     ui->version->setText(QString("Version %1, revision %2")
 #else

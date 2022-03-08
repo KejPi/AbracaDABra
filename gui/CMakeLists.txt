@@ -27,6 +27,7 @@ option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   ON)
 set(PROJECT_VERSION_RELEASE OFF)
 #string(TIMESTAMP PROJECT_BUILD_DATE "%Y-%m-%d %H:%M")
 execute_process(COMMAND git log --pretty=format:%h -n 1
+                WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                 OUTPUT_VARIABLE PROJECT_GIT_REV
                 ERROR_QUIET)
 
