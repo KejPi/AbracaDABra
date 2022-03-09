@@ -6,7 +6,7 @@
 #include <QGraphicsPixmapItem>
 #include <QShowEvent>
 
-#include "userapplication.h"
+#include "slideshowapp.h"
 
 namespace Ui {
 class CatSLSDialog;

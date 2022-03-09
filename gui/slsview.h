@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QGraphicsPixmapItem>
 
-#include "userapplication.h"
+#include "slideshowapp.h"
 
 // this implementation allow scaling od SLS with the window
 class SLSView : public QGraphicsView
