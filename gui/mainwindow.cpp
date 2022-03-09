@@ -354,6 +354,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(catSlsDialog, &CatSLSDialog::getCurrentCatSlide, slideShowApp, &SlideShowApp::getCurrentCatSlide, Qt::QueuedConnection);
     connect(catSlsDialog, &CatSLSDialog::getNextCatSlide, slideShowApp, &SlideShowApp::getNextCatSlide, Qt::QueuedConnection);    
 
+#warning "Remove automatic creation of SPI app"
+    // slide show application is created by default
+    // ETSI TS 101 499 V3.1.1  [5.1.1]
+    // The application should be automatically started when a SlideShow service is discovered for the current radio service
+    spiApp = new SPIApp(radioControl);
+    spiApp->moveToThread(radioControlThr);
+    connect(radioControlThr, &QThread::finished, spiApp, &QObject::deleteLater);
+    connect(radioControl, &RadioControl::newServiceSelection, spiApp, &SPIApp::start);
+    connect(radioControl, &RadioControl::serviceChanged, spiApp, &SPIApp::start);
+    //connect(spiApp, &SPIApp::resetTerminal, ui->slsView, &SLSView::reset, Qt::QueuedConnection);
+    connect(this, &MainWindow::stopUserApps, spiApp, &SPIApp::stop, Qt::QueuedConnection);
+
     // input device connections
     initInputDevice(InputDeviceId::UNDEFINED);
 

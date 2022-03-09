@@ -26,6 +26,8 @@
 #include "dldecoder.h"
 #include "motdecoder.h"
 #include "userapplication.h"
+#include "slideshowapp.h"
+#include "spiapp.h"
 #include "audiodecoder.h"
 #include "audiooutput.h"
 #include "servicelist.h"
@@ -106,6 +108,7 @@ private:
 
     DLDecoder * dlDecoder;
     SlideShowApp * slideShowApp;
+    SPIApp * spiApp;
 
     InputDeviceId inputDeviceId = InputDeviceId::UNDEFINED;
     InputDevice * inputDevice = nullptr;

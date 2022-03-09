@@ -339,9 +339,10 @@ add_executable(${TARGET}
 
     userapplication.h
     userapplication.cpp
-
     slideshowapp.h
     slideshowapp.cpp
+    spiapp.h
+    spiapp.cpp
 
     slsview.h
     slsview.cpp
