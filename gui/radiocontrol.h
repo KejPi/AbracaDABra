@@ -23,6 +23,10 @@
 // there are 12 FIB's in one DAB frame
 #define RADIO_CONTROL_NOTIFICATION_FIB_EXPECTED  (12*(1 << RADIO_CONTROL_NOTIFICATION_PERIOD))
 
+// this is used for testing of receiver perfomance, it allows ensemble ECC = 0
+// and data services without user application
+#define RADIO_CONTROL_TEST_MODE 0
+
 enum class DabSyncLevel
 {
     NoSync = 0,

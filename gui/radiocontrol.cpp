@@ -109,7 +109,11 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
     {
         // process ensemble info
         dabProc_NID_ENSEMBLE_INFO_t * pInfo = (dabProc_NID_ENSEMBLE_INFO_t *) pEvent->pData;
+#if (RADIO_CONTROL_TEST_MODE)
+        if (pInfo->label.str[0] != '\0')  // allow ECC == 0 in test mode
+#else
         if (((pInfo->ueid & 0x00FF0000) != 0) && pInfo->label.str[0] != '\0')
+#endif
         {
             serviceList.clear();
             ensemble.ueid = pInfo->ueid;
@@ -120,8 +124,14 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             ensemble.label = DabTables::convertToQString(pInfo->label.str, pInfo->label.charset).trimmed();
             ensemble.labelShort = toShortLabel(ensemble.label, pInfo->label.charField).trimmed();
             emit ensembleInformation(ensemble);
-            // request service list
-            dabGetServiceList();
+
+            // request service list            
+            // ETSI EN 300 401 V2.1.1 (2017-01) [6.1]
+            // The complete MCI for one configuration shall normally be signalled in a 96ms period;
+            // the exceptions are that the FIG 0/8 for primary service components containing data applications and for data secondary service components,
+            // and the FIG 0/13 may be signalled at a slower rate but not less frequently than once per second.
+            // When the slower rate is used, the FIG 0/8 and FIG 0/13 for the same service component should be signalled in the FIBs corresponding to the same CIF.
+            QTimer::singleShot(1000, this, &RadioControl::dabGetServiceList);
         }
 
         delete (dabProc_NID_ENSEMBLE_INFO_t *) pEvent->pData;
@@ -183,7 +193,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         {   // all service components belong to the same SId, reading sid from the first            
             DabSId sid(pList->at(0).SId, ensemble.ecc());
 #if RADIO_CONTROL_VERBOSE
-            qDebug("RadioControlEvent::SERVICE_COMPONENT_LIST %8.8X", sid.value);
+            qDebug("RadioControlEvent::SERVICE_COMPONENT_LIST %8.8X", sid.value());
 #endif
 
             // find service ID
@@ -203,7 +213,10 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                     if ((dabServiceComp.SubChAddr < 0)
                        || ((DabTMId::StreamAudio == DabTMId(dabServiceComp.TMId)) && (!dabServiceComp.ps) && (dabServiceComp.label.str[0] == '\0'))
                        || ((DabTMId::PacketData == DabTMId(dabServiceComp.TMId)) && (dabServiceComp.packetData.packetAddress < 0))
-                       || ((DabTMId::StreamAudio != DabTMId(dabServiceComp.TMId)) && (dabServiceComp.numUserApps <= 0)))  // user app for data services
+#if !(RADIO_CONTROL_TEST_MODE)  // data service without user application is allowed in test mode, timeout coud be implemented insted
+                       || ((DabTMId::StreamAudio != DabTMId(dabServiceComp.TMId)) && (dabServiceComp.numUserApps <= 0))  // user app for data services
+#endif
+                        )
                     {
                         requestUpdate = true;
                         break;
