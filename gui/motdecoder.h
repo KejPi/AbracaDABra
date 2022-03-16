@@ -15,13 +15,14 @@ class MOTDecoder : public QObject
 public:
     explicit MOTDecoder(QObject *parent = nullptr);
     ~MOTDecoder();
+    void newDataGroup(const QByteArray &dataGroup);
+    void reset();
+    MOTObjectCache::const_iterator directoryBegin() const { return  directory->begin(); }
+    MOTObjectCache::const_iterator directoryEnd() const { return  directory->end(); }
 
 signals:
     void newMOTObject(const MOTObject & obj);
-
-public slots:
-    void newDataGroup(const QByteArray &dataGroup);
-    void reset();   
+    void newMOTDirectory();
 
 private:
     MOTDirectory * directory;

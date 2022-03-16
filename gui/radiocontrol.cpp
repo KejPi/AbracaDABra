@@ -390,8 +390,10 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 
 //#warning "Remove automatic Journaline - this is for debug only"
 //                        startUserApplication(DabUserApplicationType::Journaline, true);
+#if RADIO_CONTROL_SPI_ENABLE
 #warning "Remove automatic SPI - this is for debug only"
                          startUserApplication(DabUserApplicationType::SPI, true);
+#endif
 //#warning "Remove automatic TPEG - this is for debug only"
                          //startUserApplication(DabUserApplicationType::TPEG, true);
                     }

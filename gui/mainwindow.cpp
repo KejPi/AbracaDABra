@@ -17,7 +17,6 @@
 #include "radiocontrol.h"
 #include "bandscandialog.h"
 
-
 const QString appName("AbracaDABra");
 const QStringList syncLevelLabels = {"No signal", "Signal found", "Sync"};
 const QStringList syncLevelTooltip = {"DAB signal not detected<br>Looking for signal...",
@@ -354,6 +353,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(catSlsDialog, &CatSLSDialog::getCurrentCatSlide, slideShowApp, &SlideShowApp::getCurrentCatSlide, Qt::QueuedConnection);
     connect(catSlsDialog, &CatSLSDialog::getNextCatSlide, slideShowApp, &SlideShowApp::getNextCatSlide, Qt::QueuedConnection);    
 
+#if RADIO_CONTROL_SPI_ENABLE
 #warning "Remove automatic creation of SPI app"
     // slide show application is created by default
     // ETSI TS 101 499 V3.1.1  [5.1.1]
@@ -365,6 +365,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControl, &RadioControl::serviceChanged, spiApp, &SPIApp::start);
     //connect(spiApp, &SPIApp::resetTerminal, ui->slsView, &SLSView::reset, Qt::QueuedConnection);
     connect(this, &MainWindow::stopUserApps, spiApp, &SPIApp::stop, Qt::QueuedConnection);
+#endif
 
     // input device connections
     initInputDevice(InputDeviceId::UNDEFINED);

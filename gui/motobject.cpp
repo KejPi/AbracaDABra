@@ -562,7 +562,14 @@ bool MOTDirectory::parse(const QByteArray &dirData)
     qDebug() << "MOT directory carousel contents:";
     for (MOTObjectCache::const_iterator it = carousel->cbegin(); it < carousel->cend(); ++it)
     {
-        qDebug("\tID: %d, isComplete = %d", it->getId(), it->isComplete());
+        qDebug("\tID: %d, isComplete = %d, body size = %lld, name = %s", it->getId(), it->isComplete(), it->getBody().size(), it->getContentName().toLocal8Bit().data());
+
+        if (it->isComplete())
+        {
+            qDebug("\t\t%2.2X %2.2X %2.2X %2.2X %2.2X %2.2X ", uint8_t(it->getBody().at(0)), uint8_t(it->getBody().at(1)),
+                   uint8_t(it->getBody().at(2)), uint8_t(it->getBody().at(3)), uint8_t(it->getBody().at(5)), uint8_t(it->getBody().at(5)));
+        }
+
     }
 #endif //MOTOBJECT_VERBOSE
 

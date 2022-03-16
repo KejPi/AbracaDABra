@@ -58,7 +58,7 @@ public:
     bool isComplete() const { return d->objectIsComplete; };
     QByteArray getBody() const;
     bool isObsolete() const { return d->objectIsObsolete; }
-    void setObsolete(bool obsolete) { d->objectIsComplete = obsolete; };
+    void setObsolete(bool obsolete) { d->objectIsObsolete = obsolete; };
 
     uint16_t getContentType() const;
     uint16_t getContentSubType() const;
@@ -110,6 +110,8 @@ public:
     bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
     void addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
     uint_fast32_t getTransportId() const { return id; }
+    MOTObjectCache::const_iterator begin() const { return  carousel->cbegin(); }
+    MOTObjectCache::const_iterator end() const { return  carousel->cend(); }
 private:
     uint_fast32_t id;
     MOTEntity dir;

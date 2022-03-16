@@ -27,6 +27,8 @@
 // and data services without user application
 #define RADIO_CONTROL_TEST_MODE 0
 
+#define RADIO_CONTROL_SPI_ENABLE 1
+
 enum class DabSyncLevel
 {
     NoSync = 0,
@@ -224,13 +226,13 @@ public:
     explicit RadioControl(QObject *parent = nullptr);    
     ~RadioControl();
 
-public slots:
     bool init();
     void start(uint32_t freq);
     void exit();
     void tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS);
     void getEnsembleConfiguration();
     void startUserApplication(DabUserApplicationType uaType, bool start);
+    uint32_t getEnsembleUEID() const { return ensemble.ueid; }
 
 signals:
     void dabEvent(RadioControlEvent * pEvent);
