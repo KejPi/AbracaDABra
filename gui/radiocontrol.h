@@ -27,7 +27,7 @@
 // and data services without user application
 #define RADIO_CONTROL_TEST_MODE 0
 
-#define RADIO_CONTROL_SPI_ENABLE 1
+#define RADIO_CONTROL_SPI_ENABLE 0
 
 enum class DabSyncLevel
 {
