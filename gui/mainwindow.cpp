@@ -1449,9 +1449,10 @@ void MainWindow::bandScan()
     BandScanDialog * dialog = new BandScanDialog(this, Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
     connect(dialog, &BandScanDialog::finished, dialog, &QObject::deleteLater);
     connect(dialog, &BandScanDialog::tuneChannel, this, &MainWindow::tuneChannel);
-    connect(radioControl, &RadioControl::ensembleInformation, dialog, &BandScanDialog::ensembleFound, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::syncStatus, dialog, &BandScanDialog::onSyncStatus, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::ensembleInformation, dialog, &BandScanDialog::onEnsembleFound, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::tuneDone, dialog, &BandScanDialog::tuneFinished, Qt::QueuedConnection);
-    connect(serviceList, &ServiceList::serviceAdded, dialog, &BandScanDialog::serviceFound);
+    connect(serviceList, &ServiceList::serviceAdded, dialog, &BandScanDialog::onServiceFound);
     connect(dialog, &BandScanDialog::scanStarts, this, &MainWindow::clearServiceList);
     connect(dialog, &BandScanDialog::finished, this, &MainWindow::bandScanFinished);
 

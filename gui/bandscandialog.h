@@ -28,6 +28,7 @@ enum class BandScanState
     Idle = 0,
     Init,
     WaitForTune,
+    WaitForSync,
     WaitForEnsemble,
     WaitForServices,
     Interrupted
@@ -42,8 +43,9 @@ public:
     ~BandScanDialog();
 
     void tuneFinished(uint32_t freq);
-    void ensembleFound(const RadioControlEnsemble &ens);
-    void serviceFound(const ServiceListItem *s);
+    void onSyncStatus(uint8_t sync);
+    void onEnsembleFound(const RadioControlEnsemble &ens);
+    void onServiceFound(const ServiceListItem *s);
 
 signals:
     void scanStarts();

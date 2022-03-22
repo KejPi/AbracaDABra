@@ -55,12 +55,13 @@ void BandScanDialog::stopPressed()
     qDebug() << Q_FUNC_INFO;
     if (isScanning)
     {
-        // the state machine hase 3 possible states
+        // the state machine has 4 possible states
         // 1. wait for tune (event)
-        // 2. wait for enseble (timer or event)
-        // 3. wait for services (timer)
+        // 2. wait for sync (timer or event)
+        // 4. wait for enseble (timer or event)
+        // 5. wait for services (timer)
         if (timer->isActive())
-        {   // state 2 and 3
+        {   // state 2, 3, 4
             timer->stop();
             done(BandScanDialogResult::Interrupted);
         }
@@ -145,13 +146,23 @@ void BandScanDialog::tuneFinished(uint32_t freq)
         done(BandScanDialogResult::Interrupted);
     }
     else
-    {   // tuned to some frequency -> wait for ensemble
+    {   // tuned to some frequency -> wait for sync
+        state = BandScanState::WaitForSync;
+        timer->start(2000);
+    }
+}
+
+void BandScanDialog::onSyncStatus(uint8_t sync)
+{
+    if (DabSyncLevel::NullSync <= DabSyncLevel(sync))
+    {
+        timer->stop();
         state = BandScanState::WaitForEnsemble;
         timer->start(2000);
     }
 }
 
-void BandScanDialog::ensembleFound(const RadioControlEnsemble &ens)
+void BandScanDialog::onEnsembleFound(const RadioControlEnsemble &ens)
 {
     timer->stop();
 
@@ -161,7 +172,7 @@ void BandScanDialog::ensembleFound(const RadioControlEnsemble &ens)
     timer->start(3000);
 }
 
-void BandScanDialog::serviceFound(const ServiceListItem *s)
+void BandScanDialog::onServiceFound(const ServiceListItem *s)
 {
     ui->numServicesFoundLabel->setText(QString("%1").arg(++numServicesFound));
 }
