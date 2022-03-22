@@ -158,7 +158,7 @@ void BandScanDialog::onSyncStatus(uint8_t sync)
     {
         timer->stop();
         state = BandScanState::WaitForEnsemble;
-        timer->start(2000);
+        timer->start(3000);
     }
 }
 
@@ -169,11 +169,23 @@ void BandScanDialog::onEnsembleFound(const RadioControlEnsemble &ens)
     ui->numEnsemblesFoundLabel->setText(QString("%1").arg(++numEnsemblesFound));
 
     state = BandScanState::WaitForServices;
-    timer->start(3000);
+
+    // this can be interrupted by enseble complete signal (ensembleConfiguration)
+    timer->start(8000);
 }
 
 void BandScanDialog::onServiceFound(const ServiceListItem *s)
 {
     ui->numServicesFoundLabel->setText(QString("%1").arg(++numServicesFound));
+}
+
+void BandScanDialog::onEnsembleComplete()
+{   // this means that ensemble information is complete => stop timer and do next set
+    qDebug() << Q_FUNC_INFO;
+    if ((nullptr != timer) && (timer->isActive()))
+    {
+        timer->stop();
+        scanStep();
+    }
 }
 

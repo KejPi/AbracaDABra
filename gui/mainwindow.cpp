@@ -1452,6 +1452,7 @@ void MainWindow::bandScan()
     connect(radioControl, &RadioControl::syncStatus, dialog, &BandScanDialog::onSyncStatus, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::ensembleInformation, dialog, &BandScanDialog::onEnsembleFound, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::tuneDone, dialog, &BandScanDialog::tuneFinished, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::ensembleComplete, dialog, &BandScanDialog::onEnsembleComplete, Qt::QueuedConnection);
     connect(serviceList, &ServiceList::serviceAdded, dialog, &BandScanDialog::onServiceFound);
     connect(dialog, &BandScanDialog::scanStarts, this, &MainWindow::clearServiceList);
     connect(dialog, &BandScanDialog::finished, this, &MainWindow::bandScanFinished);
