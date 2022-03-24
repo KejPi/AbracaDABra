@@ -145,7 +145,7 @@ bool MSCDataGroup::crc16check(const QByteArray & data)
         }
     }
 
-    uint16_t invTxCRC = ~(uint16_t(data[data.size()-2] << 8) | uint8_t(data[data.size()-1]));
+    uint16_t invTxCRC = ~((uint16_t(data[data.size()-2]) << 8) | uint8_t(data[data.size()-1]));
 
     return (crc == invTxCRC);
 }

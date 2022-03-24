@@ -11,7 +11,7 @@ project(${TARGET}
     VERSION 0.99
     LANGUAGES CXX)
 
-set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/../install/")
+option(APPLE_BUILD_X86_64     "Build x86_64 binary for Apple" OFF)
 
 # AAC decoder - default is FAAD2 but FDK-AAC can be used optionally
 option (USE_FDK_AAC           "Compile with fdk-aac library from Franhofer instead of faad2" OFF)
@@ -22,6 +22,18 @@ option (USE_SYSTEM_FAAD       "Use system provided libfaad"     ON)
 option (USE_SYSTEM_FDKAAC     "Use system provided libfdk-aac"  ON)
 option (USE_SYSTEM_MPG123     "Use system provided libmpg123"   ON)
 option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   ON)
+
+if (APPLE_BUILD_X86_64)
+    set(CMAKE_OSX_ARCHITECTURES "x86_64")
+
+    # libs need to be either universal or built sepaartely for x86_64 (this case)
+    set(USE_SYSTEM_RTLSDR OFF)
+    set(USE_SYSTEM_LIBUSB OFF)
+    set(USE_SYSTEM_FAAD OFF)
+    set(USE_SYSTEM_FDKAAC OFF)
+    set(USE_SYSTEM_MPG123 OFF)
+    set(USE_SYSTEM_PORTAUDIO OFF)
+endif()
 
 ## Version
 set(PROJECT_VERSION_RELEASE OFF)
@@ -37,6 +49,8 @@ if ("${PROJECT_GIT_REV}" STREQUAL "")
 endif()
 
 # message("${PROJECT_VERSION} ${VERSION_RELEASE} ${PROJECT_GIT_REV} ${BUILD_TIME}")
+
+set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/../install/")
 
 ### DAB library
 # This has to be before Qt stuff
@@ -176,13 +190,17 @@ if (NOT USE_SYSTEM_LIBUSB)
         endif(BUILD_32BIT)
 
     else (LIBUSB_WIN_PREBUILD)
-        set_property (TARGET libusb PROPERTY IMPORTED_LOCATION "${LIBUSB_PREFIX}/lib/libusb-1.0.a")
+        set_property (TARGET libusb PROPERTY IMPORTED_LOCATION "${LIBUSB_PREFIX}/lib/libusb-1.0.dylib")
     endif (LIBUSB_WIN_PREBUILD)
 endif ()
 
 if (NOT USE_SYSTEM_RTLSDR)   
     add_library (rtlsdr STATIC IMPORTED)
-    set_property (TARGET rtlsdr PROPERTY IMPORTED_LOCATION "${RTLSDR_PREFIX}/lib/librtlsdr_static.a")
+    if(WIN32)
+        set_property (TARGET rtlsdr PROPERTY IMPORTED_LOCATION "${RTLSDR_PREFIX}/lib/librtlsdr_static.a")
+    else(WIN32)
+        set_property (TARGET rtlsdr PROPERTY IMPORTED_LOCATION "${RTLSDR_PREFIX}/lib/librtlsdr.a")
+    endif(WIN32)
     add_dependencies (rtlsdr rtlsdr_external)
 
     set (RTL_SDR_INCLUDE_DIRS "${RTLSDR_PREFIX}/include")
@@ -213,16 +231,34 @@ endif()
 
 if (NOT USE_SYSTEM_MPG123)
     add_library (mpg123 STATIC IMPORTED)
-    set_property (TARGET mpg123 PROPERTY IMPORTED_LOCATION "${MPG123_PREFIX}/libmpg123-0.dll")
+    if(WIN32)
+        set_property (TARGET mpg123 PROPERTY IMPORTED_LOCATION "${MPG123_PREFIX}/libmpg123-0.dll")
+    elseif(APPLE)
+        set_property (TARGET mpg123 PROPERTY IMPORTED_LOCATION "${MPG123_PREFIX}/lib/libmpg123.dylib")
+    else()
+        set_property (TARGET mpg123 PROPERTY IMPORTED_LOCATION "${MPG123_PREFIX}/libmpg123.so")
+    endif()
+
     add_dependencies (mpg123 mpg123_external)
 
-    set (LIBMPG123_INCLUDE_DIRS "${MPG123_PREFIX}")
+    if(WIN32)
+        set (LIBMPG123_INCLUDE_DIRS "${MPG123_PREFIX}")
+    else(WIN32)
+        set (LIBMPG123_INCLUDE_DIRS "${MPG123_PREFIX}/include")
+    endif(WIN32)
     set (LIBMPG123_LINK_LIBRARIES mpg123)
 endif()
 
 if (NOT USE_SYSTEM_PORTAUDIO)
     add_library (portaudio STATIC IMPORTED)
-    set_property (TARGET portaudio PROPERTY IMPORTED_LOCATION "${PORTAUDIO_PREFIX}/lib/libportaudio.dll")
+    if(WIN32)
+        set_property (TARGET portaudio PROPERTY IMPORTED_LOCATION "${PORTAUDIO_PREFIX}/lib/libportaudio.dll")
+    elseif(APPLE)
+        set_property (TARGET portaudio PROPERTY IMPORTED_LOCATION "${PORTAUDIO_PREFIX}/lib/libportaudio.dylib")
+    else()
+        set_property (TARGET portaudio PROPERTY IMPORTED_LOCATION "${PORTAUDIO_PREFIX}/lib/libportaudio.so")
+    endif()
+
     add_dependencies (portaudio portaudio_external)
 
     set (PORTAUDIO_INCLUDE_DIRS "${PORTAUDIO_PREFIX}/include/")
@@ -356,44 +392,47 @@ add_executable(${TARGET}
     aboutdialog.ui
   )
 
+#add_definitions(-fsanitize=undefined)
+#target_link_options(${TARGET} PUBLIC -fsanitize=undefined)
+
 # config.h
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 ### DAB library
 include_directories ( ${BACKEND_INCLUDE_DIRS} )
-target_link_libraries(${PROJECT_NAME} PRIVATE dab)
+target_link_libraries(${TARGET} PRIVATE dab)
 
 # AAC libs
 if (USE_FDK_AAC)
     # FDKAAC
     include_directories ( ${LIBFDKAAC_INCLUDE_DIRS} )
-    target_link_libraries(${PROJECT_NAME} PRIVATE "${LIBFDKAAC_LINK_LIBRARIES}" )
+    target_link_libraries(${TARGET} PRIVATE "${LIBFDKAAC_LINK_LIBRARIES}" )
 else (USE_FDK_AAC)
     # FAAD
     include_directories ( ${LIBFAAD2_INCLUDE_DIRS} )
-    target_link_libraries(${PROJECT_NAME} PRIVATE "${LIBFAAD2_LINK_LIBRARIES}" )
+    target_link_libraries(${TARGET} PRIVATE "${LIBFAAD2_LINK_LIBRARIES}" )
 endif (USE_FDK_AAC)
 
 # MPG123
 include_directories ( ${LIBMPG123_INCLUDE_DIRS} )
-target_link_libraries(${PROJECT_NAME} PRIVATE "${LIBMPG123_LINK_LIBRARIES}" )
+target_link_libraries(${TARGET} PRIVATE "${LIBMPG123_LINK_LIBRARIES}" )
 
 # RTLSDR
 include_directories ( ${RTL_SDR_INCLUDE_DIRS} )
-target_link_libraries(${PROJECT_NAME} PRIVATE "${RTL_SDR_LINK_LIBRARIES}" )
+target_link_libraries(${TARGET} PRIVATE "${RTL_SDR_LINK_LIBRARIES}" )
 
 # PORTAUDIO
 include_directories ( ${PORTAUDIO_INCLUDE_DIRS} )
-target_link_libraries(${PROJECT_NAME} PRIVATE "${PORTAUDIO_LINK_LIBRARIES}" )
+target_link_libraries(${TARGET} PRIVATE "${PORTAUDIO_LINK_LIBRARIES}" )
 
 # Set some Win32 Specific Settings
 if(WIN32)
     # required fro sockets
-    target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32)
+    target_link_libraries(${TARGET} PRIVATE ws2_32)
 endif(WIN32)
 
 include_directories ( ${CMAKE_SOURCE_DIR} )
-target_link_libraries(AbracaDABra PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia)
+target_link_libraries(${TARGET} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia)
 
 # Set a custom plist file for the app bundle
 if(APPLE)
