@@ -394,6 +394,9 @@ add_executable(${TARGET}
 
 #add_definitions(-fsanitize=undefined)
 #target_link_options(${TARGET} PUBLIC -fsanitize=undefined)
+add_definitions(-fsanitize=thread)
+target_link_options(${TARGET} PUBLIC -fsanitize=thread)
+
 
 # config.h
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
