@@ -1196,7 +1196,7 @@ void dynamicLabelCb(dabProcDynamicLabelCBData_t * p, void * ctx)
         qDebug("Empty DL data received\n");
         return;
     }
-    RadioControl * radioCtrl = (RadioControl * ) ctx;
+    RadioControl * radioCtrl = static_cast<RadioControl *>(ctx);
 
     QByteArray * data = new QByteArray((const char *)p->pData, p->len);
 
@@ -1215,7 +1215,7 @@ void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
         return;
     }
 
-    RadioControl * radioCtrl = (RadioControl * ) ctx;
+    RadioControl * radioCtrl = static_cast<RadioControl *>(ctx);
     RadioControlUserAppData * pData = new RadioControlUserAppData;
     pData->userAppType = DabUserApplicationType(p->userAppType);
 
@@ -1231,7 +1231,7 @@ void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
 
 void audioDataCb(dabProcAudioCBData_t * p, void * ctx)
 {
-    RadioControl * radioCtrl = (RadioControl * ) ctx;
+    RadioControl * radioCtrl = static_cast<RadioControl *>(ctx);
 
     QByteArray * pData = new QByteArray;
     pData->clear();
