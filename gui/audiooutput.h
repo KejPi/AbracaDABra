@@ -14,8 +14,12 @@
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
 #include "portaudio.h"
 #else
+#if QT_VERSION < 0x060000
 #include <QAudioDeviceInfo>
-#include <QAudioOutput>
+#else
+#include <QAudioSink>
+#include <QMediaDevices>
+#endif
 #endif
 
 #ifdef QT_DEBUG
@@ -42,8 +46,6 @@ public slots:
     void mute(bool on);
 
 private:
-    uint32_t m_sampleRate_kHz;
-    uint8_t m_numChannels;
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
     FILE * rawOut;
 #endif
@@ -51,6 +53,8 @@ private:
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
     PaStream * m_outStream = nullptr;
     audioFifo_t * m_inFifoPtr = nullptr;
+    uint8_t m_numChannels;
+    uint32_t m_sampleRate_kHz;
     unsigned int m_bufferFrames;
     uint8_t m_bytesPerFrame;
 
@@ -70,9 +74,17 @@ private:
     friend int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
                      const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx);
 #else
-    QTimer * audioStartTimer;
+    // Qt audio
     AudioIODevice * ioDevice;
+#if QT_VERSION < 0x060000 // Qt5
+    uint8_t m_numChannels;
+    uint32_t m_sampleRate_kHz;
+    QTimer * audioStartTimer;
     QAudioOutput * audioOutput;
+#else  // Qt6
+    QMediaDevices * devices;
+    QAudioSink * audioOutput;
+#endif
 #endif
 
 #if AUDIOOUTPUT_DBG_TIMER
@@ -88,9 +100,11 @@ private:
 
 private slots:
 #if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
+#if QT_VERSION < 0x060000 // Qt5
     void checkInputBuffer();
     void initTimer();
     void destroyTimer();
+#endif
     void handleStateChanged(QAudio::State newState);
 #endif
 };
@@ -107,8 +121,26 @@ public:
     int64_t readData(char *data, int64_t maxlen) override;
     int64_t writeData(const char *data, int64_t len) override;
     int64_t bytesAvailable() const override;
+
+#if QT_VERSION >= 0x060000 // Qt6
+    void setFormat(const QAudioFormat & format);
+#endif
 private:
+#if QT_VERSION < 0x060000 // Qt5
     audioFifo_t * inFifoPtr = nullptr;
+#else
+    audioFifo_t * m_inFifoPtr = nullptr;
+    enum
+    {
+        StatePlaying = 0,
+        StateMuted = 1,
+        StateDoMute = 2,
+        StateDoUnmute = 3,
+    } m_playbackState;
+    uint8_t m_bytesPerFrame;
+    uint32_t m_sampleRate_kHz;
+    uint8_t m_numChannels;
+#endif
 };
 #endif
 
