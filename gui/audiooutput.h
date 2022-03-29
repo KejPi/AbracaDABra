@@ -49,6 +49,7 @@ private:
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
     FILE * rawOut;
 #endif
+    std::atomic<bool> m_muteFlag  = false;
 
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
     PaStream * m_outStream = nullptr;
@@ -66,14 +67,13 @@ private:
         StateDoUnmute = 3,
     } m_playbackState;
 
-    bool m_muteFlag = false;
-    QMutex m_muteMutex;
-
     int portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames, PaStreamCallbackFlags statusFlags);
 
     friend int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
                      const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx);
+
 #else
+
     // Qt audio
     AudioIODevice * ioDevice;
 #if QT_VERSION < 0x060000 // Qt5
@@ -81,10 +81,17 @@ private:
     uint32_t m_sampleRate_kHz;
     QTimer * audioStartTimer;
     QAudioOutput * audioOutput;
+
+    void checkInputBuffer();
+    void initTimer();
+    void destroyTimer();
 #else  // Qt6
     QMediaDevices * devices;
     QAudioSink * audioOutput;
+    QTimer * muteTimer;
 #endif
+    void handleStateChanged(QAudio::State newState);
+    void muteStep();
 #endif
 
 #if AUDIOOUTPUT_DBG_TIMER
@@ -96,17 +103,8 @@ private:
     QTimer * m_dbgTimer;
     void bufferMonitor();
 #endif
-    int64_t bytesAvailable() const;
 
-private slots:
-#if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
-#if QT_VERSION < 0x060000 // Qt5
-    void checkInputBuffer();
-    void initTimer();
-    void destroyTimer();
-#endif
-    void handleStateChanged(QAudio::State newState);
-#endif
+    int64_t bytesAvailable() const;
 };
 
 #if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
@@ -126,10 +124,8 @@ public:
     void setFormat(const QAudioFormat & format);
 #endif
 private:
-#if QT_VERSION < 0x060000 // Qt5
-    audioFifo_t * inFifoPtr = nullptr;
-#else
     audioFifo_t * m_inFifoPtr = nullptr;
+#if QT_VERSION >= 0x060000 // Qt6
     enum
     {
         StatePlaying = 0,

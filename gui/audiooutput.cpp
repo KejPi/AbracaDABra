@@ -162,9 +162,7 @@ int64_t AudioOutput::bytesAvailable() const
 
 void AudioOutput::mute(bool on)
 {
-    m_muteMutex.lock();
     m_muteFlag = on;
-    m_muteMutex.unlock();
 }
 
 int portAudioCb( const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
@@ -197,9 +195,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     uint64_t count = m_inFifoPtr->count;
     m_inFifoPtr->mutex.unlock();
 
-    m_muteMutex.lock();
     bool mute = m_muteFlag;
-    m_muteMutex.unlock();
 
     uint64_t bytesToRead = m_bytesPerFrame * nBufferFrames;
     uint32_t availableSamples = nBufferFrames;
@@ -601,7 +597,7 @@ void AudioOutput::checkInputBuffer()
 
 AudioIODevice::AudioIODevice(audioFifo_t *buffer, QObject *parent) : QIODevice(parent)
 {
-    inFifoPtr = buffer;
+    m_inFifoPtr = buffer;
 }
 
 void AudioIODevice::start()
@@ -616,9 +612,9 @@ void AudioIODevice::stop()
 
 int64_t AudioIODevice::readData(char *data, int64_t len)
 {
-    inFifoPtr->mutex.lock();
-    int64_t count = inFifoPtr->count;
-    inFifoPtr->mutex.unlock();
+    m_inFifoPtr->mutex.lock();
+    int64_t count = m_inFifoPtr->count;
+    m_inFifoPtr->mutex.unlock();
 
     //qDebug() << Q_FUNC_INFO << len << count;
     //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
@@ -633,23 +629,23 @@ int64_t AudioIODevice::readData(char *data, int64_t len)
         }
     }
 
-    int64_t bytesToEnd = AUDIO_FIFO_SIZE - inFifoPtr->tail;
+    int64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
     if (bytesToEnd < len)
     {
-        memcpy(data, inFifoPtr->buffer+inFifoPtr->tail, bytesToEnd);
-        memcpy(data+bytesToEnd, inFifoPtr->buffer, (len - bytesToEnd));
-        inFifoPtr->tail = len - bytesToEnd;
+        memcpy(data, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
+        memcpy(data+bytesToEnd, m_inFifoPtr->buffer, (len - bytesToEnd));
+        m_inFifoPtr->tail = len - bytesToEnd;
     }
     else
     {
-        memcpy(data, inFifoPtr->buffer+inFifoPtr->tail, len);
-        inFifoPtr->tail += len;
+        memcpy(data, m_inFifoPtr->buffer+m_inFifoPtr->tail, len);
+        m_inFifoPtr->tail += len;
     }
 
-    inFifoPtr->mutex.lock();
-    inFifoPtr->count -= len;
-    inFifoPtr->countChanged.wakeAll();
-    inFifoPtr->mutex.unlock();
+    m_inFifoPtr->mutex.lock();
+    m_inFifoPtr->count -= len;
+    m_inFifoPtr->countChanged.wakeAll();
+    m_inFifoPtr->mutex.unlock();
 
     return len;
 }
@@ -664,9 +660,9 @@ int64_t AudioIODevice::writeData(const char *data, int64_t len)
 
 int64_t AudioIODevice::bytesAvailable() const
 {
-    inFifoPtr->mutex.lock();
-    int64_t count = inFifoPtr->count;
-    inFifoPtr->mutex.unlock();
+    m_inFifoPtr->mutex.lock();
+    int64_t count = m_inFifoPtr->count;
+    m_inFifoPtr->mutex.unlock();
 
     //qDebug() << Q_FUNC_INFO << count;
 
@@ -680,9 +676,10 @@ AudioOutput::AudioOutput(audioFifo_t * buffer)
     devices = new  QMediaDevices(this);
     ioDevice = new AudioIODevice(buffer, this);
     audioOutput = nullptr;
+    muteTimer = nullptr;
 #if AUDIOOUTPUT_DBG_TIMER
     m_dbgTimer = nullptr;
-#endif
+#endif    
 }
 
 AudioOutput::~AudioOutput()
@@ -699,6 +696,11 @@ AudioOutput::~AudioOutput()
         delete m_dbgTimer;
     }
 #endif
+    if (nullptr != muteTimer)
+    {
+        muteTimer->stop();
+        delete muteTimer;
+    }
     ioDevice->close();
     delete ioDevice;
 }
@@ -721,7 +723,7 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
         qWarning() << "Default format not supported - trying to use preferred";
         format = defaultDeviceInfo.preferredFormat();
     }
-    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
+
 
     audioOutput = new QAudioSink(defaultDeviceInfo, format, this);
 
@@ -729,16 +731,18 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
     audioOutput->setBufferSize(AUDIO_FIFO_CHUNK_MS*2 * sRate/1000 * numCh * sizeof(int16_t));
     connect(audioOutput, &QAudioSink::stateChanged, this, &AudioOutput::handleStateChanged);
 
+    // create mute timer
+    if (nullptr == muteTimer)
+    {
+        muteTimer = new QTimer(this);
+        muteTimer->setInterval(1);
+        connect(muteTimer, &QTimer::timeout, this, &AudioOutput::muteStep);
+    }
+
     // start IO device
     ioDevice->setFormat(format);
-#if 0
-    ioDevice->open(QIODevice::ReadOnly);
-    initTimer();
-#else
     ioDevice->start();
     audioOutput->start(ioDevice);
-#endif
-
 
 #if AUDIOOUTPUT_DBG_TIMER
     // DBG counter for buffer monitoring
@@ -776,11 +780,15 @@ void AudioOutput::mute(bool on)
 {
     if (on)
     {
-        audioOutput->setVolume(0);
+        //audioOutput->setVolume(0);
+        m_muteFlag = true;
+        muteTimer->start();
     }
     else
     {
-        audioOutput->setVolume(1.0);
+        //audioOutput->setVolume(1.0);
+        m_muteFlag = false;
+        muteTimer->start();
     }
 }
 
@@ -822,7 +830,37 @@ void AudioOutput::handleStateChanged(QAudio::State newState)
         default:
             // ... other cases as appropriate
             break;
+        }
+}
+
+void AudioOutput::muteStep()
+{
+    qreal volume = audioOutput->volume();
+    if (m_muteFlag)
+    {
+        volume = volume * 0.5;
+
+        if (volume < 0.001)
+        {
+            volume = 0.0;
+            muteTimer->stop();
+        }
+        else
+        { /* do nothing */ }
     }
+    else
+    {  // mute
+        volume = (volume+0.00001) * (1.5);
+        if (volume >= 1.0)
+        {
+            volume = 1.0;
+            muteTimer->stop();
+        }
+        else
+        { /* do nothing */ }
+    }
+
+    audioOutput->setVolume(volume);
 }
 
 AudioIODevice::AudioIODevice(audioFifo_t *buffer, QObject *parent) : QIODevice(parent)
