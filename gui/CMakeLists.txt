@@ -11,11 +11,13 @@ project(${TARGET}
     VERSION 0.99
     LANGUAGES CXX)
 
-option(APPLE_BUILD_X86_64     "Build x86_64 binary for Apple" OFF)
+#########################################################
+## OPTIONAL SWITCHES
 
 # AAC decoder - default is FAAD2 but FDK-AAC can be used optionally
 option (USE_FDK_AAC           "Compile with fdk-aac library from Franhofer instead of faad2" OFF)
 
+# Options to force using libs build manually and installed in ${CMAKE_SOURCE_DIR}/../../dab-libs
 option (USE_SYSTEM_RTLSDR     "Use system provided rtl-sdr"     ON)
 option (USE_SYSTEM_LIBUSB     "Use system provided libusb"      ON)
 option (USE_SYSTEM_FAAD       "Use system provided libfaad"     ON)
@@ -23,10 +25,12 @@ option (USE_SYSTEM_FDKAAC     "Use system provided libfdk-aac"  ON)
 option (USE_SYSTEM_MPG123     "Use system provided libmpg123"   ON)
 option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   ON)
 
+option(APPLE_BUILD_X86_64     "Build x86_64 binary for Apple"   OFF)
+
 if (APPLE_BUILD_X86_64)
     set(CMAKE_OSX_ARCHITECTURES "x86_64")
 
-    # libs need to be either universal or built sepaartely for x86_64 (this case)
+    # libs need to be either universal or built separately for x86_64 (this case)
     set(USE_SYSTEM_RTLSDR OFF)
     set(USE_SYSTEM_LIBUSB OFF)
     set(USE_SYSTEM_FAAD OFF)
@@ -35,7 +39,8 @@ if (APPLE_BUILD_X86_64)
     set(USE_SYSTEM_PORTAUDIO OFF)
 endif()
 
-## Version
+#########################################################
+## VERSION
 set(PROJECT_VERSION_RELEASE OFF)
 #string(TIMESTAMP PROJECT_BUILD_DATE "%Y-%m-%d %H:%M")
 execute_process(COMMAND git log --pretty=format:%h -n 1
@@ -48,123 +53,207 @@ if ("${PROJECT_GIT_REV}" STREQUAL "")
     set(PROJECT_GIT_REV "N/A")
 endif()
 
-# message("${PROJECT_VERSION} ${VERSION_RELEASE} ${PROJECT_GIT_REV} ${BUILD_TIME}")
 
 set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/../install/")
 
-### DAB library
+#########################################################
+## DAB library (backend)
 # This has to be before Qt stuff
 set(BACKEND_DIR "${PROJECT_SOURCE_DIR}/../backend")
 set(BACKEND_INCLUDE_DIRS "${BACKEND_DIR}")
 add_subdirectory(${BACKEND_DIR} backend)
 ###
 
-### 64bits ot 32 bits
+set(POLYM_DIR "${PROJECT_SOURCE_DIR}/PolyM")
+set(POLYM_INCLUDE_DIRS "${POLYM_DIR}")
+add_subdirectory(${POLYM_DIR} PolyM)
+
+### Check that 64bits ot 32 bits
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     # 64 bits
     message(STATUS "64 bit build detected")
-
-    ## External libs
-    set (EXT_LIBS_DIR "${CMAKE_SOURCE_DIR}/../../dab_libs")
+    set(BUILD_64BIT ON)
 elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
     # 32 bits
     message(STATUS "32 bit build detected")
-
     set(BUILD_32BIT ON)
-
-    ## External libs
-    set (EXT_LIBS_DIR "${CMAKE_SOURCE_DIR}/../../dab_libs_32bit")
 else()
      message(FATAL_ERROR "Only 32bit or 64 bit platform is supported" )
 endif()
 
-
-if(WIN32)
-   # libusb compiled from souce does not work for some reason
-   # rebuilt libs downloaded from https://libusb.info work
-   set (LIBUSB_WIN_PREBUILD ON)
-endif(WIN32)
-
-if (LIBUSB_WIN_PREBUILD)
-    # downloaded prebuilt libs
-    set (LIBUSB_PREFIX "${EXT_LIBS_DIR}/libusb")
-else(LIBUSB_WIN_PREBUILD)
-    # compiled libs - seems not to work under windows
-    set (LIBUSB_PREFIX "${EXT_LIBS_DIR}/libusb-prefix")
-endif(LIBUSB_WIN_PREBUILD)
-
-
-set (RTLSDR_PREFIX "${EXT_LIBS_DIR}/rtlsdr-prefix")
-set (FAAD2_PREFIX "${EXT_LIBS_DIR}/faad2-prefix")
-set (FDKAAC_PREFIX "${EXT_LIBS_DIR}/fdk-aac-prefix")
-set (MPG123_PREFIX "${EXT_LIBS_DIR}/mpg123-prefix")
-set (PORTAUDIO_PREFIX "${EXT_LIBS_DIR}/portaudio-prefix")
+#########################################################
+## External libs
+set (DAB_LIBS_DIR "${CMAKE_SOURCE_DIR}/../../dab-libs")
 
 # This seems to work under Win
 #find_package(fdk-aac REQUIRED PATHS ${FDKAAC_PREFIX})
 #message (STATUS "fdk-aac: ${fdk-aac_FOUND}")
 
+#########################################################
+## RTL-SDR
 if (USE_SYSTEM_RTLSDR)
     find_library (RTL_SDR_LINK_LIBRARIES rtlsdr)
     find_path(RTL_SDR_INCLUDE_DIRS rtl-sdr.h)
     if (NOT WIN32)
-        pkg_search_module (RTL_SDR librtlsdr)
+        pkg_search_module (RTL_SDR rtlsdr)
     endif()
     if (NOT RTL_SDR_LINK_LIBRARIES)
-        message (WARNING "librtlsdr not found. Build from source and install to: ${RTLSDR_PREFIX}")
-        set (USE_SYSTEM_RTLSDR OFF)
-    endif ()
-endif ()
+        # not found is system -> trying ${DAB_LIBS_DIR}
+        message (WARNING "librtlsdr not found in system, searching in ${DAB_LIBS_DIR}")
 
+        find_library(RTL_SDR_LINK_LIBRARIES rtlsdr PATHS ${DAB_LIBS_DIR}/lib)
+        find_path(RTL_SDR_INCLUDE_DIRS rtl-sdr.h PATHS ${DAB_LIBS_DIR}/include)
+
+        if (RTL_SDR_LINK_LIBRARIES)
+            message (STATUS "librtlsdr found: ${RTL_SDR_LINK_LIBRARIES}")
+        else(RTL_SDR_LINK_LIBRARIES)
+            message (FATAL "librtlsdr not found. Build from source and install to: ${DAB_LIBS_DIR}")
+        endif()
+    endif()
+else(USE_SYSTEM_RTLSDR)
+    find_library(RTL_SDR_LINK_LIBRARIES rtlsdr PATHS ${DAB_LIBS_DIR}/lib NO_DEFAULT_PATH)
+    find_path(RTL_SDR_INCLUDE_DIRS rtl-sdr.h PATHS ${DAB_LIBS_DIR}/include NO_DEFAULT_PATH)
+    if (RTL_SDR_LINK_LIBRARIES)
+        message (STATUS "librtlsdr found: ${RTL_SDR_LINK_LIBRARIES}")
+    else()
+        message (FATAL_ERROR "librtlsdr not found. Build from source and install to: ${DAB_LIBS_DIR}")
+    endif()
+endif (USE_SYSTEM_RTLSDR)
+
+#########################################################
+## LIBUSB
 if (USE_SYSTEM_LIBUSB)
     find_library (LIBUSB_LINK_LIBRARIES usb-1.0)
     if (NOT WIN32)
-        pkg_search_module (LIBUSB libusb-1.0)
+        pkg_search_module (LIBUSB usb-1.0)
     endif()
     if (NOT LIBUSB_LINK_LIBRARIES)
-        if (LIBUSB_WIN_PREBUILD)
-            message (WARNING "libusb-1.0 not found. Download libusb prebuild libs for Win64 and copy to: ${LIBUSB_PREFIX}")
-        else (LIBUSB_WIN_PREBUILD)
-            message (WARNING "libusb-1.0 not found. Build from source and install to: ${LIBUSB_PREFIX}")
-        endif (LIBUSB_WIN_PREBUILD)
-        set (USE_SYSTEM_LIBUSB OFF)
-    endif ()
-endif ()
+        # not found is system -> trying ${DAB_LIBS_DIR}
+        message (WARNING "libusb-1.0 not found in system, searching in ${DAB_LIBS_DIR}")
 
+        find_library(LIBUSB_LINK_LIBRARIES usb-1.0 PATHS ${DAB_LIBS_DIR}/lib)
+
+        if (LIBUSB_LINK_LIBRARIES)
+            message (STATUS "libusb-1.0 found: ${LIBUSB_LINK_LIBRARIES}")
+        else(LIBUSB_LINK_LIBRARIES)
+            message (FATAL "libusb-1.0 not found. Build from source and install to: ${DAB_LIBS_DIR}")
+        endif()
+    endif()
+else(USE_SYSTEM_LIBUSB)
+    find_library(LIBUSB_LINK_LIBRARIES usb-1.0 PATHS ${DAB_LIBS_DIR}/lib NO_DEFAULT_PATH)
+    if (LIBUSB_LINK_LIBRARIES)
+        message (STATUS "libusb-1.0 found: ${LIBUSB_LINK_LIBRARIES}")
+    else()
+        message (FATAL_ERROR "libusb-1.0 not found. Build from source and install to: ${DAB_LIBS_DIR}")
+    endif()
+endif (USE_SYSTEM_LIBUSB)
+
+#########################################################
+## FDK-AAC
 if (USE_FDK_AAC)
-    message (STATUS "libfdk-aac used instead of libfaad2 ${USE_FDK_AAC}")
-    set(AUDIO_DECODER_USE_FDKAAC ON)
     if (USE_SYSTEM_FDKAAC)
         find_library (LIBFDKAAC_LINK_LIBRARIES fdk-aac)
         find_path(LIBFDKAAC_INCLUDE_DIRS fdk-aac/aacdecoder_lib.h)
+        if (NOT WIN32)
+            pkg_search_module (LIBFDKAAC fdk-aac)
+        endif()
         if (NOT LIBFDKAAC_LINK_LIBRARIES)
-            message (WARNING "libfdk-aac not found. Build from source and install to: ${FDKAAC_PREFIX}")
-            set (USE_SYSTEM_FDKAAC OFF)
-        endif ()
-    endif ()
-else (USE_FDK_AAC)
+            # not found is system -> trying ${DAB_LIBS_DIR}
+            message (WARNING "libfdk-aac not found in system, searching in ${DAB_LIBS_DIR}")
+
+            find_library(LIBFDKAAC_LINK_LIBRARIES fdk-aac PATHS ${DAB_LIBS_DIR}/lib)
+            find_path(LIBFDKAAC_INCLUDE_DIRS fdk-aac/aacdecoder_lib.h PATHS ${DAB_LIBS_DIR}/include)
+
+            if (LIBFDKAAC_LINK_LIBRARIES)
+                message (STATUS "libfdk-aac found: ${LIBFDKAAC_LINK_LIBRARIES}")
+                message (STATUS "libfdk-aac used instead of libfaad2 ${USE_FDK_AAC}")
+                set(AUDIO_DECODER_USE_FDKAAC ON)
+            else(LIBFDKAAC_LINK_LIBRARIES)
+                message (WARNING "libfdk-aac not found. Build from source and install to: ${DAB_LIBS_DIR}. Trying to use faad2 instead.")
+                set (USE_FDK_AAC OFF)
+            endif()
+        endif()
+    else(USE_SYSTEM_FDKAAC)
+        find_library(LIBFDKAAC_LINK_LIBRARIES fdk-aac PATHS ${DAB_LIBS_DIR}/lib NO_DEFAULT_PATH)
+        find_path(LIBFDKAAC_INCLUDE_DIRS fdk-aac/aacdecoder_lib.h PATHS ${DAB_LIBS_DIR}/include NO_DEFAULT_PATH)
+        if (LIBFDKAAC_LINK_LIBRARIES)
+            message (STATUS "libfdk-aac found: ${LIBFDKAAC_LINK_LIBRARIES}")
+            message (STATUS "libfdk-aac used instead of libfaad2 ${USE_FDK_AAC}")
+            set(AUDIO_DECODER_USE_FDKAAC ON)
+        else()
+            message (WARNING "libfdk-aac not found. Build from source and install to: ${DAB_LIBS_DIR}. Trying to use faad2 instead.")
+            set (USE_FDK_AAC OFF)
+        endif()
+    endif (USE_SYSTEM_FDKAAC)
+endif (USE_FDK_AAC)
+
+#########################################################
+## FAAD2
+# this can be fallback when FDK AAC not found
+if (NOT USE_FDK_AAC)
     if (USE_SYSTEM_FAAD)
         find_library (LIBFAAD2_LINK_LIBRARIES faad)
         find_path(LIBFAAD2_INCLUDE_DIRS neaacdec.h)
+        if (NOT WIN32)
+            pkg_search_module (LIBFAAD2 faad)
+        endif()
         if (NOT LIBFAAD2_LINK_LIBRARIES)
-            message (WARNING "libfaad not found. Build from source and install to: ${FAAD2_PREFIX}")
-            set (USE_SYSTEM_FAAD OFF)
-        endif ()
-    endif ()
-endif(USE_FDK_AAC)
+            # not found is system -> trying ${DAB_LIBS_DIR}
+            message (WARNING "libfaad2 not found in system, searching in ${DAB_LIBS_DIR}")
 
+            find_library(LIBFAAD2_LINK_LIBRARIES faad PATHS ${DAB_LIBS_DIR}/lib)
+            find_path(LIBFAAD2_INCLUDE_DIRS neaacdec.h PATHS ${DAB_LIBS_DIR}/include)
+
+            if (LIBFAAD2_LINK_LIBRARIES)
+                message (STATUS "libfaad2 found: ${LIBFAAD2_LINK_LIBRARIES}")
+            else(LIBFAAD2_LINK_LIBRARIES)
+                message (FATAL "libfaad2 not found. Build from source and install to: ${DAB_LIBS_DIR}")
+            endif()
+        endif()
+    else(USE_SYSTEM_FAAD)
+        find_library(LIBFAAD2_LINK_LIBRARIES faad PATHS ${DAB_LIBS_DIR}/lib NO_DEFAULT_PATH)
+        find_path(LIBFAAD2_INCLUDE_DIRS neaacdec.h PATHS ${DAB_LIBS_DIR}/include NO_DEFAULT_PATH)
+        if (LIBFAAD2_LINK_LIBRARIES)
+            message (STATUS "libfaad found: ${LIBFAAD2_LINK_LIBRARIES}")
+        else()
+            message (FATAL_ERROR "libfaad not found. Build from source and install to: ${DAB_LIBS_DIR}")
+        endif()
+    endif (USE_SYSTEM_FAAD)
+endif(NOT USE_FDK_AAC)
+
+#########################################################
+## MPG123
 if (USE_SYSTEM_MPG123)
     find_library (LIBMPG123_LINK_LIBRARIES mpg123)
     find_path(LIBMPG123_INCLUDE_DIRS mpg123.h)
     if (NOT WIN32)
-        pkg_search_module(LIBMPG123 mpg123)
+        pkg_search_module (LIBMPG123 mpg123)
     endif()
     if (NOT LIBMPG123_LINK_LIBRARIES)
-        message (WARNING "libmpg123 not found. Build from source and install to: ${MPG123_PREFIX}")
-        set (USE_SYSTEM_MPG123 OFF)
-    endif ()
-endif ()
+        # not found is system -> trying ${DAB_LIBS_DIR}
+        message (WARNING "libmpg123 not found in system, searching in ${DAB_LIBS_DIR}")
 
+        find_library(LIBMPG123_LINK_LIBRARIES mpg123 PATHS ${DAB_LIBS_DIR}/lib)
+        find_path(LIBMPG123_INCLUDE_DIRS mpg123.h PATHS ${DAB_LIBS_DIR}/include)
+
+        if (LIBMPG123_LINK_LIBRARIES)
+            message (STATUS "libmpg123 found: ${LIBMPG123_LINK_LIBRARIES}")
+        else(LIBMPG123_LINK_LIBRARIES)
+            message (FATAL "libmpg123 not found. Build from source and install to: ${DAB_LIBS_DIR}")
+        endif()
+    endif()
+else(USE_SYSTEM_MPG123)
+    find_library(LIBMPG123_LINK_LIBRARIES mpg123 PATHS ${DAB_LIBS_DIR}/lib NO_DEFAULT_PATH)
+    find_path(LIBMPG123_INCLUDE_DIRS mpg123.h PATHS ${DAB_LIBS_DIR}/include NO_DEFAULT_PATH)
+    if (LIBMPG123_LINK_LIBRARIES)
+        message (STATUS "libmpg123 found: ${LIBMPG123_LINK_LIBRARIES}")
+    else()
+        message (FATAL_ERROR "libmpg123 not found. Build from source and install to: ${DAB_LIBS_DIR}")
+    endif()
+endif (USE_SYSTEM_MPG123)
+
+#########################################################
+## PORTAUDIO
 if (USE_SYSTEM_PORTAUDIO)
     find_library (PORTAUDIO_LINK_LIBRARIES portaudio)
     find_path(PORTAUDIO_INCLUDE_DIRS portaudio.h)
@@ -172,102 +261,30 @@ if (USE_SYSTEM_PORTAUDIO)
         pkg_search_module(PORTAUDIO portaudio-2.0)
     endif()
     if (NOT PORTAUDIO_LINK_LIBRARIES)
-        message (WARNING "portaudio not found. Build from source and install to: ${PORTAUDIO_PREFIX}")
-        set (USE_SYSTEM_PORTAUDIO OFF)
-    endif ()
-endif ()
+        # not found is system -> trying ${DAB_LIBS_DIR}
+        message (WARNING "portaudio not found in system, searching in ${DAB_LIBS_DIR}")
 
+        find_library(PORTAUDIO_LINK_LIBRARIES portaudio PATHS ${DAB_LIBS_DIR}/lib)
+        find_path(PORTAUDIO_INCLUDE_DIRS portaudio.h PATHS ${DAB_LIBS_DIR}/include)
 
-if (NOT USE_SYSTEM_LIBUSB)
-    add_library (libusb STATIC IMPORTED)
-    set (LIBUSB_LINK_LIBRARIES libusb)
-
-    if (LIBUSB_WIN_PREBUILD)
-        if (BUILD_32BIT)
-            set_property (TARGET libusb PROPERTY IMPORTED_LOCATION "${LIBUSB_PREFIX}/MinGW32/static/libusb-1.0.a")
-        else (BUILD_32BIT)
-            set_property (TARGET libusb PROPERTY IMPORTED_LOCATION "${LIBUSB_PREFIX}/MinGW64/static/libusb-1.0.a")
-        endif(BUILD_32BIT)
-
-    else (LIBUSB_WIN_PREBUILD)
-        set_property (TARGET libusb PROPERTY IMPORTED_LOCATION "${LIBUSB_PREFIX}/lib/libusb-1.0.dylib")
-    endif (LIBUSB_WIN_PREBUILD)
-endif ()
-
-if (NOT USE_SYSTEM_RTLSDR)   
-    add_library (rtlsdr STATIC IMPORTED)
-    if(WIN32)
-        set_property (TARGET rtlsdr PROPERTY IMPORTED_LOCATION "${RTLSDR_PREFIX}/lib/librtlsdr_static.a")
-    else(WIN32)
-        set_property (TARGET rtlsdr PROPERTY IMPORTED_LOCATION "${RTLSDR_PREFIX}/lib/librtlsdr.a")
-    endif(WIN32)
-    add_dependencies (rtlsdr rtlsdr_external)
-
-    set (RTL_SDR_INCLUDE_DIRS "${RTLSDR_PREFIX}/include")
-    set (RTL_SDR_LINK_LIBRARIES rtlsdr ${LIBUSB_LINK_LIBRARIES})
-endif ()
-
-if (NOT USE_SYSTEM_FAAD)
-    add_library (faad2 STATIC IMPORTED)
-    set_property (TARGET faad2 PROPERTY IMPORTED_LOCATION "${FAAD2_PREFIX}/lib/libfaad.a")
-    add_dependencies (faad2 faad2_external)
-
-    set (LIBFAAD2_INCLUDE_DIRS "${FAAD2_PREFIX}/include")
-    set (LIBFAAD2_LINK_LIBRARIES faad2)
-endif()
-
-if (NOT USE_SYSTEM_FDKAAC)
-    add_library (fdk-aac STATIC IMPORTED)    
-    if(WIN32)
-        set_property (TARGET fdk-aac PROPERTY IMPORTED_LOCATION "${FDKAAC_PREFIX}/lib/libfdk-aac.dll.a")
-    else(WIN32)
-        set_property (TARGET fdk-aac PROPERTY IMPORTED_LOCATION "${FDKAAC_PREFIX}/lib/libfdk-aac.a")
-    endif(WIN32)
-    add_dependencies (fdk-aac fdk-aac_external)
-
-    set (LIBFDKAAC_INCLUDE_DIRS "${FDKAAC_PREFIX}/include")
-    set (LIBFDKAAC_LINK_LIBRARIES fdk-aac)
-endif()
-
-if (NOT USE_SYSTEM_MPG123)
-    add_library (mpg123 STATIC IMPORTED)
-    if(WIN32)
-        set_property (TARGET mpg123 PROPERTY IMPORTED_LOCATION "${MPG123_PREFIX}/libmpg123-0.dll")
-    elseif(APPLE)
-        set_property (TARGET mpg123 PROPERTY IMPORTED_LOCATION "${MPG123_PREFIX}/lib/libmpg123.dylib")
-    else()
-        set_property (TARGET mpg123 PROPERTY IMPORTED_LOCATION "${MPG123_PREFIX}/libmpg123.so")
+        if (PORTAUDIO_LINK_LIBRARIES)
+            message (STATUS "libportaudio found: ${PORTAUDIO_LINK_LIBRARIES}")
+        else(PORTAUDIO_LINK_LIBRARIES)
+            message (FATAL "libportaudio not found. Build from source and install to: ${DAB_LIBS_DIR}")
+        endif()
     endif()
-
-    add_dependencies (mpg123 mpg123_external)
-
-    if(WIN32)
-        set (LIBMPG123_INCLUDE_DIRS "${MPG123_PREFIX}")
-    else(WIN32)
-        set (LIBMPG123_INCLUDE_DIRS "${MPG123_PREFIX}/include")
-    endif(WIN32)
-    set (LIBMPG123_LINK_LIBRARIES mpg123)
-endif()
-
-if (NOT USE_SYSTEM_PORTAUDIO)
-    add_library (portaudio STATIC IMPORTED)
-    if(WIN32)
-        set_property (TARGET portaudio PROPERTY IMPORTED_LOCATION "${PORTAUDIO_PREFIX}/lib/libportaudio.dll")
-    elseif(APPLE)
-        set_property (TARGET portaudio PROPERTY IMPORTED_LOCATION "${PORTAUDIO_PREFIX}/lib/libportaudio.dylib")
+else(USE_SYSTEM_PORTAUDIO)
+    find_library(PORTAUDIO_LINK_LIBRARIES portaudio PATHS ${DAB_LIBS_DIR}/lib NO_DEFAULT_PATH)
+    find_path(PORTAUDIO_INCLUDE_DIRS portaudio.h PATHS ${DAB_LIBS_DIR}/include NO_DEFAULT_PATH)
+    if (PORTAUDIO_LINK_LIBRARIES)
+        message (STATUS "libportaudio found: ${PORTAUDIO_LINK_LIBRARIES}")
     else()
-        set_property (TARGET portaudio PROPERTY IMPORTED_LOCATION "${PORTAUDIO_PREFIX}/lib/libportaudio.so")
+        message (FATAL_ERROR "libportaudio not found. Build from source and install to: ${DAB_LIBS_DIR}")
     endif()
+endif (USE_SYSTEM_PORTAUDIO)
 
-    add_dependencies (portaudio portaudio_external)
-
-    set (PORTAUDIO_INCLUDE_DIRS "${PORTAUDIO_PREFIX}/include/")
-    set (PORTAUDIO_LINK_LIBRARIES portaudio)
-endif()
-
-
+#########################################################
 ## QT creator CMAKEFILE
-
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -281,11 +298,10 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia REQUIRED)
 # Prepartion for porting to Qt6
 #add_compile_definitions(QT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 
+#########################################################
 ## Pictures
 list (APPEND RESOURCES resources.qrc)
 qt_add_resources (RCC_SOURCES ${RESOURCES})
-
-#add_executable(dabGui MACOSX_BUNDLE main.cpp ${APP_ICON_MACOSX})
 
 # Set some Win32 Specific Settings
 if(WIN32)
@@ -309,6 +325,8 @@ endif(APPLE)
 
 configure_file (config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
+#########################################################
+## SOURCES & HEADERS
 add_executable(${TARGET}
     ${GUI_TYPE}
     ${RCC_SOURCES}
@@ -394,8 +412,8 @@ add_executable(${TARGET}
 
 #add_definitions(-fsanitize=undefined)
 #target_link_options(${TARGET} PUBLIC -fsanitize=undefined)
-add_definitions(-fsanitize=thread)
-target_link_options(${TARGET} PUBLIC -fsanitize=thread)
+#add_definitions(-fsanitize=thread)
+#target_link_options(${TARGET} PUBLIC -fsanitize=thread)
 
 
 # config.h
@@ -404,6 +422,10 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 ### DAB library
 include_directories ( ${BACKEND_INCLUDE_DIRS} )
 target_link_libraries(${TARGET} PRIVATE dab)
+
+### PolyM library
+include_directories ( ${POLYM_INCLUDE_DIRS} )
+target_link_libraries(${TARGET} PRIVATE polym)
 
 # AAC libs
 if (USE_FDK_AAC)
