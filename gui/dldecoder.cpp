@@ -301,7 +301,7 @@ void DLDecoder::parseDLPlusCommand()
 
             if (startMarker + lengthMarker > message.size())
             {   // something is wrong
-#if DLDECODER_VERBOSE>0
+#if DLDECODER_VERBOSE>1
                 qDebug("DL+ unexpected tag %d size: start %d, length %d", contentsType, startMarker, lengthMarker);
 #endif
                 // fix length
