@@ -14,12 +14,8 @@
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
 #include "portaudio.h"
 #else
-#if QT_VERSION < 0x060000
-#include <QAudioDeviceInfo>
-#else
 #include <QAudioSink>
 #include <QMediaDevices>
-#endif
 #endif
 
 #ifdef QT_DEBUG
@@ -92,19 +88,8 @@ private:
 
     // Qt audio
     AudioIODevice * ioDevice;
-#if QT_VERSION < 0x060000 // Qt5
-    uint8_t m_numChannels;
-    uint32_t m_sampleRate_kHz;
-    QTimer * audioStartTimer;
-    QAudioOutput * audioOutput;
-
-    void checkInputBuffer();
-    void initTimer();
-    void destroyTimer();
-#else  // Qt6
     QMediaDevices * devices;
     QAudioSink * audioSink;
-#endif
     void handleStateChanged(QAudio::State newState);
 #endif
 
@@ -137,21 +122,15 @@ public:
     int64_t writeData(const char *data, int64_t len) override;
     int64_t bytesAvailable() const override;
 
-#if QT_VERSION >= 0x060000 // Qt6
     void setFormat(const QAudioFormat & format);
 
-
-#endif
 private:
     audioFifo_t * m_inFifoPtr = nullptr;
-#if QT_VERSION >= 0x060000 // Qt6
-
     AudioOutputPlaybackState m_playbackState;
     uint8_t m_bytesPerFrame;
     uint32_t m_sampleRate_kHz;
     uint8_t m_numChannels;
     std::vector<float> m_muteRamp;
-#endif
 };
 #endif
 
