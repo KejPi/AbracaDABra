@@ -9,7 +9,7 @@
 
 #include "audiofifo.h"
 
-#define AUDIOOUTPUT_USE_PORTAUDIO
+//#define AUDIOOUTPUT_USE_PORTAUDIO
 
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
 #include "portaudio.h"
@@ -52,7 +52,7 @@ class AudioOutput : public QObject
     Q_OBJECT
 
 public:
-    AudioOutput(audioFifo_t *buffer);
+    AudioOutput(audioFifo_t *buffer, QObject *parent = nullptr);
     ~AudioOutput();
     void stop();
 
@@ -60,8 +60,10 @@ public slots:
     void start(uint32_t sRate, uint8_t numChannels);
     void mute(bool on);
 
+#ifdef AUDIOOUTPUT_USE_PORTAUDIO
 signals:
     void stateChanged(AudioOutputPlaybackState state);
+#endif
 
 private:
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
@@ -101,11 +103,9 @@ private:
     void destroyTimer();
 #else  // Qt6
     QMediaDevices * devices;
-    QAudioSink * audioOutput;
-    QTimer * muteTimer;
+    QAudioSink * audioSink;
 #endif
     void handleStateChanged(QAudio::State newState);
-    void muteStep();
 #endif
 
 #if AUDIOOUTPUT_DBG_TIMER
@@ -119,15 +119,16 @@ private:
 #endif
 
     int64_t bytesAvailable() const;
+    void muteStep(int n);
+    void unmuteStep(int n);
     void doStop();
-    void onStateChange(AudioOutputPlaybackState state);
 };
 
 #if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
 class AudioIODevice : public QIODevice
 {
 public:
-    AudioIODevice(audioFifo_t *buffer, QObject *parent = nullptr);
+    AudioIODevice(audioFifo_t *buffer, const std::vector<float> & ramp, QObject *parent = nullptr);
 
     void start();
     void stop();
@@ -138,20 +139,18 @@ public:
 
 #if QT_VERSION >= 0x060000 // Qt6
     void setFormat(const QAudioFormat & format);
+
+
 #endif
 private:
     audioFifo_t * m_inFifoPtr = nullptr;
 #if QT_VERSION >= 0x060000 // Qt6
-    enum
-    {
-        StatePlaying = 0,
-        StateMuted = 1,
-        StateDoMute = 2,
-        StateDoUnmute = 3,
-    } m_playbackState;
+
+    AudioOutputPlaybackState m_playbackState;
     uint8_t m_bytesPerFrame;
     uint32_t m_sampleRate_kHz;
     uint8_t m_numChannels;
+    std::vector<float> m_muteRamp;
 #endif
 };
 #endif
