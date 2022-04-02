@@ -387,7 +387,7 @@ MainWindow::~MainWindow()
     audioDecoderThr->wait();
     delete audioDecoderThr;
 
-#if (defined AUDIOOUTPUT_USE_RTAUDIO) || (defined AUDIOOUTPUT_USE_PORTAUDIO)
+#if (defined AUDIOOUTPUT_USE_PORTAUDIO)
     delete audioOutput;
 #else
     audioOutThr->quit();  // this deletes audiodecoder
