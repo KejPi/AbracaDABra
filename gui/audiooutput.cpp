@@ -448,10 +448,10 @@ AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent
     // mute ramp is cos^2 that changes from 1 to 0 during AUDIOOUTPUT_FADE_TIME_MS
     // value are precalculated to save MIPS in runtime
     // unmute ramp is then calculated as 1.0 - muteRamp in runtime
-    float coe = 1.0/(2.0 * AUDIOOUTPUT_FADE_TIME_MS);
+    float coe = M_PI/(2.0 * AUDIOOUTPUT_FADE_TIME_MS);
     for (int n = 0; n < AUDIOOUTPUT_FADE_TIME_MS; ++n)
     {
-        float g = cosf(M_PI*n*coe);
+        float g = cosf(n*coe);
         m_muteRamp.push_back(g*g);
     }
     ioDevice = new AudioIODevice(buffer, m_muteRamp, this);
