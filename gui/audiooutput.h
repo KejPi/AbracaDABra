@@ -28,7 +28,13 @@
 #endif
 //#define AUDIOOUTPUT_RAW_FILE_OUT
 
-#define AUDIOOUTPUT_FADE_TIME_MS 40
+#define AUDIOOUTPUT_FADE_TIME_MS 60
+
+#ifdef AUDIOOUTPUT_USE_PORTAUDIO // port audio allows to set number of sampels in callback
+#if (AUDIOOUTPUT_FADE_TIME_MS > AUDIO_FIFO_CHUNK_MS)
+#error "(AUDIOOUTPUT_FADE_TIME_MS > AUDIO_FIFO_CHUNK_MS)"
+#endif
+#endif
 
 class AudioIODevice;
 
@@ -50,6 +56,7 @@ private:
     FILE * rawOut;
 #endif
     std::atomic<bool> m_muteFlag  = false;
+    std::vector<float> m_muteRamp;
 
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
     PaStream * m_outStream = nullptr;
@@ -67,7 +74,7 @@ private:
         StateDoUnmute = 3,
     } m_playbackState;
 
-    int portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames, PaStreamCallbackFlags statusFlags);
+    int portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames);
 
     friend int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
                      const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx);
