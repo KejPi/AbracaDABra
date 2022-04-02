@@ -103,7 +103,7 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
         throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
     }
 
-    m_playbackState = StateMuted;
+    m_playbackState = AudioOutputPlaybackState::StateMuted;
 
     err = Pa_StartStream(m_outStream);
     if (paNoError != err)
@@ -148,18 +148,52 @@ void AudioOutput::stop()
     qDebug() << Q_FUNC_INFO;
     if (nullptr != m_outStream)
     {
-        if (Pa_IsStreamActive(m_outStream))
+        if (m_muteFlag != true)
         {
-            Pa_StopStream(m_outStream);
+            m_stopFlag = true;
+            QTimer::singleShot(2*AUDIOOUTPUT_FADE_TIME_MS, this, &AudioOutput::doStop);
         }
-        Pa_CloseStream(m_outStream);
-        m_outStream = nullptr;
+        else
+        {   // already muted - stop immediately
+            doStop();
+        }
     }
 
 #if AUDIOOUTPUT_DBG_TIMER
     delete m_dbgTimer;
     m_dbgTimer = nullptr;
 #endif
+}
+
+void AudioOutput::doStop()
+{
+    qDebug() << Q_FUNC_INFO;
+    if (nullptr != m_outStream)
+    {
+        if (Pa_IsStreamActive(m_outStream))
+        {
+            Pa_StopStream(m_outStream);
+        }
+        Pa_CloseStream(m_outStream);
+        m_outStream = nullptr;
+        m_stopFlag = false;
+    }
+
+#if AUDIOOUTPUT_DBG_TIMER
+    delete m_dbgTimer;
+    m_dbgTimer = nullptr;
+#endif
+}
+
+void AudioOutput::onStateChange(AudioOutputPlaybackState state)
+{
+    if (AudioOutputPlaybackState::StateMuted == state)
+    {
+        if (m_stopFlag)
+        {   // stop requested
+            doStop();
+        }
+    }
 }
 
 int64_t AudioOutput::bytesAvailable() const
@@ -206,12 +240,12 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     uint64_t count = m_inFifoPtr->count;
     m_inFifoPtr->mutex.unlock();
 
-    bool mute = m_muteFlag;
+    bool mute = m_muteFlag | m_stopFlag;
 
     uint64_t bytesToRead = m_bytesPerFrame * nBufferFrames;
     uint32_t availableSamples = nBufferFrames;
 
-    if (StateMuted == m_playbackState)
+    if (AudioOutputPlaybackState::StateMuted == m_playbackState)
     {   // muted
         // condition to unmute is enough samples && !muteFlag
         if (count > 6*bytesToRead)
@@ -250,7 +284,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             m_inFifoPtr->mutex.unlock();
 
             // unmute request
-            m_playbackState = StateDoUnmute;
+            m_playbackState = AudioOutputPlaybackState::StateDoUnmute;
         }
         else
         {   // not enough samples ==> inserting silence
@@ -265,7 +299,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     else  // cannot be anything else than StateMuted or StatePlaying
     {   // playing
 
-        Q_ASSERT(StatePlaying == m_playbackState);
+        Q_ASSERT(AudioOutputPlaybackState::StatePlaying == m_playbackState);
 
         // condition to mute is not enough samples || muteFlag
         if (count < bytesToRead)
@@ -274,7 +308,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             {   // nothing to play (cannot apply mute ramp)
                 qDebug("Hard mute [no samples available]");
                 memset(outputBuffer, 0, bytesToRead);
-                m_playbackState = StateMuted;
+                m_playbackState = AudioOutputPlaybackState::StateMuted;
                 return paContinue;
             }
 
@@ -304,7 +338,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             m_inFifoPtr->countChanged.wakeAll();
             m_inFifoPtr->mutex.unlock();
 
-            m_playbackState = StateDoMute;  // mute
+            m_playbackState = AudioOutputPlaybackState::StateDoMute;  // mute
         }
         else
         {   // reading samples
@@ -328,7 +362,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
 
             if (mute)
             {   // mute requested
-                m_playbackState = StateDoMute;
+                m_playbackState = AudioOutputPlaybackState::StateDoMute;
             }
             else
             {   // done
@@ -341,7 +375,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     // it is indicated by playbackState variable
 
     // unmute
-    if (StateDoUnmute == m_playbackState)
+    if (AudioOutputPlaybackState::StateDoUnmute == m_playbackState)
     {   // unmute can be requested only when there is enough samples
         qDebug() << "Unmuting audio";
         int16_t * dataPtr = (int16_t *) outputBuffer;
@@ -358,14 +392,15 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             }
         }
 
-        m_playbackState = StatePlaying; // playing
+        m_playbackState = AudioOutputPlaybackState::StatePlaying; // playing
+        emit stateChanged(m_playbackState);
 
         // done
         return paContinue;
     }
 
     // mute
-    if (StateDoMute == m_playbackState)
+    if (AudioOutputPlaybackState::StateDoMute == m_playbackState)
     {   // mute can be requested when there is not enough samples or from HMI
         qDebug("Muting... [available %u samples]", availableSamples);
 
@@ -393,7 +428,8 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             }
         }
 
-        m_playbackState = StateMuted; // muted
+        m_playbackState = AudioOutputPlaybackState::StateMuted; // muted
+        emit stateChanged(m_playbackState);
     }
 
     return paContinue;

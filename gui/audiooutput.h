@@ -36,6 +36,15 @@
 #endif
 #endif
 
+enum class AudioOutputPlaybackState
+{
+    StatePlaying = 0,
+    StateMuted = 1,
+    StateDoMute = 2,
+    StateDoUnmute = 3,
+};
+
+
 class AudioIODevice;
 
 class AudioOutput : public QObject
@@ -51,11 +60,15 @@ public slots:
     void start(uint32_t sRate, uint8_t numChannels);
     void mute(bool on);
 
+signals:
+    void stateChanged(AudioOutputPlaybackState state);
+
 private:
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
     FILE * rawOut;
 #endif
     std::atomic<bool> m_muteFlag  = false;
+    std::atomic<bool> m_stopFlag  = false;
     std::vector<float> m_muteRamp;
 
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
@@ -66,13 +79,7 @@ private:
     unsigned int m_bufferFrames;
     uint8_t m_bytesPerFrame;
 
-    enum
-    {
-        StatePlaying = 0,
-        StateMuted = 1,
-        StateDoMute = 2,
-        StateDoUnmute = 3,
-    } m_playbackState;
+    AudioOutputPlaybackState m_playbackState;
 
     int portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames);
 
@@ -112,6 +119,8 @@ private:
 #endif
 
     int64_t bytesAvailable() const;
+    void doStop();
+    void onStateChange(AudioOutputPlaybackState state);
 };
 
 #if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
