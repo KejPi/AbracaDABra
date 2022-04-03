@@ -64,9 +64,9 @@ set(BACKEND_INCLUDE_DIRS "${BACKEND_DIR}")
 add_subdirectory(${BACKEND_DIR} backend)
 ###
 
-set(POLYM_DIR "${PROJECT_SOURCE_DIR}/PolyM")
-set(POLYM_INCLUDE_DIRS "${POLYM_DIR}")
-add_subdirectory(${POLYM_DIR} PolyM)
+#set(POLYM_DIR "${PROJECT_SOURCE_DIR}/PolyM")
+#set(POLYM_INCLUDE_DIRS "${POLYM_DIR}")
+#add_subdirectory(${POLYM_DIR} PolyM)
 
 ### Check that 64bits ot 32 bits
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -424,8 +424,8 @@ include_directories ( ${BACKEND_INCLUDE_DIRS} )
 target_link_libraries(${TARGET} PRIVATE dab)
 
 ### PolyM library
-include_directories ( ${POLYM_INCLUDE_DIRS} )
-target_link_libraries(${TARGET} PRIVATE polym)
+#include_directories ( ${POLYM_INCLUDE_DIRS} )
+#target_link_libraries(${TARGET} PRIVATE polym)
 
 # AAC libs
 if (USE_FDK_AAC)
