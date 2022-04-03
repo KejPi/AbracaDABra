@@ -31,9 +31,6 @@ AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent
         m_muteRamp.push_back(g*g);
     }
 
-    // connect signal to doStop after mute is done
-    connect(this, &AudioOutput::stateChanged, this, &AudioOutput::onStateChange, Qt::QueuedConnection);
-
     PaError err = Pa_Initialize();
     if (paNoError != err)
     {
@@ -186,17 +183,6 @@ void AudioOutput::doStop()
 #endif
 }
 
-void AudioOutput::onStateChange(AudioOutputPlaybackState state)
-{
-    if (AudioOutputPlaybackState::StateMuted == state)
-    {
-        if (m_stopFlag)
-        {   // stop requested
-            doStop();
-        }
-    }
-}
-
 int64_t AudioOutput::bytesAvailable() const
 {
     m_inFifoPtr->mutex.lock();
@@ -262,6 +248,11 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
                 m_inFifoPtr->countChanged.wakeAll();
                 m_inFifoPtr->mutex.unlock();
 
+                if (m_stopFlag)
+                {
+                    return paComplete;
+                }
+
                 // done
                 return paContinue;
             }
@@ -289,8 +280,13 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
         }
         else
         {   // not enough samples ==> inserting silence
-            //qDebug("Muted: Inserting silence [%lu ms]", nBufferFrames/m_sampleRate_kHz);
+            //qDebug("Muted: Inserting silence [%lu ms]", nBufferFrames/m_sampleRate_kHz);                       
             memset(outputBuffer, 0, bytesToRead);
+
+            if (m_stopFlag)
+            {
+                return paComplete;
+            }
 
             // done
             return paContinue;
@@ -394,7 +390,6 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
         }
 
         m_playbackState = AudioOutputPlaybackState::StatePlaying; // playing
-        emit stateChanged(m_playbackState);
 
         // done
         return paContinue;
@@ -430,7 +425,11 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
         }
 
         m_playbackState = AudioOutputPlaybackState::StateMuted; // muted
-        emit stateChanged(m_playbackState);
+
+        if (m_stopFlag)
+        {
+            return paComplete;
+        }
     }
 
     return paContinue;

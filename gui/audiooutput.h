@@ -56,11 +56,6 @@ public slots:
     void start(uint32_t sRate, uint8_t numChannels);
     void mute(bool on);
 
-#ifdef AUDIOOUTPUT_USE_PORTAUDIO
-signals:
-    void stateChanged(AudioOutputPlaybackState state);
-#endif
-
 private:
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
     FILE * rawOut;
@@ -78,7 +73,6 @@ private:
     uint8_t m_bytesPerFrame;
 
     AudioOutputPlaybackState m_playbackState;
-    void onStateChange(AudioOutputPlaybackState state);
 
     int portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames);
 
