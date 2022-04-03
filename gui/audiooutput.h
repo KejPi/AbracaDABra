@@ -9,7 +9,7 @@
 
 #include "audiofifo.h"
 
-//#define AUDIOOUTPUT_USE_PORTAUDIO
+#define AUDIOOUTPUT_USE_PORTAUDIO
 
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
 #include "portaudio.h"
@@ -78,6 +78,7 @@ private:
     uint8_t m_bytesPerFrame;
 
     AudioOutputPlaybackState m_playbackState;
+    void onStateChange(AudioOutputPlaybackState state);
 
     int portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames);
 
