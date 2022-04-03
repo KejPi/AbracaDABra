@@ -149,7 +149,7 @@ void AudioOutput::stop()
         if (m_muteFlag != true)
         {
             m_stopFlag = true;
-            QTimer::singleShot(2*AUDIOOUTPUT_FADE_TIME_MS, this, &AudioOutput::doStop);
+            QTimer::singleShot(3*AUDIOOUTPUT_FADE_TIME_MS, this, &AudioOutput::doStop);
         }
         else
         {   // already muted - stop immediately
@@ -428,6 +428,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
 
         if (m_stopFlag)
         {
+            //qDebug() << Q_FUNC_INFO << "paCompete" << fadeSamples;
             return paComplete;
         }
     }
