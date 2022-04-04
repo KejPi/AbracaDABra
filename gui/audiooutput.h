@@ -18,10 +18,6 @@
 #include <QMediaDevices>
 #endif
 
-#ifdef QT_DEBUG
-//#define AUDIOOUTPUT_DBG_TIMER 1
-#define AUDIOOUTPUT_DBG_AVRG_SIZE 32
-#endif
 
 //#define AUDIOOUTPUT_RAW_FILE_OUT
 
@@ -92,16 +88,6 @@ private:
     void handleStateChanged(QAudio::State newState);
     int64_t bytesAvailable();
     void doStop();
-#endif
-
-#if AUDIOOUTPUT_DBG_TIMER
-    int64_t m_minCount = INT64_MAX;
-    int64_t m_maxCount = INT64_MIN;
-    int64_t m_dbgBuf[AUDIOOUTPUT_DBG_AVRG_SIZE];
-    int8_t m_cntr = 0;
-    int64_t m_sum = 0;
-    QTimer * m_dbgTimer;
-    void bufferMonitor();
 #endif
 };
 

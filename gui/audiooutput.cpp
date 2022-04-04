@@ -17,9 +17,6 @@ AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent
     m_inFifoPtr = buffer;
     m_outStream = nullptr;
     m_numChannels = m_sampleRate_kHz = 0;
-#if AUDIOOUTPUT_DBG_TIMER
-    m_dbgTimer = nullptr;
-#endif
 
     PaError err = Pa_Initialize();
     if (paNoError != err)
@@ -130,37 +127,7 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
         throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
     }
 
-#if AUDIOOUTPUT_DBG_TIMER
-    // DBG counter for buffer monitoring
-    if (nullptr == m_dbgTimer)
-    {
-        m_dbgTimer = new QTimer(this);
-        m_dbgTimer->setInterval(1000);
-        m_minCount = INT64_MAX;
-        m_maxCount = INT64_MIN;
-        m_sum = 0;
-        memset((uint8_t *)m_dbgBuf, 0, AUDIOOUTPUT_DBG_AVRG_SIZE*sizeof(int64_t));
-        connect(m_dbgTimer, &QTimer::timeout, this, &AudioOutput::bufferMonitor);
-    }
-    m_dbgTimer->start();
-#endif
 }
-
-#if AUDIOOUTPUT_DBG_TIMER
-void AudioOutput::bufferMonitor()
-{
-    int64_t count = bytesAvailable();
-    if (count > m_maxCount) m_maxCount = count;
-    if (count < m_minCount) m_minCount = count;
-    m_sum -= m_dbgBuf[m_cntr];
-    m_dbgBuf[m_cntr++] = count;
-    m_cntr = m_cntr % AUDIOOUTPUT_DBG_AVRG_SIZE;
-    m_sum+= count;
-    float avrgMs = m_sum / (sizeof(int16_t)*m_numChannels * AUDIOOUTPUT_DBG_AVRG_SIZE * m_sampleRate_kHz);
-
-    qDebug("Buffer monitor [%lld - %lld] : %4lld [avrg %.2f] ms", m_minCount, m_maxCount, (count/m_bytesPerFrame)/m_sampleRate_kHz, avrgMs);
-}
-#endif
 
 void AudioOutput::stop()
 {
@@ -169,11 +136,6 @@ void AudioOutput::stop()
     {
         m_stopFlag = true;
     }
-
-#if AUDIOOUTPUT_DBG_TIMER
-    delete m_dbgTimer;
-    m_dbgTimer = nullptr;
-#endif
 }
 
 void AudioOutput::mute(bool on)
@@ -418,9 +380,6 @@ AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent
     ioDevice = new AudioIODevice(buffer, this);
 
 
-#if AUDIOOUTPUT_DBG_TIMER
-    m_dbgTimer = nullptr;
-#endif    
 }
 
 AudioOutput::~AudioOutput()
@@ -430,13 +389,6 @@ AudioOutput::~AudioOutput()
         audioSink->stop();
         delete audioSink;
     }
-#if AUDIOOUTPUT_DBG_TIMER
-    if (nullptr != m_dbgTimer)
-    {
-        m_dbgTimer->stop();
-        delete m_dbgTimer;
-    }
-#endif
     ioDevice->close();
     delete ioDevice;
 }
@@ -497,37 +449,7 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
     ioDevice->start();
     audioSink->start(ioDevice);
 
-#if AUDIOOUTPUT_DBG_TIMER
-    // DBG counter for buffer monitoring
-    if (nullptr == m_dbgTimer)
-    {
-        m_dbgTimer = new QTimer(this);
-        m_dbgTimer->setInterval(1000);
-        m_minCount = INT64_MAX;
-        m_maxCount = INT64_MIN;
-        connect(m_dbgTimer, &QTimer::timeout, this, &AudioOutput::bufferMonitor);
-    }
-    m_dbgTimer->start();
-#endif
 }
-
-#if AUDIOOUTPUT_DBG_TIMER
-void AudioOutput::bufferMonitor()
-{
-    int64_t count = ioDevice->bytesAvailable();
-
-    if (count > m_maxCount) m_maxCount = count;
-    if (count < m_minCount) m_minCount = count;
-    m_sum -= m_dbgBuf[m_cntr];
-    m_dbgBuf[m_cntr++] = count;
-    m_cntr = m_cntr % AUDIOOUTPUT_DBG_AVRG_SIZE;
-    m_sum+= count;
-    float avrgMs = m_sum / (sizeof(int16_t)*m_numChannels * AUDIOOUTPUT_DBG_AVRG_SIZE * m_sampleRate_kHz);
-
-    qDebug("Buffer monitor [%lld - %lld] : %lld bytes => %lld samples => %lld [avrg %.2f] ms", m_minCount, m_maxCount,
-           count, count >> 2, (count>>2)/m_sampleRate_kHz, avrgMs);
-}
-#endif
 
 void AudioOutput::mute(bool on)
 {
@@ -550,11 +472,6 @@ void AudioOutput::stop()
     }
 
     doStop();
-
-#if AUDIOOUTPUT_DBG_TIMER
-    delete m_dbgTimer;
-    m_dbgTimer = nullptr;
-#endif
 }
 
 void AudioOutput::doStop()
@@ -566,11 +483,6 @@ void AudioOutput::doStop()
     }
 
     ioDevice->close();
-
-#if AUDIOOUTPUT_DBG_TIMER
-    delete m_dbgTimer;
-    m_dbgTimer = nullptr;
-#endif
 }
 
 void AudioOutput::handleStateChanged(QAudio::State newState)
@@ -632,7 +544,7 @@ int64_t AudioIODevice::readData(char *data, int64_t len)
     uint64_t bytesToRead = qMin(uint64_t(len), AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz * m_bytesPerFrame);
     uint32_t availableSamples = bytesToRead / m_bytesPerFrame;
 
-    qDebug() << Q_FUNC_INFO << bytesToRead << count << static_cast<int>(m_playbackState);
+    //qDebug() << Q_FUNC_INFO << bytesToRead << count << static_cast<int>(m_playbackState);
 
     if (AudioOutputPlaybackState::Muted == m_playbackState)
     {   // muted
