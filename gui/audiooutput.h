@@ -22,6 +22,7 @@
 //#define AUDIOOUTPUT_DBG_TIMER 1
 #define AUDIOOUTPUT_DBG_AVRG_SIZE 32
 #endif
+
 //#define AUDIOOUTPUT_RAW_FILE_OUT
 
 #define AUDIOOUTPUT_FADE_TIME_MS    60
@@ -66,17 +67,17 @@ private:
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
     FILE * rawOut;
 #endif
-    std::atomic<bool> m_muteFlag  = false;
-    std::atomic<bool> m_stopFlag  = false;
-    float m_muteFactor;
 
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
+    std::atomic<bool> m_muteFlag  = false;
+    std::atomic<bool> m_stopFlag  = false;
     PaStream * m_outStream = nullptr;
     audioFifo_t * m_inFifoPtr = nullptr;
     uint8_t m_numChannels;
     uint32_t m_sampleRate_kHz;
     unsigned int m_bufferFrames;
     uint8_t m_bytesPerFrame;
+    float m_muteFactor;
 
     AudioOutputPlaybackState m_playbackState;
 
@@ -114,7 +115,7 @@ private:
 class AudioIODevice : public QIODevice
 {
 public:
-    AudioIODevice(audioFifo_t *buffer, const std::vector<float> & ramp, QObject *parent = nullptr);
+    AudioIODevice(audioFifo_t *buffer, QObject *parent = nullptr);
 
     void start();
     void stop();
@@ -124,6 +125,8 @@ public:
     int64_t bytesAvailable() const override;
 
     void setFormat(const QAudioFormat & format);
+    void mute(bool on);
+    bool isMuted() const { return AudioOutputPlaybackState::StateMuted == m_playbackState; }
 
 private:
     audioFifo_t * m_inFifoPtr = nullptr;
@@ -131,7 +134,10 @@ private:
     uint8_t m_bytesPerFrame;
     uint32_t m_sampleRate_kHz;
     uint8_t m_numChannels;
-    std::vector<float> m_muteRamp;
+    float m_muteFactor;
+
+    std::atomic<bool> m_muteFlag  = false;
+    std::atomic<bool> m_stopFlag  = false;
 };
 #endif
 
