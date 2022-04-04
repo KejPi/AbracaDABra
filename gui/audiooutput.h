@@ -41,10 +41,8 @@
 
 enum class AudioOutputPlaybackState
 {
-    StatePlaying = 0,
-    StateMuted = 1,
-    StateDoMute = 2,
-    StateDoUnmute = 3,
+    Playing = 0,
+    Muted = 1,
 };
 
 
@@ -126,7 +124,7 @@ public:
 
     void setFormat(const QAudioFormat & format);
     void mute(bool on);
-    bool isMuted() const { return AudioOutputPlaybackState::StateMuted == m_playbackState; }
+    bool isMuted() const { return AudioOutputPlaybackState::Muted == m_playbackState; }
 
 private:
     audioFifo_t * m_inFifoPtr = nullptr;

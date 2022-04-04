@@ -96,7 +96,7 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
         throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
     }
 
-    m_playbackState = AudioOutputPlaybackState::StateMuted;
+    m_playbackState = AudioOutputPlaybackState::Muted;
 
     err = Pa_StartStream(m_outStream);
     if (paNoError != err)
@@ -222,17 +222,17 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     uint64_t count = m_inFifoPtr->count;
     m_inFifoPtr->mutex.unlock();
 
-    bool mute = m_muteFlag | m_stopFlag;
-
     uint64_t bytesToRead = m_bytesPerFrame * nBufferFrames;
     uint32_t availableSamples = nBufferFrames;
 
-    if (AudioOutputPlaybackState::StateMuted == m_playbackState)
+    bool muteRequest = m_muteFlag | m_stopFlag;        // false == do unmute, true == do mute
+
+    if (AudioOutputPlaybackState::Muted == m_playbackState)
     {   // muted
         // condition to unmute is enough samples && !muteFlag
         if (count > 6*bytesToRead)
         {   // enough samples => reading data from input fifo
-            if (mute)
+            if (muteRequest)
             {   // staying muted -> setting output buffer to 0
                 memset(outputBuffer, 0, bytesToRead);
 
@@ -271,7 +271,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             m_inFifoPtr->mutex.unlock();
 
             // unmute request
-            m_playbackState = AudioOutputPlaybackState::StateDoUnmute;
+            muteRequest = false;
         }
         else
         {   // not enough samples ==> inserting silence
@@ -287,11 +287,11 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             return paContinue;
         }
     }
-    //if (StatePlaying == playbackState)
-    else  // cannot be anything else than StateMuted or StatePlaying
+    //if (Playing == playbackState)
+    else  // cannot be anything else than Muted or Playing
     {   // playing
 
-        Q_ASSERT(AudioOutputPlaybackState::StatePlaying == m_playbackState);
+        Q_ASSERT(AudioOutputPlaybackState::Playing == m_playbackState);
 
         // condition to mute is not enough samples || muteFlag
         if (count < bytesToRead)
@@ -301,7 +301,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             {   // nothing to play (cannot apply mute ramp)
                 qDebug("Hard mute [no samples available]");
                 memset(outputBuffer, 0, bytesToRead);
-                m_playbackState = AudioOutputPlaybackState::StateMuted;
+                m_playbackState = AudioOutputPlaybackState::Muted;
                 return paContinue;
             }
 
@@ -331,7 +331,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             m_inFifoPtr->countChanged.wakeAll();
             m_inFifoPtr->mutex.unlock();
 
-            m_playbackState = AudioOutputPlaybackState::StateDoMute;  // mute
+            muteRequest = true;
         }
         else
         {   // reading samples
@@ -353,11 +353,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             m_inFifoPtr->countChanged.wakeAll();
             m_inFifoPtr->mutex.unlock();
 
-            if (mute)
-            {   // mute requested
-                m_playbackState = AudioOutputPlaybackState::StateDoMute;
-            }
-            else
+            if (!muteRequest)
             {   // done
                return paContinue;
             }
@@ -365,10 +361,10 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     }
 
     // at this point we have buffer that needs to be muted or unmuted
-    // it is indicated by playbackState variable
+    // it is indicated by muteRequest variable
 
     // unmute
-    if (AudioOutputPlaybackState::StateDoUnmute == m_playbackState)
+    if (false == muteRequest)
     {   // unmute can be requested only when there is enough samples
         qDebug() << "Unmuting audio";
 
@@ -385,14 +381,12 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             gain = gain * coe;  // after by purpose
         }
 
-        m_playbackState = AudioOutputPlaybackState::StatePlaying; // playing
+        m_playbackState = AudioOutputPlaybackState::Playing; // playing
 
         // done
         return paContinue;
     }
-
-    // mute
-    if (AudioOutputPlaybackState::StateDoMute == m_playbackState)
+    else  // mute
     {   // mute can be requested when there is not enough samples or from HMI
         qDebug("Muting... [available %u samples]", availableSamples);
         float coe = m_muteFactor;
@@ -414,7 +408,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             }
         }
 
-        m_playbackState = AudioOutputPlaybackState::StateMuted; // muted
+        m_playbackState = AudioOutputPlaybackState::Muted; // muted
 
         if (m_stopFlag)
         {
@@ -622,7 +616,7 @@ AudioIODevice::AudioIODevice(audioFifo_t *buffer, QObject *parent) : QIODevice(p
 void AudioIODevice::start()
 {
     m_stopFlag = false;
-    m_playbackState = AudioOutputPlaybackState::StateMuted;
+    m_playbackState = AudioOutputPlaybackState::Muted;
     open(QIODevice::ReadOnly);
 }
 
@@ -644,21 +638,21 @@ int64_t AudioIODevice::readData(char *data, int64_t len)
     m_inFifoPtr->mutex.unlock();
 
     //qDebug() << Q_FUNC_INFO << len << count << static_cast<int>(m_playbackState);
-    bool mute = m_muteFlag |  m_stopFlag;
+    bool muteRequest = m_muteFlag |  m_stopFlag;
 
     //uint64_t bytesToRead = len;
     uint64_t bytesToRead = qMin(uint64_t(len), AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz * m_bytesPerFrame);
     uint32_t availableSamples = bytesToRead / m_bytesPerFrame;
 
-    //qDebug() << Q_FUNC_INFO << bytesToRead << count << static_cast<int>(m_playbackState);
+    qDebug() << Q_FUNC_INFO << bytesToRead << count << static_cast<int>(m_playbackState);
 
-    if (AudioOutputPlaybackState::StateMuted == m_playbackState)
+    if (AudioOutputPlaybackState::Muted == m_playbackState)
     {   // muted
         // condition to unmute is enough samples
-        if (count > 6*bytesToRead)
+        if (count > 8*bytesToRead)
         {   // enough samples => reading data from input fifo
             Q_ASSERT((bytesToRead >= AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz * m_bytesPerFrame));
-            if (mute)
+            if (muteRequest)
             {   // staying muted -> setting output buffer to 0
                 memset(data, 0, bytesToRead);
 
@@ -692,7 +686,7 @@ int64_t AudioIODevice::readData(char *data, int64_t len)
             m_inFifoPtr->mutex.unlock();
 
             // unmute request
-            m_playbackState = AudioOutputPlaybackState::StateDoUnmute;
+            muteRequest = false;
         }
         else
         {   // not enough samples ==> inserting silence
@@ -703,10 +697,10 @@ int64_t AudioIODevice::readData(char *data, int64_t len)
             return bytesToRead;
         }
     }
-    else  // cannot be anything else than StateMuted or StatePlaying
+    else  // cannot be anything else than Muted or Playing
     {   // playing
 
-        Q_ASSERT(AudioOutputPlaybackState::StatePlaying == m_playbackState);
+        Q_ASSERT(AudioOutputPlaybackState::Playing == m_playbackState);
 
         // condition to mute is not enough samples || muteFlag
         if (count < bytesToRead)
@@ -716,7 +710,7 @@ int64_t AudioIODevice::readData(char *data, int64_t len)
             {   // nothing to play
                 qDebug("Hard mute [no samples available]");
                 memset(data, 0, bytesToRead);
-                m_playbackState = AudioOutputPlaybackState::StateMuted;
+                m_playbackState = AudioOutputPlaybackState::Muted;
                 return bytesToRead;
             }
 
@@ -746,7 +740,7 @@ int64_t AudioIODevice::readData(char *data, int64_t len)
             m_inFifoPtr->countChanged.wakeAll();
             m_inFifoPtr->mutex.unlock();
 
-            m_playbackState = AudioOutputPlaybackState::StateDoMute;  // mute
+            muteRequest = true;  // mute
         }
         else
         {   // reading samples
@@ -768,11 +762,7 @@ int64_t AudioIODevice::readData(char *data, int64_t len)
             m_inFifoPtr->countChanged.wakeAll();
             m_inFifoPtr->mutex.unlock();
 
-            if (mute)
-            {   // mute requested
-                m_playbackState = AudioOutputPlaybackState::StateDoMute;
-            }
-            else
+            if (!muteRequest)
             {   // done
                 return bytesToRead;
             }
@@ -783,7 +773,7 @@ int64_t AudioIODevice::readData(char *data, int64_t len)
     // it is indicated by playbackState variable
 
     // unmute
-    if (AudioOutputPlaybackState::StateDoUnmute == m_playbackState)
+    if (false == muteRequest)
     {   // unmute can be requested only when there is enough samples
         qDebug() << "Unmuting audio";
 
@@ -800,13 +790,11 @@ int64_t AudioIODevice::readData(char *data, int64_t len)
             gain = gain * coe;  // after by purpose
         }
 
-        m_playbackState = AudioOutputPlaybackState::StatePlaying; // playing
+        m_playbackState = AudioOutputPlaybackState::Playing; // playing
 
         return bytesToRead;
     }
-
-    // mute
-    if (AudioOutputPlaybackState::StateDoMute == m_playbackState)
+    else
     {   // mute can be requested when there is not enough samples or from HMI
         qDebug("Muting... [available %u samples]", availableSamples);
         float coe = m_muteFactor;
@@ -828,7 +816,7 @@ int64_t AudioIODevice::readData(char *data, int64_t len)
             }
         }
 
-        m_playbackState = AudioOutputPlaybackState::StateMuted; // muted
+        m_playbackState = AudioOutputPlaybackState::Muted; // muted
     }
 
     return bytesToRead;
