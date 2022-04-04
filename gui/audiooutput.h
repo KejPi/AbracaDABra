@@ -24,11 +24,17 @@
 #endif
 //#define AUDIOOUTPUT_RAW_FILE_OUT
 
-#define AUDIOOUTPUT_FADE_TIME_MS 60
+#define AUDIOOUTPUT_FADE_TIME_MS    60
 
-#ifdef AUDIOOUTPUT_USE_PORTAUDIO // port audio allows to set number of sampels in callback
-#if (AUDIOOUTPUT_FADE_TIME_MS > AUDIO_FIFO_CHUNK_MS)
-#error "(AUDIOOUTPUT_FADE_TIME_MS > AUDIO_FIFO_CHUNK_MS)"
+// these 2 values must be aligned
+#define AUDIOOUTPUT_FADE_MIN_DB    -60.0
+#define AUDIOOUTPUT_FADE_MIN_LIN     0.001
+
+#ifdef AUDIOOUTPUT_USE_PORTAUDIO
+// port audio allows to set number of samples in callback
+// this number must be aligned between AUDIOOUTPUT_FADE_TIME_MS and AUDIO_FIFO_CHUNK_MS
+#if (AUDIOOUTPUT_FADE_TIME_MS != AUDIO_FIFO_CHUNK_MS)
+#error "(AUDIOOUTPUT_FADE_TIME_MS != AUDIO_FIFO_CHUNK_MS)"
 #endif
 #endif
 
@@ -62,7 +68,7 @@ private:
 #endif
     std::atomic<bool> m_muteFlag  = false;
     std::atomic<bool> m_stopFlag  = false;
-    std::vector<float> m_muteRamp;
+    float m_muteFactor;
 
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
     PaStream * m_outStream = nullptr;

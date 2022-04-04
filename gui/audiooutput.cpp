@@ -20,17 +20,6 @@ AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent
     m_dbgTimer = nullptr;
 #endif
 
-    // initialize mute ramp
-    // mute ramp is cos^2 that changes from 1 to 0 during AUDIOOUTPUT_FADE_TIME_MS
-    // value are precalculated to save MIPS in runtime
-    // unmute ramp is then calculated as 1.0 - muteRamp in runtime
-    float coe = 1.0/(2.0 * AUDIOOUTPUT_FADE_TIME_MS);
-    for (int n = 0; n < AUDIOOUTPUT_FADE_TIME_MS; ++n)
-    {
-        float g = cosf(M_PI*n*coe);
-        m_muteRamp.push_back(g*g);
-    }
-
     PaError err = Pa_Initialize();
     if (paNoError != err)
     {
@@ -79,7 +68,13 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
     m_numChannels = numCh;
 
     m_bytesPerFrame = numCh * sizeof(int16_t);
-    m_bufferFrames = AUDIO_FIFO_CHUNK_MS * m_sampleRate_kHz;   // 120 ms (FIFO size should be integer multiple of this)
+    m_bufferFrames = AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz;  // 120 ms (FIFO size should be integer multiple of this)
+
+    // mute ramp is exponential
+    // value are precalculated to save MIPS in runtime
+    // unmute ramp is then calculated as 2.0 - m_muteFactor in runtime
+    // m_muteFactor is calculated for change from 0dB to AUDIOOUTPUT_FADE_MIN_DB in AUDIOOUTPUT_FADE_TIME_MS
+    m_muteFactor = powf(10, AUDIOOUTPUT_FADE_MIN_DB/(20.0*AUDIOOUTPUT_FADE_TIME_MS*m_sampleRate_kHz));
 
     /* Open an audio I/O stream. */
     PaError err = Pa_OpenDefaultStream( &m_outStream,
@@ -211,9 +206,9 @@ int portAudioCb( const void *inputBuffer, void *outputBuffer, unsigned long nBuf
     }
     return ret;
 #else
-    if (statusFlags & paOutputUnderflow)
+    if (statusFlags)
     {
-        qDebug() << "Port Audio underflow!";
+        qDebug() << "Port Audio statusFlags =" << statusFlags;
     }
 
     return static_cast<AudioOutput*>(ctx)->portAudioCbPrivate(outputBuffer, nBufferFrames);
@@ -301,7 +296,8 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
         // condition to mute is not enough samples || muteFlag
         if (count < bytesToRead)
         {   // not enough samples -> reading what we have and filling rest with zeros
-            if (AUDIOOUTPUT_FADE_TIME_MS*m_bytesPerFrame > count)
+            // minimum mute time is 1ms (m_sampleRate_kHz samples) , if less then hard mute
+            if (m_sampleRate_kHz*m_bytesPerFrame > count)
             {   // nothing to play (cannot apply mute ramp)
                 qDebug("Hard mute [no samples available]");
                 memset(outputBuffer, 0, bytesToRead);
@@ -375,18 +371,18 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     if (AudioOutputPlaybackState::StateDoUnmute == m_playbackState)
     {   // unmute can be requested only when there is enough samples
         qDebug() << "Unmuting audio";
+
+        float coe = 2.0 - m_muteFactor;
+        float gain = AUDIOOUTPUT_FADE_MIN_LIN;
         int16_t * dataPtr = (int16_t *) outputBuffer;
-        for (uint_fast32_t n = 0; n < AUDIOOUTPUT_FADE_TIME_MS; ++n)
+        for (uint_fast32_t n = 0; n < availableSamples; ++n)
         {
-            float gain = 1.0 - m_muteRamp.at(n);
-            for (uint_fast8_t s = 0; s < m_sampleRate_kHz; ++s)
-            {  // 1 ms samples
-                for (uint_fast8_t c = 0; c < m_numChannels; ++c)
-                {
-                    *dataPtr = int16_t(qRound(gain * *dataPtr));
-                    dataPtr++;
-                }
+            for (uint_fast8_t c = 0; c < m_numChannels; ++c)
+            {
+                *dataPtr = int16_t(qRound(gain * *dataPtr));
+                dataPtr++;
             }
+            gain = gain * coe;  // after by purpose
         }
 
         m_playbackState = AudioOutputPlaybackState::StatePlaying; // playing
@@ -399,28 +395,22 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     if (AudioOutputPlaybackState::StateDoMute == m_playbackState)
     {   // mute can be requested when there is not enough samples or from HMI
         qDebug("Muting... [available %u samples]", availableSamples);
-
-        uint32_t fadeSamples = AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz;
-        uint_fast8_t muteChunk = m_sampleRate_kHz;   // 1 ms
-        if (availableSamples < fadeSamples)
-        {   // number of samples that are available is not enough to apply normal mute ramp
-            // buffer is [(availableSamples) 0 0 0 0 0 0]
-            // but we know that availableSamples >= AUDIOOUTPUT_FADE_TIME_MS
-            muteChunk = availableSamples / AUDIOOUTPUT_FADE_TIME_MS;
-            fadeSamples = muteChunk * AUDIOOUTPUT_FADE_TIME_MS;      // this will make mute shorter than availableSamples in general
+        float coe = m_muteFactor;
+        if (availableSamples < AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz)
+        {   // less samples than expected available => need to calculate new coef
+            coe = powf(10, AUDIOOUTPUT_FADE_MIN_DB/(20.0*availableSamples));
         }
 
-        int16_t * dataPtr = (int16_t *) ((uint8_t * ) outputBuffer + (availableSamples - fadeSamples)*m_bytesPerFrame);
-        for (uint_fast32_t n = 0; n < AUDIOOUTPUT_FADE_TIME_MS; ++n)
+        float gain = 1.0;
+
+        int16_t * dataPtr = (int16_t *) outputBuffer;
+        for (uint_fast32_t n = 0; n < availableSamples; ++n)
         {
-            float gain = m_muteRamp.at(n);
-            for (uint_fast8_t s = 0; s < muteChunk; ++s)
-            {  // 1 ms samples
-                for (uint_fast8_t c = 0; c < m_numChannels; ++c)
-                {
-                    *dataPtr = int16_t(qRound(gain * *dataPtr));
-                    dataPtr++;
-                }
+            gain = gain * coe;  // before by purpose
+            for (uint_fast8_t c = 0; c < m_numChannels; ++c)
+            {
+                *dataPtr = int16_t(qRound(gain * *dataPtr));
+                dataPtr++;
             }
         }
 

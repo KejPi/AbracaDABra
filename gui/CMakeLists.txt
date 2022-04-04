@@ -18,12 +18,12 @@ project(${TARGET}
 option (USE_FDK_AAC           "Compile with fdk-aac library from Franhofer instead of faad2" OFF)
 
 # Options to force using libs build manually and installed in ${CMAKE_SOURCE_DIR}/../../dab-libs
-option (USE_SYSTEM_RTLSDR     "Use system provided rtl-sdr"     ON)
-option (USE_SYSTEM_LIBUSB     "Use system provided libusb"      ON)
-option (USE_SYSTEM_FAAD       "Use system provided libfaad"     ON)
-option (USE_SYSTEM_FDKAAC     "Use system provided libfdk-aac"  ON)
-option (USE_SYSTEM_MPG123     "Use system provided libmpg123"   ON)
-option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   ON)
+option (USE_SYSTEM_RTLSDR     "Use system provided rtl-sdr"     OFF)
+option (USE_SYSTEM_LIBUSB     "Use system provided libusb"      OFF)
+option (USE_SYSTEM_FAAD       "Use system provided libfaad"     OFF)
+option (USE_SYSTEM_FDKAAC     "Use system provided libfdk-aac"  OFF)
+option (USE_SYSTEM_MPG123     "Use system provided libmpg123"   OFF)
+option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   OFF)
 
 option(APPLE_BUILD_X86_64     "Build x86_64 binary for Apple"   OFF)
 
