@@ -16,6 +16,7 @@ AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent
 {
     m_inFifoPtr = buffer;
     m_outStream = nullptr;
+    m_numChannels = m_sampleRate_kHz = 0;
 #if AUDIOOUTPUT_DBG_TIMER
     m_dbgTimer = nullptr;
 #endif
@@ -41,7 +42,8 @@ AudioOutput::~AudioOutput()
     {
         if (Pa_IsStreamActive(m_outStream))
         {
-            Pa_AbortStream(m_outStream);
+            //Pa_AbortStream(m_outStream);
+            Pa_StopStream(m_outStream);
         }
         Pa_CloseStream(m_outStream);
     }
@@ -62,43 +64,61 @@ AudioOutput::~AudioOutput()
 
 void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 {
-    stop();
+    bool isNewStreamParams = (m_sampleRate_kHz != sRate/1000) || (m_numChannels != numCh);
+    if (isNewStreamParams)
+    {
+        //qDebug() << Q_FUNC_INFO << "new PA stream";
+        if (nullptr != m_outStream)
+        {
+            Pa_CloseStream(m_outStream);
+            m_outStream = nullptr;
+        }
 
-    m_sampleRate_kHz = sRate/1000;
-    m_numChannels = numCh;
+        m_sampleRate_kHz = sRate/1000;
+        m_numChannels = numCh;
 
-    m_bytesPerFrame = numCh * sizeof(int16_t);
-    m_bufferFrames = AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz;  // 120 ms (FIFO size should be integer multiple of this)
+        m_bytesPerFrame = numCh * sizeof(int16_t);
+        m_bufferFrames = AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz;  // 120 ms (FIFO size should be integer multiple of this)
 
-    // mute ramp is exponential
-    // value are precalculated to save MIPS in runtime
-    // unmute ramp is then calculated as 2.0 - m_muteFactor in runtime
-    // m_muteFactor is calculated for change from 0dB to AUDIOOUTPUT_FADE_MIN_DB in AUDIOOUTPUT_FADE_TIME_MS
-    m_muteFactor = powf(10, AUDIOOUTPUT_FADE_MIN_DB/(20.0*AUDIOOUTPUT_FADE_TIME_MS*m_sampleRate_kHz));
+        // mute ramp is exponential
+        // value are precalculated to save MIPS in runtime
+        // unmute ramp is then calculated as 2.0 - m_muteFactor in runtime
+        // m_muteFactor is calculated for change from 0dB to AUDIOOUTPUT_FADE_MIN_DB in AUDIOOUTPUT_FADE_TIME_MS
+        m_muteFactor = powf(10, AUDIOOUTPUT_FADE_MIN_DB/(20.0*AUDIOOUTPUT_FADE_TIME_MS*m_sampleRate_kHz));
 
-    /* Open an audio I/O stream. */
-    PaError err = Pa_OpenDefaultStream( &m_outStream,
-                                        0,              /* no input channels */
-                                        numCh,          /* stereo output */
-                                        paInt16,        /* 16 bit floating point output */
-                                        sRate,
-                                        m_bufferFrames, /* frames per buffer, i.e. the number
+        /* Open an audio I/O stream. */
+        PaError err = Pa_OpenDefaultStream( &m_outStream,
+                                           0,              /* no input channels */
+                                           numCh,          /* stereo output */
+                                           paInt16,        /* 16 bit floating point output */
+                                           sRate,
+                                           m_bufferFrames, /* frames per buffer, i.e. the number
                                                            of sample frames that PortAudio will
                                                            request from the callback. Many apps
                                                            may want to use
                                                            paFramesPerBufferUnspecified, which
                                                            tells PortAudio to pick the best,
                                                            possibly changing, buffer size.*/
-                                        portAudioCb,    /* callback */
-                                        (void *) this);
-    if (paNoError != err)
-    {
-        throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
+                                           portAudioCb,    /* callback */
+                                           (void *) this);
+        if (paNoError != err)
+        {
+            throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
+        }
+    }
+    else
+    {   // stream parameters are the same - just starting
+        // this is just to be sure
+        if (!Pa_IsStreamStopped(m_outStream))
+        {
+            Pa_StopStream(m_outStream);
+        }
     }
 
     m_playbackState = AudioOutputPlaybackState::Muted;
+    m_stopFlag = false;
 
-    err = Pa_StartStream(m_outStream);
+    PaError err = Pa_StartStream(m_outStream);
     if (paNoError != err)
     {
         throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
@@ -163,13 +183,10 @@ void AudioOutput::doStop()
     qDebug() << Q_FUNC_INFO;
     if (nullptr != m_outStream)
     {
-        if (Pa_IsStreamActive(m_outStream))
+        if (!Pa_IsStreamStopped(m_outStream))
         {
             Pa_StopStream(m_outStream);
         }
-        Pa_CloseStream(m_outStream);
-        m_outStream = nullptr;
-        m_stopFlag = false;
     }
 
 #if AUDIOOUTPUT_DBG_TIMER
