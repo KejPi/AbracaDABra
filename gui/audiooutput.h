@@ -77,7 +77,7 @@ private:
 
     int portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames);
 
-    friend int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
+    static int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
                      const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx);
 #else
 

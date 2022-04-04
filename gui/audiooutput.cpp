@@ -9,9 +9,6 @@ audioFifo_t audioBuffer;
 
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
 
-int portAudioCb( const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
-                 const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx);
-
 AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent)
 {
     m_inFifoPtr = buffer;
@@ -143,14 +140,14 @@ void AudioOutput::mute(bool on)
     m_muteFlag = on;
 }
 
-int portAudioCb( const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
+int AudioOutput::portAudioCb( const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
                  const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx)
 {
     Q_UNUSED(inputBuffer);
     Q_UNUSED(timeInfo);
 
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
-    int ret = static_cast<AudioOutput*>(ctx)->portAudioCbPrivate(outputBuffer, nBufferFrames, statusFlags);
+    int ret = static_cast<AudioOutput*>(ctx)->portAudioCbPrivate(outputBuffer, nBufferFrames);
     if (static_cast<AudioOutput*>(ctx)->rawOut)
     {
         fwrite(outputBuffer, sizeof(int16_t), nBufferFrames * static_cast<AudioOutput*>(ctx)->numChannels, static_cast<AudioOutput*>(ctx)->rawOut);
