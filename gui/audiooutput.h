@@ -83,7 +83,6 @@ private:
 
     friend int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
                      const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx);
-
 #else
 
     // Qt audio
@@ -91,6 +90,8 @@ private:
     QMediaDevices * devices;
     QAudioSink * audioSink;
     void handleStateChanged(QAudio::State newState);
+    int64_t bytesAvailable();
+    void doStop();
 #endif
 
 #if AUDIOOUTPUT_DBG_TIMER
@@ -102,11 +103,6 @@ private:
     QTimer * m_dbgTimer;
     void bufferMonitor();
 #endif
-
-    int64_t bytesAvailable() const;
-    void muteStep(int n);
-    void unmuteStep(int n);
-    void doStop();
 };
 
 #if (!defined AUDIOOUTPUT_USE_PORTAUDIO)

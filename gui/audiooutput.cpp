@@ -34,6 +34,7 @@ AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent
         qDebug("Unable to open file: audio.raw");
     }
 #endif
+
 }
 
 AudioOutput::~AudioOutput()
@@ -70,6 +71,11 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
         //qDebug() << Q_FUNC_INFO << "new PA stream";
         if (nullptr != m_outStream)
         {
+            if (!Pa_IsStreamStopped(m_outStream))
+            {
+                Pa_StopStream(m_outStream);
+            }
+
             Pa_CloseStream(m_outStream);
             m_outStream = nullptr;
         }
@@ -108,7 +114,7 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
     }
     else
     {   // stream parameters are the same - just starting
-        // this is just to be sure
+        // this is just to be sure - stream should be already stopped
         if (!Pa_IsStreamStopped(m_outStream))
         {
             Pa_StopStream(m_outStream);
@@ -161,47 +167,13 @@ void AudioOutput::stop()
     qDebug() << Q_FUNC_INFO;
     if (nullptr != m_outStream)
     {
-        if (m_muteFlag != true)
-        {
-            m_stopFlag = true;
-            QTimer::singleShot(3*AUDIOOUTPUT_FADE_TIME_MS, this, &AudioOutput::doStop);
-        }
-        else
-        {   // already muted - stop immediately
-            doStop();
-        }
+        m_stopFlag = true;
     }
 
 #if AUDIOOUTPUT_DBG_TIMER
     delete m_dbgTimer;
     m_dbgTimer = nullptr;
 #endif
-}
-
-void AudioOutput::doStop()
-{
-    qDebug() << Q_FUNC_INFO;
-    if (nullptr != m_outStream)
-    {
-        if (!Pa_IsStreamStopped(m_outStream))
-        {
-            Pa_StopStream(m_outStream);
-        }
-    }
-
-#if AUDIOOUTPUT_DBG_TIMER
-    delete m_dbgTimer;
-    m_dbgTimer = nullptr;
-#endif
-}
-
-int64_t AudioOutput::bytesAvailable() const
-{
-    m_inFifoPtr->mutex.lock();
-    int64_t count = m_inFifoPtr->count;
-    m_inFifoPtr->mutex.unlock();
-
-    return count;
 }
 
 void AudioOutput::mute(bool on)
@@ -436,7 +408,6 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
 
     return paContinue;
 }
-
 
 #else // !def AUDIOOUTPUT_USE_PORTAUDIO
 
