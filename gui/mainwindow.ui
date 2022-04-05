@@ -206,7 +206,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="channelCombo"/>
+       <widget class="QComboBox" name="channelCombo">
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QLabel" name="frequencyLabel">
@@ -230,6 +234,9 @@
         <width>324</width>
         <height>244</height>
        </size>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
       </property>
      </widget>
     </item>
@@ -389,6 +396,10 @@
    <header>clickablelabel.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>serviceListView</tabstop>
+  <tabstop>serviceTreeView</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

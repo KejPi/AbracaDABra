@@ -131,6 +131,8 @@ private:
     uint32_t SCIdS = 0;
 //    uint64_t serviceId = 0;
 //    uint64_t ensembleId = 0;
+    bool hasListViewFocus;
+    bool hasTreeViewFocus;
 
     ServiceList * serviceList;
     SLModel * slModel;

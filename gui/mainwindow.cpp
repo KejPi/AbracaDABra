@@ -371,6 +371,8 @@ MainWindow::MainWindow(QWidget *parent)
     initInputDevice(InputDeviceId::UNDEFINED);
 
     loadSettings();
+
+    QTimer::singleShot(1, this, [this](){ ui->serviceListView->setFocus(); } );
 }
 
 MainWindow::~MainWindow()
@@ -606,6 +608,14 @@ void MainWindow::updateAudioInfo(const struct AudioParameters & params)
 
 void MainWindow::onChannelSelection()
 {
+    qDebug() << Q_FUNC_INFO << ui->serviceListView->hasFocus() << ui->serviceTreeView->hasFocus();
+
+    hasListViewFocus = ui->serviceListView->hasFocus();
+    hasTreeViewFocus = ui->serviceTreeView->hasFocus();
+    ui->serviceListView->setEnabled(false);
+    ui->serviceTreeView->setEnabled(false);
+
+
     clearEnsembleInformationLabels();
     ui->frequencyLabel->setText("Tuning...  ");
 
@@ -648,6 +658,17 @@ void MainWindow::tuneFinished(uint32_t freq)
     frequency = freq;
     if (freq != 0)
     {
+        ui->serviceListView->setEnabled(true);
+        ui->serviceTreeView->setEnabled(true);
+        if (hasListViewFocus)
+        {
+            ui->serviceListView->setFocus();
+        }
+        else if (hasTreeViewFocus)
+        {
+            ui->serviceTreeView->setFocus();
+        }
+
         ui->frequencyLabel->setText(QString("%1 MHz").arg(freq/1000.0, 3, 'f', 3, QChar('0')));
         isPlaying = true;
         setupDialog->enableFileSelection(false);
@@ -1235,7 +1256,6 @@ void MainWindow::loadSettings()
                 {   // found
                     ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
                     serviceListClicked(index);   // this selects service
-                    ui->serviceListView->setFocus();
                     break;
                 }
             }
