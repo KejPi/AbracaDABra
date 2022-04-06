@@ -18,6 +18,7 @@ public:
     bool isCheckable() const { return m_checkable; }
     void setChecked(bool checked);
     bool isChecked() const { return m_checked; }
+    void toggle();
 signals:
     void clicked();
     void toggled(bool checked);

@@ -182,6 +182,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->serviceListView->setModel(slModel);
     ui->serviceListView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->serviceListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->serviceListView->installEventFilter(this);
     connect(ui->serviceListView, &QListView::clicked, this, &MainWindow::serviceListClicked);
 
     slTreeModel = new SLTreeModel(serviceList, this);
@@ -190,6 +191,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->serviceTreeView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->serviceTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->serviceTreeView->setHeaderHidden(true);
+    ui->serviceTreeView->installEventFilter(this);
     connect(ui->serviceTreeView, &QTreeView::clicked, this, &MainWindow::serviceListTreeClicked);
     connect(serviceList, &ServiceList::empty, slTreeModel, &SLTreeModel::clear);
 
@@ -402,6 +404,42 @@ MainWindow::~MainWindow()
     delete serviceList;
 
     delete ui;
+}
+
+bool MainWindow::eventFilter(QObject *o, QEvent *e)
+{
+    if (o == ui->serviceListView)
+    {
+        if(e->type() == QEvent::KeyPress)
+        {
+            QKeyEvent * event = static_cast<QKeyEvent *>(e);
+            if (Qt::Key_Return == event->key())
+            {
+                serviceListClicked(ui->serviceListView->currentIndex());
+                return true;
+            }
+            if (Qt::Key_Space == event->key())
+            {
+                ui->favoriteLabel->toggle();
+                return true;
+            }
+        }
+        return QObject::eventFilter(o, e);
+    }
+    if (o == ui->serviceTreeView)
+    {
+        if(e->type() == QEvent::KeyPress)
+        {
+            QKeyEvent * event = static_cast<QKeyEvent *>(e);
+            if (Qt::Key_Return == event->key())
+            {
+                serviceListTreeClicked(ui->serviceTreeView->currentIndex());
+                return true;
+            }
+        }
+        return QObject::eventFilter(o, e);
+    }
+    return QObject::eventFilter(o, e);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

@@ -106,6 +106,18 @@ void ClickableLabel::setChecked(bool checked)
     }
 }
 
+// this emits the signal
+void ClickableLabel::toggle()
+{
+    if (m_checkable)
+    {  // toggling state
+        setChecked(!m_checked);
+        emit toggled(m_checked);
+    }
+    else
+    { /* do nothing */ }
+}
+
 void ClickableLabel::update()
 {
     if (m_checked)

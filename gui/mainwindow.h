@@ -47,6 +47,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    bool eventFilter(QObject * o, QEvent * e);
 
 public slots:
     void inputDeviceReady();
