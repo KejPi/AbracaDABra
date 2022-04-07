@@ -174,6 +174,43 @@ QString SLModelItem::label() const
     return QString("--- UNKNOWN ---");
 }
 
+QString SLModelItem::shortLabel() const
+{
+    if (0 != m_serviceId)
+    {  // service item
+        ServiceListConstIterator it = m_slPtr->findService(m_serviceId);
+        if (m_slPtr->serviceListEnd() != it)
+        {  // found
+            return it.value()->shortLabel();
+        }
+    }
+
+    if (0 != m_ensembleId)
+    {  // ensemble item
+        EnsembleListConstIterator it = m_slPtr->findEnsemble(m_ensembleId);
+        if (m_slPtr->ensembleListEnd() != it)
+        {  // found
+            return it.value()->shortLabel().trimmed();
+        }
+    }
+    return QString("-UNKN-");
+}
+
+DabSId SLModelItem::SId() const
+{
+    if (0 != m_serviceId)
+    {  // service item
+        ServiceListConstIterator it = m_slPtr->findService(m_serviceId);
+        if (m_slPtr->serviceListEnd() != it)
+        {  // found
+            return it.value()->SId();
+        }
+    }
+
+    return DabSId();
+}
+
+
 void SLModelItem::sort(Qt::SortOrder order)
 {
     if (Qt::AscendingOrder == order)

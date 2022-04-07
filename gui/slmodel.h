@@ -6,6 +6,7 @@
 #include <QVariant>
 #include <QList>
 #include <QIcon>
+#include <slmodelitem.h>
 
 #include <servicelist.h>
 
@@ -36,7 +37,8 @@ public slots:
 private:
     ServiceList * slPtr;
 
-    QList<const ServiceListItem *> m_serviceItems;
+    //QList<const ServiceListItem *> m_serviceItems;
+    QList<SLModelItem *> m_serviceItems;
 
     QIcon favIcon;
     QIcon noIcon;

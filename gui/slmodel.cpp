@@ -39,7 +39,7 @@ QVariant SLModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    const ServiceListItem * item = static_cast<ServiceListItem*>(index.internalPointer());
+    const SLModelItem * item = static_cast<SLModelItem*>(index.internalPointer());
 
     if (0 == index.column())
     {
@@ -58,7 +58,7 @@ QVariant SLModel::data(const QModelIndex &index, int role) const
             break;
         case Qt::DecorationRole:
         {
-            if (item->isFavorite())
+            if (item->isFavoriteService())
             {
                 return QVariant(favIcon);
             }
@@ -81,8 +81,8 @@ bool SLModel::isFavoriteService(const QModelIndex &index) const
         return false;
     }
 
-    const ServiceListItem * item = static_cast<ServiceListItem*>(index.internalPointer());
-    return item->isFavorite();
+    const SLModelItem * item = static_cast<SLModelItem*>(index.internalPointer());
+    return item->isFavoriteService();
 }
 
 uint64_t SLModel::getId(const QModelIndex &index) const
@@ -92,7 +92,7 @@ uint64_t SLModel::getId(const QModelIndex &index) const
         return 0;
     }
 
-    const ServiceListItem * item = static_cast<ServiceListItem*>(index.internalPointer());
+    const SLModelItem * item = static_cast<SLModelItem*>(index.internalPointer());
 
     return item->getId();
 }
@@ -121,7 +121,7 @@ QModelIndex SLModel::index(int row, int column, const QModelIndex &parent)
         return QModelIndex();
     }
 
-    const ServiceListItem *childItem = m_serviceItems.at(row);
+    const SLModelItem *childItem = m_serviceItems.at(row);
     if (childItem)
     {
         return createIndex(row, column, (void *)childItem);
@@ -153,7 +153,7 @@ int SLModel::rowCount(const QModelIndex &parent) const
 void SLModel::addService(const ServiceListItem *s)
 {  // new service in service list
     beginInsertRows(QModelIndex(), m_serviceItems.size(), m_serviceItems.size());
-    m_serviceItems.append(s);
+    m_serviceItems.append(new SLModelItem(slPtr, s));
     endInsertRows();
 
     sort(0);
@@ -172,12 +172,12 @@ void SLModel::sort(int column, Qt::SortOrder order)
     Q_UNUSED(column);
     if (Qt::AscendingOrder == order)
     {
-        std::sort(m_serviceItems.begin(), m_serviceItems.end(), [](const ServiceListItem * a, const ServiceListItem * b) {
-            if ((a->isFavorite() && b->isFavorite()) || (!a->isFavorite() && !b->isFavorite()))
+        std::sort(m_serviceItems.begin(), m_serviceItems.end(), [](const SLModelItem * a, const SLModelItem * b) {
+            if ((a->isFavoriteService() && b->isFavoriteService()) || (!a->isFavoriteService() && !b->isFavoriteService()))
             {
                 return a->label() < b->label();
             }
-            if (a->isFavorite())
+            if (a->isFavoriteService())
             {
                 return true;
             }
@@ -186,12 +186,12 @@ void SLModel::sort(int column, Qt::SortOrder order)
     }
     else
     {
-        std::sort(m_serviceItems.begin(), m_serviceItems.end(), [](const ServiceListItem * a, const ServiceListItem * b) {
-            if ((a->isFavorite() && b->isFavorite()) || (!a->isFavorite() && !b->isFavorite()))
+        std::sort(m_serviceItems.begin(), m_serviceItems.end(), [](const SLModelItem * a, const SLModelItem * b) {
+            if ((a->isFavoriteService() && b->isFavoriteService()) || (!a->isFavoriteService() && !b->isFavoriteService()))
             {
                 return a->label() > b->label();
             }
-            if (b->isFavorite())
+            if (b->isFavoriteService())
             {
                 return true;
             }

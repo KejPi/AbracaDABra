@@ -25,7 +25,10 @@ public:
     bool isService() const;    
     bool isEnsemble() const;
     bool isFavoriteService() const;
+    QString label() const;
+    QString shortLabel() const;
     uint32_t frequency() const;
+    DabSId SId() const;
     SLModelItem* findChildId(uint64_t id) const;
     void sort(Qt::SortOrder order);    
 
@@ -36,9 +39,6 @@ private:
     ServiceList * m_slPtr;
     uint64_t m_serviceId = 0;
     uint64_t m_ensembleId = 0;
-
-
-    QString label() const;
 };
 
 #endif // SLMODELITEM_H
