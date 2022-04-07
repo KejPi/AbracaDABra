@@ -46,16 +46,8 @@ QVariant SLModel::data(const QModelIndex &index, int role) const
         switch (role)
         {
         case Qt::DisplayRole:
-            return QVariant(item->label());
-            break;
         case Qt::ToolTipRole:
-        {
-            QString tooltip = QString("<b>Short label:</b> %1<br><b>SId:</b> 0x%2")
-                    .arg(item->shortLabel(),
-                         QString("%1").arg(item->SId().countryServiceRef(), 4, 16, QChar('0')).toUpper() );
-            return QVariant(tooltip);
-        }
-            break;
+              return item->data(index.column(), role);
         case Qt::DecorationRole:
         {
             if (item->isFavoriteService())
