@@ -85,6 +85,9 @@ void RawFileInput::tune(uint32_t freq)
     stop();    
     rewind();
 
+    // Reset buffer here - worker thread it not running, DAB waits for new data
+    inputBuffer.reset();
+
     if (0 != freq)
     {
         worker = new RawFileWorker(inputFile, sampleFormat, this);
