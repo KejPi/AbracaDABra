@@ -35,13 +35,11 @@ public slots:
     void clear();
 
 private:
-    ServiceList * slPtr;
-
-    //QList<const ServiceListItem *> m_serviceItems;
+    ServiceList * m_slPtr;
     QList<SLModelItem *> m_serviceItems;
 
-    QIcon favIcon;
-    QIcon noIcon;
+    QIcon m_favIcon;
+    QIcon m_noIcon;
 };
 
 #endif // SLMODEL_H

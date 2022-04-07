@@ -3,20 +3,20 @@
 
 SLModel::SLModel(ServiceList *sl, QObject *parent)
     : QAbstractItemModel(parent)
-    , slPtr(sl)
+    , m_slPtr(sl)
 {
     QPixmap nopic(20,20);
     nopic.fill(Qt::transparent);
-    noIcon = QIcon(nopic);
+    m_noIcon = QIcon(nopic);
 
     QPixmap pic;
     if (pic.load(":/resources/star.svg"))
     {
-        favIcon = QIcon(pic);
+        m_favIcon = QIcon(pic);
     }
     else
     {
-        favIcon = noIcon;
+        m_favIcon = m_noIcon;
         qDebug() << "Unable to load :/resources/star.svg";
     }
 }
@@ -60,11 +60,11 @@ QVariant SLModel::data(const QModelIndex &index, int role) const
         {
             if (item->isFavoriteService())
             {
-                return QVariant(favIcon);
+                return QVariant(m_favIcon);
             }
             else
             {
-                return QVariant(noIcon);
+                return QVariant(m_noIcon);
             }
             return QVariant();
         }
@@ -153,7 +153,7 @@ int SLModel::rowCount(const QModelIndex &parent) const
 void SLModel::addService(const ServiceListItem *s)
 {  // new service in service list
     beginInsertRows(QModelIndex(), m_serviceItems.size(), m_serviceItems.size());
-    m_serviceItems.append(new SLModelItem(slPtr, s));
+    m_serviceItems.append(new SLModelItem(m_slPtr, s));
     endInsertRows();
 
     sort(0);
