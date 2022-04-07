@@ -4,7 +4,7 @@ SLTreeModel::SLTreeModel(ServiceList *sl, QObject *parent)
     : QAbstractItemModel(parent)
     , slPtr(sl)
 {
-    rootItem = new SLModelItem();
+    rootItem = new SLModelItem(slPtr);
 }
 
 
@@ -176,7 +176,7 @@ void SLTreeModel::addEnsembleService(const EnsembleListItem *e, const ServiceLis
     SLModelItem * ensChild = rootItem->findChildId(e->getId());
     if (nullptr == ensChild)
     {   // not found ==> new ensemble
-        ensChild = new SLModelItem(e, rootItem);
+        ensChild = new SLModelItem(slPtr, e, rootItem);
         beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
         rootItem->appendChild(ensChild);
         endInsertRows();
@@ -191,7 +191,7 @@ void SLTreeModel::addEnsembleService(const EnsembleListItem *e, const ServiceLis
         if (nullptr != serviceChild)
         {   // primary service found
             beginInsertRows(index(serviceChild->row(), 0, index(ensChild->row(), 0, QModelIndex())), serviceChild->childCount(), serviceChild->childCount());
-            serviceChild->appendChild(new SLModelItem(s, serviceChild));
+            serviceChild->appendChild(new SLModelItem(slPtr, s, serviceChild));
             endInsertRows();
         }
         else
@@ -201,7 +201,7 @@ void SLTreeModel::addEnsembleService(const EnsembleListItem *e, const ServiceLis
             if (nullptr == serviceChild)
             {  // new service to be added
                 beginInsertRows(index(ensChild->row(), 0, QModelIndex()), ensChild->childCount(), ensChild->childCount());
-                ensChild->appendChild(new SLModelItem(s, ensChild));
+                ensChild->appendChild(new SLModelItem(slPtr, s, ensChild));
                 endInsertRows();
             }
         }
@@ -212,7 +212,7 @@ void SLTreeModel::addEnsembleService(const EnsembleListItem *e, const ServiceLis
         if (nullptr == serviceChild)
         {  // new service to be added
             beginInsertRows(index(ensChild->row(), 0, QModelIndex()), ensChild->childCount(), ensChild->childCount());
-            ensChild->appendChild(new SLModelItem(s, ensChild));
+            ensChild->appendChild(new SLModelItem(slPtr, s, ensChild));
             endInsertRows();
         }
     }
@@ -226,7 +226,7 @@ void SLTreeModel::clear()
     // remove all items
     delete rootItem;
     // create new root
-    rootItem = new SLModelItem();
+    rootItem = new SLModelItem(slPtr);
     endResetModel();
 }
 

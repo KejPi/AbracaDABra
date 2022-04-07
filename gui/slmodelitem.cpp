@@ -6,21 +6,24 @@
 #include "slmodel.h"
 #include "dabtables.h"
 
-SLModelItem::SLModelItem(SLModelItem *parent)
-{
+SLModelItem::SLModelItem(ServiceList *  slPtr, SLModelItem *parent)
+{    
     m_parentItem = parent;
+    m_slPtr = slPtr;
 }
 
-SLModelItem::SLModelItem(const ServiceListItem *sPtr, SLModelItem *parent)
+SLModelItem::SLModelItem(ServiceList *  slPtr, const ServiceListItem *sPtr, SLModelItem *parent)
 {
     m_parentItem = parent;
-    m_servicePtr = sPtr;
+    m_slPtr = slPtr;
+    m_serviceId = sPtr->getId();
 }
 
-SLModelItem::SLModelItem(const EnsembleListItem *ePtr, SLModelItem *parent)
+SLModelItem::SLModelItem(ServiceList *  slPtr, const EnsembleListItem *ePtr, SLModelItem *parent)
 {
     m_parentItem = parent;
-    m_ensemblePtr = ePtr;
+    m_slPtr = slPtr;
+    m_ensembleId = ePtr->getId();
 }
 
 
@@ -57,33 +60,35 @@ QVariant SLModelItem::data(int column, int role) const
         switch (role)
         {
         case Qt::DisplayRole:
-            if (nullptr != m_servicePtr)
-            {  // service item
-                return QVariant(m_servicePtr->label());
-            }
-
-            if (nullptr != m_ensemblePtr)
-            {  // ensemble item
-                return QVariant(m_ensemblePtr->label().trimmed());
-            }
+            return QVariant(label());
             break;
         case Qt::ToolTipRole:
-            if (nullptr != m_servicePtr)
+        {
+            if (0 != m_serviceId)
             {  // service item
-                QString tooltip = QString("<b>Short label:</b> %1<br><b>SId:</b> 0x%2")
-                        .arg(m_servicePtr->shortLabel())
-                        .arg( QString("%1").arg(m_servicePtr->SId().countryServiceRef(), 4, 16, QChar('0')).toUpper() );
-                return QVariant(tooltip);
-            }
+                ServiceListConstIterator it = m_slPtr->findService(m_serviceId);
+                if (m_slPtr->serviceListEnd() != it)
+                {  // found
+                    QString tooltip = QString("<b>Short label:</b> %1<br><b>SId:</b> 0x%2").arg(it.value()->shortLabel(),
+                                          QString("%1").arg(it.value()->SId().countryServiceRef(), 4, 16, QChar('0')).toUpper() );
+                    return QVariant(tooltip);
 
-            if (nullptr != m_ensemblePtr)
-            {  // ensemble item
-                return QVariant(QString("Channel %1<br>Frequency: %2 MHz")
-                                .arg(DabTables::channelList.value(m_ensemblePtr->frequency()))
-                                .arg(m_ensemblePtr->frequency()/1000.0));
+                }
             }
+            if (0 != m_ensembleId)
+            {  // ensemble item
+                EnsembleListConstIterator it = m_slPtr->findEnsemble(m_ensembleId);
+                if (m_slPtr->ensembleListEnd() != it)
+                {  // found
+                    return QVariant(QString("Channel %1<br>Frequency: %2 MHz")
+                                        .arg(DabTables::channelList.value(it.value()->frequency()))
+                                        .arg(it.value()->frequency()/1000.0));
+                }
+            }
+        }
+            break;
         case Qt::FontRole:
-            if (nullptr != m_ensemblePtr)
+            if (0 != m_ensembleId)
             {
                 QFont f;
                 f.setBold(true);
@@ -91,19 +96,6 @@ QVariant SLModelItem::data(int column, int role) const
             }
             return QVariant();
          break;
-//        case Qt::DecorationRole:
-//        {
-//            if (nullptr != m_ensemblePtr)
-//            {
-//                QPixmap pic;
-//                if (pic.load(":/resources/broadcast.svg"))
-//                {
-//                    return QVariant(QIcon(pic));
-//                }
-//            }
-//            return QVariant();
-//        }
-//            break;
         }        
     }
     return QVariant();
@@ -126,43 +118,60 @@ int SLModelItem::row() const
 
 uint64_t SLModelItem::getId() const
 {
-    if (nullptr != m_servicePtr)
+    if (0 != m_serviceId)
     {
-        return m_servicePtr->getId();
+        return m_serviceId;
     }
-    if (nullptr != m_ensemblePtr)
+    if (0 != m_ensembleId)
     {
-        return m_ensemblePtr->getId();
+        return m_ensembleId;
     }
     return 0;
 }
 
 bool SLModelItem::isService() const
 {
-    return (nullptr != m_servicePtr);
+    return (0 != m_serviceId);
 }
 
 bool SLModelItem::isFavoriteService() const
 {
-    return ((nullptr != m_servicePtr) && m_servicePtr->isFavorite());
+    if (0 != m_serviceId)
+    {
+        ServiceListConstIterator it = m_slPtr->findService(m_serviceId);
+        if (m_slPtr->serviceListEnd() != it)
+        {  // found
+            return it.value()->isFavorite();
+        }
+    }
+    return false;
 }
 
 bool SLModelItem::isEnsemble() const
 {
-    return (nullptr != m_ensemblePtr);
+    return (0 != m_ensembleId);
 }
 
-QString SLModelItem::label()
+QString SLModelItem::label() const
 {
-    if (nullptr != m_servicePtr)
-    {
-        return m_servicePtr->label();
+    if (0 != m_serviceId)
+    {  // service item
+        ServiceListConstIterator it = m_slPtr->findService(m_serviceId);
+        if (m_slPtr->serviceListEnd() != it)
+        {  // found
+            return it.value()->label();
+        }
     }
-    if (nullptr != m_ensemblePtr)
-    {
-        return m_ensemblePtr->label();
+
+    if (0 != m_ensembleId)
+    {  // ensemble item
+        EnsembleListConstIterator it = m_slPtr->findEnsemble(m_ensembleId);
+        if (m_slPtr->ensembleListEnd() != it)
+        {  // found
+            return it.value()->label().trimmed();
+        }
     }
-    return QString();
+    return QString("--- UNKNOWN ---");
 }
 
 void SLModelItem::sort(Qt::SortOrder order)
@@ -214,9 +223,14 @@ SLModelItem* SLModelItem::findChildId(uint64_t id) const
 
 uint32_t SLModelItem::frequency() const
 {
-    if (nullptr != m_ensemblePtr)
+    if (0 != m_ensembleId)
     {
-        return m_ensemblePtr->frequency();
+        EnsembleListConstIterator it = m_slPtr->findEnsemble(m_ensembleId);
+        if (m_slPtr->ensembleListEnd() != it)
+        {  // found
+            return it.value()->frequency();
+        }
+
     }
     return 0;
 }

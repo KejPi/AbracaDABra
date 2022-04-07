@@ -8,9 +8,9 @@
 class SLModelItem
 {
 public:
-    explicit SLModelItem(SLModelItem *parentItem = 0);
-    explicit SLModelItem(const ServiceListItem *sPtr, SLModelItem *parentItem = 0);
-    explicit SLModelItem(const EnsembleListItem * ePtr, SLModelItem *parentItem = 0);
+    explicit SLModelItem(ServiceList *  slPtr, SLModelItem *parentItem = 0);
+    explicit SLModelItem(ServiceList *  slPtr, const ServiceListItem *sPtr, SLModelItem *parentItem = 0);
+    explicit SLModelItem(ServiceList *  slPtr, const EnsembleListItem * ePtr, SLModelItem *parentItem = 0);
     ~SLModelItem();
 
     void appendChild(SLModelItem *child);
@@ -33,10 +33,12 @@ private:
     QList<SLModelItem*> m_childItems;
     SLModelItem *m_parentItem;
 
-    const ServiceListItem * m_servicePtr = nullptr;
-    const EnsembleListItem * m_ensemblePtr = nullptr;
+    ServiceList * m_slPtr;
+    uint64_t m_serviceId = 0;
+    uint64_t m_ensembleId = 0;
 
-    QString label();
+
+    QString label() const;
 };
 
 #endif // SLMODELITEM_H
