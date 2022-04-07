@@ -35,8 +35,8 @@ public slots:
     void clear();
 
 private:
-    SLModelItem *rootItem;
-    ServiceList * slPtr;
+    SLModelItem * m_rootItem;
+    ServiceList * m_slPtr;
 };
 
 #endif // SLTREEMODEL_H
