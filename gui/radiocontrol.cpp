@@ -66,6 +66,15 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
     {
     case RadioControlEventType::AUDIO_DATA:
         break;
+    case RadioControlEventType::RESET:
+    {
+#if RADIO_CONTROL_VERBOSE
+        qDebug() << "RadioControlEventType::RESET";
+#endif
+        serviceList.clear();
+        clearEnsemble();
+    }
+        break;
     case RadioControlEventType::SYNC_STATUS:
     {
         dabProcSyncLevel_t s = static_cast<dabProcSyncLevel_t>(pEvent->pData);
@@ -109,13 +118,18 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
     {
         // process ensemble info
         dabProc_NID_ENSEMBLE_INFO_t * pInfo = reinterpret_cast<dabProc_NID_ENSEMBLE_INFO_t *>(pEvent->pData);
+
+#if RADIO_CONTROL_VERBOSE
+        qDebug("RadioControlEvent::ENSEMBLE_INFO 0x%8.8X", pInfo->ueid);
+#endif
+
 #if (RADIO_CONTROL_TEST_MODE)
         if (pInfo->label.str[0] != '\0')  // allow ECC == 0 in test mode
 #else
-        if (((pInfo->ueid & 0x00FF0000) != 0) && pInfo->label.str[0] != '\0')
+        if (((pInfo->ueid & 0x00FF0000) != 0) && (pInfo->label.str[0] != '\0'))
 #endif
         {
-            serviceList.clear();
+            //serviceList.clear();
             ensemble.ueid = pInfo->ueid;
             ensemble.frequency = pInfo->frequency;
             ensemble.LTO = pInfo->LTO;
@@ -145,7 +159,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::SERVICE_LIST:
     {
-#if 1 // RADIO_CONTROL_VERBOSE
+#if RADIO_CONTROL_VERBOSE
         qDebug() << "RadioControlEvent::SERVICE_LIST";
 #endif
         QList<dabProcServiceListItem_t> * pServiceList = reinterpret_cast<QList<dabProcServiceListItem_t> *>(pEvent->pData);
@@ -563,10 +577,7 @@ void RadioControl::start(uint32_t freq)
         sync = DABPROC_SYNC_LEVEL_NO_SYNC;
         emit syncStatus(uint8_t(DabSyncLevel::NoSync));        
         serviceList.clear();
-        ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
-        ensemble.label.clear();
-        ensemble.labelShort.clear();
-        ensemble.frequency = 0;
+        clearEnsemble();
         dabTune(freq);
     }
     else
@@ -617,6 +628,8 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
         serviceRequest.SId = SId;
         serviceRequest.SCIdS = SCIdS;
         emit ensembleConfiguration("");
+
+        serviceList.clear();
 
         dabTune(0);
      }
@@ -986,9 +999,17 @@ QString RadioControl::ensembleConfigurationString() const
     }
     strOut << "</dl>";
 
-    strOut.flush();  
+    strOut.flush();
 
     return output;
+}
+
+void RadioControl::clearEnsemble()
+{
+    ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
+    ensemble.label.clear();
+    ensemble.labelShort.clear();
+    ensemble.frequency = 0;
 }
 
 QString RadioControl::toShortLabel(QString & label, uint16_t charField) const
@@ -1182,6 +1203,16 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
             pEvent->pData = reinterpret_cast<intptr_t>(notifyData);
             radioCtrl->emit_dabEvent(pEvent);
         }
+    }
+        break;
+    case DABPROC_NID_RESET:
+    {
+        RadioControlEvent * pEvent = new RadioControlEvent;
+        pEvent->type = RadioControlEventType::RESET;
+
+        pEvent->status = p->status;
+        pEvent->pData = reinterpret_cast<intptr_t>(nullptr);
+        radioCtrl->emit_dabEvent(pEvent);
     }
         break;
     default:

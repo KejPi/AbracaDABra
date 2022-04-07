@@ -210,6 +210,7 @@ enum class RadioControlEventType
     DATAGROUP_DL,
     USERAPP_DATA,
     AUDIO_DATA,
+    RESET,
 };
 
 struct RadioControlEvent
@@ -287,6 +288,7 @@ private:
     void updateSyncLevel(dabProcSyncLevel_t s);
     QString toShortLabel(QString & label, uint16_t charField) const;
     QString ensembleConfigurationString() const;
+    void clearEnsemble();
 
     void emit_dabEvent(RadioControlEvent * pEvent) { emit dabEvent(pEvent); }
     void emit_audioData(QByteArray * pData) { emit audioData(pData); }
