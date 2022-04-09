@@ -15,7 +15,7 @@ class SLModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    explicit SLModel(ServiceList * sl, QObject *parent = 0);
+    explicit SLModel(const ServiceList * sl, QObject *parent = 0);
     ~SLModel();
 
     QVariant data(const QModelIndex &index, int role) const override;
@@ -35,7 +35,7 @@ public slots:
     void clear();
 
 private:
-    ServiceList * m_slPtr;
+    const ServiceList * m_slPtr;
     QList<SLModelItem *> m_serviceItems;
 
     QIcon m_favIcon;

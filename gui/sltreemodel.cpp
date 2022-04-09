@@ -1,6 +1,6 @@
 #include "sltreemodel.h"
 
-SLTreeModel::SLTreeModel(ServiceList *sl, QObject *parent)
+SLTreeModel::SLTreeModel(const ServiceList *sl, QObject *parent)
     : QAbstractItemModel(parent)
     , m_slPtr(sl)
 {
@@ -88,17 +88,6 @@ Qt::ItemFlags SLTreeModel::flags(const QModelIndex &index) const
 
     return QAbstractItemModel::flags(index);
 }
-
-
-//QVariant SLTreeModel::headerData(int section, Qt::Orientation orientation,
-//                               int role) const
-//{
-////    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-////        return rootItem->data(section);
-
-//    return QVariant();
-//}
-
 
 QModelIndex SLTreeModel::index(int row, int column, const QModelIndex &parent)
             const

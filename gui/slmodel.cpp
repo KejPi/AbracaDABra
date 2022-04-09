@@ -1,7 +1,7 @@
 #include "slmodel.h"
 #include <QFlags>
 
-SLModel::SLModel(ServiceList *sl, QObject *parent)
+SLModel::SLModel(const ServiceList *sl, QObject *parent)
     : QAbstractItemModel(parent)
     , m_slPtr(sl)
 {

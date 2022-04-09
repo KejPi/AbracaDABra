@@ -6,20 +6,20 @@
 #include "slmodel.h"
 #include "dabtables.h"
 
-SLModelItem::SLModelItem(ServiceList *  slPtr, SLModelItem *parent)
+SLModelItem::SLModelItem(const ServiceList *slPtr, SLModelItem *parent)
 {    
     m_parentItem = parent;
     m_slPtr = slPtr;
 }
 
-SLModelItem::SLModelItem(ServiceList *  slPtr, const ServiceListItem *sPtr, SLModelItem *parent)
+SLModelItem::SLModelItem(const ServiceList *  slPtr, const ServiceListItem *sPtr, SLModelItem *parent)
 {
     m_parentItem = parent;
     m_slPtr = slPtr;
     m_serviceId = sPtr->getId();
 }
 
-SLModelItem::SLModelItem(ServiceList *  slPtr, const EnsembleListItem *ePtr, SLModelItem *parent)
+SLModelItem::SLModelItem(const ServiceList *slPtr, const EnsembleListItem *ePtr, SLModelItem *parent)
 {
     m_parentItem = parent;
     m_slPtr = slPtr;
