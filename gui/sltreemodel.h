@@ -29,7 +29,7 @@ public:
     bool isFavoriteService(const QModelIndex &index) const;
 
 public slots:
-    void addEnsembleService(const EnsembleListItem *e, const ServiceListItem *s);
+    void addEnsembleService(uint64_t ensId, uint64_t servId);
     void clear();
 
 private:

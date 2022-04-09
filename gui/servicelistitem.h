@@ -30,6 +30,9 @@ public:
     uint64_t getId() const { return getId(m_sid.value(), m_scids); }
     static uint64_t getId(const RadioControlServiceComponent & item) { return getId(item.SId.value(), item.SCIdS); }
     static uint64_t getId(uint32_t sid, uint8_t scids) { return ((uint64_t(scids)<<32) | sid); }
+    static uint32_t id2sid(uint64_t id) { return static_cast<uint32_t>(id & 0xFFFFFF); }
+    static DabSId id2dabsid(uint64_t id) { return DabSId(static_cast<uint32_t>(id & 0xFFFFFF)); }
+    static uint8_t id2scids(uint64_t id) { return static_cast<uint8_t>((id>>32) & 0xFF); }
 private:
     // Service
     DabSId m_sid;           // SId (contains ECC)

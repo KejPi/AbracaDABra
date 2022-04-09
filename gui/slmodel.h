@@ -31,7 +31,7 @@ public:
     bool isFavoriteService(const QModelIndex &index) const;
 
 public slots:
-    void addService(const ServiceListItem *s);
+    void addService(uint64_t servId);
     void clear();
 
 private:

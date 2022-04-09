@@ -142,10 +142,10 @@ int SLModel::rowCount(const QModelIndex &parent) const
     return m_serviceItems.size();
 }
 
-void SLModel::addService(const ServiceListItem *s)
+void SLModel::addService(uint64_t servId)
 {  // new service in service list
     beginInsertRows(QModelIndex(), m_serviceItems.size(), m_serviceItems.size());
-    m_serviceItems.append(new SLModelItem(m_slPtr, s));
+    m_serviceItems.append(new SLModelItem(m_slPtr, servId));
     endInsertRows();
 
     sort(0);

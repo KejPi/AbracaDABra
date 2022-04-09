@@ -12,19 +12,23 @@ SLModelItem::SLModelItem(const ServiceList *slPtr, SLModelItem *parent)
     m_slPtr = slPtr;
 }
 
-SLModelItem::SLModelItem(const ServiceList *  slPtr, const ServiceListItem *sPtr, SLModelItem *parent)
+SLModelItem::SLModelItem(const ServiceList *  slPtr, uint64_t id, SLModelItem *parent)
 {
     m_parentItem = parent;
     m_slPtr = slPtr;
-    m_serviceId = sPtr->getId();
+    if (id & 0xFFFF00000000u)
+    {  // ensemble
+        m_ensembleId = id;
+        m_serviceId = 0;
+    }
+    else
+    {   // service
+        m_serviceId = id;
+        m_ensembleId = 0;
+    }
+
 }
 
-SLModelItem::SLModelItem(const ServiceList *slPtr, const EnsembleListItem *ePtr, SLModelItem *parent)
-{
-    m_parentItem = parent;
-    m_slPtr = slPtr;
-    m_ensembleId = ePtr->getId();
-}
 
 
 SLModelItem::~SLModelItem()

@@ -159,49 +159,49 @@ int SLTreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-void SLTreeModel::addEnsembleService(const EnsembleListItem *e, const ServiceListItem *s)
+void SLTreeModel::addEnsembleService(uint64_t ensId, uint64_t servId)
 {  // new service in service list
 
-    SLModelItem * ensChild = m_rootItem->findChildId(e->getId());
+    SLModelItem * ensChild = m_rootItem->findChildId(ensId);
     if (nullptr == ensChild)
     {   // not found ==> new ensemble
-        ensChild = new SLModelItem(m_slPtr, e, m_rootItem);
+        ensChild = new SLModelItem(m_slPtr, ensId, m_rootItem);
         beginInsertRows(QModelIndex(), m_rootItem->childCount(), m_rootItem->childCount());
         m_rootItem->appendChild(ensChild);
         endInsertRows();
     }
 
-    if (s->SCIdS() != 0)
+    if (0 != ServiceListItem::id2scids(servId))
     {   // this part is to creates secondary service item as secont level service in the tree
         // not tested much - only one stimuli for testing is available
-        // it expects that parent item is created first -> if not it will add secondary componemnt as normal service
-        uint64_t id = ServiceListItem::getId(s->SId().value(), 0);
+        // it expects that parent item is created first -> if not it will add secondary component as normal service
+        uint64_t id = ServiceListItem::getId(ServiceListItem::id2dabsid(servId).value(), 0);
         SLModelItem * serviceChild = ensChild->findChildId(id);
         if (nullptr != serviceChild)
         {   // primary service found
             beginInsertRows(index(serviceChild->row(), 0, index(ensChild->row(), 0, QModelIndex())), serviceChild->childCount(), serviceChild->childCount());
-            serviceChild->appendChild(new SLModelItem(m_slPtr, s, serviceChild));
+            serviceChild->appendChild(new SLModelItem(m_slPtr, servId, serviceChild));
             endInsertRows();
         }
         else
         {
             qDebug() << Q_FUNC_INFO << "Service not found - adding secondary service as regular service";
-            serviceChild = ensChild->findChildId(s->getId());
+            serviceChild = ensChild->findChildId(servId);
             if (nullptr == serviceChild)
             {  // new service to be added
                 beginInsertRows(index(ensChild->row(), 0, QModelIndex()), ensChild->childCount(), ensChild->childCount());
-                ensChild->appendChild(new SLModelItem(m_slPtr, s, ensChild));
+                ensChild->appendChild(new SLModelItem(m_slPtr, servId, ensChild));
                 endInsertRows();
             }
         }
     }
     else
     {
-        SLModelItem * serviceChild = ensChild->findChildId(s->getId());
+        SLModelItem * serviceChild = ensChild->findChildId(servId);
         if (nullptr == serviceChild)
         {  // new service to be added
             beginInsertRows(index(ensChild->row(), 0, QModelIndex()), ensChild->childCount(), ensChild->childCount());
-            ensChild->appendChild(new SLModelItem(m_slPtr, s, ensChild));
+            ensChild->appendChild(new SLModelItem(m_slPtr, servId, ensChild));
             endInsertRows();
         }
     }

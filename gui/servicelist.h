@@ -25,6 +25,21 @@ class ServiceList : public QObject
 {
     Q_OBJECT
 
+    class Id
+    {
+    public:
+        Id(uint32_t sid, uint8_t scids) { id = (uint64_t(scids)<<32) | sid;  }
+        Id(uint32_t freq, uint32_t ueid) { id = (uint64_t(freq)<<32) | ueid;  }
+        bool isService() const { return 0 == (id & 0xFFFF00000000u); }
+        bool isEnsemble() const { return !isService(); }
+        uint32_t sid() { return static_cast<uint32_t>(id & 0xFFFFFFFFu ); }
+        uint8_t scids() { return static_cast<uint8_t>((id>>32) & 0xFFu ); }
+        uint32_t ueid() { return static_cast<uint32_t>(id & 0x00FFFFFFu ); }
+    private:
+        uint64_t id;
+    };
+
+
 public:
     ServiceList(QObject * parent = 0);
     ~ServiceList();
@@ -46,8 +61,8 @@ public:
     void save(QSettings & settings);
     void load(QSettings & settings);   
 signals:
-    void serviceAddedToEnsemble(const EnsembleListItem *, const ServiceListItem *);
-    void serviceAdded(const ServiceListItem *);
+    void serviceAddedToEnsemble(uint64_t servId, uint64_t ensId);
+    void serviceAdded(uint64_t servId);
     void empty();
 
 private:

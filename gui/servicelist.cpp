@@ -66,11 +66,11 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     pService->addEnsemble(pEns);
     if (pEns->addService(pService))
     {   // new service in ensemble
-        emit serviceAddedToEnsemble(pEns, pService);
+        emit serviceAddedToEnsemble(pEns->getId(), pService->getId());
     }
     if (newService)
     {   // emit signal when new service is added
-        emit serviceAdded(pService);
+        emit serviceAdded(pService->getId());
     }
 }
 
