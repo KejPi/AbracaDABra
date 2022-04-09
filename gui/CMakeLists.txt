@@ -367,6 +367,7 @@ add_executable(${TARGET}
     audiofifo.cpp
     audiooutput.h
     audiooutput.cpp
+    servicelistid.h
     servicelist.h
     servicelist.cpp
     ensemblelistitem.h

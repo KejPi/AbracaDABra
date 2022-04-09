@@ -1,22 +1,22 @@
 #include "ensemblelistitem.h"
 #include "servicelistitem.h"
 
-EnsembleListItem::EnsembleListItem(const RadioControlEnsemble & ens)
-{
+EnsembleListItem::EnsembleListItem(const RadioControlEnsemble & ens) : m_id(ens)
+{    
     m_frequency = ens.frequency;
     m_ueid = ens.ueid;
     m_label = ens.label;
     m_shortLabel = ens.labelShort;
 }
 
-bool EnsembleListItem::operator==(const EnsembleListItem & other)
+bool EnsembleListItem::operator==(const EnsembleListItem & other) const
 {
-    return getId() == other.getId();
+    return id() == other.id();
 }
 
 bool EnsembleListItem::addService(ServiceListItem * servPtr)
 {
-    QList<ServiceListItem *>::iterator it = findService(servPtr->getId());
+    QList<ServiceListItem *>::iterator it = findService(servPtr->id());
     if (m_serviceList.end() == it)
     {
         m_serviceList.append(servPtr);
@@ -25,12 +25,12 @@ bool EnsembleListItem::addService(ServiceListItem * servPtr)
     return false;
 }
 
-QList<ServiceListItem *>::iterator EnsembleListItem::findService(uint64_t id)
+QList<ServiceListItem *>::iterator EnsembleListItem::findService(const ServiceListId & id)
 {
     QList<ServiceListItem *>::iterator it;
     for (it = m_serviceList.begin(); it < m_serviceList.end(); ++it)
     {
-        if ((*it)->getId() == id)
+        if ((*it)->id() == id)
         {
             return it;
         }

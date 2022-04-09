@@ -35,7 +35,7 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     qDebug("\tService: %s SID = 0x%X, SCIdS = %d", s.label.toLocal8Bit().data(), s.SId.value(), s.SCIdS);
 
     ServiceListItem * pService = nullptr;
-    uint64_t servId = ServiceListItem::getId(s);
+    ServiceListId servId(s);
     ServiceListIterator sit = m_serviceList.find(servId);
     if (m_serviceList.end() == sit)
     {  // not found
@@ -49,7 +49,7 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     }
 
     EnsembleListItem * pEns = nullptr;
-    uint64_t ensId = EnsembleListItem::getId(e);
+    ServiceListId ensId(e);
     EnsembleListIterator eit = m_ensembleList.find(ensId);
     if (m_ensembleList.end() == eit)
     {  // not found
@@ -66,15 +66,15 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     pService->addEnsemble(pEns);
     if (pEns->addService(pService))
     {   // new service in ensemble
-        emit serviceAddedToEnsemble(pEns->getId(), pService->getId());
+        emit serviceAddedToEnsemble(pEns->id(), pService->id());
     }
     if (newService)
     {   // emit signal when new service is added
-        emit serviceAdded(pService->getId());
+        emit serviceAdded(pService->id());
     }
 }
 
-void ServiceList::setServiceFavorite(uint64_t servId, bool ena)
+void ServiceList::setServiceFavorite(const ServiceListId & servId, bool ena)
 {
     ServiceListIterator sit = m_serviceList.find(servId);
     if (m_serviceList.end() != sit)
@@ -83,7 +83,7 @@ void ServiceList::setServiceFavorite(uint64_t servId, bool ena)
     }
 }
 
-bool ServiceList::isServiceFavorite(uint64_t servId) const
+bool ServiceList::isServiceFavorite(const ServiceListId & servId) const
 {
     ServiceListConstIterator sit = m_serviceList.find(servId);
     if (m_serviceList.end() != sit)
@@ -93,9 +93,9 @@ bool ServiceList::isServiceFavorite(uint64_t servId) const
     return false;
 }
 
-int ServiceList::numEnsembles(uint64_t servId) const
+int ServiceList::numEnsembles(const ServiceListId & servId) const
 {
-    if (0 == servId)
+    if (!servId.isValid())
     {
         return m_ensembleList.size();
     }
@@ -110,7 +110,7 @@ int ServiceList::numEnsembles(uint64_t servId) const
     }
 }
 
-int ServiceList::currentEnsembleIdx(uint64_t servId) const
+int ServiceList::currentEnsembleIdx(const ServiceListId & servId) const
 {
     ServiceListConstIterator sit = m_serviceList.find(servId);
     if (m_serviceList.end() != sit)
@@ -127,7 +127,7 @@ void ServiceList::save(QSettings & settings)
     QVector<uint64_t> idVect;
     for (auto & s : m_serviceList)
     {
-        idVect.append(s->getId());
+        idVect.append(s->id().value());
     }
     std::sort(idVect.begin(), idVect.end());
 
@@ -135,7 +135,7 @@ void ServiceList::save(QSettings & settings)
     int n = 0;
     for (auto id : idVect)
     {
-        ServiceListIterator it = m_serviceList.find(id);
+        ServiceListIterator it = m_serviceList.find(ServiceListId(id));
 
         settings.setArrayIndex(n++);
         settings.setValue("SID", (*it)->SId().value());

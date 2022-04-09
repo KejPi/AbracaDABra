@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <QString>
 #include <QList>
+#include "servicelistid.h"
 #include "radiocontrol.h"
 
 class EnsembleListItem;
@@ -16,25 +17,22 @@ public:
     bool addEnsemble(EnsembleListItem * ensPtr);     // returns true when new ensemble was added
     void setFavorite(bool ena) { m_favorite = ena; }
 
+    ServiceListId id() const { return m_id; }
+
     DabSId SId() const { return m_sid; }
     uint8_t SCIdS() const { return m_scids; }
     QString label() const { return m_label; }
     QString shortLabel() const { return m_shortLabel; }
     int numEnsembles() const { return m_ensembleList.size(); }
     bool isFavorite() const { return m_favorite; }
-    const EnsembleListItem * getEnsemble(int num = -1) const;         // returns ensemble idx (wraps over end of list)
-    const EnsembleListItem * switchEnsemble(uint64_t id = 0);                        // switches current ensemble, returns ensemble
-    uint32_t currentEnsembleIdx() const { return m_currentEnsemble; } // used to save service list
+    const EnsembleListItem * getEnsemble(int num = -1) const;          // returns ensemble idx (wraps over end of list)
+    const EnsembleListItem * switchEnsemble(const ServiceListId &id);  // switches current ensemble, returns ensemble
+    uint32_t currentEnsembleIdx() const { return m_currentEnsemble; }  // used to save service list
 
-    bool operator==(const ServiceListItem & other);
-    uint64_t getId() const { return getId(m_sid.value(), m_scids); }
-    static uint64_t getId(const RadioControlServiceComponent & item) { return getId(item.SId.value(), item.SCIdS); }
-    static uint64_t getId(uint32_t sid, uint8_t scids) { return ((uint64_t(scids)<<32) | sid); }
-    static uint32_t id2sid(uint64_t id) { return static_cast<uint32_t>(id & 0xFFFFFF); }
-    static DabSId id2dabsid(uint64_t id) { return DabSId(static_cast<uint32_t>(id & 0xFFFFFF)); }
-    static uint8_t id2scids(uint64_t id) { return static_cast<uint8_t>((id>>32) & 0xFF); }
+    bool operator==(const ServiceListItem & other) const;
 private:
     // Service
+    ServiceListId m_id;     // unique service list ID
     DabSId m_sid;           // SId (contains ECC)
     uint8_t m_scids;        // service component ID within the service
     QString m_label;        // Service label
@@ -45,7 +43,7 @@ private:
     QList<EnsembleListItem *> m_ensembleList;
 
     ServiceListItem() = delete;           // disabled
-    QList<EnsembleListItem *>::iterator findEnsemble(uint64_t id);
+    QList<EnsembleListItem *>::iterator findEnsemble(const ServiceListId &id);
 };
 
 #endif // SERVICELISTITEM_H

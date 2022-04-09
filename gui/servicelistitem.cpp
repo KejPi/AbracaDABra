@@ -1,7 +1,7 @@
 #include "servicelistitem.h"
 #include "ensemblelistitem.h"
 
-ServiceListItem::ServiceListItem(const RadioControlServiceComponent &item, bool fav, int currentEns)
+ServiceListItem::ServiceListItem(const RadioControlServiceComponent &item, bool fav, int currentEns) : m_id(item)
 {
     m_sid = item.SId;
     m_scids = item.SCIdS;
@@ -13,7 +13,7 @@ ServiceListItem::ServiceListItem(const RadioControlServiceComponent &item, bool 
 
 bool ServiceListItem::addEnsemble(EnsembleListItem * ensPtr)
 {
-    QList<EnsembleListItem *>::iterator it = findEnsemble(ensPtr->getId());
+    QList<EnsembleListItem *>::iterator it = findEnsemble(ensPtr->id());
     if (m_ensembleList.end() == it)
     {
         m_ensembleList.append(ensPtr);
@@ -22,9 +22,9 @@ bool ServiceListItem::addEnsemble(EnsembleListItem * ensPtr)
     return false;
 }
 
-const EnsembleListItem * ServiceListItem::switchEnsemble(uint64_t id)
+const EnsembleListItem * ServiceListItem::switchEnsemble(const ServiceListId & id)
 {
-    if (0 == id)
+    if (!id.isValid())
     {
         if (m_ensembleList.size() > 0)
         {
@@ -36,7 +36,7 @@ const EnsembleListItem * ServiceListItem::switchEnsemble(uint64_t id)
     {
         for (int n = 0; n < m_ensembleList.size(); ++n)
         {
-            if (m_ensembleList.at(n)->getId() == id)
+            if (m_ensembleList.at(n)->id() == id)
             {
                 m_currentEnsemble = n;
                 break;
@@ -46,17 +46,17 @@ const EnsembleListItem * ServiceListItem::switchEnsemble(uint64_t id)
     }
 }
 
-bool ServiceListItem::operator==(const ServiceListItem & other)
+bool ServiceListItem::operator==(const ServiceListItem & other) const
 {
-    return getId() == other.getId();
+    return id() == other.id();
 }
 
-QList<EnsembleListItem *>::iterator ServiceListItem::findEnsemble(uint64_t id)
+QList<EnsembleListItem *>::iterator ServiceListItem::findEnsemble(const ServiceListId &  id)
 {
     QList<EnsembleListItem *>::iterator it;
     for (it = m_ensembleList.begin(); it < m_ensembleList.end(); ++it)
     {
-        if ((*it)->getId() == id)
+        if ((*it)->id() == id)
         {
             return it;
         }

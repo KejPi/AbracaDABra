@@ -12,24 +12,12 @@ SLModelItem::SLModelItem(const ServiceList *slPtr, SLModelItem *parent)
     m_slPtr = slPtr;
 }
 
-SLModelItem::SLModelItem(const ServiceList *  slPtr, uint64_t id, SLModelItem *parent)
+SLModelItem::SLModelItem(const ServiceList *  slPtr, const ServiceListId & id, SLModelItem *parent)
 {
     m_parentItem = parent;
     m_slPtr = slPtr;
-    if (id & 0xFFFF00000000u)
-    {  // ensemble
-        m_ensembleId = id;
-        m_serviceId = 0;
-    }
-    else
-    {   // service
-        m_serviceId = id;
-        m_ensembleId = 0;
-    }
-
+    m_id = id;
 }
-
-
 
 SLModelItem::~SLModelItem()
 {
@@ -68,9 +56,9 @@ QVariant SLModelItem::data(int column, int role) const
             break;
         case Qt::ToolTipRole:
         {
-            if (0 != m_serviceId)
+            if (m_id.isService())
             {  // service item
-                ServiceListConstIterator it = m_slPtr->findService(m_serviceId);
+                ServiceListConstIterator it = m_slPtr->findService(m_id);
                 if (m_slPtr->serviceListEnd() != it)
                 {  // found
                     QString tooltip = QString("<b>Short label:</b> %1<br><b>SId:</b> 0x%2").arg(it.value()->shortLabel(),
@@ -79,9 +67,9 @@ QVariant SLModelItem::data(int column, int role) const
 
                 }
             }
-            if (0 != m_ensembleId)
+            if (m_id.isEnsemble())
             {  // ensemble item
-                EnsembleListConstIterator it = m_slPtr->findEnsemble(m_ensembleId);
+                EnsembleListConstIterator it = m_slPtr->findEnsemble(m_id);
                 if (m_slPtr->ensembleListEnd() != it)
                 {  // found
                     return QVariant(QString("Channel %1<br>Frequency: %2 MHz")
@@ -92,7 +80,7 @@ QVariant SLModelItem::data(int column, int role) const
         }
             break;
         case Qt::FontRole:
-            if (0 != m_ensembleId)
+            if (m_id.isEnsemble())
             {
                 QFont f;
                 f.setBold(true);
@@ -120,29 +108,21 @@ int SLModelItem::row() const
     return 0;
 }
 
-uint64_t SLModelItem::getId() const
+ServiceListId SLModelItem::id() const
 {
-    if (0 != m_serviceId)
-    {
-        return m_serviceId;
-    }
-    if (0 != m_ensembleId)
-    {
-        return m_ensembleId;
-    }
-    return 0;
+    return m_id;
 }
 
 bool SLModelItem::isService() const
 {
-    return (0 != m_serviceId);
+    return m_id.isService();
 }
 
 bool SLModelItem::isFavoriteService() const
 {
-    if (0 != m_serviceId)
+    if (m_id.isService())
     {
-        ServiceListConstIterator it = m_slPtr->findService(m_serviceId);
+        ServiceListConstIterator it = m_slPtr->findService(m_id);
         if (m_slPtr->serviceListEnd() != it)
         {  // found
             return it.value()->isFavorite();
@@ -153,23 +133,23 @@ bool SLModelItem::isFavoriteService() const
 
 bool SLModelItem::isEnsemble() const
 {
-    return (0 != m_ensembleId);
+    return m_id.isEnsemble();
 }
 
 QString SLModelItem::label() const
 {
-    if (0 != m_serviceId)
+    if (m_id.isService())
     {  // service item
-        ServiceListConstIterator it = m_slPtr->findService(m_serviceId);
+        ServiceListConstIterator it = m_slPtr->findService(m_id);
         if (m_slPtr->serviceListEnd() != it)
         {  // found
             return it.value()->label();
         }
     }
 
-    if (0 != m_ensembleId)
+    if (m_id.isEnsemble())
     {  // ensemble item
-        EnsembleListConstIterator it = m_slPtr->findEnsemble(m_ensembleId);
+        EnsembleListConstIterator it = m_slPtr->findEnsemble(m_id);
         if (m_slPtr->ensembleListEnd() != it)
         {  // found
             return it.value()->label().trimmed();
@@ -180,18 +160,18 @@ QString SLModelItem::label() const
 
 QString SLModelItem::shortLabel() const
 {
-    if (0 != m_serviceId)
+    if (m_id.isService())
     {  // service item
-        ServiceListConstIterator it = m_slPtr->findService(m_serviceId);
+        ServiceListConstIterator it = m_slPtr->findService(m_id);
         if (m_slPtr->serviceListEnd() != it)
         {  // found
             return it.value()->shortLabel();
         }
     }
 
-    if (0 != m_ensembleId)
+    if (m_id.isEnsemble())
     {  // ensemble item
-        EnsembleListConstIterator it = m_slPtr->findEnsemble(m_ensembleId);
+        EnsembleListConstIterator it = m_slPtr->findEnsemble(m_id);
         if (m_slPtr->ensembleListEnd() != it)
         {  // found
             return it.value()->shortLabel().trimmed();
@@ -202,9 +182,9 @@ QString SLModelItem::shortLabel() const
 
 DabSId SLModelItem::SId() const
 {
-    if (0 != m_serviceId)
+    if (m_id.isService())
     {  // service item
-        ServiceListConstIterator it = m_slPtr->findService(m_serviceId);
+        ServiceListConstIterator it = m_slPtr->findService(m_id);
         if (m_slPtr->serviceListEnd() != it)
         {  // found
             return it.value()->SId();
@@ -250,11 +230,11 @@ void SLModelItem::sort(Qt::SortOrder order)
     }
 }
 
-SLModelItem* SLModelItem::findChildId(uint64_t id) const
+SLModelItem* SLModelItem::findChildId(const ServiceListId & id) const
 {
     for (auto item : m_childItems)
     {
-        if (item->getId() == id)
+        if (item->id() == id)
         {
             return item;
         }
@@ -264,9 +244,9 @@ SLModelItem* SLModelItem::findChildId(uint64_t id) const
 
 uint32_t SLModelItem::frequency() const
 {
-    if (0 != m_ensembleId)
+    if (m_id.isEnsemble())
     {
-        EnsembleListConstIterator it = m_slPtr->findEnsemble(m_ensembleId);
+        EnsembleListConstIterator it = m_slPtr->findEnsemble(m_id);
         if (m_slPtr->ensembleListEnd() != it)
         {  // found
             return it.value()->frequency();

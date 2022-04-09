@@ -77,7 +77,7 @@ bool SLModel::isFavoriteService(const QModelIndex &index) const
     return item->isFavoriteService();
 }
 
-uint64_t SLModel::getId(const QModelIndex &index) const
+ServiceListId SLModel::id(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
@@ -86,7 +86,7 @@ uint64_t SLModel::getId(const QModelIndex &index) const
 
     const SLModelItem * item = static_cast<SLModelItem*>(index.internalPointer());
 
-    return item->getId();
+    return item->id();
 }
 
 Qt::ItemFlags SLModel::flags(const QModelIndex &index) const
@@ -142,7 +142,7 @@ int SLModel::rowCount(const QModelIndex &parent) const
     return m_serviceItems.size();
 }
 
-void SLModel::addService(uint64_t servId)
+void SLModel::addService(const ServiceListId & servId)
 {  // new service in service list
     beginInsertRows(QModelIndex(), m_serviceItems.size(), m_serviceItems.size());
     m_serviceItems.append(new SLModelItem(m_slPtr, servId));

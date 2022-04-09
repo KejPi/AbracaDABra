@@ -9,7 +9,7 @@ class SLModelItem
 {
 public:
     explicit SLModelItem(const ServiceList *  slPtr, SLModelItem *parentItem = 0);
-    explicit SLModelItem(const ServiceList *slPtr, uint64_t id, SLModelItem *parentItem = 0);
+    explicit SLModelItem(const ServiceList *slPtr, const ServiceListId &id, SLModelItem *parentItem = 0);
     ~SLModelItem();
 
     void appendChild(SLModelItem *child);
@@ -20,7 +20,7 @@ public:
     QVariant data(int column, int role) const;
     int row() const;
     SLModelItem *parentItem();
-    uint64_t getId() const;
+    ServiceListId id() const;
     bool isService() const;    
     bool isEnsemble() const;
     bool isFavoriteService() const;
@@ -28,7 +28,7 @@ public:
     QString shortLabel() const;
     uint32_t frequency() const;
     DabSId SId() const;
-    SLModelItem* findChildId(uint64_t id) const;
+    SLModelItem* findChildId(const ServiceListId &id) const;
     void sort(Qt::SortOrder order);    
 
 private:
@@ -36,8 +36,8 @@ private:
     SLModelItem *m_parentItem;
 
     const ServiceList * m_slPtr;
-    uint64_t m_serviceId = 0;
-    uint64_t m_ensembleId = 0;
+    ServiceListId m_id;
+
 };
 
 #endif // SLMODELITEM_H

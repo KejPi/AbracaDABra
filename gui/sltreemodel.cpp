@@ -67,7 +67,7 @@ bool SLTreeModel::isEnsemble(const QModelIndex &index) const
     return item->isEnsemble();
 }
 
-uint64_t SLTreeModel::getId(const QModelIndex &index) const
+ServiceListId SLTreeModel::id(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
@@ -76,7 +76,7 @@ uint64_t SLTreeModel::getId(const QModelIndex &index) const
 
     SLModelItem *item = static_cast<SLModelItem*>(index.internalPointer());
 
-    return item->getId();
+    return item->id();
 }
 
 Qt::ItemFlags SLTreeModel::flags(const QModelIndex &index) const
@@ -159,7 +159,7 @@ int SLTreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-void SLTreeModel::addEnsembleService(uint64_t ensId, uint64_t servId)
+void SLTreeModel::addEnsembleService(const ServiceListId & ensId, const ServiceListId & servId)
 {  // new service in service list
 
     SLModelItem * ensChild = m_rootItem->findChildId(ensId);
@@ -171,11 +171,11 @@ void SLTreeModel::addEnsembleService(uint64_t ensId, uint64_t servId)
         endInsertRows();
     }
 
-    if (0 != ServiceListItem::id2scids(servId))
+    if (servId.scids() != 0)
     {   // this part is to creates secondary service item as secont level service in the tree
         // not tested much - only one stimuli for testing is available
         // it expects that parent item is created first -> if not it will add secondary component as normal service
-        uint64_t id = ServiceListItem::getId(ServiceListItem::id2dabsid(servId).value(), 0);
+        ServiceListId id(servId.sid(), uint8_t(0));
         SLModelItem * serviceChild = ensChild->findChildId(id);
         if (nullptr != serviceChild)
         {   // primary service found

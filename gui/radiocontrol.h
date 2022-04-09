@@ -117,8 +117,8 @@ struct RadioControlServiceComponent
     // Each service component shall be uniquely identified by the combination of the
     // SId and the Service Component Identifier within the Service (SCIdS).
     DabSId SId;
-    int8_t SCIdS;         // Service Component Identifier within the Service (SCIdS)
-    int8_t SubChId;       // SubChId (Sub-channel Identifier)
+    uint8_t SCIdS;        // Service Component Identifier within the Service (SCIdS)
+    uint8_t SubChId;      // SubChId (Sub-channel Identifier)
     uint16_t SubChAddr;   // address 0-863
     uint16_t SubChSize;   // subchannel size
     int8_t ps;            // P/S (Primary/Secondary): this 1-bit flag shall indicate whether the service component is the primary one

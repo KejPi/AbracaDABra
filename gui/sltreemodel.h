@@ -23,13 +23,13 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
 
-    uint64_t getId(const QModelIndex &index) const;
+    ServiceListId id(const QModelIndex &index) const;
     bool isService(const QModelIndex &index) const;
     bool isEnsemble(const QModelIndex &index) const;
     bool isFavoriteService(const QModelIndex &index) const;
 
 public slots:
-    void addEnsembleService(uint64_t ensId, uint64_t servId);
+    void addEnsembleService(const ServiceListId & ensId, const ServiceListId & servId);
     void clear();
 
 private:
