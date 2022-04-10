@@ -33,6 +33,11 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
 
     qDebug("\tService: %s SID = 0x%X, SCIdS = %d", s.label.toLocal8Bit().data(), s.SId.value(), s.SCIdS);
 
+    if (s.SCIdS != 0)
+    {
+        qDebug() << "Secondary service";
+    }
+
     ServiceListItem * pService = nullptr;
     ServiceListId servId(s);
     ServiceListIterator sit = m_serviceList.find(servId);
@@ -46,6 +51,8 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     {  // found
         pService = *sit;
     }
+
+    pService->setIsObsolete(false);
 
     EnsembleListItem * pEns = nullptr;
     ServiceListId ensId(e);
@@ -210,6 +217,83 @@ void ServiceList::load(QSettings & settings)
         settings.endArray();
     }
     settings.endArray();
+}
+
+// this marks all services as obsolete
+void ServiceList::beginEnsembleUpdate(const RadioControlEnsemble & e)
+{
+    qDebug() << Q_FUNC_INFO;
+    EnsembleListItem * pEns = nullptr;
+    ServiceListId ensId(e);
+    EnsembleListIterator eit = m_ensembleList.find(ensId);
+    if (m_ensembleList.end() != eit)
+    {  // found
+        pEns = *eit;
+    }
+    else
+    {   // do nothing, ensemble not found
+        return;
+    }
+
+    // pEns -> ensemble to be updated
+    pEns->beginUpdate();
+
+}
+
+// this removed all services marked as obsolete
+void ServiceList::endEnsembleUpdate(const RadioControlEnsemble & e)
+{
+    qDebug() << Q_FUNC_INFO;
+
+    EnsembleListItem * pEns = nullptr;
+    ServiceListId ensId(e);
+    EnsembleListIterator eit = m_ensembleList.find(ensId);
+    if (m_ensembleList.end() != eit)
+    {  // found
+        pEns = *eit;
+    }
+    else
+    {   // do nothing, ensemble not found
+        return;
+    }
+
+    // this removes all services marked as obsolete from the ensemble list
+    pEns->endUpdate();
+
+    // not we need to remove all obsolete services from the service list
+    ServiceListIterator it = m_serviceList.begin();
+    while (it != m_serviceList.end())
+    {
+        if ((*it)->isObsolete())
+        {   // service is obsolete
+            qDebug("\tRemoving from ens %6.6X: %s SID = 0x%X, SCIdS = %d", e.ueid, (*it)->label().toLocal8Bit().data(), (*it)->SId().value(), (*it)->SCIdS());
+
+            emit serviceRemovedFromEnsemble(ensId, (*it)->id());
+
+            if (false == (*it)->removeEnsemble(pEns))
+            {   // this was the last ensemble -> remove service completely
+                emit serviceRemoved((*it)->id());
+
+                delete *it;                    // release memory
+                it = m_serviceList.erase(it);  // remove record from hash                
+            }
+            else
+            {
+                ++it;
+            }
+        }
+        else
+        {
+            //qDebug("\tValid service %s SID = 0x%X, SCIdS = %d", (*it)->label().toLocal8Bit().data(), (*it)->SId().value(), (*it)->SCIdS());
+            ++it;
+        }
+    }
+
+//    qDebug() << "Service list:";
+//    for (ServiceListIterator it = m_serviceList.begin(); it != m_serviceList.end(); ++it)
+//    {
+//        qDebug("\tService %s SID = 0x%X, SCIdS = %d", (*it)->label().toLocal8Bit().data(), (*it)->SId().value(), (*it)->SCIdS());
+//    }
 }
 
 

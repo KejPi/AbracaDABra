@@ -369,7 +369,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 
                         qDebug() << "=== MCI complete";
                         emit ensembleConfiguration(ensembleConfigurationString());
-                        emit ensembleComplete();
+                        emit ensembleComplete(ensemble);
                     }
                 }                
             }

@@ -47,3 +47,29 @@ const ServiceListItem * EnsembleListItem::getService(int num) const
     }
     return nullptr;
 }
+
+void EnsembleListItem::beginUpdate()
+{
+    for (auto & s : m_serviceList)
+    {
+        //qDebug("\tMarking obsolete: Service %s SID = 0x%X, SCIdS = %d", s->label().toLocal8Bit().data(), s->SId().value(), s->SCIdS());
+        s->setIsObsolete(true);
+    }
+}
+
+void EnsembleListItem::endUpdate()
+{
+    // remove obsolete services from list
+    QList<ServiceListItem *>::iterator it = m_serviceList.begin();
+    while (it != m_serviceList.end())
+    {
+        if ((*it)->isObsolete())
+        {
+            it = m_serviceList.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}

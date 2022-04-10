@@ -253,7 +253,7 @@ signals:
     void dabTime(const QDateTime & dateAndTime);
     void tuneInputDevice(uint32_t freq);
     void ensembleConfiguration(const QString &);
-    void ensembleComplete();
+    void ensembleComplete(const RadioControlEnsemble & ens);
 
 private:
     static const uint8_t EEPCoderate[];

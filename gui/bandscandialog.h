@@ -46,7 +46,7 @@ public:
     void onSyncStatus(uint8_t sync);
     void onEnsembleFound(const RadioControlEnsemble &ens);
     void onServiceFound(const ServiceListId &);
-    void onEnsembleComplete();
+    void onEnsembleComplete(const RadioControlEnsemble &);
 
 signals:
     void scanStarts();

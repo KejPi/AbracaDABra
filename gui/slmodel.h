@@ -32,6 +32,7 @@ public:
 
 public slots:
     void addService(const ServiceListId & servId);
+    void removeService(const ServiceListId & servId);
     void clear();
 
 private:

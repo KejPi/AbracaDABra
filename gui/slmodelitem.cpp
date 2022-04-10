@@ -242,6 +242,21 @@ SLModelItem* SLModelItem::findChildId(const ServiceListId & id) const
     return nullptr;
 }
 
+bool SLModelItem::removeChildId(const ServiceListId &id)
+{
+    for (int n = 0; n < m_childItems.size(); ++n)
+    {
+        if (m_childItems.at(n)->id() == id)
+        {   // found
+            SLModelItem * item = m_childItems.at(n);
+            m_childItems.removeAt(n);
+            delete item;
+            return true;
+        }
+    }
+    return false;
+}
+
 uint32_t SLModelItem::frequency() const
 {
     if (m_id.isEnsemble())

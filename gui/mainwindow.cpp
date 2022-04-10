@@ -177,6 +177,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     slModel = new SLModel(serviceList, this);
     connect(serviceList, &ServiceList::serviceAdded, slModel, &SLModel::addService);
+    connect(serviceList, &ServiceList::serviceRemoved, slModel, &SLModel::removeService);
     connect(serviceList, &ServiceList::empty, slModel, &SLModel::clear);
 
     ui->serviceListView->setModel(slModel);
@@ -187,6 +188,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     slTreeModel = new SLTreeModel(serviceList, this);
     connect(serviceList, &ServiceList::serviceAddedToEnsemble, slTreeModel, &SLTreeModel::addEnsembleService);
+    connect(serviceList, &ServiceList::serviceRemovedFromEnsemble, slTreeModel, &SLTreeModel::removeEnsembleService);
     ui->serviceTreeView->setModel(slTreeModel);
     ui->serviceTreeView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->serviceTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -284,6 +286,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->catSlsLabel, &ClickableLabel::clicked, this, &MainWindow::showCatSLS);
 
     connect(radioControl, &RadioControl::ensembleInformation, this, &MainWindow::updateEnsembleInfo, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::ensembleComplete, this, &MainWindow::onEnsembleComplete, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::syncStatus, this, &MainWindow::updateSyncStatus, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::snrLevel, this, &MainWindow::updateSnrLevel, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::dabTime, this, &MainWindow::updateDabTime, Qt::QueuedConnection);
@@ -505,6 +508,13 @@ void MainWindow::updateEnsembleInfo(const RadioControlEnsemble &ens)
                                   .arg(QString("%1").arg(ens.ecc(), 2, 16, QChar('0')).toUpper())
                                   .arg(QString("%1").arg(ens.eid(), 4, 16, QChar('0')).toUpper())
                                   .arg(DabTables::getCountryName(ens.ueid)));
+
+    serviceList->beginEnsembleUpdate(ens);
+}
+
+void MainWindow::onEnsembleComplete(const RadioControlEnsemble &ens)
+{
+    serviceList->endEnsembleUpdate(ens);
 }
 
 void MainWindow::updateSyncStatus(uint8_t sync)

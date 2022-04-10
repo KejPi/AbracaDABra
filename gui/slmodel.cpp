@@ -151,6 +151,23 @@ void SLModel::addService(const ServiceListId & servId)
     sort(0);
 }
 
+void SLModel::removeService(const ServiceListId & servId)
+{
+    // first find service in the list
+    for (int row = 0; row < m_serviceItems.size(); ++row)
+    {
+        if (m_serviceItems.at(row)->id() == servId)
+        {   // found
+            beginRemoveRows(QModelIndex(), row, row);
+            SLModelItem * item = m_serviceItems.at(row);
+            m_serviceItems.removeAt(row);
+            delete item;
+            endRemoveRows();
+            return;
+        }
+    }
+}
+
 void SLModel::clear()
 {
     beginResetModel();

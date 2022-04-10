@@ -172,7 +172,7 @@ void SLTreeModel::addEnsembleService(const ServiceListId & ensId, const ServiceL
     }
 
     if (servId.scids() != 0)
-    {   // this part is to creates secondary service item as secont level service in the tree
+    {   // this part is to creates secondary service item as second level service in the tree
         // not tested much - only one stimuli for testing is available
         // it expects that parent item is created first -> if not it will add secondary component as normal service
         ServiceListId id(servId.sid(), uint8_t(0));
@@ -207,6 +207,63 @@ void SLTreeModel::addEnsembleService(const ServiceListId & ensId, const ServiceL
     }
 
     sort(0);
+}
+
+void SLTreeModel::removeEnsembleService(const ServiceListId & ensId, const ServiceListId & servId)
+{
+    SLModelItem * ensChild = m_rootItem->findChildId(ensId);
+    if (nullptr == ensChild)
+    {   // not found ==> new ensemble
+        return;
+    }
+
+
+#if 0
+    if (servId.scids() != 0)
+    {   // this part is to delete secondary service item as second level service in the tree
+        // not tested much - only one stimuli for testing is available
+        // it expects that parent item is created first -> if not it will add secondary component as normal service
+        ServiceListId id(servId.sid(), uint8_t(0));
+        SLModelItem * serviceChild = ensChild->findChildId(id);
+        if (nullptr != serviceChild)
+        {   // primary service found
+            beginInsertRows(index(serviceChild->row(), 0, index(ensChild->row(), 0, QModelIndex())), serviceChild->childCount(), serviceChild->childCount());
+            serviceChild->appendChild(new SLModelItem(m_slPtr, servId, serviceChild));
+            endInsertRows();
+        }
+        else
+        {
+            qDebug() << Q_FUNC_INFO << "Service not found - adding secondary service as regular service";
+            serviceChild = ensChild->findChildId(servId);
+            if (nullptr == serviceChild)
+            {  // new service to be added
+                beginInsertRows(index(ensChild->row(), 0, QModelIndex()), ensChild->childCount(), ensChild->childCount());
+                ensChild->appendChild(new SLModelItem(m_slPtr, servId, ensChild));
+                endInsertRows();
+            }
+        }
+    }
+    else
+    {
+        SLModelItem * serviceChild = ensChild->findChildId(servId);
+        if (nullptr == serviceChild)
+        {  // new service to be added
+            beginInsertRows(index(ensChild->row(), 0, QModelIndex()), ensChild->childCount(), ensChild->childCount());
+            ensChild->appendChild(new SLModelItem(m_slPtr, servId, ensChild));
+            endInsertRows();
+        }
+    }
+#else
+#warning "Removing secondary service to be implemented"
+
+    SLModelItem * serviceChild = ensChild->findChildId(servId);
+    if (nullptr != serviceChild)
+    {   // found
+        beginRemoveRows(index(ensChild->row(), 0, QModelIndex()), serviceChild->row(), serviceChild->row());
+        ensChild->removeChildId(servId);
+        endRemoveRows();
+    }
+#endif
 }
 
 void SLTreeModel::clear()

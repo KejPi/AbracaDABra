@@ -9,6 +9,7 @@ ServiceListItem::ServiceListItem(const RadioControlServiceComponent &item, bool 
     m_shortLabel = item.labelShort;
     m_favorite = fav;
     m_currentEnsemble = currentEns;
+    m_isObsolete = false;
 }
 
 bool ServiceListItem::addEnsemble(EnsembleListItem * ensPtr)
@@ -20,6 +21,19 @@ bool ServiceListItem::addEnsemble(EnsembleListItem * ensPtr)
         return true;
     }
     return false;
+}
+
+// returns false service is no longer valid ==> no ensembles
+bool ServiceListItem::removeEnsemble(EnsembleListItem *ensPtr)
+{
+    QList<EnsembleListItem *>::const_iterator it = findEnsemble(ensPtr->id());
+    if (m_ensembleList.cend() != it)
+    {   // found ensemble
+        m_ensembleList.erase(it);
+        m_isObsolete = false;
+        return (0 != m_ensembleList.size());
+    }
+    return true;
 }
 
 const EnsembleListItem * ServiceListItem::switchEnsemble(const ServiceListId & id)
@@ -49,6 +63,16 @@ const EnsembleListItem * ServiceListItem::switchEnsemble(const ServiceListId & i
 bool ServiceListItem::operator==(const ServiceListItem & other) const
 {
     return id() == other.id();
+}
+
+bool ServiceListItem::isObsolete() const
+{
+    return m_isObsolete;
+}
+
+void ServiceListItem::setIsObsolete(bool isObsolete)
+{
+    m_isObsolete = isObsolete;
 }
 
 QList<EnsembleListItem *>::iterator ServiceListItem::findEnsemble(const ServiceListId &  id)

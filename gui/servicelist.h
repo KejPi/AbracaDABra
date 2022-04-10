@@ -45,10 +45,16 @@ public:
     EnsembleListConstIterator ensembleListEnd() const { return m_ensembleList.cend();}
     EnsembleListConstIterator findEnsemble(const ServiceListId & id) const { return m_ensembleList.find(id); }
     void save(QSettings & settings);
-    void load(QSettings & settings);   
+    void load(QSettings & settings);
+
+    void beginEnsembleUpdate(const RadioControlEnsemble &e);
+    void endEnsembleUpdate(const RadioControlEnsemble &e);
 signals:
     void serviceAddedToEnsemble(const ServiceListId & ensId, const ServiceListId & servId);
     void serviceAdded(const ServiceListId & servId);
+
+    void serviceRemovedFromEnsemble(const ServiceListId & ensId, const ServiceListId & servId);
+    void serviceRemoved(const ServiceListId & servId);
     void empty();
 
 private:

@@ -15,6 +15,7 @@ public:
     ServiceListItem(const RadioControlServiceComponent & item, bool fav = false, int currentEns = 0);
 
     bool addEnsemble(EnsembleListItem * ensPtr);     // returns true when new ensemble was added
+    bool removeEnsemble(EnsembleListItem * ensPtr);     // returns true when new ensemble was added
     void setFavorite(bool ena) { m_favorite = ena; }
 
     ServiceListId id() const { return m_id; }
@@ -30,6 +31,9 @@ public:
     uint32_t currentEnsembleIdx() const { return m_currentEnsemble; }  // used to save service list
 
     bool operator==(const ServiceListItem & other) const;
+
+    bool isObsolete() const;
+    void setIsObsolete(bool isObsolete);
 private:
     // Service
     ServiceListId m_id;     // unique service list ID
@@ -39,6 +43,7 @@ private:
     QString m_shortLabel;   // Short label
     bool m_favorite;        // Favorite service
     int m_currentEnsemble;
+    bool m_isObsolete;      // this is used for ensemble update
 
     QList<EnsembleListItem *> m_ensembleList;
 
