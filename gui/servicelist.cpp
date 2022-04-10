@@ -30,7 +30,6 @@ void ServiceList::clear()
 void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlServiceComponent & s, bool fav, int currentEns)
 {
     bool newService = false;
-    bool newEnsemble = false;
 
     qDebug("\tService: %s SID = 0x%X, SCIdS = %d", s.label.toLocal8Bit().data(), s.SId.value(), s.SCIdS);
 
@@ -55,7 +54,6 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     {  // not found
         pEns = new EnsembleListItem(e);
         m_ensembleList.insert(ensId, pEns);
-        newEnsemble = true;
     }
     else
     {  // found
