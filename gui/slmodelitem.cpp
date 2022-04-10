@@ -230,13 +230,22 @@ void SLModelItem::sort(Qt::SortOrder order)
     }
 }
 
-SLModelItem* SLModelItem::findChildId(const ServiceListId & id) const
+SLModelItem* SLModelItem::findChildId(const ServiceListId & id, bool recursive) const
 {
     for (auto item : m_childItems)
     {
         if (item->id() == id)
         {
             return item;
+        }
+        if (recursive)
+        {
+            SLModelItem* childPtr = item->findChildId(id);
+            if (nullptr != childPtr)
+            {
+                qDebug() << Q_FUNC_INFO;
+                return childPtr;
+            }
         }
     }
     return nullptr;

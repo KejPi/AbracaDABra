@@ -33,11 +33,6 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
 
     qDebug("\tService: %s SID = 0x%X, SCIdS = %d", s.label.toLocal8Bit().data(), s.SId.value(), s.SCIdS);
 
-    if (s.SCIdS != 0)
-    {
-        qDebug() << "Secondary service";
-    }
-
     ServiceListItem * pService = nullptr;
     ServiceListId servId(s);
     ServiceListIterator sit = m_serviceList.find(servId);

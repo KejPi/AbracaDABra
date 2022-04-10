@@ -28,7 +28,7 @@ public:
     QString shortLabel() const;
     uint32_t frequency() const;
     DabSId SId() const;
-    SLModelItem* findChildId(const ServiceListId &id) const;
+    SLModelItem* findChildId(const ServiceListId &id, bool recursive = false) const;
     bool removeChildId(const ServiceListId &id);
     void sort(Qt::SortOrder order);    
 
