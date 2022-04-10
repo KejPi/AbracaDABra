@@ -45,7 +45,7 @@ public:
     void tuneFinished(uint32_t freq);
     void onSyncStatus(uint8_t sync);
     void onEnsembleFound(const RadioControlEnsemble &ens);
-    void onServiceFound(uint64_t);
+    void onServiceFound(const ServiceListId &);
     void onEnsembleComplete();
 
 signals:

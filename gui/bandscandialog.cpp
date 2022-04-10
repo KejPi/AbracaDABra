@@ -174,7 +174,7 @@ void BandScanDialog::onEnsembleFound(const RadioControlEnsemble &ens)
     timer->start(8000);
 }
 
-void BandScanDialog::onServiceFound(uint64_t)
+void BandScanDialog::onServiceFound(const ServiceListId &)
 {
     ui->numServicesFoundLabel->setText(QString("%1").arg(++numServicesFound));
 }
