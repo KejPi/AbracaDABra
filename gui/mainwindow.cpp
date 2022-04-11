@@ -1420,7 +1420,7 @@ void MainWindow::switchServiceSource()
 void MainWindow::serviceTreeViewUpdateSelection()
 {
     const SLTreeModel * model = reinterpret_cast<const SLTreeModel*>(ui->serviceTreeView->model());
-    ServiceListId serviceId(SId.value(), SCIdS);
+    ServiceListId serviceId(SId.value(), uint8_t(SCIdS));
     ServiceListId ensembleId;
     ServiceListConstIterator it = serviceList->findService(serviceId);
     if (serviceList->serviceListEnd() != it)
@@ -1448,7 +1448,7 @@ void MainWindow::serviceTreeViewUpdateSelection()
 void MainWindow::serviceListViewUpdateSelection()
 {
     const SLModel * model = reinterpret_cast<const SLModel*>(ui->serviceListView->model());
-    ServiceListId id(SId.value(), SCIdS);
+    ServiceListId id(SId.value(), uint8_t(SCIdS));
     QModelIndex index;
     for (int r = 0; r < model->rowCount(); ++r)
     {

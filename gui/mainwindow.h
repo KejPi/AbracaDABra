@@ -130,7 +130,7 @@ private:
     bool exitRequested = false;
     uint32_t frequency = 0;
     DabSId SId;
-    uint32_t SCIdS = 0;
+    uint8_t SCIdS = 0;
 //    uint64_t serviceId = 0;
 //    uint64_t ensembleId = 0;
     bool hasListViewFocus;
