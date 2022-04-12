@@ -153,6 +153,7 @@ private:
     void switchMode();
     void showEnsembleInfo();
     void showAboutDialog();
+    void showSetupDialog();
     void showCatSLS();
     void setExpertMode(bool ena);
     void stop();

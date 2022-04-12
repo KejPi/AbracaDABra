@@ -100,7 +100,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     setupAct = new QAction("Setup...", this);
     //setupAct->setStatusTip("Application settings");       // this is shown in status bar
-    connect(setupAct, &QAction::triggered, setupDialog, &SetupDialog::show);
+    connect(setupAct, &QAction::triggered, this, &MainWindow::showSetupDialog);
 
     clearServiceListAct = new QAction("Clear service list", this);
     connect(clearServiceListAct, &QAction::triggered, this, &MainWindow::clearServiceList);
@@ -1485,6 +1485,13 @@ void MainWindow::showAboutDialog()
     //QMessageBox::aboutQt(this, tr("About QT"));
     AboutDialog aboutDialog(this);
     aboutDialog.exec();
+}
+
+void MainWindow::showSetupDialog()
+{
+    setupDialog->show();
+    setupDialog->raise();
+    setupDialog->activateWindow();
 }
 
 void MainWindow::showCatSLS()
