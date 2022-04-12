@@ -105,7 +105,7 @@ MainWindow::MainWindow(QWidget *parent)
     clearServiceListAct = new QAction("Clear service list", this);
     connect(clearServiceListAct, &QAction::triggered, this, &MainWindow::clearServiceList);
 
-    bandScanAct = new QAction("Band scan", this);
+    bandScanAct = new QAction("Band scan...", this);
     //scanAct->setStatusTip("Seach for available service"); // this is shown in status bar
     connect(bandScanAct, &QAction::triggered, this, &MainWindow::bandScan);
 
