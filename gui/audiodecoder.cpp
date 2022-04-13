@@ -598,8 +598,9 @@ void AudioDecoder::processAAC(QByteArray *inData)
 #if defined(AUDIO_DECODER_USE_FDKAAC)
         // clear concealment bit
 #if AUDIO_DECODER_FDKAAC_CONCEALMENT
-        header.bits.conceal = 0;
-        if ((nullptr == aacDecoderHandle) || (header.raw != aacHeader.raw))
+        // supposing that header is the same
+        header.raw = aacHeader.raw;
+        if (nullptr == aacDecoderHandle)
         {   // if concealment then this fram is not valid thus returning in case that it does it woul liead to reinit
             return;
         }
@@ -608,8 +609,10 @@ void AudioDecoder::processAAC(QByteArray *inData)
         return;
 #endif
 #else
-        // concealment not supported => discarding
-        return;
+        // concealment not supported
+        // supposing that header is the same and setting buffer to 0
+        inData->fill(0);
+        header.raw = aacHeader.raw;
 #endif
     }
 
