@@ -660,8 +660,11 @@ void MainWindow::onChannelSelection()
 
     hasListViewFocus = ui->serviceListView->hasFocus();
     hasTreeViewFocus = ui->serviceTreeView->hasFocus();
-    ui->serviceListView->setEnabled(false);
-    ui->serviceTreeView->setEnabled(false);
+    if (InputDeviceId::RAWFILE != inputDeviceId)
+    {
+        ui->serviceListView->setEnabled(false);
+        ui->serviceTreeView->setEnabled(false);
+    }
 
 
     clearEnsembleInformationLabels();
