@@ -7,10 +7,24 @@
 
 AudioDecoder::AudioDecoder(audioFifo_t * buffer, QObject *parent) : QObject(parent), outFifoPtr(buffer)
 {
-    aacDecoderHandle = nullptr;    
-    mp2DecoderHandle = nullptr;    
+    aacDecoderHandle = nullptr;
+    mp2DecoderHandle = nullptr;
 
     isRunning = false;
+
+#if AUDIO_DECODER_MUTE_CONCEALMENT
+    outBufferPtr = new int16_t[AUDIO_DECODER_BUFFER_SIZE];
+
+    muteRamp.clear();
+    // mute ramp is sin^2 that changes from 0 to 1 during AUDIOOUTPUT_FADE_TIME_MS
+    // values are precalculated for 48 kHz to save MIPS in runtime
+    float coe = M_PI/(2.0 * AUDIO_DECODER_FADE_TIME_MS*48);
+    for (int n = 0; n < AUDIO_DECODER_FADE_TIME_MS*48; ++n)
+    {
+        float g = sinf(n*coe);
+        muteRamp.push_back(g*g);
+    }
+#endif
 
 #ifdef AUDIO_DECODER_RAW_OUT
     rawOut = fopen("audio.raw", "wb");
@@ -49,6 +63,10 @@ AudioDecoder::~AudioDecoder()
         NeAACDecClose(aacDecoderHandle);
 #endif
     }
+#if AUDIO_DECODER_MUTE_CONCEALMENT
+    delete [] outBufferPtr;
+#endif
+
     if (nullptr != mp2DecoderHandle)
     {
         int res = mpg123_close(mp2DecoderHandle);
@@ -85,6 +103,10 @@ void AudioDecoder::start(const RadioControlServiceComponent &s)
     qDebug() << Q_FUNC_INFO;
     if (s.isAudioService())
     {
+#if AUDIO_DECODER_MUTE_CONCEALMENT
+        memset(outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE*sizeof(int16_t));
+        state = OutputState::Init;
+#endif
         isRunning = true;
         mode = s.streamAudioData.scType;
     }
@@ -161,7 +183,7 @@ void AudioDecoder::initMPG123()
         if(MPG123_OK != res)
         {
             throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_format for 24KHz: " + std::string(mpg123_plain_strerror(res)));
-        }        
+        }
 
         // disable resync limit
         res = mpg123_param(mp2DecoderHandle, MPG123_RESYNC_LIMIT, -1, 0);
@@ -185,6 +207,9 @@ void AudioDecoder::readAACHeader(const uint8_t header)
     // fill the structure used to signal audio params to HMI
     if (aacHeader.bits.sbr_flag)
     {
+#if AUDIO_DECODER_MUTE_CONCEALMENT
+        outBufferSamples = AUDIO_DECODER_BUFFER_SIZE;
+#endif
         if (aacHeader.bits.ps_flag)
         {
             audioParameters.coding = AudioCoding::HEAACv2;
@@ -196,6 +221,9 @@ void AudioDecoder::readAACHeader(const uint8_t header)
     }
     else
     {
+#if AUDIO_DECODER_MUTE_CONCEALMENT
+        outBufferSamples = AUDIO_DECODER_BUFFER_SIZE/2;
+#endif
         audioParameters.coding = AudioCoding::AACLC;
     }
     if (aacHeader.bits.aac_channel_mode || aacHeader.bits.ps_flag)
@@ -397,6 +425,11 @@ void AudioDecoder::initAACDecoder()
     {
         throw std::runtime_error("AACDecoderFAAD2: error while NeAACDecInit2: " + std::string(NeAACDecGetErrorMessage(-init_result)));
     }
+
+#if AUDIO_DECODER_MUTE_CONCEALMENT
+    numChannels = outputCh;
+    muteRampDsFactor = 48000/outputSr;
+#endif
 
     qDebug("Output SR = %lu, channels = %d", outputSr, outputCh);
 
@@ -625,7 +658,7 @@ void AudioDecoder::processAAC(QByteArray *inData)
         outFifoPtr->reset();
     }
 
-    // decode audio    
+    // decode audio
 #if defined(AUDIO_DECODER_USE_FDKAAC)
     uint8_t * aacData[1] = {(uint8_t *) inData->data()+1};
     unsigned int len[1];
@@ -655,6 +688,8 @@ void AudioDecoder::processAAC(QByteArray *inData)
         qDebug() << "Error decoding AAC frame: " << result;
     }
 
+    qDebug("error = %d | samples = %d", !IS_OUTPUT_VALID(result), outputFrameLen / sizeof(INT_PCM));
+
     if (!IS_OUTPUT_VALID(result))
     {   // no output
         return;
@@ -665,45 +700,11 @@ void AudioDecoder::processAAC(QByteArray *inData)
     {
         fwrite(outputFrame, 1, outputFrameLen, rawOut);
     }
-#endif
+#endif    
 
     int64_t bytesToWrite = outputFrameLen;
-#else // defined AUDIO_DECODER_USE_FDKAAC
-    const char * aacData = inData->data()+1;
-    unsigned long len = inData->size()-1;
 
-    uint8_t* outputFrame = (uint8_t*) NeAACDecDecode(aacDecoderHandle, &aacDecFrameInfo, (unsigned char *) aacData, len);
-
-#ifdef AUDIO_DECODER_AAC_OUT
-    writeAACOutput(aacData, len);
-#endif
-
-    if(aacDecFrameInfo.error)
-    {
-        qDebug() << "AAC error" << NeAACDecGetErrorMessage(aacDecFrameInfo.error);
-    }
-
-    if(aacDecFrameInfo.bytesconsumed == 0 && aacDecFrameInfo.samples == 0)
-    {   // no output
-        return;
-    }
-
-    if(aacDecFrameInfo.bytesconsumed != len)
-    {
-        throw std::runtime_error(std::string(Q_FUNC_INFO) + ": NeAACDecDecode did not consume all bytes");
-    }
-
-#ifdef AUDIO_DECODER_RAW_OUT
-    if (rawOut)
-    {
-        fwrite(outputFrame, sizeof(int16_t), aacDecFrameInfo.samples, rawOut);
-    }
-#endif
-
-    int64_t bytesToWrite = aacDecFrameInfo.samples*sizeof(int16_t);
-#endif // defined AUDIO_DECODER_USE_FDKAAC
-
-    // wait for space in ouput buffer    
+    // wait for space in ouput buffer
     outFifoPtr->mutex.lock();
     uint64_t count = outFifoPtr->count;
     while (int64_t(AUDIO_FIFO_SIZE - count) < bytesToWrite)
@@ -733,7 +734,155 @@ void AudioDecoder::processAAC(QByteArray *inData)
     outFifoPtr->countChanged.wakeAll();
 #endif
     outFifoPtr->mutex.unlock();
+
+#else // defined AUDIO_DECODER_USE_FDKAAC
+
+    const char * aacData = inData->data()+1;
+    unsigned long len = inData->size()-1;
+
+    uint8_t* outputFrame = (uint8_t*) NeAACDecDecode(aacDecoderHandle, &aacDecFrameInfo, (unsigned char *) aacData, len);
+
+#ifdef AUDIO_DECODER_AAC_OUT
+    writeAACOutput(aacData, len);
+#endif
+
+    //qDebug("error = %d | bytesconsumed = %d | samples = %d", aacDecFrameInfo.error, aacDecFrameInfo.bytesconsumed, aacDecFrameInfo.samples);
+
+#if 0
+    if(aacDecFrameInfo.error)
+    {
+        qDebug() << "AAC error" << NeAACDecGetErrorMessage(aacDecFrameInfo.error);
+    }
+
+    if(aacDecFrameInfo.bytesconsumed == 0 && aacDecFrameInfo.samples == 0)
+    {   // no output
+        return;
+    }
+
+    if(aacDecFrameInfo.bytesconsumed != len)
+    {
+        throw std::runtime_error(std::string(Q_FUNC_INFO) + ": NeAACDecDecode did not consume all bytes");
+    }
+#endif
+
+    handleAudioOutputFAAD(aacDecFrameInfo, outputFrame);
+#endif // defined AUDIO_DECODER_USE_FDKAAC
+
 }
+
+#if !defined(AUDIO_DECODER_USE_FDKAAC)
+void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo &frameInfo, const uint8_t *inFramePtr)
+{
+#if AUDIO_DECODER_MUTE_CONCEALMENT
+    if (frameInfo.samples != outBufferSamples)
+    {
+        if (OutputState::Unmuted == state)
+        {   // do mute
+            //qDebug() << Q_FUNC_INFO << "muting, DS =" << muteRampDsFactor;
+            int16_t * dataPtr = &outBufferPtr[outBufferSamples - 1];  // last sample
+            std::vector<float>::const_iterator it = muteRamp.cbegin();
+            while (it != muteRamp.end())
+            {
+                float gain = *it;
+                it += muteRampDsFactor;
+                for (uint_fast32_t ch = 0; ch < numChannels; ++ch)
+                {
+                    *dataPtr = int16_t(qRound(gain * *dataPtr));
+                    --dataPtr;
+                }
+            }
+        }
+        else if (OutputState::Init == state)
+        {   // do nothing and return -> decoder is initializing
+            return;
+        }
+        else // muted
+        {  /* do nothing */ }
+    }
+
+    if (OutputState::Init == state)
+    {   // only copy to internal buffer -> this is the first buffer
+        memcpy(outBufferPtr, inFramePtr, outBufferSamples*sizeof(int16_t));
+        state = OutputState::Unmuted;
+        return;
+    }
+
+    // copy data to output FIFO
+    int64_t bytesToWrite = outBufferSamples*sizeof(int16_t);
+#else
+
+    if(frameInfo.error)
+    {
+        qDebug() << "AAC error" << NeAACDecGetErrorMessage(frameInfo.error);
+    }
+
+    if(frameInfo.bytesconsumed == 0 && frameInfo.samples == 0)
+    {   // no output
+        return;
+    }
+
+    int64_t bytesToWrite = frameInfo.samples*sizeof(int16_t);
+
+    const uint8_t * outBufferPtr = inFramePtr;
+
+#endif
+
+#ifdef AUDIO_DECODER_RAW_OUT
+    if (rawOut)
+    {
+        fwrite(outBufferPtr, 1, bytesToWrite, rawOut);
+    }
+#endif
+
+    // wait for space in ouput buffer
+    outFifoPtr->mutex.lock();
+    uint64_t count = outFifoPtr->count;
+    while (int64_t(AUDIO_FIFO_SIZE - count) < bytesToWrite)
+    {
+        //qDebug("%s %lld: %lld < %lld", Q_FUNC_INFO, AUDIO_FIFO_SIZE, int64_t(AUDIO_FIFO_SIZE - count), bytesToWrite);
+        outFifoPtr->countChanged.wait(&outFifoPtr->mutex);
+        count = outFifoPtr->count;
+    }
+    outFifoPtr->mutex.unlock();
+
+    int64_t bytesToEnd = AUDIO_FIFO_SIZE - outFifoPtr->head;
+    if (bytesToEnd < bytesToWrite)
+    {
+        memcpy(outFifoPtr->buffer+outFifoPtr->head, outBufferPtr, bytesToEnd);
+        memcpy(outFifoPtr->buffer, outBufferPtr+bytesToEnd, bytesToWrite-bytesToEnd);
+        outFifoPtr->head = bytesToWrite-bytesToEnd;
+    }
+    else
+    {
+        memcpy(outFifoPtr->buffer+outFifoPtr->head, outBufferPtr, bytesToWrite);
+        outFifoPtr->head += bytesToWrite;
+    }
+
+    outFifoPtr->mutex.lock();
+    outFifoPtr->count += bytesToWrite;
+#if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
+    outFifoPtr->countChanged.wakeAll();
+#endif
+    outFifoPtr->mutex.unlock();
+
+#if AUDIO_DECODER_MUTE_CONCEALMENT
+    // copy new data to buffer
+    if (frameInfo.samples != outBufferSamples)
+    {   // error
+        if (OutputState::Unmuted == state)
+        {   // copy 0
+            memset(outBufferPtr, 0, outBufferSamples*sizeof(int16_t));
+            state = OutputState::Muted;
+        }
+    }    
+    else
+    {   // OK
+        memcpy(outBufferPtr, inFramePtr, outBufferSamples*sizeof(int16_t));
+        state = OutputState::Unmuted;
+    }
+#endif
+}
+#endif // !defined(AUDIO_DECODER_USE_FDKAAC)
 
 #ifdef AUDIO_DECODER_AAC_OUT
 void AudioDecoder::writeAACOutput(const char *data, uint16_t dataLen)

@@ -20,8 +20,18 @@
 
 // this is set from cmake
 //#define AUDIO_DECODER_USE_FDKAAC
+
+#if defined(AUDIO_DECODER_USE_FDKAAC)
 #define AUDIO_DECODER_FDKAAC_CONCEALMENT 1
 
+// leave it disabled, not supported for FDK-AAC yet
+#define AUDIO_DECODER_MUTE_CONCEALMENT 0
+#else
+#define AUDIO_DECODER_MUTE_CONCEALMENT 1
+
+#define AUDIO_DECODER_BUFFER_SIZE   3840  // this is maximum buffer size for HE-AAC
+#define AUDIO_DECODER_FADE_TIME_MS    15
+#endif
 
 enum class AudioCoding
 {
@@ -71,6 +81,7 @@ private:
 #else
     NeAACDecHandle aacDecoderHandle;
     NeAACDecFrameInfo aacDecFrameInfo;
+    void handleAudioOutputFAAD(const NeAACDecFrameInfo & frameInfo, const uint8_t * inFramePtr);
 #endif
     int ascLen;
     uint8_t asc[7];
@@ -79,6 +90,20 @@ private:
     mpg123_handle * mp2DecoderHandle;
 
     audioFifo_t * outFifoPtr;
+
+#if AUDIO_DECODER_MUTE_CONCEALMENT
+    int16_t * outBufferPtr;
+    size_t outBufferSamples;   
+    int numChannels;
+    int muteRampDsFactor;
+    std::vector<float> muteRamp;
+    enum class OutputState
+    {
+        Init = 0,
+        Muted,
+        Unmuted
+    } state;
+#endif
 
 #ifdef AUDIO_DECODER_RAW_OUT
     FILE * rawOut;
