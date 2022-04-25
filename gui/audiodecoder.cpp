@@ -688,7 +688,7 @@ void AudioDecoder::processAAC(QByteArray *inData)
         qDebug() << "Error decoding AAC frame: " << result;
     }
 
-    qDebug("error = %d | samples = %d", !IS_OUTPUT_VALID(result), outputFrameLen / sizeof(INT_PCM));
+    //qDebug("error = %d | samples = %d", !IS_OUTPUT_VALID(result), outputFrameLen / sizeof(INT_PCM));
 
     if (!IS_OUTPUT_VALID(result))
     {   // no output
