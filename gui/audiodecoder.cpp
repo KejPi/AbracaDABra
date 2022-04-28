@@ -207,9 +207,6 @@ void AudioDecoder::readAACHeader(const uint8_t header)
     // fill the structure used to signal audio params to HMI
     if (aacHeader.bits.sbr_flag)
     {
-#if AUDIO_DECODER_MUTE_CONCEALMENT
-        outBufferSamples = AUDIO_DECODER_BUFFER_SIZE;
-#endif
         if (aacHeader.bits.ps_flag)
         {
             audioParameters.coding = AudioCoding::HEAACv2;
@@ -221,9 +218,6 @@ void AudioDecoder::readAACHeader(const uint8_t header)
     }
     else
     {
-#if AUDIO_DECODER_MUTE_CONCEALMENT
-        outBufferSamples = AUDIO_DECODER_BUFFER_SIZE/2;
-#endif
         audioParameters.coding = AudioCoding::AACLC;
     }
     if (aacHeader.bits.aac_channel_mode || aacHeader.bits.ps_flag)
@@ -429,6 +423,7 @@ void AudioDecoder::initAACDecoder()
 #if AUDIO_DECODER_MUTE_CONCEALMENT
     numChannels = outputCh;
     muteRampDsFactor = 48000/outputSr;
+    outBufferSamples = 960 * outputCh * (aacHeader.bits.sbr_flag ? 2 : 1);
 #endif
 
     qDebug("Output SR = %lu, channels = %d", outputSr, outputCh);
