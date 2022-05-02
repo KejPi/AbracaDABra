@@ -157,6 +157,23 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         }
     }
         break;
+    case RadioControlEventType::RECONFIGURATION:
+    {
+#if RADIO_CONTROL_VERBOSE
+        qDebug() << "RadioControlEventType::RECONFIGURATION";
+#endif
+        reconfigurationOngoing = true;
+
+        emit ensembleReconfiguration(ensemble);
+
+        serviceList.clear();
+
+        // request service list
+        // ETSI EN 300 401 V2.1.1 (2017-01) [6.1]
+        QTimer::singleShot(10, this, &RadioControl::dabGetServiceList);
+    }
+        break;
+
     case RadioControlEventType::SERVICE_LIST:
     {
 #if RADIO_CONTROL_VERBOSE
@@ -307,8 +324,9 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                 else
                 {  // service list item information is complete
                    requestsPending--;
-                   for (auto const & serviceComp : qAsConst(serviceIt->serviceComponents))
+                   for (auto & serviceComp : serviceIt->serviceComponents)
                    {
+                       serviceComp.userApps.clear();
                        requestsPending++;
                        dabGetUserApps(serviceIt->SId.value(), serviceComp.SCIdS);
                    }
@@ -329,6 +347,8 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         if (!pList->isEmpty())
         {   // all user apps belong to the same SId, reading sid from the first
             DabSId sid(pList->at(0).SId, ensemble.ecc());
+
+            //qDebug("RadioControlEventType::USER_APP_LIST SID %6.6X : %d requestPending = %d", pList->at(0).SId, pList->at(0).SCIdS, requestsPending);
 
             // find service ID
             serviceIterator serviceIt = serviceList.find(sid.value());
@@ -362,18 +382,32 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                         scIt->userApps.insert(newUserApp.uaType, newUserApp);
                         //qDebug() << serviceIt->SId.value << scIt->SCIdS << newUserApp.uaType;
                     }
-                    if (--requestsPending == 0)
-                    {
-                        // enable SLS automatically - if available
-                        startUserApplication(DabUserApplicationType::SlideShow, true);
-
-                        qDebug() << "=== MCI complete";
-                        emit ensembleConfiguration(ensembleConfigurationString());
-                        emit ensembleComplete(ensemble);
-                    }
-                }                
+                }
+                else
+                { /* SC not found - this should not happen */ }
             }
+            else
+            { /* service nod found - this should not happen */ }
         }
+        else
+        {   // no user apps for some service
+            // qDebug() << "RadioControlEventType::USER_APP_LIST No user apps";
+        }
+
+        if (--requestsPending == 0)
+        {
+            // enable SLS automatically - if available
+            startUserApplication(DabUserApplicationType::SlideShow, true);
+
+            qDebug() << "=== MCI complete";
+            emit ensembleConfiguration(ensembleConfigurationString());
+            if (reconfigurationOngoing)
+            {
+                reconfigurationOngoing = false;
+            }
+            emit ensembleComplete(ensemble);
+        }
+
         delete pList;
     }
         break;
@@ -1072,7 +1106,7 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         pEvent->pData = reinterpret_cast<intptr_t>(pEnsembleInfo);
         radioCtrl->emit_dabEvent(pEvent);
     }
-        break;
+        break;                
     case DABPROC_NID_SERVICE_LIST:
     {
         const dabProc_NID_SERVICE_LIST_t * pInfo = (const dabProc_NID_SERVICE_LIST_t *) p->pData;
@@ -1203,6 +1237,19 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
             pEvent->pData = reinterpret_cast<intptr_t>(notifyData);
             radioCtrl->emit_dabEvent(pEvent);
         }
+    }
+        break;
+    case DABPROC_NID_RECONFIGURATION:
+    {
+#if RADIO_CONTROL_VERBOSE
+        qDebug("DABPROC_NID_RECONFIGURATION: status %d", p->status);
+#endif
+        RadioControlEvent * pEvent = new RadioControlEvent;
+        pEvent->type = RadioControlEventType::RECONFIGURATION;
+
+        pEvent->status = p->status;
+        pEvent->pData = reinterpret_cast<intptr_t>(nullptr);
+        radioCtrl->emit_dabEvent(pEvent);
     }
         break;
     case DABPROC_NID_RESET:

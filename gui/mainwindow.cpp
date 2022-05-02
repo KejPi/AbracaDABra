@@ -286,6 +286,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->catSlsLabel, &ClickableLabel::clicked, this, &MainWindow::showCatSLS);
 
     connect(radioControl, &RadioControl::ensembleInformation, this, &MainWindow::updateEnsembleInfo, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::ensembleReconfiguration, this, &MainWindow::onEnsembleReconfiguration, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::ensembleComplete, this, &MainWindow::onEnsembleComplete, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::syncStatus, this, &MainWindow::updateSyncStatus, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::snrLevel, this, &MainWindow::updateSnrLevel, Qt::QueuedConnection);
@@ -509,6 +510,11 @@ void MainWindow::updateEnsembleInfo(const RadioControlEnsemble &ens)
                                   .arg(QString("%1").arg(ens.eid(), 4, 16, QChar('0')).toUpper())
                                   .arg(DabTables::getCountryName(ens.ueid)));
 
+    serviceList->beginEnsembleUpdate(ens);
+}
+
+void MainWindow::onEnsembleReconfiguration(const RadioControlEnsemble &ens) const
+{
     serviceList->beginEnsembleUpdate(ens);
 }
 

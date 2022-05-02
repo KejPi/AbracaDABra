@@ -53,6 +53,7 @@ public slots:
     void inputDeviceReady();
     void updateEnsembleInfo(const RadioControlEnsemble &ens);
     void onEnsembleComplete(const RadioControlEnsemble &ens);
+    void onEnsembleReconfiguration(const RadioControlEnsemble &ens) const;
     void updateSyncStatus(uint8_t sync);
     void updateSnrLevel(float snr);
     void updateServiceList(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);

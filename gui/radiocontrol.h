@@ -210,6 +210,7 @@ enum class RadioControlEventType
     DATAGROUP_DL,
     USERAPP_DATA,
     AUDIO_DATA,
+    RECONFIGURATION,
     RESET,
 };
 
@@ -254,7 +255,7 @@ signals:
     void tuneInputDevice(uint32_t freq);
     void ensembleConfiguration(const QString &);
     void ensembleComplete(const RadioControlEnsemble & ens);
-
+    void ensembleReconfiguration(const RadioControlEnsemble & ens);
 private:
     static const uint8_t EEPCoderate[];
 
@@ -273,6 +274,8 @@ private:
 
     // this is a counter of requests to check when the ensemble information is complete
     int requestsPending = 0;
+
+    bool reconfigurationOngoing = false;
 
     RadioControlEnsemble ensemble;
     RadioControlServiceList serviceList;
