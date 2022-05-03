@@ -264,6 +264,8 @@ void EnsembleInfoDialog::serviceChanged(const RadioControlServiceComponent &s)
     ui->subChannel->setText(QString::number(s.SubChId));
     ui->startCU->setText(QString::number(s.SubChAddr));
     ui->numCU->setText(QString::number(s.SubChSize));
+
+    resetMscStat();
 }
 
 void EnsembleInfoDialog::showEvent(QShowEvent *event)

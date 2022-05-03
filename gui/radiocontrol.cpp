@@ -419,8 +419,6 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 #if RADIO_CONTROL_VERBOSE
             qDebug() << "RadioControlEvent::SERVICE_SELECTION success";
 #endif
-            emit serviceChanged();
-
             serviceConstIterator serviceIt = serviceList.constFind(pData->SId);
             if (serviceIt != serviceList.cend())
             {   // service is in the list
@@ -432,7 +430,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                         // store current service
                         currentService.SId = pData->SId;
                         currentService.SCIdS = pData->SCIdS;
-                        emit newServiceSelection(*scIt);
+                        emit audioServiceSelection(*scIt);
 
                         // enable SLS automatically - if available
                         startUserApplication(DabUserApplicationType::SlideShow, true);

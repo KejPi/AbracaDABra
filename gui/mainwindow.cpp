@@ -300,12 +300,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControl, &RadioControl::tuneDone, ensembleInfoDialog, &EnsembleInfoDialog::newFrequency, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::fibCounter, ensembleInfoDialog, &EnsembleInfoDialog::updateFIBstatus, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::mscCounter, ensembleInfoDialog, &EnsembleInfoDialog::updateMSCstatus, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::serviceChanged, ensembleInfoDialog, &EnsembleInfoDialog::resetMscStat, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::newServiceSelection, ensembleInfoDialog, &EnsembleInfoDialog::serviceChanged, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::audioServiceSelection, ensembleInfoDialog, &EnsembleInfoDialog::serviceChanged, Qt::QueuedConnection);
 
     connect(radioControl, &RadioControl::dlDataGroup, dlDecoder, &DLDecoder::newDataGroup, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::newServiceSelection, this, &MainWindow::serviceChanged, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::serviceChanged, dlDecoder, &DLDecoder::reset, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::audioServiceSelection, this, &MainWindow::serviceChanged, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::audioServiceSelection, dlDecoder, &DLDecoder::reset, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::audioData, audioDecoder, &AudioDecoder::inputData, Qt::QueuedConnection);
 
     // DL(+)       
@@ -316,7 +315,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(dlDecoder, &DLDecoder::resetTerminal, this, &MainWindow::onDLReset);
 
     connect(audioDecoder, &AudioDecoder::audioParametersInfo, this, &MainWindow::updateAudioInfo, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::newServiceSelection, audioDecoder, &AudioDecoder::start, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::audioServiceSelection, audioDecoder, &AudioDecoder::start, Qt::QueuedConnection);
 
     // audio output is controlled by signals from decoder
     connect(this, &MainWindow::serviceRequest, audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
@@ -345,8 +344,7 @@ MainWindow::MainWindow(QWidget *parent)
     slideShowApp = new SlideShowApp(radioControl);
     slideShowApp->moveToThread(radioControlThr);
     connect(radioControlThr, &QThread::finished, slideShowApp, &QObject::deleteLater);       
-    connect(radioControl, &RadioControl::newServiceSelection, slideShowApp, &SlideShowApp::start);
-    connect(radioControl, &RadioControl::serviceChanged, slideShowApp, &SlideShowApp::start);
+    connect(radioControl, &RadioControl::audioServiceSelection, slideShowApp, &SlideShowApp::start);
     connect(slideShowApp, &SlideShowApp::currentSlide, ui->slsView, &SLSView::showSlide, Qt::QueuedConnection);
     connect(slideShowApp, &SlideShowApp::resetTerminal, ui->slsView, &SLSView::reset, Qt::QueuedConnection);
     connect(slideShowApp, &SlideShowApp::catSlsAvailable, ui->catSlsLabel, &ClickableLabel::setVisible, Qt::QueuedConnection);
@@ -368,7 +366,6 @@ MainWindow::MainWindow(QWidget *parent)
     spiApp->moveToThread(radioControlThr);
     connect(radioControlThr, &QThread::finished, spiApp, &QObject::deleteLater);
     connect(radioControl, &RadioControl::newServiceSelection, spiApp, &SPIApp::start);
-    connect(radioControl, &RadioControl::serviceChanged, spiApp, &SPIApp::start);
     //connect(spiApp, &SPIApp::resetTerminal, ui->slsView, &SLSView::reset, Qt::QueuedConnection);
     connect(this, &MainWindow::stopUserApps, spiApp, &SPIApp::stop, Qt::QueuedConnection);
 #endif

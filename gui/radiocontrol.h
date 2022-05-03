@@ -248,8 +248,7 @@ signals:
     void serviceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
     void dlDataGroup(const QByteArray & dg);
     void userAppData(const RadioControlUserAppData & data);
-    void serviceChanged();
-    void newServiceSelection(const RadioControlServiceComponent & s);
+    void audioServiceSelection(const RadioControlServiceComponent & s);
     void audioData(QByteArray * pData);
     void dabTime(const QDateTime & dateAndTime);
     void tuneInputDevice(uint32_t freq);
