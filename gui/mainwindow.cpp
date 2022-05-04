@@ -307,6 +307,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControl, &RadioControl::audioServiceSelection, dlDecoder, &DLDecoder::reset, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::audioData, audioDecoder, &AudioDecoder::inputData, Qt::QueuedConnection);
 
+    // reconfiguration
+    connect(radioControl, &RadioControl::audioServiceReconfiguration, this, &MainWindow::serviceChanged, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::audioServiceStopped, this, &MainWindow::onServiceSelection, Qt::QueuedConnection);
+
     // DL(+)       
     connect(dlDecoder, &DLDecoder::dlComplete, this, &MainWindow::updateDL);
     connect(dlDecoder, &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived);
@@ -1004,9 +1008,21 @@ void MainWindow::serviceChanged(const RadioControlServiceComponent &s)
         //ui->serviceListView->setFocus();
     }
     else
-    {   // sid it not equal to selected sid -> should not happen
+    {   // sid it not equal to selected sid -> this could happen during reconfiguration
+
+        // ETSI TS 103 176 V2.4.1 (2020-08) [6.4.3 Receiver behaviour]
+        // If by the above methods a continuation of service cannot be established, the receiver shall stop the service.
+        // It should display a 'service ceased' message as appropriate.
+
+        QString serviceLabel = ui->serviceLabel->text();
+        clearServiceInformationLabels();
+        ui->serviceLabel->setText(serviceLabel);
+        ui->programTypeLabel->setText("Service currently unavailable");
+        ui->programTypeLabel->setToolTip("Service was removed from ensemble");
+        SId.set(0);
+
         ui->serviceListView->clearSelection();
-        return;
+        ui->serviceTreeView->clearSelection();
     }
 }
 

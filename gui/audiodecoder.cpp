@@ -110,6 +110,10 @@ void AudioDecoder::start(const RadioControlServiceComponent &s)
         isRunning = true;
         mode = s.streamAudioData.scType;
     }
+    else
+    {   // no audio service -> can happen during reconfiguration
+        stop();
+    }
 }
 
 void AudioDecoder::stop()

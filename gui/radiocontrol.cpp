@@ -308,10 +308,21 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                     }
                     serviceIt->serviceComponents.insert(newServiceComp.SCIdS, newServiceComp);
 
-                    if ((serviceRequest.SId == serviceIt->SId.value()) && (serviceRequest.SCIdS == newServiceComp.SCIdS))
+                    if (reconfigurationOngoing)
                     {
-                        dabServiceSelection(serviceRequest.SId, serviceRequest.SCIdS);
-                        serviceRequest.SId = 0;    // clear request
+                        if (((currentService.SId == serviceIt->SId.value()) && (currentService.SCIdS == newServiceComp.SCIdS)
+                             && (newServiceComp.isAudioService())))
+                        {   // inform HMI about possible new service configuration
+                            emit audioServiceReconfiguration(newServiceComp);
+                        }
+                    }
+                    else
+                    {
+                        if ((serviceRequest.SId == serviceIt->SId.value()) && (serviceRequest.SCIdS == newServiceComp.SCIdS))
+                        {
+                            dabServiceSelection(serviceRequest.SId, serviceRequest.SCIdS);
+                            serviceRequest.SId = 0;    // clear request
+                        }
                     }
 
                     emit serviceListEntry(ensemble, newServiceComp);
@@ -404,6 +415,8 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             if (reconfigurationOngoing)
             {
                 reconfigurationOngoing = false;
+
+                // find current service selection
             }
             emit ensembleComplete(ensemble);
         }
@@ -413,7 +426,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::SERVICE_SELECTION:
     {
-        dabProc_NID_SERVICE_SELECTION_t * pData = reinterpret_cast<dabProc_NID_SERVICE_SELECTION_t *>(pEvent->pData);
+        dabProc_NID_SERVICE_SELECTION_t * pData = reinterpret_cast<dabProc_NID_SERVICE_SELECTION_t *>(pEvent->pData);                        
         if (DABPROC_NSTAT_SUCCESS == pEvent->status)
         {
 #if RADIO_CONTROL_VERBOSE
@@ -449,7 +462,16 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         }        
         else
         {
+            if (reconfigurationOngoing)
+            {
+                if ((currentService.SId == pData->SId) && (currentService.SCIdS == pData->SCIdS))
+                {   // current service is no longer available -> playback will be stopped => emit dummy service component
+                    emit audioServiceSelection(RadioControlServiceComponent());
+                }
+            }
+
             qDebug() << "RadioControlEvent::SERVICE_SELECTION error" << pEvent->status;
+            currentService.SId = 0;
         }
         delete pData;
     }

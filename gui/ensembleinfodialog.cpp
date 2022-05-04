@@ -252,8 +252,8 @@ void EnsembleInfoDialog::newFrequency(quint32 f)
 
 void EnsembleInfoDialog::serviceChanged(const RadioControlServiceComponent &s)
 {
-    if (s.label.isEmpty())
-    {   // service component not valid -> shoudl not happen
+    if (!s.SId.isValid())
+    {   // service component not valid -> can happen during reconfig
         clearServiceInfo();
         return;
     }

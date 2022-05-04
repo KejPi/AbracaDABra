@@ -58,6 +58,7 @@ public:
         }
     }
     uint32_t countryServiceRef() const { return (isProgServiceId() ? (eccsid & 0x0000FFFF) : (eccsid & 0x00FFFFFF));  }
+    bool isValid() const { return eccsid != 0; }
 private:
     uint32_t eccsid;
 };
@@ -114,6 +115,8 @@ struct RadioControlUserApp
 
 struct RadioControlServiceComponent
 {
+    RadioControlServiceComponent() : TMId(DabTMId::Invalid) {};
+
     // Each service component shall be uniquely identified by the combination of the
     // SId and the Service Component Identifier within the Service (SCIdS).
     DabSId SId;
@@ -249,6 +252,8 @@ signals:
     void dlDataGroup(const QByteArray & dg);
     void userAppData(const RadioControlUserAppData & data);
     void audioServiceSelection(const RadioControlServiceComponent & s);
+    void audioServiceReconfiguration(const RadioControlServiceComponent & s);
+    void audioServiceStopped();
     void audioData(QByteArray * pData);
     void dabTime(const QDateTime & dateAndTime);
     void tuneInputDevice(uint32_t freq);
