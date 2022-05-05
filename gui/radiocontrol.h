@@ -115,8 +115,6 @@ struct RadioControlUserApp
 
 struct RadioControlServiceComponent
 {
-    RadioControlServiceComponent() : TMId(DabTMId::Invalid) {};
-
     // Each service component shall be uniquely identified by the combination of the
     // SId and the Service Component Identifier within the Service (SCIdS).
     DabSId SId;

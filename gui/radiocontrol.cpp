@@ -466,7 +466,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             {
                 if ((currentService.SId == pData->SId) && (currentService.SCIdS == pData->SCIdS))
                 {   // current service is no longer available -> playback will be stopped => emit dummy service component
-                    emit audioServiceSelection(RadioControlServiceComponent());
+                    emit audioServiceReconfiguration(RadioControlServiceComponent());
                 }
             }
 

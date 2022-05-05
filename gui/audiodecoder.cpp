@@ -169,21 +169,13 @@ void AudioDecoder::initMPG123()
             throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_format_none: " + std::string(mpg123_plain_strerror(res)));
         }
 
-#ifdef AUDIOOUTPUT_USE_RTAUDIO
         res = mpg123_format(mp2DecoderHandle, 48000, MPG123_STEREO, MPG123_ENC_SIGNED_16);
-#else
-        res = mpg123_format(mp2DecoderHandle, 48000, MPG123_MONO | MPG123_STEREO, MPG123_ENC_SIGNED_16);
-#endif
         if(MPG123_OK != res)
         {
             throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_format for 48KHz: " + std::string(mpg123_plain_strerror(res)));
         }
 
-#ifdef AUDIOOUTPUT_USE_RTAUDIO
         res = mpg123_format(mp2DecoderHandle, 24000, MPG123_STEREO, MPG123_ENC_SIGNED_16);
-#else
-        res = mpg123_format(mp2DecoderHandle, 24000, MPG123_MONO | MPG123_STEREO, MPG123_ENC_SIGNED_16);
-#endif
         if(MPG123_OK != res)
         {
             throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_format for 24KHz: " + std::string(mpg123_plain_strerror(res)));
@@ -204,10 +196,8 @@ void AudioDecoder::initMPG123()
     }
 }
 
-void AudioDecoder::readAACHeader(const uint8_t header)
-{
-    aacHeader.raw = header;
-
+void AudioDecoder::readAACHeader()
+{    
     // fill the structure used to signal audio params to HMI
     if (aacHeader.bits.sbr_flag)
     {
@@ -460,6 +450,19 @@ void AudioDecoder::inputData(QByteArray *inData)
     delete inData;
 }
 
+void AudioDecoder::getAudioParameters()
+{
+    if (nullptr != aacDecoderHandle)
+    {
+        readAACHeader();
+        return;
+    }
+    if (nullptr != mp2DecoderHandle)
+    {
+        getFormatMP2();
+    }
+}
+
 void AudioDecoder::processMP2(QByteArray *inData)
 {
 #define MP2_FRAME_PCM_SAMPLES (2*1152)
@@ -650,7 +653,8 @@ void AudioDecoder::processAAC(QByteArray *inData)
 
     if ((nullptr == aacDecoderHandle) || (header.raw != aacHeader.raw))
     {
-        readAACHeader(header.raw);
+        aacHeader.raw = header.raw;
+        readAACHeader();
         initAACDecoder();
 
         // reset FIFO

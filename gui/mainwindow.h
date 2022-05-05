@@ -71,6 +71,7 @@ public slots:
 signals:
     void serviceRequest(uint32_t freq, uint32_t SId, uint8_t SCIdS);
     void stopUserApps();
+    void getAudioInfo();
     void exit();
 
 private slots:
@@ -83,6 +84,7 @@ private slots:
     void serviceListClicked(const QModelIndex &index);
     void serviceListTreeClicked(const QModelIndex &index);
     void serviceChanged(const RadioControlServiceComponent &s);
+    void audioServiceReconfiguration(const RadioControlServiceComponent &s);
 
 protected:        
      void closeEvent(QCloseEvent *event);

@@ -308,8 +308,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControl, &RadioControl::audioData, audioDecoder, &AudioDecoder::inputData, Qt::QueuedConnection);
 
     // reconfiguration
-    connect(radioControl, &RadioControl::audioServiceReconfiguration, this, &MainWindow::serviceChanged, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::audioServiceStopped, this, &MainWindow::onServiceSelection, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::audioServiceReconfiguration, this, &MainWindow::audioServiceReconfiguration, Qt::QueuedConnection);
+    connect(this, &MainWindow::getAudioInfo, audioDecoder, &AudioDecoder::getAudioParameters, Qt::QueuedConnection);    
 
     // DL(+)       
     connect(dlDecoder, &DLDecoder::dlComplete, this, &MainWindow::updateDL);
@@ -322,7 +322,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControl, &RadioControl::audioServiceSelection, audioDecoder, &AudioDecoder::start, Qt::QueuedConnection);
 
     // audio output is controlled by signals from decoder
-    connect(this, &MainWindow::serviceRequest, audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
+    connect(this, &MainWindow::stopUserApps, audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
     connect(audioDecoder, &AudioDecoder::startAudio, audioOutput, &AudioOutput::start, Qt::QueuedConnection);
     connect(audioDecoder, &AudioDecoder::stopAudio, audioOutput, &AudioOutput::stop, Qt::QueuedConnection);
 
@@ -462,6 +462,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     {
         qDebug() << Q_FUNC_INFO << "going to IDLE";
         exitRequested = true;
+        emit stopUserApps();
         emit serviceRequest(0,0,0);
         event->ignore();
     }
@@ -522,6 +523,9 @@ void MainWindow::onEnsembleReconfiguration(const RadioControlEnsemble &ens) cons
 void MainWindow::onEnsembleComplete(const RadioControlEnsemble &ens)
 {
     serviceList->endEnsembleUpdate(ens);
+
+    serviceListViewUpdateSelection();
+    serviceTreeViewUpdateSelection();
 }
 
 void MainWindow::updateSyncStatus(uint8_t sync)
@@ -1008,8 +1012,25 @@ void MainWindow::serviceChanged(const RadioControlServiceComponent &s)
         //ui->serviceListView->setFocus();
     }
     else
-    {   // sid it not equal to selected sid -> this could happen during reconfiguration
+    {   // sid it not equal to selected sid -> this should not happen
+        SId.set(0);
 
+        ui->serviceListView->clearSelection();
+        ui->serviceTreeView->clearSelection();
+        //ui->serviceListView->selectionModel()->select(ui->serviceListView->selectionModel()->selection(), QItemSelectionModel::Deselect);
+    }
+}
+
+void MainWindow::audioServiceReconfiguration(const RadioControlServiceComponent &s)
+{
+    qDebug() << Q_FUNC_INFO << s.SId.value() << s.SId.isValid();
+    if (s.SId.isValid() && s.isAudioService() && (s.SId.value() == SId.value()))
+    {   // set UI
+        serviceChanged(s);
+        emit getAudioInfo();        
+    }
+    else
+    {   // service probably disapeared
         // ETSI TS 103 176 V2.4.1 (2020-08) [6.4.3 Receiver behaviour]
         // If by the above methods a continuation of service cannot be established, the receiver shall stop the service.
         // It should display a 'service ceased' message as appropriate.
@@ -1019,10 +1040,9 @@ void MainWindow::serviceChanged(const RadioControlServiceComponent &s)
         ui->serviceLabel->setText(serviceLabel);
         ui->programTypeLabel->setText("Service currently unavailable");
         ui->programTypeLabel->setToolTip("Service was removed from ensemble");
-        SId.set(0);
 
-        ui->serviceListView->clearSelection();
-        ui->serviceTreeView->clearSelection();
+        emit stopUserApps();
+        dlDecoder->reset();
     }
 }
 
@@ -1459,7 +1479,8 @@ void MainWindow::serviceTreeViewUpdateSelection()
                 QModelIndex serviceIndex = model->index(s, 0, ensembleIndex);
                 if (model->id(serviceIndex) == serviceId)
                 {  // found
-                    ui->serviceTreeView->selectionModel()->setCurrentIndex(serviceIndex, QItemSelectionModel::Clear | QItemSelectionModel::Select | QItemSelectionModel::Current);
+                    ui->serviceTreeView->selectionModel()->setCurrentIndex(serviceIndex,
+                           QItemSelectionModel::Clear | QItemSelectionModel::Select | QItemSelectionModel::Current);
                     return;
                 }
             }
@@ -1476,8 +1497,9 @@ void MainWindow::serviceListViewUpdateSelection()
     {
         index = model->index(r, 0);
         if (model->id(index) == id)
-        {   // found
-            ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Clear | QItemSelectionModel::Select | QItemSelectionModel::Current);
+        {   // found            
+            ui->serviceListView->selectionModel()->setCurrentIndex(index,
+                           QItemSelectionModel::Clear | QItemSelectionModel::Select | QItemSelectionModel::Current);
             return;
         }
     }

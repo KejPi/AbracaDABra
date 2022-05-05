@@ -63,6 +63,7 @@ public slots:
     void start(const RadioControlServiceComponent &s);
     void stop();
     void inputData(QByteArray * inData);
+    void getAudioParameters();
 
 signals:
     void startAudio(uint32_t sampleRate, uint8_t numChannels);
@@ -117,7 +118,7 @@ private:
     void writeMP2Output(const char *data, uint16_t dataLen);
 #endif
 
-    void readAACHeader(const uint8_t header);
+    void readAACHeader();
 
     void initAACDecoder();
     void processAAC(QByteArray *inData);

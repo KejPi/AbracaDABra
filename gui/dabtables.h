@@ -29,7 +29,6 @@ enum class DabProtectionLevel
 
 enum class DabTMId
 {
-    Invalid = -1,
     StreamAudio = 0,
     StreamData  = 1,
     PacketData  = 3
