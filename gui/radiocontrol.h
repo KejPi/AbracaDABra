@@ -211,8 +211,6 @@ enum class RadioControlEventType
     DATAGROUP_DL,
     USERAPP_DATA,
     AUDIO_DATA,
-    RECONFIGURATION,
-    RESET,
 };
 
 struct RadioControlEvent

@@ -66,15 +66,6 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
     {
     case RadioControlEventType::AUDIO_DATA:
         break;
-    case RadioControlEventType::RESET:
-    {
-#if RADIO_CONTROL_VERBOSE
-        qDebug() << "RadioControlEventType::RESET";
-#endif
-        serviceList.clear();
-        clearEnsemble();
-    }
-        break;
     case RadioControlEventType::SYNC_STATUS:
     {
         dabProcSyncLevel_t s = static_cast<dabProcSyncLevel_t>(pEvent->pData);
@@ -155,22 +146,6 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             // wait some time and send new request
             QTimer::singleShot(200, this, &RadioControl::dabGetEnsembleInfo);
         }
-    }
-        break;
-    case RadioControlEventType::RECONFIGURATION:
-    {
-#if RADIO_CONTROL_VERBOSE
-        qDebug() << "RadioControlEventType::RECONFIGURATION";
-#endif
-        reconfigurationOngoing = true;
-
-        emit ensembleReconfiguration(ensemble);
-
-        serviceList.clear();
-
-        // request service list
-        // ETSI EN 300 401 V2.1.1 (2017-01) [6.1]
-        QTimer::singleShot(10, this, &RadioControl::dabGetServiceList);
     }
         break;
 
@@ -524,63 +499,96 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
     {
         dabProc_NID_AUTO_NOTIFY_t * pData = reinterpret_cast<dabProc_NID_AUTO_NOTIFY_t *>(pEvent->pData);
 
-        if (pData->dateHoursMinutes != 0)
+        switch (pData->type)
         {
-            // decode time
-            // bits 30-14 MJD
-            int32_t mjd = (pData->dateHoursMinutes >> 14) & 0x01FFFF;
-            // bit 13 LSI
-            // uint8_t lsi = (pData->dateHoursMinutes >> 13) & 0x01;
-            // bits 10-6 Hours
-            uint8_t h = (pData->dateHoursMinutes >> 6) & 0x1F;
-            // bits 5-0 Minutes
-            uint8_t minute = pData->dateHoursMinutes & 0x3F;
-
-            // Convert Modified Julian Date (according to wikipedia)
-            int32_t J   = mjd + 2400001;
-            int32_t j   = J + 32044;
-            int32_t g   = j / 146097;
-            int32_t dg  = j % 146097;
-            int32_t c   = ((dg / 36524) + 1) * 3 / 4;
-            int32_t dc  = dg - c * 36524;
-            int32_t b   = dc / 1461;
-            int32_t db  = dc%1461;
-            int32_t a   = ((db / 365) + 1) * 3 / 4;
-            int32_t da  = db - a * 365;
-            int32_t y   = g * 400 + c * 100 + b * 4 + a;
-            int32_t m   = ((da * 5 + 308) / 153) - 2;
-            int32_t d   = da - ((m + 4) * 153 / 5) + 122;
-            int32_t Y   = y - 4800 + ((m + 2) / 12);
-            int32_t M   = ((m + 2) % 12) + 1;
-            int32_t D   = d + 1;
-
-            int32_t sec = pData->secMsec >> 10;
-            int32_t msec = pData->secMsec & 0x3FF;
-
-            QDateTime dateAndTime = QDateTime(QDate(Y, M, D), QTime(h, minute, sec, msec), Qt::UTC).toOffsetFromUtc(60*(ensemble.LTO * 30));
-
-            //qDebug() << dateAndTime;
-
-            emit dabTime(dateAndTime);
-        }
-        updateSyncLevel(pData->syncLevel);
-        if (pData->snr10 > 0)
+        case AUTONTF_PERIODIC:
         {
-            emit snrLevel(pData->snr10/10.0);
-        }
-        else
-        {
-            emit snrLevel(0);
-        }
+            if (pData->periodic.dateHoursMinutes != 0)
+            {
+                // decode time
+                // bits 30-14 MJD
+                int32_t mjd = (pData->periodic.dateHoursMinutes >> 14) & 0x01FFFF;
+                // bit 13 LSI
+                // uint8_t lsi = (pData->dateHoursMinutes >> 13) & 0x01;
+                // bits 10-6 Hours
+                uint8_t h = (pData->periodic.dateHoursMinutes >> 6) & 0x1F;
+                // bits 5-0 Minutes
+                uint8_t minute = pData->periodic.dateHoursMinutes & 0x3F;
 
-        emit freqOffset(pData->freqOffset*0.1);
-        emit fibCounter(RADIO_CONTROL_NOTIFICATION_FIB_EXPECTED, pData->fibErrorCntr);
-        emit mscCounter(pData->mscCrcOkCntr, pData->mscCrcErrorCntr);
+                // Convert Modified Julian Date (according to wikipedia)
+                int32_t J   = mjd + 2400001;
+                int32_t j   = J + 32044;
+                int32_t g   = j / 146097;
+                int32_t dg  = j % 146097;
+                int32_t c   = ((dg / 36524) + 1) * 3 / 4;
+                int32_t dc  = dg - c * 36524;
+                int32_t b   = dc / 1461;
+                int32_t db  = dc%1461;
+                int32_t a   = ((db / 365) + 1) * 3 / 4;
+                int32_t da  = db - a * 365;
+                int32_t y   = g * 400 + c * 100 + b * 4 + a;
+                int32_t m   = ((da * 5 + 308) / 153) - 2;
+                int32_t d   = da - ((m + 4) * 153 / 5) + 122;
+                int32_t Y   = y - 4800 + ((m + 2) / 12);
+                int32_t M   = ((m + 2) % 12) + 1;
+                int32_t D   = d + 1;
+
+                int32_t sec = pData->periodic.secMsec >> 10;
+                int32_t msec = pData->periodic.secMsec & 0x3FF;
+
+                QDateTime dateAndTime = QDateTime(QDate(Y, M, D), QTime(h, minute, sec, msec), Qt::UTC).toOffsetFromUtc(60*(ensemble.LTO * 30));
+
+                //qDebug() << dateAndTime;
+
+                emit dabTime(dateAndTime);
+            }
+            updateSyncLevel(pData->periodic.syncLevel);
+            if (pData->periodic.snr10 > 0)
+            {
+                emit snrLevel(pData->periodic.snr10/10.0);
+            }
+            else
+            {
+                emit snrLevel(0);
+            }
+
+            emit freqOffset(pData->periodic.freqOffset*0.1);
+            emit fibCounter(RADIO_CONTROL_NOTIFICATION_FIB_EXPECTED, pData->periodic.fibErrorCntr);
+            emit mscCounter(pData->periodic.mscCrcOkCntr, pData->periodic.mscCrcErrorCntr);
 
 #if RADIO_CONTROL_VERBOSE > 0
-        qDebug("AutoNotify: sync %d, freq offset = %.1f Hz, SNR = %.1f dB",
-               pData->syncLevel, pData->freqOffset*0.1, pData->snr10/10.0);
+            qDebug("AutoNotify: sync %d, freq offset = %.1f Hz, SNR = %.1f dB",
+                   pData->syncLevel, pData->freqOffset*0.1, pData->snr10/10.0);
 #endif
+        }
+            break;
+        case AUTONTF_RECONFIGURATION:
+        {
+#if RADIO_CONTROL_VERBOSE
+            qDebug() << "RadioControlEventType::RECONFIGURATION";
+#endif
+            reconfigurationOngoing = true;
+
+            emit ensembleReconfiguration(ensemble);
+
+            serviceList.clear();
+
+            // request service list
+            // ETSI EN 300 401 V2.1.1 (2017-01) [6.1]
+            QTimer::singleShot(10, this, &RadioControl::dabGetServiceList);
+        }
+            break;
+        case AUTONTF_RESET:
+        {
+#if RADIO_CONTROL_VERBOSE
+            qDebug() << "RadioControlEventType::RESET";
+#endif
+            serviceList.clear();
+            clearEnsemble();
+        }
+        break;
+
+        }
 
         delete pData;
     }
@@ -1257,29 +1265,6 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
             pEvent->pData = reinterpret_cast<intptr_t>(notifyData);
             radioCtrl->emit_dabEvent(pEvent);
         }
-    }
-        break;
-    case DABPROC_NID_RECONFIGURATION:
-    {
-#if RADIO_CONTROL_VERBOSE
-        qDebug("DABPROC_NID_RECONFIGURATION: status %d", p->status);
-#endif
-        RadioControlEvent * pEvent = new RadioControlEvent;
-        pEvent->type = RadioControlEventType::RECONFIGURATION;
-
-        pEvent->status = p->status;
-        pEvent->pData = reinterpret_cast<intptr_t>(nullptr);
-        radioCtrl->emit_dabEvent(pEvent);
-    }
-        break;
-    case DABPROC_NID_RESET:
-    {
-        RadioControlEvent * pEvent = new RadioControlEvent;
-        pEvent->type = RadioControlEventType::RESET;
-
-        pEvent->status = p->status;
-        pEvent->pData = reinterpret_cast<intptr_t>(nullptr);
-        radioCtrl->emit_dabEvent(pEvent);
     }
         break;
     default:
