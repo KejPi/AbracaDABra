@@ -151,6 +151,11 @@ void SLModel::addService(const ServiceListId & servId)
     sort(0);
 }
 
+void SLModel::updateService(const ServiceListId & servId)
+{   // service label was updated -> need to sort
+    sort(0);  // --> this emits dataChanged()
+}
+
 void SLModel::removeService(const ServiceListId & servId)
 {
     // first find service in the list
@@ -179,6 +184,9 @@ void SLModel::clear()
 void SLModel::sort(int column, Qt::SortOrder order)
 {
     Q_UNUSED(column);
+
+    beginResetModel();
+
     if (Qt::AscendingOrder == order)
     {
         std::sort(m_serviceItems.begin(), m_serviceItems.end(), [](const SLModelItem * a, const SLModelItem * b) {
@@ -207,6 +215,8 @@ void SLModel::sort(int column, Qt::SortOrder order)
             return false;
         });
     }
+
+    endResetModel();
 
     emit dataChanged(QModelIndex(), QModelIndex());
 }

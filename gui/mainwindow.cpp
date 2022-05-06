@@ -177,6 +177,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     slModel = new SLModel(serviceList, this);
     connect(serviceList, &ServiceList::serviceAdded, slModel, &SLModel::addService);
+    connect(serviceList, &ServiceList::serviceUpdated, slModel, &SLModel::updateService);
     connect(serviceList, &ServiceList::serviceRemoved, slModel, &SLModel::removeService);
     connect(serviceList, &ServiceList::empty, slModel, &SLModel::clear);
 
@@ -188,6 +189,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     slTreeModel = new SLTreeModel(serviceList, this);
     connect(serviceList, &ServiceList::serviceAddedToEnsemble, slTreeModel, &SLTreeModel::addEnsembleService);
+    connect(serviceList, &ServiceList::serviceUpdatedInEnsemble, slTreeModel, &SLTreeModel::updateEnsembleService);
     connect(serviceList, &ServiceList::serviceRemovedFromEnsemble, slTreeModel, &SLTreeModel::removeEnsembleService);
     ui->serviceTreeView->setModel(slTreeModel);
     ui->serviceTreeView->setSelectionMode(QAbstractItemView::SingleSelection);

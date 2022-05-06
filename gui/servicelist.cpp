@@ -30,6 +30,7 @@ void ServiceList::clear()
 void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlServiceComponent & s, bool fav, int currentEns)
 {
     bool newService = false;
+    bool updatedService = false;
 
     qDebug("\tService: %s SID = 0x%X, SCIdS = %d", s.label.toLocal8Bit().data(), s.SId.value(), s.SCIdS);
 
@@ -45,6 +46,7 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     else
     {  // found
         pService = *sit;
+        updatedService = pService->update(s);
     }
 
     pService->setIsObsolete(false);
@@ -71,6 +73,12 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     if (newService)
     {   // emit signal when new service is added
         emit serviceAdded(pService->id());
+    }
+
+    if (updatedService)
+    {
+        emit serviceUpdated(pService->id());
+        emit serviceUpdatedInEnsemble(pEns->id(), pService->id());
     }
 }
 

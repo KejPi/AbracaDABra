@@ -14,6 +14,7 @@ class ServiceListItem
 public:
     ServiceListItem(const RadioControlServiceComponent & item, bool fav = false, int currentEns = 0);
 
+    bool update(const RadioControlServiceComponent &item);
     bool addEnsemble(EnsembleListItem * ensPtr);     // returns true when new ensemble was added
     bool removeEnsemble(EnsembleListItem * ensPtr);     // returns true when new ensemble was added
     void setFavorite(bool ena) { m_favorite = ena; }

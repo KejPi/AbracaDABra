@@ -12,6 +12,22 @@ ServiceListItem::ServiceListItem(const RadioControlServiceComponent &item, bool 
     m_isObsolete = false;
 }
 
+bool ServiceListItem::update(const RadioControlServiceComponent &item)
+{
+    if (m_label != item.label)
+    {
+        m_label = item.label;
+        m_shortLabel = item.labelShort;
+        return true;
+    }
+    if (m_shortLabel != item.labelShort)
+    {
+        m_shortLabel = item.labelShort;
+        return true;
+    }
+    return false;
+}
+
 bool ServiceListItem::addEnsemble(EnsembleListItem * ensPtr)
 {
     QList<EnsembleListItem *>::iterator it = findEnsemble(ensPtr->id());

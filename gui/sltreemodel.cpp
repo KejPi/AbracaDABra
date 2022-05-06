@@ -209,6 +209,11 @@ void SLTreeModel::addEnsembleService(const ServiceListId & ensId, const ServiceL
     sort(0);
 }
 
+void SLTreeModel::updateEnsembleService(const ServiceListId &ensId, const ServiceListId &servId)
+{   // service label was updated -> need to sort
+    sort(0);  // --> this emits dataChanged()
+}
+
 void SLTreeModel::removeEnsembleService(const ServiceListId & ensId, const ServiceListId & servId)
 {
     SLModelItem * ensChild = m_rootItem->findChildId(ensId);
@@ -239,9 +244,12 @@ void SLTreeModel::clear()
 }
 
 void SLTreeModel::sort(int column, Qt::SortOrder order)
-{
-    Q_UNUSED(column);
+{   
+    Q_UNUSED(column)
+
+    beginResetModel();
     m_rootItem->sort(order);
+    endResetModel();
 
     emit dataChanged(QModelIndex(), QModelIndex());
 }

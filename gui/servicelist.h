@@ -50,8 +50,11 @@ public:
     void beginEnsembleUpdate(const RadioControlEnsemble &e);
     void endEnsembleUpdate(const RadioControlEnsemble &e);
 signals:
-    void serviceAddedToEnsemble(const ServiceListId & ensId, const ServiceListId & servId);
+    void serviceAddedToEnsemble(const ServiceListId & ensId, const ServiceListId & servId);        
     void serviceAdded(const ServiceListId & servId);
+
+    void serviceUpdatedInEnsemble(const ServiceListId & ensId, const ServiceListId & servId);
+    void serviceUpdated(const ServiceListId & servId);
 
     void serviceRemovedFromEnsemble(const ServiceListId & ensId, const ServiceListId & servId);
     void serviceRemoved(const ServiceListId & servId);

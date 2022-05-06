@@ -30,7 +30,7 @@ public:
     DabSId SId() const;
     SLModelItem* findChildId(const ServiceListId &id, bool recursive = false) const;
     bool removeChildId(const ServiceListId &id);
-    void sort(Qt::SortOrder order);    
+    void sort(Qt::SortOrder order);
 
 private:
     QList<SLModelItem*> m_childItems;
