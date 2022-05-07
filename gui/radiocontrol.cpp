@@ -1239,7 +1239,7 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;
-    case DABPROC_NID_AUTO_NOTIFY:
+    case DABPROC_NID_PERIODIC:
     {
         if (p->pData)
         {

@@ -303,7 +303,7 @@ private:
     void dabGetServiceList() { dabProcRequest_GetServiceList(dabProcHandle); }
     void dabGetServiceComponent(uint32_t SId) { dabProcRequest_GetServiceComponents(dabProcHandle, SId); }
     void dabGetUserApps(uint32_t SId, uint8_t SCIdS) { dabProcRequest_GetUserAppList(dabProcHandle, SId, SCIdS); }
-    void dabEnableAutoNotification() { dabProcRequest_AutoNotify(dabProcHandle, RADIO_CONTROL_NOTIFICATION_PERIOD, 0); }
+    void dabEnableAutoNotification() { dabProcRequest_SetPeriodicNotify(dabProcHandle, RADIO_CONTROL_NOTIFICATION_PERIOD, 0); }
     void dabServiceSelection(uint32_t SId, uint8_t SCIdS) { dabProcRequest_ServiceSelection(dabProcHandle, SId, SCIdS); }
     void dabServiceStop(uint32_t SId, uint8_t SCIdS) { dabProcRequest_ServiceStop(dabProcHandle, SId, SCIdS); }
     void dabXPadAppStart(uint8_t appType, bool start) { dabProcRequest_XPadAppStart(dabProcHandle, appType, start); }
