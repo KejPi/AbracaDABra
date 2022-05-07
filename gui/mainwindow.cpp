@@ -697,6 +697,7 @@ void MainWindow::onServiceSelection()
 
     clearServiceInformationLabels();
     dlDecoder->reset();
+    ui->favoriteLabel->setEnabled(false);
 }
 
 void MainWindow::onChannelChange(int index)
@@ -915,12 +916,14 @@ void MainWindow::serviceListTreeClicked(const QModelIndex &index)
 void MainWindow::serviceChanged(const RadioControlServiceComponent &s)
 {
     if (s.isAudioService() && (s.SId.value() == SId.value()))
-    {
+    {               
         if (s.label.isEmpty())
         {   // service component not valid -> shoudl not happen
             return;
         }
         // set service name in UI until information arrives from decoder
+
+        ui->favoriteLabel->setEnabled(true);
 
         ServiceListId id(s);
         ServiceListConstIterator it = serviceList->findService(id);
@@ -1045,6 +1048,8 @@ void MainWindow::audioServiceReconfiguration(const RadioControlServiceComponent 
 
         emit stopUserApps();
         dlDecoder->reset();
+
+        ui->favoriteLabel->setEnabled(false);
     }
 }
 
