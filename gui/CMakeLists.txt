@@ -422,7 +422,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 ### DAB library
 include_directories ( ${BACKEND_INCLUDE_DIRS} )
-target_link_libraries(${TARGET} PRIVATE dab)
+target_link_libraries(${TARGET} PRIVATE dabsdr)
 
 ### PolyM library
 #include_directories ( ${POLYM_INCLUDE_DIRS} )

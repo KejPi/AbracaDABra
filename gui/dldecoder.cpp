@@ -50,7 +50,7 @@ bool DLDecoder::crc16check(const QByteArray & data)
 
 void DLDecoder::newDataGroup(const QByteArray & dataGroup)
 {
-    // CRC check is done in dabProc
+    // CRC check is done in dabsdr
     if (dataGroup.at(0) & 0x10)
     {  // C flag == 1
         switch (dataGroup.at(0) & 0x0F)

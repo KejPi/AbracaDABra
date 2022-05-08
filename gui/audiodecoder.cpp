@@ -624,7 +624,7 @@ void AudioDecoder::getFormatMP2()
 
 void AudioDecoder::processAAC(QByteArray *inData)
 {
-    dabAudioFrameHeader_t header;
+    dabsdrAudioFrameHeader_t header;
     header.raw = *inData[0];
     uint8_t conceal = header.bits.conceal;
 

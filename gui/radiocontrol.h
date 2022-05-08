@@ -12,7 +12,7 @@
 
 #include "dabtables.h"
 #include "rawfileinput.h"
-#include "dabProc.h"
+#include "dabsdr.h"
 
 
 #define RADIO_CONTROL_UEID_INVALID  0xFF000000
@@ -218,7 +218,7 @@ enum class RadioControlEventType
 struct RadioControlEvent
 {
     RadioControlEventType type;
-    dabProcNotificationStatus_t status;
+    dabsdrNotificationStatus_t status;
     intptr_t pData;
 };
 
@@ -261,8 +261,8 @@ signals:
 private:
     static const uint8_t EEPCoderate[];
 
-    dabProcHandle_t dabProcHandle;    
-    dabProcSyncLevel_t sync;
+    dabsdrHandle_t dabsdrHandle;
+    dabsdrSyncLevel_t sync;
     bool autoNotificationEna = false;
     uint32_t frequency;
     struct {
@@ -290,7 +290,7 @@ private:
     bool getCurrentAudioServiceComponent(serviceComponentIterator & scIt);
     bool cgetCurrentAudioServiceComponent(serviceComponentConstIterator & scIt) const;
 
-    void updateSyncLevel(dabProcSyncLevel_t s);
+    void updateSyncLevel(dabsdrSyncLevel_t s);
     QString toShortLabel(QString & label, uint16_t charField) const;
     QString ensembleConfigurationString() const;
     void clearEnsemble();
@@ -298,20 +298,20 @@ private:
     void emit_dabEvent(RadioControlEvent * pEvent) { emit dabEvent(pEvent); }
     void emit_audioData(QByteArray * pData) { emit audioData(pData); }
 
-    void dabTune(uint32_t freq) { dabProcRequest_Tune(dabProcHandle, freq); }
-    void dabGetEnsembleInfo() { dabProcRequest_GetEnsemble(dabProcHandle); }
-    void dabGetServiceList() { dabProcRequest_GetServiceList(dabProcHandle); }
-    void dabGetServiceComponent(uint32_t SId) { dabProcRequest_GetServiceComponents(dabProcHandle, SId); }
-    void dabGetUserApps(uint32_t SId, uint8_t SCIdS) { dabProcRequest_GetUserAppList(dabProcHandle, SId, SCIdS); }
-    void dabEnableAutoNotification() { dabProcRequest_SetPeriodicNotify(dabProcHandle, RADIO_CONTROL_NOTIFICATION_PERIOD, 0); }
-    void dabServiceSelection(uint32_t SId, uint8_t SCIdS) { dabProcRequest_ServiceSelection(dabProcHandle, SId, SCIdS); }
-    void dabServiceStop(uint32_t SId, uint8_t SCIdS) { dabProcRequest_ServiceStop(dabProcHandle, SId, SCIdS); }
-    void dabXPadAppStart(uint8_t appType, bool start) { dabProcRequest_XPadAppStart(dabProcHandle, appType, start); }
+    void dabTune(uint32_t freq) { dabsdrRequest_Tune(dabsdrHandle, freq); }
+    void dabGetEnsembleInfo() { dabsdrRequest_GetEnsemble(dabsdrHandle); }
+    void dabGetServiceList() { dabsdrRequest_GetServiceList(dabsdrHandle); }
+    void dabGetServiceComponent(uint32_t SId) { dabsdrRequest_GetServiceComponents(dabsdrHandle, SId); }
+    void dabGetUserApps(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_GetUserAppList(dabsdrHandle, SId, SCIdS); }
+    void dabEnableAutoNotification() { dabsdrRequest_SetPeriodicNotify(dabsdrHandle, RADIO_CONTROL_NOTIFICATION_PERIOD, 0); }
+    void dabServiceSelection(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_ServiceSelection(dabsdrHandle, SId, SCIdS); }
+    void dabServiceStop(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_ServiceStop(dabsdrHandle, SId, SCIdS); }
+    void dabXPadAppStart(uint8_t appType, bool start) { dabsdrRequest_XPadAppStart(dabsdrHandle, appType, start); }
 
-    friend void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx);
-    friend void dynamicLabelCb(dabProcDynamicLabelCBData_t * p, void * ctx);
-    friend void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx);
-    friend void audioDataCb(dabProcAudioCBData_t * p, void * ctx);        
+    friend void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx);
+    friend void dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx);
+    friend void dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx);
+    friend void audioDataCb(dabsdrAudioCBData_t * p, void * ctx);        
 private slots:
     void eventFromDab(RadioControlEvent * pEvent);
 };

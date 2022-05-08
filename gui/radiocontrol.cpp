@@ -14,14 +14,14 @@ const uint8_t RadioControl::EEPCoderate[] =
 };
 
 
-void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx);
-void dynamicLabelCb(dabProcDynamicLabelCBData_t * p, void * ctx);
-void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx);
-void audioDataCb(dabProcAudioCBData_t * p, void * ctx);
+void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx);
+void dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx);
+void dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx);
+void audioDataCb(dabsdrAudioCBData_t * p, void * ctx);
 
 RadioControl::RadioControl(QObject *parent) : QObject(parent)
 {
-    dabProcHandle = NULL;
+    dabsdrHandle = NULL;
     frequency = 0;
     serviceList.clear();
     serviceRequest.SId = serviceRequest.SCIdS = 0;
@@ -30,28 +30,28 @@ RadioControl::RadioControl(QObject *parent) : QObject(parent)
 }
 
 RadioControl::~RadioControl()
-{   // this cancels dabProc thread
-    dabProcDeinit(&dabProcHandle);
+{   // this cancels dabsdr thread
+    dabsdrDeinit(&dabsdrHandle);
 }
 
 // returns false if not successfull
 bool RadioControl::init()
 {
-    if (EXIT_SUCCESS == dabProcInit(&dabProcHandle))
+    if (EXIT_SUCCESS == dabsdrInit(&dabsdrHandle))
     {
-        dabProcRegisterInputFcn(dabProcHandle, getSamples);
-        dabProcRegisterDummyInputFcn(dabProcHandle, skipSamples);
-        dabProcRegisterNotificationCb(dabProcHandle, dabNotificationCb, (void *) this);
-        dabProcRegisterDynamicLabelCb(dabProcHandle, dynamicLabelCb, (void*) this);
-        dabProcRegisterDataGroupCb(dabProcHandle, dataGroupCb, (void*) this);
-        dabProcRegisterAudioCb(dabProcHandle, audioDataCb, this);
+        dabsdrRegisterInputFcn(dabsdrHandle, getSamples);
+        dabsdrRegisterDummyInputFcn(dabsdrHandle, skipSamples);
+        dabsdrRegisterNotificationCb(dabsdrHandle, dabNotificationCb, (void *) this);
+        dabsdrRegisterDynamicLabelCb(dabsdrHandle, dynamicLabelCb, (void*) this);
+        dabsdrRegisterDataGroupCb(dabsdrHandle, dataGroupCb, (void*) this);
+        dabsdrRegisterAudioCb(dabsdrHandle, audioDataCb, this);
         // this starts dab processing thread and retunrs
-        dabProc(dabProcHandle);
+        dabsdr(dabsdrHandle);
     }
     else
     {
         qDebug() << "DAB processing init failed";
-        dabProcHandle = NULL;
+        dabsdrHandle = NULL;
 
         return false;
     }
@@ -77,12 +77,12 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::SYNC_STATUS:
     {
-        dabProcSyncLevel_t s = static_cast<dabProcSyncLevel_t>(pEvent->pData);
+        dabsdrSyncLevel_t s = static_cast<dabsdrSyncLevel_t>(pEvent->pData);
 #if RADIO_CONTROL_VERBOSE
         qDebug("Sync = %d", s);
 #endif
 
-        if ((DABPROC_SYNC_LEVEL_FIC == s) && (RADIO_CONTROL_UEID_INVALID == ensemble.ueid))
+        if ((DABSDR_SYNC_LEVEL_FIC == s) && (RADIO_CONTROL_UEID_INVALID == ensemble.ueid))
         { // ask for ensemble info if not available
             dabGetEnsembleInfo();
         }
@@ -91,7 +91,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::TUNE:
     {
-        if (DABPROC_NSTAT_SUCCESS == pEvent->status)
+        if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
             uint32_t freq = static_cast<uint32_t>(pEvent->pData);
 #if RADIO_CONTROL_VERBOSE > 1
@@ -117,7 +117,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
     case RadioControlEventType::ENSEMBLE_INFO:
     {
         // process ensemble info
-        dabProc_NID_ENSEMBLE_INFO_t * pInfo = reinterpret_cast<dabProc_NID_ENSEMBLE_INFO_t *>(pEvent->pData);
+        dabsdrNtfEnsemble_t * pInfo = reinterpret_cast<dabsdrNtfEnsemble_t *>(pEvent->pData);
 
 #if RADIO_CONTROL_VERBOSE
         qDebug("RadioControlEvent::ENSEMBLE_INFO 0x%8.8X", pInfo->ueid);
@@ -148,9 +148,9 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             QTimer::singleShot(1000, this, &RadioControl::dabGetServiceList);
         }
 
-        delete (dabProc_NID_ENSEMBLE_INFO_t *) pEvent->pData;
+        delete (dabsdrNtfEnsemble_t *) pEvent->pData;
 
-        if ((RADIO_CONTROL_UEID_INVALID == ensemble.ueid) && (DABPROC_SYNC_LEVEL_FIC == sync))
+        if ((RADIO_CONTROL_UEID_INVALID == ensemble.ueid) && (DABSDR_SYNC_LEVEL_FIC == sync))
         {   // valid ensemble sill not received
             // wait some time and send new request
             QTimer::singleShot(200, this, &RadioControl::dabGetEnsembleInfo);
@@ -179,7 +179,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 #if RADIO_CONTROL_VERBOSE
         qDebug() << "RadioControlEvent::SERVICE_LIST";
 #endif
-        QList<dabProcServiceListItem_t> * pServiceList = reinterpret_cast<QList<dabProcServiceListItem_t> *>(pEvent->pData);
+        QList<dabsdrServiceListItem_t> * pServiceList = reinterpret_cast<QList<dabsdrServiceListItem_t> *>(pEvent->pData);
         if (0 == pServiceList->size())
         {   // no service list received (invalid probably)
             serviceList.clear();
@@ -219,7 +219,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         qDebug() << "RadioControlEvent::SERVICE_COMPONENT_LIST";
 #endif
 
-        QList<dabProcServiceCompListItem_t> * pList = reinterpret_cast<QList<dabProcServiceCompListItem_t> *>(pEvent->pData);
+        QList<dabsdrServiceCompListItem_t> * pList = reinterpret_cast<QList<dabsdrServiceCompListItem_t> *>(pEvent->pData);
         if (!pList->isEmpty())
         {   // all service components belong to the same SId, reading sid from the first            
             DabSId sid(pList->at(0).SId, ensemble.ecc());
@@ -354,7 +354,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::USER_APP_LIST:
     {
-        QList<dabProcUserAppListItem_t> * pList = reinterpret_cast<QList<dabProcUserAppListItem_t> *>(pEvent->pData);
+        QList<dabsdrUserAppListItem_t> * pList = reinterpret_cast<QList<dabsdrUserAppListItem_t> *>(pEvent->pData);
         if (!pList->isEmpty())
         {   // all user apps belong to the same SId, reading sid from the first
             DabSId sid(pList->at(0).SId, ensemble.ecc());
@@ -426,8 +426,8 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::SERVICE_SELECTION:
     {
-        dabProc_NID_SERVICE_SELECTION_t * pData = reinterpret_cast<dabProc_NID_SERVICE_SELECTION_t *>(pEvent->pData);                        
-        if (DABPROC_NSTAT_SUCCESS == pEvent->status)
+        dabsdrNtfServiceSelection_t * pData = reinterpret_cast<dabsdrNtfServiceSelection_t *>(pEvent->pData);
+        if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
 #if RADIO_CONTROL_VERBOSE
             qDebug() << "RadioControlEvent::SERVICE_SELECTION success";
@@ -479,8 +479,8 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 
     case RadioControlEventType::SERVICE_STOP:
     {
-        dabProc_NID_SERVICE_STOP_t * pData = reinterpret_cast<dabProc_NID_SERVICE_STOP_t *>(pEvent->pData);
-        if (DABPROC_NSTAT_SUCCESS == pEvent->status)
+        dabsdrNtfServiceStop_t * pData = reinterpret_cast<dabsdrNtfServiceStop_t *>(pEvent->pData);
+        if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
 #if RADIO_CONTROL_VERBOSE
             qDebug() << "RadioControlEvent::SERVICE_STOP success";
@@ -506,8 +506,8 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::XPAD_APP_START_STOP:
     {
-        dabProc_NID_XPAD_APP_START_STOP_t * pData = reinterpret_cast<dabProc_NID_XPAD_APP_START_STOP_t *>(pEvent->pData);
-        if (DABPROC_NSTAT_SUCCESS == pEvent->status)
+        dabsdrXpadAppStartStop_t * pData = reinterpret_cast<dabsdrXpadAppStartStop_t *>(pEvent->pData);
+        if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
 #if RADIO_CONTROL_VERBOSE
             qDebug() << "RadioControlEvent::XPAD_APP_START_STOP success";
@@ -522,7 +522,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::AUTO_NOTIFICATION:
     {
-        dabProc_NID_AUTO_NOTIFY_t * pData = reinterpret_cast<dabProc_NID_AUTO_NOTIFY_t *>(pEvent->pData);
+        dabsdrNtfPeriodic_t * pData = reinterpret_cast<dabsdrNtfPeriodic_t *>(pEvent->pData);
 
         if (pData->dateHoursMinutes != 0)
         {
@@ -619,7 +619,7 @@ void RadioControl::exit()
 #if RADIO_CONTROL_VERBOSE
     qDebug() << Q_FUNC_INFO;
 #endif
-    dabProcRequest_Exit(dabProcHandle);
+    dabsdrRequest_Exit(dabsdrHandle);
 }
 
 void RadioControl::start(uint32_t freq)
@@ -628,7 +628,7 @@ void RadioControl::start(uint32_t freq)
     {   // when input device tuned, freq is passed to be set in SDR
         // when frequency is 0 then we are done (input device is in idle)
         frequency = freq;
-        sync = DABPROC_SYNC_LEVEL_NO_SYNC;
+        sync = DABSDR_SYNC_LEVEL_NO_SYNC;
         emit syncStatus(uint8_t(DabSyncLevel::NoSync));        
         serviceList.clear();
         clearEnsemble();
@@ -689,26 +689,26 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
      }
 }
 
-void RadioControl::updateSyncLevel(dabProcSyncLevel_t s)
+void RadioControl::updateSyncLevel(dabsdrSyncLevel_t s)
 {
     if (s != sync)
     {   // new sync level => emit signal
         sync = s;
         switch (sync)
         {
-        case DABPROC_SYNC_LEVEL_NO_SYNC:            
+        case DABSDR_SYNC_LEVEL_NO_SYNC:
             emit syncStatus(uint8_t(DabSyncLevel::NoSync));
             emit snrLevel(0);
             break;
-        case DABPROC_SYNC_LEVEL_ON_NULL:
+        case DABSDR_SYNC_LEVEL_ON_NULL:
             emit syncStatus(uint8_t(DabSyncLevel::NullSync));
             break;
-        case DABPROC_SYNC_LEVEL_FIC:
+        case DABSDR_SYNC_LEVEL_FIC:
             emit syncStatus(uint8_t(DabSyncLevel::FullSync));
             break;
         }
     }
-    if ((sync > DABPROC_SYNC_LEVEL_NO_SYNC) && (!autoNotificationEna))
+    if ((sync > DABSDR_SYNC_LEVEL_NO_SYNC) && (!autoNotificationEna))
     {
         // enable auto notifications
         dabEnableAutoNotification();
@@ -1081,17 +1081,17 @@ QString RadioControl::toShortLabel(QString & label, uint16_t charField) const
     return out;
 }
 
-void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
+void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
 {
     RadioControl * radioCtrl = static_cast<RadioControl *>(ctx);
     switch (p->nid)
     {
-    case DABPROC_NID_SYNC_STATUS:
+    case DABSDR_NID_SYNC_STATUS:
     {
         RadioControlEvent * pEvent = new RadioControlEvent;
 
-        const dabProc_NID_SYNC_STATUS_t * pInfo = static_cast<const dabProc_NID_SYNC_STATUS_t *>(p->pData);
-        qDebug("DABPROC_NID_SYNC_STATUS: %d", pInfo->syncLevel);
+        const dabsdrNtfSyncStatus_t * pInfo = static_cast<const dabsdrNtfSyncStatus_t *>(p->pData);
+        qDebug("DABSDR_NID_SYNC_STATUS: %d", pInfo->syncLevel);
 
         pEvent->type = RadioControlEventType::SYNC_STATUS;
         pEvent->status = p->status;
@@ -1099,10 +1099,10 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;
-    case DABPROC_NID_TUNE:
+    case DABSDR_NID_TUNE:
     {
 #if RADIO_CONTROL_VERBOSE
-        qDebug("DABPROC_NID_TUNE: status %d", p->status);
+        qDebug("DABSDR_NID_TUNE: status %d", p->status);
 #endif
         RadioControlEvent * pEvent = new RadioControlEvent;
         pEvent->type = RadioControlEventType::TUNE;
@@ -1111,13 +1111,13 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;
-    case DABPROC_NID_ENSEMBLE_INFO:
+    case DABSDR_NID_ENSEMBLE_INFO:
     {
 #if RADIO_CONTROL_VERBOSE
-        qDebug("DABPROC_NID_ENSEMBLE_INFO: status %d", p->status);
+        qDebug("DABSDR_NID_ENSEMBLE_INFO: status %d", p->status);
 #endif
-        dabProc_NID_ENSEMBLE_INFO_t * pEnsembleInfo = new dabProc_NID_ENSEMBLE_INFO_t;
-        memcpy(pEnsembleInfo, p->pData, sizeof(dabProc_NID_ENSEMBLE_INFO_t));
+        dabsdrNtfEnsemble_t * pEnsembleInfo = new dabsdrNtfEnsemble_t;
+        memcpy(pEnsembleInfo, p->pData, sizeof(dabsdrNtfEnsemble_t));
 
         RadioControlEvent * pEvent = new RadioControlEvent;
         pEvent->type = RadioControlEventType::ENSEMBLE_INFO;
@@ -1127,17 +1127,17 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;                
-    case DABPROC_NID_SERVICE_LIST:
+    case DABSDR_NID_SERVICE_LIST:
     {
-        const dabProc_NID_SERVICE_LIST_t * pInfo = (const dabProc_NID_SERVICE_LIST_t *) p->pData;
+        const dabsdrNtfServiceList_t * pInfo = (const dabsdrNtfServiceList_t *) p->pData;
 #if RADIO_CONTROL_VERBOSE
-        qDebug("DABPROC_NID_SERVICE_LIST: num services %d", pInfo->numServices);
+        qDebug("DABSDR_NID_SERVICE_LIST: num services %d", pInfo->numServices);
 #endif
-        dabProcServiceListItem_t item;
-        QList<dabProcServiceListItem_t> *pServiceList = new QList<dabProcServiceListItem_t>;
+        dabsdrServiceListItem_t item;
+        QList<dabsdrServiceListItem_t> *pServiceList = new QList<dabsdrServiceListItem_t>;
         for (int s = 0; s < pInfo->numServices; ++s)
         {
-            pInfo->getServiceListItem(radioCtrl->dabProcHandle, s, &item);
+            pInfo->getServiceListItem(radioCtrl->dabsdrHandle, s, &item);
             pServiceList->append(item);
         }
 
@@ -1148,17 +1148,17 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;
-    case DABPROC_NID_SERVICE_COMPONENT_LIST:
+    case DABSDR_NID_SERVICE_COMPONENT_LIST:
     {
-        const dabProc_NID_SERVICE_COMPONENT_LIST_t * pInfo = (const dabProc_NID_SERVICE_COMPONENT_LIST_t * ) p->pData;
-        if (DABPROC_NSTAT_SUCCESS == p->status)
+        const dabsdrNtfServiceComponentList_t * pInfo = (const dabsdrNtfServiceComponentList_t * ) p->pData;
+        if (DABSDR_NSTAT_SUCCESS == p->status)
         {
-            QList<dabProcServiceCompListItem_t> * pList = new QList<dabProcServiceCompListItem_t>;
+            QList<dabsdrServiceCompListItem_t> * pList = new QList<dabsdrServiceCompListItem_t>;
 
-            dabProcServiceCompListItem_t item;
+            dabsdrServiceCompListItem_t item;
             for (int s = 0; s < pInfo->numServiceComponents; ++s)
             {
-                pInfo->getServiceComponentListItem(radioCtrl->dabProcHandle, s, &item);
+                pInfo->getServiceComponentListItem(radioCtrl->dabsdrHandle, s, &item);
                 pList->append(item);
             }
 
@@ -1174,17 +1174,17 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         }
     }
         break;
-    case DABPROC_NID_USER_APP_LIST:
+    case DABSDR_NID_USER_APP_LIST:
     {
-        const dabProc_NID_USER_APP_LIST_t * pInfo = (const dabProc_NID_USER_APP_LIST_t * ) p->pData;
-        if (DABPROC_NSTAT_SUCCESS == p->status)
+        const dabsdrNtfUserAppList_t * pInfo = (const dabsdrNtfUserAppList_t * ) p->pData;
+        if (DABSDR_NSTAT_SUCCESS == p->status)
         {
-            QList<dabProcUserAppListItem_t> * pList = new QList<dabProcUserAppListItem_t>;
+            QList<dabsdrUserAppListItem_t> * pList = new QList<dabsdrUserAppListItem_t>;
 
-            dabProcUserAppListItem_t item;
+            dabsdrUserAppListItem_t item;
             for (int s = 0; s < pInfo->numUserApps; ++s)
             {
-                pInfo->getUserAppListItem(radioCtrl->dabProcHandle, s, &item);
+                pInfo->getUserAppListItem(radioCtrl->dabsdrHandle, s, &item);
                 pList->append(item);
             }
 
@@ -1200,10 +1200,10 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         }
     }
     break;
-    case DABPROC_NID_SERVICE_SELECTION:
+    case DABSDR_NID_SERVICE_SELECTION:
     {
-        dabProc_NID_SERVICE_SELECTION_t * pServSelectionInfo = new dabProc_NID_SERVICE_SELECTION_t;
-        memcpy(pServSelectionInfo, p->pData, sizeof(dabProc_NID_SERVICE_SELECTION_t));
+        dabsdrNtfServiceSelection_t * pServSelectionInfo = new dabsdrNtfServiceSelection_t;
+        memcpy(pServSelectionInfo, p->pData, sizeof(dabsdrNtfServiceSelection_t));
 
         RadioControlEvent * pEvent = new RadioControlEvent;
         pEvent->type = RadioControlEventType::SERVICE_SELECTION;
@@ -1213,10 +1213,10 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;
-    case DABPROC_NID_SERVICE_STOP:
+    case DABSDR_NID_SERVICE_STOP:
     {
-        dabProc_NID_SERVICE_STOP_t * pServStopInfo = new dabProc_NID_SERVICE_STOP_t;
-        memcpy(pServStopInfo, p->pData, sizeof(dabProc_NID_SERVICE_STOP_t));
+        dabsdrNtfServiceStop_t * pServStopInfo = new dabsdrNtfServiceStop_t;
+        memcpy(pServStopInfo, p->pData, sizeof(dabsdrNtfServiceStop_t));
 
         RadioControlEvent * pEvent = new RadioControlEvent;
         pEvent->type = RadioControlEventType::SERVICE_STOP;
@@ -1226,10 +1226,10 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;
-    case DABPROC_NID_XPAD_APP_START_STOP:
+    case DABSDR_NID_XPAD_APP_START_STOP:
     {
-        dabProc_NID_XPAD_APP_START_STOP_t * pServStopInfo = new dabProc_NID_XPAD_APP_START_STOP_t;
-        memcpy(pServStopInfo, p->pData, sizeof(dabProc_NID_XPAD_APP_START_STOP_t));
+        dabsdrXpadAppStartStop_t * pServStopInfo = new dabsdrXpadAppStartStop_t;
+        memcpy(pServStopInfo, p->pData, sizeof(dabsdrXpadAppStartStop_t));
 
         RadioControlEvent * pEvent = new RadioControlEvent;
         pEvent->type = RadioControlEventType::XPAD_APP_START_STOP;
@@ -1239,16 +1239,13 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;
-    case DABPROC_NID_PERIODIC:
+    case DABSDR_NID_PERIODIC:
     {
         if (p->pData)
         {
-            //dabProc_NID_AUTO_NOTIFY_t * pData = (dabProc_NID_AUTO_NOTIFY_t *) p->pData;
-            //qDebug("AutoNotify: sync %d, freq offset = %f", pData->syncLevel, pData->freqOffset*0.1);
+            assert(sizeof(dabsdrNtfPeriodic_t) == p->len);
 
-            assert(sizeof(dabProc_NID_AUTO_NOTIFY_t) == p->len);
-
-            dabProc_NID_AUTO_NOTIFY_t * notifyData = new dabProc_NID_AUTO_NOTIFY_t;
+            dabsdrNtfPeriodic_t * notifyData = new dabsdrNtfPeriodic_t;
             memcpy((uint8_t*)notifyData, p->pData, p->len);
 
             RadioControlEvent * pEvent = new RadioControlEvent;
@@ -1259,10 +1256,10 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         }
     }
         break;
-    case DABPROC_NID_RECONFIGURATION:
+    case DABSDR_NID_RECONFIGURATION:
     {
 #if RADIO_CONTROL_VERBOSE
-        qDebug("DABPROC_NID_RECONFIGURATION: status %d", p->status);
+        qDebug("DABSDR_NID_RECONFIGURATION: status %d", p->status);
 #endif
         RadioControlEvent * pEvent = new RadioControlEvent;
         pEvent->type = RadioControlEventType::RECONFIGURATION;
@@ -1272,7 +1269,7 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;
-    case DABPROC_NID_RESET:
+    case DABSDR_NID_RESET:
     {
         RadioControlEvent * pEvent = new RadioControlEvent;
         pEvent->type = RadioControlEventType::RESET;
@@ -1287,7 +1284,7 @@ void dabNotificationCb(dabProcNotificationCBData_t * p, void * ctx)
     }
 }
 
-void dynamicLabelCb(dabProcDynamicLabelCBData_t * p, void * ctx)
+void dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx)
 {
     if (0 == p->len)
     {   // do nothing - empty data group
@@ -1300,12 +1297,12 @@ void dynamicLabelCb(dabProcDynamicLabelCBData_t * p, void * ctx)
 
     RadioControlEvent * pEvent = new RadioControlEvent;
     pEvent->type = RadioControlEventType::DATAGROUP_DL;
-    pEvent->status = DABPROC_NSTAT_SUCCESS;
+    pEvent->status = DABSDR_NSTAT_SUCCESS;
     pEvent->pData = reinterpret_cast<intptr_t>(data);
     radioCtrl->emit_dabEvent(pEvent);
 }
 
-void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
+void dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx)
 {
     if (0 == p->dgLen)
     {   // do nothing - empty data group
@@ -1322,12 +1319,12 @@ void dataGroupCb(dabProcDataGroupCBData_t * p, void * ctx)
 
     RadioControlEvent * pEvent = new RadioControlEvent;
     pEvent->type = RadioControlEventType::USERAPP_DATA;
-    pEvent->status = DABPROC_NSTAT_SUCCESS;
+    pEvent->status = DABSDR_NSTAT_SUCCESS;
     pEvent->pData = reinterpret_cast<intptr_t>(pData);
     radioCtrl->emit_dabEvent(pEvent);        
 }
 
-void audioDataCb(dabProcAudioCBData_t * p, void * ctx)
+void audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
 {
     RadioControl * radioCtrl = static_cast<RadioControl *>(ctx);
 

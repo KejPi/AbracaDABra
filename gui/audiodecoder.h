@@ -72,7 +72,7 @@ signals:
 private:
     bool isRunning;
     DabAudioDataSCty mode;
-    dabAudioFrameHeader_t aacHeader;
+    dabsdrAudioFrameHeader_t aacHeader;
     AudioParameters audioParameters;
 
 #if defined(AUDIO_DECODER_USE_FDKAAC)
