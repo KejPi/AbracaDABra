@@ -2,7 +2,7 @@
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 #include "config.h"
-#include "backend/config.h"
+#include "dabsdr_config.h"
 
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent),

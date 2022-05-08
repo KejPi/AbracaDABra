@@ -6,9 +6,9 @@
 #include <QVariant>
 #include <QList>
 #include <QIcon>
-#include <slmodelitem.h>
+#include "slmodelitem.h"
 
-#include <servicelist.h>
+#include "servicelist.h"
 
 class SLModel : public QAbstractItemModel
 {

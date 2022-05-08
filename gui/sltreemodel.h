@@ -3,9 +3,9 @@
 
 #include <QAbstractItemModel>
 #include <QObject>
-#include "slmodelitem.h"
 
-#include <servicelist.h>
+#include "slmodelitem.h"
+#include "servicelist.h"
 
 class SLTreeModel : public QAbstractItemModel
 {
