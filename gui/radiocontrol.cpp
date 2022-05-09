@@ -145,7 +145,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             // the exceptions are that the FIG 0/8 for primary service components containing data applications and for data secondary service components,
             // and the FIG 0/13 may be signalled at a slower rate but not less frequently than once per second.
             // When the slower rate is used, the FIG 0/8 and FIG 0/13 for the same service component should be signalled in the FIBs corresponding to the same CIF.
-            QTimer::singleShot(1000, this, &RadioControl::dabGetServiceList);
+            QTimer::singleShot(200, this, &RadioControl::dabGetServiceList);
         }
 
         delete (dabsdrNtfEnsemble_t *) pEvent->pData;
