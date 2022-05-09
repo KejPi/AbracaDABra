@@ -87,7 +87,7 @@ endif()
 
 #########################################################
 ## External libs
-set (DAB_LIBS_DIR "${PROJECT_SOURCE_DIR}/../dab-libs")
+set (DAB_LIBS_DIR "${PROJECT_SOURCE_DIR}/../${TARGET}-libs")
 
 
 #########################################################
