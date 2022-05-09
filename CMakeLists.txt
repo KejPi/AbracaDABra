@@ -69,7 +69,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/dabsdr/CMakeLists.txt")
     add_subdirectory(${DABSDR_DIR} dabsdr)
 
     set(DAB_LINK_LIBRARIES dabsdr)
-    set(DAB_INCLUDE_DIRS ${DABSDR_DIR}/src)
+    set(DAB_INCLUDE_DIRS ${DABSDR_DIR}/src ${PROJECT_BINARY_DIR}/dabsdr/src)
 else()
     # dab library
     string(TOLOWER "${CMAKE_SYSTEM_NAME}_${CMAKE_HOST_SYSTEM_PROCESSOR}" PLATFORM)
