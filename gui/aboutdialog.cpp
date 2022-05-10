@@ -2,6 +2,7 @@
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 #include "config.h"
+#include "dabsdr.h"
 
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent),
@@ -10,13 +11,19 @@ AboutDialog::AboutDialog(QWidget *parent) :
     ui->setupUi(this);
     ui->appName->setText("<b>Abraca DAB radio</b>");
     ui->author->setText("Developed by Petr Kopecký (<a href=\"mailto:xkejpi@gmail.com\">xkejpi@gmail.com</a>)");
+
+    dabsdrVersion_t dabsdrVer = {0};
+    dabsdrGetVersion(&dabsdrVer);
+
 #ifdef PROJECT_VERSION_RELEASE
     ui->version->setText(QString("Version %1").arg(PROJECT_VER));
 #else
-    ui->version->setText(QString("Version %1+, revision %2").arg(PROJECT_VER).arg(PROJECT_GIT_REV));
-#endif                         
+    ui->version->setText(QString("Version %1+, revision %2").arg(PROJECT_VER, PROJECT_GIT_REV));
+#endif
     ui->qtVersion->setText(QString("Based on Qt %1").arg(QT_VERSION_STR));
-    ui->libraries->setText("AbracaDABra uses following libraries (special thanks to):"
+    ui->dabsdrVersion->setText(QString("DAB SDR version %1.%2.%3").arg(dabsdrVer.major).arg(dabsdrVer.minor).arg(dabsdrVer.patch));
+
+    ui->libraries->setText("AbracaDABra & DAB SDR library use following libraries (special thanks to):"
                            "<ul>"
                            "<li><a href=\"https://github.com/anthonix/ffts\">FFTS</a> by Anthony Blake</li>"
                            "<li><a href=\"https://github.com/mborgerding/kissfft\">KISS FFT</a> by Mark Borgerding</li>"
