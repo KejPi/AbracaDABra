@@ -76,7 +76,7 @@ else()
     set(DABSDR_DIR "${PROJECT_SOURCE_DIR}/lib")
 
     find_library(DAB_LINK_LIBRARIES dabsdr PATHS ${DABSDR_DIR}/${PLATFORM} NO_DEFAULT_PATH)
-    find_path(DAB_INCLUDE_DIRS dabsdr.h PATHS ${DABSDR_DIR}/include NO_DEFAULT_PATH)
+    find_path(DAB_INCLUDE_DIRS dabsdr.h PATHS ${DABSDR_DIR}/${PLATFORM} NO_DEFAULT_PATH)
     if (DAB_LINK_LIBRARIES)
         message (STATUS "libdabsdr found: ${DAB_LINK_LIBRARIES}")
     else()
