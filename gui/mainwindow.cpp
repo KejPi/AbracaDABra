@@ -1366,6 +1366,15 @@ void MainWindow::loadSettings()
     setupDialog->setGainIdx(settings.value("gainIndex", 1).toInt());
 
     ensembleInfoDialog->setDumpPath(settings.value("dumpPath", QVariant(QDir::homePath())).toString());
+
+    if ((InputDeviceId::RTLSDR == inputDeviceId) && (serviceList->numServices() == 0))
+    {
+        QTimer::singleShot(1, this, [this](){ bandScan(); } );
+    }
+    if (InputDeviceId::UNDEFINED == inputDeviceId)
+    {
+        QTimer::singleShot(1, this, [this](){ showSetupDialog(); } );
+    }
 }
 
 void MainWindow::saveSettings()
