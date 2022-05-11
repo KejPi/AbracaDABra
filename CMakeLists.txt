@@ -8,7 +8,7 @@ endif()
 set(TARGET AbracaDABra)
 
 project(${TARGET}
-    VERSION 0.99
+    VERSION 1.0
     LANGUAGES CXX)
 
 # Select the release build type by default to get optimization flags
@@ -48,7 +48,7 @@ endif()
 
 #########################################################
 ## VERSION
-set(PROJECT_VERSION_RELEASE OFF)
+set(PROJECT_VERSION_RELEASE ON)
 #string(TIMESTAMP PROJECT_BUILD_DATE "%Y-%m-%d %H:%M")
 execute_process(COMMAND git log --pretty=format:%h -n 1
                 WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
