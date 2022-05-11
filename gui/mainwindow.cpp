@@ -1328,7 +1328,7 @@ void MainWindow::loadSettings()
     serviceList->load(settings);
     expertMode = settings.value("ExpertMode").toBool();
     setExpertMode(expertMode);
-    int inDevice = settings.value("inputDeviceId", int(InputDeviceId::UNDEFINED)).toInt();
+    int inDevice = settings.value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();
     if (InputDeviceId::UNDEFINED != static_cast<InputDeviceId>(inDevice))
     {        
         // if input device has switched to what was stored and it is RTLSDR or RTLTCP
