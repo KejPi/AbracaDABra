@@ -1359,7 +1359,8 @@ void MainWindow::loadSettings()
     }
 
     // load this afetr device is selected to configure file input correctly
-    setupDialog->setInputFile(settings.value("inputFileName", QVariant(QString(""))).toString(),
+    QString inFile = settings.value("inputFileName", QVariant(QString(""))).toString();
+    setupDialog->setInputFile(inFile,
                               RawFileInputFormat(settings.value("inputFileFormat", 0).toInt()),
                               settings.value("inputFileLoop", false).toBool());
     setupDialog->setDAGCState(settings.value("DAGC", false).toBool());
@@ -1371,7 +1372,8 @@ void MainWindow::loadSettings()
     {
         QTimer::singleShot(1, this, [this](){ bandScan(); } );
     }
-    if (InputDeviceId::UNDEFINED == inputDeviceId)
+    if ((InputDeviceId::UNDEFINED == inputDeviceId)
+        || ((InputDeviceId::RAWFILE == inputDeviceId) && (inFile.isEmpty())))
     {
         QTimer::singleShot(1, this, [this](){ showSetupDialog(); } );
     }
