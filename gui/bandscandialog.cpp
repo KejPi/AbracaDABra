@@ -16,8 +16,7 @@ BandScanDialog::BandScanDialog(QWidget *parent, Qt::WindowFlags f) :
     buttonStart->setText("Start");
     connect(buttonStart, &QPushButton::clicked, this, &BandScanDialog::startScan);
 
-    buttonStop = ui->buttonBox->button(QDialogButtonBox::Cancel);
-    buttonStop->setDefault(true);
+    buttonStop = ui->buttonBox->button(QDialogButtonBox::Cancel);    
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &BandScanDialog::stopPressed);
 
     ui->numEnsemblesFoundLabel->setText(QString("%1").arg(numEnsemblesFound));
