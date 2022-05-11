@@ -39,7 +39,7 @@ class BandScanDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit BandScanDialog(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit BandScanDialog(QWidget *parent = nullptr, bool autoStart = false, Qt::WindowFlags f = Qt::WindowFlags());
     ~BandScanDialog();
 
     void tuneFinished(uint32_t freq);

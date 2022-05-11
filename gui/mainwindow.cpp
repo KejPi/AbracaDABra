@@ -1571,7 +1571,7 @@ void MainWindow::setExpertMode(bool ena)
 
 void MainWindow::bandScan()
 {
-    BandScanDialog * dialog = new BandScanDialog(this, Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+    BandScanDialog * dialog = new BandScanDialog(this, serviceList->numServices() == 0, Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
     connect(dialog, &BandScanDialog::finished, dialog, &QObject::deleteLater);
     connect(dialog, &BandScanDialog::tuneChannel, this, &MainWindow::tuneChannel);
     connect(radioControl, &RadioControl::syncStatus, dialog, &BandScanDialog::onSyncStatus, Qt::QueuedConnection);

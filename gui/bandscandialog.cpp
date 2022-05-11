@@ -4,7 +4,7 @@
 #include "ui_bandscandialog.h"
 #include "dabtables.h"
 
-BandScanDialog::BandScanDialog(QWidget *parent, Qt::WindowFlags f) :
+BandScanDialog::BandScanDialog(QWidget *parent, bool autoStart, Qt::WindowFlags f) :
     QDialog(parent, f),
     ui(new Ui::BandScanDialog)
 {
@@ -16,7 +16,8 @@ BandScanDialog::BandScanDialog(QWidget *parent, Qt::WindowFlags f) :
     buttonStart->setText("Start");
     connect(buttonStart, &QPushButton::clicked, this, &BandScanDialog::startScan);
 
-    buttonStop = ui->buttonBox->button(QDialogButtonBox::Cancel);    
+    buttonStop = ui->buttonBox->button(QDialogButtonBox::Cancel);
+    buttonStop->setDefault(true);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &BandScanDialog::stopPressed);
 
     ui->numEnsemblesFoundLabel->setText(QString("%1").arg(numEnsemblesFound));
@@ -29,11 +30,19 @@ BandScanDialog::BandScanDialog(QWidget *parent, Qt::WindowFlags f) :
 
     ui->progressLabel->setVisible(false);
     ui->progressChannel->setVisible(false);
-    ui->scanningLabel->setText("<span style=\"color:red\"><b>Warning:</b> Band scan deletes current service list and all favorites!</span>");
 
+    if (!autoStart)
+    {
+        ui->scanningLabel->setText("<span style=\"color:red\"><b>Warning:</b> Band scan deletes current service list and all favorites!</span>");
+    }
 
     //layout()->setSizeConstraint( QLayout::SetFixedSize );
     setFixedSize( sizeHint() );
+
+    if (autoStart)
+    {
+        QTimer::singleShot(1, this, [this](){ startScan(); } );
+    }
 }
 
 BandScanDialog::~BandScanDialog()
@@ -83,8 +92,7 @@ void BandScanDialog::startScan()
     ui->progressLabel->setVisible(true);
     ui->progressChannel->setVisible(true);
 
-    buttonStart->setText("Scanning");
-    buttonStart->setEnabled(false);
+    buttonStart->setVisible(false);
     buttonStop->setText("Stop");
     buttonStop->setDefault(false);
 
