@@ -350,7 +350,7 @@ bool RtlTcpInput::openDevice()
         }
         gainList = new QList<int>();
         for (int i = 0; i < dongleInfo.tunerGainCount; i++) {
-            qDebug() << "RTL_TCP: gain " << (gains[i] / 10.0);
+            //qDebug() << "RTL_TCP: gain " << (gains[i] / 10.0);
             gainList->append(gains[i]);
         }
         emit gainListAvailable(gainList);
@@ -478,7 +478,7 @@ void RtlTcpInput::resetAgc()
 void RtlTcpInput::setDAGC(bool ena)
 {
     sendCommand(RtlTcpCommand::SET_AGC_MODE, ena);
-    qDebug() << "RTL_TCP: DAGC enable:" << ena;
+    //qDebug() << "RTL_TCP: DAGC enable:" << ena;
 }
 
 void RtlTcpInput::updateAgc(float level, int maxVal)

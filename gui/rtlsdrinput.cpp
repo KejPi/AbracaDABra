@@ -100,7 +100,7 @@ bool RtlSdrInput::openDevice()
 
     gainList = new QList<int>();
     for (int i = 0; i < gainsCount; i++) {
-        qDebug() << "RTL_SDR: gain " << (gains[i] / 10.0);
+        //qDebug() << "RTL_SDR: gain " << (gains[i] / 10.0);
         gainList->append(gains[i]);
     }
     delete [] gains;
@@ -255,7 +255,7 @@ void RtlSdrInput::setDAGC(bool ena)
     }
     else
     {
-        qDebug() << "RTLSDR: DAGC enable:" << ena;
+        // qDebug() << "RTLSDR: DAGC enable:" << ena;
     }
 }
 
@@ -278,7 +278,7 @@ void RtlSdrInput::updateAgc(float level, int maxVal)
 
 void RtlSdrInput::readThreadStopped()
 {
-    qDebug() << Q_FUNC_INFO << deviceRunning;
+    //qDebug() << Q_FUNC_INFO << deviceRunning;
 #if (RTLSDR_WDOG_ENABLE)
     watchDogTimer.stop();
 #endif
@@ -296,7 +296,7 @@ void RtlSdrInput::readThreadStopped()
     }
     else
     {
-        qDebug() << "RTL-SDR Reading thread stopped";
+        //qDebug() << "RTL-SDR Reading thread stopped";
 
         // in this thread was stopped by to tune to new frequency, there is no other reason to stop the thread
         run();
