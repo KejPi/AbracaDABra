@@ -206,7 +206,7 @@ void SLModelItem::sort(Qt::SortOrder order)
             }
             else
             {
-                return a->label() < b->label();
+                return a->label().toUpper() < b->label().toUpper();
             }
         });
     }
@@ -219,7 +219,7 @@ void SLModelItem::sort(Qt::SortOrder order)
             }
             else
             {
-                return a->label() > b->label();
+                return a->label().toUpper() > b->label().toUpper();
             }
         });
     }

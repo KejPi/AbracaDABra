@@ -192,7 +192,7 @@ void SLModel::sort(int column, Qt::SortOrder order)
         std::sort(m_serviceItems.begin(), m_serviceItems.end(), [](const SLModelItem * a, const SLModelItem * b) {
             if ((a->isFavoriteService() && b->isFavoriteService()) || (!a->isFavoriteService() && !b->isFavoriteService()))
             {
-                return a->label() < b->label();
+                return a->label().toUpper() < b->label().toUpper();
             }
             if (a->isFavoriteService())
             {
@@ -206,7 +206,7 @@ void SLModel::sort(int column, Qt::SortOrder order)
         std::sort(m_serviceItems.begin(), m_serviceItems.end(), [](const SLModelItem * a, const SLModelItem * b) {
             if ((a->isFavoriteService() && b->isFavoriteService()) || (!a->isFavoriteService() && !b->isFavoriteService()))
             {
-                return a->label() > b->label();
+                return a->label().toUpper() > b->label().toUpper();
             }
             if (b->isFavoriteService())
             {
