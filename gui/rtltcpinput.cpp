@@ -57,7 +57,7 @@ RtlTcpInput::RtlTcpInput(QObject *parent) : InputDevice(parent)
 
 RtlTcpInput::~RtlTcpInput()
 {
-    qDebug() << Q_FUNC_INFO;   
+    //qDebug() << Q_FUNC_INFO;
     if (!deviceUnplugged)
     {
         // need to end worker thread and close socket
@@ -592,7 +592,7 @@ RtlTcpWorker::RtlTcpWorker(SOCKET socket, QObject *parent) : QThread(parent)
 
 void RtlTcpWorker::run()
 {
-    qDebug() << "RtlTcpWorker thread start" << QThread::currentThreadId() << sock;
+    //qDebug() << "RtlTcpWorker thread start" << QThread::currentThreadId() << sock;
 
     dcI = 0.0;
     dcQ = 0.0;
@@ -672,9 +672,10 @@ void RtlTcpWorker::run()
         }
     }
 
-worker_exit:
+worker_exit:    
     // single exit point
-    qDebug() << "RtlTcpWorker thread end" << QThread::currentThreadId();
+    // qDebug() << "RtlTcpWorker thread end" << QThread::currentThreadId();
+    return;
 }
 
 void RtlTcpWorker::catureIQ(bool ena)

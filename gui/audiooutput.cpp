@@ -128,7 +128,7 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 
 void AudioOutput::stop()
 {
-    qDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
     if (nullptr != m_outStream)
     {
         m_stopFlag = true;

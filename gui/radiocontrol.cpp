@@ -643,7 +643,7 @@ void RadioControl::start(uint32_t freq)
 
 void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
 {
-    qDebug() << Q_FUNC_INFO << freq << frequency << SId << SCIdS;
+    //qDebug() << Q_FUNC_INFO << freq << frequency << SId << SCIdS;
     if (freq == frequency)
     {
         if (SId)
@@ -1091,7 +1091,9 @@ void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         RadioControlEvent * pEvent = new RadioControlEvent;
 
         const dabsdrNtfSyncStatus_t * pInfo = static_cast<const dabsdrNtfSyncStatus_t *>(p->pData);
+#if RADIO_CONTROL_VERBOSE
         qDebug("DABSDR_NID_SYNC_STATUS: %d", pInfo->syncLevel);
+#endif
 
         pEvent->type = RadioControlEventType::SYNC_STATUS;
         pEvent->status = p->status;

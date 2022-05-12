@@ -225,7 +225,7 @@ void ServiceList::load(QSettings & settings)
 // this marks all services as obsolete
 void ServiceList::beginEnsembleUpdate(const RadioControlEnsemble & e)
 {
-    qDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
     EnsembleListItem * pEns = nullptr;
     ServiceListId ensId(e);
     EnsembleListIterator eit = m_ensembleList.find(ensId);
@@ -246,7 +246,7 @@ void ServiceList::beginEnsembleUpdate(const RadioControlEnsemble & e)
 // this removed all services marked as obsolete
 void ServiceList::endEnsembleUpdate(const RadioControlEnsemble & e)
 {
-    qDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
 
     EnsembleListItem * pEns = nullptr;
     ServiceListId ensId(e);

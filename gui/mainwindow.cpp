@@ -386,7 +386,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    qDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
 
     delete inputDevice;
 
@@ -453,7 +453,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (0 == frequency)
     {  // in idle
-        qDebug() << Q_FUNC_INFO << "requesting exit";
+        //qDebug() << Q_FUNC_INFO << "requesting exit";
 
         saveSettings();
 
@@ -462,23 +462,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
     else
     {
-        qDebug() << Q_FUNC_INFO << "going to IDLE";
+        //qDebug() << Q_FUNC_INFO << "going to IDLE";
         exitRequested = true;
         emit stopUserApps();
         emit serviceRequest(0,0,0);
         event->ignore();
     }
-
-/*
-    saveSettings();
-
-    qDebug() << Q_FUNC_INFO << "stopping all processing";
-
-    emit serviceRequest(0,0,0);
-    //QThread::sleep(1);
-    emit exit();
-    event->accept();
-*/
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -669,7 +658,7 @@ void MainWindow::updateAudioInfo(const struct AudioParameters & params)
 
 void MainWindow::onChannelSelection()
 {
-    qDebug() << Q_FUNC_INFO << ui->serviceListView->hasFocus() << ui->serviceTreeView->hasFocus();
+    //qDebug() << Q_FUNC_INFO << ui->serviceListView->hasFocus() << ui->serviceTreeView->hasFocus();
 
     hasListViewFocus = ui->serviceListView->hasFocus();
     hasTreeViewFocus = ui->serviceTreeView->hasFocus();
@@ -718,7 +707,7 @@ void MainWindow::onChannelChange(int index)
 
 void MainWindow::tuneFinished(uint32_t freq)
 {  // this slot is called when tune is complete
-    qDebug() << Q_FUNC_INFO << freq;
+    //qDebug() << Q_FUNC_INFO << freq;
 
     frequency = freq;
     if (freq != 0)
@@ -1081,7 +1070,7 @@ void MainWindow::clearServiceInformationLabels()
 
 void MainWindow::changeInputDevice(const InputDeviceId & d)
 {
-    qDebug() << Q_FUNC_INFO << int(d);
+    //qDebug() << Q_FUNC_INFO << int(d);
     if (d != inputDeviceId)
     {
         deviceChangeRequested = true;
@@ -1100,7 +1089,7 @@ void MainWindow::changeInputDevice(const InputDeviceId & d)
 
 void MainWindow::initInputDevice(const InputDeviceId & d)
 {
-    qDebug() << Q_FUNC_INFO << int(d);
+    //qDebug() << Q_FUNC_INFO << int(d);
 
     deviceChangeRequested = false;
     if (nullptr != inputDevice)

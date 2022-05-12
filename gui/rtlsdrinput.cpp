@@ -21,7 +21,7 @@ RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
 
 RtlSdrInput::~RtlSdrInput()
 {
-    qDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
     stop();
     if (!deviceUnplugged)
     {
@@ -353,7 +353,7 @@ RtlSdrWorker::RtlSdrWorker(struct rtlsdr_dev *d, QObject *parent) : QThread(pare
 
 void RtlSdrWorker::run()
 {
-    qDebug() << "RTLSDRWorker thread start" << QThread::currentThreadId();
+    //qDebug() << "RTLSDRWorker thread start" << QThread::currentThreadId();
 
     dcI = 0.0;
     dcQ = 0.0;
@@ -362,7 +362,7 @@ void RtlSdrWorker::run()
 
     rtlsdr_read_async(device, rtlsdrCb, (void*)this, 0, INPUT_CHUNK_IQ_SAMPLES*2*sizeof(uint8_t));
 
-    qDebug() << "RTLSDRWorker thread end" << QThread::currentThreadId();
+    //qDebug() << "RTLSDRWorker thread end" << QThread::currentThreadId();
 }
 
 void RtlSdrWorker::dumpToFileStart(FILE * f)
