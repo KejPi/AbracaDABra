@@ -1,6 +1,6 @@
 # AbracaDABra
 Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) for RTL-SDR sticks. 
-It is based on Qt6 and uses demodulation library dabsdr that is implemented in C, free for use but distributed only as binary. 
+It is based on Qt6 and uses demodulation library dabsdr that is implemented in C, free for use but available only as binary. 
 
 ![Snímek obrazovky 2022-05-13 v 22 51 00](https://user-images.githubusercontent.com/6438380/168488691-65716cac-63fa-49fe-9e89-d382956c28d3.png)
 
