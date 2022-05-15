@@ -18,6 +18,8 @@ It is based on Qt6 and uses demodulation library dabsdr that is implemented in C
 * Shows complete ensemble structure
 * Raw file dumping from RTL-SDR or RTL-TCP sources
 * Only band III and DAB mode 1 is supported.
+* Simple user-friendly interface, trying to follow DAB _Rules of implementation (TS 103 176)_
+* Multiplatform implementation
 
 ## Basic mode
 ![Snímek obrazovky 2022-05-13 v 22 38 58](https://user-images.githubusercontent.com/6438380/168489179-7157c8e5-ecba-4cc2-9e7e-31432479acc2.png)
