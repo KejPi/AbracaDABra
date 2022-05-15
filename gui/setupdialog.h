@@ -31,6 +31,7 @@ public slots:
     void setInputDevice(const InputDeviceId & inputDevice);
     void resetFilename();
     void enableFileSelection(bool ena);
+    void onExpertMode(bool ena);
 
 signals:
     void setGainMode(GainMode mode, int gain = 0);

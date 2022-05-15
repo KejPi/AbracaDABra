@@ -47,8 +47,6 @@ BandScanDialog::BandScanDialog(QWidget *parent, bool autoStart, Qt::WindowFlags 
 
 BandScanDialog::~BandScanDialog()
 {
-    qDebug() << Q_FUNC_INFO;
-
     if (nullptr != timer)
     {
         timer->stop();
@@ -60,7 +58,6 @@ BandScanDialog::~BandScanDialog()
 
 void BandScanDialog::stopPressed()
 {
-    qDebug() << Q_FUNC_INFO;
     if (isScanning)
     {
         // the state machine has 4 possible states
@@ -84,8 +81,6 @@ void BandScanDialog::stopPressed()
 
 void BandScanDialog::startScan()
 {
-    qDebug() << Q_FUNC_INFO;
-
     isScanning = true;
 
     ui->scanningLabel->setText("Scanning channel:");
@@ -138,8 +133,6 @@ void BandScanDialog::scanStep()
 
 void BandScanDialog::tuneFinished(uint32_t freq)
 {
-     qDebug() << Q_FUNC_INFO << freq;
-
     if (BandScanState::Init == state)
     {
         if (timer->isActive())
@@ -188,7 +181,6 @@ void BandScanDialog::onServiceFound(const ServiceListId &)
 
 void BandScanDialog::onEnsembleComplete(const RadioControlEnsemble &)
 {   // this means that ensemble information is complete => stop timer and do next set
-    qDebug() << Q_FUNC_INFO;
     if ((nullptr != timer) && (timer->isActive()))
     {
         timer->stop();

@@ -59,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(setupDialog, &SetupDialog::inputDeviceChanged, this, &MainWindow::changeInputDevice);
     connect(setupDialog, &SetupDialog::fileLoopingEnabled, this, &MainWindow::enableFileLooping);
     connect(setupDialog, &SetupDialog::rawFileStop, this, &MainWindow::onRawFileStop);
+    connect(this, &MainWindow::expertModeChanged, setupDialog, &SetupDialog::onExpertMode);
 
     ensembleInfoDialog = new EnsembleInfoDialog(this);
 
@@ -1565,6 +1566,8 @@ void MainWindow::setExpertMode(bool ena)
     ui->channelCombo->setVisible(ena);
     ui->channelLabel->setVisible(!ena);
     ui->serviceTreeView->setVisible(ena);
+
+    emit expertModeChanged(ena);
 
     QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
 }

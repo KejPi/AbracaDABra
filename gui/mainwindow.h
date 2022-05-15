@@ -72,6 +72,7 @@ signals:
     void serviceRequest(uint32_t freq, uint32_t SId, uint8_t SCIdS);
     void stopUserApps();
     void getAudioInfo();
+    void expertModeChanged(bool ena);
     void exit();
 
 private slots:

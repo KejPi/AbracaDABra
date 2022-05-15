@@ -17,12 +17,12 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     // remove question mark from titlebar
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    ui->inputCombo->insertItem(int(InputDeviceId::UNDEFINED), "No device");
-    ui->inputCombo->insertItem(int(InputDeviceId::RTLSDR), "RTL SDR");
-    ui->inputCombo->insertItem(int(InputDeviceId::RTLTCP), "RTL TCP");
-    ui->inputCombo->insertItem(int(InputDeviceId::RARTTCP), "RaRT TCP");
-    ui->inputCombo->insertItem(int(InputDeviceId::RAWFILE), "Raw file");
-    ui->inputCombo->setCurrentIndex(-1);  // no selection
+    ui->inputCombo->addItem("No device", QVariant(int(InputDeviceId::UNDEFINED)));
+    ui->inputCombo->addItem("RTL SDR", QVariant(int(InputDeviceId::RTLSDR)));
+    ui->inputCombo->addItem("RTL TCP", QVariant(int(InputDeviceId::RTLTCP)));
+    //ui->inputCombo->addItem("RaRT TCP", QVariant(int(InputDeviceId::RARTTCP)));
+    ui->inputCombo->addItem("Raw file", QVariant(int(InputDeviceId::RAWFILE)));
+    ui->inputCombo->setCurrentIndex(0);  // no device
     resetFilename();
 
     ui->fileFormatCombo->insertItem(int(RawFileInputFormat::SAMPLE_FORMAT_U8), "Unsigned 8 bits");
@@ -64,6 +64,27 @@ void SetupDialog::enableFileSelection(bool ena)
     openFileButton = ena;
 }
 
+void SetupDialog::onExpertMode(bool ena)
+{
+    for (int idx = 0; idx < ui->inputCombo->count(); ++idx)
+    {
+        if (ui->inputCombo->itemData(idx).toInt() == int(InputDeviceId::RAWFILE))
+        {   // found
+            if (!ena)
+            {   // remove it
+                ui->inputCombo->removeItem(idx);
+            }
+            return;
+        }
+    }
+
+    // not found
+    if (ena)
+    {   // add item
+        ui->inputCombo->addItem("Raw file", QVariant(int(InputDeviceId::RAWFILE)));
+    }
+}
+
 void SetupDialog::on_gainCombo_currentIndexChanged(int index)
 {
     if (index == 0)
@@ -82,7 +103,7 @@ void SetupDialog::on_gainCombo_currentIndexChanged(int index)
 
 void SetupDialog::on_inputCombo_currentIndexChanged(int index)
 {
-    InputDeviceId id = InputDeviceId(index);
+    InputDeviceId id = InputDeviceId(ui->inputCombo->currentData().toInt());
     switch (id)
     {
     case InputDeviceId::UNDEFINED:
@@ -159,7 +180,14 @@ void SetupDialog::on_fileFormatCombo_currentIndexChanged(int index)
 
 void SetupDialog::setInputDevice(const InputDeviceId & inputDevice)
 {
-    ui->inputCombo->setCurrentIndex(int(inputDevice));
+    for (int idx = 0; idx < ui->inputCombo->count(); ++idx)
+    {
+        if (ui->inputCombo->itemData(idx).toInt() == int(inputDevice))
+        {
+            ui->inputCombo->setCurrentIndex(idx);
+            return;
+        }
+    }
 }
 
 void SetupDialog::on_loopCheckbox_stateChanged(int state)
