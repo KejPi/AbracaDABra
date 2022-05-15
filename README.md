@@ -8,7 +8,7 @@ It is based on Qt6 and uses demodulation library dabsdr that is implemented in C
 * Supports following inout devices:
   * RTL-SDR (default device)
   * RTL-TCP (127.0.0.1:1234) 
-  * Raw file input (int16_t or uint8_t format)
+  * Raw file input (in expert mode only, int16_t or uint8_t format)
 * Band scan with automatic service list
 * Service list management
 * DAB (mp2) and DAB+ (AAC) audio deconding
