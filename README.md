@@ -1,25 +1,25 @@
 # AbracaDABra
 Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) for RTL-SDR sticks. 
-It is based on Qt6 and uses demodulation library dabsdr that is implemented in C, free for use but closed source. 
+It is based on Qt6 and uses _dabsdr_ demodulation library that is free for use but closed source. 
 
 ![Snímek obrazovky 2022-05-13 v 22 51 00](https://user-images.githubusercontent.com/6438380/168488691-65716cac-63fa-49fe-9e89-d382956c28d3.png)
 
 ## Features
-* Supports following inout devices:
+* Supports following input devices:
   * RTL-SDR (default device)
   * RTL-TCP (127.0.0.1:1234) 
   * Raw file input (in expert mode only, int16_t or uint8_t format)
 * Band scan with automatic service list
 * Service list management
-* DAB (mp2) and DAB+ (AAC) audio deconding
+* DAB (mp2) and DAB+ (AAC) audio decoding
 * Dynamic label (DL) and Dynamic label plus (DL+)
-* MOT slideshow (SLS) and categorized slideshow (CatSLS) from PAD or from secondary service.
+* MOT slideshow (SLS) and categorized slideshow (CatSLS) from PAD or from secondary data service.
 * Audio services reconfiguration (experimental support)
-* Shows complete ensemble structure
+* Ensemble structure view with all technical details.
 * Raw file dumping from RTL-SDR or RTL-TCP sources
 * Only band III and DAB mode 1 is supported.
 * Simple user-friendly interface, trying to follow DAB _Rules of implementation (TS 103 176)_
-* Multiplatform implementation
+* Multiplatform
 
 ## Basic mode
 ![Snímek obrazovky 2022-05-13 v 22 38 58](https://user-images.githubusercontent.com/6438380/168489179-7157c8e5-ecba-4cc2-9e7e-31432479acc2.png)
