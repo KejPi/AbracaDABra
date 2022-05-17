@@ -32,7 +32,7 @@ option (USE_SYSTEM_FDKAAC     "Use system provided libfdk-aac"  OFF)
 option (USE_SYSTEM_MPG123     "Use system provided libmpg123"   OFF)
 option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   OFF)
 
-option(APPLE_BUILD_X86_64     "Build x86_64 binary for Apple"   ON)
+option(APPLE_BUILD_X86_64     "Build x86_64 binary for Apple"   OFF)
 
 if (APPLE_BUILD_X86_64)
     set(CMAKE_OSX_ARCHITECTURES "x86_64")
