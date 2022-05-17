@@ -37,4 +37,10 @@ Additionally it is possible to change the DAB channel manually in this mode.
 This is particularly useful when antenna adjustment is done in order to receive ensemble the is not received during automatic band scan.
 Expert mode can be enabled in "three-dot" menu.
 
-
+## Known limitations
+* Slower switching between ensembles
+* Reconfiguration not supported for data services
+* Only SLS data service is supported 
+* Apple Silicon build is not optimized
+* No possibility to change configuration for RTL_TCP source
+* Application is hanging when audio output device is removed (like bluetooth headphones disconnected) - PortAudio does not support hot swap
