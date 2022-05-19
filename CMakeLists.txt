@@ -25,18 +25,16 @@ set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
 option (USE_FDK_AAC           "Compile with fdk-aac library from Franhofer instead of faad2" OFF)
 
 # Options to force using libs build manually and installed in ${CMAKE_SOURCE_DIR}/../../dab-libs
-option (USE_SYSTEM_RTLSDR     "Use system provided rtl-sdr"     OFF)
-option (USE_SYSTEM_LIBUSB     "Use system provided libusb"      OFF)
-option (USE_SYSTEM_FAAD       "Use system provided libfaad"     OFF)
-option (USE_SYSTEM_FDKAAC     "Use system provided libfdk-aac"  OFF)
-option (USE_SYSTEM_MPG123     "Use system provided libmpg123"   OFF)
-option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   OFF)
+option (USE_SYSTEM_RTLSDR     "Use system provided rtl-sdr"     ON)
+option (USE_SYSTEM_LIBUSB     "Use system provided libusb"      ON)
+option (USE_SYSTEM_FAAD       "Use system provided libfaad"     ON)
+option (USE_SYSTEM_FDKAAC     "Use system provided libfdk-aac"  ON)
+option (USE_SYSTEM_MPG123     "Use system provided libmpg123"   ON)
+option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   ON)
 
 option(APPLE_BUILD_X86_64     "Build x86_64 binary for Apple"   OFF)
 
-if (APPLE_BUILD_X86_64)
-    set(CMAKE_OSX_ARCHITECTURES "x86_64")
-
+if(APPLE OR WIN32)
     # libs need to be either universal or built separately for x86_64 (this case)
     set(USE_SYSTEM_RTLSDR    OFF)
     set(USE_SYSTEM_LIBUSB    OFF)
@@ -44,6 +42,10 @@ if (APPLE_BUILD_X86_64)
     set(USE_SYSTEM_FDKAAC    OFF)
     set(USE_SYSTEM_MPG123    OFF)
     set(USE_SYSTEM_PORTAUDIO OFF)
+endif()
+
+if (APPLE_BUILD_X86_64)
+    set(CMAKE_OSX_ARCHITECTURES "x86_64")
 endif()
 
 #########################################################
