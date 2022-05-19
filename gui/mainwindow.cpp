@@ -1567,6 +1567,11 @@ void MainWindow::setExpertMode(bool ena)
     ui->channelLabel->setVisible(!ena);
     ui->serviceTreeView->setVisible(ena);
 
+    ui->audioFrame->setVisible(ena);
+    ui->channelFrame->setVisible(ena);
+    ui->ensembleInfoLabel->setVisible(ena);
+    ui->programTypeLabel->setVisible(ena);
+
     emit expertModeChanged(ena);
 
     QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );

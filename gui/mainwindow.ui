@@ -149,84 +149,6 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
-     <layout class="QHBoxLayout" name="audioLayout">
-      <item>
-       <widget class="QLabel" name="audioBitrateLabel">
-        <property name="text">
-         <string>XXX kbps</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="stereoLabel">
-        <property name="text">
-         <string>STEREO</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="audioEncodingLabel">
-        <property name="text">
-         <string>HE-AAC v2</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="protectionLabel">
-        <property name="text">
-         <string>EEP 4-B</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="1" column="2">
-     <layout class="QHBoxLayout" name="channeLayout">
-      <item>
-       <widget class="QLabel" name="channelLabel">
-        <property name="toolTip">
-         <string>Current channel</string>
-        </property>
-        <property name="text">
-         <string>13F</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="channelCombo">
-        <property name="focusPolicy">
-         <enum>Qt::ClickFocus</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="frequencyLabel">
-        <property name="toolTip">
-         <string>Current frequency</string>
-        </property>
-        <property name="text">
-         <string>227.360 MHz</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
     <item row="2" column="0">
      <widget class="SLSView" name="slsView">
       <property name="minimumSize">
@@ -369,6 +291,115 @@
        </widget>
       </item>
      </layout>
+    </item>
+    <item row="1" column="0">
+     <widget class="QFrame" name="audioFrame">
+      <layout class="QHBoxLayout" name="audioLayout">
+       <property name="spacing">
+        <number>-1</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="audioBitrateLabel">
+         <property name="text">
+          <string>XXX kbps</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="stereoLabel">
+         <property name="text">
+          <string>STEREO</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="audioEncodingLabel">
+         <property name="text">
+          <string>HE-AAC v2</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="protectionLabel">
+         <property name="text">
+          <string>EEP 4-B</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QFrame" name="channelFrame">
+      <layout class="QHBoxLayout" name="channeLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="channelLabel">
+         <property name="toolTip">
+          <string>Current channel</string>
+         </property>
+         <property name="text">
+          <string>13F</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="channelCombo">
+         <property name="focusPolicy">
+          <enum>Qt::ClickFocus</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="frequencyLabel">
+         <property name="toolTip">
+          <string>Current frequency</string>
+         </property>
+         <property name="text">
+          <string>227.360 MHz</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </item>
    </layout>
   </widget>
