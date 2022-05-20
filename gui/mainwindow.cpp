@@ -68,6 +68,13 @@ MainWindow::MainWindow(QWidget *parent)
     timeLabel = new QLabel("");
     timeLabel->setToolTip("DAB time");
 
+    basicSignalQualityLabel = new QLabel("");
+    basicSignalQualityLabel->setToolTip("DAB signal quality");
+
+    timeBasicQualWidget = new QStackedWidget;
+    timeBasicQualWidget->addWidget(basicSignalQualityLabel);
+    timeBasicQualWidget->addWidget(timeLabel);
+
     syncLabel = new QLabel();
     syncLabel->setAlignment(Qt::AlignRight);
 
@@ -95,6 +102,9 @@ MainWindow::MainWindow(QWidget *parent)
     signalQualityLayout->setAlignment(syncLabel, Qt::AlignCenter);
     signalQualityLayout->addWidget(snrLabel);
     signalQualityLayout->setSpacing(10);
+    signalQualityLayout->setContentsMargins(0,0,0,0);
+    signalQualityWidget = new QWidget();
+    signalQualityWidget->setLayout(signalQualityLayout);
 
     updateSnrLevel(0);
     updateSyncStatus(uint8_t(DabSyncLevel::NoSync));
@@ -158,8 +168,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->dlPlusLabel, &ClickableLabel::toggled, this, &MainWindow::onDLPlusToggle);
 
     QGridLayout * layout = new QGridLayout(widget);
-    layout->addWidget(timeLabel, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
-    layout->addLayout(signalQualityLayout, 0, 1, Qt::AlignVCenter | Qt::AlignRight);
+    layout->addWidget(timeBasicQualWidget, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
+    layout->addWidget(signalQualityWidget, 0, 1, Qt::AlignVCenter | Qt::AlignRight);
     layout->addWidget(muteLabel, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
     layout->addWidget(settingsLabel, 0, 3, Qt::AlignVCenter | Qt::AlignRight);
     layout->setColumnStretch(0, 100);
@@ -525,6 +535,9 @@ void MainWindow::updateSyncStatus(uint8_t sync)
     if (DabSyncLevel::FullSync > DabSyncLevel(sync))
     {   // hide time when no sync
         timeLabel->setText("");
+
+        // set no signal quality when no sync
+        basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal0.png"));
     }
     syncLabel->setText(syncLevelLabels[sync]);
     syncLabel->setToolTip(syncLevelTooltip[sync]);
@@ -541,21 +554,32 @@ void MainWindow::updateSnrLevel(float snr)
     snrProgress->setValue(snr10);
 
     snrLabel->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
-#ifndef __APPLE__
     // progressbar styling -> it does not look good on Apple
     if (static_cast<int>(SNR10Threhold::SNR_BAD) > snr10)
     {   // bad SNR
+#ifndef __APPLE__
         snrProgress->setStyleSheet(snrProgressStylesheet[0]);
+#endif
+        //basicSignalQualityLabel->setText("Weak signal");
+        basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal1.png"));
     }
     else if (static_cast<int>(SNR10Threhold::SNR_GOOD) > snr10)
     {   // medium SNR
+#ifndef __APPLE__
         snrProgress->setStyleSheet(snrProgressStylesheet[1]);
+#endif
+        //basicSignalQualityLabel->setText("Medium signal");
+        basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal2.png"));
     }
     else
     {   // good SNR
+#ifndef __APPLE__
         snrProgress->setStyleSheet(snrProgressStylesheet[2]);
-    }
 #endif
+        //basicSignalQualityLabel->setText("Good signal");
+        basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal3.png"));
+    }
+
 }
 
 void MainWindow::updateServiceList(const RadioControlEnsemble &ens, const RadioControlServiceComponent &slEntry)
@@ -694,8 +718,6 @@ void MainWindow::onChannelChange(int index)
 {
     if (frequency != ui->channelCombo->itemData(index).toUInt())
     {
-        ui->channelLabel->setText(ui->channelCombo->currentText());
-
         // no service is selected
         SId.set(0);
 
@@ -818,13 +840,12 @@ void MainWindow::serviceListClicked(const QModelIndex &index)
             while (it != DabTables::channelList.constEnd()) {
                 if (it.key() == frequency)
                 {
-                    ui->channelLabel->setText(it.value());
+                    ui->channelCombo->setCurrentIndex(idx);
                     break;
                 }
                 ++it;
                 ++idx;
-            }
-            ui->channelCombo->setCurrentIndex(idx);
+            }            
 
             // set UI to new channel tuning
             onChannelSelection();
@@ -878,13 +899,12 @@ void MainWindow::serviceListTreeClicked(const QModelIndex &index)
                 while (it != DabTables::channelList.constEnd()) {
                     if (it.key() == frequency)
                     {
-                        ui->channelLabel->setText(it.value());
+                        ui->channelCombo->setCurrentIndex(idx);
                         break;
                     }
                     ++it;
                     ++idx;
-                }
-                ui->channelCombo->setCurrentIndex(idx);
+                }                
 
                 // set UI to new channel tuning
                 onChannelSelection();
@@ -1113,7 +1133,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         // do nothing
         inputDevice = nullptr;
         ui->channelCombo->setDisabled(true);   // it will be enabled when device is ready
-        ui->channelLabel->setText("");
         //setupDialog->setInputDevice(inputDeviceId); // this emits device change
 
         ui->serviceListView->setEnabled(false);
@@ -1446,13 +1465,12 @@ void MainWindow::switchServiceSource()
                 while (it != DabTables::channelList.constEnd()) {
                     if (it.key() == frequency)
                     {
-                        ui->channelLabel->setText(it.value());
+                        ui->channelCombo->setCurrentIndex(idx);
                         break;
                     }
                     ++it;
                     ++idx;
-                }
-                ui->channelCombo->setCurrentIndex(idx);
+                }                
 
                 // set UI to new channel tuning
                 onChannelSelection();
@@ -1563,9 +1581,14 @@ void MainWindow::setExpertMode(bool ena)
     {
         switchModeAct->setText("Expert mode");
     }
-    ui->channelCombo->setVisible(ena);
-    ui->channelLabel->setVisible(!ena);
+    ui->channelFrame->setVisible(ena);
+    ui->audioFrame->setVisible(ena);
+    ui->programTypeLabel->setVisible(ena);
+    ui->ensembleInfoLabel->setVisible(ena);
+
     ui->serviceTreeView->setVisible(ena);
+    signalQualityWidget->setVisible(ena);
+    timeBasicQualWidget->setCurrentIndex(ena ? 1 : 0);
 
     ui->audioFrame->setVisible(ena);
     ui->channelFrame->setVisible(ena);
@@ -1639,7 +1662,6 @@ void MainWindow::stop()
     { // stop
         // tune to 0
         ui->channelCombo->setCurrentIndex(-1);
-        ui->channelLabel->setText("");
     }
 }
 

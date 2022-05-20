@@ -12,5 +12,9 @@
         <file>resources/down.png</file>
         <file>resources/up.png</file>
         <file>resources/appIconAbout.png</file>
+        <file>resources/signal3.png</file>
+        <file>resources/signal0.png</file>
+        <file>resources/signal1.png</file>
+        <file>resources/signal2.png</file>
     </qresource>
 </RCC>

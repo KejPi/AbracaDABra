@@ -11,6 +11,7 @@
 #include <QHBoxLayout>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QStackedWidget>
 
 #include "setupdialog.h"
 #include "ensembleinfodialog.h"
@@ -97,7 +98,12 @@ private:
     CatSLSDialog * catSlsDialog;
     //AboutDialog * aboutDialog;
     QProgressBar * snrProgress;
+
+    QStackedWidget * timeBasicQualWidget;
     QLabel  * timeLabel;
+    QLabel  * basicSignalQualityLabel;
+
+    QWidget * signalQualityWidget;
     QLabel * syncLabel;
     QLabel * snrLabel;
 
