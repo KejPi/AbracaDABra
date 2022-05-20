@@ -1534,7 +1534,7 @@ void MainWindow::serviceListViewUpdateSelection()
 void MainWindow::onDLPlusToggle(bool toggle)
 {
     ui->dlPlusFrame->setVisible(toggle);
-    QTimer::singleShot(1, this, [this](){ resize(minimumSizeHint()); } );
+    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
 }
 
 void MainWindow::switchMode()
