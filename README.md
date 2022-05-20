@@ -37,6 +37,30 @@ Additionally it is possible to change the DAB channel manually in this mode.
 This is particularly useful when antenna adjustment is done in order to receive ensemble the is not received during automatic band scan.
 Expert mode can be enabled in "three-dot" menu.
 
+## How to build
+Following libraries are required:
+* Qt6
+* libusb
+* rtldsdr
+* faad2 (default) or fdk-aac (optional)
+* mpg123
+* portaudio
+
+1. Create build directory inside working copy and change to it
+
+       mkdir build
+       cd build
+
+2. Run cmake
+
+       cmake ..
+
+3. Run make
+
+       make
+
+
+
 ## Known limitations
 * Slower switching between ensembles
 * Reconfiguration not supported for data services
