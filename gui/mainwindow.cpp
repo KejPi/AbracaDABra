@@ -57,9 +57,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     setupDialog = new SetupDialog(this);
     connect(setupDialog, &SetupDialog::inputDeviceChanged, this, &MainWindow::changeInputDevice);
-    connect(setupDialog, &SetupDialog::fileLoopingEnabled, this, &MainWindow::enableFileLooping);
-    connect(setupDialog, &SetupDialog::rawFileStop, this, &MainWindow::onRawFileStop);
     connect(this, &MainWindow::expertModeChanged, setupDialog, &SetupDialog::onExpertMode);
+    connect(setupDialog, &SetupDialog::newSettings, this, &MainWindow::onNewSettings);
 
     ensembleInfoDialog = new EnsembleInfoDialog(this);
 
@@ -748,7 +747,6 @@ void MainWindow::tuneFinished(uint32_t freq)
 
         ui->frequencyLabel->setText(QString("%1 MHz").arg(freq/1000.0, 3, 'f', 3, QChar('0')));
         isPlaying = true;
-        setupDialog->enableFileSelection(false);
 
         // if current service has alternatives show icon immediately to avoid UI blocking when audio does not work
         if (serviceList->numEnsembles(ServiceListId(SId.value(), SCIdS)) > 1)
@@ -767,19 +765,11 @@ void MainWindow::tuneFinished(uint32_t freq)
 
         ui->frequencyLabel->setText("");
         isPlaying = false;
-        setupDialog->enableFileSelection(true);
         if (deviceChangeRequested)
         {
             initInputDevice(inputDeviceId);
         }
     }
-}
-
-void MainWindow::onRawFileStop()
-{
-    timeLabel->setText("End of file");
-    // tune to 0
-    ui->channelCombo->setCurrentIndex(-1);
 }
 
 void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
@@ -789,23 +779,24 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
     switch (errCode)
     {
     case InputDeviceErrorCode::EndOfFile:
-        timeLabel->setText("End of file");
         // tune to 0
-        if (!fileLooping)
+        if (!setupDialog->settings().inputFileLoopEna)
         {
             ui->channelCombo->setCurrentIndex(-1);
-            setupDialog->enableFileSelection(true);
         }
+        timeLabel->setText("End of file");
         break;
     case InputDeviceErrorCode::DeviceDisconnected:
         timeLabel->setText("Input device disconnected");
         // force no device
-        setupDialog->setInputDevice(InputDeviceId::UNDEFINED);
+        setupDialog->resetInputDevice();
+        changeInputDevice(InputDeviceId::UNDEFINED);
         break;
     case InputDeviceErrorCode::NoDataAvailable:
         timeLabel->setText("No input data");
         // force no device
-        setupDialog->setInputDevice(InputDeviceId::UNDEFINED);
+        setupDialog->resetInputDevice();
+        changeInputDevice(InputDeviceId::UNDEFINED);
         break;
     default:
         qDebug() << Q_FUNC_INFO << "InputDevice error" << int(errCode);
@@ -1089,22 +1080,166 @@ void MainWindow::clearServiceInformationLabels()
     ui->audioBitrateLabel->setToolTip("");
 }
 
-void MainWindow::changeInputDevice(const InputDeviceId & d)
+void MainWindow::onNewSettings()
 {
-    //qDebug() << Q_FUNC_INFO << int(d);
-    if (d != inputDeviceId)
+    qDebug() << Q_FUNC_INFO;
+#if 0
+    SetupDialog::Settings s = setupDialog->settings();
+
+    //    connect(setupDialog, &SetupDialog::inputDeviceChanged, this, &MainWindow::changeInputDevice);
+    bool inputDeviceChangeNeeded = false;
+    if (s.inputDevice != m_settings.inputDevice)
     {
-        deviceChangeRequested = true;
-        inputDeviceId = d;
-        if (isPlaying)
-        { // stop
-            stop();
-            ui->channelCombo->setDisabled(true);  // enabled when device is ready
+        inputDeviceChangeNeeded = true;
+    }
+    else
+    {
+        switch (m_settings.inputDevice)
+        {
+        case InputDeviceId::UNDEFINED:
+            break;
+        case InputDeviceId::RTLSDR:
+            break;
+        case InputDeviceId::RARTTCP:
+        case InputDeviceId::RTLTCP:
+            if ((s.tcpAddress != m_settings.tcpAddress) || (s.tcpPort != m_settings.tcpPort))
+            {
+                inputDeviceChangeNeeded = true;
+            }
+            break;
+        case InputDeviceId::RAWFILE:
+            if ((s.inputFile != m_settings.inputFile) || (s.inputFormat != m_settings.inputFormat))
+            {
+                inputDeviceChangeNeeded = true;
+            }
+            break;
+        }
+    }
+    if (inputDeviceChangeNeeded)
+    {   // device will be chnaged -> dialog will be enabled after change
+        //setupDialog->setEnabled(false);
+        changeInputDevice(s.inputDevice);
+        // remaining parameters will be set in initInputDevice()
+        m_settings = s;
+        return;
+    }
+
+    //fileLooping = s.inputFileLoopEna;
+    m_settings = s;
+
+    switch (m_settings.inputDevice)
+    {
+    case InputDeviceId::RTLSDR:
+        if (m_settings.gainIdx == -2)
+        {   // HW gain
+            dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Hardware);
+        }
+        else if (m_settings.gainIdx == -1)
+        {   // software gain
+            dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Software);
         }
         else
-        { // device is not playing
-            initInputDevice(d);
+        {  // manual gain value
+            dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Manual, m_settings.gainIdx);
         }
+        break;
+    case InputDeviceId::RTLTCP:
+        if (m_settings.gainIdx == -2)
+        {   // HW gain
+            dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Hardware);
+        }
+        else if (m_settings.gainIdx == -1)
+        {   // software gain
+            dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Software);
+        }
+        else
+        {  // manual gain value
+            dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Manual, m_settings.gainIdx);
+        }
+        break;
+    case InputDeviceId::RARTTCP:
+        break;
+    case InputDeviceId::RAWFILE:
+        dynamic_cast<RawFileInput*>(inputDevice)->setFileFormat(m_settings.inputFormat);
+        dynamic_cast<RawFileInput*>(inputDevice)->openFile(m_settings.inputFile);
+        break;
+    case InputDeviceId::UNDEFINED:
+        break;
+    }
+
+
+    //    connect(setupDialog, &SetupDialog::setGainMode, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setGainMode);
+    //    connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setDAGC);
+
+    //connect(setupDialog, &SetupDialog::setGainMode, dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::setGainMode);
+    //connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::setDAGC);
+
+
+    //connect(setupDialog, &SetupDialog::rawFileSelected, dynamic_cast<RawFileInput*>(inputDevice), &RawFileInput::openFile);
+    //connect(setupDialog, &SetupDialog::sampleFormat, dynamic_cast<RawFileInput*>(inputDevice), &RawFileInput::setFileFormat);
+#else
+
+    SetupDialog::Settings s = setupDialog->settings();
+    switch (s.inputDevice)
+    {
+    case InputDeviceId::RTLSDR:
+        if (s.gainIdx == -2)
+        {   // HW gain
+            dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Hardware);
+        }
+        else if (s.gainIdx == -1)
+        {   // software gain
+            dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Software);
+        }
+        else
+        {  // manual gain value
+            dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Manual, s.gainIdx);
+        }
+        break;
+    case InputDeviceId::RTLTCP:
+        if (s.gainIdx == -2)
+        {   // HW gain
+            dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Hardware);
+        }
+        else if (s.gainIdx == -1)
+        {   // software gain
+            dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Software);
+        }
+        else
+        {  // manual gain value
+            dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Manual, s.gainIdx);
+        }
+        break;
+    case InputDeviceId::RARTTCP:
+        break;
+    case InputDeviceId::RAWFILE:
+        //dynamic_cast<RawFileInput*>(inputDevice)->setFileFormat(s.inputFormat);
+        //dynamic_cast<RawFileInput*>(inputDevice)->openFile(s.inputFile);
+        break;
+    case InputDeviceId::UNDEFINED:
+        break;
+    }
+
+#endif
+
+
+}
+
+
+void MainWindow::changeInputDevice(const InputDeviceId & d)
+{
+    qDebug() << Q_FUNC_INFO << int(d);
+
+    deviceChangeRequested = true;
+    inputDeviceId = d;
+    if (isPlaying)
+    { // stop
+        stop();
+        ui->channelCombo->setDisabled(true);  // enabled when device is ready
+    }
+    else
+    { // device is not playing
+        initInputDevice(d);
     }
 }
 
@@ -1116,9 +1251,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     if (nullptr != inputDevice)
     {
         delete inputDevice;
-
-        // delete service list
-        //serviceList->clear();
     }
 
     // disable band scan - will be enable when it makes sense (RTL-SDR at the moment)
@@ -1156,15 +1288,10 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
         // setup dialog
         connect(dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
-        connect(setupDialog, &SetupDialog::setGainMode, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setGainMode);
-        connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setDAGC);
 
         if (inputDevice->openDevice())
         {  // rtl sdr is available
             inputDeviceId = InputDeviceId::RTLSDR;
-            setupDialog->setInputDevice(inputDeviceId); // this emits device change
-
-            static_cast<RtlSdrInput *>(inputDevice)->setDAGC(setupDialog->getDAGCState());
 
             // enable band scan
             bandScanAct->setEnabled(true);
@@ -1187,7 +1314,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             delete inputDevice;
             inputDevice = nullptr;
             inputDeviceId = InputDeviceId::UNDEFINED;
-            setupDialog->setInputDevice(inputDeviceId); // this emits device change
+            setupDialog->resetInputDevice();
         }
     }
         break;
@@ -1204,8 +1331,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
         // setup dialog
         connect(dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
-        connect(setupDialog, &SetupDialog::setGainMode, dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::setGainMode);
-        connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::setDAGC);
 
         // tuning procedure
         connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
@@ -1214,9 +1339,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         if (inputDevice->openDevice())
         {  // rtl tcp is available
             inputDeviceId = InputDeviceId::RTLTCP;
-            setupDialog->setInputDevice(inputDeviceId); // this emits device change
-
-            static_cast<RtlTcpInput *>(inputDevice)->setDAGC(setupDialog->getDAGCState());
 
             // enable band scan
             bandScanAct->setEnabled(true);
@@ -1239,7 +1361,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             delete inputDevice;
             inputDevice = nullptr;
             inputDeviceId = InputDeviceId::UNDEFINED;
-            setupDialog->setInputDevice(inputDeviceId); // this emits device change
+            setupDialog->resetInputDevice(); // this emits device change
         }
     }
     break;
@@ -1264,7 +1386,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         if (inputDevice->openDevice())
         {  // rtl tcp is available
             inputDeviceId = InputDeviceId::RARTTCP;
-            setupDialog->setInputDevice(inputDeviceId); // this emits device change
+            //setupDialog->setInputDevice(inputDeviceId); // this emits device change
 
             // enable band scan
             bandScanAct->setEnabled(true);
@@ -1286,7 +1408,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             delete inputDevice;
             inputDevice = nullptr;
             inputDeviceId = InputDeviceId::UNDEFINED;
-            setupDialog->setInputDevice(inputDeviceId); // this emits device change
+            setupDialog->resetInputDevice();
         }
     }
     break;
@@ -1294,7 +1416,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     {
         inputDevice = new RawFileInput();
         inputDeviceId = InputDeviceId::RAWFILE;
-        setupDialog->setInputDevice(inputDeviceId); // this emits device change
+        //setupDialog->setInputDevice(inputDeviceId); // this emits device change
 
         // tuning procedure
         connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
@@ -1304,18 +1426,12 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
         connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
-        // setup dialog
-        connect(setupDialog, &SetupDialog::rawFileSelected, dynamic_cast<RawFileInput*>(inputDevice), &RawFileInput::openFile);
-        connect(setupDialog, &SetupDialog::sampleFormat, dynamic_cast<RawFileInput*>(inputDevice), &RawFileInput::setFileFormat);
-
-        QString filename = setupDialog->getInputFileName();
+        QString filename = setupDialog->settings().inputFile;
         if (!filename.isEmpty())
         {
-            RawFileInputFormat format = setupDialog->getInputFileFormat();
+            RawFileInputFormat format = setupDialog->settings().inputFormat;
             dynamic_cast<RawFileInput*>(inputDevice)->openFile(filename, format);
-            enableFileLooping(setupDialog->isFileLoopActive());
         }
-        setupDialog->enableFileSelection(true);
 
         // clear service list
         serviceList->clear();
@@ -1327,6 +1443,8 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     }
         break;
     }
+
+    //setupDialog->setEnabled(true);
 }
 
 void MainWindow::loadSettings()
@@ -1338,11 +1456,24 @@ void MainWindow::loadSettings()
     expertMode = settings.value("ExpertMode").toBool();
     setExpertMode(expertMode);
     int inDevice = settings.value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();
+
+    SetupDialog::Settings s;
+    s.inputDevice = static_cast<InputDeviceId>(inDevice);
+    s.inputFile = settings.value("inputFileName", QVariant(QString(""))).toString();
+    s.inputFormat = RawFileInputFormat(settings.value("inputFileFormat", 0).toInt());
+    s.inputFileLoopEna = settings.value("inputFileLoop", false).toBool();
+    s.gainIdx = settings.value("gainIndex", 1).toInt();
+    s.tcpAddress = settings.value("address", QString("127.0.0.1")).toString();
+    s.tcpPort = settings.value("port", 1234).toInt();
+    setupDialog->setSettings(s);
+
+
     if (InputDeviceId::UNDEFINED != static_cast<InputDeviceId>(inDevice))
-    {        
+    {               
+        initInputDevice(s.inputDevice);
+
         // if input device has switched to what was stored and it is RTLSDR or RTLTCP
-        setupDialog->setInputDevice(static_cast<InputDeviceId>(inDevice));
-        if ((static_cast<InputDeviceId>(inDevice) == inputDeviceId)
+        if ((s.inputDevice == inputDeviceId)
                 && (    (InputDeviceId::RTLSDR == inputDeviceId)
                      || (InputDeviceId::RTLTCP == inputDeviceId)
                      || (InputDeviceId::RARTTCP == inputDeviceId)))
@@ -1368,12 +1499,12 @@ void MainWindow::loadSettings()
     }
 
     // load this afetr device is selected to configure file input correctly
-    QString inFile = settings.value("inputFileName", QVariant(QString(""))).toString();
-    setupDialog->setInputFile(inFile,
-                              RawFileInputFormat(settings.value("inputFileFormat", 0).toInt()),
-                              settings.value("inputFileLoop", false).toBool());
-    setupDialog->setDAGCState(settings.value("DAGC", false).toBool());
-    setupDialog->setGainIdx(settings.value("gainIndex", 1).toInt());
+//    QString inFile = settings.value("inputFileName", QVariant(QString(""))).toString();
+//    setupDialog->setInputFile(inFile,
+//                              RawFileInputFormat(settings.value("inputFileFormat", 0).toInt()),
+//                              settings.value("inputFileLoop", false).toBool());
+    //setupDialog->setDAGCState(settings.value("DAGC", false).toBool());
+    //setupDialog->setGainIdx(settings.value("gainIndex", 1).toInt());
 
     ensembleInfoDialog->setDumpPath(settings.value("dumpPath", QVariant(QDir::homePath())).toString());
 
@@ -1382,7 +1513,7 @@ void MainWindow::loadSettings()
         QTimer::singleShot(1, this, [this](){ bandScan(); } );
     }
     if ((InputDeviceId::UNDEFINED == inputDeviceId)
-        || ((InputDeviceId::RAWFILE == inputDeviceId) && (inFile.isEmpty())))
+        || ((InputDeviceId::RAWFILE == inputDeviceId) && (s.inputFile.isEmpty())))
     {
         QTimer::singleShot(1, this, [this](){ showSetupDialog(); } );
     }
@@ -1391,12 +1522,13 @@ void MainWindow::loadSettings()
 void MainWindow::saveSettings()
 {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-    settings.setValue("inputDeviceId", int(inputDeviceId));
-    settings.setValue("inputFileName", setupDialog->getInputFileName());
-    settings.setValue("inputFileFormat", int(setupDialog->getInputFileFormat()));
-    settings.setValue("inputFileLoop", setupDialog->isFileLoopActive());
-    settings.setValue("DAGC", setupDialog->getDAGCState());
-    settings.setValue("gainIndex", setupDialog->getGainIdx());
+
+    const SetupDialog::Settings s = setupDialog->settings();
+    settings.setValue("inputDeviceId", int(s.inputDevice));
+    settings.setValue("inputFileName", s.inputFile);
+    settings.setValue("inputFileFormat", int(s.inputFormat));
+    settings.setValue("inputFileLoop", s.inputFileLoopEna);
+    settings.setValue("gainIndex", s.gainIdx);
     settings.setValue("dumpPath", ensembleInfoDialog->getDumpPath());
 
     QModelIndex current = ui->serviceListView->currentIndex();

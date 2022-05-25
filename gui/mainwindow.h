@@ -67,7 +67,6 @@ public slots:
     void updateDabTime(const QDateTime & d);
     void changeInputDevice(const InputDeviceId &d);
     void tuneFinished(uint32_t freq);
-    void enableFileLooping(bool ena) { fileLooping = ena; }
 
 signals:
     void serviceRequest(uint32_t freq, uint32_t SId, uint8_t SCIdS);
@@ -80,13 +79,13 @@ private slots:
     void onChannelChange(int index);
     void clearEnsembleInformationLabels();
     void clearServiceInformationLabels();
+    void onNewSettings();
     void initInputDevice(const InputDeviceId &d);
-    void onRawFileStop();
     void onInputDeviceError(const InputDeviceErrorCode errCode);
     void serviceListClicked(const QModelIndex &index);
     void serviceListTreeClicked(const QModelIndex &index);
     void serviceChanged(const RadioControlServiceComponent &s);
-    void audioServiceReconfiguration(const RadioControlServiceComponent &s);
+    void audioServiceReconfiguration(const RadioControlServiceComponent &s);    
 
 protected:        
      void closeEvent(QCloseEvent *event);
@@ -134,7 +133,6 @@ private:
     AudioOutput * audioOutput;
 
     bool isPlaying = false;
-    bool fileLooping = false;
     bool deviceChangeRequested = false;
     bool expertMode = false;
     bool exitRequested = false;
@@ -149,6 +147,8 @@ private:
     ServiceList * serviceList;
     SLModel * slModel;
     SLTreeModel * slTreeModel;
+
+    //SetupDialog::Settings m_settings;
 
     QMap<DLPlusContentType, DLPlusObjectUI*> dlObjCache;
 

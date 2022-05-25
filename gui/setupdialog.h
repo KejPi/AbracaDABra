@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QWidget>
 #include <QList>
+#include <QAbstractButton>
 #include "inputdevice.h"
 #include "rawfileinput.h"
 
@@ -15,45 +16,39 @@ class SetupDialog : public QDialog
 {
     Q_OBJECT
 public:
-    SetupDialog(QWidget *parent = nullptr);    
+    // this is to store active state
+    struct Settings
+    {
+        InputDeviceId inputDevice;
+        int gainIdx;
+        QString inputFile;
+        RawFileInputFormat inputFormat;
+        bool inputFileLoopEna;
+        QString tcpAddress;
+        int tcpPort;
+    };
 
-    QString getInputFileName() const;
-    RawFileInputFormat getInputFileFormat() const;
-    bool isFileLoopActive() const;
-    void setInputFile(const QString &value, const RawFileInputFormat &format, bool loop);
-    bool getDAGCState() const;
-    void setDAGCState(bool ena);
-    int getGainIdx() const;
-    void setGainIdx(int idx);
 
-public slots:
-    void setGainValues(const QList<int> * pList);
-    void setInputDevice(const InputDeviceId & inputDevice);
-    void resetFilename();
-    void enableFileSelection(bool ena);
+    SetupDialog(QWidget *parent = nullptr);
+    Settings settings() const;
+    void setGainValues(const QList<int> * pList = nullptr);
+    void resetInputDevice();
     void onExpertMode(bool ena);
+    void setSettings(const Settings &settings);
 
 signals:
-    void setGainMode(GainMode mode, int gain = 0);
-    void setDAGC(bool ena);
     void inputDeviceChanged(const InputDeviceId & inputDevice);
-    void sampleFormat(const RawFileInputFormat &format);
-    void rawFileSelected(const QString & filename, const RawFileInputFormat &format);
-    void rawFileStop();
-    void fileLoopingEnabled(bool ena);
-
-private slots:
-    void on_gainCombo_currentIndexChanged(int index);
-    void on_inputCombo_currentIndexChanged(int index);
-    void on_openFileButton_clicked();
-    void on_fileFormatCombo_currentIndexChanged(int index);
-    void on_loopCheckbox_stateChanged(int state);
-    void on_dagcCheckBox_stateChanged(int state);
+    void newSettings();
 
 private:
     Ui::SetupDialog *ui;
-    bool openFileButton = false;
-    QString inputFileName;
+    Settings m_settings;
+
+    void onButtonClicked(QAbstractButton *button);
+    void onInputChanged(int index);
+    void onOpenFileButtonClicked();
+    void applySettings();
+    void resetGainValues();
 };
 
 #endif // SETUPDIALOG_H
