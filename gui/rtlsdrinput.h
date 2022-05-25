@@ -57,7 +57,6 @@ public:
 public slots:
     void tune(uint32_t freq) override;
     void setGainMode(GainMode mode, int gainIdx = 0);
-    void setDAGC(bool ena);
 
     void startDumpToFile(const QString & filename) override;
     void stopDumpToFile() override;
