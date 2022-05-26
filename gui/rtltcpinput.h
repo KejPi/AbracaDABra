@@ -27,8 +27,6 @@
 #define INVALID_SOCKET (-1)
 #endif
 
-#define RTLTCP_PORT 1234
-#define RTLTCP_ADDRESS "127.0.0.1"
 #define RTLTCP_CHUNK_SIZE (16384*100)
 
 #define RTLTCP_DOC_ENABLE 1         // enable DOC
@@ -115,6 +113,7 @@ public:
 
 public slots:
     void tune(uint32_t freq) override;
+    void setTcpIp(const QString & addr, int p);
     void setGainMode(GainMode mode, int gainIdx = 0);
     void setDAGC(bool ena);
 
@@ -128,6 +127,8 @@ private:
     uint32_t frequency;
     bool deviceUnplugged;
     SOCKET sock;
+    QString address;
+    int port;
 
     RtlTcpWorker * worker;
 #if (RTLTCP_WDOG_ENABLE)

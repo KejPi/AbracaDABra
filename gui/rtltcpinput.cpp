@@ -49,6 +49,8 @@ RtlTcpInput::RtlTcpInput(QObject *parent) : InputDevice(parent)
     worker = nullptr;
     frequency = 0;
     sock = INVALID_SOCKET;
+    address = "127.0.0.1";
+    port = 1234;
 
 #if (RTLTCP_WDOG_ENABLE)
     connect(&watchDogTimer, &QTimer::timeout, this, &RtlTcpInput::watchDogTimeout);
@@ -108,10 +110,10 @@ bool RtlTcpInput::openDevice()
     hints.ai_flags = 0;
     hints.ai_protocol = 0;          /* Any protocol */
 
-    QString port_str = QString().number(RTLTCP_PORT);
+    QString portStr = QString().number(port);
 
     struct addrinfo *result;
-    int s = getaddrinfo(RTLTCP_ADDRESS, port_str.toLatin1(), &hints, &result);
+    int s = getaddrinfo(address.toLatin1(), portStr.toLatin1(), &hints, &result);
     if (s != 0)
     {
 #if defined(_WIN32)
@@ -136,74 +138,6 @@ bool RtlTcpInput::openDevice()
             continue;
         }
 
-#if 0
-        // set the socket in non-blocking mode
-#ifdef _WIN32
-        unsigned long mode = 1;
-        int res = ioctlsocket(sfd, FIONBIO, &mode);
-#else
-        int oldflags = fcntl(sfd, F_GETFL, 0);
-        if (oldflags == -1)
-        {
-            return false;
-        }
-        int flags = oldflags | O_NONBLOCK;
-        int res = fcntl(sfd, F_SETFL, flags);
-#endif
-        if (res != 0)
-        {
-            qDebug() << "RTLTCP: Failed to put socket into non-blocking mode with error: " << res;
-        }
-
-        struct sockaddr_in *sa = (struct sockaddr_in *) rp->ai_addr;
-        qDebug() << "RTLTCP: Try to connect to: " << inet_ntoa(sa->sin_addr);
-        ::connect(sfd, rp->ai_addr, rp->ai_addrlen);
-
-        // set the socket back in blocking mode
-#ifdef _WIN32
-        mode = 0;
-        res = ioctlsocket(sfd, FIONBIO, &mode);
-#else
-        res = fcntl(sfd, F_SETFL, oldflags);
-#endif
-        if (res != 0)
-        {
-            qDebug() << "RTLTCP: Failed to put socket into blocking mode with error: " << res;
-        }
-
-        fd_set Write;
-        FD_ZERO(&Write);
-        FD_SET(sfd, &Write);
-
-        // check if the socket is ready
-#if defined(_WIN32)
-        TIMEVAL Timeout;
-#else
-        struct timeval Timeout;
-#endif
-        Timeout.tv_sec = 5;
-        Timeout.tv_usec = 0;
-        int sel_value = ::select(sfd+1, nullptr, &Write, nullptr, &Timeout);
-        if(FD_ISSET(sfd, &Write) && sel_value > 0)
-        {
-            int error=0;
-            socklen_t size=sizeof(error);
-            res = 0;
-
-#ifndef _WIN32
-            res = ::getsockopt(sfd, SOL_SOCKET, SO_ERROR, &error, &size);
-#endif
-            if(error > 0 && res == 0)
-            {
-                qDebug() << "RTLTCP: Connection failed: \"" << strerror(error) << "\"";
-            }
-            else
-            {
-                sock = sfd;
-                break; /* Success */
-            }
-        }
-#else
         struct sockaddr_in *sa = (struct sockaddr_in *) rp->ai_addr;
         qDebug() << "RTLTCP: Trying to connect to:" << inet_ntoa(sa->sin_addr);
         if (0 == ::connect(sfd, rp->ai_addr, rp->ai_addrlen))
@@ -211,7 +145,6 @@ bool RtlTcpInput::openDevice()
             sock = sfd;
             break; /* Success */
         }
-#endif
 
 #if defined(_WIN32)
         closesocket(sfd);
@@ -397,6 +330,12 @@ void RtlTcpInput::tune(uint32_t freq)
         stop();
     }
     emit tuned(frequency);
+}
+
+void RtlTcpInput::setTcpIp(const QString &addr, int p)
+{
+    address = addr;
+    port = p;
 }
 
 void RtlTcpInput::run()

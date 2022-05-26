@@ -1335,6 +1335,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
         connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
 
+        // set IP address and port
+        dynamic_cast<RtlTcpInput*>(inputDevice)->setTcpIp(setupDialog->settings().tcpAddress, setupDialog->settings().tcpPort);
+
         if (inputDevice->openDevice())
         {  // rtl tcp is available
             inputDeviceId = InputDeviceId::RTLTCP;
