@@ -1263,6 +1263,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     {
     case InputDeviceId::UNDEFINED:
         // do nothing
+        inputDeviceId = InputDeviceId::UNDEFINED;
         inputDevice = nullptr;
         ui->channelCombo->setDisabled(true);   // it will be enabled when device is ready
         //setupDialog->setInputDevice(inputDeviceId); // this emits device change
@@ -1311,10 +1312,8 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         }
         else
         {
-            delete inputDevice;
-            inputDevice = nullptr;
-            inputDeviceId = InputDeviceId::UNDEFINED;
             setupDialog->resetInputDevice();
+            initInputDevice(InputDeviceId::UNDEFINED);
         }
     }
         break;
@@ -1358,10 +1357,8 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         }
         else
         {
-            delete inputDevice;
-            inputDevice = nullptr;
-            inputDeviceId = InputDeviceId::UNDEFINED;
-            setupDialog->resetInputDevice(); // this emits device change
+            setupDialog->resetInputDevice();
+            initInputDevice(InputDeviceId::UNDEFINED);
         }
     }
     break;
@@ -1405,10 +1402,8 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         }
         else
         {
-            delete inputDevice;
-            inputDevice = nullptr;
-            inputDeviceId = InputDeviceId::UNDEFINED;
             setupDialog->resetInputDevice();
+            initInputDevice(InputDeviceId::UNDEFINED);
         }
     }
     break;
@@ -1443,8 +1438,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     }
         break;
     }
-
-    //setupDialog->setEnabled(true);
 }
 
 void MainWindow::loadSettings()
@@ -1498,14 +1491,6 @@ void MainWindow::loadSettings()
         }
     }
 
-    // load this afetr device is selected to configure file input correctly
-//    QString inFile = settings.value("inputFileName", QVariant(QString(""))).toString();
-//    setupDialog->setInputFile(inFile,
-//                              RawFileInputFormat(settings.value("inputFileFormat", 0).toInt()),
-//                              settings.value("inputFileLoop", false).toBool());
-    //setupDialog->setDAGCState(settings.value("DAGC", false).toBool());
-    //setupDialog->setGainIdx(settings.value("gainIndex", 1).toInt());
-
     ensembleInfoDialog->setDumpPath(settings.value("dumpPath", QVariant(QDir::homePath())).toString());
 
     if ((InputDeviceId::RTLSDR == inputDeviceId) && (serviceList->numServices() == 0))
@@ -1530,6 +1515,8 @@ void MainWindow::saveSettings()
     settings.setValue("inputFileLoop", s.inputFileLoopEna);
     settings.setValue("gainIndex", s.gainIdx);
     settings.setValue("dumpPath", ensembleInfoDialog->getDumpPath());
+    settings.setValue("address", s.tcpAddress);
+    settings.setValue("port", s.tcpPort);
 
     QModelIndex current = ui->serviceListView->currentIndex();
     const SLModel * model = reinterpret_cast<const SLModel*>(current.model());

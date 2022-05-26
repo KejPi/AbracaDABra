@@ -28,7 +28,6 @@ public:
         int tcpPort;
     };
 
-
     SetupDialog(QWidget *parent = nullptr);
     Settings settings() const;
     void setGainValues(const QList<int> * pList = nullptr);
@@ -48,7 +47,6 @@ private:
     void onInputChanged(int index);
     void onOpenFileButtonClicked();
     void applySettings();
-    void resetGainValues();
 };
 
 #endif // SETUPDIALOG_H

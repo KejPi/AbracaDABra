@@ -38,7 +38,6 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
                                +                                + "(\\." + ipRange + ")$");
     QRegularExpressionValidator *ipValidator = new QRegularExpressionValidator(ipRegex, this);
     ui->ipAddressEdit->setValidator(ipValidator);
-    ui->tcpFrame->hide();
 
     connect(ui->buttonBox, &QDialogButtonBox::clicked, this, &SetupDialog::onButtonClicked);
     connect(ui->inputCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onInputChanged);
@@ -74,24 +73,36 @@ void SetupDialog::onButtonClicked(QAbstractButton *button)
 
 }
 
-void SetupDialog::resetGainValues()
-{
-    ui->gainCombo->clear();
-    ui->gainCombo->addItem("Device");
-    ui->gainCombo->addItem("Software");
-}
-
 void SetupDialog::setGainValues(const QList<int> * pList)
 {
-    resetGainValues();
+    QComboBox * comboPtr;
+
+    switch (m_settings.inputDevice)
+    {
+    case InputDeviceId::RTLSDR:
+        comboPtr = ui->rtlsdrGainCombo;
+        break;
+    case InputDeviceId::RTLTCP:
+        comboPtr = ui->rtltcpGainCombo;
+        break;
+    case InputDeviceId::UNDEFINED:
+    case InputDeviceId::RARTTCP:
+    case InputDeviceId::RAWFILE:
+        return;
+    }
+
+    comboPtr->clear();
+    comboPtr->addItem("Device");
+    comboPtr->addItem("Software");
+
     if (nullptr != pList)
     {
         for (int i=0; i<pList->size(); ++i)
         {
-            ui->gainCombo->addItem(QString("%1").arg(pList->at(i)/10.0), pList->at(i));
+            comboPtr->addItem(QString("%1").arg(pList->at(i)/10.0), pList->at(i));
         }
     }
-    ui->gainCombo->setCurrentIndex(1);
+    comboPtr->setCurrentIndex(1);
 }
 
 void SetupDialog::setSettings(const Settings &settings)
@@ -100,16 +111,27 @@ void SetupDialog::setSettings(const Settings &settings)
     m_settings = settings;
 
     // -2 == HW, -1 == SW, 0 .. N is gain index
-    ui->gainCombo->setCurrentIndex(m_settings.gainIdx + 2);
     int index = ui->inputCombo->findData(QVariant(static_cast<int>(m_settings.inputDevice)));
     ui->inputCombo->setCurrentIndex(index);
+
+    if (InputDeviceId::RTLSDR == m_settings.inputDevice)
+    {
+        ui->rtlsdrGainCombo->setCurrentIndex(m_settings.gainIdx + 2);
+    }
+    else if (InputDeviceId::RTLTCP == m_settings.inputDevice)
+    {
+        ui->rtltcpGainCombo->setCurrentIndex(m_settings.gainIdx + 2);
+    }
+
     if (m_settings.inputFile.isEmpty())
     {
         ui->fileNameLabel->setText(NO_FILE);
+        ui->fileNameLabel->setToolTip("");
     }
     else
-    {
-        ui->fileNameLabel->setText(m_settings.inputFile);
+    {        
+        ui->fileNameLabel->setText(QFileInfo(m_settings.inputFile).fileName());
+        ui->fileNameLabel->setToolTip(m_settings.inputFile);
     }
     ui->loopCheckbox->setChecked(m_settings.inputFileLoopEna);
     ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings.inputFormat));   
@@ -122,8 +144,18 @@ void SetupDialog::applySettings()
     qDebug() << Q_FUNC_INFO;
 
     Settings newSet;
-    newSet.gainIdx = ui->gainCombo->currentIndex() - 2;
     newSet.inputDevice = static_cast<InputDeviceId>(ui->inputCombo->itemData(ui->inputCombo->currentIndex()).toInt());
+
+    newSet.gainIdx = -2;
+    if (InputDeviceId::RTLSDR == newSet.inputDevice)
+    {
+        newSet.gainIdx = ui->rtlsdrGainCombo->currentIndex() - 2;
+    }
+    else if (InputDeviceId::RTLTCP == newSet.inputDevice)
+    {
+        newSet.gainIdx = ui->rtltcpGainCombo->currentIndex() - 2;
+    }
+
     if (ui->fileNameLabel->text() != NO_FILE)
     {
         newSet.inputFile = ui->fileNameLabel->text();
@@ -217,31 +249,18 @@ void SetupDialog::onInputChanged(int index)
     switch (id)
     {
     case InputDeviceId::UNDEFINED:
-        ui->rawFileFrame->setVisible(false);
-        ui->rtlsdrFrame->setVisible(false);
-        ui->tcpFrame->setVisible(false);
+        ui->deviceOptionsWidget->setCurrentIndex(0);
         break;
     case InputDeviceId::RTLSDR:
-        ui->rawFileFrame->setVisible(false);
-        ui->rtlsdrFrame->setVisible(true);
-        ui->tcpFrame->setVisible(false);
-        //resetGainValues();
+        ui->deviceOptionsWidget->setCurrentIndex(1);
         break;
-    case InputDeviceId::RTLTCP:
-        ui->rawFileFrame->setVisible(false);
-        ui->rtlsdrFrame->setVisible(true);
-        ui->tcpFrame->setVisible(true);
-        //resetGainValues();
+    case InputDeviceId::RTLTCP:        
+        ui->deviceOptionsWidget->setCurrentIndex(2);
         break;
     case InputDeviceId::RARTTCP:
-        ui->rawFileFrame->setVisible(false);
-        ui->rtlsdrFrame->setVisible(false);
-        ui->tcpFrame->setVisible(true);
         break;
     case InputDeviceId::RAWFILE:
-        ui->rawFileFrame->setVisible(true);
-        ui->rtlsdrFrame->setVisible(false);
-        ui->tcpFrame->setVisible(false);
+        ui->deviceOptionsWidget->setCurrentIndex(3);
         break;
     }
 
@@ -260,7 +279,8 @@ void SetupDialog::onOpenFileButtonClicked()
     if (!fileName.isEmpty())
     {
         inputFileName = fileName;
-        ui->fileNameLabel->setText(fileName);
+        ui->fileNameLabel->setText(QFileInfo(fileName).fileName());
+        ui->fileNameLabel->setToolTip(fileName);
         if (fileName.endsWith(".s16"))
         {
             ui->fileFormatCombo->setCurrentIndex(int(RawFileInputFormat::SAMPLE_FORMAT_S16));
@@ -280,12 +300,28 @@ void SetupDialog::onOpenFileButtonClicked()
 
 void SetupDialog::resetInputDevice()
 {
-    for (int idx = 0; idx < ui->inputCombo->count(); ++idx)
+    QComboBox * comboPtr;
+
+    switch (m_settings.inputDevice)
     {
-        if (ui->inputCombo->itemData(idx).toInt() == static_cast<int>(InputDeviceId::UNDEFINED))
-        {
-            ui->inputCombo->setCurrentIndex(idx);
-            return;
-        }
+    case InputDeviceId::RTLSDR:
+        comboPtr = ui->rtlsdrGainCombo;
+        break;
+    case InputDeviceId::RTLTCP:
+        comboPtr = ui->rtltcpGainCombo;
+        break;
+    case InputDeviceId::UNDEFINED:
+    case InputDeviceId::RARTTCP:
+    case InputDeviceId::RAWFILE:
+        return;
     }
+
+    comboPtr->clear();
+    comboPtr->addItem("Device");
+    comboPtr->addItem("Software");
+
+    m_settings.inputDevice = InputDeviceId::UNDEFINED;
+
+    int idx = ui->inputCombo->findData(QVariant(static_cast<int>(InputDeviceId::UNDEFINED)));
+    ui->inputCombo->setCurrentIndex(idx);
 }
