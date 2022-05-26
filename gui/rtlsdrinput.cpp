@@ -330,6 +330,20 @@ void RtlSdrInput::stopDumpToFile()
     emit dumpingToFile(false);
 }
 
+void RtlSdrInput::setBW(bool full)
+{
+    int bw = 0;
+    if (!full)
+    {
+        bw = 1540 * 1000;
+    }
+    int ret = rtlsdr_set_tuner_bandwidth(device, bw);
+    if (ret != 0)
+    {
+        qDebug() << "RTLSDR: Failed to set tuner BW";
+    }
+}
+
 RtlSdrWorker::RtlSdrWorker(struct rtlsdr_dev *d, QObject *parent) : QThread(parent)
 {
     enaDumpToFile = false;

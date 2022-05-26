@@ -26,6 +26,7 @@ public:
         bool inputFileLoopEna;
         QString tcpAddress;
         int tcpPort;
+        bool fullBW;
     };
 
     SetupDialog(QWidget *parent = nullptr);

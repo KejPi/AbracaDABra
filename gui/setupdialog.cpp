@@ -28,6 +28,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->fileFormatCombo->insertItem(int(RawFileInputFormat::SAMPLE_FORMAT_U8), "Unsigned 8 bits");
     ui->fileFormatCombo->insertItem(int(RawFileInputFormat::SAMPLE_FORMAT_S16), "Signed 16 bits");
 
+    ui->rtlsdrBwCombo->insertItem(0, "Reduced");
+    ui->rtlsdrBwCombo->insertItem(1, "Full");
+
     // this has to be aligned with mainwindow
     ui->loopCheckbox->setChecked(false);
 
@@ -133,6 +136,7 @@ void SetupDialog::setSettings(const Settings &settings)
         ui->fileNameLabel->setText(QFileInfo(m_settings.inputFile).fileName());
         ui->fileNameLabel->setToolTip(m_settings.inputFile);
     }
+    ui->rtlsdrBwCombo->setCurrentIndex(m_settings.fullBW);
     ui->loopCheckbox->setChecked(m_settings.inputFileLoopEna);
     ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings.inputFormat));   
     ui->ipAddressEdit->setText(m_settings.tcpAddress);
@@ -164,6 +168,7 @@ void SetupDialog::applySettings()
     {
         newSet.inputFile.clear();
     }
+    newSet.fullBW = ui->rtlsdrBwCombo->currentIndex() != 0;
     newSet.inputFileLoopEna = ui->loopCheckbox->isChecked();
     newSet.inputFormat = static_cast<RawFileInputFormat>(ui->fileFormatCombo->currentIndex());
     newSet.tcpAddress = ui->ipAddressEdit->text();
@@ -212,7 +217,8 @@ void SetupDialog::applySettings()
                       || (m_settings.inputFileLoopEna != newSet.inputFileLoopEna)
                       || (m_settings.inputFormat != newSet.inputFormat)
                       || (m_settings.tcpAddress != newSet.tcpAddress)
-                      || (m_settings.tcpPort != newSet.tcpPort);
+                      || (m_settings.tcpPort != newSet.tcpPort)
+                      || (m_settings.fullBW != newSet.fullBW);
 
     m_settings = newSet;
     if (settingsChanged)

@@ -1082,103 +1082,6 @@ void MainWindow::clearServiceInformationLabels()
 
 void MainWindow::onNewSettings()
 {
-    qDebug() << Q_FUNC_INFO;
-#if 0
-    SetupDialog::Settings s = setupDialog->settings();
-
-    //    connect(setupDialog, &SetupDialog::inputDeviceChanged, this, &MainWindow::changeInputDevice);
-    bool inputDeviceChangeNeeded = false;
-    if (s.inputDevice != m_settings.inputDevice)
-    {
-        inputDeviceChangeNeeded = true;
-    }
-    else
-    {
-        switch (m_settings.inputDevice)
-        {
-        case InputDeviceId::UNDEFINED:
-            break;
-        case InputDeviceId::RTLSDR:
-            break;
-        case InputDeviceId::RARTTCP:
-        case InputDeviceId::RTLTCP:
-            if ((s.tcpAddress != m_settings.tcpAddress) || (s.tcpPort != m_settings.tcpPort))
-            {
-                inputDeviceChangeNeeded = true;
-            }
-            break;
-        case InputDeviceId::RAWFILE:
-            if ((s.inputFile != m_settings.inputFile) || (s.inputFormat != m_settings.inputFormat))
-            {
-                inputDeviceChangeNeeded = true;
-            }
-            break;
-        }
-    }
-    if (inputDeviceChangeNeeded)
-    {   // device will be chnaged -> dialog will be enabled after change
-        //setupDialog->setEnabled(false);
-        changeInputDevice(s.inputDevice);
-        // remaining parameters will be set in initInputDevice()
-        m_settings = s;
-        return;
-    }
-
-    //fileLooping = s.inputFileLoopEna;
-    m_settings = s;
-
-    switch (m_settings.inputDevice)
-    {
-    case InputDeviceId::RTLSDR:
-        if (m_settings.gainIdx == -2)
-        {   // HW gain
-            dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Hardware);
-        }
-        else if (m_settings.gainIdx == -1)
-        {   // software gain
-            dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Software);
-        }
-        else
-        {  // manual gain value
-            dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Manual, m_settings.gainIdx);
-        }
-        break;
-    case InputDeviceId::RTLTCP:
-        if (m_settings.gainIdx == -2)
-        {   // HW gain
-            dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Hardware);
-        }
-        else if (m_settings.gainIdx == -1)
-        {   // software gain
-            dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Software);
-        }
-        else
-        {  // manual gain value
-            dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Manual, m_settings.gainIdx);
-        }
-        break;
-    case InputDeviceId::RARTTCP:
-        break;
-    case InputDeviceId::RAWFILE:
-        dynamic_cast<RawFileInput*>(inputDevice)->setFileFormat(m_settings.inputFormat);
-        dynamic_cast<RawFileInput*>(inputDevice)->openFile(m_settings.inputFile);
-        break;
-    case InputDeviceId::UNDEFINED:
-        break;
-    }
-
-
-    //    connect(setupDialog, &SetupDialog::setGainMode, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setGainMode);
-    //    connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::setDAGC);
-
-    //connect(setupDialog, &SetupDialog::setGainMode, dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::setGainMode);
-    //connect(setupDialog, &SetupDialog::setDAGC, dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::setDAGC);
-
-
-    //connect(setupDialog, &SetupDialog::rawFileSelected, dynamic_cast<RawFileInput*>(inputDevice), &RawFileInput::openFile);
-    //connect(setupDialog, &SetupDialog::sampleFormat, dynamic_cast<RawFileInput*>(inputDevice), &RawFileInput::setFileFormat);
-#else
-
     SetupDialog::Settings s = setupDialog->settings();
     switch (s.inputDevice)
     {
@@ -1195,6 +1098,7 @@ void MainWindow::onNewSettings()
         {  // manual gain value
             dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Manual, s.gainIdx);
         }
+        dynamic_cast<RtlSdrInput*>(inputDevice)->setBW(s.fullBW);
         break;
     case InputDeviceId::RTLTCP:
         if (s.gainIdx == -2)
@@ -1219,10 +1123,6 @@ void MainWindow::onNewSettings()
     case InputDeviceId::UNDEFINED:
         break;
     }
-
-#endif
-
-
 }
 
 
@@ -1309,6 +1209,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(inputDevice, &InputDevice::dumpedBytes, ensembleInfoDialog, &EnsembleInfoDialog::updateDumpStatus);
             connect(inputDevice, &InputDevice::agcGain, ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             ensembleInfoDialog->enableDumpToFile(true);
+
+            // apply current settings
+            onNewSettings();
         }
         else
         {
@@ -1357,6 +1260,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(inputDevice, &InputDevice::dumpedBytes, ensembleInfoDialog, &EnsembleInfoDialog::updateDumpStatus);
             connect(inputDevice, &InputDevice::agcGain, ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             ensembleInfoDialog->enableDumpToFile(true);
+
+            // apply current settings
+            onNewSettings();
         }
         else
         {
@@ -1402,6 +1308,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(inputDevice, &InputDevice::dumpingToFile, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
             connect(inputDevice, &InputDevice::dumpedBytes, ensembleInfoDialog, &EnsembleInfoDialog::updateDumpStatus);
             ensembleInfoDialog->enableDumpToFile(true);
+
+            // apply current settings
+            onNewSettings();
         }
         else
         {
@@ -1438,6 +1347,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         ui->serviceListView->setEnabled(true);
         ui->serviceTreeView->setEnabled(true);
         ui->favoriteLabel->setEnabled(true);
+
+        // apply current settings
+        onNewSettings();
     }
         break;
     }
@@ -1461,6 +1373,7 @@ void MainWindow::loadSettings()
     s.gainIdx = settings.value("gainIndex", 1).toInt();
     s.tcpAddress = settings.value("address", QString("127.0.0.1")).toString();
     s.tcpPort = settings.value("port", 1234).toInt();
+    s.fullBW = settings.value("fullBW", true).toBool();
     setupDialog->setSettings(s);
 
 
@@ -1520,6 +1433,7 @@ void MainWindow::saveSettings()
     settings.setValue("dumpPath", ensembleInfoDialog->getDumpPath());
     settings.setValue("address", s.tcpAddress);
     settings.setValue("port", s.tcpPort);
+    settings.setValue("fullBW", s.fullBW);
 
     QModelIndex current = ui->serviceListView->currentIndex();
     const SLModel * model = reinterpret_cast<const SLModel*>(current.model());

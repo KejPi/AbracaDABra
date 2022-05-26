@@ -54,12 +54,13 @@ public:
     ~RtlSdrInput();
     bool openDevice() override;
 
-public slots:
     void tune(uint32_t freq) override;
     void setGainMode(GainMode mode, int gainIdx = 0);
 
     void startDumpToFile(const QString & filename) override;
     void stopDumpToFile() override;
+
+    void setBW(bool full);
 
 signals:
     void gainListAvailable(const QList<int> * pList);
@@ -88,7 +89,7 @@ private:
 
     // used by friend
     void updateAgc(float level, int maxVal);
-private slots:
+
     void readThreadStopped();
 #if (RTLSDR_WDOG_ENABLE)
     void watchDogTimeout();
