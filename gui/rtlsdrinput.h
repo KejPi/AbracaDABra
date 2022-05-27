@@ -60,7 +60,8 @@ public:
     void startDumpToFile(const QString & filename) override;
     void stopDumpToFile() override;
 
-    void setBW(bool full);
+    void setBW(int bw);
+    void setBiasT(bool ena);
 
 signals:
     void gainListAvailable(const QList<int> * pList);

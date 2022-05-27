@@ -330,17 +330,31 @@ void RtlSdrInput::stopDumpToFile()
     emit dumpingToFile(false);
 }
 
-void RtlSdrInput::setBW(bool full)
+void RtlSdrInput::setBW(int bw)
 {
-    int bw = 2000 * 1000;
-    if (!full)
+    if (bw > 0)
     {
-        bw = 1700 * 1000;
+        int ret = rtlsdr_set_tuner_bandwidth(device, bw);
+        if (ret != 0)
+        {
+            qDebug() << "RTLSDR: Failed to set tuner BW";
+        }
+        else
+        {
+            qDebug() << "RTLSDR: bandwidth set to:" << bw;
+        }
     }
-    int ret = rtlsdr_set_tuner_bandwidth(device, bw);
-    if (ret != 0)
+}
+
+void RtlSdrInput::setBiasT(bool ena)
+{
+    if (ena)
     {
-        qDebug() << "RTLSDR: Failed to set tuner BW";
+        int ret = rtlsdr_set_bias_tee(device, ena);
+        if (ret != 0)
+        {
+            qDebug() << "RTLSDR: Failed to enable bias-T";
+        }
     }
 }
 

@@ -780,7 +780,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
     {
     case InputDeviceErrorCode::EndOfFile:
         // tune to 0
-        if (!setupDialog->settings().inputFileLoopEna)
+        if (!setupDialog->settings().rawfile.loopEna)
         {
             ui->channelCombo->setCurrentIndex(-1);
         }
@@ -1083,35 +1083,35 @@ void MainWindow::clearServiceInformationLabels()
 void MainWindow::onNewSettings()
 {
     SetupDialog::Settings s = setupDialog->settings();
+
     switch (s.inputDevice)
     {
     case InputDeviceId::RTLSDR:
-        if (s.gainIdx == -2)
+        if (s.rtlsdr.gainIdx == -2)
         {   // HW gain
             dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Hardware);
         }
-        else if (s.gainIdx == -1)
+        else if (s.rtlsdr.gainIdx == -1)
         {   // software gain
             dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Software);
         }
         else
         {  // manual gain value
-            dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Manual, s.gainIdx);
+            dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Manual, s.rtlsdr.gainIdx);
         }
-        dynamic_cast<RtlSdrInput*>(inputDevice)->setBW(s.fullBW);
         break;
     case InputDeviceId::RTLTCP:
-        if (s.gainIdx == -2)
+        if (s.rtltcp.gainIdx == -2)
         {   // HW gain
             dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Hardware);
         }
-        else if (s.gainIdx == -1)
+        else if (s.rtltcp.gainIdx == -1)
         {   // software gain
             dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Software);
         }
         else
         {  // manual gain value
-            dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Manual, s.gainIdx);
+            dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Manual, s.rtltcp.gainIdx);
         }
         break;
     case InputDeviceId::RARTTCP:
@@ -1210,6 +1210,11 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(inputDevice, &InputDevice::agcGain, ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             ensembleInfoDialog->enableDumpToFile(true);
 
+            // these are settings that are configures in ini file manually
+            // they are only set when device is initialized
+            dynamic_cast<RtlSdrInput*>(inputDevice)->setBW(setupDialog->settings().rtlsdr.bandwidth);
+            dynamic_cast<RtlSdrInput*>(inputDevice)->setBiasT(setupDialog->settings().rtlsdr.biasT);
+
             // apply current settings
             onNewSettings();
         }
@@ -1239,7 +1244,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
 
         // set IP address and port
-        dynamic_cast<RtlTcpInput*>(inputDevice)->setTcpIp(setupDialog->settings().tcpAddress, setupDialog->settings().tcpPort);
+        dynamic_cast<RtlTcpInput*>(inputDevice)->setTcpIp(setupDialog->settings().rtltcp.tcpAddress, setupDialog->settings().rtltcp.tcpPort);
 
         if (inputDevice->openDevice())
         {  // rtl tcp is available
@@ -1333,10 +1338,10 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
         connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
-        QString filename = setupDialog->settings().inputFile;
+        QString filename = setupDialog->settings().rawfile.file;
         if (!filename.isEmpty())
         {
-            RawFileInputFormat format = setupDialog->settings().inputFormat;
+            RawFileInputFormat format = setupDialog->settings().rawfile.format;
             dynamic_cast<RawFileInput*>(inputDevice)->openFile(filename, format);
         }
 
@@ -1367,15 +1372,18 @@ void MainWindow::loadSettings()
 
     SetupDialog::Settings s;
     s.inputDevice = static_cast<InputDeviceId>(inDevice);
-    s.inputFile = settings.value("inputFileName", QVariant(QString(""))).toString();
-    s.inputFormat = RawFileInputFormat(settings.value("inputFileFormat", 0).toInt());
-    s.inputFileLoopEna = settings.value("inputFileLoop", false).toBool();
-    s.gainIdx = settings.value("gainIndex", 1).toInt();
-    s.tcpAddress = settings.value("address", QString("127.0.0.1")).toString();
-    s.tcpPort = settings.value("port", 1234).toInt();
-    s.fullBW = settings.value("fullBW", true).toBool();
+    s.rtlsdr.gainIdx = settings.value("RTL-SDR/gainIndex", -1).toInt();
+    s.rtlsdr.bandwidth = settings.value("RTL-SDR/bandwidth", 0).toInt();
+    s.rtlsdr.biasT = settings.value("RTL-SDR/bias-T", false).toBool();
+    s.rtltcp.gainIdx = settings.value("RTL-TCP/gainIndex", -1).toInt();
+    s.rtltcp.tcpAddress = settings.value("RTL-TCP/address", QString("127.0.0.1")).toString();
+    s.rtltcp.tcpPort = settings.value("RTL-TCP/port", 1234).toInt();
+    s.rawfile.file = settings.value("RAW-FILE/filename", QVariant(QString(""))).toString();
+    s.rawfile.format = RawFileInputFormat(settings.value("RAW-FILE/format", 0).toInt());
+    s.rawfile.loopEna = settings.value("RAW-FILE/loop", false).toBool();
     setupDialog->setSettings(s);
 
+    ensembleInfoDialog->setDumpPath(settings.value("dumpPath", QVariant(QDir::homePath())).toString());
 
     if (InputDeviceId::UNDEFINED != static_cast<InputDeviceId>(inDevice))
     {               
@@ -1407,14 +1415,13 @@ void MainWindow::loadSettings()
         }
     }
 
-    ensembleInfoDialog->setDumpPath(settings.value("dumpPath", QVariant(QDir::homePath())).toString());
 
     if ((InputDeviceId::RTLSDR == inputDeviceId) && (serviceList->numServices() == 0))
     {
         QTimer::singleShot(1, this, [this](){ bandScan(); } );
     }
     if ((InputDeviceId::UNDEFINED == inputDeviceId)
-        || ((InputDeviceId::RAWFILE == inputDeviceId) && (s.inputFile.isEmpty())))
+        || ((InputDeviceId::RAWFILE == inputDeviceId) && (s.rawfile.file.isEmpty())))
     {
         QTimer::singleShot(1, this, [this](){ showSetupDialog(); } );
     }
@@ -1426,14 +1433,16 @@ void MainWindow::saveSettings()
 
     const SetupDialog::Settings s = setupDialog->settings();
     settings.setValue("inputDeviceId", int(s.inputDevice));
-    settings.setValue("inputFileName", s.inputFile);
-    settings.setValue("inputFileFormat", int(s.inputFormat));
-    settings.setValue("inputFileLoop", s.inputFileLoopEna);
-    settings.setValue("gainIndex", s.gainIdx);
     settings.setValue("dumpPath", ensembleInfoDialog->getDumpPath());
-    settings.setValue("address", s.tcpAddress);
-    settings.setValue("port", s.tcpPort);
-    settings.setValue("fullBW", s.fullBW);
+    settings.setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
+    settings.setValue("RTL-SDR/bandwidth", s.rtlsdr.bandwidth);
+    settings.setValue("RTL-SDR/bias-T", s.rtlsdr.biasT);
+    settings.setValue("RTL-TCP/gainIndex", s.rtlsdr.gainIdx);
+    settings.setValue("RTL-TCP/address", s.rtltcp.tcpAddress);
+    settings.setValue("RTL-TCP/port", s.rtltcp.tcpPort);
+    settings.setValue("RAW-FILE/filename", s.rawfile.file);
+    settings.setValue("RAW-FILE/format", int(s.rawfile.format));
+    settings.setValue("RAW-FILE/loop", s.rawfile.loopEna);
 
     QModelIndex current = ui->serviceListView->currentIndex();
     const SLModel * model = reinterpret_cast<const SLModel*>(current.model());

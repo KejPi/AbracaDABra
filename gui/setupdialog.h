@@ -20,13 +20,24 @@ public:
     struct Settings
     {
         InputDeviceId inputDevice;
-        int gainIdx;
-        QString inputFile;
-        RawFileInputFormat inputFormat;
-        bool inputFileLoopEna;
-        QString tcpAddress;
-        int tcpPort;
-        bool fullBW;
+        struct
+        {
+            QString file;
+            RawFileInputFormat format;
+            bool loopEna;
+        } rawfile;
+        struct
+        {
+            int gainIdx;
+            QString tcpAddress;
+            int tcpPort;
+        } rtltcp;
+        struct
+        {
+            int gainIdx;
+            int bandwidth;
+            bool biasT;
+        } rtlsdr;
     };
 
     SetupDialog(QWidget *parent = nullptr);

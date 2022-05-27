@@ -28,9 +28,6 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->fileFormatCombo->insertItem(int(RawFileInputFormat::SAMPLE_FORMAT_U8), "Unsigned 8 bits");
     ui->fileFormatCombo->insertItem(int(RawFileInputFormat::SAMPLE_FORMAT_S16), "Signed 16 bits");
 
-    ui->rtlsdrBwCombo->insertItem(0, "Reduced");
-    ui->rtlsdrBwCombo->insertItem(1, "Full");
-
     // this has to be aligned with mainwindow
     ui->loopCheckbox->setChecked(false);
 
@@ -116,31 +113,23 @@ void SetupDialog::setSettings(const Settings &settings)
     // -2 == HW, -1 == SW, 0 .. N is gain index
     int index = ui->inputCombo->findData(QVariant(static_cast<int>(m_settings.inputDevice)));
     ui->inputCombo->setCurrentIndex(index);
+    ui->rtlsdrGainCombo->setCurrentIndex(m_settings.rtlsdr.gainIdx + 2);
+    ui->rtltcpGainCombo->setCurrentIndex(m_settings.rtltcp.gainIdx + 2);
 
-    if (InputDeviceId::RTLSDR == m_settings.inputDevice)
-    {
-        ui->rtlsdrGainCombo->setCurrentIndex(m_settings.gainIdx + 2);
-    }
-    else if (InputDeviceId::RTLTCP == m_settings.inputDevice)
-    {
-        ui->rtltcpGainCombo->setCurrentIndex(m_settings.gainIdx + 2);
-    }
-
-    if (m_settings.inputFile.isEmpty())
+    if (m_settings.rawfile.file.isEmpty())
     {
         ui->fileNameLabel->setText(NO_FILE);
         ui->fileNameLabel->setToolTip("");
     }
     else
     {        
-        ui->fileNameLabel->setText(QFileInfo(m_settings.inputFile).fileName());
-        ui->fileNameLabel->setToolTip(m_settings.inputFile);
+        ui->fileNameLabel->setText(QFileInfo(m_settings.rawfile.file).fileName());
+        ui->fileNameLabel->setToolTip(m_settings.rawfile.file);
     }
-    ui->rtlsdrBwCombo->setCurrentIndex(m_settings.fullBW);
-    ui->loopCheckbox->setChecked(m_settings.inputFileLoopEna);
-    ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings.inputFormat));   
-    ui->ipAddressEdit->setText(m_settings.tcpAddress);
-    ui->ipPortSpinBox->setValue(m_settings.tcpPort);
+    ui->loopCheckbox->setChecked(m_settings.rawfile.loopEna);
+    ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings.rawfile.format));
+    ui->ipAddressEdit->setText(m_settings.rtltcp.tcpAddress);
+    ui->ipPortSpinBox->setValue(m_settings.rtltcp.tcpPort);
 }
 
 void SetupDialog::applySettings()
@@ -148,31 +137,25 @@ void SetupDialog::applySettings()
     qDebug() << Q_FUNC_INFO;
 
     Settings newSet;
+    newSet.rtlsdr.bandwidth = m_settings.rtlsdr.bandwidth;
+    newSet.rtlsdr.biasT = m_settings.rtlsdr.biasT;
     newSet.inputDevice = static_cast<InputDeviceId>(ui->inputCombo->itemData(ui->inputCombo->currentIndex()).toInt());
 
-    newSet.gainIdx = -2;
-    if (InputDeviceId::RTLSDR == newSet.inputDevice)
-    {
-        newSet.gainIdx = ui->rtlsdrGainCombo->currentIndex() - 2;
-    }
-    else if (InputDeviceId::RTLTCP == newSet.inputDevice)
-    {
-        newSet.gainIdx = ui->rtltcpGainCombo->currentIndex() - 2;
-    }
+    newSet.rtlsdr.gainIdx = ui->rtlsdrGainCombo->currentIndex() - 2;
+    newSet.rtltcp.gainIdx = ui->rtltcpGainCombo->currentIndex() - 2;
 
     if (ui->fileNameLabel->text() != NO_FILE)
     {
-        newSet.inputFile = ui->fileNameLabel->text();
+        newSet.rawfile.file = ui->fileNameLabel->text();
     }
     else
     {
-        newSet.inputFile.clear();
+        newSet.rawfile.file.clear();
     }
-    newSet.fullBW = ui->rtlsdrBwCombo->currentIndex() != 0;
-    newSet.inputFileLoopEna = ui->loopCheckbox->isChecked();
-    newSet.inputFormat = static_cast<RawFileInputFormat>(ui->fileFormatCombo->currentIndex());
-    newSet.tcpAddress = ui->ipAddressEdit->text();
-    newSet.tcpPort = ui->ipPortSpinBox->value();
+    newSet.rawfile.loopEna = ui->loopCheckbox->isChecked();
+    newSet.rawfile.format = static_cast<RawFileInputFormat>(ui->fileFormatCombo->currentIndex());
+    newSet.rtltcp.tcpAddress = ui->ipAddressEdit->text();
+    newSet.rtltcp.tcpPort = ui->ipPortSpinBox->value();
 
     bool inputDeviceChangeNeeded = false;
     if (m_settings.inputDevice != newSet.inputDevice)
@@ -189,13 +172,15 @@ void SetupDialog::applySettings()
             break;
         case InputDeviceId::RARTTCP:
         case InputDeviceId::RTLTCP:
-            if ((newSet.tcpAddress != m_settings.tcpAddress) || (newSet.tcpPort != m_settings.tcpPort))
+            if ((newSet.rtltcp.tcpAddress != m_settings.rtltcp.tcpAddress)
+                || (newSet.rtltcp.tcpPort != m_settings.rtltcp.tcpPort))
             {
                 inputDeviceChangeNeeded = true;
             }
             break;
         case InputDeviceId::RAWFILE:
-            if ((newSet.inputFile != m_settings.inputFile) || (newSet.inputFormat != m_settings.inputFormat))
+            if ((newSet.rawfile.file != m_settings.rawfile.file)
+                || (newSet.rawfile.format != m_settings.rawfile.format))
             {
                 inputDeviceChangeNeeded = true;
             }
@@ -212,13 +197,13 @@ void SetupDialog::applySettings()
 
     // check if new settings
     bool settingsChanged = false;
-    settingsChanged = (m_settings.gainIdx != newSet.gainIdx)
-                      || (m_settings.inputFile != newSet.inputFile)
-                      || (m_settings.inputFileLoopEna != newSet.inputFileLoopEna)
-                      || (m_settings.inputFormat != newSet.inputFormat)
-                      || (m_settings.tcpAddress != newSet.tcpAddress)
-                      || (m_settings.tcpPort != newSet.tcpPort)
-                      || (m_settings.fullBW != newSet.fullBW);
+    settingsChanged = (m_settings.rtlsdr.gainIdx != newSet.rtlsdr.gainIdx)
+                      || (m_settings.rtltcp.gainIdx != newSet.rtltcp.gainIdx)
+                      || (m_settings.rawfile.file != newSet.rawfile.file)
+                      || (m_settings.rawfile.loopEna != newSet.rawfile.loopEna)
+                      || (m_settings.rawfile.format != newSet.rawfile.format)
+                      || (m_settings.rtltcp.tcpAddress != newSet.rtltcp.tcpAddress)
+                      || (m_settings.rtltcp.tcpPort != newSet.rtltcp.tcpPort);
 
     m_settings = newSet;
     if (settingsChanged)
