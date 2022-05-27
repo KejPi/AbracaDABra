@@ -162,8 +162,7 @@ void RtlSdrInput::stop()
 
         rtlsdr_cancel_async(device);
 
-        //worker->wait(QDeadlineTimer(2000));  // requires QT >=5.15
-        worker->wait(2000);
+        worker->wait(QDeadlineTimer(2000));
         while (!worker->isFinished())
         {
             qDebug() << "Worker thread not finished after timeout - this should not happen :-(";
