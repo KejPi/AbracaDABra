@@ -826,17 +826,7 @@ void MainWindow::serviceListClicked(const QModelIndex &index)
            frequency = newFrequency;
 
             // change combo
-            int idx = 0;
-            dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
-            while (it != DabTables::channelList.constEnd()) {
-                if (it.key() == frequency)
-                {
-                    ui->channelCombo->setCurrentIndex(idx);
-                    break;
-                }
-                ++it;
-                ++idx;
-            }            
+            ui->channelCombo->setCurrentIndex(ui->channelCombo->findData(frequency));
 
             // set UI to new channel tuning
             onChannelSelection();
@@ -885,17 +875,7 @@ void MainWindow::serviceListTreeClicked(const QModelIndex &index)
                 frequency = newFrequency;
 
                 // change combo
-                int idx = 0;
-                dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
-                while (it != DabTables::channelList.constEnd()) {
-                    if (it.key() == frequency)
-                    {
-                        ui->channelCombo->setCurrentIndex(idx);
-                        break;
-                    }
-                    ++it;
-                    ++idx;
-                }                
+                ui->channelCombo->setCurrentIndex(ui->channelCombo->findData(frequency));
 
                 // set UI to new channel tuning
                 onChannelSelection();
@@ -1500,17 +1480,7 @@ void MainWindow::switchServiceSource()
                frequency = newFrequency;
 
                 // change combo
-                int idx = 0;
-                dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
-                while (it != DabTables::channelList.constEnd()) {
-                    if (it.key() == frequency)
-                    {
-                        ui->channelCombo->setCurrentIndex(idx);
-                        break;
-                    }
-                    ++it;
-                    ++idx;
-                }                
+                ui->channelCombo->setCurrentIndex(ui->channelCombo->findData(frequency));
 
                 // set UI to new channel tuning
                 onChannelSelection();
@@ -1683,17 +1653,7 @@ void MainWindow::bandScanFinished(int result)
 void MainWindow::tuneChannel(uint32_t freq)
 {
     // change combo - find combo index
-    int idx = 0;
-    dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
-    while (it != DabTables::channelList.constEnd()) {
-        if (it.key() == freq)
-        {
-            ui->channelCombo->setCurrentIndex(idx);
-            return;
-        }
-        ++it;
-        ++idx;
-    }
+    ui->channelCombo->setCurrentIndex(ui->channelCombo->findData(freq));
 }
 
 void MainWindow::stop()
