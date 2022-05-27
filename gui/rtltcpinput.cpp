@@ -297,6 +297,7 @@ bool RtlTcpInput::openDevice()
         // need to create worker, server is pushing samples
         worker = new RtlTcpWorker(sock, this);
         connect(worker, &RtlTcpWorker::agcLevel, this, &RtlTcpInput::updateAgc, Qt::QueuedConnection);
+        connect(worker, &RtlTcpWorker::dumpedBytes, this, &InputDevice::dumpedBytes, Qt::QueuedConnection);
         connect(worker, &RtlTcpWorker::finished, this, &RtlTcpInput::readThreadStopped, Qt::QueuedConnection);
         connect(worker, &RtlTcpWorker::finished, worker, &QObject::deleteLater);
         worker->start();
