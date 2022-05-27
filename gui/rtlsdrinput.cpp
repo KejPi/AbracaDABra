@@ -341,7 +341,7 @@ void RtlSdrInput::setBW(int bw)
         }
         else
         {
-            qDebug() << "RTLSDR: bandwidth set to:" << bw;
+            qDebug() << "RTLSDR: bandwidth set to" << bw/1000.0 << "kHz";
         }
     }
 }

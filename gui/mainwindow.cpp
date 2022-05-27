@@ -1117,8 +1117,6 @@ void MainWindow::onNewSettings()
     case InputDeviceId::RARTTCP:
         break;
     case InputDeviceId::RAWFILE:
-        //dynamic_cast<RawFileInput*>(inputDevice)->setFileFormat(s.inputFormat);
-        //dynamic_cast<RawFileInput*>(inputDevice)->openFile(s.inputFile);
         break;
     case InputDeviceId::UNDEFINED:
         break;
@@ -1166,7 +1164,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         inputDeviceId = InputDeviceId::UNDEFINED;
         inputDevice = nullptr;
         ui->channelCombo->setDisabled(true);   // it will be enabled when device is ready
-        //setupDialog->setInputDevice(inputDeviceId); // this emits device change
 
         ui->serviceListView->setEnabled(false);
         ui->serviceTreeView->setEnabled(false);
@@ -1297,7 +1294,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         if (inputDevice->openDevice())
         {  // rtl tcp is available
             inputDeviceId = InputDeviceId::RARTTCP;
-            //setupDialog->setInputDevice(inputDeviceId); // this emits device change
 
             // enable band scan
             bandScanAct->setEnabled(true);
@@ -1328,7 +1324,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     {
         inputDevice = new RawFileInput();
         inputDeviceId = InputDeviceId::RAWFILE;
-        //setupDialog->setInputDevice(inputDeviceId); // this emits device change
 
         // tuning procedure
         connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);

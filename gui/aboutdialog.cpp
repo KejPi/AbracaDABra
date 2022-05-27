@@ -16,9 +16,10 @@ AboutDialog::AboutDialog(QWidget *parent) :
     dabsdrGetVersion(&dabsdrVer);
 
 #ifdef PROJECT_VERSION_RELEASE
-    ui->version->setText(QString("Version %1").arg(PROJECT_VER));
+    ui->version->setText(QString("Version %1 (%2)").arg(PROJECT_VER,"<a href=\"https://github.com/KejPi/AbracaDABra\">GitHub</a>"));
 #else
-    ui->version->setText(QString("Version %1+, revision %2").arg(PROJECT_VER, PROJECT_GIT_REV));
+    ui->version->setText(QString("Version %1+, revision %2 (%3)").arg(PROJECT_VER, PROJECT_GIT_REV)
+                             .arg("<a href=\"https://github.com/KejPi/AbracaDABra\">GitHub</a>"));
 #endif
     ui->qtVersion->setText(QString("Based on Qt %1").arg(QT_VERSION_STR));
     ui->dabsdrVersion->setText(QString("DAB SDR version %1.%2.%3").arg(dabsdrVer.major).arg(dabsdrVer.minor).arg(dabsdrVer.patch));
@@ -51,6 +52,11 @@ AboutDialog::AboutDialog(QWidget *parent) :
                             "IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, "
                             "WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH "
                             "THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.");
+
+    QObject::connect(
+        ui->version, &QLabel::linkActivated,
+        [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
+        );
 
     QObject::connect(
                 ui->author, &QLabel::linkActivated,

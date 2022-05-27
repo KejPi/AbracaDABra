@@ -107,7 +107,7 @@ void SetupDialog::setGainValues(const QList<int> * pList)
 
 void SetupDialog::setSettings(const Settings &settings)
 {
-    qDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
     m_settings = settings;
 
     // -2 == HW, -1 == SW, 0 .. N is gain index
@@ -134,7 +134,7 @@ void SetupDialog::setSettings(const Settings &settings)
 
 void SetupDialog::applySettings()
 {
-    qDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
 
     Settings newSet;
     newSet.rtlsdr.bandwidth = m_settings.rtlsdr.bandwidth;
@@ -234,7 +234,7 @@ void SetupDialog::onExpertMode(bool ena)
 
 void SetupDialog::onInputChanged(int index)
 {
-    qDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
 
     InputDeviceId id = InputDeviceId(ui->inputCombo->itemData(index).toInt());
     switch (id)
