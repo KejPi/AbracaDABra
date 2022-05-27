@@ -332,10 +332,10 @@ void RtlSdrInput::stopDumpToFile()
 
 void RtlSdrInput::setBW(bool full)
 {
-    int bw = 0;
+    int bw = 2000 * 1000;
     if (!full)
     {
-        bw = 1540 * 1000;
+        bw = 1700 * 1000;
     }
     int ret = rtlsdr_set_tuner_bandwidth(device, bw);
     if (ret != 0)
