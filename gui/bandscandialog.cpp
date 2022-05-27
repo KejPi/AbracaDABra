@@ -148,7 +148,7 @@ void BandScanDialog::tuneFinished(uint32_t freq)
     else
     {   // tuned to some frequency -> wait for sync
         state = BandScanState::WaitForSync;
-        timer->start(2000);
+        timer->start(3000);
     }
 }
 
@@ -158,7 +158,7 @@ void BandScanDialog::onSyncStatus(uint8_t sync)
     {
         timer->stop();
         state = BandScanState::WaitForEnsemble;
-        timer->start(3000);
+        timer->start(6000);
     }
 }
 
