@@ -23,7 +23,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->inputCombo->setCurrentIndex(-1);  // undefined
 
     ui->fileNameLabel->setText(NO_FILE);
-    setGainValues();
+    rawfilename = "";
 
     ui->fileFormatCombo->insertItem(int(RawFileInputFormat::SAMPLE_FORMAT_U8), "Unsigned 8 bits");
     ui->fileFormatCombo->insertItem(int(RawFileInputFormat::SAMPLE_FORMAT_S16), "Signed 16 bits");
@@ -119,11 +119,13 @@ void SetupDialog::setSettings(const Settings &settings)
     if (m_settings.rawfile.file.isEmpty())
     {
         ui->fileNameLabel->setText(NO_FILE);
-        ui->fileNameLabel->setToolTip("");
+        rawfilename = "";
+        ui->fileNameLabel->setToolTip("");        
     }
     else
-    {        
+    {
         ui->fileNameLabel->setText(QFileInfo(m_settings.rawfile.file).fileName());
+        rawfilename = m_settings.rawfile.file;
         ui->fileNameLabel->setToolTip(m_settings.rawfile.file);
     }
     ui->loopCheckbox->setChecked(m_settings.rawfile.loopEna);
@@ -144,13 +146,13 @@ void SetupDialog::applySettings()
     newSet.rtlsdr.gainIdx = ui->rtlsdrGainCombo->currentIndex() - 2;
     newSet.rtltcp.gainIdx = ui->rtltcpGainCombo->currentIndex() - 2;
 
-    if (ui->fileNameLabel->text() != NO_FILE)
+    if (rawfilename.isEmpty())
     {
-        newSet.rawfile.file = ui->fileNameLabel->text();
+        newSet.rawfile.file.clear();
     }
     else
     {
-        newSet.rawfile.file.clear();
+        newSet.rawfile.file = rawfilename;
     }
     newSet.rawfile.loopEna = ui->loopCheckbox->isChecked();
     newSet.rawfile.format = static_cast<RawFileInputFormat>(ui->fileFormatCombo->currentIndex());
@@ -260,16 +262,15 @@ void SetupDialog::onInputChanged(int index)
 
 void SetupDialog::onOpenFileButtonClicked()
 {
-    QString inputFileName = ui->fileNameLabel->text();
     QString dir = QDir::homePath();
-    if (NO_FILE == inputFileName)
+    if (!rawfilename.isEmpty())
     {
-        dir = QFileInfo(inputFileName).path();
+        dir = QFileInfo(rawfilename).path();
     }
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open IQ stream"), dir, tr("Binary files (*.bin *.s16 *.u8 *.raw)"));
     if (!fileName.isEmpty())
     {
-        inputFileName = fileName;
+        rawfilename = fileName;
         ui->fileNameLabel->setText(QFileInfo(fileName).fileName());
         ui->fileNameLabel->setToolTip(fileName);
         if (fileName.endsWith(".s16"))

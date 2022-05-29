@@ -54,6 +54,7 @@ signals:
 private:
     Ui::SetupDialog *ui;
     Settings m_settings;
+    QString rawfilename;
 
     void onButtonClicked(QAbstractButton *button);
     void onInputChanged(int index);
