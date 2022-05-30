@@ -1412,7 +1412,7 @@ void MainWindow::saveSettings()
     settings.setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
     settings.setValue("RTL-SDR/bandwidth", s.rtlsdr.bandwidth);
     settings.setValue("RTL-SDR/bias-T", s.rtlsdr.biasT);
-    settings.setValue("RTL-TCP/gainIndex", s.rtlsdr.gainIdx);
+    settings.setValue("RTL-TCP/gainIndex", s.rtltcp.gainIdx);
     settings.setValue("RTL-TCP/address", s.rtltcp.tcpAddress);
     settings.setValue("RTL-TCP/port", s.rtltcp.tcpPort);
     settings.setValue("RAW-FILE/filename", s.rawfile.file);
