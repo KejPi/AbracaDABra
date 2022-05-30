@@ -752,6 +752,8 @@ void rtltcpCb(unsigned char *buf, uint32_t len, void * ctx)
                 sumI += tmp;
                 *outPtr++ = float(tmp) - dcI;
             }
+#else
+            *outPtr++ = float(tmp);
 #endif  // RTLTCP_DOC_ENABLE
 #endif  // ((RTLTCP_DOC_ENABLE == 0) && ((RTLTCP_AGC_ENABLE == 0)))
         }
@@ -800,6 +802,8 @@ void rtltcpCb(unsigned char *buf, uint32_t len, void * ctx)
                 sumI += tmp;
                 *outPtr++ = float(tmp) - dcI;
             }
+#else
+            *outPtr++ = float(tmp);
 #endif  // RTLTCP_DOC_ENABLE
 #endif  // ((RTLTCP_DOC_ENABLE == 0) && ((RTLTCP_AGC_ENABLE == 0)))
         }
@@ -842,18 +846,12 @@ void rtltcpCb(unsigned char *buf, uint32_t len, void * ctx)
                 sumI += tmp;
                 *outPtr++ = float(tmp) - dcI;
             }
+#else
+            *outPtr++ = float(tmp);
 #endif  // RTLTCP_DOC_ENABLE
 #endif  // ((RTLTCP_DOC_ENABLE == 0) && ((RTLTCP_AGC_ENABLE == 0)))
         }
         inputBuffer.head = (len-samplesTillEnd)*sizeof(float);
-
-#if RTLTCP_DOC_ENABLE
-        //qDebug() << dcI << dcQ;
-#endif
-#if (RTLTCP_AGC_ENABLE > 0)
-        //qDebug() << agcLev << maxVal;
-#endif
-
     }
 
 #if (RTLTCP_DOC_ENABLE > 0)
