@@ -508,6 +508,8 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 sumI += tmp;
                 *outPtr++ = float(tmp) - dcI;
             }
+#else
+            *outPtr++ = float(tmp);
 #endif  // RTLSDR_DOC_ENABLE
 #endif  // ((RTLSDR_DOC_ENABLE == 0) && ((RTLSDR_AGC_ENABLE == 0)))
         }
@@ -556,6 +558,8 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 sumI += tmp;
                 *outPtr++ = float(tmp) - dcI;
             }
+#else
+            *outPtr++ = float(tmp);
 #endif  // RTLSDR_DOC_ENABLE
 #endif  // ((RTLSDR_DOC_ENABLE == 0) && ((RTLSDR_AGC_ENABLE == 0)))
         }
@@ -598,18 +602,12 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
                 sumI += tmp;
                 *outPtr++ = float(tmp) - dcI;
             }
+#else
+            *outPtr++ = float(tmp);
 #endif  // RTLSDR_DOC_ENABLE
 #endif  // ((RTLSDR_DOC_ENABLE == 0) && ((RTLSDR_AGC_ENABLE == 0)))
         }
         inputBuffer.head = (len-samplesTillEnd)*sizeof(float);
-
-#if RTLSDR_DOC_ENABLE
-        //qDebug() << dcI << dcQ;
-#endif
-#if (RTLSDR_AGC_ENABLE > 0)
-        //qDebug() << agcLev << maxVal;
-#endif
-
     }
 
 #if (RTLSDR_DOC_ENABLE > 0)
