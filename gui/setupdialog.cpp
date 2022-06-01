@@ -43,6 +43,16 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->inputCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onInputChanged);
     connect(ui->openFileButton, &QPushButton::clicked, this, &SetupDialog::onOpenFileButtonClicked);
 
+    ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
+
+    connect(ui->inputCombo, &QComboBox::currentIndexChanged, this, [this](){ applyEnable(); });
+    connect(ui->fileFormatCombo, &QComboBox::currentIndexChanged, this, [this](){ applyEnable(); });
+    connect(ui->rtlsdrGainCombo, &QComboBox::currentIndexChanged, this, [this](){ applyEnable(); });
+    connect(ui->rtltcpGainCombo, &QComboBox::currentIndexChanged, this, [this](){ applyEnable(); });
+    connect(ui->ipAddressEdit, &QLineEdit::textEdited, this, [this](){ applyEnable(); });
+    connect(ui->ipPortSpinBox, &QSpinBox::valueChanged, this, [this](){ applyEnable(); });
+    connect(ui->loopCheckbox, &QCheckBox::stateChanged, this, [this](){ applyEnable(); });
+
     adjustSize();
 }
 
@@ -103,13 +113,18 @@ void SetupDialog::setGainValues(const QList<int> * pList)
         }
     }
     comboPtr->setCurrentIndex(1);
+
+    ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
 }
 
 void SetupDialog::setSettings(const Settings &settings)
 {
     //qDebug() << Q_FUNC_INFO;
     m_settings = settings;
+}
 
+void SetupDialog::showEvent(QShowEvent *event)
+{
     // -2 == HW, -1 == SW, 0 .. N is gain index
     int index = ui->inputCombo->findData(QVariant(static_cast<int>(m_settings.inputDevice)));
     ui->inputCombo->setCurrentIndex(index);
@@ -120,7 +135,7 @@ void SetupDialog::setSettings(const Settings &settings)
     {
         ui->fileNameLabel->setText(NO_FILE);
         rawfilename = "";
-        ui->fileNameLabel->setToolTip("");        
+        ui->fileNameLabel->setToolTip("");
     }
     else
     {
@@ -132,11 +147,15 @@ void SetupDialog::setSettings(const Settings &settings)
     ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings.rawfile.format));
     ui->ipAddressEdit->setText(m_settings.rtltcp.tcpAddress);
     ui->ipPortSpinBox->setValue(m_settings.rtltcp.tcpPort);
+
+    ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
 }
 
 void SetupDialog::applySettings()
 {
     //qDebug() << Q_FUNC_INFO;
+
+    ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
 
     Settings newSet;
     newSet.rtlsdr.bandwidth = m_settings.rtlsdr.bandwidth;
@@ -214,6 +233,11 @@ void SetupDialog::applySettings()
     }
 }
 
+void SetupDialog::applyEnable()
+{
+    ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
+}
+
 void SetupDialog::onExpertMode(bool ena)
 {
     int idx = ui->inputCombo->findData(QVariant(static_cast<int>(InputDeviceId::RAWFILE)));
@@ -287,6 +311,8 @@ void SetupDialog::onOpenFileButtonClicked()
         {
             qDebug() << "Selected file :" << fileName << "Sample format unknown";
         }
+
+        ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
     }
 }
 

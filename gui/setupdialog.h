@@ -51,6 +51,9 @@ signals:
     void inputDeviceChanged(const InputDeviceId & inputDevice);
     void newSettings();
 
+protected:
+    void showEvent(QShowEvent *event);
+
 private:
     Ui::SetupDialog *ui;
     Settings m_settings;
@@ -60,6 +63,7 @@ private:
     void onInputChanged(int index);
     void onOpenFileButtonClicked();
     void applySettings();
+    void applyEnable();
 };
 
 #endif // SETUPDIALOG_H
