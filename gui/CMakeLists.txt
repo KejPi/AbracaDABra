@@ -22,6 +22,10 @@ if (APPLE)
     set(APP_ICON_MACOSX ${CMAKE_CURRENT_SOURCE_DIR}/resources/appIcon.icns)
     set_source_files_properties(${APP_ICON_MACOSX} PROPERTIES
            MACOSX_PACKAGE_LOCATION "Resources")
+
+    set(APPLE_SOURCES
+        mac.mm
+        mac.h)
 endif(APPLE)
 
 configure_file (config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
@@ -110,6 +114,8 @@ add_executable(${TARGET}
     aboutdialog.h
     aboutdialog.cpp
     aboutdialog.ui
+
+    ${APPLE_SOURCES}
   )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

@@ -13,6 +13,7 @@
 #include <QUrl>
 #include <QStackedWidget>
 
+#include "clickablelabel.h"
 #include "setupdialog.h"
 #include "ensembleinfodialog.h"
 #include "aboutdialog.h"
@@ -90,13 +91,15 @@ private slots:
 protected:        
      void closeEvent(QCloseEvent *event);
      void resizeEvent(QResizeEvent *event);
+     void changeEvent( QEvent* e );
 private:
     Ui::MainWindow *ui;
     SetupDialog * setupDialog;
     EnsembleInfoDialog * ensembleInfoDialog;
-    CatSLSDialog * catSlsDialog;
-    //AboutDialog * aboutDialog;
+    CatSLSDialog * catSlsDialog;   
     QProgressBar * snrProgress;
+    ClickableLabel * settingsLabel;
+    ClickableLabel * muteLabel;
 
     QStackedWidget * timeBasicQualWidget;
     QLabel  * timeLabel;
@@ -139,8 +142,6 @@ private:
     uint32_t frequency = 0;
     DabSId SId;
     uint8_t SCIdS = 0;
-//    uint64_t serviceId = 0;
-//    uint64_t ensembleId = 0;
     bool hasListViewFocus;
     bool hasTreeViewFocus;
 
@@ -172,10 +173,13 @@ private:
     void bandScanFinished(int result);
     void clearServiceList();
 
+    bool isDarkMode();
+    void setIcons();
+
     void serviceTreeViewUpdateSelection();
     void serviceListViewUpdateSelection();
 
-    void onDLPlusToggle(bool toggle);
+    void onDLPlusToggle(bool toggle);    
 
 };
 

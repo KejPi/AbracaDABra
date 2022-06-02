@@ -17,6 +17,10 @@
 #include "radiocontrol.h"
 #include "bandscandialog.h"
 
+#ifdef Q_OS_MACX
+#include "mac.h"
+#endif
+
 const QString appName("AbracaDABra");
 const QStringList syncLevelLabels = {"No signal", "Signal found", "Sync"};
 const QStringList syncLevelTooltip = {"DAB signal not detected<br>Looking for signal...",
@@ -49,10 +53,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // favorites control
     ui->favoriteLabel->setCheckable(true);
-    ui->favoriteLabel->setIcon(":/resources/starEmpty20.png", false);
-    ui->favoriteLabel->setIcon(":/resources/star20.png", true);
-    ui->favoriteLabel->setTooltip("Add service to favourites", false);
-    ui->favoriteLabel->setTooltip("Remove service from favourites", true);
+    ui->favoriteLabel->setTooltip("Add service to favorites", false);
+    ui->favoriteLabel->setTooltip("Remove service from favorites", true);
     ui->favoriteLabel->setChecked(false);
 
     setupDialog = new SetupDialog(this);
@@ -136,24 +138,18 @@ MainWindow::MainWindow(QWidget *parent)
     menu->addAction(clearServiceListAct);
     menu->addAction(aboutAct);
 
-    QPixmap pic;
-    ClickableLabel * settingsLabel = new ClickableLabel(this);
-    settingsLabel->setIcon(":/resources/menu.png");
+    settingsLabel = new ClickableLabel(this);
     settingsLabel->setToolTip("Open menu");
     settingsLabel->setMenu(menu);
 
-    ClickableLabel * muteLabel = new ClickableLabel(this);
+    muteLabel = new ClickableLabel(this);
     muteLabel->setCheckable(true);
-    muteLabel->setIcon(":/resources/volume_on.png", false);
-    muteLabel->setIcon(":/resources/volume_off.png", true);
     muteLabel->setTooltip("Mute audio", false);
     muteLabel->setTooltip("Unmute audio", true);
     muteLabel->setChecked(false);
 
     //DL+
     ui->dlPlusLabel->setCheckable(true);
-    ui->dlPlusLabel->setIcon(":/resources/down.png", false);
-    ui->dlPlusLabel->setIcon(":/resources/up.png", true);
     ui->dlPlusLabel->setTooltip("Show DL+", false);
     ui->dlPlusLabel->setTooltip("Hide DL+", true);
     ui->dlPlusLabel->setChecked(false);
@@ -233,29 +229,16 @@ MainWindow::MainWindow(QWidget *parent)
     ui->slsView->setMinimumSize(QSize(322, 242));
     ui->slsView->reset();
 
-    if (pic.load(":/resources/catSls.png"))
-    {
-        ui->catSlsLabel->setPixmap(pic);
-    }
-    else
-    {
-        qDebug() << "Unable to load :/resources/catSls.png";
-    }
     ui->catSlsLabel->setToolTip("Browse categorized slides");
     ui->catSlsLabel->setHidden(true);
 
-    if (pic.load(":/resources/broadcast.png"))
-    {
-        ui->switchSourceLabel->setPixmap(pic);
-    }
-    else
-    {
-        qDebug() << "Unable to load :/resources/broadcast.png";
-    }
     ui->switchSourceLabel->setToolTip("Change service source (ensemble)");
     ui->switchSourceLabel->setHidden(true);
 
     ui->serviceTreeView->setVisible(false);
+
+    setIcons();
+
     resize(minimumSizeHint());
 
     // threads
@@ -494,6 +477,17 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     QMainWindow::resizeEvent(event);
 }
 
+void MainWindow::changeEvent( QEvent* e )
+{
+#ifdef Q_OS_MACX
+    if ( e->type() == QEvent::PaletteChange )
+    {
+        setIcons();
+    }
+#endif
+    QMainWindow::changeEvent( e );
+}
+
 void MainWindow::inputDeviceReady()
 {
     ui->channelCombo->setEnabled(true);    
@@ -536,7 +530,14 @@ void MainWindow::updateSyncStatus(uint8_t sync)
         timeLabel->setText("");
 
         // set no signal quality when no sync
-        basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal0.png"));
+        if (isDarkMode())
+        {
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal0_dark.png"));
+        }
+        else
+        {
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal0.png"));
+        }
     }
     syncLabel->setText(syncLevelLabels[sync]);
     syncLabel->setToolTip(syncLevelTooltip[sync]);
@@ -559,24 +560,42 @@ void MainWindow::updateSnrLevel(float snr)
 #ifndef __APPLE__
         snrProgress->setStyleSheet(snrProgressStylesheet[0]);
 #endif
-        //basicSignalQualityLabel->setText("Weak signal");
-        basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal1.png"));
+        if (isDarkMode())
+        {
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal1_dark.png"));
+        }
+        else
+        {
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal1.png"));
+        }
     }
     else if (static_cast<int>(SNR10Threhold::SNR_GOOD) > snr10)
     {   // medium SNR
 #ifndef __APPLE__
         snrProgress->setStyleSheet(snrProgressStylesheet[1]);
 #endif
-        //basicSignalQualityLabel->setText("Medium signal");
-        basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal2.png"));
+        if (isDarkMode())
+        {
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal2_dark.png"));
+        }
+        else
+        {
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal2.png"));
+        }
     }
     else
     {   // good SNR
 #ifndef __APPLE__
         snrProgress->setStyleSheet(snrProgressStylesheet[2]);
 #endif
-        //basicSignalQualityLabel->setText("Good signal");
-        basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal3.png"));
+        if (isDarkMode())
+        {
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal3_dark.png"));
+        }
+        else
+        {
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal3.png"));
+        }
     }
 
 }
@@ -1669,6 +1688,55 @@ void MainWindow::clearServiceList()
 {
     stop();
     serviceList->clear();
+}
+
+bool MainWindow::isDarkMode()
+{
+#ifdef Q_OS_MACX
+    return macIsInDarkTheme();
+#else
+    //return windowsIsInDarkTheme();
+    return false;
+#endif
+}
+
+void MainWindow::setIcons()
+{
+    if (isDarkMode())
+    {
+        settingsLabel->setIcon(":/resources/menu_dark.png");
+
+        ui->favoriteLabel->setIcon(":/resources/starEmpty_dark.png", false);
+        ui->favoriteLabel->setIcon(":/resources/star_dark.png", true);
+
+        muteLabel->setIcon(":/resources/volume_on_dark.png", false);
+        muteLabel->setIcon(":/resources/volume_off_dark.png", true);
+
+        ui->dlPlusLabel->setIcon(":/resources/down_dark.png", false);
+        ui->dlPlusLabel->setIcon(":/resources/up_dark.png", true);
+
+        ui->catSlsLabel->setIcon(":/resources/catSls_dark.png");
+
+        ui->switchSourceLabel->setIcon(":/resources/broadcast_dark.png");
+    }
+    else
+    {
+        settingsLabel->setIcon(":/resources/menu.png");
+
+        ui->favoriteLabel->setIcon(":/resources/starEmpty.png", false);
+        ui->favoriteLabel->setIcon(":/resources/star.png", true);
+
+        muteLabel->setIcon(":/resources/volume_on.png", false);
+        muteLabel->setIcon(":/resources/volume_off.png", true);
+
+        ui->dlPlusLabel->setIcon(":/resources/down.png", false);
+        ui->dlPlusLabel->setIcon(":/resources/up.png", true);
+
+        ui->catSlsLabel->setIcon(":/resources/catSls.png");
+
+        ui->switchSourceLabel->setIcon(":/resources/broadcast.png");
+    }
+    ui->slsView->setDarkMode(isDarkMode());
 }
 
 void MainWindow::onDLPlusObjReceived(const DLPlusObject & object)

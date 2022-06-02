@@ -24,6 +24,9 @@ public:
     //! @brief This method implements fintInViw without borders
     void fitInViewTight(const QRectF &rect, Qt::AspectRatioMode aspectRatioMode);
 
+    //! @brief This method changes between light and dark mode
+    void setDarkMode(bool darkModeEna);
+
 protected:
     //! @brief Reimplemented to scale image correctly
     void resizeEvent(QResizeEvent *event);
@@ -40,6 +43,12 @@ private:
 
     //! @brief URL of current slide
     QString clickThroughURL;
+
+    //! @brief dark mode ena
+    bool isDarkMode = false;
+
+    //! @brief shows slide
+    bool showsSlide = false;
 };
 
 #endif // SLSVIEW_H

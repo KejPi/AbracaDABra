@@ -11,32 +11,43 @@ SLSView::SLSView(QWidget *parent) : QGraphicsView(parent)
 void SLSView::reset()
 {
     QPixmap pic;
-    if (pic.load(":/resources/sls_logo.png"))
+    if (isDarkMode)
     {
-        QGraphicsScene * sc = scene();
-        if (nullptr == sc)
-        {
-            //qDebug() << Q_FUNC_INFO << "New graphisc scene";
-            sc = new QGraphicsScene(this);
-            pixmapItem = sc->addPixmap(pic);
-
-            setScene(sc);
-        }
-        else
-        {
-            pixmapItem->setPixmap(pic);
-        }
-        sc->setSceneRect(pic.rect());
-        sc->setBackgroundBrush(Qt::white);
-        fitInViewTight(pic.rect(), Qt::KeepAspectRatio);
+        pic.load(":/resources/sls_logo_dark.png");
     }
     else
     {
-        qDebug() << "Unable to load :/resources/sls_logo.png";
+        pic.load(":/resources/sls_logo.png");
     }
+
+    QGraphicsScene * sc = scene();
+    if (nullptr == sc)
+    {
+        //qDebug() << Q_FUNC_INFO << "New graphisc scene";
+        sc = new QGraphicsScene(this);
+        pixmapItem = sc->addPixmap(pic);
+
+        setScene(sc);
+    }
+    else
+    {
+        pixmapItem->setPixmap(pic);
+    }
+    sc->setSceneRect(pic.rect());
+    if (isDarkMode)
+    {
+        sc->setBackgroundBrush(Qt::black);
+    }
+    else
+    {
+        sc->setBackgroundBrush(Qt::white);
+    }
+
+    fitInViewTight(pic.rect(), Qt::KeepAspectRatio);
 
     setToolTip("");
     setCursor(Qt::ArrowCursor);
+    showsSlide = false;
     clickThroughURL.clear();
 }
 
@@ -74,6 +85,37 @@ void SLSView::fitInViewTight(const QRectF &rect, Qt::AspectRatioMode aspectRatio
     // Scale and center on the center of \a rect.
     scale(xratio, yratio);
     centerOn(rect.center());
+}
+
+void SLSView::setDarkMode(bool darkModeEna)
+{
+    if (darkModeEna != isDarkMode)
+    {
+        isDarkMode = darkModeEna;
+        QGraphicsScene * sc = scene();
+        if (nullptr != sc)
+        {
+            if (!showsSlide)
+            {
+                QPixmap pic;
+                if (isDarkMode)
+                {
+                    pic.load(":/resources/sls_logo_dark.png");
+                    sc->setBackgroundBrush(Qt::black);
+                }
+                else
+                {
+                    pic.load(":/resources/sls_logo.png");
+                    sc->setBackgroundBrush(Qt::white);
+                }
+
+                pixmapItem->setPixmap(pic);
+
+                sc->setSceneRect(pic.rect());
+                fitInViewTight(pic.rect(), Qt::KeepAspectRatio);
+            }
+        }
+    }
 }
 
 void SLSView::showSlide(const Slide & slide)
@@ -123,6 +165,8 @@ void SLSView::showSlide(const Slide & slide)
     {    // this disables automatic lines breaks
         setToolTip(QString("<p style='white-space:pre'>") + toolTip);
     }
+
+    showsSlide = true;
 }
 
 void SLSView::resizeEvent(QResizeEvent *event)
