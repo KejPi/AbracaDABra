@@ -1,13 +1,13 @@
 
 #########################################################
 ## Pictures
-list (APPEND RESOURCES icons.qrc)
+list (APPEND RESOURCES resources.qrc)
 qt_add_resources (RCC_SOURCES ${RESOURCES})
 
 # Set some Win32 Specific Settings
 if(WIN32)
     set(GUI_TYPE WIN32)
-    set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/icons/appIcon.rc")
+    set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources/appIcon.rc")
 endif(WIN32)
 
 # Set some Apple MacOS Specific settings
@@ -19,8 +19,9 @@ if (APPLE)
     set(MACOSX_BUNDLE_ICON_FILE appIcon.icns)
 
     # And this part tells CMake where to find and install the file itself
-    set(APP_ICON_MACOSX ${CMAKE_CURRENT_SOURCE_DIR}/icons/appIcon.icns)
-    set_source_files_properties(${APP_ICON_MACOSX} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+    set(APP_ICON_MACOSX ${CMAKE_CURRENT_SOURCE_DIR}/resources/appIcon.icns)
+    set_source_files_properties(${APP_ICON_MACOSX} PROPERTIES
+           MACOSX_PACKAGE_LOCATION "Resources")
 
     set(APPLE_SOURCES
         mac.mm

@@ -532,11 +532,11 @@ void MainWindow::updateSyncStatus(uint8_t sync)
         // set no signal quality when no sync
         if (isDarkMode())
         {
-            basicSignalQualityLabel->setPixmap(QPixmap(":/icons/signal0_dark.png"));
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal0_dark.png"));
         }
         else
         {
-            basicSignalQualityLabel->setPixmap(QPixmap(":/icons/signal0.png"));
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal0.png"));
         }
     }
     syncLabel->setText(syncLevelLabels[sync]);
@@ -562,11 +562,11 @@ void MainWindow::updateSnrLevel(float snr)
 #endif
         if (isDarkMode())
         {
-            basicSignalQualityLabel->setPixmap(QPixmap(":/icons/signal1_dark.png"));
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal1_dark.png"));
         }
         else
         {
-            basicSignalQualityLabel->setPixmap(QPixmap(":/icons/signal1.png"));
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal1.png"));
         }
     }
     else if (static_cast<int>(SNR10Threhold::SNR_GOOD) > snr10)
@@ -576,11 +576,11 @@ void MainWindow::updateSnrLevel(float snr)
 #endif
         if (isDarkMode())
         {
-            basicSignalQualityLabel->setPixmap(QPixmap(":/icons/signal2_dark.png"));
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal2_dark.png"));
         }
         else
         {
-            basicSignalQualityLabel->setPixmap(QPixmap(":/icons/signal2.png"));
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal2.png"));
         }
     }
     else
@@ -590,11 +590,11 @@ void MainWindow::updateSnrLevel(float snr)
 #endif
         if (isDarkMode())
         {
-            basicSignalQualityLabel->setPixmap(QPixmap(":/icons/signal3_dark.png"));
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal3_dark.png"));
         }
         else
         {
-            basicSignalQualityLabel->setPixmap(QPixmap(":/icons/signal3.png"));
+            basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal3.png"));
         }
     }
 
@@ -1704,37 +1704,37 @@ void MainWindow::setIcons()
 {
     if (isDarkMode())
     {
-        settingsLabel->setIcon(":/icons/menu_dark.png");
+        settingsLabel->setIcon(":/resources/menu_dark.png");
 
-        ui->favoriteLabel->setIcon(":/icons/starEmpty_dark.png", false);
-        ui->favoriteLabel->setIcon(":/icons/star_dark.png", true);
+        ui->favoriteLabel->setIcon(":/resources/starEmpty_dark.png", false);
+        ui->favoriteLabel->setIcon(":/resources/star_dark.png", true);
 
-        muteLabel->setIcon(":/icons/volume_on_dark.png", false);
-        muteLabel->setIcon(":/icons/volume_off_dark.png", true);
+        muteLabel->setIcon(":/resources/volume_on_dark.png", false);
+        muteLabel->setIcon(":/resources/volume_off_dark.png", true);
 
-        ui->dlPlusLabel->setIcon(":/icons/down_dark.png", false);
-        ui->dlPlusLabel->setIcon(":/icons/up_dark.png", true);
+        ui->dlPlusLabel->setIcon(":/resources/down_dark.png", false);
+        ui->dlPlusLabel->setIcon(":/resources/up_dark.png", true);
 
-        ui->catSlsLabel->setIcon(":/icons/catSls_dark.png");
+        ui->catSlsLabel->setIcon(":/resources/catSls_dark.png");
 
-        ui->switchSourceLabel->setIcon(":/icons/broadcast_dark.png");
+        ui->switchSourceLabel->setIcon(":/resources/broadcast_dark.png");
     }
     else
     {
-        settingsLabel->setIcon(":/icons/menu.png");
+        settingsLabel->setIcon(":/resources/menu.png");
 
-        ui->favoriteLabel->setIcon(":/icons/starEmpty.png", false);
-        ui->favoriteLabel->setIcon(":/icons/star.png", true);
+        ui->favoriteLabel->setIcon(":/resources/starEmpty.png", false);
+        ui->favoriteLabel->setIcon(":/resources/star.png", true);
 
-        muteLabel->setIcon(":/icons/volume_on.png", false);
-        muteLabel->setIcon(":/icons/volume_off.png", true);
+        muteLabel->setIcon(":/resources/volume_on.png", false);
+        muteLabel->setIcon(":/resources/volume_off.png", true);
 
-        ui->dlPlusLabel->setIcon(":/icons/down.png", false);
-        ui->dlPlusLabel->setIcon(":/icons/up.png", true);
+        ui->dlPlusLabel->setIcon(":/resources/down.png", false);
+        ui->dlPlusLabel->setIcon(":/resources/up.png", true);
 
-        ui->catSlsLabel->setIcon(":/icons/catSls.png");
+        ui->catSlsLabel->setIcon(":/resources/catSls.png");
 
-        ui->switchSourceLabel->setIcon(":/icons/broadcast.png");
+        ui->switchSourceLabel->setIcon(":/resources/broadcast.png");
     }
     ui->slsView->setDarkMode(isDarkMode());
 }

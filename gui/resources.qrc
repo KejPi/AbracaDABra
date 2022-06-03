@@ -1,0 +1,34 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/sls_logo.png</file>
+        <file>resources/broadcast.png</file>
+        <file>resources/volume_off.png</file>
+        <file>resources/volume_on.png</file>
+        <file>resources/menu.png</file>
+        <file>resources/star.svg</file>
+        <file>resources/catSls.png</file>
+        <file>resources/down.png</file>
+        <file>resources/up.png</file>
+        <file>resources/appIconAbout.png</file>
+        <file>resources/signal3.png</file>
+        <file>resources/signal0.png</file>
+        <file>resources/signal1.png</file>
+        <file>resources/signal2.png</file>
+        <file>resources/broadcast_dark.png</file>
+        <file>resources/volume_on_dark.png</file>
+        <file>resources/catSls_dark.png</file>
+        <file>resources/down_dark.png</file>
+        <file>resources/volume_off_dark.png</file>
+        <file>resources/sls_logo_dark.png</file>
+        <file>resources/star.png</file>
+        <file>resources/starEmpty.png</file>
+        <file>resources/menu_dark.png</file>
+        <file>resources/signal0_dark.png</file>
+        <file>resources/signal1_dark.png</file>
+        <file>resources/signal2_dark.png</file>
+        <file>resources/signal3_dark.png</file>
+        <file>resources/star_dark.png</file>
+        <file>resources/starEmpty_dark.png</file>
+        <file>resources/up_dark.png</file>
+    </qresource>
+</RCC>
