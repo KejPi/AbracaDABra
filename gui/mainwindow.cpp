@@ -904,7 +904,7 @@ void MainWindow::serviceListTreeClicked(const QModelIndex &index)
                 ui->switchSourceLabel->setVisible(serviceList->numEnsembles(ServiceListId(SId.value(), SCIdS)) > 1);
             }
             onServiceSelection();
-            qDebug("serviceRequest: freq=%d, SId=0x%X, SCIdS=%d", frequency, SId.value(), SCIdS);
+            //qDebug("serviceRequest: freq=%d, SId=0x%X, SCIdS=%d", frequency, SId.value(), SCIdS);
             emit serviceRequest(frequency, SId.value(), SCIdS);
 
             // we need to find the item in model and select it
