@@ -647,7 +647,14 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
     if (freq == frequency)
     {
         if (SId)
-        {   // clear request
+        {
+            if (serviceRequest.SId != 0)
+            {   // this can happen when service is selected while still acquiring ensemble infomation
+                // ignoring the request
+                return;
+            }
+
+            // clear request
             serviceRequest.SId = 0;
 
             // remove automatically enabled data services

@@ -915,8 +915,14 @@ void MainWindow::serviceListTreeClicked(const QModelIndex &index)
 
 void MainWindow::serviceChanged(const RadioControlServiceComponent &s)
 {
-    if (s.isAudioService() && (s.SId.value() == SId.value()))
-    {               
+    if (s.isAudioService())
+    {
+        if (s.SId.value() != SId.value())
+        {   // this can happen when service is selected while still acquiring ensemble infomation
+            SId = s.SId;
+            SCIdS = s.SCIdS;
+        }
+
         if (s.label.isEmpty())
         {   // service component not valid -> shoudl not happen
             return;
