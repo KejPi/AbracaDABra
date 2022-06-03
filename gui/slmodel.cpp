@@ -10,14 +10,14 @@ SLModel::SLModel(const ServiceList *sl, QObject *parent)
     m_noIcon = QIcon(nopic);
 
     QPixmap pic;
-    if (pic.load(":/resources/star.svg"))
+    if (pic.load(":/icons/star.svg"))
     {
         m_favIcon = QIcon(pic);
     }
     else
     {
         m_favIcon = m_noIcon;
-        qDebug() << "Unable to load :/resources/star.svg";
+        qDebug() << "Unable to load :/icons/star.svg";
     }
 }
 

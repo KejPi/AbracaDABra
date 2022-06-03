@@ -13,11 +13,11 @@ void SLSView::reset()
     QPixmap pic;
     if (isDarkMode)
     {
-        pic.load(":/resources/sls_logo_dark.png");
+        pic.load(":/icons/sls_logo_dark.png");
     }
     else
     {
-        pic.load(":/resources/sls_logo.png");
+        pic.load(":/icons/sls_logo.png");
     }
 
     QGraphicsScene * sc = scene();
@@ -100,12 +100,12 @@ void SLSView::setDarkMode(bool darkModeEna)
                 QPixmap pic;
                 if (isDarkMode)
                 {
-                    pic.load(":/resources/sls_logo_dark.png");
+                    pic.load(":/icons/sls_logo_dark.png");
                     sc->setBackgroundBrush(Qt::black);
                 }
                 else
                 {
-                    pic.load(":/resources/sls_logo.png");
+                    pic.load(":/icons/sls_logo.png");
                     sc->setBackgroundBrush(Qt::white);
                 }
 
