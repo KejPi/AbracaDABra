@@ -45,6 +45,17 @@ Following libraries are required:
 * mpg123
 * portaudio
 
+For a fresh Ubuntu 22.04 installation you can use the following commands:
+
+       sudo apt-get install git cmake build-essential mesa-common-dev
+       sudo apt-get install libusb-dev librtlsdr-dev libfaad2 mpg123 libmpg123-dev 
+       sudo apt-get install portaudio19-dev qt6-base-dev qt6-multimedia-dev rtl-sdr
+
+Then clone the project:
+
+       git clone https://github.com/KejPi/AbracaDABra/
+       cd AbracaDABra
+
 1. Create build directory inside working copy and change to it
 
        mkdir build
