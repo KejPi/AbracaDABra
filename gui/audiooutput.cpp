@@ -375,8 +375,7 @@ AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent
     m_devices = new  QMediaDevices(this);
     m_audioSink = nullptr;
     m_ioDevice = new AudioIODevice(buffer, this);
-
-
+    m_linearVolume = 1.0;
 }
 
 AudioOutput::~AudioOutput()
@@ -441,16 +440,28 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
     else
     {  /* do nothing */ }
 
+    m_audioSink->setVolume(m_linearVolume);
+
     // start IO device
     m_ioDevice->setFormat(format);
     m_ioDevice->start();
     m_audioSink->start(m_ioDevice);
-
 }
 
 void AudioOutput::mute(bool on)
 {
     m_ioDevice->mute(on);
+}
+
+void AudioOutput::setVolume(int value)
+{
+    m_linearVolume = QAudio::convertVolume(value / qreal(100),
+                                               QAudio::LogarithmicVolumeScale,
+                                               QAudio::LinearVolumeScale);
+    if (nullptr != m_audioSink)
+    {
+        m_audioSink->setVolume(m_linearVolume);
+    }
 }
 
 void AudioOutput::stop()

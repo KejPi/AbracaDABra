@@ -91,12 +91,15 @@ public:
 public slots:
     void start(uint32_t sRate, uint8_t numChannels);
     void mute(bool on);
+    void setVolume(int value);
 
 private:
     // Qt audio
     AudioIODevice * m_ioDevice;
     QMediaDevices * m_devices;
     QAudioSink * m_audioSink;
+    float m_linearVolume;
+
     void handleStateChanged(QAudio::State newState);
     int64_t bytesAvailable();
     void doStop();

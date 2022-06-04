@@ -16,6 +16,7 @@
 #include "dabtables.h"
 #include "radiocontrol.h"
 #include "bandscandialog.h"
+#include "config.h"
 
 #ifdef Q_OS_MACX
 #include "mac.h"
@@ -148,6 +149,15 @@ MainWindow::MainWindow(QWidget *parent)
     muteLabel->setTooltip("Unmute audio", true);
     muteLabel->setChecked(false);
 
+#if !(defined AUDIOOUTPUT_USE_PORTAUDIO)
+    volumeSlider = new QSlider(Qt::Horizontal, this);
+    volumeSlider->setMinimum(0);
+    volumeSlider->setMaximum(100);
+    volumeSlider->setSingleStep(10);
+    volumeSlider->setToolTip("Audio volume");
+    connect(muteLabel, &ClickableLabel::toggled, volumeSlider, &QSlider::setDisabled);
+#endif
+
     //DL+
     ui->dlPlusLabel->setCheckable(true);
     ui->dlPlusLabel->setTooltip("Show DL+", false);
@@ -165,8 +175,15 @@ MainWindow::MainWindow(QWidget *parent)
     QGridLayout * layout = new QGridLayout(widget);
     layout->addWidget(timeBasicQualWidget, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
     layout->addWidget(signalQualityWidget, 0, 1, Qt::AlignVCenter | Qt::AlignRight);
+#if (defined AUDIOOUTPUT_USE_PORTAUDIO)
     layout->addWidget(muteLabel, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
     layout->addWidget(settingsLabel, 0, 3, Qt::AlignVCenter | Qt::AlignRight);
+#else
+    layout->addWidget(muteLabel, 0, 2, Qt::AlignTop | Qt::AlignRight);
+    layout->addWidget(volumeSlider, 0, 3, Qt::AlignBottom | Qt::AlignRight);
+    layout->addWidget(settingsLabel, 0, 4, Qt::AlignVCenter | Qt::AlignRight);
+#endif
+
     layout->setColumnStretch(0, 100);
     layout->setSpacing(20);
     ui->statusbar->addWidget(widget,1);   
@@ -272,6 +289,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(audioOutThr, &QThread::finished, audioOutput, &QObject::deleteLater);
     audioOutThr->start();
     audioOutThr->setPriority(QThread::HighestPriority);
+
+    connect(volumeSlider, &QSlider::valueChanged, audioOutput, &AudioOutput::setVolume, Qt::QueuedConnection);
 #endif
 
     // Connect signals
@@ -1366,8 +1385,14 @@ void MainWindow::loadSettings()
 
     // load servicelist
     serviceList->load(settings);
-    expertMode = settings.value("ExpertMode").toBool();
+    expertMode = settings.value("ExpertMode").toBool();   
     setExpertMode(expertMode);
+#if (defined AUDIOOUTPUT_USE_PORTAUDIO)
+    // do nothing, volume control not supported
+#else
+    volumeSlider->setValue(settings.value("volume", 100).toInt());
+#endif
+
     int inDevice = settings.value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();
 
     SetupDialog::Settings s;
@@ -1434,6 +1459,11 @@ void MainWindow::saveSettings()
     const SetupDialog::Settings s = setupDialog->settings();
     settings.setValue("inputDeviceId", int(s.inputDevice));
     settings.setValue("dumpPath", ensembleInfoDialog->getDumpPath());
+#if (defined AUDIOOUTPUT_USE_PORTAUDIO)
+    settings.setValue("volume", 100);
+#else
+    settings.setValue("volume", volumeSlider->value());
+#endif
     settings.setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
     settings.setValue("RTL-SDR/bandwidth", s.rtlsdr.bandwidth);
     settings.setValue("RTL-SDR/bias-T", s.rtlsdr.biasT);

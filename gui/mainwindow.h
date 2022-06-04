@@ -12,6 +12,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QStackedWidget>
+#include <QSlider>
 
 #include "clickablelabel.h"
 #include "setupdialog.h"
@@ -130,8 +131,9 @@ private:
     QThread * audioDecoderThr;
     AudioDecoder * audioDecoder;
 
-#if (!defined AUDIOOUTPUT_USE_RTAUDIO) &&  (!defined AUDIOOUTPUT_USE_PORTAUDIO)
+#if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
     QThread * audioOutThr;
+    QSlider * volumeSlider;
 #endif
     AudioOutput * audioOutput;
 
