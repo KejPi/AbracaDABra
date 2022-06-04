@@ -484,7 +484,7 @@ void AudioOutput::stop()
 
 void AudioOutput::doStop()
 {
-    qDebug() << Q_FUNC_INFO << m_ioDevice->isMuted();
+    //qDebug() << Q_FUNC_INFO << m_ioDevice->isMuted();
     if (nullptr != m_audioSink)
     {
         m_audioSink->stop();
@@ -495,7 +495,7 @@ void AudioOutput::doStop()
 
 void AudioOutput::handleStateChanged(QAudio::State newState)
 {
-    qDebug() << newState;
+    //qDebug() << newState;
     switch (newState)
     {
         case QAudio::ActiveState:
