@@ -156,6 +156,25 @@ MainWindow::MainWindow(QWidget *parent)
     volumeSlider->setSingleStep(10);
     volumeSlider->setToolTip("Audio volume");
     connect(muteLabel, &ClickableLabel::toggled, volumeSlider, &QSlider::setDisabled);
+
+    QHBoxLayout * volumeLayout = new QHBoxLayout();
+    volumeLayout->addWidget(muteLabel);
+#if 0
+    QHBoxLayout * dummySliderLayout = new QHBoxLayout();
+    dummySliderLayout->addWidget(volumeSlider);
+    dummySliderLayout->setAlignment(volumeSlider, Qt::AlignCenter);
+    dummySliderLayout->setContentsMargins(0,6,0,0);
+    volumeLayout->addLayout(dummySliderLayout);
+#else
+    volumeLayout->addWidget(volumeSlider);
+    volumeLayout->setAlignment(volumeSlider, Qt::AlignCenter);
+#endif
+    volumeLayout->setStretch(0, 100);
+    volumeLayout->setAlignment(muteLabel, Qt::AlignCenter);
+    volumeLayout->setSpacing(10);
+    volumeLayout->setContentsMargins(10,0,0,0);
+    QWidget * volumeWidget = new QWidget();
+    volumeWidget->setLayout(volumeLayout);
 #endif
 
     //DL+
@@ -177,12 +196,10 @@ MainWindow::MainWindow(QWidget *parent)
     layout->addWidget(signalQualityWidget, 0, 1, Qt::AlignVCenter | Qt::AlignRight);
 #if (defined AUDIOOUTPUT_USE_PORTAUDIO)
     layout->addWidget(muteLabel, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
-    layout->addWidget(settingsLabel, 0, 3, Qt::AlignVCenter | Qt::AlignRight);
 #else
-    layout->addWidget(muteLabel, 0, 2, Qt::AlignTop | Qt::AlignRight);
-    layout->addWidget(volumeSlider, 0, 3, Qt::AlignBottom | Qt::AlignRight);
-    layout->addWidget(settingsLabel, 0, 4, Qt::AlignVCenter | Qt::AlignRight);
+    layout->addWidget(volumeWidget, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
 #endif
+    layout->addWidget(settingsLabel, 0, 3, Qt::AlignVCenter | Qt::AlignRight);
 
     layout->setColumnStretch(0, 100);
     layout->setSpacing(20);
@@ -283,7 +300,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     audioOutput = new AudioOutput(&audioBuffer);
 #if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
-    audioOutThr = new QThread(this);    
+    audioOutThr = new QThread(this);
     audioOutThr->setObjectName("audioOutThr");
     audioOutput->moveToThread(audioOutThr);
     connect(audioOutThr, &QThread::finished, audioOutput, &QObject::deleteLater);
