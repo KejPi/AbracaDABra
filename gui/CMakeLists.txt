@@ -153,8 +153,10 @@ include_directories ( ${RTL_SDR_INCLUDE_DIRS} )
 target_link_libraries(${TARGET} PRIVATE "${RTL_SDR_LINK_LIBRARIES}" )
 
 # PORTAUDIO
-include_directories ( ${PORTAUDIO_INCLUDE_DIRS} )
-target_link_libraries(${TARGET} PRIVATE "${PORTAUDIO_LINK_LIBRARIES}" )
+if (USE_PORTAUDIO)
+    include_directories ( ${PORTAUDIO_INCLUDE_DIRS} )
+    target_link_libraries(${TARGET} PRIVATE "${PORTAUDIO_LINK_LIBRARIES}" )
+endif(USE_PORTAUDIO)
 
 # Set some Win32 Specific Settings
 if(WIN32)

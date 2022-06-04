@@ -372,29 +372,29 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
 
 AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent)
 {
-    devices = new  QMediaDevices(this);    
-    audioSink = nullptr;
-    ioDevice = new AudioIODevice(buffer, this);
+    m_devices = new  QMediaDevices(this);
+    m_audioSink = nullptr;
+    m_ioDevice = new AudioIODevice(buffer, this);
 
 
 }
 
 AudioOutput::~AudioOutput()
 {
-    if (nullptr != audioSink)
+    if (nullptr != m_audioSink)
     {
-        audioSink->stop();
-        delete audioSink;
+        m_audioSink->stop();
+        delete m_audioSink;
     }
-    ioDevice->close();
-    delete ioDevice;
+    m_ioDevice->close();
+    delete m_ioDevice;
 }
 
 void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 {
     //stop();
 
-    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
+    //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
 
     QAudioFormat format;
     format.setSampleRate(sRate);
@@ -409,58 +409,58 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
         format.setChannelConfig(QAudioFormat::ChannelConfigMono);
     }
 
-    const QAudioDevice &defaultDeviceInfo = devices->defaultAudioOutput();
+    const QAudioDevice &defaultDeviceInfo = m_devices->defaultAudioOutput();
     if (!defaultDeviceInfo.isFormatSupported(format))
     {
         qWarning() << "Default format not supported - trying to use preferred";
         format = defaultDeviceInfo.preferredFormat();
     }
 
-    if (nullptr != audioSink)
+    if (nullptr != m_audioSink)
     {
         // audioSink exists
-        if (format != audioSink->format())
+        if (format != m_audioSink->format())
         {   // need to create new audio sink
-            delete audioSink;
-            audioSink = nullptr;
+            delete m_audioSink;
+            m_audioSink = nullptr;
         }
         else
         { /* do nothing - format is the same */ }
     }
 
-    if (nullptr == audioSink)
+    if (nullptr == m_audioSink)
     {
         // create audio sink
-        audioSink = new QAudioSink(defaultDeviceInfo, format, this);
+        m_audioSink = new QAudioSink(defaultDeviceInfo, format, this);
 
         // set buffer size to 2* AUDIO_FIFO_CHUNK_MS ms
-        audioSink->setBufferSize(2 * AUDIO_FIFO_CHUNK_MS * sRate/1000 * numCh * sizeof(int16_t));
+        m_audioSink->setBufferSize(2 * AUDIO_FIFO_CHUNK_MS * sRate/1000 * numCh * sizeof(int16_t));
 
-        connect(audioSink, &QAudioSink::stateChanged, this, &AudioOutput::handleStateChanged);
+        connect(m_audioSink, &QAudioSink::stateChanged, this, &AudioOutput::handleStateChanged);
     }
     else
     {  /* do nothing */ }
 
     // start IO device
-    ioDevice->setFormat(format);
-    ioDevice->start();
-    audioSink->start(ioDevice);
+    m_ioDevice->setFormat(format);
+    m_ioDevice->start();
+    m_audioSink->start(m_ioDevice);
 
 }
 
 void AudioOutput::mute(bool on)
 {
-    ioDevice->mute(on);
+    m_ioDevice->mute(on);
 }
 
 void AudioOutput::stop()
 {
-    qDebug() << Q_FUNC_INFO;
-    if (nullptr != audioSink)
+    //qDebug() << Q_FUNC_INFO;
+    if (nullptr != m_audioSink)
     {
-        if (!ioDevice->isMuted())
+        if (!m_ioDevice->isMuted())
         {   // delay stop until audio is muted
-            ioDevice->stop();
+            m_ioDevice->stop();
             QTimer::singleShot(2*AUDIOOUTPUT_FADE_TIME_MS, this, &AudioOutput::doStop);
             return;
         }
@@ -473,13 +473,13 @@ void AudioOutput::stop()
 
 void AudioOutput::doStop()
 {
-    qDebug() << Q_FUNC_INFO << ioDevice->isMuted();
-    if (nullptr != audioSink)
+    qDebug() << Q_FUNC_INFO << m_ioDevice->isMuted();
+    if (nullptr != m_audioSink)
     {
-        audioSink->stop();
+        m_audioSink->stop();
     }
 
-    ioDevice->close();
+    m_ioDevice->close();
 }
 
 void AudioOutput::handleStateChanged(QAudio::State newState)
@@ -602,7 +602,7 @@ int64_t AudioIODevice::readData(char *data, int64_t len)
         // condition to mute is not enough samples || muteFlag
         if (count < bytesToRead)
         {   // not enough samples -> reading what we have and filling rest with zeros
-
+            // minimum mute time is 1ms (m_sampleRate_kHz samples) , if less then hard mute
             if (m_sampleRate_kHz*m_bytesPerFrame > count)
             {   // nothing to play
                 qDebug("Hard mute [no samples available]");
@@ -733,9 +733,7 @@ int64_t AudioIODevice::bytesAvailable() const
     int64_t count = m_inFifoPtr->count;
     m_inFifoPtr->mutex.unlock();
 
-    //qDebug() << Q_FUNC_INFO << count;
-
-    return count; // + QIODevice::bytesAvailable();
+    return count;
 }
 
 void AudioIODevice::setFormat(const QAudioFormat & format)

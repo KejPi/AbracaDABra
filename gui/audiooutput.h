@@ -6,10 +6,8 @@
 #include <QWaitCondition>
 #include <QMutex>
 #include <QTimer>
-
+#include "config.h"
 #include "audiofifo.h"
-
-#define AUDIOOUTPUT_USE_PORTAUDIO
 
 #ifdef AUDIOOUTPUT_USE_PORTAUDIO
 #include "portaudio.h"
@@ -96,9 +94,9 @@ public slots:
 
 private:
     // Qt audio
-    AudioIODevice * ioDevice;
-    QMediaDevices * devices;
-    QAudioSink * audioSink;
+    AudioIODevice * m_ioDevice;
+    QMediaDevices * m_devices;
+    QAudioSink * m_audioSink;
     void handleStateChanged(QAudio::State newState);
     int64_t bytesAvailable();
     void doStop();

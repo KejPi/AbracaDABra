@@ -23,6 +23,8 @@ set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
 
 # AAC decoder - default is FAAD2 but FDK-AAC can be used optionally
 option (USE_FDK_AAC           "Compile with fdk-aac library from Franhofer instead of faad2" OFF)
+option (USE_PORTAUDIO         "Compile with PortAudio library of Qt6 multimedia framework (better performance)" OFF)
+
 
 # Options to force using libs build manually and installed in ${CMAKE_SOURCE_DIR}/../../dab-libs
 option (USE_SYSTEM_RTLSDR     "Use system provided rtl-sdr"     ON)
@@ -273,34 +275,38 @@ endif (USE_SYSTEM_MPG123)
 
 #########################################################
 ## PORTAUDIO
-if (USE_SYSTEM_PORTAUDIO)
-    find_library (PORTAUDIO_LINK_LIBRARIES portaudio)
-    find_path(PORTAUDIO_INCLUDE_DIRS portaudio.h)
-    if (NOT WIN32)
-        pkg_search_module(PORTAUDIO portaudio-2.0)
-    endif()
-    if (NOT PORTAUDIO_LINK_LIBRARIES)
-        # not found is system -> trying ${DAB_LIBS_DIR}
-        message (WARNING "portaudio not found in system, searching in ${DAB_LIBS_DIR}")
+if (USE_PORTAUDIO)
+    if (USE_SYSTEM_PORTAUDIO)
+        find_library (PORTAUDIO_LINK_LIBRARIES portaudio)
+        find_path(PORTAUDIO_INCLUDE_DIRS portaudio.h)
+        if (NOT WIN32)
+            pkg_search_module(PORTAUDIO portaudio-2.0)
+        endif()
+        if (NOT PORTAUDIO_LINK_LIBRARIES)
+            # not found is system -> trying ${DAB_LIBS_DIR}
+            message (WARNING "portaudio not found in system, searching in ${DAB_LIBS_DIR}")
 
-        find_library(PORTAUDIO_LINK_LIBRARIES portaudio PATHS ${DAB_LIBS_DIR}/lib)
-        find_path(PORTAUDIO_INCLUDE_DIRS portaudio.h PATHS ${DAB_LIBS_DIR}/include)
+            find_library(PORTAUDIO_LINK_LIBRARIES portaudio PATHS ${DAB_LIBS_DIR}/lib)
+            find_path(PORTAUDIO_INCLUDE_DIRS portaudio.h PATHS ${DAB_LIBS_DIR}/include)
 
+            if (PORTAUDIO_LINK_LIBRARIES)
+                message (STATUS "libportaudio found: ${PORTAUDIO_LINK_LIBRARIES}")
+                set(AUDIOOUTPUT_USE_PORTAUDIO ON)
+            else(PORTAUDIO_LINK_LIBRARIES)
+                message (STATUS "libportaudio not found. Build from source and install to: ${DAB_LIBS_DIR}. Using Qt6 multimedia framework instead.")
+            endif()
+        endif()
+    else(USE_SYSTEM_PORTAUDIO)
+        find_library(PORTAUDIO_LINK_LIBRARIES portaudio PATHS ${DAB_LIBS_DIR}/lib NO_DEFAULT_PATH)
+        find_path(PORTAUDIO_INCLUDE_DIRS portaudio.h PATHS ${DAB_LIBS_DIR}/include NO_DEFAULT_PATH)
         if (PORTAUDIO_LINK_LIBRARIES)
             message (STATUS "libportaudio found: ${PORTAUDIO_LINK_LIBRARIES}")
-        else(PORTAUDIO_LINK_LIBRARIES)
-            message (FATAL "libportaudio not found. Build from source and install to: ${DAB_LIBS_DIR}")
+            set(AUDIOOUTPUT_USE_PORTAUDIO ON)
+        else()
+            message (STATUS "libportaudio not found. Build from source and install to: ${DAB_LIBS_DIR}. Using Qt6 multimedia framework instead.")
         endif()
-    endif()
-else(USE_SYSTEM_PORTAUDIO)
-    find_library(PORTAUDIO_LINK_LIBRARIES portaudio PATHS ${DAB_LIBS_DIR}/lib NO_DEFAULT_PATH)
-    find_path(PORTAUDIO_INCLUDE_DIRS portaudio.h PATHS ${DAB_LIBS_DIR}/include NO_DEFAULT_PATH)
-    if (PORTAUDIO_LINK_LIBRARIES)
-        message (STATUS "libportaudio found: ${PORTAUDIO_LINK_LIBRARIES}")
-    else()
-        message (FATAL_ERROR "libportaudio not found. Build from source and install to: ${DAB_LIBS_DIR}")
-    endif()
-endif (USE_SYSTEM_PORTAUDIO)
+    endif (USE_SYSTEM_PORTAUDIO)
+endif(USE_PORTAUDIO)
 
 #########################################################
 ## QT creator CMAKEFILE

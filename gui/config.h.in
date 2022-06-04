@@ -11,6 +11,8 @@
 
 #cmakedefine AUDIO_DECODER_USE_FDKAAC 1
 
+#cmakedefine AUDIOOUTPUT_USE_PORTAUDIO 1
+
 #endif // CONFIG_H
 
 
