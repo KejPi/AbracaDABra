@@ -71,8 +71,19 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 #if RADIO_CONTROL_VERBOSE
         qDebug() << "RadioControlEventType::RESET";
 #endif
-        serviceList.clear();
-        clearEnsemble();
+        dabsdrNtfResetFlags_t flags = static_cast<dabsdrNtfResetFlags_t>(pEvent->pData);
+        switch (flags)
+        {
+        case DABSDR_RESET_INIT:
+            serviceList.clear();
+            clearEnsemble();
+            break;
+        case DABSDR_RESET_NEW_EID:
+            start(frequency);
+            emit audioServiceStopped();
+
+            break;
+        }
     }
         break;
     case RadioControlEventType::SYNC_STATUS:
@@ -106,6 +117,9 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             else
             {   // tune is finished , notify HMI
                 emit tuneDone(freq);
+
+                // this is to request autontf when EID changes
+                autoNotificationEna = false;
             }
         }
         else
@@ -627,9 +641,10 @@ void RadioControl::start(uint32_t freq)
     if (freq)
     {   // when input device tuned, freq is passed to be set in SDR
         // when frequency is 0 then we are done (input device is in idle)
+        autoNotificationEna = false;
         frequency = freq;
         sync = DABSDR_SYNC_LEVEL_NO_SYNC;
-        emit syncStatus(uint8_t(DabSyncLevel::NoSync));        
+        emit syncStatus(uint8_t(DabSyncLevel::NoSync));
         serviceList.clear();
         clearEnsemble();
         dabTune(freq);
@@ -697,7 +712,7 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
 }
 
 void RadioControl::updateSyncLevel(dabsdrSyncLevel_t s)
-{
+{   
     if (s != sync)
     {   // new sync level => emit signal
         sync = s;
@@ -1284,7 +1299,7 @@ void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         pEvent->type = RadioControlEventType::RESET;
 
         pEvent->status = p->status;
-        pEvent->pData = reinterpret_cast<intptr_t>(nullptr);
+        pEvent->pData = static_cast<intptr_t>(*((dabsdrNtfResetFlags_t*) p->pData));
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;

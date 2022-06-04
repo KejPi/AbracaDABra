@@ -330,13 +330,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControl, &RadioControl::ensembleConfiguration, ensembleInfoDialog, &EnsembleInfoDialog::refreshEnsembleConfiguration, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::tuneDone, ensembleInfoDialog, &EnsembleInfoDialog::newFrequency, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::fibCounter, ensembleInfoDialog, &EnsembleInfoDialog::updateFIBstatus, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::mscCounter, ensembleInfoDialog, &EnsembleInfoDialog::updateMSCstatus, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::mscCounter, ensembleInfoDialog, &EnsembleInfoDialog::updateMSCstatus, Qt::QueuedConnection);    
     connect(radioControl, &RadioControl::audioServiceSelection, ensembleInfoDialog, &EnsembleInfoDialog::serviceChanged, Qt::QueuedConnection);
 
     connect(radioControl, &RadioControl::dlDataGroup, dlDecoder, &DLDecoder::newDataGroup, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::audioServiceSelection, this, &MainWindow::serviceChanged, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::audioServiceSelection, dlDecoder, &DLDecoder::reset, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::audioData, audioDecoder, &AudioDecoder::inputData, Qt::QueuedConnection);
+
+    // service stopped
+    connect(radioControl, &RadioControl::audioServiceStopped, this, &MainWindow::onServiceSelection, Qt::QueuedConnection);
 
     // reconfiguration
     connect(radioControl, &RadioControl::audioServiceReconfiguration, this, &MainWindow::audioServiceReconfiguration, Qt::QueuedConnection);
@@ -530,7 +533,7 @@ void MainWindow::inputDeviceReady()
 }
 
 void MainWindow::updateEnsembleInfo(const RadioControlEnsemble &ens)
-{
+{    
     ui->ensembleLabel->setText(ens.label);
     ui->ensembleLabel->setToolTip(QString("<b>Ensemble:</b> %1<br>"
                                           "<b>Short label:</b> %2<br>"
