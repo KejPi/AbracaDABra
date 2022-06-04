@@ -27,20 +27,57 @@
 #define AUDIOOUTPUT_FADE_MIN_DB    -60.0
 #define AUDIOOUTPUT_FADE_MIN_LIN     0.001
 
-#ifdef AUDIOOUTPUT_USE_PORTAUDIO
-// port audio allows to set number of samples in callback
-// this number must be aligned between AUDIOOUTPUT_FADE_TIME_MS and AUDIO_FIFO_CHUNK_MS
-#if (AUDIOOUTPUT_FADE_TIME_MS != AUDIO_FIFO_CHUNK_MS)
-#error "(AUDIOOUTPUT_FADE_TIME_MS != AUDIO_FIFO_CHUNK_MS)"
-#endif
-#endif
-
 enum class AudioOutputPlaybackState
 {
     Playing = 0,
     Muted = 1,
 };
 
+#if (defined AUDIOOUTPUT_USE_PORTAUDIO)
+
+// port audio allows to set number of samples in callback
+// this number must be aligned between AUDIOOUTPUT_FADE_TIME_MS and AUDIO_FIFO_CHUNK_MS
+#if (AUDIOOUTPUT_FADE_TIME_MS != AUDIO_FIFO_CHUNK_MS)
+#error "(AUDIOOUTPUT_FADE_TIME_MS != AUDIO_FIFO_CHUNK_MS)"
+#endif
+
+class AudioOutput : public QObject
+{
+    Q_OBJECT
+
+public:
+    AudioOutput(audioFifo_t *buffer, QObject *parent = nullptr);
+    ~AudioOutput();
+    void stop();
+
+public slots:
+    void start(uint32_t sRate, uint8_t numChannels);
+    void mute(bool on);
+
+private:
+    std::atomic<bool> m_muteFlag  = false;
+    std::atomic<bool> m_stopFlag  = false;
+    PaStream * m_outStream = nullptr;
+    audioFifo_t * m_inFifoPtr = nullptr;
+    uint8_t m_numChannels;
+    uint32_t m_sampleRate_kHz;
+    unsigned int m_bufferFrames;
+    uint8_t m_bytesPerFrame;
+    float m_muteFactor;
+
+    AudioOutputPlaybackState m_playbackState;
+
+    int portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames);
+
+    static int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
+                           const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx);
+
+#ifdef AUDIOOUTPUT_RAW_FILE_OUT
+    FILE * rawOut;
+#endif
+};
+
+#else // (defined AUDIOOUTPUT_USE_PORTAUDIO)
 
 class AudioIODevice;
 
@@ -58,29 +95,6 @@ public slots:
     void mute(bool on);
 
 private:
-#ifdef AUDIOOUTPUT_RAW_FILE_OUT
-    FILE * rawOut;
-#endif
-
-#ifdef AUDIOOUTPUT_USE_PORTAUDIO
-    std::atomic<bool> m_muteFlag  = false;
-    std::atomic<bool> m_stopFlag  = false;
-    PaStream * m_outStream = nullptr;
-    audioFifo_t * m_inFifoPtr = nullptr;
-    uint8_t m_numChannels;
-    uint32_t m_sampleRate_kHz;
-    unsigned int m_bufferFrames;
-    uint8_t m_bytesPerFrame;
-    float m_muteFactor;
-
-    AudioOutputPlaybackState m_playbackState;
-
-    int portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames);
-
-    static int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
-                     const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx);
-#else
-
     // Qt audio
     AudioIODevice * ioDevice;
     QMediaDevices * devices;
@@ -88,10 +102,13 @@ private:
     void handleStateChanged(QAudio::State newState);
     int64_t bytesAvailable();
     void doStop();
+
+#ifdef AUDIOOUTPUT_RAW_FILE_OUT
+    FILE * rawOut;
 #endif
 };
 
-#if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
+
 class AudioIODevice : public QIODevice
 {
 public:
@@ -119,6 +136,7 @@ private:
     std::atomic<bool> m_muteFlag  = false;
     std::atomic<bool> m_stopFlag  = false;
 };
+
 #endif
 
 #endif // AUDIOOUTPUT_H
