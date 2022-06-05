@@ -233,6 +233,19 @@ void SLTreeModel::removeEnsembleService(const ServiceListId & ensId, const Servi
     }
 }
 
+void SLTreeModel::removeEnsemble(const ServiceListId &ensId)
+{
+    SLModelItem * ensChild = m_rootItem->findChildId(ensId);
+    if (nullptr == ensChild)
+    {   // not found (it shoud not happen)
+        return;
+    }
+
+    beginRemoveRows(QModelIndex(), ensChild->row(), ensChild->row());
+    m_rootItem->removeChildId(ensId);
+    endRemoveRows();
+}
+
 void SLTreeModel::clear()
 {
     beginResetModel();

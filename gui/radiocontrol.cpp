@@ -79,8 +79,8 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             clearEnsemble();
             break;
         case DABSDR_RESET_NEW_EID:
+            emit ensembleRemoved(ensemble);
             start(frequency);
-            emit audioServiceStopped();
 
             break;
         }

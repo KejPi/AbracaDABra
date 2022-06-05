@@ -32,6 +32,7 @@ public slots:
     void addEnsembleService(const ServiceListId & ensId, const ServiceListId & servId);
     void updateEnsembleService(const ServiceListId & ensId, const ServiceListId & servId);
     void removeEnsembleService(const ServiceListId &ensId, const ServiceListId &servId);
+    void removeEnsemble(const ServiceListId &ensId);
     void clear();
 
 private:

@@ -53,6 +53,7 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
 
     EnsembleListItem * pEns = nullptr;
     ServiceListId ensId(e);
+#if 0
     EnsembleListIterator eit = m_ensembleList.find(ensId);
     if (m_ensembleList.end() == eit)
     {  // not found
@@ -63,6 +64,84 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     {  // found
         pEns = *eit;
     }
+#else
+    uint32_t freq = e.frequency;
+    EnsembleListIterator eit = m_ensembleList.begin();
+    while (eit != m_ensembleList.end())
+    {
+        if (freq == (*eit)->frequency())
+        {   // frequency is equal to ensemble to be added
+            if (e.ueid == (*eit)->ueid())
+            {   // ensemble is the same
+                pEns = *eit;
+            }
+            else
+            {   // different ensemble in channel -> this is not allowed ensemble to be removed
+#if 0
+                pEns = *eit;
+                pEns->beginUpdate();
+
+                // this removes all services marked as obsolete from the ensemble list
+                pEns->endUpdate();
+
+                // now we need to remove all obsolete services from the service list
+                ServiceListIterator it = m_serviceList.begin();
+                while (it != m_serviceList.end())
+                {
+                    if ((*it)->isObsolete())
+                    {   // service is obsolete
+                        qDebug("\tRemoving from ens %6.6X: %s SID = 0x%X, SCIdS = %d", e.ueid, (*it)->label().toLocal8Bit().data(), (*it)->SId().value(), (*it)->SCIdS());
+
+                        emit serviceRemovedFromEnsemble(ensId, (*it)->id());
+
+                        if (false == (*it)->removeEnsemble(pEns))
+                        {   // this was the last ensemble -> remove service completely
+                            emit serviceRemoved((*it)->id());
+
+                            delete *it;                    // release memory
+                            it = m_serviceList.erase(it);  // remove record from hash
+                        }
+                        else
+                        {
+                            ++it;
+                        }
+                    }
+                    else
+                    {
+                        ++it;
+                    }
+                }
+
+                ServiceListId ensIdToBeRemoved = (*eit)->id();
+                delete *eit;
+                m_ensembleList.erase(eit);
+
+                emit ensembleRemoved(ensIdToBeRemoved);
+
+                pEns = nullptr;
+#else
+                // construct dummy RadioControlEnsemble so that removeEnsemble interface can be used
+                RadioControlEnsemble dummyEnsToBeRemoved;
+                dummyEnsToBeRemoved.frequency = (*eit)->frequency();
+                dummyEnsToBeRemoved.ueid = (*eit)->ueid();
+                dummyEnsToBeRemoved.label = (*eit)->label();
+                dummyEnsToBeRemoved.labelShort = (*eit)->shortLabel();
+
+                removeEnsemble(dummyEnsToBeRemoved);
+
+                pEns = nullptr;
+#endif
+            }
+            break;
+        }
+        ++eit;
+    }
+    if (nullptr == pEns)
+    {   // not found
+        pEns = new EnsembleListItem(e);
+        m_ensembleList.insert(ensId, pEns);
+    }
+#endif
 
     // we have ens and service item => lets link them together
     pService->addEnsemble(pEns);
@@ -230,17 +309,12 @@ void ServiceList::beginEnsembleUpdate(const RadioControlEnsemble & e)
     ServiceListId ensId(e);
     EnsembleListIterator eit = m_ensembleList.find(ensId);
     if (m_ensembleList.end() != eit)
-    {  // found
-        pEns = *eit;
+    {   // found
+        // ensemble to be updated
+        (*eit)->beginUpdate();
     }
     else
-    {   // do nothing, ensemble not found
-        return;
-    }
-
-    // pEns -> ensemble to be updated
-    pEns->beginUpdate();
-
+    {  /* do nothing, ensemble not found */ }
 }
 
 // this removed all services marked as obsolete
@@ -287,16 +361,27 @@ void ServiceList::endEnsembleUpdate(const RadioControlEnsemble & e)
         }
         else
         {
-            //qDebug("\tValid service %s SID = 0x%X, SCIdS = %d", (*it)->label().toLocal8Bit().data(), (*it)->SId().value(), (*it)->SCIdS());
             ++it;
         }
     }
+}
 
-//    qDebug() << "Service list:";
-//    for (ServiceListIterator it = m_serviceList.begin(); it != m_serviceList.end(); ++it)
-//    {
-//        qDebug("\tService %s SID = 0x%X, SCIdS = %d", (*it)->label().toLocal8Bit().data(), (*it)->SId().value(), (*it)->SCIdS());
-//    }
+void ServiceList::removeEnsemble(const RadioControlEnsemble &e)
+{
+    ServiceListId ensId(e);
+    EnsembleListIterator eit = m_ensembleList.find(ensId);
+    if (m_ensembleList.end() != eit)
+    {
+        qDebug("\tRemoving ens %6.6X from service list", e.ueid);
+
+        beginEnsembleUpdate(e);
+        endEnsembleUpdate(e);
+
+        delete *eit;
+        m_ensembleList.erase(eit);
+
+        emit ensembleRemoved(ensId);
+    }
 }
 
 

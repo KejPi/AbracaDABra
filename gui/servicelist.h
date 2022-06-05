@@ -49,6 +49,7 @@ public:
 
     void beginEnsembleUpdate(const RadioControlEnsemble &e);
     void endEnsembleUpdate(const RadioControlEnsemble &e);
+    void removeEnsemble(const RadioControlEnsemble &e);
 signals:
     void serviceAddedToEnsemble(const ServiceListId & ensId, const ServiceListId & servId);        
     void serviceAdded(const ServiceListId & servId);
@@ -58,8 +59,9 @@ signals:
 
     void serviceRemovedFromEnsemble(const ServiceListId & ensId, const ServiceListId & servId);
     void serviceRemoved(const ServiceListId & servId);
-    void empty();
 
+    void ensembleRemoved(const ServiceListId & ensId);
+    void empty();
 private:
     QHash<ServiceListId, ServiceListItem *> m_serviceList;
     QHash<ServiceListId, EnsembleListItem *> m_ensembleList;

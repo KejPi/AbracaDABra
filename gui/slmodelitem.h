@@ -12,7 +12,7 @@ public:
     explicit SLModelItem(const ServiceList *slPtr, const ServiceListId &id, SLModelItem *parentItem = 0);
     ~SLModelItem();
 
-    void appendChild(SLModelItem *child);
+    void appendChild(SLModelItem *child);    
 
     SLModelItem *child(int row);
     int childCount() const;

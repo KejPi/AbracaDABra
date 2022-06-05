@@ -231,6 +231,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(serviceList, &ServiceList::serviceAddedToEnsemble, slTreeModel, &SLTreeModel::addEnsembleService);
     connect(serviceList, &ServiceList::serviceUpdatedInEnsemble, slTreeModel, &SLTreeModel::updateEnsembleService);
     connect(serviceList, &ServiceList::serviceRemovedFromEnsemble, slTreeModel, &SLTreeModel::removeEnsembleService);
+    connect(serviceList, &ServiceList::ensembleRemoved, slTreeModel, &SLTreeModel::removeEnsemble);
     ui->serviceTreeView->setModel(slTreeModel);
     ui->serviceTreeView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->serviceTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -339,7 +340,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(radioControl, &RadioControl::audioData, audioDecoder, &AudioDecoder::inputData, Qt::QueuedConnection);
 
     // service stopped
-    connect(radioControl, &RadioControl::audioServiceStopped, this, &MainWindow::onServiceSelection, Qt::QueuedConnection);
+    connect(radioControl, &RadioControl::ensembleRemoved, this, &MainWindow::onEnsembleRemoved, Qt::QueuedConnection);
 
     // reconfiguration
     connect(radioControl, &RadioControl::audioServiceReconfiguration, this, &MainWindow::audioServiceReconfiguration, Qt::QueuedConnection);
@@ -560,6 +561,17 @@ void MainWindow::onEnsembleComplete(const RadioControlEnsemble &ens)
 
     serviceListViewUpdateSelection();
     serviceTreeViewUpdateSelection();
+}
+
+void MainWindow::onEnsembleRemoved(const RadioControlEnsemble &ens)
+{
+    emit stopUserApps();
+
+    clearServiceInformationLabels();
+    dlDecoder->reset();
+    ui->favoriteLabel->setEnabled(false);
+
+    serviceList->removeEnsemble(ens);
 }
 
 void MainWindow::updateSyncStatus(uint8_t sync)
