@@ -155,6 +155,12 @@ MainWindow::MainWindow(QWidget *parent)
     volumeSlider->setMaximum(100);
     volumeSlider->setSingleStep(10);
     volumeSlider->setToolTip("Audio volume");
+#ifdef Q_OS_MACX
+    //volumeSlider->setTickPosition(QSlider::TicksAbove);
+#endif
+#ifdef Q_OS_WIN
+    volumeSlider->setMaximumHeight(15);
+#endif
     connect(muteLabel, &ClickableLabel::toggled, volumeSlider, &QSlider::setDisabled);
 
     QHBoxLayout * volumeLayout = new QHBoxLayout();
