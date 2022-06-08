@@ -312,7 +312,6 @@ MainWindow::MainWindow(QWidget *parent)
     audioOutput->moveToThread(audioOutThr);
     connect(audioOutThr, &QThread::finished, audioOutput, &QObject::deleteLater);
     audioOutThr->start();
-    audioOutThr->setPriority(QThread::HighestPriority);
 
     connect(volumeSlider, &QSlider::valueChanged, audioOutput, &AudioOutput::setVolume, Qt::QueuedConnection);
 #endif
