@@ -118,9 +118,9 @@ public:
     void start();
     void stop();
 
-    int64_t readData(char *data, int64_t maxlen) override;
-    int64_t writeData(const char *data, int64_t len) override;
-    int64_t bytesAvailable() const override;
+    qint64 readData(char *data, qint64 maxlen) override;
+    qint64 writeData(const char *data, qint64 len) override;
+    qint64 bytesAvailable() const override;
 
     void setFormat(const QAudioFormat & format);
     void mute(bool on);

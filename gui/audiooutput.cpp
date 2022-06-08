@@ -533,7 +533,7 @@ void AudioIODevice::stop()
     m_stopFlag = true;
 }
 
-int64_t AudioIODevice::readData(char *data, int64_t len)
+qint64 AudioIODevice::readData(char *data, qint64 len)
 {
     if (0 == len)
     {
@@ -730,7 +730,7 @@ int64_t AudioIODevice::readData(char *data, int64_t len)
     return bytesToRead;
 }
 
-int64_t AudioIODevice::writeData(const char *data, int64_t len)
+qint64 AudioIODevice::writeData(const char *data, qint64 len)
 {
     Q_UNUSED(data);
     Q_UNUSED(len);
@@ -738,7 +738,7 @@ int64_t AudioIODevice::writeData(const char *data, int64_t len)
     return 0;
 }
 
-int64_t AudioIODevice::bytesAvailable() const
+qint64 AudioIODevice::bytesAvailable() const
 {
     m_inFifoPtr->mutex.lock();
     int64_t count = m_inFifoPtr->count;
