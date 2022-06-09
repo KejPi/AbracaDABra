@@ -547,7 +547,6 @@ void AudioDecoder::processMP2(QByteArray *inData)
 
         outFifoPtr->mutex.lock();
         outFifoPtr->count += size;
-        outFifoPtr->countChanged.wakeAll();
         outFifoPtr->mutex.unlock();
 
         // there should be nothing more to decode, but try to be sure
@@ -575,7 +574,6 @@ void AudioDecoder::processMP2(QByteArray *inData)
 
             outFifoPtr->mutex.lock();
             outFifoPtr->count += size;
-            outFifoPtr->countChanged.wakeAll();
             outFifoPtr->mutex.unlock();
         }
 
@@ -732,9 +730,6 @@ void AudioDecoder::processAAC(QByteArray *inData)
 
     outFifoPtr->mutex.lock();
     outFifoPtr->count += bytesToWrite;
-#if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
-    outFifoPtr->countChanged.wakeAll();
-#endif
     outFifoPtr->mutex.unlock();
 
 #else // defined AUDIO_DECODER_USE_FDKAAC
@@ -862,9 +857,6 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo &frameInfo, con
 
     outFifoPtr->mutex.lock();
     outFifoPtr->count += bytesToWrite;
-#if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
-    outFifoPtr->countChanged.wakeAll();
-#endif
     outFifoPtr->mutex.unlock();
 
 #if AUDIO_DECODER_MUTE_CONCEALMENT

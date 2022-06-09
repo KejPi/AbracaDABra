@@ -132,7 +132,7 @@ private:
     QThread * audioDecoderThr;
     AudioDecoder * audioDecoder;
 
-#if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
+#if (!defined AUDIOOUTPUT_USE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     QThread * audioOutThr;
     QSlider * volumeSlider;
 #endif

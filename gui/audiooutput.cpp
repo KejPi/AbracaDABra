@@ -14,6 +14,7 @@ AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent
     m_inFifoPtr = buffer;
     m_outStream = nullptr;
     m_numChannels = m_sampleRate_kHz = 0;
+    m_linearVolume = 1.0;
 
     PaError err = Pa_Initialize();
     if (paNoError != err)
@@ -46,7 +47,7 @@ AudioOutput::~AudioOutput()
     PaError err = Pa_Terminate();
     if (paNoError != err)
     {
-       qDebug("PortAudio Pa_Terminate() error: %s", Pa_GetErrorText(err));
+        qDebug("PortAudio Pa_Terminate() error: %s", Pa_GetErrorText(err));
     }
 
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
@@ -140,8 +141,15 @@ void AudioOutput::mute(bool on)
     m_muteFlag = on;
 }
 
+void AudioOutput::setVolume(int value)
+{
+    m_linearVolume = QAudio::convertVolume(value / qreal(100),
+                                           QAudio::LogarithmicVolumeScale,
+                                           QAudio::LinearVolumeScale);
+}
+
 int AudioOutput::portAudioCb( const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
-                 const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx)
+                             const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx)
 {
     Q_UNUSED(inputBuffer);
     Q_UNUSED(timeInfo);
@@ -201,6 +209,85 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             }
 
             uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
+#if AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA
+            if (bytesToEnd < bytesToRead)
+            {
+                float volume = m_linearVolume;
+                if (volume > 0.9)
+                {   // only copy here
+                    memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
+                    memcpy((uint8_t*)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (bytesToRead - bytesToEnd));
+                    m_inFifoPtr->tail = bytesToRead - bytesToEnd;
+                }
+                else
+                {
+                    //memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
+                    int16_t * inDataPtr = (int16_t *) (m_inFifoPtr->buffer+m_inFifoPtr->tail);
+                    int16_t * outDataPtr = (int16_t *) outputBuffer;
+                    // each sample is int16 => 2 bytes per samples
+                    uint_fast32_t numSamples = (bytesToEnd >> 1);
+
+                    Q_ASSERT(numSamples*sizeof(int16_t) == bytesToEnd);
+
+                    for (uint_fast32_t n = 0; n < numSamples; ++n)
+                    {
+#if AUDIOOUTPUT_PORTAUDIO_VOLUME_ROUND
+                        *outDataPtr++ = int16_t(std::lroundf(volume * *inDataPtr++));
+#else
+                        *outDataPtr++ = int16_t(volume * *inDataPtr++);
+#endif
+                    }
+
+                    //memcpy((uint8_t*)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (bytesToRead - bytesToEnd));
+                    inDataPtr = (int16_t *) m_inFifoPtr->buffer;
+                    outDataPtr = (int16_t *) ((uint8_t*)outputBuffer + bytesToEnd);
+                    // each sample is int16 => 2 bytes per samples
+                    numSamples = ((bytesToRead - bytesToEnd) >> 1);
+
+                    Q_ASSERT(numSamples*sizeof(int16_t) == (bytesToRead - bytesToEnd));
+
+                    for (uint_fast32_t n = 0; n < numSamples; ++n)
+                    {
+#if AUDIOOUTPUT_PORTAUDIO_VOLUME_ROUND
+                        *outDataPtr++ = int16_t(std::lroundf(volume * *inDataPtr++));
+#else
+                        *outDataPtr++ = int16_t(volume * *inDataPtr++);
+#endif
+                    }
+                    m_inFifoPtr->tail = bytesToRead - bytesToEnd;
+                }
+            }
+            else
+            {
+                float volume = m_linearVolume;
+                if (volume > 0.9)
+                {  // only copy here
+                    memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToRead);
+                    m_inFifoPtr->tail += bytesToRead;
+                }
+                else
+                {
+                    //memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToRead);
+                    int16_t * inDataPtr = (int16_t *) (m_inFifoPtr->buffer+m_inFifoPtr->tail);
+                    int16_t * outDataPtr = (int16_t *) outputBuffer;
+                    // each sample is int16 => 2 bytes per samples
+                    uint_fast32_t numSamples = (bytesToRead >> 1);
+
+                    Q_ASSERT(numSamples*sizeof(int16_t) == bytesToRead);
+
+                    for (uint_fast32_t n = 0; n < numSamples; ++n)
+                    {
+#if AUDIOOUTPUT_PORTAUDIO_VOLUME_ROUND
+                        *outDataPtr++ = int16_t(std::lroundf(volume * *inDataPtr++));
+#else
+                        *outDataPtr++ = int16_t(volume * *inDataPtr++);
+#endif
+                    }
+
+                    m_inFifoPtr->tail += bytesToRead;
+                }
+            }
+#else
             if (bytesToEnd < bytesToRead)
             {
                 memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
@@ -212,7 +299,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
                 memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToRead);
                 m_inFifoPtr->tail += bytesToRead;
             }
-
+#endif
             m_inFifoPtr->mutex.lock();
             m_inFifoPtr->count -= bytesToRead;
             m_inFifoPtr->countChanged.wakeAll();
@@ -260,6 +347,82 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
 
             // copy all available samples to output buffer
             uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
+#if AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA
+            if (bytesToEnd < count)
+            {
+                float volume = m_linearVolume;
+                if (volume > 0.9)
+                {   // only copy here
+                    memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
+                    memcpy((uint8_t*)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (count - bytesToEnd));
+                    m_inFifoPtr->tail = count - bytesToEnd;
+                }
+                else
+                {
+                    //memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
+                    int16_t * inDataPtr = (int16_t *) (m_inFifoPtr->buffer+m_inFifoPtr->tail);
+                    int16_t * outDataPtr = (int16_t *) outputBuffer;
+                    // each sample is int16 => 2 bytes per samples
+                    uint_fast32_t numSamples = (bytesToEnd >> 1);
+
+                    Q_ASSERT(numSamples*sizeof(int16_t) == bytesToEnd);
+
+                    for (uint_fast32_t n = 0; n < numSamples; ++n)
+                    {
+#if AUDIOOUTPUT_PORTAUDIO_VOLUME_ROUND
+                        *outDataPtr++ = int16_t(std::lroundf(volume * *inDataPtr++));
+#else
+                        *outDataPtr++ = int16_t(volume * *inDataPtr++);
+#endif
+                    }
+                    //memcpy((uint8_t*)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (count - bytesToEnd));
+                    inDataPtr = (int16_t *) m_inFifoPtr->buffer;
+                    // each sample is int16 => 2 bytes per samples
+                    numSamples = ((count - bytesToEnd) >> 1);
+
+                    Q_ASSERT(numSamples*sizeof(int16_t) == (count - bytesToEnd));
+
+                    for (uint_fast32_t n = 0; n < numSamples; ++n)
+                    {
+#if AUDIOOUTPUT_PORTAUDIO_VOLUME_ROUND
+                        *outDataPtr++ = int16_t(std::lroundf(volume * *inDataPtr++));
+#else
+                        *outDataPtr++ = int16_t(volume * *inDataPtr++);
+#endif
+                    }
+                    m_inFifoPtr->tail = count - bytesToEnd;
+                }
+            }
+            else
+            {
+                float volume = m_linearVolume;
+                if (volume > 0.9)
+                {   // only copy here
+                    memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, count);
+                    m_inFifoPtr->tail += count;
+                }
+                else
+                {
+                    //memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, count);
+                    int16_t * inDataPtr = (int16_t *) (m_inFifoPtr->buffer+m_inFifoPtr->tail);
+                    int16_t * outDataPtr = (int16_t *) outputBuffer;
+                    // each sample is int16 => 2 bytes per samples
+                    uint_fast32_t numSamples = (count >> 1);
+
+                    Q_ASSERT(numSamples*sizeof(int16_t) == count);
+
+                    for (uint_fast32_t n = 0; n < numSamples; ++n)
+                    {
+#if AUDIOOUTPUT_PORTAUDIO_VOLUME_ROUND
+                        *outDataPtr++ = int16_t(std::lroundf(volume * *inDataPtr++));
+#else
+                        *outDataPtr++ = int16_t(volume * *inDataPtr++);
+#endif
+                    }
+                    m_inFifoPtr->tail += count;
+                }
+            }
+#else
             if (bytesToEnd < count)
             {
                 memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
@@ -271,6 +434,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
                 memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, count);
                 m_inFifoPtr->tail += count;
             }
+#endif
             // set rest of the samples to be 0
             memset((uint8_t*)outputBuffer+count, 0, bytesToRead-count);
 
@@ -284,6 +448,84 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
         else
         {   // reading samples
             uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
+#if AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA
+            if (bytesToEnd < bytesToRead)
+            {
+                float volume = m_linearVolume;
+                if (volume > 0.9)
+                {   // only copy here
+                    memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
+                    memcpy((uint8_t*)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (bytesToRead - bytesToEnd));
+                    m_inFifoPtr->tail = bytesToRead - bytesToEnd;
+                }
+                else
+                {
+                    //memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
+                    int16_t * inDataPtr = (int16_t *) (m_inFifoPtr->buffer+m_inFifoPtr->tail);
+                    int16_t * outDataPtr = (int16_t *) outputBuffer;
+                    // each sample is int16 => 2 bytes per samples
+                    uint_fast32_t numSamples = (bytesToEnd >> 1);
+
+                    Q_ASSERT(numSamples*sizeof(int16_t) == bytesToEnd);
+
+                    for (uint_fast32_t n = 0; n < numSamples; ++n)
+                    {
+#if AUDIOOUTPUT_PORTAUDIO_VOLUME_ROUND
+                        *outDataPtr++ = int16_t(std::lroundf(volume * *inDataPtr++));
+#else
+                        *outDataPtr++ = int16_t(volume * *inDataPtr++);
+#endif
+                    }
+
+                    //memcpy((uint8_t*)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (bytesToRead - bytesToEnd));
+                    inDataPtr = (int16_t *) m_inFifoPtr->buffer;
+                    outDataPtr = (int16_t *) ((uint8_t*)outputBuffer + bytesToEnd);
+                    // each sample is int16 => 2 bytes per samples
+                    numSamples = ((bytesToRead - bytesToEnd) >> 1);
+
+                    Q_ASSERT(numSamples*sizeof(int16_t) == (bytesToRead - bytesToEnd));
+
+                    for (uint_fast32_t n = 0; n < numSamples; ++n)
+                    {
+#if AUDIOOUTPUT_PORTAUDIO_VOLUME_ROUND
+                        *outDataPtr++ = int16_t(std::lroundf(volume * *inDataPtr++));
+#else
+                        *outDataPtr++ = int16_t(volume * *inDataPtr++);
+#endif
+                    }
+                    m_inFifoPtr->tail = bytesToRead - bytesToEnd;
+                }
+            }
+            else
+            {
+                float volume = m_linearVolume;
+                if (volume > 0.9)
+                {
+                    memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToRead);
+                    m_inFifoPtr->tail += bytesToRead;
+                }
+                else
+                {
+                    //memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToRead);
+                    int16_t * inDataPtr = (int16_t *) (m_inFifoPtr->buffer+m_inFifoPtr->tail);
+                    int16_t * outDataPtr = (int16_t *) outputBuffer;
+                    // each sample is int16 => 2 bytes per samples
+                    uint_fast32_t numSamples = (bytesToRead >> 1);
+
+                    Q_ASSERT(numSamples*sizeof(int16_t) == bytesToRead);
+
+                    for (uint_fast32_t n = 0; n < numSamples; ++n)
+                    {
+#if AUDIOOUTPUT_PORTAUDIO_VOLUME_ROUND
+                        *outDataPtr++ = int16_t(std::lroundf(volume * *inDataPtr++));
+#else
+                        *outDataPtr++ = int16_t(volume * *inDataPtr++);
+#endif
+                    }
+                    m_inFifoPtr->tail += bytesToRead;
+                }
+            }
+#else
             if (bytesToEnd < bytesToRead)
             {
                 memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
@@ -295,7 +537,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
                 memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToRead);
                 m_inFifoPtr->tail += bytesToRead;
             }
-
+#endif
             m_inFifoPtr->mutex.lock();
             m_inFifoPtr->count -= bytesToRead;
             m_inFifoPtr->countChanged.wakeAll();
@@ -303,7 +545,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
 
             if (!muteRequest)
             {   // done
-               return paContinue;
+                return paContinue;
             }
         }
     }
@@ -323,7 +565,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
         {
             for (uint_fast8_t c = 0; c < m_numChannels; ++c)
             {
-                *dataPtr = int16_t(qRound(gain * *dataPtr));
+                *dataPtr = int16_t(std::lroundf(gain * *dataPtr));
                 dataPtr++;
             }
             gain = gain * coe;  // after by purpose
@@ -351,7 +593,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             gain = gain * coe;  // before by purpose
             for (uint_fast8_t c = 0; c < m_numChannels; ++c)
             {
-                *dataPtr = int16_t(qRound(gain * *dataPtr));
+                *dataPtr = int16_t(std::lroundf(gain * *dataPtr));
                 dataPtr++;
             }
         }
@@ -456,8 +698,8 @@ void AudioOutput::mute(bool on)
 void AudioOutput::setVolume(int value)
 {
     m_linearVolume = QAudio::convertVolume(value / qreal(100),
-                                               QAudio::LogarithmicVolumeScale,
-                                               QAudio::LinearVolumeScale);
+                                           QAudio::LogarithmicVolumeScale,
+                                           QAudio::LinearVolumeScale);
     if (nullptr != m_audioSink)
     {
         m_audioSink->setVolume(m_linearVolume);
@@ -498,21 +740,21 @@ void AudioOutput::handleStateChanged(QAudio::State newState)
     //qDebug() << newState;
     switch (newState)
     {
-        case QAudio::ActiveState:
-            //destroyTimer();
-            break;
-        case QAudio::IdleState:
-            // no more data
-            break;
+    case QAudio::ActiveState:
+        //destroyTimer();
+        break;
+    case QAudio::IdleState:
+        // no more data
+        break;
 
-        case QAudio::StoppedState:
-            // Stopped for other reasons
-            break;
+    case QAudio::StoppedState:
+        // Stopped for other reasons
+        break;
 
-        default:
-            // ... other cases as appropriate
-            break;
-        }
+    default:
+        // ... other cases as appropriate
+        break;
+    }
 }
 
 

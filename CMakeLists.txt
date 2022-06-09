@@ -23,7 +23,7 @@ set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
 
 # AAC decoder - default is FAAD2 but FDK-AAC can be used optionally
 option (USE_FDK_AAC           "Compile with fdk-aac library from Franhofer instead of faad2" OFF)
-option (USE_PORTAUDIO         "Compile with PortAudio library of Qt6 multimedia framework (better performance)" OFF)
+option (USE_PORTAUDIO         "Compile with PortAudio library of Qt6 multimedia framework (better performance)" ON)
 
 
 # Options to force using libs build manually and installed in ${CMAKE_SOURCE_DIR}/../../dab-libs

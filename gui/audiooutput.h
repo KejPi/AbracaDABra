@@ -33,6 +33,9 @@ enum class AudioOutputPlaybackState
 
 #if (defined AUDIOOUTPUT_USE_PORTAUDIO)
 
+#define AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA        1
+#define AUDIOOUTPUT_PORTAUDIO_VOLUME_ROUND      1
+
 // port audio allows to set number of samples in callback
 // this number must be aligned between AUDIOOUTPUT_FADE_TIME_MS and AUDIO_FIFO_CHUNK_MS
 #if (AUDIOOUTPUT_FADE_TIME_MS != AUDIO_FIFO_CHUNK_MS)
@@ -51,6 +54,7 @@ public:
 public slots:
     void start(uint32_t sRate, uint8_t numChannels);
     void mute(bool on);
+    void setVolume(int value);
 
 private:
     std::atomic<bool> m_muteFlag  = false;
@@ -62,6 +66,7 @@ private:
     unsigned int m_bufferFrames;
     uint8_t m_bytesPerFrame;
     float m_muteFactor;
+    std::atomic<float> m_linearVolume;
 
     AudioOutputPlaybackState m_playbackState;
 
