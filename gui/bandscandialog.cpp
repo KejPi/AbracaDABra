@@ -156,9 +156,12 @@ void BandScanDialog::onSyncStatus(uint8_t sync)
 {
     if (DabSyncLevel::NullSync <= DabSyncLevel(sync))
     {
-        timer->stop();
-        state = BandScanState::WaitForEnsemble;
-        timer->start(6000);
+        if (BandScanState::WaitForSync == state)
+        {   // if we are waiting for sync (move to next step)
+            timer->stop();
+            state = BandScanState::WaitForEnsemble;
+            timer->start(6000);
+        }
     }
 }
 
