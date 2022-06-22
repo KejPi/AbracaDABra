@@ -262,6 +262,12 @@ typedef struct
     uint8_t SCIdS;
 } dabsdrNtfServiceSelection_t;
 
+typedef enum dabsdrNtfResetFlags_e
+{
+    DABSDR_RESET_INIT = 0,
+    DABSDR_RESET_NEW_EID = 1
+} dabsdrNtfResetFlags_t;
+
 typedef dabsdrNtfServiceSelection_t dabsdrNtfServiceStop_t;
 
 typedef struct
@@ -269,7 +275,6 @@ typedef struct
     uint8_t appType;
     uint8_t start;
 } dabsdrXpadAppStartStop_t;
-
 
 // input functions
 typedef void (*dabsdrInputFunc_t)(float _Complex [], uint16_t);
