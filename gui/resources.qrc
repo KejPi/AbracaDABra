@@ -9,7 +9,6 @@
         <file>resources/catSls.png</file>
         <file>resources/down.png</file>
         <file>resources/up.png</file>
-        <file>resources/appIconAbout.png</file>
         <file>resources/signal3.png</file>
         <file>resources/signal0.png</file>
         <file>resources/signal1.png</file>
@@ -30,5 +29,7 @@
         <file>resources/star_dark.png</file>
         <file>resources/starEmpty_dark.png</file>
         <file>resources/up_dark.png</file>
+        <file>resources/appIcon-linux.png</file>
+        <file>resources/appIcon.png</file>
     </qresource>
 </RCC>
