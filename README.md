@@ -1,13 +1,13 @@
 # AbracaDABra
 Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) for RTL-SDR sticks. 
-It is based on Qt6 and uses _dabsdr_ demodulation library that is free for use but closed source. 
+It is based on Qt6 and uses _dabsdr_ demodulation library that is free for use but not open source. 
 
-![Snímek obrazovky 2022-05-13 v 22 51 00](https://user-images.githubusercontent.com/6438380/169595803-3ead3b88-35ab-4f8e-8246-cacb97b54c32.png)
+<img width="1634" alt="Snímek obrazovky 2022-06-28 v 22 32 25" src="https://user-images.githubusercontent.com/6438380/176279785-1e212201-3c1d-428f-9416-b1b0b464238b.png">
 
 ## Features
 * Supports following input devices:
   * RTL-SDR (default device)
-  * RTL-TCP (127.0.0.1:1234) 
+  * RTL-TCP
   * Raw file input (in expert mode only, int16_t or uint8_t format)
 * Band scan with automatic service list
 * Service list management
@@ -22,19 +22,30 @@ It is based on Qt6 and uses _dabsdr_ demodulation library that is free for use b
 * Multiplatform
 
 ## Basic mode
-![Snímek obrazovky 2022-05-20 v 21 06 26](https://user-images.githubusercontent.com/6438380/169595834-5a822b8f-6987-450f-aa12-d3c13f02936a.png)
+<img width="663" alt="Snímek obrazovky 2022-06-28 v 22 19 47" src="https://user-images.githubusercontent.com/6438380/176277787-7737ca9b-adb1-4d91-bf5b-bd9331d27663.png">
 
 Simple user interface that is focused on radio listening. Just select your favorite service from service list on the right side 
 and enjoy the music with slide show and DL(+). 
 Service can be easily added to favorites by clicking "star" icon.  Most of the elements in UI have tool tip with more information.
 
 ## Expert mode
-![Snímek obrazovky 2022-05-13 v 22 49 36](https://user-images.githubusercontent.com/6438380/168489297-bf12730c-ffc9-415a-9e45-7e7cebe0de39.png)
+<img width="873" alt="Snímek obrazovky 2022-06-28 v 22 37 21" src="https://user-images.githubusercontent.com/6438380/176281878-405e3d99-64ef-4a95-a30e-7b74127b178e.png">
 
 In addition to basic mode, it shows ensemble tree with structure of services and additional details of currenly tuned service. 
 Additionally it is possible to change the DAB channel manually in this mode. 
 This is particularly useful when antenna adjustment is done in order to receive ensemble the is not received during automatic band scan.
 Expert mode can be enabled in "three-dot" menu.
+
+## Expert settings
+Some settings can only be chencged by editting of the AbracaDABra.ini file. File location is OS dependent:
+* MacOS & Linux: `$HOME/.config/AbracaDABra/AbracaDABra.ini`
+* Windows: `%USERPROFILE%\AppData\Roaming\AbracaDABra\AbracaDABra.ini`
+
+Following settings can be changed for RTL-SDR device by editing AbracaDABra.ini:
+
+      [RTL-SDR]
+      bandwidth=0     # 0 means automatic BW otherwise bandwidth value in Hz
+      bias-T=false    # set to true to enable bias-T
 
 ## How to build
 Following libraries are required:
@@ -68,13 +79,10 @@ Then clone the project:
 3. Run make
 
        make
-
-
-
+       
 ## Known limitations
 * Slower switching between ensembles
 * Reconfiguration not supported for data services
 * Only SLS data service is supported 
 * Apple Silicon build is not optimized
-* No possibility to change configuration for RTL_TCP source
 * Application is hanging when audio output device is removed (like bluetooth headphones disconnected) - PortAudio does not support hot swap
