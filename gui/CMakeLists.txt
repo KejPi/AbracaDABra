@@ -8,6 +8,8 @@ qt_add_resources (RCC_SOURCES ${RESOURCES})
 if(WIN32)
     set(GUI_TYPE WIN32)
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources/appIcon.rc")
+    set(APP_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources/app.rc")
+    set_source_files_properties(${APP_RESOURCE_WINDOWS} PROPERTIES LANGUAGE RC)
 endif(WIN32)
 
 # Set some Apple MacOS Specific settings
@@ -37,7 +39,8 @@ add_executable(${TARGET}
     ${RCC_SOURCES}
     ${APP_ICON_MACOSX}
     ${APP_ICON_RESOURCE_WINDOWS}
-    ${CMAKE_CURRENT_BINARY_DIR}/config.h
+    ${APP_RESOURCE_WINDOWS}
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h    
     main.cpp
     mainwindow.cpp
     mainwindow.h
@@ -165,7 +168,7 @@ if(WIN32)
 endif(WIN32)
 
 include_directories ( ${CMAKE_SOURCE_DIR} )
-target_link_libraries(${TARGET} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia)
+target_link_libraries(${TARGET} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia Qt${QT_VERSION_MAJOR}::Svg)
 
 # Set a custom plist file for the app bundle
 if(APPLE)
