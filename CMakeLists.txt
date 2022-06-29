@@ -8,7 +8,7 @@ endif()
 set(TARGET AbracaDABra)
 
 project(${TARGET}
-    VERSION 1.0
+    VERSION 1.1
     LANGUAGES CXX)
 
 # Select the release build type by default to get optimization flags
@@ -52,7 +52,7 @@ endif()
 
 #########################################################
 ## VERSION
-set(PROJECT_VERSION_RELEASE OFF)
+set(PROJECT_VERSION_RELEASE ON)
 #string(TIMESTAMP PROJECT_BUILD_DATE "%Y-%m-%d %H:%M")
 execute_process(COMMAND git log --pretty=format:%h -n 1
                 WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -317,8 +317,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 COMPONENTS Widgets Multimedia REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia REQUIRED)
+find_package(QT NAMES Qt6 COMPONENTS Widgets Multimedia Svg REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia Svg REQUIRED)
 
 #########################################################
 ## AbracaDABra GUI
