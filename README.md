@@ -37,15 +37,17 @@ This is particularly useful when antenna adjustment is done in order to receive 
 Expert mode can be enabled in "three-dot" menu.
 
 ## Expert settings
-Some settings can only be chencged by editting of the AbracaDABra.ini file. File location is OS dependent:
+Some settings can only be changed by editting of the AbracaDABra.ini file. File location is OS dependent:
 * MacOS & Linux: `$HOME/.config/AbracaDABra/AbracaDABra.ini`
 * Windows: `%USERPROFILE%\AppData\Roaming\AbracaDABra\AbracaDABra.ini`
 
 Following settings can be changed for RTL-SDR device by editing AbracaDABra.ini:
 
       [RTL-SDR]
-      bandwidth=0     # 0 means automatic BW otherwise bandwidth value in Hz
+      bandwidth=0     # 0 means automatic bandwidth, positive value means bandwidth value in Hz (e.g. bandwidth=1530000 is 1.53MHz BW)
       bias-T=false    # set to true to enable bias-T
+
+Application shall not run while changing these settings, otherwise it will be overwritten.
 
 ## How to build
 Following libraries are required:
