@@ -781,7 +781,7 @@ void MainWindow::onChannelSelection()
 }
 
 void MainWindow::onServiceSelection()
-{        
+{
     emit stopUserApps();
 
     clearServiceInformationLabels();
@@ -961,7 +961,6 @@ void MainWindow::serviceListTreeClicked(const QModelIndex &index)
                 ui->switchSourceLabel->setVisible(serviceList->numEnsembles(ServiceListId(SId.value(), SCIdS)) > 1);
             }
             onServiceSelection();
-            //qDebug("serviceRequest: freq=%d, SId=0x%X, SCIdS=%d", frequency, SId.value(), SCIdS);
             emit serviceRequest(frequency, SId.value(), SCIdS);
 
             // we need to find the item in model and select it
@@ -1634,8 +1633,17 @@ void MainWindow::serviceListViewUpdateSelection()
 
 void MainWindow::onDLPlusToggle(bool toggle)
 {
+    int h = 0;
+    if (height() > minimumSizeHint().height())
+    {   // user changed window height
+        h = height();
+    }
     ui->dlPlusFrame->setVisible(toggle);
-    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
+
+    //QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
+    QTimer::singleShot(10, this, [this, h](){
+        resize(width(), (h > minimumSizeHint().height()) ? h : minimumSizeHint().height());
+    } );
 }
 
 void MainWindow::switchMode()
