@@ -641,13 +641,17 @@ void AudioDecoder::processAAC(QByteArray *inData)
         return;
 #endif
 #else
+        if (nullptr == aacDecoderHandle)
+        {   // if decoder is not initialized, then return
+            return;
+        }
+
         // concealment not supported
         // supposing that header is the same and setting buffer to 0
         inData->fill(0);
         header.raw = aacHeader.raw;
 #endif
-    }
-
+    }    
     if ((nullptr == aacDecoderHandle) || (header.raw != aacHeader.raw))
     {
         aacHeader.raw = header.raw;
