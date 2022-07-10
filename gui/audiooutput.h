@@ -9,7 +9,7 @@
 #include "config.h"
 #include "audiofifo.h"
 
-#ifdef AUDIOOUTPUT_USE_PORTAUDIO
+#ifdef HAVE_PORTAUDIO
 #include "portaudio.h"
 #else
 #include <QAudioSink>
@@ -31,7 +31,7 @@ enum class AudioOutputPlaybackState
     Muted = 1,
 };
 
-#if (defined AUDIOOUTPUT_USE_PORTAUDIO)
+#if (defined HAVE_PORTAUDIO)
 
 #define AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA        1
 #define AUDIOOUTPUT_PORTAUDIO_VOLUME_ROUND      1
@@ -80,7 +80,7 @@ private:
 #endif
 };
 
-#else // (defined AUDIOOUTPUT_USE_PORTAUDIO)
+#else // (defined HAVE_PORTAUDIO)
 
 class AudioIODevice;
 

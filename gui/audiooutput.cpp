@@ -7,7 +7,7 @@
 
 audioFifo_t audioBuffer;
 
-#ifdef AUDIOOUTPUT_USE_PORTAUDIO
+#ifdef HAVE_PORTAUDIO
 
 AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent)
 {
@@ -610,7 +610,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     return paContinue;
 }
 
-#else // !def AUDIOOUTPUT_USE_PORTAUDIO
+#else // !def HAVE_PORTAUDIO
 
 AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent)
 {
@@ -1007,4 +1007,4 @@ void AudioIODevice::mute(bool on)
     m_muteFlag = on;
 }
 
-#endif // def AUDIOOUTPUT_USE_PORTAUDIO
+#endif // def HAVE_PORTAUDIO

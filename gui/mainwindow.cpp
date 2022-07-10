@@ -149,7 +149,7 @@ MainWindow::MainWindow(QWidget *parent)
     muteLabel->setTooltip("Unmute audio", true);
     muteLabel->setChecked(false);
 
-#if !(defined AUDIOOUTPUT_USE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
+#if !(defined HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     volumeSlider = new QSlider(Qt::Horizontal, this);
     volumeSlider->setMinimum(0);
     volumeSlider->setMaximum(100);
@@ -200,7 +200,7 @@ MainWindow::MainWindow(QWidget *parent)
     QGridLayout * layout = new QGridLayout(widget);
     layout->addWidget(timeBasicQualWidget, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
     layout->addWidget(signalQualityWidget, 0, 1, Qt::AlignVCenter | Qt::AlignRight);
-#if !(defined AUDIOOUTPUT_USE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
+#if !(defined HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     layout->addWidget(volumeWidget, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
 #else
     layout->addWidget(muteLabel, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
@@ -306,14 +306,14 @@ MainWindow::MainWindow(QWidget *parent)
     audioDecoderThr->start();
 
     audioOutput = new AudioOutput(&audioBuffer);
-#if (!defined AUDIOOUTPUT_USE_PORTAUDIO)
+#if (!defined HAVE_PORTAUDIO)
     audioOutThr = new QThread(this);
     audioOutThr->setObjectName("audioOutThr");
     audioOutput->moveToThread(audioOutThr);
     connect(audioOutThr, &QThread::finished, audioOutput, &QObject::deleteLater);
     audioOutThr->start();
 #endif
-#if (!defined AUDIOOUTPUT_USE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
+#if (!defined HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     connect(volumeSlider, &QSlider::valueChanged, audioOutput, &AudioOutput::setVolume, Qt::QueuedConnection);
 #endif
 
@@ -437,7 +437,7 @@ MainWindow::~MainWindow()
     audioDecoderThr->wait();
     delete audioDecoderThr;
 
-#if (defined AUDIOOUTPUT_USE_PORTAUDIO)
+#if (defined HAVE_PORTAUDIO)
     delete audioOutput;
 #else
     audioOutThr->quit();  // this deletes audiodecoder
@@ -1424,7 +1424,7 @@ void MainWindow::loadSettings()
     serviceList->load(settings);
     expertMode = settings.value("ExpertMode").toBool();   
     setExpertMode(expertMode);
-#if (!defined AUDIOOUTPUT_USE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
+#if (!defined HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     volumeSlider->setValue(settings.value("volume", 100).toInt());
 #endif
 
@@ -1494,7 +1494,7 @@ void MainWindow::saveSettings()
     const SetupDialog::Settings s = setupDialog->settings();
     settings.setValue("inputDeviceId", int(s.inputDevice));
     settings.setValue("dumpPath", ensembleInfoDialog->getDumpPath());
-#if (!defined AUDIOOUTPUT_USE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
+#if (!defined HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     settings.setValue("volume", volumeSlider->value());
 #else
     settings.setValue("volume", 100);

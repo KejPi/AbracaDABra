@@ -6,11 +6,11 @@
 #include <QDataStream>
 #include <mpg123.h>
 #include "config.h"
-#if defined(AUDIO_DECODER_USE_FDKAAC)
+#if defined(HAVE_FDKAAC)
 #include <fdk-aac/aacdecoder_lib.h>
 #else
 #include <neaacdec.h>
-#endif // defined(AUDIO_DECODER_USE_FDKAAC)
+#endif // defined(HAVE_FDKAAC)
 #include "radiocontrol.h"
 #include "audiofifo.h"
 
@@ -19,9 +19,9 @@
 //#define AUDIO_DECODER_MP2_OUT
 
 // this is set from cmake
-//#define AUDIO_DECODER_USE_FDKAAC
+//#define HAVE_FDKAAC
 
-#if defined(AUDIO_DECODER_USE_FDKAAC)
+#if defined(HAVE_FDKAAC)
 #define AUDIO_DECODER_FDKAAC_CONCEALMENT 1
 
 // leave it disabled, not supported for FDK-AAC yet
@@ -75,7 +75,7 @@ private:
     dabsdrAudioFrameHeader_t aacHeader;
     AudioParameters audioParameters;
 
-#if defined(AUDIO_DECODER_USE_FDKAAC)
+#if defined(HAVE_FDKAAC)
     HANDLE_AACDECODER aacDecoderHandle;
     uint8_t *outputFrame = nullptr;
     size_t outputFrameLen;

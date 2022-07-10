@@ -137,15 +137,15 @@ include_directories ( ${DAB_INCLUDE_DIRS} )
 target_link_libraries(${TARGET} PRIVATE ${DAB_LINK_LIBRARIES})
 
 # AAC libs
-if (USE_FDK_AAC)
+if (HAVE_FDKAAC)
     # FDKAAC
     include_directories ( ${LIBFDKAAC_INCLUDE_DIRS} )
     target_link_libraries(${TARGET} PRIVATE "${LIBFDKAAC_LINK_LIBRARIES}" )
-else (USE_FDK_AAC)
+else (HAVE_FDKAAC)
     # FAAD
     include_directories ( ${LIBFAAD2_INCLUDE_DIRS} )
     target_link_libraries(${TARGET} PRIVATE "${LIBFAAD2_LINK_LIBRARIES}" )
-endif (USE_FDK_AAC)
+endif (HAVE_FDKAAC)
 
 # MPG123
 include_directories ( ${LIBMPG123_INCLUDE_DIRS} )

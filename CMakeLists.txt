@@ -22,9 +22,10 @@ set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
 ## OPTIONAL SWITCHES
 
 # AAC decoder - default is FAAD2 but FDK-AAC can be used optionally
-option (USE_FDK_AAC           "Compile with fdk-aac library from Franhofer instead of faad2" OFF)
-option (USE_PORTAUDIO         "Compile with PortAudio library of Qt6 multimedia framework (better performance)" ON)
+option (USE_FDKAAC            "Compile with fdk-aac library from Franhofer instead of faad2" OFF)
 
+# Audio output
+option (USE_PORTAUDIO         "Compile with PortAudio library of Qt6 multimedia framework (better performance)" ON)
 
 # Options to force using libs build manually and installed in ${CMAKE_SOURCE_DIR}/../../dab-libs
 option (USE_SYSTEM_RTLSDR     "Use system provided rtl-sdr"     ON)
@@ -34,10 +35,12 @@ option (USE_SYSTEM_FDKAAC     "Use system provided libfdk-aac"  ON)
 option (USE_SYSTEM_MPG123     "Use system provided libmpg123"   ON)
 option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   ON)
 
-option(APPLE_BUILD_X86_64     "Build x86_64 binary for Apple"   OFF)
+option (APPLE_BUILD_X86_64    "Build x86_64 binary for Apple"   OFF)
 
 if(APPLE OR WIN32)
-    # libs need to be either universal or built separately for x86_64 (this case)
+    # Apple and Win does not use system libs
+    # - M1 seems to have problems with that https://forum.qt.io/topic/135220/random-application-crash-on-apple-silicon-m1-qt-6-2-3/24
+    # - Windows has always some problems
     set(USE_SYSTEM_RTLSDR    OFF)
     set(USE_SYSTEM_LIBUSB    OFF)
     set(USE_SYSTEM_FAAD      OFF)
@@ -171,7 +174,7 @@ endif (USE_SYSTEM_LIBUSB)
 
 #########################################################
 ## FDK-AAC
-if (USE_FDK_AAC)
+if (USE_FDKAAC)
     if (USE_SYSTEM_FDKAAC)
         find_library (LIBFDKAAC_LINK_LIBRARIES fdk-aac)
         find_path(LIBFDKAAC_INCLUDE_DIRS fdk-aac/aacdecoder_lib.h)
@@ -187,11 +190,11 @@ if (USE_FDK_AAC)
 
             if (LIBFDKAAC_LINK_LIBRARIES)
                 message (STATUS "libfdk-aac found: ${LIBFDKAAC_LINK_LIBRARIES}")
-                message (STATUS "libfdk-aac used instead of libfaad2 ${USE_FDK_AAC}")
-                set(AUDIO_DECODER_USE_FDKAAC ON)
+                message (STATUS "libfdk-aac used instead of libfaad2")
+                set(HAVE_FDKAAC ON)
             else(LIBFDKAAC_LINK_LIBRARIES)
                 message (WARNING "libfdk-aac not found. Build from source and install to: ${DAB_LIBS_DIR}. Trying to use faad2 instead.")
-                set (USE_FDK_AAC OFF)
+                set (HAVE_FDKAAC OFF)
             endif()
         endif()
     else(USE_SYSTEM_FDKAAC)
@@ -199,19 +202,21 @@ if (USE_FDK_AAC)
         find_path(LIBFDKAAC_INCLUDE_DIRS fdk-aac/aacdecoder_lib.h PATHS ${DAB_LIBS_DIR}/include NO_DEFAULT_PATH)
         if (LIBFDKAAC_LINK_LIBRARIES)
             message (STATUS "libfdk-aac found: ${LIBFDKAAC_LINK_LIBRARIES}")
-            message (STATUS "libfdk-aac used instead of libfaad2 ${USE_FDK_AAC}")
-            set(AUDIO_DECODER_USE_FDKAAC ON)
+            message (STATUS "libfdk-aac used instead of libfaad2")
+            set(HAVE_FDKAAC ON)
         else()
             message (WARNING "libfdk-aac not found. Build from source and install to: ${DAB_LIBS_DIR}. Trying to use faad2 instead.")
-            set (USE_FDK_AAC OFF)
+            set (HAVE_FDKAAC OFF)
         endif()
     endif (USE_SYSTEM_FDKAAC)
-endif (USE_FDK_AAC)
+else (USE_FDKAAC)
+    set (HAVE_FDKAAC OFF)
+endif (USE_FDKAAC)
 
 #########################################################
 ## FAAD2
 # this can be fallback when FDK AAC not found
-if (NOT USE_FDK_AAC)
+if (NOT USE_FDKAAC)
     if (USE_SYSTEM_FAAD)
         find_library (LIBFAAD2_LINK_LIBRARIES faad)
         find_path(LIBFAAD2_INCLUDE_DIRS neaacdec.h)
@@ -240,7 +245,7 @@ if (NOT USE_FDK_AAC)
             message (FATAL_ERROR "libfaad not found. Build from source and install to: ${DAB_LIBS_DIR}")
         endif()
     endif (USE_SYSTEM_FAAD)
-endif(NOT USE_FDK_AAC)
+endif(NOT USE_FDKAAC)
 
 #########################################################
 ## MPG123
@@ -291,7 +296,7 @@ if (USE_PORTAUDIO)
 
             if (PORTAUDIO_LINK_LIBRARIES)
                 message (STATUS "libportaudio found: ${PORTAUDIO_LINK_LIBRARIES}")
-                set(AUDIOOUTPUT_USE_PORTAUDIO ON)
+                set(HAVE_PORTAUDIO ON)
             else(PORTAUDIO_LINK_LIBRARIES)
                 message (STATUS "libportaudio not found. Build from source and install to: ${DAB_LIBS_DIR}. Using Qt6 multimedia framework instead.")
             endif()
@@ -301,7 +306,7 @@ if (USE_PORTAUDIO)
         find_path(PORTAUDIO_INCLUDE_DIRS portaudio.h PATHS ${DAB_LIBS_DIR}/include NO_DEFAULT_PATH)
         if (PORTAUDIO_LINK_LIBRARIES)
             message (STATUS "libportaudio found: ${PORTAUDIO_LINK_LIBRARIES}")
-            set(AUDIOOUTPUT_USE_PORTAUDIO ON)
+            set(HAVE_PORTAUDIO ON)
         else()
             message (STATUS "libportaudio not found. Build from source and install to: ${DAB_LIBS_DIR}. Using Qt6 multimedia framework instead.")
         endif()
