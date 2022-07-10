@@ -18,7 +18,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->inputCombo->addItem("No device", QVariant(int(InputDeviceId::UNDEFINED)));
     ui->inputCombo->addItem("RTL SDR", QVariant(int(InputDeviceId::RTLSDR)));
     ui->inputCombo->addItem("RTL TCP", QVariant(int(InputDeviceId::RTLTCP)));
-    //ui->inputCombo->addItem("RaRT TCP", QVariant(int(InputDeviceId::RARTTCP)));
+#ifdef HAVE_RARTTCP
+    ui->inputCombo->addItem("RaRT TCP", QVariant(int(InputDeviceId::RARTTCP)));
+#endif
     ui->inputCombo->addItem("Raw file", QVariant(int(InputDeviceId::RAWFILE)));
     ui->inputCombo->setCurrentIndex(-1);  // undefined
 
@@ -37,7 +39,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
                                +                                + "(\\." + ipRange + ")"
                                +                                + "(\\." + ipRange + ")$");
     QRegularExpressionValidator *ipValidator = new QRegularExpressionValidator(ipRegex, this);
-    ui->ipAddressEdit->setValidator(ipValidator);
+    ui->rtltcpIpAddressEdit->setValidator(ipValidator);
+    ui->rarttcpIpAddressEdit->setValidator(ipValidator);
 
     connect(ui->buttonBox, &QDialogButtonBox::clicked, this, &SetupDialog::onButtonClicked);
     connect(ui->inputCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onInputChanged);
@@ -49,8 +52,12 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->fileFormatCombo, &QComboBox::currentIndexChanged, this, [this](){ applyEnable(); });
     connect(ui->rtlsdrGainCombo, &QComboBox::currentIndexChanged, this, [this](){ applyEnable(); });
     connect(ui->rtltcpGainCombo, &QComboBox::currentIndexChanged, this, [this](){ applyEnable(); });
-    connect(ui->ipAddressEdit, &QLineEdit::textEdited, this, [this](){ applyEnable(); });
-    connect(ui->ipPortSpinBox, &QSpinBox::valueChanged, this, [this](){ applyEnable(); });
+    connect(ui->rtltcpIpAddressEdit, &QLineEdit::textEdited, this, [this](){ applyEnable(); });
+    connect(ui->rtltcpIpPortSpinBox, &QSpinBox::valueChanged, this, [this](){ applyEnable(); });
+#ifdef HAVE_RARTTCP
+    connect(ui->rarttcpIpAddressEdit, &QLineEdit::textEdited, this, [this](){ applyEnable(); });
+    connect(ui->rarttcpIpPortSpinBox, &QSpinBox::valueChanged, this, [this](){ applyEnable(); });
+#endif
     connect(ui->loopCheckbox, &QCheckBox::stateChanged, this, [this](){ applyEnable(); });
 
     adjustSize();
@@ -145,9 +152,12 @@ void SetupDialog::showEvent(QShowEvent *event)
     }
     ui->loopCheckbox->setChecked(m_settings.rawfile.loopEna);
     ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings.rawfile.format));
-    ui->ipAddressEdit->setText(m_settings.rtltcp.tcpAddress);
-    ui->ipPortSpinBox->setValue(m_settings.rtltcp.tcpPort);
-
+    ui->rtltcpIpAddressEdit->setText(m_settings.rtltcp.tcpAddress);
+    ui->rtltcpIpPortSpinBox->setValue(m_settings.rtltcp.tcpPort);
+#ifdef HAVE_RARTTCP
+    ui->rarttcpIpAddressEdit->setText(m_settings.rarttcp.tcpAddress);
+    ui->rarttcpIpPortSpinBox->setValue(m_settings.rarttcp.tcpPort);
+#endif
     ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
 }
 
@@ -175,8 +185,12 @@ void SetupDialog::applySettings()
     }
     newSet.rawfile.loopEna = ui->loopCheckbox->isChecked();
     newSet.rawfile.format = static_cast<RawFileInputFormat>(ui->fileFormatCombo->currentIndex());
-    newSet.rtltcp.tcpAddress = ui->ipAddressEdit->text();
-    newSet.rtltcp.tcpPort = ui->ipPortSpinBox->value();
+    newSet.rtltcp.tcpAddress = ui->rtltcpIpAddressEdit->text();
+    newSet.rtltcp.tcpPort = ui->rtltcpIpPortSpinBox->value();
+#ifdef HAVE_RARTTCP
+    newSet.rarttcp.tcpAddress = ui->rarttcpIpAddressEdit->text();
+    newSet.rarttcp.tcpPort = ui->rarttcpIpPortSpinBox->value();
+#endif
 
     bool inputDeviceChangeNeeded = false;
     if (m_settings.inputDevice != newSet.inputDevice)
@@ -192,6 +206,14 @@ void SetupDialog::applySettings()
         case InputDeviceId::RTLSDR:
             break;
         case InputDeviceId::RARTTCP:
+#ifdef HAVE_RARTTCP
+            if ((newSet.rarttcp.tcpAddress != m_settings.rarttcp.tcpAddress)
+                || (newSet.rarttcp.tcpPort != m_settings.rarttcp.tcpPort))
+            {
+                inputDeviceChangeNeeded = true;
+            }
+#endif
+            break;
         case InputDeviceId::RTLTCP:
             if ((newSet.rtltcp.tcpAddress != m_settings.rtltcp.tcpAddress)
                 || (newSet.rtltcp.tcpPort != m_settings.rtltcp.tcpPort))
@@ -223,6 +245,10 @@ void SetupDialog::applySettings()
                       || (m_settings.rawfile.file != newSet.rawfile.file)
                       || (m_settings.rawfile.loopEna != newSet.rawfile.loopEna)
                       || (m_settings.rawfile.format != newSet.rawfile.format)
+#ifdef HAVE_RARTTCP
+                      || (m_settings.rarttcp.tcpAddress != newSet.rarttcp.tcpAddress)
+                      || (m_settings.rarttcp.tcpPort != newSet.rarttcp.tcpPort)
+#endif
                       || (m_settings.rtltcp.tcpAddress != newSet.rtltcp.tcpAddress)
                       || (m_settings.rtltcp.tcpPort != newSet.rtltcp.tcpPort);
 
@@ -260,27 +286,7 @@ void SetupDialog::onExpertMode(bool ena)
 
 void SetupDialog::onInputChanged(int index)
 {
-    //qDebug() << Q_FUNC_INFO;
-
-    InputDeviceId id = InputDeviceId(ui->inputCombo->itemData(index).toInt());
-    switch (id)
-    {
-    case InputDeviceId::UNDEFINED:
-        ui->deviceOptionsWidget->setCurrentIndex(0);
-        break;
-    case InputDeviceId::RTLSDR:
-        ui->deviceOptionsWidget->setCurrentIndex(1);
-        break;
-    case InputDeviceId::RTLTCP:        
-        ui->deviceOptionsWidget->setCurrentIndex(2);
-        break;
-    case InputDeviceId::RARTTCP:
-        break;
-    case InputDeviceId::RAWFILE:
-        ui->deviceOptionsWidget->setCurrentIndex(3);
-        break;
-    }
-
+    ui->deviceOptionsWidget->setCurrentIndex(ui->inputCombo->itemData(index).toInt());
     adjustSize();
 }
 
@@ -318,25 +324,24 @@ void SetupDialog::onOpenFileButtonClicked()
 
 void SetupDialog::resetInputDevice()
 {
-    QComboBox * comboPtr;
-
     switch (m_settings.inputDevice)
     {
     case InputDeviceId::RTLSDR:
-        comboPtr = ui->rtlsdrGainCombo;
+        ui->rtlsdrGainCombo->clear();
+        ui->rtlsdrGainCombo->addItem("Device");
+        ui->rtlsdrGainCombo->addItem("Software");
         break;
     case InputDeviceId::RTLTCP:
-        comboPtr = ui->rtltcpGainCombo;
+        ui->rtltcpGainCombo->clear();
+        ui->rtltcpGainCombo->addItem("Device");
+        ui->rtltcpGainCombo->addItem("Software");
+        break;
+    case InputDeviceId::RARTTCP:
         break;
     case InputDeviceId::UNDEFINED:
-    case InputDeviceId::RARTTCP:
     case InputDeviceId::RAWFILE:
         return;
     }
-
-    comboPtr->clear();
-    comboPtr->addItem("Device");
-    comboPtr->addItem("Software");
 
     m_settings.inputDevice = InputDeviceId::UNDEFINED;
 

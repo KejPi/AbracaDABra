@@ -11,6 +11,9 @@
 #cmakedefine HAVE_FDKAAC
 #cmakedefine HAVE_PORTAUDIO
 
+/* Optional devices */
+#cmakedefine HAVE_RARTTCP
+
 #endif // CONFIG_H
 
 

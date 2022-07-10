@@ -27,9 +27,8 @@
 #define INVALID_SOCKET (-1)
 #endif
 
-#define RARTTCP_PORT 1234
-#define RARTTCP_ADDRESS "127.0.0.1"
 #define RARTTCP_CHUNK_SIZE (16384*100)
+
 #define RARTTCP_WDOG_ENABLE 1        // enable watchdog timer
 #define RARTTCP_START_COUNTER_INIT 2 // init value of the counter used to reset buffer after tune
 
@@ -57,13 +56,6 @@ private:
     QMutex fileMutex;           
     int captureStartCntr;
 
-    // DOC memory
-    float dcI = 0.0;
-    float dcQ = 0.0;
-
-    // AGC memory
-    float agcLev = 0.0;
-
     // input buffer
     uint8_t bufferIQ[RARTTCP_CHUNK_SIZE];
 
@@ -89,6 +81,8 @@ public:
 
 public slots:
     void tune(uint32_t freq) override;
+    void setTcpIp(const QString & addr, int p);
+
     void startDumpToFile(const QString & filename) override;
     void stopDumpToFile() override;
 
@@ -96,6 +90,8 @@ private:
     uint32_t frequency;
     bool deviceUnplugged;
     SOCKET sock;
+    QString address;
+    int port;
 
     RartTcpWorker * worker;
 #if (RARTTCP_WDOG_ENABLE)

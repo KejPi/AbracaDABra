@@ -37,6 +37,9 @@ option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   ON)
 
 option (APPLE_BUILD_X86_64    "Build x86_64 binary for Apple"   OFF)
 
+# Devices
+option (RARTTCP               "Enable RaRT TCP device"          OFF)
+
 if(APPLE OR WIN32)
     # Apple and Win does not use system libs
     # - M1 seems to have problems with that https://forum.qt.io/topic/135220/random-application-crash-on-apple-silicon-m1-qt-6-2-3/24
@@ -312,6 +315,15 @@ if (USE_PORTAUDIO)
         endif()
     endif (USE_SYSTEM_PORTAUDIO)
 endif(USE_PORTAUDIO)
+
+#########################################################
+## RARTTCP
+if (RARTTCP)
+    # no specific check here
+    set(HAVE_RARTTCP ON)
+else(RARTTCP)
+    set(HAVE_RARTTCP OFF)
+endif(RARTTCP)
 
 #########################################################
 ## QT creator CMAKEFILE

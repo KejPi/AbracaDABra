@@ -155,7 +155,7 @@ bool RtlTcpInput::openDevice()
 
     if (NULL == rp)
     {   /* No address succeeded */
-        qDebug() << "RTLSDR: Could not connect";
+        qDebug() << "RTLTCP: Could not connect";
         return false;
     }
 

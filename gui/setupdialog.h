@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QList>
 #include <QAbstractButton>
+#include "config.h"
 #include "inputdevice.h"
 #include "rawfileinput.h"
 
@@ -32,6 +33,13 @@ public:
             QString tcpAddress;
             int tcpPort;
         } rtltcp;
+#ifdef HAVE_RARTTCP
+        struct
+        {
+            QString tcpAddress;
+            int tcpPort;
+        } rarttcp;
+#endif
         struct
         {
             int gainIdx;

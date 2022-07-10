@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>333</width>
+    <width>337</width>
     <height>198</height>
    </rect>
   </property>
@@ -37,7 +37,7 @@
       <enum>QFrame::Sunken</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="noDevicePage"/>
      <widget class="QWidget" name="rtlsdrPage">
@@ -77,7 +77,7 @@
         <widget class="QComboBox" name="rtltcpGainCombo"/>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="ipAddressEdit">
+        <widget class="QLineEdit" name="rtltcpIpAddressEdit">
          <property name="minimumSize">
           <size>
            <width>100</width>
@@ -100,14 +100,14 @@
         </widget>
        </item>
        <item row="0" column="2">
-        <widget class="QLabel" name="portLabel">
+        <widget class="QLabel" name="rtltcpPortLabel">
          <property name="text">
           <string>Port:</string>
          </property>
         </widget>
        </item>
        <item row="0" column="3">
-        <widget class="QSpinBox" name="ipPortSpinBox">
+        <widget class="QSpinBox" name="rtltcpIpPortSpinBox">
          <property name="alignment">
           <set>Qt::AlignCenter</set>
          </property>
@@ -120,11 +120,75 @@
         </widget>
        </item>
        <item row="0" column="0">
-        <widget class="QLabel" name="ipAddrLabel">
+        <widget class="QLabel" name="rtltcpIpAddrLabel">
          <property name="text">
           <string>IP Address:</string>
          </property>
         </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="rarttcpPage">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QLabel" name="rarttcpIpAddrLabel">
+           <property name="text">
+            <string>IP Address:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="rarttcpIpAddressEdit">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>127.0.0.1</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="rarttcpPortLabel">
+           <property name="text">
+            <string>Port:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QSpinBox" name="rarttcpIpPortSpinBox">
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="maximum">
+            <number>99999</number>
+           </property>
+           <property name="value">
+            <number>1235</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>32</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>

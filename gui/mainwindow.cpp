@@ -1336,6 +1336,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     break;
     case InputDeviceId::RARTTCP:
     {
+#ifdef HAVE_RARTTCP
         inputDevice = new RartTcpInput();
 
         // signals have to be connected before calling isAvailable
@@ -1351,6 +1352,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         // tuning procedure
         connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
         connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+        // set IP address and port
+        dynamic_cast<RartTcpInput*>(inputDevice)->setTcpIp(setupDialog->settings().rarttcp.tcpAddress, setupDialog->settings().rarttcp.tcpPort);
 
         if (inputDevice->openDevice())
         {  // rtl tcp is available
@@ -1379,6 +1383,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             setupDialog->resetInputDevice();
             initInputDevice(InputDeviceId::UNDEFINED);
         }
+#endif
     }
     break;
     case InputDeviceId::RAWFILE:
@@ -1438,6 +1443,10 @@ void MainWindow::loadSettings()
     s.rtltcp.gainIdx = settings.value("RTL-TCP/gainIndex", -1).toInt();
     s.rtltcp.tcpAddress = settings.value("RTL-TCP/address", QString("127.0.0.1")).toString();
     s.rtltcp.tcpPort = settings.value("RTL-TCP/port", 1234).toInt();
+#ifdef HAVE_RARTTCP
+    s.rarttcp.tcpAddress = settings.value("RART-TCP/address", QString("127.0.0.1")).toString();
+    s.rarttcp.tcpPort = settings.value("RART-TCP/port", 1235).toInt();
+#endif
     s.rawfile.file = settings.value("RAW-FILE/filename", QVariant(QString(""))).toString();
     s.rawfile.format = RawFileInputFormat(settings.value("RAW-FILE/format", 0).toInt());
     s.rawfile.loopEna = settings.value("RAW-FILE/loop", false).toBool();
@@ -1505,6 +1514,10 @@ void MainWindow::saveSettings()
     settings.setValue("RTL-TCP/gainIndex", s.rtltcp.gainIdx);
     settings.setValue("RTL-TCP/address", s.rtltcp.tcpAddress);
     settings.setValue("RTL-TCP/port", s.rtltcp.tcpPort);
+#ifdef HAVE_RARTTCP
+    settings.setValue("RART-TCP/address", s.rarttcp.tcpAddress);
+    settings.setValue("RART-TCP/port", s.rarttcp.tcpPort);
+#endif
     settings.setValue("RAW-FILE/filename", s.rawfile.file);
     settings.setValue("RAW-FILE/format", int(s.rawfile.format));
     settings.setValue("RAW-FILE/loop", s.rawfile.loopEna);
