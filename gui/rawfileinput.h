@@ -57,7 +57,6 @@ private:
     QFile * inputFile = nullptr;
     RawFileWorker * worker = nullptr;
     QTimer * inputTimer = nullptr;
-    uint64_t getNumSamples();
     void stop();
     void rewind();
     void onEndOfFile() { emit error(InputDeviceErrorCode::EndOfFile); }

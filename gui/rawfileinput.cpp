@@ -43,36 +43,12 @@ void RawFileInput::openFile(const QString & fileName, const RawFileInputFormat &
         qDebug() << "Unable to open file: " << fileName;
         delete inputFile;
         inputFile = nullptr;
+
+        return;
     }
 
     setFileFormat(format);
-
-    if (getNumSamples() > 0)
-    {
-        emit deviceReady();
-    }
-}
-
-uint64_t RawFileInput::getNumSamples()
-{
-    if (nullptr != inputFile)
-    {
-        int bytesPerSample = 1;
-        switch (sampleFormat)
-        {
-        case RawFileInputFormat::SAMPLE_FORMAT_S16:
-            bytesPerSample = sizeof(int16_t) * 2;
-            break;
-        case RawFileInputFormat::SAMPLE_FORMAT_U8:
-            bytesPerSample = sizeof(uint16_t) * 1;
-            break;
-        }
-        uint64_t numSamples = inputFile->size() / bytesPerSample;
-        qDebug("Number of samples: %lld => %f sec\n", numSamples, numSamples/2048e3);
-        qDebug("Expected NULLs: %lld\n", numSamples/(2656+2552*76));
-        return numSamples;
-    }
-    return 0;
+    emit deviceReady();
 }
 
 void RawFileInput::setFileFormat(const RawFileInputFormat &format)
