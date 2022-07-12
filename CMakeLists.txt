@@ -181,11 +181,11 @@ endif (USE_SYSTEM_LIBUSB)
 #########################################################
 ## FDK-AAC
 if (USE_FDKAAC)
-    if (USE_SYSTEM_FDKAAC)
+    if (USE_SYSTEM_FDKAAC)        
         find_library (LIBFDKAAC_LINK_LIBRARIES fdk-aac)
         find_path(LIBFDKAAC_INCLUDE_DIRS fdk-aac/aacdecoder_lib.h)
         if (NOT WIN32)
-            pkg_search_module (LIBFDKAAC fdk-aac)
+            pkg_search_module (LIBFDKAAC fdk-aac)            
         endif()
         if (NOT LIBFDKAAC_LINK_LIBRARIES)
             # not found is system -> trying ${DAB_LIBS_DIR}
@@ -202,6 +202,9 @@ if (USE_FDKAAC)
                 message (WARNING "libfdk-aac not found. Build from source and install to: ${DAB_LIBS_DIR}. Trying to use faad2 instead.")
                 set (HAVE_FDKAAC OFF)
             endif()
+        else()
+            # found in system
+            set(HAVE_FDKAAC ON)
         endif()
     else(USE_SYSTEM_FDKAAC)
         find_library(LIBFDKAAC_LINK_LIBRARIES fdk-aac PATHS ${DAB_LIBS_DIR}/lib NO_DEFAULT_PATH)
@@ -215,14 +218,14 @@ if (USE_FDKAAC)
             set (HAVE_FDKAAC OFF)
         endif()
     endif (USE_SYSTEM_FDKAAC)
-else (USE_FDKAAC)
+else (USE_FDKAAC)   
     set (HAVE_FDKAAC OFF)
 endif (USE_FDKAAC)
 
 #########################################################
 ## FAAD2
 # this can be fallback when FDK AAC not found
-if (NOT USE_FDKAAC)
+if (NOT HAVE_FDKAAC)
     if (USE_SYSTEM_FAAD)
         find_library (LIBFAAD2_LINK_LIBRARIES faad)
         find_path(LIBFAAD2_INCLUDE_DIRS neaacdec.h)
@@ -251,7 +254,7 @@ if (NOT USE_FDKAAC)
             message (FATAL_ERROR "libfaad not found. Build from source and install to: ${DAB_LIBS_DIR}")
         endif()
     endif (USE_SYSTEM_FAAD)
-endif(NOT USE_FDKAAC)
+endif(NOT HAVE_FDKAAC)
 
 #########################################################
 ## MPG123
