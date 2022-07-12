@@ -161,6 +161,13 @@ if (USE_PORTAUDIO)
     target_link_libraries(${TARGET} PRIVATE "${PORTAUDIO_LINK_LIBRARIES}" )
 endif(USE_PORTAUDIO)
 
+# AIRSPY
+if (HAVE_AIRSPY)
+    # AIRSPY
+    include_directories ( ${AIRSPY_INCLUDE_DIRS} )
+    target_link_libraries(${TARGET} PRIVATE "${AIRSPY_LINK_LIBRARIES}" )
+endif(HAVE_AIRSPY)
+
 # Set some Win32 Specific Settings
 if(WIN32)
     # required fro sockets

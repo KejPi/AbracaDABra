@@ -34,10 +34,12 @@ option (USE_SYSTEM_FAAD       "Use system provided libfaad"     ON)
 option (USE_SYSTEM_FDKAAC     "Use system provided libfdk-aac"  ON)
 option (USE_SYSTEM_MPG123     "Use system provided libmpg123"   ON)
 option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   ON)
+option (USE_SYSTEM_AIRSPY     "Use system provided airspy lib"  ON)
 
 option (APPLE_BUILD_X86_64    "Build x86_64 binary for Apple"   OFF)
 
 # Devices
+option (AIRSPY                "Enable AirSpy devices"           OFF)
 option (RARTTCP               "Enable RaRT TCP device"          OFF)
 
 if(APPLE OR WIN32)
@@ -50,6 +52,7 @@ if(APPLE OR WIN32)
     set(USE_SYSTEM_FDKAAC    OFF)
     set(USE_SYSTEM_MPG123    OFF)
     set(USE_SYSTEM_PORTAUDIO OFF)
+    set(USE_SYSTEM_AIRSPY    OFF)
 endif()
 
 if (APPLE_BUILD_X86_64)
@@ -324,6 +327,46 @@ if (RARTTCP)
 else(RARTTCP)
     set(HAVE_RARTTCP OFF)
 endif(RARTTCP)
+
+#########################################################
+## AIRSPY
+if (AIRSPY)
+    if (USE_SYSTEM_AIRSPY)
+        find_library (AIRSPY_LINK_LIBRARIES airspy)
+        find_path(AIRSPY_INCLUDE_DIRS libairspy/airspy.h)
+        if (NOT WIN32)
+            pkg_search_module(AIRSPY airspy)
+        endif()
+        if (NOT AIRSPY_LINK_LIBRARIES)
+            # not found is system -> trying ${DAB_LIBS_DIR}
+            message (WARNING "airspy not found in system, searching in ${DAB_LIBS_DIR}")
+
+            find_library(AIRSPY_LINK_LIBRARIES airspy PATHS ${DAB_LIBS_DIR}/lib)
+            find_path(AIRSPY_INCLUDE_DIRS libairspy/airspy.h PATHS ${DAB_LIBS_DIR}/include)
+
+            if (AIRSPY_LINK_LIBRARIES)
+                message (STATUS "libairspy found: ${AIRSPY_LINK_LIBRARIES}")
+                set(HAVE_AIRSPY ON)
+            else(AIRSPY_LINK_LIBRARIES)
+                message (STATUS "libairspy not found. Build from source and install to: ${DAB_LIBS_DIR}.")
+                set(HAVE_AIRSPY OFF)
+            endif()
+        endif()
+    else(USE_SYSTEM_AIRSPY)
+        find_library(AIRSPY_LINK_LIBRARIES airspy PATHS ${DAB_LIBS_DIR}/lib NO_DEFAULT_PATH)
+        find_path(AIRSPY_INCLUDE_DIRS libairspy/airspy.h PATHS ${DAB_LIBS_DIR}/include NO_DEFAULT_PATH)
+        if (AIRSPY_LINK_LIBRARIES)
+            message (STATUS "libairspy found: ${AIRSPY_LINK_LIBRARIES}")
+            set(HAVE_AIRSPY ON)
+        else()
+            message (STATUS "libairspy not found. Build from source and install to: ${DAB_LIBS_DIR}.")
+            set(HAVE_AIRSPY OFF)
+        endif()
+    endif (USE_SYSTEM_AIRSPY)
+else(AIRSPY)
+    set(HAVE_AIRSPY OFF)
+endif(AIRSPY)
+
 
 #########################################################
 ## QT creator CMAKEFILE
