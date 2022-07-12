@@ -39,7 +39,7 @@ option (USE_SYSTEM_AIRSPY     "Use system provided airspy lib"  ON)
 option (APPLE_BUILD_X86_64    "Build x86_64 binary for Apple"   OFF)
 
 # Devices
-option (AIRSPY                "Enable AirSpy devices"           OFF)
+option (AIRSPY                "Enable AirSpy devices"           ON)
 option (RARTTCP               "Enable RaRT TCP device"          OFF)
 
 if(APPLE OR WIN32)
@@ -354,6 +354,9 @@ if (AIRSPY)
                 message (STATUS "libairspy not found. Build from source and install to: ${DAB_LIBS_DIR}.")
                 set(HAVE_AIRSPY OFF)
             endif()
+        else()
+            # found in system
+            set(HAVE_AIRSPY ON)
         endif()
     else(USE_SYSTEM_AIRSPY)
         find_library(AIRSPY_LINK_LIBRARIES airspy PATHS ${DAB_LIBS_DIR}/lib NO_DEFAULT_PATH)
