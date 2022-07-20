@@ -39,7 +39,7 @@ option (USE_SYSTEM_AIRSPY     "Use system provided airspy lib"  ON)
 option (APPLE_BUILD_X86_64    "Build x86_64 binary for Apple"   OFF)
 
 # Devices
-option (AIRSPY                "Enable AirSpy devices"           ON)
+option (AIRSPY                "Enable AirSpy devices"           OFF)
 option (RARTTCP               "Enable RaRT TCP device"          OFF)
 
 if(APPLE OR WIN32)
