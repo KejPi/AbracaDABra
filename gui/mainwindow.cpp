@@ -1177,6 +1177,8 @@ void MainWindow::onNewSettings()
         break;
     case InputDeviceId::RARTTCP:
         break;
+    case InputDeviceId::AIRSPY:
+        break;
     case InputDeviceId::RAWFILE:
         break;
     case InputDeviceId::UNDEFINED:
@@ -1373,6 +1375,53 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, inputDevice, &InputDevice::stopDumpToFile);
             connect(inputDevice, &InputDevice::dumpingToFile, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
             connect(inputDevice, &InputDevice::dumpedBytes, ensembleInfoDialog, &EnsembleInfoDialog::updateDumpStatus);
+            ensembleInfoDialog->enableDumpToFile(true);
+
+            // apply current settings
+            onNewSettings();
+        }
+        else
+        {
+            setupDialog->resetInputDevice();
+            initInputDevice(InputDeviceId::UNDEFINED);
+        }
+#endif
+    }
+    break;
+    case InputDeviceId::AIRSPY:
+    {
+#ifdef HAVE_AIRSPY
+        inputDevice = new AirspyInput();
+
+        // signals have to be connected before calling isAvailable
+
+        // tuning procedure
+        connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+        connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+        // HMI
+        connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
+        connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
+
+
+        if (inputDevice->openDevice())
+        {  // rtl sdr is available
+            inputDeviceId = InputDeviceId::AIRSPY;
+
+            // enable band scan
+            bandScanAct->setEnabled(true);
+
+            // enable service list
+            ui->serviceListView->setEnabled(true);
+            ui->serviceTreeView->setEnabled(true);
+            ui->favoriteLabel->setEnabled(true);
+
+            // ensemble info dialog
+            connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, inputDevice, &InputDevice::startDumpToFile);
+            connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, inputDevice, &InputDevice::stopDumpToFile);
+            connect(inputDevice, &InputDevice::dumpingToFile, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
+            connect(inputDevice, &InputDevice::dumpedBytes, ensembleInfoDialog, &EnsembleInfoDialog::updateDumpStatus);
+            connect(inputDevice, &InputDevice::agcGain, ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             ensembleInfoDialog->enableDumpToFile(true);
 
             // apply current settings

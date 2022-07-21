@@ -25,6 +25,7 @@
 #include "rtlsdrinput.h"
 #include "rtltcpinput.h"
 #include "rarttcpinput.h"
+#include "airspyinput.h"
 #include "radiocontrol.h"
 #include "dldecoder.h"
 #include "motdecoder.h"

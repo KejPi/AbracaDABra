@@ -17,6 +17,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 
     ui->inputCombo->addItem("No device", QVariant(int(InputDeviceId::UNDEFINED)));
     ui->inputCombo->addItem("RTL SDR", QVariant(int(InputDeviceId::RTLSDR)));
+#ifdef HAVE_AIRSPY
+    ui->inputCombo->addItem("Airspy", QVariant(int(InputDeviceId::AIRSPY)));
+#endif
     ui->inputCombo->addItem("RTL TCP", QVariant(int(InputDeviceId::RTLTCP)));
 #ifdef HAVE_RARTTCP
     ui->inputCombo->addItem("RaRT TCP", QVariant(int(InputDeviceId::RARTTCP)));
@@ -105,6 +108,7 @@ void SetupDialog::setGainValues(const QList<int> * pList)
     case InputDeviceId::UNDEFINED:
     case InputDeviceId::RARTTCP:
     case InputDeviceId::RAWFILE:
+    case InputDeviceId::AIRSPY:
         return;
     }
 
@@ -228,6 +232,8 @@ void SetupDialog::applySettings()
                 inputDeviceChangeNeeded = true;
             }
             break;
+        case InputDeviceId::AIRSPY:
+            break;
         }
     }
 
@@ -337,9 +343,9 @@ void SetupDialog::resetInputDevice()
         ui->rtltcpGainCombo->addItem("Software");
         break;
     case InputDeviceId::RARTTCP:
-        break;
     case InputDeviceId::UNDEFINED:
     case InputDeviceId::RAWFILE:
+    case InputDeviceId::AIRSPY:
         return;
     }
 

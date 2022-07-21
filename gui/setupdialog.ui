@@ -37,7 +37,7 @@
       <enum>QFrame::Sunken</enum>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="noDevicePage"/>
      <widget class="QWidget" name="rtlsdrPage">
@@ -229,6 +229,7 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="airspyPage"/>
     </widget>
    </item>
    <item>

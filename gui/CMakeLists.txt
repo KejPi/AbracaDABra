@@ -32,6 +32,10 @@ endif(APPLE)
 
 configure_file (config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
+if (HAVE_AIRSPY)
+    set(AIRSPY_SOURCES airspyinput.h airspyinput.cpp)
+endif(HAVE_AIRSPY)
+
 #########################################################
 ## SOURCES & HEADERS
 add_executable(${TARGET}
@@ -41,6 +45,7 @@ add_executable(${TARGET}
     ${APP_ICON_RESOURCE_WINDOWS}
     ${APP_RESOURCE_WINDOWS}
     ${CMAKE_CURRENT_BINARY_DIR}/config.h    
+    ${AIRSPY_SOURCES}
     main.cpp
     mainwindow.cpp
     mainwindow.h
