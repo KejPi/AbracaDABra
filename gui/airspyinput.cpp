@@ -63,14 +63,7 @@ bool AirspyInput::openDevice()
 {
     int ret = 0;
 
-    ret = airspy_init();
-    if (AIRSPY_SUCCESS != ret)
-    {
-        qDebug()  << "Airspy: " << "airspy_init () failed: " << airspy_error_name((airspy_error)ret) << "(" << ret << ")";
-        return false;
-    }
-
-    // Get all devices
+    // open first device
     ret = airspy_open(&device);
     if (AIRSPY_SUCCESS != ret)
     {
@@ -134,6 +127,8 @@ void AirspyInput::run()
 
     // Reset buffer here - worker thread it not running, DAB waits for new data
     inputBuffer.reset();
+
+    filter->reset();
 
     if (frequency != 0)
     {   // Tune to new frequency
@@ -823,6 +818,10 @@ AirspyDSFilter::~AirspyDSFilter()
 void AirspyDSFilter::reset()
 {
     bufferPtr = buffer;
+    for (int n = 0; n < 4*len; ++n)
+    {
+        buffer[n] = 0;
+    }
 }
 
 void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ)
