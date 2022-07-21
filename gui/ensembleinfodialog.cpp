@@ -162,7 +162,15 @@ void EnsembleInfoDialog::dumpToFileStateToggle(bool dumping, int bytesPerSample)
         bytesDumped = 0;
 
         // default is bytes/2048/2 => 2 bytes per sample, 2048 samples per milisecond => 2^-12
-        bytesToTimeShiftFactor = 12 + (4 == bytesPerSample);
+        //bytesToTimeShiftFactor = 12 + (4 == bytesPerSample);
+
+        bytesToTimeShiftFactor = 11;
+        int n = 1;
+        do
+        {
+            n <<= 1;
+            bytesToTimeShiftFactor+=1;
+        } while (n < bytesPerSample);
     }
     else
     {

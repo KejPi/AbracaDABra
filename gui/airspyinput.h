@@ -14,7 +14,22 @@
 
 #define AIRSPY_WORKER 0
 
-#define AIRSPY_SAMPLES_FLOAT 0
+#define AIRSPY_FILTER_ORDER (42)
+const float airspyCoeFIR[(AIRSPY_FILTER_ORDER+2)/4 + 1] =
+    {
+        0.000112380767633697036585876949388307366,
+        -0.000438873618326434972863880901172706217,
+        0.001218129090837656493956364656128243951,
+        -0.002787554831905981848894082730794252711,
+        0.005622266695424369027656030795014885371,
+        -0.010383084851125472941602012610928795766,
+        0.018065458684386147963918389791615481954,
+        -0.030481819420066884329667544761832687072,
+        0.052030553411055557866404797096038237214,
+        -0.098722780213991889741720342499320395291,
+        0.315779321846157479125594136348809115589,
+        0.5                                      ,
+};
 
 #if AIRSPY_WORKER
 class AirspyWorker : public QThread
@@ -55,6 +70,21 @@ private:
 };
 #endif
 
+#define AIRSPY_FILTER_ORDER (42)
+class AirspyDSFilter
+{
+public:
+    AirspyDSFilter(const float c[], int order);
+    ~AirspyDSFilter();
+    void reset();
+    void process(float * inDataIQ, float *outDataIQ, int numIQ);
+private:
+    float * bufferPtr;
+    float * buffer;
+    float * coe;
+    int_fast8_t len;
+    int_fast8_t lenX2;
+};
 
 class AirspyInput : public InputDevice
 {
@@ -92,6 +122,8 @@ private:
     QMutex fileMutex;
     float * filterOutBuffer;
 
+    AirspyDSFilter * filter;
+
     void run();           
     void stop();
     void resetAgc();
@@ -110,13 +142,8 @@ private:
     bool isDumpingIQ() const { return enaDumpToFile; }
     void dumpBuffer(unsigned char *buf, uint32_t len);
 
-#if AIRSPY_SAMPLES_FLOAT
-    void doFilter(float _Complex inBuffer[], int numIQsamples);
-#else
-    void doFilter(int16_t inBuffer[], int numIQsamples);
-#endif
-
-    friend int airspyCb(airspy_transfer* transfer);
+    void processInputData(airspy_transfer* transfer);
+    static int callback(airspy_transfer* transfer);
 };
 
 

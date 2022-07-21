@@ -15,6 +15,8 @@ AirspyInput::AirspyInput(QObject *parent) : InputDevice(parent)
     gainList = nullptr;
     dumpFile = nullptr;
     filterOutBuffer = new float[65536];
+    filter = new AirspyDSFilter(airspyCoeFIR, AIRSPY_FILTER_ORDER);
+
 #if (AIRSPY_WDOG_ENABLE)
     connect(&watchDogTimer, &QTimer::timeout, this, &AirspyInput::watchDogTimeout);
 #endif
@@ -35,6 +37,7 @@ AirspyInput::~AirspyInput()
     airspy_exit();
 
     delete [] filterOutBuffer;
+    delete filter;
 }
 
 void AirspyInput::tune(uint32_t freq)
@@ -76,11 +79,7 @@ bool AirspyInput::openDevice()
     }
 
     // set sample type
-#if AIRSPY_SAMPLES_FLOAT
     ret = airspy_set_sample_type(device, AIRSPY_SAMPLE_FLOAT32_IQ);
-#else
-    ret = airspy_set_sample_type(device, AIRSPY_SAMPLE_INT16_IQ);
-#endif
     if (AIRSPY_SUCCESS != ret)
     {
         qDebug() << "AIRSPY:  Cannot set sample format";
@@ -162,7 +161,7 @@ void AirspyInput::run()
 #if AIRSPY_WORKER
         worker->start();
 #else
-        ret = airspy_start_rx(device, airspyCb, (void*)this);
+        ret = airspy_start_rx(device, AirspyInput::callback, (void*)this);
         if (AIRSPY_SUCCESS != ret)
         {
             qDebug("AIRSPY: Failed to start RX");
@@ -375,7 +374,7 @@ void AirspyInput::startDumpToFile(const QString & filename)
         enaDumpToFile = true;
         fileMutex.unlock();
 #endif
-        emit dumpingToFile(true, 2*sizeof(int16_t));
+        emit dumpingToFile(true, 2*sizeof(float));
     }
 }
 
@@ -436,49 +435,21 @@ void AirspyInput::dumpBuffer(unsigned char *buf, uint32_t len)
     fileMutex.unlock();
 }
 
-#if AIRSPY_SAMPLES_FLOAT
-void AirspyInput::doFilter(float _Complex inBuffer[], int numIQsamples)
+int AirspyInput::callback(airspy_transfer* transfer)
 {
-    Q_ASSERT((numIQsamples & 0x1) == 0);
+    AirspyInput * thisPtr = static_cast<AirspyInput *>(transfer->ctx);
+    thisPtr->processInputData(transfer);
 
-    float _Complex * outPtr = reinterpret_cast<float _Complex *>(filterOutBuffer);
-    for (int n = 0; n < numIQsamples/2; ++n)
-    {
-        *outPtr++ = 0.5 * (inBuffer[2*n] + inBuffer[2*n + 1]);
-    }
+    return 0;
 }
-#else
-void AirspyInput::doFilter(int16_t inBuffer[], int numIQsamples)
-{
-    Q_ASSERT((numIQsamples & 0x1) == 0);
 
-    float * outPtr = filterOutBuffer;
-    for (int n = 0; n < numIQsamples/2; ++n)
-    {
-        *outPtr = 0.5 * inBuffer[4*n];
-        *outPtr++ += 0.5 * inBuffer[4*n + 2];
-
-        *outPtr = 0.5 * inBuffer[4*n+1];
-        *outPtr++ += 0.5 * inBuffer[4*n + 3];
-    }
-}
-#endif
-
-int airspyCb(airspy_transfer* transfer)
+void AirspyInput::processInputData(airspy_transfer *transfer)
 {
     //qDebug() << Q_FUNC_INFO << transfer->sample_count;
 
     if (transfer->dropped_samples > 0)
     {
         qDebug() << "AIRSPY: dropping" << transfer->dropped_samples << "samples";
-    }
-
-    uint64_t len = transfer->sample_count*sizeof(float)*2;
-
-    AirspyInput * airspyInput = static_cast<AirspyInput *>(transfer->ctx);
-    if (airspyInput->isDumpingIQ())
-    {
-        airspyInput->dumpBuffer((unsigned char *) transfer->samples, len);
     }
 
 #if (AIRSPY_WDOG_ENABLE)
@@ -494,35 +465,35 @@ int airspyCb(airspy_transfer* transfer)
 
     pthread_mutex_unlock(&inputBuffer.countMutex);
 
-    uint64_t bytesToWrite = transfer->sample_count*sizeof(float); //*2 (considering downsampling by 2)
+    uint64_t bytesToWrite = transfer->sample_count*sizeof(float); //*2/2 (considering downsampling by 2)
 
-    if ((INPUT_FIFO_SIZE - count) < bytesToWrite) //*2 (considering downsampling by 2)
+    if ((INPUT_FIFO_SIZE - count) < bytesToWrite) //*2/2 (considering downsampling by 2)
     {
         qDebug() << Q_FUNC_INFO << "dropping" << transfer->sample_count << "IQ samples...";
-        return 0;
+        return;
     }
 
-    // input samples are IQ = [int16_t int16_t] @ 4096kHz
-    // going to transform them to [float float] = float _Complex @ 2048kHz
+    // input samples are IQ = [float float] @ 4096kHz
+    // going to transform them to [float float] @ 2048kHz
+    filter->process((float*) transfer->samples, filterOutBuffer, transfer->sample_count);
 
-#if AIRSPY_SAMPLES_FLOAT
-    airspyInput->doFilter((float _Complex *) transfer->samples, transfer->sample_count);
-#else
-    airspyInput->doFilter((int16_t *) transfer->samples, transfer->sample_count);
-#endif
+    if (isDumpingIQ())
+    {
+        dumpBuffer((unsigned char *) filterOutBuffer, bytesToWrite);
+    }
 
     // there is enough room in buffer
     uint64_t bytesTillEnd = INPUT_FIFO_SIZE - inputBuffer.head;
 
     if (bytesTillEnd >= bytesToWrite)
     {
-        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *) airspyInput->filterOutBuffer, bytesToWrite);
+        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *) filterOutBuffer, bytesToWrite);
         inputBuffer.head = (inputBuffer.head + bytesToWrite);
     }
     else
     {
-        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *) airspyInput->filterOutBuffer, bytesTillEnd);
-        std::memcpy((inputBuffer.buffer), ((uint8_t *) airspyInput->filterOutBuffer)+bytesTillEnd, bytesToWrite-bytesTillEnd);
+        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *) filterOutBuffer, bytesTillEnd);
+        std::memcpy((inputBuffer.buffer), ((uint8_t *) filterOutBuffer)+bytesTillEnd, bytesToWrite-bytesTillEnd);
         inputBuffer.head = bytesToWrite-bytesTillEnd;
     }
 
@@ -530,8 +501,6 @@ int airspyCb(airspy_transfer* transfer)
     inputBuffer.count = inputBuffer.count + bytesToWrite;
     pthread_cond_signal(&inputBuffer.countCondition);
     pthread_mutex_unlock(&inputBuffer.countMutex);
-
-    return 0;
 }
 
 #if 0
@@ -830,3 +799,76 @@ int airspyCb(airspy_transfer* transfer)
     return 0;
 }
 #endif
+
+AirspyDSFilter::AirspyDSFilter(const float c[], int order)
+{
+    len = order + 1;
+    lenX2 = 2*len;
+    buffer = new float[4*len];  // I Q interleaved, double size for circular buffer
+    bufferPtr = buffer;
+
+    coe = new float[(order + 2)/4 + 1];
+    for (int n = 0; n < (order + 2)/4 + 1; ++n)
+    {
+        coe[n] = c[n];
+    }
+}
+
+AirspyDSFilter::~AirspyDSFilter()
+{
+    delete [] buffer;
+    delete [] coe;
+}
+
+void AirspyDSFilter::reset()
+{
+    bufferPtr = buffer;
+}
+
+void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ)
+{
+    for (int n = 0; n<numIQ/2; ++n)
+    {
+        float * fwd = bufferPtr;
+        float * rev = bufferPtr + lenX2;
+
+        *fwd++ = *inDataIQ;     // I
+        *rev = *inDataIQ++;     // I
+        *fwd++ = *inDataIQ;     // Q
+        *(rev+1) = *inDataIQ++;     // Q
+
+        float accI = 0;
+        float accQ = 0;
+
+        for (int c = 0; c < (len-1)/2; ++c)
+        {
+            accI += (*fwd++ + *rev++)*coe[c];
+            accQ += (*fwd++ + *rev--)*coe[c];
+            fwd += 2;  // zero coe
+            rev -= 4;  // current sample and zero coe
+        }
+
+        accI += *fwd++ * coe[(len-1)/2];
+        accQ += *fwd++ * coe[(len-1)/2];
+
+        *outDataIQ++ = accI;
+        *outDataIQ++ = accQ;
+
+        bufferPtr += 2;
+        if (bufferPtr == buffer + lenX2)
+        {
+            bufferPtr = buffer;
+        }
+
+        // insert new samples to delay line
+        *(bufferPtr + lenX2) = *inDataIQ; // I
+        *bufferPtr++ = *inDataIQ++;       // I
+        *(bufferPtr + lenX2) = *inDataIQ; // Q
+        *bufferPtr++ = *inDataIQ++;       // Q
+
+        if (bufferPtr == buffer + lenX2)
+        {
+            bufferPtr = buffer;
+        }
+    }
+}
