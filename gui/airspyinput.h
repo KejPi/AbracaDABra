@@ -10,7 +10,7 @@
 
 #define AIRSPY_DOC_ENABLE  0   // enable DOC
 #define AIRSPY_AGC_ENABLE  0   // enable AGC
-#define AIRSPY_WDOG_ENABLE 0   // enable watchdog timer
+#define AIRSPY_WDOG_ENABLE 1   // enable watchdog timer
 
 #define AIRSPY_WORKER 0
 

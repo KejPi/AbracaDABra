@@ -340,19 +340,11 @@ void AirspyInput::readThreadStopped()
 #if (AIRSPY_WDOG_ENABLE)
 void AirspyInput::watchDogTimeout()
 {
-    if (nullptr != worker)
+    if (AIRSPY_TRUE != airspy_is_streaming(device))
     {
-        bool isRunning = worker->isRunning();
-        if (!isRunning)
-        {  // some problem in data input
-            qDebug() << Q_FUNC_INFO << "watchdog timeout";
-            inputBuffer.fillDummy();
-            emit error(InputDeviceErrorCode::NoDataAvailable);
-        }
-    }
-    else
-    {
-        watchDogTimer.stop();
+        qDebug() << Q_FUNC_INFO << "watchdog timeout";
+        inputBuffer.fillDummy();
+        emit error(InputDeviceErrorCode::NoDataAvailable);
     }
 }
 #endif
@@ -446,11 +438,6 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
     {
         qDebug() << "AIRSPY: dropping" << transfer->dropped_samples << "samples";
     }
-
-#if (AIRSPY_WDOG_ENABLE)
-    // reset watchDog flag, timer sets it to true
-    airspyWorker->wdogIsRunningFlag = true;
-#endif
 
     // len is number of I and Q samples
     // get FIFO space
