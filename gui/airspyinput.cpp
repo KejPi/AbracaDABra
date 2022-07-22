@@ -839,7 +839,7 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ)
         float accI = 0;
         float accQ = 0;
 
-        for (int c = 0; c < (len-1)/2; ++c)
+        for (int c = 0; c < (len+1)/4; ++c)
         {
             accI += (*fwd++ + *rev++)*coe[c];
             accQ += (*fwd++ + *rev--)*coe[c];
@@ -847,8 +847,8 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ)
             rev -= 4;  // current sample and zero coe
         }
 
-        accI += *fwd++ * coe[(len-1)/2];
-        accQ += *fwd++ * coe[(len-1)/2];
+        accI += *(fwd-2) * coe[(len+1)/4];
+        accQ += *(fwd-1) * coe[(len+1)/4];
 
         *outDataIQ++ = accI;
         *outDataIQ++ = accQ;
