@@ -15,7 +15,7 @@ AirspyInput::AirspyInput(QObject *parent) : InputDevice(parent)
     gainList = nullptr;
     dumpFile = nullptr;
     filterOutBuffer = new float[65536];
-    filter = new AirspyDSFilter(airspyCoeFIR, AIRSPY_FILTER_ORDER);
+    filter = new AirspyDSFilter();
 
 #if (AIRSPY_WDOG_ENABLE)
     connect(&watchDogTimer, &QTimer::timeout, this, &AirspyInput::watchDogTimeout);
@@ -795,30 +795,21 @@ int airspyCb(airspy_transfer* transfer)
 }
 #endif
 
-AirspyDSFilter::AirspyDSFilter(const float c[], int order)
+AirspyDSFilter::AirspyDSFilter()
 {
-    len = order + 1;
-    lenX2 = 2*len;
-    buffer = new float[4*len];  // I Q interleaved, double size for circular buffer
+    buffer = new float[4*taps];  // I Q interleaved, double size for circular buffer
     bufferPtr = buffer;
-
-    coe = new float[(order + 2)/4 + 1];
-    for (int n = 0; n < (order + 2)/4 + 1; ++n)
-    {
-        coe[n] = c[n];
-    }
 }
 
 AirspyDSFilter::~AirspyDSFilter()
 {
     delete [] buffer;
-    delete [] coe;
 }
 
 void AirspyDSFilter::reset()
 {
     bufferPtr = buffer;
-    for (int n = 0; n < 4*len; ++n)
+    for (int n = 0; n < 4*taps; ++n)
     {
         buffer[n] = 0;
     }
@@ -829,43 +820,43 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ)
     for (int n = 0; n<numIQ/2; ++n)
     {
         float * fwd = bufferPtr;
-        float * rev = bufferPtr + lenX2;
+        float * rev = bufferPtr + tapsX2;
 
-        *fwd++ = *inDataIQ;     // I
-        *rev = *inDataIQ++;     // I
-        *fwd++ = *inDataIQ;     // Q
-        *(rev+1) = *inDataIQ++;     // Q
+        *fwd++ = *inDataIQ;     // I[2*k+n]
+        *rev = *inDataIQ++;     // I[2*k+n]
+        *fwd++ = *inDataIQ;     // Q[2*k+n]
+        *(rev+1) = *inDataIQ++; // Q[2*k+n]
 
         float accI = 0;
         float accQ = 0;
 
-        for (int c = 0; c < (len+1)/4; ++c)
+        for (int c = 0; c < (taps+1)/4; ++c)
         {
-            accI += (*fwd++ + *rev++)*coe[c];
-            accQ += (*fwd++ + *rev--)*coe[c];
+            accI += (*fwd++ + *rev++)*coef[c];
+            accQ += (*fwd++ + *rev--)*coef[c];
             fwd += 2;  // zero coe
             rev -= 4;  // current sample and zero coe
         }
 
-        accI += *(fwd-2) * coe[(len+1)/4];
-        accQ += *(fwd-1) * coe[(len+1)/4];
+        accI += *(fwd-2) * coef[(taps+1)/4];
+        accQ += *(fwd-1) * coef[(taps+1)/4];
 
         *outDataIQ++ = accI;
         *outDataIQ++ = accQ;
 
         bufferPtr += 2;
-        if (bufferPtr == buffer + lenX2)
+        if (bufferPtr == buffer + tapsX2)
         {
             bufferPtr = buffer;
         }
 
         // insert new samples to delay line
-        *(bufferPtr + lenX2) = *inDataIQ; // I
-        *bufferPtr++ = *inDataIQ++;       // I
-        *(bufferPtr + lenX2) = *inDataIQ; // Q
-        *bufferPtr++ = *inDataIQ++;       // Q
+        *(bufferPtr + tapsX2) = *inDataIQ; // I[2*k+1+n]
+        *bufferPtr++ = *inDataIQ++;        // I[2*k+1+n]
+        *(bufferPtr + tapsX2) = *inDataIQ; // Q[2*k+1+n]
+        *bufferPtr++ = *inDataIQ++;        // Q[2*k+1+n]
 
-        if (bufferPtr == buffer + lenX2)
+        if (bufferPtr == buffer + tapsX2)
         {
             bufferPtr = buffer;
         }

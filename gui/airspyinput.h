@@ -15,21 +15,6 @@
 #define AIRSPY_WORKER 0
 
 #define AIRSPY_FILTER_ORDER (42)
-const float airspyCoeFIR[(AIRSPY_FILTER_ORDER+2)/4 + 1] =
-    {
-        0.000112380767633697036585876949388307366,
-        -0.000438873618326434972863880901172706217,
-        0.001218129090837656493956364656128243951,
-        -0.002787554831905981848894082730794252711,
-        0.005622266695424369027656030795014885371,
-        -0.010383084851125472941602012610928795766,
-        0.018065458684386147963918389791615481954,
-        -0.030481819420066884329667544761832687072,
-        0.052030553411055557866404797096038237214,
-        -0.098722780213991889741720342499320395291,
-        0.315779321846157479125594136348809115589,
-        0.5                                      ,
-};
 
 #if AIRSPY_WORKER
 class AirspyWorker : public QThread
@@ -72,18 +57,34 @@ private:
 
 #define AIRSPY_FILTER_ORDER (42)
 class AirspyDSFilter
-{
+{    
 public:
-    AirspyDSFilter(const float c[], int order);
+    AirspyDSFilter();
     ~AirspyDSFilter();
     void reset();
     void process(float * inDataIQ, float *outDataIQ, int numIQ);
 private:
     float * bufferPtr;
     float * buffer;
-    float * coe;
-    int_fast8_t len;
-    int_fast8_t lenX2;
+
+    // Halfband FIR, fixed coeffs, designed for downsampling 4096kHz -> 2048kHz
+    static const int_fast8_t taps = AIRSPY_FILTER_ORDER + 1;
+    static const int_fast8_t tapsX2 = 2*(AIRSPY_FILTER_ORDER + 1);
+    constexpr static const float coef[(AIRSPY_FILTER_ORDER+2)/4 + 1] =
+    {
+        0.000112380767633697036585876949388307366,
+        -0.000438873618326434972863880901172706217,
+        0.001218129090837656493956364656128243951,
+        -0.002787554831905981848894082730794252711,
+        0.005622266695424369027656030795014885371,
+        -0.010383084851125472941602012610928795766,
+        0.018065458684386147963918389791615481954,
+        -0.030481819420066884329667544761832687072,
+        0.052030553411055557866404797096038237214,
+        -0.098722780213991889741720342499320395291,
+        0.315779321846157479125594136348809115589,
+        0.5                                      ,
+    };
 };
 
 class AirspyInput : public InputDevice
