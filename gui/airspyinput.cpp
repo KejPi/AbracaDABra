@@ -12,7 +12,6 @@ AirspyInput::AirspyInput(QObject *parent) : InputDevice(parent)
     device = nullptr;
     deviceUnplugged = true;
     deviceRunning = false;
-    gainList = nullptr;
     dumpFile = nullptr;
     filterOutBuffer = new float[65536];
     filter = new AirspyDSFilter();
@@ -29,10 +28,6 @@ AirspyInput::~AirspyInput()
     if (!deviceUnplugged)
     {
         airspy_close(device);
-    }
-    if (nullptr != gainList)
-    {
-        delete gainList;
     }
     airspy_exit();
 
@@ -103,10 +98,12 @@ bool AirspyInput::openDevice()
     delete [] gains;
     emit gainListAvailable(gainList);
 
+#endif
+    connect(this, &AirspyInput::agcLevel, this, &AirspyInput::updateAgc, Qt::QueuedConnection);
+
     // set automatic gain
     setGainMode(GainMode::Software);
-#endif
-    setGainMode(GainMode::Hardware);
+    //setGainMode(GainMode::Hardware);
 
     deviceUnplugged = false;
 
@@ -118,12 +115,6 @@ bool AirspyInput::openDevice()
 void AirspyInput::run()
 {
     qDebug() << Q_FUNC_INFO;
-
-//    // Reset endpoint before we start reading from it (mandatory)
-//    if (rtlsdr_reset_buffer(device) < 0)
-//    {
-//        emit error(InputDeviceErrorCode::Undefined);
-//    }
 
     // Reset buffer here - worker thread it not running, DAB waits for new data
     inputBuffer.reset();
@@ -216,7 +207,7 @@ void AirspyInput::stop()
     }
 }
 
-void AirspyInput::setGainMode(GainMode mode, int gainIdx)
+void AirspyInput::setGainMode(GainMode mode, int idx)
 {
 #if 0
     if (mode != gainMode)
@@ -242,16 +233,18 @@ void AirspyInput::setGainMode(GainMode mode, int gainIdx)
     }
 
     // does nothing in (GainMode::Software != mode)
-    resetAgc();
 #endif
+    gainMode = mode;
+
+    resetAgc();
+
     if (GainMode::Hardware == gainMode)
     {
-        airspy_set_vga_gain(device, 5);
-        //airspy_set_mixer_gain(device, 5);
-        //airspy_set_lna_gain(device, 1);
-
+        gainIdx = 5;
+        airspy_set_vga_gain(device, gainIdx);
         airspy_set_lna_agc(device, 1);
         airspy_set_mixer_agc(device, 1);
+//        airspy_set_sensitivity_gain(device, 12);
     }
 }
 
@@ -282,21 +275,50 @@ void AirspyInput::setGain(int gIdx)
             emit agcGain(gainList->at(gainIdx));
         }
     }
+#else
+    // force index vaslidity
+    if (gIdx < 0)
+    {
+        gIdx = 0;
+    }
+    if (gIdx >= 21)
+    {
+        gIdx = 21;
+    }
+    if (gIdx != gainIdx)
+    {
+        gainIdx = gIdx;
+        int ret = airspy_set_sensitivity_gain(device, gainIdx);
+        if (AIRSPY_SUCCESS != ret)
+        {
+            qDebug() << "AIRSPY: Failed to set tuner gain";
+        }
+        else
+        {
+            qDebug() << "AIRSPY: Tuner gain set to" << gainIdx;
+            //emit agcGain(gainList->at(gainIdx));
+        }
+    }
+
+
 #endif
 }
 
 void AirspyInput::resetAgc()
 {
+    signalLevel = 0.005;
     if (GainMode::Software == gainMode)
     {
-        setGain(gainList->size() >> 1);
+        gainIdx = -1;
+        setGain(22/2);
     }
 }
 
-void AirspyInput::updateAgc(float level, int maxVal)
+void AirspyInput::updateAgc(float level)
 {
     if (GainMode::Software == gainMode)
     {
+#if 0
         // AGC correction
         if (maxVal >= 127)
         {
@@ -306,6 +328,43 @@ void AirspyInput::updateAgc(float level, int maxVal)
         {  // (maxVal < 100) is required to avoid toggling => change gain only if there is some headroom
            // this could be problem on E4000 tuner with big AGC gain steps
            setGain(gainIdx+1);
+        }
+#else
+        //qDebug() << Q_FUNC_INFO << level;
+        if (level > 0.1)
+        {
+            qDebug()  << Q_FUNC_INFO << level << "==> down";
+            setGain(gainIdx-1);
+            return;
+        }
+        if (level < 0.002)
+        {
+            qDebug()  << Q_FUNC_INFO << level << "==> up";
+            setGain(gainIdx+1);
+        }
+
+        return;
+#endif
+    }
+    if (GainMode::Hardware == gainMode)
+    {
+        if (level < 0.002)
+        {
+            if ((gainIdx+1) > 15)
+            {
+                return;
+            }
+            qDebug() << "VGA gain" << gainIdx+1 << level;
+            airspy_set_vga_gain(device, ++gainIdx);
+        }
+        if (level > 0.01)
+        {
+            if ((gainIdx-1) < 5)
+            {
+                return;
+            }
+            qDebug() << "VGA gain" << gainIdx-1 << level;
+            airspy_set_vga_gain(device, --gainIdx);
         }
     }
 }
@@ -457,7 +516,21 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
 
     // input samples are IQ = [float float] @ 4096kHz
     // going to transform them to [float float] @ 2048kHz
-    filter->process((float*) transfer->samples, filterOutBuffer, transfer->sample_count);
+    float maxAbs2;
+    filter->process((float*) transfer->samples, filterOutBuffer, transfer->sample_count, maxAbs2);
+
+#if (AIRSPY_AGC_ENABLE > 0)
+#define LEV_C 0.01
+    // calculate signal level (rectifier, fast attack slow release)
+    signalLevel = LEV_C * maxAbs2 + signalLevel - LEV_C * signalLevel;
+
+    static uint_fast8_t cntr = 0;
+    if (0 == (++cntr & 0x07))
+    {
+        //qDebug() << signalLevel;
+        emit agcLevel(signalLevel);
+    }
+#endif
 
     if (isDumpingIQ())
     {
@@ -802,8 +875,12 @@ void AirspyDSFilter::reset()
     }
 }
 
-void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ)
+void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ, float & maxAbs2)
 {
+#if (AIRSPY_AGC_ENABLE > 0)
+    maxAbs2 = 0;
+#endif
+
     for (int n = 0; n<numIQ/2; ++n)
     {
         float * fwd = bufferPtr;
@@ -830,6 +907,14 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ)
 
         *outDataIQ++ = accI;
         *outDataIQ++ = accQ;
+
+#if (AIRSPY_AGC_ENABLE > 0)
+        float abs2 = accI*accI + accQ*accQ;
+        if (maxAbs2 < abs2)
+        {
+            maxAbs2 = abs2;
+        }
+#endif
 
         bufferPtr += 2;
         if (bufferPtr == buffer + tapsX2)

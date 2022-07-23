@@ -9,7 +9,7 @@
 #include "inputdevice.h"
 
 #define AIRSPY_DOC_ENABLE  0   // enable DOC
-#define AIRSPY_AGC_ENABLE  0   // enable AGC
+#define AIRSPY_AGC_ENABLE  1   // enable AGC
 #define AIRSPY_WDOG_ENABLE 1   // enable watchdog timer
 
 #define AIRSPY_WORKER 0
@@ -62,7 +62,7 @@ public:
     AirspyDSFilter();
     ~AirspyDSFilter();
     void reset();
-    void process(float * inDataIQ, float *outDataIQ, int numIQ);
+    void process(float * inDataIQ, float *outDataIQ, int numIQ, float & maxAbsVal);
 private:
     float * bufferPtr;
     float * buffer;
@@ -96,7 +96,7 @@ public:
     bool openDevice() override;
 
     void tune(uint32_t freq) override;
-    void setGainMode(GainMode mode, int gainIdx = 0);
+    void setGainMode(GainMode mode, int idx = 0);
 
     void startDumpToFile(const QString & filename) override;
     void stopDumpToFile() override;
@@ -106,6 +106,7 @@ public:
 
 signals:
     void gainListAvailable(const QList<int> * pList);
+    void agcLevel(float level);
 
 private:
     uint32_t frequency;
@@ -117,13 +118,14 @@ private:
 #endif
     GainMode gainMode = GainMode::Hardware;
     int gainIdx;
-    QList<int> * gainList;
     FILE * dumpFile;
     std::atomic<bool> enaDumpToFile;
     QMutex fileMutex;
-    float * filterOutBuffer;
-
+    float * filterOutBuffer;       
     AirspyDSFilter * filter;
+#if (AIRSPY_AGC_ENABLE > 0)
+    float signalLevel;
+#endif
 
     void run();           
     void stop();
@@ -133,8 +135,7 @@ private:
     // gain is set from outside usin setGainMode() function
     void setGain(int gIdx);
 
-    // used by friend
-    void updateAgc(float level, int maxVal);
+    void updateAgc(float level);
 
     void readThreadStopped();
 #if (AIRSPY_WDOG_ENABLE)
