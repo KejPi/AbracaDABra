@@ -86,8 +86,6 @@ private:
     void onButtonClicked(QAbstractButton *button);
     void onInputChanged(int index);
     void onOpenFileButtonClicked();
-    void applySettings();
-    void applyEnable();
     void setStatusLabel();
 
     void onConnectDeviceClicked();

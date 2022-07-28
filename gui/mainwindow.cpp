@@ -1158,8 +1158,8 @@ void MainWindow::onNewSettings()
     case InputDeviceId::AIRSPY:
 #ifdef HAVE_AIRSPY
         dynamic_cast<AirspyInput*>(inputDevice)->setGainMode(s.airspy.gainMode,
-                                                              s.airspy.lnaGainIdx,
-                                                              s.airspy.mixerGainIdx,
+                                                              ((s.airspy.lnaAgcEna) ? (-1) : (s.airspy.lnaGainIdx)),
+                                                              ((s.airspy.mixerAgcEna) ? (-1) : (s.airspy.mixerGainIdx)),
                                                               s.airspy.ifGainIdx);
 #endif
         break;

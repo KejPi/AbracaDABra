@@ -46,22 +46,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->rtltcpIpAddressEdit->setValidator(ipValidator);
     ui->rarttcpIpAddressEdit->setValidator(ipValidator);
 
-    connect(ui->buttonBox, &QDialogButtonBox::clicked, this, &SetupDialog::onButtonClicked);
     connect(ui->inputCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onInputChanged);
     connect(ui->openFileButton, &QPushButton::clicked, this, &SetupDialog::onOpenFileButtonClicked);
-
-    ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
-    ui->buttonBox->setVisible(false);
-
-    connect(ui->inputCombo, &QComboBox::currentIndexChanged, this, [this](){ applyEnable(); });
-    connect(ui->fileFormatCombo, &QComboBox::currentIndexChanged, this, [this](){ applyEnable(); });
-    connect(ui->rtltcpIpAddressEdit, &QLineEdit::textEdited, this, [this](){ applyEnable(); });
-    connect(ui->rtltcpIpPortSpinBox, &QSpinBox::valueChanged, this, [this](){ applyEnable(); });
-#ifdef HAVE_RARTTCP
-    connect(ui->rarttcpIpAddressEdit, &QLineEdit::textEdited, this, [this](){ applyEnable(); });
-    connect(ui->rarttcpIpPortSpinBox, &QSpinBox::valueChanged, this, [this](){ applyEnable(); });
-#endif
-    connect(ui->loopCheckbox, &QCheckBox::stateChanged, this, [this](){ applyEnable(); });
 
     connect(ui->connectButton, &QPushButton::clicked, this, &SetupDialog::onConnectDeviceClicked);
 
@@ -98,28 +84,6 @@ SetupDialog::Settings SetupDialog::settings() const
     return m_settings;
 }
 
-
-void SetupDialog::onButtonClicked(QAbstractButton *button)
-{
-    switch (ui->buttonBox->buttonRole(button))
-    {
-    case QDialogButtonBox::ApplyRole:
-        applySettings();
-        break;
-    case QDialogButtonBox::AcceptRole:
-        applySettings();
-        hide();
-        break;
-    case QDialogButtonBox::RejectRole:
-        hide();
-        break;
-    default:
-        // do nothing
-        return;
-    }
-
-}
-
 void SetupDialog::setGainValues(const QList<int> * pList)
 {
 
@@ -145,8 +109,6 @@ void SetupDialog::setGainValues(const QList<int> * pList)
     case InputDeviceId::AIRSPY:
         return;
     }
-
-    ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
 }
 
 void SetupDialog::setSettings(const Settings &settings)
@@ -257,113 +219,9 @@ void SetupDialog::showEvent(QShowEvent *event)
     ui->rarttcpIpPortSpinBox->setValue(m_settings.rarttcp.tcpPort);
 #endif
 
-    ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
-
     setStatusLabel();
 }
 
-void SetupDialog::applySettings()
-{
-    //qDebug() << Q_FUNC_INFO;
-
-    ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
-
-    Settings newSet;
-    newSet.rtlsdr.bandwidth = m_settings.rtlsdr.bandwidth;
-    newSet.rtlsdr.biasT = m_settings.rtlsdr.biasT;
-    newSet.inputDevice = static_cast<InputDeviceId>(ui->inputCombo->itemData(ui->inputCombo->currentIndex()).toInt());
-
-    //newSet.rtlsdr.gainIdx = ui->rtlsdrGainCombo->currentIndex() - 2;
-    //newSet.rtltcp.gainIdx = ui->rtltcpGainCombo->currentIndex() - 2;
-
-    if (rawfilename.isEmpty())
-    {
-        newSet.rawfile.file.clear();
-    }
-    else
-    {
-        newSet.rawfile.file = rawfilename;
-    }
-    newSet.rawfile.loopEna = ui->loopCheckbox->isChecked();
-    newSet.rawfile.format = static_cast<RawFileInputFormat>(ui->fileFormatCombo->currentIndex());
-    newSet.rtltcp.tcpAddress = ui->rtltcpIpAddressEdit->text();
-    newSet.rtltcp.tcpPort = ui->rtltcpIpPortSpinBox->value();
-#ifdef HAVE_RARTTCP
-    newSet.rarttcp.tcpAddress = ui->rarttcpIpAddressEdit->text();
-    newSet.rarttcp.tcpPort = ui->rarttcpIpPortSpinBox->value();
-#endif
-
-    bool inputDeviceChangeNeeded = false;
-    if (m_settings.inputDevice != newSet.inputDevice)
-    {
-        inputDeviceChangeNeeded = true;
-    }
-    else
-    {   // device is the same
-        switch (m_settings.inputDevice)
-        {
-        case InputDeviceId::UNDEFINED:
-            break;
-        case InputDeviceId::RTLSDR:
-            break;
-        case InputDeviceId::RARTTCP:
-#ifdef HAVE_RARTTCP
-            if ((newSet.rarttcp.tcpAddress != m_settings.rarttcp.tcpAddress)
-                || (newSet.rarttcp.tcpPort != m_settings.rarttcp.tcpPort))
-            {
-                inputDeviceChangeNeeded = true;
-            }
-#endif
-            break;
-        case InputDeviceId::RTLTCP:
-            if ((newSet.rtltcp.tcpAddress != m_settings.rtltcp.tcpAddress)
-                || (newSet.rtltcp.tcpPort != m_settings.rtltcp.tcpPort))
-            {
-                inputDeviceChangeNeeded = true;
-            }
-            break;
-        case InputDeviceId::RAWFILE:
-            if ((newSet.rawfile.file != m_settings.rawfile.file)
-                || (newSet.rawfile.format != m_settings.rawfile.format))
-            {
-                inputDeviceChangeNeeded = true;
-            }
-            break;
-        case InputDeviceId::AIRSPY:
-            break;
-        }
-    }
-
-    if (inputDeviceChangeNeeded)
-    {   // device will be chnaged -> dialog will be enabled after change
-        m_settings = newSet;        
-        emit inputDeviceChanged(m_settings.inputDevice);
-
-        setStatusLabel();
-
-        return;
-    }
-
-    // check if new settings
-    bool settingsChanged = false;
-    settingsChanged = (m_settings.rtlsdr.gainIdx != newSet.rtlsdr.gainIdx)
-                      || (m_settings.rtltcp.gainIdx != newSet.rtltcp.gainIdx)
-                      || (m_settings.rawfile.file != newSet.rawfile.file)
-                      || (m_settings.rawfile.loopEna != newSet.rawfile.loopEna)
-                      || (m_settings.rawfile.format != newSet.rawfile.format)
-#ifdef HAVE_RARTTCP
-                      || (m_settings.rarttcp.tcpAddress != newSet.rarttcp.tcpAddress)
-                      || (m_settings.rarttcp.tcpPort != newSet.rarttcp.tcpPort)
-#endif
-                      || (m_settings.rtltcp.tcpAddress != newSet.rtltcp.tcpAddress)
-                      || (m_settings.rtltcp.tcpPort != newSet.rtltcp.tcpPort);
-
-    m_settings = newSet;
-    if (settingsChanged)
-    {
-        emit newSettings();
-    }
-}
 
 void SetupDialog::onConnectDeviceClicked()
 {
@@ -564,11 +422,6 @@ void SetupDialog::onAirspyMixerAGCstateChanged(int state)
 }
 #endif
 
-void SetupDialog::applyEnable()
-{
-    ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
-}
-
 void SetupDialog::setStatusLabel()
 {
     switch (m_settings.inputDevice)
@@ -617,7 +470,7 @@ void SetupDialog::onExpertMode(bool ena)
 void SetupDialog::onInputChanged(int index)
 {
     int inputDeviceInt = ui->inputCombo->itemData(index).toInt();
-    ui->deviceOptionsWidget->setCurrentIndex(inputDeviceInt);
+    ui->deviceOptionsWidget->setCurrentIndex(inputDeviceInt-1);
     adjustSize();
 
     ui->connectButton->setHidden(m_settings.inputDevice == static_cast<InputDeviceId>(inputDeviceInt));

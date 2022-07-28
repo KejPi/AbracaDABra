@@ -225,8 +225,24 @@ void AirspyInput::setGainMode(GainMode mode, int lnaIdx, int mixerIdx, int ifIdx
     case GainMode::Manual:
         gainMode = mode;
         airspy_set_vga_gain(device, ifIdx);
-        airspy_set_lna_gain(device, ifIdx);
-        airspy_set_mixer_gain(device, ifIdx);
+        if (lnaIdx < 0)
+        {
+            airspy_set_lna_agc(device, 1);
+        }
+        else
+        {
+            airspy_set_lna_agc(device, 0);
+            airspy_set_lna_gain(device, lnaIdx);
+        }
+        if (mixerIdx < 0)
+        {
+            airspy_set_mixer_agc(device, 1);
+        }
+        else
+        {
+            airspy_set_mixer_agc(device, 0);
+            airspy_set_mixer_gain(device, mixerIdx);
+        }
         break;
     case GainMode::Software:
         if (gainMode == mode)
