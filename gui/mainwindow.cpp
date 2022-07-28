@@ -1513,6 +1513,7 @@ void MainWindow::loadSettings()
         // if input device has switched to what was stored and it is RTLSDR or RTLTCP
         if ((s.inputDevice == inputDeviceId)
                 && (    (InputDeviceId::RTLSDR == inputDeviceId)
+                     || (InputDeviceId::AIRSPY == inputDeviceId)
                      || (InputDeviceId::RTLTCP == inputDeviceId)
                      || (InputDeviceId::RARTTCP == inputDeviceId)))
         {   // channel is only restored for RTL SDR and RTL/RART TCP at the moment
