@@ -1148,36 +1148,20 @@ void MainWindow::onNewSettings()
     switch (s.inputDevice)
     {
     case InputDeviceId::RTLSDR:
-        if (s.rtlsdr.gainIdx == -2)
-        {   // HW gain
-            dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Hardware);
-        }
-        else if (s.rtlsdr.gainIdx == -1)
-        {   // software gain
-            dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Software);
-        }
-        else
-        {  // manual gain value
-            dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(GainMode::Manual, s.rtlsdr.gainIdx);
-        }
+        dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(s.rtlsdr.gainMode, s.rtlsdr.gainIdx);
         break;
     case InputDeviceId::RTLTCP:
-        if (s.rtltcp.gainIdx == -2)
-        {   // HW gain
-            dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Hardware);
-        }
-        else if (s.rtltcp.gainIdx == -1)
-        {   // software gain
-            dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Software);
-        }
-        else
-        {  // manual gain value
-            dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(GainMode::Manual, s.rtltcp.gainIdx);
-        }
+        dynamic_cast<RtlTcpInput*>(inputDevice)->setGainMode(s.rtltcp.gainMode, s.rtltcp.gainIdx);
         break;
     case InputDeviceId::RARTTCP:
         break;
     case InputDeviceId::AIRSPY:
+#ifdef HAVE_AIRSPY
+        dynamic_cast<AirspyInput*>(inputDevice)->setGainMode(s.airspy.gainMode,
+                                                              s.airspy.lnaGainIdx,
+                                                              s.airspy.mixerGainIdx,
+                                                              s.airspy.ifGainIdx);
+#endif
         break;
     case InputDeviceId::RAWFILE:
         break;
@@ -1448,23 +1432,28 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
         connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
-        QString filename = setupDialog->settings().rawfile.file;
-        if (!filename.isEmpty())
-        {
-            RawFileInputFormat format = setupDialog->settings().rawfile.format;
-            dynamic_cast<RawFileInput*>(inputDevice)->openFile(filename, format);
+        RawFileInputFormat format = setupDialog->settings().rawfile.format;
+        dynamic_cast<RawFileInput*>(inputDevice)->setFile(setupDialog->settings().rawfile.file, format);
+
+        // we can open device now
+        if (inputDevice->openDevice())
+        {  // raw file is available
+            // clear service list
+            serviceList->clear();
+
+            // enable service list
+            ui->serviceListView->setEnabled(true);
+            ui->serviceTreeView->setEnabled(true);
+            ui->favoriteLabel->setEnabled(true);
+
+            // apply current settings
+            onNewSettings();
         }
-
-        // clear service list
-        serviceList->clear();
-
-        // enable service list
-        ui->serviceListView->setEnabled(true);
-        ui->serviceTreeView->setEnabled(true);
-        ui->favoriteLabel->setEnabled(true);
-
-        // apply current settings
-        onNewSettings();
+        else
+        {
+            setupDialog->resetInputDevice();
+            initInputDevice(InputDeviceId::UNDEFINED);
+        }
     }
         break;
     }
@@ -1486,15 +1475,29 @@ void MainWindow::loadSettings()
 
     SetupDialog::Settings s;
     s.inputDevice = static_cast<InputDeviceId>(inDevice);
-    s.rtlsdr.gainIdx = settings.value("RTL-SDR/gainIndex", -1).toInt();
+
+    s.rtlsdr.gainIdx = settings.value("RTL-SDR/gainIndex", 0).toInt();
+    s.rtlsdr.gainMode = static_cast<GainMode>(settings.value("RTL-SDR/gainMode", 1).toInt());
     s.rtlsdr.bandwidth = settings.value("RTL-SDR/bandwidth", 0).toInt();
     s.rtlsdr.biasT = settings.value("RTL-SDR/bias-T", false).toBool();
-    s.rtltcp.gainIdx = settings.value("RTL-TCP/gainIndex", -1).toInt();
+
+    s.rtltcp.gainIdx = settings.value("RTL-TCP/gainIndex", 0).toInt();
+    s.rtltcp.gainMode = static_cast<GainMode>(settings.value("RTL-TCP/gainMode", 1).toInt());
     s.rtltcp.tcpAddress = settings.value("RTL-TCP/address", QString("127.0.0.1")).toString();
     s.rtltcp.tcpPort = settings.value("RTL-TCP/port", 1234).toInt();
+
 #ifdef HAVE_RARTTCP
     s.rarttcp.tcpAddress = settings.value("RART-TCP/address", QString("127.0.0.1")).toString();
     s.rarttcp.tcpPort = settings.value("RART-TCP/port", 1235).toInt();
+#endif
+#ifdef HAVE_AIRSPY
+    s.airspy.lnaGainIdx = settings.value("AIRSPY/lnaGainIdx", 0).toInt();
+    s.airspy.mixerGainIdx = settings.value("AIRSPY/mixerGainIdx", 0).toInt();
+    s.airspy.ifGainIdx = settings.value("AIRSPY/ifGainIdx", 5).toInt();
+    s.airspy.lnaAgcEna = settings.value("AIRSPY/lnaAgcEna", true).toBool();
+    s.airspy.mixerAgcEna = settings.value("AIRSPY/mixerAgcEna", true).toBool();
+    s.airspy.gainMode = static_cast<GainMode>(settings.value("AIRSPY/gainMode", 0).toInt());
+    s.airspy.biasT = settings.value("AIRSPY/bias-T", false).toBool();
 #endif
     s.rawfile.file = settings.value("RAW-FILE/filename", QVariant(QString(""))).toString();
     s.rawfile.format = RawFileInputFormat(settings.value("RAW-FILE/format", 0).toInt());
@@ -1558,11 +1561,25 @@ void MainWindow::saveSettings()
     settings.setValue("volume", 100);
 #endif
     settings.setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
-    settings.setValue("RTL-SDR/bandwidth", s.rtlsdr.bandwidth);
+    settings.setValue("RTL-SDR/gainMode", static_cast<int>(s.rtlsdr.gainMode));
+    settings.setValue("RTL-SDR/bandwidth", s.rtlsdr.bandwidth);   
     settings.setValue("RTL-SDR/bias-T", s.rtlsdr.biasT);
-    settings.setValue("RTL-TCP/gainIndex", s.rtltcp.gainIdx);
+
+#ifdef HAVE_AIRSPY
+    settings.setValue("AIRSPY/lnaGainIdx", s.airspy.lnaGainIdx);
+    settings.setValue("AIRSPY/mixerGainIdx", s.airspy.mixerGainIdx);
+    settings.setValue("AIRSPY/ifGainIdx", s.airspy.ifGainIdx);
+    settings.setValue("AIRSPY/lnaAgcEna", s.airspy.lnaAgcEna);
+    settings.setValue("AIRSPY/mixerAgcEna", s.airspy.mixerAgcEna);
+    settings.setValue("AIRSPY/gainMode", static_cast<int>(s.airspy.gainMode));
+    settings.setValue("AIRSPY/bias-T", s.airspy.biasT);
+#endif
+
+   settings.setValue("RTL-TCP/gainIndex", s.rtltcp.gainIdx);
+    settings.setValue("RTL-TCP/gainMode", static_cast<int>(s.rtltcp.gainMode));
     settings.setValue("RTL-TCP/address", s.rtltcp.tcpAddress);
     settings.setValue("RTL-TCP/port", s.rtltcp.tcpPort);
+
 #ifdef HAVE_RARTTCP
     settings.setValue("RART-TCP/address", s.rarttcp.tcpAddress);
     settings.setValue("RART-TCP/port", s.rarttcp.tcpPort);

@@ -17,6 +17,13 @@ RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
 #if (RTLSDR_WDOG_ENABLE)
     connect(&watchDogTimer, &QTimer::timeout, this, &RtlSdrInput::watchDogTimeout);
 #endif
+//    int devCnt = rtlsdr_get_device_count();
+//    for (int i = 0; i < devCnt; i++)
+//    {
+//        char vendor[256], product[256], serial[256];
+//        rtlsdr_get_device_usb_strings(i, vendor, product, serial);
+//        qDebug() << "RTLSDR device #" << i << ": SN" << serial << vendor << product << rtlsdr_get_device_name((uint32_t)i);
+//    }
 }
 
 RtlSdrInput::~RtlSdrInput()

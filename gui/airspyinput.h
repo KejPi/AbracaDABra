@@ -96,7 +96,7 @@ public:
     bool openDevice() override;
 
     void tune(uint32_t freq) override;
-    void setGainMode(GainMode mode, int idx = 0);
+    void setGainMode(GainMode mode, int lnaIdx = -1, int mixerIdx = -1 , int ifIdx = 5);
 
     void startDumpToFile(const QString & filename) override;
     void stopDumpToFile() override;

@@ -207,76 +207,42 @@ void AirspyInput::stop()
     }
 }
 
-void AirspyInput::setGainMode(GainMode mode, int idx)
+void AirspyInput::setGainMode(GainMode mode, int lnaIdx, int mixerIdx, int ifIdx)
 {
-#if 0
-    if (mode != gainMode)
+    switch (mode)
     {
-        // set automatic gain 0 or manual 1
-        int ret = rtlsdr_set_tuner_gain_mode(device, (GainMode::Hardware != mode));
-        if (ret != 0)
-        {
-            qDebug() << "AIRSPY: Failed to set tuner gain";
+    case GainMode::Hardware:
+        if (gainMode == mode)
+        {   // do nothing -> mode does not change
+            break;
         }
-
+        // mode changes
         gainMode = mode;
-    }
-
-    if (GainMode::Manual == gainMode)
-    {
-        setGain(gainIdx);
-    }
-
-    if (GainMode::Hardware == gainMode)
-    {   // signalize that gain is not available
-        emit agcGain(INPUTDEVICE_AGC_GAIN_NA);
-    }
-
-    // does nothing in (GainMode::Software != mode)
-#endif
-    gainMode = mode;
-
-    resetAgc();
-
-    if (GainMode::Hardware == gainMode)
-    {
-        gainIdx = 5;
-        airspy_set_vga_gain(device, gainIdx);
         airspy_set_lna_agc(device, 1);
         airspy_set_mixer_agc(device, 1);
-//        airspy_set_sensitivity_gain(device, 12);
+        resetAgc();
+        break;
+    case GainMode::Manual:
+        gainMode = mode;
+        airspy_set_vga_gain(device, ifIdx);
+        airspy_set_lna_gain(device, ifIdx);
+        airspy_set_mixer_gain(device, ifIdx);
+        break;
+    case GainMode::Software:
+        if (gainMode == mode)
+        {   // do nothing -> mode does not change
+            break;
+        }
+        gainMode = mode;
+        resetAgc();
+        break;
     }
 }
 
 void AirspyInput::setGain(int gIdx)
 {
 #if 0
-    // force index vaslidity
-    if (gIdx < 0)
-    {
-        gIdx = 0;
-    }
-    if (gIdx >= gainList->size())
-    {
-        gIdx = gainList->size() - 1;
-    }
-
-    if (gIdx != gainIdx)
-    {
-        gainIdx = gIdx;
-        int ret = rtlsdr_set_tuner_gain(device, gainList->at(gainIdx));
-        if (ret != 0)
-        {
-            qDebug() << "AIRSPY: Failed to set tuner gain";
-        }
-        else
-        {
-            //qDebug() << "AIRSPY: Tuner gain set to" << gainList->at(gainIdx)/10.0;
-            emit agcGain(gainList->at(gainIdx));
-        }
-    }
-#else
-    // force index vaslidity
+    // force index validity
     if (gIdx < 0)
     {
         gIdx = 0;
@@ -288,6 +254,84 @@ void AirspyInput::setGain(int gIdx)
     if (gIdx != gainIdx)
     {
         gainIdx = gIdx;
+        if (GainMode::Hardware == gainMode)
+        {
+            int ret = airspy_set_vga_gain(device, gainIdx);
+            if (AIRSPY_SUCCESS != ret)
+            {
+                qDebug() << "AIRSPY: Failed to set tuner gain";
+            }
+            else
+            {
+                qDebug() << "AIRSPY: Tuner VGA gain set to" << gainIdx;
+                //emit agcGain(gainList->at(gainIdx));
+            }
+            return;
+        }
+        if (GainMode::Software == gainMode)
+        {
+            int ret = airspy_set_sensitivity_gain(device, gainIdx);
+            if (AIRSPY_SUCCESS != ret)
+            {
+                qDebug() << "AIRSPY: Failed to set tuner gain";
+            }
+            else
+            {
+                qDebug() << "AIRSPY: Tuner Sensitivity gain set to" << gainIdx;
+                //emit agcGain(gainList->at(gainIdx));
+            }
+            return;
+        }
+    }
+#else
+    if (GainMode::Hardware == gainMode)
+    {
+        if (gIdx < 4)
+        {
+            gIdx = 4;
+        }
+        if (gIdx >= 13)
+        {
+            gIdx = 13;
+        }
+
+        if (gIdx == gainIdx)
+        {
+            return;
+        }
+        // else
+        gainIdx = gIdx;
+
+        int ret = airspy_set_vga_gain(device, gainIdx);
+        if (AIRSPY_SUCCESS != ret)
+        {
+            qDebug() << "AIRSPY: Failed to set tuner gain";
+        }
+        else
+        {
+            qDebug() << "AIRSPY: Tuner VGA gain set to" << gainIdx;
+            //emit agcGain(gainList->at(gainIdx));
+        }
+        return;
+    }
+    if (GainMode::Software == gainMode)
+    {
+        if (gIdx < 0)
+        {
+            gIdx = 0;
+        }
+        if (gIdx >= 21)
+        {
+            gIdx = 21;
+        }
+
+        if (gIdx == gainIdx)
+        {
+            return;
+        }
+        // else
+        gainIdx = gIdx;
+
         int ret = airspy_set_sensitivity_gain(device, gainIdx);
         if (AIRSPY_SUCCESS != ret)
         {
@@ -295,12 +339,11 @@ void AirspyInput::setGain(int gIdx)
         }
         else
         {
-            qDebug() << "AIRSPY: Tuner gain set to" << gainIdx;
+            qDebug() << "AIRSPY: Tuner Sensitivity gain set to" << gainIdx;
             //emit agcGain(gainList->at(gainIdx));
         }
+        return;
     }
-
-
 #endif
 }
 
@@ -309,42 +352,35 @@ void AirspyInput::resetAgc()
     signalLevel = 0.005;
     if (GainMode::Software == gainMode)
     {
+        gainIdx = -1;        
+        setGain(22/2); // set it to the middle
+        return;
+    }
+    if (GainMode::Hardware == gainMode)
+    {
         gainIdx = -1;
-        setGain(22/2);
+        setGain(6);
     }
 }
 
 void AirspyInput::updateAgc(float level)
 {
+#if 0
     if (GainMode::Software == gainMode)
     {
-#if 0
-        // AGC correction
-        if (maxVal >= 127)
-        {
-           setGain(gainIdx-1);
-        }
-        else if ((level < 50) && (maxVal < 100))
-        {  // (maxVal < 100) is required to avoid toggling => change gain only if there is some headroom
-           // this could be problem on E4000 tuner with big AGC gain steps
-           setGain(gainIdx+1);
-        }
-#else
-        //qDebug() << Q_FUNC_INFO << level;
         if (level > 0.1)
         {
-            qDebug()  << Q_FUNC_INFO << level << "==> down";
+            //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity down";
             setGain(gainIdx-1);
             return;
         }
         if (level < 0.002)
         {
-            qDebug()  << Q_FUNC_INFO << level << "==> up";
+            //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity up";
             setGain(gainIdx+1);
         }
 
         return;
-#endif
     }
     if (GainMode::Hardware == gainMode)
     {
@@ -354,19 +390,32 @@ void AirspyInput::updateAgc(float level)
             {
                 return;
             }
-            qDebug() << "VGA gain" << gainIdx+1 << level;
+            //qDebug() << "VGA gain" << gainIdx+1 << level;
             airspy_set_vga_gain(device, ++gainIdx);
         }
         if (level > 0.01)
         {
-            if ((gainIdx-1) < 5)
+            if ((gainIdx-1) < 2)
             {
                 return;
             }
-            qDebug() << "VGA gain" << gainIdx-1 << level;
+            //qDebug() << "VGA gain" << gainIdx-1 << level;
             airspy_set_vga_gain(device, --gainIdx);
         }
     }
+#else
+    if (level > 0.1)
+    {
+        //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity down";
+        setGain(gainIdx-1);
+        return;
+    }
+    if (level < 0.002)
+    {
+        //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity up";
+        setGain(gainIdx+1);
+    }
+#endif
 }
 
 void AirspyInput::readThreadStopped()

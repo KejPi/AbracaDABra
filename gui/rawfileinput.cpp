@@ -30,7 +30,7 @@ RawFileInput::~RawFileInput()
     }   
 }
 
-void RawFileInput::openFile(const QString & fileName, const RawFileInputFormat &format)
+bool RawFileInput::openDevice()
 {
     if (nullptr != inputFile)
     {
@@ -44,11 +44,18 @@ void RawFileInput::openFile(const QString & fileName, const RawFileInputFormat &
         delete inputFile;
         inputFile = nullptr;
 
-        return;
+        return false;
     }
 
-    setFileFormat(format);
     emit deviceReady();
+
+    return true;
+}
+
+void RawFileInput::setFile(const QString & fName, const RawFileInputFormat &format)
+{
+    fileName = fName;
+    setFileFormat(format);
 }
 
 void RawFileInput::setFileFormat(const RawFileInputFormat &format)

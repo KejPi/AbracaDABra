@@ -45,15 +45,16 @@ class RawFileInput : public InputDevice
 public:
     explicit RawFileInput(QObject *parent = nullptr);
     ~RawFileInput();
-    bool openDevice() override { return false; }   // useless for raw file input
+    bool openDevice() override;
 
 public slots:
     void tune(uint32_t freq) override;
-    void openFile(const QString & fileName, const RawFileInputFormat &format = RawFileInputFormat::SAMPLE_FORMAT_U8);
+    void setFile(const QString & fName, const RawFileInputFormat &format = RawFileInputFormat::SAMPLE_FORMAT_U8);
     void setFileFormat(const RawFileInputFormat &format);
 
 private:
     RawFileInputFormat sampleFormat;
+    QString fileName;
     QFile * inputFile = nullptr;
     RawFileWorker * worker = nullptr;
     QTimer * inputTimer = nullptr;

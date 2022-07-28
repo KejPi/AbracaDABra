@@ -30,6 +30,14 @@ public:
         struct
         {
             int gainIdx;
+            GainMode gainMode;
+            int bandwidth;
+            bool biasT;
+        } rtlsdr;
+        struct
+        {
+            int gainIdx;
+            GainMode gainMode;
             QString tcpAddress;
             int tcpPort;
         } rtltcp;
@@ -40,12 +48,18 @@ public:
             int tcpPort;
         } rarttcp;
 #endif
+#ifdef HAVE_AIRSPY
         struct
         {
-            int gainIdx;
-            int bandwidth;
+            int lnaGainIdx;
+            int mixerGainIdx;
+            int ifGainIdx;
+            bool lnaAgcEna;
+            bool mixerAgcEna;
+            GainMode gainMode;
             bool biasT;
-        } rtlsdr;
+        } airspy;
+#endif
     };
 
     SetupDialog(QWidget *parent = nullptr);
@@ -66,12 +80,39 @@ private:
     Ui::SetupDialog *ui;
     Settings m_settings;
     QString rawfilename;
+    QList<int> rtlsdrGainList;
+    QList<int> rtltcpGainList;
 
     void onButtonClicked(QAbstractButton *button);
     void onInputChanged(int index);
     void onOpenFileButtonClicked();
     void applySettings();
     void applyEnable();
+    void setStatusLabel();
+
+    void onConnectDeviceClicked();
+
+    void onRtlGainModeToggled(bool checked);
+    void onRtlSdrGainSliderChanged(int val);
+    void activateRtlSdrControls(bool en);
+
+    void onTcpGainModeToggled(bool checked);
+    void onRtlTcpGainSliderChanged(int val);
+    void onRtlTcpIpAddrEditFinished();
+    void onRtlTcpPortValueChanged(int val);
+    void activateRtlTcpControls(bool en);
+
+    void onRawFileFormatChanged(int idx);
+
+#ifdef HAVE_AIRSPY
+    void onAirspyModeToggled(bool checked);
+    void onAirspyIFGainSliderChanged(int val);
+    void onAirspyLNAGainSliderChanged(int val);
+    void onAirspyMixerGainSliderChanged(int val);
+    void onAirspyLNAAGCstateChanged(int state);
+    void onAirspyMixerAGCstateChanged(int state);
+    void activateAirspyControls(bool en);
+#endif
 };
 
 #endif // SETUPDIALOG_H

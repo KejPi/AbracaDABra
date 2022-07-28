@@ -96,6 +96,7 @@ RtlTcpInput::~RtlTcpInput()
     }
 }
 
+
 bool RtlTcpInput::openDevice()
 {
     if (!deviceUnplugged)
@@ -138,13 +139,116 @@ bool RtlTcpInput::openDevice()
             continue;
         }
 
+        // Set non-blocking
+#if defined(_WIN32)
+        /// Windows sockets are created in blocking mode by default
+        // currently on windows, there is no easy way to obtain the socket's current blocking mode since WSAIsBlocking was deprecated
+        // https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-ioctlsocket
+        u_long flags = 1;  // If flags != 0, non-blocking mode is enabled.
+        if (NO_ERROR != ioctlsocket(sfd, FIONBIO, &flags))
+        {
+            qDebug() << "RTLTCP: Failed to set non-blocking socket";
+        }
+
         struct sockaddr_in *sa = (struct sockaddr_in *) rp->ai_addr;
-        qDebug() << "RTLTCP: Trying to connect to:" << inet_ntoa(sa->sin_addr);
-        if (0 == ::connect(sfd, rp->ai_addr, rp->ai_addrlen))
-        {   // connected
+        qDebug("RTLTCP: Trying to connect to: %s:%d", inet_ntoa(sa->sin_addr), port);
+        ::connect(sfd, rp->ai_addr, rp->ai_addrlen);
+        // https://docs.microsoft.com/en-us/previous-versions/windows/embedded/aa450263(v=msdn.10)
+        //  It is normal for WSAEWOULDBLOCK to be reported as the result from calling connect (Windows Sockets)
+        // on a nonblocking SOCK_STREAM socket, since some time must elapse for the connection to be established.
+#if (_WIN32_WINNT >= 0x0600)
+        struct pollfd  pfd;
+        pfd.fd = sfd;
+        pfd.events = POLLIN;
+        if (WSAPoll(&pfd, 1, 2000) > 0)
+        {
+            qDebug("RTLTCP: Connected to: %s:%d", inet_ntoa(sa->sin_addr), port);
+
+            flags = 0;  // If flags != 0, non-blocking mode is enabled.
+            if (NO_ERROR != ioctlsocket(sfd, FIONBIO, &flags))
+            {
+                qDebug() << "RTLTCP: Failed to set blocking socket";
+            }
+
             sock = sfd;
             break; /* Success */
         }
+        else
+        {   // -1 is error, 0 is timeout
+            qDebug() << "RTLTCP: Unable to connect";
+        }
+#else   // (_WIN32_WINNT < 0x0600)
+        // poll API does not exist :-(
+        // this part was not tested
+        fd_set connFd;
+        FD_ZERO(&connFd);
+        FD_SET(sfd, &connFd);
+
+        // check if the socket is ready
+        TIMEVAL connTimeout;
+        connTimeout.tv_sec = 2;
+        connTimeout.tv_usec = 0;
+        if (::select(sfd+1, nullptr, &connFd, nullptr, &connTimeout) > 0)
+        {
+            qDebug("RTLTCP: Connected to: %s:%d", inet_ntoa(sa->sin_addr), port);
+
+            flags = 0;  // If flags != 0, non-blocking mode is enabled.
+            if (NO_ERROR != ioctlsocket(sfd, FIONBIO, &flags))
+            {
+                qDebug() << "RTLTCP: Failed to set blocking socket";
+            }
+
+            sock = sfd;
+            break; /* Success */
+        }
+        else
+        {   // -1 is error, 0 is timeout
+            qDebug() << "RTLTCP: Unable to connect";
+        }
+#endif
+
+#else   // not defined(_WIN32)
+        long arg;
+        if( (arg = fcntl(sfd, F_GETFL, NULL)) < 0)
+        {
+            qDebug("RTLTCP: Error fcntl(..., F_GETFL) (%s)", strerror(errno));
+        }
+        arg |= O_NONBLOCK;
+        if( fcntl(sfd, F_SETFL, arg) < 0)
+        {
+            qDebug("RTLTCP: Error fcntl(..., F_SETFL) (%s)", strerror(errno));
+        }
+
+        struct sockaddr_in *sa = (struct sockaddr_in *) rp->ai_addr;
+        qDebug("RTLTCP: Trying to connect to: %s:%d", inet_ntoa(sa->sin_addr), port);
+        ::connect(sfd, rp->ai_addr, rp->ai_addrlen);
+
+        struct pollfd pfd;
+        pfd.fd = sfd;
+        pfd.events = POLLIN;
+        if (poll(&pfd, 1, 2000) > 0)
+        {
+            qDebug("RTLTCP: Connected to: %s:%d", inet_ntoa(sa->sin_addr), port);
+
+            // set bloking mode again
+            if( (arg = fcntl(sfd, F_GETFL, NULL)) < 0)
+            {
+                qDebug("RTLTCP: Error fcntl(..., F_GETFL) (%s)", strerror(errno));
+            }
+            arg &= (~O_NONBLOCK);
+            if( fcntl(sfd, F_SETFL, arg) < 0)
+            {
+                qDebug("RTLTCP: Error fcntl(..., F_SETFL) (%s)", strerror(errno));
+            }
+
+            sock = sfd;
+            break; /* Success */
+        }
+        else
+        {   // -1 is error, 0 is timeout
+            qDebug() << "RTLTCP: Unable to connect";
+        }
+#endif
 
 #if defined(_WIN32)
         closesocket(sfd);

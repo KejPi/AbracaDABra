@@ -6,29 +6,70 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>337</width>
-    <height>198</height>
+    <width>339</width>
+    <height>379</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Setup</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_4">
-   <item>
-    <layout class="QFormLayout" name="formLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="inputDeviceLabel">
+  <layout class="QGridLayout" name="gridLayout_7">
+   <item row="4" column="0">
+    <widget class="QLabel" name="statusLabel">
+     <property name="text">
+      <string>No device connected</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::RichText</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="inputDeviceLabel">
+         <property name="text">
+          <string>Input device:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="inputCombo"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="connectButton">
        <property name="text">
-        <string>Input device:</string>
+        <string>Connect</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="inputCombo"/>
-     </item>
     </layout>
    </item>
-   <item>
+   <item row="3" column="0">
     <widget class="QStackedWidget" name="deviceOptionsWidget">
      <property name="frameShape">
       <enum>QFrame::Box</enum>
@@ -41,20 +82,84 @@
      </property>
      <widget class="QWidget" name="noDevicePage"/>
      <widget class="QWidget" name="rtlsdrPage">
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="0">
-          <widget class="QLabel" name="rtlsdrAgcGainLabel">
-           <property name="text">
-            <string>AGC Gain:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QComboBox" name="rtlsdrGainCombo"/>
-         </item>
-        </layout>
+        <widget class="QGroupBox" name="rtlsdrGainModeGroup">
+         <property name="title">
+          <string>Gain control</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QRadioButton" name="rtlsdrGainModeSw">
+            <property name="text">
+             <string>Software</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="rtlsdrGainModeHw">
+            <property name="text">
+             <string>Device</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="rtlsdrGainModeManual">
+            <property name="text">
+             <string>Manual</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="rtlsdrGainWidget" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="rtlsdrGainLabel">
+            <property name="text">
+             <string>Gain</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="rtlsdrGainSlider">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="rtlsdrGainValueLabel">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>18 dB</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
        <item>
         <spacer name="verticalSpacer">
@@ -73,8 +178,53 @@
      </widget>
      <widget class="QWidget" name="rtltcpPage">
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="1" column="1">
-        <widget class="QComboBox" name="rtltcpGainCombo"/>
+       <item row="3" column="0" colspan="4">
+        <widget class="QWidget" name="rtltcpGainWidget" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="rtltcpGainLabel">
+            <property name="text">
+             <string>Gain</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="rtltcpGainSlider">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="rtltcpGainValueLabel">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>18 dB</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
        <item row="0" column="1">
         <widget class="QLineEdit" name="rtltcpIpAddressEdit">
@@ -92,18 +242,48 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="rtltcpAgcGainLabel">
-         <property name="text">
-          <string>AGC Gain:</string>
+       <item row="1" column="0" colspan="4">
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="rtltcpPortLabel">
+       <item row="0" column="0">
+        <widget class="QLabel" name="rtltcpIpAddrLabel">
          <property name="text">
-          <string>Port:</string>
+          <string>IP Address:</string>
          </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="4">
+        <widget class="QGroupBox" name="rtltcpGainModeGroup">
+         <property name="title">
+          <string>Gain control</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <widget class="QRadioButton" name="rtltcpGainModeSw">
+            <property name="text">
+             <string>Software</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="rtltcpGainModeHw">
+            <property name="text">
+             <string>Device</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="rtltcpGainModeManual">
+            <property name="text">
+             <string>Manual</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item row="0" column="3">
@@ -119,10 +299,23 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="rtltcpIpAddrLabel">
+       <item row="4" column="1">
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>26</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="rtltcpPortLabel">
          <property name="text">
-          <string>IP Address:</string>
+          <string>Port:</string>
          </property>
         </widget>
        </item>
@@ -194,16 +387,6 @@
      </widget>
      <widget class="QWidget" name="rawfilePage">
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="2">
-        <widget class="QCheckBox" name="loopCheckbox">
-         <property name="text">
-          <string>Loop file</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QComboBox" name="fileFormatCombo"/>
-       </item>
        <item row="1" column="0" colspan="3">
         <widget class="QLabel" name="fileNameLabel">
          <property name="text">
@@ -211,6 +394,13 @@
          </property>
          <property name="wordWrap">
           <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QCheckBox" name="loopCheckbox">
+         <property name="text">
+          <string>Loop file</string>
          </property>
         </widget>
        </item>
@@ -227,16 +417,178 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="fileFormatCombo"/>
+       </item>
+       <item row="2" column="0" colspan="3">
+        <spacer name="verticalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="airspyPage"/>
-    </widget>
-   </item>
-   <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
+     <widget class="QWidget" name="airspyPage">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QGroupBox" name="airspyGainModeGroup">
+         <property name="title">
+          <string>Gain control</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QRadioButton" name="airspyGainModeSw">
+            <property name="text">
+             <string>Software</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="airspyGainModeHybrid">
+            <property name="text">
+             <string>Hybrid</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="airspyGainModeManual">
+            <property name="text">
+             <string>Manual</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="airspyGainWidget" native="true">
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>IF gain</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSlider" name="airspyIFGainSlider">
+            <property name="maximum">
+             <number>21</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="airspyIFGainLabel">
+            <property name="text">
+             <string>8</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="airspyLNAGain">
+            <property name="text">
+             <string>LNA gain</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSlider" name="airspyLNAGainSlider">
+            <property name="maximum">
+             <number>21</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="airspyLNAGainLabel">
+            <property name="text">
+             <string>5</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QCheckBox" name="airspyLNAAGCCheckbox">
+            <property name="text">
+             <string>AGC</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="airspyMixerGain">
+            <property name="text">
+             <string>Mixer gain</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSlider" name="airspyMixerGainSlider">
+            <property name="maximum">
+             <number>21</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QLabel" name="airspyMixerGainLabel">
+            <property name="minimumSize">
+             <size>
+              <width>20</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>12</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QCheckBox" name="airspyMixerAGCCheckbox">
+            <property name="text">
+             <string>AGC</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
