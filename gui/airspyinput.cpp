@@ -922,30 +922,58 @@ int airspyCb(airspy_transfer* transfer)
 
 AirspyDSFilter::AirspyDSFilter()
 {
+#if AIRSPY_FILTER_IQ_INTERLEAVED
     buffer = new float[4*taps];  // I Q interleaved, double size for circular buffer
     bufferPtr = buffer;
+#else
+    bufferI = new float[2*taps];
+    bufferQ = new float[2*taps];
+    bufferPtrI = bufferI;
+    bufferPtrQ = bufferQ;
+#endif
+
+
 }
 
 AirspyDSFilter::~AirspyDSFilter()
 {
+#if AIRSPY_FILTER_IQ_INTERLEAVED
     delete [] buffer;
+#else
+    delete [] bufferI;
+    delete [] bufferQ;
+#endif
 }
 
 void AirspyDSFilter::reset()
 {
+#if AIRSPY_FILTER_IQ_INTERLEAVED
     bufferPtr = buffer;
     for (int n = 0; n < 4*taps; ++n)
     {
         buffer[n] = 0;
     }
+#else
+    bufferPtrI = bufferI;
+    bufferPtrQ = bufferQ;
+    for (int n = 0; n < 2*taps; ++n)
+    {
+        bufferI[n] = 0;
+    }
+    for (int n = 0; n < 2*taps; ++n)
+    {
+        bufferQ[n] = 0;
+    }
+#endif
 }
 
 void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ, float & maxAbs2)
 {
+
 #if (AIRSPY_AGC_ENABLE > 0)
     maxAbs2 = 0;
 #endif
-
+#if AIRSPY_FILTER_IQ_INTERLEAVED
     for (int n = 0; n<numIQ/2; ++n)
     {
         float * fwd = bufferPtr;
@@ -998,4 +1026,66 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ, float
             bufferPtr = buffer;
         }
     }
+#else
+    for (int n = 0; n<numIQ/2; ++n)
+    {
+        float * fwdI = bufferPtrI;
+        float * revI = bufferPtrI + taps;
+        float * fwdQ = bufferPtrQ;
+        float * revQ = bufferPtrQ + taps;
+
+
+        *fwdI++ = *inDataIQ;
+        *revI = *inDataIQ++;
+        *fwdQ++ = *inDataIQ;
+        *revQ = *inDataIQ++;
+
+        float accI = 0;
+        float accQ = 0;
+
+        for (int c = 0; c < (taps+1)/4; ++c)
+        {
+            accI += (*fwdI + *revI)*coef[c];
+            fwdI += 2;  // every other coeff is zero
+            revI -= 2;  // every other coeff is zero
+            accQ += (*fwdQ + *revQ)*coef[c];
+            fwdQ += 2;  // every other coeff is zero
+            revQ -= 2;  // every other coeff is zero
+        }
+
+        accI += *(fwdI-1) * coef[(taps+1)/4];
+        accQ += *(fwdQ-1) * coef[(taps+1)/4];
+
+        *outDataIQ++ = accI;
+        *outDataIQ++ = accQ;
+
+#if (AIRSPY_AGC_ENABLE > 0)
+        float abs2 = accI*accI + accQ*accQ;
+        if (maxAbs2 < abs2)
+        {
+            maxAbs2 = abs2;
+        }
+#endif
+
+        bufferPtrQ += 1;
+        if (++bufferPtrI == bufferI + taps)
+        {
+            bufferPtrI = bufferI;
+            bufferPtrQ = bufferQ;
+        }
+
+        // insert new samples to delay line
+        *(bufferPtrI + taps) = *inDataIQ;   // I
+        *bufferPtrI++ = *inDataIQ++;       // I
+        *(bufferPtrQ + taps) = *inDataIQ;   // I
+        *bufferPtrQ++ = *inDataIQ++;       // I
+
+        if (bufferPtrI == bufferI + taps)
+        {
+            bufferPtrI = bufferI;
+            bufferPtrQ = bufferQ;
+        }
+    }
+
+#endif
 }

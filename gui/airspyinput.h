@@ -56,6 +56,7 @@ private:
 #endif
 
 #define AIRSPY_FILTER_ORDER (42)
+#define AIRSPY_FILTER_IQ_INTERLEAVED 0
 class AirspyDSFilter
 {    
 public:
@@ -64,8 +65,15 @@ public:
     void reset();
     void process(float * inDataIQ, float *outDataIQ, int numIQ, float & maxAbsVal);
 private:
+#if AIRSPY_FILTER_IQ_INTERLEAVED
     float * bufferPtr;
     float * buffer;
+#else
+    float * bufferPtrI;
+    float * bufferPtrQ;
+    float * bufferI;
+    float * bufferQ;
+#endif
 
     // Halfband FIR, fixed coeffs, designed for downsampling 4096kHz -> 2048kHz
     static const int_fast8_t taps = AIRSPY_FILTER_ORDER + 1;
