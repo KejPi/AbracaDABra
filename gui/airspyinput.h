@@ -9,14 +9,14 @@
 #include "inputdevice.h"
 
 #define AIRSPY_AGC_ENABLE  1   // enable AGC
-#define AIRSPY_WDOG_ENABLE 1   // enable watchdog timer
+#define AIRSPY_WDOG_ENABLE 1  // enable watchdog timer
 
 #define AIRSPY_SW_AGC_MIN  0
-#define AIRSPY_SW_AGC_MAX  17
+#define AIRSPY_SW_AGC_MAX 17
 #define AIRSPY_HW_AGC_MIN  0
-#define AIRSPY_HW_AGC_MAX  17
+#define AIRSPY_HW_AGC_MAX 17
 
-#define AIRSPY_WORKER 1
+#define AIRSPY_WORKER      0
 #define AIRSPY_FILTER_ORDER (42)
 #define AIRSPY_FILTER_IQ_INTERLEAVED 0
 
@@ -114,16 +114,12 @@ signals:
 
 private:
     uint32_t frequency;
-    bool deviceRunning;
     struct airspy_device *device;
 #if (AIRSPY_WDOG_ENABLE)
     QTimer watchDogTimer;
 #endif
     GainMode gainMode = GainMode::Hardware;
     int gainIdx;
-#if (AIRSPY_AGC_ENABLE > 0)
-    float signalLevel;
-#endif
     FILE * dumpFile;   
 #if AIRSPY_WORKER
     QThread workerThread;
@@ -131,6 +127,9 @@ private:
     int bufferIdx;
     float * inBuffer[4];
 #else
+#if (AIRSPY_AGC_ENABLE > 0)
+    float signalLevel;
+#endif
     std::atomic<bool> enaDumpToFile;
     QMutex fileMutex;
     float * filterOutBuffer;

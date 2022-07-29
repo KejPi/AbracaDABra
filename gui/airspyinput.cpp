@@ -7,7 +7,6 @@ AirspyInput::AirspyInput(QObject *parent) : InputDevice(parent)
     id = InputDeviceId::AIRSPY;
 
     device = nullptr;
-    deviceRunning = false;
     dumpFile = nullptr;
 #if AIRSPY_WORKER
     for (int n = 0; n < 4; ++n)
@@ -66,7 +65,7 @@ void AirspyInput::tune(uint32_t freq)
 {
     qDebug() << Q_FUNC_INFO << freq;
     frequency = freq;
-    if ((deviceRunning) || (0 == freq))
+    if (airspy_is_streaming(device) || (0 == freq))
     {   // worker is running
         //      sequence in this case is:
         //      1) stop
@@ -158,7 +157,6 @@ void AirspyInput::run()
             emit error(InputDeviceErrorCode::DeviceDisconnected);
             return;
         }
-        deviceRunning = true;
     }
     else
     { /* tune to 0 => going to idle */  }
@@ -191,8 +189,6 @@ void AirspyInput::stop()
             QThread::msleep(2000);
         }
 
-
-        deviceRunning = false;       // this flag say that we want to stop worker intentionally
         run(); // restart
     }
     else if (0 == frequency)
@@ -315,7 +311,9 @@ void AirspyInput::setGain(int gIdx)
 
 void AirspyInput::resetAgc()
 {
-    signalLevel = 0.001;
+#if !AIRSPY_WORKER
+    signalLevel = 0.008;
+#endif
     if (GainMode::Software == gainMode)
     {
         gainIdx = -1;
@@ -804,5 +802,5 @@ void AirspyWorker::processInputData(float * inBufferIQ, int numIQ)
 void AirspyWorker::reset()
 {
     filter->reset();
-    signalLevel = 0.001;
+    signalLevel = 0.008;
 }
