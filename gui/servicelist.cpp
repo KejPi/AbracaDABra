@@ -184,7 +184,7 @@ int ServiceList::numEnsembles(const ServiceListId & servId) const
 {
     if (!servId.isValid())
     {
-        return m_ensembleList.size();
+        return 0;
     }
     else
     {
