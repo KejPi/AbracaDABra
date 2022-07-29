@@ -26,7 +26,7 @@ public:
     AirspyDSFilter();
     ~AirspyDSFilter();
     void reset();
-    void process(float * inDataIQ, float *outDataIQ, int numIQ, float & maxAbsVal);
+    void process(float * inDataIQ, float *outDataIQ, int numIQ, float & signalLevel);
 private:
 #if AIRSPY_FILTER_IQ_INTERLEAVED
     float * bufferPtr;
