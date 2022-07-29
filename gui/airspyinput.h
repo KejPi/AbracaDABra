@@ -8,13 +8,16 @@
 #include <libairspy/airspy_commands.h>
 #include "inputdevice.h"
 
-#define AIRSPY_DOC_ENABLE  0   // enable DOC
 #define AIRSPY_AGC_ENABLE  1   // enable AGC
 #define AIRSPY_WDOG_ENABLE 1   // enable watchdog timer
 
+#define AIRSPY_SW_AGC_MIN  0
+#define AIRSPY_SW_AGC_MAX  17
+#define AIRSPY_HW_AGC_MIN  0
+#define AIRSPY_HW_AGC_MAX  17
+
 #define AIRSPY_WORKER 0
 
-#define AIRSPY_FILTER_ORDER (42)
 
 #if AIRSPY_WORKER
 class AirspyWorker : public QThread

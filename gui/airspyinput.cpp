@@ -257,58 +257,15 @@ void AirspyInput::setGainMode(GainMode mode, int lnaIdx, int mixerIdx, int ifIdx
 
 void AirspyInput::setGain(int gIdx)
 {
-#if 0
-    // force index validity
-    if (gIdx < 0)
-    {
-        gIdx = 0;
-    }
-    if (gIdx >= 21)
-    {
-        gIdx = 21;
-    }
-    if (gIdx != gainIdx)
-    {
-        gainIdx = gIdx;
-        if (GainMode::Hardware == gainMode)
-        {
-            int ret = airspy_set_vga_gain(device, gainIdx);
-            if (AIRSPY_SUCCESS != ret)
-            {
-                qDebug() << "AIRSPY: Failed to set tuner gain";
-            }
-            else
-            {
-                qDebug() << "AIRSPY: Tuner VGA gain set to" << gainIdx;
-                //emit agcGain(gainList->at(gainIdx));
-            }
-            return;
-        }
-        if (GainMode::Software == gainMode)
-        {
-            int ret = airspy_set_sensitivity_gain(device, gainIdx);
-            if (AIRSPY_SUCCESS != ret)
-            {
-                qDebug() << "AIRSPY: Failed to set tuner gain";
-            }
-            else
-            {
-                qDebug() << "AIRSPY: Tuner Sensitivity gain set to" << gainIdx;
-                //emit agcGain(gainList->at(gainIdx));
-            }
-            return;
-        }
-    }
-#else
     if (GainMode::Hardware == gainMode)
     {
-        if (gIdx < 4)
+        if (gIdx < AIRSPY_HW_AGC_MIN)
         {
-            gIdx = 4;
+            gIdx = AIRSPY_HW_AGC_MIN;
         }
-        if (gIdx >= 13)
+        if (gIdx > AIRSPY_HW_AGC_MAX)
         {
-            gIdx = 13;
+            gIdx = AIRSPY_HW_AGC_MAX;
         }
 
         if (gIdx == gainIdx)
@@ -332,13 +289,13 @@ void AirspyInput::setGain(int gIdx)
     }
     if (GainMode::Software == gainMode)
     {
-        if (gIdx < 0)
+        if (gIdx < AIRSPY_SW_AGC_MIN)
         {
-            gIdx = 0;
+            gIdx = AIRSPY_SW_AGC_MIN;
         }
-        if (gIdx >= 21)
+        if (gIdx > AIRSPY_SW_AGC_MAX)
         {
-            gIdx = 21;
+            gIdx = AIRSPY_SW_AGC_MAX;
         }
 
         if (gIdx == gainIdx)
@@ -360,16 +317,15 @@ void AirspyInput::setGain(int gIdx)
         }
         return;
     }
-#endif
 }
 
 void AirspyInput::resetAgc()
 {
-    signalLevel = 0.005;
+    signalLevel = 0.05;
     if (GainMode::Software == gainMode)
     {
-        gainIdx = -1;        
-        setGain(22/2); // set it to the middle
+        gainIdx = -1;
+        setGain((AIRSPY_SW_AGC_MAX+1)/2); // set it to the middle
         return;
     }
     if (GainMode::Hardware == gainMode)
@@ -381,57 +337,17 @@ void AirspyInput::resetAgc()
 
 void AirspyInput::updateAgc(float level)
 {
-#if 0
-    if (GainMode::Software == gainMode)
-    {
-        if (level > 0.1)
-        {
-            //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity down";
-            setGain(gainIdx-1);
-            return;
-        }
-        if (level < 0.002)
-        {
-            //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity up";
-            setGain(gainIdx+1);
-        }
-
-        return;
-    }
-    if (GainMode::Hardware == gainMode)
-    {
-        if (level < 0.002)
-        {
-            if ((gainIdx+1) > 15)
-            {
-                return;
-            }
-            //qDebug() << "VGA gain" << gainIdx+1 << level;
-            airspy_set_vga_gain(device, ++gainIdx);
-        }
-        if (level > 0.01)
-        {
-            if ((gainIdx-1) < 2)
-            {
-                return;
-            }
-            //qDebug() << "VGA gain" << gainIdx-1 << level;
-            airspy_set_vga_gain(device, --gainIdx);
-        }
-    }
-#else
     if (level > 0.1)
     {
         //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity down";
         setGain(gainIdx-1);
         return;
     }
-    if (level < 0.002)
+    if (level < 0.005)
     {
         //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity up";
         setGain(gainIdx+1);
     }
-#endif
 }
 
 void AirspyInput::readThreadStopped()
@@ -974,25 +890,33 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ, float
     maxAbs2 = 0;
 #endif
 #if AIRSPY_FILTER_IQ_INTERLEAVED
-    for (int n = 0; n<numIQ/2; ++n)
-    {
-        float * fwd = bufferPtr;
-        float * rev = bufferPtr + tapsX2;
+    //Q_ASSERT(numIQ > 4*len);
 
-        *fwd++ = *inDataIQ;     // I[2*k+n]
-        *rev = *inDataIQ++;     // I[2*k+n]
-        *fwd++ = *inDataIQ;     // Q[2*k+n]
-        *(rev+1) = *inDataIQ++; // Q[2*k+n]
+    //    if (0 != (uint64_t(inDataIQ) & 0x00F))
+    //    {
+    //        qDebug("Data not aligned %8.8X", inDataIQ);
+    //    }
+
+    // prolog
+    std::memcpy(buffer+tapsX2-2, inDataIQ, (tapsX2+2)*sizeof(float));
+
+    for (int n = 0; n<taps+1; n+=2)
+    {
+        float * fwd = buffer + 2*n;
+        float * rev = buffer + 2*n + tapsX2 - 2 + 1;
 
         float accI = 0;
         float accQ = 0;
 
         for (int c = 0; c < (taps+1)/4; ++c)
         {
-            accI += (*fwd++ + *rev++)*coef[c];
-            accQ += (*fwd++ + *rev--)*coef[c];
+            accI += *fwd++ * coef[c];
+            accQ += *rev-- * coef[c];
+            accQ += *fwd++ * coef[c];
+            accI += *rev-- * coef[c];
+
             fwd += 2;  // zero coe
-            rev -= 4;  // current sample and zero coe
+            rev -= 2;  // zero coe
         }
 
         accI += *(fwd-2) * coef[(taps+1)/4];
@@ -1008,24 +932,48 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ, float
             maxAbs2 = abs2;
         }
 #endif
-
-        bufferPtr += 2;
-        if (bufferPtr == buffer + tapsX2)
-        {
-            bufferPtr = buffer;
-        }
-
-        // insert new samples to delay line
-        *(bufferPtr + tapsX2) = *inDataIQ; // I[2*k+1+n]
-        *bufferPtr++ = *inDataIQ++;        // I[2*k+1+n]
-        *(bufferPtr + tapsX2) = *inDataIQ; // Q[2*k+1+n]
-        *bufferPtr++ = *inDataIQ++;        // Q[2*k+1+n]
-
-        if (bufferPtr == buffer + tapsX2)
-        {
-            bufferPtr = buffer;
-        }
     }
+
+    // main loop
+    for (int n = taps+1; n<numIQ; n+=2)
+    {
+        //float * fwd = inDataIQ + (lenX2+2) + 2*n;
+        //float * rev = inDataIQ + (lenX2+2) + lenX2 - 2 + 2*n;
+        float * fwd = inDataIQ + 2*n - (tapsX2 - 2);
+        float * rev = inDataIQ + 2*n + 1;
+
+        float accI = 0;
+        float accQ = 0;
+
+        for (int c = 0; c < (taps+1)/4; ++c)
+        {
+            accI += *fwd++ * coef[c];
+            accQ += *rev-- * coef[c];
+            accQ += *fwd++ * coef[c];
+            accI += *rev-- * coef[c];
+
+            fwd += 2;  // zero coe
+            rev -= 2;  // zero coe
+        }
+
+        accI += *(fwd-2) * coef[(taps+1)/4];
+        accQ += *(fwd-1) * coef[(taps+1)/4];
+
+        *outDataIQ++ = accI;
+        *outDataIQ++ = accQ;
+
+#if (AIRSPY_AGC_ENABLE > 0)
+        float abs2 = accI*accI + accQ*accQ;
+        if (maxAbs2 < abs2)
+        {
+            maxAbs2 = abs2;
+        }
+#endif
+    }
+
+    // epilog
+    std::memcpy(buffer, inDataIQ + (2*numIQ) - (tapsX2-2), (tapsX2-2)*sizeof(float));
+
 #else
     for (int n = 0; n<numIQ/2; ++n)
     {
