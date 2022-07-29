@@ -16,10 +16,10 @@
 #define AIRSPY_HW_AGC_MIN  0
 #define AIRSPY_HW_AGC_MAX  17
 
-#define AIRSPY_WORKER 0
+#define AIRSPY_WORKER 1
 
 
-#if AIRSPY_WORKER
+#if 0
 class AirspyWorker : public QThread
 {
     Q_OBJECT
@@ -57,6 +57,8 @@ private:
     friend int airspyCb(airspy_transfer* transfer);
 };
 #endif
+
+
 
 #define AIRSPY_FILTER_ORDER (42)
 #define AIRSPY_FILTER_IQ_INTERLEAVED 0
@@ -98,6 +100,35 @@ private:
     };
 };
 
+class AirspyWorker : public QObject
+{
+    Q_OBJECT
+public:
+    explicit AirspyWorker(QObject *parent = nullptr);
+    ~AirspyWorker();
+    void processInputData(float *inBufferIQ, int numIQ);
+
+    void dumpToFileStart(FILE * f);
+    void dumpToFileStop();
+signals:
+    void agcLevel(float level);
+    void dumpedBytes(ssize_t bytes);
+
+private:
+    FILE * dumpFile;
+    QMutex fileMutex;
+    std::atomic<bool> enaDumpToFile;
+
+    AirspyDSFilter * filter;
+    float * filterOutBuffer;
+#if (AIRSPY_AGC_ENABLE > 0)
+    float signalLevel;
+#endif
+
+    bool isDumpingIQ() const { return enaDumpToFile; }
+    void dumpBuffer(unsigned char *buf, uint32_t len);
+};
+
 class AirspyInput : public InputDevice
 {
     Q_OBJECT
@@ -118,6 +149,9 @@ public:
 signals:
     void gainListAvailable(const QList<int> * pList);
     void agcLevel(float level);
+#if AIRSPY_WORKER
+    void doInputDataProcessing(float * bufferIQ, int numIQ);
+#endif
 
 private:
     uint32_t frequency;
@@ -129,13 +163,20 @@ private:
 #endif
     GainMode gainMode = GainMode::Hardware;
     int gainIdx;
-    FILE * dumpFile;
-    std::atomic<bool> enaDumpToFile;
-    QMutex fileMutex;
-    float * filterOutBuffer;       
-    AirspyDSFilter * filter;
 #if (AIRSPY_AGC_ENABLE > 0)
     float signalLevel;
+#endif
+    FILE * dumpFile;
+    std::atomic<bool> enaDumpToFile;
+    QMutex fileMutex;    
+#if AIRSPY_WORKER
+    QThread workerThread;
+    AirspyWorker * worker;
+    int bufferIdx;
+    float * inBuffer[4];
+#else
+    float * filterOutBuffer;
+    AirspyDSFilter * filter;
 #endif
 
     void run();           
@@ -158,6 +199,5 @@ private:
     void processInputData(airspy_transfer* transfer);
     static int callback(airspy_transfer* transfer);
 };
-
 
 #endif // AIRSPYNPUT_H

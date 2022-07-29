@@ -13,8 +13,26 @@ AirspyInput::AirspyInput(QObject *parent) : InputDevice(parent)
     deviceUnplugged = true;
     deviceRunning = false;
     dumpFile = nullptr;
+#if AIRSPY_WORKER
+    for (int n = 0; n < 4; ++n)
+    {
+        //inBuffer[n] = new float[65536*2];
+        inBuffer[n] = new ( std::align_val_t(16) ) float[65536*2];
+    }
+    bufferIdx = 0;
+
+    worker = new AirspyWorker();
+    worker->moveToThread(&workerThread);
+    connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
+    connect(this, &AirspyInput::doInputDataProcessing, worker, &AirspyWorker::processInputData, Qt::QueuedConnection);
+    connect(worker, &AirspyWorker::agcLevel, this, &AirspyInput::updateAgc, Qt::QueuedConnection);
+    workerThread.start();
+#else
     filterOutBuffer = new float[65536];
     filter = new AirspyDSFilter();
+
+    connect(this, &AirspyInput::agcLevel, this, &AirspyInput::updateAgc, Qt::QueuedConnection);
+#endif
 
 #if (AIRSPY_WDOG_ENABLE)
     connect(&watchDogTimer, &QTimer::timeout, this, &AirspyInput::watchDogTimeout);
@@ -34,8 +52,19 @@ AirspyInput::~AirspyInput()
         airspy_exit();
     }
 
+#if AIRSPY_WORKER
+    workerThread.quit();  // this deletes worker
+    workerThread.wait();
+
+    for (int n = 0; n < 4; ++n)
+    {
+        //delete [] inBuffer[n];
+        operator delete [] (inBuffer[n], std::align_val_t{16});
+    }
+#else
     delete [] filterOutBuffer;
     delete filter;
+#endif
 }
 
 void AirspyInput::tune(uint32_t freq)
@@ -87,23 +116,6 @@ bool AirspyInput::openDevice()
         qDebug() << "AIRSPY: Setting sample rate failed";
         return false;
     }
-#if 0
-    // Get tuner gains
-    uint32_t gainsCount = rtlsdr_get_tuner_gains(device, NULL);
-    qDebug() << "RTL_SDR: Supported gain values" << gainsCount;
-    int * gains = new int[gainsCount];
-    gainsCount = rtlsdr_get_tuner_gains(device, gains);
-
-    gainList = new QList<int>();
-    for (int i = 0; i < gainsCount; i++) {
-        //qDebug() << "RTL_SDR: gain " << (gains[i] / 10.0);
-        gainList->append(gains[i]);
-    }
-    delete [] gains;
-    emit gainListAvailable(gainList);
-
-#endif
-    connect(this, &AirspyInput::agcLevel, this, &AirspyInput::updateAgc, Qt::QueuedConnection);
 
     // set automatic gain
     setGainMode(GainMode::Software);
@@ -122,8 +134,9 @@ void AirspyInput::run()
 
     // Reset buffer here - worker thread it not running, DAB waits for new data
     inputBuffer.reset();
-
+#if !AIRSPY_WORKER
     filter->reset();
+#endif
 
     if (frequency != 0)
     {   // Tune to new frequency
@@ -138,7 +151,7 @@ void AirspyInput::run()
 
         // does nothing if not SW AGC
         resetAgc();
-#if AIRSPY_WORKER
+#if 0
         worker = new AirspyWorker(device, this);
         //connect(worker, &AirspyWorker::agcLevel, this, &AirspyInput::updateAgc, Qt::QueuedConnection);
         connect(worker, &AirspyWorker::dumpedBytes, this, &InputDevice::dumpedBytes, Qt::QueuedConnection);
@@ -148,7 +161,7 @@ void AirspyInput::run()
 #if (AIRSPY_WDOG_ENABLE)
         watchDogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
 #endif
-#if AIRSPY_WORKER
+#if 0
         worker->start();
 #else
         ret = airspy_start_rx(device, AirspyInput::callback, (void*)this);
@@ -174,7 +187,7 @@ void AirspyInput::stop()
     if (AIRSPY_TRUE == airspy_is_streaming(device))
     {   // if devise is running, stop worker
         airspy_stop_rx(device);
-#if AIRSPY_WORKER
+#if 0
         worker->wait(QDeadlineTimer(2000));
         while (!worker->isFinished())
         {
@@ -470,12 +483,11 @@ int AirspyInput::callback(airspy_transfer* transfer)
 {
     AirspyInput * thisPtr = static_cast<AirspyInput *>(transfer->ctx);
     thisPtr->processInputData(transfer);
-
     return 0;
 }
 
 void AirspyInput::processInputData(airspy_transfer *transfer)
-{
+{    
     //qDebug() << Q_FUNC_INFO << transfer->sample_count;
 
     if (transfer->dropped_samples > 0)
@@ -483,6 +495,13 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
         qDebug() << "AIRSPY: dropping" << transfer->dropped_samples << "samples";
     }
 
+#if AIRSPY_WORKER
+    float * inBufferPtr = inBuffer[bufferIdx++];
+    bufferIdx &= 0x03;
+
+    std::memcpy(inBufferPtr, transfer->samples, transfer->sample_count*2*sizeof(float));
+    emit doInputDataProcessing(inBufferPtr, transfer->sample_count);
+#else
     // len is number of I and Q samples
     // get FIFO space
     pthread_mutex_lock(&inputBuffer.countMutex);
@@ -541,6 +560,7 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
     inputBuffer.count = inputBuffer.count + bytesToWrite;
     pthread_cond_signal(&inputBuffer.countCondition);
     pthread_mutex_unlock(&inputBuffer.countMutex);
+#endif
 }
 
 #if 0
@@ -851,8 +871,7 @@ AirspyDSFilter::AirspyDSFilter()
     bufferPtrI = bufferI;
     bufferPtrQ = bufferQ;
 #endif
-
-
+    reset();
 }
 
 AirspyDSFilter::~AirspyDSFilter()
@@ -1040,4 +1059,108 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ, float
     }
 
 #endif
+}
+
+AirspyWorker::AirspyWorker(QObject *parent)
+{
+    filterOutBuffer = new float[65536];
+    filter = new AirspyDSFilter();
+    filter->reset();
+
+    signalLevel = 0.05;
+}
+
+AirspyWorker::~AirspyWorker()
+{
+    delete [] filterOutBuffer;
+    delete filter;
+}
+
+void AirspyWorker::dumpToFileStart(FILE * f)
+{
+    fileMutex.lock();
+    dumpFile = f;
+    enaDumpToFile = true;
+    fileMutex.unlock();
+}
+
+void AirspyWorker::dumpToFileStop()
+{
+    enaDumpToFile = false;
+    fileMutex.lock();
+    dumpFile = nullptr;
+    fileMutex.unlock();
+}
+
+void AirspyWorker::dumpBuffer(unsigned char *buf, uint32_t len)
+{
+    fileMutex.lock();
+    if (nullptr != dumpFile)
+    {
+        ssize_t bytes = fwrite(buf, 1, len, dumpFile);
+        emit dumpedBytes(bytes);
+    }
+    fileMutex.unlock();
+}
+
+void AirspyWorker::processInputData(float * inBufferIQ, int numIQ)
+{
+    // len is number of I and Q samples
+    // get FIFO space
+    pthread_mutex_lock(&inputBuffer.countMutex);
+    uint64_t count = inputBuffer.count;
+    Q_ASSERT(count <= INPUT_FIFO_SIZE);
+
+    pthread_mutex_unlock(&inputBuffer.countMutex);
+
+    uint64_t bytesToWrite = numIQ*sizeof(float); //*2/2 (considering downsampling by 2)
+
+    if ((INPUT_FIFO_SIZE - count) < bytesToWrite) //*2/2 (considering downsampling by 2)
+    {
+        qDebug() << Q_FUNC_INFO << "dropping" << numIQ << "IQ samples...";
+        return;
+    }
+
+    // input samples are IQ = [float float] @ 4096kHz
+    // going to transform them to [float float] @ 2048kHz
+    float maxAbs2;
+    filter->process((float*) inBufferIQ, filterOutBuffer, numIQ, maxAbs2);
+
+#if (AIRSPY_AGC_ENABLE > 0)
+#define LEV_C 0.01
+    // calculate signal level (rectifier, fast attack slow release)
+    signalLevel = LEV_C * maxAbs2 + signalLevel - LEV_C * signalLevel;
+
+    static uint_fast8_t cntr = 0;
+    if (0 == (++cntr & 0x07))
+    {
+        //qDebug() << signalLevel;
+        emit agcLevel(signalLevel);
+    }
+#endif
+
+    //    if (isDumpingIQ())
+    //    {
+    //        dumpBuffer((unsigned char *) filterOutBuffer, bytesToWrite);
+    //    }
+
+    // there is enough room in buffer
+    uint64_t bytesTillEnd = INPUT_FIFO_SIZE - inputBuffer.head;
+
+    if (bytesTillEnd >= bytesToWrite)
+    {
+        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *) filterOutBuffer, bytesToWrite);
+        inputBuffer.head = (inputBuffer.head + bytesToWrite);
+    }
+    else
+    {
+        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *) filterOutBuffer, bytesTillEnd);
+        std::memcpy((inputBuffer.buffer), ((uint8_t *) filterOutBuffer)+bytesTillEnd, bytesToWrite-bytesTillEnd);
+        inputBuffer.head = bytesToWrite-bytesTillEnd;
+    }
+
+    pthread_mutex_lock(&inputBuffer.countMutex);
+    inputBuffer.count = inputBuffer.count + bytesToWrite;
+    pthread_cond_signal(&inputBuffer.countCondition);
+    pthread_mutex_unlock(&inputBuffer.countMutex);
 }
