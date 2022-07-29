@@ -17,51 +17,9 @@
 #define AIRSPY_HW_AGC_MAX  17
 
 #define AIRSPY_WORKER 1
-
-
-#if 0
-class AirspyWorker : public QThread
-{
-    Q_OBJECT
-public:
-    explicit AirspyWorker(struct airspy_device *d, QObject *parent = nullptr);
-    void dumpToFileStart(FILE * f);
-    void dumpToFileStop();
-    bool isRunning();
-protected:
-    void run() override;
-signals:
-    void agcLevel(float level, int maxVal);
-    void dumpedBytes(ssize_t bytes);
-private:
-    QObject *airspyPtr;
-    struct airspy_device *device;
-    std::atomic<bool> enaDumpToFile;
-    FILE * dumpFile;
-    QMutex fileMutex;
-    std::atomic<bool> wdogIsRunningFlag;
-
-#if (AIRSPY_DOC_ENABLE > 0)
-    // DOC memory
-    float dcI = 0.0;
-    float dcQ = 0.0;
-#endif
-
-    // AGC memory
-    float agcLev = 0.0;
-
-    bool isDumpingIQ() const { return enaDumpToFile; }
-    void dumpBuffer(unsigned char *buf, uint32_t len);    
-    void emitAgcLevel(float level, int maxVal) { emit agcLevel(level, maxVal); }
-
-    friend int airspyCb(airspy_transfer* transfer);
-};
-#endif
-
-
-
 #define AIRSPY_FILTER_ORDER (42)
 #define AIRSPY_FILTER_IQ_INTERLEAVED 0
+
 class AirspyDSFilter
 {    
 public:
@@ -108,6 +66,7 @@ public:
     ~AirspyWorker();
     void processInputData(float *inBufferIQ, int numIQ);
 
+    void reset();
     void dumpToFileStart(FILE * f);
     void dumpToFileStop();
 signals:
@@ -143,19 +102,18 @@ public:
     void startDumpToFile(const QString & filename) override;
     void stopDumpToFile() override;
 
-    void setBW(int bw);
     void setBiasT(bool ena);
 
 signals:
     void gainListAvailable(const QList<int> * pList);
     void agcLevel(float level);
 #if AIRSPY_WORKER
+    void doReset();
     void doInputDataProcessing(float * bufferIQ, int numIQ);
 #endif
 
 private:
     uint32_t frequency;
-    bool deviceUnplugged;
     bool deviceRunning;
     struct airspy_device *device;
 #if (AIRSPY_WDOG_ENABLE)
@@ -166,15 +124,15 @@ private:
 #if (AIRSPY_AGC_ENABLE > 0)
     float signalLevel;
 #endif
-    FILE * dumpFile;
-    std::atomic<bool> enaDumpToFile;
-    QMutex fileMutex;    
+    FILE * dumpFile;   
 #if AIRSPY_WORKER
     QThread workerThread;
     AirspyWorker * worker;
     int bufferIdx;
     float * inBuffer[4];
 #else
+    std::atomic<bool> enaDumpToFile;
+    QMutex fileMutex;
     float * filterOutBuffer;
     AirspyDSFilter * filter;
 #endif
@@ -189,13 +147,14 @@ private:
 
     void updateAgc(float level);
 
-    void readThreadStopped();
 #if (AIRSPY_WDOG_ENABLE)
     void watchDogTimeout();
 #endif
+
+#if !AIRSPY_WORKER
     bool isDumpingIQ() const { return enaDumpToFile; }
     void dumpBuffer(unsigned char *buf, uint32_t len);
-
+#endif
     void processInputData(airspy_transfer* transfer);
     static int callback(airspy_transfer* transfer);
 };
