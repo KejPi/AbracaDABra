@@ -547,7 +547,8 @@ void SetupDialog::resetInputDevice()
     case InputDeviceId::RARTTCP:
     case InputDeviceId::UNDEFINED:
     case InputDeviceId::AIRSPY:
-        return;
+        activateAirspyControls(false);
+        break;
     }
 
     m_settings.inputDevice = InputDeviceId::UNDEFINED;

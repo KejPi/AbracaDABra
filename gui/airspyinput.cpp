@@ -24,12 +24,15 @@ AirspyInput::AirspyInput(QObject *parent) : InputDevice(parent)
 AirspyInput::~AirspyInput()
 {
     //qDebug() << Q_FUNC_INFO;
-    stop();
-    if (!deviceUnplugged)
+    if (nullptr != device)
     {
-        airspy_close(device);
+        stop();
+        if (!deviceUnplugged)
+        {
+            airspy_close(device);
+        }
+        airspy_exit();
     }
-    airspy_exit();
 
     delete [] filterOutBuffer;
     delete filter;
@@ -63,6 +66,7 @@ bool AirspyInput::openDevice()
     if (AIRSPY_SUCCESS != ret)
     {
         qDebug() << "AIRSPY:  Failed opening device";
+        device = nullptr;
         return false;
     }
 
