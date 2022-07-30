@@ -67,6 +67,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->fileFormatCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onRawFileFormatChanged);
 
 #ifdef HAVE_AIRSPY
+    connect(ui->airspySensitivityGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspySensitivityGainSliderChanged);
     connect(ui->airspyIFGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspyIFGainSliderChanged);
     connect(ui->airspyLNAGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspyLNAGainSliderChanged);
     connect(ui->airspyMixerGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspyMixerGainSliderChanged);
@@ -75,6 +76,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->airspyGainModeHybrid, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
     connect(ui->airspyGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
     connect(ui->airspyGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
+    connect(ui->airspyGainModeSensitivity, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
 #endif
     adjustSize();
 }
@@ -149,13 +151,13 @@ void SetupDialog::showEvent(QShowEvent *event)
     }
 
     switch (m_settings.rtlsdr.gainMode) {
-    case GainMode::Software:
+    case RtlGainMode::Software:
         ui->rtlsdrGainModeSw->setChecked(true);
         break;
-    case GainMode::Hardware:
+    case RtlGainMode::Hardware:
         ui->rtlsdrGainModeHw->setChecked(true);
         break;
-    case GainMode::Manual:
+    case RtlGainMode::Manual:
         ui->rtlsdrGainModeManual->setChecked(true);
         break;
     default:
@@ -163,13 +165,13 @@ void SetupDialog::showEvent(QShowEvent *event)
     }
 
     switch (m_settings.rtltcp.gainMode) {
-    case GainMode::Software:
+    case RtlGainMode::Software:
         ui->rtltcpGainModeSw->setChecked(true);
         break;
-    case GainMode::Hardware:
+    case RtlGainMode::Hardware:
         ui->rtltcpGainModeHw->setChecked(true);
         break;
-    case GainMode::Manual:
+    case RtlGainMode::Manual:
         ui->rtltcpGainModeManual->setChecked(true);
         break;
     default:
@@ -177,25 +179,29 @@ void SetupDialog::showEvent(QShowEvent *event)
     }
 
 #ifdef HAVE_AIRSPY
-    switch (m_settings.airspy.gainMode) {
-    case GainMode::Software:
+    switch (m_settings.airspy.gain.mode) {
+    case AirpyGainMode::Software:
         ui->airspyGainModeSw->setChecked(true);
         break;
-    case GainMode::Hardware:
+    case AirpyGainMode::Hybrid:
         ui->airspyGainModeHybrid->setChecked(true);
         break;
-    case GainMode::Manual:
+    case AirpyGainMode::Manual:
         ui->airspyGainModeManual->setChecked(true);
+        break;
+    case AirpyGainMode::Sensitivity:
+        ui->airspyGainModeSensitivity->setChecked(true);
         break;
     default:
         break;
     }
 
-    ui->airspyIFGainSlider->setValue(m_settings.airspy.ifGainIdx);
-    ui->airspyLNAGainSlider->setValue(m_settings.airspy.lnaGainIdx);
-    ui->airspyMixerGainSlider->setValue(m_settings.airspy.mixerGainIdx);
-    ui->airspyMixerAGCCheckbox->setChecked(m_settings.airspy.mixerAgcEna);
-    ui->airspyLNAAGCCheckbox->setChecked(m_settings.airspy.lnaAgcEna);
+    ui->airspySensitivityGainSlider->setValue(m_settings.airspy.gain.sensitivityGainIdx);
+    ui->airspyIFGainSlider->setValue(m_settings.airspy.gain.ifGainIdx);
+    ui->airspyLNAGainSlider->setValue(m_settings.airspy.gain.lnaGainIdx);
+    ui->airspyMixerGainSlider->setValue(m_settings.airspy.gain.mixerGainIdx);
+    ui->airspyMixerAGCCheckbox->setChecked(m_settings.airspy.gain.mixerAgcEna);
+    ui->airspyLNAAGCCheckbox->setChecked(m_settings.airspy.gain.lnaAgcEna);
 #endif
 
     if (m_settings.rawfile.file.isEmpty())
@@ -294,15 +300,15 @@ void SetupDialog::onRtlGainModeToggled(bool checked)
     {
         if (ui->rtlsdrGainModeHw->isChecked())
         {
-            m_settings.rtlsdr.gainMode = GainMode::Hardware;
+            m_settings.rtlsdr.gainMode = RtlGainMode::Hardware;
         }
         else if (ui->rtlsdrGainModeSw->isChecked())
         {
-            m_settings.rtlsdr.gainMode = GainMode::Software;
+            m_settings.rtlsdr.gainMode = RtlGainMode::Software;
         }
         else if (ui->rtlsdrGainModeManual->isChecked())
         {
-            m_settings.rtlsdr.gainMode = GainMode::Manual;
+            m_settings.rtlsdr.gainMode = RtlGainMode::Manual;
         }
         activateRtlSdrControls(true);
         emit newSettings();
@@ -315,15 +321,15 @@ void SetupDialog::onTcpGainModeToggled(bool checked)
     {
         if (ui->rtltcpGainModeHw->isChecked())
         {
-            m_settings.rtltcp.gainMode = GainMode::Hardware;
+            m_settings.rtltcp.gainMode = RtlGainMode::Hardware;
         }
         else if (ui->rtltcpGainModeSw->isChecked())
         {
-            m_settings.rtltcp.gainMode = GainMode::Software;
+            m_settings.rtltcp.gainMode = RtlGainMode::Software;
         }
         else if (ui->rtltcpGainModeManual->isChecked())
         {
-            m_settings.rtltcp.gainMode = GainMode::Manual;
+            m_settings.rtltcp.gainMode = RtlGainMode::Manual;
         }
         activateRtlTcpControls(true);
         emit newSettings();
@@ -333,13 +339,13 @@ void SetupDialog::onTcpGainModeToggled(bool checked)
 void SetupDialog::activateRtlSdrControls(bool en)
 {
     ui->rtlsdrGainModeGroup->setEnabled(en);
-    ui->rtlsdrGainWidget->setEnabled(en && (GainMode::Manual == m_settings.rtlsdr.gainMode));
+    ui->rtlsdrGainWidget->setEnabled(en && (RtlGainMode::Manual == m_settings.rtlsdr.gainMode));
 }
 
 void SetupDialog::activateRtlTcpControls(bool en)
 {
     ui->rtltcpGainModeGroup->setEnabled(en);
-    ui->rtltcpGainWidget->setEnabled(en && (GainMode::Manual == m_settings.rtltcp.gainMode));
+    ui->rtltcpGainWidget->setEnabled(en && (RtlGainMode::Manual == m_settings.rtltcp.gainMode));
 }
 
 void SetupDialog::onRawFileFormatChanged(int idx)
@@ -354,7 +360,28 @@ void SetupDialog::onRawFileFormatChanged(int idx)
 void SetupDialog::activateAirspyControls(bool en)
 {
     ui->airspyGainModeGroup->setEnabled(en);
-    ui->airspyGainWidget->setEnabled(en && (GainMode::Manual == m_settings.airspy.gainMode));
+    bool sensEna = en && (AirpyGainMode::Sensitivity == m_settings.airspy.gain.mode);
+    bool manualEna = en && (AirpyGainMode::Manual == m_settings.airspy.gain.mode);
+
+    // sensitivity controls
+    ui->airspySensitivityGain->setEnabled(sensEna);
+    ui->airspySensitivityGainLabel->setEnabled(sensEna);
+    ui->airspySensitivityGainSlider->setEnabled(sensEna);
+
+    // manual gain controls
+    ui->airspyIFGain->setEnabled(manualEna);
+    ui->airspyIFGainLabel->setEnabled(manualEna);
+    ui->airspyIFGainSlider->setEnabled(manualEna);
+
+    ui->airspyLNAAGCCheckbox->setEnabled(manualEna);
+    ui->airspyLNAGain->setEnabled(manualEna && !m_settings.airspy.gain.lnaAgcEna);
+    ui->airspyLNAGainLabel->setEnabled(manualEna && !m_settings.airspy.gain.lnaAgcEna);
+    ui->airspyLNAGainSlider->setEnabled(manualEna && !m_settings.airspy.gain.lnaAgcEna);
+
+    ui->airspyMixerAGCCheckbox->setEnabled(manualEna);
+    ui->airspyMixerGain->setEnabled(manualEna && !m_settings.airspy.gain.mixerAgcEna);
+    ui->airspyMixerGainLabel->setEnabled(manualEna && !m_settings.airspy.gain.mixerAgcEna);
+    ui->airspyMixerGainSlider->setEnabled(manualEna && !m_settings.airspy.gain.mixerAgcEna);
 }
 
 void SetupDialog::onAirspyModeToggled(bool checked)
@@ -363,39 +390,51 @@ void SetupDialog::onAirspyModeToggled(bool checked)
     {
         if (ui->airspyGainModeHybrid->isChecked())
         {
-            m_settings.airspy.gainMode = GainMode::Hardware;
+            m_settings.airspy.gain.mode = AirpyGainMode::Hybrid;
         }
         else if (ui->airspyGainModeSw->isChecked())
         {
-            m_settings.airspy.gainMode = GainMode::Software;
+            m_settings.airspy.gain.mode = AirpyGainMode::Software;
         }
         else if (ui->airspyGainModeManual->isChecked())
         {
-            m_settings.airspy.gainMode = GainMode::Manual;
+            m_settings.airspy.gain.mode = AirpyGainMode::Manual;
+        }
+        else if (ui->airspyGainModeSensitivity->isChecked())
+        {
+            m_settings.airspy.gain.mode = AirpyGainMode::Sensitivity;
         }
         activateAirspyControls(true);
         emit newSettings();
     }
 }
 
+void SetupDialog::onAirspySensitivityGainSliderChanged(int val)
+{
+    ui->airspySensitivityGainLabel->setText(QString::number(val));
+    m_settings.airspy.gain.sensitivityGainIdx = val;
+
+    emit newSettings();
+}
+
 void SetupDialog::onAirspyIFGainSliderChanged(int val)
 {
     ui->airspyIFGainLabel->setText(QString::number(val));
-    m_settings.airspy.ifGainIdx = val;
+    m_settings.airspy.gain.ifGainIdx = val;
     emit newSettings();
 }
 
 void SetupDialog::onAirspyLNAGainSliderChanged(int val)
 {
     ui->airspyLNAGainLabel->setText(QString::number(val));
-    m_settings.airspy.lnaGainIdx = val;
+    m_settings.airspy.gain.lnaGainIdx = val;
     emit newSettings();
 }
 
 void SetupDialog::onAirspyMixerGainSliderChanged(int val)
 {
     ui->airspyMixerGainLabel->setText(QString::number(val));
-    m_settings.airspy.mixerGainIdx = val;
+    m_settings.airspy.gain.mixerGainIdx = val;
     emit newSettings();
 }
 
@@ -406,7 +445,7 @@ void SetupDialog::onAirspyLNAAGCstateChanged(int state)
     ui->airspyLNAGainLabel->setEnabled(ena);
     ui->airspyLNAGainSlider->setEnabled(ena);
 
-    m_settings.airspy.lnaAgcEna = !ena;
+    m_settings.airspy.gain.lnaAgcEna = !ena;
     emit newSettings();
 }
 
@@ -417,7 +456,7 @@ void SetupDialog::onAirspyMixerAGCstateChanged(int state)
     ui->airspyMixerGainLabel->setEnabled(ena);
     ui->airspyMixerGainSlider->setEnabled(ena);
 
-    m_settings.airspy.mixerAgcEna = !ena;
+    m_settings.airspy.gain.mixerAgcEna = !ena;
     emit newSettings();
 }
 #endif

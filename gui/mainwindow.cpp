@@ -1157,10 +1157,7 @@ void MainWindow::onNewSettings()
         break;
     case InputDeviceId::AIRSPY:
 #ifdef HAVE_AIRSPY
-        dynamic_cast<AirspyInput*>(inputDevice)->setGainMode(s.airspy.gainMode,
-                                                              ((s.airspy.lnaAgcEna) ? (-1) : (s.airspy.lnaGainIdx)),
-                                                              ((s.airspy.mixerAgcEna) ? (-1) : (s.airspy.mixerGainIdx)),
-                                                              s.airspy.ifGainIdx);
+        dynamic_cast<AirspyInput*>(inputDevice)->setGainMode(s.airspy.gain);
 #endif
         break;
     case InputDeviceId::RAWFILE:
@@ -1477,12 +1474,12 @@ void MainWindow::loadSettings()
     s.inputDevice = static_cast<InputDeviceId>(inDevice);
 
     s.rtlsdr.gainIdx = settings.value("RTL-SDR/gainIndex", 0).toInt();
-    s.rtlsdr.gainMode = static_cast<GainMode>(settings.value("RTL-SDR/gainMode", 1).toInt());
+    s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings.value("RTL-SDR/gainMode", 1).toInt());
     s.rtlsdr.bandwidth = settings.value("RTL-SDR/bandwidth", 0).toInt();
     s.rtlsdr.biasT = settings.value("RTL-SDR/bias-T", false).toBool();
 
     s.rtltcp.gainIdx = settings.value("RTL-TCP/gainIndex", 0).toInt();
-    s.rtltcp.gainMode = static_cast<GainMode>(settings.value("RTL-TCP/gainMode", 1).toInt());
+    s.rtltcp.gainMode = static_cast<RtlGainMode>(settings.value("RTL-TCP/gainMode", 1).toInt());
     s.rtltcp.tcpAddress = settings.value("RTL-TCP/address", QString("127.0.0.1")).toString();
     s.rtltcp.tcpPort = settings.value("RTL-TCP/port", 1234).toInt();
 
@@ -1491,12 +1488,13 @@ void MainWindow::loadSettings()
     s.rarttcp.tcpPort = settings.value("RART-TCP/port", 1235).toInt();
 #endif
 #ifdef HAVE_AIRSPY
-    s.airspy.lnaGainIdx = settings.value("AIRSPY/lnaGainIdx", 0).toInt();
-    s.airspy.mixerGainIdx = settings.value("AIRSPY/mixerGainIdx", 0).toInt();
-    s.airspy.ifGainIdx = settings.value("AIRSPY/ifGainIdx", 5).toInt();
-    s.airspy.lnaAgcEna = settings.value("AIRSPY/lnaAgcEna", true).toBool();
-    s.airspy.mixerAgcEna = settings.value("AIRSPY/mixerAgcEna", true).toBool();
-    s.airspy.gainMode = static_cast<GainMode>(settings.value("AIRSPY/gainMode", 0).toInt());
+    s.airspy.gain.sensitivityGainIdx = settings.value("AIRSPY/sensitivityGainIdx", 9).toInt();
+    s.airspy.gain.lnaGainIdx = settings.value("AIRSPY/lnaGainIdx", 0).toInt();
+    s.airspy.gain.mixerGainIdx = settings.value("AIRSPY/mixerGainIdx", 0).toInt();
+    s.airspy.gain.ifGainIdx = settings.value("AIRSPY/ifGainIdx", 5).toInt();
+    s.airspy.gain.lnaAgcEna = settings.value("AIRSPY/lnaAgcEna", true).toBool();
+    s.airspy.gain.mixerAgcEna = settings.value("AIRSPY/mixerAgcEna", true).toBool();
+    s.airspy.gain.mode = static_cast<AirpyGainMode>(settings.value("AIRSPY/gainMode", 0).toInt());
     s.airspy.biasT = settings.value("AIRSPY/bias-T", false).toBool();
 #endif
     s.rawfile.file = settings.value("RAW-FILE/filename", QVariant(QString(""))).toString();
@@ -1567,12 +1565,13 @@ void MainWindow::saveSettings()
     settings.setValue("RTL-SDR/bias-T", s.rtlsdr.biasT);
 
 #ifdef HAVE_AIRSPY
-    settings.setValue("AIRSPY/lnaGainIdx", s.airspy.lnaGainIdx);
-    settings.setValue("AIRSPY/mixerGainIdx", s.airspy.mixerGainIdx);
-    settings.setValue("AIRSPY/ifGainIdx", s.airspy.ifGainIdx);
-    settings.setValue("AIRSPY/lnaAgcEna", s.airspy.lnaAgcEna);
-    settings.setValue("AIRSPY/mixerAgcEna", s.airspy.mixerAgcEna);
-    settings.setValue("AIRSPY/gainMode", static_cast<int>(s.airspy.gainMode));
+    settings.setValue("AIRSPY/sensitivityGainIdx", s.airspy.gain.sensitivityGainIdx);
+    settings.setValue("AIRSPY/lnaGainIdx", s.airspy.gain.lnaGainIdx);
+    settings.setValue("AIRSPY/mixerGainIdx", s.airspy.gain.mixerGainIdx);
+    settings.setValue("AIRSPY/ifGainIdx", s.airspy.gain.ifGainIdx);
+    settings.setValue("AIRSPY/lnaAgcEna", s.airspy.gain.lnaAgcEna);
+    settings.setValue("AIRSPY/mixerAgcEna", s.airspy.gain.mixerAgcEna);
+    settings.setValue("AIRSPY/gainMode", static_cast<int>(s.airspy.gain.mode));
     settings.setValue("AIRSPY/bias-T", s.airspy.biasT);
 #endif
 

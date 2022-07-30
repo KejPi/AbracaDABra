@@ -20,6 +20,25 @@
 #define AIRSPY_FILTER_ORDER (42)
 #define AIRSPY_FILTER_IQ_INTERLEAVED 0
 
+enum class AirpyGainMode
+{
+    Hybrid,
+    Software,
+    Sensitivity,
+    Manual
+};
+
+struct AirspyGainStr
+{
+    AirpyGainMode mode;
+    int sensitivityGainIdx;
+    int lnaGainIdx;
+    int mixerGainIdx;
+    int ifGainIdx;
+    bool lnaAgcEna;
+    bool mixerAgcEna;
+};
+
 class AirspyDSFilter
 {    
 public:
@@ -97,7 +116,7 @@ public:
     bool openDevice() override;
 
     void tune(uint32_t freq) override;
-    void setGainMode(GainMode mode, int lnaIdx = -1, int mixerIdx = -1 , int ifIdx = 5);
+    void setGainMode(const AirspyGainStr & gain);
 
     void startDumpToFile(const QString & filename) override;
     void stopDumpToFile() override;
@@ -118,7 +137,7 @@ private:
 #if (AIRSPY_WDOG_ENABLE)
     QTimer watchDogTimer;
 #endif
-    GainMode gainMode = GainMode::Hardware;
+    AirpyGainMode gainMode = AirpyGainMode::Hybrid;
     int gainIdx;
     FILE * dumpFile;   
 #if AIRSPY_WORKER

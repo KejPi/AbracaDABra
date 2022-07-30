@@ -55,7 +55,7 @@ public:
     bool openDevice() override;
 
     void tune(uint32_t freq) override;
-    void setGainMode(GainMode mode, int gainIdx = 0);
+    void setGainMode(RtlGainMode mode, int gainIdx = 0);
 
     void startDumpToFile(const QString & filename) override;
     void stopDumpToFile() override;
@@ -75,7 +75,7 @@ private:
 #if (RTLSDR_WDOG_ENABLE)
     QTimer watchDogTimer;
 #endif
-    GainMode gainMode = GainMode::Hardware;
+    RtlGainMode gainMode = RtlGainMode::Hardware;
     int gainIdx;
     QList<int> * gainList;
     FILE * dumpFile;

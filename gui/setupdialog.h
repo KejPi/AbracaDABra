@@ -7,6 +7,7 @@
 #include <QAbstractButton>
 #include "config.h"
 #include "inputdevice.h"
+#include "airspyinput.h"
 #include "rawfileinput.h"
 
 QT_BEGIN_NAMESPACE
@@ -29,15 +30,15 @@ public:
         } rawfile;
         struct
         {
-            int gainIdx;
-            GainMode gainMode;
+            RtlGainMode gainMode;
+            int gainIdx;            
             int bandwidth;
             bool biasT;
         } rtlsdr;
         struct
         {
+            RtlGainMode gainMode;
             int gainIdx;
-            GainMode gainMode;
             QString tcpAddress;
             int tcpPort;
         } rtltcp;
@@ -51,12 +52,16 @@ public:
 #ifdef HAVE_AIRSPY
         struct
         {
+            AirspyGainStr gain;
+/*
+            AirpyGainMode gainMode;
+            int sensitivityGainIdx;
             int lnaGainIdx;
             int mixerGainIdx;
             int ifGainIdx;
             bool lnaAgcEna;
             bool mixerAgcEna;
-            GainMode gainMode;
+*/
             bool biasT;
         } airspy;
 #endif
@@ -104,6 +109,7 @@ private:
 
 #ifdef HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);
+    void onAirspySensitivityGainSliderChanged(int val);
     void onAirspyIFGainSliderChanged(int val);
     void onAirspyLNAGainSliderChanged(int val);
     void onAirspyMixerGainSliderChanged(int val);

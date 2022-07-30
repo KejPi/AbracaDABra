@@ -396,7 +396,7 @@ bool RtlTcpInput::openDevice()
         sendCommand(RtlTcpCommand::SET_SAMPLE_RATE, 2048000);
 
         // set automatic gain
-        setGainMode(GainMode::Software);
+        setGainMode(RtlGainMode::Software);
 
         // need to create worker, server is pushing samples
         worker = new RtlTcpWorker(sock, this);
@@ -467,22 +467,22 @@ void RtlTcpInput::stop()
     }
 }
 
-void RtlTcpInput::setGainMode(GainMode mode, int gainIdx)
+void RtlTcpInput::setGainMode(RtlGainMode mode, int gainIdx)
 {
     if (mode != gainMode)
     {
         // set automatic gain 0 or manual 1
-        sendCommand(RtlTcpCommand::SET_GAIN_MODE, (GainMode::Hardware != mode));
+        sendCommand(RtlTcpCommand::SET_GAIN_MODE, (RtlGainMode::Hardware != mode));
 
         gainMode = mode;
     }
 
-    if (GainMode::Manual == gainMode)
+    if (RtlGainMode::Manual == gainMode)
     {
         setGain(gainIdx);
     }
 
-    if (GainMode::Hardware == gainMode)
+    if (RtlGainMode::Hardware == gainMode)
     {   // signalize that gain is not available
         emit agcGain(INPUTDEVICE_AGC_GAIN_NA);
     }
@@ -513,7 +513,7 @@ void RtlTcpInput::setGain(int gIdx)
 
 void RtlTcpInput::resetAgc()
 {
-    if (GainMode::Software == gainMode)
+    if (RtlGainMode::Software == gainMode)
     {
         setGain(gainList->size() >> 1);
     }
@@ -527,7 +527,7 @@ void RtlTcpInput::setDAGC(bool ena)
 
 void RtlTcpInput::updateAgc(float level, int maxVal)
 {
-    if (GainMode::Software == gainMode)
+    if (RtlGainMode::Software == gainMode)
     {
         // AGC correction
         if (maxVal >= 127)

@@ -2,6 +2,10 @@
 #include <QDebug>
 #include "airspyinput.h"
 
+extern uint8_t airspy_sensitivity_vga_gains[22];
+extern uint8_t airspy_sensitivity_mixer_gains[22];
+extern uint8_t airspy_sensitivity_lna_gains[22];
+
 AirspyInput::AirspyInput(QObject *parent) : InputDevice(parent)
 {
     id = InputDeviceId::AIRSPY;
@@ -112,8 +116,8 @@ bool AirspyInput::openDevice()
     }
 
     // set automatic gain
-    setGainMode(GainMode::Software);
-    //setGainMode(GainMode::Hardware);
+    gainMode = AirpyGainMode::Software;
+    resetAgc();
 
     emit deviceReady();
 
@@ -197,57 +201,61 @@ void AirspyInput::stop()
     }
 }
 
-void AirspyInput::setGainMode(GainMode mode, int lnaIdx, int mixerIdx, int ifIdx)
+void AirspyInput::setGainMode(const AirspyGainStr &gain)
 {
-    switch (mode)
+    switch (gain.mode)
     {
-    case GainMode::Hardware:
-        if (gainMode == mode)
+    case AirpyGainMode::Hybrid:
+        if (gainMode == gain.mode)
         {   // do nothing -> mode does not change
             break;
         }
         // mode changes
-        gainMode = mode;
+        gainMode = gain.mode;
         airspy_set_lna_agc(device, 1);
         airspy_set_mixer_agc(device, 1);
         resetAgc();
         break;
-    case GainMode::Manual:
-        gainMode = mode;
-        airspy_set_vga_gain(device, ifIdx);
-        if (lnaIdx < 0)
+    case AirpyGainMode::Manual:
+        gainMode = gain.mode;
+        airspy_set_vga_gain(device, gain.ifGainIdx);
+        if (gain.lnaAgcEna)
         {
             airspy_set_lna_agc(device, 1);
         }
         else
         {
             airspy_set_lna_agc(device, 0);
-            airspy_set_lna_gain(device, lnaIdx);
+            airspy_set_lna_gain(device, gain.lnaGainIdx);
         }
-        if (mixerIdx < 0)
+        if (gain.mixerAgcEna)
         {
             airspy_set_mixer_agc(device, 1);
         }
         else
         {
             airspy_set_mixer_agc(device, 0);
-            airspy_set_mixer_gain(device, mixerIdx);
+            airspy_set_mixer_gain(device, gain.mixerGainIdx);
         }
         break;
-    case GainMode::Software:
-        if (gainMode == mode)
+    case AirpyGainMode::Software:
+        if (gainMode == gain.mode)
         {   // do nothing -> mode does not change
             break;
         }
-        gainMode = mode;
+        gainMode = gain.mode;
         resetAgc();
+        break;
+    case AirpyGainMode::Sensitivity:
+        gainMode = gain.mode;
+        airspy_set_sensitivity_gain(device, gain.sensitivityGainIdx);
         break;
     }
 }
 
 void AirspyInput::setGain(int gIdx)
 {
-    if (GainMode::Hardware == gainMode)
+    if (AirpyGainMode::Hybrid == gainMode)
     {
         if (gIdx < AIRSPY_HW_AGC_MIN)
         {
@@ -277,7 +285,7 @@ void AirspyInput::setGain(int gIdx)
         }
         return;
     }
-    if (GainMode::Software == gainMode)
+    if (AirpyGainMode::Software == gainMode)
     {
         if (gIdx < AIRSPY_SW_AGC_MIN)
         {
@@ -314,13 +322,13 @@ void AirspyInput::resetAgc()
 #if !AIRSPY_WORKER
     signalLevel = 0.008;
 #endif
-    if (GainMode::Software == gainMode)
+    if (AirpyGainMode::Software == gainMode)
     {
         gainIdx = -1;
         setGain((AIRSPY_SW_AGC_MAX+1)/2); // set it to the middle
         return;
     }
-    if (GainMode::Hardware == gainMode)
+    if (AirpyGainMode::Hybrid == gainMode)
     {
         gainIdx = -1;
         setGain(6);
@@ -336,7 +344,7 @@ void AirspyInput::updateAgc(float level)
         setGain(gainIdx-1);
         return;
     }
-    if (level < 0.005)
+    if (level < 0.001)
     {
         //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity up";
         setGain(gainIdx+1);

@@ -114,7 +114,7 @@ bool RtlSdrInput::openDevice()
     emit gainListAvailable(gainList);
 
     // set automatic gain
-    setGainMode(GainMode::Software);
+    setGainMode(RtlGainMode::Software);
 
     deviceUnplugged = false;
 
@@ -188,12 +188,12 @@ void RtlSdrInput::stop()
     }
 }
 
-void RtlSdrInput::setGainMode(GainMode mode, int gainIdx)
+void RtlSdrInput::setGainMode(RtlGainMode mode, int gainIdx)
 {
     if (mode != gainMode)
     {
         // set automatic gain 0 or manual 1
-        int ret = rtlsdr_set_tuner_gain_mode(device, (GainMode::Hardware != mode));
+        int ret = rtlsdr_set_tuner_gain_mode(device, (RtlGainMode::Hardware != mode));
         if (ret != 0)
         {
             qDebug() << "RTLSDR: Failed to set tuner gain";
@@ -202,12 +202,12 @@ void RtlSdrInput::setGainMode(GainMode mode, int gainIdx)
         gainMode = mode;
     }
 
-    if (GainMode::Manual == gainMode)
+    if (RtlGainMode::Manual == gainMode)
     {
         setGain(gainIdx);
     }
 
-    if (GainMode::Hardware == gainMode)
+    if (RtlGainMode::Hardware == gainMode)
     {   // signalize that gain is not available
         emit agcGain(INPUTDEVICE_AGC_GAIN_NA);
     }
@@ -246,7 +246,7 @@ void RtlSdrInput::setGain(int gIdx)
 
 void RtlSdrInput::resetAgc()
 {
-    if (GainMode::Software == gainMode)
+    if (RtlGainMode::Software == gainMode)
     {
         setGain(gainList->size() >> 1);
     }
@@ -254,7 +254,7 @@ void RtlSdrInput::resetAgc()
 
 void RtlSdrInput::updateAgc(float level, int maxVal)
 {
-    if (GainMode::Software == gainMode)
+    if (RtlGainMode::Software == gainMode)
     {
         // AGC correction
         if (maxVal >= 127)

@@ -114,7 +114,7 @@ public:
 public slots:
     void tune(uint32_t freq) override;
     void setTcpIp(const QString & addr, int p);
-    void setGainMode(GainMode mode, int gainIdx = 0);
+    void setGainMode(RtlGainMode mode, int gainIdx = 0);
     void setDAGC(bool ena);
 
     void startDumpToFile(const QString & filename) override;
@@ -134,7 +134,7 @@ private:
 #if (RTLTCP_WDOG_ENABLE)
     QTimer watchDogTimer;
 #endif
-    GainMode gainMode = GainMode::Hardware;    
+    RtlGainMode gainMode = RtlGainMode::Hardware;    
     int gainIdx;
     QList<int> * gainList;
     FILE * dumpFile;

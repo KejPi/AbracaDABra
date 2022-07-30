@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>339</width>
-    <height>339</height>
+    <width>410</width>
+    <height>376</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
       <enum>QFrame::Sunken</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="rtlsdrPage">
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -402,6 +402,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QRadioButton" name="airspyGainModeSensitivity">
+            <property name="text">
+             <string>Sensitivity</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QRadioButton" name="airspyGainModeManual">
             <property name="text">
              <string>Manual</string>
@@ -414,85 +421,7 @@
        <item>
         <widget class="QWidget" name="airspyGainWidget" native="true">
          <layout class="QGridLayout" name="gridLayout_5">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>IF gain</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QSlider" name="airspyIFGainSlider">
-            <property name="maximum">
-             <number>21</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="airspyIFGainLabel">
-            <property name="text">
-             <string>8</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="airspyLNAGain">
-            <property name="text">
-             <string>LNA gain</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QSlider" name="airspyLNAGainSlider">
-            <property name="maximum">
-             <number>21</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLabel" name="airspyLNAGainLabel">
-            <property name="text">
-             <string>5</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="3">
-           <widget class="QCheckBox" name="airspyLNAAGCCheckbox">
-            <property name="text">
-             <string>AGC</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="airspyMixerGain">
-            <property name="text">
-             <string>Mixer gain</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QSlider" name="airspyMixerGainSlider">
-            <property name="maximum">
-             <number>21</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
+          <item row="5" column="2">
            <widget class="QLabel" name="airspyMixerGainLabel">
             <property name="minimumSize">
              <size>
@@ -508,10 +437,115 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="3">
+          <item row="0" column="0">
+           <widget class="QLabel" name="airspySensitivityGain">
+            <property name="text">
+             <string>Sensitivity gain</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="3">
+           <widget class="QCheckBox" name="airspyLNAAGCCheckbox">
+            <property name="text">
+             <string>AGC</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="airspyLNAGain">
+            <property name="text">
+             <string>LNA gain</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="airspyMixerGain">
+            <property name="text">
+             <string>Mixer gain</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QLabel" name="airspyLNAGainLabel">
+            <property name="text">
+             <string>5</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QSlider" name="airspyMixerGainSlider">
+            <property name="maximum">
+             <number>21</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSlider" name="airspySensitivityGainSlider">
+            <property name="maximum">
+             <number>21</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="airspySensitivityGainLabel">
+            <property name="text">
+             <string>8</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QSlider" name="airspyLNAGainSlider">
+            <property name="maximum">
+             <number>21</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="3">
            <widget class="QCheckBox" name="airspyMixerAGCCheckbox">
             <property name="text">
              <string>AGC</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="airspyIFGain">
+            <property name="text">
+             <string>IF gain</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QSlider" name="airspyIFGainSlider">
+            <property name="maximum">
+             <number>21</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="QLabel" name="airspyIFGainLabel">
+            <property name="text">
+             <string>8</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
