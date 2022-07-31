@@ -53,15 +53,6 @@ public:
         struct
         {
             AirspyGainStr gain;
-/*
-            AirpyGainMode gainMode;
-            int sensitivityGainIdx;
-            int lnaGainIdx;
-            int mixerGainIdx;
-            int ifGainIdx;
-            bool lnaAgcEna;
-            bool mixerAgcEna;
-*/
             bool biasT;
         } airspy;
 #endif

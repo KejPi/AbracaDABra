@@ -16,6 +16,8 @@
 #define AIRSPY_HW_AGC_MIN  0
 #define AIRSPY_HW_AGC_MAX 17
 
+#define HAVE_ARM_NEON 0
+
 #define AIRSPY_WORKER      0
 #define AIRSPY_FILTER_ORDER (42)
 #define AIRSPY_FILTER_IQ_INTERLEAVED 0
@@ -50,12 +52,13 @@ private:
 #if AIRSPY_FILTER_IQ_INTERLEAVED
     float * bufferPtr;
     float * buffer;
+    float * coeFull;
 #else
     float * bufferPtrI;
     float * bufferPtrQ;
     float * bufferI;
     float * bufferQ;
-#endif
+#endif    
 
     // Halfband FIR, fixed coeffs, designed for downsampling 4096kHz -> 2048kHz
     static const int_fast8_t taps = AIRSPY_FILTER_ORDER + 1;

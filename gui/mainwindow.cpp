@@ -1143,6 +1143,7 @@ void MainWindow::clearServiceInformationLabels()
 
 void MainWindow::onNewSettings()
 {
+    //qDebug() << Q_FUNC_INFO;
     SetupDialog::Settings s = setupDialog->settings();
 
     switch (s.inputDevice)
@@ -1187,8 +1188,6 @@ void MainWindow::changeInputDevice(const InputDeviceId & d)
 
 void MainWindow::initInputDevice(const InputDeviceId & d)
 {
-    //qDebug() << Q_FUNC_INFO << int(d);
-
     deviceChangeRequested = false;
     if (nullptr != inputDevice)
     {
@@ -1384,9 +1383,8 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
         connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
-
         if (inputDevice->openDevice())
-        {  // rtl sdr is available
+        {  // airspy is available
             inputDeviceId = InputDeviceId::AIRSPY;
 
             // enable band scan
@@ -1500,12 +1498,13 @@ void MainWindow::loadSettings()
     s.rawfile.file = settings.value("RAW-FILE/filename", QVariant(QString(""))).toString();
     s.rawfile.format = RawFileInputFormat(settings.value("RAW-FILE/format", 0).toInt());
     s.rawfile.loopEna = settings.value("RAW-FILE/loop", false).toBool();
+
     setupDialog->setSettings(s);
 
     ensembleInfoDialog->setDumpPath(settings.value("dumpPath", QVariant(QDir::homePath())).toString());
 
     if (InputDeviceId::UNDEFINED != static_cast<InputDeviceId>(inDevice))
-    {               
+    {
         initInputDevice(s.inputDevice);
 
         // if input device has switched to what was stored and it is RTLSDR or RTLTCP
@@ -1534,7 +1533,6 @@ void MainWindow::loadSettings()
             }
         }
     }
-
 
     if ((InputDeviceId::RTLSDR == inputDeviceId) && (serviceList->numServices() == 0))
     {
