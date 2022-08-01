@@ -12,7 +12,7 @@
 #define AIRSPY_WDOG_ENABLE 1   // enable watchdog timer
 #define AIRSPY_DUMP_INT16  1   // dump raw stream in int16 insetad of float
 
-#define AIRSPY_DUMP_FLOAT2INT16  (8192)   // conversion constant to int16
+#define AIRSPY_DUMP_FLOAT2INT16  (16384*2)   // conversion constant to int16
 
 #define AIRSPY_SW_AGC_MIN  0
 #define AIRSPY_SW_AGC_MAX 17
