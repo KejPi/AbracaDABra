@@ -35,6 +35,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <widget class="QRadioButton" name="rtlsdrGainModeSw">
+            <property name="toolTip">
+             <string>Gain controlled by software (SW AGC)</string>
+            </property>
             <property name="text">
              <string>Software</string>
             </property>
@@ -42,6 +45,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="rtlsdrGainModeHw">
+            <property name="toolTip">
+             <string>Gain controlled internally by device (HW AGC)</string>
+            </property>
             <property name="text">
              <string>Device</string>
             </property>
@@ -49,6 +55,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="rtlsdrGainModeManual">
+            <property name="toolTip">
+             <string>Manual gain control</string>
+            </property>
             <property name="text">
              <string>Manual</string>
             </property>
@@ -208,6 +217,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
            <widget class="QRadioButton" name="rtltcpGainModeSw">
+            <property name="toolTip">
+             <string>Gain controlled by software (SW AGC)</string>
+            </property>
             <property name="text">
              <string>Software</string>
             </property>
@@ -215,6 +227,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="rtltcpGainModeHw">
+            <property name="toolTip">
+             <string>Gain controlled internally by device (HW AGC)</string>
+            </property>
             <property name="text">
              <string>Device</string>
             </property>
@@ -222,6 +237,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="rtltcpGainModeManual">
+            <property name="toolTip">
+             <string>Manual gain control</string>
+            </property>
             <property name="text">
              <string>Manual</string>
             </property>
@@ -343,6 +361,9 @@
        </item>
        <item row="0" column="2">
         <widget class="QCheckBox" name="loopCheckbox">
+         <property name="toolTip">
+          <string>Play file in the loop</string>
+         </property>
          <property name="text">
           <string>Loop file</string>
          </property>
@@ -389,6 +410,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QRadioButton" name="airspyGainModeSw">
+            <property name="toolTip">
+             <string>Gain controlled by software using sensitivity gain (SW AGC)</string>
+            </property>
             <property name="text">
              <string>Software</string>
             </property>
@@ -396,6 +420,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="airspyGainModeHybrid">
+            <property name="toolTip">
+             <string>LNA and Mixer controlled by device (HW AGC), IF gain controlled by software (SW AGC)</string>
+            </property>
             <property name="text">
              <string>Hybrid</string>
             </property>
@@ -403,6 +430,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="airspyGainModeSensitivity">
+            <property name="toolTip">
+             <string>Manual control of sensitivity gain</string>
+            </property>
             <property name="text">
              <string>Sensitivity</string>
             </property>
@@ -410,6 +440,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="airspyGainModeManual">
+            <property name="toolTip">
+             <string>Free manual control of all gains</string>
+            </property>
             <property name="text">
              <string>Manual</string>
             </property>
@@ -430,7 +463,7 @@
              </size>
             </property>
             <property name="text">
-             <string>12</string>
+             <string>0</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -446,6 +479,9 @@
           </item>
           <item row="4" column="3">
            <widget class="QCheckBox" name="airspyLNAAGCCheckbox">
+            <property name="toolTip">
+             <string>LNA AGC </string>
+            </property>
             <property name="text">
              <string>AGC</string>
             </property>
@@ -468,7 +504,7 @@
           <item row="4" column="2">
            <widget class="QLabel" name="airspyLNAGainLabel">
             <property name="text">
-             <string>5</string>
+             <string>0</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -498,7 +534,7 @@
           <item row="0" column="2">
            <widget class="QLabel" name="airspySensitivityGainLabel">
             <property name="text">
-             <string>8</string>
+             <string>0</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -517,6 +553,9 @@
           </item>
           <item row="5" column="3">
            <widget class="QCheckBox" name="airspyMixerAGCCheckbox">
+            <property name="toolTip">
+             <string>Mixer AGC</string>
+            </property>
             <property name="text">
              <string>AGC</string>
             </property>
@@ -542,7 +581,7 @@
           <item row="6" column="2">
            <widget class="QLabel" name="airspyIFGainLabel">
             <property name="text">
-             <string>8</string>
+             <string>0</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
