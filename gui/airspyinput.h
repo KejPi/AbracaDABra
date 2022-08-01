@@ -46,8 +46,14 @@ public:
     AirspyDSFilter();
     ~AirspyDSFilter();
     void reset();
-    void process(float * inDataIQ, float *outDataIQ, int numIQ, float & signalLevel);
+    void resetSignalLevel() { signalLevel = 0.008; }
+
+    // processing - returns signal level
+    float process(float * inDataIQ, float *outDataIQ, int numIQ);
 private:
+#if (AIRSPY_AGC_ENABLE > 0)
+    float signalLevel;
+#endif
 #if AIRSPY_FILTER_IQ_INTERLEAVED
     float * bufferPtr;
     float * buffer;
@@ -107,10 +113,7 @@ private:
 #endif
     AirpyGainMode gainMode = AirpyGainMode::Hybrid;
     int gainIdx;
-    FILE * dumpFile;   
-#if (AIRSPY_AGC_ENABLE > 0)
-    float signalLevel;
-#endif
+    FILE * dumpFile;
     std::atomic<bool> enaDumpToFile;
     QMutex fileMutex;
     float * filterOutBuffer;

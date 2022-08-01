@@ -290,7 +290,7 @@ void AirspyInput::setGain(int gIdx)
 
 void AirspyInput::resetAgc()
 {
-    signalLevel = 0.008;
+    filter->resetSignalLevel();
 
     if (AirpyGainMode::Software == gainMode)
     {
@@ -416,7 +416,7 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
 
     // input samples are IQ = [float float] @ 4096kHz
     // going to transform them to [float float] @ 2048kHz
-    filter->process((float*) transfer->samples, filterOutBuffer, transfer->sample_count, signalLevel);
+    float signalLevel = filter->process((float*) transfer->samples, filterOutBuffer, transfer->sample_count);
 
 #if (AIRSPY_AGC_ENABLE > 0)
     static uint_fast8_t cntr = 0;
@@ -517,6 +517,8 @@ AirspyDSFilter::~AirspyDSFilter()
 
 void AirspyDSFilter::reset()
 {
+    resetSignalLevel();
+
 #if AIRSPY_FILTER_IQ_INTERLEAVED
     bufferPtr = buffer;
     for (int n = 0; n < 4*taps; ++n)
@@ -537,10 +539,12 @@ void AirspyDSFilter::reset()
 #endif
 }
 
-void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ, float & signalLevel)
+float AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ)
 {
 #define LEV_CATT 0.01
 #define LEV_CREL 0.00001
+
+    float level = signalLevel;
 
 #if AIRSPY_FILTER_IQ_INTERLEAVED
 #if HAVE_ARM_NEON
@@ -588,11 +592,11 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ, float
 
         // calculate signal level (rectifier, fast attack slow release)
         float c = LEV_CREL;
-        if (abs2 > signalLevel)
+        if (abs2 > level)
         {
             c = LEV_CATT;
         }
-        signalLevel = c * abs2 + signalLevel - c * signalLevel;
+        level = c * abs2 + level - c * level;
 #endif
     }
     // main loop
@@ -633,11 +637,11 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ, float
         float abs2 = accI*accI + accQ*accQ;
         // calculate signal level (rectifier, fast attack slow release)
         float c = LEV_CREL;
-        if (abs2 > signalLevel)
+        if (abs2 > level)
         {
             c = LEV_CATT;
         }
-        signalLevel = c * abs2 + signalLevel - c * signalLevel;
+        level = c * abs2 + level - c * level;
 #endif
     }
 
@@ -648,12 +652,8 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ, float
 
     // input data must be aligned for autovectorization to work
 #if 0
-    Q_ASSERT(numIQ <= 65536);
-    Q_ASSERT((uint64_t(inDataIQ) & 0x0F) == 0);
-    Q_ASSERT((uint64_t(outDataIQ) & 0x0F) == 0);
-
     float * outPtr = outDataIQ;
-    for (int n = 0; n < numIQ; n+=4)
+    for (int n = 0; n < 2*numIQ; n+=4)
     {
         float accI = inDataIQ[n];
         float accQ = inDataIQ[n+1];
@@ -661,11 +661,11 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ, float
         float abs2 = accI*accI + accQ*accQ;
         // calculate signal level (rectifier, fast attack slow release)
         float c = LEV_CREL;
-        if (abs2 > signalLevel)
+        if (abs2 > level)
         {
             c = LEV_CATT;
         }
-        signalLevel = c * abs2 + signalLevel - c * signalLevel;
+        level = c * abs2 + level - c * level;
 
         *outPtr++ = accI;
         *outPtr++ = accQ;
@@ -698,11 +698,11 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ, float
 
         // calculate signal level (rectifier, fast attack slow release)
         float c = LEV_CREL;
-        if (abs2 > signalLevel)
+        if (abs2 > level)
         {
             c = LEV_CATT;
         }
-        signalLevel = c * abs2 + signalLevel - c * signalLevel;
+        level = c * abs2 + level - c * level;
 #endif
     }
     // main loop
@@ -728,11 +728,11 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ, float
         float abs2 = accI*accI + accQ*accQ;
         // calculate signal level (rectifier, fast attack slow release)
         float c = LEV_CREL;
-        if (abs2 > signalLevel)
+        if (abs2 > level)
         {
             c = LEV_CATT;
         }
-        signalLevel = c * abs2 + signalLevel - c * signalLevel;
+        level = c * abs2 + level - c * level;
 #endif
     }
 
@@ -779,11 +779,11 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ, float
 
         // calculate signal level (rectifier, fast attack slow release)
         float c = LEV_CREL;
-        if (abs2 > signalLevel)
+        if (abs2 > level)
         {
             c = LEV_CATT;
         }
-        signalLevel = c * abs2 + signalLevel - c * signalLevel;
+        level = c * abs2 + level - c * level;
 #endif
 
         bufferPtrQ += 1;
@@ -806,4 +806,6 @@ void AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ, float
         }
     }
 #endif
+
+    return signalLevel = level;
 }
