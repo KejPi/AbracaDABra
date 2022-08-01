@@ -9,12 +9,18 @@
 #include "inputdevice.h"
 
 #define AIRSPY_AGC_ENABLE  1   // enable AGC
-#define AIRSPY_WDOG_ENABLE 1  // enable watchdog timer
+#define AIRSPY_WDOG_ENABLE 1   // enable watchdog timer
+#define AIRSPY_DUMP_INT16  1   // dump raw stream in int16 insetad of float
+
+#define AIRSPY_DUMP_FLOAT2INT16  (8192)   // conversion constant to int16
 
 #define AIRSPY_SW_AGC_MIN  0
 #define AIRSPY_SW_AGC_MAX 17
 #define AIRSPY_HW_AGC_MIN  0
 #define AIRSPY_HW_AGC_MAX 17
+#define AIRSPY_LEVEL_THR_MIN (0.001)
+#define AIRSPY_LEVEL_THR_MAX (0.1)
+#define AIRSPY_LEVEL_RESET   (0.008)
 
 #define AIRSPY_FILTER_ORDER (42)
 
@@ -43,7 +49,7 @@ public:
     AirspyDSFilter();
     ~AirspyDSFilter();
     void reset();
-    void resetSignalLevel() { signalLevel = 0.008; }
+    void resetSignalLevel() { signalLevel = AIRSPY_LEVEL_RESET; }
 
     // processing - returns signal level
     float process(float * inDataIQ, float *outDataIQ, int numIQ);

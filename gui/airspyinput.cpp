@@ -223,6 +223,8 @@ void AirspyInput::setGainMode(const AirspyGainStr &gain)
         airspy_set_sensitivity_gain(device, gain.sensitivityGainIdx);
         break;
     }
+
+    emit agcGain(INPUTDEVICE_AGC_GAIN_NA);
 }
 
 void AirspyInput::setGain(int gIdx)
@@ -309,13 +311,13 @@ void AirspyInput::resetAgc()
 void AirspyInput::updateAgc(float level)
 {
     //qDebug() << Q_FUNC_INFO << level;
-    if (level > 0.1)
+    if (level > AIRSPY_LEVEL_THR_MAX)
     {
         //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity down";
         setGain(gainIdx-1);
         return;
     }
-    if (level < 0.001)
+    if (level < AIRSPY_LEVEL_THR_MIN)
     {
         //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity up";
         setGain(gainIdx+1);
@@ -342,8 +344,11 @@ void AirspyInput::startDumpToFile(const QString & filename)
         fileMutex.lock();
         enaDumpToFile = true;
         fileMutex.unlock();
-
+#if AIRSPY_DUMP_INT16
+        emit dumpingToFile(true, 2*sizeof(int16_t));
+#else
         emit dumpingToFile(true, 2*sizeof(float));
+#endif
     }
 }
 
@@ -377,7 +382,20 @@ void AirspyInput::dumpBuffer(unsigned char *buf, uint32_t len)
     fileMutex.lock();
     if (nullptr != dumpFile)
     {
+#if AIRSPY_DUMP_INT16
+        // dumping in int16
+        float * floatBuf = (float *) buf;
+        int16_t int16Buf[len/sizeof(float)];
+        for (int n = 0; n < len/sizeof(float); ++n)
+        {
+            int16Buf[n] = *floatBuf++ * AIRSPY_DUMP_FLOAT2INT16;
+        }
+        ssize_t bytes = fwrite(int16Buf, 1, sizeof(int16Buf), dumpFile);
+
+#else
+        // dumping in float
         ssize_t bytes = fwrite(buf, 1, len, dumpFile);
+#endif
         emit dumpedBytes(bytes);
     }
     fileMutex.unlock();
