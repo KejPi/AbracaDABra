@@ -18,7 +18,6 @@
 
 #define HAVE_ARM_NEON 0
 
-#define AIRSPY_WORKER      0
 #define AIRSPY_FILTER_ORDER (42)
 #define AIRSPY_FILTER_IQ_INTERLEAVED 0
 
@@ -80,36 +79,6 @@ private:
     };
 };
 
-class AirspyWorker : public QObject
-{
-    Q_OBJECT
-public:
-    explicit AirspyWorker(QObject *parent = nullptr);
-    ~AirspyWorker();
-    void processInputData(float *inBufferIQ, int numIQ);
-
-    void reset();
-    void dumpToFileStart(FILE * f);
-    void dumpToFileStop();
-signals:
-    void agcLevel(float level);
-    void dumpedBytes(ssize_t bytes);
-
-private:
-    FILE * dumpFile;
-    QMutex fileMutex;
-    std::atomic<bool> enaDumpToFile;
-
-    AirspyDSFilter * filter;
-    float * filterOutBuffer;
-#if (AIRSPY_AGC_ENABLE > 0)
-    float signalLevel;
-#endif
-
-    bool isDumpingIQ() const { return enaDumpToFile; }
-    void dumpBuffer(unsigned char *buf, uint32_t len);
-};
-
 class AirspyInput : public InputDevice
 {
     Q_OBJECT
@@ -129,10 +98,6 @@ public:
 signals:
     void gainListAvailable(const QList<int> * pList);
     void agcLevel(float level);
-#if AIRSPY_WORKER
-    void doReset();
-    void doInputDataProcessing(float * bufferIQ, int numIQ);
-#endif
 
 private:
     uint32_t frequency;
@@ -143,12 +108,6 @@ private:
     AirpyGainMode gainMode = AirpyGainMode::Hybrid;
     int gainIdx;
     FILE * dumpFile;   
-#if AIRSPY_WORKER
-    QThread workerThread;
-    AirspyWorker * worker;
-    int bufferIdx;
-    float * inBuffer[4];
-#else
 #if (AIRSPY_AGC_ENABLE > 0)
     float signalLevel;
 #endif
@@ -156,7 +115,6 @@ private:
     QMutex fileMutex;
     float * filterOutBuffer;
     AirspyDSFilter * filter;
-#endif
 
     void run();           
     void stop();
@@ -172,10 +130,8 @@ private:
     void watchDogTimeout();
 #endif
 
-#if !AIRSPY_WORKER
     bool isDumpingIQ() const { return enaDumpToFile; }
     void dumpBuffer(unsigned char *buf, uint32_t len);
-#endif
     void processInputData(airspy_transfer* transfer);
     static int callback(airspy_transfer* transfer);
 };
