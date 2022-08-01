@@ -44,10 +44,10 @@ AirspyInput::~AirspyInput()
 
 void AirspyInput::tune(uint32_t freq)
 {
-    qDebug() << Q_FUNC_INFO << freq;
+    //qDebug() << Q_FUNC_INFO << freq;
     frequency = freq;
     if (airspy_is_streaming(device) || (0 == freq))
-    {   // airsoy is running
+    {   // airspy is running
         //      sequence in this case is:
         //      1) stop
         //      2) wait to finish
@@ -107,6 +107,7 @@ void AirspyInput::run()
 
     // Reset buffer here - airspy is not running, DAB waits for new data
     inputBuffer.reset();
+
     filter->reset();
 
     if (frequency != 0)
@@ -251,7 +252,7 @@ void AirspyInput::setGain(int gIdx)
         }
         else
         {
-            qDebug() << "AIRSPY: Tuner VGA gain set to" << gainIdx;
+            //qDebug() << "AIRSPY: Tuner VGA gain set to" << gainIdx;
             //emit agcGain(gainList->at(gainIdx));
         }
         return;
@@ -281,7 +282,7 @@ void AirspyInput::setGain(int gIdx)
         }
         else
         {
-            qDebug() << "AIRSPY: Tuner Sensitivity gain set to" << gainIdx;
+            //qDebug() << "AIRSPY: Tuner Sensitivity gain set to" << gainIdx;
             //emit agcGain(gainList->at(gainIdx));
         }
         return;
@@ -402,9 +403,9 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
     // get FIFO space
     pthread_mutex_lock(&inputBuffer.countMutex);
     uint64_t count = inputBuffer.count;
-    Q_ASSERT(count <= INPUT_FIFO_SIZE);
-
     pthread_mutex_unlock(&inputBuffer.countMutex);
+
+    Q_ASSERT(count <= INPUT_FIFO_SIZE);
 
     uint64_t bytesToWrite = transfer->sample_count*sizeof(float); //*2/2 (considering downsampling by 2)
 
@@ -455,88 +456,31 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
 
 AirspyDSFilter::AirspyDSFilter()
 {
-#if AIRSPY_FILTER_IQ_INTERLEAVED
-    buffer = new ( std::align_val_t(16) ) float[4*taps];  // I Q interleaved, double size for circular buffer
-    coeFull = new ( std::align_val_t(16) ) float[2*taps + 2];
-
-//    Q_ASSERT(((uint64_t)buffer & 0x0F) == 0);
-//    Q_ASSERT(((uint64_t)coeFull & 0x0F) == 0);
-//    if ((nullptr == buffer) || (((uint64_t)buffer & 0x0F) != 0))
-//    {
-//        qDebug() << Q_FUNC_INFO << "buffer address error";
-//    }
-//    if ((nullptr == coeFull) || (((uint64_t)coeFull & 0x0F) != 0))
-//    {
-//        qDebug() << Q_FUNC_INFO << "coeFull address error";
-//    }
-
-    float * coeFullPtr = coeFull;
-    for (int n = 0; n < (AIRSPY_FILTER_ORDER+2)/4-1; ++n)
-    {
-        *coeFullPtr++ = coef[n];
-        *coeFullPtr++ = coef[n];
-        *coeFullPtr++ = 0;
-        *coeFullPtr++ = 0;
-    }
-    *coeFullPtr++ = coef[(AIRSPY_FILTER_ORDER+2)/4-1];
-    *coeFullPtr++ = coef[(AIRSPY_FILTER_ORDER+2)/4-1];
-    *coeFullPtr++ = coef[(AIRSPY_FILTER_ORDER+2)/4];;
-    *coeFullPtr++ = coef[(AIRSPY_FILTER_ORDER+2)/4];;
-
-    for (int n = (AIRSPY_FILTER_ORDER+2)/4-1; n >=0; --n)
-    {
-        *coeFullPtr++ = coef[n];
-        *coeFullPtr++ = coef[n];
-        *coeFullPtr++ = 0;
-        *coeFullPtr++ = 0;
-    }
-    *coeFullPtr++ = 0;
-    *coeFullPtr++ = 0;
-
-    bufferPtr = buffer;
-
-#else
     bufferI = new float[2*taps];
     bufferQ = new float[2*taps];
     bufferPtrI = bufferI;
     bufferPtrQ = bufferQ;
-#endif
+
     reset();
 }
 
 AirspyDSFilter::~AirspyDSFilter()
 {
-#if AIRSPY_FILTER_IQ_INTERLEAVED
-    operator delete [] (buffer, std::align_val_t(16));
-    operator delete [] (coeFull, std::align_val_t(16));
-#else
     delete [] bufferI;
     delete [] bufferQ;
-#endif
 }
 
 void AirspyDSFilter::reset()
 {
     resetSignalLevel();
 
-#if AIRSPY_FILTER_IQ_INTERLEAVED
-    bufferPtr = buffer;
-    for (int n = 0; n < 4*taps; ++n)
-    {
-        buffer[n] = 0;
-    }
-#else
     bufferPtrI = bufferI;
     bufferPtrQ = bufferQ;
     for (int n = 0; n < 2*taps; ++n)
     {
         bufferI[n] = 0;
-    }
-    for (int n = 0; n < 2*taps; ++n)
-    {
         bufferQ[n] = 0;
     }
-#endif
 }
 
 float AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ)
@@ -546,208 +490,15 @@ float AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ)
 
     float level = signalLevel;
 
-#if AIRSPY_FILTER_IQ_INTERLEAVED
-#if HAVE_ARM_NEON
-    // input data must be aligned for autovectorization to work
+    float * bufPtrI = bufferPtrI;
+    float * bufPtrQ = bufferPtrQ;
 
-    // prolog
-    std::memcpy(buffer+2*(taps-1), inDataIQ, 2*(taps+1)*sizeof(float));
-
-    for (int n = 0; n<2*(taps+1); n+=4)
-    {
-
-        float * fwd = buffer + n;
-
-        //float accI = 0;
-        //float accQ = 0;
-        float32x4_t	accReg = vdupq_n_f32(0.0);
-
-        for (int c = 0; c < 2*(taps + 1); c+=4)
-        {
-            /*
-            accI += *fwd++ * coeFull[c];
-            accQ += *fwd++ * coeFull[c+1];
-            accI += *fwd++ * coeFull[c+2];
-            accQ += *fwd++ * coeFull[c+3];
-            */
-            float32x4_t	inReg = vld1q_f32(fwd);
-            float32x4_t	coeReg = vld1q_f32(coeFull+c);
-            accReg = vmlaq_f32(accReg, inReg, coeReg);   // acc = acc + in * coe
-        }
-
-        float32x2_t res1reg = vget_high_f32(accReg);
-        float32x2_t	res2reg = vget_low_f32(accReg);
-        float32x2_t resReg = vadd_f32(res1reg, res2reg);
-
-        //*outDataIQ++ = accI;
-        //*outDataIQ++ = accQ;
-        vst1_f32(outDataIQ, resReg);
-
-        float accI = *outDataIQ;
-        float accQ = *(outDataIQ+1);
-        outDataIQ += 2;
-
-#if (AIRSPY_AGC_ENABLE > 0)
-        float abs2 = accI*accI + accQ*accQ;
-
-        // calculate signal level (rectifier, fast attack slow release)
-        float c = LEV_CREL;
-        if (abs2 > level)
-        {
-            c = LEV_CATT;
-        }
-        level = c * abs2 + level - c * level;
-#endif
-    }
-    // main loop
-    for (int n = 2*(taps+1); n<2*numIQ; n+=4)
-    {
-        float * fwd = inDataIQ + n - (tapsX2 - 2);
-
-        //float accI = 0;
-        //float accQ = 0;
-        float32x4_t	accReg = vdupq_n_f32(0.0);
-
-        for (int c = 0; c < 2*(taps + 1); c+=4)
-        {
-            /*
-            accI += *fwd++ * coeFull[c];
-            accQ += *fwd++ * coeFull[c+1];
-            accI += *fwd++ * coeFull[c+2];
-            accQ += *fwd++ * coeFull[c+3];
-            */
-            float32x4_t	inReg = vld1q_f32(fwd);
-            float32x4_t	coeReg = vld1q_f32(coeFull+c);
-            accReg = vmlaq_f32(accReg, inReg, coeReg);   // acc = acc + in * coe
-        }
-
-        float32x2_t res1reg = vget_high_f32(accReg);
-        float32x2_t	res2reg = vget_low_f32(accReg);
-        float32x2_t resReg = vadd_f32(res1reg, res2reg);
-
-        //*outDataIQ++ = accI;
-        //*outDataIQ++ = accQ;
-        vst1_f32(outDataIQ, resReg);
-
-        float accI = *outDataIQ;
-        float accQ = *(outDataIQ+1);
-        outDataIQ += 2;
-
-#if (AIRSPY_AGC_ENABLE > 0)
-        float abs2 = accI*accI + accQ*accQ;
-        // calculate signal level (rectifier, fast attack slow release)
-        float c = LEV_CREL;
-        if (abs2 > level)
-        {
-            c = LEV_CATT;
-        }
-        level = c * abs2 + level - c * level;
-#endif
-    }
-
-    // epilog
-    std::memcpy(buffer, inDataIQ + (2*numIQ) - (tapsX2-2), (tapsX2-2)*sizeof(float));
-
-#else
-
-    // input data must be aligned for autovectorization to work
-#if 0
-    float * outPtr = outDataIQ;
-    for (int n = 0; n < 2*numIQ; n+=4)
-    {
-        float accI = inDataIQ[n];
-        float accQ = inDataIQ[n+1];
-
-        float abs2 = accI*accI + accQ*accQ;
-        // calculate signal level (rectifier, fast attack slow release)
-        float c = LEV_CREL;
-        if (abs2 > level)
-        {
-            c = LEV_CATT;
-        }
-        level = c * abs2 + level - c * level;
-
-        *outPtr++ = accI;
-        *outPtr++ = accQ;
-    }
-#else
-    // prolog
-    std::memcpy(buffer+2*(taps-1), inDataIQ, 2*(taps+1)*sizeof(float));
-
-    for (int n = 0; n<2*(taps+1); n+=4)
-    {
-
-        float * fwd = buffer + n;
-
-        float accI = 0;
-        float accQ = 0;
-
-        for (int c = 0; c < 2*(taps + 1); c+=4)
-        {
-            accI += *fwd++ * coeFull[c];
-            accQ += *fwd++ * coeFull[c+1];
-            accI += *fwd++ * coeFull[c+2];
-            accQ += *fwd++ * coeFull[c+3];
-        }
-
-        *outDataIQ++ = accI;
-        *outDataIQ++ = accQ;
-
-#if (AIRSPY_AGC_ENABLE > 0)
-        float abs2 = accI*accI + accQ*accQ;
-
-        // calculate signal level (rectifier, fast attack slow release)
-        float c = LEV_CREL;
-        if (abs2 > level)
-        {
-            c = LEV_CATT;
-        }
-        level = c * abs2 + level - c * level;
-#endif
-    }
-    // main loop
-    for (int n = 2*(taps+1); n<2*numIQ; n+=4)
-    {
-        float * fwd = inDataIQ + n - (tapsX2 - 2);
-
-        float accI = 0;
-        float accQ = 0;
-
-        for (int c = 0; c < 2*(taps + 1); c+=4)
-        {
-            accI += *fwd++ * coeFull[c];
-            accQ += *fwd++ * coeFull[c+1];
-            accI += *fwd++ * coeFull[c+2];
-            accQ += *fwd++ * coeFull[c+3];
-        }
-
-        *outDataIQ++ = accI;
-        *outDataIQ++ = accQ;
-
-#if (AIRSPY_AGC_ENABLE > 0)
-        float abs2 = accI*accI + accQ*accQ;
-        // calculate signal level (rectifier, fast attack slow release)
-        float c = LEV_CREL;
-        if (abs2 > level)
-        {
-            c = LEV_CATT;
-        }
-        level = c * abs2 + level - c * level;
-#endif
-    }
-
-    // epilog
-    std::memcpy(buffer, inDataIQ + (2*numIQ) - (tapsX2-2), (tapsX2-2)*sizeof(float));
-#endif
-#endif
-
-#else
     for (int n = 0; n<numIQ/2; ++n)
     {
-        float * fwdI = bufferPtrI;
-        float * revI = bufferPtrI + taps;
-        float * fwdQ = bufferPtrQ;
-        float * revQ = bufferPtrQ + taps;
+        float * fwdI = bufPtrI;
+        float * revI = bufPtrI + taps;
+        float * fwdQ = bufPtrQ;
+        float * revQ = bufPtrQ + taps;
 
 
         *fwdI++ = *inDataIQ;
@@ -760,10 +511,10 @@ float AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ)
 
         for (int c = 0; c < (taps+1)/4; ++c)
         {
-            accI += (*fwdI + *revI)*coef[c];
+            accI += (*fwdI + *revI) * coef[c];
             fwdI += 2;  // every other coeff is zero
             revI -= 2;  // every other coeff is zero
-            accQ += (*fwdQ + *revQ)*coef[c];
+            accQ += (*fwdQ + *revQ) * coef[c];
             fwdQ += 2;  // every other coeff is zero
             revQ -= 2;  // every other coeff is zero
         }
@@ -786,26 +537,28 @@ float AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ)
         level = c * abs2 + level - c * level;
 #endif
 
-        bufferPtrQ += 1;
-        if (++bufferPtrI == bufferI + taps)
+        bufPtrQ += 1;
+        if (++bufPtrI == bufferI + taps)
         {
-            bufferPtrI = bufferI;
-            bufferPtrQ = bufferQ;
+            bufPtrI = bufferI;
+            bufPtrQ = bufferQ;
         }
 
         // insert new samples to delay line
-        *(bufferPtrI + taps) = *inDataIQ;   // I
-        *bufferPtrI++ = *inDataIQ++;       // I
-        *(bufferPtrQ + taps) = *inDataIQ;   // I
-        *bufferPtrQ++ = *inDataIQ++;       // I
+        *(bufPtrI + taps) = *inDataIQ;   // I
+        *bufPtrI++ = *inDataIQ++;       // I
+        *(bufPtrQ + taps) = *inDataIQ;   // I
+        *bufPtrQ++ = *inDataIQ++;       // I
 
-        if (bufferPtrI == bufferI + taps)
+        if (bufPtrI == bufferI + taps)
         {
-            bufferPtrI = bufferI;
-            bufferPtrQ = bufferQ;
+            bufPtrI = bufferI;
+            bufPtrQ = bufferQ;
         }
     }
-#endif
+
+    bufferPtrI = bufPtrI;
+    bufferPtrQ = bufPtrQ;
 
     return signalLevel = level;
 }

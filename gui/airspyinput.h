@@ -16,10 +16,7 @@
 #define AIRSPY_HW_AGC_MIN  0
 #define AIRSPY_HW_AGC_MAX 17
 
-#define HAVE_ARM_NEON 0
-
 #define AIRSPY_FILTER_ORDER (42)
-#define AIRSPY_FILTER_IQ_INTERLEAVED 0
 
 enum class AirpyGainMode
 {
@@ -67,7 +64,6 @@ private:
 
     // Halfband FIR, fixed coeffs, designed for downsampling 4096kHz -> 2048kHz
     static const int_fast8_t taps = AIRSPY_FILTER_ORDER + 1;
-    static const int_fast8_t tapsX2 = 2*(AIRSPY_FILTER_ORDER + 1);
     constexpr static const float coef[(AIRSPY_FILTER_ORDER+2)/4 + 1] =
     {
         0.000112380767633697036585876949388307366,
