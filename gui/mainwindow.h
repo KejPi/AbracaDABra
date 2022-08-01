@@ -49,7 +49,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(const QString & iniFile = QString(), QWidget *parent = nullptr);
     ~MainWindow();
     bool eventFilter(QObject * o, QEvent * e);
 
@@ -92,10 +92,11 @@ private slots:
     void audioServiceReconfiguration(const RadioControlServiceComponent &s);    
 
 protected:        
-     void closeEvent(QCloseEvent *event);
-     void resizeEvent(QResizeEvent *event);
-     void changeEvent( QEvent* e );
+    void closeEvent(QCloseEvent *event);
+    void resizeEvent(QResizeEvent *event);
+    void changeEvent( QEvent* e );
 private:
+    QString iniFilename;
     Ui::MainWindow *ui;
     SetupDialog * setupDialog;
     EnsembleInfoDialog * ensembleInfoDialog;
@@ -152,8 +153,6 @@ private:
     ServiceList * serviceList;
     SLModel * slModel;
     SLTreeModel * slTreeModel;
-
-    //SetupDialog::Settings m_settings;
 
     QMap<DLPlusContentType, DLPlusObjectUI*> dlObjCache;
 
