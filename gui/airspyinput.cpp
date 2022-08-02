@@ -6,10 +6,6 @@
 #include <arm_neon.h>
 #endif
 
-extern uint8_t airspy_sensitivity_vga_gains[22];
-extern uint8_t airspy_sensitivity_mixer_gains[22];
-extern uint8_t airspy_sensitivity_lna_gains[22];
-
 AirspyInput::AirspyInput(QObject *parent) : InputDevice(parent)
 {
     id = InputDeviceId::AIRSPY;
