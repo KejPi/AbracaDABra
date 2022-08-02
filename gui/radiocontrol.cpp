@@ -232,9 +232,8 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 #if RADIO_CONTROL_VERBOSE
         qDebug() << "RadioControlEvent::SERVICE_COMPONENT_LIST";
 #endif
-
         QList<dabsdrServiceCompListItem_t> * pList = reinterpret_cast<QList<dabsdrServiceCompListItem_t> *>(pEvent->pData);
-        if (!pList->isEmpty())
+        if (!pList->isEmpty() && ensemble.isValid())
         {   // all service components belong to the same SId, reading sid from the first            
             DabSId sid(pList->at(0).SId, ensemble.ecc());
 #if RADIO_CONTROL_VERBOSE
@@ -703,7 +702,6 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
 
         serviceRequest.SId = SId;
         serviceRequest.SCIdS = SCIdS;
-        emit ensembleConfiguration("");
 
         serviceList.clear();
 
@@ -1081,11 +1079,13 @@ QString RadioControl::ensembleConfigurationString() const
 }
 
 void RadioControl::clearEnsemble()
-{
+{    
     ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
     ensemble.label.clear();
     ensemble.labelShort.clear();
     ensemble.frequency = 0;
+
+    emit ensembleConfiguration("");
 }
 
 QString RadioControl::toShortLabel(QString & label, uint16_t charField) const
