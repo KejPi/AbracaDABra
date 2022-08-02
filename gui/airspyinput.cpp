@@ -17,6 +17,7 @@ AirspyInput::AirspyInput(QObject *parent) : InputDevice(parent)
     device = nullptr;
     dumpFile = nullptr;
     enaDumpToFile = false;
+    signalLevelEmitCntr = 0;
 
     filterOutBuffer = new ( std::align_val_t(16) ) float[65536];
     filter = new AirspyDSFilter();
@@ -294,6 +295,7 @@ void AirspyInput::setGain(int gIdx)
 void AirspyInput::resetAgc()
 {
     filter->resetSignalLevel();
+    signalLevelEmitCntr = 0;
 
     if (AirpyGainMode::Software == gainMode)
     {
@@ -356,11 +358,10 @@ void AirspyInput::stopDumpToFile()
 {
     enaDumpToFile = false;
     fileMutex.lock();
-    dumpFile = nullptr;
-    fileMutex.unlock();
-
     fflush(dumpFile);
     fclose(dumpFile);
+    dumpFile = nullptr;
+    fileMutex.unlock();
 
     emit dumpingToFile(false);
 }
@@ -438,8 +439,7 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
     float signalLevel = filter->process((float*) transfer->samples, filterOutBuffer, transfer->sample_count);
 
 #if (AIRSPY_AGC_ENABLE > 0)
-    static uint_fast8_t cntr = 0;
-    if (0 == (++cntr & 0x07))
+    if (0 == (++signalLevelEmitCntr & 0x07))
     {
         //qDebug() << signalLevel;
         emit agcLevel(signalLevel);

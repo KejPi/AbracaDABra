@@ -120,6 +120,7 @@ private:
     QMutex fileMutex;
     float * filterOutBuffer;
     AirspyDSFilter * filter;
+    int_fast8_t signalLevelEmitCntr;
 
     void run();           
     void stop();

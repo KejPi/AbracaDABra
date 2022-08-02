@@ -1404,6 +1404,10 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(inputDevice, &InputDevice::agcGain, ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             ensembleInfoDialog->enableDumpToFile(true);
 
+            // these are settings that are configures in ini file manually
+            // they are only set when device is initialized
+            dynamic_cast<AirspyInput*>(inputDevice)->setBiasT(setupDialog->settings().airspy.biasT);
+
             // apply current settings
             onNewSettings();
         }
@@ -1592,7 +1596,7 @@ void MainWindow::saveSettings()
     settings->setValue("AIRSPY/bias-T", s.airspy.biasT);
 #endif
 
-   settings->setValue("RTL-TCP/gainIndex", s.rtltcp.gainIdx);
+    settings->setValue("RTL-TCP/gainIndex", s.rtltcp.gainIdx);
     settings->setValue("RTL-TCP/gainMode", static_cast<int>(s.rtltcp.gainMode));
     settings->setValue("RTL-TCP/address", s.rtltcp.tcpAddress);
     settings->setValue("RTL-TCP/port", s.rtltcp.tcpPort);
