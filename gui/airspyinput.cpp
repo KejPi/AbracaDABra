@@ -104,7 +104,7 @@ bool AirspyInput::openDevice()
 
 void AirspyInput::run()
 {
-    qDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
 
     // Reset buffer here - airspy is not running, DAB waits for new data
     inputBuffer.reset();
@@ -143,7 +143,7 @@ void AirspyInput::run()
 
 void AirspyInput::stop()
 {
-    qDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
 
     if (AIRSPY_TRUE == airspy_is_streaming(device))
     {   // if devise is running, stop RX
