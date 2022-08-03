@@ -96,7 +96,7 @@ struct RadioControlEnsemble
     uint16_t eid() const { return uint16_t(ueid); }
     uint8_t ecc() const { return (ueid >> 16); }
 
-    bool isValid() { return (0 != frequency) && (RADIO_CONTROL_UEID_INVALID != ueid); }
+    bool isValid() const { return (0 != frequency) && (RADIO_CONTROL_UEID_INVALID != ueid); }
 };
 Q_DECLARE_METATYPE(RadioControlEnsemble)
 

@@ -29,6 +29,11 @@ void ServiceList::clear()
 
 void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlServiceComponent & s, bool fav, int currentEns)
 {
+    if (!e.isValid())
+    {   // invalid ensemble -> do nothing
+        return;
+    }
+
     bool newService = false;
     bool updatedService = false;
 
