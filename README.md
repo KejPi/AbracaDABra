@@ -7,6 +7,7 @@ It is based on Qt6 and uses _dabsdr_ demodulation library that is free for use b
 ## Features
 * Supports following input devices:
   * RTL-SDR (default device)
+  * Airspy (optional)
   * RTL-TCP
   * Raw file input (in expert mode only, int16_t or uint8_t format)
 * Band scan with automatic service list
@@ -16,7 +17,7 @@ It is based on Qt6 and uses _dabsdr_ demodulation library that is free for use b
 * MOT slideshow (SLS) and categorized slideshow (CatSLS) from PAD or from secondary data service.
 * Audio services reconfiguration (experimental support)
 * Ensemble structure view with all technical details.
-* Raw file dumping from RTL-SDR or RTL-TCP sources
+* Raw file dumping
 * Only band III and DAB mode 1 is supported.
 * Simple user-friendly interface, trying to follow DAB _Rules of implementation (TS 103 176)_
 * Multiplatform
@@ -41,13 +42,18 @@ Some settings can only be changed by editting of the AbracaDABra.ini file. File 
 * MacOS & Linux: `$HOME/.config/AbracaDABra/AbracaDABra.ini`
 * Windows: `%USERPROFILE%\AppData\Roaming\AbracaDABra\AbracaDABra.ini`
 
-Following settings can be changed for RTL-SDR device by editing AbracaDABra.ini:
+Following settings can be changed by editing AbracaDABra.ini:
 
       [RTL-SDR]
       bandwidth=0     # 0 means automatic bandwidth, positive value means bandwidth value in Hz (e.g. bandwidth=1530000 is 1.53MHz BW)
       bias-T=false    # set to true to enable bias-T
+      
+      [AIRSPY]
+      bias-T=false    # set to true to enable bias-T      
 
 Application shall not run while changing these settings, otherwise it will be overwritten.
+
+It is also possible to use other than default INI file using `--ini` or `-i` command line parameter.
 
 ## How to build
 Following libraries are required:
@@ -57,12 +63,17 @@ Following libraries are required:
 * faad2 (default) or fdk-aac (optional)
 * mpg123
 * portaudio
+* airspy (optional)
 
 For a fresh Ubuntu 22.04 installation you can use the following commands:
 
        sudo apt-get install git cmake build-essential mesa-common-dev
        sudo apt-get install libusb-dev librtlsdr-dev libfaad2 mpg123 libmpg123-dev libfaad-dev
-       sudo apt-get install portaudio19-dev qt6-base-dev qt6-multimedia-dev libqt6svg6-dev rtl-sdr
+       sudo apt-get install portaudio19-dev qt6-base-dev qt6-multimedia-dev libqt6svg6-dev rtl-sdr       
+       
+Optional Airspy support:       
+
+       sudo apt-get install libairspy-dev
 
 Then clone the project:
 
@@ -77,10 +88,15 @@ Then clone the project:
 2. Run cmake
 
        cmake ..
+       
+    Optional Airspy support:          
+       
+       cmake .. -DAIRSPY=ON
+       
 
 3. Run make
 
-       make
+       make      
        
 ## Known limitations
 * Slower switching between ensembles
