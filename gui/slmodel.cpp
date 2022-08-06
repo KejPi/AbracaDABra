@@ -10,6 +10,18 @@ SLModel::SLModel(const ServiceList *sl, QObject *parent)
     m_noIcon = QIcon(nopic);
 
     QPixmap pic;
+#ifdef Q_OS_LINUX
+    // SVG is too big on linux, using PNG instead
+    if (pic.load(":/resources/star.png"))
+    {
+        m_favIcon = QIcon(pic);
+    }
+    else
+    {
+        m_favIcon = m_noIcon;
+        qDebug() << "Unable to load :/resources/star.png";
+    }
+#else
     if (pic.load(":/resources/star.svg"))
     {
         m_favIcon = QIcon(pic);
@@ -19,6 +31,7 @@ SLModel::SLModel(const ServiceList *sl, QObject *parent)
         m_favIcon = m_noIcon;
         qDebug() << "Unable to load :/resources/star.svg";
     }
+#endif
 }
 
 
