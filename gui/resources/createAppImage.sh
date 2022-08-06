@@ -10,7 +10,7 @@ if [ -d build ]; then
 fi
 mkdir build
 cd build
-cmake ..
+cmake .. -DAIRSPY=ON
 make
 
 # Prepare directory structure
