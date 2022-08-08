@@ -8,7 +8,7 @@ endif()
 set(TARGET AbracaDABra)
 
 project(${TARGET}
-    VERSION 1.1
+    VERSION 1.2
     LANGUAGES CXX)
 
 # Select the release build type by default to get optimization flags
@@ -36,7 +36,7 @@ option (USE_SYSTEM_MPG123     "Use system provided libmpg123"   ON)
 option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   ON)
 option (USE_SYSTEM_AIRSPY     "Use system provided airspy lib"  ON)
 
-option (APPLE_BUILD_X86_64    "Build x86_64 binary for Apple"   OFF)
+option (APPLE_BUILD_X86_64    "Build x86_64 binary for Apple"   ON)
 
 # Devices
 option (AIRSPY                "Enable AirSpy devices"           OFF)
@@ -61,7 +61,7 @@ endif()
 
 #########################################################
 ## VERSION
-set(PROJECT_VERSION_RELEASE OFF)
+set(PROJECT_VERSION_RELEASE ON)
 #string(TIMESTAMP PROJECT_BUILD_DATE "%Y-%m-%d %H:%M")
 execute_process(COMMAND git log --pretty=format:%h -n 1
                 WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
