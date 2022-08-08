@@ -1485,12 +1485,12 @@ void MainWindow::loadSettings()
     s.inputDevice = static_cast<InputDeviceId>(inDevice);
 
     s.rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
-    s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", 1).toInt());
+    s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
     s.rtlsdr.bandwidth = settings->value("RTL-SDR/bandwidth", 0).toInt();
     s.rtlsdr.biasT = settings->value("RTL-SDR/bias-T", false).toBool();
 
     s.rtltcp.gainIdx = settings->value("RTL-TCP/gainIndex", 0).toInt();
-    s.rtltcp.gainMode = static_cast<RtlGainMode>(settings->value("RTL-TCP/gainMode", 1).toInt());
+    s.rtltcp.gainMode = static_cast<RtlGainMode>(settings->value("RTL-TCP/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
     s.rtltcp.tcpAddress = settings->value("RTL-TCP/address", QString("127.0.0.1")).toString();
     s.rtltcp.tcpPort = settings->value("RTL-TCP/port", 1234).toInt();
 
@@ -1505,7 +1505,7 @@ void MainWindow::loadSettings()
     s.airspy.gain.ifGainIdx = settings->value("AIRSPY/ifGainIdx", 5).toInt();
     s.airspy.gain.lnaAgcEna = settings->value("AIRSPY/lnaAgcEna", true).toBool();
     s.airspy.gain.mixerAgcEna = settings->value("AIRSPY/mixerAgcEna", true).toBool();
-    s.airspy.gain.mode = static_cast<AirpyGainMode>(settings->value("AIRSPY/gainMode", 0).toInt());
+    s.airspy.gain.mode = static_cast<AirpyGainMode>(settings->value("AIRSPY/gainMode", static_cast<int>(AirpyGainMode::Hybrid)).toInt());
     s.airspy.biasT = settings->value("AIRSPY/bias-T", false).toBool();
 #endif
     s.rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
@@ -1549,7 +1549,8 @@ void MainWindow::loadSettings()
 
     delete settings;
 
-    if ((InputDeviceId::RTLSDR == inputDeviceId) && (serviceList->numServices() == 0))
+    if (((InputDeviceId::RTLSDR == inputDeviceId) || (InputDeviceId::AIRSPY == inputDeviceId))
+       && (serviceList->numServices() == 0))
     {
         QTimer::singleShot(1, this, [this](){ bandScan(); } );
     }
