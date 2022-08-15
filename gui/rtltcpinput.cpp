@@ -392,6 +392,9 @@ bool RtlTcpInput::openDevice()
         }
         emit gainListAvailable(gainList);
 
+        // device connected
+        deviceUnplugged = false;
+
         // set sample rate
         sendCommand(RtlTcpCommand::SET_SAMPLE_RATE, 2048000);
 
@@ -408,9 +411,6 @@ bool RtlTcpInput::openDevice()
 #if (RTLTCP_WDOG_ENABLE)
         watchDogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
 #endif
-        // device connected
-        deviceUnplugged = false;
-
         emit deviceReady();
     }
     else
