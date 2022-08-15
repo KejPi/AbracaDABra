@@ -798,6 +798,8 @@ void MainWindow::onChannelChange(int index)
         SId.set(0);
 
         // reset UI
+        ui->serviceListView->clearSelection();
+        ui->serviceTreeView->clearSelection();
         onChannelSelection();
 
         emit serviceRequest(ui->channelCombo->itemData(index).toUInt(), 0, 0);
