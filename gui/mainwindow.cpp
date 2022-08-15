@@ -1972,6 +1972,7 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object)
 
                 QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(ui->dlPlusFrame->layout());
                 layout->insertLayout(index, uiObj->getLayout());
+                ui->dlPlusFrame->setMaximumHeight(ui->dlPlusFrame->minimumHeight() > 120 ? ui->dlPlusFrame->minimumHeight() : 120);
             }
             else
             { /* object the we do not display: Descriptors, PROGRAMME_FREQUENCY, INFO_DATE_TIME, PROGRAMME_SUBCHANNEL*/ }
