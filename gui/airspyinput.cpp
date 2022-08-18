@@ -539,18 +539,6 @@ float AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ)
         *outDataIQ++ = accI;
         *outDataIQ++ = accQ;
 
-#if (AIRSPY_AGC_ENABLE > 0)
-        float abs2 = accI*accI + accQ*accQ;
-
-        // calculate signal level (rectifier, fast attack slow release)
-        float c = LEV_CREL;
-        if (abs2 > level)
-        {
-            c = LEV_CATT;
-        }
-        level = c * abs2 + level - c * level;
-#endif
-
         bufPtrQ += 1;
         if (++bufPtrI == bufferI + taps)
         {
@@ -559,11 +547,33 @@ float AirspyDSFilter::process(float *inDataIQ, float *outDataIQ, int numIQ)
         }
 
         // insert new samples to delay line
-        *(bufPtrI + taps) = *inDataIQ;   // I
-        *bufPtrI++ = *inDataIQ++;       // I
-        *(bufPtrQ + taps) = *inDataIQ;   // I
-        *bufPtrQ++ = *inDataIQ++;       // I
+#if (AIRSPY_AGC_ENABLE > 0)
+        float abs2 = (*inDataIQ) * (*inDataIQ);  // I*I
 
+        // insert to delay line
+        *(bufPtrI + taps) = *inDataIQ;           // I
+        *bufPtrI++ = *inDataIQ++;                // I
+
+        abs2 += (*inDataIQ) * (*inDataIQ);       // Q*Q
+
+        // insert to delay line
+        *(bufPtrQ + taps) = *inDataIQ;           // Q
+        *bufPtrQ++ = *inDataIQ++;                // Q
+
+        // calculate signal level (rectifier, fast attack slow release)
+        float c = LEV_CREL;
+        if (abs2 > level)
+        {
+            c = LEV_CATT;
+        }
+        level = c * abs2 + level - c * level;
+#else
+        // insert new samples to delay line
+        *(bufPtrI + taps) = *inDataIQ;    // I
+        *bufPtrI++ = *inDataIQ++;         // I
+        *(bufPtrQ + taps) = *inDataIQ;    // Q
+        *bufPtrQ++ = *inDataIQ++;         // Q
+#endif
         if (bufPtrI == bufferI + taps)
         {
             bufPtrI = bufferI;
