@@ -8,8 +8,8 @@ InputDeviceSRC::InputDeviceSRC(int inputSampleRate)
     m_inputSampleRate = inputSampleRate;
     if (2*2048000 == inputSampleRate)
     {
-        //m_filter = new InputDeviceSRCFilterDS2();
-        m_filter = new InputDeviceSRCFilterFarrow(inputSampleRate);
+        m_filter = new InputDeviceSRCFilterDS2();
+        //m_filter = new InputDeviceSRCFilterFarrow(inputSampleRate);
     }
     else
     {
@@ -186,6 +186,8 @@ InputDeviceSRCFilterFarrow::~InputDeviceSRCFilterFarrow()
 
 void InputDeviceSRCFilterFarrow::reset()
 {
+    resetSignalLevel();
+
     mu = 0;
     for (int m = 0; m < POLY_COEFS; ++m)
     {

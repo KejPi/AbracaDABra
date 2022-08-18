@@ -6,6 +6,8 @@
 #include <arm_neon.h>
 #endif
 
+#define AIRSPY_FS_IN (3000*1000)
+
 AirspyInput::AirspyInput(QObject *parent) : InputDevice(parent)
 {
     id = InputDeviceId::AIRSPY;
@@ -15,8 +17,10 @@ AirspyInput::AirspyInput(QObject *parent) : InputDevice(parent)
     enaDumpToFile = false;
     signalLevelEmitCntr = 0;
 
-    filterOutBuffer = new ( std::align_val_t(16) ) float[65536];
-    src = new InputDeviceSRC(4096000);
+    // airspy provides 49152 samples in callback in packed modes
+    // we cannot produce more samples in SRC => allocating for worst case
+    filterOutBuffer = new ( std::align_val_t(16) ) float[49152*2];
+    src = new InputDeviceSRC(AIRSPY_FS_IN);
 
     connect(this, &AirspyInput::agcLevel, this, &AirspyInput::updateAgc, Qt::QueuedConnection);
 
@@ -82,7 +86,7 @@ bool AirspyInput::openDevice()
     airspy_set_packing(device, 1);
 
     // Set sample rate
-    ret = airspy_set_samplerate(device, 4096000);
+    ret = airspy_set_samplerate(device, AIRSPY_FS_IN);
     if (AIRSPY_SUCCESS != ret)
     {
         qDebug() << "AIRSPY: Setting sample rate failed";
@@ -422,17 +426,16 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
 
     Q_ASSERT(count <= INPUT_FIFO_SIZE);
 
-    uint64_t bytesToWrite = transfer->sample_count*sizeof(float); //*2/2 (considering downsampling by 2)
+    // input samples are IQ = [float float] @ 4096kHz
+    // going to transform them to [float float] @ 2048kHz
+    int numIQ = src->process((float*) transfer->samples, transfer->sample_count, filterOutBuffer);
+    uint64_t bytesToWrite = numIQ * 2 * sizeof(float);
 
-    if ((INPUT_FIFO_SIZE - count) < bytesToWrite) //*2/2 (considering downsampling by 2)
+    if ((INPUT_FIFO_SIZE - count) < bytesToWrite)
     {
         qDebug() << Q_FUNC_INFO << "dropping" << transfer->sample_count << "IQ samples...";
         return;
     }
-
-    // input samples are IQ = [float float] @ 4096kHz
-    // going to transform them to [float float] @ 2048kHz
-    src->process((float*) transfer->samples, transfer->sample_count, filterOutBuffer);
 
 #if (AIRSPY_AGC_ENABLE > 0)
     if (0 == (++signalLevelEmitCntr & 0x07))
