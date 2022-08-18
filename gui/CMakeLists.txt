@@ -58,6 +58,8 @@ add_executable(${TARGET}
     radiocontrol.cpp
     inputdevice.h
     inputdevice.cpp
+    inputdevicesrc.h
+    inputdevicesrc.cpp
     rawfileinput.h
     rawfileinput.cpp
     rtlsdrinput.h

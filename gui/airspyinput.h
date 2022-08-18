@@ -7,6 +7,7 @@
 #include <libairspy/airspy.h>
 #include <libairspy/airspy_commands.h>
 #include "inputdevice.h"
+#include "inputdevicesrc.h"
 
 #define AIRSPY_AGC_ENABLE  1   // enable AGC
 #define AIRSPY_WDOG_ENABLE 1   // enable watchdog timer
@@ -21,8 +22,6 @@
 #define AIRSPY_LEVEL_THR_MIN (0.001)
 #define AIRSPY_LEVEL_THR_MAX (0.1)
 #define AIRSPY_LEVEL_RESET   (0.008)
-
-#define AIRSPY_FILTER_ORDER (42)
 
 enum class AirpyGainMode
 {
@@ -41,44 +40,6 @@ struct AirspyGainStr
     int ifGainIdx;
     bool lnaAgcEna;
     bool mixerAgcEna;
-};
-
-class AirspyDSFilter
-{    
-public:
-    AirspyDSFilter();
-    ~AirspyDSFilter();
-    void reset();
-    void resetSignalLevel() { signalLevel = AIRSPY_LEVEL_RESET; }
-
-    // processing - returns signal level
-    float process(float * inDataIQ, float *outDataIQ, int numIQ);
-private:
-#if (AIRSPY_AGC_ENABLE > 0)
-    float signalLevel;
-#endif
-    float * bufferPtrI;
-    float * bufferPtrQ;
-    float * bufferI;
-    float * bufferQ;
-
-    // Halfband FIR, fixed coeffs, designed for downsampling 4096kHz -> 2048kHz
-    static const int_fast8_t taps = AIRSPY_FILTER_ORDER + 1;
-    constexpr static const float coef[(AIRSPY_FILTER_ORDER+2)/4 + 1] =
-    {
-        0.000223158782894952853123604619156594708,
-        -0.00070774549637065342286290636764078954,
-        0.001735782601167994458266075064045708132,
-        -0.003619832275410410967614316390950079949,
-        0.006788741778432844271862212082169207861,
-        -0.01183550169261274320753329902800032869,
-        0.019680477383812611941182879604639310855,
-        -0.032073581325677551212560700832909788005,
-        0.053382280107447499517547839786857366562,
-        -0.099631117404426483563639749263529665768,
-        0.316099577146216947909351802081800997257,
-        0.5
-    };
 };
 
 class AirspyInput : public InputDevice
@@ -113,7 +74,8 @@ private:
     std::atomic<bool> enaDumpToFile;
     QMutex fileMutex;
     float * filterOutBuffer;
-    AirspyDSFilter * filter;
+    InputDeviceSRC * src;
+
     int_fast8_t signalLevelEmitCntr;
 
     void run();           
