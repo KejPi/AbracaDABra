@@ -8,8 +8,8 @@ InputDeviceSRC::InputDeviceSRC(int inputSampleRate)
     m_inputSampleRate = inputSampleRate;
     if (2*2048000 == inputSampleRate)
     {
-        m_filter = new InputDeviceSRCFilterDS2();
-        //m_filter = new InputDeviceSRCFilterFarrow(inputSampleRate);
+        //m_filter = new InputDeviceSRCFilterDS2();
+        m_filter = new InputDeviceSRCFilterFarrow(inputSampleRate);
     }
     else
     {
@@ -226,8 +226,8 @@ int InputDeviceSRCFilterFarrow::process(float inDataIQ[], int numInDataIQ, float
                 yI[n] = yI[n] + accI;
                 yQ[n] = yQ[n] + accQ;
             }
-            *outDataIQ++ = yI[0];
-            *outDataIQ++ = yQ[0];
+            *outDataIQ++ = R * yI[0];
+            *outDataIQ++ = R * yQ[0];
             numOutDataIQ += 1;
 
             // shift delay line -> prepare for next dump
