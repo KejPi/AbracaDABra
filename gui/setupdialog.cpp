@@ -586,7 +586,9 @@ void SetupDialog::resetInputDevice()
     case InputDeviceId::RARTTCP:
     case InputDeviceId::UNDEFINED:
     case InputDeviceId::AIRSPY:
+#ifdef HAVE_AIRSPY
         activateAirspyControls(false);
+#endif
         break;
     }
 
