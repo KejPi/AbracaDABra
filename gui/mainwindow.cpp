@@ -420,7 +420,8 @@ MainWindow::MainWindow(const QString &iniFile, QWidget *parent)
     initInputDevice(InputDeviceId::UNDEFINED);
 
     loadSettings();
-
+    restoreWindowPos();
+      
     QTimer::singleShot(1, this, [this](){ ui->serviceListView->setFocus(); } );
 }
 
@@ -429,7 +430,8 @@ MainWindow::~MainWindow()
     //qDebug() << Q_FUNC_INFO;
 
     delete inputDevice;
-
+    delete settings;
+  
     radioControlThr->quit();  // this deletes radioControl
     radioControlThr->wait();
     delete radioControlThr;
@@ -487,6 +489,33 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
         return QObject::eventFilter(o, e);
     }
     return QObject::eventFilter(o, e);
+}
+
+void MainWindow::saveWindowPos()
+{
+    int h = size().height();
+    int w = size().width();
+    int x = pos().x();
+    int y = pos().y();
+    settings->setValue("win_x", x);
+    settings->setValue("win_y", y);
+    settings->setValue("win_h", h);
+    settings->setValue("win_w", w);
+}
+
+void MainWindow::restoreWindowPos()
+{
+    QPoint point(settings->value("win_x").toInt(), settings->value("win_y").toInt());
+    QSize  size(settings->value("win_w").toInt(), settings->value("win_h").toInt());
+
+    if (!point.isNull() && !size.isNull()) {
+         win_point = point;
+         win_size = size;
+         move(win_point);
+         resize(win_size);
+    }
+    else
+         win_size = minimumSizeHint();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -1463,7 +1492,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
 void MainWindow::loadSettings()
 {
-    QSettings * settings;
     if (iniFilename.isEmpty())
     {
         settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
@@ -1549,8 +1577,6 @@ void MainWindow::loadSettings()
         }
     }
 
-    delete settings;
-
     if (((InputDeviceId::RTLSDR == inputDeviceId) || (InputDeviceId::AIRSPY == inputDeviceId))
        && (serviceList->numServices() == 0))
     {
@@ -1626,6 +1652,7 @@ void MainWindow::saveSettings()
         settings->setValue("Frequency", frequency);
     }
     settings->setValue("ExpertMode", expertMode);
+    saveWindowPos();
 
     serviceList->save(*settings);
 
@@ -1739,7 +1766,7 @@ void MainWindow::serviceListViewUpdateSelection()
 void MainWindow::onDLPlusToggle(bool toggle)
 {
     int h = 0;
-    if (height() > minimumSizeHint().height())
+    if (height() > win_size.height())
     {   // user changed window height
         h = height();
     }
@@ -1747,7 +1774,7 @@ void MainWindow::onDLPlusToggle(bool toggle)
 
     //QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
     QTimer::singleShot(10, this, [this, h](){
-        resize(width(), (h > minimumSizeHint().height()) ? h : minimumSizeHint().height());
+        resize(width(), (h > win_ize.height()) ? h : win_size.height());
     } );
 }
 
@@ -1811,7 +1838,7 @@ void MainWindow::setExpertMode(bool ena)
 
     emit expertModeChanged(ena);
 
-    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
+    QTimer::singleShot(10, this, [this](){ resize(win_size); } );
 }
 
 void MainWindow::bandScan()
