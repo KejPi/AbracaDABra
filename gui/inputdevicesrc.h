@@ -3,9 +3,23 @@
 
 #include <cstdint>
 
+#define HAVE_SSE3 0
+
 #define INPUTDEVICESRC_LEVEL_ESTIMATION 1
 #define INPUTDEVICESRC_LEVEL_ATTACK  5e-5    // 50 usec
 #define INPUTDEVICESRC_LEVEL_RELEASE 5e-2    // 50 msec
+
+#if HAVE_SSE3
+#ifdef __GNUC__
+#define INPUTDEVICESRC_ALIGN(x) __attribute__((aligned(x)))
+#elif defined(_MSC_VER)
+#define INPUTDEVICESRC_ALIGN(x) __declspec(align(x))
+#else
+#define INPUTDEVICESRC_ALIGN(x)
+#endif
+#else
+#define INPUTDEVICESRC_ALIGN(x)
+#endif // HAVE_SSE2
 
 
 class InputDeviceSRCFilter;
@@ -107,13 +121,13 @@ private:
     float crel;
 
     float mu = 0;
-    float xI[POLY_COEFS];
-    float xQ[POLY_COEFS];
+    float xI[POLY_COEFS] INPUTDEVICESRC_ALIGN(16);
+    float xQ[POLY_COEFS] INPUTDEVICESRC_ALIGN(16);
     float yI[NUM_POLY];
     float yQ[NUM_POLY];
     float R;   // FSout/FSin
 
-    constexpr static const float coef[NUM_POLY][POLY_COEFS] =
+    constexpr static const float coef[NUM_POLY][POLY_COEFS] INPUTDEVICESRC_ALIGN(16) =
     {
         {  -0.000281562528833651036075, -0.015899103853663387742046,  0.085935707278077533288752, -0.016679464303555484316899  },
         {   0.049747825207855991824779,  0.121785659855580680188680, -0.235273593230387656483060, -0.011278968636526921776042  },
