@@ -102,6 +102,9 @@ private:
     EnsembleInfoDialog * ensembleInfoDialog;
     CatSLSDialog * catSlsDialog;   
     QProgressBar * snrProgress;
+    QSettings * settings;
+    QSize  win_size;
+    QPoint win_point;
     ClickableLabel * settingsLabel;
     ClickableLabel * muteLabel;
 
