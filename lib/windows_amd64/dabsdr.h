@@ -5,6 +5,13 @@
 #include <stdlib.h>
 #include "dabsdr_export.h"
 
+#if defined(_MSC_VER)
+  #include <complex.h>
+  #undef I
+#else
+  #define _Fcomplex float _Complex
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -277,7 +284,7 @@ typedef struct
 } dabsdrXpadAppStartStop_t;
 
 // input functions
-typedef void (*dabsdrInputFunc_t)(float _Complex [], uint16_t);
+typedef void (*dabsdrInputFunc_t)(_Fcomplex *, uint16_t);
 
 // callback types
 typedef void (*dabsdrAudioCBFunc_t)(dabsdrAudioCBData_t * p, void * ctx);
