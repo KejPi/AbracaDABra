@@ -1480,6 +1480,7 @@ void MainWindow::loadSettings()
 #if (!defined HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     volumeSlider->setValue(settings->value("volume", 100).toInt());
 #endif
+    restoreGeometry(settings->value("windowGeometry").toByteArray());
 
     int inDevice = settings->value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();
 
@@ -1583,6 +1584,8 @@ void MainWindow::saveSettings()
 #else
     settings->setValue("volume", 100);
 #endif
+    settings->setValue("windowGeometry", saveGeometry());
+
     settings->setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
     settings->setValue("RTL-SDR/gainMode", static_cast<int>(s.rtlsdr.gainMode));
     settings->setValue("RTL-SDR/bandwidth", s.rtlsdr.bandwidth);
