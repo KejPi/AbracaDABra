@@ -2,12 +2,6 @@
 #include <QDebug>
 #include "airspyinput.h"
 
-#if HAVE_ARM_NEON
-#include <arm_neon.h>
-#endif
-
-#define AIRSPY_FS_IN (3000*1000)
-
 AirspyInput::AirspyInput(QObject *parent) : InputDevice(parent)
 {
     id = InputDeviceId::AIRSPY;
@@ -16,11 +10,8 @@ AirspyInput::AirspyInput(QObject *parent) : InputDevice(parent)
     dumpFile = nullptr;
     enaDumpToFile = false;
     signalLevelEmitCntr = 0;
-
-    // airspy provides 49152 samples in callback in packed modes
-    // we cannot produce more samples in SRC => allocating for worst case
-    filterOutBuffer = new ( std::align_val_t(16) ) float[49152*2];
-    src = new InputDeviceSRC(AIRSPY_FS_IN);
+    src = nullptr;
+    filterOutBuffer = nullptr;
 
     connect(this, &AirspyInput::agcLevel, this, &AirspyInput::updateAgc, Qt::QueuedConnection);
 
@@ -39,8 +30,14 @@ AirspyInput::~AirspyInput()
         airspy_exit();
     }
 
-    operator delete [] (filterOutBuffer, std::align_val_t(16));
-    delete src;
+    if (nullptr != filterOutBuffer)
+    {
+        operator delete [] (filterOutBuffer, std::align_val_t(16));
+    }
+    if (nullptr != src)
+    {
+        delete src;
+    }
 }
 
 void AirspyInput::tune(uint32_t freq)
@@ -86,12 +83,50 @@ bool AirspyInput::openDevice()
     airspy_set_packing(device, 1);
 
     // Set sample rate
-    ret = airspy_set_samplerate(device, AIRSPY_FS_IN);
-    if (AIRSPY_SUCCESS != ret)
-    {
-        qDebug() << "AIRSPY: Setting sample rate failed";
-        return false;
+    uint32_t sampleRate = UINT32_MAX;
+#if AIRSPY_TRY_SR_4096
+    // here we try SR=4096kHz that is not oficailly supported by AirSpy devices
+    // however it works on Airspy Mini
+    // it seems that this sample rate leads to lower CPU load
+    ret = airspy_set_samplerate(device, 4096*1000);
+    if (AIRSPY_SUCCESS == ret)
+    {   // succesfull
+        sampleRate = 4096*1000;
+        qDebug() << "AIRSPY: Sample rate set to" << sampleRate << "Hz";
     }
+    else
+#endif
+    {   // find lowest supported sample rated that is >= 2048kHz
+        uint32_t srCount;
+        airspy_get_samplerates(device, &srCount, 0);
+        uint32_t * srArray = new uint32_t[srCount];
+        airspy_get_samplerates(device, srArray, srCount);
+        for (int s = 0; s < srCount; ++s)
+        {
+            if ((srArray[s] >= (2048*1000)) && (srArray[s] < sampleRate))
+            {
+                sampleRate = srArray[s];
+            }
+        }
+        delete [] srArray;
+
+        // Set sample rate
+        ret = airspy_set_samplerate(device, sampleRate);
+        if (AIRSPY_SUCCESS != ret)
+        {
+            qDebug() << "AIRSPY: Setting sample rate failed";
+            return false;
+        }
+        else
+        {
+            qDebug() << "AIRSPY: Sample rate set to" << sampleRate << "Hz";
+        }
+    }
+
+    // airspy provides 49152 samples in callback in packed modes
+    // we cannot produce more samples in SRC => allocating for worst case
+    filterOutBuffer = new ( std::align_val_t(16) ) float[49152*2];
+    src = new InputDeviceSRC(sampleRate);
 
     // set automatic gain
     gainMode = AirpyGainMode::Software;

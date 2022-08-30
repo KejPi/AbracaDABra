@@ -15,10 +15,11 @@
 
 #define AIRSPY_DUMP_FLOAT2INT16  (16384*2)   // conversion constant to int16
 
-#define AIRSPY_SW_AGC_MIN  0
-#define AIRSPY_SW_AGC_MAX 17
-#define AIRSPY_HW_AGC_MIN  0
-#define AIRSPY_HW_AGC_MAX 17
+#define AIRSPY_TRY_SR_4096     0  // try samplerate 4.096MHz (lower CPU load)
+#define AIRSPY_SW_AGC_MIN      0
+#define AIRSPY_SW_AGC_MAX     17
+#define AIRSPY_HW_AGC_MIN      0
+#define AIRSPY_HW_AGC_MAX     17
 #define AIRSPY_LEVEL_THR_MIN (0.001)
 #define AIRSPY_LEVEL_THR_MAX (0.1)
 #define AIRSPY_LEVEL_RESET   (0.008)
