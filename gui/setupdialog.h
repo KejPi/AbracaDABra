@@ -55,6 +55,7 @@ public:
             AirspyGainStr gain;
             bool biasT;
             bool dataPacking;
+            bool prefer4096kHz;
         } airspy;
 #endif
     };

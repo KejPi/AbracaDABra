@@ -1374,7 +1374,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     case InputDeviceId::AIRSPY:
     {
 #ifdef HAVE_AIRSPY
-        inputDevice = new AirspyInput();
+        inputDevice = new AirspyInput(setupDialog->settings().airspy.prefer4096kHz);
 
         // signals have to be connected before calling isAvailable
 
@@ -1512,6 +1512,7 @@ void MainWindow::loadSettings()
     s.airspy.gain.mode = static_cast<AirpyGainMode>(settings->value("AIRSPY/gainMode", static_cast<int>(AirpyGainMode::Hybrid)).toInt());
     s.airspy.biasT = settings->value("AIRSPY/bias-T", false).toBool();
     s.airspy.dataPacking = settings->value("AIRSPY/dataPacking", true).toBool();
+    s.airspy.prefer4096kHz = settings->value("AIRSPY/preferSampleRate4096kHz", true).toBool();
 #endif
     s.rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
     s.rawfile.format = RawFileInputFormat(settings->value("RAW-FILE/format", 0).toInt());
@@ -1603,6 +1604,7 @@ void MainWindow::saveSettings()
     settings->setValue("AIRSPY/gainMode", static_cast<int>(s.airspy.gain.mode));
     settings->setValue("AIRSPY/bias-T", s.airspy.biasT);
     settings->setValue("AIRSPY/dataPacking", s.airspy.dataPacking);
+    settings->setValue("AIRSPY/preferSampleRate4096kHz", s.airspy.prefer4096kHz);
 #endif
 
     settings->setValue("RTL-TCP/gainIndex", s.rtltcp.gainIdx);

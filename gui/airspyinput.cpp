@@ -2,10 +2,11 @@
 #include <QDebug>
 #include "airspyinput.h"
 
-AirspyInput::AirspyInput(QObject *parent) : InputDevice(parent)
+AirspyInput::AirspyInput(bool try4096kHz, QObject *parent) : InputDevice(parent)
 {
     id = InputDeviceId::AIRSPY;
 
+    try4096kHzSR = try4096kHz;
     device = nullptr;
     dumpFile = nullptr;
     enaDumpToFile = false;
@@ -78,18 +79,16 @@ bool AirspyInput::openDevice()
 
     // Set sample rate
     uint32_t sampleRate = UINT32_MAX;
-#if AIRSPY_TRY_SR_4096
-    // here we try SR=4096kHz that is not oficailly supported by AirSpy devices
+
+    // here we try SR=4096kHz that is not oficailly supported by Airspy devices
     // however it works on Airspy Mini
     // it seems that this sample rate leads to lower CPU load
-    ret = airspy_set_samplerate(device, 4096*1000);
-    if (AIRSPY_SUCCESS == ret)
+    if (try4096kHzSR && (AIRSPY_SUCCESS == airspy_set_samplerate(device, 4096*1000)))
     {   // succesfull
         sampleRate = 4096*1000;
         qDebug() << "AIRSPY: Sample rate set to" << sampleRate << "Hz";
     }
     else
-#endif
     {   // find lowest supported sample rated that is >= 2048kHz
         uint32_t srCount;
         airspy_get_samplerates(device, &srCount, 0);

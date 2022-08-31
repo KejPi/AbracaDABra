@@ -15,7 +15,6 @@
 
 #define AIRSPY_DUMP_FLOAT2INT16  (16384*2)   // conversion constant to int16
 
-#define AIRSPY_TRY_SR_4096     0  // try samplerate 4.096MHz (lower CPU load)
 #define AIRSPY_SW_AGC_MIN      0
 #define AIRSPY_SW_AGC_MAX     17
 #define AIRSPY_HW_AGC_MIN      0
@@ -47,7 +46,7 @@ class AirspyInput : public InputDevice
 {
     Q_OBJECT
 public:
-    explicit AirspyInput(QObject *parent = nullptr);
+    explicit AirspyInput(bool try4096kHz, QObject *parent = nullptr);
     ~AirspyInput();
     bool openDevice() override;
 
@@ -75,9 +74,9 @@ private:
     FILE * dumpFile;
     std::atomic<bool> enaDumpToFile;
     QMutex fileMutex;
+    bool try4096kHzSR;
     float * filterOutBuffer;
-    InputDeviceSRC * src;
-
+    InputDeviceSRC * src;    
     int_fast8_t signalLevelEmitCntr;
 
     void run();           
