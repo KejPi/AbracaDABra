@@ -61,11 +61,8 @@ void AirspyInput::tune(uint32_t freq)
 
 bool AirspyInput::openDevice()
 {
-    int ret = 0;
-
     // open first device
-    ret = airspy_open(&device);
-    if (AIRSPY_SUCCESS != ret)
+    if (AIRSPY_SUCCESS != airspy_open(&device))
     {
         qDebug() << "AIRSPY:  Failed opening device";
         device = nullptr;
@@ -73,8 +70,7 @@ bool AirspyInput::openDevice()
     }
 
     // set sample type
-    ret = airspy_set_sample_type(device, AIRSPY_SAMPLE_FLOAT32_IQ);
-    if (AIRSPY_SUCCESS != ret)
+    if (AIRSPY_SUCCESS != airspy_set_sample_type(device, AIRSPY_SAMPLE_FLOAT32_IQ))
     {
         qDebug() << "AIRSPY:  Cannot set sample format";
         return false;
@@ -109,8 +105,7 @@ bool AirspyInput::openDevice()
         delete [] srArray;
 
         // Set sample rate
-        ret = airspy_set_samplerate(device, sampleRate);
-        if (AIRSPY_SUCCESS != ret)
+        if (AIRSPY_SUCCESS != airspy_set_samplerate(device, sampleRate))
         {
             qDebug() << "AIRSPY: Setting sample rate failed";
             return false;
@@ -146,9 +141,7 @@ void AirspyInput::run()
 
     if (frequency != 0)
     {   // Tune to new frequency
-
-        int ret = airspy_set_freq(device, frequency*1000);
-        if (AIRSPY_SUCCESS != ret)
+        if (AIRSPY_SUCCESS != airspy_set_freq(device, frequency*1000))
         {
             qDebug("AIRSPY: Tune to %d kHz failed", frequency);
             emit error(InputDeviceErrorCode::DeviceDisconnected);
@@ -160,8 +153,7 @@ void AirspyInput::run()
 #if (AIRSPY_WDOG_ENABLE)
         watchDogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
 #endif
-        ret = airspy_start_rx(device, AirspyInput::callback, (void*)this);
-        if (AIRSPY_SUCCESS != ret)
+        if (AIRSPY_SUCCESS != airspy_start_rx(device, AirspyInput::callback, (void*)this))
         {
             qDebug("AIRSPY: Failed to start RX");
             emit error(InputDeviceErrorCode::DeviceDisconnected);
@@ -281,8 +273,7 @@ void AirspyInput::setGain(int gIdx)
         // else
         gainIdx = gIdx;
 
-        int ret = airspy_set_vga_gain(device, gainIdx);
-        if (AIRSPY_SUCCESS != ret)
+        if (AIRSPY_SUCCESS != airspy_set_vga_gain(device, gainIdx))
         {
             qDebug() << "AIRSPY: Failed to set tuner gain";
         }
@@ -311,8 +302,7 @@ void AirspyInput::setGain(int gIdx)
         // else
         gainIdx = gIdx;
 
-        int ret = airspy_set_sensitivity_gain(device, gainIdx);
-        if (AIRSPY_SUCCESS != ret)
+        if (AIRSPY_SUCCESS != airspy_set_sensitivity_gain(device, gainIdx))
         {
             qDebug() << "AIRSPY: Failed to set tuner gain";
         }
@@ -403,8 +393,7 @@ void AirspyInput::setBiasT(bool ena)
 {
     if (ena)
     {
-        int ret = airspy_set_rf_bias(device, ena);
-        if (ret != 0)
+        if (AIRSPY_SUCCESS != airspy_set_rf_bias(device, ena))
         {
             qDebug() << "AIRSPY: Failed to enable bias-T";
         }
@@ -413,8 +402,7 @@ void AirspyInput::setBiasT(bool ena)
 
 void AirspyInput::setDataPacking(bool ena)
 {
-    int ret = airspy_set_packing(device, ena);
-    if (ret != 0)
+    if (AIRSPY_SUCCESS != airspy_set_packing(device, ena))
     {
         qDebug() << "AIRSPY: Failed to set data packing";
     }
