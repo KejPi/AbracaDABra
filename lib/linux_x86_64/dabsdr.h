@@ -277,7 +277,7 @@ typedef struct
 } dabsdrXpadAppStartStop_t;
 
 // input functions
-typedef void (*dabsdrInputFunc_t)(float _Complex [], uint16_t);
+typedef void (*dabsdrInputFunc_t)(float [], uint16_t);
 
 // callback types
 typedef void (*dabsdrAudioCBFunc_t)(dabsdrAudioCBData_t * p, void * ctx);

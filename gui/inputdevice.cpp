@@ -41,7 +41,7 @@ InputDevice::~InputDevice()
     pthread_cond_destroy(&inputBuffer.countCondition);
 }
 
-void getSamples(float _Complex buffer[], uint16_t numSamples)
+void getSamples(float buffer[], uint16_t numSamples)
 {
     //qDebug() << Q_FUNC_INFO;
 
@@ -77,7 +77,7 @@ void getSamples(float _Complex buffer[], uint16_t numSamples)
     pthread_mutex_unlock(&inputBuffer.countMutex);
 }
 
-void skipSamples(float _Complex buffer[], uint16_t numSamples)
+void skipSamples(float buffer[], uint16_t numSamples)
 {
     (void) buffer;
 
