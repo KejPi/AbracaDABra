@@ -54,6 +54,7 @@ public:
         {
             AirspyGainStr gain;
             bool biasT;
+            bool dataPacking;
         } airspy;
 #endif
     };

@@ -1409,6 +1409,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             // these are settings that are configures in ini file manually
             // they are only set when device is initialized
             dynamic_cast<AirspyInput*>(inputDevice)->setBiasT(setupDialog->settings().airspy.biasT);
+            dynamic_cast<AirspyInput*>(inputDevice)->setDataPacking(setupDialog->settings().airspy.dataPacking);
 
             // apply current settings
             onNewSettings();
@@ -1510,6 +1511,7 @@ void MainWindow::loadSettings()
     s.airspy.gain.mixerAgcEna = settings->value("AIRSPY/mixerAgcEna", true).toBool();
     s.airspy.gain.mode = static_cast<AirpyGainMode>(settings->value("AIRSPY/gainMode", static_cast<int>(AirpyGainMode::Hybrid)).toInt());
     s.airspy.biasT = settings->value("AIRSPY/bias-T", false).toBool();
+    s.airspy.dataPacking = settings->value("AIRSPY/dataPacking", true).toBool();
 #endif
     s.rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
     s.rawfile.format = RawFileInputFormat(settings->value("RAW-FILE/format", 0).toInt());
@@ -1600,6 +1602,7 @@ void MainWindow::saveSettings()
     settings->setValue("AIRSPY/mixerAgcEna", s.airspy.gain.mixerAgcEna);
     settings->setValue("AIRSPY/gainMode", static_cast<int>(s.airspy.gain.mode));
     settings->setValue("AIRSPY/bias-T", s.airspy.biasT);
+    settings->setValue("AIRSPY/dataPacking", s.airspy.dataPacking);
 #endif
 
     settings->setValue("RTL-TCP/gainIndex", s.rtltcp.gainIdx);

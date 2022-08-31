@@ -80,8 +80,6 @@ bool AirspyInput::openDevice()
         return false;
     }
 
-    airspy_set_packing(device, 1);
-
     // Set sample rate
     uint32_t sampleRate = UINT32_MAX;
 #if AIRSPY_TRY_SR_4096
@@ -410,6 +408,15 @@ void AirspyInput::setBiasT(bool ena)
         {
             qDebug() << "AIRSPY: Failed to enable bias-T";
         }
+    }
+}
+
+void AirspyInput::setDataPacking(bool ena)
+{
+    int ret = airspy_set_packing(device, ena);
+    if (ret != 0)
+    {
+        qDebug() << "AIRSPY: Failed to set data packing";
     }
 }
 

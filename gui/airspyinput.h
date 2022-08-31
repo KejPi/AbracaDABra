@@ -58,6 +58,7 @@ public:
     void stopDumpToFile() override;
 
     void setBiasT(bool ena);
+    void setDataPacking(bool ena);
 
 signals:
     void gainListAvailable(const QList<int> * pList);
