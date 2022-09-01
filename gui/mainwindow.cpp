@@ -1476,12 +1476,12 @@ void MainWindow::loadSettings()
 
     // load servicelist
     serviceList->load(*settings);
+    restoreGeometry(settings->value("windowGeometry").toByteArray());
     expertMode = settings->value("ExpertMode").toBool();
     setExpertMode(expertMode);
 #if (!defined HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     volumeSlider->setValue(settings->value("volume", 100).toInt());
 #endif
-    restoreGeometry(settings->value("windowGeometry").toByteArray());
 
     int inDevice = settings->value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();
 
@@ -1795,13 +1795,18 @@ void MainWindow::showCatSLS()
 
 void MainWindow::setExpertMode(bool ena)
 {
+    bool doResize = false;
     if (ena)
     {
         switchModeAct->setText("Basic mode");
     }
     else
     {
-        switchModeAct->setText("Expert mode");
+       switchModeAct->setText("Expert mode");
+
+        // going to basic mode -> windows get resized if user did not resize before
+        // this always keeps minimum window size
+        doResize = (size() == minimumSizeHint());
     }
     ui->channelFrame->setVisible(ena);
     ui->audioFrame->setVisible(ena);
@@ -1819,7 +1824,10 @@ void MainWindow::setExpertMode(bool ena)
 
     emit expertModeChanged(ena);
 
-    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
+    if (doResize)
+    {
+        QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
+    }
 }
 
 void MainWindow::bandScan()
