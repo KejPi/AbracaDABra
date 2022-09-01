@@ -3,12 +3,6 @@
 #include <cmath>
 #include <cstring>
 
-#if HAVE_SSE3
-#include <immintrin.h>
-#include <xmmintrin.h>
-#include <pmmintrin.h>
-#endif
-
 InputDeviceSRC::InputDeviceSRC(int inputSampleRate)
 {
     m_inputSampleRate = inputSampleRate;
@@ -219,38 +213,6 @@ int InputDeviceSRCFilterFarrow::process(float inDataIQ[], int numInDataIQ, float
         if (mu < 0)
         {   // dump condition
             mu = mu + 1.0;
-#if HAVE_SSE3
-            // calc FIR for each polynomial
-            for (int n = 0; n<NUM_POLY; ++n)
-            {
-                __m128 C = _mm_load_ps(&coef[n][0]);
-                __m128 X = _mm_load_ps(xI);
-                __m128 MUL = _mm_mul_ps(X, C);
-                __m128 ACC1 = _mm_hadd_ps(MUL, MUL);
-                __m128 ACC2 = _mm_hadd_ps(ACC1, ACC1);
-                yI[n] += _mm_cvtss_f32(ACC2);
-
-                X = _mm_load_ps(xQ);
-                MUL = _mm_mul_ps(X, C);
-                ACC1 = _mm_hadd_ps(MUL, MUL);
-                ACC2 = _mm_hadd_ps(ACC1, ACC1);
-                yQ[n] += _mm_cvtss_f32(ACC2);
-            }
-            *outDataIQ++ = R * yI[0];
-            *outDataIQ++ = R * yQ[0];
-            numOutDataIQ += 1;
-
-            // shift delay line -> prepare for next dump
-            std::memmove(&yI[0], &yI[1], (NUM_POLY-1)*sizeof(float));
-            std::memmove(&yQ[0], &yQ[1], (NUM_POLY-1)*sizeof(float));
-            yI[NUM_POLY-1] = 0.0;
-            yQ[NUM_POLY-1] = 0.0;
-
-            // dump xIQ
-            __m128 ZERO = _mm_setzero_ps();
-            _mm_store_ps(xI, ZERO);
-            _mm_store_ps(xQ, ZERO);
-#else
             // calc FIR for each polynomial
             for (int n = 0; n<NUM_POLY; ++n)
             {
@@ -280,7 +242,6 @@ int InputDeviceSRCFilterFarrow::process(float inDataIQ[], int numInDataIQ, float
                 xI[m] = 0.0;
                 xQ[m] = 0.0;
             }
-#endif
         }
         else { /* continue with integration */ }
 
