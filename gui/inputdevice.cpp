@@ -48,7 +48,7 @@ void getSamples(float buffer[], uint16_t numSamples)
     // input read -> lets store it to FIFO
     pthread_mutex_lock(&inputBuffer.countMutex);
     uint64_t count = inputBuffer.count;
-    while (count < numSamples*sizeof(float _Complex))
+    while (count < numSamples*2*sizeof(float))
     {
         pthread_cond_wait(&inputBuffer.countCondition, &inputBuffer.countMutex);
         count = inputBuffer.count;
@@ -57,22 +57,22 @@ void getSamples(float buffer[], uint16_t numSamples)
 
     // there is enough samples in input buffer
     uint64_t bytesTillEnd = INPUT_FIFO_SIZE - inputBuffer.tail;
-    if (bytesTillEnd >= numSamples*sizeof(float _Complex))
+    if (bytesTillEnd >= numSamples*2*sizeof(float))
     {
-        memcpy(buffer, inputBuffer.buffer + inputBuffer.tail, numSamples*sizeof(float _Complex));
-        inputBuffer.tail = (inputBuffer.tail + numSamples*sizeof(float _Complex));
+        memcpy(buffer, inputBuffer.buffer + inputBuffer.tail, numSamples*2*sizeof(float));
+        inputBuffer.tail = (inputBuffer.tail + numSamples*2*sizeof(float));
     }
     else
     {
         memcpy(buffer, inputBuffer.buffer + inputBuffer.tail, bytesTillEnd);
-        Q_ASSERT(sizeof(float _Complex) == 8);
+        Q_ASSERT(2*sizeof(float) == 8);
         uint64_t samplesTillEnd = bytesTillEnd >> 3;
-        memcpy(buffer+samplesTillEnd, inputBuffer.buffer, (numSamples - samplesTillEnd)*sizeof(float _Complex));
-        inputBuffer.tail = (numSamples - samplesTillEnd) * sizeof(float _Complex);
+        memcpy(buffer+samplesTillEnd, inputBuffer.buffer, (numSamples - samplesTillEnd)*2*sizeof(float));
+        inputBuffer.tail = (numSamples - samplesTillEnd) * 2*sizeof(float);
     }
 
     pthread_mutex_lock(&inputBuffer.countMutex);
-    inputBuffer.count = inputBuffer.count - numSamples*sizeof(float _Complex);
+    inputBuffer.count = inputBuffer.count - numSamples*2*sizeof(float);
     pthread_cond_signal(&inputBuffer.countCondition);
     pthread_mutex_unlock(&inputBuffer.countMutex);
 }
@@ -84,15 +84,15 @@ void skipSamples(float buffer[], uint16_t numSamples)
     // input read -> lets store it to FIFO
     pthread_mutex_lock(&inputBuffer.countMutex);
     uint64_t count = inputBuffer.count;
-    while (count < numSamples*sizeof(float _Complex))
+    while (count < numSamples*2*sizeof(float))
     {
         pthread_cond_wait(&inputBuffer.countCondition, &inputBuffer.countMutex);
         count = inputBuffer.count;
     }
 
-    inputBuffer.tail = (inputBuffer.tail + numSamples*sizeof(float _Complex)) % INPUT_FIFO_SIZE;
+    inputBuffer.tail = (inputBuffer.tail + numSamples*2*sizeof(float)) % INPUT_FIFO_SIZE;
 
-    inputBuffer.count = inputBuffer.count - numSamples*sizeof(float _Complex);
+    inputBuffer.count = inputBuffer.count - numSamples*2*sizeof(float);
     pthread_cond_signal(&inputBuffer.countCondition);
     pthread_mutex_unlock(&inputBuffer.countMutex);
 }
