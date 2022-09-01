@@ -264,10 +264,10 @@ void MOTObjectData::parseHeader()
                 break;
 
             default:
-                // some user app prameter or parameter not handled by MOT decoder
+                // some user app parameter or parameter not handled by MOT decoder
                 if (userAppParams.end() != userAppParams.find(paramId))
                 {
-                    qDebug() << Q_FUNC_INFO << "Removing duplicit header parameter" << paramId;
+                    qDebug() << Q_FUNC_INFO << "Removing duplicate header parameter" << paramId;
                     userAppParams.remove(paramId);
                 }
                 else
@@ -631,7 +631,7 @@ void MOTObjectCache::markAllObsolete()
 }
 
 MOTObjectCache::iterator MOTObjectCache::markObjObsolete(uint16_t transportId, bool obsolete)
-{   
+{
     MOTObjectCache::iterator it;
     for (it = cache.begin(); it < cache.end(); ++it)
     {
