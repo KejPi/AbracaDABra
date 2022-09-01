@@ -181,7 +181,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     uint64_t bytesToRead = m_bytesPerFrame * nBufferFrames;
     uint32_t availableSamples = nBufferFrames;
 
-    bool muteRequest = m_muteFlag | m_stopFlag;        // false == do unmute, true == do mute
+    bool muteRequest = m_muteFlag || m_stopFlag;        // false == do unmute, true == do mute
 
     if (AudioOutputPlaybackState::Muted == m_playbackState)
     {   // muted
@@ -788,7 +788,7 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
     m_inFifoPtr->mutex.unlock();
 
     //qDebug() << Q_FUNC_INFO << len << count << static_cast<int>(m_playbackState);
-    bool muteRequest = m_muteFlag |  m_stopFlag;
+    bool muteRequest = m_muteFlag ||  m_stopFlag;
 
     //uint64_t bytesToRead = len;
     uint64_t bytesToRead = qMin(uint64_t(len), AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz * m_bytesPerFrame);

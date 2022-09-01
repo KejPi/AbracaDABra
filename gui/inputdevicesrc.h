@@ -44,6 +44,8 @@ private:
 class InputDeviceSRCFilter
 {
 public:
+    virtual ~InputDeviceSRCFilter() {}   // virtual destructor to avoid undefined behavior
+
     // reset filter and signal level
     virtual void reset() = 0;
 

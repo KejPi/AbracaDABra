@@ -614,4 +614,6 @@ const uint8_t *SPIApp::parseAttributes(const uint8_t *attrPtr, uint8_t tag, int 
     default:
         break;
     }
+
+    return nullptr;
 }

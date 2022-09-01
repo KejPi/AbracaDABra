@@ -805,7 +805,7 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
         }
 
         // TODO: not found - try ensemble
-#warning "Debug - remove or make implementation clean"
+        // #warning "Debug - remove or make implementation clean"
         for (auto & service : serviceList)
         {
             if (!service.SId.isProgServiceId())

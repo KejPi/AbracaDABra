@@ -109,7 +109,7 @@ const EnsembleListItem * ServiceListItem::getEnsemble(int num) const
 {
     if (num < 0)
     {   // best ensemble
-#warning "Best ensemble to be implemented"
+        // #warning "Best ensemble to be implemented"
         return m_ensembleList.at(m_currentEnsemble);
     }
     else
