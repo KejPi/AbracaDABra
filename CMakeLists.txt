@@ -25,21 +25,23 @@ set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
 option (USE_FDKAAC            "Compile with fdk-aac library from Franhofer instead of faad2" OFF)
 
 # Audio output
-option (USE_PORTAUDIO         "Compile with PortAudio library of Qt6 multimedia framework (better performance)" ON)
+option (USE_PORTAUDIO         "Compile with PortAudio library instead of Qt6 multimedia framework (better performance)" ON)
 
 # Options to force using libs build manually and installed in ${CMAKE_SOURCE_DIR}/../../dab-libs
-option (USE_SYSTEM_RTLSDR     "Use system provided rtl-sdr"     ON)
-option (USE_SYSTEM_LIBUSB     "Use system provided libusb"      ON)
-option (USE_SYSTEM_FAAD       "Use system provided libfaad"     ON)
-option (USE_SYSTEM_FDKAAC     "Use system provided libfdk-aac"  ON)
-option (USE_SYSTEM_MPG123     "Use system provided libmpg123"   ON)
-option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"   ON)
-option (USE_SYSTEM_AIRSPY     "Use system provided airspy lib"  ON)
+option (USE_SYSTEM_RTLSDR     "Use system provided rtl-sdr"      ON)
+option (USE_SYSTEM_LIBUSB     "Use system provided libusb"       ON)
+option (USE_SYSTEM_FAAD       "Use system provided libfaad"      ON)
+option (USE_SYSTEM_FDKAAC     "Use system provided libfdk-aac"   ON)
+option (USE_SYSTEM_MPG123     "Use system provided libmpg123"    ON)
+option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"    ON)
+option (USE_SYSTEM_AIRSPY     "Use system provided airspy lib"   ON)
+option (USE_SYSTEM_SOAPYSDR   "Use system provided SoapySDR lib" ON)
 
 option (APPLE_BUILD_X86_64    "Build x86_64 binary for Apple"   OFF)
 
 # Devices
 option (AIRSPY                "Enable AirSpy devices"           OFF)
+option (SOAPYSDR              "Enable Soapy SDR devices"        OFF)
 option (RARTTCP               "Enable RaRT TCP device"          OFF)
 
 if(APPLE OR WIN32)
@@ -53,6 +55,7 @@ if(APPLE OR WIN32)
     set(USE_SYSTEM_MPG123    OFF)
     set(USE_SYSTEM_PORTAUDIO OFF)
     set(USE_SYSTEM_AIRSPY    OFF)
+    set(USE_SYSTEM_SOAPYSDR  OFF)
 endif()
 
 if (APPLE_BUILD_X86_64)
@@ -376,6 +379,47 @@ else(AIRSPY)
     set(HAVE_AIRSPY OFF)
 endif(AIRSPY)
 
+#########################################################
+## SOAPYSDR
+if (SOAPYSDR)
+    if (USE_SYSTEM_SOAPYSDR)
+        find_library (SOAPYSDR_LINK_LIBRARIES SoapySDR)
+        find_path(SOAPYSDR_INCLUDE_DIRS SoapySDR/Device.hpp)
+        if (NOT WIN32)
+            pkg_search_module(SOAPYSDR SoapySDR)
+        endif()
+        if (NOT SOAPYSDR_LINK_LIBRARIES)
+            # not found is system -> trying ${DAB_LIBS_DIR}
+            message (WARNING "libSoapySDR not found in system, searching in ${DAB_LIBS_DIR}")
+
+            find_library(SOAPYSDR_LINK_LIBRARIES SoapySDR PATHS ${DAB_LIBS_DIR}/lib)
+            find_path(SOAPYSDR_INCLUDE_DIRS SoapySDR/Device.hpp PATHS ${DAB_LIBS_DIR}/include)
+
+            if (SOAPYSDR_LINK_LIBRARIES)
+                message (STATUS "libSoapySDR found: ${SOAPYSDR_LINK_LIBRARIES}")
+                set(HAVE_SOAPYSDR ON)
+            else(AIRSPY_LINK_LIBRARIES)
+                message (STATUS "libSoapySDR not found. Build from source and install to: ${DAB_LIBS_DIR}.")
+                set(HAVE_SOAPYSDR OFF)
+            endif()
+        else()
+            # found in system
+            set(HAVE_SOAPYSDR ON)
+        endif()
+    else(USE_SYSTEM_SOAPYSDR)
+        find_library(SOAPYSDR_LINK_LIBRARIES SoapySDR PATHS ${DAB_LIBS_DIR}/lib NO_DEFAULT_PATH)
+        find_path(SOAPYSDR_INCLUDE_DIRS SoapySDR/Device.hpp PATHS ${DAB_LIBS_DIR}/include NO_DEFAULT_PATH)
+        if (SOAPYSDR_LINK_LIBRARIES)
+            message (STATUS "libSoapySDR found: ${SOAPYSDR_LINK_LIBRARIES}")
+            set(HAVE_SOAPYSDR ON)
+        else()
+            message (STATUS "libSoapySDR not found. Build from source and install to: ${DAB_LIBS_DIR}.")
+            set(HAVE_SOAPYSDR OFF)
+        endif()
+    endif (USE_SYSTEM_SOAPYSDR)
+else(SOAPYSDR)
+    set(HAVE_SOAPYSDR OFF)
+endif(SOAPYSDR)
 
 #########################################################
 ## QT creator CMAKEFILE

@@ -175,6 +175,13 @@ if (HAVE_AIRSPY)
     target_link_libraries(${TARGET} PRIVATE "${AIRSPY_LINK_LIBRARIES}" )
 endif(HAVE_AIRSPY)
 
+# SOAPYSDR
+if (HAVE_SOAPYSDR)
+    # SOAPYSDR
+    include_directories ( ${SOAPYSDR_INCLUDE_DIRS} )
+    target_link_libraries(${TARGET} PRIVATE "${SOAPYSDR_LINK_LIBRARIES}" )
+endif(HAVE_SOAPYSDR)
+
 # Set some Win32 Specific Settings
 if(WIN32)
     # required fro sockets

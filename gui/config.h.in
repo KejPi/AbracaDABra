@@ -14,6 +14,7 @@
 /* Optional devices */
 #cmakedefine HAVE_RARTTCP
 #cmakedefine HAVE_AIRSPY
+#cmakedefine HAVE_SOAPYSDR
 
 #endif // CONFIG_H
 
