@@ -53,7 +53,7 @@ BandScanDialog::~BandScanDialog()
         delete timer;
     }
 
-    delete ui;        
+    delete ui;
 }
 
 void BandScanDialog::stopPressed()
@@ -63,7 +63,7 @@ void BandScanDialog::stopPressed()
         // the state machine has 4 possible states
         // 1. wait for tune (event)
         // 2. wait for sync (timer or event)
-        // 4. wait for enseble (timer or event)
+        // 4. wait for ensemble (timer or event)
         // 5. wait for services (timer)
         if (timer->isActive())
         {   // state 2, 3, 4
@@ -98,7 +98,7 @@ void BandScanDialog::startScan()
 
     // using timer for mainwindow to cleanup and tune to 0 potentially (no timeout in case)
     timer->start(2000);
-    emit scanStarts();        
+    emit scanStarts();
 }
 
 void BandScanDialog::scanStep()
@@ -173,7 +173,7 @@ void BandScanDialog::onEnsembleFound(const RadioControlEnsemble &)
 
     state = BandScanState::WaitForServices;
 
-    // this can be interrupted by enseble complete signal (ensembleConfiguration)
+    // this can be interrupted by ensemble complete signal (ensembleConfiguration)
     timer->start(8000);
 }
 

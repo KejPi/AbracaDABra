@@ -210,7 +210,7 @@ MainWindow::MainWindow(const QString &iniFile, QWidget *parent)
 
     layout->setColumnStretch(0, 100);
     layout->setSpacing(20);
-    ui->statusbar->addWidget(widget,1);   
+    ui->statusbar->addWidget(widget,1);
 
     // set fonts
     QFont f;
@@ -293,7 +293,7 @@ MainWindow::MainWindow(const QString &iniFile, QWidget *parent)
 
     // initialize radio control
     if (!radioControl->init())
-    {        
+    {
         qDebug() << "RadioControl() init failed";
         close();
         qApp->quit();
@@ -338,7 +338,7 @@ MainWindow::MainWindow(const QString &iniFile, QWidget *parent)
     connect(radioControl, &RadioControl::ensembleConfiguration, ensembleInfoDialog, &EnsembleInfoDialog::refreshEnsembleConfiguration, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::tuneDone, ensembleInfoDialog, &EnsembleInfoDialog::newFrequency, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::fibCounter, ensembleInfoDialog, &EnsembleInfoDialog::updateFIBstatus, Qt::QueuedConnection);
-    connect(radioControl, &RadioControl::mscCounter, ensembleInfoDialog, &EnsembleInfoDialog::updateMSCstatus, Qt::QueuedConnection);    
+    connect(radioControl, &RadioControl::mscCounter, ensembleInfoDialog, &EnsembleInfoDialog::updateMSCstatus, Qt::QueuedConnection);
     connect(radioControl, &RadioControl::audioServiceSelection, ensembleInfoDialog, &EnsembleInfoDialog::serviceChanged, Qt::QueuedConnection);
 
     connect(radioControl, &RadioControl::dlDataGroup, dlDecoder, &DLDecoder::newDataGroup, Qt::QueuedConnection);
@@ -351,9 +351,9 @@ MainWindow::MainWindow(const QString &iniFile, QWidget *parent)
 
     // reconfiguration
     connect(radioControl, &RadioControl::audioServiceReconfiguration, this, &MainWindow::audioServiceReconfiguration, Qt::QueuedConnection);
-    connect(this, &MainWindow::getAudioInfo, audioDecoder, &AudioDecoder::getAudioParameters, Qt::QueuedConnection);    
+    connect(this, &MainWindow::getAudioInfo, audioDecoder, &AudioDecoder::getAudioParameters, Qt::QueuedConnection);
 
-    // DL(+)       
+    // DL(+)
     connect(dlDecoder, &DLDecoder::dlComplete, this, &MainWindow::updateDL);
     connect(dlDecoder, &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived);
     connect(dlDecoder, &DLDecoder::dlItemToggle, this, &MainWindow::onDLPlusItemToggle);
@@ -389,7 +389,7 @@ MainWindow::MainWindow(const QString &iniFile, QWidget *parent)
     // The application should be automatically started when a SlideShow service is discovered for the current radio service
     slideShowApp = new SlideShowApp(radioControl);
     slideShowApp->moveToThread(radioControlThr);
-    connect(radioControlThr, &QThread::finished, slideShowApp, &QObject::deleteLater);       
+    connect(radioControlThr, &QThread::finished, slideShowApp, &QObject::deleteLater);
     connect(radioControl, &RadioControl::audioServiceSelection, slideShowApp, &SlideShowApp::start);
     connect(slideShowApp, &SlideShowApp::currentSlide, ui->slsView, &SLSView::showSlide, Qt::QueuedConnection);
     connect(slideShowApp, &SlideShowApp::resetTerminal, ui->slsView, &SLSView::reset, Qt::QueuedConnection);
@@ -401,7 +401,7 @@ MainWindow::MainWindow(const QString &iniFile, QWidget *parent)
     connect(slideShowApp, &SlideShowApp::catSlide, catSlsDialog, &CatSLSDialog::onCatSlide, Qt::QueuedConnection);
     connect(slideShowApp, &SlideShowApp::resetTerminal, catSlsDialog, &CatSLSDialog::reset, Qt::QueuedConnection);
     connect(catSlsDialog, &CatSLSDialog::getCurrentCatSlide, slideShowApp, &SlideShowApp::getCurrentCatSlide, Qt::QueuedConnection);
-    connect(catSlsDialog, &CatSLSDialog::getNextCatSlide, slideShowApp, &SlideShowApp::getNextCatSlide, Qt::QueuedConnection);    
+    connect(catSlsDialog, &CatSLSDialog::getNextCatSlide, slideShowApp, &SlideShowApp::getNextCatSlide, Qt::QueuedConnection);
 
 #if RADIO_CONTROL_SPI_ENABLE
 #warning "Remove automatic creation of SPI app"
@@ -537,11 +537,11 @@ void MainWindow::changeEvent( QEvent* e )
 
 void MainWindow::inputDeviceReady()
 {
-    ui->channelCombo->setEnabled(true);    
+    ui->channelCombo->setEnabled(true);
 }
 
 void MainWindow::updateEnsembleInfo(const RadioControlEnsemble &ens)
-{    
+{
     ui->ensembleLabel->setText(ens.label);
     ui->ensembleLabel->setToolTip(QString("<b>Ensemble:</b> %1<br>"
                                           "<b>Short label:</b> %2<br>"
@@ -833,7 +833,7 @@ void MainWindow::tuneFinished(uint32_t freq)
             ui->switchSourceLabel->setVisible(true);
         }
     }
-    else        
+    else
     {
         // this can only happen when device is changed, or ehen exit is requested
         if (exitRequested)
@@ -927,8 +927,8 @@ void MainWindow::serviceListTreeClicked(const QModelIndex &index)
     const SLTreeModel * model = reinterpret_cast<const SLTreeModel*>(index.model());
 
     if (index.parent().isValid())
-    {   // service, not ensemle selected
-        // if both service ID and enseble ID are the same then return
+    {   // service, not ensemble selected
+        // if both service ID and ensemble ID are the same then return
         ServiceListId currentServiceId(SId.value(), SCIdS);
         ServiceListId currentEnsId(0);
         ServiceListConstIterator it = serviceList->findService(currentServiceId);
@@ -1097,7 +1097,7 @@ void MainWindow::audioServiceReconfiguration(const RadioControlServiceComponent 
     if (s.SId.isValid() && s.isAudioService() && (s.SId.value() == SId.value()))
     {   // set UI
         serviceChanged(s);
-        emit getAudioInfo();        
+        emit getAudioInfo();
     }
     else
     {   // service probably disapeared
@@ -1120,7 +1120,7 @@ void MainWindow::audioServiceReconfiguration(const RadioControlServiceComponent 
 
 void MainWindow::clearEnsembleInformationLabels()
 {
-    timeLabel->setText("");    
+    timeLabel->setText("");
     ui->ensembleLabel->setText("No ensemble");
     ui->ensembleLabel->setToolTip("No ensemble tuned");
     ui->ensembleInfoLabel->setText("");
@@ -1128,7 +1128,7 @@ void MainWindow::clearEnsembleInformationLabels()
 }
 
 void MainWindow::clearServiceInformationLabels()
-{    
+{
     ui->serviceLabel->setText("No service");
     ui->favoriteLabel->setChecked(false);
     ui->catSlsLabel->setHidden(true);
@@ -1564,11 +1564,11 @@ void MainWindow::loadSettings()
         || ((InputDeviceId::RAWFILE == inputDeviceId) && (s.rawfile.file.isEmpty())))
     {
         QTimer::singleShot(1, this, [this](){ showSetupDialog(); } );
-    }        
+    }
 }
 
 void MainWindow::saveSettings()
-{    
+{
     QSettings * settings;
     if (iniFilename.isEmpty())
     {
@@ -1645,7 +1645,7 @@ void MainWindow::saveSettings()
 
 void MainWindow::favoriteToggled(bool checked)
 {
-    QModelIndex current = ui->serviceListView->currentIndex();            
+    QModelIndex current = ui->serviceListView->currentIndex();
     const SLModel * model = reinterpret_cast<const SLModel*>(current.model());
     ServiceListId id = model->id(current);
     serviceList->setServiceFavorite(id, checked);
@@ -1736,7 +1736,7 @@ void MainWindow::serviceListViewUpdateSelection()
     {
         index = model->index(r, 0);
         if (model->id(index) == id)
-        {   // found            
+        {   // found
             ui->serviceListView->selectionModel()->setCurrentIndex(index,
                            QItemSelectionModel::Clear | QItemSelectionModel::Select | QItemSelectionModel::Current);
             return;
@@ -1953,7 +1953,7 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object)
         return;
     }
     else
-    { /* no dummy object */ }    
+    { /* no dummy object */ }
 
     if (object.isDelete())
     {   // [ETSI TS 102 980 V2.1.2] 5.3.2 Deleting objects
@@ -1991,7 +1991,7 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object)
                 ui->dlPlusFrame->setMaximumHeight(ui->dlPlusFrame->minimumHeight() > 120 ? ui->dlPlusFrame->minimumHeight() : 120);
             }
             else
-            { /* object the we do not display: Descriptors, PROGRAMME_FREQUENCY, INFO_DATE_TIME, PROGRAMME_SUBCHANNEL*/ }
+            { /* objects that we do not display: Descriptors, PROGRAMME_FREQUENCY, INFO_DATE_TIME, PROGRAMME_SUBCHANNEL*/ }
         }
     }
 }
@@ -2069,7 +2069,7 @@ DLPlusObjectUI::DLPlusObjectUI(const DLPlusObject &obj) : dlPlusObject(obj)
         switch (obj.getType())
         {
         case DLPlusContentType::PROGRAMME_HOMEPAGE:
-        case DLPlusContentType::INFO_URL:           
+        case DLPlusContentType::INFO_URL:
             tagText = new QLabel(QString("<a href=\"%1\">%1</a>").arg(obj.getTag()));
             QObject::connect(
                         tagText, &QLabel::linkActivated,
@@ -2199,7 +2199,7 @@ QString DLPlusObjectUI::getLabel(DLPlusContentType type) const
     case DLPlusContentType::VOTE_QUESTION: label = "Vote Question"; break;
     case DLPlusContentType::VOTE_CENTRE: label = "Vote Here"; break;
         // rfu = 54
-        // rfu = 55       
+        // rfu = 55
     case DLPlusContentType::PRIVATE_1: label = "Private 1"; break;
     case DLPlusContentType::PRIVATE_2: label = "Private 2"; break;
     case DLPlusContentType::PRIVATE_3: label = "Private 3"; break;

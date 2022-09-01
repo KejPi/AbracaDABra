@@ -30,7 +30,7 @@ typedef union
         uint8_t aac_channel_mode : 1;
         uint8_t sbr_flag : 1;
         uint8_t dac_rate : 1;
-        uint8_t conceal : 1;        // concealment requested, means that fram is not valid, if decoder does not support, it should be discarded
+        uint8_t conceal : 1;        // concealment requested, means that frame is not valid, if decoder does not support, it should be discarded
     } bits;
 } dabsdrAudioFrameHeader_t;
 
@@ -107,7 +107,7 @@ typedef struct
 
 typedef struct
 {
-    dabsdrSyncLevel_t syncLevel;  // DAB synchronization level
+    dabsdrSyncLevel_t syncLevel;   // DAB synchronization level
     int32_t freqOffset;            // frequency offset * 10
     uint32_t dateHoursMinutes;     // DAB time date + hours + minutes
     uint16_t secMsec;              // DAB time sec + msec

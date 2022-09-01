@@ -16,7 +16,7 @@ SlideShowApp::~SlideShowApp()
 }
 
 void SlideShowApp::start()
-{   // does nothing is application is alraeady running
+{   // does nothing is application is already running
     if (isRunning)
     {   // do nothign, application is running
         return;

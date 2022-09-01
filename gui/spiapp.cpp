@@ -15,9 +15,9 @@ SPIApp::~SPIApp()
 }
 
 void SPIApp::start()
-{   // does nothing is application is alraeady running
+{   // does nothing if application is already running
     if (isRunning)
-    {   // do nothign, application is running
+    {   // do nothing, application is running
         return;
     }
     else
@@ -184,7 +184,7 @@ void SPIApp::parseServiceInfo(const MOTObject &motObj)
                     qDebug("\t\tScopeID: %6.6X", ueid);
                     if (radioControl->getEnsembleUEID() != ueid)
                     {
-                        qDebug("ScopeID: %6.6X is not current enseble. Service info for current ensemble is only supported!", ueid);
+                        qDebug("ScopeID: %6.6X is not current ensemble. Service info for current ensemble is only supported!", ueid);
                         return;
                     }
                 }
@@ -260,7 +260,7 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
     else
     { /* len < 0xFE */ }
 
-    // we know that we have enough data here           
+    // we know that we have enough data here
     qDebug("Tag = %2.2X, len = %d", tag, len);
 
     if (tag < 0x80)
@@ -429,7 +429,7 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
         case SPIElement::Tag::serviceInformation:
             switch (SPIElement::serviceInformation::attribute(tag))
             {
-            case SPIElement::serviceInformation::attribute::version:                
+            case SPIElement::serviceInformation::attribute::version:
             {   // ETSI TS 102 371 V3.2.1 (2016-05) [4.8.3 version]
                 // Encoded as a 16-bit unsigned integer.
                 uint16_t version = 0;
@@ -449,7 +449,7 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
             case SPIElement::serviceInformation::attribute::serviceProvider:
                 qDebug() << "attribute:serviceProvider";
                 break;
-            }            
+            }
             break;
         case SPIElement::Tag::tokenTable:
             break;

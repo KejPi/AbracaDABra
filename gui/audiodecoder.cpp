@@ -196,7 +196,7 @@ void AudioDecoder::initMPG123()
 }
 
 void AudioDecoder::readAACHeader()
-{    
+{
     // fill the structure used to signal audio params to HMI
     if (aacHeader.bits.sbr_flag)
     {
@@ -633,7 +633,7 @@ void AudioDecoder::processAAC(QByteArray *inData)
         // supposing that header is the same
         header.raw = aacHeader.raw;
         if (nullptr == aacDecoderHandle)
-        {   // if concealment then this fram is not valid thus returning in case that it does it woul liead to reinit
+        {   // if concealment then this frame is not valid thus returning in case that it does, it would like to reinit
             return;
         }
 #else
@@ -651,7 +651,7 @@ void AudioDecoder::processAAC(QByteArray *inData)
         inData->fill(0);
         header.raw = aacHeader.raw;
 #endif
-    }    
+    }
     if ((nullptr == aacDecoderHandle) || (header.raw != aacHeader.raw))
     {
         aacHeader.raw = header.raw;
@@ -704,7 +704,7 @@ void AudioDecoder::processAAC(QByteArray *inData)
     {
         fwrite(outputFrame, 1, outputFrameLen, rawOut);
     }
-#endif    
+#endif
 
     int64_t bytesToWrite = outputFrameLen;
 
@@ -872,7 +872,7 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo &frameInfo, con
             memset(outBufferPtr, 0, outBufferSamples*sizeof(int16_t));
             state = OutputState::Muted;
         }
-    }    
+    }
     else
     {   // OK
         memcpy(outBufferPtr, inFramePtr, outBufferSamples*sizeof(int16_t));

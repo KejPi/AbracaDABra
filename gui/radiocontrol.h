@@ -19,7 +19,7 @@
 #define RADIO_CONTROL_VERBOSE  0
 #define RADIO_CONTROL_N_CHANNELS_ENABLE  0
 #define RADIO_CONTROL_NOTIFICATION_PERIOD  3  // 2^3 = 8 DAB frames = 8*96ms = 768ms
-// number of FIB expeted to be received during noticication period
+// number of FIB expected to be received during noticication period
 // there are 12 FIB's in one DAB frame
 #define RADIO_CONTROL_NOTIFICATION_FIB_EXPECTED  (12*(1 << RADIO_CONTROL_NOTIFICATION_PERIOD))
 
@@ -131,7 +131,7 @@ struct RadioControlServiceComponent
                           // Access Control System (ACS) used for the service
     bool CAflag;          // CA flag: this 1-bit field flag shall indicate whether access control applies to the service component
 
-    //int8_t numUserApps;   // Number of user applications    
+    //int8_t numUserApps;   // Number of user applications
     QHash<DabUserApplicationType,RadioControlUserApp> userApps;
 
     QString label;        // Service label
@@ -228,7 +228,7 @@ class RadioControl : public QObject
 {
     Q_OBJECT
 public:
-    explicit RadioControl(QObject *parent = nullptr);    
+    explicit RadioControl(QObject *parent = nullptr);
     ~RadioControl();
 
     bool init();
@@ -252,7 +252,7 @@ signals:
     void dlDataGroup(const QByteArray & dg);
     void userAppData(const RadioControlUserAppData & data);
     void audioServiceSelection(const RadioControlServiceComponent & s);
-    void audioServiceReconfiguration(const RadioControlServiceComponent & s);    
+    void audioServiceReconfiguration(const RadioControlServiceComponent & s);
     void audioData(QByteArray * pData);
     void dabTime(const QDateTime & dateAndTime);
     void tuneInputDevice(uint32_t freq);
@@ -313,7 +313,7 @@ private:
     friend void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx);
     friend void dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx);
     friend void dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx);
-    friend void audioDataCb(dabsdrAudioCBData_t * p, void * ctx);        
+    friend void audioDataCb(dabsdrAudioCBData_t * p, void * ctx);
 private slots:
     void eventFromDab(RadioControlEvent * pEvent);
 };
