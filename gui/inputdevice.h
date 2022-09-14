@@ -33,9 +33,16 @@ struct ComplexFifo
 };
 typedef struct ComplexFifo fifo_t;
 
-enum class InputDeviceId { UNDEFINED = 0, RTLSDR, RTLTCP, RARTTCP, RAWFILE, AIRSPY};
+enum class InputDeviceId { UNDEFINED = 0, RTLSDR, RTLTCP, RARTTCP, RAWFILE, AIRSPY, SOAPYSDR};
 
 enum class RtlGainMode
+{
+    Hardware,
+    Software,
+    Manual
+};
+
+enum class SoapyGainMode
 {
     Hardware,
     Software,

@@ -17,6 +17,7 @@
 #include "radiocontrol.h"
 #include "bandscandialog.h"
 #include "config.h"
+#include "soapysdrinput.h"
 
 #ifdef Q_OS_MACX
 #include "mac.h"
@@ -1164,6 +1165,11 @@ void MainWindow::onNewSettings()
         dynamic_cast<AirspyInput*>(inputDevice)->setGainMode(s.airspy.gain);
 #endif
         break;
+    case InputDeviceId::SOAPYSDR:
+#ifdef HAVE_SOAPYSDR
+        dynamic_cast<SoapySdrInput*>(inputDevice)->setGainMode(s.soapysdr.gainMode, s.soapysdr.gainIdx);
+#endif
+        break;
     case InputDeviceId::RAWFILE:
         break;
     case InputDeviceId::UNDEFINED:
@@ -1422,6 +1428,60 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 #endif
     }
     break;
+    case InputDeviceId::SOAPYSDR:
+    {
+#ifdef HAVE_SOAPYSDR
+        inputDevice = new SoapySdrInput();
+
+        // signals have to be connected before calling isAvailable
+
+        // tuning procedure
+        connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+        connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+        // setup dialog
+        connect(dynamic_cast<SoapySdrInput*>(inputDevice), &SoapySdrInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
+
+        // HMI
+        connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
+        connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
+
+        // set connection paramaters
+        dynamic_cast<SoapySdrInput*>(inputDevice)->setDevArgs(setupDialog->settings().soapysdr.devArgs);
+        dynamic_cast<SoapySdrInput*>(inputDevice)->setRxChannel(setupDialog->settings().soapysdr.channel);
+
+        if (inputDevice->openDevice())
+        {  // SoapySDR is available
+            inputDeviceId = InputDeviceId::SOAPYSDR;
+
+            // enable band scan
+            bandScanAct->setEnabled(true);
+
+            // enable service list
+            ui->serviceListView->setEnabled(true);
+            ui->serviceTreeView->setEnabled(true);
+            ui->favoriteLabel->setEnabled(true);
+
+            // ensemble info dialog
+            connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, inputDevice, &InputDevice::startDumpToFile);
+            connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, inputDevice, &InputDevice::stopDumpToFile);
+            connect(inputDevice, &InputDevice::dumpingToFile, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
+            connect(inputDevice, &InputDevice::dumpedBytes, ensembleInfoDialog, &EnsembleInfoDialog::updateDumpStatus);
+            connect(inputDevice, &InputDevice::agcGain, ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
+            ensembleInfoDialog->enableDumpToFile(true);
+
+            // apply current settings
+            onNewSettings();
+        }
+        else
+        {
+            setupDialog->resetInputDevice();
+            initInputDevice(InputDeviceId::UNDEFINED);
+        }
+#endif
+    }
+    break;
+
     case InputDeviceId::RAWFILE:
     {
         inputDevice = new RawFileInput();
@@ -1514,6 +1574,12 @@ void MainWindow::loadSettings()
     s.airspy.dataPacking = settings->value("AIRSPY/dataPacking", true).toBool();
     s.airspy.prefer4096kHz = settings->value("AIRSPY/preferSampleRate4096kHz", true).toBool();
 #endif
+#ifdef HAVE_SOAPYSDR
+    s.soapysdr.gainIdx = settings->value("SOAPYSDR/gainIndex", 0).toInt();
+    s.soapysdr.gainMode = static_cast<SoapyGainMode>(settings->value("SOAPYSDR/gainMode", static_cast<int>(SoapyGainMode::Hardware)).toInt());
+    s.soapysdr.devArgs = settings->value("SOAPYSDR/devArgs", QString("driver=rtlsdr")).toString();
+    s.soapysdr.channel = settings->value("SOAPYSDR/rxChannel", 0).toInt();
+#endif
     s.rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
     s.rawfile.format = RawFileInputFormat(settings->value("RAW-FILE/format", 0).toInt());
     s.rawfile.loopEna = settings->value("RAW-FILE/loop", false).toBool();
@@ -1526,7 +1592,7 @@ void MainWindow::loadSettings()
     {
         initInputDevice(s.inputDevice);
 
-        // if input device has switched to what was stored and it is RTLSDR or RTLTCP
+        // if input device has switched to what was stored and it is RTLSDR or RTLTCP or Airspy
         if ((s.inputDevice == inputDeviceId)
                 && (    (InputDeviceId::RTLSDR == inputDeviceId)
                      || (InputDeviceId::AIRSPY == inputDeviceId)
@@ -1605,6 +1671,13 @@ void MainWindow::saveSettings()
     settings->setValue("AIRSPY/bias-T", s.airspy.biasT);
     settings->setValue("AIRSPY/dataPacking", s.airspy.dataPacking);
     settings->setValue("AIRSPY/preferSampleRate4096kHz", s.airspy.prefer4096kHz);
+#endif
+
+#ifdef HAVE_SOAPYSDR
+    settings->setValue("SOAPYSDR/gainIndex", s.soapysdr.gainIdx);
+    settings->setValue("SOAPYSDR/gainMode", static_cast<int>(s.soapysdr.gainMode));
+    settings->setValue("SOAPYSDR/devArgs", s.soapysdr.devArgs);
+    settings->setValue("SOAPYSDR/rxChannel", s.soapysdr.channel);
 #endif
 
     settings->setValue("RTL-TCP/gainIndex", s.rtltcp.gainIdx);

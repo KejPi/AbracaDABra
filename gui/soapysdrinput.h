@@ -64,7 +64,7 @@ public:
 
     void tune(uint32_t freq) override;
     void setDevArgs(const QString & args) { devArgs = args; }
-    void setRxChannel(size_t ch) { rxChannel = ch; }
+    void setRxChannel(int ch) { rxChannel = ch; }
 
     void setGainMode(SoapyGainMode mode, int gainIdx = 0);
 
@@ -85,7 +85,7 @@ private:
 
     // settimgs
     QString devArgs;
-    size_t rxChannel = 0;
+    int rxChannel = 0;
     SoapySdrWorker * worker;
 #if (SOAPYSDR_WDOG_ENABLE)
     QTimer watchDogTimer;

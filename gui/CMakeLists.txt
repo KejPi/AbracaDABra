@@ -35,6 +35,9 @@ configure_file (config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 if (HAVE_AIRSPY)
     set(AIRSPY_SOURCES airspyinput.h airspyinput.cpp)
 endif(HAVE_AIRSPY)
+if (HAVE_SOAPYSDR)
+    set(SOAPYSDR_SOURCES soapysdrinput.h soapysdrinput.cpp)
+endif(HAVE_SOAPYSDR)
 
 #########################################################
 ## SOURCES & HEADERS
@@ -46,6 +49,7 @@ add_executable(${TARGET}
     ${APP_RESOURCE_WINDOWS}
     ${CMAKE_CURRENT_BINARY_DIR}/config.h    
     ${AIRSPY_SOURCES}
+    ${SOAPYSDR_SOURCES}
     main.cpp
     mainwindow.cpp
     mainwindow.h

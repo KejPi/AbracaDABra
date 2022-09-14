@@ -58,6 +58,16 @@ public:
             bool prefer4096kHz;
         } airspy;
 #endif
+#ifdef HAVE_SOAPYSDR
+        struct
+        {
+            SoapyGainMode gainMode;
+            int gainIdx;
+            QString devArgs;
+            int channel;
+            //bool prefer4096kHz;
+        } soapysdr;
+#endif
     };
 
     SetupDialog(QWidget *parent = nullptr);
@@ -80,6 +90,7 @@ private:
     QString rawfilename;
     QList<int> rtlsdrGainList;
     QList<int> rtltcpGainList;
+    QList<int> soapysdrGainList;
 
     void onButtonClicked(QAbstractButton *button);
     void onInputChanged(int index);
@@ -109,6 +120,13 @@ private:
     void onAirspyLNAAGCstateChanged(int state);
     void onAirspyMixerAGCstateChanged(int state);
     void activateAirspyControls(bool en);
+#endif
+#ifdef HAVE_SOAPYSDR
+    void onSoapySdrGainSliderChanged(int val);
+    void activateSoapySdrControls(bool en);
+    void onSoapySdrDevArgsEditFinished();
+    void onSoapySdrChannelEditFinished();
+    void onSoapySdrGainModeToggled(bool checked);
 #endif
 };
 

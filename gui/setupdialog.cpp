@@ -19,6 +19,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 #ifdef HAVE_AIRSPY
     ui->inputCombo->addItem("Airspy", QVariant(int(InputDeviceId::AIRSPY)));
 #endif
+#ifdef HAVE_SOAPYSDR
+    ui->inputCombo->addItem("Soapy SDR", QVariant(int(InputDeviceId::SOAPYSDR)));
+#endif
     ui->inputCombo->addItem("RTL TCP", QVariant(int(InputDeviceId::RTLTCP)));
 #ifdef HAVE_RARTTCP
     ui->inputCombo->addItem("RaRT TCP", QVariant(int(InputDeviceId::RARTTCP)));
@@ -78,6 +81,15 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->airspyGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
     connect(ui->airspyGainModeSensitivity, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
 #endif
+
+#ifdef HAVE_SOAPYSDR
+    connect(ui->soapysdrGainSlider, &QSlider::valueChanged, this, &SetupDialog::onSoapySdrGainSliderChanged);
+    connect(ui->soapysdrDevArgs, &QLineEdit::editingFinished, this, &SetupDialog::onSoapySdrDevArgsEditFinished);
+    connect(ui->soapysdrChannelNum, &QLineEdit::editingFinished, this, &SetupDialog::onSoapySdrChannelEditFinished);
+    connect(ui->soapysdrGainModeHw, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
+    connect(ui->soapysdrGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
+    connect(ui->soapysdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
+#endif
     adjustSize();
 }
 
@@ -104,6 +116,13 @@ void SetupDialog::setGainValues(const QList<int> * pList)
         ui->rtltcpGainSlider->setMinimum(0);
         ui->rtltcpGainSlider->setMaximum(rtltcpGainList.size()-1);
         ui->rtltcpGainSlider->setValue((m_settings.rtltcp.gainIdx >= 0) ? m_settings.rtltcp.gainIdx : 0);
+        break;
+    case InputDeviceId::SOAPYSDR:
+        soapysdrGainList.clear();
+        soapysdrGainList = *pList;
+        ui->soapysdrGainSlider->setMinimum(0);
+        ui->soapysdrGainSlider->setMaximum(soapysdrGainList.size()-1);
+        ui->soapysdrGainSlider->setValue((m_settings.soapysdr.gainIdx >= 0) ? m_settings.soapysdr.gainIdx : 0);
         break;
     case InputDeviceId::UNDEFINED:
     case InputDeviceId::RARTTCP:
@@ -204,6 +223,36 @@ void SetupDialog::showEvent(QShowEvent *event)
     ui->airspyLNAAGCCheckbox->setChecked(m_settings.airspy.gain.lnaAgcEna);
 #endif
 
+#ifdef HAVE_SOAPYSDR
+    switch (m_settings.soapysdr.gainMode) {
+    case SoapyGainMode::Software:
+        ui->soapysdrGainModeSw->setChecked(true);
+        break;
+    case SoapyGainMode::Hardware:
+        ui->soapysdrGainModeHw->setChecked(true);
+        break;
+    case SoapyGainMode::Manual:
+        ui->soapysdrGainModeManual->setChecked(true);
+        break;
+    default:
+        break;
+    }
+
+    if (!soapysdrGainList.isEmpty())
+    {
+        ui->soapysdrGainSlider->setValue(m_settings.soapysdr.gainIdx);
+        onSoapySdrGainSliderChanged(m_settings.soapysdr.gainIdx);
+    }
+    else
+    {
+        ui->soapysdrGainSlider->setValue(0);
+        ui->soapysdrGainValueLabel->setText("N/A");
+    }
+
+    ui->soapysdrDevArgs->setText(m_settings.soapysdr.devArgs);
+    ui->soapysdrChannelNum->setText(QString::number(m_settings.soapysdr.channel));
+#endif
+
     if (m_settings.rawfile.file.isEmpty())
     {
         ui->fileNameLabel->setText(NO_FILE);
@@ -258,6 +307,11 @@ void SetupDialog::onConnectDeviceClicked()
         activateAirspyControls(true);
 #endif
         break;
+    case InputDeviceId::SOAPYSDR:
+#ifdef HAVE_SOAPYSDR
+        activateSoapySdrControls(true);
+#endif
+        break;
     }
     emit inputDeviceChanged(m_settings.inputDevice);
 }
@@ -292,7 +346,6 @@ void SetupDialog::onRtlTcpPortValueChanged(int val)
     }
 
 }
-
 
 void SetupDialog::onRtlGainModeToggled(bool checked)
 {
@@ -459,7 +512,60 @@ void SetupDialog::onAirspyMixerAGCstateChanged(int state)
     m_settings.airspy.gain.mixerAgcEna = !ena;
     emit newSettings();
 }
-#endif
+#endif // HAVE_AIRSPY
+
+#ifdef HAVE_SOAPYSDR
+void SetupDialog::onSoapySdrGainSliderChanged(int val)
+{
+    ui->soapysdrGainValueLabel->setText(QString("%1 dB").arg(soapysdrGainList.at(val)/10.0));
+    m_settings.soapysdr.gainIdx = val;
+    emit newSettings();
+}
+
+void SetupDialog::activateSoapySdrControls(bool en)
+{
+    ui->soapysdrGainModeGroup->setEnabled(en);
+    ui->soapysdrGainWidget->setEnabled(en && (SoapyGainMode::Manual == m_settings.soapysdr.gainMode));
+}
+
+void SetupDialog::onSoapySdrDevArgsEditFinished()
+{
+    if (ui->soapysdrDevArgs->text().trimmed() != m_settings.soapysdr.devArgs.trimmed())
+    {
+        ui->connectButton->setVisible(true);
+    }
+}
+
+void SetupDialog::onSoapySdrChannelEditFinished()
+{
+    if (ui->soapysdrChannelNum->text().toInt() != m_settings.soapysdr.channel)
+    {
+        ui->connectButton->setVisible(true);
+    }
+}
+
+void SetupDialog::onSoapySdrGainModeToggled(bool checked)
+{
+    if (checked)
+    {
+        if (ui->soapysdrGainModeHw->isChecked())
+        {
+            m_settings.soapysdr.gainMode = SoapyGainMode::Hardware;
+        }
+        else if (ui->soapysdrGainModeSw->isChecked())
+        {
+            m_settings.soapysdr.gainMode = SoapyGainMode::Software;
+        }
+        else if (ui->soapysdrGainModeManual->isChecked())
+        {
+            m_settings.soapysdr.gainMode = SoapyGainMode::Manual;
+        }
+        activateSoapySdrControls(true);
+        emit newSettings();
+    }
+}
+
+#endif // HAVE_SOAPYSDR
 
 void SetupDialog::setStatusLabel()
 {
@@ -482,6 +588,9 @@ void SetupDialog::setStatusLabel()
         break;
     case InputDeviceId::AIRSPY:
         ui->statusLabel->setText("Airspy device connected");
+        break;
+    case InputDeviceId::SOAPYSDR:
+        ui->statusLabel->setText("Soapy SDR device connected");
         break;
     }
 }
@@ -515,7 +624,6 @@ void SetupDialog::onInputChanged(int index)
     ui->connectButton->setHidden(m_settings.inputDevice == static_cast<InputDeviceId>(inputDeviceInt));
     if (m_settings.inputDevice != static_cast<InputDeviceId>(inputDeviceInt))
     {   // selected input device does not match current input device
-
         switch (static_cast<InputDeviceId>(inputDeviceInt))
         {
         case InputDeviceId::RTLSDR:
@@ -533,6 +641,11 @@ void SetupDialog::onInputChanged(int index)
         case InputDeviceId::AIRSPY:
 #ifdef HAVE_AIRSPY
             activateAirspyControls(false);
+#endif
+            return;
+        case InputDeviceId::SOAPYSDR:
+#ifdef HAVE_SOAPYSDR
+            activateSoapySdrControls(false);
 #endif
             return;
         }
@@ -588,6 +701,11 @@ void SetupDialog::resetInputDevice()
     case InputDeviceId::AIRSPY:
 #ifdef HAVE_AIRSPY
         activateAirspyControls(false);
+#endif
+        break;
+    case InputDeviceId::SOAPYSDR:
+#ifdef HAVE_SOAPYSDR
+        activateSoapySdrControls(false);
 #endif
         break;
     }

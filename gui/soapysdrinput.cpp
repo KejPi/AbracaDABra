@@ -85,7 +85,7 @@ bool SoapySdrInput::openDevice()
 
     if (rxChannel >= device->getNumChannels(SOAPY_SDR_RX))
     {
-        qDebug("SOAPYSDR: channel #%zu not supported. Using channel 0", rxChannel);
+        qDebug("SOAPYSDR: channel #%d not supported. Using channel 0", rxChannel);
         rxChannel = 0;
     }
     else { /* OK */ }
@@ -491,7 +491,7 @@ void SoapySdrWorker::run()
         long long time_ns;
 
         // read samples with timeout 100 ms
-        int ret = device->readStream(stream, buffs, 1024, flags, time_ns, 100000);
+        int ret = device->readStream(stream, buffs, SOAPYSDR_INPUT_SAMPLES, flags, time_ns, 100000);
 
 #if (SOAPYSDR_WDOG_ENABLE)
         // reset watchDog flag, timer sets it to false
@@ -571,12 +571,67 @@ bool SoapySdrWorker::isRunning()
 
 void SoapySdrWorker::stop()
 {
+    qDebug() << Q_FUNC_INFO;
     doReadIQ = false;
 }
 
 void SoapySdrWorker::processInputData(std::complex<float> buff[], size_t numSamples)
 {
-    qDebug() << "Received samples" << numSamples;
+    // get FIFO space
+    pthread_mutex_lock(&inputBuffer.countMutex);
+    uint64_t count = inputBuffer.count;
+    pthread_mutex_unlock(&inputBuffer.countMutex);
+
+    Q_ASSERT(count <= INPUT_FIFO_SIZE);
+
+    // input samples are IQ = [float float] @ 4096kHz
+    // going to transform them to [float float] @ 2048kHz
+
+#warning "SRC missing"
+    //int numIQ = src->process((float*) transfer->samples, transfer->sample_count, filterOutBuffer);
+    float * filterOutBuffer = (float *) buff;
+    int numIQ = numSamples;
+
+    uint64_t bytesToWrite = numIQ * 2 * sizeof(float);
+
+    if ((INPUT_FIFO_SIZE - count) < bytesToWrite)
+    {
+        qDebug() << Q_FUNC_INFO << "dropping" << numSamples << "IQ samples...";
+        return;
+    }
+
+#if (AIRSPY_AGC_ENABLE > 0)
+    if (0 == (++signalLevelEmitCntr & 0x07))
+    {
+        //qDebug() << signalLevel;
+        emit agcLevel(src->signalLevel());
+    }
+#endif
+
+    if (isDumpingIQ())
+    {
+        dumpBuffer((unsigned char *) filterOutBuffer, bytesToWrite);
+    }
+
+    // there is enough room in buffer
+    uint64_t bytesTillEnd = INPUT_FIFO_SIZE - inputBuffer.head;
+
+    if (bytesTillEnd >= bytesToWrite)
+    {
+        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *) filterOutBuffer, bytesToWrite);
+        inputBuffer.head = (inputBuffer.head + bytesToWrite);
+    }
+    else
+    {
+        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *) filterOutBuffer, bytesTillEnd);
+        std::memcpy((inputBuffer.buffer), ((uint8_t *) filterOutBuffer)+bytesTillEnd, bytesToWrite-bytesTillEnd);
+        inputBuffer.head = bytesToWrite-bytesTillEnd;
+    }
+
+    pthread_mutex_lock(&inputBuffer.countMutex);
+    inputBuffer.count = inputBuffer.count + bytesToWrite;
+    pthread_cond_signal(&inputBuffer.countCondition);
+    pthread_mutex_unlock(&inputBuffer.countMutex);
 }
 
 void soapysdrCb(unsigned char *buf, uint32_t len, void * ctx)
