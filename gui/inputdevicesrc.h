@@ -13,7 +13,7 @@ class InputDeviceSRCFilter;
 class InputDeviceSRC
 {
 public:
-    InputDeviceSRC(int inputSampleRate);
+    InputDeviceSRC(float inputSampleRate);
     ~InputDeviceSRC();
     void reset();
     void resetSignalLevel(float resetVal = 0.0);
@@ -22,7 +22,6 @@ public:
     // processing - returns number of output samples
     int process(float inDataIQ[], int numInDataIQ, float outDataIQ[]);
 private:
-    int m_inputSampleRate;
     InputDeviceSRCFilter * m_filter = nullptr;
 };
 
@@ -94,7 +93,7 @@ private:
 class InputDeviceSRCFilterFarrow : public InputDeviceSRCFilter
 {
 public:
-    InputDeviceSRCFilterFarrow(int inputSampleRate);
+    InputDeviceSRCFilterFarrow(float inputSampleRate);
     ~InputDeviceSRCFilterFarrow();
     void reset() override;
 

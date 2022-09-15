@@ -3,10 +3,9 @@
 #include <cmath>
 #include <cstring>
 
-InputDeviceSRC::InputDeviceSRC(int inputSampleRate)
+InputDeviceSRC::InputDeviceSRC(float inputSampleRate)
 {
-    m_inputSampleRate = inputSampleRate;
-    if (2*2048000 == inputSampleRate)
+    if (2*2048e3 == inputSampleRate)
     {
         m_filter = new InputDeviceSRCFilterDS2();
     }
@@ -168,10 +167,10 @@ int InputDeviceSRCFilterDS2::process(float inDataIQ[], int numInDataIQ, float ou
 //===================================================================================================
 // Transposed Farrow filter designed for downsampling from arbitrary rate to 2048kHz
 
-InputDeviceSRCFilterFarrow::InputDeviceSRCFilterFarrow(int inputSampleRate)
+InputDeviceSRCFilterFarrow::InputDeviceSRCFilterFarrow(float inputSampleRate)
 {
     // output FS is fixed to 2048kHz
-    R = 2048e3 / (float) inputSampleRate;
+    R = 2048e3 / inputSampleRate;
 
     // calculate catt and crel
     catt = 1 - std::exp(-1/(INPUTDEVICESRC_LEVEL_ATTACK * inputSampleRate));
