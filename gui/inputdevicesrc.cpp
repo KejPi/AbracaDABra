@@ -175,6 +175,8 @@ InputDeviceSRCFilterFarrow::InputDeviceSRCFilterFarrow(float inputSampleRate)
     // calculate catt and crel
     catt = 1 - std::exp(-1/(INPUTDEVICESRC_LEVEL_ATTACK * inputSampleRate));
     crel = 1 - std::exp(-1/(INPUTDEVICESRC_LEVEL_RELEASE * inputSampleRate));
+
+    InputDeviceSRCFilterFarrow::reset();
 }
 
 InputDeviceSRCFilterFarrow::~InputDeviceSRCFilterFarrow()

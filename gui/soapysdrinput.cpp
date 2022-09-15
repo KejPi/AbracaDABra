@@ -545,7 +545,7 @@ void SoapySdrWorker::run()
     device->deactivateStream(stream, 0, 0);
 
     // exit of the thread
-    qDebug() << "SoapySdrWorker thread end" << QThread::currentThreadId();
+    //qDebug() << "SoapySdrWorker thread end" << QThread::currentThreadId();
 }
 
 void SoapySdrWorker::dumpToFileStart(FILE * f)
@@ -584,7 +584,6 @@ bool SoapySdrWorker::isRunning()
 
 void SoapySdrWorker::stop()
 {
-    qDebug() << Q_FUNC_INFO;
     doReadIQ = false;
 }
 
@@ -599,18 +598,18 @@ void SoapySdrWorker::processInputData(std::complex<float> buff[], size_t numSamp
 
     // input samples are IQ = [float float] @ sampleRate
     // going to transform them to [float float] @ 2048kHz  
-    int numIQ;
+    int numOutputIQ;
     if (nullptr != src)
     {   // SRC needed
-        numIQ = src->process((float*) buff, numSamples, filterOutBuffer);
+        numOutputIQ = src->process((float*) buff, numSamples, filterOutBuffer);
     }
     else
     {   // input is @ 2048kHz, no SRC
         filterOutBuffer = (float *) buff;
-        numIQ = numSamples;
+        numOutputIQ = numSamples;
     }
 
-    uint64_t bytesToWrite = numIQ * 2 * sizeof(float);
+    uint64_t bytesToWrite = numOutputIQ * 2 * sizeof(float);
 
     if ((INPUT_FIFO_SIZE - count) < bytesToWrite)
     {

@@ -309,6 +309,8 @@ void SetupDialog::onConnectDeviceClicked()
         break;
     case InputDeviceId::SOAPYSDR:
 #ifdef HAVE_SOAPYSDR
+        m_settings.soapysdr.devArgs = ui->soapysdrDevArgs->text();
+        m_settings.soapysdr.channel = ui->soapysdrChannelNum->text().toInt();
         activateSoapySdrControls(true);
 #endif
         break;

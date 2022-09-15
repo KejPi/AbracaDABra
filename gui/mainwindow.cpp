@@ -1596,9 +1596,10 @@ void MainWindow::loadSettings()
         if ((s.inputDevice == inputDeviceId)
                 && (    (InputDeviceId::RTLSDR == inputDeviceId)
                      || (InputDeviceId::AIRSPY == inputDeviceId)
+                     || (InputDeviceId::SOAPYSDR == inputDeviceId)
                      || (InputDeviceId::RTLTCP == inputDeviceId)
                      || (InputDeviceId::RARTTCP == inputDeviceId)))
-        {   // channel is only restored for RTL SDR and RTL/RART TCP at the moment
+        {   // restore channel
             int sid = settings->value("SID", 0).toInt();
             uint8_t scids = settings->value("SCIdS", 0).toInt();
             ServiceListId id(sid, scids);
@@ -1621,7 +1622,9 @@ void MainWindow::loadSettings()
 
     delete settings;
 
-    if (((InputDeviceId::RTLSDR == inputDeviceId) || (InputDeviceId::AIRSPY == inputDeviceId))
+    if (((InputDeviceId::RTLSDR == inputDeviceId)
+         || (InputDeviceId::AIRSPY == inputDeviceId)
+         || (InputDeviceId::SOAPYSDR == inputDeviceId))
        && (serviceList->numServices() == 0))
     {
         QTimer::singleShot(1, this, [this](){ bandScan(); } );
