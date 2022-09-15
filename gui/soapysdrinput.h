@@ -8,6 +8,7 @@
 #include <SoapySDR/Types.hpp>
 #include <SoapySDR/Formats.hpp>
 #include "inputdevice.h"
+#include "inputdevicesrc.h"
 
 #define SOAPYSDR_DOC_ENABLE  1   // enable DOC
 #define SOAPYSDR_AGC_ENABLE  1   // enable AGC
@@ -19,7 +20,8 @@ class SoapySdrWorker : public QThread
 {
     Q_OBJECT
 public:
-    explicit SoapySdrWorker(SoapySDR::Device *d, SoapySDR::Stream *s, QObject *parent = nullptr);
+    explicit SoapySdrWorker(SoapySDR::Device *d, SoapySDR::Stream *s, double sampleRate, QObject *parent = nullptr);
+    ~SoapySdrWorker();
     void dumpToFileStart(FILE * f);
     void dumpToFileStop();
     bool isRunning();
@@ -39,19 +41,22 @@ private:
     std::atomic<bool> wdogIsRunningFlag;
     std::atomic<bool> doReadIQ;
 
+    // SRC
+    float * filterOutBuffer;
+    InputDeviceSRC * src;
+
     // DOC memory
     float dcI = 0.0;
     float dcQ = 0.0;
 
     // AGC memory
     float agcLev = 0.0;
+    int_fast8_t signalLevelEmitCntr;
 
     bool isDumpingIQ() const { return enaDumpToFile; }
     void dumpBuffer(unsigned char *buf, uint32_t len);    
     void emitAgcLevel(float level, int maxVal) { emit agcLevel(level, maxVal); }
     void processInputData(std::complex<float> buff[], size_t numSamples);
-
-    friend void soapysdrCb(unsigned char *buf, uint32_t len, void *ctx);
 };
 
 class SoapySdrInput : public InputDevice
@@ -77,6 +82,7 @@ signals:
     void gainListAvailable(const QList<int> * pList);
 
 private:
+    double sampleRate;
     uint32_t frequency;
     bool deviceUnplugged;
     bool deviceRunning;

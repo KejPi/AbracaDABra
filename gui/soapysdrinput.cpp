@@ -2,8 +2,6 @@
 #include <QDebug>
 #include "soapysdrinput.h"
 
-void soapysdrCb(unsigned char *buf, uint32_t len, void *ctx);
-
 SoapySdrInput::SoapySdrInput(QObject *parent) : InputDevice(parent)
 {
     id = InputDeviceId::SOAPYSDR;
@@ -110,7 +108,7 @@ bool SoapySdrInput::openDevice()
         qDebug("[%g Hz - %g Hz], ", srRanges[n].minimum(), srRanges[n].maximum());
     }
 
-    double sampleRate = 10e8;  // dummy high value
+    sampleRate = 10e8;  // dummy high value
     bool has2048 = false;
     bool has4096 = false;
     for(int n = 0; n < srRanges.size(); ++n)
@@ -164,12 +162,6 @@ bool SoapySdrInput::openDevice()
         return false;
     }
     qDebug() << "SOAPYSDR: Sample rate set to" << sampleRate << "Hz";
-
-#warning "Set SRC here"
-    // airspy provides 49152 samples in callback in packed modes
-    // we cannot produce more samples in SRC => allocating for worst case
-//    filterOutBuffer = new ( std::align_val_t(16) ) float[49152*2];
-//    src = new InputDeviceSRC(sampleRate);
 
     // Get gains
     SoapySDR::Range gainRange = device->getGainRange(SOAPY_SDR_RX, rxChannel);
@@ -254,7 +246,7 @@ void SoapySdrInput::run()
         // does nothing if not SW AGC
         resetAgc();
 
-        worker = new SoapySdrWorker(device, stream, this);
+        worker = new SoapySdrWorker(device, stream, sampleRate, this);
         connect(worker, &SoapySdrWorker::agcLevel, this, &SoapySdrInput::updateAgc, Qt::QueuedConnection);
         connect(worker, &SoapySdrWorker::dumpedBytes, this, &InputDevice::dumpedBytes, Qt::QueuedConnection);
         connect(worker, &SoapySdrWorker::finished, this, &SoapySdrInput::readThreadStopped, Qt::QueuedConnection);
@@ -461,13 +453,34 @@ void SoapySdrInput::setBW(int bw)
     }
 }
 
-SoapySdrWorker::SoapySdrWorker(SoapySDR::Device *d, SoapySDR::Stream *s, QObject *parent) : QThread(parent)
+SoapySdrWorker::SoapySdrWorker(SoapySDR::Device *d, SoapySDR::Stream *s, double sampleRate, QObject *parent)
+    : QThread(parent)
 {
     enaDumpToFile = false;
     dumpFile = nullptr;
     soapySdrPtr = parent;
     device = d;
     stream = s;
+
+    if (2048e3 != sampleRate)
+    {
+        // we cannot produce more samples in SRC
+        filterOutBuffer = new ( std::align_val_t(16) ) float[SOAPYSDR_INPUT_SAMPLES*2];
+        src = new InputDeviceSRC(sampleRate);
+    }
+    else
+    {
+        src = nullptr;
+    }
+}
+
+SoapySdrWorker::~SoapySdrWorker()
+{
+    if (nullptr != src)
+    {
+        delete src;
+        operator delete [] (filterOutBuffer, std::align_val_t(16));
+    }
 }
 
 void SoapySdrWorker::run()
@@ -584,13 +597,18 @@ void SoapySdrWorker::processInputData(std::complex<float> buff[], size_t numSamp
 
     Q_ASSERT(count <= INPUT_FIFO_SIZE);
 
-    // input samples are IQ = [float float] @ 4096kHz
-    // going to transform them to [float float] @ 2048kHz
-
-#warning "SRC missing"
-    //int numIQ = src->process((float*) transfer->samples, transfer->sample_count, filterOutBuffer);
-    float * filterOutBuffer = (float *) buff;
-    int numIQ = numSamples;
+    // input samples are IQ = [float float] @ sampleRate
+    // going to transform them to [float float] @ 2048kHz  
+    int numIQ;
+    if (nullptr != src)
+    {   // SRC needed
+        numIQ = src->process((float*) buff, numSamples, filterOutBuffer);
+    }
+    else
+    {   // input is @ 2048kHz, no SRC
+        filterOutBuffer = (float *) buff;
+        numIQ = numSamples;
+    }
 
     uint64_t bytesToWrite = numIQ * 2 * sizeof(float);
 
@@ -630,222 +648,6 @@ void SoapySdrWorker::processInputData(std::complex<float> buff[], size_t numSamp
 
     pthread_mutex_lock(&inputBuffer.countMutex);
     inputBuffer.count = inputBuffer.count + bytesToWrite;
-    pthread_cond_signal(&inputBuffer.countCondition);
-    pthread_mutex_unlock(&inputBuffer.countMutex);
-}
-
-void soapysdrCb(unsigned char *buf, uint32_t len, void * ctx)
-{
-#if (SOAPYSDR_DOC_ENABLE > 0)
-    int_fast32_t sumI = 0;
-    int_fast32_t sumQ = 0;
-#define DC_C 0.05
-#endif
-
-#if (SOAPYSDR_AGC_ENABLE > 0)
-    int maxVal = 0;
-#define LEV_CATT 0.1
-#define LEV_CREL 0.0001
-#endif
-
-    SoapySdrWorker * soapySdrWorker = static_cast<SoapySdrWorker *>(ctx);
-    if (soapySdrWorker->isDumpingIQ())
-    {
-        soapySdrWorker->dumpBuffer(buf, len);
-    }
-
-#if (SOAPYSDR_WDOG_ENABLE)
-    // reset watchDog flag, timer sets it to true
-    soapySdrWorker->wdogIsRunningFlag = true;
-#endif
-
-    // retrieving memories
-#if (SOAPYSDR_DOC_ENABLE > 0)
-    float dcI = soapySdrWorker->dcI;
-    float dcQ = soapySdrWorker->dcQ;
-#endif
-#if (SOAPYSDR_AGC_ENABLE > 0)
-    float agcLev = soapySdrWorker->agcLev;
-#endif
-
-    // len is number of I and Q samples
-    // get FIFO space
-    pthread_mutex_lock(&inputBuffer.countMutex);
-    uint64_t count = inputBuffer.count;
-    Q_ASSERT(count <= INPUT_FIFO_SIZE);
-
-    pthread_mutex_unlock(&inputBuffer.countMutex);
-
-    if ((INPUT_FIFO_SIZE - count) < len*sizeof(float))
-    {
-        qDebug() << Q_FUNC_INFO << "dropping" << len << "bytes...";
-        return;
-    }
-
-    // input samples are IQ = [uint8_t uint8_t]
-    // going to transform them to [float float] = float _Complex
-    // on uint8_t will be transformed to one float
-
-    // there is enough room in buffer
-    uint64_t bytesTillEnd = INPUT_FIFO_SIZE - inputBuffer.head;
-    uint8_t * inPtr = buf;
-    if (bytesTillEnd >= len*sizeof(float))
-    {
-        float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
-        for (uint64_t k=0; k<len; k++)
-        {   // convert to float
-#if ((SOAPYSDR_DOC_ENABLE == 0) && ((SOAPYSDR_AGC_ENABLE == 0)))
-            *outPtr++ = float(*inPtr++ - 128);  // I or Q
-#else // ((SOAPYSDR_DOC_ENABLE == 0) && ((SOAPYSDR_AGC_ENABLE == 0)))
-            int_fast8_t tmp = *inPtr++ - 128; // I or Q
-
-#if (SOAPYSDR_AGC_ENABLE > 0)
-            int_fast8_t absTmp = abs(tmp);
-
-            // catch maximum value (used to avoid overflow)
-            if (absTmp > maxVal)
-            {
-                maxVal = absTmp;
-            }
-
-            // calculate signal level (rectifier, fast attack slow release)
-            float c = LEV_CREL;
-            if (absTmp > agcLev)
-            {
-                c = LEV_CATT;
-            }
-            agcLev = c * absTmp + agcLev - c * agcLev;
-#endif  // (SOAPYSDR_AGC_ENABLE > 0)
-
-#if (SOAPYSDR_DOC_ENABLE > 0)
-            // subtract DC
-            if (k & 0x1)
-            {   // Q
-                sumQ += tmp;
-                *outPtr++ = float(tmp) - dcQ;
-            }
-            else
-            {  // I
-                sumI += tmp;
-                *outPtr++ = float(tmp) - dcI;
-            }
-#else
-            *outPtr++ = float(tmp);
-#endif  // SOAPYSDR_DOC_ENABLE
-#endif  // ((SOAPYSDR_DOC_ENABLE == 0) && ((SOAPYSDR_AGC_ENABLE == 0)))
-        }
-        inputBuffer.head = (inputBuffer.head + len*sizeof(float));
-    }
-    else
-    {
-        Q_ASSERT(sizeof(float) == 4);
-        uint64_t samplesTillEnd = bytesTillEnd >> 2; // / sizeof(float);
-
-        float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
-        for (uint64_t k=0; k<samplesTillEnd; ++k)
-        {   // convert to float
-#if ((SOAPYSDR_DOC_ENABLE == 0) && ((SOAPYSDR_AGC_ENABLE == 0)))
-            *outPtr++ = float(*inPtr++ - 128);  // I or Q
-#else // ((SOAPYSDR_DOC_ENABLE == 0) && ((SOAPYSDR_AGC_ENABLE == 0)))
-            int_fast8_t tmp = *inPtr++ - 128; // I or Q
-
-#if (SOAPYSDR_AGC_ENABLE > 0)
-            int_fast8_t absTmp = abs(tmp);
-
-            // catch maximum value (used to avoid overflow)
-            if (absTmp > maxVal)
-            {
-                maxVal = absTmp;
-            }
-
-            // calculate signal level (rectifier, fast attack slow release)
-            float c = LEV_CREL;
-            if (absTmp > agcLev)
-            {
-                c = LEV_CATT;
-            }
-            agcLev = c * absTmp + agcLev - c * agcLev;
-#endif  // (SOAPYSDR_AGC_ENABLE > 0)
-
-#if (SOAPYSDR_DOC_ENABLE > 0)
-            // subtract DC
-            if (k & 0x1)
-            {   // Q
-                sumQ += tmp;
-                *outPtr++ = float(tmp) - dcQ;
-            }
-            else
-            {  // I
-                sumI += tmp;
-                *outPtr++ = float(tmp) - dcI;
-            }
-#else
-            *outPtr++ = float(tmp);
-#endif  // SOAPYSDR_DOC_ENABLE
-#endif  // ((SOAPYSDR_DOC_ENABLE == 0) && ((SOAPYSDR_AGC_ENABLE == 0)))
-        }
-
-        outPtr = (float *)(inputBuffer.buffer);
-        for (uint64_t k=0; k<len-samplesTillEnd; ++k)
-        {   // convert to float
-#if ((SOAPYSDR_DOC_ENABLE == 0) && ((SOAPYSDR_AGC_ENABLE == 0)))
-            *outPtr++ = float(*inPtr++ - 128);  // I or Q
-#else // ((SOAPYSDR_DOC_ENABLE == 0) && ((SOAPYSDR_AGC_ENABLE == 0)))
-            int_fast8_t tmp = *inPtr++ - 128; // I or Q
-
-#if (SOAPYSDR_AGC_ENABLE > 0)
-            int_fast8_t absTmp = abs(tmp);
-
-            // catch maximum value (used to avoid overflow)
-            if (absTmp > maxVal)
-            {
-                maxVal = absTmp;
-            }
-
-            // calculate signal level (rectifier, fast attack slow release)
-            float c = LEV_CREL;
-            if (absTmp > agcLev)
-            {
-                c = LEV_CATT;
-            }
-            agcLev = c * absTmp + agcLev - c * agcLev;
-#endif  // (SOAPYSDR_AGC_ENABLE > 0)
-
-#if (SOAPYSDR_DOC_ENABLE > 0)
-            // subtract DC
-            if (k & 0x1)
-            {   // Q
-                sumQ += tmp;
-                *outPtr++ = float(tmp) - dcQ;
-            }
-            else
-            {  // I
-                sumI += tmp;
-                *outPtr++ = float(tmp) - dcI;
-            }
-#else
-            *outPtr++ = float(tmp);
-#endif  // SOAPYSDR_DOC_ENABLE
-#endif  // ((SOAPYSDR_DOC_ENABLE == 0) && ((SOAPYSDR_AGC_ENABLE == 0)))
-        }
-        inputBuffer.head = (len-samplesTillEnd)*sizeof(float);
-    }
-
-#if (SOAPYSDR_DOC_ENABLE > 0)
-    // calculate correction values for next input buffer
-    soapySdrWorker->dcI = sumI * DC_C / (len >> 1) + dcI - DC_C * dcI;
-    soapySdrWorker->dcQ = sumQ * DC_C / (len >> 1) + dcQ - DC_C * dcQ;
-#endif
-
-#if (SOAPYSDR_AGC_ENABLE > 0)
-    // store memory
-    soapySdrWorker->agcLev = agcLev;
-
-    soapySdrWorker->emitAgcLevel(agcLev, maxVal);
-#endif
-
-    pthread_mutex_lock(&inputBuffer.countMutex);
-    inputBuffer.count = inputBuffer.count + len*sizeof(float);
     pthread_cond_signal(&inputBuffer.countCondition);
     pthread_mutex_unlock(&inputBuffer.countMutex);
 }
