@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>350</width>
-    <height>107</height>
+    <height>132</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
        <item>
         <widget class="QLabel" name="scanningLabel">
          <property name="text">
-          <string>Scaning channel:</string>
+          <string>Scanning channel:</string>
          </property>
         </widget>
        </item>

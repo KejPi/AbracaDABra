@@ -74,7 +74,7 @@ QVariant SLModelItem::data(int column, int role) const
                 {  // found
                     return QVariant(QString("Channel %1<br>Frequency: %2 MHz")
                                         .arg(DabTables::channelList.value(it.value()->frequency()))
-                                        .arg(it.value()->frequency()/1000.0));
+                                        .arg(it.value()->frequency()/1000.0, 3, 'f', 3, QChar('0')));
                 }
             }
         }
