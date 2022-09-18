@@ -10,9 +10,11 @@
 #include "inputdevice.h"
 #include "inputdevicesrc.h"
 
-#define SOAPYSDR_DOC_ENABLE  1   // enable DOC
 #define SOAPYSDR_AGC_ENABLE  1   // enable AGC
 #define SOAPYSDR_WDOG_ENABLE 1   // enable watchdog timer
+#define SOAPYSDR_DUMP_INT16  1   // dump raw stream in int16 insetad of float
+
+#define SOAPYSDR_DUMP_FLOAT2INT16  (16384)   // conversion constant to int16
 
 #define SOAPYSDR_INPUT_SAMPLES (16384)
 

@@ -450,7 +450,11 @@ void SoapySdrInput::startDumpToFile(const QString & filename)
     if (nullptr != dumpFile)
     {
         worker->dumpToFileStart(dumpFile);
-        emit dumpingToFile(true);
+#if SOAPYSDR_DUMP_INT16
+        emit dumpingToFile(true, 2*sizeof(int16_t));
+#else
+        emit dumpingToFile(true, 2*sizeof(float));
+#endif
     }
 }
 
@@ -604,7 +608,20 @@ void SoapySdrWorker::dumpBuffer(unsigned char *buf, uint32_t len)
     fileMutex.lock();
     if (nullptr != dumpFile)
     {
+#if SOAPYSDR_DUMP_INT16
+        // dumping in int16
+        float * floatBuf = (float *) buf;
+        int16_t int16Buf[len/sizeof(float)];
+        for (int n = 0; n < len/sizeof(float); ++n)
+        {
+            int16Buf[n] = *floatBuf++ * SOAPYSDR_DUMP_FLOAT2INT16;
+        }
+        ssize_t bytes = fwrite(int16Buf, 1, sizeof(int16Buf), dumpFile);
+
+#else
+        // dumping in float
         ssize_t bytes = fwrite(buf, 1, len, dumpFile);
+#endif
         emit dumpedBytes(bytes);
     }
     fileMutex.unlock();
