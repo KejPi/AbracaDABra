@@ -14,9 +14,9 @@
 // total capacity is 8 input chunks
 #define INPUT_FIFO_SIZE           (INPUT_CHUNK_IQ_SAMPLES * (2*sizeof(float)) * 8)
 
-#define INPUTDEVICE_WDOG_TIMEOUT_SEC 2   // watchdog timeout in seconds (if implemented and enabled)
+#define INPUTDEVICE_WDOG_TIMEOUT_SEC 2     // watchdog timeout in seconds (if implemented and enabled)
 
-#define INPUTDEVICE_AGC_GAIN_NA  0x0FFF  // this value signalizes that AGC gain is not available (e.g. hardware AGC)
+#define INPUTDEVICE_AGC_GAIN_NA (0x7FC00000)    // this value signalizes that AGC gain is not available (e.g. hardware AGC)
 
 struct ComplexFifo
 {
@@ -78,7 +78,7 @@ signals:
     void tuned(uint32_t freq);
     void dumpingToFile(bool running, int bytesPerSample = 2);
     void dumpedBytes(ssize_t bytes);
-    void agcGain(int gain10);
+    void agcGain(float gain);
     void error(const InputDeviceErrorCode errCode = InputDeviceErrorCode::Undefined);
 
 protected:

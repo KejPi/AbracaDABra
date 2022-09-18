@@ -204,6 +204,9 @@ void RtlSdrInput::setGainMode(RtlGainMode mode, int gainIdx)
     if (RtlGainMode::Manual == gainMode)
     {
         setGain(gainIdx);
+
+        // always emit gain when switching mode to manual
+        emit agcGain(gainList->at(gainIdx)*0.1);
     }
 
     if (RtlGainMode::Hardware == gainMode)
@@ -238,7 +241,7 @@ void RtlSdrInput::setGain(int gIdx)
         else
         {
             //qDebug() << "RTLSDR: Tuner gain set to" << gainList->at(gainIdx)/10.0;
-            emit agcGain(gainList->at(gainIdx));
+            emit agcGain(gainList->at(gainIdx)*0.1);
         }
     }
 }

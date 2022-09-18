@@ -191,14 +191,14 @@ void EnsembleInfoDialog::updateDumpStatus(ssize_t bytes)
     ui->dumpLength->setText(QString::number(double(timeMs * 0.001),'f', 1) + " sec");
 }
 
-void EnsembleInfoDialog::updateAgcGain(int gain10)
+void EnsembleInfoDialog::updateAgcGain(float gain)
 {
-    if (INPUTDEVICE_AGC_GAIN_NA == gain10)
+    if (INPUTDEVICE_AGC_GAIN_NA == gain)
     {   // gain is not available (input device in HW mode)
         ui->agcGain->setText("N/A");
         return;
     }
-    ui->agcGain->setText(QString::number(double(gain10 * 0.1),'f', 1) + " dB");
+    ui->agcGain->setText(QString::number(double(gain),'f', 1) + " dB");
 }
 
 void EnsembleInfoDialog::updateFIBstatus(int fibCntr, int fibErrCount)

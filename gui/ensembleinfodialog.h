@@ -25,7 +25,7 @@ public:
     void enableDumpToFile(bool ena);
     void dumpToFileStateToggle(bool dumping, int bytesPerSample);
     void updateDumpStatus(ssize_t bytes);
-    void updateAgcGain(int gain10);
+    void updateAgcGain(float gain);
     void updateFIBstatus(int fibCount, int fibErrCount);
     void updateMSCstatus(int crcOkCount, int crcErrCount);
     void resetFibStat();

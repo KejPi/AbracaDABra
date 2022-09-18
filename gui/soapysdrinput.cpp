@@ -325,6 +325,9 @@ void SoapySdrInput::setGainMode(SoapyGainMode mode, int gainIdx)
     if (SoapyGainMode::Manual == gainMode)
     {
         setGain(gainIdx);
+
+        // always emit gain when switching mode to manual
+        emit agcGain(gainList->at(gainIdx));
     }
 
     if (SoapyGainMode::Hardware == gainMode)
