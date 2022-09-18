@@ -40,6 +40,7 @@ private:
     QMutex fileMutex;
     std::atomic<bool> wdogIsRunningFlag;
     std::atomic<bool> doReadIQ;
+    int captureStartCntr;
 
     // SRC
     float * filterOutBuffer;

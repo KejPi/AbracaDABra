@@ -243,7 +243,7 @@ void SoapySdrInput::run()
     {   // Tune to new frequency
         device->setFrequency(SOAPY_SDR_RX, rxChannel, frequency*1000);
 
-        // does nothing if not SW AGC
+        // does nothing if manual AGC
         resetAgc();
 
         worker = new SoapySdrWorker(device, stream, sampleRate, this);
@@ -348,7 +348,7 @@ void SoapySdrInput::setGain(int gIdx)
 
 void SoapySdrInput::resetAgc()
 {
-    if (SoapyGainMode::Software == gainMode)
+    if ((SoapyGainMode::Software == gainMode) || (SoapyGainMode::Hardware == gainMode))
     {
         setGain(gainList->size() >> 1);
     }
@@ -493,6 +493,8 @@ void SoapySdrWorker::run()
     agcLev = 0.0;
     wdogIsRunningFlag = false;  // first callback sets it to true
 
+    captureStartCntr = 4;
+
     device->activateStream(stream);
 
     std::complex<float> inputBuffer[SOAPYSDR_INPUT_SAMPLES];
@@ -537,6 +539,11 @@ void SoapySdrWorker::run()
         else
         {
             // OK, process data
+            if (captureStartCntr > 0)
+            {   // clear buffer to avoid mixing of channels
+                captureStartCntr--;
+                memset(inputBuffer, 0, SOAPYSDR_INPUT_SAMPLES * sizeof(std::complex<float>));
+            }
             processInputData(inputBuffer, ret);
         }
     }

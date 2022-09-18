@@ -1149,8 +1149,7 @@ void MainWindow::onNewSettings()
 {
     //qDebug() << Q_FUNC_INFO;
     SetupDialog::Settings s = setupDialog->settings();
-
-    switch (s.inputDevice)
+    switch (inputDeviceId)
     {
     case InputDeviceId::RTLSDR:
         dynamic_cast<RtlSdrInput*>(inputDevice)->setGainMode(s.rtlsdr.gainMode, s.rtlsdr.gainIdx);
