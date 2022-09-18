@@ -12,11 +12,15 @@
 
 #define SOAPYSDR_AGC_ENABLE  1   // enable AGC
 #define SOAPYSDR_WDOG_ENABLE 1   // enable watchdog timer
-#define SOAPYSDR_DUMP_INT16  1   // dump raw stream in int16 insetad of float
 
+#define SOAPYSDR_DUMP_INT16  1   // dump raw stream in int16 insetad of float
 #define SOAPYSDR_DUMP_FLOAT2INT16  (16384)   // conversion constant to int16
 
 #define SOAPYSDR_INPUT_SAMPLES (16384)
+
+#define SOAPYSDR_LEVEL_THR_MIN (0.001)
+#define SOAPYSDR_LEVEL_THR_MAX (0.1)
+#define SOAPYSDR_LEVEL_RESET   (0.008)
 
 class SoapySdrWorker : public QThread
 {
@@ -31,7 +35,7 @@ public:
 protected:
     void run() override;
 signals:
-    void agcLevel(float level, int maxVal);
+    void agcLevel(float level);
     void dumpedBytes(ssize_t bytes);
 private:
     QObject *soapySdrPtr;
@@ -58,7 +62,6 @@ private:
 
     bool isDumpingIQ() const { return enaDumpToFile; }
     void dumpBuffer(unsigned char *buf, uint32_t len);    
-    void emitAgcLevel(float level, int maxVal) { emit agcLevel(level, maxVal); }
     void processInputData(std::complex<float> buff[], size_t numSamples);
 };
 
@@ -111,8 +114,8 @@ private:
     // gain is set from outside usin setGainMode() function
     void setGain(int gIdx);
 
-    // used by friend
-    void updateAgc(float level, int maxVal);
+    // used by worker
+    void updateAgc(float level);
 
     void readThreadStopped();
 #if (SOAPYSDR_WDOG_ENABLE)

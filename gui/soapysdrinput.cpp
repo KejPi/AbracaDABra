@@ -378,24 +378,24 @@ void SoapySdrInput::resetAgc()
 #endif
     if (SoapyGainMode::Software == gainMode)
     {
+        gainIdx = -1;
         setGain(gainList->size() >> 1);
     }
 }
 
-void SoapySdrInput::updateAgc(float level, int maxVal)
+void SoapySdrInput::updateAgc(float level)
 {
-    if (SoapyGainMode::Software == gainMode)
+    //qDebug() << Q_FUNC_INFO << level;
+    if (level > SOAPYSDR_LEVEL_THR_MAX)
     {
-        // AGC correction
-        if (maxVal >= 127)
-        {
-           setGain(gainIdx-1);
-        }
-        else if ((level < 50) && (maxVal < 100))
-        {  // (maxVal < 100) is required to avoid toggling => change gain only if there is some headroom
-           // this could be problem on E4000 tuner with big AGC gain steps
-           setGain(gainIdx+1);
-        }
+        //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity down";
+        setGain(gainIdx-1);
+        return;
+    }
+    if (level < SOAPYSDR_LEVEL_THR_MIN)
+    {
+        //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity up";
+        setGain(gainIdx+1);
     }
 }
 
@@ -525,7 +525,9 @@ void SoapySdrWorker::run()
     agcLev = 0.0;
     wdogIsRunningFlag = false;  // first callback sets it to true
 
-    captureStartCntr = 4;
+    signalLevelEmitCntr = 0;
+
+    captureStartCntr = 3;
 
     device->activateStream(stream);
 
@@ -669,11 +671,14 @@ void SoapySdrWorker::processInputData(std::complex<float> buff[], size_t numSamp
         return;
     }
 
-#if (AIRSPY_AGC_ENABLE > 0)
-    if (0 == (++signalLevelEmitCntr & 0x07))
-    {
-        //qDebug() << signalLevel;
-        emit agcLevel(src->signalLevel());
+#if (SOAPYSDR_AGC_ENABLE > 0)
+    if (0 == (++signalLevelEmitCntr & 0x0F))
+    {        
+        if (nullptr != src)
+        {
+            //qDebug() << src->signalLevel();
+            emit agcLevel(src->signalLevel());
+        }
     }
 #endif
 
