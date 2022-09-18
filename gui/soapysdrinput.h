@@ -79,8 +79,7 @@ public:
 
     void setBW(int bw);
 
-signals:
-    void gainListAvailable(const QList<int> * pList);
+    QList<int> * getGainList() const { return gainList; }
 
 private:
     double sampleRate;

@@ -111,7 +111,6 @@ bool RtlSdrInput::openDevice()
         gainList->append(gains[i]);
     }
     delete [] gains;
-    emit gainListAvailable(gainList);
 
     // set automatic gain
     setGainMode(RtlGainMode::Software);

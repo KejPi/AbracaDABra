@@ -390,7 +390,6 @@ bool RtlTcpInput::openDevice()
             //qDebug() << "RTL_TCP: gain " << (gains[i] / 10.0);
             gainList->append(gains[i]);
         }
-        emit gainListAvailable(gainList);
 
         // device connected
         deviceUnplugged = false;

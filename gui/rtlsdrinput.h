@@ -63,8 +63,7 @@ public:
     void setBW(int bw);
     void setBiasT(bool ena);
 
-signals:
-    void gainListAvailable(const QList<int> * pList);
+    QList<int> * getGainList() const { return gainList; }
 
 private:
     uint32_t frequency;

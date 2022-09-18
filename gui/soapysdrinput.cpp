@@ -178,7 +178,6 @@ bool SoapySdrInput::openDevice()
         gainList->append(round(gain*10));
         gain += gainStep;
     }
-    emit gainListAvailable(gainList);
 
     if (device->hasGainMode(SOAPY_SDR_RX, rxChannel))
     {   // set automatic gain
@@ -188,6 +187,12 @@ bool SoapySdrInput::openDevice()
     {
         setGainMode(SoapyGainMode::Software);
     }
+
+    if (device->hasDCOffsetMode(SOAPY_SDR_RX, rxChannel))
+    {   // set automatic gain
+        device->setDCOffsetMode(SOAPY_SDR_RX, rxChannel, true);
+    }
+    else { /* DC offset correction not available */ }
 
     try
     {
@@ -295,18 +300,24 @@ void SoapySdrInput::stop()
 
 void SoapySdrInput::setGainMode(SoapyGainMode mode, int gainIdx)
 {
+    qDebug() << int(mode) << gainIdx;
     if (mode != gainMode)
     {
-#warning "What to do when AGC not supported"
-
-        // enable AGC for HW mode
-        try
+        if (SoapyGainMode::Hardware == mode)
         {
-            device->setGainMode(SOAPY_SDR_RX, rxChannel, (SoapyGainMode::Hardware == mode));
+            if (device->hasGainMode(SOAPY_SDR_RX, rxChannel))
+            {
+                device->setGainMode(SOAPY_SDR_RX, rxChannel, (SoapyGainMode::Hardware == mode));
+            }
+            else
+            {
+                device->setGainMode(SOAPY_SDR_RX, rxChannel, false);
+                mode = SoapyGainMode::Software;   // SW AC is fallback
+            }
         }
-        catch(const std::exception &ex)
+        else
         {
-            qDebug() << "SOAPYSDR: Error AGC mode" << ex.what();
+            device->setGainMode(SOAPY_SDR_RX, rxChannel, false);
         }
 
         gainMode = mode;

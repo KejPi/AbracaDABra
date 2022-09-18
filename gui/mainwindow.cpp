@@ -1235,12 +1235,12 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
         connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
-        // setup dialog
-        connect(dynamic_cast<RtlSdrInput*>(inputDevice), &RtlSdrInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
-
         if (inputDevice->openDevice())
         {  // rtl sdr is available
             inputDeviceId = InputDeviceId::RTLSDR;
+
+            // setup dialog
+            setupDialog->setGainValues(dynamic_cast<RtlSdrInput*>(inputDevice)->getGainList());
 
             // enable band scan
             bandScanAct->setEnabled(true);
@@ -1284,9 +1284,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
         connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
-        // setup dialog
-        connect(dynamic_cast<RtlTcpInput*>(inputDevice), &RtlTcpInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
-
         // tuning procedure
         connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
         connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
@@ -1297,6 +1294,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         if (inputDevice->openDevice())
         {  // rtl tcp is available
             inputDeviceId = InputDeviceId::RTLTCP;
+
+            // setup dialog
+            setupDialog->setGainValues(dynamic_cast<RtlTcpInput*>(inputDevice)->getGainList());
 
             // enable band scan
             bandScanAct->setEnabled(true);
@@ -1335,9 +1335,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         // HMI
         connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
         connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
-
-        // setup dialog
-        // nothing at the moment
 
         // tuning procedure
         connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
@@ -1438,9 +1435,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
         connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
 
-        // setup dialog
-        connect(dynamic_cast<SoapySdrInput*>(inputDevice), &SoapySdrInput::gainListAvailable, setupDialog, &SetupDialog::setGainValues);
-
         // HMI
         connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
         connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
@@ -1452,6 +1446,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         if (inputDevice->openDevice())
         {  // SoapySDR is available
             inputDeviceId = InputDeviceId::SOAPYSDR;
+
+            // setup dialog
+            setupDialog->setGainValues(dynamic_cast<SoapySdrInput*>(inputDevice)->getGainList());
 
             // enable band scan
             bandScanAct->setEnabled(true);

@@ -111,7 +111,6 @@ public:
     ~RtlTcpInput();
     bool openDevice() override;
 
-public slots:
     void tune(uint32_t freq) override;
     void setTcpIp(const QString & addr, int p);
     void setGainMode(RtlGainMode mode, int gainIdx = 0);
@@ -120,9 +119,7 @@ public slots:
     void startDumpToFile(const QString & filename) override;
     void stopDumpToFile() override;
 
-signals:
-    void gainListAvailable(const QList<int> * pList);
-
+    QList<int> * getGainList() const { return gainList; }
 private:    
     uint32_t frequency;
     bool deviceUnplugged;
