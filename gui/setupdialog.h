@@ -72,7 +72,7 @@ public:
 
     SetupDialog(QWidget *parent = nullptr);
     Settings settings() const;
-    void setGainValues(const QList<int> * pList = nullptr);
+    void setGainValues(const QList<float> & gainList);
     void resetInputDevice();
     void onExpertMode(bool ena);
     void setSettings(const Settings &settings);
@@ -88,9 +88,9 @@ private:
     Ui::SetupDialog *ui;
     Settings m_settings;
     QString rawfilename;
-    QList<int> rtlsdrGainList;
-    QList<int> rtltcpGainList;
-    QList<int> soapysdrGainList;
+    QList<float> rtlsdrGainList;
+    QList<float> rtltcpGainList;
+    QList<float> soapysdrGainList;
 
     void onButtonClicked(QAbstractButton *button);
     void onInputChanged(int index);

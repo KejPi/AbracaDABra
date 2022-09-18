@@ -79,7 +79,7 @@ public:
 
     void setBW(int bw);
 
-    QList<int> * getGainList() const { return gainList; }
+    QList<float> getGainList() const { return * gainList; }
 
 private:
     double sampleRate;
@@ -96,9 +96,9 @@ private:
 #if (SOAPYSDR_WDOG_ENABLE)
     QTimer watchDogTimer;
 #endif
-    SoapyGainMode gainMode = SoapyGainMode::Hardware;
+    SoapyGainMode gainMode = SoapyGainMode::Manual;
     int gainIdx;
-    QList<int> * gainList;
+    QList<float> * gainList;
     FILE * dumpFile;
 
     void run();           

@@ -171,11 +171,11 @@ bool SoapySdrInput::openDevice()
     {   // expecting step 1
         gainStep = 1.0;
     }
-    gainList = new QList<int>();
+    gainList = new QList<float>();
     double gain = gainRange.minimum();
     while (gain <= gainRange.maximum())
     {
-        gainList->append(round(gain*10));
+        gainList->append(gain);
         gain += gainStep;
     }
 
@@ -300,14 +300,13 @@ void SoapySdrInput::stop()
 
 void SoapySdrInput::setGainMode(SoapyGainMode mode, int gainIdx)
 {
-    qDebug() << int(mode) << gainIdx;
     if (mode != gainMode)
     {
         if (SoapyGainMode::Hardware == mode)
         {
             if (device->hasGainMode(SOAPY_SDR_RX, rxChannel))
             {
-                device->setGainMode(SOAPY_SDR_RX, rxChannel, (SoapyGainMode::Hardware == mode));
+                device->setGainMode(SOAPY_SDR_RX, rxChannel, true);
             }
             else
             {
@@ -333,7 +332,7 @@ void SoapySdrInput::setGainMode(SoapyGainMode mode, int gainIdx)
         emit agcGain(INPUTDEVICE_AGC_GAIN_NA);
     }
 
-    // does nothing in (GainMode::Software != mode)
+    // does nothing in (GainMode::Software != mode)    
     resetAgc();
 }
 
@@ -359,7 +358,22 @@ void SoapySdrInput::setGain(int gIdx)
 
 void SoapySdrInput::resetAgc()
 {
-    if ((SoapyGainMode::Software == gainMode) || (SoapyGainMode::Hardware == gainMode))
+#if 0
+    switch (gainMode)
+    {
+    case SoapyGainMode::Software:
+        setGain(gainList->size() >> 1);
+        break;
+    case SoapyGainMode::Hardware:
+        device->setGainMode(SOAPY_SDR_RX, rxChannel, false);
+        setGain(gainList->size() >> 1);
+        device->setGainMode(SOAPY_SDR_RX, rxChannel, true);
+        break;
+    default: ;
+        // do nothing
+    }
+#endif
+    if (SoapyGainMode::Software == gainMode)
     {
         setGain(gainList->size() >> 1);
     }

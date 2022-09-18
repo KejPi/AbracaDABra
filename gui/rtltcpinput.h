@@ -119,7 +119,7 @@ public:
     void startDumpToFile(const QString & filename) override;
     void stopDumpToFile() override;
 
-    QList<int> * getGainList() const { return gainList; }
+    QList<float> getGainList() const;
 private:    
     uint32_t frequency;
     bool deviceUnplugged;

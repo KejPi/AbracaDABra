@@ -607,6 +607,16 @@ void RtlTcpInput::stopDumpToFile()
     emit dumpingToFile(false);
 }
 
+QList<float> RtlTcpInput::getGainList() const
+{
+    QList<float> ret;
+    for (int g = 0; g < gainList->size(); ++g)
+    {
+        ret.append(gainList->at(g)/10.0);
+    }
+    return ret;
+}
+
 void RtlTcpInput::sendCommand(const RtlTcpCommand & cmd, uint32_t param)
 {
     if (deviceUnplugged)

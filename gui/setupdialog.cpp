@@ -98,28 +98,28 @@ SetupDialog::Settings SetupDialog::settings() const
     return m_settings;
 }
 
-void SetupDialog::setGainValues(const QList<int> * pList)
+void SetupDialog::setGainValues(const QList<float> &gainList)
 {
 
     switch (m_settings.inputDevice)
     {
     case InputDeviceId::RTLSDR:
         rtlsdrGainList.clear();
-        rtlsdrGainList = *pList;
+        rtlsdrGainList = gainList;
         ui->rtlsdrGainSlider->setMinimum(0);
         ui->rtlsdrGainSlider->setMaximum(rtlsdrGainList.size()-1);
         ui->rtlsdrGainSlider->setValue((m_settings.rtlsdr.gainIdx >= 0) ? m_settings.rtlsdr.gainIdx : 0);
         break;
     case InputDeviceId::RTLTCP:
         rtltcpGainList.clear();
-        rtltcpGainList = *pList;
+        rtltcpGainList = gainList;
         ui->rtltcpGainSlider->setMinimum(0);
         ui->rtltcpGainSlider->setMaximum(rtltcpGainList.size()-1);
         ui->rtltcpGainSlider->setValue((m_settings.rtltcp.gainIdx >= 0) ? m_settings.rtltcp.gainIdx : 0);
         break;
     case InputDeviceId::SOAPYSDR:
         soapysdrGainList.clear();
-        soapysdrGainList = *pList;
+        soapysdrGainList = gainList;
         ui->soapysdrGainSlider->setMinimum(0);
         ui->soapysdrGainSlider->setMaximum(soapysdrGainList.size()-1);
         ui->soapysdrGainSlider->setValue((m_settings.soapysdr.gainIdx >= 0) ? m_settings.soapysdr.gainIdx : 0);
@@ -320,14 +320,14 @@ void SetupDialog::onConnectDeviceClicked()
 
 void SetupDialog::onRtlSdrGainSliderChanged(int val)
 {
-    ui->rtlsdrGainValueLabel->setText(QString("%1 dB").arg(rtlsdrGainList.at(val)/10.0));
+    ui->rtlsdrGainValueLabel->setText(QString("%1 dB").arg(rtlsdrGainList.at(val)));
     m_settings.rtlsdr.gainIdx = val;
     emit newSettings();
 }
 
 void SetupDialog::onRtlTcpGainSliderChanged(int val)
 {
-    ui->rtltcpGainValueLabel->setText(QString("%1 dB").arg(rtltcpGainList.at(val)/10.0));
+    ui->rtltcpGainValueLabel->setText(QString("%1 dB").arg(rtltcpGainList.at(val)));
     m_settings.rtltcp.gainIdx = val;
     emit newSettings();
 }
@@ -519,7 +519,7 @@ void SetupDialog::onAirspyMixerAGCstateChanged(int state)
 #ifdef HAVE_SOAPYSDR
 void SetupDialog::onSoapySdrGainSliderChanged(int val)
 {
-    ui->soapysdrGainValueLabel->setText(QString("%1 dB").arg(soapysdrGainList.at(val)/10.0));
+    ui->soapysdrGainValueLabel->setText(QString("%1 dB").arg(soapysdrGainList.at(val)));
     m_settings.soapysdr.gainIdx = val;
     emit newSettings();
 }

@@ -363,6 +363,16 @@ void RtlSdrInput::setBiasT(bool ena)
     }
 }
 
+QList<float> RtlSdrInput::getGainList() const
+{
+    QList<float> ret;
+    for (int g = 0; g < gainList->size(); ++g)
+    {
+        ret.append(gainList->at(g)/10.0);
+    }
+    return ret;
+}
+
 RtlSdrWorker::RtlSdrWorker(struct rtlsdr_dev *d, QObject *parent) : QThread(parent)
 {
     enaDumpToFile = false;
