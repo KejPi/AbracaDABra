@@ -194,6 +194,9 @@ bool SoapySdrInput::openDevice()
     }
     else { /* DC offset correction not available */ }
 
+    // set bandwidth
+    setBW(SOAPYSDR_BANDWIDTH);
+
     SoapySDR::Stream *stream;
     try
     {
@@ -470,7 +473,7 @@ void SoapySdrInput::setBW(int bw)
         }
         catch(const std::exception &ex)
         {
-            qDebug() << "SOAPYSDR: failed to set banwidth" << bw << ":" << ex.what();
+            qDebug() << "SOAPYSDR: failed to set bandwidth" << bw << ":" << ex.what();
             return;
         }
         qDebug() << "SOAPYSDR: bandwidth set to" << bw/1000.0 << "kHz";
