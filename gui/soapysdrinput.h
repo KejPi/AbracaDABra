@@ -10,7 +10,6 @@
 #include "inputdevice.h"
 #include "inputdevicesrc.h"
 
-#define SOAPYSDR_AGC_ENABLE  1   // enable AGC
 #define SOAPYSDR_WDOG_ENABLE 1   // enable watchdog timer
 
 #define SOAPYSDR_DUMP_INT16  1   // dump raw stream in int16 insetad of float
@@ -18,9 +17,9 @@
 
 #define SOAPYSDR_INPUT_SAMPLES (16384)
 
-#define SOAPYSDR_LEVEL_THR_MIN (0.001)
-#define SOAPYSDR_LEVEL_THR_MAX (0.1)
-#define SOAPYSDR_LEVEL_RESET   (0.008)
+#define SOAPYSDR_LEVEL_THR_MAX (0.5)
+#define SOAPYSDR_LEVEL_THR_MIN (SOAPYSDR_LEVEL_THR_MAX/20.0)
+#define SOAPYSDR_LEVEL_RESET   ((SOAPYSDR_LEVEL_THR_MAX-SOAPYSDR_LEVEL_THR_MIN)/2.0 + SOAPYSDR_LEVEL_THR_MIN)
 
 class SoapySdrWorker : public QThread
 {
@@ -52,13 +51,9 @@ private:
     float * filterOutBuffer;
     InputDeviceSRC * src;
 
-    // DOC memory
-    float dcI = 0.0;
-    float dcQ = 0.0;
-
     // AGC memory
     float agcLev = 0.0;
-    int_fast8_t signalLevelEmitCntr;
+    uint_fast8_t signalLevelEmitCntr;
 
     bool isDumpingIQ() const { return enaDumpToFile; }
     void dumpBuffer(unsigned char *buf, uint32_t len);    

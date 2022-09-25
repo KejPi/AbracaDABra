@@ -74,8 +74,8 @@ private:
     QMutex fileMutex;
     bool try4096kHzSR;
     float * filterOutBuffer;
-    InputDeviceSRC * src;    
-    int_fast8_t signalLevelEmitCntr;
+    InputDeviceSRC * src;
+    uint_fast8_t signalLevelEmitCntr;
 
     void run();           
     void stop();

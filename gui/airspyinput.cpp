@@ -249,7 +249,7 @@ void AirspyInput::setGainMode(const AirspyGainStr &gain)
         break;
     }
 
-    emit agcGain(INPUTDEVICE_AGC_GAIN_NA);
+    emit agcGain(NAN);
 }
 
 void AirspyInput::setGain(int gIdx)

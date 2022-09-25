@@ -332,7 +332,7 @@ void SoapySdrInput::setGainMode(SoapyGainMode mode, int gainIdx)
 
     if (SoapyGainMode::Hardware == gainMode)
     {   // signalize that gain is not available
-        emit agcGain(INPUTDEVICE_AGC_GAIN_NA);
+        emit agcGain(NAN);
     }
 
     // does nothing in (GainMode::Software != mode)    
@@ -361,21 +361,6 @@ void SoapySdrInput::setGain(int gIdx)
 
 void SoapySdrInput::resetAgc()
 {
-#if 0
-    switch (gainMode)
-    {
-    case SoapyGainMode::Software:
-        setGain(gainList->size() >> 1);
-        break;
-    case SoapyGainMode::Hardware:
-        device->setGainMode(SOAPY_SDR_RX, rxChannel, false);
-        setGain(gainList->size() >> 1);
-        device->setGainMode(SOAPY_SDR_RX, rxChannel, true);
-        break;
-    default: ;
-        // do nothing
-    }
-#endif
     if (SoapyGainMode::Software == gainMode)
     {
         gainIdx = -1;
@@ -385,17 +370,19 @@ void SoapySdrInput::resetAgc()
 
 void SoapySdrInput::updateAgc(float level)
 {
-    //qDebug() << Q_FUNC_INFO << level;
-    if (level > SOAPYSDR_LEVEL_THR_MAX)
+    if (SoapyGainMode::Software == gainMode)
     {
-        //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity down";
-        setGain(gainIdx-1);
-        return;
-    }
-    if (level < SOAPYSDR_LEVEL_THR_MIN)
-    {
-        //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity up";
-        setGain(gainIdx+1);
+        if (level > SOAPYSDR_LEVEL_THR_MAX)
+        {
+            //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity down";
+            setGain(gainIdx-1);
+            return;
+        }
+        if (level < SOAPYSDR_LEVEL_THR_MIN)
+        {
+            //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity up";
+            setGain(gainIdx+1);
+        }
     }
 }
 
@@ -494,25 +481,15 @@ SoapySdrWorker::SoapySdrWorker(SoapySDR::Device *d, SoapySDR::Stream *s, double 
     device = d;
     stream = s;
 
-    if (2048e3 != sampleRate)
-    {
-        // we cannot produce more samples in SRC
-        filterOutBuffer = new ( std::align_val_t(16) ) float[SOAPYSDR_INPUT_SAMPLES*2];
-        src = new InputDeviceSRC(sampleRate);
-    }
-    else
-    {
-        src = nullptr;
-    }
+    // we cannot produce more samples in SRC
+    filterOutBuffer = new ( std::align_val_t(16) ) float[SOAPYSDR_INPUT_SAMPLES*2];
+    src = new InputDeviceSRC(sampleRate);
 }
 
 SoapySdrWorker::~SoapySdrWorker()
 {
-    if (nullptr != src)
-    {
-        delete src;
-        operator delete [] (filterOutBuffer, std::align_val_t(16));
-    }
+    delete src;
+    operator delete [] (filterOutBuffer, std::align_val_t(16));
 }
 
 void SoapySdrWorker::run()
@@ -520,14 +497,12 @@ void SoapySdrWorker::run()
     //qDebug() << "SoapySdrWorker thread start" << QThread::currentThreadId();
     doReadIQ = true;
 
-    dcI = 0.0;
-    dcQ = 0.0;
     agcLev = 0.0;
     wdogIsRunningFlag = false;  // first callback sets it to true
 
     signalLevelEmitCntr = 0;
 
-    captureStartCntr = 3;
+    captureStartCntr = 20;
 
     device->activateStream(stream);
 
@@ -643,6 +618,8 @@ void SoapySdrWorker::stop()
 
 void SoapySdrWorker::processInputData(std::complex<float> buff[], size_t numSamples)
 {
+    static float signalLevel = SOAPYSDR_LEVEL_RESET;
+
     // get FIFO space
     pthread_mutex_lock(&inputBuffer.countMutex);
     uint64_t count = inputBuffer.count;
@@ -652,16 +629,7 @@ void SoapySdrWorker::processInputData(std::complex<float> buff[], size_t numSamp
 
     // input samples are IQ = [float float] @ sampleRate
     // going to transform them to [float float] @ 2048kHz  
-    int numOutputIQ;
-    if (nullptr != src)
-    {   // SRC needed
-        numOutputIQ = src->process((float*) buff, numSamples, filterOutBuffer);
-    }
-    else
-    {   // input is @ 2048kHz, no SRC
-        filterOutBuffer = (float *) buff;
-        numOutputIQ = numSamples;
-    }
+    int numOutputIQ = src->process((float*) buff, numSamples, filterOutBuffer);
 
     uint64_t bytesToWrite = numOutputIQ * 2 * sizeof(float);
 
@@ -671,16 +639,11 @@ void SoapySdrWorker::processInputData(std::complex<float> buff[], size_t numSamp
         return;
     }
 
-#if (SOAPYSDR_AGC_ENABLE > 0)
     if (0 == (++signalLevelEmitCntr & 0x0F))
-    {        
-        if (nullptr != src)
-        {
-            //qDebug() << src->signalLevel();
-            emit agcLevel(src->signalLevel());
-        }
+    {
+        qDebug() << src->signalLevel();
+        emit agcLevel(src->signalLevel());
     }
-#endif
 
     if (isDumpingIQ())
     {

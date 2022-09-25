@@ -193,7 +193,7 @@ void EnsembleInfoDialog::updateDumpStatus(ssize_t bytes)
 
 void EnsembleInfoDialog::updateAgcGain(float gain)
 {
-    if (INPUTDEVICE_AGC_GAIN_NA == gain)
+    if (isnan(gain))
     {   // gain is not available (input device in HW mode)
         ui->agcGain->setText("N/A");
         return;
@@ -348,7 +348,7 @@ void EnsembleInfoDialog::clearSignalInfo()
 {
     ui->snr->setText("N/A");
     ui->freqOffset->setText("N/A");
-    ui->agcGain->setText("N/A");
+    //ui->agcGain->setText("N/A");
 }
 
 void EnsembleInfoDialog::clearFreqInfo()
