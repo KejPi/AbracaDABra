@@ -5,7 +5,11 @@
 
 InputDeviceSRC::InputDeviceSRC(float inputSampleRate)
 {
-    if (2*2048e3 == inputSampleRate)
+    if (2048e3 == inputSampleRate)
+    {
+        m_filter = new InputDeviceSRCPassthrough();
+    }
+    else if (2*2048e3 == inputSampleRate)
     {
         m_filter = new InputDeviceSRCFilterDS2();
     }
@@ -279,4 +283,52 @@ int InputDeviceSRCFilterFarrow::process(float inDataIQ[], int numInDataIQ, float
     m_signalLevel = level;
 
     return numOutDataIQ;
+}
+
+InputDeviceSRCPassthrough::InputDeviceSRCPassthrough()
+{
+    catt = 1 - std::exp(-1/(INPUTDEVICESRC_LEVEL_ATTACK * 2048e3));
+    crel = 1 - std::exp(-1/(INPUTDEVICESRC_LEVEL_RELEASE * 2048e3));
+
+    InputDeviceSRCPassthrough::reset();
+}
+
+InputDeviceSRCPassthrough::~InputDeviceSRCPassthrough()
+{
+
+}
+
+void InputDeviceSRCPassthrough::reset()
+{
+    resetSignalLevel();
+}
+
+int InputDeviceSRCPassthrough::process(float inDataIQ[], int numInDataIQ, float outDataIQ[])
+{
+#if (INPUTDEVICESRC_LEVEL_ESTIMATION > 0)
+    float level = m_signalLevel;
+
+    for (int n = 0; n < numInDataIQ; ++n)
+    {
+        float abs2 = (*inDataIQ) * (*inDataIQ);
+        *outDataIQ++ = *inDataIQ++;
+        abs2 += (*inDataIQ) * (*inDataIQ);
+        *outDataIQ++ = *inDataIQ++;
+
+        // calculate signal level (rectifier, fast attack slow release)
+        float c = crel;
+        if (abs2 > level)
+        {
+            c = catt;
+        }
+        level = c * abs2 + level - c * level;
+    }
+
+    // store signal level
+    m_signalLevel = level;
+#else
+    std::memcpy(outDataIQ, inDataIQ, numInDataIQ * 2*sizeof(float));
+#endif
+
+    return numInDataIQ;
 }

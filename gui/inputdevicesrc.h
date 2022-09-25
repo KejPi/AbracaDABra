@@ -55,7 +55,7 @@ public:
     ~InputDeviceSRCFilterDS2();
     void reset() override;
 
-    // processing - returns signal level
+    // processing -  - returns number of output samples
     int process(float inDataIQ[], int numInDataIQ, float outDataIQ[]) override;
 private:
     enum { FILTER_ORDER = 42 };
@@ -122,6 +122,23 @@ private:
         {   0.114518381640217964401174, -0.923204505507555395205088,  0.952958408884428287421997, -0.243745693669455892882425  },
         {  -0.104194288733202022889657,  0.243880907754789599817258, -0.134525637544989168370435, -0.004040531324696002707375  },
     };
+};
+
+//===================================================================================================
+// Passthrough for input rate 2048kHz, only caculates signal level and copies data
+class InputDeviceSRCPassthrough : public InputDeviceSRCFilter
+{
+public:
+    InputDeviceSRCPassthrough();
+    ~InputDeviceSRCPassthrough();
+    void reset() override;
+
+    // processing - returns number of output samples
+    int process(float inDataIQ[], int numInDataIQ, float outDataIQ[]) override;
+private:
+    // level filter
+    float catt;
+    float crel;
 };
 
 #endif // INPUTDEVICESRC_H
