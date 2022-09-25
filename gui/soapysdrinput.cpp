@@ -148,7 +148,7 @@ bool SoapySdrInput::openDevice()
     {
         sampleRate = 4096e3;
     }
-    else { /* nether 2048 nor 4096 kHz supported - using the lowest possible */ }
+    else { /* neither 2048 nor 4096 kHz supported - using the lowest possible */ }
 
     try
     {
@@ -189,7 +189,7 @@ bool SoapySdrInput::openDevice()
     }
 
     if (device->hasDCOffsetMode(SOAPY_SDR_RX, rxChannel))
-    {   // set automatic gain
+    {   // set DC offset correction
         device->setDCOffsetMode(SOAPY_SDR_RX, rxChannel, true);
     }
     else { /* DC offset correction not available */ }
@@ -403,7 +403,7 @@ void SoapySdrInput::readThreadStopped()
 
     if (deviceRunning)
     {   // if device should be running then it measn reading error thus device is disconnected
-        qDebug() << "RTL-SDR is unplugged.";
+        qDebug() << "SOAPYSDR: device is unplugged.";
         deviceUnplugged = true;
         deviceRunning = false;
 
