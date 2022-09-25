@@ -194,6 +194,7 @@ bool SoapySdrInput::openDevice()
     }
     else { /* DC offset correction not available */ }
 
+    SoapySDR::Stream *stream;
     try
     {
         stream = device->setupStream(SOAPY_SDR_RX, SOAPY_SDR_CF32, std::vector<size_t>(rxChannel));
@@ -212,6 +213,10 @@ bool SoapySdrInput::openDevice()
         SoapySDR::Device::unmake(device);
         device = nullptr;
         return false;
+    }
+    else
+    {   // stream is functional -> closing
+        device->closeStream(stream);
     }
 
     deviceUnplugged = false;
@@ -251,7 +256,7 @@ void SoapySdrInput::run()
         // does nothing if manual AGC
         resetAgc();
 
-        worker = new SoapySdrWorker(device, stream, sampleRate, this);
+        worker = new SoapySdrWorker(device, sampleRate, rxChannel, this);
         connect(worker, &SoapySdrWorker::agcLevel, this, &SoapySdrInput::updateAgc, Qt::QueuedConnection);
         connect(worker, &SoapySdrWorker::dumpedBytes, this, &InputDevice::dumpedBytes, Qt::QueuedConnection);
         connect(worker, &SoapySdrWorker::finished, this, &SoapySdrInput::readThreadStopped, Qt::QueuedConnection);
@@ -472,14 +477,14 @@ void SoapySdrInput::setBW(int bw)
     }
 }
 
-SoapySdrWorker::SoapySdrWorker(SoapySDR::Device *d, SoapySDR::Stream *s, double sampleRate, QObject *parent)
+SoapySdrWorker::SoapySdrWorker(SoapySDR::Device *d, double sampleRate, int channel, QObject *parent)
     : QThread(parent)
 {
     enaDumpToFile = false;
     dumpFile = nullptr;
     soapySdrPtr = parent;
     device = d;
-    stream = s;
+    rxChannel = channel;
 
     // we cannot produce more samples in SRC
     filterOutBuffer = new ( std::align_val_t(16) ) float[SOAPYSDR_INPUT_SAMPLES*2];
@@ -499,10 +504,18 @@ void SoapySdrWorker::run()
 
     agcLev = 0.0;
     wdogIsRunningFlag = false;  // first callback sets it to true
-
     signalLevelEmitCntr = 0;
 
-    captureStartCntr = 20;
+    SoapySDR::Stream *stream = nullptr;
+    try
+    {
+        stream = device->setupStream(SOAPY_SDR_RX, SOAPY_SDR_CF32, std::vector<size_t>(rxChannel));
+    }
+    catch(const std::exception &ex)
+    {
+        qDebug() << "SOAPYSDR: Error setup stream" << ex.what();
+        return;
+    }
 
     device->activateStream(stream);
 
@@ -548,17 +561,13 @@ void SoapySdrWorker::run()
         else
         {
             // OK, process data
-            if (captureStartCntr > 0)
-            {   // clear buffer to avoid mixing of channels
-                captureStartCntr--;
-                memset(inputBuffer, 0, SOAPYSDR_INPUT_SAMPLES * sizeof(std::complex<float>));
-            }
             processInputData(inputBuffer, ret);
         }
     }
 
     // deactivate stream
     device->deactivateStream(stream, 0, 0);
+    device->closeStream(stream);
 
     // exit of the thread
     //qDebug() << "SoapySdrWorker thread end" << QThread::currentThreadId();
@@ -641,7 +650,7 @@ void SoapySdrWorker::processInputData(std::complex<float> buff[], size_t numSamp
 
     if (0 == (++signalLevelEmitCntr & 0x0F))
     {
-        qDebug() << src->signalLevel();
+        //qDebug() << src->signalLevel();
         emit agcLevel(src->signalLevel());
     }
 

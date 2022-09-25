@@ -13,7 +13,7 @@
 #define SOAPYSDR_WDOG_ENABLE 1   // enable watchdog timer
 
 #define SOAPYSDR_DUMP_INT16  1   // dump raw stream in int16 insetad of float
-#define SOAPYSDR_DUMP_FLOAT2INT16  (16384)   // conversion constant to int16
+#define SOAPYSDR_DUMP_FLOAT2INT16  (32768)   // conversion constant to int16
 
 #define SOAPYSDR_INPUT_SAMPLES (16384)
 
@@ -25,7 +25,7 @@ class SoapySdrWorker : public QThread
 {
     Q_OBJECT
 public:
-    explicit SoapySdrWorker(SoapySDR::Device *d, SoapySDR::Stream *s, double sampleRate, QObject *parent = nullptr);
+    explicit SoapySdrWorker(SoapySDR::Device *d, double sampleRate, int channel = 0, QObject *parent = nullptr);
     ~SoapySdrWorker();
     void dumpToFileStart(FILE * f);
     void dumpToFileStop();
@@ -39,13 +39,12 @@ signals:
 private:
     QObject *soapySdrPtr;
     SoapySDR::Device *device;
-    SoapySDR::Stream *stream;
+    int rxChannel;
     std::atomic<bool> enaDumpToFile;
     FILE * dumpFile;
     QMutex fileMutex;
     std::atomic<bool> wdogIsRunningFlag;
     std::atomic<bool> doReadIQ;
-    int captureStartCntr;
 
     // SRC
     float * filterOutBuffer;
@@ -87,7 +86,6 @@ private:
     bool deviceUnplugged;
     bool deviceRunning;
     SoapySDR::Device *device;
-    SoapySDR::Stream *stream;
 
     // settimgs
     QString devArgs;
