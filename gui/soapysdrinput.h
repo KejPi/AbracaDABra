@@ -71,6 +71,7 @@ public:
     void tune(uint32_t freq) override;
     void setDevArgs(const QString & args) { devArgs = args; }
     void setRxChannel(int ch) { rxChannel = ch; }
+    void setAntenna(const QString & ant) { antenna = ant; }
 
     void setGainMode(SoapyGainMode mode, int gainIdx = 0);
 
@@ -90,6 +91,7 @@ private:
 
     // settimgs
     QString devArgs;
+    QString antenna;
     int rxChannel = 0;
     SoapySdrWorker * worker;
 #if (SOAPYSDR_WDOG_ENABLE)

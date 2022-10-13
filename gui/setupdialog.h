@@ -64,6 +64,7 @@ public:
             SoapyGainMode gainMode;
             int gainIdx;
             QString devArgs;
+            QString antenna;
             int channel;
             //bool prefer4096kHz;
         } soapysdr;
@@ -125,6 +126,7 @@ private:
     void onSoapySdrGainSliderChanged(int val);
     void activateSoapySdrControls(bool en);
     void onSoapySdrDevArgsEditFinished();
+    void onSoapySdrAntennaEditFinished();
     void onSoapySdrChannelEditFinished();
     void onSoapySdrGainModeToggled(bool checked);
 #endif

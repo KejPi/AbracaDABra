@@ -1442,6 +1442,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         // set connection paramaters
         dynamic_cast<SoapySdrInput*>(inputDevice)->setDevArgs(setupDialog->settings().soapysdr.devArgs);
         dynamic_cast<SoapySdrInput*>(inputDevice)->setRxChannel(setupDialog->settings().soapysdr.channel);
+        dynamic_cast<SoapySdrInput*>(inputDevice)->setAntenna(setupDialog->settings().soapysdr.antenna);
 
         if (inputDevice->openDevice())
         {  // SoapySDR is available
@@ -1574,6 +1575,7 @@ void MainWindow::loadSettings()
     s.soapysdr.gainIdx = settings->value("SOAPYSDR/gainIndex", 0).toInt();
     s.soapysdr.gainMode = static_cast<SoapyGainMode>(settings->value("SOAPYSDR/gainMode", static_cast<int>(SoapyGainMode::Hardware)).toInt());
     s.soapysdr.devArgs = settings->value("SOAPYSDR/devArgs", QString("driver=rtlsdr")).toString();
+    s.soapysdr.antenna = settings->value("SOAPYSDR/antenna", QString("RX")).toString();
     s.soapysdr.channel = settings->value("SOAPYSDR/rxChannel", 0).toInt();
 #endif
     s.rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
@@ -1677,6 +1679,7 @@ void MainWindow::saveSettings()
     settings->setValue("SOAPYSDR/gainMode", static_cast<int>(s.soapysdr.gainMode));
     settings->setValue("SOAPYSDR/devArgs", s.soapysdr.devArgs);
     settings->setValue("SOAPYSDR/rxChannel", s.soapysdr.channel);
+    settings->setValue("SOAPYSDR/antenna", s.soapysdr.antenna);
 #endif
 
     settings->setValue("RTL-TCP/gainIndex", s.rtltcp.gainIdx);

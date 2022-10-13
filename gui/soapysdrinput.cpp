@@ -88,6 +88,18 @@ bool SoapySdrInput::openDevice()
     }
     else { /* OK */ }
 
+    try
+    {
+        device->setAntenna(SOAPY_SDR_RX, rxChannel, antenna.toStdString());
+    }
+    catch(const std::exception &ex)
+    {
+        qDebug() << "SOAPYSDR: Error setting antenna" << ex.what();
+        SoapySDR::Device::unmake(device);
+        device = nullptr;
+        return false;
+    }
+
     // check sample format -> need CF32
     std::vector<std::string> formats = device->getStreamFormats(SOAPY_SDR_RX, rxChannel);
     if (std::find(formats.begin(), formats.end(), SOAPY_SDR_CF32) == formats.end())

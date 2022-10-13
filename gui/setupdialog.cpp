@@ -85,7 +85,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 #ifdef HAVE_SOAPYSDR
     connect(ui->soapysdrGainSlider, &QSlider::valueChanged, this, &SetupDialog::onSoapySdrGainSliderChanged);
     connect(ui->soapysdrDevArgs, &QLineEdit::editingFinished, this, &SetupDialog::onSoapySdrDevArgsEditFinished);
-    connect(ui->soapysdrChannelNum, &QLineEdit::editingFinished, this, &SetupDialog::onSoapySdrChannelEditFinished);
+    connect(ui->soapySdrAntenna, &QLineEdit::editingFinished, this, &SetupDialog::onSoapySdrAntennaEditFinished);
+    connect(ui->soapysdrChannelNum, &QSpinBox::editingFinished, this, &SetupDialog::onSoapySdrChannelEditFinished);
     connect(ui->soapysdrGainModeHw, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
     connect(ui->soapysdrGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
     connect(ui->soapysdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
@@ -250,7 +251,8 @@ void SetupDialog::showEvent(QShowEvent *event)
     }
 
     ui->soapysdrDevArgs->setText(m_settings.soapysdr.devArgs);
-    ui->soapysdrChannelNum->setText(QString::number(m_settings.soapysdr.channel));
+    ui->soapysdrChannelNum->setValue(m_settings.soapysdr.channel);
+    ui->soapySdrAntenna->setText(m_settings.soapysdr.antenna);
 #endif
 
     if (m_settings.rawfile.file.isEmpty())
@@ -311,6 +313,7 @@ void SetupDialog::onConnectDeviceClicked()
 #ifdef HAVE_SOAPYSDR
         m_settings.soapysdr.devArgs = ui->soapysdrDevArgs->text();
         m_settings.soapysdr.channel = ui->soapysdrChannelNum->text().toInt();
+        m_settings.soapysdr.antenna = ui->soapySdrAntenna->text();
         activateSoapySdrControls(true);
 #endif
         break;
@@ -538,9 +541,17 @@ void SetupDialog::onSoapySdrDevArgsEditFinished()
     }
 }
 
+void SetupDialog::onSoapySdrAntennaEditFinished()
+{
+    if (ui->soapySdrAntenna->text().trimmed() != m_settings.soapysdr.antenna.trimmed())
+    {
+        ui->connectButton->setVisible(true);
+    }
+}
+
 void SetupDialog::onSoapySdrChannelEditFinished()
 {
-    if (ui->soapysdrChannelNum->text().toInt() != m_settings.soapysdr.channel)
+    if (ui->soapysdrChannelNum->value() != m_settings.soapysdr.channel)
     {
         ui->connectButton->setVisible(true);
     }
