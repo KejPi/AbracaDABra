@@ -119,11 +119,13 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
         ui->rtltcpGainSlider->setValue((m_settings.rtltcp.gainIdx >= 0) ? m_settings.rtltcp.gainIdx : 0);
         break;
     case InputDeviceId::SOAPYSDR:
+#ifdef HAVE_SOAPYSDR
         soapysdrGainList.clear();
         soapysdrGainList = gainList;
         ui->soapysdrGainSlider->setMinimum(0);
         ui->soapysdrGainSlider->setMaximum(soapysdrGainList.size()-1);
         ui->soapysdrGainSlider->setValue((m_settings.soapysdr.gainIdx >= 0) ? m_settings.soapysdr.gainIdx : 0);
+#endif // HAVE_SOAPYSDR
         break;
     case InputDeviceId::UNDEFINED:
     case InputDeviceId::RARTTCP:
