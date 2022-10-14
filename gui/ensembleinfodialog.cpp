@@ -193,7 +193,7 @@ void EnsembleInfoDialog::updateDumpStatus(ssize_t bytes)
 
 void EnsembleInfoDialog::updateAgcGain(float gain)
 {
-    if (isnan(gain))
+    if (std::isnan(gain))
     {   // gain is not available (input device in HW mode)
         ui->agcGain->setText("N/A");
         return;
