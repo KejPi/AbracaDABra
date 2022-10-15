@@ -57,6 +57,12 @@ protected:
     void resizeEvent(QResizeEvent *event);
     void changeEvent( QEvent* e );
 private:
+    // constants
+    static const QString appName;
+    static const QStringList syncLevelLabels;
+    static const QStringList syncLevelTooltip;
+    static const QStringList snrProgressStylesheet;
+
     // UI and dialogs
     Ui::MainWindow *ui;
     SetupDialog * m_setupDialog;

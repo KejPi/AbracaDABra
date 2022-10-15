@@ -35,12 +35,12 @@
 #include "mac.h"
 #endif
 
-const QString appName("AbracaDABra");
-const QStringList syncLevelLabels = {"No signal", "Signal found", "Sync"};
-const QStringList syncLevelTooltip = {"DAB signal not detected<br>Looking for signal...",
+const QString MainWindow::appName("AbracaDABra");
+const QStringList MainWindow::syncLevelLabels = {"No signal", "Signal found", "Sync"};
+const QStringList MainWindow::syncLevelTooltip = {"DAB signal not detected<br>Looking for signal...",
                                       "Found DAB signal,<br>trying to synchronize...",
                                       "Synchronized to DAB signal"};
-const QStringList snrProgressStylesheet = {
+const QStringList MainWindow::snrProgressStylesheet = {
     QString::fromUtf8("QProgressBar::chunk {background-color: #ff4b4b; }"),  // red
     QString::fromUtf8("QProgressBar::chunk {background-color: #ffb527; }"),  // yellow
     QString::fromUtf8("QProgressBar::chunk {background-color: #5bc214; }")   // green
