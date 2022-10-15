@@ -10,7 +10,6 @@
 #include "inputdevicesrc.h"
 
 #define AIRSPY_AGC_ENABLE  1   // enable AGC
-#define AIRSPY_WDOG_ENABLE 1   // enable watchdog timer
 #define AIRSPY_DUMP_INT16  1   // dump raw stream in int16 insetad of float
 
 #define AIRSPY_DUMP_FLOAT2INT16  (16384*2)   // conversion constant to int16
@@ -64,9 +63,7 @@ signals:
 private:
     uint32_t m_frequency;
     struct airspy_device *m_device;
-#if (AIRSPY_WDOG_ENABLE)
     QTimer m_watchdogTimer;
-#endif
     AirpyGainMode m_gainMode = AirpyGainMode::Hybrid;
     int m_gainIdx;
     std::atomic<bool> m_enaDumpToFile;
@@ -86,10 +83,7 @@ private:
     void setGain(int gainIdx);
 
     void onAgcLevel(float level);
-
-#if (AIRSPY_WDOG_ENABLE)
     void onWatchdogTimeout();
-#endif
 
     bool isDumpingIQ() const { return m_enaDumpToFile; }
     void dumpBuffer(unsigned char *buf, uint32_t len);

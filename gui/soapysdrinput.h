@@ -10,8 +10,6 @@
 #include "inputdevice.h"
 #include "inputdevicesrc.h"
 
-#define SOAPYSDR_WDOG_ENABLE 1   // enable watchdog timer
-
 #define SOAPYSDR_DUMP_INT16  1   // dump raw stream in int16 insetad of float
 #define SOAPYSDR_DUMP_FLOAT2INT16  (32768)   // conversion constant to int16
 
@@ -93,9 +91,7 @@ private:
     QString m_antenna;
     int m_rxChannel = 0;
     SoapySdrWorker * m_worker;
-#if (SOAPYSDR_WDOG_ENABLE)
     QTimer m_watchdogTimer;
-#endif
     SoapyGainMode m_gainMode = SoapyGainMode::Manual;
     int m_gainIdx;
     QList<float> * m_gainList;
@@ -113,9 +109,7 @@ private:
     void onAgcLevel(float agcLevel);
 
     void onReadThreadStopped();
-#if (SOAPYSDR_WDOG_ENABLE)
     void onWatchdogTimeout();
-#endif
 };
 
 

@@ -11,9 +11,8 @@ SoapySdrInput::SoapySdrInput(QObject *parent) : InputDevice(parent)
     m_deviceRunningFlag = false;
     m_gainList = nullptr;
     m_dumpFile = nullptr;
-#if (SOAPYSDR_WDOG_ENABLE)
+
     connect(&m_watchdogTimer, &QTimer::timeout, this, &SoapySdrInput::onWatchdogTimeout);
-#endif
 }
 
 SoapySdrInput::~SoapySdrInput()
@@ -276,11 +275,9 @@ void SoapySdrInput::run()
         connect(m_worker, &SoapySdrWorker::dumpedBytes, this, &InputDevice::dumpedBytes, Qt::QueuedConnection);
         connect(m_worker, &SoapySdrWorker::finished, this, &SoapySdrInput::onReadThreadStopped, Qt::QueuedConnection);
         connect(m_worker, &SoapySdrWorker::finished, m_worker, &QObject::deleteLater);
-#if (SOAPYSDR_WDOG_ENABLE)
-        m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
-#endif
-        m_worker->start();
 
+        m_worker->start();
+        m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
         m_deviceRunningFlag = true;
     }
     else
@@ -406,9 +403,7 @@ void SoapySdrInput::onAgcLevel(float agcLevel)
 
 void SoapySdrInput::onReadThreadStopped()
 {
-#if (SOAPYSDR_WDOG_ENABLE)
     m_watchdogTimer.stop();
-#endif
 
     if (m_deviceRunningFlag)
     {   // if device should be running then it measn reading error thus device is disconnected
@@ -428,7 +423,6 @@ void SoapySdrInput::onReadThreadStopped()
     }
 }
 
-#if (SOAPYSDR_WDOG_ENABLE)
 void SoapySdrInput::onWatchdogTimeout()
 {
     if (nullptr != m_worker)
@@ -446,7 +440,6 @@ void SoapySdrInput::onWatchdogTimeout()
         m_watchdogTimer.stop();
     }
 }
-#endif
 
 void SoapySdrInput::startDumpToFile(const QString & filename)
 {
@@ -540,10 +533,8 @@ void SoapySdrWorker::run()
         // read samples with timeout 100 ms
         int ret = m_device->readStream(stream, buffs, SOAPYSDR_INPUT_SAMPLES, flags, time_ns, 100000);
 
-#if (SOAPYSDR_WDOG_ENABLE)
         // reset watchDog flag, timer sets it to false
         m_watchdogFlag = true;
-#endif
 
         if (ret <= 0)
         {

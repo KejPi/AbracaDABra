@@ -9,7 +9,6 @@
 
 #define RTLSDR_DOC_ENABLE  1   // enable DOC
 #define RTLSDR_AGC_ENABLE  1   // enable AGC
-#define RTLSDR_WDOG_ENABLE 1   // enable watchdog timer
 
 class RtlSdrWorker : public QThread
 {
@@ -71,9 +70,7 @@ private:
     bool m_deviceRunningFlag;
     struct rtlsdr_dev * m_device;
     RtlSdrWorker * m_worker;
-#if (RTLSDR_WDOG_ENABLE)
     QTimer m_watchdogTimer;
-#endif
     RtlGainMode m_gainMode = RtlGainMode::Hardware;
     int m_gainIdx;
     QList<int> * m_gainList;
@@ -91,9 +88,7 @@ private:
     void onAgcLevel(float agcLevel, int maxVal);
 
     void onReadThreadStopped();
-#if (RTLSDR_WDOG_ENABLE)
     void onWatchdogTimeout();
-#endif
 };
 
 

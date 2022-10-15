@@ -29,7 +29,6 @@
 
 #define RARTTCP_CHUNK_SIZE (16384*100)
 
-#define RARTTCP_WDOG_ENABLE 1        // enable watchdog timer
 #define RARTTCP_START_COUNTER_INIT 2 // init value of the counter used to reset buffer after tune
 
 class RartTcpWorker : public QThread
@@ -93,9 +92,7 @@ private:
     int m_port;
 
     RartTcpWorker * m_worker;
-#if (RARTTCP_WDOG_ENABLE)
     QTimer m_watchdogTimer;
-#endif
     FILE * m_dumpFile;
 
     void run();
@@ -105,9 +102,7 @@ private:
     void sendCommand(const RartTcpCommand & cmd, uint32_t param);
 private slots:
     void onReadThreadStopped();
-#if (RARTTCP_WDOG_ENABLE)
     void onWatchdogTimeout();
-#endif
 };
 
 

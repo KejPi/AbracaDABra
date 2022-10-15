@@ -11,9 +11,8 @@ RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
     m_deviceRunningFlag = false;
     m_gainList = nullptr;
     m_dumpFile = nullptr;
-#if (RTLSDR_WDOG_ENABLE)
+
     connect(&m_watchdogTimer, &QTimer::timeout, this, &RtlSdrInput::onWatchdogTimeout);
-#endif
 }
 
 RtlSdrInput::~RtlSdrInput()
@@ -134,9 +133,8 @@ void RtlSdrInput::run()
         connect(m_worker, &RtlSdrWorker::dumpedBytes, this, &InputDevice::dumpedBytes, Qt::QueuedConnection);
         connect(m_worker, &RtlSdrWorker::finished, this, &RtlSdrInput::onReadThreadStopped, Qt::QueuedConnection);
         connect(m_worker, &RtlSdrWorker::finished, m_worker, &QObject::deleteLater);
-#if (RTLSDR_WDOG_ENABLE)
         m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
-#endif
+
         m_worker->start();
 
         m_deviceRunningFlag = true;
@@ -260,10 +258,7 @@ void RtlSdrInput::onAgcLevel(float agcLevel, int maxVal)
 
 void RtlSdrInput::onReadThreadStopped()
 {
-#if (RTLSDR_WDOG_ENABLE)
     m_watchdogTimer.stop();
-#endif
-
     if (m_deviceRunningFlag)
     {   // if device should be running then it measn reading error thus device is disconnected
         qDebug() << "RTL-SDR: device unplugged.";
@@ -282,7 +277,6 @@ void RtlSdrInput::onReadThreadStopped()
     }
 }
 
-#if (RTLSDR_WDOG_ENABLE)
 void RtlSdrInput::onWatchdogTimeout()
 {
     if (nullptr != m_worker)
@@ -300,7 +294,6 @@ void RtlSdrInput::onWatchdogTimeout()
         m_watchdogTimer.stop();
     }
 }
-#endif
 
 void RtlSdrInput::startDumpToFile(const QString & filename)
 {
@@ -436,10 +429,8 @@ void RtlSdrWorker::processInputData(unsigned char *buf, uint32_t len)
         dumpBuffer(buf, len);
     }
 
-#if (RTLSDR_WDOG_ENABLE)
     // reset watchDog flag, timer sets it to true
     m_watchdogFlag = true;
-#endif
 
     // retrieving memories
 #if (RTLSDR_DOC_ENABLE > 0)

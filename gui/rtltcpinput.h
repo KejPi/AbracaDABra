@@ -31,7 +31,6 @@
 
 #define RTLTCP_DOC_ENABLE 1         // enable DOC
 #define RTLTCP_AGC_ENABLE 1         // enable AGC
-#define RTLTCP_WDOG_ENABLE 1        // enable watchdog timer
 #define RTLTCP_START_COUNTER_INIT 2 // init value of the counter used to reset buffer after tune
 
 class RtlTcpWorker : public QThread
@@ -126,9 +125,7 @@ private:
     int m_port;
 
     RtlTcpWorker * m_worker;
-#if (RTLTCP_WDOG_ENABLE)
     QTimer m_watchdogTimer;
-#endif
     RtlGainMode m_gainMode = RtlGainMode::Hardware;
     int m_gainIdx;
     QList<int> * m_gainList;
@@ -148,9 +145,7 @@ private:
     void sendCommand(const RtlTcpCommand & cmd, uint32_t param);
 private slots:
     void onReadThreadStopped();
-#if (RTLTCP_WDOG_ENABLE)
     void onWatchdogTimeout();
-#endif
 };
 
 

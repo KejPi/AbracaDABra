@@ -15,10 +15,7 @@ AirspyInput::AirspyInput(bool try4096kHz, QObject *parent) : InputDevice(parent)
     m_filterOutBuffer = nullptr;
 
     connect(this, &AirspyInput::agcLevel, this, &AirspyInput::onAgcLevel, Qt::QueuedConnection);
-
-#if (AIRSPY_WDOG_ENABLE)
     connect(&m_watchdogTimer, &QTimer::timeout, this, &AirspyInput::onWatchdogTimeout);
-#endif
 }
 
 AirspyInput::~AirspyInput()
@@ -145,9 +142,8 @@ void AirspyInput::run()
 
         resetAgc();
 
-#if (AIRSPY_WDOG_ENABLE)
         m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
-#endif
+
         if (AIRSPY_SUCCESS != airspy_start_rx(m_device, AirspyInput::callback, (void*)this))
         {
             qDebug("AIRSPY: Failed to start RX");
@@ -166,10 +162,7 @@ void AirspyInput::stop()
     if (AIRSPY_TRUE == airspy_is_streaming(m_device))
     {   // if devise is running, stop RX
         airspy_stop_rx(m_device);
-
-#if (AIRSPY_WDOG_ENABLE)
         m_watchdogTimer.stop();
-#endif
 
         QThread::msleep(50);
         while (AIRSPY_TRUE == airspy_is_streaming(m_device))
@@ -339,7 +332,6 @@ void AirspyInput::onAgcLevel(float level)
     }
 }
 
-#if (AIRSPY_WDOG_ENABLE)
 void AirspyInput::onWatchdogTimeout()
 {
     if (AIRSPY_TRUE != airspy_is_streaming(m_device))
@@ -349,7 +341,6 @@ void AirspyInput::onWatchdogTimeout()
         emit error(InputDeviceErrorCode::NoDataAvailable);
     }
 }
-#endif
 
 void AirspyInput::startDumpToFile(const QString & filename)
 {

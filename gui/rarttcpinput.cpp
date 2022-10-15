@@ -37,9 +37,7 @@ RartTcpInput::RartTcpInput(QObject *parent) : InputDevice(parent)
     m_address = "127.0.0.1";
     m_port = 1235;
 
-#if (RARTTCP_WDOG_ENABLE)
     connect(&m_watchdogTimer, &QTimer::timeout, this, &RartTcpInput::onWatchdogTimeout);
-#endif
 }
 
 RartTcpInput::~RartTcpInput()
@@ -214,9 +212,8 @@ bool RartTcpInput::openDevice()
         connect(m_worker, &RartTcpWorker::finished, this, &RartTcpInput::onReadThreadStopped, Qt::QueuedConnection);
         connect(m_worker, &RartTcpWorker::finished, m_worker, &QObject::deleteLater);
         m_worker->start();
-#if (RARTTCP_WDOG_ENABLE)
         m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
-#endif
+
         // device connected
         m_deviceUnpluggedFlag = false;
 
@@ -282,11 +279,7 @@ void RartTcpInput::onReadThreadStopped()
     ::close(m_sock);
 #endif
     m_sock = INVALID_SOCKET;
-
-#if (RARTTCP_WDOG_ENABLE)
     m_watchdogTimer.stop();
-#endif
-
     m_deviceUnpluggedFlag = true;
 
     // fill buffer (artificially to avoid blocking of the DAB processing thread)
@@ -295,7 +288,6 @@ void RartTcpInput::onReadThreadStopped()
     emit error(InputDeviceErrorCode::DeviceDisconnected);
 }
 
-#if (RARTTCP_WDOG_ENABLE)
 void RartTcpInput::onWatchdogTimeout()
 {
     if (nullptr != m_worker)
@@ -316,7 +308,6 @@ void RartTcpInput::onWatchdogTimeout()
         m_watchdogTimer.stop();
     }
 }
-#endif
 
 void RartTcpInput::startDumpToFile(const QString & filename)
 {
@@ -423,10 +414,8 @@ void RartTcpWorker::run()
             }
         } while (RARTTCP_CHUNK_SIZE > read);
 
-#if (RARTTCP_WDOG_ENABLE)
         // reset watchDog flag, timer sets it to true
         m_watchdogFlag = true;
-#endif
 
         // full chunk is read at this point
         if (m_enaCaptureIQ)
