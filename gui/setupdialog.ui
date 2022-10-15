@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>410</width>
-    <height>376</height>
+    <width>345</width>
+    <height>286</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -729,7 +729,20 @@
         <widget class="QSpinBox" name="soapysdrChannelNum"/>
        </item>
        <item row="1" column="4">
-        <widget class="QLineEdit" name="soapySdrAntenna"/>
+        <widget class="QLineEdit" name="soapySdrAntenna">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
        </item>
        <item row="1" column="3">
         <widget class="QLabel" name="soapySdrAntennalLabel">
@@ -797,12 +810,6 @@
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
          </property>
         </spacer>
        </item>
