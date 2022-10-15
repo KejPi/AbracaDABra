@@ -66,7 +66,7 @@ public:
             QString devArgs;
             QString antenna;
             int channel;
-            //bool prefer4096kHz;
+            int bandwidth;
         } soapysdr;
 #endif
     };

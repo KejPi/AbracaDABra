@@ -1466,6 +1466,10 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             m_ensembleInfoDialog->enableDumpToFile(true);
 
+            // these are settings that are configures in ini file manually
+            // they are only set when device is initialized
+            dynamic_cast<SoapySdrInput*>(m_inputDevice)->setBW(m_setupDialog->settings().soapysdr.bandwidth);
+
             // apply current settings
             onNewSettings();
         }
@@ -1576,6 +1580,7 @@ void MainWindow::loadSettings()
     s.soapysdr.devArgs = settings->value("SOAPYSDR/devArgs", QString("driver=rtlsdr")).toString();
     s.soapysdr.antenna = settings->value("SOAPYSDR/antenna", QString("RX")).toString();
     s.soapysdr.channel = settings->value("SOAPYSDR/rxChannel", 0).toInt();
+    s.soapysdr.bandwidth = settings->value("SOAPYSDR/bandwidth", 0).toInt();
 #endif
     s.rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
     s.rawfile.format = RawFileInputFormat(settings->value("RAW-FILE/format", 0).toInt());
@@ -1679,6 +1684,7 @@ void MainWindow::saveSettings()
     settings->setValue("SOAPYSDR/devArgs", s.soapysdr.devArgs);
     settings->setValue("SOAPYSDR/rxChannel", s.soapysdr.channel);
     settings->setValue("SOAPYSDR/antenna", s.soapysdr.antenna);
+    settings->setValue("SOAPYSDR/bandwidth", s.soapysdr.bandwidth);
 #endif
 
     settings->setValue("RTL-TCP/gainIndex", s.rtltcp.gainIdx);
