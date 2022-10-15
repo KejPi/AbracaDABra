@@ -3,17 +3,15 @@
 
 #include "rarttcpinput.h"
 
-void rarttcpCb(unsigned char *buf, uint32_t len, void *ctx);
-
 #if defined(_WIN32)
 class SocketInitialiseWrapper {
 public:
     SocketInitialiseWrapper() {
         WSADATA wsa;
-        qDebug() << "RTL_TCP: Initialising Winsock...";
+        qDebug() << "RART-TCP: Initialising Winsock...";
 
         if (WSAStartup(MAKEWORD(2,2),&wsa) != 0)
-            qDebug() << "RTL_TCP: Winsock init failed. Error Code:" << WSAGetLastError();
+            qDebug() << "RART-TCP: Winsock init failed. Error Code:" << WSAGetLastError();
     }
 
     ~SocketInitialiseWrapper() {
@@ -29,51 +27,50 @@ static SocketInitialiseWrapper socketInitialiseWrapper;
 
 RartTcpInput::RartTcpInput(QObject *parent) : InputDevice(parent)
 {
-    id = InputDeviceId::RARTTCP;
+    m_id = InputDeviceId::RARTTCP;
 
-    deviceUnplugged = true;
-    dumpFile = nullptr;
-    worker = nullptr;
-    frequency = 0;
-    sock = INVALID_SOCKET;
-    address = "127.0.0.1";
-    port = 1235;
+    m_deviceUnpluggedFlag = true;
+    m_dumpFile = nullptr;
+    m_worker = nullptr;
+    m_frequency = 0;
+    m_sock = INVALID_SOCKET;
+    m_address = "127.0.0.1";
+    m_port = 1235;
 
 #if (RARTTCP_WDOG_ENABLE)
-    connect(&watchDogTimer, &QTimer::timeout, this, &RartTcpInput::watchDogTimeout);
+    connect(&m_watchdogTimer, &QTimer::timeout, this, &RartTcpInput::onWatchdogTimeout);
 #endif
 }
 
 RartTcpInput::~RartTcpInput()
 {
-    //qDebug() << Q_FUNC_INFO;
-    if (!deviceUnplugged)
+    if (!m_deviceUnpluggedFlag)
     {
         // need to end worker thread and close socket
-        if (nullptr != worker)
+        if (nullptr != m_worker)
         {
-            worker->catureIQ(false);
+            m_worker->catureIQ(false);
 
             // close socket
 #if defined(_WIN32)
             closesocket(sock);
 #else
-            ::close(sock);
+            ::close(m_sock);
 #endif
-            sock = INVALID_SOCKET;
+            m_sock = INVALID_SOCKET;
 
-            worker->wait(2000);
+            m_worker->wait(2000);
 
-            while  (!worker->isFinished())
+            while  (!m_worker->isFinished())
             {
-                qDebug() << "Worker thread not finished after timeout - this should not happen :-(";
+                qDebug() << "RART-TCP: Worker thread not finished after timeout - this should not happen :-(";
 
                 // reset buffer - and tell the thread it is empty - buffer will be reset in any case
                 pthread_mutex_lock(&inputBuffer.countMutex);
                 inputBuffer.count = 0;
                 pthread_cond_signal(&inputBuffer.countCondition);
                 pthread_mutex_unlock(&inputBuffer.countMutex);
-                worker->wait(2000);
+                m_worker->wait(2000);
             }
         }
     }
@@ -81,7 +78,7 @@ RartTcpInput::~RartTcpInput()
 
 bool RartTcpInput::openDevice()
 {
-    if (!deviceUnplugged)
+    if (!m_deviceUnpluggedFlag)
     {   // device already opened
         return true;
     }
@@ -93,16 +90,16 @@ bool RartTcpInput::openDevice()
     hints.ai_flags = 0;
     hints.ai_protocol = 0;          /* Any protocol */
 
-    QString port_str = QString().number(port);
+    QString port_str = QString().number(m_port);
 
     struct addrinfo *result;
-    int s = getaddrinfo(address.toLatin1(), port_str.toLatin1(), &hints, &result);
+    int s = getaddrinfo(m_address.toLatin1(), port_str.toLatin1(), &hints, &result);
     if (s != 0)
     {
 #if defined(_WIN32)
-        qDebug() << "RARTTCP: getaddrinfo error:" << gai_strerrorA(s);
+        qDebug() << "RART-TCP: getaddrinfo error:" << gai_strerrorA(s);
 #else
-        qDebug() << "RARTTCP: getaddrinfo error:" << gai_strerror(s);
+        qDebug() << "RART-TCP: getaddrinfo error:" << gai_strerror(s);
 #endif
         return false;
     }
@@ -122,10 +119,10 @@ bool RartTcpInput::openDevice()
         }
 
         struct sockaddr_in *sa = (struct sockaddr_in *) rp->ai_addr;
-        qDebug() << "RARTTCP: Trying to connect to:" << inet_ntoa(sa->sin_addr);
+        qDebug() << "RART-TCP: Trying to connect to:" << inet_ntoa(sa->sin_addr);
         if (0 == ::connect(sfd, rp->ai_addr, rp->ai_addrlen))
         {   // connected
-            sock = sfd;
+            m_sock = sfd;
             break; /* Success */
         }
 
@@ -138,7 +135,7 @@ bool RartTcpInput::openDevice()
 
     if (NULL == rp)
     {   /* No address succeeded */
-        qDebug() << "RARTTCP: Could not connect";
+        qDebug() << "RART-TCP: Could not connect";
         return false;
     }
 
@@ -187,15 +184,15 @@ bool RartTcpInput::openDevice()
 #endif
 #else
     struct pollfd fd;
-    fd.fd = sock;
+    fd.fd = m_sock;
     fd.events = POLLIN;
     if (poll(&fd, 1, 2000) > 0)
     {
-        ::recv(sock, (char *) &dongleInfo, sizeof(dongleInfo), 0);
+        ::recv(m_sock, (char *) &dongleInfo, sizeof(dongleInfo), 0);
     }
     else
     {   // -1 is error, 0 is timeout
-        qDebug() << "Unable to get RaRT infomation";
+        qDebug() << "RART-TCP: Unable to get RaRT infomation";
         return false;
     }
 #endif
@@ -209,46 +206,34 @@ bool RartTcpInput::openDevice()
         dongleInfo.magic[2] == 'R' &&
         dongleInfo.magic[3] == 'T')
     {
-#if 0 //todo tuner detection
-        switch(dongleInfo.tunerType)
-        {
-        case RTLSDR_TUNER_E4000:
-        case RTLSDR_TUNER_UNKNOWN:
-        default:
-        {
-            qDebug() << "RTLSDR_TUNER_UNKNOWN";
-            dongleInfo.tunerGainCount = 0;
-        }
-        }
-#endif
-        qDebug() << "Found RaRT TCP server";
+        qDebug() << "RART-TCP: Found RaRT TCP server";
 
         // need to create worker, server is pushing samples
-        worker = new RartTcpWorker(sock, this);
-        connect(worker, &RartTcpWorker::dumpedBytes, this, &InputDevice::dumpedBytes, Qt::QueuedConnection);
-        connect(worker, &RartTcpWorker::finished, this, &RartTcpInput::readThreadStopped, Qt::QueuedConnection);
-        connect(worker, &RartTcpWorker::finished, worker, &QObject::deleteLater);
-        worker->start();        
+        m_worker = new RartTcpWorker(m_sock, this);
+        connect(m_worker, &RartTcpWorker::dumpedBytes, this, &InputDevice::dumpedBytes, Qt::QueuedConnection);
+        connect(m_worker, &RartTcpWorker::finished, this, &RartTcpInput::onReadThreadStopped, Qt::QueuedConnection);
+        connect(m_worker, &RartTcpWorker::finished, m_worker, &QObject::deleteLater);
+        m_worker->start();
 #if (RARTTCP_WDOG_ENABLE)
-        watchDogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
+        m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
 #endif
         // device connected
-        deviceUnplugged = false;
+        m_deviceUnpluggedFlag = false;
 
         emit deviceReady();
     }
     else
     {
-        qDebug() << "RART_TCP: \"RaRT\" magic key not found. Server not supported";
+        qDebug() << "RART-TCP: \"RaRT\" magic key not found. Server not supported";
         return false;
     }    
     return true;
 }
 
-void RartTcpInput::tune(uint32_t freq)
+void RartTcpInput::tune(uint32_t frequency)
 {
-    frequency = freq;
-    if ((frequency > 0) && (!deviceUnplugged))
+    m_frequency = frequency;
+    if ((m_frequency > 0) && (!m_deviceUnpluggedFlag))
     {
         run();
     }
@@ -256,53 +241,53 @@ void RartTcpInput::tune(uint32_t freq)
     {
         stop();
     }
-    emit tuned(frequency);
+    emit tuned(m_frequency);
 }
 
-void RartTcpInput::setTcpIp(const QString &addr, int p)
+void RartTcpInput::setTcpIp(const QString &address, int port)
 {
-    address = addr;
-    port = p;
+    m_address = address;
+    m_port = port;
 }
 
 void RartTcpInput::run()
 {
-    if (frequency != 0)
+    if (m_frequency != 0)
     {   // Tune to new frequency
-        sendCommand(RartTcpCommand::SET_FREQ, frequency*1000);
+        sendCommand(RartTcpCommand::SET_FREQ, m_frequency*1000);
 
-        if (nullptr != worker)
+        if (nullptr != m_worker)
         {
-            worker->catureIQ(true);
+            m_worker->catureIQ(true);
         }
     }
 }
 
 void RartTcpInput::stop()
 {
-    if (nullptr != worker)
+    if (nullptr != m_worker)
     {
-        worker->catureIQ(false);
+        m_worker->catureIQ(false);
     }
 }
 
-void RartTcpInput::readThreadStopped()
+void RartTcpInput::onReadThreadStopped()
 {
-    qDebug() << "RARTTCP server disconnected.";
+    qDebug() << "RART-TCP: server disconnected.";
 
     // close socket
 #if defined(_WIN32)
     closesocket(sock);
 #else
-    ::close(sock);
+    ::close(m_sock);
 #endif
-    sock = INVALID_SOCKET;
+    m_sock = INVALID_SOCKET;
 
 #if (RARTTCP_WDOG_ENABLE)
-    watchDogTimer.stop();
+    m_watchdogTimer.stop();
 #endif
 
-    deviceUnplugged = true;
+    m_deviceUnpluggedFlag = true;
 
     // fill buffer (artificially to avoid blocking of the DAB processing thread)
     inputBuffer.fillDummy();
@@ -311,16 +296,16 @@ void RartTcpInput::readThreadStopped()
 }
 
 #if (RARTTCP_WDOG_ENABLE)
-void RartTcpInput::watchDogTimeout()
+void RartTcpInput::onWatchdogTimeout()
 {
-    if (nullptr != worker)
+    if (nullptr != m_worker)
     {
-        if (!deviceUnplugged)
+        if (!m_deviceUnpluggedFlag)
         {
-            bool isRunning = worker->isRunning();
+            bool isRunning = m_worker->isRunning();
             if (!isRunning)
             {  // some problem in data input
-                qDebug() << Q_FUNC_INFO << "watchdog timeout";
+                qDebug() << "RART-TCP: watchdog timeout";
                 inputBuffer.fillDummy();
                 emit error(InputDeviceErrorCode::NoDataAvailable);
             }
@@ -328,33 +313,33 @@ void RartTcpInput::watchDogTimeout()
     }
     else
     {
-        watchDogTimer.stop();
+        m_watchdogTimer.stop();
     }
 }
 #endif
 
 void RartTcpInput::startDumpToFile(const QString & filename)
 {
-    dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "wb");
-    if (nullptr != dumpFile)
+    m_dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "wb");
+    if (nullptr != m_dumpFile)
     {
-        worker->dumpToFileStart(dumpFile);
+        m_worker->dumpToFileStart(m_dumpFile);
         emit dumpingToFile(true, 4);
     }
 }
 
 void RartTcpInput::stopDumpToFile()
 {
-    worker->dumpToFileStop();
+    m_worker->dumpToFileStop();
 
-    fclose(dumpFile);
+    fclose(m_dumpFile);
 
     emit dumpingToFile(false);
 }
 
 void RartTcpInput::sendCommand(const RartTcpCommand & cmd, uint32_t param)
 {
-    if (deviceUnplugged)
+    if (m_deviceUnpluggedFlag)
     {
         return;
     }
@@ -367,33 +352,31 @@ void RartTcpInput::sendCommand(const RartTcpCommand & cmd, uint32_t param)
     cmdBuffer[2] = (param >> 16) & 0xFF;
     cmdBuffer[1] = (param >> 24) & 0xFF;
 
-    ::send(sock, (char *) cmdBuffer, 5, 0);
+    ::send(m_sock, (char *) cmdBuffer, 5, 0);
 }
 
-RartTcpWorker::RartTcpWorker(SOCKET socket, QObject *parent) : QThread(parent)
+RartTcpWorker::RartTcpWorker(SOCKET sock, QObject *parent) : QThread(parent)
 {
-    enaDumpToFile = false;
-    enaCaptureIQ = false;
-    dumpFile = nullptr;
-    sock = socket;
+    m_enaDumpToFile = false;
+    m_enaCaptureIQ = false;
+    m_dumpFile = nullptr;
+    m_sock = sock;
 }
 
 void RartTcpWorker::run()
 {
-    //qDebug() << "RartTcpWorker thread start" << QThread::currentThreadId() << sock;
-
-    wdogIsRunningFlag = false;  // first callback sets it to true
+    m_watchdogFlag = false;  // first callback sets it to true
 
     // read samples
-    while (INVALID_SOCKET != sock)
+    while (INVALID_SOCKET != m_sock)
     {
         size_t read = 0;
         do
         {
-            ssize_t ret = ::recv(sock, (char *) bufferIQ+read, RARTTCP_CHUNK_SIZE - read, 0);
+            ssize_t ret = ::recv(m_sock, (char *) m_bufferIQ+read, RARTTCP_CHUNK_SIZE - read, 0);
             if (0 == ret)
             {   // disconnected => finish thread operation
-                qDebug() << Q_FUNC_INFO << "RARTTCP: socket disconnected";
+                qDebug() << "RART-TCP: socket disconnected";
                 goto worker_exit;
             }
             else if (-1 == ret)
@@ -406,17 +389,17 @@ void RartTcpWorker::run()
                 else if (WSAECONNABORTED == WSAGetLastError())
                 {   // disconnected => finish thread operation
                     // when socket is diconnected under Win, recv returns -1 but error code is 0
-                    qDebug() << Q_FUNC_INFO << "RARTTCP: socket disconnected";
+                    qDebug() << "RART-TCP: socket disconnected";
                     goto worker_exit;
                 }
                 else if ((WSAECONNRESET == WSAGetLastError()) || (WSAEBADF == WSAGetLastError()))
                 {   // disconnected => finish thread operation
-                    qDebug() << "RARTTCP: socket read error:" << strerror(WSAGetLastError());
+                    qDebug() << "RART-TCP: socket read error:" << strerror(WSAGetLastError());
                     goto worker_exit;
                 }
                 else
                 {
-                    qDebug() << "RARTTCP: socket read error:" << strerror(WSAGetLastError());
+                    qDebug() << "RART-TCP: socket read error:" << strerror(WSAGetLastError());
                 }
 #else
                 if ((EAGAIN == errno) || (EINTR == errno))
@@ -425,12 +408,12 @@ void RartTcpWorker::run()
                 }
                 else if ((ECONNRESET == errno) || (EBADF == errno))
                 {   // disconnected => finish thread operation
-                    qDebug() << Q_FUNC_INFO << "error: " << strerror(errno);
+                    qDebug() << "RART-TCP: error: " << strerror(errno);
                     goto worker_exit;
                 }
                 else
                 {
-                    qDebug() << "RARTTCP: socket read error:" << strerror(errno);
+                    qDebug() << "RART-TCP: socket read error:" << strerror(errno);
                 }
 #endif
             }
@@ -442,24 +425,23 @@ void RartTcpWorker::run()
 
 #if (RARTTCP_WDOG_ENABLE)
         // reset watchDog flag, timer sets it to true
-        wdogIsRunningFlag = true;
+        m_watchdogFlag = true;
 #endif
 
         // full chunk is read at this point
-        if (enaCaptureIQ)
+        if (m_enaCaptureIQ)
         {   // process data
-            if (captureStartCntr > 0)
+            if (m_captureStartCntr > 0)
             {   // clear buffer to avoid mixing of channels
-                captureStartCntr--;
-                memset(bufferIQ, 0, RARTTCP_CHUNK_SIZE);
+                m_captureStartCntr--;
+                memset(m_bufferIQ, 0, RARTTCP_CHUNK_SIZE);
             }
-            rarttcpCb(bufferIQ, RARTTCP_CHUNK_SIZE, this);
+            processInputData(m_bufferIQ, RARTTCP_CHUNK_SIZE);
         }
     }
 
 worker_exit:
     // single exit point
-    //qDebug() << "RartTcpWorker thread end" << QThread::currentThreadId();
     return;
 }
 
@@ -468,51 +450,50 @@ void RartTcpWorker::catureIQ(bool ena)
     if (ena)
     {
         inputBuffer.reset();
-        captureStartCntr = RARTTCP_START_COUNTER_INIT;
+        m_captureStartCntr = RARTTCP_START_COUNTER_INIT;
     }
-    enaCaptureIQ = ena;
+    m_enaCaptureIQ = ena;
 }
 
-void RartTcpWorker::dumpToFileStart(FILE * f)
+void RartTcpWorker::dumpToFileStart(FILE * dumpFile)
 {
-    fileMutex.lock();
-    dumpFile = f;
-    enaDumpToFile = true;
-    fileMutex.unlock();
+    m_dumpFileMutex.lock();
+    m_dumpFile = dumpFile;
+    m_enaDumpToFile = true;
+    m_dumpFileMutex.unlock();
 }
 
 void RartTcpWorker::dumpToFileStop()
 {
-    fileMutex.lock();
-    enaDumpToFile = false;
-    dumpFile = nullptr;
-    fileMutex.unlock();
+    m_dumpFileMutex.lock();
+    m_enaDumpToFile = false;
+    m_dumpFile = nullptr;
+    m_dumpFileMutex.unlock();
 }
 
 void RartTcpWorker::dumpBuffer(unsigned char *buf, uint32_t len)
 {
-    fileMutex.lock();
-    if (nullptr != dumpFile)
+    m_dumpFileMutex.lock();
+    if (nullptr != m_dumpFile)
     {
-        ssize_t bytes = fwrite(buf, 1, len, dumpFile);
+        ssize_t bytes = fwrite(buf, 1, len, m_dumpFile);
         emit dumpedBytes(bytes);
     }
-    fileMutex.unlock();
+    m_dumpFileMutex.unlock();
 }
 
 bool RartTcpWorker::isRunning()
 {
-    bool flag = wdogIsRunningFlag;
-    wdogIsRunningFlag = false;
+    bool flag = m_watchdogFlag;
+    m_watchdogFlag = false;
     return flag;
 }
 
-void rarttcpCb(unsigned char *buf, uint32_t len, void * ctx)
+void RartTcpWorker::processInputData(unsigned char *buf, uint32_t len)
 {
-    RartTcpWorker * rartTcpWorker = static_cast<RartTcpWorker *>(ctx);
-    if (rartTcpWorker->isDumpingIQ())
+    if (isDumpingIQ())
     {
-        rartTcpWorker->dumpBuffer(buf, len);
+        dumpBuffer(buf, len);
     }
 
     // len is number of I and Q samples
@@ -526,7 +507,7 @@ void rarttcpCb(unsigned char *buf, uint32_t len, void * ctx)
     uint32_t numSamples = len >> 1;  // number of I and Q samples, one I or Q sample is 2 bytes (int16)
     if ((INPUT_FIFO_SIZE - count) < numSamples*sizeof(float))
     {
-        qDebug() << Q_FUNC_INFO << "dropping" << numSamples << "samples...";
+        qDebug() << "RART-TCP: dropping" << numSamples << "samples...";
         return;
     }
 

@@ -38,8 +38,8 @@ class RtlTcpWorker : public QThread
 {
     Q_OBJECT
 public:
-    explicit RtlTcpWorker(SOCKET socket, QObject *parent = nullptr);
-    void dumpToFileStart(FILE * f);
+    explicit RtlTcpWorker(SOCKET sock, QObject *parent = nullptr);
+    void dumpToFileStart(FILE * dumpFile);
     void dumpToFileStop();
     void catureIQ(bool ena);
     bool isRunning();
@@ -49,30 +49,28 @@ signals:
     void agcLevel(float level, int maxVal);
     void dumpedBytes(ssize_t bytes);
 private:
-    SOCKET sock;
+    SOCKET m_sock;
 
-    std::atomic<bool> enaDumpToFile;
-    std::atomic<bool> enaCaptureIQ;
-    std::atomic<bool> wdogIsRunningFlag;
-    FILE * dumpFile;
-    QMutex fileMutex;
-    int captureStartCntr;
+    std::atomic<bool> m_enaDumpToFile;
+    std::atomic<bool> m_enaCaptureIQ;
+    std::atomic<bool> m_watchdogFlag;
+    FILE * m_dumpFile;
+    QMutex m_dumpFileMutex;
+    int m_captureStartCntr;
 
     // DOC memory
-    float dcI = 0.0;
-    float dcQ = 0.0;
+    float m_dcI = 0.0;
+    float m_dcQ = 0.0;
 
     // AGC memory
-    float agcLev = 0.0;
+    float m_agcLevel = 0.0;
 
     // input buffer
-    uint8_t bufferIQ[RTLTCP_CHUNK_SIZE];
+    uint8_t m_bufferIQ[RTLTCP_CHUNK_SIZE];
 
-    bool isDumpingIQ() const { return enaDumpToFile; }
+    bool isDumpingIQ() const { return m_enaDumpToFile; }
     void dumpBuffer(unsigned char *buf, uint32_t len);
-    void emitAgcLevel(float level, int maxVal) { emit agcLevel(level, maxVal); }
-
-    friend void rtltcpCb(unsigned char *buf, uint32_t len, void *ctx);
+    void processInputData(unsigned char *buf, uint32_t len);
 };
 
 class RtlTcpInput : public InputDevice
@@ -111,9 +109,9 @@ public:
     ~RtlTcpInput();
     bool openDevice() override;
 
-    void tune(uint32_t freq) override;
-    void setTcpIp(const QString & addr, int p);
-    void setGainMode(RtlGainMode mode, int gainIdx = 0);
+    void tune(uint32_t frequency) override;
+    void setTcpIp(const QString & address, int port);
+    void setGainMode(RtlGainMode gainMode, int gainIdx = 0);
     void setDAGC(bool ena);
 
     void startDumpToFile(const QString & filename) override;
@@ -121,37 +119,37 @@ public:
 
     QList<float> getGainList() const;
 private:    
-    uint32_t frequency;
-    bool deviceUnplugged;
-    SOCKET sock;
-    QString address;
-    int port;
+    uint32_t m_frequency;
+    bool m_deviceUnpluggedFlag;
+    SOCKET m_sock;
+    QString m_address;
+    int m_port;
 
-    RtlTcpWorker * worker;
+    RtlTcpWorker * m_worker;
 #if (RTLTCP_WDOG_ENABLE)
-    QTimer watchDogTimer;
+    QTimer m_watchdogTimer;
 #endif
-    RtlGainMode gainMode = RtlGainMode::Hardware;    
-    int gainIdx;
-    QList<int> * gainList;
-    FILE * dumpFile;
+    RtlGainMode m_gainMode = RtlGainMode::Hardware;
+    int m_gainIdx;
+    QList<int> * m_gainList;
+    FILE * m_dumpFile;
 
     void run();
     void stop();
     void resetAgc();
 
     // private function
-    // gain is set from outside usin setGainMode() function
-    void setGain(int gIdx);
+    // gain is set from outside using setGainMode() function
+    void setGain(int gainIdx);
 
-    // used by friend
-    void updateAgc(float level, int maxVal);
+    // used by worker
+    void onAgcLevel(float agcLevel, int maxVal);
 
     void sendCommand(const RtlTcpCommand & cmd, uint32_t param);
 private slots:
-    void readThreadStopped();
+    void onReadThreadStopped();
 #if (RTLTCP_WDOG_ENABLE)
-    void watchDogTimeout();
+    void onWatchdogTimeout();
 #endif
 };
 

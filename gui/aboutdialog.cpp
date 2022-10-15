@@ -15,7 +15,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     dabsdrVersion_t dabsdrVer = {0};
     dabsdrGetVersion(&dabsdrVer);
 
-#ifdef PROJECT_VERSION_RELEASE
+#if PROJECT_VERSION_RELEASE
     ui->version->setText(QString("Version %1 (%2)").arg(PROJECT_VER,"<a href=\"https://github.com/KejPi/AbracaDABra\">GitHub</a>"));
 #else
     ui->version->setText(QString("Version %1+, revision %2 (%3)").arg(PROJECT_VER, PROJECT_GIT_REV)

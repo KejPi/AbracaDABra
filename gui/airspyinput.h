@@ -50,7 +50,7 @@ public:
     ~AirspyInput();
     bool openDevice() override;
 
-    void tune(uint32_t freq) override;
+    void tune(uint32_t frequency) override;
     void setGainMode(const AirspyGainStr & gain);
 
     void startDumpToFile(const QString & filename) override;
@@ -62,36 +62,36 @@ signals:
     void agcLevel(float level);
 
 private:
-    uint32_t frequency;
-    struct airspy_device *device;
+    uint32_t m_frequency;
+    struct airspy_device *m_device;
 #if (AIRSPY_WDOG_ENABLE)
-    QTimer watchDogTimer;
+    QTimer m_watchdogTimer;
 #endif
-    AirpyGainMode gainMode = AirpyGainMode::Hybrid;
-    int gainIdx;
-    FILE * dumpFile;
-    std::atomic<bool> enaDumpToFile;
-    QMutex fileMutex;
-    bool try4096kHzSR;
-    float * filterOutBuffer;
-    InputDeviceSRC * src;
-    uint_fast8_t signalLevelEmitCntr;
+    AirpyGainMode m_gainMode = AirpyGainMode::Hybrid;
+    int m_gainIdx;
+    std::atomic<bool> m_enaDumpToFile;
+    FILE * m_dumpFile;
+    QMutex m_dumpfileMutex;
+    bool m_try4096kHz;
+    float * m_filterOutBuffer;
+    InputDeviceSRC * m_src;
+    uint_fast8_t m_signalLevelEmitCntr;
 
     void run();           
     void stop();
     void resetAgc();
 
     // private function
-    // gain is set from outside usin setGainMode() function
-    void setGain(int gIdx);
+    // gain is set from outside using setGainMode() function
+    void setGain(int gainIdx);
 
-    void updateAgc(float level);
+    void onAgcLevel(float level);
 
 #if (AIRSPY_WDOG_ENABLE)
-    void watchDogTimeout();
+    void onWatchdogTimeout();
 #endif
 
-    bool isDumpingIQ() const { return enaDumpToFile; }
+    bool isDumpingIQ() const { return m_enaDumpToFile; }
     void dumpBuffer(unsigned char *buf, uint32_t len);
     void processInputData(airspy_transfer* transfer);
     static int callback(airspy_transfer* transfer);

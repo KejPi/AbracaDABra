@@ -16,14 +16,14 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     ui->inputCombo->addItem("RTL SDR", QVariant(int(InputDeviceId::RTLSDR)));
-#ifdef HAVE_AIRSPY
+#if HAVE_AIRSPY
     ui->inputCombo->addItem("Airspy", QVariant(int(InputDeviceId::AIRSPY)));
 #endif
-#ifdef HAVE_SOAPYSDR
+#if HAVE_SOAPYSDR
     ui->inputCombo->addItem("Soapy SDR", QVariant(int(InputDeviceId::SOAPYSDR)));
 #endif
     ui->inputCombo->addItem("RTL TCP", QVariant(int(InputDeviceId::RTLTCP)));
-#ifdef HAVE_RARTTCP
+#if HAVE_RARTTCP
     ui->inputCombo->addItem("RaRT TCP", QVariant(int(InputDeviceId::RARTTCP)));
 #endif
     ui->inputCombo->addItem("Raw file", QVariant(int(InputDeviceId::RAWFILE)));
@@ -69,7 +69,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->loopCheckbox, &QCheckBox::stateChanged, [=](int val) { m_settings.rawfile.loopEna = (Qt::Unchecked != val); });
     connect(ui->fileFormatCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onRawFileFormatChanged);
 
-#ifdef HAVE_AIRSPY
+#if HAVE_AIRSPY
     connect(ui->airspySensitivityGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspySensitivityGainSliderChanged);
     connect(ui->airspyIFGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspyIFGainSliderChanged);
     connect(ui->airspyLNAGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspyLNAGainSliderChanged);
@@ -82,7 +82,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->airspyGainModeSensitivity, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
 #endif
 
-#ifdef HAVE_SOAPYSDR
+#if HAVE_SOAPYSDR
     connect(ui->soapysdrGainSlider, &QSlider::valueChanged, this, &SetupDialog::onSoapySdrGainSliderChanged);
     connect(ui->soapysdrDevArgs, &QLineEdit::editingFinished, this, &SetupDialog::onSoapySdrDevArgsEditFinished);
     connect(ui->soapySdrAntenna, &QLineEdit::editingFinished, this, &SetupDialog::onSoapySdrAntennaEditFinished);
@@ -119,7 +119,7 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
         ui->rtltcpGainSlider->setValue((m_settings.rtltcp.gainIdx >= 0) ? m_settings.rtltcp.gainIdx : 0);
         break;
     case InputDeviceId::SOAPYSDR:
-#ifdef HAVE_SOAPYSDR
+#if HAVE_SOAPYSDR
         m_soapysdrGainList.clear();
         m_soapysdrGainList = gainList;
         ui->soapysdrGainSlider->setMinimum(0);
@@ -200,7 +200,7 @@ void SetupDialog::showEvent(QShowEvent *event)
         break;
     }
 
-#ifdef HAVE_AIRSPY
+#if HAVE_AIRSPY
     switch (m_settings.airspy.gain.mode) {
     case AirpyGainMode::Software:
         ui->airspyGainModeSw->setChecked(true);
@@ -226,7 +226,7 @@ void SetupDialog::showEvent(QShowEvent *event)
     ui->airspyLNAAGCCheckbox->setChecked(m_settings.airspy.gain.lnaAgcEna);
 #endif
 
-#ifdef HAVE_SOAPYSDR
+#if HAVE_SOAPYSDR
     switch (m_settings.soapysdr.gainMode) {
     case SoapyGainMode::Software:
         ui->soapysdrGainModeSw->setChecked(true);
@@ -273,7 +273,7 @@ void SetupDialog::showEvent(QShowEvent *event)
     ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings.rawfile.format));
     ui->rtltcpIpAddressEdit->setText(m_settings.rtltcp.tcpAddress);
     ui->rtltcpIpPortSpinBox->setValue(m_settings.rtltcp.tcpPort);
-#ifdef HAVE_RARTTCP
+#if HAVE_RARTTCP
     ui->rarttcpIpAddressEdit->setText(m_settings.rarttcp.tcpAddress);
     ui->rarttcpIpPortSpinBox->setValue(m_settings.rarttcp.tcpPort);
 #endif
@@ -307,12 +307,12 @@ void SetupDialog::onConnectDeviceClicked()
         m_settings.rawfile.format = static_cast<RawFileInputFormat>(ui->fileFormatCombo->currentIndex());
         break;
     case InputDeviceId::AIRSPY:
-#ifdef HAVE_AIRSPY
+#if HAVE_AIRSPY
         activateAirspyControls(true);
 #endif
         break;
     case InputDeviceId::SOAPYSDR:
-#ifdef HAVE_SOAPYSDR
+#if HAVE_SOAPYSDR
         m_settings.soapysdr.devArgs = ui->soapysdrDevArgs->text();
         m_settings.soapysdr.channel = ui->soapysdrChannelNum->text().toInt();
         m_settings.soapysdr.antenna = ui->soapySdrAntenna->text();
@@ -416,7 +416,7 @@ void SetupDialog::onRawFileFormatChanged(int idx)
     }
 }
 
-#ifdef HAVE_AIRSPY
+#if HAVE_AIRSPY
 void SetupDialog::activateAirspyControls(bool en)
 {
     ui->airspyGainModeGroup->setEnabled(en);
@@ -521,7 +521,7 @@ void SetupDialog::onAirspyMixerAGCstateChanged(int state)
 }
 #endif // HAVE_AIRSPY
 
-#ifdef HAVE_SOAPYSDR
+#if HAVE_SOAPYSDR
 void SetupDialog::onSoapySdrGainSliderChanged(int val)
 {
     ui->soapysdrGainValueLabel->setText(QString("%1 dB").arg(m_soapysdrGainList.at(val)));
@@ -654,12 +654,12 @@ void SetupDialog::onInputChanged(int index)
         case InputDeviceId::RAWFILE:
             break;
         case InputDeviceId::AIRSPY:
-#ifdef HAVE_AIRSPY
+#if HAVE_AIRSPY
             activateAirspyControls(false);
 #endif
             return;
         case InputDeviceId::SOAPYSDR:
-#ifdef HAVE_SOAPYSDR
+#if HAVE_SOAPYSDR
             activateSoapySdrControls(false);
 #endif
             return;
@@ -714,12 +714,12 @@ void SetupDialog::resetInputDevice()
     case InputDeviceId::RARTTCP:
     case InputDeviceId::UNDEFINED:
     case InputDeviceId::AIRSPY:
-#ifdef HAVE_AIRSPY
+#if HAVE_AIRSPY
         activateAirspyControls(false);
 #endif
         break;
     case InputDeviceId::SOAPYSDR:
-#ifdef HAVE_SOAPYSDR
+#if HAVE_SOAPYSDR
         activateSoapySdrControls(false);
 #endif
         break;

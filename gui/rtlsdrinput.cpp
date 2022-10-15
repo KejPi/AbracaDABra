@@ -1,49 +1,38 @@
 #include <QDir>
 #include <QDebug>
-//#include <QDeadlineTimer>
 #include "rtlsdrinput.h"
-
-void rtlsdrCb(unsigned char *buf, uint32_t len, void *ctx);
 
 RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
 {
-    id = InputDeviceId::RTLSDR;
+    m_id = InputDeviceId::RTLSDR;
 
-    device = nullptr;
-    deviceUnplugged = true;
-    deviceRunning = false;
-    gainList = nullptr;
-    dumpFile = nullptr;
+    m_device = nullptr;
+    m_deviceUnpluggedFlag = true;
+    m_deviceRunningFlag = false;
+    m_gainList = nullptr;
+    m_dumpFile = nullptr;
 #if (RTLSDR_WDOG_ENABLE)
-    connect(&watchDogTimer, &QTimer::timeout, this, &RtlSdrInput::watchDogTimeout);
+    connect(&m_watchdogTimer, &QTimer::timeout, this, &RtlSdrInput::onWatchdogTimeout);
 #endif
-//    int devCnt = rtlsdr_get_device_count();
-//    for (int i = 0; i < devCnt; i++)
-//    {
-//        char vendor[256], product[256], serial[256];
-//        rtlsdr_get_device_usb_strings(i, vendor, product, serial);
-//        qDebug() << "RTLSDR device #" << i << ": SN" << serial << vendor << product << rtlsdr_get_device_name((uint32_t)i);
-//    }
 }
 
 RtlSdrInput::~RtlSdrInput()
 {
-    //qDebug() << Q_FUNC_INFO;
     stop();
-    if (!deviceUnplugged)
+    if (!m_deviceUnpluggedFlag)
     {
-        rtlsdr_close(device);
+        rtlsdr_close(m_device);
     }
-    if (nullptr != gainList)
+    if (nullptr != m_gainList)
     {
-        delete gainList;
+        delete m_gainList;
     }
 }
 
-void RtlSdrInput::tune(uint32_t freq)
+void RtlSdrInput::tune(uint32_t frequency)
 {
-    frequency = freq;
-    if ((deviceRunning) || (0 == freq))
+    m_frequency = frequency;
+    if ((m_deviceRunningFlag) || (0 == frequency))
     {   // worker is running
         //      sequence in this case is:
         //      1) stop
@@ -66,56 +55,55 @@ bool RtlSdrInput::openDevice()
     uint32_t deviceCount = rtlsdr_get_device_count();
     if (deviceCount == 0)
     {
-        qDebug() << "RTLSDR: No devices found";
+        qDebug() << "RTL-SDR: No devices found";
         return false;
     }
     else
     {
-        qDebug() << "RTLSDR: Found " << deviceCount << " devices. Uses the first working one";
+        qDebug() << "RTL-SDR: Found " << deviceCount << " devices. Uses the first working one";
     }
 
     //	Iterate over all found rtl-sdr devices and try to open it. Stops if one device is successfull opened.
     for(uint32_t n=0; n<deviceCount; ++n)
     {
-        ret = rtlsdr_open(&device, n);
+        ret = rtlsdr_open(&m_device, n);
         if (ret >= 0)
         {
-            qDebug() << "RTLSDR:  Opening rtl-sdr device" << n;
+            qDebug() << "RTL-SDR:  Opening rtl-sdr device" << n;
             break;
         }
     }
 
     if (ret < 0)
     {
-        qDebug() << "RTLSDR: Opening rtl-sdr failed";
+        qDebug() << "RTL-SDR: Opening rtl-sdr failed";
         return false;
     }
 
     // Set sample rate
-    ret = rtlsdr_set_sample_rate(device, 2048000);
+    ret = rtlsdr_set_sample_rate(m_device, 2048000);
     if (ret < 0)
     {
-        qDebug() << "RTLSDR: Setting sample rate failed";
+        qDebug() << "RTL-SDR: Setting sample rate failed";
         return false;
     }
 
     // Get tuner gains
-    uint32_t gainsCount = rtlsdr_get_tuner_gains(device, NULL);
+    uint32_t gainsCount = rtlsdr_get_tuner_gains(m_device, NULL);
     qDebug() << "RTL_SDR: Supported gain values" << gainsCount;
     int * gains = new int[gainsCount];
-    gainsCount = rtlsdr_get_tuner_gains(device, gains);
+    gainsCount = rtlsdr_get_tuner_gains(m_device, gains);
 
-    gainList = new QList<int>();
+    m_gainList = new QList<int>();
     for (int i = 0; i < gainsCount; i++) {
-        //qDebug() << "RTL_SDR: gain " << (gains[i] / 10.0);
-        gainList->append(gains[i]);
+        m_gainList->append(gains[i]);
     }
     delete [] gains;
 
     // set automatic gain
     setGainMode(RtlGainMode::Software);
 
-    deviceUnplugged = false;
+    m_deviceUnpluggedFlag = false;
 
     emit deviceReady();
 
@@ -125,7 +113,7 @@ bool RtlSdrInput::openDevice()
 void RtlSdrInput::run()
 {
     // Reset endpoint before we start reading from it (mandatory)
-    if (rtlsdr_reset_buffer(device) < 0)
+    if (rtlsdr_reset_buffer(m_device) < 0)
     {
         emit error(InputDeviceErrorCode::Undefined);
     }
@@ -133,83 +121,83 @@ void RtlSdrInput::run()
     // Reset buffer here - worker thread it not running, DAB waits for new data
     inputBuffer.reset();
 
-    if (frequency != 0)
+    if (m_frequency != 0)
     {   // Tune to new frequency
 
-        rtlsdr_set_center_freq(device, frequency*1000);
+        rtlsdr_set_center_freq(m_device, m_frequency*1000);
 
         // does nothing if not SW AGC
         resetAgc();
 
-        worker = new RtlSdrWorker(device, this);
-        connect(worker, &RtlSdrWorker::agcLevel, this, &RtlSdrInput::updateAgc, Qt::QueuedConnection);
-        connect(worker, &RtlSdrWorker::dumpedBytes, this, &InputDevice::dumpedBytes, Qt::QueuedConnection);
-        connect(worker, &RtlSdrWorker::finished, this, &RtlSdrInput::readThreadStopped, Qt::QueuedConnection);
-        connect(worker, &RtlSdrWorker::finished, worker, &QObject::deleteLater);
+        m_worker = new RtlSdrWorker(m_device, this);
+        connect(m_worker, &RtlSdrWorker::agcLevel, this, &RtlSdrInput::onAgcLevel, Qt::QueuedConnection);
+        connect(m_worker, &RtlSdrWorker::dumpedBytes, this, &InputDevice::dumpedBytes, Qt::QueuedConnection);
+        connect(m_worker, &RtlSdrWorker::finished, this, &RtlSdrInput::onReadThreadStopped, Qt::QueuedConnection);
+        connect(m_worker, &RtlSdrWorker::finished, m_worker, &QObject::deleteLater);
 #if (RTLSDR_WDOG_ENABLE)
-        watchDogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
+        m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
 #endif
-        worker->start();
+        m_worker->start();
 
-        deviceRunning = true;
+        m_deviceRunningFlag = true;
     }
     else
     { /* tune to 0 => going to idle */  }
 
-    emit tuned(frequency);
+    emit tuned(m_frequency);
 }
 
 void RtlSdrInput::stop()
 {
-    if (deviceRunning)
+    if (m_deviceRunningFlag)
     {   // if devise is running, stop worker
-        deviceRunning = false;       // this flag say that we want to stop worker intentionally
+        m_deviceRunningFlag = false;       // this flag say that we want to stop worker intentionally
                                      // (checked in readThreadStopped() slot)
 
-        rtlsdr_cancel_async(device);
+        rtlsdr_cancel_async(m_device);
 
-        worker->wait(QDeadlineTimer(2000));
-        while (!worker->isFinished())
+        m_worker->wait(QDeadlineTimer(2000));
+        while (!m_worker->isFinished())
         {
-            qDebug() << "Worker thread not finished after timeout - this should not happen :-(";
+            qDebug() << "RTL-SDR: Worker thread not finished after timeout - this should not happen :-(";
 
             // reset buffer - and tell the thread it is empty - buffer will be reset in any case
             pthread_mutex_lock(&inputBuffer.countMutex);
             inputBuffer.count = 0;
             pthread_cond_signal(&inputBuffer.countCondition);
             pthread_mutex_unlock(&inputBuffer.countMutex);
-            worker->wait(2000);
+            m_worker->wait(2000);
         }
     }
-    else if (0 == frequency)
+    else if (0 == m_frequency)
     {   // going to idle
         emit tuned(0);
     }
 }
 
-void RtlSdrInput::setGainMode(RtlGainMode mode, int gainIdx)
+void RtlSdrInput::setGainMode(RtlGainMode gainMode, int gainIdx)
 {
-    if (mode != gainMode)
+    if (gainMode != m_gainMode)
     {
         // set automatic gain 0 or manual 1
-        int ret = rtlsdr_set_tuner_gain_mode(device, (RtlGainMode::Hardware != mode));
+        int ret = rtlsdr_set_tuner_gain_mode(m_device, (RtlGainMode::Hardware != gainMode));
         if (ret != 0)
         {
-            qDebug() << "RTLSDR: Failed to set tuner gain";
+            qDebug() << "RTL-SDR: Failed to set tuner gain";
         }
 
-        gainMode = mode;
+        m_gainMode = gainMode;
     }
 
-    if (RtlGainMode::Manual == gainMode)
+    if (RtlGainMode::Manual == m_gainMode)
     {
         setGain(gainIdx);
 
         // always emit gain when switching mode to manual
-        emit agcGain(gainList->at(gainIdx)*0.1);
+        emit agcGain(m_gainList->at(gainIdx)*0.1);
     }
 
-    if (RtlGainMode::Hardware == gainMode)
+    if (RtlGainMode::Hardware == m_gainMode)
     {   // signalize that gain is not available
         emit agcGain(NAN);
     }
@@ -225,64 +213,62 @@ void RtlSdrInput::setGain(int gIdx)
     {
         gIdx = 0;
     }
-    if (gIdx >= gainList->size())
+    if (gIdx >= m_gainList->size())
     {
-        gIdx = gainList->size() - 1;
+        gIdx = m_gainList->size() - 1;
     }
 
-    if (gIdx != gainIdx)
+    if (gIdx != m_gainIdx)
     {
-        gainIdx = gIdx;
-        int ret = rtlsdr_set_tuner_gain(device, gainList->at(gainIdx));
+        m_gainIdx = gIdx;
+        int ret = rtlsdr_set_tuner_gain(m_device, m_gainList->at(m_gainIdx));
         if (ret != 0)
         {
-            qDebug() << "RTLSDR: Failed to set tuner gain";
+            qDebug() << "RTL-SDR: Failed to set tuner gain";
         }
         else
         {
-            //qDebug() << "RTLSDR: Tuner gain set to" << gainList->at(gainIdx)/10.0;
-            emit agcGain(gainList->at(gainIdx)*0.1);
+            emit agcGain(m_gainList->at(m_gainIdx)*0.1);
         }
     }
 }
 
 void RtlSdrInput::resetAgc()
 {
-    if (RtlGainMode::Software == gainMode)
+    if (RtlGainMode::Software == m_gainMode)
     {
-        setGain(gainList->size() >> 1);
+        setGain(m_gainList->size() >> 1);
     }
 }
 
-void RtlSdrInput::updateAgc(float level, int maxVal)
+void RtlSdrInput::onAgcLevel(float agcLevel, int maxVal)
 {
-    if (RtlGainMode::Software == gainMode)
+    if (RtlGainMode::Software == m_gainMode)
     {
         // AGC correction
         if (maxVal >= 127)
         {
-           setGain(gainIdx-1);
+           setGain(m_gainIdx-1);
         }
-        else if ((level < 50) && (maxVal < 100))
+        else if ((agcLevel < 50) && (maxVal < 100))
         {  // (maxVal < 100) is required to avoid toggling => change gain only if there is some headroom
            // this could be problem on E4000 tuner with big AGC gain steps
-           setGain(gainIdx+1);
+           setGain(m_gainIdx+1);
         }
     }
 }
 
-void RtlSdrInput::readThreadStopped()
+void RtlSdrInput::onReadThreadStopped()
 {
-    //qDebug() << Q_FUNC_INFO << deviceRunning;
 #if (RTLSDR_WDOG_ENABLE)
-    watchDogTimer.stop();
+    m_watchdogTimer.stop();
 #endif
 
-    if (deviceRunning)
+    if (m_deviceRunningFlag)
     {   // if device should be running then it measn reading error thus device is disconnected
-        qDebug() << "RTL-SDR is unplugged.";
-        deviceUnplugged = true;
-        deviceRunning = false;
+        qDebug() << "RTL-SDR: device unplugged.";
+        m_deviceUnpluggedFlag = true;
+        m_deviceRunningFlag = false;
 
         // fill buffer (artificially to avoid blocking of the DAB processing thread)
         inputBuffer.fillDummy();
@@ -291,49 +277,47 @@ void RtlSdrInput::readThreadStopped()
     }
     else
     {
-        //qDebug() << "RTL-SDR Reading thread stopped";
-
         // in this thread was stopped by to tune to new frequency, there is no other reason to stop the thread
         run();
     }
 }
 
 #if (RTLSDR_WDOG_ENABLE)
-void RtlSdrInput::watchDogTimeout()
+void RtlSdrInput::onWatchdogTimeout()
 {
-    if (nullptr != worker)
+    if (nullptr != m_worker)
     {
-        bool isRunning = worker->isRunning();
+        bool isRunning = m_worker->isRunning();
         if (!isRunning)
         {  // some problem in data input
-            qDebug() << Q_FUNC_INFO << "watchdog timeout";
+            qDebug() << "RTL-SDR: watchdog timeout";
             inputBuffer.fillDummy();
             emit error(InputDeviceErrorCode::NoDataAvailable);
         }
     }
     else
     {
-        watchDogTimer.stop();
+        m_watchdogTimer.stop();
     }
 }
 #endif
 
 void RtlSdrInput::startDumpToFile(const QString & filename)
 {
-    dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "wb");
-    if (nullptr != dumpFile)
+    m_dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "wb");
+    if (nullptr != m_dumpFile)
     {
-        worker->dumpToFileStart(dumpFile);
+        m_worker->dumpToFileStart(m_dumpFile);
         emit dumpingToFile(true);
     }
 }
 
 void RtlSdrInput::stopDumpToFile()
 {
-    worker->dumpToFileStop();
+    m_worker->dumpToFileStop();
 
-    fflush(dumpFile);
-    fclose(dumpFile);
+    fflush(m_dumpFile);
+    fclose(m_dumpFile);
 
     emit dumpingToFile(false);
 }
@@ -342,14 +326,14 @@ void RtlSdrInput::setBW(int bw)
 {
     if (bw > 0)
     {
-        int ret = rtlsdr_set_tuner_bandwidth(device, bw);
+        int ret = rtlsdr_set_tuner_bandwidth(m_device, bw);
         if (ret != 0)
         {
-            qDebug() << "RTLSDR: Failed to set tuner BW";
+            qDebug() << "RTL-SDR: Failed to set tuner BW";
         }
         else
         {
-            qDebug() << "RTLSDR: bandwidth set to" << bw/1000.0 << "kHz";
+            qDebug() << "RTL-SDR: bandwidth set to" << bw/1000.0 << "kHz";
         }
     }
 }
@@ -358,10 +342,10 @@ void RtlSdrInput::setBiasT(bool ena)
 {
     if (ena)
     {
-        int ret = rtlsdr_set_bias_tee(device, ena);
+        int ret = rtlsdr_set_bias_tee(m_device, ena);
         if (ret != 0)
         {
-            qDebug() << "RTLSDR: Failed to enable bias-T";
+            qDebug() << "RTL-SDR: Failed to enable bias-T";
         }
     }
 }
@@ -369,70 +353,71 @@ void RtlSdrInput::setBiasT(bool ena)
 QList<float> RtlSdrInput::getGainList() const
 {
     QList<float> ret;
-    for (int g = 0; g < gainList->size(); ++g)
+    for (int g = 0; g < m_gainList->size(); ++g)
     {
-        ret.append(gainList->at(g)/10.0);
+        ret.append(m_gainList->at(g)/10.0);
     }
     return ret;
 }
 
-RtlSdrWorker::RtlSdrWorker(struct rtlsdr_dev *d, QObject *parent) : QThread(parent)
+RtlSdrWorker::RtlSdrWorker(struct rtlsdr_dev * device, QObject *parent) : QThread(parent)
 {
-    enaDumpToFile = false;
-    dumpFile = nullptr;
-    rtlSdrPtr = parent;
-    device = d;    
+    m_enaDumpToFile = false;
+    m_dumpFile = nullptr;
+    m_rtlSdrPtr = parent;
+    m_device = device;
 }
 
 void RtlSdrWorker::run()
 {
-    //qDebug() << "RTLSDRWorker thread start" << QThread::currentThreadId();
+    m_dcI = 0.0;
+    m_dcQ = 0.0;
+    m_agcLevel = 0.0;
+    m_watchdogFlag = false;  // first callback sets it to true
 
-    dcI = 0.0;
-    dcQ = 0.0;
-    agcLev = 0.0;
-    wdogIsRunningFlag = false;  // first callback sets it to true
-
-    rtlsdr_read_async(device, rtlsdrCb, (void*)this, 0, INPUT_CHUNK_IQ_SAMPLES*2*sizeof(uint8_t));
-
-    //qDebug() << "RTLSDRWorker thread end" << QThread::currentThreadId();
+    rtlsdr_read_async(m_device, callback, (void*)this, 0, INPUT_CHUNK_IQ_SAMPLES*2*sizeof(uint8_t));
 }
 
-void RtlSdrWorker::dumpToFileStart(FILE * f)
+void RtlSdrWorker::dumpToFileStart(FILE * dumpFile)
 {
-    fileMutex.lock();
-    dumpFile = f;
-    enaDumpToFile = true;
-    fileMutex.unlock();
+    m_dumpFileMutex.lock();
+    m_dumpFile = dumpFile;
+    m_enaDumpToFile = true;
+    m_dumpFileMutex.unlock();
 }
 
 void RtlSdrWorker::dumpToFileStop()
 {
-    enaDumpToFile = false;
-    fileMutex.lock();
-    dumpFile = nullptr;
-    fileMutex.unlock();
+    m_enaDumpToFile = false;
+    m_dumpFileMutex.lock();
+    m_dumpFile = nullptr;
+    m_dumpFileMutex.unlock();
 }
 
 void RtlSdrWorker::dumpBuffer(unsigned char *buf, uint32_t len)
 {
-    fileMutex.lock();
-    if (nullptr != dumpFile)
+    m_dumpFileMutex.lock();
+    if (nullptr != m_dumpFile)
     {
-        ssize_t bytes = fwrite(buf, 1, len, dumpFile);
+        ssize_t bytes = fwrite(buf, 1, len, m_dumpFile);
         emit dumpedBytes(bytes);
     }
-    fileMutex.unlock();
+    m_dumpFileMutex.unlock();
 }
 
 bool RtlSdrWorker::isRunning()
 {
-    bool flag = wdogIsRunningFlag;
-    wdogIsRunningFlag = false;
+    bool flag = m_watchdogFlag;
+    m_watchdogFlag = false;
     return flag;
 }
 
-void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
+void RtlSdrWorker::callback(unsigned char *buf, uint32_t len, void * ctx)
+{
+    static_cast<RtlSdrWorker *>(ctx)->processInputData(buf, len);
+}
+
+void RtlSdrWorker::processInputData(unsigned char *buf, uint32_t len)
 {
 #if (RTLSDR_DOC_ENABLE > 0)
     int_fast32_t sumI = 0;
@@ -446,24 +431,23 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 #define LEV_CREL 0.0001
 #endif
 
-    RtlSdrWorker * rtlSdrWorker = static_cast<RtlSdrWorker *>(ctx);
-    if (rtlSdrWorker->isDumpingIQ())
+    if (isDumpingIQ())
     {
-        rtlSdrWorker->dumpBuffer(buf, len);
+        dumpBuffer(buf, len);
     }
 
 #if (RTLSDR_WDOG_ENABLE)
     // reset watchDog flag, timer sets it to true
-    rtlSdrWorker->wdogIsRunningFlag = true;
+    m_watchdogFlag = true;
 #endif
 
     // retrieving memories
 #if (RTLSDR_DOC_ENABLE > 0)
-    float dcI = rtlSdrWorker->dcI;
-    float dcQ = rtlSdrWorker->dcQ;
+    float dcI = m_dcI;
+    float dcQ = m_dcQ;
 #endif
 #if (RTLSDR_AGC_ENABLE > 0)
-    float agcLev = rtlSdrWorker->agcLev;
+    float agcLev = m_agcLevel;
 #endif
 
     // len is number of I and Q samples
@@ -476,7 +460,7 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 
     if ((INPUT_FIFO_SIZE - count) < len*sizeof(float))
     {
-        qDebug() << Q_FUNC_INFO << "dropping" << len << "bytes...";
+        qDebug() << "RTL-SDR: dropping" << len << "bytes...";
         return;
     }
 
@@ -631,15 +615,15 @@ void rtlsdrCb(unsigned char *buf, uint32_t len, void * ctx)
 
 #if (RTLSDR_DOC_ENABLE > 0)
     // calculate correction values for next input buffer
-    rtlSdrWorker->dcI = sumI * DC_C / (len >> 1) + dcI - DC_C * dcI;
-    rtlSdrWorker->dcQ = sumQ * DC_C / (len >> 1) + dcQ - DC_C * dcQ;
+    m_dcI = sumI * DC_C / (len >> 1) + dcI - DC_C * dcI;
+    m_dcQ = sumQ * DC_C / (len >> 1) + dcQ - DC_C * dcQ;
 #endif
 
 #if (RTLSDR_AGC_ENABLE > 0)
     // store memory
-    rtlSdrWorker->agcLev = agcLev;
+    m_agcLevel = agcLev;
 
-    rtlSdrWorker->emitAgcLevel(agcLev, maxVal);
+    emit agcLevel(agcLev, maxVal);
 #endif
 
     pthread_mutex_lock(&inputBuffer.countMutex);

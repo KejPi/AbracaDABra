@@ -36,8 +36,8 @@ class RartTcpWorker : public QThread
 {
     Q_OBJECT
 public:
-    explicit RartTcpWorker(SOCKET socket, QObject *parent = nullptr);
-    void dumpToFileStart(FILE * f);
+    explicit RartTcpWorker(SOCKET sock, QObject *parent = nullptr);
+    void dumpToFileStart(FILE * dumpFile);
     void dumpToFileStop();
     void catureIQ(bool ena);
     bool isRunning();
@@ -47,22 +47,21 @@ signals:
     void dumpedBytes(ssize_t bytes);
 
 private:
-    SOCKET sock;
+    SOCKET m_sock;
 
-    std::atomic<bool> enaDumpToFile;
-    std::atomic<bool> enaCaptureIQ;
-    std::atomic<bool> wdogIsRunningFlag;
-    FILE * dumpFile;
-    QMutex fileMutex;           
-    int captureStartCntr;
+    std::atomic<bool> m_enaDumpToFile;
+    std::atomic<bool> m_enaCaptureIQ;
+    std::atomic<bool> m_watchdogFlag;
+    FILE * m_dumpFile;
+    QMutex m_dumpFileMutex;
+    int m_captureStartCntr;
 
     // input buffer
-    uint8_t bufferIQ[RARTTCP_CHUNK_SIZE];
+    uint8_t m_bufferIQ[RARTTCP_CHUNK_SIZE];
 
-    bool isDumpingIQ() const { return enaDumpToFile; }
+    bool isDumpingIQ() const { return m_enaDumpToFile; }
     void dumpBuffer(unsigned char *buf, uint32_t len);
-
-    friend void rarttcpCb(unsigned char *buf, uint32_t len, void *ctx);
+    void processInputData(unsigned char *buf, uint32_t len);
 };
 
 class RartTcpInput : public InputDevice
@@ -80,24 +79,24 @@ public:
     bool openDevice() override;
 
 public slots:
-    void tune(uint32_t freq) override;
-    void setTcpIp(const QString & addr, int p);
+    void tune(uint32_t frequency) override;
+    void setTcpIp(const QString & address, int port);
 
     void startDumpToFile(const QString & filename) override;
     void stopDumpToFile() override;
 
 private:    
-    uint32_t frequency;
-    bool deviceUnplugged;
-    SOCKET sock;
-    QString address;
-    int port;
+    uint32_t m_frequency;
+    bool m_deviceUnpluggedFlag;
+    SOCKET m_sock;
+    QString m_address;
+    int m_port;
 
-    RartTcpWorker * worker;
+    RartTcpWorker * m_worker;
 #if (RARTTCP_WDOG_ENABLE)
-    QTimer watchDogTimer;
+    QTimer m_watchdogTimer;
 #endif
-    FILE * dumpFile;
+    FILE * m_dumpFile;
 
     void run();
     void stop();
@@ -105,9 +104,9 @@ private:
     // private function
     void sendCommand(const RartTcpCommand & cmd, uint32_t param);
 private slots:
-    void readThreadStopped();
+    void onReadThreadStopped();
 #if (RARTTCP_WDOG_ENABLE)
-    void watchDogTimeout();
+    void onWatchdogTimeout();
 #endif
 };
 

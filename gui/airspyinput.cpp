@@ -4,48 +4,46 @@
 
 AirspyInput::AirspyInput(bool try4096kHz, QObject *parent) : InputDevice(parent)
 {
-    id = InputDeviceId::AIRSPY;
+    m_id = InputDeviceId::AIRSPY;
 
-    try4096kHzSR = try4096kHz;
-    device = nullptr;
-    dumpFile = nullptr;
-    enaDumpToFile = false;
-    signalLevelEmitCntr = 0;
-    src = nullptr;
-    filterOutBuffer = nullptr;
+    m_try4096kHz = try4096kHz;
+    m_device = nullptr;
+    m_dumpFile = nullptr;
+    m_enaDumpToFile = false;
+    m_signalLevelEmitCntr = 0;
+    m_src = nullptr;
+    m_filterOutBuffer = nullptr;
 
-    connect(this, &AirspyInput::agcLevel, this, &AirspyInput::updateAgc, Qt::QueuedConnection);
+    connect(this, &AirspyInput::agcLevel, this, &AirspyInput::onAgcLevel, Qt::QueuedConnection);
 
 #if (AIRSPY_WDOG_ENABLE)
-    connect(&watchDogTimer, &QTimer::timeout, this, &AirspyInput::watchDogTimeout);
+    connect(&m_watchdogTimer, &QTimer::timeout, this, &AirspyInput::onWatchdogTimeout);
 #endif
 }
 
 AirspyInput::~AirspyInput()
 {
-    //qDebug() << Q_FUNC_INFO;
-    if (nullptr != device)
+    if (nullptr != m_device)
     {
         stop();
-        airspy_close(device);
+        airspy_close(m_device);
         airspy_exit();
     }
 
-    if (nullptr != filterOutBuffer)
+    if (nullptr != m_filterOutBuffer)
     {
-        operator delete [] (filterOutBuffer, std::align_val_t(16));
+        operator delete [] (m_filterOutBuffer, std::align_val_t(16));
     }
-    if (nullptr != src)
+    if (nullptr != m_src)
     {
-        delete src;
+        delete m_src;
     }
 }
 
-void AirspyInput::tune(uint32_t freq)
+void AirspyInput::tune(uint32_t frequency)
 {
-    //qDebug() << Q_FUNC_INFO << freq;
-    frequency = freq;
-    if (airspy_is_streaming(device) || (0 == freq))
+    m_frequency = frequency;
+    if (airspy_is_streaming(m_device) || (0 == frequency))
     {   // airspy is running
         //      sequence in this case is:
         //      1) stop
@@ -63,17 +61,17 @@ void AirspyInput::tune(uint32_t freq)
 bool AirspyInput::openDevice()
 {
     // open first device
-    if (AIRSPY_SUCCESS != airspy_open(&device))
+    if (AIRSPY_SUCCESS != airspy_open(&m_device))
     {
-        qDebug() << "AIRSPY:  Failed opening device";
-        device = nullptr;
+        qDebug() << "AIRSPY: Failed opening device";
+        m_device = nullptr;
         return false;
     }
 
     // set sample type
-    if (AIRSPY_SUCCESS != airspy_set_sample_type(device, AIRSPY_SAMPLE_FLOAT32_IQ))
+    if (AIRSPY_SUCCESS != airspy_set_sample_type(m_device, AIRSPY_SAMPLE_FLOAT32_IQ))
     {
-        qDebug() << "AIRSPY:  Cannot set sample format";
+        qDebug() << "AIRSPY: Cannot set sample format";
         return false;
     }
 
@@ -83,28 +81,28 @@ bool AirspyInput::openDevice()
     // here we try SR=4096kHz that is not oficailly supported by Airspy devices
     // however it works on Airspy Mini
     // it seems that this sample rate leads to lower CPU load
-    if (try4096kHzSR && (AIRSPY_SUCCESS == airspy_set_samplerate(device, 4096*1000)))
+    if (m_try4096kHz && (AIRSPY_SUCCESS == airspy_set_samplerate(m_device, 4096*1000)))
     {   // succesfull
         sampleRate = 4096*1000;
         qDebug() << "AIRSPY: Sample rate set to" << sampleRate << "Hz";
     }
     else
     {   // find lowest supported sample rated that is >= 2048kHz
-        uint32_t srCount;
-        airspy_get_samplerates(device, &srCount, 0);
-        uint32_t * srArray = new uint32_t[srCount];
-        airspy_get_samplerates(device, srArray, srCount);
-        for (int s = 0; s < srCount; ++s)
+        uint32_t samplerateCount;
+        airspy_get_samplerates(m_device, &samplerateCount, 0);
+        uint32_t * samplerateArray = new uint32_t[samplerateCount];
+        airspy_get_samplerates(m_device, samplerateArray, samplerateCount);
+        for (int s = 0; s < samplerateCount; ++s)
         {
-            if ((srArray[s] >= (2048*1000)) && (srArray[s] < sampleRate))
+            if ((samplerateArray[s] >= (2048*1000)) && (samplerateArray[s] < sampleRate))
             {
-                sampleRate = srArray[s];
+                sampleRate = samplerateArray[s];
             }
         }
-        delete [] srArray;
+        delete [] samplerateArray;
 
         // Set sample rate
-        if (AIRSPY_SUCCESS != airspy_set_samplerate(device, sampleRate))
+        if (AIRSPY_SUCCESS != airspy_set_samplerate(m_device, sampleRate))
         {
             qDebug() << "AIRSPY: Setting sample rate failed";
             return false;
@@ -117,11 +115,11 @@ bool AirspyInput::openDevice()
 
     // airspy provides 49152 samples in callback in packed modes
     // we cannot produce more samples in SRC => allocating for worst case
-    filterOutBuffer = new ( std::align_val_t(16) ) float[49152*2];
-    src = new InputDeviceSRC(sampleRate);
+    m_filterOutBuffer = new ( std::align_val_t(16) ) float[49152*2];
+    m_src = new InputDeviceSRC(sampleRate);
 
     // set automatic gain
-    gainMode = AirpyGainMode::Software;
+    m_gainMode = AirpyGainMode::Software;
     resetAgc();
 
     emit deviceReady();
@@ -131,18 +129,16 @@ bool AirspyInput::openDevice()
 
 void AirspyInput::run()
 {
-    //qDebug() << Q_FUNC_INFO;
-
     // Reset buffer here - airspy is not running, DAB waits for new data
     inputBuffer.reset();
 
-    src->reset();
+    m_src->reset();
 
-    if (frequency != 0)
+    if (m_frequency != 0)
     {   // Tune to new frequency
-        if (AIRSPY_SUCCESS != airspy_set_freq(device, frequency*1000))
+        if (AIRSPY_SUCCESS != airspy_set_freq(m_device, m_frequency*1000))
         {
-            qDebug("AIRSPY: Tune to %d kHz failed", frequency);
+            qDebug("AIRSPY: Tune to %d kHz failed", m_frequency);
             emit error(InputDeviceErrorCode::DeviceDisconnected);
             return;
         }
@@ -150,9 +146,9 @@ void AirspyInput::run()
         resetAgc();
 
 #if (AIRSPY_WDOG_ENABLE)
-        watchDogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
+        m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
 #endif
-        if (AIRSPY_SUCCESS != airspy_start_rx(device, AirspyInput::callback, (void*)this))
+        if (AIRSPY_SUCCESS != airspy_start_rx(m_device, AirspyInput::callback, (void*)this))
         {
             qDebug("AIRSPY: Failed to start RX");
             emit error(InputDeviceErrorCode::DeviceDisconnected);
@@ -162,25 +158,23 @@ void AirspyInput::run()
     else
     { /* tune to 0 => going to idle */  }
 
-    emit tuned(frequency);
+    emit tuned(m_frequency);
 }
 
 void AirspyInput::stop()
 {
-    //qDebug() << Q_FUNC_INFO;
-
-    if (AIRSPY_TRUE == airspy_is_streaming(device))
+    if (AIRSPY_TRUE == airspy_is_streaming(m_device))
     {   // if devise is running, stop RX
-        airspy_stop_rx(device);
+        airspy_stop_rx(m_device);
 
 #if (AIRSPY_WDOG_ENABLE)
-        watchDogTimer.stop();
+        m_watchdogTimer.stop();
 #endif
 
         QThread::msleep(50);
-        while (AIRSPY_TRUE == airspy_is_streaming(device))
+        while (AIRSPY_TRUE == airspy_is_streaming(m_device))
         {
-            qDebug() << "Airspy not finished after timeout - this should not happen :-(";
+            qDebug() << "AIRSPY: not finished after timeout - this should not happen :-(";
 
             // reset buffer - and tell the thread it is empty - buffer will be reset in any case
             pthread_mutex_lock(&inputBuffer.countMutex);
@@ -192,7 +186,7 @@ void AirspyInput::stop()
 
         run(); // restart
     }
-    else if (0 == frequency)
+    else if (0 == m_frequency)
     {   // going to idle
         emit tuned(0);
     }
@@ -203,76 +197,76 @@ void AirspyInput::setGainMode(const AirspyGainStr &gain)
     switch (gain.mode)
     {
     case AirpyGainMode::Hybrid:
-        if (gainMode == gain.mode)
+        if (m_gainMode == gain.mode)
         {   // do nothing -> mode does not change
             break;
         }
         // mode changes
-        gainMode = gain.mode;
-        airspy_set_lna_agc(device, 1);
-        airspy_set_mixer_agc(device, 1);
+        m_gainMode = gain.mode;
+        airspy_set_lna_agc(m_device, 1);
+        airspy_set_mixer_agc(m_device, 1);
         resetAgc();
         break;
     case AirpyGainMode::Manual:
-        gainMode = gain.mode;
-        airspy_set_vga_gain(device, gain.ifGainIdx);
+        m_gainMode = gain.mode;
+        airspy_set_vga_gain(m_device, gain.ifGainIdx);
         if (gain.lnaAgcEna)
         {
-            airspy_set_lna_agc(device, 1);
+            airspy_set_lna_agc(m_device, 1);
         }
         else
         {
-            airspy_set_lna_agc(device, 0);
-            airspy_set_lna_gain(device, gain.lnaGainIdx);
+            airspy_set_lna_agc(m_device, 0);
+            airspy_set_lna_gain(m_device, gain.lnaGainIdx);
         }
         if (gain.mixerAgcEna)
         {
-            airspy_set_mixer_agc(device, 1);
+            airspy_set_mixer_agc(m_device, 1);
         }
         else
         {
-            airspy_set_mixer_agc(device, 0);
-            airspy_set_mixer_gain(device, gain.mixerGainIdx);
+            airspy_set_mixer_agc(m_device, 0);
+            airspy_set_mixer_gain(m_device, gain.mixerGainIdx);
         }
         break;
     case AirpyGainMode::Software:
-        if (gainMode == gain.mode)
+        if (m_gainMode == gain.mode)
         {   // do nothing -> mode does not change
             break;
         }
-        gainMode = gain.mode;
+        m_gainMode = gain.mode;
         resetAgc();
         break;
     case AirpyGainMode::Sensitivity:
-        gainMode = gain.mode;
-        airspy_set_sensitivity_gain(device, gain.sensitivityGainIdx);
+        m_gainMode = gain.mode;
+        airspy_set_sensitivity_gain(m_device, gain.sensitivityGainIdx);
         break;
     }
 
     emit agcGain(NAN);
 }
 
-void AirspyInput::setGain(int gIdx)
+void AirspyInput::setGain(int gainIdx)
 {
-    if (AirpyGainMode::Hybrid == gainMode)
+    if (AirpyGainMode::Hybrid == m_gainMode)
     {
-        if (gIdx < AIRSPY_HW_AGC_MIN)
+        if (gainIdx < AIRSPY_HW_AGC_MIN)
         {
-            gIdx = AIRSPY_HW_AGC_MIN;
+            gainIdx = AIRSPY_HW_AGC_MIN;
         }
-        if (gIdx > AIRSPY_HW_AGC_MAX)
+        if (gainIdx > AIRSPY_HW_AGC_MAX)
         {
-            gIdx = AIRSPY_HW_AGC_MAX;
+            gainIdx = AIRSPY_HW_AGC_MAX;
         }
 
-        if (gIdx == gainIdx)
+        if (gainIdx == m_gainIdx)
         {
             return;
         }
         // else
-        gainIdx = gIdx;
+        m_gainIdx = gainIdx;
 
-        if (AIRSPY_SUCCESS != airspy_set_vga_gain(device, gainIdx))
+        if (AIRSPY_SUCCESS != airspy_set_vga_gain(m_device, m_gainIdx))
         {
             qDebug() << "AIRSPY: Failed to set tuner gain";
         }
@@ -283,25 +277,25 @@ void AirspyInput::setGain(int gIdx)
         }
         return;
     }
-    if (AirpyGainMode::Software == gainMode)
+    if (AirpyGainMode::Software == m_gainMode)
     {
-        if (gIdx < AIRSPY_SW_AGC_MIN)
+        if (gainIdx < AIRSPY_SW_AGC_MIN)
         {
-            gIdx = AIRSPY_SW_AGC_MIN;
+            gainIdx = AIRSPY_SW_AGC_MIN;
         }
-        if (gIdx > AIRSPY_SW_AGC_MAX)
+        if (gainIdx > AIRSPY_SW_AGC_MAX)
         {
-            gIdx = AIRSPY_SW_AGC_MAX;
+            gainIdx = AIRSPY_SW_AGC_MAX;
         }
 
-        if (gIdx == gainIdx)
+        if (gainIdx == m_gainIdx)
         {
             return;
         }
         // else
-        gainIdx = gIdx;
+        m_gainIdx = gainIdx;
 
-        if (AIRSPY_SUCCESS != airspy_set_sensitivity_gain(device, gainIdx))
+        if (AIRSPY_SUCCESS != airspy_set_sensitivity_gain(m_device, m_gainIdx))
         {
             qDebug() << "AIRSPY: Failed to set tuner gain";
         }
@@ -316,44 +310,41 @@ void AirspyInput::setGain(int gIdx)
 
 void AirspyInput::resetAgc()
 {
-    src->resetSignalLevel(AIRSPY_LEVEL_RESET);
-    signalLevelEmitCntr = 0;
+    m_src->resetSignalLevel(AIRSPY_LEVEL_RESET);
+    m_signalLevelEmitCntr = 0;
 
-    if (AirpyGainMode::Software == gainMode)
+    if (AirpyGainMode::Software == m_gainMode)
     {
-        gainIdx = -1;
+        m_gainIdx = -1;
         setGain((AIRSPY_SW_AGC_MAX+1)/2); // set it to the middle
         return;
     }
-    if (AirpyGainMode::Hybrid == gainMode)
+    if (AirpyGainMode::Hybrid == m_gainMode)
     {
-        gainIdx = -1;
+        m_gainIdx = -1;
         setGain(6);
     }
 }
 
-void AirspyInput::updateAgc(float level)
+void AirspyInput::onAgcLevel(float level)
 {
-    //qDebug() << Q_FUNC_INFO << level;
     if (level > AIRSPY_LEVEL_THR_MAX)
     {
-        //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity down";
-        setGain(gainIdx-1);
+        setGain(m_gainIdx-1);
         return;
     }
     if (level < AIRSPY_LEVEL_THR_MIN)
     {
-        //qDebug()  << Q_FUNC_INFO << level << "==> sensitivity up";
-        setGain(gainIdx+1);
+        setGain(m_gainIdx+1);
     }
 }
 
 #if (AIRSPY_WDOG_ENABLE)
-void AirspyInput::watchDogTimeout()
+void AirspyInput::onWatchdogTimeout()
 {
-    if (AIRSPY_TRUE != airspy_is_streaming(device))
+    if (AIRSPY_TRUE != airspy_is_streaming(m_device))
     {
-        qDebug() << Q_FUNC_INFO << "watchdog timeout";
+        qDebug() << "AIRSPY: watchdog timeout";
         inputBuffer.fillDummy();
         emit error(InputDeviceErrorCode::NoDataAvailable);
     }
@@ -362,12 +353,12 @@ void AirspyInput::watchDogTimeout()
 
 void AirspyInput::startDumpToFile(const QString & filename)
 {
-    dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "wb");
-    if (nullptr != dumpFile)
+    m_dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "wb");
+    if (nullptr != m_dumpFile)
     {
-        fileMutex.lock();
-        enaDumpToFile = true;
-        fileMutex.unlock();
+        m_dumpfileMutex.lock();
+        m_enaDumpToFile = true;
+        m_dumpfileMutex.unlock();
 #if AIRSPY_DUMP_INT16
         emit dumpingToFile(true, 2*sizeof(int16_t));
 #else
@@ -378,12 +369,12 @@ void AirspyInput::startDumpToFile(const QString & filename)
 
 void AirspyInput::stopDumpToFile()
 {
-    enaDumpToFile = false;
-    fileMutex.lock();
-    fflush(dumpFile);
-    fclose(dumpFile);
-    dumpFile = nullptr;
-    fileMutex.unlock();
+    m_enaDumpToFile = false;
+    m_dumpfileMutex.lock();
+    fflush(m_dumpFile);
+    fclose(m_dumpFile);
+    m_dumpFile = nullptr;
+    m_dumpfileMutex.unlock();
 
     emit dumpingToFile(false);
 }
@@ -392,7 +383,7 @@ void AirspyInput::setBiasT(bool ena)
 {
     if (ena)
     {
-        if (AIRSPY_SUCCESS != airspy_set_rf_bias(device, ena))
+        if (AIRSPY_SUCCESS != airspy_set_rf_bias(m_device, ena))
         {
             qDebug() << "AIRSPY: Failed to enable bias-T";
         }
@@ -401,7 +392,7 @@ void AirspyInput::setBiasT(bool ena)
 
 void AirspyInput::setDataPacking(bool ena)
 {
-    if (AIRSPY_SUCCESS != airspy_set_packing(device, ena))
+    if (AIRSPY_SUCCESS != airspy_set_packing(m_device, ena))
     {
         qDebug() << "AIRSPY: Failed to set data packing";
     }
@@ -409,8 +400,8 @@ void AirspyInput::setDataPacking(bool ena)
 
 void AirspyInput::dumpBuffer(unsigned char *buf, uint32_t len)
 {
-    fileMutex.lock();
-    if (nullptr != dumpFile)
+    m_dumpfileMutex.lock();
+    if (nullptr != m_dumpFile)
     {
 #if AIRSPY_DUMP_INT16
         // dumping in int16
@@ -420,7 +411,7 @@ void AirspyInput::dumpBuffer(unsigned char *buf, uint32_t len)
         {
             int16Buf[n] = *floatBuf++ * AIRSPY_DUMP_FLOAT2INT16;
         }
-        ssize_t bytes = fwrite(int16Buf, 1, sizeof(int16Buf), dumpFile);
+        ssize_t bytes = fwrite(int16Buf, 1, sizeof(int16Buf), m_dumpFile);
 
 #else
         // dumping in float
@@ -428,20 +419,17 @@ void AirspyInput::dumpBuffer(unsigned char *buf, uint32_t len)
 #endif
         emit dumpedBytes(bytes);
     }
-    fileMutex.unlock();
+    m_dumpfileMutex.unlock();
 }
 
 int AirspyInput::callback(airspy_transfer* transfer)
 {
-    AirspyInput * thisPtr = static_cast<AirspyInput *>(transfer->ctx);
-    thisPtr->processInputData(transfer);
+    static_cast<AirspyInput *>(transfer->ctx)->processInputData(transfer);
     return 0;
 }
 
 void AirspyInput::processInputData(airspy_transfer *transfer)
 {    
-    //qDebug() << Q_FUNC_INFO << transfer->sample_count;
-
     if (transfer->dropped_samples > 0)
     {
         qDebug() << "AIRSPY: dropping" << transfer->dropped_samples << "samples";
@@ -457,26 +445,25 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
 
     // input samples are IQ = [float float] @ 4096kHz
     // going to transform them to [float float] @ 2048kHz
-    int numIQ = src->process((float*) transfer->samples, transfer->sample_count, filterOutBuffer);
+    int numIQ = m_src->process((float*) transfer->samples, transfer->sample_count, m_filterOutBuffer);
     uint64_t bytesToWrite = numIQ * 2 * sizeof(float);
 
     if ((INPUT_FIFO_SIZE - count) < bytesToWrite)
     {
-        qDebug() << Q_FUNC_INFO << "dropping" << transfer->sample_count << "IQ samples...";
+        qDebug() << "AIRSPY: dropping" << transfer->sample_count << "IQ samples...";
         return;
     }
 
 #if (AIRSPY_AGC_ENABLE > 0)
-    if (0 == (++signalLevelEmitCntr & 0x07))
+    if (0 == (++m_signalLevelEmitCntr & 0x07))
     {
-        //qDebug() << signalLevel;
-        emit agcLevel(src->signalLevel());
+        emit agcLevel(m_src->signalLevel());
     }
 #endif
 
     if (isDumpingIQ())
     {
-        dumpBuffer((unsigned char *) filterOutBuffer, bytesToWrite);
+        dumpBuffer((unsigned char *) m_filterOutBuffer, bytesToWrite);
     }
 
     // there is enough room in buffer
@@ -484,13 +471,13 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
 
     if (bytesTillEnd >= bytesToWrite)
     {
-        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *) filterOutBuffer, bytesToWrite);
+        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *) m_filterOutBuffer, bytesToWrite);
         inputBuffer.head = (inputBuffer.head + bytesToWrite);
     }
     else
     {
-        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *) filterOutBuffer, bytesTillEnd);
-        std::memcpy((inputBuffer.buffer), ((uint8_t *) filterOutBuffer)+bytesTillEnd, bytesToWrite-bytesTillEnd);
+        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *) m_filterOutBuffer, bytesTillEnd);
+        std::memcpy((inputBuffer.buffer), ((uint8_t *) m_filterOutBuffer)+bytesTillEnd, bytesToWrite-bytesTillEnd);
         inputBuffer.head = bytesToWrite-bytesTillEnd;
     }
 

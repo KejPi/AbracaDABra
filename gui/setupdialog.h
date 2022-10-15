@@ -42,14 +42,14 @@ public:
             QString tcpAddress;
             int tcpPort;
         } rtltcp;
-#ifdef HAVE_RARTTCP
+#if HAVE_RARTTCP
         struct
         {
             QString tcpAddress;
             int tcpPort;
         } rarttcp;
 #endif
-#ifdef HAVE_AIRSPY
+#if HAVE_AIRSPY
         struct
         {
             AirspyGainStr gain;
@@ -58,7 +58,7 @@ public:
             bool prefer4096kHz;
         } airspy;
 #endif
-#ifdef HAVE_SOAPYSDR
+#if HAVE_SOAPYSDR
         struct
         {
             SoapyGainMode gainMode;
@@ -113,7 +113,7 @@ private:
 
     void onRawFileFormatChanged(int idx);
 
-#ifdef HAVE_AIRSPY
+#if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);
     void onAirspySensitivityGainSliderChanged(int val);
     void onAirspyIFGainSliderChanged(int val);
@@ -123,7 +123,7 @@ private:
     void onAirspyMixerAGCstateChanged(int state);
     void activateAirspyControls(bool en);
 #endif
-#ifdef HAVE_SOAPYSDR    
+#if HAVE_SOAPYSDR
     void onSoapySdrGainSliderChanged(int val);
     void onSoapySdrDevArgsEditFinished();
     void onSoapySdrAntennaEditFinished();

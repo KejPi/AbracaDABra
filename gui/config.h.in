@@ -6,15 +6,15 @@
 #define PROJECT_VER_MINOR @PROJECT_VERSION_MINOR@
 #define PROJECT_GIT_REV "@PROJECT_GIT_REV@"
 
-#cmakedefine PROJECT_VERSION_RELEASE
+#cmakedefine01 PROJECT_VERSION_RELEASE
 
 #cmakedefine01 HAVE_FDKAAC
 #cmakedefine01 HAVE_PORTAUDIO
 
 /* Optional devices */
-#cmakedefine HAVE_RARTTCP
-#cmakedefine HAVE_AIRSPY
-#cmakedefine HAVE_SOAPYSDR
+#cmakedefine01 HAVE_RARTTCP
+#cmakedefine01 HAVE_AIRSPY
+#cmakedefine01 HAVE_SOAPYSDR
 
 #endif // CONFIG_H
 

@@ -6,43 +6,43 @@
 
 RawFileInput::RawFileInput(QObject *parent) : InputDevice(parent)
 {
-    id = InputDeviceId::RAWFILE;
+    m_id = InputDeviceId::RAWFILE;
 
-    worker = nullptr;
-    inputTimer = nullptr;
-    inputFile = nullptr;    
-    sampleFormat = RawFileInputFormat::SAMPLE_FORMAT_U8;    
+    m_worker = nullptr;
+    m_inputTimer = nullptr;
+    m_inputFile = nullptr;
+    m_sampleFormat = RawFileInputFormat::SAMPLE_FORMAT_U8;    
 }
 
 RawFileInput::~RawFileInput()
 {
-    if (nullptr != worker)
+    if (nullptr != m_worker)
     {
-        worker->stop();
-        worker->quit();
-        worker->wait();
+        m_worker->stop();
+        m_worker->quit();
+        m_worker->wait();
     }
 
-    if (nullptr != inputFile)
+    if (nullptr != m_inputFile)
     {
-        inputFile->close();
-        delete inputFile;
+        m_inputFile->close();
+        delete m_inputFile;
     }   
 }
 
 bool RawFileInput::openDevice()
 {
-    if (nullptr != inputFile)
+    if (nullptr != m_inputFile)
     {
-        inputFile->close();
-        delete inputFile;
+        m_inputFile->close();
+        delete m_inputFile;
     }
-    inputFile = new QFile(fileName);
-    if (!inputFile->open(QIODevice::ReadOnly))
+    m_inputFile = new QFile(m_fileName);
+    if (!m_inputFile->open(QIODevice::ReadOnly))
     {
-        qDebug() << "Unable to open file: " << fileName;
-        delete inputFile;
-        inputFile = nullptr;
+        qDebug() << "RAW-FILE: Unable to open file: " << m_fileName;
+        delete m_inputFile;
+        m_inputFile = nullptr;
 
         return false;
     }
@@ -52,15 +52,15 @@ bool RawFileInput::openDevice()
     return true;
 }
 
-void RawFileInput::setFile(const QString & fName, const RawFileInputFormat &format)
+void RawFileInput::setFile(const QString & fileName, const RawFileInputFormat &sampleFormat)
 {
-    fileName = fName;
-    setFileFormat(format);
+    m_fileName = fileName;
+    setFileFormat(sampleFormat);
 }
 
-void RawFileInput::setFileFormat(const RawFileInputFormat &format)
+void RawFileInput::setFileFormat(const RawFileInputFormat &sampleFormat)
 {
-    sampleFormat = format;
+    m_sampleFormat = sampleFormat;
 }
 
 void RawFileInput::tune(uint32_t freq)
@@ -73,81 +73,79 @@ void RawFileInput::tune(uint32_t freq)
 
     if (0 != freq)
     {
-        worker = new RawFileWorker(inputFile, sampleFormat, this);
-        connect(worker, &RawFileWorker::endOfFile, this, &RawFileInput::onEndOfFile, Qt::QueuedConnection);
-        connect(worker, &RawFileWorker::finished, worker, &QObject::deleteLater);
-        worker->start();
+        m_worker = new RawFileWorker(m_inputFile, m_sampleFormat, this);
+        connect(m_worker, &RawFileWorker::endOfFile, this, &RawFileInput::onEndOfFile, Qt::QueuedConnection);
+        connect(m_worker, &RawFileWorker::finished, m_worker, &QObject::deleteLater);
+        m_worker->start();
 
-        inputTimer = new QTimer(this);
-        connect(inputTimer, &QTimer::timeout, worker, &RawFileWorker::trigger);
-        inputTimer->start(INPUT_CHUNK_MS);
+        m_inputTimer = new QTimer(this);
+        connect(m_inputTimer, &QTimer::timeout, m_worker, &RawFileWorker::trigger);
+        m_inputTimer->start(INPUT_CHUNK_MS);
     }
     emit tuned(freq);
 }
 
 void RawFileInput::rewind()
 {
-    if (nullptr == worker)
+    if (nullptr == m_worker)
     {   // avoid multiple access - if thread is running, then no action
         // go to file beginning
-        if (nullptr != inputFile)
+        if (nullptr != m_inputFile)
         {
-            inputFile->seek(0);
+            m_inputFile->seek(0);
         }
     }
 }
 
 void RawFileInput::stop()
 {
-    if (nullptr != inputTimer)
+    if (nullptr != m_inputTimer)
     {
-        inputTimer->stop();
+        m_inputTimer->stop();
     }
-    if (nullptr != worker)
+    if (nullptr != m_worker)
     {
-        worker->stop();
-        worker->wait(INPUT_CHUNK_MS*2);
-        worker = nullptr;
+        m_worker->stop();
+        m_worker->wait(INPUT_CHUNK_MS*2);
+        m_worker = nullptr;
     }
 }
 
 
-RawFileWorker::RawFileWorker(QFile *inFile, RawFileInputFormat sFormat, QObject *parent)
+RawFileWorker::RawFileWorker(QFile *inputFile, RawFileInputFormat sampleFormat, QObject *parent)
     : QThread(parent)
-    , sampleFormat(sFormat)
-    , inputFile(inFile)
+    , m_sampleFormat(sampleFormat)
+    , m_inputFile(inputFile)
 {
-    stopRequest = false;
-    elapsedTimer.start();
+    m_stopRequest = false;
+    m_elapsedTimer.start();
 }
 
 void RawFileWorker::trigger()
 {
-    sem.release();
+    m_semaphore.release();
 }
 
 void RawFileWorker::stop()
 {
-    stopRequest = true;
-    sem.release();
+    m_stopRequest = true;
+    m_semaphore.release();
 }
 
 void RawFileWorker::run()
 {
     while(1)
     {
-        sem.acquire();
+        m_semaphore.acquire();
 
-        if (stopRequest)
+        if (m_stopRequest)
         {   // stop request
             return;
         }
 
-        qint64 elapsed = elapsedTimer.elapsed();
-        int period = elapsed - lastTriggerTime;
-        lastTriggerTime = elapsed;
-
-        //qDebug() << Q_FUNC_INFO << elapsed << " ==> " << period;
+        qint64 elapsed = m_elapsedTimer.elapsed();
+        int period = elapsed - m_lastTriggerTime;
+        m_lastTriggerTime = elapsed;
 
         uint64_t samplesRead = 0;
         uint64_t input_chunk_iq_samples = period * 2048;
@@ -168,12 +166,12 @@ void RawFileWorker::run()
         // there is enough room in buffer
         uint64_t bytesTillEnd = INPUT_FIFO_SIZE - inputBuffer.head;
 
-        switch (sampleFormat)
+        switch (m_sampleFormat)
         {
         case RawFileInputFormat::SAMPLE_FORMAT_S16:
         {
             int16_t * tmpBuffer = new int16_t[input_chunk_iq_samples*2];
-            uint64_t bytesRead = inputFile->read((char *) tmpBuffer, input_chunk_iq_samples * 2 * sizeof(int16_t));
+            uint64_t bytesRead = m_inputFile->read((char *) tmpBuffer, input_chunk_iq_samples * 2 * sizeof(int16_t));
 
             samplesRead = bytesRead >> 1;  // one sample is int16 (I or Q) => 2 bytes
 
@@ -207,7 +205,7 @@ void RawFileWorker::run()
         case RawFileInputFormat::SAMPLE_FORMAT_U8:
         {
             uint8_t * tmpBuffer = new uint8_t[input_chunk_iq_samples*2];
-            uint64_t bytesRead = inputFile->read((char *) tmpBuffer, input_chunk_iq_samples * 2 * sizeof(uint8_t));
+            uint64_t bytesRead = m_inputFile->read((char *) tmpBuffer, input_chunk_iq_samples * 2 * sizeof(uint8_t));
 
             samplesRead = bytesRead;  // one sample is uint8 => 1 byte
 
@@ -240,19 +238,16 @@ void RawFileWorker::run()
         break;
         }
 
-        //qDebug() << Q_FUNC_INFO << samplesRead;
-
         inputBuffer.head = (inputBuffer.head + samplesRead*sizeof(float)) % INPUT_FIFO_SIZE;
         pthread_mutex_lock(&inputBuffer.countMutex);
         inputBuffer.count = inputBuffer.count + samplesRead*sizeof(float);
-        //qDebug() << Q_FUNC_INFO << inputBuffer.count;
         pthread_cond_signal(&inputBuffer.countCondition);
         pthread_mutex_unlock(&inputBuffer.countMutex);
 
         if (samplesRead < input_chunk_iq_samples*2)
         {
-            qDebug() << "End of file";
-            inputFile->seek(0);
+            qDebug() << "RAW-FILE: End of file";
+            m_inputFile->seek(0);
             emit endOfFile();
         }
     }

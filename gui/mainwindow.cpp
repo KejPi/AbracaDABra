@@ -1159,12 +1159,12 @@ void MainWindow::onNewSettings()
     case InputDeviceId::RARTTCP:
         break;
     case InputDeviceId::AIRSPY:
-#ifdef HAVE_AIRSPY
+#if HAVE_AIRSPY
         dynamic_cast<AirspyInput*>(m_inputDevice)->setGainMode(s.airspy.gain);
 #endif
         break;
     case InputDeviceId::SOAPYSDR:
-#ifdef HAVE_SOAPYSDR
+#if HAVE_SOAPYSDR
         dynamic_cast<SoapySdrInput*>(m_inputDevice)->setGainMode(s.soapysdr.gainMode, s.soapysdr.gainIdx);
 #endif
         break;
@@ -1325,7 +1325,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     break;
     case InputDeviceId::RARTTCP:
     {
-#ifdef HAVE_RARTTCP
+#if HAVE_RARTTCP
         inputDevice = new RartTcpInput();
 
         // signals have to be connected before calling isAvailable
@@ -1374,7 +1374,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     break;
     case InputDeviceId::AIRSPY:
     {
-#ifdef HAVE_AIRSPY
+#if HAVE_AIRSPY
         m_inputDevice = new AirspyInput(m_setupDialog->settings().airspy.prefer4096kHz);
 
         // signals have to be connected before calling isAvailable
@@ -1425,7 +1425,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     break;
     case InputDeviceId::SOAPYSDR:
     {
-#ifdef HAVE_SOAPYSDR
+#if HAVE_SOAPYSDR
         m_inputDevice = new SoapySdrInput();
 
         // signals have to be connected before calling isAvailable
@@ -1554,11 +1554,11 @@ void MainWindow::loadSettings()
     s.rtltcp.tcpAddress = settings->value("RTL-TCP/address", QString("127.0.0.1")).toString();
     s.rtltcp.tcpPort = settings->value("RTL-TCP/port", 1234).toInt();
 
-#ifdef HAVE_RARTTCP
+#if HAVE_RARTTCP
     s.rarttcp.tcpAddress = settings->value("RART-TCP/address", QString("127.0.0.1")).toString();
     s.rarttcp.tcpPort = settings->value("RART-TCP/port", 1235).toInt();
 #endif
-#ifdef HAVE_AIRSPY
+#if HAVE_AIRSPY
     s.airspy.gain.sensitivityGainIdx = settings->value("AIRSPY/sensitivityGainIdx", 9).toInt();
     s.airspy.gain.lnaGainIdx = settings->value("AIRSPY/lnaGainIdx", 0).toInt();
     s.airspy.gain.mixerGainIdx = settings->value("AIRSPY/mixerGainIdx", 0).toInt();
@@ -1570,7 +1570,7 @@ void MainWindow::loadSettings()
     s.airspy.dataPacking = settings->value("AIRSPY/dataPacking", true).toBool();
     s.airspy.prefer4096kHz = settings->value("AIRSPY/preferSampleRate4096kHz", true).toBool();
 #endif
-#ifdef HAVE_SOAPYSDR
+#if HAVE_SOAPYSDR
     s.soapysdr.gainIdx = settings->value("SOAPYSDR/gainIndex", 0).toInt();
     s.soapysdr.gainMode = static_cast<SoapyGainMode>(settings->value("SOAPYSDR/gainMode", static_cast<int>(SoapyGainMode::Hardware)).toInt());
     s.soapysdr.devArgs = settings->value("SOAPYSDR/devArgs", QString("driver=rtlsdr")).toString();
@@ -1660,7 +1660,7 @@ void MainWindow::saveSettings()
     settings->setValue("RTL-SDR/bandwidth", s.rtlsdr.bandwidth);
     settings->setValue("RTL-SDR/bias-T", s.rtlsdr.biasT);
 
-#ifdef HAVE_AIRSPY
+#if HAVE_AIRSPY
     settings->setValue("AIRSPY/sensitivityGainIdx", s.airspy.gain.sensitivityGainIdx);
     settings->setValue("AIRSPY/lnaGainIdx", s.airspy.gain.lnaGainIdx);
     settings->setValue("AIRSPY/mixerGainIdx", s.airspy.gain.mixerGainIdx);
@@ -1673,7 +1673,7 @@ void MainWindow::saveSettings()
     settings->setValue("AIRSPY/preferSampleRate4096kHz", s.airspy.prefer4096kHz);
 #endif
 
-#ifdef HAVE_SOAPYSDR
+#if HAVE_SOAPYSDR
     settings->setValue("SOAPYSDR/gainIndex", s.soapysdr.gainIdx);
     settings->setValue("SOAPYSDR/gainMode", static_cast<int>(s.soapysdr.gainMode));
     settings->setValue("SOAPYSDR/devArgs", s.soapysdr.devArgs);
@@ -1686,7 +1686,7 @@ void MainWindow::saveSettings()
     settings->setValue("RTL-TCP/address", s.rtltcp.tcpAddress);
     settings->setValue("RTL-TCP/port", s.rtltcp.tcpPort);
 
-#ifdef HAVE_RARTTCP
+#if HAVE_RARTTCP
     settings->setValue("RART-TCP/address", s.rarttcp.tcpAddress);
     settings->setValue("RART-TCP/port", s.rarttcp.tcpPort);
 #endif

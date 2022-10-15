@@ -13,7 +13,8 @@
 #include "inputdevice.h"
 
 
-enum class RawFileInputFormat {
+enum class RawFileInputFormat
+{
     SAMPLE_FORMAT_U8,
     SAMPLE_FORMAT_S16,
 };
@@ -22,7 +23,7 @@ class RawFileWorker : public QThread
 {
     Q_OBJECT
 public:
-    explicit RawFileWorker(QFile * inFile, RawFileInputFormat sFormat, QObject *parent = nullptr);
+    explicit RawFileWorker(QFile * inputFile, RawFileInputFormat sampleFormat, QObject *parent = nullptr);
     void trigger();
     void stop();
 protected:
@@ -30,12 +31,12 @@ protected:
 signals:
     void endOfFile();
 private:
-    QAtomicInt stopRequest = false;
-    QSemaphore sem;
-    QFile * inputFile = nullptr;
-    QElapsedTimer elapsedTimer;
-    qint64 lastTriggerTime = 0;
-    RawFileInputFormat sampleFormat;
+    QAtomicInt m_stopRequest = false;
+    QSemaphore m_semaphore;
+    QFile * m_inputFile = nullptr;
+    QElapsedTimer m_elapsedTimer;
+    qint64 m_lastTriggerTime = 0;
+    RawFileInputFormat m_sampleFormat;
 };
 
 
@@ -49,15 +50,15 @@ public:
 
 public slots:
     void tune(uint32_t freq) override;
-    void setFile(const QString & fName, const RawFileInputFormat &format = RawFileInputFormat::SAMPLE_FORMAT_U8);
-    void setFileFormat(const RawFileInputFormat &format);
+    void setFile(const QString & fileName, const RawFileInputFormat & sampleFormat = RawFileInputFormat::SAMPLE_FORMAT_U8);
+    void setFileFormat(const RawFileInputFormat & sampleFormat);
 
 private:
-    RawFileInputFormat sampleFormat;
-    QString fileName;
-    QFile * inputFile = nullptr;
-    RawFileWorker * worker = nullptr;
-    QTimer * inputTimer = nullptr;
+    RawFileInputFormat m_sampleFormat;
+    QString m_fileName;
+    QFile * m_inputFile = nullptr;
+    RawFileWorker * m_worker = nullptr;
+    QTimer * m_inputTimer = nullptr;
     void stop();
     void rewind();
     void onEndOfFile() { emit error(InputDeviceErrorCode::EndOfFile); }

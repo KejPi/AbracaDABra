@@ -64,7 +64,7 @@ public:
     InputDevice(QObject *parent = nullptr);
     ~InputDevice();
     virtual bool openDevice() = 0;
-    const InputDeviceId getDeviceId() const { return id; }
+    const InputDeviceId getDeviceId() const { return m_id; }
 
 public slots:
     virtual void tune(uint32_t freq) = 0;
@@ -80,7 +80,7 @@ signals:
     void error(const InputDeviceErrorCode errCode = InputDeviceErrorCode::Undefined);
 
 protected:
-    InputDeviceId id = InputDeviceId::UNDEFINED;
+    InputDeviceId m_id = InputDeviceId::UNDEFINED;
 };
 
 extern fifo_t inputBuffer;

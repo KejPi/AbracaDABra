@@ -26,9 +26,9 @@ class SoapySdrWorker : public QThread
 {
     Q_OBJECT
 public:
-    explicit SoapySdrWorker(SoapySDR::Device *d, double sampleRate, int channel = 0, QObject *parent = nullptr);
+    explicit SoapySdrWorker(SoapySDR::Device *device, double sampleRate, int rxChannel = 0, QObject *parent = nullptr);
     ~SoapySdrWorker();
-    void dumpToFileStart(FILE * f);
+    void dumpToFileStart(FILE * dumpFile);
     void dumpToFileStop();
     bool isRunning();
     void stop();
@@ -38,24 +38,23 @@ signals:
     void agcLevel(float level);
     void dumpedBytes(ssize_t bytes);
 private:
-    QObject *soapySdrPtr;
-    SoapySDR::Device *device;
-    int rxChannel;
-    std::atomic<bool> enaDumpToFile;
-    FILE * dumpFile;
-    QMutex fileMutex;
-    std::atomic<bool> wdogIsRunningFlag;
-    std::atomic<bool> doReadIQ;
+    SoapySDR::Device * m_device;
+    int m_rxChannel;
+    std::atomic<bool> m_enaDumpToFile;
+    FILE * m_dumpFile;
+    QMutex m_dumpFileMutex;
+    std::atomic<bool> m_watchdogFlag;
+    std::atomic<bool> m_doReadIQ;
 
     // SRC
-    float * filterOutBuffer;
-    InputDeviceSRC * src;
+    float * m_filterOutBuffer;
+    InputDeviceSRC * m_src;
 
     // AGC memory
-    float agcLev = 0.0;
-    uint_fast8_t signalLevelEmitCntr;
+    float m_agcLevel = 0.0;
+    uint_fast8_t m_signalLevelEmitCntr;
 
-    bool isDumpingIQ() const { return enaDumpToFile; }
+    bool isDumpingIQ() const { return m_enaDumpToFile; }
     void dumpBuffer(unsigned char *buf, uint32_t len);    
     void processInputData(std::complex<float> buff[], size_t numSamples);
 };
@@ -68,39 +67,39 @@ public:
     ~SoapySdrInput();
     bool openDevice() override;
 
-    void tune(uint32_t freq) override;
-    void setDevArgs(const QString & args) { devArgs = args; }
-    void setRxChannel(int ch) { rxChannel = ch; }
-    void setAntenna(const QString & ant) { antenna = ant; }
+    void tune(uint32_t frequency) override;
+    void setDevArgs(const QString & devArgs) { m_devArgs = devArgs; }
+    void setRxChannel(int rxChannel) { m_rxChannel = rxChannel; }
+    void setAntenna(const QString & antenna) { m_antenna = antenna; }
 
-    void setGainMode(SoapyGainMode mode, int gainIdx = 0);
+    void setGainMode(SoapyGainMode gainMode, int gainIdx = 0);
 
     void startDumpToFile(const QString & filename) override;
     void stopDumpToFile() override;
 
     void setBW(int bw);
 
-    QList<float> getGainList() const { return * gainList; }
+    QList<float> getGainList() const { return * m_gainList; }
 
 private:
-    double sampleRate;
-    uint32_t frequency;
-    bool deviceUnplugged;
-    bool deviceRunning;
-    SoapySDR::Device *device;
+    double m_sampleRate;
+    uint32_t m_frequency;
+    bool m_deviceUnpluggedFlag;
+    bool m_deviceRunningFlag;
+    SoapySDR::Device * m_device;
 
     // settimgs
-    QString devArgs;
-    QString antenna;
-    int rxChannel = 0;
-    SoapySdrWorker * worker;
+    QString m_devArgs;
+    QString m_antenna;
+    int m_rxChannel = 0;
+    SoapySdrWorker * m_worker;
 #if (SOAPYSDR_WDOG_ENABLE)
-    QTimer watchDogTimer;
+    QTimer m_watchdogTimer;
 #endif
-    SoapyGainMode gainMode = SoapyGainMode::Manual;
-    int gainIdx;
-    QList<float> * gainList;
-    FILE * dumpFile;
+    SoapyGainMode m_gainMode = SoapyGainMode::Manual;
+    int m_gainIdx;
+    QList<float> * m_gainList;
+    FILE * m_dumpFile;
 
     void run();           
     void stop();
@@ -108,14 +107,14 @@ private:
 
     // private function
     // gain is set from outside usin setGainMode() function
-    void setGain(int gIdx);
+    void setGain(int gainIdx);
 
     // used by worker
-    void updateAgc(float level);
+    void onAgcLevel(float agcLevel);
 
-    void readThreadStopped();
+    void onReadThreadStopped();
 #if (SOAPYSDR_WDOG_ENABLE)
-    void watchDogTimeout();
+    void onWatchdogTimeout();
 #endif
 };
 
