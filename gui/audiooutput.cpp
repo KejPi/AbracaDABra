@@ -209,7 +209,6 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             }
 
             uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
-#if AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA
             if (bytesToEnd < bytesToRead)
             {
                 float volume = m_linearVolume;
@@ -287,19 +286,6 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
                     m_inFifoPtr->tail += bytesToRead;
                 }
             }
-#else
-            if (bytesToEnd < bytesToRead)
-            {
-                memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
-                memcpy((uint8_t*)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (bytesToRead - bytesToEnd));
-                m_inFifoPtr->tail = bytesToRead - bytesToEnd;
-            }
-            else
-            {
-                memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToRead);
-                m_inFifoPtr->tail += bytesToRead;
-            }
-#endif
             m_inFifoPtr->mutex.lock();
             m_inFifoPtr->count -= bytesToRead;
             m_inFifoPtr->countChanged.wakeAll();
@@ -347,7 +333,6 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
 
             // copy all available samples to output buffer
             uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
-#if AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA
             if (bytesToEnd < count)
             {
                 float volume = m_linearVolume;
@@ -422,19 +407,6 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
                     m_inFifoPtr->tail += count;
                 }
             }
-#else
-            if (bytesToEnd < count)
-            {
-                memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
-                memcpy((uint8_t*)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (count - bytesToEnd));
-                m_inFifoPtr->tail = count - bytesToEnd;
-            }
-            else
-            {
-                memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, count);
-                m_inFifoPtr->tail += count;
-            }
-#endif
             // set rest of the samples to be 0
             memset((uint8_t*)outputBuffer+count, 0, bytesToRead-count);
 
@@ -448,7 +420,6 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
         else
         {   // reading samples
             uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
-#if AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA
             if (bytesToEnd < bytesToRead)
             {
                 float volume = m_linearVolume;
@@ -525,19 +496,6 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
                     m_inFifoPtr->tail += bytesToRead;
                 }
             }
-#else
-            if (bytesToEnd < bytesToRead)
-            {
-                memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
-                memcpy((uint8_t*)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (bytesToRead - bytesToEnd));
-                m_inFifoPtr->tail = bytesToRead - bytesToEnd;
-            }
-            else
-            {
-                memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToRead);
-                m_inFifoPtr->tail += bytesToRead;
-            }
-#endif
             m_inFifoPtr->mutex.lock();
             m_inFifoPtr->count -= bytesToRead;
             m_inFifoPtr->countChanged.wakeAll();

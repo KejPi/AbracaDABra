@@ -24,7 +24,9 @@
 #include "rawfileinput.h"
 #include "rtlsdrinput.h"
 #include "rtltcpinput.h"
+#if HAVE_RARTTCP
 #include "rarttcpinput.h"
+#endif
 #include "airspyinput.h"
 #include "soapysdrinput.h"
 
@@ -161,7 +163,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_muteLabel->setTooltip("Unmute audio", true);
     m_muteLabel->setChecked(false);
 
-#if (!HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     m_volumeSlider = new QSlider(Qt::Horizontal, this);
     m_volumeSlider->setMinimum(0);
     m_volumeSlider->setMaximum(100);
@@ -182,7 +183,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     volumeLayout->setContentsMargins(10,0,0,0);
     QWidget * volumeWidget = new QWidget();
     volumeWidget->setLayout(volumeLayout);
-#endif
 
     //DL+
     ui->dlPlusLabel->setCheckable(true);
@@ -201,11 +201,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     QGridLayout * layout = new QGridLayout(widget);
     layout->addWidget(m_timeBasicQualWidget, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
     layout->addWidget(m_signalQualityWidget, 0, 1, Qt::AlignVCenter | Qt::AlignRight);
-#if (!HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     layout->addWidget(volumeWidget, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
-#else
-    layout->addWidget(muteLabel, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
-#endif
     layout->addWidget(m_settingsLabel, 0, 3, Qt::AlignVCenter | Qt::AlignRight);
 
     layout->setColumnStretch(0, 100);
@@ -314,9 +310,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_audioOutputThread, &QThread::finished, m_audioOutput, &QObject::deleteLater);
     m_audioOutputThread->start();
 #endif
-#if (!HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     connect(m_volumeSlider, &QSlider::valueChanged, m_audioOutput, &AudioOutput::setVolume, Qt::QueuedConnection);
-#endif
 
     // Connect signals
     connect(m_muteLabel, &ClickableLabel::toggled, m_audioOutput, &AudioOutput::mute, Qt::QueuedConnection);
@@ -1539,9 +1533,7 @@ void MainWindow::loadSettings()
     restoreGeometry(settings->value("windowGeometry").toByteArray());
     m_expertMode = settings->value("ExpertMode").toBool();
     setExpertMode(m_expertMode);
-#if (!HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     m_volumeSlider->setValue(settings->value("volume", 100).toInt());
-#endif
 
     int inDevice = settings->value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();
 
@@ -1653,11 +1645,7 @@ void MainWindow::saveSettings()
     const SetupDialog::Settings s = m_setupDialog->settings();
     settings->setValue("inputDeviceId", int(s.inputDevice));
     settings->setValue("dumpPath", m_ensembleInfoDialog->getDumpPath());
-#if (!HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     settings->setValue("volume", m_volumeSlider->value());
-#else
-    settings->setValue("volume", 100);
-#endif
     settings->setValue("windowGeometry", saveGeometry());
 
     settings->setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);

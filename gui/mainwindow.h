@@ -96,10 +96,11 @@ private:
     AudioDecoder * m_audioDecoder;
 
     // audio output
-#if (!HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
+#if (!HAVE_PORTAUDIO)
     QThread * m_audioOutputThread;
-    QSlider * m_volumeSlider;
 #endif
+    QSlider * m_volumeSlider;
+
     AudioOutput * m_audioOutput;
 
     // state variables

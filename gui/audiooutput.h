@@ -34,7 +34,6 @@ enum class AudioOutputPlaybackState
 
 #if HAVE_PORTAUDIO
 
-#define AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA        1
 #define AUDIOOUTPUT_PORTAUDIO_VOLUME_ROUND      1
 
 // port audio allows to set number of samples in callback
