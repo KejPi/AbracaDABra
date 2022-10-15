@@ -1,4 +1,5 @@
 #include <QDebug>
+#include "slsview.h"
 #include "catslsdialog.h"
 #include "ui_catslsdialog.h"
 

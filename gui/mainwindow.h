@@ -17,20 +17,10 @@
 #include "clickablelabel.h"
 #include "setupdialog.h"
 #include "ensembleinfodialog.h"
-#include "aboutdialog.h"
-#include "slsview.h"
 #include "catslsdialog.h"
 #include "inputdevice.h"
-#include "rawfileinput.h"
-#include "rtlsdrinput.h"
-#include "rtltcpinput.h"
-#include "rarttcpinput.h"
-#include "airspyinput.h"
-#include "soapysdrinput.h"
 #include "radiocontrol.h"
 #include "dldecoder.h"
-#include "motdecoder.h"
-#include "userapplication.h"
 #include "slideshowapp.h"
 #include "spiapp.h"
 #include "audiodecoder.h"
@@ -50,28 +40,10 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(const QString & iniFile = QString(), QWidget *parent = nullptr);
+    MainWindow(const QString & iniFilename = QString(), QWidget *parent = nullptr);
     ~MainWindow();
     bool eventFilter(QObject * o, QEvent * e);
 
-public slots:
-    void inputDeviceReady();
-    void updateEnsembleInfo(const RadioControlEnsemble &ens);
-    void onEnsembleComplete(const RadioControlEnsemble &ens);
-    void onEnsembleReconfiguration(const RadioControlEnsemble &ens) const;
-    void onEnsembleRemoved(const RadioControlEnsemble &ens);
-    void updateSyncStatus(uint8_t sync);
-    void updateSnrLevel(float snr);
-    void updateServiceList(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
-    void updateDL(const QString &dl);
-    void onDLPlusObjReceived(const DLPlusObject & object);
-    void onDLPlusItemToggle();
-    void onDLPlusItemRunning(bool isRunning);
-    void onDLReset();
-    void updateAudioInfo(const AudioParameters &params);
-    void updateDabTime(const QDateTime & d);
-    void changeInputDevice(const InputDeviceId &d);
-    void tuneFinished(uint32_t freq);
 
 signals:
     void serviceRequest(uint32_t freq, uint32_t SId, uint8_t SCIdS);
@@ -80,91 +52,83 @@ signals:
     void expertModeChanged(bool ena);
     void exit();
 
-private slots:
-    void onChannelChange(int index);
-    void clearEnsembleInformationLabels();
-    void clearServiceInformationLabels();
-    void onNewSettings();
-    void initInputDevice(const InputDeviceId &d);
-    void onInputDeviceError(const InputDeviceErrorCode errCode);
-    void serviceListClicked(const QModelIndex &index);
-    void serviceListTreeClicked(const QModelIndex &index);
-    void serviceChanged(const RadioControlServiceComponent &s);
-    void audioServiceReconfiguration(const RadioControlServiceComponent &s);    
-
 protected:        
     void closeEvent(QCloseEvent *event);
     void resizeEvent(QResizeEvent *event);
     void changeEvent( QEvent* e );
 private:
-    QString iniFilename;
+    // UI and dialogs
     Ui::MainWindow *ui;
-    SetupDialog * setupDialog;
-    EnsembleInfoDialog * ensembleInfoDialog;
-    CatSLSDialog * catSlsDialog;   
-    QProgressBar * snrProgress;
-    ClickableLabel * settingsLabel;
-    ClickableLabel * muteLabel;
+    SetupDialog * m_setupDialog;
+    EnsembleInfoDialog * m_ensembleInfoDialog;
+    CatSLSDialog * m_catSlsDialog;
+    QProgressBar * m_snrProgressbar;
+    ClickableLabel * m_settingsLabel;
+    ClickableLabel * m_muteLabel;
 
-    QStackedWidget * timeBasicQualWidget;
-    QLabel  * timeLabel;
-    QLabel  * basicSignalQualityLabel;
+    // status bar widgets
+    QStackedWidget * m_timeBasicQualWidget;
+    QLabel  * m_timeLabel;
+    QLabel  * m_basicSignalQualityLabel;
+    QWidget * m_signalQualityWidget;
+    QLabel * m_syncLabel;
+    QLabel * m_snrLabel;
 
-    QWidget * signalQualityWidget;
-    QLabel * syncLabel;
-    QLabel * snrLabel;
+    // application menu
+    QMenu * m_menu;
+    QAction * m_setupAction;
+    QAction * m_clearServiceListAction;
+    QAction * m_bandScanAction;
+    QAction * m_switchModeAction;
+    QAction * m_ensembleInfoAction;
+    QAction * m_aboutAction;
 
-    QMenu * menu;
-    QAction * setupAct;
-    QAction * clearServiceListAct;
-    QAction * bandScanAct;
-    QAction * switchModeAct;
-    QAction * ensembleInfoAct;
-    QAction * aboutAct;
+    // radio control
+    QThread * m_radioControlThread;
+    RadioControl * m_radioControl;
 
-    QThread * radioControlThr;
-    RadioControl * radioControl;
+    // input device
+    InputDeviceId m_inputDeviceId = InputDeviceId::UNDEFINED;
+    InputDevice * m_inputDevice = nullptr;
 
-    DLDecoder * dlDecoder;
-    SlideShowApp * slideShowApp;
-    SPIApp * spiApp;
+    // audio decoder
+    QThread * m_audioDecoderThread;
+    AudioDecoder * m_audioDecoder;
 
-    InputDeviceId inputDeviceId = InputDeviceId::UNDEFINED;
-    InputDevice * inputDevice = nullptr;
-
-    QThread * audioDecoderThr;
-    AudioDecoder * audioDecoder;
-
+    // audio output
 #if (!defined HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
-    QThread * audioOutThr;
-    QSlider * volumeSlider;
+    QThread * m_audioOutputThread;
+    QSlider * m_volumeSlider;
 #endif
-    AudioOutput * audioOutput;
+    AudioOutput * m_audioOutput;
 
-    bool isPlaying = false;
-    bool deviceChangeRequested = false;
-    bool expertMode = false;
-    bool exitRequested = false;
-    uint32_t frequency = 0;
-    DabSId SId;
-    uint8_t SCIdS = 0;
-    bool hasListViewFocus;
-    bool hasTreeViewFocus;
+    // state variables
+    QString m_iniFilename;
+    bool m_isPlaying = false;
+    bool m_deviceChangeRequested = false;
+    bool m_expertMode = false;
+    bool m_exitRequested = false;
+    uint32_t m_frequency = 0;
+    DabSId m_SId;
+    uint8_t m_SCIdS = 0;
+    bool m_hasListViewFocus;
+    bool m_hasTreeViewFocus;
 
-    ServiceList * serviceList;
-    SLModel * slModel;
-    SLTreeModel * slTreeModel;
+    // service list
+    ServiceList * m_serviceList;
+    SLModel * m_slModel;
+    SLTreeModel * m_slTreeModel;
 
-    QMap<DLPlusContentType, DLPlusObjectUI*> dlObjCache;
+    // user applications
+    DLDecoder * m_dlDecoder;
+    QMap<DLPlusContentType, DLPlusObjectUI*> m_dlObjCache;
+    SlideShowApp * m_slideShowApp;
+    SPIApp * m_spiApp;
 
-    void onServiceSelection();
-    void onChannelSelection();
+    // methods
     void loadSettings();
     void saveSettings();
 
-    void setFavoriteLabel(bool ena);
-    void favoriteToggled(bool checked);
-    void switchServiceSource();
     void switchMode();
     void showEnsembleInfo();
     void showAboutDialog();
@@ -172,19 +136,47 @@ private:
     void showCatSLS();
     void setExpertMode(bool ena);
     void stop();
-    void tuneChannel(uint32_t freq);
     void bandScan();
-    void bandScanFinished(int result);
     void clearServiceList();
-
+    void clearEnsembleInformationLabels();
+    void clearServiceInformationLabels();
+    void initInputDevice(const InputDeviceId &d);
     bool isDarkMode();
-    void setIcons();
-
+    void setIcons();    
+    void serviceSelected();
+    void channelSelected();
     void serviceTreeViewUpdateSelection();
     void serviceListViewUpdateSelection();
+    void changeInputDevice(const InputDeviceId &d);
 
-    void onDLPlusToggle(bool toggle);    
-
+    void onInputDeviceReady();
+    void onEnsembleInfo(const RadioControlEnsemble &ens);
+    void onEnsembleComplete(const RadioControlEnsemble &ens);
+    void onEnsembleReconfiguration(const RadioControlEnsemble &ens) const;
+    void onEnsembleRemoved(const RadioControlEnsemble &ens);
+    void onChannelChange(int index);
+    void onBandScanFinished(int result);
+    void onFavoriteToggled(bool checked);
+    void onSwitchSourceClicked();
+    void onSyncStatus(uint8_t sync);
+    void onSnrLevel(float snr);
+    void onServiceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
+    void onDLComplete(const QString &dl);
+    void onDLPlusToggled(bool toggle);
+    void onDLPlusObjReceived(const DLPlusObject & object);
+    void onDLPlusItemToggle();
+    void onDLPlusItemRunning(bool isRunning);
+    void onDLReset();
+    void onAudioParametersInfo(const AudioParameters &params);
+    void onDabTime(const QDateTime & d);
+    void onTuneChannel(uint32_t freq);
+    void onTuneDone(uint32_t freq);
+    void onNewSettings();
+    void onInputDeviceError(const InputDeviceErrorCode errCode);
+    void onServiceListClicked(const QModelIndex &index);
+    void onServiceListTreeClicked(const QModelIndex &index);
+    void onAudioServiceSelection(const RadioControlServiceComponent &s);
+    void onAudioServiceReconfiguration(const RadioControlServiceComponent &s);
 };
 
 class DLPlusObjectUI
@@ -198,10 +190,10 @@ public:
     const DLPlusObject &getDlPlusObject() const;
 
 private:
-    DLPlusObject dlPlusObject;
-    QHBoxLayout* layout;
-    QLabel * tagLabel;
-    QLabel * tagText;
+    DLPlusObject m_dlPlusObject;
+    QHBoxLayout* m_layout;
+    QLabel * m_tagLabel;
+    QLabel * m_tagText;
 
     QString getLabel(DLPlusContentType type) const;
 };
