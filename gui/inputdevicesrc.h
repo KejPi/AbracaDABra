@@ -60,18 +60,18 @@ public:
 private:
     enum { FILTER_ORDER = 42 };
 
-    float * bufferPtrI;
-    float * bufferPtrQ;
-    float * bufferI;
-    float * bufferQ;
+    float * m_bufferPtrI;
+    float * m_bufferPtrQ;
+    float * m_bufferI;
+    float * m_bufferQ;
 
     // level filter
-    float catt;
-    float crel;
+    float m_catt;
+    float m_crel;
 
     // Halfband FIR, fixed coeffs, designed for downsampling 4096kHz -> 2048kHz
-    static const int_fast8_t taps = FILTER_ORDER + 1;
-    constexpr static const float coef[(FILTER_ORDER+2)/4 + 1] =
+    static const int_fast8_t m_taps = FILTER_ORDER + 1;
+    constexpr static const float m_coef[(FILTER_ORDER+2)/4 + 1] =
     {
          0.000223158782894952853123604619156594708,
         -0.00070774549637065342286290636764078954,
@@ -103,17 +103,17 @@ private:
     enum { POLY_COEFS = 4, NUM_POLY = 6 };  // M = 4, N = 6
 
     // level filter
-    float catt;
-    float crel;
+    float m_catt;
+    float m_crel;
 
-    float mu = 0;
-    float xI[POLY_COEFS];
-    float xQ[POLY_COEFS];
-    float yI[NUM_POLY];
-    float yQ[NUM_POLY];
-    float R;   // FSout/FSin
+    float m_mu = 0;
+    float m_xI[POLY_COEFS];
+    float m_xQ[POLY_COEFS];
+    float m_yI[NUM_POLY];
+    float m_yQ[NUM_POLY];
+    float m_R;   // FSout/FSin
 
-    constexpr static const float coef[NUM_POLY][POLY_COEFS] =
+    constexpr static const float m_coef[NUM_POLY][POLY_COEFS] =
     {
         {   0.001667349914006070960362,  0.032712194697834547085780, -0.146457831613232558609639,  0.004040531324696360060411  },
         {  -0.103347648141097675500433, -0.244367915078825215235980,  0.233146907266815583970043,  0.243745693669456003904727  },
@@ -137,8 +137,8 @@ public:
     int process(float inDataIQ[], int numInDataIQ, float outDataIQ[]) override;
 private:
     // level filter
-    float catt;
-    float crel;
+    float m_catt;
+    float m_crel;
 };
 
 #endif // INPUTDEVICESRC_H

@@ -2,21 +2,21 @@
 
 SPIApp::SPIApp(RadioControl * radioControlPtr, QObject *parent) : UserApplication(radioControlPtr, parent)
 {
-    decoder = nullptr;
-    connect(radioControl, &RadioControl::userAppData, this, &SPIApp::onUserAppData);
+    m_decoder = nullptr;
+    connect(m_radioControl, &RadioControl::userAppData, this, &SPIApp::onUserAppData);
 }
 
 SPIApp::~SPIApp()
 {
-    if (nullptr != decoder)
+    if (nullptr != m_decoder)
     {
-        delete decoder;
+        delete m_decoder;
     }
 }
 
 void SPIApp::start()
 {   // does nothing if application is already running
-    if (isRunning)
+    if (m_isRunning)
     {   // do nothing, application is running
         return;
     }
@@ -24,21 +24,21 @@ void SPIApp::start()
     { /* not running */ }
 
     // create new decoder
-    decoder = new MOTDecoder();
-    connect(decoder, &MOTDecoder::newMOTObject, this, &SPIApp::onNewMOTObject);
-    connect(decoder, &MOTDecoder::newMOTDirectory, this, &SPIApp::onNewMOTDirectory);
+    m_decoder = new MOTDecoder();
+    connect(m_decoder, &MOTDecoder::newMOTObject, this, &SPIApp::onNewMOTObject);
+    connect(m_decoder, &MOTDecoder::newMOTDirectory, this, &SPIApp::onNewMOTDirectory);
 
-    isRunning = true;
+    m_isRunning = true;
 }
 
 void SPIApp::stop()
 {
-    if (nullptr != decoder)
+    if (nullptr != m_decoder)
     {
-        delete decoder;
-        decoder = nullptr;
+        delete m_decoder;
+        m_decoder = nullptr;
     }
-    isRunning = false;
+    m_isRunning = false;
 
     // ask HMI to clear data
     emit resetTerminal();
@@ -52,12 +52,12 @@ void SPIApp::restart()
 
 void SPIApp::onUserAppData(const RadioControlUserAppData & data)
 {
-    if ((DabUserApplicationType::SPI == data.userAppType) && (isRunning))
+    if ((DabUserApplicationType::SPI == data.userAppType) && (m_isRunning))
     {
         // application is running and user application type matches
         // data is for this application
         // send data to decoder
-        decoder->newDataGroup(data.data);
+        m_decoder->newDataGroup(data.data);
     }
     else
     { /* do nothing */ }
@@ -67,7 +67,7 @@ void SPIApp::onNewMOTDirectory()
 {
     qDebug() << Q_FUNC_INFO << "New MOT directory";
     MOTObjectCache::const_iterator objIt;
-    for (objIt = decoder->directoryBegin(); objIt != decoder->directoryEnd(); ++objIt)
+    for (objIt = m_decoder->directoryBegin(); objIt != m_decoder->directoryEnd(); ++objIt)
     {
         if (!objIt->isComplete())
         {
@@ -182,7 +182,7 @@ void SPIApp::parseServiceInfo(const MOTObject &motObj)
                 {
                     uint32_t ueid = (uint8_t(paramIt.value().at(0)) << 16) | (uint8_t(paramIt.value().at(1)) << 8) | uint8_t(paramIt.value().at(2));
                     qDebug("\t\tScopeID: %6.6X", ueid);
-                    if (radioControl->getEnsembleUEID() != ueid)
+                    if (m_radioControl->getEnsembleUEID() != ueid)
                     {
                         qDebug("ScopeID: %6.6X is not current ensemble. Service info for current ensemble is only supported!", ueid);
                         return;
@@ -274,8 +274,8 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
             QString cdata = QString::fromUtf8((const char *)(dataPtr+bytesRead), len);
 
             // replace tokens with strings
-            QHash<uint8_t, QString>::const_iterator it = tokenTable.constBegin();
-            while (it != tokenTable.cend())
+            QHash<uint8_t, QString>::const_iterator it = m_tokenTable.constBegin();
+            while (it != m_tokenTable.cend())
             {
                 cdata = cdata.replace(QChar(it.key()), it.value());
                 ++it;
@@ -291,13 +291,13 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
             tagName = "serviceInformation";
             break;
         case SPIElement::Tag::tokenTable:
-            tokenTable.clear();
+            m_tokenTable.clear();
             while (len > bytesRead)
             {
                 uint8_t tokenId = *(dataPtr+bytesRead);
                 uint8_t tokenLen = *(dataPtr+bytesRead+1);
                 QString token = QString::fromUtf8((const char *)(dataPtr+bytesRead+2), tokenLen);
-                tokenTable.insert(tokenId, token);
+                m_tokenTable.insert(tokenId, token);
                 bytesRead += tokenLen+2;
                 qDebug() << "\t\ttoken" << tokenId << " : " << token;
             }

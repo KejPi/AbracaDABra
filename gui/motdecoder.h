@@ -17,16 +17,16 @@ public:
     ~MOTDecoder();
     void newDataGroup(const QByteArray &dataGroup);
     void reset();
-    MOTObjectCache::const_iterator directoryBegin() const { return  directory->begin(); }
-    MOTObjectCache::const_iterator directoryEnd() const { return  directory->end(); }
+    MOTObjectCache::const_iterator directoryBegin() const { return  m_directory->begin(); }
+    MOTObjectCache::const_iterator directoryEnd() const { return  m_directory->end(); }
 
 signals:
     void newMOTObject(const MOTObject & obj);
     void newMOTDirectory();
 
 private:
-    MOTDirectory * directory;
-    MOTObjectCache * objCache;
+    MOTDirectory * m_directory;
+    MOTObjectCache * m_objCache;
 };
 
 #endif // MOTDECODER_H

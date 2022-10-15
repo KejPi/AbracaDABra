@@ -3,21 +3,21 @@
 
 SlideShowApp::SlideShowApp(RadioControl * radioControlPtr, QObject *parent) : UserApplication(radioControlPtr, parent)
 {
-    decoder = nullptr;
-    connect(radioControl, &RadioControl::userAppData, this, &SlideShowApp::onUserAppData);
+    m_decoder = nullptr;
+    connect(m_radioControl, &RadioControl::userAppData, this, &SlideShowApp::onUserAppData);
 }
 
 SlideShowApp::~SlideShowApp()
 {
-    if (nullptr != decoder)
+    if (nullptr != m_decoder)
     {
-        delete decoder;
+        delete m_decoder;
     }
 }
 
 void SlideShowApp::start()
 {   // does nothing is application is already running
-    if (isRunning)
+    if (m_isRunning)
     {   // do nothign, application is running
         return;
     }
@@ -25,26 +25,26 @@ void SlideShowApp::start()
     { /* not running */ }
 
     // create new decoder
-    decoder = new MOTDecoder();
-    connect(decoder, &MOTDecoder::newMOTObject, this, &SlideShowApp::onNewMOTObject);
+    m_decoder = new MOTDecoder();
+    connect(m_decoder, &MOTDecoder::newMOTObject, this, &SlideShowApp::onNewMOTObject);
 
-    isRunning = true;
+    m_isRunning = true;
 }
 
 void SlideShowApp::stop()
 {
-    if (nullptr != decoder)
+    if (nullptr != m_decoder)
     {
-        delete decoder;
-        decoder = nullptr;
+        delete m_decoder;
+        m_decoder = nullptr;
     }
-    isRunning = false;
+    m_isRunning = false;
 
     // clear cache
-    cache.clear();
+    m_cache.clear();
 
     // clear categories
-    catSls.clear();
+    m_catSls.clear();
 
     // ask HMI to clear SLS
     emit resetTerminal();
@@ -58,12 +58,12 @@ void SlideShowApp::restart()
 
 void SlideShowApp::onUserAppData(const RadioControlUserAppData & data)
 {
-    if ((DabUserApplicationType::SlideShow == data.userAppType) && (isRunning))
+    if ((DabUserApplicationType::SlideShow == data.userAppType) && (m_isRunning))
     {
         // application is running and user application type matches
         // data is for this application
         // send data to decoder
-        decoder->newDataGroup(data.data);
+        m_decoder->newDataGroup(data.data);
     }
     else
     { /* do nothing */ }
@@ -278,8 +278,8 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         // This parameter is used for uniquely identifying the object for the purposes of cache management.
 
         // first check if item is already in cache
-        QHash<QString, Slide>::const_iterator cacheIt = cache.constFind(slide.getContentName());
-        if (cache.cend() != cacheIt)
+        QHash<QString, Slide>::const_iterator cacheIt = m_cache.constFind(slide.getContentName());
+        if (m_cache.cend() != cacheIt)
         {   // item is in the cache -> decategorize and delete from cache
 #if (USER_APPLICATION_VERBOSE > 1)
             qDebug() << "Item" << obj.getContentName() << "is already in cache";
@@ -288,7 +288,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
             removeSlideFromCategory(*cacheIt);
 
             // delete slide from cache
-            cache.erase(cacheIt);
+            m_cache.erase(cacheIt);
         }
         else
         { /* item was is not in cache - do nothing */ }
@@ -298,8 +298,8 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         // This parameter is used for uniquely identifying the object for the purposes of cache management.
 
         // first check if item is already in cache
-        QHash<QString, Slide>::const_iterator cacheIt = cache.constFind(slide.getContentName());
-        if (cache.cend() != cacheIt)
+        QHash<QString, Slide>::const_iterator cacheIt = m_cache.constFind(slide.getContentName());
+        if (m_cache.cend() != cacheIt)
         {   // item is already received
 #if (USER_APPLICATION_VERBOSE > 1)
             qDebug() << "Item" << obj.getContentName() << "is already in cache";
@@ -318,7 +318,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
                 removeSlideFromCategory(*cacheIt);
 
                 // delete old slide from cache
-                cache.erase(cacheIt);
+                m_cache.erase(cacheIt);
             }
             else
             {   // new slide is identical - emit it for SLS
@@ -330,7 +330,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         { /* item was is not in cache yet */ }
 
         // adding new slide to cache
-        cache.insert(slide.getContentName(), slide);
+        m_cache.insert(slide.getContentName(), slide);
 #if (USER_APPLICATION_VERBOSE > 1)
         qDebug() << "Cache contains" << cache.size() << "slides";
 #endif
@@ -371,8 +371,8 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
 
 void SlideShowApp::addSlideToCategory(const Slide & slide)
 {
-    QHash<int, Category>::iterator catIt = catSls.find(slide.getCategoryID());
-    if (catSls.end() != catIt)
+    QHash<int, Category>::iterator catIt = m_catSls.find(slide.getCategoryID());
+    if (m_catSls.end() != catIt)
     {   // category already exists
 #if (USER_APPLICATION_VERBOSE > 1)
         qDebug() << "Category" << catIt->getTitle() << "exists, adding slide ID" << slide.getSlideID();
@@ -394,12 +394,12 @@ void SlideShowApp::addSlideToCategory(const Slide & slide)
         QString catName = slide.getCategoryTitle();
         Category newCat = Category(catName);
         newCat.insertSlide(slide);
-        catSls.insert(slide.getCategoryID(), newCat);
+        m_catSls.insert(slide.getCategoryID(), newCat);
 #if (USER_APPLICATION_VERBOSE > 1)
         qDebug() << "New category" << catName << "created";
 #endif
 
-        if (1 == catSls.size())
+        if (1 == m_catSls.size())
         {  // this is the first category -> signal that CatSLS is available
             emit catSlsAvailable(true);
         }
@@ -411,17 +411,17 @@ void SlideShowApp::addSlideToCategory(const Slide & slide)
 void SlideShowApp::removeSlideFromCategory(const Slide & slide)
 {
     // remove slide from current category
-    QHash<int, Category>::iterator catSlsIt = catSls.find(slide.getCategoryID());
-    if (catSlsIt != catSls.end())
+    QHash<int, Category>::iterator catSlsIt = m_catSls.find(slide.getCategoryID());
+    if (catSlsIt != m_catSls.end())
     {
         catSlsIt->removeSlide(slide.getSlideID());
         if (0 == catSlsIt->size())
         {   // category is empty -> removing category
-            catSls.erase(catSlsIt);
+            m_catSls.erase(catSlsIt);
 
             emit categoryUpdate(slide.getCategoryID(), QString());
 
-            if (catSls.isEmpty())
+            if (m_catSls.isEmpty())
             {  // there are no more categories -> disable catSls
                 emit catSlsAvailable(false);
             }
@@ -435,11 +435,11 @@ void SlideShowApp::removeSlideFromCategory(const Slide & slide)
 
 void SlideShowApp::getCurrentCatSlide(int catId)
 {
-    QHash<int, SlideShowApp::Category>::const_iterator catSlsIt = catSls.constFind(catId);
-    if (catSlsIt != catSls.cend())
+    QHash<int, SlideShowApp::Category>::const_iterator catSlsIt = m_catSls.constFind(catId);
+    if (catSlsIt != m_catSls.cend())
     { // category found
-        QHash<QString, Slide>::const_iterator cacheIt = cache.constFind(catSlsIt->getCurrentSlide());
-        if (cache.cend() != cacheIt)
+        QHash<QString, Slide>::const_iterator cacheIt = m_cache.constFind(catSlsIt->getCurrentSlide());
+        if (m_cache.cend() != cacheIt)
         {   // found in cache
             emit catSlide(cacheIt.value(), catId, catSlsIt->getCurrentIndex(), catSlsIt->size());
         }
@@ -454,11 +454,11 @@ void SlideShowApp::getCurrentCatSlide(int catId)
 
 void SlideShowApp::getNextCatSlide(int catId, bool forward)
 {
-    QHash<int, SlideShowApp::Category>::iterator catSlsIt = catSls.find(catId);
-    if (catSlsIt != catSls.end())
+    QHash<int, SlideShowApp::Category>::iterator catSlsIt = m_catSls.find(catId);
+    if (catSlsIt != m_catSls.end())
     { // category found
-        QHash<QString, Slide>::const_iterator cacheIt = cache.constFind(catSlsIt->getNextSlide(forward));
-        if (cache.cend() != cacheIt)
+        QHash<QString, Slide>::const_iterator cacheIt = m_cache.constFind(catSlsIt->getNextSlide(forward));
+        if (m_cache.cend() != cacheIt)
         {   // found in cache
             emit catSlide(cacheIt.value(), catId, catSlsIt->getCurrentIndex(), catSlsIt->size());
         }
@@ -584,40 +584,40 @@ bool Slide::operator==(const Slide & other) const
 }
 
 SlideShowApp::Category::Category(QString & categoryTitle) :
-    title(categoryTitle)
+    m_title(categoryTitle)
 {
-    currentSlide = 0;   // this is invalid slide ID
-    currentSlideIdx = -1;
+    m_currentSlide = 0;   // this is invalid slide ID
+    m_currentSlideIdx = -1;
 }
 
 const QString &SlideShowApp::Category::getTitle() const
 {
-    return title;
+    return m_title;
 }
 
 void SlideShowApp::Category::setTitle(const QString &newTitle)
 {
-    title = newTitle;
+    m_title = newTitle;
 }
 
 // function returns position of inserted slide
 int SlideShowApp::Category::insertSlide(const Slide &s)
 {
-    slideItem item = { s.getSlideID(), s.getContentName() };
+    SlideItem item = { s.getSlideID(), s.getContentName() };
 
-    for (int idx = 0; idx < slidesList.size(); ++idx)
+    for (int idx = 0; idx < m_slidesList.size(); ++idx)
     {
-        if (slidesList.at(idx).id == item.id)
+        if (m_slidesList.at(idx).id == item.id)
         {   // replace item
-            slidesList.replace(idx, item);
+            m_slidesList.replace(idx, item);
             return idx;
         }
-        if (slidesList.at(idx).id > item.id)
+        if (m_slidesList.at(idx).id > item.id)
         {   // insert here
-            slidesList.insert(idx, item);
-            if (currentSlideIdx >= idx)
+            m_slidesList.insert(idx, item);
+            if (m_currentSlideIdx >= idx)
             {
-                currentSlideIdx += 1;
+                m_currentSlideIdx += 1;
             }
             return idx;
         }
@@ -625,46 +625,46 @@ int SlideShowApp::Category::insertSlide(const Slide &s)
 
      // if it comes here we need to append the item
     // it could be last or even very first slide
-    slidesList.append(item);
-    if (currentSlideIdx < 0)
+    m_slidesList.append(item);
+    if (m_currentSlideIdx < 0)
     {   // set current index
-        currentSlideIdx = 0;
+        m_currentSlideIdx = 0;
     }
-    return slidesList.size()-1;
+    return m_slidesList.size()-1;
 }
 
 // function returns position of removed slide
 int SlideShowApp::Category::removeSlide(int id)
 {
-    if (0 == slidesList.size())
+    if (0 == m_slidesList.size())
     {   // no items in category -> this shoudl not happen
         return -1;
     }
 
     // find the slide in category
-    for (int idx = 0; idx < slidesList.size(); ++idx)
+    for (int idx = 0; idx < m_slidesList.size(); ++idx)
     {
-        if (slidesList.at(idx).id == id)
+        if (m_slidesList.at(idx).id == id)
         {   // found
-            slidesList.remove(idx);
-            if (slidesList.isEmpty())
+            m_slidesList.remove(idx);
+            if (m_slidesList.isEmpty())
             {   // empty category
-                currentSlideIdx = -1;
+                m_currentSlideIdx = -1;
                 return idx;
             }
 
             // update current index
-            if (currentSlideIdx == idx)
+            if (m_currentSlideIdx == idx)
             {   // removed current -> emit signal
 #if (USER_APPLICATION_VERBOSE > 1)
                 qDebug() << "Current slide removed";
 #endif
             }
-            if (currentSlideIdx > idx)
+            if (m_currentSlideIdx > idx)
             {   // decrement current
-                if (--currentSlideIdx < 0)
+                if (--m_currentSlideIdx < 0)
                 {   // removed current -> setting current to last
-                    currentSlideIdx = slidesList.size()-1;
+                    m_currentSlideIdx = m_slidesList.size()-1;
                 }
             }
 #if (USER_APPLICATION_VERBOSE > 1)
@@ -680,9 +680,9 @@ int SlideShowApp::Category::removeSlide(int id)
 
 QString SlideShowApp::Category::getCurrentSlide() const
 {
-    if (!slidesList.isEmpty())
+    if (!m_slidesList.isEmpty())
     {
-        return slidesList.at(currentSlideIdx).contentName;
+        return m_slidesList.at(m_currentSlideIdx).contentName;
     }
     else
     { /* empty category */ }
@@ -692,35 +692,35 @@ QString SlideShowApp::Category::getCurrentSlide() const
 
 QString SlideShowApp::Category::getNextSlide(bool moveForward)
 {
-    if (slidesList.isEmpty())
+    if (m_slidesList.isEmpty())
     {
         return QString();
     }
 
     if (moveForward)
     {
-        if (++currentSlideIdx >= slidesList.size())
+        if (++m_currentSlideIdx >= m_slidesList.size())
         {
-            currentSlideIdx = 0;
+            m_currentSlideIdx = 0;
         }
     }
     else
     {
-        if (--currentSlideIdx < 0)
+        if (--m_currentSlideIdx < 0)
         {
-            currentSlideIdx = slidesList.size()-1;
+            m_currentSlideIdx = m_slidesList.size()-1;
         }
     }
 
-    return slidesList.at(currentSlideIdx).contentName;
+    return m_slidesList.at(m_currentSlideIdx).contentName;
 }
 
 int SlideShowApp::Category::size() const
 {
-    return slidesList.size();
+    return m_slidesList.size();
 }
 
 int SlideShowApp::Category::getCurrentIndex() const
 {
-    return currentSlideIdx;
+    return m_currentSlideIdx;
 }

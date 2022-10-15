@@ -11,7 +11,7 @@ SLSView::SLSView(QWidget *parent) : QGraphicsView(parent)
 void SLSView::reset()
 {
     QPixmap pic;
-    if (isDarkMode)
+    if (m_isDarkMode)
     {
         pic.load(":/resources/sls_logo_dark.png");
     }
@@ -25,16 +25,16 @@ void SLSView::reset()
     {
         //qDebug() << Q_FUNC_INFO << "New graphisc scene";
         sc = new QGraphicsScene(this);
-        pixmapItem = sc->addPixmap(pic);
+        m_pixmapItem = sc->addPixmap(pic);
 
         setScene(sc);
     }
     else
     {
-        pixmapItem->setPixmap(pic);
+        m_pixmapItem->setPixmap(pic);
     }
     sc->setSceneRect(pic.rect());
-    if (isDarkMode)
+    if (m_isDarkMode)
     {
         sc->setBackgroundBrush(Qt::black);
     }
@@ -47,8 +47,8 @@ void SLSView::reset()
 
     setToolTip("");
     setCursor(Qt::ArrowCursor);
-    showsSlide = false;
-    clickThroughURL.clear();
+    m_isShowingSlide = false;
+    m_clickThroughURL.clear();
 }
 
 void SLSView::fitInViewTight(const QRectF &rect, Qt::AspectRatioMode aspectRatioMode)
@@ -89,16 +89,16 @@ void SLSView::fitInViewTight(const QRectF &rect, Qt::AspectRatioMode aspectRatio
 
 void SLSView::setDarkMode(bool darkModeEna)
 {
-    if (darkModeEna != isDarkMode)
+    if (darkModeEna != m_isDarkMode)
     {
-        isDarkMode = darkModeEna;
+        m_isDarkMode = darkModeEna;
         QGraphicsScene * sc = scene();
         if (nullptr != sc)
         {
-            if (!showsSlide)
+            if (!m_isShowingSlide)
             {
                 QPixmap pic;
-                if (isDarkMode)
+                if (m_isDarkMode)
                 {
                     pic.load(":/resources/sls_logo_dark.png");
                     sc->setBackgroundBrush(Qt::black);
@@ -109,7 +109,7 @@ void SLSView::setDarkMode(bool darkModeEna)
                     sc->setBackgroundBrush(Qt::white);
                 }
 
-                pixmapItem->setPixmap(pic);
+                m_pixmapItem->setPixmap(pic);
 
                 sc->setSceneRect(pic.rect());
                 fitInViewTight(pic.rect(), Qt::KeepAspectRatio);
@@ -124,12 +124,12 @@ void SLSView::showSlide(const Slide & slide)
     if (nullptr == sc)
     {
         sc = new QGraphicsScene(this);
-        pixmapItem = sc->addPixmap(slide.getPixmap());
+        m_pixmapItem = sc->addPixmap(slide.getPixmap());
         setScene(sc);
     }
     else
     {
-        pixmapItem->setPixmap(slide.getPixmap());
+        m_pixmapItem->setPixmap(slide.getPixmap());
     }
 
     sc->setSceneRect(slide.getPixmap().rect());
@@ -139,10 +139,10 @@ void SLSView::showSlide(const Slide & slide)
     // update tool tip
     QString toolTip;
 
-    clickThroughURL = slide.getClickThroughURL();
-    if (!clickThroughURL.isEmpty())
+    m_clickThroughURL = slide.getClickThroughURL();
+    if (!m_clickThroughURL.isEmpty())
     {
-        toolTip = QString("%1<br><br>").arg(clickThroughURL);
+        toolTip = QString("%1<br><br>").arg(m_clickThroughURL);
 
         setCursor(Qt::PointingHandCursor);
     }
@@ -166,7 +166,7 @@ void SLSView::showSlide(const Slide & slide)
         setToolTip(QString("<p style='white-space:pre'>") + toolTip);
     }
 
-    showsSlide = true;
+    m_isShowingSlide = true;
 }
 
 void SLSView::resizeEvent(QResizeEvent *event)
@@ -193,7 +193,7 @@ void SLSView::showEvent(QShowEvent *event)
 
 void SLSView::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (!clickThroughURL.isEmpty())
+    if (!m_clickThroughURL.isEmpty())
     {   // if clickThroughURL is set
         qDebug() << Q_FUNC_INFO << event->position()
                  << ((event->position().x() >=0) && (event->position().y() >= 0) &&
@@ -202,7 +202,7 @@ void SLSView::mouseReleaseEvent(QMouseEvent *event)
         if ((event->position().x() >=0) && (event->position().y() >= 0) &&
                 (event->position().x() < width()) && (event->position().y() < height()))
         {   // release was on the slide view
-            QDesktopServices::openUrl(QUrl(clickThroughURL, QUrl::TolerantMode));
+            QDesktopServices::openUrl(QUrl(m_clickThroughURL, QUrl::TolerantMode));
         }
         else
         { /* mouse was released outside teh view */ }

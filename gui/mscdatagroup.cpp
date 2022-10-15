@@ -4,7 +4,7 @@
 
 MSCDataGroup::MSCDataGroup(const QByteArray &dataGroup)
 {
-    valid = false;
+    m_isValid = false;
     if (dataGroup.size() <= 0)
     {  // no data
         return;
@@ -29,22 +29,22 @@ MSCDataGroup::MSCDataGroup(const QByteArray &dataGroup)
     { /* no CRC */ }
 
     // Data group header [ETSI EN 300 401, 5.3.3.1]
-    extensionFlag = (*inputDataPtr & 0x80) != 0;    // byte 0, bit 7
-    segmentFlag = (*inputDataPtr & 0x20) != 0;      // byte 0, bit 5
-    userAccessFlag = (*inputDataPtr & 0x10) != 0;   // byte 0, bit 4
-    type = (*inputDataPtr++ & 0x0F);    // byte 0, bits 3-0
+    m_extensionFlag = (*inputDataPtr & 0x80) != 0;    // byte 0, bit 7
+    m_segmentFlag = (*inputDataPtr & 0x20) != 0;      // byte 0, bit 5
+    m_userAccessFlag = (*inputDataPtr & 0x10) != 0;   // byte 0, bit 4
+    m_type = (*inputDataPtr++ & 0x0F);    // byte 0, bits 3-0
 
     // inputDataPtr->byte 1
-    continuityIdx = (*inputDataPtr >> 4) & 0x0F; // byte 1, bits 7-4
-    repetitionIdx = (*inputDataPtr++ & 0x0F);    // byte 1, bits 3-0
+    m_continuityIdx = (*inputDataPtr >> 4) & 0x0F; // byte 1, bits 7-4
+    m_repetitionIdx = (*inputDataPtr++ & 0x0F);    // byte 1, bits 3-0
 
     // inputDataPtr->byte 2 (extension field)
-    if (extensionFlag)
+    if (m_extensionFlag)
     {   // extension field is present
         // Extension field: this 16-bit field shall be used to carry information for CA on data group level
         // (see ETSI TS 102 367 [4]). For other Data group types, the Extension field is reserved for future
         // additions to the Data group header.
-        extensionField = (*inputDataPtr << 8) | (*inputDataPtr+1);
+        m_extensionField = (*inputDataPtr << 8) | (*inputDataPtr+1);
         inputDataPtr += 2;
     }
     else
@@ -52,36 +52,36 @@ MSCDataGroup::MSCDataGroup(const QByteArray &dataGroup)
 
     // Session header [ETSI EN 300 401, 5.3.3.2]
     // inputDataPtr->segment field
-    lastFlag = false;
-    segmentNum = 0;
-    if (segmentFlag)
+    m_lastFlag = false;
+    m_segmentNum = 0;
+    if (m_segmentFlag)
     {   // segment field is present
-        lastFlag = (*inputDataPtr & 0x80) != 0;
-        segmentNum = (*inputDataPtr++ << 8) & 0x7FFF;
-        segmentNum += *inputDataPtr++;
+        m_lastFlag = (*inputDataPtr & 0x80) != 0;
+        m_segmentNum = (*inputDataPtr++ << 8) & 0x7FFF;
+        m_segmentNum += *inputDataPtr++;
     }
     else
     { /* no segment field */ }
 
-    transportIdFlag = false;
-    lengthIndicator = 0;
-    transportId = 0;
-    if (userAccessFlag)
+    m_transportIdFlag = false;
+    m_lengthIndicator = 0;
+    m_transportId = 0;
+    if (m_userAccessFlag)
     {
-        transportIdFlag = (*inputDataPtr & 0x10) != 0;
-        lengthIndicator = (*inputDataPtr++ & 0x0F);
-        if (transportIdFlag)
+        m_transportIdFlag = (*inputDataPtr & 0x10) != 0;
+        m_lengthIndicator = (*inputDataPtr++ & 0x0F);
+        if (m_transportIdFlag)
         {
-            transportId = (*inputDataPtr << 8) | *(inputDataPtr+1);
+            m_transportId = (*inputDataPtr << 8) | *(inputDataPtr+1);
             inputDataPtr += 2;
         }
         else
         { /* transport ID is not present */ }
 
-        if (lengthIndicator - transportIdFlag * 2 > 0)
+        if (m_lengthIndicator - m_transportIdFlag * 2 > 0)
         {   // end user address field is present
-            endUserAddrField = QByteArray((const char *) inputDataPtr, (lengthIndicator - transportIdFlag * 2));
-            inputDataPtr += lengthIndicator - transportIdFlag * 2;
+            m_endUserAddrField = QByteArray((const char *) inputDataPtr, (m_lengthIndicator - m_transportIdFlag * 2));
+            inputDataPtr += m_lengthIndicator - m_transportIdFlag * 2;
         }
         else
         {  /* no end user address field */ }
@@ -92,39 +92,39 @@ MSCDataGroup::MSCDataGroup(const QByteArray &dataGroup)
     // inputDataPtr -> beginning of MSC data group data field
     int dataFieldSize = dataGroup.size() - (inputDataPtr - (const uint8_t *) dataGroup.constBegin()) - crcFlag * 2;
 
-    dataField = QByteArray((const char *) inputDataPtr,  dataFieldSize);
+    m_dataField = QByteArray((const char *) inputDataPtr,  dataFieldSize);
 
-    valid = true;
+    m_isValid = true;
 }
 
 QByteArray::const_iterator MSCDataGroup::dataFieldConstBegin() const
 {
-    return dataField.constBegin();
+    return m_dataField.constBegin();
 }
 
 uint8_t MSCDataGroup::getType() const
 {
-    return type;
+    return m_type;
 }
 
 uint16_t MSCDataGroup::getSegmentNum() const
 {
-    return segmentNum;
+    return m_segmentNum;
 }
 
 uint16_t MSCDataGroup::getTransportId() const
 {
-    return transportId;
+    return m_transportId;
 }
 
 bool MSCDataGroup::getLastFlag() const
 {
-    return lastFlag;
+    return m_lastFlag;
 }
 
 bool MSCDataGroup::isValid() const
 {
-    return valid;
+    return m_isValid;
 }
 
 bool MSCDataGroup::crc16check(const QByteArray & data)

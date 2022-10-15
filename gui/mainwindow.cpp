@@ -161,7 +161,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_muteLabel->setTooltip("Unmute audio", true);
     m_muteLabel->setChecked(false);
 
-#if !(defined HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
+#if (!HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     m_volumeSlider = new QSlider(Qt::Horizontal, this);
     m_volumeSlider->setMinimum(0);
     m_volumeSlider->setMaximum(100);
@@ -201,7 +201,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     QGridLayout * layout = new QGridLayout(widget);
     layout->addWidget(m_timeBasicQualWidget, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
     layout->addWidget(m_signalQualityWidget, 0, 1, Qt::AlignVCenter | Qt::AlignRight);
-#if !(defined HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
+#if (!HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     layout->addWidget(volumeWidget, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
 #else
     layout->addWidget(muteLabel, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
@@ -307,14 +307,14 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_audioDecoderThread->start();
 
     m_audioOutput = new AudioOutput(&audioBuffer);
-#if (!defined HAVE_PORTAUDIO)
-    audioOutThr = new QThread(this);
-    audioOutThr->setObjectName("audioOutThr");
-    audioOutput->moveToThread(audioOutThr);
-    connect(audioOutThr, &QThread::finished, audioOutput, &QObject::deleteLater);
-    audioOutThr->start();
+#if (!HAVE_PORTAUDIO)
+    m_audioOutputThread = new QThread(this);
+    m_audioOutputThread->setObjectName("audioOutThr");
+    m_audioOutputThread->moveToThread(m_audioOutputThread);
+    connect(m_audioOutputThread, &QThread::finished, m_audioOutput, &QObject::deleteLater);
+    m_audioOutputThread->start();
 #endif
-#if (!defined HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
+#if (!HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     connect(m_volumeSlider, &QSlider::valueChanged, m_audioOutput, &AudioOutput::setVolume, Qt::QueuedConnection);
 #endif
 
@@ -438,12 +438,12 @@ MainWindow::~MainWindow()
     m_audioDecoderThread->wait();
     delete m_audioDecoderThread;
 
-#if (defined HAVE_PORTAUDIO)
+#if HAVE_PORTAUDIO
     delete m_audioOutput;
 #else
-    audioOutThr->quit();  // this deletes audiodecoder
-    audioOutThr->wait();
-    delete audioOutThr;
+    m_audioOutputThread->quit();  // this deletes audiodecoder
+    m_audioOutputThread->wait();
+    delete m_audioOutputThread;
 #endif
 
     delete m_dlDecoder;
@@ -1535,7 +1535,7 @@ void MainWindow::loadSettings()
     restoreGeometry(settings->value("windowGeometry").toByteArray());
     m_expertMode = settings->value("ExpertMode").toBool();
     setExpertMode(m_expertMode);
-#if (!defined HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
+#if (!HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     m_volumeSlider->setValue(settings->value("volume", 100).toInt());
 #endif
 
@@ -1648,7 +1648,7 @@ void MainWindow::saveSettings()
     const SetupDialog::Settings s = m_setupDialog->settings();
     settings->setValue("inputDeviceId", int(s.inputDevice));
     settings->setValue("dumpPath", m_ensembleInfoDialog->getDumpPath());
-#if (!defined HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
+#if (!HAVE_PORTAUDIO) || (AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA)
     settings->setValue("volume", m_volumeSlider->value());
 #else
     settings->setValue("volume", 100);
@@ -1911,7 +1911,7 @@ void MainWindow::bandScan()
     connect(dialog, &BandScanDialog::tuneChannel, this, &MainWindow::onTuneChannel);
     connect(m_radioControl, &RadioControl::syncStatus, dialog, &BandScanDialog::onSyncStatus, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleInformation, dialog, &BandScanDialog::onEnsembleFound, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::tuneDone, dialog, &BandScanDialog::tuneFinished, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::tuneDone, dialog, &BandScanDialog::onTuneDone, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleComplete, dialog, &BandScanDialog::onEnsembleComplete, Qt::QueuedConnection);
     connect(m_serviceList, &ServiceList::serviceAdded, dialog, &BandScanDialog::onServiceFound);
     connect(dialog, &BandScanDialog::scanStarts, this, &MainWindow::clearServiceList);

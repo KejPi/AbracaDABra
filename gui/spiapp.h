@@ -30,13 +30,13 @@ public:
     void stop() override;
     void restart() override;
 private:
-    MOTDecoder * decoder;
+    MOTDecoder * m_decoder;
 
     void parseServiceInfo(const MOTObject & motObj);
     uint32_t parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize);
     const uint8_t * parseAttributes(const uint8_t * attrPtr, uint8_t tag, int maxSize);
 
-    QHash<uint8_t, QString> tokenTable;
+    QHash<uint8_t, QString> m_tokenTable;
 };
 
 namespace SPIElement

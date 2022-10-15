@@ -11,7 +11,6 @@
 #include <QThread>
 
 #include "dabtables.h"
-#include "rawfileinput.h"
 #include "dabsdr.h"
 
 
@@ -36,34 +35,36 @@ enum class DabSyncLevel
     FullSync = 2,
 };
 
-class DabSId {
+class DabSId
+{
 public:
-    DabSId() : eccsid(0) {};
+    DabSId() : m_eccsid(0) {};
     DabSId(uint32_t sid, uint8_t ensEcc = 0) { set(sid, ensEcc); }
-    bool isProgServiceId() const { return 0 == (eccsid & 0xFF000000); }
-    uint32_t value() const { return eccsid; }
-    uint16_t progSId() const { return uint16_t(eccsid); }
-    uint8_t ecc() const { return uint8_t(eccsid >> 16);}
+    bool isProgServiceId() const { return 0 == (m_eccsid & 0xFF000000); }
+    uint32_t value() const { return m_eccsid; }
+    uint16_t progSId() const { return uint16_t(m_eccsid); }
+    uint8_t ecc() const { return uint8_t(m_eccsid >> 16);}
     void set(uint32_t sid, uint8_t ensEcc = 0)
     {
         if (0 == (sid & 0xFF000000))
         {   // programme service ID
             uint8_t ecc = (sid >> 16);
             if (0 == ecc) { ecc = ensEcc; }
-            eccsid = (ecc << 16) | (sid & 0x0000FFFF);
+            m_eccsid = (ecc << 16) | (sid & 0x0000FFFF);
         }
         else
         {   // data service ID
-            eccsid = sid;
+            m_eccsid = sid;
         }
     }
-    uint32_t countryServiceRef() const { return (isProgServiceId() ? (eccsid & 0x0000FFFF) : (eccsid & 0x00FFFFFF));  }
-    bool isValid() const { return eccsid != 0; }
+    uint32_t countryServiceRef() const { return (isProgServiceId() ? (m_eccsid & 0x0000FFFF) : (m_eccsid & 0x00FFFFFF));  }
+    bool isValid() const { return m_eccsid != 0; }
 private:
-    uint32_t eccsid;
+    uint32_t m_eccsid;
 };
 
-struct DabProtection {
+struct DabProtection
+{
     DabProtectionLevel level;
     union {
         struct {
@@ -77,7 +78,8 @@ struct DabProtection {
     bool isEEP() const { return level > DabProtectionLevel::UEP_MAX; }
 };
 
-struct DabPTy {
+struct DabPTy
+{
     uint8_t s;  // static
     uint8_t d;  // dynamic
 };
@@ -237,7 +239,7 @@ public:
     void tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS);
     void getEnsembleConfiguration();
     void startUserApplication(DabUserApplicationType uaType, bool start);
-    uint32_t getEnsembleUEID() const { return ensemble.ueid; }
+    uint32_t getEnsembleUEID() const { return m_ensemble.ueid; }
 
 signals:
     void dabEvent(RadioControlEvent * pEvent);
@@ -263,26 +265,26 @@ signals:
 private:
     static const uint8_t EEPCoderate[];
 
-    dabsdrHandle_t dabsdrHandle;
-    dabsdrSyncLevel_t sync;
-    bool autoNotificationEna = false;
-    uint32_t frequency;
+    dabsdrHandle_t m_dabsdrHandle;
+    dabsdrSyncLevel_t m_syncLevel;
+    bool m_enaAutoNotification = false;
+    uint32_t m_frequency;
     struct {
         uint32_t SId;
         uint8_t SCIdS;
-    } serviceRequest;
+    } m_serviceRequest;
     struct {
         uint32_t SId;
         uint8_t SCIdS;
-    } currentService;
+    } m_currentService;
 
     // this is a counter of requests to check when the ensemble information is complete
-    int requestsPending = 0;
+    int m_numRequestsPending = 0;
 
-    bool reconfigurationOngoing = false;
+    bool m_isReconfigurationOngoing = false;
 
-    RadioControlEnsemble ensemble;
-    RadioControlServiceList serviceList;
+    RadioControlEnsemble m_ensemble;
+    RadioControlServiceList m_serviceList;
 
     typedef RadioControlServiceCompList::iterator serviceComponentIterator;
     typedef RadioControlServiceCompList::const_iterator serviceComponentConstIterator;
@@ -297,25 +299,28 @@ private:
     QString ensembleConfigurationString() const;
     void clearEnsemble();
 
+    // wrapper functions for dabsdr API
+    void dabTune(uint32_t freq) { dabsdrRequest_Tune(m_dabsdrHandle, freq); }
+    void dabGetEnsembleInfo() { dabsdrRequest_GetEnsemble(m_dabsdrHandle); }
+    void dabGetServiceList() { dabsdrRequest_GetServiceList(m_dabsdrHandle); }
+    void dabGetServiceComponent(uint32_t SId) { dabsdrRequest_GetServiceComponents(m_dabsdrHandle, SId); }
+    void dabGetUserApps(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_GetUserAppList(m_dabsdrHandle, SId, SCIdS); }
+    void dabEnableAutoNotification() { dabsdrRequest_SetPeriodicNotify(m_dabsdrHandle, RADIO_CONTROL_NOTIFICATION_PERIOD, 0); }
+    void dabServiceSelection(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_ServiceSelection(m_dabsdrHandle, SId, SCIdS); }
+    void dabServiceStop(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_ServiceStop(m_dabsdrHandle, SId, SCIdS); }
+    void dabXPadAppStart(uint8_t appType, bool start) { dabsdrRequest_XPadAppStart(m_dabsdrHandle, appType, start); }
+
+    // wrappers unsed in callback functions (emit requires class instance)
     void emit_dabEvent(RadioControlEvent * pEvent) { emit dabEvent(pEvent); }
     void emit_audioData(QByteArray * pData) { emit audioData(pData); }
 
-    void dabTune(uint32_t freq) { dabsdrRequest_Tune(dabsdrHandle, freq); }
-    void dabGetEnsembleInfo() { dabsdrRequest_GetEnsemble(dabsdrHandle); }
-    void dabGetServiceList() { dabsdrRequest_GetServiceList(dabsdrHandle); }
-    void dabGetServiceComponent(uint32_t SId) { dabsdrRequest_GetServiceComponents(dabsdrHandle, SId); }
-    void dabGetUserApps(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_GetUserAppList(dabsdrHandle, SId, SCIdS); }
-    void dabEnableAutoNotification() { dabsdrRequest_SetPeriodicNotify(dabsdrHandle, RADIO_CONTROL_NOTIFICATION_PERIOD, 0); }
-    void dabServiceSelection(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_ServiceSelection(dabsdrHandle, SId, SCIdS); }
-    void dabServiceStop(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_ServiceStop(dabsdrHandle, SId, SCIdS); }
-    void dabXPadAppStart(uint8_t appType, bool start) { dabsdrRequest_XPadAppStart(dabsdrHandle, appType, start); }
-
-    friend void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx);
-    friend void dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx);
-    friend void dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx);
-    friend void audioDataCb(dabsdrAudioCBData_t * p, void * ctx);
+    // static methods used as dabsdr library callbacks
+    static void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx);
+    static void dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx);
+    static void dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx);
+    static void audioDataCb(dabsdrAudioCBData_t * p, void * ctx);
 private slots:
-    void eventFromDab(RadioControlEvent * pEvent);
+    void onDabEvent(RadioControlEvent * pEvent);
 };
 
 

@@ -7,8 +7,6 @@
 #include "ensembleinfodialog.h"
 #include "ui_ensembleinfodialog.h"
 
-#include "inputdevice.h"   // needed for AGC gain
-
 EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::EnsembleInfoDialog)
@@ -17,6 +15,8 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
 
     // remove question mark from titlebar
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
+    connect(ui->dumpButton, &QPushButton::clicked, this, &EnsembleInfoDialog::onDumpButtonClicked);
 
     dumpPath = QDir::homePath();
 
@@ -123,15 +123,14 @@ void EnsembleInfoDialog::enableDumpToFile(bool ena)
     showDumpingStat(false);
 }
 
-void EnsembleInfoDialog::on_dumpButton_clicked()
+void EnsembleInfoDialog::onDumpButtonClicked()
 {
     ui->dumpButton->setEnabled(false);
     if (!isDumping)
     {
-        QString f = QString("%1/%2_%3.raw")
-                .arg(dumpPath)
-                .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"))
-                .arg(DabTables::channelList.value(frequency));
+        QString f = QString("%1/%2_%3.raw").arg(dumpPath,
+                QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"),
+                DabTables::channelList.value(frequency));
 
         QString fileName = QFileDialog::getSaveFileName(this,
                                                         tr("Dump IQ stream"),

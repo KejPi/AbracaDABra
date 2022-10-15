@@ -99,9 +99,9 @@ signals:
 
     void catSlsAvailable(bool isAvailable);
 private:
-    MOTDecoder * decoder;
-    QHash<QString, Slide> cache;
-    QHash<int, Category> catSls;
+    MOTDecoder * m_decoder;
+    QHash<QString, Slide> m_cache;
+    QHash<int, Category> m_catSls;
 
     void addSlideToCategory(const Slide & slide);
     void removeSlideFromCategory(const Slide & slide);
@@ -120,16 +120,16 @@ public:
     QString getNextSlide(bool moveForward = true);
     int getCurrentIndex() const;
 private:
-    struct slideItem
+    struct SlideItem
     {
         int id;
         QString contentName;
     };
 
-    int currentSlide;
-    int currentSlideIdx;
-    QString title;
-    QList<slideItem> slidesList;
+    int m_currentSlide;
+    int m_currentSlideIdx;
+    QString m_title;
+    QList<SlideItem> m_slidesList;
 };
 
 #endif // SLIDESHOWAPP_H

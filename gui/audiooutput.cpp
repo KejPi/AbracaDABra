@@ -7,7 +7,7 @@
 
 audioFifo_t audioBuffer;
 
-#ifdef HAVE_PORTAUDIO
+#if HAVE_PORTAUDIO
 
 AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent)
 {
@@ -23,8 +23,8 @@ AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent
     }
 
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
-    rawOut = fopen("audio.raw", "wb");
-    if (!rawOut)
+    m_rawOut = fopen("audio.raw", "wb");
+    if (!m_rawOut)
     {
         qDebug("Unable to open file: audio.raw");
     }
@@ -51,9 +51,9 @@ AudioOutput::~AudioOutput()
     }
 
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
-    if (rawOut)
+    if (m_rawOut)
     {
-        fclose(rawOut);
+        fclose(m_rawOut);
     }
 #endif
 }
@@ -156,9 +156,9 @@ int AudioOutput::portAudioCb( const void *inputBuffer, void *outputBuffer, unsig
 
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
     int ret = static_cast<AudioOutput*>(ctx)->portAudioCbPrivate(outputBuffer, nBufferFrames);
-    if (static_cast<AudioOutput*>(ctx)->rawOut)
+    if (static_cast<AudioOutput*>(ctx)->m_rawOut)
     {
-        fwrite(outputBuffer, sizeof(int16_t), nBufferFrames * static_cast<AudioOutput*>(ctx)->numChannels, static_cast<AudioOutput*>(ctx)->rawOut);
+        fwrite(outputBuffer, sizeof(int16_t), nBufferFrames * static_cast<AudioOutput*>(ctx)->m_numChannels, static_cast<AudioOutput*>(ctx)->m_rawOut);
     }
     return ret;
 #else
@@ -610,7 +610,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     return paContinue;
 }
 
-#else // !def HAVE_PORTAUDIO
+#else // HAVE_PORTAUDIO
 
 AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent)
 {
@@ -1007,4 +1007,4 @@ void AudioIODevice::mute(bool on)
     m_muteFlag = on;
 }
 
-#endif // def HAVE_PORTAUDIO
+#endif // HAVE_PORTAUDIO

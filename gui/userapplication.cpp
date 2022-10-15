@@ -1,11 +1,10 @@
 #include <QDebug>
 
 #include "userapplication.h"
-#include "dabtables.h"
 
 UserApplication::UserApplication(RadioControl * radioControlPtr, QObject *parent) :
-    QObject(parent), radioControl(radioControlPtr)
+    QObject(parent), m_radioControl(radioControlPtr)
 {    
-    isRunning = false;
+    m_isRunning = false;
 }
 

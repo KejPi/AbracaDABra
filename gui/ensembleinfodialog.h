@@ -55,8 +55,7 @@ private:
     quint32 crcCounter;
     quint32 crcErrorCounter;
 
-private slots:
-    void on_dumpButton_clicked();
+    void onDumpButtonClicked();
     void fibFrameContextMenu(const QPoint &pos);
     void clearServiceInfo();
     void clearSignalInfo();

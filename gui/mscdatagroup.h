@@ -16,21 +16,21 @@ public:
     bool isValid() const;
 
 private:
-    bool valid = false;
-    bool extensionFlag;
-    bool segmentFlag;
-    bool userAccessFlag;
-    uint8_t type;
-    uint8_t continuityIdx;
-    uint8_t repetitionIdx;
-    uint16_t extensionField;
-    bool lastFlag;
-    uint16_t segmentNum;
-    bool transportIdFlag;
-    uint8_t lengthIndicator;
-    uint16_t transportId;
-    QByteArray endUserAddrField;
-    QByteArray dataField;
+    bool m_isValid = false;
+    bool m_extensionFlag;
+    bool m_segmentFlag;
+    bool m_userAccessFlag;
+    uint8_t m_type;
+    uint8_t m_continuityIdx;
+    uint8_t m_repetitionIdx;
+    uint16_t m_extensionField;
+    bool m_lastFlag;
+    uint16_t m_segmentNum;
+    bool m_transportIdFlag;
+    uint8_t m_lengthIndicator;
+    uint16_t m_transportId;
+    QByteArray m_endUserAddrField;
+    QByteArray m_dataField;
 
     bool crc16check(const QByteArray &data);
 };

@@ -36,14 +36,4 @@ private:
     uint64_t calcEnsembleId(uint32_t freq, uint32_t ueid) { return (uint64_t(freq)<<32) | ueid; }
 };
 
-//inline bool operator==(const ServiceListId &e1, const ServiceListId &e2)
-//{
-//    return e1.value() == e2.value();
-//}
-
-//inline uint qHash(const ServiceListId &key, uint seed)
-//{
-//    return key.value();
-//}
-
 #endif // SERVICELISTID_H

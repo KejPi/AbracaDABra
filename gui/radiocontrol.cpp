@@ -3,9 +3,9 @@
 #include <QTime>
 
 #include <QDebug>
-
+#include <QIODevice>
 #include "radiocontrol.h"
-#include "dldecoder.h"
+#include "inputdevice.h"
 
 const uint8_t RadioControl::EEPCoderate[] =
 { // ETSI EN 300 401 V2.1.1 [6.2.1 Basic sub-channel organization] table 9 & 10
@@ -21,37 +21,37 @@ void audioDataCb(dabsdrAudioCBData_t * p, void * ctx);
 
 RadioControl::RadioControl(QObject *parent) : QObject(parent)
 {
-    dabsdrHandle = NULL;
-    frequency = 0;
-    serviceList.clear();
-    serviceRequest.SId = serviceRequest.SCIdS = 0;
+    m_dabsdrHandle = nullptr;
+    m_frequency = 0;
+    m_serviceList.clear();
+    m_serviceRequest.SId = m_serviceRequest.SCIdS = 0;
 
-    connect(this, &RadioControl::dabEvent, this, &RadioControl::eventFromDab, Qt::QueuedConnection);
+    connect(this, &RadioControl::dabEvent, this, &RadioControl::onDabEvent, Qt::QueuedConnection);
 }
 
 RadioControl::~RadioControl()
 {   // this cancels dabsdr thread
-    dabsdrDeinit(&dabsdrHandle);
+    dabsdrDeinit(&m_dabsdrHandle);
 }
 
 // returns false if not successfull
 bool RadioControl::init()
 {
-    if (EXIT_SUCCESS == dabsdrInit(&dabsdrHandle))
+    if (EXIT_SUCCESS == dabsdrInit(&m_dabsdrHandle))
     {
-        dabsdrRegisterInputFcn(dabsdrHandle, getSamples);
-        dabsdrRegisterDummyInputFcn(dabsdrHandle, skipSamples);
-        dabsdrRegisterNotificationCb(dabsdrHandle, dabNotificationCb, (void *) this);
-        dabsdrRegisterDynamicLabelCb(dabsdrHandle, dynamicLabelCb, (void*) this);
-        dabsdrRegisterDataGroupCb(dabsdrHandle, dataGroupCb, (void*) this);
-        dabsdrRegisterAudioCb(dabsdrHandle, audioDataCb, this);
+        dabsdrRegisterInputFcn(m_dabsdrHandle, getSamples);
+        dabsdrRegisterDummyInputFcn(m_dabsdrHandle, skipSamples);
+        dabsdrRegisterNotificationCb(m_dabsdrHandle, dabNotificationCb, (void *) this);
+        dabsdrRegisterDynamicLabelCb(m_dabsdrHandle, dynamicLabelCb, (void*) this);
+        dabsdrRegisterDataGroupCb(m_dabsdrHandle, dataGroupCb, (void*) this);
+        dabsdrRegisterAudioCb(m_dabsdrHandle, audioDataCb, this);
         // this starts dab processing thread and retunrs
-        dabsdr(dabsdrHandle);
+        dabsdr(m_dabsdrHandle);
     }
     else
     {
         qDebug() << "DAB processing init failed";
-        dabsdrHandle = NULL;
+        m_dabsdrHandle = nullptr;
 
         return false;
     }
@@ -59,7 +59,7 @@ bool RadioControl::init()
     return true;
 }
 
-void RadioControl::eventFromDab(RadioControlEvent * pEvent)
+void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 {
     //qDebug() << Q_FUNC_INFO << QThread::currentThreadId() << pEvent->type;
     switch (pEvent->type)
@@ -75,12 +75,12 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         switch (flags)
         {
         case DABSDR_RESET_INIT:
-            serviceList.clear();
+            m_serviceList.clear();
             clearEnsemble();
             break;
         case DABSDR_RESET_NEW_EID:
-            emit ensembleRemoved(ensemble);
-            start(frequency);
+            emit ensembleRemoved(m_ensemble);
+            start(m_frequency);
 
             break;
         }
@@ -93,7 +93,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         qDebug("Sync = %d", s);
 #endif
 
-        if ((DABSDR_SYNC_LEVEL_FIC == s) && (RADIO_CONTROL_UEID_INVALID == ensemble.ueid))
+        if ((DABSDR_SYNC_LEVEL_FIC == s) && (RADIO_CONTROL_UEID_INVALID == m_ensemble.ueid))
         { // ask for ensemble info if not available
             dabGetEnsembleInfo();
         }
@@ -108,18 +108,18 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 #if RADIO_CONTROL_VERBOSE > 1
             qDebug() << "Tune success" << freq;
 #endif
-            if ((freq != frequency) || (0 == frequency))
+            if ((freq != m_frequency) || (0 == m_frequency))
             {   // in first step, DAB is tuned to 0 that is != desired frequency
                 // or if we want to tune to 0 by purpose (tgo to IDLE)
                 // this tunes input device to desired frequency
-                emit tuneInputDevice(frequency);
+                emit tuneInputDevice(m_frequency);
             }
             else
             {   // tune is finished , notify HMI
                 emit tuneDone(freq);
 
                 // this is to request autontf when EID changes
-                autoNotificationEna = false;
+                m_enaAutoNotification = false;
             }
         }
         else
@@ -144,14 +144,14 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 #endif
         {
             //serviceList.clear();
-            ensemble.ueid = pInfo->ueid;
-            ensemble.frequency = pInfo->frequency;
-            ensemble.LTO = pInfo->LTO;
-            ensemble.intTable = pInfo->intTable;
-            ensemble.alarm = pInfo->alarm;
-            ensemble.label = DabTables::convertToQString(pInfo->label.str, pInfo->label.charset).trimmed();
-            ensemble.labelShort = toShortLabel(ensemble.label, pInfo->label.charField).trimmed();
-            emit ensembleInformation(ensemble);
+            m_ensemble.ueid = pInfo->ueid;
+            m_ensemble.frequency = pInfo->frequency;
+            m_ensemble.LTO = pInfo->LTO;
+            m_ensemble.intTable = pInfo->intTable;
+            m_ensemble.alarm = pInfo->alarm;
+            m_ensemble.label = DabTables::convertToQString(pInfo->label.str, pInfo->label.charset).trimmed();
+            m_ensemble.labelShort = toShortLabel(m_ensemble.label, pInfo->label.charField).trimmed();
+            emit ensembleInformation(m_ensemble);
 
             // request service list            
             // ETSI EN 300 401 V2.1.1 (2017-01) [6.1]
@@ -164,7 +164,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 
         delete (dabsdrNtfEnsemble_t *) pEvent->pData;
 
-        if ((RADIO_CONTROL_UEID_INVALID == ensemble.ueid) && (DABSDR_SYNC_LEVEL_FIC == sync))
+        if ((RADIO_CONTROL_UEID_INVALID == m_ensemble.ueid) && (DABSDR_SYNC_LEVEL_FIC == m_syncLevel))
         {   // valid ensemble sill not received
             // wait some time and send new request
             QTimer::singleShot(200, this, &RadioControl::dabGetEnsembleInfo);
@@ -176,11 +176,11 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 #if RADIO_CONTROL_VERBOSE
         qDebug() << "RadioControlEventType::RECONFIGURATION";
 #endif
-        reconfigurationOngoing = true;
+        m_isReconfigurationOngoing = true;
 
-        emit ensembleReconfiguration(ensemble);
+        emit ensembleReconfiguration(m_ensemble);
 
-        serviceList.clear();
+        m_serviceList.clear();
 
         // request service list
         // ETSI EN 300 401 V2.1.1 (2017-01) [6.1]
@@ -196,21 +196,21 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         QList<dabsdrServiceListItem_t> * pServiceList = reinterpret_cast<QList<dabsdrServiceListItem_t> *>(pEvent->pData);
         if (0 == pServiceList->size())
         {   // no service list received (invalid probably)
-            serviceList.clear();
+            m_serviceList.clear();
 
             // send new request after some timeout
             QTimer::singleShot(100, this, &RadioControl::dabGetServiceList);
         }
         else
         {
-            requestsPending = 0;
+            m_numRequestsPending = 0;
             for (auto const & dabService : *pServiceList)
             {
-                DabSId sid(dabService.sid, ensemble.ecc());
-                serviceConstIterator servIt = serviceList.constFind(sid.value());
-                if (servIt != serviceList.cend())
+                DabSId sid(dabService.sid, m_ensemble.ecc());
+                serviceConstIterator servIt = m_serviceList.constFind(sid.value());
+                if (servIt != m_serviceList.cend())
                 {   // delete existing service
-                    serviceList.erase(servIt);
+                    m_serviceList.erase(servIt);
                 }
                 RadioControlService newService;
                 newService.SId = sid;
@@ -219,8 +219,8 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                 newService.pty.s = dabService.pty.s;
                 newService.pty.d = dabService.pty.d;
                 newService.CAId = dabService.CAId;
-                serviceList.insert(sid.value(), newService);
-                requestsPending++;
+                m_serviceList.insert(sid.value(), newService);
+                m_numRequestsPending++;
                 dabGetServiceComponent(sid.value());
             }
         }
@@ -233,16 +233,16 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         qDebug() << "RadioControlEvent::SERVICE_COMPONENT_LIST";
 #endif
         QList<dabsdrServiceCompListItem_t> * pList = reinterpret_cast<QList<dabsdrServiceCompListItem_t> *>(pEvent->pData);
-        if (!pList->isEmpty() && ensemble.isValid())
+        if (!pList->isEmpty() && m_ensemble.isValid())
         {   // all service components belong to the same SId, reading sid from the first            
-            DabSId sid(pList->at(0).SId, ensemble.ecc());
+            DabSId sid(pList->at(0).SId, m_ensemble.ecc());
 #if RADIO_CONTROL_VERBOSE
             qDebug("RadioControlEvent::SERVICE_COMPONENT_LIST %8.8X", sid.value());
 #endif
 
             // find service ID
-            serviceIterator serviceIt = serviceList.find(sid.value());
-            if (serviceIt != serviceList.end())
+            serviceIterator serviceIt = m_serviceList.find(sid.value());
+            if (serviceIt != m_serviceList.end())
             {   // SId found
                 serviceIt->serviceComponents.clear();
 
@@ -321,9 +321,9 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                     }
                     serviceIt->serviceComponents.insert(newServiceComp.SCIdS, newServiceComp);
 
-                    if (reconfigurationOngoing)
+                    if (m_isReconfigurationOngoing)
                     {
-                        if (((currentService.SId == serviceIt->SId.value()) && (currentService.SCIdS == newServiceComp.SCIdS)
+                        if (((m_currentService.SId == serviceIt->SId.value()) && (m_currentService.SCIdS == newServiceComp.SCIdS)
                              && (newServiceComp.isAudioService())))
                         {   // inform HMI about possible new service configuration
                             emit audioServiceReconfiguration(newServiceComp);
@@ -331,14 +331,14 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                     }
                     else
                     {
-                        if ((serviceRequest.SId == serviceIt->SId.value()) && (serviceRequest.SCIdS == newServiceComp.SCIdS))
+                        if ((m_serviceRequest.SId == serviceIt->SId.value()) && (m_serviceRequest.SCIdS == newServiceComp.SCIdS))
                         {
-                            dabServiceSelection(serviceRequest.SId, serviceRequest.SCIdS);
-                            serviceRequest.SId = 0;    // clear request
+                            dabServiceSelection(m_serviceRequest.SId, m_serviceRequest.SCIdS);
+                            m_serviceRequest.SId = 0;    // clear request
                         }
                     }
 
-                    emit serviceListEntry(ensemble, newServiceComp);
+                    emit serviceListEntry(m_ensemble, newServiceComp);
                 }
                 if (requestUpdate)
                 {
@@ -347,11 +347,11 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                 }
                 else
                 {  // service list item information is complete
-                   requestsPending--;
+                   m_numRequestsPending--;
                    for (auto & serviceComp : serviceIt->serviceComponents)
                    {
                        serviceComp.userApps.clear();
-                       requestsPending++;
+                       m_numRequestsPending++;
                        dabGetUserApps(serviceIt->SId.value(), serviceComp.SCIdS);
                    }
                 }
@@ -370,13 +370,13 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         QList<dabsdrUserAppListItem_t> * pList = reinterpret_cast<QList<dabsdrUserAppListItem_t> *>(pEvent->pData);
         if (!pList->isEmpty())
         {   // all user apps belong to the same SId, reading sid from the first
-            DabSId sid(pList->at(0).SId, ensemble.ecc());
+            DabSId sid(pList->at(0).SId, m_ensemble.ecc());
 
             //qDebug("RadioControlEventType::USER_APP_LIST SID %6.6X : %d requestPending = %d", pList->at(0).SId, pList->at(0).SCIdS, requestsPending);
 
             // find service ID
-            serviceIterator serviceIt = serviceList.find(sid.value());
-            if (serviceIt != serviceList.end())
+            serviceIterator serviceIt = m_serviceList.find(sid.value());
+            if (serviceIt != m_serviceList.end())
             {   // SId found
                 // all user apps belong to the same SId+SCIdS, reading SCIdS from the first
                 serviceComponentIterator scIt = serviceIt->serviceComponents.find(pList->at(0).SCIdS);
@@ -418,20 +418,20 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             // qDebug() << "RadioControlEventType::USER_APP_LIST No user apps";
         }
 
-        if (--requestsPending == 0)
+        if (--m_numRequestsPending == 0)
         {
             // enable SLS automatically - if available
             startUserApplication(DabUserApplicationType::SlideShow, true);
 
             qDebug() << "=== MCI complete";
             emit ensembleConfiguration(ensembleConfigurationString());
-            if (reconfigurationOngoing)
+            if (m_isReconfigurationOngoing)
             {
-                reconfigurationOngoing = false;
+                m_isReconfigurationOngoing = false;
 
                 // find current service selection
             }
-            emit ensembleComplete(ensemble);
+            emit ensembleComplete(m_ensemble);
         }
 
         delete pList;
@@ -445,8 +445,8 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
 #if RADIO_CONTROL_VERBOSE
             qDebug() << "RadioControlEvent::SERVICE_SELECTION success";
 #endif
-            serviceConstIterator serviceIt = serviceList.constFind(pData->SId);
-            if (serviceIt != serviceList.cend())
+            serviceConstIterator serviceIt = m_serviceList.constFind(pData->SId);
+            if (serviceIt != m_serviceList.cend())
             {   // service is in the list
                 serviceComponentConstIterator scIt = serviceIt->serviceComponents.constFind(pData->SCIdS);
                 if (scIt != serviceIt->serviceComponents.end())
@@ -454,8 +454,8 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
                     if (!scIt->autoEnabled)
                     {   // if not data service that is autoimatically enabled
                         // store current service
-                        currentService.SId = pData->SId;
-                        currentService.SCIdS = pData->SCIdS;
+                        m_currentService.SId = pData->SId;
+                        m_currentService.SCIdS = pData->SCIdS;
                         emit audioServiceSelection(*scIt);
 
                         // enable SLS automatically - if available
@@ -475,16 +475,16 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
         }        
         else
         {
-            if (reconfigurationOngoing)
+            if (m_isReconfigurationOngoing)
             {
-                if ((currentService.SId == pData->SId) && (currentService.SCIdS == pData->SCIdS))
+                if ((m_currentService.SId == pData->SId) && (m_currentService.SCIdS == pData->SCIdS))
                 {   // current service is no longer available -> playback will be stopped => emit dummy service component
                     emit audioServiceReconfiguration(RadioControlServiceComponent());
                 }
             }
 
             qDebug() << "RadioControlEvent::SERVICE_SELECTION error" << pEvent->status;
-            currentService.SId = 0;
+            m_currentService.SId = 0;
         }
         delete pData;
     }
@@ -499,8 +499,8 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             qDebug() << "RadioControlEvent::SERVICE_STOP success";
 #endif
 
-            serviceIterator serviceIt = serviceList.find(pData->SId);
-            if (serviceIt != serviceList.end())
+            serviceIterator serviceIt = m_serviceList.find(pData->SId);
+            if (serviceIt != m_serviceList.end())
             {   // service is in the list
                 serviceComponentIterator scIt = serviceIt->serviceComponents.find(pData->SCIdS);
                 if (scIt != serviceIt->serviceComponents.end())
@@ -570,7 +570,7 @@ void RadioControl::eventFromDab(RadioControlEvent * pEvent)
             int32_t sec = pData->secMsec >> 10;
             int32_t msec = pData->secMsec & 0x3FF;
 
-            QDateTime dateAndTime = QDateTime(QDate(Y, M, D), QTime(h, minute, sec, msec), Qt::UTC).toOffsetFromUtc(60*(ensemble.LTO * 30));
+            QDateTime dateAndTime = QDateTime(QDate(Y, M, D), QTime(h, minute, sec, msec), Qt::UTC).toOffsetFromUtc(60*(m_ensemble.LTO * 30));
 
             //qDebug() << dateAndTime;
 
@@ -632,7 +632,7 @@ void RadioControl::exit()
 #if RADIO_CONTROL_VERBOSE
     qDebug() << Q_FUNC_INFO;
 #endif
-    dabsdrRequest_Exit(dabsdrHandle);
+    dabsdrRequest_Exit(m_dabsdrHandle);
 }
 
 void RadioControl::start(uint32_t freq)
@@ -640,11 +640,11 @@ void RadioControl::start(uint32_t freq)
     if (freq)
     {   // when input device tuned, freq is passed to be set in SDR
         // when frequency is 0 then we are done (input device is in idle)
-        autoNotificationEna = false;
-        frequency = freq;
-        sync = DABSDR_SYNC_LEVEL_NO_SYNC;
+        m_enaAutoNotification = false;
+        m_frequency = freq;
+        m_syncLevel = DABSDR_SYNC_LEVEL_NO_SYNC;
         emit syncStatus(uint8_t(DabSyncLevel::NoSync));
-        serviceList.clear();
+        m_serviceList.clear();
         clearEnsemble();
         dabTune(freq);
     }
@@ -658,28 +658,28 @@ void RadioControl::start(uint32_t freq)
 void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
 {
     //qDebug() << Q_FUNC_INFO << freq << frequency << SId << SCIdS;
-    if (freq == frequency)
+    if (freq == m_frequency)
     {
         if (SId)
         {
-            if (serviceRequest.SId != 0)
+            if (m_serviceRequest.SId != 0)
             {   // this can happen when service is selected while still acquiring ensemble infomation
                 // ignoring the request
                 return;
             }
 
             // clear request
-            serviceRequest.SId = 0;
+            m_serviceRequest.SId = 0;
 
             // remove automatically enabled data services
-            serviceConstIterator serviceIt = serviceList.constFind(currentService.SId);
-            if (serviceIt != serviceList.cend())
+            serviceConstIterator serviceIt = m_serviceList.constFind(m_currentService.SId);
+            if (serviceIt != m_serviceList.cend())
             {   // service is in the list
                 for (auto & sc : serviceIt->serviceComponents)
                 {
                     if (sc.autoEnabled)
                     {   // request stop
-                        dabServiceStop(currentService.SId, sc.SCIdS);
+                        dabServiceStop(m_currentService.SId, sc.SCIdS);
                     }
                 }
             }
@@ -687,23 +687,23 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
             { /* this should not happen */ }
 
             // reset current service
-            currentService.SId = 0;
+            m_currentService.SId = 0;
 
             dabServiceSelection(SId, SCIdS);
         }
     }
     else
     {   // service selection will be done after tune
-        autoNotificationEna = false;
-        frequency = freq;
+        m_enaAutoNotification = false;
+        m_frequency = freq;
 
         // reset current service - tuning resets dab process
-        currentService.SId = 0;
+        m_currentService.SId = 0;
 
-        serviceRequest.SId = SId;
-        serviceRequest.SCIdS = SCIdS;
+        m_serviceRequest.SId = SId;
+        m_serviceRequest.SCIdS = SCIdS;
 
-        serviceList.clear();
+        m_serviceList.clear();
 
         dabTune(0);
      }
@@ -711,10 +711,10 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
 
 void RadioControl::updateSyncLevel(dabsdrSyncLevel_t s)
 {   
-    if (s != sync)
+    if (s != m_syncLevel)
     {   // new sync level => emit signal
-        sync = s;
-        switch (sync)
+        m_syncLevel = s;
+        switch (m_syncLevel)
         {
         case DABSDR_SYNC_LEVEL_NO_SYNC:
             emit syncStatus(uint8_t(DabSyncLevel::NoSync));
@@ -728,21 +728,21 @@ void RadioControl::updateSyncLevel(dabsdrSyncLevel_t s)
             break;
         }
     }
-    if ((sync > DABSDR_SYNC_LEVEL_NO_SYNC) && (!autoNotificationEna))
+    if ((m_syncLevel > DABSDR_SYNC_LEVEL_NO_SYNC) && (!m_enaAutoNotification))
     {
         // enable auto notifications
         dabEnableAutoNotification();
-        autoNotificationEna = true;
+        m_enaAutoNotification = true;
     }
 }
 
 bool RadioControl::getCurrentAudioServiceComponent(serviceComponentIterator &scIt)
 {
-    for (auto & service : serviceList)
+    for (auto & service : m_serviceList)
     {
-        if (service.SId.value() == currentService.SId)
+        if (service.SId.value() == m_currentService.SId)
         {
-            scIt = service.serviceComponents.find(currentService.SCIdS);
+            scIt = service.serviceComponents.find(m_currentService.SCIdS);
             return (service.serviceComponents.end() != scIt);
         }
     }
@@ -751,11 +751,11 @@ bool RadioControl::getCurrentAudioServiceComponent(serviceComponentIterator &scI
 
 bool RadioControl::cgetCurrentAudioServiceComponent(serviceComponentConstIterator &scIt) const
 {
-    for (const auto & service : serviceList)
+    for (const auto & service : m_serviceList)
     {
-        if (service.SId.value() == currentService.SId)
+        if (service.SId.value() == m_currentService.SId)
         {
-            scIt = service.serviceComponents.constFind(currentService.SCIdS);
+            scIt = service.serviceComponents.constFind(m_currentService.SCIdS);
             return (service.serviceComponents.cend() != scIt);
         }
     }
@@ -782,7 +782,7 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
         }
 
         // not found in XPAD - try secondary data services
-        serviceIterator serviceIt = serviceList.find(currentService.SId);
+        serviceIterator serviceIt = m_serviceList.find(m_currentService.SId);
         for (auto & sc : serviceIt->serviceComponents)
         {
             if (!sc.isAudioService())
@@ -806,7 +806,7 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
 
         // TODO: not found - try ensemble
         // #warning "Debug - remove or make implementation clean"
-        for (auto & service : serviceList)
+        for (auto & service : m_serviceList)
         {
             if (!service.SId.isProgServiceId())
             {   // data service
@@ -837,7 +837,7 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
 
 QString RadioControl::ensembleConfigurationString() const
 {
-    if (0 == serviceList.size())
+    if (0 == m_serviceList.size())
     {
         return QString("");
     }
@@ -848,21 +848,21 @@ QString RadioControl::ensembleConfigurationString() const
     strOut << "<dl>";
     strOut << "<dt>Ensemble:</dt>";
     strOut << QString("<dd>0x%1 <b>%2</b> [ <i>%3</i> ]  ECC = 0x%4, UTC %5 min, INT = %6, alarm announcements = %7</dd>")
-              .arg(QString("%1").arg(ensemble.eid(), 4, 16, QChar('0')).toUpper())
-              .arg(ensemble.label)
-              .arg(ensemble.labelShort)
-              .arg(QString("%1").arg(ensemble.ecc(), 2, 16, QChar('0')).toUpper())
-              .arg(ensemble.LTO*30)
-              .arg(ensemble.intTable)
-              .arg(ensemble.alarm);
+              .arg(QString("%1").arg(m_ensemble.eid(), 4, 16, QChar('0')).toUpper())
+              .arg(m_ensemble.label)
+              .arg(m_ensemble.labelShort)
+              .arg(QString("%1").arg(m_ensemble.ecc(), 2, 16, QChar('0')).toUpper())
+              .arg(m_ensemble.LTO*30)
+              .arg(m_ensemble.intTable)
+              .arg(m_ensemble.alarm);
     strOut << "</dl>";
 
     strOut << "<dl>";
     strOut << "<dt>";
-    strOut << QString("Services (%1):").arg(serviceList.size());
+    strOut << QString("Services (%1):").arg(m_serviceList.size());
     strOut << "</dt>";
 
-    for (auto const & s : serviceList)
+    for (auto const & s : m_serviceList)
     {
         strOut << "<dd>";
 
@@ -1080,10 +1080,10 @@ QString RadioControl::ensembleConfigurationString() const
 
 void RadioControl::clearEnsemble()
 {    
-    ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
-    ensemble.label.clear();
-    ensemble.labelShort.clear();
-    ensemble.frequency = 0;
+    m_ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
+    m_ensemble.label.clear();
+    m_ensemble.labelShort.clear();
+    m_ensemble.frequency = 0;
 
     emit ensembleConfiguration("");
 }
@@ -1103,7 +1103,7 @@ QString RadioControl::toShortLabel(QString & label, uint16_t charField) const
     return out;
 }
 
-void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
+void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
 {
     RadioControl * radioCtrl = static_cast<RadioControl *>(ctx);
     switch (p->nid)
@@ -1161,7 +1161,7 @@ void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         QList<dabsdrServiceListItem_t> *pServiceList = new QList<dabsdrServiceListItem_t>;
         for (int s = 0; s < pInfo->numServices; ++s)
         {
-            pInfo->getServiceListItem(radioCtrl->dabsdrHandle, s, &item);
+            pInfo->getServiceListItem(radioCtrl->m_dabsdrHandle, s, &item);
             pServiceList->append(item);
         }
 
@@ -1182,7 +1182,7 @@ void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
             dabsdrServiceCompListItem_t item;
             for (int s = 0; s < pInfo->numServiceComponents; ++s)
             {
-                pInfo->getServiceComponentListItem(radioCtrl->dabsdrHandle, s, &item);
+                pInfo->getServiceComponentListItem(radioCtrl->m_dabsdrHandle, s, &item);
                 pList->append(item);
             }
 
@@ -1208,7 +1208,7 @@ void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
             dabsdrUserAppListItem_t item;
             for (int s = 0; s < pInfo->numUserApps; ++s)
             {
-                pInfo->getUserAppListItem(radioCtrl->dabsdrHandle, s, &item);
+                pInfo->getUserAppListItem(radioCtrl->m_dabsdrHandle, s, &item);
                 pList->append(item);
             }
 
@@ -1308,7 +1308,7 @@ void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
     }
 }
 
-void dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx)
+void RadioControl::dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx)
 {
     if (0 == p->len)
     {   // do nothing - empty data group
@@ -1326,7 +1326,7 @@ void dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx)
     radioCtrl->emit_dabEvent(pEvent);
 }
 
-void dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx)
+void RadioControl::dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx)
 {
     if (0 == p->dgLen)
     {   // do nothing - empty data group
@@ -1348,7 +1348,7 @@ void dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx)
     radioCtrl->emit_dabEvent(pEvent);        
 }
 
-void audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
+void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
 {
     RadioControl * radioCtrl = static_cast<RadioControl *>(ctx);
 

@@ -30,7 +30,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->inputCombo->setCurrentIndex(-1);  // undefined
 
     ui->fileNameLabel->setText(NO_FILE);
-    rawfilename = "";
+    m_rawfilename = "";
 
     ui->fileFormatCombo->insertItem(int(RawFileInputFormat::SAMPLE_FORMAT_U8), "Unsigned 8 bits");
     ui->fileFormatCombo->insertItem(int(RawFileInputFormat::SAMPLE_FORMAT_S16), "Signed 16 bits");
@@ -105,25 +105,25 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
     switch (m_settings.inputDevice)
     {
     case InputDeviceId::RTLSDR:
-        rtlsdrGainList.clear();
-        rtlsdrGainList = gainList;
+        m_rtlsdrGainList.clear();
+        m_rtlsdrGainList = gainList;
         ui->rtlsdrGainSlider->setMinimum(0);
-        ui->rtlsdrGainSlider->setMaximum(rtlsdrGainList.size()-1);
+        ui->rtlsdrGainSlider->setMaximum(m_rtlsdrGainList.size()-1);
         ui->rtlsdrGainSlider->setValue((m_settings.rtlsdr.gainIdx >= 0) ? m_settings.rtlsdr.gainIdx : 0);
         break;
     case InputDeviceId::RTLTCP:
-        rtltcpGainList.clear();
-        rtltcpGainList = gainList;
+        m_rtltcpGainList.clear();
+        m_rtltcpGainList = gainList;
         ui->rtltcpGainSlider->setMinimum(0);
-        ui->rtltcpGainSlider->setMaximum(rtltcpGainList.size()-1);
+        ui->rtltcpGainSlider->setMaximum(m_rtltcpGainList.size()-1);
         ui->rtltcpGainSlider->setValue((m_settings.rtltcp.gainIdx >= 0) ? m_settings.rtltcp.gainIdx : 0);
         break;
     case InputDeviceId::SOAPYSDR:
 #ifdef HAVE_SOAPYSDR
-        soapysdrGainList.clear();
-        soapysdrGainList = gainList;
+        m_soapysdrGainList.clear();
+        m_soapysdrGainList = gainList;
         ui->soapysdrGainSlider->setMinimum(0);
-        ui->soapysdrGainSlider->setMaximum(soapysdrGainList.size()-1);
+        ui->soapysdrGainSlider->setMaximum(m_soapysdrGainList.size()-1);
         ui->soapysdrGainSlider->setValue((m_settings.soapysdr.gainIdx >= 0) ? m_settings.soapysdr.gainIdx : 0);
 #endif // HAVE_SOAPYSDR
         break;
@@ -151,7 +151,7 @@ void SetupDialog::showEvent(QShowEvent *event)
     }
     ui->inputCombo->setCurrentIndex(index);
 
-    if (!rtlsdrGainList.isEmpty())
+    if (!m_rtlsdrGainList.isEmpty())
     {
         ui->rtlsdrGainSlider->setValue(m_settings.rtlsdr.gainIdx);
         onRtlSdrGainSliderChanged(m_settings.rtlsdr.gainIdx);
@@ -161,7 +161,7 @@ void SetupDialog::showEvent(QShowEvent *event)
         ui->rtlsdrGainSlider->setValue(0);
         ui->rtlsdrGainValueLabel->setText("N/A");
     }
-    if (!rtltcpGainList.isEmpty())
+    if (!m_rtltcpGainList.isEmpty())
     {
         ui->rtltcpGainSlider->setValue(m_settings.rtltcp.gainIdx);
         onRtlTcpGainSliderChanged(m_settings.rtltcp.gainIdx);
@@ -241,7 +241,7 @@ void SetupDialog::showEvent(QShowEvent *event)
         break;
     }
 
-    if (!soapysdrGainList.isEmpty())
+    if (!m_soapysdrGainList.isEmpty())
     {
         ui->soapysdrGainSlider->setValue(m_settings.soapysdr.gainIdx);
         onSoapySdrGainSliderChanged(m_settings.soapysdr.gainIdx);
@@ -260,13 +260,13 @@ void SetupDialog::showEvent(QShowEvent *event)
     if (m_settings.rawfile.file.isEmpty())
     {
         ui->fileNameLabel->setText(NO_FILE);
-        rawfilename = "";
+        m_rawfilename = "";
         ui->fileNameLabel->setToolTip("");
     }
     else
     {
         ui->fileNameLabel->setText(QFileInfo(m_settings.rawfile.file).fileName());
-        rawfilename = m_settings.rawfile.file;
+        m_rawfilename = m_settings.rawfile.file;
         ui->fileNameLabel->setToolTip(m_settings.rawfile.file);
     }
     ui->loopCheckbox->setChecked(m_settings.rawfile.loopEna);
@@ -302,7 +302,7 @@ void SetupDialog::onConnectDeviceClicked()
     case InputDeviceId::UNDEFINED:
         break;
     case InputDeviceId::RAWFILE:
-        m_settings.rawfile.file = rawfilename;
+        m_settings.rawfile.file = m_rawfilename;
         m_settings.rawfile.loopEna = ui->loopCheckbox->isChecked();
         m_settings.rawfile.format = static_cast<RawFileInputFormat>(ui->fileFormatCombo->currentIndex());
         break;
@@ -325,14 +325,14 @@ void SetupDialog::onConnectDeviceClicked()
 
 void SetupDialog::onRtlSdrGainSliderChanged(int val)
 {
-    ui->rtlsdrGainValueLabel->setText(QString("%1 dB").arg(rtlsdrGainList.at(val)));
+    ui->rtlsdrGainValueLabel->setText(QString("%1 dB").arg(m_rtlsdrGainList.at(val)));
     m_settings.rtlsdr.gainIdx = val;
     emit newSettings();
 }
 
 void SetupDialog::onRtlTcpGainSliderChanged(int val)
 {
-    ui->rtltcpGainValueLabel->setText(QString("%1 dB").arg(rtltcpGainList.at(val)));
+    ui->rtltcpGainValueLabel->setText(QString("%1 dB").arg(m_rtltcpGainList.at(val)));
     m_settings.rtltcp.gainIdx = val;
     emit newSettings();
 }
@@ -524,7 +524,7 @@ void SetupDialog::onAirspyMixerAGCstateChanged(int state)
 #ifdef HAVE_SOAPYSDR
 void SetupDialog::onSoapySdrGainSliderChanged(int val)
 {
-    ui->soapysdrGainValueLabel->setText(QString("%1 dB").arg(soapysdrGainList.at(val)));
+    ui->soapysdrGainValueLabel->setText(QString("%1 dB").arg(m_soapysdrGainList.at(val)));
     m_settings.soapysdr.gainIdx = val;
     emit newSettings();
 }
@@ -670,14 +670,14 @@ void SetupDialog::onInputChanged(int index)
 void SetupDialog::onOpenFileButtonClicked()
 {
     QString dir = QDir::homePath();
-    if (!rawfilename.isEmpty())
+    if (!m_rawfilename.isEmpty())
     {
-        dir = QFileInfo(rawfilename).path();
+        dir = QFileInfo(m_rawfilename).path();
     }
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open IQ stream"), dir, tr("Binary files (*.bin *.s16 *.u8 *.raw)"));
     if (!fileName.isEmpty())
     {
-        rawfilename = fileName;
+        m_rawfilename = fileName;
         ui->fileNameLabel->setText(QFileInfo(fileName).fileName());
         ui->fileNameLabel->setToolTip(fileName);
         if (fileName.endsWith(".s16"))

@@ -9,7 +9,7 @@ MOTEntity::MOTEntity()
 
 bool MOTEntity::isComplete() const
 {
-    if (numSegments < 0)
+    if (m_numSegments < 0)
     {   // last segment was not received yet
         return false;
     }
@@ -21,17 +21,17 @@ bool MOTEntity::isComplete() const
     // [ETSI EN 301 234, 5.1 Segmentation of MOT entities]
     // MOT entities will be split up in segments with equal size. Only the last segment may have a smaller size
     // (to carry the remaining bytes of the MOT entity). Every MOT entity (e.g. every MOT body) can use a different segmentation size.
-    int lastSegmentSize = segments.last().size();
+    int lastSegmentSize = m_segments.last().size();
     bool ret = true;
 
-    if (numSegments != segments.size())
+    if (m_numSegments != m_segments.size())
     {
         qDebug() << "numSegments != segments.size()";
     }
 
-    for (int n = 0; n < numSegments-1; ++n)
+    for (int n = 0; n < m_numSegments-1; ++n)
     {
-        if (segments.at(n).size() < lastSegmentSize)
+        if (m_segments.at(n).size() < lastSegmentSize)
         {  // some segment is smaller than last segment thus not received
             ret = false;
             break;
@@ -44,9 +44,9 @@ bool MOTEntity::isComplete() const
 int MOTEntity::size()
 {
     int receivedSize = 0;
-    for (int n = 0; n < numSegments; ++n)
+    for (int n = 0; n < m_numSegments; ++n)
     {
-        receivedSize += segments[n].size();
+        receivedSize += m_segments[n].size();
     }
 
     return receivedSize;
@@ -63,46 +63,46 @@ void MOTEntity::addSegment(const uint8_t * segment, uint16_t segmentNum, uint16_
 
     if (lastFlag)
     {   // current segment is marked as last, thus we know number of segments
-        numSegments = segmentNum+1;
+        m_numSegments = segmentNum+1;
     }
     else
     { /* do nothing */ }
 
     // all segments have the same size only the last can be shorter
-    if (segmentNum > segments.size())
+    if (segmentNum > m_segments.size())
     {   // insert empty items
-        for (int n = segments.size(); n<segmentNum; ++n)
+        for (int n = m_segments.size(); n<segmentNum; ++n)
         {
-            segments.append(QByteArray());
+            m_segments.append(QByteArray());
         }
     }
     else
     { /* do nothing - segment is somewhere in the middle */ }
 
-    if (segmentNum < segments.size())
+    if (segmentNum < m_segments.size())
     {
-        if (segments.at(segmentNum).size() != segmentSize)
+        if (m_segments.at(segmentNum).size() != segmentSize)
         {   // current segment size is diffrent than recieved size, it could happen when no segment #segmentNum was received yet
-            segments.replace(segmentNum, QByteArray((const char *)segment, segmentSize));
+            m_segments.replace(segmentNum, QByteArray((const char *)segment, segmentSize));
         }
         else
         { /* do nothing - segment was already received before */ }
     }
-    else if (segmentNum == segments.size())
+    else if (segmentNum == m_segments.size())
     {   // add segment to the end
-        segments.append(QByteArray((const char *)segment, segmentSize));
+        m_segments.append(QByteArray((const char *)segment, segmentSize));
     }
 }
 
 void MOTEntity::reset()
 {
-    segments.clear();
-    numSegments = -1;
+    m_segments.clear();
+    m_numSegments = -1;
 }
 
 QByteArray MOTEntity::getData() const
 {
-    return segments.join();
+    return m_segments.join();
 }
 
 
@@ -366,21 +366,21 @@ const QString &MOTObject::getContentName() const
 
 MOTDirectory::MOTDirectory(uint_fast32_t transportId, MOTObjectCache * cachePtr)
 {
-    id = transportId;
+    m_id = transportId;
 
     // cache becomes carousel in MOT directory
     // decoder is still adding segments, even segments that do not exist in directoy yet
     // crousel/cache maintenence is performed when new directory is received
-    carousel = cachePtr;
+    m_carousel = cachePtr;
 }
 
 bool MOTDirectory::addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
 {
-    dir.addSegment(segment, segmentNum, segmentSize, lastFlag);
-    if (dir.isComplete())
+    m_dir.addSegment(segment, segmentNum, segmentSize, lastFlag);
+    if (m_dir.isComplete())
     {
         qDebug() << "MOT directory is complete";
-        if (!parse(dir.getData()))
+        if (!parse(m_dir.getData()))
         {   // something is wrong - header could not be parsed, objects is not complete
             qDebug() << "MOT directory parsing failed";
         }
@@ -396,14 +396,14 @@ bool MOTDirectory::addSegment(const uint8_t *segment, uint16_t segmentNum, uint1
 void MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
 {
     // first find if object already exists in carousel
-    MOTObjectCache::iterator it = carousel->findMotObj(transportId);
-    if (carousel->end() == it)
+    MOTObjectCache::iterator it = m_carousel->findMotObj(transportId);
+    if (m_carousel->end() == it)
     {  // object does not exist in carousel - this should not happen for current directory
 #if MOTOBJECT_VERBOSE
         qDebug() << "New MOT object" << transportId << "number of objects in carousel" << carousel->size();
 #endif
         // add new object to cache
-        it = carousel->addMotObj(MOTObject(transportId));
+        it = m_carousel->addMotObj(MOTObject(transportId));
     }
     else
     {  /* do nothing - it already exists, just adding next segment */ }
@@ -524,7 +524,7 @@ bool MOTDirectory::parse(const QByteArray &dirData)
     qDebug() << "\tReading MOT objects";
 
     // set all object in carousel obsolete
-    carousel->markAllObsolete();
+    m_carousel->markAllObsolete();
 
     int numObjRead = 0;
     while (n < dirSize)
@@ -540,11 +540,11 @@ bool MOTDirectory::parse(const QByteArray &dirData)
         qDebug() << "\t* ID" << objTransportID << "| header size " << headerSize;
 
         // mark all objects in directory as active (non-obsolete)
-        MOTObjectCache::iterator it = carousel->markObjObsolete(objTransportID, false);
-        if (carousel->end() == it)
+        MOTObjectCache::iterator it = m_carousel->markObjObsolete(objTransportID, false);
+        if (m_carousel->end() == it)
         {   // not found create new object in carousel
             qDebug() << "Object not found in the cache: ID" << objTransportID;
-            it = carousel->addMotObj(MOTObject(objTransportID));
+            it = m_carousel->addMotObj(MOTObject(objTransportID));
         }
         else
         { /* do nothing - object is marked as active (non-obsolete) */ }
@@ -556,7 +556,7 @@ bool MOTDirectory::parse(const QByteArray &dirData)
     }
 
     // done -> delete all remaining obsolete objects
-    carousel->deleteObsolete();
+    m_carousel->deleteObsolete();
 
 #if MOTOBJECT_VERBOSE
     qDebug() << "MOT directory carousel contents:";
@@ -588,13 +588,13 @@ MOTObjectCache::~MOTObjectCache()
 
 void MOTObjectCache::clear()
 {
-    cache.clear();
+    m_cache.clear();
 }
 
 MOTObjectCache::iterator MOTObjectCache::findMotObj(uint16_t transportId)
 {
     MOTObjectCache::iterator it;
-    for (it = cache.begin(); it < cache.end(); ++it)
+    for (it = m_cache.begin(); it < m_cache.end(); ++it)
     {
         if (it->getId() == transportId)
         {
@@ -606,11 +606,11 @@ MOTObjectCache::iterator MOTObjectCache::findMotObj(uint16_t transportId)
 
 void MOTObjectCache::deleteMotObj(uint16_t transportId)
 {
-    for (int n = 0; n<cache.size(); ++n)
+    for (int n = 0; n<m_cache.size(); ++n)
     {
-        if (cache[n].getId() == transportId)
+        if (m_cache[n].getId() == transportId)
         {
-            cache.removeAt(n);
+            m_cache.removeAt(n);
             return;
         }
     }
@@ -618,22 +618,22 @@ void MOTObjectCache::deleteMotObj(uint16_t transportId)
 
 MOTObjectCache::iterator MOTObjectCache::addMotObj(const MOTObject & obj)
 {
-    cache.append(obj);
-    return --(cache.end());
+    m_cache.append(obj);
+    return --(m_cache.end());
 }
 
 void MOTObjectCache::markAllObsolete()
 {
-    for (int n = 0; n<cache.size(); ++n)
+    for (int n = 0; n<m_cache.size(); ++n)
     {
-        cache[n].setObsolete(true);
+        m_cache[n].setObsolete(true);
     }
 }
 
 MOTObjectCache::iterator MOTObjectCache::markObjObsolete(uint16_t transportId, bool obsolete)
 {
     MOTObjectCache::iterator it;
-    for (it = cache.begin(); it < cache.end(); ++it)
+    for (it = m_cache.begin(); it < m_cache.end(); ++it)
     {
         if (it->getId() == transportId)
         {
@@ -646,12 +646,12 @@ MOTObjectCache::iterator MOTObjectCache::markObjObsolete(uint16_t transportId, b
 
 void MOTObjectCache::deleteObsolete()
 {
-    QList<MOTObject>::iterator it = cache.begin();
-    while (it != cache.end())
+    QList<MOTObject>::iterator it = m_cache.begin();
+    while (it != m_cache.end())
     {
         if (it->isObsolete())
         {
-            it = cache.erase(it);
+            it = m_cache.erase(it);
         }
         else
         {

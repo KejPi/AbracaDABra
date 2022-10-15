@@ -88,15 +88,16 @@ protected:
 private:
     Ui::SetupDialog *ui;
     Settings m_settings;
-    QString rawfilename;
-    QList<float> rtlsdrGainList;
-    QList<float> rtltcpGainList;
-    QList<float> soapysdrGainList;
+    QString m_rawfilename;
+    QList<float> m_rtlsdrGainList;
+    QList<float> m_rtltcpGainList;
+    QList<float> m_soapysdrGainList;
+
+    void setStatusLabel();
 
     void onButtonClicked(QAbstractButton *button);
     void onInputChanged(int index);
     void onOpenFileButtonClicked();
-    void setStatusLabel();
 
     void onConnectDeviceClicked();
 
@@ -122,13 +123,13 @@ private:
     void onAirspyMixerAGCstateChanged(int state);
     void activateAirspyControls(bool en);
 #endif
-#ifdef HAVE_SOAPYSDR
+#ifdef HAVE_SOAPYSDR    
     void onSoapySdrGainSliderChanged(int val);
-    void activateSoapySdrControls(bool en);
     void onSoapySdrDevArgsEditFinished();
     void onSoapySdrAntennaEditFinished();
     void onSoapySdrChannelEditFinished();
     void onSoapySdrGainModeToggled(bool checked);
+    void activateSoapySdrControls(bool en);
 #endif
 };
 

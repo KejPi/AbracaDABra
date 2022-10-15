@@ -39,16 +39,16 @@ protected:
 
 private:
     //! @brief Used to store current pixmap
-    QGraphicsPixmapItem * pixmapItem;
+    QGraphicsPixmapItem * m_pixmapItem;
 
     //! @brief URL of current slide
-    QString clickThroughURL;
+    QString m_clickThroughURL;
 
     //! @brief dark mode ena
-    bool isDarkMode = false;
+    bool m_isDarkMode = false;
 
     //! @brief shows slide
-    bool showsSlide = false;
+    bool m_isShowingSlide = false;
 };
 
 #endif // SLSVIEW_H

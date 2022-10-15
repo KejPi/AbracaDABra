@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include "radiocontrol.h"
-#include "motdecoder.h"
+#include "motobject.h"
 
 #define USER_APPLICATION_VERBOSE 1
 
@@ -23,8 +23,8 @@ signals:
     void resetTerminal();
 
 protected:
-    bool isRunning;
-    RadioControl * radioControl;
+    bool m_isRunning;
+    RadioControl * m_radioControl;
 };
 
 #endif // USERAPPLICATION_H

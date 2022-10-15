@@ -9,21 +9,21 @@
 #include "config.h"
 #include "audiofifo.h"
 
-#ifdef HAVE_PORTAUDIO
+#if HAVE_PORTAUDIO
 #include "portaudio.h"
 #else
 #include <QAudioSink>
 #include <QMediaDevices>
 #endif
 
-
-//#define AUDIOOUTPUT_RAW_FILE_OUT
-
+// muting
 #define AUDIOOUTPUT_FADE_TIME_MS    60
-
 // these 2 values must be aligned
 #define AUDIOOUTPUT_FADE_MIN_DB    -60.0
 #define AUDIOOUTPUT_FADE_MIN_LIN     0.001
+
+// debug switch
+//#define AUDIOOUTPUT_RAW_FILE_OUT
 
 enum class AudioOutputPlaybackState
 {
@@ -31,7 +31,8 @@ enum class AudioOutputPlaybackState
     Muted = 1,
 };
 
-#if (defined HAVE_PORTAUDIO)
+
+#if HAVE_PORTAUDIO
 
 #define AUDIOOUTPUT_PORTAUDIO_VOLUME_ENA        1
 #define AUDIOOUTPUT_PORTAUDIO_VOLUME_ROUND      1
@@ -76,11 +77,11 @@ private:
                            const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx);
 
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
-    FILE * rawOut;
+    FILE * m_rawOut;
 #endif
 };
 
-#else // (defined HAVE_PORTAUDIO)
+#else // HAVE_PORTAUDIO
 
 class AudioIODevice;
 
@@ -108,10 +109,6 @@ private:
     void handleStateChanged(QAudio::State newState);
     int64_t bytesAvailable();
     void doStop();
-
-#ifdef AUDIOOUTPUT_RAW_FILE_OUT
-    FILE * rawOut;
-#endif
 };
 
 

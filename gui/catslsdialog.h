@@ -26,7 +26,7 @@ public:
     //! @brief Reset UI (on service change)
     void reset();
 
-    //! @brief NSlot for new category, removal of category (title is empty) or update of the category name
+    //! @brief Slot for new category, removal of category (title is empty) or update of the category name
     void onCategoryUpdate(int catId, const QString & title);
 
     //! @brief Slot for new slide to come

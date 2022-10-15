@@ -12,16 +12,16 @@ BandScanDialog::BandScanDialog(QWidget *parent, bool autoStart, Qt::WindowFlags 
 
     setSizeGripEnabled(false);
 
-    buttonStart = ui->buttonBox->button(QDialogButtonBox::Ok);
-    buttonStart->setText("Start");
-    connect(buttonStart, &QPushButton::clicked, this, &BandScanDialog::startScan);
+    m_buttonStart = ui->buttonBox->button(QDialogButtonBox::Ok);
+    m_buttonStart->setText("Start");
+    connect(m_buttonStart, &QPushButton::clicked, this, &BandScanDialog::startScan);
 
-    buttonStop = ui->buttonBox->button(QDialogButtonBox::Cancel);
-    buttonStop->setDefault(true);
+    m_buttonStop = ui->buttonBox->button(QDialogButtonBox::Cancel);
+    m_buttonStop->setDefault(true);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &BandScanDialog::stopPressed);
 
-    ui->numEnsemblesFoundLabel->setText(QString("%1").arg(numEnsemblesFound));
-    ui->numServicesFoundLabel->setText(QString("%1").arg(numServicesFound));
+    ui->numEnsemblesFoundLabel->setText(QString("%1").arg(m_numEnsemblesFound));
+    ui->numServicesFoundLabel->setText(QString("%1").arg(m_numServicesFound));
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(DabTables::channelList.size());
     ui->progressBar->setValue(0);
@@ -47,10 +47,10 @@ BandScanDialog::BandScanDialog(QWidget *parent, bool autoStart, Qt::WindowFlags 
 
 BandScanDialog::~BandScanDialog()
 {
-    if (nullptr != timer)
+    if (nullptr != m_timer)
     {
-        timer->stop();
-        delete timer;
+        m_timer->stop();
+        delete m_timer;
     }
 
     delete ui;
@@ -58,20 +58,20 @@ BandScanDialog::~BandScanDialog()
 
 void BandScanDialog::stopPressed()
 {
-    if (isScanning)
+    if (m_isScanning)
     {
         // the state machine has 4 possible states
         // 1. wait for tune (event)
         // 2. wait for sync (timer or event)
         // 4. wait for ensemble (timer or event)
         // 5. wait for services (timer)
-        if (timer->isActive())
+        if (m_timer->isActive())
         {   // state 2, 3, 4
-            timer->stop();
+            m_timer->stop();
             done(BandScanDialogResult::Interrupted);
         }
         // timer not running -> state 1
-        state = BandScanState::Interrupted;  // ==> it will be finished when tune is complete
+        m_state = BandScanState::Interrupted;  // ==> it will be finished when tune is complete
     }
     else
     {
@@ -81,41 +81,41 @@ void BandScanDialog::stopPressed()
 
 void BandScanDialog::startScan()
 {
-    isScanning = true;
+    m_isScanning = true;
 
     ui->scanningLabel->setText("Scanning channel:");
     ui->progressLabel->setVisible(true);
     ui->progressChannel->setVisible(true);
 
-    buttonStart->setVisible(false);
-    buttonStop->setText("Stop");
-    buttonStop->setDefault(false);
+    m_buttonStart->setVisible(false);
+    m_buttonStop->setText("Stop");
+    m_buttonStop->setDefault(false);
 
-    timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &BandScanDialog::scanStep);
+    m_timer = new QTimer(this);
+    connect(m_timer, &QTimer::timeout, this, &BandScanDialog::scanStep);
 
-    state = BandScanState::Init;
+    m_state = BandScanState::Init;
 
     // using timer for mainwindow to cleanup and tune to 0 potentially (no timeout in case)
-    timer->start(2000);
+    m_timer->start(2000);
     emit scanStarts();
 }
 
 void BandScanDialog::scanStep()
 {
-    if (BandScanState::Init == state)
+    if (BandScanState::Init == m_state)
     {  // first step
-       channelIt = DabTables::channelList.constBegin();
+       m_channelIt = DabTables::channelList.constBegin();
 
        // debug
        //channelIt = DabTables::channelList.find(225648);
     }
     else
     {  // next step
-       ++channelIt;
+       ++m_channelIt;
     }
 
-    if (DabTables::channelList.constEnd() == channelIt)
+    if (DabTables::channelList.constEnd() == m_channelIt)
     {
         // scan finished
         done(BandScanDialogResult::Done);
@@ -126,29 +126,29 @@ void BandScanDialog::scanStep()
     ui->progressLabel->setText(QString("%1 / %2")
                                .arg(ui->progressBar->value())
                                .arg(DabTables::channelList.size()));
-    ui->progressChannel->setText(channelIt.value());
-    state = BandScanState::WaitForTune;
-    emit tuneChannel(channelIt.key());
+    ui->progressChannel->setText(m_channelIt.value());
+    m_state = BandScanState::WaitForTune;
+    emit tuneChannel(m_channelIt.key());
 }
 
-void BandScanDialog::tuneFinished(uint32_t freq)
+void BandScanDialog::onTuneDone(uint32_t freq)
 {
-    if (BandScanState::Init == state)
+    if (BandScanState::Init == m_state)
     {
-        if (timer->isActive())
+        if (m_timer->isActive())
         {
-            timer->stop();
+            m_timer->stop();
         }
         scanStep();
     }
-    else if (BandScanState::Interrupted == state)
+    else if (BandScanState::Interrupted == m_state)
     {   // exit
         done(BandScanDialogResult::Interrupted);
     }
     else
     {   // tuned to some frequency -> wait for sync
-        state = BandScanState::WaitForSync;
-        timer->start(3000);
+        m_state = BandScanState::WaitForSync;
+        m_timer->start(3000);
     }
 }
 
@@ -156,37 +156,37 @@ void BandScanDialog::onSyncStatus(uint8_t sync)
 {
     if (DabSyncLevel::NullSync <= DabSyncLevel(sync))
     {
-        if (BandScanState::WaitForSync == state)
+        if (BandScanState::WaitForSync == m_state)
         {   // if we are waiting for sync (move to next step)
-            timer->stop();
-            state = BandScanState::WaitForEnsemble;
-            timer->start(6000);
+            m_timer->stop();
+            m_state = BandScanState::WaitForEnsemble;
+            m_timer->start(6000);
         }
     }
 }
 
 void BandScanDialog::onEnsembleFound(const RadioControlEnsemble &)
 {
-    timer->stop();
+    m_timer->stop();
 
-    ui->numEnsemblesFoundLabel->setText(QString("%1").arg(++numEnsemblesFound));
+    ui->numEnsemblesFoundLabel->setText(QString("%1").arg(++m_numEnsemblesFound));
 
-    state = BandScanState::WaitForServices;
+    m_state = BandScanState::WaitForServices;
 
     // this can be interrupted by ensemble complete signal (ensembleConfiguration)
-    timer->start(8000);
+    m_timer->start(8000);
 }
 
 void BandScanDialog::onServiceFound(const ServiceListId &)
 {
-    ui->numServicesFoundLabel->setText(QString("%1").arg(++numServicesFound));
+    ui->numServicesFoundLabel->setText(QString("%1").arg(++m_numServicesFound));
 }
 
 void BandScanDialog::onEnsembleComplete(const RadioControlEnsemble &)
 {   // this means that ensemble information is complete => stop timer and do next set
-    if ((nullptr != timer) && (timer->isActive()))
+    if ((nullptr != m_timer) && (m_timer->isActive()))
     {
-        timer->stop();
+        m_timer->stop();
         scanStep();
     }
 }

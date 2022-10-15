@@ -8,7 +8,7 @@
 #include <QDialogButtonBox>
 
 #include "radiocontrol.h"
-#include "servicelist.h"
+#include "servicelistid.h"
 
 namespace Ui {
 class BandScanDialog;
@@ -42,7 +42,7 @@ public:
     explicit BandScanDialog(QWidget *parent = nullptr, bool autoStart = false, Qt::WindowFlags f = Qt::WindowFlags());
     ~BandScanDialog();
 
-    void tuneFinished(uint32_t freq);
+    void onTuneDone(uint32_t freq);
     void onSyncStatus(uint8_t sync);
     void onEnsembleFound(const RadioControlEnsemble &ens);
     void onServiceFound(const ServiceListId &);
@@ -54,16 +54,16 @@ signals:
 
 private:
     Ui::BandScanDialog *ui;
-    QPushButton * buttonStart;
-    QPushButton * buttonStop;
-    QTimer * timer = nullptr;
+    QPushButton * m_buttonStart;
+    QPushButton * m_buttonStop;
+    QTimer * m_timer = nullptr;
 
-    bool isScanning = false;
-    BandScanState state = BandScanState::Idle;
+    bool m_isScanning = false;
+    BandScanState m_state = BandScanState::Idle;
 
-    int numEnsemblesFound = 0;
-    int numServicesFound = 0;
-    dabChannelList_t::ConstIterator channelIt;
+    int m_numEnsemblesFound = 0;
+    int m_numServicesFound = 0;
+    dabChannelList_t::ConstIterator m_channelIt;
 
     void startScan();
     void scanStep();
