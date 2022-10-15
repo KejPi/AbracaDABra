@@ -31,7 +31,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
                            "<li><a href=\"https://github.com/Opendigitalradio/ka9q-fec\">FEC</a> by Phil Karn, KA9Q</li>"
                            "<li><a href=\"https://osmocom.org/projects/rtl-sdr/wiki/Rtl-sdr\">rtl-sdr</a> by Steve Markgraf, Dimitri Stolnikov, and Hoernchen, with contributions by Kyle Keen, Christian Vogel and Harald Welte.</li>"
                            "<li><a href=\"https://www.mpg123.de\">mpg123</a> by Michael Hipp, Thomas Orgis and others</li>"
-#if defined(HAVE_FDKAAC)
+#if HAVE_FDKAAC
                            "<li><a href=\"https://github.com/mstorsjo/fdk-aac\">fdk-aac</a> Copyright © 1995 - 2018 Fraunhofer-Gesellschaft "
                            "zur Förderung der angewandten Forschung e.V.</li>"
 #else

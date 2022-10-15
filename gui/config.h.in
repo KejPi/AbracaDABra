@@ -8,7 +8,7 @@
 
 #cmakedefine PROJECT_VERSION_RELEASE
 
-#cmakedefine HAVE_FDKAAC
+#cmakedefine01 HAVE_FDKAAC
 #cmakedefine HAVE_PORTAUDIO
 
 /* Optional devices */

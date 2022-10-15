@@ -344,7 +344,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::dlDataGroup, m_dlDecoder, &DLDecoder::newDataGroup, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, this, &MainWindow::onAudioServiceSelection, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_dlDecoder, &DLDecoder::reset, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::audioData, m_audioDecoder, &AudioDecoder::inputData, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::audioData, m_audioDecoder, &AudioDecoder::decodeData, Qt::QueuedConnection);
 
     // service stopped
     connect(m_radioControl, &RadioControl::ensembleRemoved, this, &MainWindow::onEnsembleRemoved, Qt::QueuedConnection);
