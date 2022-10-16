@@ -137,7 +137,6 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
 
 void SetupDialog::setSettings(const Settings &settings)
 {
-    //qDebug() << Q_FUNC_INFO;
     m_settings = settings;
     setStatusLabel();
 }

@@ -491,7 +491,6 @@ SlideData::SlideData(const SlideData & other) :
     categoryID(other.categoryID),
     slideID(other.slideID)
 {
-    //qDebug() << Q_FUNC_INFO << contentName;
 }
 
 Slide::Slide()

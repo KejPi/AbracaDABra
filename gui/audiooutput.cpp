@@ -63,7 +63,6 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
     bool isNewStreamParams = (m_sampleRate_kHz != sRate/1000) || (m_numChannels != numCh);
     if (isNewStreamParams)
     {
-        //qDebug() << Q_FUNC_INFO << "new PA stream";
         if (nullptr != m_outStream)
         {
             if (!Pa_IsStreamStopped(m_outStream))
@@ -129,7 +128,6 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 
 void AudioOutput::stop()
 {
-    //qDebug() << Q_FUNC_INFO;
     if (nullptr != m_outStream)
     {
         m_stopFlag = true;
@@ -560,7 +558,6 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
 
         if (m_stopFlag)
         {
-            //qDebug() << Q_FUNC_INFO << "paCompete" << fadeSamples;
             return paComplete;
         }
     }
@@ -591,10 +588,6 @@ AudioOutput::~AudioOutput()
 
 void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 {
-    //stop();
-
-    //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
-
     QAudioFormat format;
     format.setSampleRate(sRate);
     format.setSampleFormat(QAudioFormat::Int16);
@@ -666,7 +659,6 @@ void AudioOutput::setVolume(int value)
 
 void AudioOutput::stop()
 {
-    //qDebug() << Q_FUNC_INFO;
     if (nullptr != m_audioSink)
     {
         if (!m_ioDevice->isMuted())
@@ -684,7 +676,6 @@ void AudioOutput::stop()
 
 void AudioOutput::doStop()
 {
-    //qDebug() << Q_FUNC_INFO << m_ioDevice->isMuted();
     if (nullptr != m_audioSink)
     {
         m_audioSink->stop();
@@ -695,7 +686,6 @@ void AudioOutput::doStop()
 
 void AudioOutput::handleStateChanged(QAudio::State newState)
 {
-    //qDebug() << newState;
     switch (newState)
     {
     case QAudio::ActiveState:
@@ -745,14 +735,11 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
     uint64_t count = m_inFifoPtr->count;
     m_inFifoPtr->mutex.unlock();
 
-    //qDebug() << Q_FUNC_INFO << len << count << static_cast<int>(m_playbackState);
     bool muteRequest = m_muteFlag ||  m_stopFlag;
 
     //uint64_t bytesToRead = len;
     uint64_t bytesToRead = qMin(uint64_t(len), AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz * m_bytesPerFrame);
     uint32_t availableSamples = bytesToRead / m_bytesPerFrame;
-
-    //qDebug() << Q_FUNC_INFO << bytesToRead << count << static_cast<int>(m_playbackState);
 
     if (AudioOutputPlaybackState::Muted == m_playbackState)
     {   // muted

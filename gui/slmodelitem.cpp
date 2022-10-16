@@ -243,7 +243,6 @@ SLModelItem* SLModelItem::findChildId(const ServiceListId & id, bool recursive) 
             SLModelItem* childPtr = item->findChildId(id);
             if (nullptr != childPtr)
             {
-                qDebug() << Q_FUNC_INFO;
                 return childPtr;
             }
         }

@@ -23,7 +23,6 @@ void SLSView::reset()
     QGraphicsScene * sc = scene();
     if (nullptr == sc)
     {
-        //qDebug() << Q_FUNC_INFO << "New graphisc scene";
         sc = new QGraphicsScene(this);
         m_pixmapItem = sc->addPixmap(pic);
 
@@ -195,10 +194,6 @@ void SLSView::mouseReleaseEvent(QMouseEvent *event)
 {
     if (!m_clickThroughURL.isEmpty())
     {   // if clickThroughURL is set
-        qDebug() << Q_FUNC_INFO << event->position()
-                 << ((event->position().x() >=0) && (event->position().y() >= 0) &&
-                    (event->position().x() < width()) && (event->position().y() < height()));
-
         if ((event->position().x() >=0) && (event->position().y() >= 0) &&
                 (event->position().x() < width()) && (event->position().y() < height()))
         {   // release was on the slide view

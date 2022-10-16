@@ -43,8 +43,6 @@ InputDevice::~InputDevice()
 
 void getSamples(float buffer[], uint16_t numSamples)
 {
-    //qDebug() << Q_FUNC_INFO;
-
     // input read -> lets store it to FIFO
     pthread_mutex_lock(&inputBuffer.countMutex);
     uint64_t count = inputBuffer.count;

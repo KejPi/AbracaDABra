@@ -61,7 +61,6 @@ bool RadioControl::init()
 
 void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 {
-    //qDebug() << Q_FUNC_INFO << QThread::currentThreadId() << pEvent->type;
     switch (pEvent->type)
     {
     case RadioControlEventType::AUDIO_DATA:
@@ -404,7 +403,6 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                         }
 
                         scIt->userApps.insert(newUserApp.uaType, newUserApp);
-                        //qDebug() << serviceIt->SId.value << scIt->SCIdS << newUserApp.uaType;
                     }
                 }
                 else
@@ -415,7 +413,6 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         }
         else
         {   // no user apps for some service
-            // qDebug() << "RadioControlEventType::USER_APP_LIST No user apps";
         }
 
         if (--m_numRequestsPending == 0)
@@ -572,8 +569,6 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 
             QDateTime dateAndTime = QDateTime(QDate(Y, M, D), QTime(h, minute, sec, msec), Qt::UTC).toOffsetFromUtc(60*(m_ensemble.LTO * 30));
 
-            //qDebug() << dateAndTime;
-
             emit dabTime(dateAndTime);
         }
         updateSyncLevel(pData->syncLevel);
@@ -629,9 +624,6 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 
 void RadioControl::exit()
 {
-#if RADIO_CONTROL_VERBOSE
-    qDebug() << Q_FUNC_INFO;
-#endif
     dabsdrRequest_Exit(m_dabsdrHandle);
 }
 
@@ -657,7 +649,6 @@ void RadioControl::start(uint32_t freq)
 
 void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
 {
-    //qDebug() << Q_FUNC_INFO << freq << frequency << SId << SCIdS;
     if (freq == m_frequency)
     {
         if (SId)
