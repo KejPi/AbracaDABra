@@ -59,7 +59,7 @@ bool RtlSdrInput::openDevice()
     }
     else
     {
-        qDebug() << "RTL-SDR: Found " << deviceCount << " devices. Uses the first working one";
+        qDebug() << "RTL-SDR: Found" << deviceCount << "devices";
     }
 
     //	Iterate over all found rtl-sdr devices and try to open it. Stops if one device is successfull opened.
@@ -68,7 +68,7 @@ bool RtlSdrInput::openDevice()
         ret = rtlsdr_open(&m_device, n);
         if (ret >= 0)
         {
-            qDebug() << "RTL-SDR:  Opening rtl-sdr device" << n;
+            qDebug() << "RTL-SDR: Opening rtl-sdr device" << n;
             break;
         }
     }
@@ -89,7 +89,7 @@ bool RtlSdrInput::openDevice()
 
     // Get tuner gains
     uint32_t gainsCount = rtlsdr_get_tuner_gains(m_device, NULL);
-    qDebug() << "RTL_SDR: Supported gain values" << gainsCount;
+    qDebug() << "RTL-SDR: Supported gain values" << gainsCount;
     int * gains = new int[gainsCount];
     gainsCount = rtlsdr_get_tuner_gains(m_device, gains);
 
