@@ -27,9 +27,12 @@
 #if HAVE_RARTTCP
 #include "rarttcpinput.h"
 #endif
+#if HAVE_AIRSPY
 #include "airspyinput.h"
+#endif
+#if HAVE_SOAPYSDR
 #include "soapysdrinput.h"
-
+#endif
 
 #ifdef Q_OS_MACX
 #include "mac.h"
@@ -57,7 +60,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     , ui(new Ui::MainWindow)
     , m_iniFilename(iniFilename)
 {
-    //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
     m_dlDecoder = new DLDecoder();
 
     ui->setupUi(this);
@@ -420,8 +422,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    //qDebug() << Q_FUNC_INFO;
-
     delete m_inputDevice;
 
     m_radioControlThread->quit();  // this deletes radioControl
@@ -486,9 +486,7 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (0 == m_frequency)
-    {  // in idle
-        //qDebug() << Q_FUNC_INFO << "requesting exit";
-
+    {   // in idle
         saveSettings();
 
         emit exit();
@@ -496,7 +494,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
     else
     {
-        //qDebug() << Q_FUNC_INFO << "going to IDLE";
         m_exitRequested = true;
         emit stopUserApps();
         emit serviceRequest(0,0,0);
@@ -753,8 +750,6 @@ void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)
 
 void MainWindow::channelSelected()
 {
-    //qDebug() << Q_FUNC_INFO << ui->serviceListView->hasFocus() << ui->serviceTreeView->hasFocus();
-
     m_hasListViewFocus = ui->serviceListView->hasFocus();
     m_hasTreeViewFocus = ui->serviceTreeView->hasFocus();
     if (InputDeviceId::RAWFILE != m_inputDeviceId)
@@ -801,9 +796,7 @@ void MainWindow::onChannelChange(int index)
 }
 
 void MainWindow::onTuneDone(uint32_t freq)
-{  // this slot is called when tune is complete
-    //qDebug() << Q_FUNC_INFO << freq;
-
+{   // this slot is called when tune is complete
     m_frequency = freq;
     if (freq != 0)
     {
@@ -847,8 +840,6 @@ void MainWindow::onTuneDone(uint32_t freq)
 
 void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
 {
-    qDebug() << Q_FUNC_INFO;
-
     switch (errCode)
     {
     case InputDeviceErrorCode::EndOfFile:
@@ -872,21 +863,18 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
         changeInputDevice(InputDeviceId::UNDEFINED);
         break;
     default:
-        qDebug() << Q_FUNC_INFO << "InputDevice error" << int(errCode);
+        qDebug() << "InputDevice error" << int(errCode);
     }
 }
 
 void MainWindow::onServiceListClicked(const QModelIndex &index)
 {
     const SLModel * model = reinterpret_cast<const SLModel*>(index.model());
-
-    //qDebug() << current << model->getId(current) << previous << model->getId(previous);
     if (model->id(index) == ServiceListId(m_SId.value(), m_SCIdS))
     {
         return;
     }
 
-    //qDebug() << Q_FUNC_INFO << "isService ID =" << model->getId(current);
     ServiceListConstIterator it = m_serviceList->findService(model->id(index));
     if (m_serviceList->serviceListEnd() != it)
     {
@@ -1087,7 +1075,6 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
 
 void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponent &s)
 {
-    qDebug() << Q_FUNC_INFO << s.SId.value() << s.SId.isValid();
     if (s.SId.isValid() && s.isAudioService() && (s.SId.value() == m_SId.value()))
     {   // set UI
         onAudioServiceSelection(s);
@@ -1140,7 +1127,6 @@ void MainWindow::clearServiceInformationLabels()
 
 void MainWindow::onNewSettings()
 {
-    //qDebug() << Q_FUNC_INFO;
     SetupDialog::Settings s = m_setupDialog->settings();
     switch (m_inputDeviceId)
     {
@@ -1172,8 +1158,6 @@ void MainWindow::onNewSettings()
 
 void MainWindow::changeInputDevice(const InputDeviceId & d)
 {
-    qDebug() << Q_FUNC_INFO << int(d);
-
     m_deviceChangeRequested = true;
     m_inputDeviceId = d;
     if (m_isPlaying)
@@ -1916,7 +1900,6 @@ void MainWindow::bandScan()
 
 void MainWindow::onBandScanFinished(int result)
 {
-    qDebug() << Q_FUNC_INFO;
     switch (result)
     {
     case BandScanDialogResult::Done:
@@ -2010,8 +1993,6 @@ void MainWindow::setIcons()
 
 void MainWindow::onDLPlusObjReceived(const DLPlusObject & object)
 {
-    //qDebug() << Q_FUNC_INFO << object.getType() << object.getTag();
-
     ui->dlPlusLabel->setVisible(true);
     if (DLPlusContentType::DUMMY == object.getType())
     {   // dummy object = do nothing
@@ -2026,8 +2007,6 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object)
     if (object.isDelete())
     {   // [ETSI TS 102 980 V2.1.2] 5.3.2 Deleting objects
         // Objects are deleted by transmitting a "delete" object
-        qDebug() << "DL+ delete object" << object.getType();
-
         const auto it = m_dlObjCache.constFind(object.getType());
         if (it != m_dlObjCache.cend())
         {   // object type found in cache
@@ -2066,7 +2045,6 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object)
 
 void MainWindow::onDLPlusItemToggle()
 {
-    //qDebug() << Q_FUNC_INFO;
     // delete all ITEMS.*
     auto it = m_dlObjCache.cbegin();
     while (it != m_dlObjCache.cend())
@@ -2086,7 +2064,6 @@ void MainWindow::onDLPlusItemToggle()
 
 void MainWindow::onDLPlusItemRunning(bool isRunning)
 {
-    //qDebug() << Q_FUNC_INFO << isRunning;
     auto it = m_dlObjCache.cbegin();
     while (it != m_dlObjCache.cend())
     {
@@ -2118,8 +2095,6 @@ void MainWindow::onDLReset()
 
 DLPlusObjectUI::DLPlusObjectUI(const DLPlusObject &obj) : m_dlPlusObject(obj)
 {
-    //qDebug() << Q_FUNC_INFO;
-
     m_layout = new QHBoxLayout();
     QString label = getLabel(obj.getType());
     if (label.isEmpty())
