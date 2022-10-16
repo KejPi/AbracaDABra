@@ -8,6 +8,7 @@ It is based on Qt6 and uses _dabsdr_ demodulation library that is free for use b
 * Supports following input devices:
   * RTL-SDR (default device)
   * Airspy (optional)
+  * SoapySDR (optional)
   * RTL-TCP
   * Raw file input (in expert mode only, int16_t or uint8_t format)
 * Band scan with automatic service list
@@ -51,7 +52,10 @@ Following settings can be changed by editing AbracaDABra.ini:
       [AIRSPY]
       bias-T=false    # set to true to enable bias-T      
 
-Application shall not run while changing these settings, otherwise it will be overwritten.
+      [SOAPYSDR]
+      bandwidth=0     # 0 means default bandwidth, positive value means bandwidth value in Hz (e.g. bandwidth=1530000 is 1.53MHz BW)
+
+Application shall not run while changing ini file, otherwise the settings will be overwritten.
 
 It is also possible to use other than default INI file using `--ini` or `-i` command line parameter.
 
@@ -64,6 +68,7 @@ Following libraries are required:
 * mpg123
 * portaudio
 * airspy (optional)
+* SoapySDR (optional)
 
 For a fresh Ubuntu 22.04 installation you can use the following commands:
 
@@ -92,7 +97,10 @@ Then clone the project:
     Optional Airspy support:          
        
        cmake .. -DAIRSPY=ON
+
+    Optional SoapySDR support:          
        
+       cmake .. -DSOAPYSDR=ON
 
 3. Run make
 
