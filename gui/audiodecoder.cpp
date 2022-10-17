@@ -815,7 +815,7 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
 #ifdef AUDIO_DECODER_RAW_OUT
     if (m_rawOut)
     {
-        fwrite(outBufferPtr, 1, bytesToWrite, m_rawOut);
+        fwrite(m_outBufferPtr, 1, bytesToWrite, m_rawOut);
     }
 #endif
 
@@ -873,22 +873,22 @@ void AudioDecoder::writeAACOutput(const char *data, uint16_t dataLen)
     uint8_t adts_sfreqidx;
     uint8_t audioFs;
 
-    if ((aacHeader.bits.dac_rate == 0) && (aacHeader.bits.sbr_flag == 1))
+    if ((m_aacHeader.bits.dac_rate == 0) && (m_aacHeader.bits.sbr_flag == 1))
     {
         audioFs = 16 * 2;
         adts_sfreqidx = 0x8;  // 16 kHz
     }
-    if ((aacHeader.bits.dac_rate == 1) && (aacHeader.bits.sbr_flag == 1))
+    if ((m_aacHeader.bits.dac_rate == 1) && (m_aacHeader.bits.sbr_flag == 1))
     {
         audioFs = 24 * 2;
         adts_sfreqidx = 0x6;  // 24 kHz
     }
-    if ((aacHeader.bits.dac_rate == 0) && (aacHeader.bits.sbr_flag == 0))
+    if ((m_aacHeader.bits.dac_rate == 0) && (m_aacHeader.bits.sbr_flag == 0))
     {
         audioFs = 32;
         adts_sfreqidx = 0x5;  // 32 kHz
     }
-    if ((aacHeader.bits.dac_rate == 1) && (aacHeader.bits.sbr_flag == 0))
+    if ((m_aacHeader.bits.dac_rate == 1) && (m_aacHeader.bits.sbr_flag == 0))
     {
         audioFs = 48;
         adts_sfreqidx = 0x3;  // 48 kHz
@@ -914,7 +914,7 @@ void AudioDecoder::writeAACOutput(const char *data, uint16_t dataLen)
     aac_header[4] = 0b00000000;
 
     uint8_t * aac_header_ptr = &aac_header[5];
-    uint_fast8_t sbr_flag = aacHeader.bits.sbr_flag;
+    uint_fast8_t sbr_flag = m_aacHeader.bits.sbr_flag;
 
     if (sbr_flag)
     {
@@ -924,10 +924,10 @@ void AudioDecoder::writeAACOutput(const char *data, uint16_t dataLen)
         *aac_header_ptr++ |= (adts_sfreqidx >> 1) & 0x7;
         *aac_header_ptr  = (adts_sfreqidx & 0x1) << 7;
         // [4 bits] channel configuration
-        *aac_header_ptr |= (aacHeader.bits.aac_channel_mode + 1) << 3;
+        *aac_header_ptr |= (m_aacHeader.bits.aac_channel_mode + 1) << 3;
         // [4 bits] extension sample rate index = 3 or 5
-        *aac_header_ptr++ |= (5 - 2 * aacHeader.bits.dac_rate) >> 1;
-        *aac_header_ptr  = ((5 - 2 * aacHeader.bits.dac_rate) & 0x1) << 7;
+        *aac_header_ptr++ |= (5 - 2 * m_aacHeader.bits.dac_rate) >> 1;
+        *aac_header_ptr  = ((5 - 2 * m_aacHeader.bits.dac_rate) & 0x1) << 7;
         // [5 bits] AAC LC
         *aac_header_ptr |= 0b00010 << 2;
         // [3 bits] GASpecificConfig() with 960 transform = 0b100
@@ -951,7 +951,7 @@ void AudioDecoder::writeAACOutput(const char *data, uint16_t dataLen)
         *aac_header_ptr++ |= (adts_sfreqidx >> 1) & 0x7;
         *aac_header_ptr  = (adts_sfreqidx & 0x1) << 7;
         // [4 bits] channel configuration
-        *aac_header_ptr |= (aacHeader.bits.aac_channel_mode + 1) << 3;
+        *aac_header_ptr |= (m_aacHeader.bits.aac_channel_mode + 1) << 3;
         // [3 bits] GASpecificConfig() with 960 transform = 0b100
         *aac_header_ptr++ |= 0b100;
         // [3 bits] frameLengthType = 0b000
@@ -978,12 +978,12 @@ void AudioDecoder::writeAACOutput(const char *data, uint16_t dataLen)
     *aac_header_ptr = (au_size % 255) << (3 - sbr_flag);
 
     // total length = total size - 3 (length is in byte 1-2, thus -3 bytes)
-    int len = 9 + aacHeader.bits.sbr_flag + au_size_255 + 1 + au_size - 3;
+    int len = 9 + m_aacHeader.bits.sbr_flag + au_size_255 + 1 + au_size - 3;
 
     aac_header[1] |= (len >> 8) & 0x1F;
     aac_header[2] = len & 0xFF;
 
-    fwrite(aac_header, sizeof(uint8_t), 9 + aacHeader.bits.sbr_flag + au_size_255, m_aacOut);
+    fwrite(aac_header, sizeof(uint8_t), 9 + m_aacHeader.bits.sbr_flag + au_size_255, m_aacOut);
 
     uint8_t byte = *aac_header_ptr;
     const uint8_t * auPtr = (const uint8_t *)data; //&buffer[mscDataPtr->au_start[r]];
