@@ -171,7 +171,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_volumeSlider->setSingleStep(10);
     m_volumeSlider->setToolTip("Audio volume");
 #ifdef Q_OS_WIN
-    volumeSlider->setMaximumHeight(15);
+    m_volumeSlider->setMaximumHeight(15);
 #endif
     connect(m_muteLabel, &ClickableLabel::toggled, m_volumeSlider, &QSlider::setDisabled);
 
@@ -607,7 +607,7 @@ void MainWindow::onSnrLevel(float snr)
     if (static_cast<int>(SNR10Threhold::SNR_BAD) > snr10)
     {   // bad SNR
 #ifndef __APPLE__
-        snrProgress->setStyleSheet(snrProgressStylesheet[0]);
+        m_snrProgressbar->setStyleSheet(snrProgressStylesheet[0]);
 #endif
         if (isDarkMode())
         {
@@ -621,7 +621,7 @@ void MainWindow::onSnrLevel(float snr)
     else if (static_cast<int>(SNR10Threhold::SNR_GOOD) > snr10)
     {   // medium SNR
 #ifndef __APPLE__
-        snrProgress->setStyleSheet(snrProgressStylesheet[1]);
+        m_snrProgressbar->setStyleSheet(snrProgressStylesheet[1]);
 #endif
         if (isDarkMode())
         {
@@ -635,7 +635,7 @@ void MainWindow::onSnrLevel(float snr)
     else
     {   // good SNR
 #ifndef __APPLE__
-        snrProgress->setStyleSheet(snrProgressStylesheet[2]);
+        m_snrProgressbar->setStyleSheet(snrProgressStylesheet[2]);
 #endif
         if (isDarkMode())
         {

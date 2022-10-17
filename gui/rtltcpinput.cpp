@@ -64,7 +64,7 @@ RtlTcpInput::~RtlTcpInput()
 
             // close socket
 #if defined(_WIN32)
-            closesocket(sock);
+            closesocket(m_sock);
 #else
             ::close(m_sock);
 #endif
@@ -146,7 +146,7 @@ bool RtlTcpInput::openDevice()
         }
 
         struct sockaddr_in *sa = (struct sockaddr_in *) rp->ai_addr;
-        qDebug("RTL-TCP: Trying to connect to: %s:%d", inet_ntoa(sa->sin_addr), port);
+        qDebug("RTL-TCP: Trying to connect to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
         ::connect(sfd, rp->ai_addr, rp->ai_addrlen);
         // https://docs.microsoft.com/en-us/previous-versions/windows/embedded/aa450263(v=msdn.10)
         //  It is normal for WSAEWOULDBLOCK to be reported as the result from calling connect (Windows Sockets)
@@ -157,7 +157,7 @@ bool RtlTcpInput::openDevice()
         pfd.events = POLLIN;
         if (WSAPoll(&pfd, 1, 2000) > 0)
         {
-            qDebug("RTL-TCP: Connected to: %s:%d", inet_ntoa(sa->sin_addr), port);
+            qDebug("RTL-TCP: Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
 
             flags = 0;  // If flags != 0, non-blocking mode is enabled.
             if (NO_ERROR != ioctlsocket(sfd, FIONBIO, &flags))
@@ -165,7 +165,7 @@ bool RtlTcpInput::openDevice()
                 qDebug() << "RTL-TCP: Failed to set blocking socket";
             }
 
-            sock = sfd;
+            m_sock = sfd;
             break; /* Success */
         }
         else
@@ -185,7 +185,7 @@ bool RtlTcpInput::openDevice()
         connTimeout.tv_usec = 0;
         if (::select(sfd+1, nullptr, &connFd, nullptr, &connTimeout) > 0)
         {
-            qDebug("RTL-TCP: Connected to: %s:%d", inet_ntoa(sa->sin_addr), port);
+            qDebug("RTL-TCP: Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
 
             flags = 0;  // If flags != 0, non-blocking mode is enabled.
             if (NO_ERROR != ioctlsocket(sfd, FIONBIO, &flags))
@@ -193,7 +193,7 @@ bool RtlTcpInput::openDevice()
                 qDebug() << "RTL-TCP: Failed to set blocking socket";
             }
 
-            sock = sfd;
+            m_sock = sfd;
             break; /* Success */
         }
         else
@@ -269,11 +269,11 @@ bool RtlTcpInput::openDevice()
 #if defined(_WIN32)
 #if (_WIN32_WINNT >= 0x0600)
     struct pollfd  fd;
-    fd.fd = sock;
+    fd.fd = m_sock;
     fd.events = POLLIN;
     if (WSAPoll(&fd, 1, 2000) > 0)
     {
-        ::recv(sock, (char *) &dongleInfo, sizeof(dongleInfo), 0);
+        ::recv(m_sock, (char *) &dongleInfo, sizeof(dongleInfo), 0);
     }
     else
     {   // -1 is error, 0 is timeout
@@ -540,7 +540,7 @@ void RtlTcpInput::onReadThreadStopped()
 
     // close socket
 #if defined(_WIN32)
-    closesocket(sock);
+    closesocket(m_sock);
 #else
     ::close(m_sock);
 #endif

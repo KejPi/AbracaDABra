@@ -51,7 +51,7 @@ RartTcpInput::~RartTcpInput()
 
             // close socket
 #if defined(_WIN32)
-            closesocket(sock);
+            closesocket(m_sock);
 #else
             ::close(m_sock);
 #endif
@@ -149,11 +149,11 @@ bool RartTcpInput::openDevice()
 #if defined(_WIN32)
 #if (_WIN32_WINNT >= 0x0600)
     struct pollfd  fd;
-    fd.fd = sock;
+    fd.fd = m_sock;
     fd.events = POLLIN;
     if (WSAPoll(&fd, 1, 2000) > 0)
     {
-        ::recv(sock, (char *) &dongleInfo, sizeof(dongleInfo), 0);
+        ::recv(m_sock, (char *) &dongleInfo, sizeof(dongleInfo), 0);
     }
     else
     {   // -1 is error, 0 is timeout
@@ -274,7 +274,7 @@ void RartTcpInput::onReadThreadStopped()
 
     // close socket
 #if defined(_WIN32)
-    closesocket(sock);
+    closesocket(m_sock);
 #else
     ::close(m_sock);
 #endif
