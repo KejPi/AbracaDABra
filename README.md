@@ -80,6 +80,10 @@ Optional Airspy support:
 
        sudo apt-get install libairspy-dev
 
+Optional SoapySDR support:       
+
+       sudo apt-get install libsoapysdr-dev
+
 Then clone the project:
 
        git clone https://github.com/KejPi/AbracaDABra/
