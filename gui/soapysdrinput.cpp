@@ -491,7 +491,7 @@ SoapySdrWorker::SoapySdrWorker(SoapySDR::Device * device, double sampleRate, int
     m_rxChannel = rxChannel;
 
     // we cannot produce more samples in SRC
-    m_filterOutBuffer = new ( std::align_val_t(16) ) float[SOAPYSDR_INPUT_SAMPLES*2];
+    m_filterOutBuffer = (float *) operator new[](sizeof(float) * SOAPYSDR_INPUT_SAMPLES*2, (std::align_val_t)(16));
     m_src = new InputDeviceSRC(sampleRate);
 }
 
