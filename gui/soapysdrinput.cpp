@@ -589,24 +589,23 @@ void SoapySdrWorker::dumpToFileStop()
     m_dumpFileMutex.unlock();
 }
 
-void SoapySdrWorker::dumpBuffer(unsigned char *buf, uint32_t len)
+void SoapySdrWorker::dumpBuffer(const float *buf, uint32_t numIQ)
 {
     m_dumpFileMutex.lock();
     if (nullptr != m_dumpFile)
     {
 #if SOAPYSDR_DUMP_INT16
         // dumping in int16
-        float * floatBuf = (float *) buf;
-        int16_t int16Buf[len/sizeof(float)];
-        for (int n = 0; n < len/sizeof(float); ++n)
+        int16_t int16Buf[numIQ * 2];
+        for (int n = 0; n < numIQ*2; ++n)
         {
-            int16Buf[n] = *floatBuf++ * SOAPYSDR_DUMP_FLOAT2INT16;
+            int16Buf[n] = int16_t(*buf++ * SOAPYSDR_DUMP_FLOAT2INT16);
         }
         ssize_t bytes = fwrite(int16Buf, 1, sizeof(int16Buf), m_dumpFile);
 
 #else
         // dumping in float
-        ssize_t bytes = fwrite(buf, 1, len, dumpFile);
+        ssize_t bytes = fwrite(buf, sizeof(float), 2*numIQ, m_dumpFile);
 #endif
         emit dumpedBytes(bytes);
     }
@@ -655,7 +654,7 @@ void SoapySdrWorker::processInputData(std::complex<float> buff[], size_t numSamp
 
     if (isDumpingIQ())
     {
-        dumpBuffer((unsigned char *) m_filterOutBuffer, bytesToWrite);
+        dumpBuffer(m_filterOutBuffer, numOutputIQ);
     }
 
     // there is enough room in buffer

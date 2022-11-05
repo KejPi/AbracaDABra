@@ -53,7 +53,7 @@ private:
     uint_fast8_t m_signalLevelEmitCntr;
 
     bool isDumpingIQ() const { return m_enaDumpToFile; }
-    void dumpBuffer(unsigned char *buf, uint32_t len);    
+    void dumpBuffer(const float *buf, uint32_t numIQ);
     void processInputData(std::complex<float> buff[], size_t numSamples);
 };
 
