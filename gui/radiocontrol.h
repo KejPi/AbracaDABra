@@ -189,6 +189,12 @@ struct RadioControlService
     // Access Control System (ACS) used for the service
     uint8_t CAId;
 
+    // Announcements support
+    uint16_t ASu;
+
+    // cluster ids
+    QByteArray clusterIds;
+
     RadioControlServiceCompList serviceComponents;
 };
 

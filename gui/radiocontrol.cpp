@@ -218,6 +218,11 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                 newService.pty.s = dabService.pty.s;
                 newService.pty.d = dabService.pty.d;
                 newService.CAId = dabService.CAId;
+                newService.ASu = dabService.ASu;
+                for (int n = 0; n < dabService.numClusterIds; ++n)
+                {
+                    newService.clusterIds.append(dabService.clusterIds[n]);
+                }
                 m_serviceList.insert(sid.value(), newService);
                 m_numRequestsPending++;
                 dabGetServiceComponent(sid.value());
@@ -870,11 +875,33 @@ QString RadioControl::ensembleConfigurationString() const
             strOut << QString(" PTY: %1").arg(s.pty.s);
             if (s.pty.d != 0)
             {
-                strOut << QString(" (dynamic %1)").arg(s.pty.d);
+                strOut << QString(" (dynamic %1), ").arg(s.pty.d);
             }
             else
             {
-                strOut << " (static)";
+                strOut << " (static), ";
+            }
+            if (0 == s.ASu)
+            {
+                strOut << "Announcements: No";
+            }
+            else
+            {
+                strOut << "Announcements: ";
+                for (int b = 0; b < 16; ++b)
+                {
+                    if ((1 << b) & s.ASu)
+                    {
+                        strOut << DabTables::getAnnouncementName(b) << ", ";
+                    }
+                }
+                strOut << QString("Cluster IDs [");
+                strOut << QString("%1").arg(s.clusterIds.at(0), 2, 16, QLatin1Char('0')).toUpper();
+                for (int d = 1; d < s.clusterIds.size(); ++d)
+                {
+                    strOut << QString(" %1").arg(s.clusterIds.at(d), 2, 16, QLatin1Char('0')).toUpper();
+                }
+                strOut << "]";
             }
         }
         else

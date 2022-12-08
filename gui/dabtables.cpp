@@ -557,5 +557,23 @@ QString DabTables::getCountryName(uint32_t SId)
         case 0xF3F: return QString("Mongolia");
 
         default: return QString("Unknown");
+        }
+}
+
+QString DabTables::getAnnouncementName(uint8_t bit)
+{
+    switch (static_cast<DabAnnoucement>(bit))
+    {
+    case DabAnnoucement::Trafic:    return QString("Road Traffic flash");
+    case DabAnnoucement::Transport: return QString("Transport flash");
+    case DabAnnoucement::Warning:   return QString("Warning/Service");
+    case DabAnnoucement::News:      return QString("News flash");
+    case DabAnnoucement::Weather:   return QString("Area weather flash");
+    case DabAnnoucement::Event:     return QString("Event announcement");
+    case DabAnnoucement::Special:   return QString("Special event");
+    case DabAnnoucement::Programme: return QString("Programme Information");
+    case DabAnnoucement::Sport:     return QString("Sport report");
+    case DabAnnoucement::Financial: return QString("Financial report");
+    default:                        return QString("Unknown");
     }
 }
