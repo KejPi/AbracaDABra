@@ -227,6 +227,11 @@ enum class RadioControlEventType
     RESET,
 };
 
+struct RadioControlServiceSelection
+{
+    QList<dabsdrUserAppListItem_t> * pUserAppList;
+};
+
 struct RadioControlEvent
 {
     RadioControlEventType type;
@@ -234,7 +239,37 @@ struct RadioControlEvent
     // service identification where needed
     uint32_t SId;
     uint8_t SCIdS;
-    intptr_t pData;
+    union
+    {   // this is data payload transferred from DABSDR
+        // no data => set to nullptr
+        intptr_t pNoData;
+        // sync level
+        dabsdrSyncLevel_t syncLevel;
+        // tuned frequency
+        uint32_t frequency;
+        // ensemble information
+        dabsdrNtfEnsemble_t * pEnsembleInfo;
+        // service list
+        QList<dabsdrServiceListItem_t> * pServiceList;
+        // service component list
+        QList<dabsdrServiceCompListItem_t> * pServiceCompList;
+        // user applications list
+        QList<dabsdrUserAppListItem_t> * pUserAppList;
+        // service selected
+        RadioControlServiceSelection * pServiceSelectionInfo;
+        // service stopped
+        dabsdrNtfServiceStop_t * pServiceStopInfo;
+        // xpad application started / stopped
+        dabsdrXpadAppStartStop_t * pXpadAppStartStopInfo;
+        // periodic notification
+        dabsdrNtfPeriodic_t * pNotifyData;
+        // reset occured
+        dabsdrNtfResetFlags_t resetFlag;
+        // user application data group
+        RadioControlUserAppData * pUserAppData;
+        // dynamic labale data group
+        QByteArray * pDataGroupDL;
+    };
 };
 
 class RadioControl : public QObject
