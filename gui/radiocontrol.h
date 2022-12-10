@@ -193,7 +193,7 @@ struct RadioControlService
     uint16_t ASu;
 
     // cluster ids
-    QByteArray clusterIds;
+    QList<uint8_t> clusterIds;
 
     RadioControlServiceCompList serviceComponents;
 };
