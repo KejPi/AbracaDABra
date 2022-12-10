@@ -97,11 +97,16 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
     }
     else
     {
+        int minWidth = ui->ensStructureTextEdit->document()->idealWidth()
+                       + ui->ensStructureTextEdit->contentsMargins().left()
+                       + ui->ensStructureTextEdit->contentsMargins().right()
+                       + ui->ensStructureTextEdit->verticalScrollBar()->width();
 
-        ui->ensStructureTextEdit->setMinimumWidth(ui->ensStructureTextEdit->document()->idealWidth()
-                        + ui->ensStructureTextEdit->contentsMargins().left()
-                        + ui->ensStructureTextEdit->contentsMargins().right()
-                        + ui->ensStructureTextEdit->verticalScrollBar()->width());
+        if (minWidth > 1000)
+        {
+            minWidth = 1000;
+        }
+        ui->ensStructureTextEdit->setMinimumWidth(minWidth);
     }
 }
 
