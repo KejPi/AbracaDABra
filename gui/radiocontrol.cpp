@@ -25,6 +25,10 @@ RadioControl::RadioControl(QObject *parent) : QObject(parent)
     m_frequency = 0;
     m_serviceList.clear();
     m_serviceRequest.SId = m_serviceRequest.SCIdS = 0;
+    m_ensembleInfoTimeoutTimer = new QTimer(this);
+    m_ensembleInfoTimeoutTimer->setSingleShot(true);
+    m_ensembleInfoTimeoutTimer->setInterval(RADIO_CONTROL_ENSEMBLE_TIMEOUT_SEC*1000);
+    connect(m_ensembleInfoTimeoutTimer, &QTimer::timeout, this, &RadioControl::onEnsembleInfoTimeout);
 
     connect(this, &RadioControl::dabEvent, this, &RadioControl::onDabEvent, Qt::QueuedConnection);
 }
@@ -202,7 +206,8 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         }
         else
         {
-            m_numRequestsPending = 0;
+            m_numReqPendingServiceList = 0;
+            m_numReqPendingUserApp = 0;
             for (auto const & dabService : *pServiceList)
             {
                 DabSId sid(dabService.sid, m_ensemble.ecc());
@@ -224,7 +229,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                     newService.clusterIds.append(dabService.clusterIds[n]);
                 }
                 m_serviceList.insert(sid.value(), newService);
-                m_numRequestsPending++;
+                m_numReqPendingServiceList++;
                 dabGetServiceComponent(sid.value());
             }
         }
@@ -238,8 +243,8 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 #endif
         QList<dabsdrServiceCompListItem_t> * pList = reinterpret_cast<QList<dabsdrServiceCompListItem_t> *>(pEvent->pData);
         if (!pList->isEmpty() && m_ensemble.isValid())
-        {   // all service components belong to the same SId, reading sid from the first            
-            DabSId sid(pList->at(0).SId, m_ensemble.ecc());
+        {   // all service components belong to the same SId
+            DabSId sid(pEvent->SId, m_ensemble.ecc());
 #if RADIO_CONTROL_VERBOSE
             qDebug("RadioControlEvent::SERVICE_COMPONENT_LIST %8.8X", sid.value());
 #endif
@@ -261,9 +266,6 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                     if ((dabServiceComp.SubChAddr < 0)
                        || ((DabTMId::StreamAudio == DabTMId(dabServiceComp.TMId)) && (!dabServiceComp.ps) && (dabServiceComp.label.str[0] == '\0'))
                        || ((DabTMId::PacketData == DabTMId(dabServiceComp.TMId)) && (dabServiceComp.packetData.packetAddress < 0))
-#if !(RADIO_CONTROL_TEST_MODE)  // data service without user application is allowed in test mode, timeout coud be implemented insted
-                       || ((DabTMId::StreamAudio != DabTMId(dabServiceComp.TMId)) && (dabServiceComp.numUserApps <= 0))  // user app for data services
-#endif
                         )
                     {
                         requestUpdate = true;
@@ -347,18 +349,30 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                 if (requestUpdate)
                 {
                     serviceIt->serviceComponents.clear();
-                    //dabGetServiceComponent(sid.value());
                     uint32_t sidVal = sid.value();
-                    QTimer::singleShot(1*1000, this, [this, sidVal](){ dabGetServiceComponent(sidVal); } );
+                    QTimer::singleShot(100, this, [this, sidVal](){ dabGetServiceComponent(sidVal); } );
                 }
                 else
                 {  // service list item information is complete
-                   m_numRequestsPending--;
                    for (auto & serviceComp : serviceIt->serviceComponents)
                    {
                        serviceComp.userApps.clear();
-                       m_numRequestsPending++;
+                       m_numReqPendingUserApp++;
                        dabGetUserApps(serviceIt->SId.value(), serviceComp.SCIdS);
+                   }
+                   if (--m_numReqPendingServiceList == 0)
+                   {   // service list is complete
+                       if (m_isReconfigurationOngoing)
+                       {
+                           m_isReconfigurationOngoing = false;
+
+                           // find current service selection
+                       }
+
+                       emit serviceListComplete(m_ensemble);
+
+                       // start timeout timer (10 sec) for getting info about uuser apps and announcements
+                       m_ensembleInfoTimeoutTimer->start();
                    }
                 }
             }
@@ -373,19 +387,21 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::USER_APP_LIST:
     {
+#if 1 // RADIO_CONTROL_VERBOSE
+        qDebug("RadioControlEvent::USER_APP_LIST SID %8.8X SCIdS %d", pEvent->SId, pEvent->SCIdS);
+#endif
+
         QList<dabsdrUserAppListItem_t> * pList = reinterpret_cast<QList<dabsdrUserAppListItem_t> *>(pEvent->pData);
         if (!pList->isEmpty())
-        {   // all user apps belong to the same SId, reading sid from the first
-            DabSId sid(pList->at(0).SId, m_ensemble.ecc());
-
-            //qDebug("RadioControlEventType::USER_APP_LIST SID %6.6X : %d requestPending = %d", pList->at(0).SId, pList->at(0).SCIdS, requestsPending);
+        {   // all user apps belong to the same SId
+            DabSId sid(pEvent->SId, m_ensemble.ecc());
 
             // find service ID
             serviceIterator serviceIt = m_serviceList.find(sid.value());
             if (serviceIt != m_serviceList.end())
             {   // SId found
-                // all user apps belong to the same SId+SCIdS, reading SCIdS from the first
-                serviceComponentIterator scIt = serviceIt->serviceComponents.find(pList->at(0).SCIdS);
+                // all user apps belong to the same SId+SCIdS
+                serviceComponentIterator scIt = serviceIt->serviceComponents.find(pEvent->SCIdS);
                 if (scIt != serviceIt->serviceComponents.end())
                 {   // service component found
                     scIt->userApps.clear();
@@ -412,30 +428,34 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                         scIt->userApps.insert(newUserApp.uaType, newUserApp);
                     }
                 }
-                else
-                { /* SC not found - this should not happen */ }
+                else { /* SC not found - this should not happen */ }
             }
-            else
-            { /* service nod found - this should not happen */ }
+            else { /* service not found - this should not happen */ }
+
+            if (--m_numReqPendingUserApp == 0)
+            {
+                m_isEnsembleComplete = true;
+            }
         }
         else
-        {   // no user apps for some service
+        {   // no user apps
+            // TSI EN 300 401 V2.1.1 [6.1]
+            // FIG 0/13 may be signalled at a slower rate but not less frequently than once per second.
+            // Lets try again in 1 second -> we do not know if there are really no user apps or we missed FIG0/13
+            if (!m_isEnsembleComplete)
+            {
+                uint32_t sid = pEvent->SId;
+                uint8_t scids = pEvent->SCIdS;
+                QTimer::singleShot(1000, this, [this, sid, scids](){ dabGetUserApps(sid, scids); } );
+            }
+            else { /* timeout occured */ }
         }
 
-        if (--m_numRequestsPending == 0)
+        if (m_isEnsembleComplete)
         {
-            // enable SLS automatically - if available
-            startUserApplication(DabUserApplicationType::SlideShow, true);
-
+            m_ensembleInfoTimeoutTimer->stop();
             qDebug() << "=== MCI complete";
             emit ensembleConfiguration(ensembleConfigurationString());
-            if (m_isReconfigurationOngoing)
-            {
-                m_isReconfigurationOngoing = false;
-
-                // find current service selection
-            }
-            emit ensembleComplete(m_ensemble);
         }
 
         delete pList;
@@ -1104,8 +1124,18 @@ void RadioControl::clearEnsemble()
     m_ensemble.label.clear();
     m_ensemble.labelShort.clear();
     m_ensemble.frequency = 0;
+    m_ensembleInfoTimeoutTimer->stop();
+    m_isEnsembleComplete = false;
 
     emit ensembleConfiguration("");
+}
+
+void RadioControl::onEnsembleInfoTimeout()
+{
+    m_isEnsembleComplete = true;
+
+    qDebug() << "=== MCI timeout";
+    emit ensembleConfiguration(ensembleConfigurationString());
 }
 
 QString RadioControl::toShortLabel(QString & label, uint16_t charField) const
@@ -1207,6 +1237,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
             }
 
             RadioControlEvent * pEvent = new RadioControlEvent;
+            pEvent->SId = pInfo->SId;
             pEvent->type = RadioControlEventType::SERVICE_COMPONENT_LIST;
             pEvent->status = p->status;
             pEvent->pData = reinterpret_cast<intptr_t>(pList);
@@ -1214,7 +1245,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         }
         else
         {
-            qDebug("SId %4.4X not found", pInfo->sid);
+            qDebug("SId %4.4X not found", pInfo->SId);
         }
     }
         break;
@@ -1235,6 +1266,8 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
             RadioControlEvent * pEvent = new RadioControlEvent;
             pEvent->type = RadioControlEventType::USER_APP_LIST;
             pEvent->status = p->status;
+            pEvent->SId = pInfo->SId;
+            pEvent->SCIdS = pInfo->SCIdS;
             pEvent->pData = reinterpret_cast<intptr_t>(pList);
             radioCtrl->emit_dabEvent(pEvent);
         }

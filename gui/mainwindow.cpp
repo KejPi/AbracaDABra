@@ -322,7 +322,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     connect(m_radioControl, &RadioControl::ensembleInformation, this, &MainWindow::onEnsembleInfo, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleReconfiguration, this, &MainWindow::onEnsembleReconfiguration, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::ensembleComplete, this, &MainWindow::onEnsembleComplete, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::serviceListComplete, this, &MainWindow::onEnsembleComplete, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::syncStatus, this, &MainWindow::onSyncStatus, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::snrLevel, this, &MainWindow::onSnrLevel, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::dabTime, this, &MainWindow::onDabTime, Qt::QueuedConnection);
@@ -1890,7 +1890,7 @@ void MainWindow::bandScan()
     connect(m_radioControl, &RadioControl::syncStatus, dialog, &BandScanDialog::onSyncStatus, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleInformation, dialog, &BandScanDialog::onEnsembleFound, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::tuneDone, dialog, &BandScanDialog::onTuneDone, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::ensembleComplete, dialog, &BandScanDialog::onEnsembleComplete, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::serviceListComplete, dialog, &BandScanDialog::onServiceListComplete, Qt::QueuedConnection);
     connect(m_serviceList, &ServiceList::serviceAdded, dialog, &BandScanDialog::onServiceFound);
     connect(dialog, &BandScanDialog::scanStarts, this, &MainWindow::clearServiceList);
     connect(dialog, &BandScanDialog::finished, this, &MainWindow::onBandScanFinished);

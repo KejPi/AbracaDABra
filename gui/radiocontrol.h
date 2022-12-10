@@ -22,6 +22,8 @@
 // there are 12 FIB's in one DAB frame
 #define RADIO_CONTROL_NOTIFICATION_FIB_EXPECTED  (12*(1 << RADIO_CONTROL_NOTIFICATION_PERIOD))
 
+#define RADIO_CONTROL_ENSEMBLE_TIMEOUT_SEC (10)
+
 // this is used for testing of receiver perfomance, it allows ensemble ECC = 0
 // and data services without user application
 #define RADIO_CONTROL_TEST_MODE 0
@@ -229,6 +231,9 @@ struct RadioControlEvent
 {
     RadioControlEventType type;
     dabsdrNotificationStatus_t status;
+    // service identification where needed
+    uint32_t SId;
+    uint8_t SCIdS;
     intptr_t pData;
 };
 
@@ -254,18 +259,18 @@ signals:
     void freqOffset(float f);
     void fibCounter(int expected, int errors);
     void mscCounter(int correct, int errors);
-    void tuneDone(uint32_t freq);
-    void ensembleInformation(const RadioControlEnsemble & ens);
+    void tuneInputDevice(uint32_t freq);
+    void tuneDone(uint32_t freq);    
     void serviceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
+    void serviceListComplete(const RadioControlEnsemble & ens);
     void dlDataGroup(const QByteArray & dg);
     void userAppData(const RadioControlUserAppData & data);
     void audioServiceSelection(const RadioControlServiceComponent & s);
     void audioServiceReconfiguration(const RadioControlServiceComponent & s);
     void audioData(QByteArray * pData);
-    void dabTime(const QDateTime & dateAndTime);
-    void tuneInputDevice(uint32_t freq);
+    void dabTime(const QDateTime & dateAndTime);   
+    void ensembleInformation(const RadioControlEnsemble & ens);
     void ensembleConfiguration(const QString &);
-    void ensembleComplete(const RadioControlEnsemble & ens);
     void ensembleReconfiguration(const RadioControlEnsemble & ens);
     void ensembleRemoved(const RadioControlEnsemble & ens);
 private:
@@ -284,8 +289,17 @@ private:
         uint8_t SCIdS;
     } m_currentService;
 
-    // this is a counter of requests to check when the ensemble information is complete
-    int m_numRequestsPending = 0;
+    // this is a counter of requests to check
+    // when the service list is complete
+    int m_numReqPendingServiceList = 0;
+
+    // this is a counter of requests to check
+    // when the ensemble information is complete
+    int m_numReqPendingUserApp = 0;
+
+    // set when ensemble information is complete
+    bool m_isEnsembleComplete = false;
+    QTimer * m_ensembleInfoTimeoutTimer;
 
     bool m_isReconfigurationOngoing = false;
 
@@ -304,6 +318,8 @@ private:
     QString toShortLabel(QString & label, uint16_t charField) const;
     QString ensembleConfigurationString() const;
     void clearEnsemble();
+    void onEnsembleInfoTimeout();
+    bool isCurrentService(uint32_t sid, uint8_t scids) { return ((sid == m_currentService.SId) && (scids == m_currentService.SCIdS)); }
 
     // wrapper functions for dabsdr API
     void dabTune(uint32_t freq) { dabsdrRequest_Tune(m_dabsdrHandle, freq); }
