@@ -133,7 +133,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         dabsdrNtfEnsemble_t * pInfo = reinterpret_cast<dabsdrNtfEnsemble_t *>(pEvent->pData);
 
 #if RADIO_CONTROL_VERBOSE
-        qDebug("RadioControlEvent::ENSEMBLE_INFO 0x%8.8X", pInfo->ueid);
+        qDebug("RadioControlEvent::ENSEMBLE_INFO 0x%8.8X '%s'", pInfo->ueid, pInfo->label.str);
 #endif
 
 #if (RADIO_CONTROL_TEST_MODE)
@@ -347,7 +347,9 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                 if (requestUpdate)
                 {
                     serviceIt->serviceComponents.clear();
-                    dabGetServiceComponent(sid.value());
+                    //dabGetServiceComponent(sid.value());
+                    uint32_t sidVal = sid.value();
+                    QTimer::singleShot(1*1000, this, [this, sidVal](){ dabGetServiceComponent(sidVal); } );
                 }
                 else
                 {  // service list item information is complete
@@ -1321,9 +1323,11 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;
+    case DABSDR_NID_ANNOUNCEMENT:
+        break;
     default:
         qDebug("Unexpected notification %d", p->nid);
-    }
+    }    
 }
 
 void RadioControl::dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx)
