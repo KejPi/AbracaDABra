@@ -216,6 +216,7 @@ enum class RadioControlEventType
     SERVICE_LIST,
     SERVICE_COMPONENT_LIST,
     USER_APP_LIST,
+    ANNOUNCEMENT_SUPPORT,
     SERVICE_SELECTION,
     SERVICE_STOP,
     XPAD_APP_START_STOP,
@@ -225,11 +226,7 @@ enum class RadioControlEventType
     AUDIO_DATA,
     RECONFIGURATION,
     RESET,
-};
-
-struct RadioControlServiceSelection
-{
-    QList<dabsdrUserAppListItem_t> * pUserAppList;
+    ANNOUNCEMENT,
 };
 
 struct RadioControlEvent
@@ -241,8 +238,6 @@ struct RadioControlEvent
     uint8_t SCIdS;
     union
     {   // this is data payload transferred from DABSDR
-        // no data => set to nullptr
-        intptr_t pNoData;
         // sync level
         dabsdrSyncLevel_t syncLevel;
         // tuned frequency
@@ -255,10 +250,8 @@ struct RadioControlEvent
         QList<dabsdrServiceCompListItem_t> * pServiceCompList;
         // user applications list
         QList<dabsdrUserAppListItem_t> * pUserAppList;
-        // service selected
-        RadioControlServiceSelection * pServiceSelectionInfo;
-        // service stopped
-        dabsdrNtfServiceStop_t * pServiceStopInfo;
+        // supported announcements
+        dabsdrNtfAnnouncementSupport_t * pAnnouncementSupport;
         // xpad application started / stopped
         dabsdrXpadAppStartStop_t * pXpadAppStartStopInfo;
         // periodic notification
@@ -269,6 +262,8 @@ struct RadioControlEvent
         RadioControlUserAppData * pUserAppData;
         // dynamic labale data group
         QByteArray * pDataGroupDL;
+        // announcement switching
+        dabsdrNtfAnnouncement_t * pAnnouncement;
     };
 };
 
@@ -322,6 +317,10 @@ private:
     struct {
         uint32_t SId;
         uint8_t SCIdS;
+
+        // announcement support
+        uint16_t ASu;
+        QList<uint8_t> clusterIds;
     } m_currentService;
 
     // this is a counter of requests to check
@@ -355,13 +354,16 @@ private:
     void clearEnsemble();
     void onEnsembleInfoTimeout();
     bool isCurrentService(uint32_t sid, uint8_t scids) { return ((sid == m_currentService.SId) && (scids == m_currentService.SCIdS)); }
+    void resetCurrentService();
+    void setCurrentServiceAnnouncementSupport();
 
     // wrapper functions for dabsdr API
     void dabTune(uint32_t freq) { dabsdrRequest_Tune(m_dabsdrHandle, freq); }
     void dabGetEnsembleInfo() { dabsdrRequest_GetEnsemble(m_dabsdrHandle); }
     void dabGetServiceList() { dabsdrRequest_GetServiceList(m_dabsdrHandle); }
-    void dabGetServiceComponent(uint32_t SId) { dabsdrRequest_GetServiceComponents(m_dabsdrHandle, SId); }
+    void dabGetServiceComponent(uint32_t SId) { dabsdrRequest_GetServiceComponents(m_dabsdrHandle, SId); }    
     void dabGetUserApps(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_GetUserAppList(m_dabsdrHandle, SId, SCIdS); }
+    void dabGetAnnouncementSupport(uint32_t SId) { dabsdrRequest_GetAnnouncementSupport(m_dabsdrHandle, SId); }
     void dabEnableAutoNotification() { dabsdrRequest_SetPeriodicNotify(m_dabsdrHandle, RADIO_CONTROL_NOTIFICATION_PERIOD, 0); }
     void dabServiceSelection(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_ServiceSelection(m_dabsdrHandle, SId, SCIdS); }
     void dabServiceStop(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_ServiceStop(m_dabsdrHandle, SId, SCIdS); }
