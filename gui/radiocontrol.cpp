@@ -1258,7 +1258,7 @@ void RadioControl::setCurrentServiceAnnouncementSupport()
             m_currentService.clusterIds.append(0xFE);
 
             // enable alarm announcement
-            m_currentService.ASu |= (1 << static_cast<int>(DabAnnoucement::Alarm));
+            m_currentService.ASu |= (1 << static_cast<int>(DabAnnouncement::Alarm));
         }
     }
     else

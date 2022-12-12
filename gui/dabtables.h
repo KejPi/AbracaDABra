@@ -84,10 +84,10 @@ enum class DabMotExtParameter
     CAReplacementObject = 0x24
 };
 
-enum class DabAnnoucement
+enum class DabAnnouncement
 {
     Alarm = 0,
-    Trafic = 1,
+    Traffic = 1,
     Transport,
     Warning,
     News,
