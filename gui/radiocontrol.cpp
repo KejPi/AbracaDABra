@@ -215,7 +215,6 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         else
         {
             m_numReqPendingServiceList = 0;
-            m_numReqPendingUserApp = 0;
             for (auto const & dabService : *pServiceList)
             {
                 DabSId sid(dabService.sid, m_ensemble.ecc());
@@ -240,7 +239,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                 {   // only programme services support announcements
                     // get supported announcements -> delay request by 1 second
                     uint32_t sidVal = sid.value();
-                    QTimer::singleShot(1000, this, [this, sidVal](){ dabGetAnnouncementSupport(sidVal); } );
+                    QTimer::singleShot(1000, this, [this, sidVal](){dabGetAnnouncementSupport(sidVal); } );
                 }
             }
         }
@@ -368,7 +367,6 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                    for (auto & serviceComp : serviceIt->serviceComponents)
                    {
                        serviceComp.userApps.clear();
-                       m_numReqPendingUserApp++;
                        dabGetUserApps(serviceIt->SId.value(), serviceComp.SCIdS);
                    }
                    if (--m_numReqPendingServiceList == 0)
@@ -401,74 +399,63 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 #if 1 // RADIO_CONTROL_VERBOSE
         qDebug("RadioControlEvent::USER_APP_LIST SID %8.8X SCIdS %d", pEvent->SId, pEvent->SCIdS);
 #endif
-
-        QList<dabsdrUserAppListItem_t> * pList = pEvent->pUserAppList;
-        if (!pList->isEmpty())
-        {   // all user apps belong to the same SId
-            DabSId sid(pEvent->SId, m_ensemble.ecc());
-
-            // find service ID
-            serviceIterator serviceIt = m_serviceList.find(sid.value());
-            if (serviceIt != m_serviceList.end())
-            {   // SId found
-                // all user apps belong to the same SId+SCIdS
-                serviceComponentIterator scIt = serviceIt->serviceComponents.find(pEvent->SCIdS);
-                if (scIt != serviceIt->serviceComponents.end())
-                {   // service component found
-                    scIt->userApps.clear();
-                    for (auto const & userApp : *pList)
-                    {
-                        RadioControlUserApp newUserApp;
-                        newUserApp.label = DabTables::convertToQString(userApp.label.str, userApp.label.charset).trimmed();
-                        newUserApp.labelShort = toShortLabel(newUserApp.label, userApp.label.charField).trimmed();
-                        newUserApp.uaType = DabUserApplicationType(userApp.type);
-                        for (int n = 0; n < userApp.dataLen; ++n)
-                        {
-                            newUserApp.uaData.append(userApp.data[n]);
-                        }
-                        if ((scIt->isAudioService()) && (userApp.dataLen >= 2))
-                        {
-                            //newUserApp.xpadData.value = (userApp.data[0] << 8) | userApp.data[1];
-                            newUserApp.xpadData.CAflag = (0 != (userApp.data[0] & 0x80));
-                            newUserApp.xpadData.CAOrgFlag = (0!= (userApp.data[0] & 0x40));
-                            newUserApp.xpadData.xpadAppTy = userApp.data[0]  & 0x1F;
-                            newUserApp.xpadData.dgFlag = (0 != (userApp.data[1] & 0x80));
-                            newUserApp.xpadData.DScTy = DabAudioDataSCty(userApp.data[1] & 0x3F);
-                        }
-
-                        scIt->userApps.insert(newUserApp.uaType, newUserApp);
-                    }
-                }
-                else { /* SC not found - this should not happen */ }
-            }
-            else { /* service not found - this should not happen */ }
-
-            if (--m_numReqPendingUserApp == 0)
-            {
-                m_isEnsembleComplete = true;
-            }
-        }
-        else
-        {   // no user apps
-            // TSI EN 300 401 V2.1.1 [6.1]
-            // FIG 0/13 may be signalled at a slower rate but not less frequently than once per second.
-            // Lets try again in 1 second -> we do not know if there are really no user apps or we missed FIG0/13
-            if (!m_isEnsembleComplete)
-            {
-                uint32_t sid = pEvent->SId;
-                uint8_t scids = pEvent->SCIdS;
-                QTimer::singleShot(1000, this, [this, sid, scids](){ dabGetUserApps(sid, scids); } );
-            }
-            else { /* timeout occured */ }
-        }
-
-        if (m_isEnsembleComplete)
+        if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
-            m_ensembleInfoTimeoutTimer->stop();
-            qDebug() << "=== MCI complete";
-            emit ensembleConfiguration(ensembleConfigurationString());
-        }
+            QList<dabsdrUserAppListItem_t> * pList = pEvent->pUserAppList;
+            if (!pList->isEmpty())
+            {   // all user apps belong to the same SId
+                DabSId sid(pEvent->SId, m_ensemble.ecc());
 
+                // find service ID
+                serviceIterator serviceIt = m_serviceList.find(sid.value());
+                if (serviceIt != m_serviceList.end())
+                {   // SId found
+                    // all user apps belong to the same SId+SCIdS
+                    serviceComponentIterator scIt = serviceIt->serviceComponents.find(pEvent->SCIdS);
+                    if (scIt != serviceIt->serviceComponents.end())
+                    {   // service component found
+                        scIt->userApps.clear();
+                        for (auto const & userApp : *pList)
+                        {
+                            RadioControlUserApp newUserApp;
+                            newUserApp.label = DabTables::convertToQString(userApp.label.str, userApp.label.charset).trimmed();
+                            newUserApp.labelShort = toShortLabel(newUserApp.label, userApp.label.charField).trimmed();
+                            newUserApp.uaType = DabUserApplicationType(userApp.type);
+                            for (int n = 0; n < userApp.dataLen; ++n)
+                            {
+                                newUserApp.uaData.append(userApp.data[n]);
+                            }
+                            if ((scIt->isAudioService()) && (userApp.dataLen >= 2))
+                            {
+                                //newUserApp.xpadData.value = (userApp.data[0] << 8) | userApp.data[1];
+                                newUserApp.xpadData.CAflag = (0 != (userApp.data[0] & 0x80));
+                                newUserApp.xpadData.CAOrgFlag = (0!= (userApp.data[0] & 0x40));
+                                newUserApp.xpadData.xpadAppTy = userApp.data[0]  & 0x1F;
+                                newUserApp.xpadData.dgFlag = (0 != (userApp.data[1] & 0x80));
+                                newUserApp.xpadData.DScTy = DabAudioDataSCty(userApp.data[1] & 0x3F);
+                            }
+
+                            scIt->userApps.insert(newUserApp.uaType, newUserApp);
+                        }
+                    }
+                    else { /* SC not found - this should not happen */ }
+                }
+                else { /* service not found - this should not happen */ }
+            }
+            else
+            {   // no user apps
+                // TSI EN 300 401 V2.1.1 [6.1]
+                // FIG 0/13 may be signalled at a slower rate but not less frequently than once per second.
+                // Lets try again in 1 second -> we do not know if there are really no user apps or we missed FIG0/13
+                if (!m_isEnsembleComplete)
+                {
+                    uint32_t sid = pEvent->SId;
+                    uint8_t scids = pEvent->SCIdS;
+                    QTimer::singleShot(1000, this, [this, sid, scids](){ dabGetUserApps(sid, scids); } );
+                }
+                else { /* timeout occured */ }
+            }
+        }
         delete pEvent->pUserAppList;
     }
         break;
@@ -680,7 +667,6 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::ANNOUNCEMENT:
     {
-#if 1
 #if RADIO_CONTROL_VERBOSE > 1
         qDebug() << "RadioControlEventType::ANNOUNCEMENT";
 #endif
@@ -698,7 +684,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                         m_currentService.announcementTimeoutTimer->stop();
                         m_currentService.activeCluster = 0;
 
-#if 1 // RADIO_CONTROL_VERBOSE > 1
+#if RADIO_CONTROL_VERBOSE > 1
                         qDebug() << "End of announcement for cluster ID" << pAnnouncement->clusterId;
 #endif
                         emit announcement(DabAnnouncement::Undefined, false);
@@ -743,7 +729,6 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
             qDebug() << "Ignoring announcement cluster ID" << pAnnouncement->clusterId;
 #endif
         }
-#endif
         delete pEvent->pAnnouncement;
     }
         break;
@@ -1260,7 +1245,7 @@ void RadioControl::onEnsembleInfoTimeout()
 {
     m_isEnsembleComplete = true;
 
-    qDebug() << "=== MCI timeout";
+    qDebug() << "=== MCI complete";
     emit ensembleConfiguration(ensembleConfigurationString());
 }
 

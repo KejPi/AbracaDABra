@@ -323,7 +323,6 @@ private:
         // announcement support
         uint16_t ASu;
         QList<uint8_t> clusterIds;
-
         uint8_t activeCluster = 0;
         QTimer * announcementTimeoutTimer;
     } m_currentService;
@@ -331,10 +330,6 @@ private:
     // this is a counter of requests to check
     // when the service list is complete
     int m_numReqPendingServiceList = 0;
-
-    // this is a counter of requests to check
-    // when the ensemble information is complete
-    int m_numReqPendingUserApp = 0;
 
     // set when ensemble information is complete
     bool m_isEnsembleComplete = false;
