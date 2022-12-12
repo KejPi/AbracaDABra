@@ -31,5 +31,7 @@
         <file>resources/up_dark.png</file>
         <file>resources/appIcon-linux.png</file>
         <file>resources/appIcon.png</file>
+        <file>resources/announcement.png</file>
+        <file>resources/announcement_dark.png</file>
     </qresource>
 </RCC>

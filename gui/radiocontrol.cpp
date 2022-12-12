@@ -30,11 +30,22 @@ RadioControl::RadioControl(QObject *parent) : QObject(parent)
     m_ensembleInfoTimeoutTimer->setInterval(RADIO_CONTROL_ENSEMBLE_TIMEOUT_SEC*1000);
     connect(m_ensembleInfoTimeoutTimer, &QTimer::timeout, this, &RadioControl::onEnsembleInfoTimeout);
 
+    m_currentService.announcementTimeoutTimer = new QTimer(this);
+    m_currentService.announcementTimeoutTimer->setSingleShot(true);
+    m_currentService.announcementTimeoutTimer->setInterval(RADIO_CONTROL_ANNOUNCEMENT_TIMEOUT_SEC*1000);
+    connect(m_currentService.announcementTimeoutTimer, &QTimer::timeout, this, &RadioControl::onAnnouncementTimeout);
+
     connect(this, &RadioControl::dabEvent, this, &RadioControl::onDabEvent, Qt::QueuedConnection);
 }
 
 RadioControl::~RadioControl()
-{   // this cancels dabsdr thread
+{
+    m_ensembleInfoTimeoutTimer->stop();
+    delete m_ensembleInfoTimeoutTimer;
+    m_currentService.announcementTimeoutTimer->stop();
+    delete m_currentService.announcementTimeoutTimer;
+
+    // this cancels dabsdr thread
     dabsdrDeinit(&m_dabsdrHandle);
 }
 
@@ -669,6 +680,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::ANNOUNCEMENT:
     {
+#if 1
 #if RADIO_CONTROL_VERBOSE > 1
         qDebug() << "RadioControlEventType::ANNOUNCEMENT";
 #endif
@@ -677,43 +689,61 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 
         if (m_currentService.clusterIds.contains(pAnnouncement->clusterId))
         {   // current service is member of announcement cluster
-            if (0 != (m_currentService.ASu & pAnnouncement->ASwFlags))
-            {   // announcement in current service
+            if (m_currentService.activeCluster != 0)
+            {
+                if (m_currentService.activeCluster == pAnnouncement->clusterId)
+                {   // announcement cluster is currently active
+                    if (0 == pAnnouncement->ASwFlags)
+                    {    // end of announcement
+                        m_currentService.announcementTimeoutTimer->stop();
+                        m_currentService.activeCluster = 0;
+
+#if 1 // RADIO_CONTROL_VERBOSE > 1
+                        qDebug() << "End of announcement for cluster ID" << pAnnouncement->clusterId;
+#endif
+                        emit announcement(DabAnnouncement::Undefined, false);
+                    }
+                    else
+                    {   // announcement continues - restart timer
+                        // ETSI TS 103 176 V2.4.1 [7.2.5]
+                        // the value of the ASw flags field - shall not change during an announcement
+                        // ==> ignoring any potential change
+                        m_currentService.announcementTimeoutTimer->start();
+                    }
+                }
+                else
+                { /* During the announcement the receiver shall monitor ASw information for only the active Cluster Id */ }
+            }
+            else
+            {   // no announcement is active -> let check if announcement belong to current service
+                //
                 // ETSI TS 103 176 V2.4.1 [7.4.3]
                 // The ASw flags field shall have one bit (bit flags b1 to b15) set to 1
                 // corresponding to the announcement type while the announcement is active
                 // ...
                 // An ASw flag field with more than one bit flag set to 1 is invalid and shall be ignored.
-                int announcementBit = DabTables::ASwValues.indexOf(pAnnouncement->ASwFlags);
-                if (announcementBit >= 0)
+                int announcementId = DabTables::ASwValues.indexOf(pAnnouncement->ASwFlags);
+                if (announcementId >= 0)
                 {   // valid ASw
-                    qDebug() << DabTables::getAnnouncementName(announcementBit)
-                            << "announcement in subchannel" <<  pAnnouncement->subChId;
-                }
-            }
-            else
-            {
-                if (0 == pAnnouncement->ASwFlags)
-                {    // end of announcement
 #if 1 // RADIO_CONTROL_VERBOSE > 1
-                     qDebug() << "End of announcement for cluster ID" << pAnnouncement->clusterId;
+                    qDebug() << DabTables::getAnnouncementName(static_cast<DabAnnouncement>(announcementId))
+                             << "announcement in subchannel" <<  pAnnouncement->subChId;
 #endif
+                    m_currentService.activeCluster = pAnnouncement->clusterId;
+                    m_currentService.announcementTimeoutTimer->start();
+                    emit announcement(static_cast<DabAnnouncement>(announcementId), true);
                 }
                 else
-                {   // announcement type not supported by current service - ignoring
-#if 1 // RADIO_CONTROL_VERBOSE > 1
-                    qDebug("Announcement %2.2X not supported by current service", pAnnouncement->ASwFlags);
-#endif
-                }
+                { /* invalid or not enabled for current service */ }
             }
         }
         else
-        {   // ignoring -> not relevant for current service
-#if 1 // RADIO_CONTROL_VERBOSE > 1
+        {   // ignoring -> cluster not relevant for current service
+#if RADIO_CONTROL_VERBOSE > 1
             qDebug() << "Ignoring announcement cluster ID" << pAnnouncement->clusterId;
 #endif
         }
-
+#endif
         delete pEvent->pAnnouncement;
     }
         break;
@@ -1009,7 +1039,7 @@ QString RadioControl::ensembleConfigurationString() const
                 {
                     if ((1 << b) & s.ASu)
                     {
-                        strOut << DabTables::getAnnouncementName(b) << ", ";
+                        strOut << DabTables::getAnnouncementName(static_cast<DabAnnouncement>(b)) << ", ";
                     }
                 }
                 strOut << QString("Cluster IDs [");
@@ -1238,7 +1268,9 @@ void RadioControl::resetCurrentService()
 {
     m_currentService.SId = 0;
     m_currentService.ASu = 0;
-    m_currentService.clusterIds.clear();
+    m_currentService.clusterIds.clear();    
+    m_currentService.announcementTimeoutTimer->stop();
+    m_currentService.activeCluster = 0;
 }
 
 void RadioControl::setCurrentServiceAnnouncementSupport()
@@ -1254,11 +1286,12 @@ void RadioControl::setCurrentServiceAnnouncementSupport()
             // Cluster Id = "1111 1111" shall be used exclusively for all Alarm announcements.
             m_currentService.clusterIds.append(0xFF);
 
-            // not defined in standard but seems to be used for alarm tests
+            // test alarm
+            // ETSI TS 103 176 V2.4.1 [Annex G]
             m_currentService.clusterIds.append(0xFE);
 
             // enable alarm announcement
-            m_currentService.ASu |= (1 << static_cast<int>(DabAnnoucement::Alarm));
+            m_currentService.ASu |= (1 << static_cast<int>(DabAnnouncement::Alarm));
         }
     }
     else
@@ -1266,6 +1299,17 @@ void RadioControl::setCurrentServiceAnnouncementSupport()
         m_currentService.ASu = 0;
         m_currentService.clusterIds.clear();
     }
+}
+
+void RadioControl::onAnnouncementTimeout()
+{
+    qDebug() << Q_FUNC_INFO;
+
+    // this can only happen when announcement starts and is not correctly finished
+
+    // forcing end of announcement
+    m_currentService.activeCluster = 0;
+    emit announcement(DabAnnouncement::Undefined, false);
 }
 
 QString RadioControl::toShortLabel(QString & label, uint16_t charField) const

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>875</width>
-    <height>606</height>
+    <width>897</width>
+    <height>651</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -78,6 +78,13 @@
           </property>
           <property name="text">
            <string>Service Name</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="ClickableLabel" name="announcementLabel">
+          <property name="text">
+           <string>AN</string>
           </property>
          </widget>
         </item>
@@ -395,8 +402,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>875</width>
-     <height>22</height>
+     <width>897</width>
+     <height>37</height>
     </rect>
    </property>
   </widget>

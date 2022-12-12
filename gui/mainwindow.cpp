@@ -269,6 +269,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->slsView->setMinimumSize(QSize(322, 242));
     ui->slsView->reset();
 
+    ui->announcementLabel->setToolTip("Ongoing announcement");
+    ui->announcementLabel->setHidden(true);
+
     ui->catSlsLabel->setToolTip("Browse categorized slides");
     ui->catSlsLabel->setHidden(true);
 
@@ -327,6 +330,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::snrLevel, this, &MainWindow::onSnrLevel, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::dabTime, this, &MainWindow::onDabTime, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListEntry, this, &MainWindow::onServiceListEntry, Qt::BlockingQueuedConnection);
+    connect(m_radioControl, &RadioControl::announcement, this, &MainWindow::onAnnouncement, Qt::QueuedConnection);
 
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfiguration, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::snrLevel, m_ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
@@ -1099,6 +1103,15 @@ void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponen
     }
 }
 
+void MainWindow::onAnnouncement(DabAnnouncement id, bool ongoing)
+{
+    if (ongoing)
+    {
+        ui->announcementLabel->setToolTip(QString("Ongoing announcement:<br><b>%1</b>")                                              .arg(DabTables::getAnnouncementName(id)));
+    }
+    ui->announcementLabel->setVisible(ongoing);
+}
+
 void MainWindow::clearEnsembleInformationLabels()
 {
     m_timeLabel->setText("");
@@ -1113,6 +1126,7 @@ void MainWindow::clearServiceInformationLabels()
     ui->serviceLabel->setText("No service");
     ui->favoriteLabel->setChecked(false);
     ui->catSlsLabel->setHidden(true);
+    ui->announcementLabel->setHidden(true);
     ui->serviceLabel->setToolTip("No service playing");
     ui->programTypeLabel->setText("");
     ui->audioEncodingLabel->setText("");
@@ -1969,6 +1983,8 @@ void MainWindow::setIcons()
 
         ui->catSlsLabel->setIcon(":/resources/catSls_dark.png");
 
+        ui->announcementLabel->setIcon(":/resources/announcement_dark.png");
+
         ui->switchSourceLabel->setIcon(":/resources/broadcast_dark.png");
     }
     else
@@ -1985,6 +2001,8 @@ void MainWindow::setIcons()
         ui->dlPlusLabel->setIcon(":/resources/up.png", true);
 
         ui->catSlsLabel->setIcon(":/resources/catSls.png");
+
+        ui->announcementLabel->setIcon(":/resources/announcement.png");
 
         ui->switchSourceLabel->setIcon(":/resources/broadcast.png");
     }

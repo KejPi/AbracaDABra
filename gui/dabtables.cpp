@@ -560,37 +560,37 @@ QString DabTables::getCountryName(uint32_t SId)
         }
 }
 
-QString DabTables::getAnnouncementName(uint8_t bit)
+QString DabTables::getAnnouncementName(DabAnnouncement announcement)
 {
-    switch (static_cast<DabAnnoucement>(bit))
+    switch (announcement)
     {
-    case DabAnnoucement::Alarm:     return QString("Alarm");
-    case DabAnnoucement::Traffic:    return QString("Road Traffic flash");
-    case DabAnnoucement::Transport: return QString("Transport flash");
-    case DabAnnoucement::Warning:   return QString("Warning/Service");
-    case DabAnnoucement::News:      return QString("News flash");
-    case DabAnnoucement::Weather:   return QString("Area weather flash");
-    case DabAnnoucement::Event:     return QString("Event announcement");
-    case DabAnnoucement::Special:   return QString("Special event");
-    case DabAnnoucement::Programme: return QString("Programme Information");
-    case DabAnnoucement::Sport:     return QString("Sport report");
-    case DabAnnoucement::Financial: return QString("Financial report");
-    default:                        return QString("Unknown");
+    case DabAnnouncement::Alarm:     return QString("Alarm");
+    case DabAnnouncement::Traffic:   return QString("Road Traffic flash");
+    case DabAnnouncement::Transport: return QString("Transport flash");
+    case DabAnnouncement::Warning:   return QString("Warning/Service");
+    case DabAnnouncement::News:      return QString("News flash");
+    case DabAnnouncement::Weather:   return QString("Area weather flash");
+    case DabAnnouncement::Event:     return QString("Event announcement");
+    case DabAnnouncement::Special:   return QString("Special event");
+    case DabAnnouncement::Programme: return QString("Programme Information");
+    case DabAnnouncement::Sport:     return QString("Sport report");
+    case DabAnnouncement::Financial: return QString("Financial report");
+    default:                         return QString("Unknown");
     }
 }
 
 const QList<uint16_t> DabTables::ASwValues =
 {
-    (1 << static_cast<int>(DabAnnoucement::Alarm)),
-    (1 << static_cast<int>(DabAnnoucement::Traffic)),
-    (1 << static_cast<int>(DabAnnoucement::Transport)),
-    (1 << static_cast<int>(DabAnnoucement::Warning)),
-    (1 << static_cast<int>(DabAnnoucement::News)),
-    (1 << static_cast<int>(DabAnnoucement::Weather)),
-    (1 << static_cast<int>(DabAnnoucement::Event)),
-    (1 << static_cast<int>(DabAnnoucement::Special)),
-    (1 << static_cast<int>(DabAnnoucement::Programme)),
-    (1 << static_cast<int>(DabAnnoucement::Sport)),
-    (1 << static_cast<int>(DabAnnoucement::Financial)),
+    (1 << static_cast<int>(DabAnnouncement::Alarm)),
+    (1 << static_cast<int>(DabAnnouncement::Traffic)),
+    (1 << static_cast<int>(DabAnnouncement::Transport)),
+    (1 << static_cast<int>(DabAnnouncement::Warning)),
+    (1 << static_cast<int>(DabAnnouncement::News)),
+    (1 << static_cast<int>(DabAnnouncement::Weather)),
+    (1 << static_cast<int>(DabAnnouncement::Event)),
+    (1 << static_cast<int>(DabAnnouncement::Special)),
+    (1 << static_cast<int>(DabAnnouncement::Programme)),
+    (1 << static_cast<int>(DabAnnouncement::Sport)),
+    (1 << static_cast<int>(DabAnnouncement::Financial)),
 };
 

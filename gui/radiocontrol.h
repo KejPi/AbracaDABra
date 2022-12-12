@@ -23,6 +23,7 @@
 #define RADIO_CONTROL_NOTIFICATION_FIB_EXPECTED  (12*(1 << RADIO_CONTROL_NOTIFICATION_PERIOD))
 
 #define RADIO_CONTROL_ENSEMBLE_TIMEOUT_SEC (10)
+#define RADIO_CONTROL_ANNOUNCEMENT_TIMEOUT_SEC (5)
 
 // this is used for testing of receiver perfomance, it allows ensemble ECC = 0
 // and data services without user application
@@ -303,6 +304,7 @@ signals:
     void ensembleConfiguration(const QString &);
     void ensembleReconfiguration(const RadioControlEnsemble & ens);
     void ensembleRemoved(const RadioControlEnsemble & ens);
+    void announcement(DabAnnouncement id, bool ongoing);
 private:
     static const uint8_t EEPCoderate[];
 
@@ -321,6 +323,9 @@ private:
         // announcement support
         uint16_t ASu;
         QList<uint8_t> clusterIds;
+
+        uint8_t activeCluster = 0;
+        QTimer * announcementTimeoutTimer;
     } m_currentService;
 
     // this is a counter of requests to check
@@ -356,6 +361,7 @@ private:
     bool isCurrentService(uint32_t sid, uint8_t scids) { return ((sid == m_currentService.SId) && (scids == m_currentService.SCIdS)); }
     void resetCurrentService();
     void setCurrentServiceAnnouncementSupport();
+    void onAnnouncementTimeout();
 
     // wrapper functions for dabsdr API
     void dabTune(uint32_t freq) { dabsdrRequest_Tune(m_dabsdrHandle, freq); }

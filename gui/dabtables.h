@@ -84,7 +84,7 @@ enum class DabMotExtParameter
     CAReplacementObject = 0x24
 };
 
-enum class DabAnnoucement
+enum class DabAnnouncement
 {
     Alarm = 0,
     Traffic = 1,
@@ -97,6 +97,7 @@ enum class DabAnnoucement
     Programme,
     Sport,
     Financial,
+    Undefined
 };
 
 typedef QMap<uint32_t, QString> dabChannelList_t;
@@ -113,7 +114,7 @@ public:
     static QString getPtyName(const uint8_t pty);
     static QString getLangName(int lang);
     static QString getCountryName(uint32_t SId);
-    static QString getAnnouncementName(uint8_t bit);
+    static QString getAnnouncementName(DabAnnouncement announcement);
 };
 
 #endif // DABTABLES_H
