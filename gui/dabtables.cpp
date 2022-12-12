@@ -565,7 +565,7 @@ QString DabTables::getAnnouncementName(uint8_t bit)
     switch (static_cast<DabAnnoucement>(bit))
     {
     case DabAnnoucement::Alarm:     return QString("Alarm");
-    case DabAnnoucement::Trafic:    return QString("Road Traffic flash");
+    case DabAnnoucement::Traffic:    return QString("Road Traffic flash");
     case DabAnnoucement::Transport: return QString("Transport flash");
     case DabAnnoucement::Warning:   return QString("Warning/Service");
     case DabAnnoucement::News:      return QString("News flash");
@@ -582,7 +582,7 @@ QString DabTables::getAnnouncementName(uint8_t bit)
 const QList<uint16_t> DabTables::ASwValues =
 {
     (1 << static_cast<int>(DabAnnoucement::Alarm)),
-    (1 << static_cast<int>(DabAnnoucement::Trafic)),
+    (1 << static_cast<int>(DabAnnoucement::Traffic)),
     (1 << static_cast<int>(DabAnnoucement::Transport)),
     (1 << static_cast<int>(DabAnnoucement::Warning)),
     (1 << static_cast<int>(DabAnnoucement::News)),

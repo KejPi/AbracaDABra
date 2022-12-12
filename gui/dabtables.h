@@ -87,7 +87,7 @@ enum class DabMotExtParameter
 enum class DabAnnoucement
 {
     Alarm = 0,
-    Trafic = 1,
+    Traffic = 1,
     Transport,
     Warning,
     News,
