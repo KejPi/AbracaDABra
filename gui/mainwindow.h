@@ -158,7 +158,7 @@ private:
 
     void onInputDeviceReady();
     void onEnsembleInfo(const RadioControlEnsemble &ens);
-    void onEnsembleComplete(const RadioControlEnsemble &ens);
+    void onServiceListComplete(const RadioControlEnsemble &ens);
     void onEnsembleReconfiguration(const RadioControlEnsemble &ens) const;
     void onEnsembleRemoved(const RadioControlEnsemble &ens);
     void onChannelChange(int index);

@@ -28,7 +28,7 @@ RadioControl::RadioControl(QObject *parent) : QObject(parent)
     m_ensembleInfoTimeoutTimer = new QTimer(this);
     m_ensembleInfoTimeoutTimer->setSingleShot(true);
     m_ensembleInfoTimeoutTimer->setInterval(RADIO_CONTROL_ENSEMBLE_TIMEOUT_SEC*1000);
-    connect(m_ensembleInfoTimeoutTimer, &QTimer::timeout, this, &RadioControl::onEnsembleInfoTimeout);
+    connect(m_ensembleInfoTimeoutTimer, &QTimer::timeout, this, &RadioControl::onEnsembleInfoFinished);
 
     m_currentService.announcementTimeoutTimer = new QTimer(this);
     m_currentService.announcementTimeoutTimer->setSingleShot(true);
@@ -215,6 +215,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         else
         {
             m_numReqPendingServiceList = 0;
+            m_numReqPendingEnsemble = 0;
             for (auto const & dabService : *pServiceList)
             {
                 DabSId sid(dabService.sid, m_ensemble.ecc());
@@ -239,6 +240,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                 {   // only programme services support announcements
                     // get supported announcements -> delay request by 1 second
                     uint32_t sidVal = sid.value();
+                    m_numReqPendingEnsemble += 1;
                     QTimer::singleShot(1000, this, [this, sidVal](){dabGetAnnouncementSupport(sidVal); } );
                 }
             }
@@ -367,6 +369,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                    for (auto & serviceComp : serviceIt->serviceComponents)
                    {
                        serviceComp.userApps.clear();
+                       m_numReqPendingEnsemble += 1;
                        dabGetUserApps(serviceIt->SId.value(), serviceComp.SCIdS);
                    }
                    if (--m_numReqPendingServiceList == 0)
@@ -396,9 +399,10 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::USER_APP_LIST:
     {
-#if 1 // RADIO_CONTROL_VERBOSE
+#if RADIO_CONTROL_VERBOSE
         qDebug("RadioControlEvent::USER_APP_LIST SID %8.8X SCIdS %d", pEvent->SId, pEvent->SCIdS);
 #endif
+        m_numReqPendingEnsemble -= 1;
         if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
             QList<dabsdrUserAppListItem_t> * pList = pEvent->pUserAppList;
@@ -436,6 +440,23 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                             }
 
                             scIt->userApps.insert(newUserApp.uaType, newUserApp);
+
+                            if (isCurrentService(pEvent->SId, pEvent->SCIdS))
+                            {   // if is is current service ==> start user applications
+                                // enable SLS automatically - if available
+                                startUserApplication(DabUserApplicationType::SlideShow, true);
+
+//#warning "Remove automatic Journaline - this is for debug only"
+//                        startUserApplication(DabUserApplicationType::Journaline, true);
+#if RADIO_CONTROL_SPI_ENABLE
+#warning "Remove automatic SPI - this is for debug only"
+                                startUserApplication(DabUserApplicationType::SPI, true);
+#endif
+                                //#warning "Remove automatic TPEG - this is for debug only"
+                                //startUserApplication(DabUserApplicationType::TPEG, true);
+                            }
+
+                            emit ensembleConfiguration(ensembleConfigurationString());
                         }
                     }
                     else { /* SC not found - this should not happen */ }
@@ -447,8 +468,9 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                 // TSI EN 300 401 V2.1.1 [6.1]
                 // FIG 0/13 may be signalled at a slower rate but not less frequently than once per second.
                 // Lets try again in 1 second -> we do not know if there are really no user apps or we missed FIG0/13
-                if (!m_isEnsembleComplete)
+                if (!m_isEnsembleInfoFinished)
                 {
+                    m_numReqPendingEnsemble += 1;
                     uint32_t sid = pEvent->SId;
                     uint8_t scids = pEvent->SCIdS;
                     QTimer::singleShot(1000, this, [this, sid, scids](){ dabGetUserApps(sid, scids); } );
@@ -456,14 +478,20 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                 else { /* timeout occured */ }
             }
         }
+        if (m_numReqPendingEnsemble <= 0)
+        {
+            onEnsembleInfoFinished();
+        }
+
         delete pEvent->pUserAppList;
     }
         break;
     case RadioControlEventType::ANNOUNCEMENT_SUPPORT:
     {
+        m_numReqPendingEnsemble -= 1;
         if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
-#if 1 // RADIO_CONTROL_VERBOSE
+#if RADIO_CONTROL_VERBOSE
             qDebug("RadioControlEventType::ANNOUNCEMENT_SUPPORT SId %8.8X", pEvent->SId);
 #endif
             serviceIterator serviceIt = m_serviceList.find(pEvent->SId);
@@ -478,10 +506,11 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                         // TSI EN 300 401 V2.1.1 [8.1.6.1]
                         // The FIG 0/18 has a repetition rate of once per second.
                         // Lets try again in 1 second -> we do not know if there are really no announcements supported or we missed FIG0/18
-                        if (!m_isEnsembleComplete)
+                        if (!m_isEnsembleInfoFinished)
                         {
+                            m_numReqPendingEnsemble += 1;
                             uint32_t sidVal = serviceIt->SId.value();
-                            QTimer::singleShot(1*1000, this, [this, sidVal](){ dabGetAnnouncementSupport(sidVal); } );
+                            QTimer::singleShot(1000, this, [this, sidVal](){ dabGetAnnouncementSupport(sidVal); } );
                         }
                         else { /* timeout occured */ }
                     }
@@ -496,6 +525,8 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                         {   // update current service
                             setCurrentServiceAnnouncementSupport();
                         }
+
+                        emit ensembleConfiguration(ensembleConfigurationString());
                     }
                 }
                 else
@@ -506,6 +537,11 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
             else
             { /* service is not in the list - this should not happen */ }
         }
+        if (m_numReqPendingEnsemble <= 0)
+        {
+            onEnsembleInfoFinished();
+        }
+
         delete pEvent->pAnnouncementSupport;
     }
     break;
@@ -527,10 +563,18 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                         // store current service
                         m_currentService.SId = pEvent->SId;
                         m_currentService.SCIdS = pEvent->SCIdS;
-                        setCurrentServiceAnnouncementSupport();
                         emit audioServiceSelection(*scIt);
 
-                        // enable SLS automatically - if available
+                        // discovery point -> request UserApps and Announcements information update
+                        m_numReqPendingEnsemble += 2;
+                        dabGetUserApps(m_currentService.SId, m_currentService.SCIdS);
+                        dabGetAnnouncementSupport(m_currentService.SId);
+
+                        // announcements and user apps are enabled when updated info is received
+                        // setup announcements
+                        setCurrentServiceAnnouncementSupport();
+
+                        // enable SLS automatically - if already available
                         startUserApplication(DabUserApplicationType::SlideShow, true);
 
 //#warning "Remove automatic Journaline - this is for debug only"
@@ -588,7 +632,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::XPAD_APP_START_STOP:
     {
-        dabsdrXpadAppStartStop_t * pData = pEvent->pXpadAppStartStopInfo;
+        //dabsdrXpadAppStartStop_t * pData = pEvent->pXpadAppStartStopInfo;
         if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
 #if RADIO_CONTROL_VERBOSE
@@ -1236,17 +1280,22 @@ void RadioControl::clearEnsemble()
     m_ensemble.frequency = 0;
     m_ensemble.alarm = 0;
     m_ensembleInfoTimeoutTimer->stop();
-    m_isEnsembleComplete = false;
+    m_isEnsembleInfoFinished = false;
 
     emit ensembleConfiguration("");
 }
 
-void RadioControl::onEnsembleInfoTimeout()
+void RadioControl::onEnsembleInfoFinished()
 {
-    m_isEnsembleComplete = true;
-
-    qDebug() << "=== MCI complete";
-    emit ensembleConfiguration(ensembleConfigurationString());
+    m_ensembleInfoTimeoutTimer->stop();
+    m_isEnsembleInfoFinished = true;
+    if (m_numReqPendingEnsemble <= 0)
+    {
+#if 1 //RADIO_CONTROL_VERBOSE
+        qDebug() << "=== Ensemble information should be complete";
+#endif
+        emit ensembleConfiguration(ensembleConfigurationString());
+    }
 }
 
 void RadioControl::resetCurrentService()

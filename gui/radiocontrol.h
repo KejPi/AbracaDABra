@@ -331,8 +331,12 @@ private:
     // when the service list is complete
     int m_numReqPendingServiceList = 0;
 
+    // this is a counter of requests to check
+    // when the service list is complete
+    int m_numReqPendingEnsemble = 0;
+
     // set when ensemble information is complete
-    bool m_isEnsembleComplete = false;
+    bool m_isEnsembleInfoFinished = false;
     QTimer * m_ensembleInfoTimeoutTimer;
 
     bool m_isReconfigurationOngoing = false;
@@ -352,7 +356,7 @@ private:
     QString toShortLabel(QString & label, uint16_t charField) const;
     QString ensembleConfigurationString() const;
     void clearEnsemble();
-    void onEnsembleInfoTimeout();
+    void onEnsembleInfoFinished();
     bool isCurrentService(uint32_t sid, uint8_t scids) { return ((sid == m_currentService.SId) && (scids == m_currentService.SCIdS)); }
     void resetCurrentService();
     void setCurrentServiceAnnouncementSupport();

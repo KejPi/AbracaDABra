@@ -325,7 +325,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     connect(m_radioControl, &RadioControl::ensembleInformation, this, &MainWindow::onEnsembleInfo, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleReconfiguration, this, &MainWindow::onEnsembleReconfiguration, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::serviceListComplete, this, &MainWindow::onEnsembleComplete, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::serviceListComplete, this, &MainWindow::onServiceListComplete, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::syncStatus, this, &MainWindow::onSyncStatus, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::snrLevel, this, &MainWindow::onSnrLevel, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::dabTime, this, &MainWindow::onDabTime, Qt::QueuedConnection);
@@ -557,12 +557,14 @@ void MainWindow::onEnsembleReconfiguration(const RadioControlEnsemble &ens) cons
     m_serviceList->beginEnsembleUpdate(ens);
 }
 
-void MainWindow::onEnsembleComplete(const RadioControlEnsemble &ens)
+void MainWindow::onServiceListComplete(const RadioControlEnsemble &ens)
 {
     m_serviceList->endEnsembleUpdate(ens);
 
     serviceListViewUpdateSelection();
     serviceTreeViewUpdateSelection();
+
+
 }
 
 void MainWindow::onEnsembleRemoved(const RadioControlEnsemble &ens)
