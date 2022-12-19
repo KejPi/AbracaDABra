@@ -46,7 +46,8 @@ void getSamples(float buffer[], uint16_t numSamples)
     // input read -> lets store it to FIFO
     pthread_mutex_lock(&inputBuffer.countMutex);
     uint64_t count = inputBuffer.count;
-    while (count < numSamples*2*sizeof(float))
+    uint_fast32_t numIQ = numSamples * 2;
+    while (count < numIQ*sizeof(float))
     {
         pthread_cond_wait(&inputBuffer.countCondition, &inputBuffer.countMutex);
         count = inputBuffer.count;
@@ -55,22 +56,22 @@ void getSamples(float buffer[], uint16_t numSamples)
 
     // there is enough samples in input buffer
     uint64_t bytesTillEnd = INPUT_FIFO_SIZE - inputBuffer.tail;
-    if (bytesTillEnd >= numSamples*2*sizeof(float))
+    if (bytesTillEnd >= numIQ*sizeof(float))
     {
-        memcpy(buffer, inputBuffer.buffer + inputBuffer.tail, numSamples*2*sizeof(float));
-        inputBuffer.tail = (inputBuffer.tail + numSamples*2*sizeof(float));
+        memcpy(buffer, inputBuffer.buffer + inputBuffer.tail, numIQ*sizeof(float));
+        inputBuffer.tail = (inputBuffer.tail + numIQ*sizeof(float));
     }
     else
     {
         memcpy(buffer, inputBuffer.buffer + inputBuffer.tail, bytesTillEnd);
         Q_ASSERT(2*sizeof(float) == 8);
-        uint64_t samplesTillEnd = bytesTillEnd >> 3;
-        memcpy(buffer+samplesTillEnd, inputBuffer.buffer, (numSamples - samplesTillEnd)*2*sizeof(float));
-        inputBuffer.tail = (numSamples - samplesTillEnd) * 2*sizeof(float);
+        uint64_t numIQtillEnd = bytesTillEnd >> 2;
+        memcpy(buffer+numIQtillEnd, inputBuffer.buffer, (numIQ - numIQtillEnd)*sizeof(float));
+        inputBuffer.tail = (numIQ - numIQtillEnd) * sizeof(float);
     }
 
     pthread_mutex_lock(&inputBuffer.countMutex);
-    inputBuffer.count = inputBuffer.count - numSamples*2*sizeof(float);
+    inputBuffer.count = inputBuffer.count - numIQ*sizeof(float);
     pthread_cond_signal(&inputBuffer.countCondition);
     pthread_mutex_unlock(&inputBuffer.countMutex);
 }
