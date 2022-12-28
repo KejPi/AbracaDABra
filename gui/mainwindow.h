@@ -48,6 +48,7 @@ public:
 signals:
     void serviceRequest(uint32_t freq, uint32_t SId, uint8_t SCIdS);
     void stopUserApps();
+    void stopAudio();
     void getAudioInfo();
     void expertModeChanged(bool ena);
     void exit();

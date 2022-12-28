@@ -102,6 +102,11 @@ void AudioDecoder::start(const RadioControlServiceComponent&s)
     //qDebug() << Q_FUNC_INFO;
     if (s.isAudioService())
     {
+        if (m_isRunning)
+        {   // if running, then stop it first
+            stop();
+        }
+
 #if AUDIO_DECODER_MUTE_CONCEALMENT
         memset(m_outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
         m_state = OutputState::Init;
@@ -117,6 +122,7 @@ void AudioDecoder::start(const RadioControlServiceComponent&s)
 
 void AudioDecoder::stop()
 {
+    //qDebug() << Q_FUNC_INFO;
     m_isRunning = false;
 
     if (nullptr != m_aacDecoderHandle)
