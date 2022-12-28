@@ -19,8 +19,8 @@
 // muting
 #define AUDIOOUTPUT_FADE_TIME_MS    60
 // these 2 values must be aligned
-#define AUDIOOUTPUT_FADE_MIN_DB    -60.0
-#define AUDIOOUTPUT_FADE_MIN_LIN     0.001
+#define AUDIOOUTPUT_FADE_MIN_DB    -80.0
+#define AUDIOOUTPUT_FADE_MIN_LIN     0.0001
 
 // debug switch
 //#define AUDIOOUTPUT_RAW_FILE_OUT
