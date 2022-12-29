@@ -254,7 +254,7 @@ struct RadioControlEvent
         // supported announcements
         dabsdrNtfAnnouncementSupport_t * pAnnouncementSupport;
         // xpad application started / stopped
-        dabsdrXpadAppStartStop_t * pXpadAppStartStopInfo;
+        dabsdrNtfXpadAppStartStop_t * pXpadAppStartStopInfo;
         // periodic notification
         dabsdrNtfPeriodic_t * pNotifyData;
         // reset occured
@@ -265,6 +265,8 @@ struct RadioControlEvent
         QByteArray * pDataGroupDL;
         // announcement switching
         dabsdrNtfAnnouncement_t * pAnnouncement;
+        // audio service instance
+        dabsdrAudioInstance_t audioInstance;
     };
 };
 
@@ -305,6 +307,7 @@ signals:
     void ensembleReconfiguration(const RadioControlEnsemble & ens);
     void ensembleRemoved(const RadioControlEnsemble & ens);
     void announcement(DabAnnouncement id, bool ongoing);
+    void announcementAudioAvailable();
 private:
     static const uint8_t EEPCoderate[];
 
@@ -324,7 +327,13 @@ private:
         uint16_t ASu;
         QList<uint8_t> clusterIds;
         uint8_t activeCluster = 0;
+        DabAnnouncement announcementId;
         QTimer * announcementTimeoutTimer;
+        struct {
+            DabSId SId;
+            uint8_t SCIdS;
+        } announcementService;
+        std::atomic_int announcementSwitchState;
     } m_currentService;
 
     // this is a counter of requests to check
@@ -361,6 +370,8 @@ private:
     void resetCurrentService();
     void setCurrentServiceAnnouncementSupport();
     void onAnnouncementTimeout();
+    void onAnnouncementAudioAvailable();
+    bool announcementStart(uint8_t subChId, bool start);
 
     // wrapper functions for dabsdr API
     void dabTune(uint32_t freq) { dabsdrRequest_Tune(m_dabsdrHandle, freq); }
@@ -370,13 +381,14 @@ private:
     void dabGetUserApps(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_GetUserAppList(m_dabsdrHandle, SId, SCIdS); }
     void dabGetAnnouncementSupport(uint32_t SId) { dabsdrRequest_GetAnnouncementSupport(m_dabsdrHandle, SId); }
     void dabEnableAutoNotification() { dabsdrRequest_SetPeriodicNotify(m_dabsdrHandle, RADIO_CONTROL_NOTIFICATION_PERIOD, 0); }
-    void dabServiceSelection(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_ServiceSelection(m_dabsdrHandle, SId, SCIdS); }
-    void dabServiceStop(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_ServiceStop(m_dabsdrHandle, SId, SCIdS); }
+    void dabServiceSelection(uint32_t SId, uint8_t SCIdS, dabsdrAudioInstance_t audioInstance) { dabsdrRequest_ServiceSelection(m_dabsdrHandle, SId, SCIdS, audioInstance); }
+    void dabServiceStop(uint32_t SId, uint8_t SCIdS, dabsdrAudioInstance_t audioInstance) { dabsdrRequest_ServiceStop(m_dabsdrHandle, SId, SCIdS, audioInstance); }
     void dabXPadAppStart(uint8_t appType, bool start) { dabsdrRequest_XPadAppStart(m_dabsdrHandle, appType, start); }
 
     // wrappers unsed in callback functions (emit requires class instance)
     void emit_dabEvent(RadioControlEvent * pEvent) { emit dabEvent(pEvent); }
     void emit_audioData(QByteArray * pData) { emit audioData(pData); }
+    void emit_announcementAudioAvailable() { emit announcementAudioAvailable(); }
 
     // static methods used as dabsdr library callbacks
     static void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx);
