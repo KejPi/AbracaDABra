@@ -1731,6 +1731,7 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
         {
             QByteArray * pData = new QByteArray;
             pData->clear();
+            pData->append(p->ASCTy);
             pData->append(p->header.raw);
             pData->append((const char *) p->pAuData, p->auLen);
 
@@ -1746,6 +1747,7 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
     {   // announcement expected
         QByteArray * pData = new QByteArray;
         pData->clear();
+        pData->append(p->ASCTy);
         pData->append(p->header.raw);
         pData->append((const char *) p->pAuData, p->auLen);
 
@@ -1763,6 +1765,7 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
         {
             QByteArray * pData = new QByteArray;
             pData->clear();
+            pData->append(p->ASCTy);
             pData->append(p->header.raw);
             pData->append((const char *) p->pAuData, p->auLen);
 

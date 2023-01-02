@@ -112,7 +112,6 @@ void AudioDecoder::start(const RadioControlServiceComponent&s)
         m_state = OutputState::Init;
 #endif
         m_isRunning = true;
-        m_mode = s.streamAudioData.scType;
     }
     else
     {   // no audio service -> can happen during reconfiguration
@@ -125,16 +124,64 @@ void AudioDecoder::stop()
     //qDebug() << Q_FUNC_INFO;
     m_isRunning = false;
 
-    if (nullptr != m_aacDecoderHandle)
+    deinitAACDecoder();
+    deinitMPG123();
+
+    emit stopAudio();
+}
+
+void AudioDecoder::initMPG123()
+{
+    deinitMPG123();
+    deinitAACDecoder();
+
+    int res = mpg123_init();
+    if (MPG123_OK != res)
     {
-#if HAVE_FDKAAC
-        aacDecoder_Close(m_aacDecoderHandle);
-#else
-        NeAACDecClose(m_aacDecoderHandle);
-#endif
-        m_aacDecoderHandle = nullptr;
+        throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_init");
     }
 
+    m_mp2DecoderHandle = mpg123_new(nullptr, &res);
+    if (nullptr == m_mp2DecoderHandle)
+    {
+        throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_new: " + std::string(mpg123_plain_strerror(res)));
+    }
+
+    // set allowed formats
+    res = mpg123_format_none(m_mp2DecoderHandle);
+    if (MPG123_OK != res)
+    {
+        throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_format_none: " + std::string(mpg123_plain_strerror(res)));
+    }
+
+    res = mpg123_format(m_mp2DecoderHandle, 48000, MPG123_STEREO, MPG123_ENC_SIGNED_16);
+    if (MPG123_OK != res)
+    {
+        throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_format for 48KHz: " + std::string(mpg123_plain_strerror(res)));
+    }
+
+    res = mpg123_format(m_mp2DecoderHandle, 24000, MPG123_STEREO, MPG123_ENC_SIGNED_16);
+    if (MPG123_OK != res)
+    {
+        throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_format for 24KHz: " + std::string(mpg123_plain_strerror(res)));
+    }
+
+    // disable resync limit
+    res = mpg123_param(m_mp2DecoderHandle, MPG123_RESYNC_LIMIT, -1, 0);
+    if (MPG123_OK != res)
+    {
+        throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_param: " + std::string(mpg123_plain_strerror(res)));
+    }
+
+    res = mpg123_open_feed(m_mp2DecoderHandle);
+    if (MPG123_OK != res)
+    {
+        throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_open_feed: " + std::string(mpg123_plain_strerror(res)));
+    }
+}
+
+void AudioDecoder::deinitMPG123()
+{
     if (nullptr != m_mp2DecoderHandle)
     {
         int res = mpg123_close(m_mp2DecoderHandle);
@@ -146,57 +193,6 @@ void AudioDecoder::stop()
         mpg123_delete(m_mp2DecoderHandle);
         mpg123_exit();
         m_mp2DecoderHandle = nullptr;
-    }
-    emit stopAudio();
-}
-
-void AudioDecoder::initMPG123()
-{
-    if (nullptr == m_mp2DecoderHandle)
-    {
-        int res = mpg123_init();
-        if (MPG123_OK != res)
-        {
-            throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_init");
-        }
-
-        m_mp2DecoderHandle = mpg123_new(nullptr, &res);
-        if (nullptr == m_mp2DecoderHandle)
-        {
-            throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_new: " + std::string(mpg123_plain_strerror(res)));
-        }
-
-        // set allowed formats
-        res = mpg123_format_none(m_mp2DecoderHandle);
-        if (MPG123_OK != res)
-        {
-            throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_format_none: " + std::string(mpg123_plain_strerror(res)));
-        }
-
-        res = mpg123_format(m_mp2DecoderHandle, 48000, MPG123_STEREO, MPG123_ENC_SIGNED_16);
-        if (MPG123_OK != res)
-        {
-            throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_format for 48KHz: " + std::string(mpg123_plain_strerror(res)));
-        }
-
-        res = mpg123_format(m_mp2DecoderHandle, 24000, MPG123_STEREO, MPG123_ENC_SIGNED_16);
-        if (MPG123_OK != res)
-        {
-            throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_format for 24KHz: " + std::string(mpg123_plain_strerror(res)));
-        }
-
-        // disable resync limit
-        res = mpg123_param(m_mp2DecoderHandle, MPG123_RESYNC_LIMIT, -1, 0);
-        if (MPG123_OK != res)
-        {
-            throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_param: " + std::string(mpg123_plain_strerror(res)));
-        }
-
-        res = mpg123_open_feed(m_mp2DecoderHandle);
-        if (MPG123_OK != res)
-        {
-            throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while mpg123_open_feed: " + std::string(mpg123_plain_strerror(res)));
-        }
     }
 }
 
@@ -310,10 +306,8 @@ void AudioDecoder::readAACHeader()
 #if HAVE_FDKAAC
 void AudioDecoder::initAACDecoder()
 {
-    if (nullptr != m_aacDecoderHandle)
-    {
-        aacDecoder_Close(m_aacDecoderHandle);
-    }
+    deinitMPG123();
+    deinitAACDecoder();
 
     m_aacDecoderHandle = aacDecoder_Open(TT_MP4_RAW, 1);
     if (!m_aacDecoderHandle)
@@ -377,10 +371,8 @@ void AudioDecoder::initAACDecoder()
 #else // HAVE_FDKAAC
 void AudioDecoder::initAACDecoder()
 {
-    if (nullptr != m_aacDecoderHandle)
-    {
-        NeAACDecClose(m_aacDecoderHandle);
-    }
+    deinitMPG123();
+    deinitAACDecoder();
 
     m_aacDecoderHandle = NeAACDecOpen();
     if (!m_aacDecoderHandle)
@@ -431,6 +423,19 @@ void AudioDecoder::initAACDecoder()
     emit startAudio(uint32_t(outputSr), uint8_t(outputCh));
 }
 
+void AudioDecoder::deinitAACDecoder()
+{
+    if (nullptr != m_aacDecoderHandle)
+    {
+#if HAVE_FDKAAC
+        aacDecoder_Close(m_aacDecoderHandle);
+#else
+        NeAACDecClose(m_aacDecoderHandle);
+#endif
+        m_aacDecoderHandle = nullptr;
+    }
+}
+
 #endif // HAVE_FDKAAC
 
 void AudioDecoder::decodeData(QByteArray *inData)
@@ -441,7 +446,7 @@ void AudioDecoder::decodeData(QByteArray *inData)
         return;
     }
 
-    switch (m_mode)
+    switch (static_cast<DabAudioDataSCty>(inData->at(0)))
     {
         case DabAudioDataSCty::DAB_AUDIO:
             processMP2(inData);
@@ -478,7 +483,7 @@ void AudioDecoder::processMP2(QByteArray *inData)
     #define MP2_DRC_ENABLE        1
 
     if (nullptr == m_mp2DecoderHandle)
-    {
+    {   // this can happen when audio changes from AAC to MP2
         initMPG123();
 
         // reset FIFO
@@ -486,13 +491,13 @@ void AudioDecoder::processMP2(QByteArray *inData)
     }
 
 #ifdef AUDIO_DECODER_MP2_OUT
-    writeMP2Output(inData->data() + 1, inData->size() - 1);
+    writeMP2Output(inData->data() + 2, inData->size() - 2);
 #endif
 
-    if (inData->size() > 1)
+    if (inData->size() > 2)
     {
         // input data
-        const char * mp2Data = inData->data() + 1;
+        const char * mp2Data = inData->data() + 2;
 
         // [ETSI TS 103 466 V1.2.1 (2019-09)]
         // 5.2.9 Formatting of the audio bit stream
@@ -503,7 +508,7 @@ void AudioDecoder::processMP2(QByteArray *inData)
 
         /* Feed input chunk and get first chunk of decoded audio. */
         size_t size;
-        int ret = mpg123_decode(m_mp2DecoderHandle, (const unsigned char *)mp2Data, (inData->size() - 1), outBuf, MP2_FRAME_PCM_SAMPLES * sizeof(int16_t), &size);
+        int ret = mpg123_decode(m_mp2DecoderHandle, (const unsigned char *)mp2Data, (inData->size() - 2), outBuf, MP2_FRAME_PCM_SAMPLES * sizeof(int16_t), &size);
         if (MPG123_NEW_FORMAT == ret)
         {
             long rate;
@@ -590,7 +595,7 @@ void AudioDecoder::processMP2(QByteArray *inData)
         delete [] outBuf;
     }
     // store DRC for next frame
-    m_mp2DRC = inData->at(0);
+    m_mp2DRC = inData->at(1);
 }
 
 void AudioDecoder::getFormatMP2()
@@ -634,12 +639,22 @@ void AudioDecoder::getFormatMP2()
 }
 
 void AudioDecoder::processAAC(QByteArray *inData)
-{
+{      
     dabsdrAudioFrameHeader_t header;
 
-    header.raw = *inData[0];
-    uint8_t conceal = header.bits.conceal;
+    header.raw = inData->at(1);
 
+    if (nullptr == m_aacDecoderHandle)
+    {   // this can happen when format changes from MP2 to AAC
+        m_aacHeader.raw = header.raw;
+        readAACHeader();
+        initAACDecoder();
+
+        // reset FIFO
+        m_outFifoPtr->reset();
+    }
+
+    uint8_t conceal = header.bits.conceal;
     if (conceal)
     {
 #if HAVE_FDKAAC
@@ -647,27 +662,19 @@ void AudioDecoder::processAAC(QByteArray *inData)
 #if AUDIO_DECODER_FDKAAC_CONCEALMENT
         // supposing that header is the same
         header.raw = m_aacHeader.raw;
-        if (nullptr == m_aacDecoderHandle)
-        {   // if concealment then this frame is not valid thus returning in case that it does, it would like to reinit
-            return;
-        }
 #else
         // concealment not supported => discarding
         return;
 #endif
 #else
-        if (nullptr == m_aacDecoderHandle)
-        {   // if decoder is not initialized, then return
-            return;
-        }
-
         // concealment not supported
         // supposing that header is the same and setting buffer to 0
         inData->fill(0);
         header.raw = m_aacHeader.raw;
 #endif
-    }
-    if ((nullptr == m_aacDecoderHandle) || (header.raw != m_aacHeader.raw))
+    }    
+
+    if (header.raw != m_aacHeader.raw)
     {
         m_aacHeader.raw = header.raw;
         readAACHeader();
@@ -679,9 +686,9 @@ void AudioDecoder::processAAC(QByteArray *inData)
 
     // decode audio
 #if HAVE_FDKAAC
-    uint8_t * aacData[1] = { (uint8_t *)inData->data() + 1 };
+    uint8_t * aacData[1] = { (uint8_t *)inData->data() + 2 };
     unsigned int len[1];
-    len[0] = inData->size() - 1;
+    len[0] = inData->size() - 2;
     unsigned int bytesValid = len[0];
 
     // fill internal input buffer
@@ -751,8 +758,8 @@ void AudioDecoder::processAAC(QByteArray *inData)
     m_outFifoPtr->count += bytesToWrite;
     m_outFifoPtr->mutex.unlock();
 #else // HAVE_FDKAAC
-    const char * aacData = inData->data() + 1;
-    unsigned long len = inData->size() - 1;
+    const char * aacData = inData->data() + 2;
+    unsigned long len = inData->size() - 2;
 
     uint8_t * outputFrame = (uint8_t *)NeAACDecDecode(m_aacDecoderHandle, &m_aacDecFrameInfo, (unsigned char *)aacData, len);
 

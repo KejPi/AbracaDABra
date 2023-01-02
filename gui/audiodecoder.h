@@ -72,7 +72,7 @@ signals:
 
 private:
     bool m_isRunning;
-    DabAudioDataSCty m_mode;
+
     dabsdrAudioFrameHeader_t m_aacHeader;
     AudioParameters m_audioParameters;
 
@@ -109,9 +109,11 @@ private:
     void readAACHeader();
 
     void initAACDecoder();
+    void deinitAACDecoder();
     void processAAC(QByteArray *inData);
 
     void initMPG123();
+    void deinitMPG123();
     void processMP2(QByteArray *inData);
     void getFormatMP2();
 
