@@ -5,13 +5,11 @@
 
 #include "audiooutput.h"
 
-audioFifo_t audioBuffer;
-
 #if HAVE_PORTAUDIO
 
-AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent)
+AudioOutput::AudioOutput( QObject *parent) : QObject(parent)
 {
-    m_inFifoPtr = buffer;
+    m_inFifoPtr = nullptr;
     m_outStream = nullptr;
     m_numChannels = m_sampleRate_kHz = 0;
     m_linearVolume = 1.0;
@@ -30,6 +28,7 @@ AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent
     }
 #endif
 
+    connect(this, &AudioOutput::streamFinished, this, &AudioOutput::onStreamFinished, Qt::QueuedConnection);
 }
 
 AudioOutput::~AudioOutput()
@@ -58,8 +57,11 @@ AudioOutput::~AudioOutput()
 #endif
 }
 
-void AudioOutput::start(uint32_t sRate, uint8_t numCh)
+void AudioOutput::start(audioFifo_t *buffer)
 {
+    uint32_t sRate = buffer->sampleRate;
+    uint8_t numCh = buffer->numChannels;
+
     bool isNewStreamParams = (m_sampleRate_kHz != sRate/1000) || (m_numChannels != numCh);
     if (isNewStreamParams)
     {
@@ -105,18 +107,26 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
         {
             throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
         }
+
+        err = Pa_SetStreamFinishedCallback(m_outStream, portAudioStreamFinishedCb);
+        if (paNoError != err)
+        {
+            throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
+        }
     }
     else
     {   // stream parameters are the same - just starting
-        // this is just to be sure - stream should be already stopped
+        // Pa_StopStream() is required event that streaming was stopped by paComplete return value from callback
         if (!Pa_IsStreamStopped(m_outStream))
         {
             Pa_StopStream(m_outStream);
         }
     }
 
+    m_inFifoPtr = buffer;
     m_playbackState = AudioOutputPlaybackState::Muted;
-    m_stopFlag = false;
+    m_cbRequest = Request::KeepRunning;
+    //m_cbRequest &= ~(Request::Stop | Request::Restart);
 
     PaError err = Pa_StartStream(m_outStream);
     if (paNoError != err)
@@ -126,17 +136,26 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 
 }
 
+void AudioOutput::restart(audioFifo_t *buffer)
+{
+    if (nullptr != m_outStream)
+    {
+        m_restartFifoPtr = buffer;
+        m_cbRequest = Request::Restart;
+    }
+}
+
 void AudioOutput::stop()
 {
     if (nullptr != m_outStream)
     {
-        m_stopFlag = true;
+        m_cbRequest = Request::Stop;
     }
 }
 
 void AudioOutput::mute(bool on)
 {
-    m_muteFlag = on;
+    m_cbRequest = Request::Mute;
 }
 
 void AudioOutput::setVolume(int value)
@@ -179,7 +198,9 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     uint64_t bytesToRead = m_bytesPerFrame * nBufferFrames;
     uint32_t availableSamples = nBufferFrames;
 
-    bool muteRequest = m_muteFlag || m_stopFlag;        // false == do unmute, true == do mute
+    int request = m_cbRequest;
+    bool muteRequest = (request != Request::KeepRunning);
+    // false == do unmute, true == do mute
 
     if (AudioOutputPlaybackState::Muted == m_playbackState)
     {   // muted
@@ -197,7 +218,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
                 m_inFifoPtr->countChanged.wakeAll();
                 m_inFifoPtr->mutex.unlock();
 
-                if (m_stopFlag)
+                if (request & (Request::Stop | Request::Restart))
                 {
                     return paComplete;
                 }
@@ -297,7 +318,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             //qDebug("Muted: Inserting silence [%lu ms]", nBufferFrames/m_sampleRate_kHz);                       
             memset(outputBuffer, 0, bytesToRead);
 
-            if (m_stopFlag)
+            if (request & (Request::Stop | Request::Restart))
             {
                 return paComplete;
             }
@@ -499,6 +520,12 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             m_inFifoPtr->countChanged.wakeAll();
             m_inFifoPtr->mutex.unlock();
 
+            if ((Request::Restart & request) && (count >= 2*bytesToRead))
+            {   // ignoring restart flag ==> play all samples we have
+                muteRequest = request & (Request::Mute | Request::Stop);
+            }
+
+
             if (!muteRequest)
             {   // done
                 return paContinue;
@@ -556,13 +583,28 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
 
         m_playbackState = AudioOutputPlaybackState::Muted; // muted
 
-        if (m_stopFlag)
+        if (request & (Request::Stop | Request::Restart))
         {
             return paComplete;
         }
     }
 
     return paContinue;
+}
+
+void AudioOutput::portAudioStreamFinishedCb(void *ctx)
+{
+    static_cast<AudioOutput*>(ctx)->portAudioStreamFinishedPrivateCb();
+}
+
+void AudioOutput::onStreamFinished()
+{
+    if (m_cbRequest & Request::Restart)
+    {   // restart was requested
+        m_cbRequest &= ~Request::Restart;
+        start(m_restartFifoPtr);
+    }
+    else { /* do nothing */ }
 }
 
 #else // HAVE_PORTAUDIO

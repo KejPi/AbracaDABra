@@ -47,20 +47,34 @@ class AudioOutput : public QObject
     Q_OBJECT
 
 public:
-    AudioOutput(audioFifo_t *buffer, QObject *parent = nullptr);
+    AudioOutput(QObject *parent = nullptr);
     ~AudioOutput();
     void stop();
 
 public slots:
-    void start(uint32_t sRate, uint8_t numChannels);
+    void start(audioFifo_t *buffer);
+    void restart(audioFifo_t *buffer);
     void mute(bool on);
     void setVolume(int value);
 
 private:
-    std::atomic<bool> m_muteFlag  = false;
-    std::atomic<bool> m_stopFlag  = false;
+//    std::atomic<bool> m_muteFlag  = false;
+//    std::atomic<bool> m_stopFlag  = false;
+//    std::atomic<bool> m_restartFlag  = false;
+//    enum class StopRequest { KeepRunning = 0, Stop, Restart };
+//    std::atomic<int> m_stopRequest = static_cast<int>(StopRequest::KeepRunning);
+    enum Request
+    {
+        KeepRunning = (1 << 0),
+        Mute = (1 << 1),
+        Stop = (1 << 2),
+        Restart = (1 << 3),
+    };
+    std::atomic<int> m_cbRequest = Request::KeepRunning;
+
     PaStream * m_outStream = nullptr;
     audioFifo_t * m_inFifoPtr = nullptr;
+    audioFifo_t * m_restartFifoPtr = nullptr;
     uint8_t m_numChannels;
     uint32_t m_sampleRate_kHz;
     unsigned int m_bufferFrames;
@@ -71,13 +85,19 @@ private:
     AudioOutputPlaybackState m_playbackState;
 
     int portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames);
+    void portAudioStreamFinishedPrivateCb() { emit streamFinished(); }
 
     static int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
                            const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx);
+    static void portAudioStreamFinishedCb(void *ctx);
 
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
     FILE * m_rawOut;
 #endif
+
+    void onStreamFinished();
+signals:
+    void streamFinished();     // this signal is emited from portAudioStreamFinishedCb
 };
 
 #else // HAVE_PORTAUDIO

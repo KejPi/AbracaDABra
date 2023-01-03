@@ -56,7 +56,7 @@ class AudioDecoder : public QObject
 {
     Q_OBJECT
 public:
-    explicit AudioDecoder(audioFifo_t *buffer, QObject *parent = nullptr);
+    explicit AudioDecoder(QObject *parent = nullptr);
     ~AudioDecoder();
 
 public slots:
@@ -66,12 +66,13 @@ public slots:
     void getAudioParameters();
 
 signals:
-    void startAudio(uint32_t sampleRate, uint8_t numChannels);
+    void startAudio(audioFifo_t *buffer);
+    void switchAudio(audioFifo_t *buffer);
     void stopAudio();
     void audioParametersInfo(const AudioParameters & params);
 
 private:
-    bool m_isRunning;
+    enum class PlaybackState { Stopped = 0, WaitForInit, Running } m_playbackState;
 
     dabsdrAudioFrameHeader_t m_aacHeader;
     AudioParameters m_audioParameters;
@@ -91,6 +92,7 @@ private:
     float m_mp2DRC = 0;
     mpg123_handle * m_mp2DecoderHandle;
 
+    int m_outFifoIdx;
     audioFifo_t * m_outFifoPtr;
 
 #if AUDIO_DECODER_MUTE_CONCEALMENT
@@ -106,8 +108,9 @@ private:
         Unmuted
     } m_state;
 #endif
-    void readAACHeader();
+    void setOutput(int sampleRate, int numChannels);
 
+    void readAACHeader();
     void initAACDecoder();
     void deinitAACDecoder();
     void processAAC(QByteArray *inData);

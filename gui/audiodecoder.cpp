@@ -4,12 +4,16 @@
 
 #include "audiodecoder.h"
 
-AudioDecoder::AudioDecoder(audioFifo_t * buffer, QObject *parent) : QObject(parent), m_outFifoPtr(buffer)
+audioFifo_t audioFifo[2];
+
+AudioDecoder::AudioDecoder(QObject *parent) : QObject(parent)
 {
+    m_outFifoIdx = 0;
+    m_outFifoPtr = &audioFifo[m_outFifoIdx];
     m_aacDecoderHandle = nullptr;
     m_mp2DecoderHandle = nullptr;
 
-    m_isRunning = false;
+    m_playbackState = PlaybackState::Stopped;
 
 #if AUDIO_DECODER_MUTE_CONCEALMENT
     m_outBufferPtr = new int16_t[AUDIO_DECODER_BUFFER_SIZE];
@@ -102,7 +106,7 @@ void AudioDecoder::start(const RadioControlServiceComponent&s)
     //qDebug() << Q_FUNC_INFO;
     if (s.isAudioService())
     {
-        if (m_isRunning)
+        if (PlaybackState::Stopped != m_playbackState)
         {   // if running, then stop it first
             stop();
         }
@@ -111,7 +115,9 @@ void AudioDecoder::start(const RadioControlServiceComponent&s)
         memset(m_outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
         m_state = OutputState::Init;
 #endif
-        m_isRunning = true;
+//        m_outFifoIdx = 0;
+//        m_outFifoPtr = &audioFifo[m_outFifoIdx];
+        m_playbackState = PlaybackState::WaitForInit;
     }
     else
     {   // no audio service -> can happen during reconfiguration
@@ -122,7 +128,7 @@ void AudioDecoder::start(const RadioControlServiceComponent&s)
 void AudioDecoder::stop()
 {
     //qDebug() << Q_FUNC_INFO;
-    m_isRunning = false;
+    m_playbackState = PlaybackState::Stopped;
 
     deinitAACDecoder();
     deinitMPG123();
@@ -365,7 +371,10 @@ void AudioDecoder::initAACDecoder()
 
     qDebug("Output SR = %d, channels = %d", m_aacHeader.bits.dac_rate ? 48000 : 32000, channels);
 
-    emit startAudio(uint32_t(m_aacHeader.bits.dac_rate ? 48000 : 32000), uint8_t(channels));
+//    m_outFifoPtr->numChannels = uint8_t(channels);
+//    m_outFifoPtr->sampleRate = uint32_t(m_aacHeader.bits.dac_rate ? 48000 : 32000);
+//    emit startAudio(m_outFifoPtr);
+    setOutput(m_aacHeader.bits.dac_rate ? 48000 : 32000, channels);
 }
 
 #else // HAVE_FDKAAC
@@ -404,23 +413,36 @@ void AudioDecoder::initAACDecoder()
     }
 
     // init decoder
-    unsigned long outputSr;
-    unsigned char outputCh;
-    long int init_result = NeAACDecInit2(m_aacDecoderHandle, m_asc, (unsigned long)m_ascLen, &outputSr, &outputCh);
+    unsigned long sampleRate;
+    unsigned char numChannels;
+    long int init_result = NeAACDecInit2(m_aacDecoderHandle, m_asc, (unsigned long)m_ascLen, &sampleRate, &numChannels);
     if (init_result != 0)
     {
         throw std::runtime_error("AACDecoderFAAD2: error while NeAACDecInit2: " + std::string(NeAACDecGetErrorMessage(-init_result)));
     }
 
 #if AUDIO_DECODER_MUTE_CONCEALMENT
-    m_numChannels = outputCh;
-    m_muteRampDsFactor = 48000 / outputSr;
-    m_outputBufferSamples = 960 * outputCh * (m_aacHeader.bits.sbr_flag ? 2 : 1);
+    m_numChannels = numChannels;
+    m_muteRampDsFactor = 48000 / sampleRate;
+    m_outputBufferSamples = 960 * numChannels * (m_aacHeader.bits.sbr_flag ? 2 : 1);
 #endif
 
-    qDebug("Output SR = %lu, channels = %d", outputSr, outputCh);
+    qDebug("Output SR = %lu, channels = %d", sampleRate, numChannels);
 
-    emit startAudio(uint32_t(outputSr), uint8_t(outputCh));
+//    m_outFifoPtr->numChannels = uint8_t(outputCh);
+//    m_outFifoPtr->sampleRate = uint32_t(outputSr);
+
+//    if (PlaybackState::Running == m_playbackState)
+//    {
+//        qDebug() << Q_FUNC_INFO << static_cast<int>(m_playbackState) << "==> switch";
+//    }
+//    else
+//    {
+//        qDebug() << Q_FUNC_INFO << static_cast<int>(m_playbackState) << "==> start";
+//    }
+
+//    emit startAudio(m_outFifoPtr);
+    setOutput(sampleRate, numChannels);
 }
 
 void AudioDecoder::deinitAACDecoder()
@@ -440,7 +462,7 @@ void AudioDecoder::deinitAACDecoder()
 
 void AudioDecoder::decodeData(QByteArray *inData)
 {
-    if (!m_isRunning)
+    if (PlaybackState::Stopped == m_playbackState)
     {   // do nothing if not running
         delete inData;  // free input buffer
         return;
@@ -485,9 +507,6 @@ void AudioDecoder::processMP2(QByteArray *inData)
     if (nullptr == m_mp2DecoderHandle)
     {   // this can happen when audio changes from AAC to MP2
         initMPG123();
-
-        // reset FIFO
-        m_outFifoPtr->reset();
     }
 
 #ifdef AUDIO_DECODER_MP2_OUT
@@ -511,13 +530,31 @@ void AudioDecoder::processMP2(QByteArray *inData)
         int ret = mpg123_decode(m_mp2DecoderHandle, (const unsigned char *)mp2Data, (inData->size() - 2), outBuf, MP2_FRAME_PCM_SAMPLES * sizeof(int16_t), &size);
         if (MPG123_NEW_FORMAT == ret)
         {
-            long rate;
-            int channels, enc;
-            mpg123_getformat(m_mp2DecoderHandle, &rate, &channels, &enc);
+            long sampleRate;
+            int numChannels, enc;
+            mpg123_getformat(m_mp2DecoderHandle, &sampleRate, &numChannels, &enc);
 
-            qDebug("New MP2 format: %ld Hz, %d channels, encoding %d", rate, channels, enc);
+            qDebug("New MP2 format: %ld Hz, %d channels, encoding %d", sampleRate, numChannels, enc);
 
-            emit startAudio(uint32_t(rate), uint8_t(channels));
+//            // reset FIFO
+//            m_outFifoPtr->reset();
+//            m_outFifoPtr->numChannels = uint8_t(channels);
+//            m_outFifoPtr->sampleRate = uint32_t(rate);
+
+//            if (PlaybackState::Running == m_playbackState)
+//            {
+//                qDebug() << Q_FUNC_INFO << static_cast<int>(m_playbackState) << "==> switch";
+//            }
+//            else
+//            {
+//                qDebug() << Q_FUNC_INFO << static_cast<int>(m_playbackState) << "==> start";
+//            }
+
+//            emit startAudio(m_outFifoPtr);
+
+//            m_playbackState = PlaybackState::Running;
+
+            setOutput(sampleRate, numChannels);
 
             getFormatMP2();
 
@@ -645,13 +682,15 @@ void AudioDecoder::processAAC(QByteArray *inData)
     header.raw = inData->at(1);
 
     if (nullptr == m_aacDecoderHandle)
-    {   // this can happen when format changes from MP2 to AAC
+    {   // this can happen when format changes from MP2 to AAC or during init
         m_aacHeader.raw = header.raw;
         readAACHeader();
-        initAACDecoder();
+        initAACDecoder();        
 
         // reset FIFO
         m_outFifoPtr->reset();
+
+        m_playbackState = PlaybackState::Running;
     }
 
     uint8_t conceal = header.bits.conceal;
@@ -675,7 +714,7 @@ void AudioDecoder::processAAC(QByteArray *inData)
     }    
 
     if (header.raw != m_aacHeader.raw)
-    {
+    {   // this is stream reconfiguration
         m_aacHeader.raw = header.raw;
         readAACHeader();
         initAACDecoder();
@@ -876,6 +915,30 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
         m_state = OutputState::Unmuted;
     }
 #endif
+}
+
+void AudioDecoder::setOutput(int sampleRate, int numChannels)
+{
+    // toggle index 0->1 or 1->0
+    m_outFifoIdx = (m_outFifoIdx + 1) & 0x1;
+    m_outFifoPtr = &audioFifo[m_outFifoIdx];
+
+    m_outFifoPtr->sampleRate = sampleRate;
+    m_outFifoPtr->numChannels = numChannels;
+    m_outFifoPtr->reset();
+
+    if (PlaybackState::Running == m_playbackState)
+    {   // switch audio source
+        //qDebug() << Q_FUNC_INFO << static_cast<int>(m_playbackState) << "==> switch: idx =" << m_outFifoIdx;
+        emit switchAudio(m_outFifoPtr);
+
+    }
+    else
+    {   // start audio
+        //qDebug() << Q_FUNC_INFO << static_cast<int>(m_playbackState) << "==> start: idx =" << m_outFifoIdx;
+        m_playbackState = PlaybackState::Running;
+        emit startAudio(m_outFifoPtr);
+    }
 }
 
 #endif // HAVE_FDKAAC

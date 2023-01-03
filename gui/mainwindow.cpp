@@ -300,14 +300,14 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         qApp->quit();
     }
 
-    m_audioDecoder = new AudioDecoder(&audioBuffer, nullptr);
+    m_audioDecoder = new AudioDecoder(nullptr);
     m_audioDecoderThread = new QThread(this);
     m_audioDecoderThread->setObjectName("audioDecoderThr");
     m_audioDecoder->moveToThread(m_audioDecoderThread);
     connect(m_audioDecoderThread, &QThread::finished, m_audioDecoder, &QObject::deleteLater);
     m_audioDecoderThread->start();
 
-    m_audioOutput = new AudioOutput(&audioBuffer);
+    m_audioOutput = new AudioOutput();
 #if (!HAVE_PORTAUDIO)
     m_audioOutputThread = new QThread(this);
     m_audioOutputThread->setObjectName("audioOutThr");
@@ -366,6 +366,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // audio output is controlled by signals from decoder
     connect(this, &MainWindow::stopAudio, m_audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
     connect(m_audioDecoder, &AudioDecoder::startAudio, m_audioOutput, &AudioOutput::start, Qt::QueuedConnection);
+    connect(m_audioDecoder, &AudioDecoder::switchAudio, m_audioOutput, &AudioOutput::restart, Qt::QueuedConnection);
     connect(m_audioDecoder, &AudioDecoder::stopAudio, m_audioOutput, &AudioOutput::stop, Qt::QueuedConnection);
 
     // tune procedure:
