@@ -499,11 +499,6 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             m_inFifoPtr->countChanged.wakeAll();
             m_inFifoPtr->mutex.unlock();
 
-            if (m_stopFlag && (count >= 2*bytesToRead))
-            {   // stop is request and still enough samples
-                muteRequest = m_muteFlag;  // ignoring stop flag
-            }
-
             if (!muteRequest)
             {   // done
                 return paContinue;
