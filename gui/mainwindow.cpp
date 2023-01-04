@@ -760,6 +760,7 @@ void MainWindow::channelSelected()
 
 
     clearEnsembleInformationLabels();
+    ui->channelCombo->setDisabled(true);
     ui->frequencyLabel->setText("Tuning...  ");
 
     onSyncStatus(uint8_t(DabSyncLevel::NoSync));
@@ -800,6 +801,7 @@ void MainWindow::onTuneDone(uint32_t freq)
     m_frequency = freq;
     if (freq != 0)
     {
+        ui->channelCombo->setEnabled(true);
         ui->serviceListView->setEnabled(true);
         ui->serviceTreeView->setEnabled(true);
         if (m_hasListViewFocus)
