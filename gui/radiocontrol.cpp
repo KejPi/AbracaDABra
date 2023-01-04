@@ -1729,13 +1729,13 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
     {   // no ennouncement ongoing
         if (DABSDR_AUDIO_INSTANCE_PRIMARY == p->instance)
         {
-            QByteArray * pData = new QByteArray;
-            pData->clear();
-            pData->append(p->ASCTy);
-            pData->append(p->header.raw);
-            pData->append((const char *) p->pAuData, p->auLen);
+            RadioControlAudioData * pAudioData = new RadioControlAudioData;
+            pAudioData->instance = p->instance;
+            pAudioData->ASCTy = static_cast<DabAudioDataSCty>(p->ASCTy);
+            pAudioData->header = p->header;
+            pAudioData->data.assign(p->pAuData, p->pAuData+p->auLen);
 
-            radioCtrl->emit_audioData(pData);
+            radioCtrl->emit_audioData(pAudioData);
         }
         else
         {
@@ -1745,14 +1745,13 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
         return;
     case 1:
     {   // announcement expected
-        QByteArray * pData = new QByteArray;
-        pData->clear();
-        pData->append(p->ASCTy);
-        pData->append(p->header.raw);
-        pData->append((const char *) p->pAuData, p->auLen);
+        RadioControlAudioData * pAudioData = new RadioControlAudioData;
+        pAudioData->instance = p->instance;
+        pAudioData->ASCTy = static_cast<DabAudioDataSCty>(p->ASCTy);
+        pAudioData->header = p->header;
+        pAudioData->data.assign(p->pAuData, p->pAuData+p->auLen);
 
-        radioCtrl->emit_audioData(pData);
-
+        radioCtrl->emit_audioData(pAudioData);
         if (DABSDR_AUDIO_INSTANCE_SECONDARY == p->instance)
         {   // first announcement data increment value
             radioCtrl->emit_announcementAudioAvailable();
@@ -1763,13 +1762,13 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
     {   //
         if (DABSDR_AUDIO_INSTANCE_SECONDARY == p->instance)
         {
-            QByteArray * pData = new QByteArray;
-            pData->clear();
-            pData->append(p->ASCTy);
-            pData->append(p->header.raw);
-            pData->append((const char *) p->pAuData, p->auLen);
+            RadioControlAudioData * pAudioData = new RadioControlAudioData;
+            pAudioData->instance = p->instance;
+            pAudioData->ASCTy = static_cast<DabAudioDataSCty>(p->ASCTy);
+            pAudioData->header = p->header;
+            pAudioData->data.assign(p->pAuData, p->pAuData+p->auLen);
 
-            radioCtrl->emit_audioData(pData);
+            radioCtrl->emit_audioData(pAudioData);
         }
         else
         {

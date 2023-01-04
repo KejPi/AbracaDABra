@@ -62,7 +62,7 @@ public:
 public slots:
     void start(const RadioControlServiceComponent &s);
     void stop();
-    void decodeData(QByteArray * inData);
+    void decodeData(RadioControlAudioData *inData);
     void getAudioParameters();
 
 signals:
@@ -113,11 +113,11 @@ private:
     void readAACHeader();
     void initAACDecoder();
     void deinitAACDecoder();
-    void processAAC(QByteArray *inData);
+    void processAAC(RadioControlAudioData *inData);
 
     void initMPG123();
     void deinitMPG123();
-    void processMP2(QByteArray *inData);
+    void processMP2(RadioControlAudioData *inData);
     void getFormatMP2();
 
     // this is for dubugging

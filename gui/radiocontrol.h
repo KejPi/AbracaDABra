@@ -209,6 +209,15 @@ struct RadioControlUserAppData
     QByteArray data;
 };
 
+struct RadioControlAudioData
+{
+    uint8_t instance;
+    DabAudioDataSCty ASCTy;
+    dabsdrAudioFrameHeader_t header;
+    std::vector<uint8_t> data;
+};
+
+
 enum class RadioControlEventType
 {
     SYNC_STATUS = 0,
@@ -300,7 +309,7 @@ signals:
     void userAppData(const RadioControlUserAppData & data);
     void audioServiceSelection(const RadioControlServiceComponent & s);
     void audioServiceReconfiguration(const RadioControlServiceComponent & s);
-    void audioData(QByteArray * pData);
+    void audioData(RadioControlAudioData * pData);
     void dabTime(const QDateTime & dateAndTime);   
     void ensembleInformation(const RadioControlEnsemble & ens);
     void ensembleConfiguration(const QString &);
@@ -387,7 +396,7 @@ private:
 
     // wrappers unsed in callback functions (emit requires class instance)
     void emit_dabEvent(RadioControlEvent * pEvent) { emit dabEvent(pEvent); }
-    void emit_audioData(QByteArray * pData) { emit audioData(pData); }
+    void emit_audioData(RadioControlAudioData * pData) { emit audioData(pData); }
     void emit_announcementAudioAvailable() { emit announcementAudioAvailable(); }
 
     // static methods used as dabsdr library callbacks

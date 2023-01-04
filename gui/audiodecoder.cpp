@@ -444,6 +444,7 @@ void AudioDecoder::initAACDecoder()
 //    emit startAudio(m_outFifoPtr);
     setOutput(sampleRate, numChannels);
 }
+#endif // HAVE_FDKAAC
 
 void AudioDecoder::deinitAACDecoder()
 {
@@ -458,9 +459,7 @@ void AudioDecoder::deinitAACDecoder()
     }
 }
 
-#endif // HAVE_FDKAAC
-
-void AudioDecoder::decodeData(QByteArray *inData)
+void AudioDecoder::decodeData(RadioControlAudioData *inData)
 {
     if (PlaybackState::Stopped == m_playbackState)
     {   // do nothing if not running
@@ -468,7 +467,7 @@ void AudioDecoder::decodeData(QByteArray *inData)
         return;
     }
 
-    switch (static_cast<DabAudioDataSCty>(inData->at(0)))
+    switch (inData->ASCTy)
     {
         case DabAudioDataSCty::DAB_AUDIO:
             processMP2(inData);
@@ -482,7 +481,7 @@ void AudioDecoder::decodeData(QByteArray *inData)
             ; // do nothing
     }
 
-    // free input buffer
+    // free input data
     delete inData;
 }
 
@@ -499,7 +498,7 @@ void AudioDecoder::getAudioParameters()
     }
 }
 
-void AudioDecoder::processMP2(QByteArray *inData)
+void AudioDecoder::processMP2(RadioControlAudioData *inData)
 {
     #define MP2_FRAME_PCM_SAMPLES (2 * 1152)
     #define MP2_DRC_ENABLE        1
@@ -513,11 +512,8 @@ void AudioDecoder::processMP2(QByteArray *inData)
     writeMP2Output(inData->data() + 2, inData->size() - 2);
 #endif
 
-    if (inData->size() > 2)
+    if (inData->data.size() > 0)
     {
-        // input data
-        const char * mp2Data = inData->data() + 2;
-
         // [ETSI TS 103 466 V1.2.1 (2019-09)]
         // 5.2.9 Formatting of the audio bit stream
         // It shall further divide this bit stream into audio frames, each corresponding to 1152 PCM audio samples,
@@ -527,7 +523,7 @@ void AudioDecoder::processMP2(QByteArray *inData)
 
         /* Feed input chunk and get first chunk of decoded audio. */
         size_t size;
-        int ret = mpg123_decode(m_mp2DecoderHandle, (const unsigned char *)mp2Data, (inData->size() - 2), outBuf, MP2_FRAME_PCM_SAMPLES * sizeof(int16_t), &size);
+        int ret = mpg123_decode(m_mp2DecoderHandle, &inData->data[0], inData->data.size(), outBuf, MP2_FRAME_PCM_SAMPLES * sizeof(int16_t), &size);
         if (MPG123_NEW_FORMAT == ret)
         {
             long sampleRate;
@@ -535,24 +531,6 @@ void AudioDecoder::processMP2(QByteArray *inData)
             mpg123_getformat(m_mp2DecoderHandle, &sampleRate, &numChannels, &enc);
 
             qDebug("New MP2 format: %ld Hz, %d channels, encoding %d", sampleRate, numChannels, enc);
-
-//            // reset FIFO
-//            m_outFifoPtr->reset();
-//            m_outFifoPtr->numChannels = uint8_t(channels);
-//            m_outFifoPtr->sampleRate = uint32_t(rate);
-
-//            if (PlaybackState::Running == m_playbackState)
-//            {
-//                qDebug() << Q_FUNC_INFO << static_cast<int>(m_playbackState) << "==> switch";
-//            }
-//            else
-//            {
-//                qDebug() << Q_FUNC_INFO << static_cast<int>(m_playbackState) << "==> start";
-//            }
-
-//            emit startAudio(m_outFifoPtr);
-
-//            m_playbackState = PlaybackState::Running;
 
             setOutput(sampleRate, numChannels);
 
@@ -632,7 +610,7 @@ void AudioDecoder::processMP2(QByteArray *inData)
         delete [] outBuf;
     }
     // store DRC for next frame
-    m_mp2DRC = inData->at(1);
+    m_mp2DRC = inData->header.mp2DRC;
 }
 
 void AudioDecoder::getFormatMP2()
@@ -675,11 +653,11 @@ void AudioDecoder::getFormatMP2()
     emit audioParametersInfo(m_audioParameters);
 }
 
-void AudioDecoder::processAAC(QByteArray *inData)
+void AudioDecoder::processAAC(RadioControlAudioData *inData)
 {      
     dabsdrAudioFrameHeader_t header;
 
-    header.raw = inData->at(1);
+    header = inData->header;
 
     if (nullptr == m_aacDecoderHandle)
     {   // this can happen when format changes from MP2 to AAC or during init
@@ -708,8 +686,8 @@ void AudioDecoder::processAAC(QByteArray *inData)
 #else
         // concealment not supported
         // supposing that header is the same and setting buffer to 0
-        inData->fill(0);
-        header.raw = m_aacHeader.raw;
+        inData->data.assign(inData->data.size(), 0);
+        header = m_aacHeader;
 #endif
     }    
 
@@ -725,9 +703,9 @@ void AudioDecoder::processAAC(QByteArray *inData)
 
     // decode audio
 #if HAVE_FDKAAC
-    uint8_t * aacData[1] = { (uint8_t *)inData->data() + 2 };
+    uint8_t * aacData[1] = {  &inData->data[0] };
     unsigned int len[1];
-    len[0] = inData->size() - 2;
+    len[0] = inData->data.size();
     unsigned int bytesValid = len[0];
 
     // fill internal input buffer
@@ -797,10 +775,7 @@ void AudioDecoder::processAAC(QByteArray *inData)
     m_outFifoPtr->count += bytesToWrite;
     m_outFifoPtr->mutex.unlock();
 #else // HAVE_FDKAAC
-    const char * aacData = inData->data() + 2;
-    unsigned long len = inData->size() - 2;
-
-    uint8_t * outputFrame = (uint8_t *)NeAACDecDecode(m_aacDecoderHandle, &m_aacDecFrameInfo, (unsigned char *)aacData, len);
+    uint8_t * outputFrame = (uint8_t *)NeAACDecDecode(m_aacDecoderHandle, &m_aacDecFrameInfo, &inData->data[0], inData->data.size());
 
 #ifdef AUDIO_DECODER_AAC_OUT
     writeAACOutput(aacData, len);
@@ -916,6 +891,7 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
     }
 #endif
 }
+#endif // HAVE_FDKAAC
 
 void AudioDecoder::setOutput(int sampleRate, int numChannels)
 {
@@ -940,8 +916,6 @@ void AudioDecoder::setOutput(int sampleRate, int numChannels)
         emit startAudio(m_outFifoPtr);
     }
 }
-
-#endif // HAVE_FDKAAC
 
 #ifdef AUDIO_DECODER_AAC_OUT
 void AudioDecoder::writeAACOutput(const char *data, uint16_t dataLen)

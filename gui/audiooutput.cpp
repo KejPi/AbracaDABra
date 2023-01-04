@@ -198,7 +198,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     uint32_t availableSamples = nBufferFrames;
 
     // is any bit is set then mute is requested (mute | stop | restart)
-    int request = m_cbRequest;
+    unsigned int request = m_cbRequest;
 
     if (AudioOutputPlaybackState::Muted == m_playbackState)
     {   // muted
