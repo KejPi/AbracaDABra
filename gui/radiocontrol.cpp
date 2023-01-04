@@ -771,9 +771,15 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                 int announcementId = DabTables::ASwValues.indexOf(pAnnouncement->ASwFlags);
                 if (announcementId >= 0)
                 {   // valid ASw
-#if 1 // RADIO_CONTROL_VERBOSE > 1
+#if 1 // RADIO_CONTROL_VERBOSE > 1                    
+                    if (0xFE == pAnnouncement->clusterId)
+                    {   // this is test mode
+                        // ETSI TS 103 176 V2.4.1 [Annex G]
+                        announcementId = static_cast<int>(DabAnnouncement::AlarmTest);
+                    }
                     qDebug() << DabTables::getAnnouncementName(static_cast<DabAnnouncement>(announcementId))
-                             << "announcement in subchannel" <<  pAnnouncement->subChId;
+                             << "announcement in subchannel" <<  pAnnouncement->subChId
+                             << "cluster ID" << pAnnouncement->clusterId;
 #endif
                     m_currentService.activeCluster = pAnnouncement->clusterId;
                     m_currentService.announcementTimeoutTimer->start();

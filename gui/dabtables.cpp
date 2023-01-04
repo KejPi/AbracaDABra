@@ -575,6 +575,7 @@ QString DabTables::getAnnouncementName(DabAnnouncement announcement)
     case DabAnnouncement::Programme: return QString("Programme Information");
     case DabAnnouncement::Sport:     return QString("Sport report");
     case DabAnnouncement::Financial: return QString("Financial report");
+    case DabAnnouncement::AlarmTest: return QString("Alarm Test");
     default:                         return QString("Unknown");
     }
 }

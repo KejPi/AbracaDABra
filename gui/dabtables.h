@@ -97,6 +97,7 @@ enum class DabAnnouncement
     Programme,
     Sport,
     Financial,
+    AlarmTest,
     Undefined
 };
 
