@@ -57,6 +57,9 @@ public slots:
     void mute(bool on);
     void setVolume(int value);
 
+signals:
+    void audioOutputRestart();
+
 private:
     enum Request
     {

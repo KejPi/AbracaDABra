@@ -429,19 +429,6 @@ void AudioDecoder::initAACDecoder()
 
     qDebug("Output SR = %lu, channels = %d", sampleRate, numChannels);
 
-//    m_outFifoPtr->numChannels = uint8_t(outputCh);
-//    m_outFifoPtr->sampleRate = uint32_t(outputSr);
-
-//    if (PlaybackState::Running == m_playbackState)
-//    {
-//        qDebug() << Q_FUNC_INFO << static_cast<int>(m_playbackState) << "==> switch";
-//    }
-//    else
-//    {
-//        qDebug() << Q_FUNC_INFO << static_cast<int>(m_playbackState) << "==> start";
-//    }
-
-//    emit startAudio(m_outFifoPtr);
     setOutput(sampleRate, numChannels);
 }
 #endif // HAVE_FDKAAC
@@ -505,6 +492,7 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
 
     if (nullptr == m_mp2DecoderHandle)
     {   // this can happen when audio changes from AAC to MP2
+        m_inputDataInstance = inData->instance;
         initMPG123();
     }
 
@@ -524,8 +512,8 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
         /* Feed input chunk and get first chunk of decoded audio. */
         size_t size;
         int ret = mpg123_decode(m_mp2DecoderHandle, &inData->data[0], inData->data.size(), outBuf, MP2_FRAME_PCM_SAMPLES * sizeof(int16_t), &size);
-        if (MPG123_NEW_FORMAT == ret)
-        {
+        if ((MPG123_NEW_FORMAT == ret) || (inData->instance != m_inputDataInstance))
+        {   // this is stream reconfiguration or announcement (different instance)
             long sampleRate;
             int numChannels, enc;
             mpg123_getformat(m_mp2DecoderHandle, &sampleRate, &numChannels, &enc);
@@ -536,6 +524,7 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
 
             getFormatMP2();
 
+            m_inputDataInstance = inData->instance;
             m_mp2DRC = 0;
         }
 
@@ -662,11 +651,9 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     if (nullptr == m_aacDecoderHandle)
     {   // this can happen when format changes from MP2 to AAC or during init
         m_aacHeader.raw = header.raw;
+        m_inputDataInstance = inData->instance;
         readAACHeader();
         initAACDecoder();        
-
-        // reset FIFO
-        m_outFifoPtr->reset();
 
         m_playbackState = PlaybackState::Running;
     }
@@ -689,16 +676,14 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
         inData->data.assign(inData->data.size(), 0);
         header = m_aacHeader;
 #endif
-    }    
+    }
 
-    if (header.raw != m_aacHeader.raw)
-    {   // this is stream reconfiguration
+    if ((header.raw != m_aacHeader.raw) || (inData->instance != m_inputDataInstance))
+    {   // this is stream reconfiguration or announcement (different instance)
         m_aacHeader.raw = header.raw;
+        m_inputDataInstance = inData->instance;
         readAACHeader();
         initAACDecoder();
-
-        // reset FIFO
-        m_outFifoPtr->reset();
     }
 
     // decode audio

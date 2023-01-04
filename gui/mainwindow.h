@@ -185,7 +185,7 @@ private:
     void onServiceListTreeClicked(const QModelIndex &index);
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
     void onAudioServiceReconfiguration(const RadioControlServiceComponent &s);
-    void onAnnouncement(DabAnnouncement id, bool ongoing);
+    void onAnnouncement(DabAnnouncement id);
 };
 
 class DLPlusObjectUI

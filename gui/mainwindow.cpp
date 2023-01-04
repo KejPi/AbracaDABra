@@ -331,6 +331,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::dabTime, this, &MainWindow::onDabTime, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListEntry, this, &MainWindow::onServiceListEntry, Qt::BlockingQueuedConnection);
     connect(m_radioControl, &RadioControl::announcement, this, &MainWindow::onAnnouncement, Qt::QueuedConnection);
+    connect(m_audioOutput, &AudioOutput::audioOutputRestart, m_radioControl, &RadioControl::onAudioOutputRestart, Qt::QueuedConnection);
 
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfiguration, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::snrLevel, m_ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
@@ -1109,8 +1110,9 @@ void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponen
     }
 }
 
-void MainWindow::onAnnouncement(DabAnnouncement id, bool ongoing)
+void MainWindow::onAnnouncement(DabAnnouncement id)
 {
+    bool ongoing = (DabAnnouncement::Undefined != id);
     if (ongoing)
     {
         ui->announcementLabel->setToolTip(QString("Ongoing announcement:<br><b>%1</b>")                                              .arg(DabTables::getAnnouncementName(id)));
@@ -1143,6 +1145,7 @@ void MainWindow::clearServiceInformationLabels()
     ui->protectionLabel->setToolTip("");
     ui->audioBitrateLabel->setText("");
     ui->audioBitrateLabel->setToolTip("");
+    ui->announcementLabel->setVisible(false);
 }
 
 void MainWindow::onNewSettings()

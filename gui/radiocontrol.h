@@ -293,6 +293,7 @@ public:
     void getEnsembleConfiguration();
     void startUserApplication(DabUserApplicationType uaType, bool start);
     uint32_t getEnsembleUEID() const { return m_ensemble.ueid; }
+    void onAudioOutputRestart();
 
 signals:
     void dabEvent(RadioControlEvent * pEvent);
@@ -315,7 +316,7 @@ signals:
     void ensembleConfiguration(const QString &);
     void ensembleReconfiguration(const RadioControlEnsemble & ens);
     void ensembleRemoved(const RadioControlEnsemble & ens);
-    void announcement(DabAnnouncement id, bool ongoing);
+    void announcement(DabAnnouncement id);
     void announcementAudioAvailable();
 private:
     static const uint8_t EEPCoderate[];

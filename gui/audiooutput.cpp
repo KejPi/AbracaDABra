@@ -600,7 +600,8 @@ void AudioOutput::onStreamFinished()
 {
     if (m_cbRequest & Request::Restart)
     {   // restart was requested (flag is cleared in start routine)
-        start(m_restartFifoPtr);
+        emit audioOutputRestart();
+        start(m_restartFifoPtr);        
     }
     else { /* do nothing */ }
 }

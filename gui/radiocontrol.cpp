@@ -742,9 +742,12 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                         qDebug() << "End of announcement for cluster ID" << pAnnouncement->clusterId;
 #endif
                         // stop announcement
-                        announcementStart(0xFF, false);
-
-                        emit announcement(DabAnnouncement::Undefined, false);                                                
+                        if (!announcementStart(pAnnouncement->subChId, false))
+                        {   // announcement in current service
+                             // delay to compensate audio delay somehow
+                             QTimer::singleShot(1000, this, [this](){ emit announcement(DabAnnouncement::Undefined); });
+                        }
+                        else { /* signal will be sent when audio changes from onAudioOutputRestart() */ }
                     }
                     else
                     {   // announcement continues - restart timer
@@ -777,11 +780,11 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                     m_currentService.announcementId = static_cast<DabAnnouncement>(announcementId);
 
                     if (!announcementStart(pAnnouncement->subChId, true))
-                    {  // announcement in current service
+                    {   // announcement in current service
                         // delay to compensate audio delay somehow
-                        QTimer::singleShot(1000, this, [this](){ emit announcement(m_currentService.announcementId, true); });
+                        QTimer::singleShot(1000, this, [this](){ emit announcement(m_currentService.announcementId); });
                     }
-                    else { /* announcement will be siugnalized one data is available */ }
+                    else { /* signal will be sent when audio changes from onAudioOutputRestart() */ }
                 }
                 else
                 { /* invalid or not enabled for current service */ }
@@ -862,6 +865,9 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
 
             // clear request
             m_serviceRequest.SId = 0;
+
+            // stop any service running in secondary instance (announcment)
+            dabsdrRequest_ServiceStop(m_dabsdrHandle, 0, 0, DABSDR_AUDIO_INSTANCE_SECONDARY);
 
             // remove automatically enabled data services
             serviceConstIterator serviceIt = m_serviceList.constFind(m_currentService.SId);
@@ -1025,6 +1031,11 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
             }
         }
     }
+}
+
+void RadioControl::onAudioOutputRestart()
+{   // restrt can be caused by announcement or audio service reconfig
+    emit announcement(m_currentService.announcementId);
 }
 
 QString RadioControl::ensembleConfigurationString() const
@@ -1326,6 +1337,7 @@ void RadioControl::resetCurrentService()
     m_currentService.announcementTimeoutTimer->stop();
     m_currentService.activeCluster = 0;
     m_currentService.announcementSwitchState = 0;
+    m_currentService.announcementId = DabAnnouncement::Undefined;
 }
 
 void RadioControl::setCurrentServiceAnnouncementSupport()
@@ -1366,25 +1378,25 @@ void RadioControl::onAnnouncementTimeout()
     m_currentService.activeCluster = 0;
     m_currentService.announcementSwitchState = 0;
     m_currentService.announcementId = DabAnnouncement::Undefined;
-    emit announcement(DabAnnouncement::Undefined, false);
+    emit announcement(DabAnnouncement::Undefined);
 }
 
 void RadioControl::onAnnouncementAudioAvailable()
 {
-    m_currentService.announcementSwitchState = 2;
-    emit announcement(m_currentService.announcementId, true);
+    m_currentService.announcementSwitchState = 2;    
 }
 
 bool RadioControl::announcementStart(uint8_t subChId, bool start)
 {
+    // 1. check that subchId is not current service
+    serviceComponentIterator scIt;
+    if (getCurrentAudioServiceComponent(scIt) && (scIt->SubChId == subChId))
+    {   // nothing to be done -> return value (false) indicates announcement in current subChannel
+        return false;
+    }
+
     if (start)
     {   // start announcement
-        // 1. check that subchId is not current service
-        serviceComponentIterator scIt;
-        if (getCurrentAudioServiceComponent(scIt) && (scIt->SubChId == subChId))
-        {   // nothing to be done -> return value iundicates announcement in current subChannel
-            return false;
-        }
 
         // 2. find SId and SCIdS that match subChId
         DabSId sid;
