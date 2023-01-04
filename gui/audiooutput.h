@@ -27,8 +27,8 @@
 
 enum class AudioOutputPlaybackState
 {
-    Playing = 0,
-    Muted = 1,
+    Muted = 0,
+    Playing = 1,
 };
 
 
@@ -58,19 +58,14 @@ public slots:
     void setVolume(int value);
 
 private:
-//    std::atomic<bool> m_muteFlag  = false;
-//    std::atomic<bool> m_stopFlag  = false;
-//    std::atomic<bool> m_restartFlag  = false;
-//    enum class StopRequest { KeepRunning = 0, Stop, Restart };
-//    std::atomic<int> m_stopRequest = static_cast<int>(StopRequest::KeepRunning);
     enum Request
     {
-        KeepRunning = (1 << 0),
-        Mute = (1 << 1),
-        Stop = (1 << 2),
-        Restart = (1 << 3),
+        None = 0,          // no bit
+        Mute = (1 << 0),   // bit #0
+        Stop = (1 << 1),   // bit #1
+        Restart = (1 << 2) // bit #2
     };
-    std::atomic<int> m_cbRequest = Request::KeepRunning;
+    std::atomic<unsigned int> m_cbRequest = Request::None;
 
     PaStream * m_outStream = nullptr;
     audioFifo_t * m_inFifoPtr = nullptr;
