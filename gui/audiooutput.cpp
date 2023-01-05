@@ -154,7 +154,14 @@ void AudioOutput::stop()
 
 void AudioOutput::mute(bool on)
 {
-    m_cbRequest |= Request::Mute;         // set mute bit
+    if (on)
+    {   // set mute bit
+        m_cbRequest |= Request::Mute;
+    }
+    else
+    {   // reset mute bit
+        m_cbRequest &= ~Request::Mute;
+    }
 }
 
 void AudioOutput::setVolume(int value)
