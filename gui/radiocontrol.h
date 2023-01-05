@@ -320,6 +320,8 @@ signals:
     void announcement(DabAnnouncement id);
     void announcementAudioAvailable();
 private:
+    enum class AnnouncementSwitchState { NoAnnouncement, WaitForAnnouncement, OngoingAnnouncement };
+
     static const uint8_t EEPCoderate[];
 
     dabsdrHandle_t m_dabsdrHandle;
@@ -334,17 +336,15 @@ private:
         uint32_t SId;
         uint8_t SCIdS;
 
-        // announcement support
-        uint16_t ASu;
-        QList<uint8_t> clusterIds;
-        uint8_t activeCluster = 0;
-        DabAnnouncement announcementId;
-        QTimer * announcementTimeoutTimer;
-        struct {
-            DabSId SId;
-            uint8_t SCIdS;
-        } announcementService;
-        std::atomic_int announcementSwitchState;
+        struct
+        {   // announcement support
+            uint16_t ASu;
+            QList<uint8_t> clusterIds;
+            uint8_t activeCluster = 0;
+            DabAnnouncement id;
+            QTimer * timeoutTimer;
+            std::atomic<AnnouncementSwitchState> switchState;
+        } announcement;
     } m_currentService;
 
     // this is a counter of requests to check
