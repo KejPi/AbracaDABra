@@ -400,7 +400,7 @@ void MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *se
     if (m_carousel->end() == it)
     {  // object does not exist in carousel - this should not happen for current directory
 #if MOTOBJECT_VERBOSE
-        qDebug() << "New MOT object" << transportId << "number of objects in carousel" << carousel->size();
+        qDebug() << "New MOT object" << transportId << "number of objects in carousel" << m_carousel->size();
 #endif
         // add new object to cache
         it = m_carousel->addMotObj(MOTObject(transportId));
@@ -560,7 +560,7 @@ bool MOTDirectory::parse(const QByteArray &dirData)
 
 #if MOTOBJECT_VERBOSE
     qDebug() << "MOT directory carousel contents:";
-    for (MOTObjectCache::const_iterator it = carousel->cbegin(); it < carousel->cend(); ++it)
+    for (MOTObjectCache::const_iterator it = m_carousel->cbegin(); it < m_carousel->cend(); ++it)
     {
         qDebug("\tID: %d, isComplete = %d, body size = %lld, name = %s", it->getId(), it->isComplete(), it->getBody().size(), it->getContentName().toLocal8Bit().data());
 
