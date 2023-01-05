@@ -365,7 +365,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_audioDecoder, &AudioDecoder::start, Qt::QueuedConnection);
 
     // audio output is controlled by signals from decoder
-    connect(this, &MainWindow::stopAudio, m_audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::stopAudio, m_audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
     connect(m_audioDecoder, &AudioDecoder::startAudio, m_audioOutput, &AudioOutput::start, Qt::QueuedConnection);
     connect(m_audioDecoder, &AudioDecoder::switchAudio, m_audioOutput, &AudioOutput::restart, Qt::QueuedConnection);
     connect(m_audioDecoder, &AudioDecoder::stopAudio, m_audioOutput, &AudioOutput::stop, Qt::QueuedConnection);
@@ -502,7 +502,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     {
         m_exitRequested = true;
         emit stopUserApps();
-        emit stopAudio();
         emit serviceRequest(0,0,0);
         event->ignore();
     }

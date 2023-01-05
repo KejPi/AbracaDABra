@@ -910,6 +910,9 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
         m_serviceList.clear();
 
         dabTune(0);
+
+        // request audio stop
+        emit stopAudio();
      }
 }
 

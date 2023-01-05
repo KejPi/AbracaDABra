@@ -303,7 +303,8 @@ signals:
     void fibCounter(int expected, int errors);
     void mscCounter(int correct, int errors);
     void tuneInputDevice(uint32_t freq);
-    void tuneDone(uint32_t freq);    
+    void tuneDone(uint32_t freq);
+    void stopAudio();
     void serviceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
     void serviceListComplete(const RadioControlEnsemble & ens);
     void dlDataGroup(const QByteArray & dg);
