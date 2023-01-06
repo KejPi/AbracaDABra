@@ -58,6 +58,7 @@ protected:
     void changeEvent( QEvent* e );
 private:
     // constants
+    enum InstanceIdx { Service = 0, Announcement = 1, NumInstances };
     static const QString appName;
     static const QStringList syncLevelLabels;
     static const QStringList syncLevelTooltip;
@@ -154,7 +155,7 @@ private:
     void channelSelected();
     void serviceTreeViewUpdateSelection();
     void serviceListViewUpdateSelection();
-    void changeInputDevice(const InputDeviceId &d);
+    void changeInputDevice(const InputDeviceId &d);    
 
     void onInputDeviceReady();
     void onEnsembleInfo(const RadioControlEnsemble &ens);
@@ -168,12 +169,15 @@ private:
     void onSyncStatus(uint8_t sync);
     void onSnrLevel(float snr);
     void onServiceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
-    void onDLComplete(const QString &dl);
+    void onDLComplete_Service(const QString &dl);
+    void onDLComplete_Announcement(const QString & dl);
+    void onDLComplete(QLabel * dlLabel, const QString & dl);
     void onDLPlusToggled(bool toggle);
     void onDLPlusObjReceived(const DLPlusObject & object);
     void onDLPlusItemToggle();
     void onDLPlusItemRunning(bool isRunning);
-    void onDLReset();
+    void onDLReset_Service();
+    void onDLReset_Announcement();
     void onAudioParametersInfo(const AudioParameters &params);
     void onDabTime(const QDateTime & d);
     void onTuneChannel(uint32_t freq);
@@ -184,7 +188,7 @@ private:
     void onServiceListTreeClicked(const QModelIndex &index);
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
     void onAudioServiceReconfiguration(const RadioControlServiceComponent &s);
-    void onAnnouncement(DabAnnouncement id);
+    void onAnnouncement(DabAnnouncement id, bool serviceSwitch);
 };
 
 class DLPlusObjectUI

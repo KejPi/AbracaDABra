@@ -742,10 +742,11 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                         qDebug() << "End of announcement for cluster ID" << pAnnouncement->clusterId;
 #endif
                         // stop announcement
-                        if (!announcementStart(pAnnouncement->subChId, false))
+                        announcementStart(pAnnouncement->subChId, false);
+                        if (!m_currentService.announcement.serviceSwitch)
                         {   // announcement in current service
                              // delay to compensate audio delay somehow
-                             QTimer::singleShot(1000, this, [this](){ emit announcement(DabAnnouncement::Undefined); });
+                             QTimer::singleShot(1000, this, [this](){ emit announcement(DabAnnouncement::Undefined, false); });
                         }
                         else { /* signal will be sent when audio changes from onAudioOutputRestart() */ }
                     }
@@ -784,11 +785,11 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                     m_currentService.announcement.activeCluster = pAnnouncement->clusterId;
                     m_currentService.announcement.timeoutTimer->start();
                     m_currentService.announcement.id = static_cast<DabAnnouncement>(announcementId);
-
-                    if (!announcementStart(pAnnouncement->subChId, true))
+                    announcementStart(pAnnouncement->subChId, true);
+                    if (!m_currentService.announcement.serviceSwitch)
                     {   // announcement in current service
                         // delay to compensate audio delay somehow
-                        QTimer::singleShot(1000, this, [this](){ emit announcement(m_currentService.announcement.id); });
+                        QTimer::singleShot(1000, this, [this](){ emit announcement(m_currentService.announcement.id, false); });
                     }
                     else { /* signal will be sent when audio changes from onAudioOutputRestart() */ }
                 }
@@ -810,8 +811,16 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 #if RADIO_CONTROL_VERBOSE > 1
         qDebug() << "RadioControlEvent::DATAGROUP_DL";
 #endif
-        emit dlDataGroup(*(pEvent->pDataGroupDL));
-        delete pEvent->pDataGroupDL;
+        if (DABSDR_AUDIO_INSTANCE_PRIMARY == pEvent->pDynamicLabelData->instance)
+        {
+            emit dlDataGroup_Service(pEvent->pDynamicLabelData->data);
+        }
+        else
+        {
+            emit dlDataGroup_Announcement(pEvent->pDynamicLabelData->data);
+        }
+
+        delete pEvent->pDynamicLabelData;
     }
         break;
     case RadioControlEventType::USERAPP_DATA:
@@ -1044,7 +1053,7 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
 
 void RadioControl::onAudioOutputRestart()
 {   // restart can be caused by announcement or audio service reconfig
-    emit announcement(m_currentService.announcement.id);
+    emit announcement(m_currentService.announcement.id, m_currentService.announcement.serviceSwitch);
 }
 
 QString RadioControl::ensembleConfigurationString() const
@@ -1345,6 +1354,7 @@ void RadioControl::resetCurrentService()
     m_currentService.announcement.clusterIds.clear();
     m_currentService.announcement.timeoutTimer->stop();
     m_currentService.announcement.activeCluster = 0;
+    m_currentService.announcement.serviceSwitch = false;
     m_currentService.announcement.switchState = AnnouncementSwitchState::NoAnnouncement;
     m_currentService.announcement.id = DabAnnouncement::Undefined;
 }
@@ -1379,15 +1389,14 @@ void RadioControl::setCurrentServiceAnnouncementSupport()
 
 void RadioControl::onAnnouncementTimeout()
 {
-    qDebug() << Q_FUNC_INFO;
-
     // this can only happen when announcement starts and is not correctly finished
 
     // forcing end of announcement
     m_currentService.announcement.activeCluster = 0;
     m_currentService.announcement.switchState = AnnouncementSwitchState::NoAnnouncement;
     m_currentService.announcement.id = DabAnnouncement::Undefined;
-    emit announcement(DabAnnouncement::Undefined);
+    emit announcement(DabAnnouncement::Undefined, m_currentService.announcement.serviceSwitch);
+    m_currentService.announcement.serviceSwitch = false;
 }
 
 void RadioControl::onAnnouncementAudioAvailable()
@@ -1395,13 +1404,13 @@ void RadioControl::onAnnouncementAudioAvailable()
     m_currentService.announcement.switchState = AnnouncementSwitchState::OngoingAnnouncement;
 }
 
-bool RadioControl::announcementStart(uint8_t subChId, bool start)
+void RadioControl::announcementStart(uint8_t subChId, bool start)
 {
     // 1. check that subchId is not current service
     serviceComponentIterator scIt;
     if (getCurrentAudioServiceComponent(scIt) && (scIt->SubChId == subChId))
     {   // nothing to be done -> return value (false) indicates announcement in current subChannel        
-        return false;
+        m_currentService.announcement.serviceSwitch = false;
     }
 
     if (start)
@@ -1453,7 +1462,7 @@ bool RadioControl::announcementStart(uint8_t subChId, bool start)
         m_currentService.announcement.switchState = AnnouncementSwitchState::NoAnnouncement;
     }
 
-    return true;
+    m_currentService.announcement.serviceSwitch = true;
 }
 
 QString RadioControl::toShortLabel(QString & label, uint16_t charField) const
@@ -1714,7 +1723,10 @@ void RadioControl::dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx)
     RadioControlEvent * pEvent = new RadioControlEvent;
     pEvent->type = RadioControlEventType::DATAGROUP_DL;
     pEvent->status = DABSDR_NSTAT_SUCCESS;
-    pEvent->pDataGroupDL = new QByteArray((const char *)p->pData, p->len);
+    RadioControlDataDL * pDynamicLabelData = new RadioControlDataDL;
+    pDynamicLabelData->instance = p->instance;
+    pDynamicLabelData->data.append((const char *)p->pData, p->len);
+    pEvent->pDynamicLabelData = pDynamicLabelData;
     radioCtrl->emit_dabEvent(pEvent);
 }
 
@@ -1726,7 +1738,7 @@ void RadioControl::dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx)
         return;
     }
 
-    RadioControl * radioCtrl = static_cast<RadioControl *>(ctx);
+    RadioControl * radioCtrl = static_cast<RadioControl *>(ctx);       
     RadioControlUserAppData * pData = new RadioControlUserAppData;
     pData->userAppType = DabUserApplicationType(p->userAppType);
 

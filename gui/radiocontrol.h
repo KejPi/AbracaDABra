@@ -203,6 +203,12 @@ struct RadioControlService
 
 typedef QMap<uint32_t, RadioControlService> RadioControlServiceList;
 
+struct RadioControlDataDL
+{
+    dabsdrAudioInstance_t instance;
+    QByteArray data;
+};
+
 struct RadioControlUserAppData
 {
     DabUserApplicationType userAppType;
@@ -211,7 +217,7 @@ struct RadioControlUserAppData
 
 struct RadioControlAudioData
 {
-    uint8_t instance;
+    dabsdrAudioInstance_t instance;
     DabAudioDataSCty ASCTy;
     dabsdrAudioFrameHeader_t header;
     std::vector<uint8_t> data;
@@ -271,7 +277,7 @@ struct RadioControlEvent
         // user application data group
         RadioControlUserAppData * pUserAppData;
         // dynamic labale data group
-        QByteArray * pDataGroupDL;
+        RadioControlDataDL * pDynamicLabelData;
         // announcement switching
         dabsdrNtfAnnouncement_t * pAnnouncement;
         // audio service instance
@@ -307,7 +313,8 @@ signals:
     void stopAudio();
     void serviceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
     void serviceListComplete(const RadioControlEnsemble & ens);
-    void dlDataGroup(const QByteArray & dg);
+    void dlDataGroup_Service(const QByteArray & dg);
+    void dlDataGroup_Announcement(const QByteArray & dg);
     void userAppData(const RadioControlUserAppData & data);
     void audioServiceSelection(const RadioControlServiceComponent & s);
     void audioServiceReconfiguration(const RadioControlServiceComponent & s);
@@ -317,7 +324,7 @@ signals:
     void ensembleConfiguration(const QString &);
     void ensembleReconfiguration(const RadioControlEnsemble & ens);
     void ensembleRemoved(const RadioControlEnsemble & ens);
-    void announcement(DabAnnouncement id);
+    void announcement(DabAnnouncement id, bool serviceSwitch);
     void announcementAudioAvailable();
 private:
     enum class AnnouncementSwitchState { NoAnnouncement, WaitForAnnouncement, OngoingAnnouncement };
@@ -343,6 +350,7 @@ private:
             uint8_t activeCluster = 0;
             DabAnnouncement id;
             QTimer * timeoutTimer;
+            bool serviceSwitch;
             std::atomic<AnnouncementSwitchState> switchState;
         } announcement;
     } m_currentService;
@@ -382,7 +390,7 @@ private:
     void setCurrentServiceAnnouncementSupport();
     void onAnnouncementTimeout();
     void onAnnouncementAudioAvailable();
-    bool announcementStart(uint8_t subChId, bool start);
+    void announcementStart(uint8_t subChId, bool start);
 
     // wrapper functions for dabsdr API
     void dabTune(uint32_t freq) { dabsdrRequest_Tune(m_dabsdrHandle, freq); }

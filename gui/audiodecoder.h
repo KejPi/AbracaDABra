@@ -92,7 +92,7 @@ private:
     float m_mp2DRC = 0;
     mpg123_handle * m_mp2DecoderHandle;
 
-    uint8_t m_inputDataInstance;
+    dabsdrAudioInstance_t m_inputDataInstance;
     int m_outFifoIdx;
     audioFifo_t * m_outFifoPtr;
 
