@@ -60,7 +60,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     , ui(new Ui::MainWindow)
     , m_iniFilename(iniFilename)
 {
-    m_dlDecoder = new DLDecoder[InstanceIdx::NumInstances];
+    m_dlDecoder = new DLDecoder[Instance::NumInstances];
 
     ui->setupUi(this);
     connect(ui->channelCombo, &QComboBox::currentIndexChanged, this, &MainWindow::onChannelChange);
@@ -341,11 +341,11 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::mscCounter, m_ensembleInfoDialog, &EnsembleInfoDialog::updateMSCstatus, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_ensembleInfoDialog, &EnsembleInfoDialog::serviceChanged, Qt::QueuedConnection);
 
-    connect(m_radioControl, &RadioControl::dlDataGroup_Service, &m_dlDecoder[InstanceIdx::Service], &DLDecoder::newDataGroup, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::dlDataGroup_Announcement, &m_dlDecoder[InstanceIdx::Announcement], &DLDecoder::newDataGroup, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::dlDataGroup_Service, &m_dlDecoder[Instance::Service], &DLDecoder::newDataGroup, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::dlDataGroup_Announcement, &m_dlDecoder[Instance::Announcement], &DLDecoder::newDataGroup, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, this, &MainWindow::onAudioServiceSelection, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::audioServiceSelection, &m_dlDecoder[InstanceIdx::Service], &DLDecoder::reset, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::audioServiceSelection, &m_dlDecoder[InstanceIdx::Announcement], &DLDecoder::reset, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::audioServiceSelection, &m_dlDecoder[Instance::Service], &DLDecoder::reset, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::audioServiceSelection, &m_dlDecoder[Instance::Announcement], &DLDecoder::reset, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioData, m_audioDecoder, &AudioDecoder::decodeData, Qt::QueuedConnection);
 
     // service stopped
@@ -357,17 +357,17 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     // DL(+)
     // normal service
-    connect(&m_dlDecoder[InstanceIdx::Service], &DLDecoder::dlComplete, this, &MainWindow::onDLComplete_Service);
-    connect(&m_dlDecoder[InstanceIdx::Service], &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived_Service);
-    connect(&m_dlDecoder[InstanceIdx::Service], &DLDecoder::dlItemToggle, this, &MainWindow::onDLPlusItemToggle_Service);
-    connect(&m_dlDecoder[InstanceIdx::Service], &DLDecoder::dlItemRunning, this, &MainWindow::onDLPlusItemRunning_Service);
-    connect(&m_dlDecoder[InstanceIdx::Service], &DLDecoder::resetTerminal, this, &MainWindow::onDLReset_Service);
+    connect(&m_dlDecoder[Instance::Service], &DLDecoder::dlComplete, this, &MainWindow::onDLComplete_Service);
+    connect(&m_dlDecoder[Instance::Service], &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived_Service);
+    connect(&m_dlDecoder[Instance::Service], &DLDecoder::dlItemToggle, this, &MainWindow::onDLPlusItemToggle_Service);
+    connect(&m_dlDecoder[Instance::Service], &DLDecoder::dlItemRunning, this, &MainWindow::onDLPlusItemRunning_Service);
+    connect(&m_dlDecoder[Instance::Service], &DLDecoder::resetTerminal, this, &MainWindow::onDLReset_Service);
     // announcement
-    connect(&m_dlDecoder[InstanceIdx::Announcement], &DLDecoder::dlComplete, this, &MainWindow::onDLComplete_Announcement);
-    connect(&m_dlDecoder[InstanceIdx::Announcement], &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived_Announcement);
-    connect(&m_dlDecoder[InstanceIdx::Announcement], &DLDecoder::dlItemToggle, this, &MainWindow::onDLPlusItemToggle_Announcement);
-    connect(&m_dlDecoder[InstanceIdx::Announcement], &DLDecoder::dlItemRunning, this, &MainWindow::onDLPlusItemRunning_Announcement);
-    connect(&m_dlDecoder[InstanceIdx::Announcement], &DLDecoder::resetTerminal, this, &MainWindow::onDLReset_Announcement);
+    connect(&m_dlDecoder[Instance::Announcement], &DLDecoder::dlComplete, this, &MainWindow::onDLComplete_Announcement);
+    connect(&m_dlDecoder[Instance::Announcement], &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived_Announcement);
+    connect(&m_dlDecoder[Instance::Announcement], &DLDecoder::dlItemToggle, this, &MainWindow::onDLPlusItemToggle_Announcement);
+    connect(&m_dlDecoder[Instance::Announcement], &DLDecoder::dlItemRunning, this, &MainWindow::onDLPlusItemRunning_Announcement);
+    connect(&m_dlDecoder[Instance::Announcement], &DLDecoder::resetTerminal, this, &MainWindow::onDLReset_Announcement);
 
     connect(m_audioDecoder, &AudioDecoder::audioParametersInfo, this, &MainWindow::onAudioParametersInfo, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_audioDecoder, &AudioDecoder::start, Qt::QueuedConnection);
@@ -590,8 +590,8 @@ void MainWindow::onEnsembleRemoved(const RadioControlEnsemble &ens)
     emit stopUserApps();
 
     clearServiceInformationLabels();
-    m_dlDecoder[InstanceIdx::Service].reset();
-    m_dlDecoder[InstanceIdx::Announcement].reset();
+    m_dlDecoder[Instance::Service].reset();
+    m_dlDecoder[Instance::Announcement].reset();
     ui->favoriteLabel->setEnabled(false);
 
     m_serviceList->removeEnsemble(ens);
@@ -813,8 +813,8 @@ void MainWindow::serviceSelected()
     emit stopUserApps();
 
     clearServiceInformationLabels();
-    m_dlDecoder[InstanceIdx::Service].reset();
-    m_dlDecoder[InstanceIdx::Announcement].reset();
+    m_dlDecoder[Instance::Service].reset();
+    m_dlDecoder[Instance::Announcement].reset();
     ui->favoriteLabel->setEnabled(false);
 }
 
@@ -1137,8 +1137,8 @@ void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponen
         ui->programTypeLabel->setToolTip("Service was removed from ensemble");
 
         emit stopUserApps();
-        m_dlDecoder[InstanceIdx::Service].reset();
-        m_dlDecoder[InstanceIdx::Announcement].reset();
+        m_dlDecoder[Instance::Service].reset();
+        m_dlDecoder[Instance::Announcement].reset();
 
         ui->favoriteLabel->setEnabled(false);
     }
@@ -1151,26 +1151,30 @@ void MainWindow::onAnnouncement(DabAnnouncement id, bool serviceSwitch)
     {
         ui->announcementLabel->setToolTip(QString("Ongoing announcement:<br><b>%1</b>")
                                               .arg(DabTables::getAnnouncementName(id)));
-        ui->dlWidget->setCurrentIndex(InstanceIdx::Announcement);
-        ui->dlPlusWidget->setCurrentIndex(InstanceIdx::Announcement);
+        ui->dlWidget->setCurrentIndex(Instance::Announcement);
+        ui->dlPlusWidget->setCurrentIndex(Instance::Announcement);
         qDebug() << "Announcement START | service switch" << serviceSwitch;
     }
     else
     {
-        ui->dlWidget->setCurrentIndex(InstanceIdx::Service);
+        ui->dlWidget->setCurrentIndex(Instance::Service);
         ui->dynamicLabel_Announcement->clear();   // clear for next announcment       
-        ui->dlPlusWidget->setCurrentIndex(InstanceIdx::Service);
+        ui->dlPlusWidget->setCurrentIndex(Instance::Service);
         // reset DL+
-        for (auto objPtr : m_dlObjCache[InstanceIdx::Announcement])
+        for (auto objPtr : m_dlObjCache[Instance::Announcement])
         {
             delete objPtr;
         }
-        m_dlObjCache[InstanceIdx::Announcement].clear();
-        if (m_dlObjCache[InstanceIdx::Service].isEmpty())
+        m_dlObjCache[Instance::Announcement].clear();
+        if (m_dlObjCache[Instance::Service].isEmpty())
         {   // there are no DL+ objects from normal service ==> disabling switch
             ui->dlPlusLabel->setVisible(false);
             ui->dlPlusLabel->setChecked(false);
             onDLPlusToggled(false);
+        }
+        else
+        {
+            ui->dlPlusLabel->setVisible(true);
         }
 
         qDebug() << "Announcement STOP | service switch" << serviceSwitch;
@@ -2078,19 +2082,19 @@ void MainWindow::setIcons()
 
 void MainWindow::onDLPlusObjReceived_Service(const DLPlusObject & object)
 {
-    onDLPlusObjReceived(object, InstanceIdx::Service);
+    onDLPlusObjReceived(object, Instance::Service);
 }
 
 void MainWindow::onDLPlusObjReceived_Announcement(const DLPlusObject & object)
 {
-    onDLPlusObjReceived(object, InstanceIdx::Announcement);
+    onDLPlusObjReceived(object, Instance::Announcement);
 }
 
-void MainWindow::onDLPlusObjReceived(const DLPlusObject & object, InstanceIdx inst)
+void MainWindow::onDLPlusObjReceived(const DLPlusObject & object, Instance inst)
 {
     QMap<DLPlusContentType, DLPlusObjectUI*> * dlObjCachePtr = &m_dlObjCache[inst];
     QWidget * dlPlusFrame = ui->dlPlusFrame_Service;
-    if (InstanceIdx::Service != inst)
+    if (Instance::Service != inst)
     {
         dlPlusFrame = ui->dlPlusFrame_Announcement;
     }
@@ -2150,15 +2154,15 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object, InstanceIdx in
 
 void MainWindow::onDLPlusItemToggle_Service()
 {
-    onDLPlusItemToggle(InstanceIdx::Service);
+    onDLPlusItemToggle(Instance::Service);
 }
 
 void MainWindow::onDLPlusItemToggle_Announcement()
 {
-    onDLPlusItemToggle(InstanceIdx::Announcement);
+    onDLPlusItemToggle(Instance::Announcement);
 }
 
-void MainWindow::onDLPlusItemToggle(InstanceIdx inst)
+void MainWindow::onDLPlusItemToggle(Instance inst)
 {    
     QMap<DLPlusContentType, DLPlusObjectUI*> * dlObjCachePtr = &m_dlObjCache[inst];
 
@@ -2181,15 +2185,15 @@ void MainWindow::onDLPlusItemToggle(InstanceIdx inst)
 
 void MainWindow::onDLPlusItemRunning_Service(bool isRunning)
 {
-    onDLPlusItemRunning(isRunning, InstanceIdx::Service);
+    onDLPlusItemRunning(isRunning, Instance::Service);
 }
 
 void MainWindow::onDLPlusItemRunning_Announcement(bool isRunning)
 {
-    onDLPlusItemRunning(isRunning, InstanceIdx::Announcement);
+    onDLPlusItemRunning(isRunning, Instance::Announcement);
 }
 
-void MainWindow::onDLPlusItemRunning(bool isRunning, InstanceIdx inst)
+void MainWindow::onDLPlusItemRunning(bool isRunning, Instance inst)
 {
     QMap<DLPlusContentType, DLPlusObjectUI*> * dlObjCachePtr = &m_dlObjCache[inst];
 
@@ -2215,26 +2219,25 @@ void MainWindow::onDLReset_Service()
     ui->dlPlusLabel->setChecked(false);
     onDLPlusToggled(false);
 
-    for (auto objPtr : m_dlObjCache[InstanceIdx::Service])
+    for (auto objPtr : m_dlObjCache[Instance::Service])
     {
         delete objPtr;
     }
-    m_dlObjCache[InstanceIdx::Service].clear();
+    m_dlObjCache[Instance::Service].clear();
 }
 
 void MainWindow::onDLReset_Announcement()
 {
-#warning "TODO: fix onDLReset_XXXXX()"
     ui->dynamicLabel_Announcement->setText("");
     ui->dlPlusLabel->setVisible(false);
     ui->dlPlusLabel->setChecked(false);
     onDLPlusToggled(false);
 
-    for (auto objPtr : m_dlObjCache[InstanceIdx::Announcement])
+    for (auto objPtr : m_dlObjCache[Instance::Announcement])
     {
         delete objPtr;
     }
-    m_dlObjCache[InstanceIdx::Announcement].clear();
+    m_dlObjCache[Instance::Announcement].clear();
 }
 
 DLPlusObjectUI::DLPlusObjectUI(const DLPlusObject &obj) : m_dlPlusObject(obj)

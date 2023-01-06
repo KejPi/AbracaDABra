@@ -58,7 +58,7 @@ protected:
     void changeEvent( QEvent* e );
 private:
     // constants
-    enum InstanceIdx { Service = 0, Announcement = 1, NumInstances };
+    enum Instance { Service = 0, Announcement = 1, NumInstances };
     static const QString appName;
     static const QStringList syncLevelLabels;
     static const QStringList syncLevelTooltip;
@@ -129,7 +129,7 @@ private:
 
     // user applications
     DLDecoder * m_dlDecoder;
-    QMap<DLPlusContentType, DLPlusObjectUI*> m_dlObjCache[InstanceIdx::NumInstances];
+    QMap<DLPlusContentType, DLPlusObjectUI*> m_dlObjCache[Instance::NumInstances];
     SlideShowApp * m_slideShowApp;
     SPIApp * m_spiApp;
 
@@ -175,13 +175,13 @@ private:
     void onDLPlusToggled(bool toggle);
     void onDLPlusObjReceived_Service(const DLPlusObject & object);
     void onDLPlusObjReceived_Announcement(const DLPlusObject & object);
-    void onDLPlusObjReceived(const DLPlusObject & object, InstanceIdx inst);
+    void onDLPlusObjReceived(const DLPlusObject & object, Instance inst);
     void onDLPlusItemToggle_Service();
     void onDLPlusItemToggle_Announcement();
-    void onDLPlusItemToggle(InstanceIdx inst);
+    void onDLPlusItemToggle(Instance inst);
     void onDLPlusItemRunning_Service(bool isRunning);
     void onDLPlusItemRunning_Announcement(bool isRunning);
-    void onDLPlusItemRunning(bool isRunning, InstanceIdx inst);
+    void onDLPlusItemRunning(bool isRunning, Instance inst);
     void onDLReset_Service();
     void onDLReset_Announcement();
     void onAudioParametersInfo(const AudioParameters &params);
