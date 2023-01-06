@@ -324,7 +324,7 @@ signals:
     void ensembleConfiguration(const QString &);
     void ensembleReconfiguration(const RadioControlEnsemble & ens);
     void ensembleRemoved(const RadioControlEnsemble & ens);
-    void announcement(DabAnnouncement id, bool serviceSwitch);
+    void announcement(DabAnnouncement id, const RadioControlServiceComponent & s);
     void announcementAudioAvailable();
 private:
     enum class AnnouncementSwitchState { NoAnnouncement, WaitForAnnouncement, OngoingAnnouncement };
@@ -350,8 +350,9 @@ private:
             uint8_t activeCluster = 0;
             DabAnnouncement id;
             QTimer * timeoutTimer;
-            bool serviceSwitch;
             std::atomic<AnnouncementSwitchState> switchState;
+            uint32_t SId;
+            uint8_t SCIdS;
         } announcement;
     } m_currentService;
 
@@ -390,7 +391,7 @@ private:
     void setCurrentServiceAnnouncementSupport();
     void onAnnouncementTimeout();
     void onAnnouncementAudioAvailable();
-    void announcementStart(uint8_t subChId, bool start);
+    bool announcementStart(uint8_t subChId, bool start);
 
     // wrapper functions for dabsdr API
     void dabTune(uint32_t freq) { dabsdrRequest_Tune(m_dabsdrHandle, freq); }

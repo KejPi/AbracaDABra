@@ -155,7 +155,8 @@ private:
     void channelSelected();
     void serviceTreeViewUpdateSelection();
     void serviceListViewUpdateSelection();
-    void changeInputDevice(const InputDeviceId &d);    
+    void changeInputDevice(const InputDeviceId &d);
+    void displaySubchParams(const RadioControlServiceComponent &s);
 
     void onInputDeviceReady();
     void onEnsembleInfo(const RadioControlEnsemble &ens);
@@ -194,7 +195,7 @@ private:
     void onServiceListTreeClicked(const QModelIndex &index);
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
     void onAudioServiceReconfiguration(const RadioControlServiceComponent &s);
-    void onAnnouncement(DabAnnouncement id, bool serviceSwitch);
+    void onAnnouncement(DabAnnouncement id, const RadioControlServiceComponent &s);
 };
 
 class DLPlusObjectUI

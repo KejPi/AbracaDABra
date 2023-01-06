@@ -262,6 +262,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     clearServiceInformationLabels();
     ui->dynamicLabel_Service->clear();
     ui->dynamicLabel_Announcement->clear();
+    ui->dlWidget->setCurrentIndex(Instance::Service);
+    ui->dlPlusWidget->setCurrentIndex(Instance::Service);
 
     ui->audioEncodingLabel->setToolTip("Audio coding");
 
@@ -815,6 +817,8 @@ void MainWindow::serviceSelected()
     clearServiceInformationLabels();
     m_dlDecoder[Instance::Service].reset();
     m_dlDecoder[Instance::Announcement].reset();
+    ui->dlWidget->setCurrentIndex(Instance::Service);
+    ui->dlPlusWidget->setCurrentIndex(Instance::Service);
     ui->favoriteLabel->setEnabled(false);
 }
 
@@ -1066,6 +1070,23 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
 
         }
 
+        displaySubchParams(s);
+    }
+    else
+    {   // sid it not equal to selected sid -> this should not happen
+        m_SId.set(0);
+
+        ui->serviceListView->clearSelection();
+        ui->serviceTreeView->clearSelection();
+        //ui->serviceListView->selectionModel()->select(ui->serviceListView->selectionModel()->selection(), QItemSelectionModel::Deselect);
+    }
+}
+
+void MainWindow::displaySubchParams(const RadioControlServiceComponent &s)
+{
+    // update information about protection level and bitrate
+    if (s.isAudioService())
+    {
         QString label;
         QString toolTip;
         if (s.protection.isEEP())
@@ -1082,10 +1103,10 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
             toolTip = QString("<B>Error protection</b><br>"
                               "%1<br>Coderate: %2/%3<br>"
                               "Capacity units: %4 CU")
-                                            .arg(label)
-                                            .arg(s.protection.codeRateUpper)
-                                            .arg(s.protection.codeRateLower)
-                                            .arg(s.SubChSize);
+                          .arg(label)
+                          .arg(s.protection.codeRateUpper)
+                          .arg(s.protection.codeRateLower)
+                          .arg(s.SubChSize);
         }
         else
         {  // UEP
@@ -1093,9 +1114,9 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
             toolTip = QString("<B>Error protection</b><br>"
                               "%1<br>Protection level: %2<br>"
                               "Capacity units: %3 CU")
-                                            .arg(label)
-                                            .arg(int(s.protection.level))
-                                            .arg(s.SubChSize);
+                          .arg(label)
+                          .arg(int(s.protection.level))
+                          .arg(s.SubChSize);
         }
         ui->protectionLabel->setText(label);
         ui->protectionLabel->setToolTip(toolTip);
@@ -1103,18 +1124,9 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
         QString br = QString("%1 kbps").arg(s.streamAudioData.bitRate);
         ui->audioBitrateLabel->setText(br);
         ui->audioBitrateLabel->setToolTip(QString("<b>Service bitrate</b><br>Audio & data: %1").arg(br));
-
-        //ui->serviceListView->selectionModel()->setCurrentIndex(item->index(), QItemSelectionModel::Select | QItemSelectionModel::Current);
-        //ui->serviceListView->setFocus();
     }
     else
-    {   // sid it not equal to selected sid -> this should not happen
-        m_SId.set(0);
-
-        ui->serviceListView->clearSelection();
-        ui->serviceTreeView->clearSelection();
-        //ui->serviceListView->selectionModel()->select(ui->serviceListView->selectionModel()->selection(), QItemSelectionModel::Deselect);
-    }
+    {   /* this should not happen */ }
 }
 
 void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponent &s)
@@ -1144,7 +1156,7 @@ void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponen
     }
 }
 
-void MainWindow::onAnnouncement(DabAnnouncement id, bool serviceSwitch)
+void MainWindow::onAnnouncement(DabAnnouncement id, const RadioControlServiceComponent & s)
 {
     bool ongoing = (DabAnnouncement::Undefined != id);
     if (ongoing)
@@ -1153,7 +1165,6 @@ void MainWindow::onAnnouncement(DabAnnouncement id, bool serviceSwitch)
                                               .arg(DabTables::getAnnouncementName(id)));
         ui->dlWidget->setCurrentIndex(Instance::Announcement);
         ui->dlPlusWidget->setCurrentIndex(Instance::Announcement);
-        qDebug() << "Announcement START | service switch" << serviceSwitch;
     }
     else
     {
@@ -1176,10 +1187,10 @@ void MainWindow::onAnnouncement(DabAnnouncement id, bool serviceSwitch)
         {
             ui->dlPlusLabel->setVisible(true);
         }
-
-        qDebug() << "Announcement STOP | service switch" << serviceSwitch;
     }
     ui->announcementLabel->setVisible(ongoing);
+
+    displaySubchParams(s);
 }
 
 void MainWindow::clearEnsembleInformationLabels()
@@ -2101,8 +2112,6 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object, Instance inst)
     else
     { /* Service - already initialized */ }
 
-
-    ui->dlPlusLabel->setVisible(true);
     if (DLPlusContentType::DUMMY == object.getType())
     {   // dummy object = do nothing
         // or
@@ -2112,6 +2121,8 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object, Instance inst)
     }
     else
     { /* no dummy object */ }
+
+    ui->dlPlusLabel->setVisible(true);
 
     if (object.isDelete())
     {   // [ETSI TS 102 980 V2.1.2] 5.3.2 Deleting objects
@@ -2214,7 +2225,7 @@ void MainWindow::onDLPlusItemRunning(bool isRunning, Instance inst)
 
 void MainWindow::onDLReset_Service()
 {
-    ui->dynamicLabel_Service->setText("");
+    ui->dynamicLabel_Service->clear();
     ui->dlPlusLabel->setVisible(false);
     ui->dlPlusLabel->setChecked(false);
     onDLPlusToggled(false);
@@ -2228,7 +2239,7 @@ void MainWindow::onDLReset_Service()
 
 void MainWindow::onDLReset_Announcement()
 {
-    ui->dynamicLabel_Announcement->setText("");
+    ui->dynamicLabel_Announcement->clear();
     ui->dlPlusLabel->setVisible(false);
     ui->dlPlusLabel->setChecked(false);
     onDLPlusToggled(false);
