@@ -791,6 +791,10 @@ void MainWindow::onChannelChange(int index)
         ui->serviceListView->clearSelection();
         ui->serviceTreeView->clearSelection();
         channelSelected();
+        if (index < 0)
+        {   // this indx is set when service list is cleared by user -> we want combo enabled
+            ui->channelCombo->setEnabled(true);
+        }
 
         emit serviceRequest(ui->channelCombo->itemData(index).toUInt(), 0, 0);
     }
