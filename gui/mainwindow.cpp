@@ -105,10 +105,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_snrProgressbar->setToolTip(QString("DAB signal SNR"));
 
     m_snrLabel = new QLabel();
-//#ifdef __APPLE__
     int width = m_snrLabel->fontMetrics().boundingRect("100.0 dB").width();
     m_snrLabel->setFixedWidth(width);
-//#endif
     m_snrLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     m_snrLabel->setToolTip(QString("DAB signal SNR"));
 
@@ -360,12 +358,15 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // DL(+)
     // normal service
     connect(&m_dlDecoder[InstanceIdx::Service], &DLDecoder::dlComplete, this, &MainWindow::onDLComplete_Service);
-    connect(&m_dlDecoder[InstanceIdx::Service], &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived);
-    connect(&m_dlDecoder[InstanceIdx::Service], &DLDecoder::dlItemToggle, this, &MainWindow::onDLPlusItemToggle);
-    connect(&m_dlDecoder[InstanceIdx::Service], &DLDecoder::dlItemRunning, this, &MainWindow::onDLPlusItemRunning);
+    connect(&m_dlDecoder[InstanceIdx::Service], &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived_Service);
+    connect(&m_dlDecoder[InstanceIdx::Service], &DLDecoder::dlItemToggle, this, &MainWindow::onDLPlusItemToggle_Service);
+    connect(&m_dlDecoder[InstanceIdx::Service], &DLDecoder::dlItemRunning, this, &MainWindow::onDLPlusItemRunning_Service);
     connect(&m_dlDecoder[InstanceIdx::Service], &DLDecoder::resetTerminal, this, &MainWindow::onDLReset_Service);
     // announcement
     connect(&m_dlDecoder[InstanceIdx::Announcement], &DLDecoder::dlComplete, this, &MainWindow::onDLComplete_Announcement);
+    connect(&m_dlDecoder[InstanceIdx::Announcement], &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived_Announcement);
+    connect(&m_dlDecoder[InstanceIdx::Announcement], &DLDecoder::dlItemToggle, this, &MainWindow::onDLPlusItemToggle_Announcement);
+    connect(&m_dlDecoder[InstanceIdx::Announcement], &DLDecoder::dlItemRunning, this, &MainWindow::onDLPlusItemRunning_Announcement);
     connect(&m_dlDecoder[InstanceIdx::Announcement], &DLDecoder::resetTerminal, this, &MainWindow::onDLReset_Announcement);
 
     connect(m_audioDecoder, &AudioDecoder::audioParametersInfo, this, &MainWindow::onAudioParametersInfo, Qt::QueuedConnection);
@@ -687,15 +688,15 @@ void MainWindow::onServiceListEntry(const RadioControlEnsemble &ens, const Radio
 
 void MainWindow::onDLComplete_Service(const QString & dl)
 {
-    onDLComplete(ui->dynamicLabel_Service, dl);
+    onDLComplete(dl, ui->dynamicLabel_Service);
 }
 
 void MainWindow::onDLComplete_Announcement(const QString & dl)
 {
-    onDLComplete(ui->dynamicLabel_Announcement, dl);
+    onDLComplete(dl, ui->dynamicLabel_Announcement);
 }
 
-void MainWindow::onDLComplete(QLabel * dlLabel, const QString & dl)
+void MainWindow::onDLComplete(const QString & dl, QLabel * dlLabel)
 {
     QString label = dl;
 
@@ -1157,9 +1158,21 @@ void MainWindow::onAnnouncement(DabAnnouncement id, bool serviceSwitch)
     else
     {
         ui->dlWidget->setCurrentIndex(InstanceIdx::Service);
-        ui->dynamicLabel_Announcement->clear();   // clear for next announcment
-
+        ui->dynamicLabel_Announcement->clear();   // clear for next announcment       
         ui->dlPlusWidget->setCurrentIndex(InstanceIdx::Service);
+        // reset DL+
+        for (auto objPtr : m_dlObjCache[InstanceIdx::Announcement])
+        {
+            delete objPtr;
+        }
+        m_dlObjCache[InstanceIdx::Announcement].clear();
+        if (m_dlObjCache[InstanceIdx::Service].isEmpty())
+        {   // there are no DL+ objects from normal service ==> disabling switch
+            ui->dlPlusLabel->setVisible(false);
+            ui->dlPlusLabel->setChecked(false);
+            onDLPlusToggled(false);
+        }
+
         qDebug() << "Announcement STOP | service switch" << serviceSwitch;
     }
     ui->announcementLabel->setVisible(ongoing);
@@ -2063,8 +2076,28 @@ void MainWindow::setIcons()
     ui->slsView->setDarkMode(isDarkMode());
 }
 
-void MainWindow::onDLPlusObjReceived(const DLPlusObject & object)
+void MainWindow::onDLPlusObjReceived_Service(const DLPlusObject & object)
 {
+    onDLPlusObjReceived(object, InstanceIdx::Service);
+}
+
+void MainWindow::onDLPlusObjReceived_Announcement(const DLPlusObject & object)
+{
+    onDLPlusObjReceived(object, InstanceIdx::Announcement);
+}
+
+void MainWindow::onDLPlusObjReceived(const DLPlusObject & object, InstanceIdx inst)
+{
+    QMap<DLPlusContentType, DLPlusObjectUI*> * dlObjCachePtr = &m_dlObjCache[inst];
+    QWidget * dlPlusFrame = ui->dlPlusFrame_Service;
+    if (InstanceIdx::Service != inst)
+    {
+        dlPlusFrame = ui->dlPlusFrame_Announcement;
+    }
+    else
+    { /* Service - already initialized */ }
+
+
     ui->dlPlusLabel->setVisible(true);
     if (DLPlusContentType::DUMMY == object.getType())
     {   // dummy object = do nothing
@@ -2079,10 +2112,10 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object)
     if (object.isDelete())
     {   // [ETSI TS 102 980 V2.1.2] 5.3.2 Deleting objects
         // Objects are deleted by transmitting a "delete" object
-        const auto it = m_dlObjCache.constFind(object.getType());
-        if (it != m_dlObjCache.cend())
+        const auto it = dlObjCachePtr->constFind(object.getType());
+        if (it != dlObjCachePtr->cend())
         {   // object type found in cache
-            DLPlusObjectUI* uiObj = m_dlObjCache.take(object.getType());
+            DLPlusObjectUI* uiObj = dlObjCachePtr->take(object.getType());
             delete uiObj;
         }
         else
@@ -2090,8 +2123,8 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object)
     }
     else
     {
-        auto it = m_dlObjCache.find(object.getType());
-        if (it != m_dlObjCache.end())
+        auto it = dlObjCachePtr->find(object.getType());
+        if (it != dlObjCachePtr->end())
         {   // object type found in cahe
             (*it)->update(object);
         }
@@ -2100,14 +2133,14 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object)
             DLPlusObjectUI * uiObj = new DLPlusObjectUI(object);
             if (nullptr != uiObj->getLayout())
             {
-                it = m_dlObjCache.insert(object.getType(), uiObj);
+                it = dlObjCachePtr->insert(object.getType(), uiObj);
 
                 // we want it sorted -> need to find the position
-                int index = std::distance(m_dlObjCache.begin(), it);
+                int index = std::distance(dlObjCachePtr->begin(), it);
 
-                QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(ui->dlPlusFrame_Service->layout());
+                QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(dlPlusFrame->layout());
                 layout->insertLayout(index, uiObj->getLayout());
-                ui->dlPlusFrame_Service->setMaximumHeight(ui->dlPlusFrame_Service->minimumHeight() > 120 ? ui->dlPlusFrame_Service->minimumHeight() : 120);
+                dlPlusFrame->setMaximumHeight(dlPlusFrame->minimumHeight() > 120 ? dlPlusFrame->minimumHeight() : 120);
             }
             else
             { /* objects that we do not display: Descriptors, PROGRAMME_FREQUENCY, INFO_DATE_TIME, PROGRAMME_SUBCHANNEL*/ }
@@ -2115,17 +2148,29 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object)
     }
 }
 
-void MainWindow::onDLPlusItemToggle()
+void MainWindow::onDLPlusItemToggle_Service()
 {
+    onDLPlusItemToggle(InstanceIdx::Service);
+}
+
+void MainWindow::onDLPlusItemToggle_Announcement()
+{
+    onDLPlusItemToggle(InstanceIdx::Announcement);
+}
+
+void MainWindow::onDLPlusItemToggle(InstanceIdx inst)
+{    
+    QMap<DLPlusContentType, DLPlusObjectUI*> * dlObjCachePtr = &m_dlObjCache[inst];
+
     // delete all ITEMS.*
-    auto it = m_dlObjCache.cbegin();
-    while (it != m_dlObjCache.cend())
+    auto it = dlObjCachePtr->cbegin();
+    while (it != dlObjCachePtr->cend())
     {
         if (it.key() < DLPlusContentType::INFO_NEWS)
         {
             DLPlusObjectUI* uiObj = it.value();
             delete uiObj;
-            it = m_dlObjCache.erase(it);
+            it = dlObjCachePtr->erase(it);
         }
         else
         {   // no more items ot ITEM type in cache
@@ -2134,10 +2179,22 @@ void MainWindow::onDLPlusItemToggle()
     }
 }
 
-void MainWindow::onDLPlusItemRunning(bool isRunning)
+void MainWindow::onDLPlusItemRunning_Service(bool isRunning)
 {
-    auto it = m_dlObjCache.cbegin();
-    while (it != m_dlObjCache.cend())
+    onDLPlusItemRunning(isRunning, InstanceIdx::Service);
+}
+
+void MainWindow::onDLPlusItemRunning_Announcement(bool isRunning)
+{
+    onDLPlusItemRunning(isRunning, InstanceIdx::Announcement);
+}
+
+void MainWindow::onDLPlusItemRunning(bool isRunning, InstanceIdx inst)
+{
+    QMap<DLPlusContentType, DLPlusObjectUI*> * dlObjCachePtr = &m_dlObjCache[inst];
+
+    auto it = dlObjCachePtr->cbegin();
+    while (it != dlObjCachePtr->cend())
     {
         if (it.key() < DLPlusContentType::INFO_NEWS)
         {
@@ -2158,16 +2215,26 @@ void MainWindow::onDLReset_Service()
     ui->dlPlusLabel->setChecked(false);
     onDLPlusToggled(false);
 
-    for (auto objPtr : m_dlObjCache)
+    for (auto objPtr : m_dlObjCache[InstanceIdx::Service])
     {
         delete objPtr;
     }
-    m_dlObjCache.clear();
+    m_dlObjCache[InstanceIdx::Service].clear();
 }
 
 void MainWindow::onDLReset_Announcement()
 {
+#warning "TODO: fix onDLReset_XXXXX()"
     ui->dynamicLabel_Announcement->setText("");
+    ui->dlPlusLabel->setVisible(false);
+    ui->dlPlusLabel->setChecked(false);
+    onDLPlusToggled(false);
+
+    for (auto objPtr : m_dlObjCache[InstanceIdx::Announcement])
+    {
+        delete objPtr;
+    }
+    m_dlObjCache[InstanceIdx::Announcement].clear();
 }
 
 DLPlusObjectUI::DLPlusObjectUI(const DLPlusObject &obj) : m_dlPlusObject(obj)

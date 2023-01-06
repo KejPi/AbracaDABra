@@ -129,7 +129,7 @@ private:
 
     // user applications
     DLDecoder * m_dlDecoder;
-    QMap<DLPlusContentType, DLPlusObjectUI*> m_dlObjCache;
+    QMap<DLPlusContentType, DLPlusObjectUI*> m_dlObjCache[InstanceIdx::NumInstances];
     SlideShowApp * m_slideShowApp;
     SPIApp * m_spiApp;
 
@@ -171,11 +171,17 @@ private:
     void onServiceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
     void onDLComplete_Service(const QString &dl);
     void onDLComplete_Announcement(const QString & dl);
-    void onDLComplete(QLabel * dlLabel, const QString & dl);
+    void onDLComplete(const QString & dl, QLabel * dlLabel);
     void onDLPlusToggled(bool toggle);
-    void onDLPlusObjReceived(const DLPlusObject & object);
-    void onDLPlusItemToggle();
-    void onDLPlusItemRunning(bool isRunning);
+    void onDLPlusObjReceived_Service(const DLPlusObject & object);
+    void onDLPlusObjReceived_Announcement(const DLPlusObject & object);
+    void onDLPlusObjReceived(const DLPlusObject & object, InstanceIdx inst);
+    void onDLPlusItemToggle_Service();
+    void onDLPlusItemToggle_Announcement();
+    void onDLPlusItemToggle(InstanceIdx inst);
+    void onDLPlusItemRunning_Service(bool isRunning);
+    void onDLPlusItemRunning_Announcement(bool isRunning);
+    void onDLPlusItemRunning(bool isRunning, InstanceIdx inst);
     void onDLReset_Service();
     void onDLReset_Announcement();
     void onAudioParametersInfo(const AudioParameters &params);
