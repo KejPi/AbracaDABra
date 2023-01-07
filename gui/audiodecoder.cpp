@@ -492,7 +492,7 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
 
     if (nullptr == m_mp2DecoderHandle)
     {   // this can happen when audio changes from AAC to MP2
-        m_inputDataInstance = inData->instance;
+        m_inputDataDecoderId = inData->id;
         initMPG123();
     }
 
@@ -512,7 +512,7 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
         /* Feed input chunk and get first chunk of decoded audio. */
         size_t size;
         int ret = mpg123_decode(m_mp2DecoderHandle, &inData->data[0], inData->data.size(), outBuf, MP2_FRAME_PCM_SAMPLES * sizeof(int16_t), &size);
-        if ((MPG123_NEW_FORMAT == ret) || (inData->instance != m_inputDataInstance))
+        if ((MPG123_NEW_FORMAT == ret) || (inData->id != m_inputDataDecoderId))
         {   // this is stream reconfiguration or announcement (different instance)
             long sampleRate;
             int numChannels, enc;
@@ -524,7 +524,7 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
 
             getFormatMP2();
 
-            m_inputDataInstance = inData->instance;
+            m_inputDataDecoderId = inData->id;
             m_mp2DRC = 0;
         }
 
@@ -651,7 +651,7 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     if (nullptr == m_aacDecoderHandle)
     {   // this can happen when format changes from MP2 to AAC or during init
         m_aacHeader.raw = header.raw;
-        m_inputDataInstance = inData->instance;
+        m_inputDataDecoderId = inData->id;
         readAACHeader();
         initAACDecoder();        
 
@@ -678,10 +678,10 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
 #endif
     }
 
-    if ((header.raw != m_aacHeader.raw) || (inData->instance != m_inputDataInstance))
+    if ((header.raw != m_aacHeader.raw) || (inData->id != m_inputDataDecoderId))
     {   // this is stream reconfiguration or announcement (different instance)
         m_aacHeader.raw = header.raw;
-        m_inputDataInstance = inData->instance;
+        m_inputDataDecoderId = inData->id;
         readAACHeader();
         initAACDecoder();
     }

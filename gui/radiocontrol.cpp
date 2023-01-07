@@ -352,7 +352,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                     {
                         if ((m_serviceRequest.SId == serviceIt->SId.value()) && (m_serviceRequest.SCIdS == newServiceComp.SCIdS))
                         {
-                            dabServiceSelection(m_serviceRequest.SId, m_serviceRequest.SCIdS, DABSDR_AUDIO_INSTANCE_PRIMARY);
+                            dabServiceSelection(m_serviceRequest.SId, m_serviceRequest.SCIdS, DABSDR_ID_AUDIO_PRIMARY);
                             m_serviceRequest.SId = 0;    // clear request
                         }
                     }
@@ -553,7 +553,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 #if RADIO_CONTROL_VERBOSE
             qDebug() << "RadioControlEvent::SERVICE_SELECTION success";
 #endif
-            if (pEvent->audioInstance == DABSDR_AUDIO_INSTANCE_PRIMARY)
+            if (pEvent->decoderId == DABSDR_ID_AUDIO_PRIMARY)
             {
                 serviceConstIterator serviceIt = m_serviceList.constFind(pEvent->SId);
                 if (serviceIt != m_serviceList.cend())
@@ -594,7 +594,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
             }
             else
             {
-                qDebug() << "RadioControlEvent::SERVICE_SELECTION success instance" << int(pEvent->audioInstance);
+                qDebug() << "RadioControlEvent::SERVICE_SELECTION success instance" << int(pEvent->decoderId);
                 m_currentService.announcement.switchState = AnnouncementSwitchState::WaitForAnnouncement;
 
                 m_currentService.announcement.SId = pEvent->SId;
@@ -821,7 +821,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 #if RADIO_CONTROL_VERBOSE > 1
         qDebug() << "RadioControlEvent::DATAGROUP_DL";
 #endif
-        if (DABSDR_AUDIO_INSTANCE_PRIMARY == pEvent->pDynamicLabelData->instance)
+        if (DABSDR_ID_AUDIO_PRIMARY == pEvent->pDynamicLabelData->id)
         {
             emit dlDataGroup_Service(pEvent->pDynamicLabelData->data);
         }
@@ -892,7 +892,7 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
             m_serviceRequest.SId = 0;
 
             // stop any service running in secondary instance (announcment)
-            dabsdrRequest_ServiceStop(m_dabsdrHandle, 0, 0, DABSDR_AUDIO_INSTANCE_SECONDARY);
+            dabsdrRequest_ServiceStop(m_dabsdrHandle, 0, 0, DABSDR_ID_AUDIO_SECONDARY);
 
             // remove automatically enabled data services
             serviceConstIterator serviceIt = m_serviceList.constFind(m_currentService.SId);
@@ -902,7 +902,7 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
                 {
                     if (sc.autoEnabled)
                     {   // request stop
-                        dabServiceStop(m_currentService.SId, sc.SCIdS, DABSDR_NO_AUDIO_INSTANCE);
+                        dabServiceStop(m_currentService.SId, sc.SCIdS, DABSDR_ID_DATA);
                     }
                 }
             }
@@ -912,7 +912,7 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
             // reset current service
             resetCurrentService();
 
-            dabServiceSelection(SId, SCIdS, DABSDR_AUDIO_INSTANCE_PRIMARY);
+            dabServiceSelection(SId, SCIdS, DABSDR_ID_AUDIO_PRIMARY);
         }
     }
     else
@@ -1019,11 +1019,11 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
                     sc.autoEnabled = start;
                     if (start)
                     {
-                        dabServiceSelection(sc.SId.value(), sc.SCIdS, DABSDR_NO_AUDIO_INSTANCE);
+                        dabServiceSelection(sc.SId.value(), sc.SCIdS, DABSDR_ID_DATA);
                     }
                     else
                     {
-                        dabServiceStop(sc.SId.value(), sc.SCIdS, DABSDR_NO_AUDIO_INSTANCE);
+                        dabServiceStop(sc.SId.value(), sc.SCIdS, DABSDR_ID_DATA);
                     }
                     return;
                 }
@@ -1046,11 +1046,11 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
                             sc.autoEnabled = start;
                             if (start)
                             {
-                                dabServiceSelection(sc.SId.value(), sc.SCIdS, DABSDR_NO_AUDIO_INSTANCE);
+                                dabServiceSelection(sc.SId.value(), sc.SCIdS, DABSDR_ID_DATA);
                             }
                             else
                             {
-                                dabServiceStop(sc.SId.value(), sc.SCIdS, DABSDR_NO_AUDIO_INSTANCE);
+                                dabServiceStop(sc.SId.value(), sc.SCIdS, DABSDR_ID_DATA);
                             }
                             return;
                         }
@@ -1492,7 +1492,7 @@ bool RadioControl::announcementStart(uint8_t subChId, bool start)
         if (sid.isValid())
         {
             // request secondary audio service
-            dabsdrRequest_ServiceSelection(m_dabsdrHandle, sid.value(), scids, DABSDR_AUDIO_INSTANCE_SECONDARY);
+            dabsdrRequest_ServiceSelection(m_dabsdrHandle, sid.value(), scids, DABSDR_ID_AUDIO_SECONDARY);
         }
         else
         {   // not found -> no audio service belongs to subChId (it should not happen)
@@ -1505,7 +1505,7 @@ bool RadioControl::announcementStart(uint8_t subChId, bool start)
     }
     else
     {   // stop announcement - sid, scids and subChId are not relevant, simply stopping secondary audio service
-        dabsdrRequest_ServiceStop(m_dabsdrHandle, 0, 0, DABSDR_AUDIO_INSTANCE_SECONDARY);
+        dabsdrRequest_ServiceStop(m_dabsdrHandle, 0, 0, DABSDR_ID_AUDIO_SECONDARY);
         m_currentService.announcement.switchState = AnnouncementSwitchState::NoAnnouncement;
         m_currentService.announcement.SId = 0;
     }
@@ -1659,7 +1659,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         pEvent->status = p->status;
         pEvent->SId = pInfo->SId;
         pEvent->SCIdS = pInfo->SCIdS;
-        pEvent->audioInstance = pInfo->audioInstance;
+        pEvent->decoderId = pInfo->id;
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;
@@ -1673,7 +1673,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         pEvent->status = p->status;
         pEvent->SId = pInfo->SId;
         pEvent->SCIdS = pInfo->SCIdS;
-        pEvent->audioInstance = pInfo->audioInstance;
+        pEvent->decoderId = pInfo->id;
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;
@@ -1772,7 +1772,7 @@ void RadioControl::dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx)
     pEvent->type = RadioControlEventType::DATAGROUP_DL;
     pEvent->status = DABSDR_NSTAT_SUCCESS;
     RadioControlDataDL * pDynamicLabelData = new RadioControlDataDL;
-    pDynamicLabelData->instance = p->instance;
+    pDynamicLabelData->id = p->id;
     pDynamicLabelData->data.append((const char *)p->pData, p->len);
     pEvent->pDynamicLabelData = pDynamicLabelData;
     radioCtrl->emit_dabEvent(pEvent);
@@ -1808,10 +1808,10 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
     {
     case AnnouncementSwitchState::NoAnnouncement:
     {   // no ennouncement ongoing
-        if (DABSDR_AUDIO_INSTANCE_PRIMARY == p->instance)
+        if (DABSDR_ID_AUDIO_PRIMARY == p->id)
         {
             RadioControlAudioData * pAudioData = new RadioControlAudioData;
-            pAudioData->instance = p->instance;
+            pAudioData->id = p->id;
             pAudioData->ASCTy = static_cast<DabAudioDataSCty>(p->ASCTy);
             pAudioData->header = p->header;
             pAudioData->data.assign(p->pAuData, p->pAuData+p->auLen);
@@ -1827,13 +1827,13 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
     case AnnouncementSwitchState::WaitForAnnouncement:
     {   // announcement expected
         RadioControlAudioData * pAudioData = new RadioControlAudioData;
-        pAudioData->instance = p->instance;
+        pAudioData->id = p->id;
         pAudioData->ASCTy = static_cast<DabAudioDataSCty>(p->ASCTy);
         pAudioData->header = p->header;
         pAudioData->data.assign(p->pAuData, p->pAuData+p->auLen);
 
         radioCtrl->emit_audioData(pAudioData);
-        if (DABSDR_AUDIO_INSTANCE_SECONDARY == p->instance)
+        if (DABSDR_ID_AUDIO_SECONDARY == p->id)
         {   // first announcement data increment value
             radioCtrl->emit_announcementAudioAvailable();
         }
@@ -1841,10 +1841,10 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
     }
     default:
     {   //
-        if (DABSDR_AUDIO_INSTANCE_SECONDARY == p->instance)
+        if (DABSDR_ID_AUDIO_SECONDARY == p->id)
         {
             RadioControlAudioData * pAudioData = new RadioControlAudioData;
-            pAudioData->instance = p->instance;
+            pAudioData->id = p->id;
             pAudioData->ASCTy = static_cast<DabAudioDataSCty>(p->ASCTy);
             pAudioData->header = p->header;
             pAudioData->data.assign(p->pAuData, p->pAuData+p->auLen);

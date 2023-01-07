@@ -205,7 +205,7 @@ typedef QMap<uint32_t, RadioControlService> RadioControlServiceList;
 
 struct RadioControlDataDL
 {
-    dabsdrAudioInstance_t instance;
+    dabsdrDecoderId_t id;
     QByteArray data;
 };
 
@@ -217,7 +217,7 @@ struct RadioControlUserAppData
 
 struct RadioControlAudioData
 {
-    dabsdrAudioInstance_t instance;
+    dabsdrDecoderId_t id;
     DabAudioDataSCty ASCTy;
     dabsdrAudioFrameHeader_t header;
     std::vector<uint8_t> data;
@@ -281,7 +281,7 @@ struct RadioControlEvent
         // announcement switching
         dabsdrNtfAnnouncement_t * pAnnouncement;
         // audio service instance
-        dabsdrAudioInstance_t audioInstance;
+        dabsdrDecoderId_t decoderId;
     };
 };
 
@@ -401,8 +401,8 @@ private:
     void dabGetUserApps(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_GetUserAppList(m_dabsdrHandle, SId, SCIdS); }
     void dabGetAnnouncementSupport(uint32_t SId) { dabsdrRequest_GetAnnouncementSupport(m_dabsdrHandle, SId); }
     void dabEnableAutoNotification() { dabsdrRequest_SetPeriodicNotify(m_dabsdrHandle, RADIO_CONTROL_NOTIFICATION_PERIOD, 0); }
-    void dabServiceSelection(uint32_t SId, uint8_t SCIdS, dabsdrAudioInstance_t audioInstance) { dabsdrRequest_ServiceSelection(m_dabsdrHandle, SId, SCIdS, audioInstance); }
-    void dabServiceStop(uint32_t SId, uint8_t SCIdS, dabsdrAudioInstance_t audioInstance) { dabsdrRequest_ServiceStop(m_dabsdrHandle, SId, SCIdS, audioInstance); }
+    void dabServiceSelection(uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t decoderId) { dabsdrRequest_ServiceSelection(m_dabsdrHandle, SId, SCIdS, decoderId); }
+    void dabServiceStop(uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t decoderId) { dabsdrRequest_ServiceStop(m_dabsdrHandle, SId, SCIdS, decoderId); }
     void dabXPadAppStart(uint8_t appType, bool start) { dabsdrRequest_XPadAppStart(m_dabsdrHandle, appType, start); }
 
     // wrappers unsed in callback functions (emit requires class instance)
