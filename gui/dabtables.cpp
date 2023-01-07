@@ -562,19 +562,20 @@ QString DabTables::getCountryName(uint32_t SId)
 
 QString DabTables::getAnnouncementName(DabAnnouncement announcement)
 {
+    // ETSI TS 101 756 V2.4.1 [Table 15]
     switch (announcement)
     {
     case DabAnnouncement::Alarm:     return QString("Alarm");
-    case DabAnnouncement::Traffic:   return QString("Road Traffic flash");
-    case DabAnnouncement::Transport: return QString("Transport flash");
-    case DabAnnouncement::Warning:   return QString("Warning/Service");
-    case DabAnnouncement::News:      return QString("News flash");
-    case DabAnnouncement::Weather:   return QString("Area weather flash");
-    case DabAnnouncement::Event:     return QString("Event announcement");
+    case DabAnnouncement::Traffic:   return QString("Traffic News");
+    case DabAnnouncement::Transport: return QString("Transport News");
+    case DabAnnouncement::Warning:   return QString("Warning");
+    case DabAnnouncement::News:      return QString("News");
+    case DabAnnouncement::Weather:   return QString("Weather");
+    case DabAnnouncement::Event:     return QString("Event");
     case DabAnnouncement::Special:   return QString("Special event");
-    case DabAnnouncement::Programme: return QString("Programme Information");
-    case DabAnnouncement::Sport:     return QString("Sport report");
-    case DabAnnouncement::Financial: return QString("Financial report");
+    case DabAnnouncement::Programme: return QString("Radio Info");
+    case DabAnnouncement::Sport:     return QString("Sport news");
+    case DabAnnouncement::Financial: return QString("Financial news");
     case DabAnnouncement::AlarmTest: return QString("Alarm Test");
     default:                         return QString("Unknown");
     }
