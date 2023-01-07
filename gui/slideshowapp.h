@@ -79,7 +79,7 @@ class SlideShowApp : public UserApplication
     class Category;
 
 public:
-    SlideShowApp(RadioControl * radioControlPtr, QObject *parent = nullptr);
+    SlideShowApp(QObject *parent = nullptr);
     ~SlideShowApp();
     void onNewMOTObject(const MOTObject & obj) override;
     void onUserAppData(const RadioControlUserAppData & data) override;

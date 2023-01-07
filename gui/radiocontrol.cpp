@@ -838,7 +838,18 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 #if RADIO_CONTROL_VERBOSE > 1
         qDebug() << "RadioControlEvent::DATAGROUP_MSC";
 #endif
-        emit userAppData(*(pEvent->pUserAppData));
+        switch (pEvent->pUserAppData->id)
+        {
+        case DABSDR_ID_AUDIO_PRIMARY:
+            emit userAppData_Service(*(pEvent->pUserAppData));
+            break;
+        case DABSDR_ID_AUDIO_SECONDARY:
+            emit userAppData_Announcement(*(pEvent->pUserAppData));
+            break;
+        default:
+            emit userAppData(*(pEvent->pUserAppData));
+            break;
+        }
 
         delete pEvent->pUserAppData;
     }
@@ -1789,7 +1800,7 @@ void RadioControl::dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx)
     RadioControl * radioCtrl = static_cast<RadioControl *>(ctx);       
     RadioControlUserAppData * pData = new RadioControlUserAppData;
     pData->userAppType = DabUserApplicationType(p->userAppType);
-
+    pData->id = p->id;
     // copy data to QByteArray
     pData->data = QByteArray((const char *)p->pDgData, p->dgLen);
 

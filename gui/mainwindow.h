@@ -128,9 +128,9 @@ private:
     SLTreeModel * m_slTreeModel;
 
     // user applications
-    DLDecoder * m_dlDecoder;
+    DLDecoder * m_dlDecoder[Instance::NumInstances];
     QMap<DLPlusContentType, DLPlusObjectUI*> m_dlObjCache[Instance::NumInstances];
-    SlideShowApp * m_slideShowApp;
+    SlideShowApp * m_slideShowApp[Instance::NumInstances];
     SPIApp * m_spiApp;
 
     // methods

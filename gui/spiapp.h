@@ -20,8 +20,8 @@ class SPIApp : public UserApplication
         ScopeID = 0x27,
     };
 
-public:        
-    SPIApp(RadioControl * radioControlPtr, QObject *parent = nullptr);
+public:
+    SPIApp(QObject *parent = nullptr);
     ~SPIApp();
     void onNewMOTObject(const MOTObject & obj) override;
     void onUserAppData(const RadioControlUserAppData & data) override;

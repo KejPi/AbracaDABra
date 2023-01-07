@@ -1,9 +1,9 @@
 #include "spiapp.h"
 
-SPIApp::SPIApp(RadioControl * radioControlPtr, QObject *parent) : UserApplication(radioControlPtr, parent)
+SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
 {
     m_decoder = nullptr;
-    connect(m_radioControl, &RadioControl::userAppData, this, &SPIApp::onUserAppData);
+    //connect(m_radioControl, &RadioControl::userAppData, this, &SPIApp::onUserAppData);
 }
 
 SPIApp::~SPIApp()
@@ -182,11 +182,13 @@ void SPIApp::parseServiceInfo(const MOTObject &motObj)
                 {
                     uint32_t ueid = (uint8_t(paramIt.value().at(0)) << 16) | (uint8_t(paramIt.value().at(1)) << 8) | uint8_t(paramIt.value().at(2));
                     qDebug("\t\tScopeID: %6.6X", ueid);
-                    if (m_radioControl->getEnsembleUEID() != ueid)
-                    {
-                        qDebug("ScopeID: %6.6X is not current ensemble. Service info for current ensemble is only supported!", ueid);
-                        return;
-                    }
+
+// TODO:
+//                    if (m_radioControl->getEnsembleUEID() != ueid)
+//                    {
+//                        qDebug("ScopeID: %6.6X is not current ensemble. Service info for current ensemble is only supported!", ueid);
+//                        return;
+//                    }
                 }
                 else
                 {   // unexpected length

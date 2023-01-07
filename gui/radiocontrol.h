@@ -211,6 +211,7 @@ struct RadioControlDataDL
 
 struct RadioControlUserAppData
 {
+    dabsdrDecoderId_t id;
     DabUserApplicationType userAppType;
     QByteArray data;
 };
@@ -315,6 +316,8 @@ signals:
     void serviceListComplete(const RadioControlEnsemble & ens);
     void dlDataGroup_Service(const QByteArray & dg);
     void dlDataGroup_Announcement(const QByteArray & dg);
+    void userAppData_Service(const RadioControlUserAppData & data);
+    void userAppData_Announcement(const RadioControlUserAppData & data);
     void userAppData(const RadioControlUserAppData & data);
     void audioServiceSelection(const RadioControlServiceComponent & s);
     void audioServiceReconfiguration(const RadioControlServiceComponent & s);

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>899</width>
-    <height>653</height>
+    <width>921</width>
+    <height>677</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -253,16 +253,71 @@
      </widget>
     </item>
     <item row="2" column="0">
-     <widget class="SLSView" name="slsView">
-      <property name="minimumSize">
-       <size>
-        <width>324</width>
-        <height>244</height>
-       </size>
-      </property>
-      <property name="focusPolicy">
-       <enum>Qt::NoFocus</enum>
-      </property>
+     <widget class="QStackedWidget" name="slsWidget">
+      <widget class="QWidget" name="slsPage_Service">
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="SLSView" name="slsView_Service">
+          <property name="minimumSize">
+           <size>
+            <width>324</width>
+            <height>244</height>
+           </size>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="slsPage_Announcement">
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="SLSView" name="slsView_Announcement">
+          <property name="minimumSize">
+           <size>
+            <width>324</width>
+            <height>244</height>
+           </size>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
     <item row="2" column="2" rowspan="3">
@@ -292,7 +347,7 @@
       <property name="currentIndex">
        <number>1</number>
       </property>
-      <widget class="QWidget" name="dlPage">
+      <widget class="QWidget" name="dlPage_Service">
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <property name="spacing">
          <number>0</number>
@@ -336,7 +391,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="dlPageAnn">
+      <widget class="QWidget" name="dlPage_Announcement">
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <property name="spacing">
          <number>0</number>
@@ -509,7 +564,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>899</width>
+     <width>921</width>
      <height>37</height>
     </rect>
    </property>

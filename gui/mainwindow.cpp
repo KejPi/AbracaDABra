@@ -60,7 +60,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     , ui(new Ui::MainWindow)
     , m_iniFilename(iniFilename)
 {
-    m_dlDecoder = new DLDecoder[Instance::NumInstances];
+    m_dlDecoder[Instance::Service] = new DLDecoder();
+    m_dlDecoder[Instance::Announcement] = new DLDecoder();
 
     ui->setupUi(this);
     connect(ui->channelCombo, &QComboBox::currentIndexChanged, this, &MainWindow::onChannelChange);
@@ -267,8 +268,11 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     ui->audioEncodingLabel->setToolTip("Audio coding");
 
-    ui->slsView->setMinimumSize(QSize(322, 242));
-    ui->slsView->reset();
+    ui->slsView_Service->setMinimumSize(QSize(322, 242));
+    ui->slsView_Announcement->setMinimumSize(QSize(322, 242));
+    ui->slsView_Service->reset();
+    ui->slsView_Announcement->reset();
+    ui->slsWidget->setCurrentIndex(Instance::Service);
 
     ui->announcementLabel->setToolTip("Ongoing announcement");
     ui->announcementLabel->setHidden(true);
@@ -343,11 +347,11 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::mscCounter, m_ensembleInfoDialog, &EnsembleInfoDialog::updateMSCstatus, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_ensembleInfoDialog, &EnsembleInfoDialog::serviceChanged, Qt::QueuedConnection);
 
-    connect(m_radioControl, &RadioControl::dlDataGroup_Service, &m_dlDecoder[Instance::Service], &DLDecoder::newDataGroup, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::dlDataGroup_Announcement, &m_dlDecoder[Instance::Announcement], &DLDecoder::newDataGroup, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::dlDataGroup_Service, m_dlDecoder[Instance::Service], &DLDecoder::newDataGroup, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::dlDataGroup_Announcement, m_dlDecoder[Instance::Announcement], &DLDecoder::newDataGroup, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, this, &MainWindow::onAudioServiceSelection, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::audioServiceSelection, &m_dlDecoder[Instance::Service], &DLDecoder::reset, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::audioServiceSelection, &m_dlDecoder[Instance::Announcement], &DLDecoder::reset, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::audioServiceSelection, m_dlDecoder[Instance::Service], &DLDecoder::reset, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::audioServiceSelection, m_dlDecoder[Instance::Announcement], &DLDecoder::reset, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioData, m_audioDecoder, &AudioDecoder::decodeData, Qt::QueuedConnection);
 
     // service stopped
@@ -359,17 +363,17 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     // DL(+)
     // normal service
-    connect(&m_dlDecoder[Instance::Service], &DLDecoder::dlComplete, this, &MainWindow::onDLComplete_Service);
-    connect(&m_dlDecoder[Instance::Service], &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived_Service);
-    connect(&m_dlDecoder[Instance::Service], &DLDecoder::dlItemToggle, this, &MainWindow::onDLPlusItemToggle_Service);
-    connect(&m_dlDecoder[Instance::Service], &DLDecoder::dlItemRunning, this, &MainWindow::onDLPlusItemRunning_Service);
-    connect(&m_dlDecoder[Instance::Service], &DLDecoder::resetTerminal, this, &MainWindow::onDLReset_Service);
+    connect(m_dlDecoder[Instance::Service], &DLDecoder::dlComplete, this, &MainWindow::onDLComplete_Service);
+    connect(m_dlDecoder[Instance::Service], &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived_Service);
+    connect(m_dlDecoder[Instance::Service], &DLDecoder::dlItemToggle, this, &MainWindow::onDLPlusItemToggle_Service);
+    connect(m_dlDecoder[Instance::Service], &DLDecoder::dlItemRunning, this, &MainWindow::onDLPlusItemRunning_Service);
+    connect(m_dlDecoder[Instance::Service], &DLDecoder::resetTerminal, this, &MainWindow::onDLReset_Service);
     // announcement
-    connect(&m_dlDecoder[Instance::Announcement], &DLDecoder::dlComplete, this, &MainWindow::onDLComplete_Announcement);
-    connect(&m_dlDecoder[Instance::Announcement], &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived_Announcement);
-    connect(&m_dlDecoder[Instance::Announcement], &DLDecoder::dlItemToggle, this, &MainWindow::onDLPlusItemToggle_Announcement);
-    connect(&m_dlDecoder[Instance::Announcement], &DLDecoder::dlItemRunning, this, &MainWindow::onDLPlusItemRunning_Announcement);
-    connect(&m_dlDecoder[Instance::Announcement], &DLDecoder::resetTerminal, this, &MainWindow::onDLReset_Announcement);
+    connect(m_dlDecoder[Instance::Announcement], &DLDecoder::dlComplete, this, &MainWindow::onDLComplete_Announcement);
+    connect(m_dlDecoder[Instance::Announcement], &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived_Announcement);
+    connect(m_dlDecoder[Instance::Announcement], &DLDecoder::dlItemToggle, this, &MainWindow::onDLPlusItemToggle_Announcement);
+    connect(m_dlDecoder[Instance::Announcement], &DLDecoder::dlItemRunning, this, &MainWindow::onDLPlusItemRunning_Announcement);
+    connect(m_dlDecoder[Instance::Announcement], &DLDecoder::resetTerminal, this, &MainWindow::onDLReset_Announcement);
 
     connect(m_audioDecoder, &AudioDecoder::audioParametersInfo, this, &MainWindow::onAudioParametersInfo, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_audioDecoder, &AudioDecoder::start, Qt::QueuedConnection);
@@ -399,21 +403,34 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // slide show application is created by default
     // ETSI TS 101 499 V3.1.1  [5.1.1]
     // The application should be automatically started when a SlideShow service is discovered for the current radio service
-    m_slideShowApp = new SlideShowApp(m_radioControl);
-    m_slideShowApp->moveToThread(m_radioControlThread);
-    connect(m_radioControlThread, &QThread::finished, m_slideShowApp, &QObject::deleteLater);
-    connect(m_radioControl, &RadioControl::audioServiceSelection, m_slideShowApp, &SlideShowApp::start);
-    connect(m_slideShowApp, &SlideShowApp::currentSlide, ui->slsView, &SLSView::showSlide, Qt::QueuedConnection);
-    connect(m_slideShowApp, &SlideShowApp::resetTerminal, ui->slsView, &SLSView::reset, Qt::QueuedConnection);
-    connect(m_slideShowApp, &SlideShowApp::catSlsAvailable, ui->catSlsLabel, &ClickableLabel::setVisible, Qt::QueuedConnection);
-    connect(this, &MainWindow::stopUserApps, m_slideShowApp, &SlideShowApp::stop, Qt::QueuedConnection);
+    m_slideShowApp[Instance::Service] = new SlideShowApp();
+    m_slideShowApp[Instance::Announcement] = new SlideShowApp();
+
+    m_slideShowApp[Instance::Service]->moveToThread(m_radioControlThread);
+    m_slideShowApp[Instance::Announcement]->moveToThread(m_radioControlThread);
+    connect(m_radioControlThread, &QThread::finished, m_slideShowApp[Instance::Service], &QObject::deleteLater);
+    connect(m_radioControl, &RadioControl::audioServiceSelection, m_slideShowApp[Instance::Service], &SlideShowApp::start);
+    connect(m_radioControl, &RadioControl::userAppData_Service, m_slideShowApp[Instance::Service], &SlideShowApp::onUserAppData);
+    connect(m_slideShowApp[Instance::Service], &SlideShowApp::currentSlide, ui->slsView_Service, &SLSView::showSlide, Qt::QueuedConnection);
+    connect(m_slideShowApp[Instance::Service], &SlideShowApp::resetTerminal, ui->slsView_Service, &SLSView::reset, Qt::QueuedConnection);
+    connect(m_slideShowApp[Instance::Service], &SlideShowApp::catSlsAvailable, ui->catSlsLabel, &ClickableLabel::setVisible, Qt::QueuedConnection);
+    connect(this, &MainWindow::stopUserApps, m_slideShowApp[Instance::Service], &SlideShowApp::stop, Qt::QueuedConnection);
+
+    connect(m_radioControlThread, &QThread::finished, m_slideShowApp[Instance::Announcement], &QObject::deleteLater);
+    connect(m_radioControl, &RadioControl::audioServiceSelection, m_slideShowApp[Instance::Announcement], &SlideShowApp::start);
+    connect(m_radioControl, &RadioControl::userAppData_Announcement, m_slideShowApp[Instance::Announcement], &SlideShowApp::onUserAppData);
+    connect(m_slideShowApp[Instance::Announcement], &SlideShowApp::currentSlide, ui->slsView_Announcement, &SLSView::showSlide, Qt::QueuedConnection);
+    connect(m_slideShowApp[Instance::Announcement], &SlideShowApp::resetTerminal, ui->slsView_Announcement, &SLSView::reset, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::announcement, ui->slsView_Announcement, &SLSView::reset, Qt::QueuedConnection);
+    connect(this, &MainWindow::stopUserApps, m_slideShowApp[Instance::Announcement], &SlideShowApp::stop, Qt::QueuedConnection);
+
 
     m_catSlsDialog = new CatSLSDialog(this);
-    connect(m_slideShowApp, &SlideShowApp::categoryUpdate, m_catSlsDialog, &CatSLSDialog::onCategoryUpdate, Qt::QueuedConnection);
-    connect(m_slideShowApp, &SlideShowApp::catSlide, m_catSlsDialog, &CatSLSDialog::onCatSlide, Qt::QueuedConnection);
-    connect(m_slideShowApp, &SlideShowApp::resetTerminal, m_catSlsDialog, &CatSLSDialog::reset, Qt::QueuedConnection);
-    connect(m_catSlsDialog, &CatSLSDialog::getCurrentCatSlide, m_slideShowApp, &SlideShowApp::getCurrentCatSlide, Qt::QueuedConnection);
-    connect(m_catSlsDialog, &CatSLSDialog::getNextCatSlide, m_slideShowApp, &SlideShowApp::getNextCatSlide, Qt::QueuedConnection);
+    connect(m_slideShowApp[Instance::Service], &SlideShowApp::categoryUpdate, m_catSlsDialog, &CatSLSDialog::onCategoryUpdate, Qt::QueuedConnection);
+    connect(m_slideShowApp[Instance::Service], &SlideShowApp::catSlide, m_catSlsDialog, &CatSLSDialog::onCatSlide, Qt::QueuedConnection);
+    connect(m_slideShowApp[Instance::Service], &SlideShowApp::resetTerminal, m_catSlsDialog, &CatSLSDialog::reset, Qt::QueuedConnection);
+    connect(m_catSlsDialog, &CatSLSDialog::getCurrentCatSlide, m_slideShowApp[Instance::Service], &SlideShowApp::getCurrentCatSlide, Qt::QueuedConnection);
+    connect(m_catSlsDialog, &CatSLSDialog::getNextCatSlide, m_slideShowApp[Instance::Service], &SlideShowApp::getNextCatSlide, Qt::QueuedConnection);
 
 #if RADIO_CONTROL_SPI_ENABLE
 #warning "Remove automatic creation of SPI app"
@@ -456,10 +473,9 @@ MainWindow::~MainWindow()
     delete m_audioOutputThread;
 #endif
 
-    delete [] m_dlDecoder;
-
+    delete m_dlDecoder[Instance::Service];
+    delete m_dlDecoder[Instance::Announcement];
     delete m_serviceList;
-
     delete ui;
 }
 
@@ -592,8 +608,8 @@ void MainWindow::onEnsembleRemoved(const RadioControlEnsemble &ens)
     emit stopUserApps();
 
     clearServiceInformationLabels();
-    m_dlDecoder[Instance::Service].reset();
-    m_dlDecoder[Instance::Announcement].reset();
+    m_dlDecoder[Instance::Service]->reset();
+    m_dlDecoder[Instance::Announcement]->reset();
     ui->favoriteLabel->setEnabled(false);
 
     m_serviceList->removeEnsemble(ens);
@@ -815,8 +831,8 @@ void MainWindow::serviceSelected()
     emit stopUserApps();
 
     clearServiceInformationLabels();
-    m_dlDecoder[Instance::Service].reset();
-    m_dlDecoder[Instance::Announcement].reset();
+    m_dlDecoder[Instance::Service]->reset();
+    m_dlDecoder[Instance::Announcement]->reset();
     ui->dlWidget->setCurrentIndex(Instance::Service);
     ui->dlPlusWidget->setCurrentIndex(Instance::Service);
     ui->favoriteLabel->setEnabled(false);
@@ -1149,8 +1165,8 @@ void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponen
         ui->programTypeLabel->setToolTip("Service was removed from ensemble");
 
         emit stopUserApps();
-        m_dlDecoder[Instance::Service].reset();
-        m_dlDecoder[Instance::Announcement].reset();
+        m_dlDecoder[Instance::Service]->reset();
+        m_dlDecoder[Instance::Announcement]->reset();
 
         ui->favoriteLabel->setEnabled(false);
     }
@@ -1163,14 +1179,21 @@ void MainWindow::onAnnouncement(DabAnnouncement id, const RadioControlServiceCom
     {
         ui->announcementLabel->setToolTip(QString("Ongoing announcement:<br><b>%1</b>")
                                               .arg(DabTables::getAnnouncementName(id)));
-        ui->dlWidget->setCurrentIndex(Instance::Announcement);
-        ui->dlPlusWidget->setCurrentIndex(Instance::Announcement);
+
+        if ((s.SId.value() != m_SId.value()) || (s.SCIdS != m_SCIdS))
+        {
+            ui->dlWidget->setCurrentIndex(Instance::Announcement);
+            ui->dlPlusWidget->setCurrentIndex(Instance::Announcement);
+            ui->slsWidget->setCurrentIndex(Instance::Announcement);
+        }
+        else
+        {  /* announcement i current service -> do nothing */ }
     }
     else
     {
         ui->dlWidget->setCurrentIndex(Instance::Service);
         ui->dynamicLabel_Announcement->clear();   // clear for next announcment       
-        ui->dlPlusWidget->setCurrentIndex(Instance::Service);
+        ui->dlPlusWidget->setCurrentIndex(Instance::Service);        
         // reset DL+
         for (auto objPtr : m_dlObjCache[Instance::Announcement])
         {
@@ -1187,6 +1210,7 @@ void MainWindow::onAnnouncement(DabAnnouncement id, const RadioControlServiceCom
         {
             ui->dlPlusLabel->setVisible(true);
         }
+        ui->slsWidget->setCurrentIndex(Instance::Service);
     }
     ui->announcementLabel->setVisible(ongoing);
 
@@ -2088,7 +2112,8 @@ void MainWindow::setIcons()
 
         ui->switchSourceLabel->setIcon(":/resources/broadcast.png");
     }
-    ui->slsView->setDarkMode(isDarkMode());
+    ui->slsView_Service->setDarkMode(isDarkMode());
+    ui->slsView_Announcement->setDarkMode(isDarkMode());
 }
 
 void MainWindow::onDLPlusObjReceived_Service(const DLPlusObject & object)
