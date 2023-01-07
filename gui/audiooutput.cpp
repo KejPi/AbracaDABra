@@ -526,10 +526,10 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             m_inFifoPtr->countChanged.wakeAll();
             m_inFifoPtr->mutex.unlock();
 
-            if ((Request::Restart & request) && (count >= 2*bytesToRead))
-            {   // removing restart flag ==> play all samples we have
-                request &= ~Request::Restart;
-            }
+//            if ((Request::Restart & request) && (count >= 4*bytesToRead))
+//            {   // removing restart flag ==> play all samples we have
+//                request &= ~Request::Restart;
+//            }
 
             if (Request::None == request)
             {   // done
