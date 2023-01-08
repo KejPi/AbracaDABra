@@ -246,6 +246,14 @@ enum class RadioControlEventType
     ANNOUNCEMENT,
 };
 
+enum class RadioControlAnnouncementState
+{
+    None,
+    OnCurrentService,
+    OnOtherService,
+    Suspended
+};
+
 struct RadioControlEvent
 {
     RadioControlEventType type;
@@ -301,6 +309,8 @@ public:
     void startUserApplication(DabUserApplicationType uaType, bool start);
     uint32_t getEnsembleUEID() const { return m_ensemble.ueid; }
     void onAudioOutputRestart();
+    void setupAnnouncements(uint16_t enaFlags);
+    void suspendAnnouncement(bool suspend);
 
 signals:
     void dabEvent(RadioControlEvent * pEvent);
@@ -327,7 +337,7 @@ signals:
     void ensembleConfiguration(const QString &);
     void ensembleReconfiguration(const RadioControlEnsemble & ens);
     void ensembleRemoved(const RadioControlEnsemble & ens);
-    void announcement(DabAnnouncement id, const RadioControlServiceComponent & s);
+    void announcement(DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent & s);
     void announcementAudioAvailable();
 private:
     enum class AnnouncementSwitchState { NoAnnouncement, WaitForAnnouncement, OngoingAnnouncement };
@@ -342,10 +352,10 @@ private:
         uint32_t SId;
         uint8_t SCIdS;
     } m_serviceRequest;
+
     struct {
         uint32_t SId;
         uint8_t SCIdS;
-
         struct
         {   // announcement support
             uint16_t ASu;
@@ -356,6 +366,12 @@ private:
             std::atomic<AnnouncementSwitchState> switchState;
             uint32_t SId;
             uint8_t SCIdS;
+
+            uint16_t enaFlags;
+            bool isOtherService;
+            bool isSuspended;
+            bool isSuspendRequest;
+            RadioControlAnnouncementState state;
         } announcement;
     } m_currentService;
 
@@ -394,7 +410,9 @@ private:
     void setCurrentServiceAnnouncementSupport();
     void onAnnouncementTimeout();
     void onAnnouncementAudioAvailable();
-    bool announcementStart(uint8_t subChId, bool start);
+    void announcementHandler(dabsdrNtfAnnouncement_t * pAnnouncement);
+    bool startAnnouncement(uint8_t subChId);
+    void stopAnnouncement();
 
     // wrapper functions for dabsdr API
     void dabTune(uint32_t freq) { dabsdrRequest_Tune(m_dabsdrHandle, freq); }

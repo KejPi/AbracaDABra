@@ -50,6 +50,7 @@ signals:
     void stopUserApps();
     void getAudioInfo();
     void expertModeChanged(bool ena);
+    void cancelAnnouncement(bool suspend);
     void exit();
 
 protected:        
@@ -167,6 +168,7 @@ private:
     void onBandScanFinished(int result);
     void onFavoriteToggled(bool checked);
     void onSwitchSourceClicked();
+    void onAnnouncementClicked();
     void onSyncStatus(uint8_t sync);
     void onSnrLevel(float snr);
     void onServiceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
@@ -189,13 +191,13 @@ private:
     void onDabTime(const QDateTime & d);
     void onTuneChannel(uint32_t freq);
     void onTuneDone(uint32_t freq);
-    void onNewSettings();
+    void onNewInputDeviceSettings();
     void onInputDeviceError(const InputDeviceErrorCode errCode);
     void onServiceListClicked(const QModelIndex &index);
     void onServiceListTreeClicked(const QModelIndex &index);
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
     void onAudioServiceReconfiguration(const RadioControlServiceComponent &s);
-    void onAnnouncement(DabAnnouncement id, const RadioControlServiceComponent &s);
+    void onAnnouncement(const DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent &s);
 };
 
 class DLPlusObjectUI

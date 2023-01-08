@@ -78,7 +78,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_setupDialog = new SetupDialog(this);
     connect(m_setupDialog, &SetupDialog::inputDeviceChanged, this, &MainWindow::changeInputDevice);
     connect(this, &MainWindow::expertModeChanged, m_setupDialog, &SetupDialog::onExpertMode);
-    connect(m_setupDialog, &SetupDialog::newSettings, this, &MainWindow::onNewSettings);
+    connect(m_setupDialog, &SetupDialog::newInputDeviceSettings, this, &MainWindow::onNewInputDeviceSettings);
 
     m_ensembleInfoDialog = new EnsembleInfoDialog(this);
 
@@ -327,6 +327,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(ui->favoriteLabel, &ClickableLabel::toggled, this, &MainWindow::onFavoriteToggled);
     connect(ui->switchSourceLabel, &ClickableLabel::clicked, this, &MainWindow::onSwitchSourceClicked);
     connect(ui->catSlsLabel, &ClickableLabel::clicked, this, &MainWindow::showCatSLS);
+    connect(ui->announcementLabel, &ClickableLabel::clicked, this, &MainWindow::onAnnouncementClicked);
 
     connect(m_radioControl, &RadioControl::ensembleInformation, this, &MainWindow::onEnsembleInfo, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleReconfiguration, this, &MainWindow::onEnsembleReconfiguration, Qt::QueuedConnection);
@@ -336,7 +337,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::dabTime, this, &MainWindow::onDabTime, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListEntry, this, &MainWindow::onServiceListEntry, Qt::BlockingQueuedConnection);
     connect(m_radioControl, &RadioControl::announcement, this, &MainWindow::onAnnouncement, Qt::QueuedConnection);
+    connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, m_radioControl, &RadioControl::setupAnnouncements, Qt::QueuedConnection);
     connect(m_audioOutput, &AudioOutput::audioOutputRestart, m_radioControl, &RadioControl::onAudioOutputRestart, Qt::QueuedConnection);
+    connect(this, &MainWindow::cancelAnnouncement, m_radioControl, &RadioControl::suspendAnnouncement, Qt::QueuedConnection);
 
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfiguration, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::snrLevel, m_ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
@@ -1172,28 +1175,14 @@ void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponen
     }
 }
 
-void MainWindow::onAnnouncement(DabAnnouncement id, const RadioControlServiceComponent & s)
+void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent & s)
 {
-    bool ongoing = (DabAnnouncement::Undefined != id);
-    if (ongoing)
+    switch (state)
     {
-        ui->announcementLabel->setToolTip(QString("Ongoing announcement:<br><b>%1</b>")
-                                              .arg(DabTables::getAnnouncementName(id)));
-
-        if ((s.SId.value() != m_SId.value()) || (s.SCIdS != m_SCIdS))
-        {
-            ui->dlWidget->setCurrentIndex(Instance::Announcement);
-            ui->dlPlusWidget->setCurrentIndex(Instance::Announcement);
-            ui->slsWidget->setCurrentIndex(Instance::Announcement);
-        }
-        else
-        {  /* announcement i current service -> do nothing */ }
-    }
-    else
-    {
+    case RadioControlAnnouncementState::None:
         ui->dlWidget->setCurrentIndex(Instance::Service);
-        ui->dynamicLabel_Announcement->clear();   // clear for next announcment       
-        ui->dlPlusWidget->setCurrentIndex(Instance::Service);        
+        ui->dynamicLabel_Announcement->clear();   // clear for next announcment
+        ui->dlPlusWidget->setCurrentIndex(Instance::Service);
         // reset DL+
         for (auto objPtr : m_dlObjCache[Instance::Announcement])
         {
@@ -1211,8 +1200,32 @@ void MainWindow::onAnnouncement(DabAnnouncement id, const RadioControlServiceCom
             ui->dlPlusLabel->setVisible(true);
         }
         ui->slsWidget->setCurrentIndex(Instance::Service);
+        ui->announcementLabel->setVisible(false);
+        break;
+    case RadioControlAnnouncementState::OnCurrentService:
+        ui->announcementLabel->setToolTip(QString("Ongoing announcement:<br><b>%1</b>")
+                                              .arg(DabTables::getAnnouncementName(id)));
+        ui->announcementLabel->setEnabled(false);
+        ui->announcementLabel->setVisible(true);
+
+        break;
+    case RadioControlAnnouncementState::OnOtherService:
+        ui->announcementLabel->setToolTip(QString("Ongoing announcement:<br><b>%1</b><br><br>Click to cancel this announcement")
+                                              .arg(DabTables::getAnnouncementName(id)));
+        ui->announcementLabel->setEnabled(true);
+        ui->announcementLabel->setVisible(true);
+
+        ui->dlWidget->setCurrentIndex(Instance::Announcement);
+        ui->dlPlusWidget->setCurrentIndex(Instance::Announcement);
+        ui->slsWidget->setCurrentIndex(Instance::Announcement);
+        break;
+    case RadioControlAnnouncementState::Suspended:
+        ui->announcementLabel->setToolTip(QString("Suspended announcement:<br><b>%1</b>")
+                                              .arg(DabTables::getAnnouncementName(id)));
+        ui->announcementLabel->setEnabled(false);
+        ui->announcementLabel->setVisible(true);
+        break;
     }
-    ui->announcementLabel->setVisible(ongoing);
 
     displaySubchParams(s);
 }
@@ -1245,7 +1258,7 @@ void MainWindow::clearServiceInformationLabels()
     ui->announcementLabel->setVisible(false);
 }
 
-void MainWindow::onNewSettings()
+void MainWindow::onNewInputDeviceSettings()
 {
     SetupDialog::Settings s = m_setupDialog->settings();
     switch (m_inputDeviceId)
@@ -1361,7 +1374,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             dynamic_cast<RtlSdrInput*>(m_inputDevice)->setBiasT(m_setupDialog->settings().rtlsdr.biasT);
 
             // apply current settings
-            onNewSettings();
+            onNewInputDeviceSettings();
         }
         else
         {
@@ -1412,7 +1425,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             m_ensembleInfoDialog->enableDumpToFile(true);
 
             // apply current settings
-            onNewSettings();
+            onNewInputDeviceSettings();
         }
         else
         {
@@ -1511,7 +1524,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             dynamic_cast<AirspyInput*>(m_inputDevice)->setDataPacking(m_setupDialog->settings().airspy.dataPacking);
 
             // apply current settings
-            onNewSettings();
+            onNewInputDeviceSettings();
         }
         else
         {
@@ -1569,7 +1582,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             dynamic_cast<SoapySdrInput*>(m_inputDevice)->setBW(m_setupDialog->settings().soapysdr.bandwidth);
 
             // apply current settings
-            onNewSettings();
+            onNewInputDeviceSettings();
         }
         else
         {
@@ -1608,7 +1621,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             ui->favoriteLabel->setEnabled(true);
 
             // apply current settings
-            onNewSettings();
+            onNewInputDeviceSettings();
         }
         else
         {
@@ -1639,10 +1652,11 @@ void MainWindow::loadSettings()
     setExpertMode(m_expertMode);
     m_volumeSlider->setValue(settings->value("volume", 100).toInt());
 
-    int inDevice = settings->value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();
+    int inDevice = settings->value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();        
 
-    SetupDialog::Settings s;
+    SetupDialog::Settings s;    
     s.inputDevice = static_cast<InputDeviceId>(inDevice);
+    s.announcementEna = settings->value("announcementEna", 0x0FFF).toUInt();
 
     s.rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
     s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
@@ -1751,6 +1765,7 @@ void MainWindow::saveSettings()
     settings->setValue("dumpPath", m_ensembleInfoDialog->getDumpPath());
     settings->setValue("volume", m_volumeSlider->value());
     settings->setValue("windowGeometry", saveGeometry());
+    settings->setValue("announcementEna", s.announcementEna);
 
     settings->setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
     settings->setValue("RTL-SDR/gainMode", static_cast<int>(s.rtlsdr.gainMode));
@@ -1868,6 +1883,11 @@ void MainWindow::onSwitchSourceClicked()
             serviceTreeViewUpdateSelection();
         }
     }
+}
+
+void MainWindow::onAnnouncementClicked()
+{
+    emit cancelAnnouncement(true);
 }
 
 void MainWindow::serviceTreeViewUpdateSelection()
