@@ -104,7 +104,14 @@ void SLSView::showAnnouncement(DabAnnouncement id)
     m_announcementText->setPos((320 - rect.width())/2, 185);
 
     sc->setSceneRect(pic.rect());
-    sc->setBackgroundBrush(Qt::darkGray);
+    if (DabAnnouncement::Alarm != id)
+    {
+        sc->setBackgroundBrush(Qt::darkGray);
+    }
+    else
+    {   //d30f0f
+        sc->setBackgroundBrush(QBrush(QColor(0xd3, 0x0f, 0x0f)));
+    }
 
     fitInViewTight(pic.rect(), Qt::KeepAspectRatio);
 
