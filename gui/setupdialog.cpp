@@ -174,6 +174,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->soapysdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
 #endif
     adjustSize();
+
+    this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 SetupDialog::Settings SetupDialog::settings() const

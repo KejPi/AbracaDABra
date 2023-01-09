@@ -7,16 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>456</width>
-    <height>409</height>
+    <height>339</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Setup</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_6">
-   <property name="sizeConstraint">
-    <enum>QLayout::SetFixedSize</enum>
-   </property>
+  <layout class="QGridLayout" name="mainLayout">
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="sizePolicy">
@@ -27,8 +30,8 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>432</width>
-       <height>391</height>
+       <width>438</width>
+       <height>321</height>
       </size>
      </property>
      <property name="currentIndex">
@@ -79,6 +82,12 @@
        </item>
        <item>
         <widget class="QStackedWidget" name="deviceOptionsWidget">
+         <property name="minimumSize">
+          <size>
+           <width>414</width>
+           <height>221</height>
+          </size>
+         </property>
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -676,7 +685,7 @@
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>20</width>
+               <width>0</width>
                <height>0</height>
               </size>
              </property>
