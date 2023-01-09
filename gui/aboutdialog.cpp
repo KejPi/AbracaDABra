@@ -39,7 +39,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
 #endif
                            "<li><a href=\"http://www.portaudio.com\">PortAudio</a> Copyright © 1999-2011 Ross Bencina and Phil Burk</li>"
                            "</ul>");
-    ui->disclaimer->setText("<p>Copyright © 2019-2022 Petr Kopecký</p>"
+    ui->disclaimer->setText("<p>Copyright © 2019-2023 Petr Kopecký</p>"
                             "<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software "
                             "and associated documentation files (the “Software”), to deal in the Software without restriction, "
                             "including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, "
