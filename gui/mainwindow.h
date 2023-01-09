@@ -50,7 +50,7 @@ signals:
     void stopUserApps();
     void getAudioInfo();
     void expertModeChanged(bool ena);
-    void cancelAnnouncement(bool suspend);
+    void toggleAnnouncement();
     void exit();
 
 protected:        

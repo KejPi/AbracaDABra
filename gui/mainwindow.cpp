@@ -69,6 +69,14 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // set UI
     setWindowTitle("Abraca DAB Radio");
 
+#ifdef Q_OS_WIN
+    // this is Windows specific code, not portable - allows to bring window to front (used for alarm announcement)
+    // does not exit on Qt6 yet
+    // workaround: https://forum.qt.io/topic/133694/using-alwaysactivatewindow-to-gain-foreground-in-win10-using-qt6-2/3
+    //QWindowsWindowFunctions::setWindowActivationBehavior(QWindowsWindowFunctions::AlwaysActivateWindow);
+#endif
+
+
     // favorites control
     ui->favoriteLabel->setCheckable(true);
     ui->favoriteLabel->setTooltip("Add service to favorites", false);
@@ -339,7 +347,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::announcement, this, &MainWindow::onAnnouncement, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, m_radioControl, &RadioControl::setupAnnouncements, Qt::QueuedConnection);
     connect(m_audioOutput, &AudioOutput::audioOutputRestart, m_radioControl, &RadioControl::onAudioOutputRestart, Qt::QueuedConnection);
-    connect(this, &MainWindow::cancelAnnouncement, m_radioControl, &RadioControl::suspendAnnouncement, Qt::QueuedConnection);
+    connect(this, &MainWindow::toggleAnnouncement, m_radioControl, &RadioControl::suspendResumeAnnouncement, Qt::QueuedConnection);
 
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfiguration, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::snrLevel, m_ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
@@ -839,6 +847,7 @@ void MainWindow::serviceSelected()
     ui->dlWidget->setCurrentIndex(Instance::Service);
     ui->dlPlusWidget->setCurrentIndex(Instance::Service);
     ui->favoriteLabel->setEnabled(false);
+    ui->slsWidget->setCurrentIndex(Instance::Service);
 }
 
 void MainWindow::onChannelChange(int index)
@@ -1177,6 +1186,7 @@ void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponen
 
 void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent & s)
 {
+    qDebug() << Q_FUNC_INFO << DabTables::getAnnouncementName(id) << int(state);
     switch (state)
     {
     case RadioControlAnnouncementState::None:
@@ -1220,14 +1230,43 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
         ui->slsWidget->setCurrentIndex(Instance::Announcement);
         break;
     case RadioControlAnnouncementState::Suspended:
-        ui->announcementLabel->setToolTip(QString("Suspended announcement:<br><b>%1</b>")
+        ui->announcementLabel->setToolTip(QString("Suspended announcement:<br><b>%1</b><br><br>Click to resume this announcement")
                                               .arg(DabTables::getAnnouncementName(id)));
-        ui->announcementLabel->setEnabled(false);
+        ui->announcementLabel->setEnabled(true);
         ui->announcementLabel->setVisible(true);
+
+        ui->dlWidget->setCurrentIndex(Instance::Service);
+        ui->dynamicLabel_Announcement->clear();   // clear for next announcment
+        ui->dlPlusWidget->setCurrentIndex(Instance::Service);
+        // reset DL+
+        for (auto objPtr : m_dlObjCache[Instance::Announcement])
+        {
+            delete objPtr;
+        }
+        m_dlObjCache[Instance::Announcement].clear();
+        if (m_dlObjCache[Instance::Service].isEmpty())
+        {   // there are no DL+ objects from normal service ==> disabling switch
+            ui->dlPlusLabel->setVisible(false);
+            ui->dlPlusLabel->setChecked(false);
+            onDLPlusToggled(false);
+        }
+        else
+        {
+            ui->dlPlusLabel->setVisible(true);
+        }
+        ui->slsWidget->setCurrentIndex(Instance::Service);
+
         break;
     }
 
     displaySubchParams(s);
+
+    if (DabAnnouncement::Alarm == id)
+    {
+        show(); //bring window to top on OSX
+        raise(); //bring window from minimized state on OSX
+        activateWindow(); //bring window to front/unminimize on windows
+    }
 }
 
 void MainWindow::clearEnsembleInformationLabels()
@@ -1887,7 +1926,8 @@ void MainWindow::onSwitchSourceClicked()
 
 void MainWindow::onAnnouncementClicked()
 {
-    emit cancelAnnouncement(true);
+    emit toggleAnnouncement();
+    ui->announcementLabel->setEnabled(false);
 }
 
 void MainWindow::serviceTreeViewUpdateSelection()

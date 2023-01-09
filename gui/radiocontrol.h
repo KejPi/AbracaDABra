@@ -310,7 +310,7 @@ public:
     uint32_t getEnsembleUEID() const { return m_ensemble.ueid; }
     void onAudioOutputRestart();
     void setupAnnouncements(uint16_t enaFlags);
-    void suspendAnnouncement(bool suspend);
+    void suspendResumeAnnouncement();
 
 signals:
     void dabEvent(RadioControlEvent * pEvent);
@@ -369,8 +369,7 @@ private:
 
             uint16_t enaFlags;
             bool isOtherService;
-            bool isSuspended;
-            bool isSuspendRequest;
+            bool suspendRequest;
             RadioControlAnnouncementState state;
         } announcement;
     } m_currentService;
