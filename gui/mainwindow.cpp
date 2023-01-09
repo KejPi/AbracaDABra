@@ -1186,7 +1186,7 @@ void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponen
 
 void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent & s)
 {
-    qDebug() << Q_FUNC_INFO << DabTables::getAnnouncementName(id) << int(state);
+    //qDebug() << Q_FUNC_INFO << DabTables::getAnnouncementName(id) << int(state);
     switch (state)
     {
     case RadioControlAnnouncementState::None:
@@ -1220,8 +1220,14 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
 
         break;
     case RadioControlAnnouncementState::OnOtherService:
-        ui->announcementLabel->setToolTip(QString("Ongoing announcement:<br><b>%1</b><br><br>Click to cancel this announcement")
-                                              .arg(DabTables::getAnnouncementName(id)));
+        ui->announcementLabel->setToolTip(QString("Ongoing announcement:<br>"
+                                                  "<b>%1</b><br>"
+                                                  "<br>"
+                                                  "From service: <i>%2</i><br>"
+                                                  "<br>"
+                                                  "Click to suspend this announcement")
+                                              .arg(DabTables::getAnnouncementName(id))
+                                              .arg(s.label));
         ui->announcementLabel->setEnabled(true);
         ui->announcementLabel->setVisible(true);
 
@@ -1230,8 +1236,14 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
         ui->slsWidget->setCurrentIndex(Instance::Announcement);
         break;
     case RadioControlAnnouncementState::Suspended:
-        ui->announcementLabel->setToolTip(QString("Suspended announcement:<br><b>%1</b><br><br>Click to resume this announcement")
-                                              .arg(DabTables::getAnnouncementName(id)));
+        ui->announcementLabel->setToolTip(QString("Suspended announcement:<br>"
+                                                  "<b>%1</b><br>"
+                                                  "<br>"
+                                                  "From service: <i>%2</i><br>"
+                                                  "<br>"
+                                                  "Click to resume this announcement")
+                                              .arg(DabTables::getAnnouncementName(id))
+                                              .arg(s.label));
         ui->announcementLabel->setEnabled(true);
         ui->announcementLabel->setVisible(true);
 
