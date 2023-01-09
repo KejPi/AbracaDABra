@@ -198,6 +198,13 @@ void SLSView::showSlide(const Slide & slide)
     }
     else
     {
+        if (nullptr != m_announcementText)
+        {
+            sc->removeItem(m_announcementText);
+            delete m_announcementText;
+            m_announcementText = nullptr;
+        }
+
         m_pixmapItem->setPixmap(slide.getPixmap());
     }
 

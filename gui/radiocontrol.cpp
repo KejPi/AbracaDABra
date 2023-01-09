@@ -946,7 +946,7 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
         if (scIt->userApps.cend() != uaIt)
         {
             qDebug() << "Found XPAD app" << int(uaType);
-            dabXPadAppStart(uaIt->xpadData.xpadAppTy, 1);
+            dabXPadAppStart(uaIt->xpadData.xpadAppTy, 1, DABSDR_ID_AUDIO_PRIMARY);
             return;
         }
 
@@ -1444,11 +1444,11 @@ bool RadioControl::startAnnouncement(uint8_t subChId)
         // request secondary audio service
         dabsdrRequest_ServiceSelection(m_dabsdrHandle, sid.value(), scids, DABSDR_ID_AUDIO_SECONDARY);
 
-//        QHash<DabUserApplicationType,RadioControlUserApp>::const_iterator uaIt = scIt->userApps.constFind(DabUserApplicationType::SlideShow);
-//        if (scIt->userApps.cend() != uaIt)
-//        {
-//            dabXPadAppStart(uaIt->xpadData.xpadAppTy, 1);
-//        }
+        QHash<DabUserApplicationType,RadioControlUserApp>::const_iterator uaIt = scIt->userApps.constFind(DabUserApplicationType::SlideShow);
+        if (scIt->userApps.cend() != uaIt)
+        {
+            dabXPadAppStart(uaIt->xpadData.xpadAppTy, 1, DABSDR_ID_AUDIO_SECONDARY);
+        }
 
     }
     else
@@ -1583,27 +1583,6 @@ void RadioControl::announcementHandler(dabsdrNtfAnnouncement_t *pAnnouncement)
                 // the value of the ASw flags field - shall not change during an announcement
                 // ==> ignoring any potential change
                 m_currentService.announcement.timeoutTimer->start();
-#if 0
-                // we can suspend announcement from here
-                if (m_currentService.announcement.isOtherService)
-                {   // only on other service announcment
-                    if (m_currentService.announcement.isSuspendRequest != m_currentService.announcement.isSuspended)
-                    {   // suspend or resume requested
-                        if (m_currentService.announcement.isSuspendRequest)
-                        {   // stop audio
-                            stopAnnouncement();
-                            m_currentService.announcement.isSuspended = true;
-                        }
-                        else
-                        {
-                            // restart
-                            startAnnouncement(pAnnouncement->subChId);
-                            m_currentService.announcement.isSuspended = false;
-                        }
-                    }
-                }
-                else { /* announcement is on currrent service */ }
-#endif
             }
         }
         else

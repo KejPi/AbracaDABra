@@ -15,7 +15,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     // remove question mark from titlebar
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    ui->tabWidget->setTabText(SetupDialogTabs::Device, "Input device");
+    ui->tabWidget->setTabText(SetupDialogTabs::Device, "Device");
     ui->tabWidget->setTabText(SetupDialogTabs::Announcement, "Announcements");
 
     ui->inputCombo->addItem("RTL SDR", QVariant(int(InputDeviceId::RTLSDR)));
@@ -53,38 +53,6 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->rarttcpIpAddressEdit->setValidator(ipValidator);
 
     // set announcement combos
-    //    QGridLayout *mainLayout = new QGridLayout;
-    //    mainLayout->setSizeConstraint(QLayout::SetFixedSize);
-    //    mainLayout->addWidget(ui->tabWidget, 0, 0);
-    //    setLayout(mainLayout);
-#if  0
-    int row = 0;
-    int column = 0;
-    QGridLayout *announcementLayout = new QGridLayout;
-    for (int ann = 0; ann < static_cast<int>(DabAnnouncement::Undefined); ++ann)
-    {
-        //if (static_cast<int>(DabAnnouncement::Alarm) != ann)
-        {
-            m_announcementCheckBox[ann] = new QCheckBox();
-            m_announcementCheckBox[ann]->setText(DabTables::getAnnouncementName(static_cast<DabAnnouncement>(ann)));
-            m_announcementCheckBox[ann]->setChecked(true);
-
-            if (static_cast<int>(DabAnnouncement::Alarm) == ann)
-            {
-                m_announcementCheckBox[ann]->setDisabled(true);
-            }
-
-            announcementLayout->addWidget(m_announcementCheckBox[ann], row++, column);
-            if (row >= (static_cast<int>(DabAnnouncement::Undefined)+1)/2)
-            {
-                row = 0;
-                column = 1;
-            }
-        }
-    }
-    ui->tabAnnouncement->setLayout(announcementLayout);
-#endif
-
     QGridLayout *gridLayout = new QGridLayout;
     // alarm announcements
     int ann = static_cast<int>(DabAnnouncement::Alarm);
