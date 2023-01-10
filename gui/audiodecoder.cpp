@@ -110,13 +110,6 @@ void AudioDecoder::start(const RadioControlServiceComponent&s)
         {   // if running, then stop it first
             stop();
         }
-
-#if AUDIO_DECODER_MUTE_CONCEALMENT
-        memset(m_outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
-        m_state = OutputState::Init;
-#endif
-//        m_outFifoIdx = 0;
-//        m_outFifoPtr = &audioFifo[m_outFifoIdx];
         m_playbackState = PlaybackState::WaitForInit;
     }
     else
@@ -650,6 +643,10 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
 
     if (nullptr == m_aacDecoderHandle)
     {   // this can happen when format changes from MP2 to AAC or during init
+#if AUDIO_DECODER_MUTE_CONCEALMENT
+        memset(m_outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
+        m_state = OutputState::Init;
+#endif
         m_aacHeader.raw = header.raw;
         m_inputDataDecoderId = inData->id;
         readAACHeader();
