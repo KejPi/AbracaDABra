@@ -618,9 +618,10 @@ void MainWindow::onEnsembleRemoved(const RadioControlEnsemble &ens)
 {
     emit stopUserApps();
 
-    clearServiceInformationLabels();
     m_dlDecoder[Instance::Service]->reset();
     m_dlDecoder[Instance::Announcement]->reset();
+
+    clearServiceInformationLabels();
     ui->favoriteLabel->setEnabled(false);
 
     m_serviceList->removeEnsemble(ens);
@@ -840,10 +841,9 @@ void MainWindow::channelSelected()
 void MainWindow::serviceSelected()
 {
     emit stopUserApps();
-
-    clearServiceInformationLabels();
     m_dlDecoder[Instance::Service]->reset();
     m_dlDecoder[Instance::Announcement]->reset();
+    clearServiceInformationLabels();
     ui->dlWidget->setCurrentIndex(Instance::Service);
     ui->dlPlusWidget->setCurrentIndex(Instance::Service);
     ui->favoriteLabel->setEnabled(false);
@@ -907,6 +907,8 @@ void MainWindow::onTuneDone(uint32_t freq)
 
         ui->frequencyLabel->setText("");
         m_isPlaying = false;
+        clearEnsembleInformationLabels();
+        clearServiceInformationLabels();
         if (m_deviceChangeRequested)
         {
             initInputDevice(m_inputDeviceId);
@@ -1287,7 +1289,7 @@ void MainWindow::clearEnsembleInformationLabels()
     ui->ensembleLabel->setText("No ensemble");
     ui->ensembleLabel->setToolTip("No ensemble tuned");
     ui->ensembleInfoLabel->setText("");
-    ui->frequencyLabel->setText("");
+    ui->frequencyLabel->setText("");    
 }
 
 void MainWindow::clearServiceInformationLabels()
@@ -1307,6 +1309,9 @@ void MainWindow::clearServiceInformationLabels()
     ui->audioBitrateLabel->setText("");
     ui->audioBitrateLabel->setToolTip("");
     ui->announcementLabel->setVisible(false);
+    ui->dlPlusWidget->setCurrentIndex(Instance::Service);
+    ui->dlWidget->setCurrentIndex(Instance::Service);
+    ui->slsWidget->setCurrentIndex(Instance::Service);
 }
 
 void MainWindow::onNewInputDeviceSettings()
