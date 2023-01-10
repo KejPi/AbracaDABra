@@ -644,13 +644,14 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     if (nullptr == m_aacDecoderHandle)
     {   // this can happen when format changes from MP2 to AAC or during init
 #if AUDIO_DECODER_MUTE_CONCEALMENT
-        memset(m_outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
+        // not necessary -> will be set in init state
+        //memset(m_outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
         m_state = OutputState::Init;
 #endif
         m_aacHeader.raw = header.raw;
         m_inputDataDecoderId = inData->id;
         readAACHeader();
-        initAACDecoder();        
+        initAACDecoder();
 
         m_playbackState = PlaybackState::Running;
     }
@@ -677,6 +678,12 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
 
     if ((header.raw != m_aacHeader.raw) || (inData->id != m_inputDataDecoderId))
     {   // this is stream reconfiguration or announcement (different instance)
+#if AUDIO_DECODER_MUTE_CONCEALMENT
+        // not necessary -> will be set in init state
+        //memset(m_outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
+        m_state = OutputState::Init;
+#endif
+
         m_aacHeader.raw = header.raw;
         m_inputDataDecoderId = inData->id;
         readAACHeader();
@@ -799,7 +806,22 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
     if (OutputState::Init == m_state)
     {   // only copy to internal buffer -> this is the first buffer
         memcpy(m_outBufferPtr, inFramePtr, m_outputBufferSamples * sizeof(int16_t));
-        m_state = OutputState::Unmuted;
+
+        // apply unmute ramp
+        int16_t * dataPtr = &m_outBufferPtr[0];  // first sample
+        std::vector <float>::const_iterator it = m_muteRamp.cbegin();
+        while (it != m_muteRamp.end())
+        {
+            float gain = *it;
+            it += m_muteRampDsFactor;
+            for (uint_fast32_t ch = 0; ch < m_numChannels; ++ch)
+            {
+                *dataPtr = int16_t(qRound(gain * *dataPtr));
+                dataPtr += 1;
+            }
+        }
+
+        m_state = OutputState::Unmuted;                
         return;
     }
 
@@ -818,7 +840,7 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
 
     int64_t bytesToWrite = frameInfo.samples * sizeof(int16_t);
 
-    const uint8_t * outBufferPtr = inFramePtr;
+    const uint8_t * m_outBufferPtr = inFramePtr;
 #endif
 
 #ifdef AUDIO_DECODER_RAW_OUT
@@ -869,7 +891,24 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
     else
     {   // OK
         memcpy(m_outBufferPtr, inFramePtr, m_outputBufferSamples * sizeof(int16_t));
-        m_state = OutputState::Unmuted;
+
+        if (OutputState::Muted == m_state)
+        {
+            // apply unmute ramp
+            int16_t * dataPtr = &m_outBufferPtr[0];  // first sample
+            std::vector <float>::const_iterator it = m_muteRamp.cbegin();
+            while (it != m_muteRamp.end())
+            {
+                float gain = *it;
+                it += m_muteRampDsFactor;
+                for (uint_fast32_t ch = 0; ch < m_numChannels; ++ch)
+                {
+                    *dataPtr = int16_t(qRound(gain * *dataPtr));
+                    dataPtr += 1;
+                }
+            }
+            m_state = OutputState::Unmuted;
+        }
     }
 #endif
 }
