@@ -72,6 +72,7 @@ public:
         } soapysdr;
 #endif
         uint16_t announcementEna;
+        bool bringWindowToForeground;
     };
 
     SetupDialog(QWidget *parent = nullptr);
@@ -99,6 +100,7 @@ private:
     QList<float> m_rtltcpGainList;
     QList<float> m_soapysdrGainList;
     QCheckBox * m_announcementCheckBox[static_cast<int>(DabAnnouncement::Undefined)];
+    QCheckBox * m_bringWindowToForegroundCheckbox;
 
     void setStatusLabel();
 
@@ -120,6 +122,7 @@ private:
 
     void onRawFileFormatChanged(int idx);    
     void onAnnouncementClicked();
+    void onBringWindowToForegroundClicked(bool checked);
 
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);

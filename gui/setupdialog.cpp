@@ -69,11 +69,18 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     gridLayout->addWidget(m_announcementCheckBox[ann], 0, 1);
 
     QLabel * label = new QLabel("<br>Note: Alarm announcement cannot be disabled.");
-    gridLayout->addWidget(label, 1, 0, 1, 2);
+    gridLayout->addWidget(label, 4, 0, 1, 2);
     QGroupBox * groupBox = new QGroupBox("Alarm Announcements");
     groupBox->setLayout(gridLayout);
     QVBoxLayout *vLayout = new QVBoxLayout;
     vLayout->addWidget(groupBox);
+
+    m_bringWindowToForegroundCheckbox = new QCheckBox();
+    m_bringWindowToForegroundCheckbox->setText("Bring window to foreground");
+    m_bringWindowToForegroundCheckbox->setToolTip("Check to bring window to foreground when (test) alarm announcement starts");
+    m_bringWindowToForegroundCheckbox->setChecked(true);
+    connect(m_bringWindowToForegroundCheckbox, &QCheckBox::clicked, this, &SetupDialog::onBringWindowToForegroundClicked);
+    gridLayout->addWidget(m_bringWindowToForegroundCheckbox, 5, 0, 1, 2);
 
     // regular announcements
     int row = 0;
@@ -339,6 +346,7 @@ void SetupDialog::showEvent(QShowEvent *event)
         m_announcementCheckBox[a]->setChecked(announcementEna & 0x1);
         announcementEna >>= 1;
     }
+    m_bringWindowToForegroundCheckbox->setChecked(m_settings.bringWindowToForeground);
 }
 
 
@@ -756,6 +764,12 @@ void SetupDialog::onOpenFileButtonClicked()
         }
 
         ui->connectButton->setVisible(true);
+
+#ifdef Q_OS_MACX // bug in Ventura
+        show(); //bring window to top on OSX
+        raise(); //bring window from minimized state on OSX
+        activateWindow(); //bring window to front/unminimize on windows
+#endif
     }
 }
 
@@ -802,4 +816,9 @@ void SetupDialog::onAnnouncementClicked()
         m_settings.announcementEna = announcementEna;
         emit newAnnouncementSettings(announcementEna);
     }
+}
+
+void SetupDialog::onBringWindowToForegroundClicked(bool checked)
+{
+    m_settings.bringWindowToForeground = checked;
 }

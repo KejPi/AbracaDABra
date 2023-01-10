@@ -1215,17 +1215,18 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
         ui->announcementLabel->setVisible(false);
         break;
     case RadioControlAnnouncementState::OnCurrentService:
-        ui->announcementLabel->setToolTip(QString("Ongoing announcement:<br><b>%1</b>")
+        ui->announcementLabel->setToolTip(QString("<b>%1</b><br>"
+                                                  "Ongoing announcement<br>"
+                                                  "on current service")
                                               .arg(DabTables::getAnnouncementName(id)));
         ui->announcementLabel->setEnabled(false);
         ui->announcementLabel->setVisible(true);
 
         break;
     case RadioControlAnnouncementState::OnOtherService:
-        ui->announcementLabel->setToolTip(QString("Ongoing announcement:<br>"
-                                                  "<b>%1</b><br>"
-                                                  "<br>"
-                                                  "From service: <i>%2</i><br>"
+        ui->announcementLabel->setToolTip(QString("<b>%1</b><br>"
+                                                  "Ongoing announcement<br>"
+                                                  "Source service: <i>%2</i><br>"
                                                   "<br>"
                                                   "Click to suspend this announcement")
                                               .arg(DabTables::getAnnouncementName(id))
@@ -1238,10 +1239,9 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
         ui->slsWidget->setCurrentIndex(Instance::Announcement);
         break;
     case RadioControlAnnouncementState::Suspended:
-        ui->announcementLabel->setToolTip(QString("Suspended announcement:<br>"
-                                                  "<b>%1</b><br>"
-                                                  "<br>"
-                                                  "From service: <i>%2</i><br>"
+        ui->announcementLabel->setToolTip(QString("<b>%1</b><br>"
+                                                  "Suspended announcement<br>"
+                                                  "Source service: <i>%2</i><br>"
                                                   "<br>"
                                                   "Click to resume this announcement")
                                               .arg(DabTables::getAnnouncementName(id))
@@ -1275,7 +1275,7 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
 
     displaySubchParams(s);
 
-    if (DabAnnouncement::Alarm == id)
+    if ((DabAnnouncement::Alarm == id) && (m_setupDialog->settings().bringWindowToForeground))
     {
         show(); //bring window to top on OSX
         raise(); //bring window from minimized state on OSX
@@ -1713,6 +1713,7 @@ void MainWindow::loadSettings()
     SetupDialog::Settings s;    
     s.inputDevice = static_cast<InputDeviceId>(inDevice);
     s.announcementEna = settings->value("announcementEna", 0x0FFF).toUInt();
+    s.bringWindowToForeground = settings->value("bringWindowToForegroundOnAlarm", true).toBool();
 
     s.rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
     s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
@@ -1822,6 +1823,7 @@ void MainWindow::saveSettings()
     settings->setValue("volume", m_volumeSlider->value());
     settings->setValue("windowGeometry", saveGeometry());
     settings->setValue("announcementEna", s.announcementEna);
+    settings->setValue("bringWindowToForegroundOnAlarm", s.bringWindowToForeground);
 
     settings->setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
     settings->setValue("RTL-SDR/gainMode", static_cast<int>(s.rtlsdr.gainMode));
@@ -1943,8 +1945,8 @@ void MainWindow::onSwitchSourceClicked()
 
 void MainWindow::onAnnouncementClicked()
 {
-    emit toggleAnnouncement();
     ui->announcementLabel->setEnabled(false);
+    emit toggleAnnouncement();
 }
 
 void MainWindow::serviceTreeViewUpdateSelection()
