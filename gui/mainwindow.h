@@ -50,6 +50,7 @@ signals:
     void stopUserApps();
     void getAudioInfo();
     void expertModeChanged(bool ena);
+    void toggleAnnouncement();
     void exit();
 
 protected:        
@@ -58,6 +59,7 @@ protected:
     void changeEvent( QEvent* e );
 private:
     // constants
+    enum Instance { Service = 0, Announcement = 1, NumInstances };
     static const QString appName;
     static const QStringList syncLevelLabels;
     static const QStringList syncLevelTooltip;
@@ -127,9 +129,9 @@ private:
     SLTreeModel * m_slTreeModel;
 
     // user applications
-    DLDecoder * m_dlDecoder;
-    QMap<DLPlusContentType, DLPlusObjectUI*> m_dlObjCache;
-    SlideShowApp * m_slideShowApp;
+    DLDecoder * m_dlDecoder[Instance::NumInstances];
+    QMap<DLPlusContentType, DLPlusObjectUI*> m_dlObjCache[Instance::NumInstances];
+    SlideShowApp * m_slideShowApp[Instance::NumInstances];
     SPIApp * m_spiApp;
 
     // methods
@@ -155,35 +157,47 @@ private:
     void serviceTreeViewUpdateSelection();
     void serviceListViewUpdateSelection();
     void changeInputDevice(const InputDeviceId &d);
+    void displaySubchParams(const RadioControlServiceComponent &s);
 
     void onInputDeviceReady();
     void onEnsembleInfo(const RadioControlEnsemble &ens);
-    void onEnsembleComplete(const RadioControlEnsemble &ens);
+    void onServiceListComplete(const RadioControlEnsemble &ens);
     void onEnsembleReconfiguration(const RadioControlEnsemble &ens) const;
     void onEnsembleRemoved(const RadioControlEnsemble &ens);
     void onChannelChange(int index);
     void onBandScanFinished(int result);
     void onFavoriteToggled(bool checked);
     void onSwitchSourceClicked();
+    void onAnnouncementClicked();
     void onSyncStatus(uint8_t sync);
     void onSnrLevel(float snr);
     void onServiceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
-    void onDLComplete(const QString &dl);
+    void onDLComplete_Service(const QString &dl);
+    void onDLComplete_Announcement(const QString & dl);
+    void onDLComplete(const QString & dl, QLabel * dlLabel);
     void onDLPlusToggled(bool toggle);
-    void onDLPlusObjReceived(const DLPlusObject & object);
-    void onDLPlusItemToggle();
-    void onDLPlusItemRunning(bool isRunning);
-    void onDLReset();
+    void onDLPlusObjReceived_Service(const DLPlusObject & object);
+    void onDLPlusObjReceived_Announcement(const DLPlusObject & object);
+    void onDLPlusObjReceived(const DLPlusObject & object, Instance inst);
+    void onDLPlusItemToggle_Service();
+    void onDLPlusItemToggle_Announcement();
+    void onDLPlusItemToggle(Instance inst);
+    void onDLPlusItemRunning_Service(bool isRunning);
+    void onDLPlusItemRunning_Announcement(bool isRunning);
+    void onDLPlusItemRunning(bool isRunning, Instance inst);
+    void onDLReset_Service();
+    void onDLReset_Announcement();
     void onAudioParametersInfo(const AudioParameters &params);
     void onDabTime(const QDateTime & d);
     void onTuneChannel(uint32_t freq);
     void onTuneDone(uint32_t freq);
-    void onNewSettings();
+    void onNewInputDeviceSettings();
     void onInputDeviceError(const InputDeviceErrorCode errCode);
     void onServiceListClicked(const QModelIndex &index);
     void onServiceListTreeClicked(const QModelIndex &index);
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
     void onAudioServiceReconfiguration(const RadioControlServiceComponent &s);
+    void onAnnouncement(const DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent &s);
 };
 
 class DLPlusObjectUI

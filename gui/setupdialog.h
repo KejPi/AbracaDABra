@@ -5,10 +5,12 @@
 #include <QWidget>
 #include <QList>
 #include <QAbstractButton>
+#include "QtWidgets/qcheckbox.h"
 #include "config.h"
 #include "inputdevice.h"
 #include "airspyinput.h"
 #include "rawfileinput.h"
+#include "dabtables.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class SetupDialog; }
@@ -69,6 +71,8 @@ public:
             int bandwidth;
         } soapysdr;
 #endif
+        uint16_t announcementEna;
+        bool bringWindowToForeground;
     };
 
     SetupDialog(QWidget *parent = nullptr);
@@ -80,18 +84,23 @@ public:
 
 signals:
     void inputDeviceChanged(const InputDeviceId & inputDevice);
-    void newSettings();
+    void newInputDeviceSettings();
+    void newAnnouncementSettings(uint16_t enaFlags);
 
 protected:
     void showEvent(QShowEvent *event);
 
 private:
+    enum SetupDialogTabs { Device = 0, Announcement = 1 };
+
     Ui::SetupDialog *ui;
     Settings m_settings;
     QString m_rawfilename;
     QList<float> m_rtlsdrGainList;
     QList<float> m_rtltcpGainList;
     QList<float> m_soapysdrGainList;
+    QCheckBox * m_announcementCheckBox[static_cast<int>(DabAnnouncement::Undefined)];
+    QCheckBox * m_bringWindowToForegroundCheckbox;
 
     void setStatusLabel();
 
@@ -111,7 +120,9 @@ private:
     void onRtlTcpPortValueChanged(int val);
     void activateRtlTcpControls(bool en);
 
-    void onRawFileFormatChanged(int idx);
+    void onRawFileFormatChanged(int idx);    
+    void onAnnouncementClicked();
+    void onBringWindowToForegroundClicked(bool checked);
 
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);

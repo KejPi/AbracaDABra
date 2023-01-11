@@ -19,16 +19,16 @@
 // muting
 #define AUDIOOUTPUT_FADE_TIME_MS    60
 // these 2 values must be aligned
-#define AUDIOOUTPUT_FADE_MIN_DB    -60.0
-#define AUDIOOUTPUT_FADE_MIN_LIN     0.001
+#define AUDIOOUTPUT_FADE_MIN_DB    -80.0
+#define AUDIOOUTPUT_FADE_MIN_LIN     0.0001
 
 // debug switch
 //#define AUDIOOUTPUT_RAW_FILE_OUT
 
 enum class AudioOutputPlaybackState
 {
-    Playing = 0,
-    Muted = 1,
+    Muted = 0,
+    Playing = 1,
 };
 
 
@@ -47,20 +47,32 @@ class AudioOutput : public QObject
     Q_OBJECT
 
 public:
-    AudioOutput(audioFifo_t *buffer, QObject *parent = nullptr);
+    AudioOutput(QObject *parent = nullptr);
     ~AudioOutput();
     void stop();
 
 public slots:
-    void start(uint32_t sRate, uint8_t numChannels);
+    void start(audioFifo_t *buffer);
+    void restart(audioFifo_t *buffer);
     void mute(bool on);
     void setVolume(int value);
 
+signals:
+    void audioOutputRestart();
+
 private:
-    std::atomic<bool> m_muteFlag  = false;
-    std::atomic<bool> m_stopFlag  = false;
+    enum Request
+    {
+        None = 0,          // no bit
+        Mute = (1 << 0),   // bit #0
+        Stop = (1 << 1),   // bit #1
+        Restart = (1 << 2) // bit #2
+    };
+    std::atomic<unsigned int> m_cbRequest = Request::None;
+
     PaStream * m_outStream = nullptr;
     audioFifo_t * m_inFifoPtr = nullptr;
+    audioFifo_t * m_restartFifoPtr = nullptr;
     uint8_t m_numChannels;
     uint32_t m_sampleRate_kHz;
     unsigned int m_bufferFrames;
@@ -71,13 +83,19 @@ private:
     AudioOutputPlaybackState m_playbackState;
 
     int portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames);
+    void portAudioStreamFinishedPrivateCb() { emit streamFinished(); }
 
     static int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
                            const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx);
+    static void portAudioStreamFinishedCb(void *ctx);
 
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
     FILE * m_rawOut;
 #endif
+
+    void onStreamFinished();
+signals:
+    void streamFinished();     // this signal is emited from portAudioStreamFinishedCb
 };
 
 #else // HAVE_PORTAUDIO

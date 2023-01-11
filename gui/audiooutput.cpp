@@ -5,13 +5,11 @@
 
 #include "audiooutput.h"
 
-audioFifo_t audioBuffer;
-
 #if HAVE_PORTAUDIO
 
-AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent)
+AudioOutput::AudioOutput( QObject *parent) : QObject(parent)
 {
-    m_inFifoPtr = buffer;
+    m_inFifoPtr = nullptr;
     m_outStream = nullptr;
     m_numChannels = m_sampleRate_kHz = 0;
     m_linearVolume = 1.0;
@@ -30,6 +28,7 @@ AudioOutput::AudioOutput(audioFifo_t * buffer, QObject *parent) : QObject(parent
     }
 #endif
 
+    connect(this, &AudioOutput::streamFinished, this, &AudioOutput::onStreamFinished, Qt::QueuedConnection);
 }
 
 AudioOutput::~AudioOutput()
@@ -58,8 +57,11 @@ AudioOutput::~AudioOutput()
 #endif
 }
 
-void AudioOutput::start(uint32_t sRate, uint8_t numCh)
+void AudioOutput::start(audioFifo_t *buffer)
 {
+    uint32_t sRate = buffer->sampleRate;
+    uint8_t numCh = buffer->numChannels;
+
     bool isNewStreamParams = (m_sampleRate_kHz != sRate/1000) || (m_numChannels != numCh);
     if (isNewStreamParams)
     {
@@ -105,18 +107,25 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
         {
             throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
         }
+
+        err = Pa_SetStreamFinishedCallback(m_outStream, portAudioStreamFinishedCb);
+        if (paNoError != err)
+        {
+            throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
+        }
     }
     else
     {   // stream parameters are the same - just starting
-        // this is just to be sure - stream should be already stopped
+        // Pa_StopStream() is required event that streaming was stopped by paComplete return value from callback
         if (!Pa_IsStreamStopped(m_outStream))
         {
             Pa_StopStream(m_outStream);
         }
     }
 
+    m_inFifoPtr = buffer;
     m_playbackState = AudioOutputPlaybackState::Muted;
-    m_stopFlag = false;
+    m_cbRequest &= ~(Request::Stop | Request::Restart);  // reset stop and restart bits
 
     PaError err = Pa_StartStream(m_outStream);
     if (paNoError != err)
@@ -126,17 +135,33 @@ void AudioOutput::start(uint32_t sRate, uint8_t numCh)
 
 }
 
+void AudioOutput::restart(audioFifo_t *buffer)
+{
+    if (nullptr != m_outStream)
+    {
+        m_restartFifoPtr = buffer;
+        m_cbRequest |= Request::Restart;  // set restart bit
+    }
+}
+
 void AudioOutput::stop()
 {
     if (nullptr != m_outStream)
     {
-        m_stopFlag = true;
+        m_cbRequest |= Request::Stop;     // set stop bit
     }
 }
 
 void AudioOutput::mute(bool on)
 {
-    m_muteFlag = on;
+    if (on)
+    {   // set mute bit
+        m_cbRequest |= Request::Mute;
+    }
+    else
+    {   // reset mute bit
+        m_cbRequest &= ~Request::Mute;
+    }
 }
 
 void AudioOutput::setVolume(int value)
@@ -179,14 +204,15 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     uint64_t bytesToRead = m_bytesPerFrame * nBufferFrames;
     uint32_t availableSamples = nBufferFrames;
 
-    bool muteRequest = m_muteFlag || m_stopFlag;        // false == do unmute, true == do mute
+    // is any bit is set then mute is requested (mute | stop | restart)
+    unsigned int request = m_cbRequest;
 
     if (AudioOutputPlaybackState::Muted == m_playbackState)
     {   // muted
         // condition to unmute is enough samples && !muteFlag
         if (count > 6*bytesToRead)
         {   // enough samples => reading data from input fifo
-            if (muteRequest)
+            if (Request::None != request)
             {   // staying muted -> setting output buffer to 0
                 memset(outputBuffer, 0, bytesToRead);
 
@@ -197,15 +223,17 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
                 m_inFifoPtr->countChanged.wakeAll();
                 m_inFifoPtr->mutex.unlock();
 
-                if (m_stopFlag)
-                {
+                if (request & (Request::Stop | Request::Restart))
+                {   // stop or restart requested ==> finish playback
                     return paComplete;
                 }
 
                 // done
                 return paContinue;
             }
+            else { /* no request */ }
 
+            // at this point we have enough sample to unmute and there is no request => preparing data
             uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
             if (bytesToEnd < bytesToRead)
             {
@@ -290,15 +318,15 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             m_inFifoPtr->mutex.unlock();
 
             // unmute request
-            muteRequest = false;
+            request = Request::None;
         }
         else
         {   // not enough samples ==> inserting silence
             //qDebug("Muted: Inserting silence [%lu ms]", nBufferFrames/m_sampleRate_kHz);                       
             memset(outputBuffer, 0, bytesToRead);
 
-            if (m_stopFlag)
-            {
+            if (request & (Request::Stop | Request::Restart))
+            {   // stop or restart requested ==> finish playback
                 return paComplete;
             }
 
@@ -306,11 +334,9 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             return paContinue;
         }
     }
-    //if (Playing == playbackState)
-    else  // cannot be anything else than Muted or Playing
-    {   // playing
-
-        Q_ASSERT(AudioOutputPlaybackState::Playing == m_playbackState);
+    else
+    {   // (AudioOutputPlaybackState::Muted != m_playbackState)
+        // cannot be anything else than Muted or Playing ==> playing
 
         // condition to mute is not enough samples || muteFlag
         if (count < bytesToRead)
@@ -413,10 +439,11 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             m_inFifoPtr->countChanged.wakeAll();
             m_inFifoPtr->mutex.unlock();
 
-            muteRequest = true;
+            // request to apply mute ramp
+            request = Request::Mute;
         }
         else
-        {   // reading samples
+        {   // enough sample available -> reading samples
             uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
             if (bytesToEnd < bytesToRead)
             {
@@ -499,7 +526,12 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             m_inFifoPtr->countChanged.wakeAll();
             m_inFifoPtr->mutex.unlock();
 
-            if (!muteRequest)
+//            if ((Request::Restart & request) && (count >= 4*bytesToRead))
+//            {   // removing restart flag ==> play all samples we have
+//                request &= ~Request::Restart;
+//            }
+
+            if (Request::None == request)
             {   // done
                 return paContinue;
             }
@@ -507,10 +539,10 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     }
 
     // at this point we have buffer that needs to be muted or unmuted
-    // it is indicated by muteRequest variable
+    // it is indicated by request variable
 
     // unmute
-    if (false == muteRequest)
+    if (Request::None == request)
     {   // unmute can be requested only when there is enough samples
         qDebug() << "Unmuting audio";
 
@@ -532,8 +564,9 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
         // done
         return paContinue;
     }
-    else  // mute
-    {   // mute can be requested when there is not enough samples or from HMI
+    else
+    {   // there is so request => muting
+        // mute can be requested when there is not enough samples or from HMI
         qDebug("Muting... [available %u samples]", availableSamples);
         float coe = m_muteFactor;
         if (availableSamples < AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz)
@@ -556,13 +589,28 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
 
         m_playbackState = AudioOutputPlaybackState::Muted; // muted
 
-        if (m_stopFlag)
-        {
+        if (request & (Request::Stop | Request::Restart))
+        {   // stop or restart requested ==> finish playback
             return paComplete;
         }
     }
 
     return paContinue;
+}
+
+void AudioOutput::portAudioStreamFinishedCb(void *ctx)
+{
+    static_cast<AudioOutput*>(ctx)->portAudioStreamFinishedPrivateCb();
+}
+
+void AudioOutput::onStreamFinished()
+{
+    if (m_cbRequest & Request::Restart)
+    {   // restart was requested (flag is cleared in start routine)
+        emit audioOutputRestart();
+        start(m_restartFifoPtr);        
+    }
+    else { /* do nothing */ }
 }
 
 #else // HAVE_PORTAUDIO

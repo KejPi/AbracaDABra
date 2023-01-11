@@ -11,7 +11,7 @@ class UserApplication : public QObject
 {
     Q_OBJECT
 public:
-    UserApplication(RadioControl * radioControlPtr, QObject *parent = nullptr);
+    UserApplication(QObject *parent = nullptr);
 
     virtual void onNewMOTObject(const MOTObject & obj) = 0;
     virtual void onUserAppData(const RadioControlUserAppData & data) = 0;
@@ -24,7 +24,6 @@ signals:
 
 protected:
     bool m_isRunning;
-    RadioControl * m_radioControl;
 };
 
 #endif // USERAPPLICATION_H

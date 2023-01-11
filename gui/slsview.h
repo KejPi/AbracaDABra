@@ -18,6 +18,9 @@ public:
     //! @brief Reset view => show default picture, used when service changes
     void reset();
 
+    //! @brief Show announcement picture, used when announcement starts
+    void showAnnouncement(DabAnnouncement id);
+
     //! @brief This slot shall be invoked when new slide is to be shown
     void showSlide(const Slide & slide);
 
@@ -40,6 +43,9 @@ protected:
 private:
     //! @brief Used to store current pixmap
     QGraphicsPixmapItem * m_pixmapItem;
+
+    //! @brief Used to store current announcement text
+    QGraphicsTextItem * m_announcementText;
 
     //! @brief URL of current slide
     QString m_clickThroughURL;

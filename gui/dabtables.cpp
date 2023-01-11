@@ -557,5 +557,42 @@ QString DabTables::getCountryName(uint32_t SId)
         case 0xF3F: return QString("Mongolia");
 
         default: return QString("Unknown");
+        }
+}
+
+QString DabTables::getAnnouncementName(DabAnnouncement announcement)
+{
+    // ETSI TS 101 756 V2.4.1 [Table 15]
+    switch (announcement)
+    {
+    case DabAnnouncement::Alarm:     return QString("Alarm");
+    case DabAnnouncement::Traffic:   return QString("Traffic News");
+    case DabAnnouncement::Transport: return QString("Transport News");
+    case DabAnnouncement::Warning:   return QString("Warning");
+    case DabAnnouncement::News:      return QString("News");
+    case DabAnnouncement::Weather:   return QString("Weather");
+    case DabAnnouncement::Event:     return QString("Event");
+    case DabAnnouncement::Special:   return QString("Special event");
+    case DabAnnouncement::Programme: return QString("Radio Info");
+    case DabAnnouncement::Sport:     return QString("Sport news");
+    case DabAnnouncement::Financial: return QString("Financial news");
+    case DabAnnouncement::AlarmTest: return QString("Alarm Test");
+    default:                         return QString("Unknown");
     }
 }
+
+const QList<uint16_t> DabTables::ASwValues =
+{
+    (1 << static_cast<int>(DabAnnouncement::Alarm)),
+    (1 << static_cast<int>(DabAnnouncement::Traffic)),
+    (1 << static_cast<int>(DabAnnouncement::Transport)),
+    (1 << static_cast<int>(DabAnnouncement::Warning)),
+    (1 << static_cast<int>(DabAnnouncement::News)),
+    (1 << static_cast<int>(DabAnnouncement::Weather)),
+    (1 << static_cast<int>(DabAnnouncement::Event)),
+    (1 << static_cast<int>(DabAnnouncement::Special)),
+    (1 << static_cast<int>(DabAnnouncement::Programme)),
+    (1 << static_cast<int>(DabAnnouncement::Sport)),
+    (1 << static_cast<int>(DabAnnouncement::Financial)),
+};
+

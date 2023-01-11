@@ -1,10 +1,9 @@
 #include "dabtables.h"
 #include "slideshowapp.h"
 
-SlideShowApp::SlideShowApp(RadioControl * radioControlPtr, QObject *parent) : UserApplication(radioControlPtr, parent)
+SlideShowApp::SlideShowApp(QObject *parent) : UserApplication(parent)
 {
     m_decoder = nullptr;
-    connect(m_radioControl, &RadioControl::userAppData, this, &SlideShowApp::onUserAppData);
 }
 
 SlideShowApp::~SlideShowApp()

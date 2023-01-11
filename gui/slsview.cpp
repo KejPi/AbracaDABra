@@ -5,6 +5,7 @@
 
 SLSView::SLSView(QWidget *parent) : QGraphicsView(parent)
 {
+    m_announcementText = nullptr;
     reset();
 }
 
@@ -47,6 +48,75 @@ void SLSView::reset()
     setToolTip("");
     setCursor(Qt::ArrowCursor);
     m_isShowingSlide = false;
+    m_clickThroughURL.clear();
+}
+
+void SLSView::showAnnouncement(DabAnnouncement id)
+{
+    QPixmap pic;
+
+    if (DabAnnouncement::Undefined == id)
+    {
+        pic.load(":/resources/sls_logo.png");
+        m_isShowingSlide = false;
+    }
+    else
+    {
+        pic.load(QString(":/resources/announcement%1.png").arg(static_cast<int>(id), 2, 10, QChar('0')));
+        m_isShowingSlide = true;
+    }
+
+    QGraphicsScene * sc = scene();
+    if (nullptr == sc)
+    {
+        sc = new QGraphicsScene(this);
+        m_pixmapItem = sc->addPixmap(pic);
+
+        QFont font;
+        font.setPixelSize(28);
+        font.setBold(true);
+        //font.setFamily("Calibri");
+
+        m_announcementText = sc->addText(DabTables::getAnnouncementName(id), font);
+        m_announcementText->setDefaultTextColor(QColor(255,255,255));
+        setScene(sc);
+    }
+    else
+    {
+        m_pixmapItem->setPixmap(pic);
+
+        if (nullptr == m_announcementText)
+        {
+            QFont font;
+            font.setPixelSize(28);
+            font.setBold(true);
+            //font.setFamily("Calibri");
+
+            m_announcementText = sc->addText(DabTables::getAnnouncementName(id), font);
+            m_announcementText->setDefaultTextColor(QColor(255,255,255));
+        }
+        else
+        {
+            m_announcementText->setPlainText(DabTables::getAnnouncementName(id));
+        }
+    }
+    QRectF rect = m_announcementText->boundingRect();
+    m_announcementText->setPos((320 - rect.width())/2, 185);
+
+    sc->setSceneRect(pic.rect());
+    if (DabAnnouncement::Alarm != id)
+    {
+        sc->setBackgroundBrush(Qt::darkGray);
+    }
+    else
+    {   //d30f0f
+        sc->setBackgroundBrush(QBrush(QColor(0xd3, 0x0f, 0x0f)));
+    }
+
+    fitInViewTight(pic.rect(), Qt::KeepAspectRatio);
+
+    setToolTip(QString("Ongoing announcement:<br><b>%1</b>").arg(DabTables::getAnnouncementName(id)));
+    setCursor(Qt::ArrowCursor);
     m_clickThroughURL.clear();
 }
 
@@ -128,6 +198,13 @@ void SLSView::showSlide(const Slide & slide)
     }
     else
     {
+        if (nullptr != m_announcementText)
+        {
+            sc->removeItem(m_announcementText);
+            delete m_announcementText;
+            m_announcementText = nullptr;
+        }
+
         m_pixmapItem->setPixmap(slide.getPixmap());
     }
 

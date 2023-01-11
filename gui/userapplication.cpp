@@ -2,8 +2,8 @@
 
 #include "userapplication.h"
 
-UserApplication::UserApplication(RadioControl * radioControlPtr, QObject *parent) :
-    QObject(parent), m_radioControl(radioControlPtr)
+UserApplication::UserApplication(QObject *parent) :
+    QObject(parent)
 {    
     m_isRunning = false;
 }

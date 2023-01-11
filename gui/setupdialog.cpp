@@ -15,6 +15,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     // remove question mark from titlebar
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
+    ui->tabWidget->setTabText(SetupDialogTabs::Device, "Device");
+    ui->tabWidget->setTabText(SetupDialogTabs::Announcement, "Announcements");
+
     ui->inputCombo->addItem("RTL SDR", QVariant(int(InputDeviceId::RTLSDR)));
 #if HAVE_AIRSPY
     ui->inputCombo->addItem("Airspy", QVariant(int(InputDeviceId::AIRSPY)));
@@ -38,7 +41,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     // this has to be aligned with mainwindow
     ui->loopCheckbox->setChecked(false);
 
-    ui->statusLabel->setText("<span style=\"color:red\">No device connected</span>");
+    ui->statusLabel->setText("<span style=\"color:red\">No device connected</span>");            
 
     QString ipRange = "(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])";
     QRegularExpression ipRegex ("^" + ipRange
@@ -48,6 +51,60 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     QRegularExpressionValidator *ipValidator = new QRegularExpressionValidator(ipRegex, this);
     ui->rtltcpIpAddressEdit->setValidator(ipValidator);
     ui->rarttcpIpAddressEdit->setValidator(ipValidator);
+
+    // set announcement combos
+    QGridLayout *gridLayout = new QGridLayout;
+    // alarm announcements
+    int ann = static_cast<int>(DabAnnouncement::Alarm);
+    m_announcementCheckBox[ann] = new QCheckBox();
+    m_announcementCheckBox[ann]->setText(DabTables::getAnnouncementName(static_cast<DabAnnouncement>(ann)));
+    m_announcementCheckBox[ann]->setChecked(true);
+    m_announcementCheckBox[ann]->setDisabled(true);
+    gridLayout->addWidget(m_announcementCheckBox[ann], 0, 0);
+
+    ann = static_cast<int>(DabAnnouncement::AlarmTest);
+    m_announcementCheckBox[ann] = new QCheckBox();
+    m_announcementCheckBox[ann]->setText(DabTables::getAnnouncementName(static_cast<DabAnnouncement>(ann)));
+    connect(m_announcementCheckBox[ann], &QCheckBox::clicked, this, &SetupDialog::onAnnouncementClicked);
+    gridLayout->addWidget(m_announcementCheckBox[ann], 0, 1);
+
+    QLabel * label = new QLabel("<br>Note: Alarm announcement cannot be disabled.");
+    gridLayout->addWidget(label, 4, 0, 1, 2);
+    QGroupBox * groupBox = new QGroupBox("Alarm Announcements");
+    groupBox->setLayout(gridLayout);
+    QVBoxLayout *vLayout = new QVBoxLayout;
+    vLayout->addWidget(groupBox);
+
+    m_bringWindowToForegroundCheckbox = new QCheckBox();
+    m_bringWindowToForegroundCheckbox->setText("Bring window to foreground");
+    m_bringWindowToForegroundCheckbox->setToolTip("Check to bring window to foreground when (test) alarm announcement starts");
+    m_bringWindowToForegroundCheckbox->setChecked(true);
+    connect(m_bringWindowToForegroundCheckbox, &QCheckBox::clicked, this, &SetupDialog::onBringWindowToForegroundClicked);
+    gridLayout->addWidget(m_bringWindowToForegroundCheckbox, 5, 0, 1, 2);
+
+    // regular announcements
+    int row = 0;
+    int column = 0;
+    gridLayout = new QGridLayout;
+    for (int ann = static_cast<int>(DabAnnouncement::Alarm)+1; ann < static_cast<int>(DabAnnouncement::AlarmTest); ++ann)
+    {
+        m_announcementCheckBox[ann] = new QCheckBox();
+        m_announcementCheckBox[ann]->setText(DabTables::getAnnouncementName(static_cast<DabAnnouncement>(ann)));
+        connect(m_announcementCheckBox[ann], &QCheckBox::clicked, this, &SetupDialog::onAnnouncementClicked);
+        gridLayout->addWidget(m_announcementCheckBox[ann], row++, column);
+        if (row > 4)
+        {
+            row = 0;
+            column = 1;
+        }
+    }
+    groupBox = new QGroupBox("Regular Announcements");
+    groupBox->setLayout(gridLayout);
+    vLayout->addWidget(groupBox);
+
+    QSpacerItem * verticalSpacer = new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+    vLayout->addItem(verticalSpacer);
+    ui->tabAnnouncement->setLayout(vLayout);
 
     connect(ui->inputCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onInputChanged);
     connect(ui->openFileButton, &QPushButton::clicked, this, &SetupDialog::onOpenFileButtonClicked);
@@ -92,6 +149,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->soapysdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
 #endif
     adjustSize();
+
+    this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 SetupDialog::Settings SetupDialog::settings() const
@@ -139,6 +198,7 @@ void SetupDialog::setSettings(const Settings &settings)
 {
     m_settings = settings;
     setStatusLabel();
+    emit newAnnouncementSettings(m_settings.announcementEna);
 }
 
 void SetupDialog::showEvent(QShowEvent *event)
@@ -278,6 +338,15 @@ void SetupDialog::showEvent(QShowEvent *event)
 #endif
 
     setStatusLabel();
+
+    // announcments
+    uint16_t announcementEna = m_settings.announcementEna | (1 << static_cast<int>(DabAnnouncement::Alarm));  // enable alarm
+    for (int a = 0; a < static_cast<int>(DabAnnouncement::Undefined); ++a)
+    {
+        m_announcementCheckBox[a]->setChecked(announcementEna & 0x1);
+        announcementEna >>= 1;
+    }
+    m_bringWindowToForegroundCheckbox->setChecked(m_settings.bringWindowToForeground);
 }
 
 
@@ -326,14 +395,14 @@ void SetupDialog::onRtlSdrGainSliderChanged(int val)
 {
     ui->rtlsdrGainValueLabel->setText(QString("%1 dB").arg(m_rtlsdrGainList.at(val)));
     m_settings.rtlsdr.gainIdx = val;
-    emit newSettings();
+    emit newInputDeviceSettings();
 }
 
 void SetupDialog::onRtlTcpGainSliderChanged(int val)
 {
     ui->rtltcpGainValueLabel->setText(QString("%1 dB").arg(m_rtltcpGainList.at(val)));
     m_settings.rtltcp.gainIdx = val;
-    emit newSettings();
+    emit newInputDeviceSettings();
 }
 
 void SetupDialog::onRtlTcpIpAddrEditFinished()
@@ -370,7 +439,7 @@ void SetupDialog::onRtlGainModeToggled(bool checked)
             m_settings.rtlsdr.gainMode = RtlGainMode::Manual;
         }
         activateRtlSdrControls(true);
-        emit newSettings();
+        emit newInputDeviceSettings();
     }
 }
 
@@ -391,7 +460,7 @@ void SetupDialog::onTcpGainModeToggled(bool checked)
             m_settings.rtltcp.gainMode = RtlGainMode::Manual;
         }
         activateRtlTcpControls(true);
-        emit newSettings();
+        emit newInputDeviceSettings();
     }
 }
 
@@ -464,7 +533,7 @@ void SetupDialog::onAirspyModeToggled(bool checked)
             m_settings.airspy.gain.mode = AirpyGainMode::Sensitivity;
         }
         activateAirspyControls(true);
-        emit newSettings();
+        emit newInputDeviceSettings();
     }
 }
 
@@ -473,28 +542,28 @@ void SetupDialog::onAirspySensitivityGainSliderChanged(int val)
     ui->airspySensitivityGainLabel->setText(QString::number(val));
     m_settings.airspy.gain.sensitivityGainIdx = val;
 
-    emit newSettings();
+    emit newInputDeviceSettings();
 }
 
 void SetupDialog::onAirspyIFGainSliderChanged(int val)
 {
     ui->airspyIFGainLabel->setText(QString::number(val));
     m_settings.airspy.gain.ifGainIdx = val;
-    emit newSettings();
+    emit newInputDeviceSettings();
 }
 
 void SetupDialog::onAirspyLNAGainSliderChanged(int val)
 {
     ui->airspyLNAGainLabel->setText(QString::number(val));
     m_settings.airspy.gain.lnaGainIdx = val;
-    emit newSettings();
+    emit newInputDeviceSettings();
 }
 
 void SetupDialog::onAirspyMixerGainSliderChanged(int val)
 {
     ui->airspyMixerGainLabel->setText(QString::number(val));
     m_settings.airspy.gain.mixerGainIdx = val;
-    emit newSettings();
+    emit newInputDeviceSettings();
 }
 
 void SetupDialog::onAirspyLNAAGCstateChanged(int state)
@@ -505,7 +574,7 @@ void SetupDialog::onAirspyLNAAGCstateChanged(int state)
     ui->airspyLNAGainSlider->setEnabled(ena);
 
     m_settings.airspy.gain.lnaAgcEna = !ena;
-    emit newSettings();
+    emit newInputDeviceSettings();
 }
 
 void SetupDialog::onAirspyMixerAGCstateChanged(int state)
@@ -516,7 +585,7 @@ void SetupDialog::onAirspyMixerAGCstateChanged(int state)
     ui->airspyMixerGainSlider->setEnabled(ena);
 
     m_settings.airspy.gain.mixerAgcEna = !ena;
-    emit newSettings();
+    emit newInputDeviceSettings();
 }
 #endif // HAVE_AIRSPY
 
@@ -525,7 +594,7 @@ void SetupDialog::onSoapySdrGainSliderChanged(int val)
 {
     ui->soapysdrGainValueLabel->setText(QString("%1 dB").arg(m_soapysdrGainList.at(val)));
     m_settings.soapysdr.gainIdx = val;
-    emit newSettings();
+    emit newInputDeviceSettings();
 }
 
 void SetupDialog::activateSoapySdrControls(bool en)
@@ -575,7 +644,7 @@ void SetupDialog::onSoapySdrGainModeToggled(bool checked)
             m_settings.soapysdr.gainMode = SoapyGainMode::Manual;
         }
         activateSoapySdrControls(true);
-        emit newSettings();
+        emit newInputDeviceSettings();
     }
 }
 
@@ -695,6 +764,12 @@ void SetupDialog::onOpenFileButtonClicked()
         }
 
         ui->connectButton->setVisible(true);
+
+#ifdef Q_OS_MACX // bug in Ventura
+        show(); //bring window to top on OSX
+        raise(); //bring window from minimized state on OSX
+        activateWindow(); //bring window to front/unminimize on windows
+#endif
     }
 }
 
@@ -727,4 +802,23 @@ void SetupDialog::resetInputDevice()
     m_settings.inputDevice = InputDeviceId::UNDEFINED;
     setStatusLabel();
     ui->connectButton->setVisible(true);
+}
+
+void SetupDialog::onAnnouncementClicked()
+{   // calculate ena flag
+    uint16_t announcementEna = 0;
+    for (int a = 0; a < static_cast<int>(DabAnnouncement::Undefined); ++a)
+    {
+        announcementEna |= (m_announcementCheckBox[a]->isChecked() << a);
+    }
+    if (m_settings.announcementEna != announcementEna)
+    {
+        m_settings.announcementEna = announcementEna;
+        emit newAnnouncementSettings(announcementEna);
+    }
+}
+
+void SetupDialog::onBringWindowToForegroundClicked(bool checked)
+{
+    m_settings.bringWindowToForeground = checked;
 }

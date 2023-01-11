@@ -11,17 +11,19 @@
 
 struct AudioFifo
 {
+    uint32_t sampleRate;
+    uint8_t numChannels;
     std::atomic<int64_t> count;
     int64_t head;
     int64_t tail;
-    uint8_t buffer[AUDIO_FIFO_SIZE];    
+    uint8_t buffer[AUDIO_FIFO_SIZE];
     QWaitCondition countChanged;
-    QMutex mutex;    
+    QMutex mutex;
     void reset();
 };
 
 typedef struct AudioFifo audioFifo_t;
 
-extern audioFifo_t audioBuffer;
+//extern audioFifo_t audioBuffer[2];
 
 #endif // AUDIOFIFO_H

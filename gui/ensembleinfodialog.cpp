@@ -85,23 +85,35 @@ EnsembleInfoDialog::~EnsembleInfoDialog()
 
 void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
 {
-    ui->ensStructureTextEdit->setHtml(txt);
-
-    if (txt.isEmpty())
-    {   // empty ensemble configuration means tuning to new frequency
-        clearSignalInfo();
-        clearServiceInfo();
-
-        resetFibStat();
-        resetMscStat();
-    }
-    else
+    if (isVisible())
     {
+        ui->ensStructureTextEdit->setHtml(txt);
 
-        ui->ensStructureTextEdit->setMinimumWidth(ui->ensStructureTextEdit->document()->idealWidth()
-                        + ui->ensStructureTextEdit->contentsMargins().left()
-                        + ui->ensStructureTextEdit->contentsMargins().right()
-                        + ui->ensStructureTextEdit->verticalScrollBar()->width());
+        if (txt.isEmpty())
+        {   // empty ensemble configuration means tuning to new frequency
+            clearSignalInfo();
+            clearServiceInfo();
+
+            resetFibStat();
+            resetMscStat();
+
+            ui->ensStructureTextEdit->setDocumentTitle("");
+        }
+        else
+        {
+            ui->ensStructureTextEdit->setDocumentTitle("Ensemble information");
+
+            int minWidth = ui->ensStructureTextEdit->document()->idealWidth()
+                           + ui->ensStructureTextEdit->contentsMargins().left()
+                           + ui->ensStructureTextEdit->contentsMargins().right()
+                           + ui->ensStructureTextEdit->verticalScrollBar()->width();
+
+            if (minWidth > 1000)
+            {
+                minWidth = 1000;
+            }
+            ui->ensStructureTextEdit->setMinimumWidth(minWidth);
+        }
     }
 }
 
