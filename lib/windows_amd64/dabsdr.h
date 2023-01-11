@@ -1,3 +1,28 @@
+/*
+ *  MIT License
+ *
+ *  Copyright (c) 2019-2023 Petr Kopecký
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all
+ *  copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *  SOFTWARE.
+ *
+ */
+
 #ifndef DABSDR_H
 #define DABSDR_H
 
@@ -34,30 +59,42 @@ typedef union
     } bits;
 } dabsdrAudioFrameHeader_t;
 
+typedef enum dabsdrDecoderId_e
+{
+    DABSDR_ID_DATA = -1,
+    DABSDR_ID_AUDIO_PRIMARY = 0,
+    DABSDR_ID_AUDIO_SECONDARY = 1,
+} dabsdrDecoderId_t;
+
 // callback data types
 // audio callback
 typedef struct
 {
-   dabsdrAudioFrameHeader_t header;
-   uint16_t auLen;
-   const uint8_t * pAuData;
+    dabsdrDecoderId_t id;
+    uint8_t ASCTy;    // ASCTy (Audio Service Component Type)
+    dabsdrAudioFrameHeader_t header;
+    uint16_t auLen;
+    const uint8_t * pAuData;
 } dabsdrAudioCBData_t;
 
 // dynamic label (DL) callback
 typedef struct
 {
-   uint16_t len;
-   const uint8_t * pData;
+    dabsdrDecoderId_t id;
+    uint16_t len;
+    const uint8_t * pData;
 } dabsdrDynamicLabelCBData_t;
 
 // data group callback
 typedef struct
 {
-   int16_t userAppType;
-   uint16_t dgLen;
-   const uint8_t * pDgData;
+    dabsdrDecoderId_t id;
+    int16_t userAppType;
+    uint16_t dgLen;
+    const uint8_t * pDgData;
 } dabsdrDataGroupCBData_t;
 
+// notifications typedefs
 typedef enum dabsdrNotificationId_e
 {
     DABSDR_NID_SYNC_STATUS = 1,
@@ -72,6 +109,8 @@ typedef enum dabsdrNotificationId_e
     DABSDR_NID_XPAD_APP_START_STOP,
     DABSDR_NID_RECONFIGURATION,
     DABSDR_NID_RESET,
+    DABSDR_NID_ANNOUNCEMENT_SUPPORT,
+    DABSDR_NID_ANNOUNCEMENT_SWITCHING,
 } dabsdrNotificationId_t;
 
 typedef enum dabsdrNotificationStatus_e
@@ -85,14 +124,13 @@ typedef enum dabsdrNotificationStatus_e
 
 typedef struct
 {
-   dabsdrNotificationId_t nid;
-   dabsdrNotificationStatus_t status;
-   uint16_t len;
-   const void * pData;
+    dabsdrNotificationId_t nid;
+    dabsdrNotificationStatus_t status;
+    uint16_t len;
+    const void * pData;
 } dabsdrNotificationCBData_t;
 
 
-// notifications typedefs
 typedef enum
 {
     DABSDR_SYNC_LEVEL_NO_SYNC = 0b00,
@@ -107,7 +145,7 @@ typedef struct
 
 typedef struct
 {
-    dabsdrSyncLevel_t syncLevel;   // DAB synchronization level
+    dabsdrSyncLevel_t syncLevel;  // DAB synchronization level
     int32_t freqOffset;            // frequency offset * 10
     uint32_t dateHoursMinutes;     // DAB time date + hours + minutes
     uint16_t secMsec;              // DAB time sec + msec
@@ -139,8 +177,6 @@ typedef struct
     // CAId (Conditional Access Identifier): this 3-bit field shall identify the
     // Access Control System (ACS) used for the service
     uint8_t CAId;
-
-    uint8_t numComponents;
 } dabsdrServiceListItem_t;
 
 
@@ -148,7 +184,6 @@ typedef struct
 {
     // Each service component shall be uniquely identified by the combination of the
     // SId and the Service Component Identifier within the Service (SCIdS).
-    uint32_t SId;
     uint8_t SCIdS;         // Service Component Identifier within the Service (SCIdS)
     uint8_t SubChId;       // SubChId (Sub-channel Identifier)
     int16_t SubChAddr;     // address 0-863
@@ -188,10 +223,10 @@ typedef struct
         {
             uint8_t DSCTy;         // DSCTy (Data Service Component Type)
             uint16_t SCId;         // SCId (Service Component Identifier): this 12-bit field shall uniquely
-                                   // identify the service component within the ensemble
+                // identify the service component within the ensemble
             uint8_t DGflag;        // DG flag: this 1-bit flag shall indicate whether data groups are used to transport the service component as follows:
-                                   //   0: data groups are used to transport the service component;
-                                   //   1: data groups are not used to transport the service component.
+                //   0: data groups are used to transport the service component;
+                //   1: data groups are not used to transport the service component.
             int16_t packetAddress; // this 10-bit field shall define the address of the packet in which the service component is carried.
         } packetData;
     };
@@ -199,10 +234,6 @@ typedef struct
 
 typedef struct
 {
-    // Service identification
-    uint32_t SId;
-    uint8_t SCIdS;         // Service Component Identifier within the Service (SCIdS)
-
     // User Application Type: this 11-bit field identifies the user application that shall be used to decode the data in the
     // channel identified by SId and SCIdS. The interpretation of this field shall be as defined in ETSI TS 101 756 [3],
     // table 16.
@@ -224,10 +255,24 @@ typedef struct
 
 typedef struct
 {
-    uint32_t sid;
+    uint32_t SId;
     uint8_t numServiceComponents;
     int (*getServiceComponentListItem)(dabsdrHandle_t handle, uint8_t scIdx, dabsdrServiceCompListItem_t * pServiceCompListItem);
 } dabsdrNtfServiceComponentList_t;
+
+typedef struct
+{   // service ID
+    uint32_t SId;
+
+    // Announcements support
+    uint16_t ASu;
+
+    // Number Cluster Ids (maximum 7).
+    uint8_t numClusterIds;
+
+    // cluster ids
+    uint8_t clusterIds[7];
+} dabsdrNtfAnnouncementSupport_t;
 
 typedef struct
 {
@@ -250,7 +295,7 @@ typedef struct
         };
     };
     int8_t LTO;       // Ensemble LTO (Local Time Offset): Local Time Offset (LTO) for the ensemble.
-                      // It is expressed in multiples of half hours in the range -15,5 hours to +15,5 hours
+        // It is expressed in multiples of half hours in the range -15,5 hours to +15,5 hours
     uint8_t intTable; // Inter. (International) Table Id: this 8-bit field shall be used to select an international table
     uint8_t alarm;
     dabsdrLabel_t label;
@@ -260,6 +305,7 @@ typedef struct
 {
     uint32_t SId;
     uint8_t SCIdS;
+    dabsdrDecoderId_t id;
 } dabsdrNtfServiceSelection_t;
 
 typedef enum dabsdrNtfResetFlags_e
@@ -273,8 +319,20 @@ typedef dabsdrNtfServiceSelection_t dabsdrNtfServiceStop_t;
 typedef struct
 {
     uint8_t appType;
-    uint8_t start;
-} dabsdrXpadAppStartStop_t;
+    int8_t start;
+} dabsdrNtfXpadAppStartStop_t;
+
+typedef struct
+{
+    uint8_t clusterId;
+    uint8_t subChId;
+    uint16_t ASwFlags;
+} dabsdrAsw_t;
+
+typedef struct
+{
+    dabsdrAsw_t asw[8];
+} dabsdrNtfAnnouncementSwitching_t;
 
 // input functions
 typedef void (*dabsdrInputFunc_t)(float [], uint16_t);
@@ -310,9 +368,10 @@ DABSDR_API void dabsdrRequest_GetEnsemble(dabsdrHandle_t handle);
 DABSDR_API void dabsdrRequest_GetServiceList(dabsdrHandle_t handle);
 DABSDR_API void dabsdrRequest_GetServiceComponents(dabsdrHandle_t handle, uint32_t SId);
 DABSDR_API void dabsdrRequest_GetUserAppList(dabsdrHandle_t handle, uint32_t SId, uint8_t SCIdS);
-DABSDR_API void dabsdrRequest_ServiceSelection(dabsdrHandle_t handle, uint32_t SId, uint8_t SCIdS);
-DABSDR_API void dabsdrRequest_ServiceStop(dabsdrHandle_t handle, uint32_t SId, uint8_t SCIdS);
-DABSDR_API void dabsdrRequest_XPadAppStart(dabsdrHandle_t handle, uint8_t appType, int8_t startRequest);
+DABSDR_API void dabsdrRequest_GetAnnouncementSupport(dabsdrHandle_t handle, uint32_t SId);
+DABSDR_API void dabsdrRequest_ServiceSelection(dabsdrHandle_t handle, uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t id);
+DABSDR_API void dabsdrRequest_ServiceStop(dabsdrHandle_t handle, uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t id);
+DABSDR_API void dabsdrRequest_XPadAppStart(dabsdrHandle_t handle, uint8_t appType, int8_t startRequest, dabsdrDecoderId_t id);
 DABSDR_API void dabsdrRequest_SetPeriodicNotify(dabsdrHandle_t handle, uint8_t period, uint32_t cfg);
 DABSDR_API void dabsdrRequest_Exit(dabsdrHandle_t handle);
 
