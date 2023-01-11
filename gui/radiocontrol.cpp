@@ -544,7 +544,9 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         }        
         else
         {
+#if RADIO_CONTROL_VERBOSE
             qDebug() << "RadioControlEvent::SERVICE_SELECTION error" << pEvent->status;
+#endif
             if (pEvent->decoderId == DABSDR_ID_AUDIO_PRIMARY)
             {
                 if (m_isReconfigurationOngoing)
@@ -557,8 +559,12 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                 resetCurrentService();
             }
             else
-            {   // this is error when starting announcement - TODO: how to recover????
+            {   // this is error when starting announcement
+#if 1 // RADIO_CONTROL_VERBOSE
                 qDebug() << "RadioControlEvent::SERVICE_SELECTION error" << pEvent->status << "on announcement start";
+#endif
+                // try to stop announcement
+                onAnnouncementTimeout();
             }
         }
     }
@@ -1488,6 +1494,7 @@ void RadioControl::stopAnnouncement()
 
 void RadioControl::announcementHandler(dabsdrAsw_t *pAnnouncement)
 {
+#if 1
     switch (m_currentService.announcement.state)
     {
     case RadioControlAnnouncementState::None:
@@ -1828,6 +1835,208 @@ void RadioControl::announcementHandler(dabsdrAsw_t *pAnnouncement)
     }
     break;
     }
+#else
+    if (RadioControlAnnouncementState::None == m_currentService.announcement.state)
+    {   // no announcement is active -> let check if announcement belong to current service
+        //
+        // ETSI TS 103 176 V2.4.1 [7.4.3]
+        // The ASw flags field shall have one bit (bit flags b1 to b15) set to 1
+        // corresponding to the announcement type while the announcement is active
+        // ...
+        // An ASw flag field with more than one bit flag set to 1 is invalid and shall be ignored.
+        int announcementId = DabTables::ASwValues.indexOf(pAnnouncement->ASwFlags);
+        if ((static_cast<int>(DabAnnouncement::Alarm) == announcementId) && (0xFE == pAnnouncement->clusterId))
+        {   // this is test mode
+            // ETSI TS 103 176 V2.4.1 [Annex G]
+            announcementId = static_cast<int>(DabAnnouncement::AlarmTest);
+        }
+        if ((static_cast<int>(DabAnnouncement::Alarm) == announcementId) && (0xFF != pAnnouncement->clusterId))
+        {   // ETSI TS 103 176 V2.4.1 [7.3.4]
+            // If the ASw flags field has set bit b0 to 1 with a Cluster Id or OE Cluster Id other than "1111 1111" (0xFF),
+            // the ASw field shall be ignored.
+            return;
+        }
+        if ((announcementId >= 0) && (pAnnouncement->ASwFlags & m_currentService.announcement.enaFlags))
+        {   // valid ASw
+    #if 1 // RADIO_CONTROL_VERBOSE > 1
+            qDebug() << DabTables::getAnnouncementName(static_cast<DabAnnouncement>(announcementId))
+                     << "announcement in subchannel" <<  pAnnouncement->subChId
+                     << "cluster ID" << pAnnouncement->clusterId;
+    #endif
+            m_currentService.announcement.suspendRequest = false;
+            if (startAnnouncement(pAnnouncement->subChId))
+            {   // found subchannel
+                m_currentService.announcement.activeCluster = pAnnouncement->clusterId;
+                m_currentService.announcement.timeoutTimer->start();
+                m_currentService.announcement.id = static_cast<DabAnnouncement>(announcementId);
+                if (!m_currentService.announcement.isOtherService)
+                {   // announcement in current service
+                    m_currentService.announcement.state = RadioControlAnnouncementState::OnCurrentService;
+
+                    // delay to compensate audio delay somehow
+                    serviceComponentIterator scIt;
+                    if (getCurrentAudioServiceComponent(scIt))
+                    {
+                        // Inform HMI -> announcement on current service
+                        RadioControlServiceComponent sc = *scIt;
+                        QTimer::singleShot(1000, this, [this, sc](){
+                            emit announcement(m_currentService.announcement.id, RadioControlAnnouncementState::OnCurrentService, sc);
+                        });
+                    }
+                }
+                else
+                {   /* signal will be sent when audio changes from onAudioOutputRestart() */
+                    m_currentService.announcement.state = RadioControlAnnouncementState::OnOtherService;
+                }
+            }
+            else
+            { /* subchannel not found -> ignoring */ }
+        }
+        else
+        { /* invalid or not enabled for current service */ }
+    }
+    else
+    {   // some announcement is ongoing
+        if (m_currentService.announcement.activeCluster == pAnnouncement->clusterId)
+        {   // this specific announcement cluster is currently active
+            if (0 == (pAnnouncement->ASwFlags & m_currentService.announcement.enaFlags))
+            {   // end of announcement
+                // the expression evaluates to 0 if:
+                //      pAnnouncement->ASwFlags == 0  (end of announcment)
+                // or
+                //      pAnnouncement->ASwFlags & m_announcementEnaFlags == 0 (disabled announcment)
+
+                switch (m_currentService.announcement.state)
+                {
+                case RadioControlAnnouncementState::OnCurrentService:
+                {
+                    // notify HMI
+                    serviceComponentIterator scIt;
+                    if (getCurrentAudioServiceComponent(scIt))
+                    {   // delay to compensate audio delay somehow
+                        // Inform HMI -> announcement on current service
+                        RadioControlServiceComponent sc = *scIt;
+                        QTimer::singleShot(1000, this, [this, sc](){
+                            emit announcement(DabAnnouncement::Undefined, RadioControlAnnouncementState::None, sc);
+                        });
+                    }
+                }
+                    break;
+                case RadioControlAnnouncementState::Suspended:
+                {
+                    serviceConstIterator sIt = m_serviceList.constFind(m_currentService.announcement.SId);
+                    if (m_serviceList.cend() != sIt)
+                    {   // found
+                        serviceComponentConstIterator scIt = sIt->serviceComponents.constFind(m_currentService.announcement.SCIdS);
+                        if (sIt->serviceComponents.cend() != scIt)
+                        {   // found
+                            emit announcement(DabAnnouncement::Undefined, RadioControlAnnouncementState::None, *scIt);
+                        }
+                    }
+                }
+                    break;
+                default:
+                    // OnOtherService, None is not possible here
+
+                    // stops announcement audio, does nothing announcement is on current service or suspended
+                    stopAnnouncement();
+                    // HMI will be notified when audio switches
+                    break;
+                }
+
+                m_currentService.announcement.timeoutTimer->stop();
+                m_currentService.announcement.activeCluster = 0;
+                m_currentService.announcement.state = RadioControlAnnouncementState::None;
+                m_currentService.announcement.id = DabAnnouncement::Undefined;
+
+            }
+            else
+            {   // announcement continues - restart timer
+                // ETSI TS 103 176 V2.4.1 [7.2.5]
+                // the value of the ASw flags field - shall not change during an announcement
+                // ==> ignoring any potential change
+                m_currentService.announcement.timeoutTimer->start();
+
+                // we can suspend announcement here
+                switch (m_currentService.announcement.state)
+                {
+                case RadioControlAnnouncementState::OnOtherService:
+                    // announcement is on other service
+                    if (m_currentService.announcement.suspendRequest)
+                    {   // suspend
+                        m_currentService.announcement.state = RadioControlAnnouncementState::Suspended;
+
+                        // stops announcement audio, does nothing announcement is on current service or suspended
+                        stopAnnouncement();
+                        // HMI will be notified when audio switches
+                    }
+                    break;
+                case RadioControlAnnouncementState::Suspended:
+                    // OnOtherService but suspended
+                    if (!m_currentService.announcement.suspendRequest)
+                    {   // resume
+                        // start announcement
+                        startAnnouncement(pAnnouncement->subChId);
+                        // HMI will be notified when audio switches
+
+                        m_currentService.announcement.state = RadioControlAnnouncementState::OnOtherService;
+                    }
+                    break;
+                default:
+                    // do nothing
+                    break;
+                }
+            }
+        }
+        else
+        {   // During the announcement the receiver shall monitor ASw information for only the active Cluster Id
+            // monitor for alarm announcement
+            DabAnnouncement announcementId = static_cast<DabAnnouncement>(DabTables::ASwValues.indexOf(pAnnouncement->ASwFlags));
+            if ((DabAnnouncement::Alarm == announcementId) && (0xFE == pAnnouncement->clusterId))
+            {   // this is test mode
+                // ETSI TS 103 176 V2.4.1 [Annex G]
+                announcementId = DabAnnouncement::AlarmTest;
+            }
+            if ((DabAnnouncement::Alarm == announcementId) && (0xFF != pAnnouncement->clusterId))
+            {   // ETSI TS 103 176 V2.4.1 [7.3.4]
+                // If the ASw flags field has set bit b0 to 1 with a Cluster Id or OE Cluster Id other than "1111 1111" (0xFF),
+                // the ASw field shall be ignored.
+                return;
+            }
+            if (((DabAnnouncement::Alarm == announcementId) || (DabAnnouncement::AlarmTest == announcementId))
+                && (pAnnouncement->ASwFlags & m_currentService.announcement.enaFlags))
+            {   // ETSI TS 103 176 V2.4.1 [7.6.3.2]
+                // The response to alarm announcements shall not be subject to any user setting;
+                // receivers shall switch to the target subchannel unconditionally,
+                // any active regular announcements shall be terminated.
+
+                // DabAnnouncement::Alarm or enabled DabAnnouncement::AlarmTest
+
+                // stopping current announcement
+                stopAnnouncement();
+                // HMI will be notified when audio switches
+
+                m_currentService.announcement.suspendRequest = false;
+                if (startAnnouncement(pAnnouncement->subChId))
+                {   // found subchannel
+                    m_currentService.announcement.activeCluster = pAnnouncement->clusterId;
+                    m_currentService.announcement.timeoutTimer->start();
+                    m_currentService.announcement.id = static_cast<DabAnnouncement>(announcementId);
+                    if (m_currentService.announcement.isOtherService)
+                    {   /* signal will be sent when audio changes from onAudioOutputRestart() */
+                        m_currentService.announcement.state = RadioControlAnnouncementState::OnOtherService;
+                    }
+                    else
+                    {   // announcement in current service
+                        m_currentService.announcement.state = RadioControlAnnouncementState::OnCurrentService;
+                    }
+                }
+                else
+                { /* subchannel not found -> ignoring */ }
+            }
+        }
+    }
+#endif
 }
 
 QString RadioControl::toShortLabel(QString & label, uint16_t charField) const
