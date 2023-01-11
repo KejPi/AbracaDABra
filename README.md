@@ -14,6 +14,7 @@ It is based on Qt6 and uses _dabsdr_ demodulation library that is free for use b
 * Band scan with automatic service list
 * Service list management
 * DAB (mp2) and DAB+ (AAC) audio decoding
+* Announcements (all types including alarm test)
 * Dynamic label (DL) and Dynamic label plus (DL+)
 * MOT slideshow (SLS) and categorized slideshow (CatSLS) from PAD or from secondary data service.
 * Audio services reconfiguration (experimental support)
@@ -114,5 +115,7 @@ Then clone the project:
 * Slower switching between ensembles
 * Reconfiguration not supported for data services
 * Only SLS data service is supported 
-* Apple Silicon build is not optimized
 * Application is hanging when audio output device is removed (like bluetooth headphones disconnected) - PortAudio does not support hot swap
+
+## Artwork
+Application uses <a href="https://www.flaticon.com/authors/basic-miscellany/lineal-color" title="linear color">Artwork created by Smashicons - Flaticon</a>
