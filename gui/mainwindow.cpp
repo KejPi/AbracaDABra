@@ -284,6 +284,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     ui->announcementLabel->setToolTip("Ongoing announcement");
     ui->announcementLabel->setHidden(true);
+    ui->announcementLabel->setCheckable(true);
 
     ui->catSlsLabel->setToolTip("Browse categorized slides");
     ui->catSlsLabel->setHidden(true);
@@ -335,7 +336,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(ui->favoriteLabel, &ClickableLabel::toggled, this, &MainWindow::onFavoriteToggled);
     connect(ui->switchSourceLabel, &ClickableLabel::clicked, this, &MainWindow::onSwitchSourceClicked);
     connect(ui->catSlsLabel, &ClickableLabel::clicked, this, &MainWindow::showCatSLS);
-    connect(ui->announcementLabel, &ClickableLabel::clicked, this, &MainWindow::onAnnouncementClicked);
+    connect(ui->announcementLabel, &ClickableLabel::toggled, this, &MainWindow::onAnnouncementClicked);
 
     connect(m_radioControl, &RadioControl::ensembleInformation, this, &MainWindow::onEnsembleInfo, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleReconfiguration, this, &MainWindow::onEnsembleReconfiguration, Qt::QueuedConnection);
@@ -1219,7 +1220,8 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
                                                   "Ongoing announcement<br>"
                                                   "on current service")
                                               .arg(DabTables::getAnnouncementName(id)));
-        ui->announcementLabel->setEnabled(false);
+        ui->announcementLabel->setChecked(true);
+        ui->announcementLabel->setEnabled(false);        
         ui->announcementLabel->setVisible(true);
         ui->slsWidget->setCurrentIndex(Instance::Service);
 
@@ -1232,6 +1234,7 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
                                                   "Click to suspend this announcement")
                                               .arg(DabTables::getAnnouncementName(id))
                                               .arg(s.label));
+        ui->announcementLabel->setChecked(true);
         ui->announcementLabel->setEnabled(true);
         ui->announcementLabel->setVisible(true);
 
@@ -1247,6 +1250,7 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
                                                   "Click to resume this announcement")
                                               .arg(DabTables::getAnnouncementName(id))
                                               .arg(s.label));
+        ui->announcementLabel->setChecked(false);
         ui->announcementLabel->setEnabled(true);
         ui->announcementLabel->setVisible(true);
 
@@ -1713,7 +1717,7 @@ void MainWindow::loadSettings()
 
     SetupDialog::Settings s;    
     s.inputDevice = static_cast<InputDeviceId>(inDevice);
-    s.announcementEna = settings->value("announcementEna", 0x0FFF).toUInt();
+    s.announcementEna = settings->value("announcementEna", 0x07FF).toUInt();
     s.bringWindowToForeground = settings->value("bringWindowToForegroundOnAlarm", true).toBool();
 
     s.rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
@@ -2169,7 +2173,8 @@ void MainWindow::setIcons()
 
         ui->catSlsLabel->setIcon(":/resources/catSls_dark.png");
 
-        ui->announcementLabel->setIcon(":/resources/announcement_dark.png");
+        ui->announcementLabel->setIcon(":/resources/announcement_active_dark.png", true);
+        ui->announcementLabel->setIcon(":/resources/announcement_suspended_dark.png", false);
 
         ui->switchSourceLabel->setIcon(":/resources/broadcast_dark.png");
     }
@@ -2188,7 +2193,8 @@ void MainWindow::setIcons()
 
         ui->catSlsLabel->setIcon(":/resources/catSls.png");
 
-        ui->announcementLabel->setIcon(":/resources/announcement.png");
+        ui->announcementLabel->setIcon(":/resources/announcement_active.png", true);
+        ui->announcementLabel->setIcon(":/resources/announcement_suspended.png", false);
 
         ui->switchSourceLabel->setIcon(":/resources/broadcast.png");
     }

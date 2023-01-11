@@ -31,8 +31,6 @@
         <file>resources/up_dark.png</file>
         <file>resources/appIcon-linux.png</file>
         <file>resources/appIcon.png</file>
-        <file>resources/announcement.png</file>
-        <file>resources/announcement_dark.png</file>
         <file>resources/announcement01.png</file>
         <file>resources/announcement00.png</file>
         <file>resources/announcement03.png</file>
@@ -45,5 +43,9 @@
         <file>resources/announcement08.png</file>
         <file>resources/announcement09.png</file>
         <file>resources/announcement10.png</file>
+        <file>resources/announcement_active.png</file>
+        <file>resources/announcement_suspended.png</file>
+        <file>resources/announcement_active_dark.png</file>
+        <file>resources/announcement_suspended_dark.png</file>
     </qresource>
 </RCC>
