@@ -1221,6 +1221,7 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
                                               .arg(DabTables::getAnnouncementName(id)));
         ui->announcementLabel->setEnabled(false);
         ui->announcementLabel->setVisible(true);
+        ui->slsWidget->setCurrentIndex(Instance::Service);
 
         break;
     case RadioControlAnnouncementState::OnOtherService:

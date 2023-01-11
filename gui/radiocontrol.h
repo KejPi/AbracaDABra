@@ -243,7 +243,7 @@ enum class RadioControlEventType
     AUDIO_DATA,
     RECONFIGURATION,
     RESET,
-    ANNOUNCEMENT,
+    ANNOUNCEMENT_SWITCHING,
 };
 
 enum class RadioControlAnnouncementState
@@ -288,7 +288,7 @@ struct RadioControlEvent
         // dynamic labale data group
         RadioControlDataDL * pDynamicLabelData;
         // announcement switching
-        dabsdrNtfAnnouncement_t * pAnnouncement;
+        dabsdrNtfAnnouncementSwitching_t * pAnnouncement;
         // audio service instance
         dabsdrDecoderId_t decoderId;
     };
@@ -409,7 +409,7 @@ private:
     void setCurrentServiceAnnouncementSupport();
     void onAnnouncementTimeout();
     void onAnnouncementAudioAvailable();
-    void announcementHandler(dabsdrNtfAnnouncement_t * pAnnouncement);
+    void announcementHandler(dabsdrAsw_t *pAnnouncement);
     bool startAnnouncement(uint8_t subChId);
     void stopAnnouncement();
 

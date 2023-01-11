@@ -487,65 +487,6 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         delete pEvent->pUserAppList;
     }
         break;
-    case RadioControlEventType::ANNOUNCEMENT_SUPPORT:
-    {
-        m_numReqPendingEnsemble -= 1;
-        if (DABSDR_NSTAT_SUCCESS == pEvent->status)
-        {
-#if RADIO_CONTROL_VERBOSE
-            qDebug("RadioControlEventType::ANNOUNCEMENT_SUPPORT SId %8.8X", pEvent->SId);
-#endif
-            serviceIterator serviceIt = m_serviceList.find(pEvent->SId);
-            if (serviceIt != m_serviceList.end())
-            {   // service is in the list
-                if (serviceIt->SId.isProgServiceId())
-                {
-                    serviceIt->ASu = pEvent->pAnnouncementSupport->ASu;
-                    serviceIt->clusterIds.clear();
-                    if (0 == pEvent->pAnnouncementSupport->numClusterIds)
-                    {   // no announcement support -> request update
-                        // TSI EN 300 401 V2.1.1 [8.1.6.1]
-                        // The FIG 0/18 has a repetition rate of once per second.
-                        // Lets try again in 1 second -> we do not know if there are really no announcements supported or we missed FIG0/18
-                        if (!m_isEnsembleInfoFinished)
-                        {
-                            m_numReqPendingEnsemble += 1;
-                            uint32_t sidVal = serviceIt->SId.value();
-                            QTimer::singleShot(1000, this, [this, sidVal](){ dabGetAnnouncementSupport(sidVal); } );
-                        }
-                        else { /* timeout occured */ }
-                    }
-                    else
-                    {   // announcements supported
-                        for (int c = 0; c < pEvent->pAnnouncementSupport->numClusterIds; ++c)
-                        {
-                            serviceIt->clusterIds.append(pEvent->pAnnouncementSupport->clusterIds[c]);
-                        }
-
-                        if (pEvent->SId == m_currentService.SId)
-                        {   // update current service
-                            setCurrentServiceAnnouncementSupport();
-                        }
-
-                        emit ensembleConfiguration(ensembleConfigurationString());
-                    }
-                }
-                else
-                {   // data services do not support announcements
-                    serviceIt->ASu = 0;
-                }
-            }
-            else
-            { /* service is not in the list - this should not happen */ }
-        }
-        if (m_numReqPendingEnsemble <= 0)
-        {
-            onEnsembleInfoFinished();
-        }
-
-        delete pEvent->pAnnouncementSupport;
-    }
-    break;
     case RadioControlEventType::SERVICE_SELECTION:
     {
         if (DABSDR_NSTAT_SUCCESS == pEvent->status)
@@ -726,26 +667,91 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 
         delete pEvent->pNotifyData;
     }
-        break;
-    case RadioControlEventType::ANNOUNCEMENT:
+    break;
+    case RadioControlEventType::ANNOUNCEMENT_SUPPORT:
+    {
+        m_numReqPendingEnsemble -= 1;
+        if (DABSDR_NSTAT_SUCCESS == pEvent->status)
+        {
+#if RADIO_CONTROL_VERBOSE
+            qDebug("RadioControlEventType::ANNOUNCEMENT_SUPPORT SId %8.8X", pEvent->SId);
+#endif
+            serviceIterator serviceIt = m_serviceList.find(pEvent->SId);
+            if (serviceIt != m_serviceList.end())
+            {   // service is in the list
+                if (serviceIt->SId.isProgServiceId())
+                {
+                    serviceIt->ASu = pEvent->pAnnouncementSupport->ASu;
+                    serviceIt->clusterIds.clear();
+                    if (0 == pEvent->pAnnouncementSupport->numClusterIds)
+                    {   // no announcement support -> request update
+                        // TSI EN 300 401 V2.1.1 [8.1.6.1]
+                        // The FIG 0/18 has a repetition rate of once per second.
+                        // Lets try again in 1 second -> we do not know if there are really no announcements supported or we missed FIG0/18
+                        if (!m_isEnsembleInfoFinished)
+                        {
+                             m_numReqPendingEnsemble += 1;
+                             uint32_t sidVal = serviceIt->SId.value();
+                             QTimer::singleShot(1000, this, [this, sidVal](){ dabGetAnnouncementSupport(sidVal); } );
+                        }
+                        else { /* timeout occured */ }
+                    }
+                    else
+                    {   // announcements supported
+                        for (int c = 0; c < pEvent->pAnnouncementSupport->numClusterIds; ++c)
+                        {
+                             serviceIt->clusterIds.append(pEvent->pAnnouncementSupport->clusterIds[c]);
+                        }
+
+                        if (pEvent->SId == m_currentService.SId)
+                        {   // update current service
+                             setCurrentServiceAnnouncementSupport();
+                        }
+
+                        emit ensembleConfiguration(ensembleConfigurationString());
+                    }
+                }
+                else
+                {   // data services do not support announcements
+                    serviceIt->ASu = 0;
+                }
+            }
+            else
+            { /* service is not in the list - this should not happen */ }
+        }
+        if (m_numReqPendingEnsemble <= 0)
+        {
+            onEnsembleInfoFinished();
+        }
+
+        delete pEvent->pAnnouncementSupport;
+    }
+    break;
+    case RadioControlEventType::ANNOUNCEMENT_SWITCHING:
     {
 #if RADIO_CONTROL_VERBOSE > 1
         qDebug() << "RadioControlEventType::ANNOUNCEMENT";
 #endif
-        dabsdrNtfAnnouncement_t * pAnnouncement = pEvent->pAnnouncement;
+        dabsdrNtfAnnouncementSwitching_t * pAnnouncement = pEvent->pAnnouncement;
 
-        // check that announcement belongs to current service
-        if (m_currentService.announcement.clusterIds.contains(pAnnouncement->clusterId))
-        {   // current service is member of announcement cluster
-            announcementHandler(pAnnouncement);
-        }
-        else
-        {   // ignoring -> cluster not relevant for current service
+        // go through asw array
+        dabsdrAsw_t * pAsw = pAnnouncement->asw;
+        while (0 != pAsw->clusterId)
+        {
+            // check that announcement belongs to current service
+            if (m_currentService.announcement.clusterIds.contains(pAsw->clusterId))
+            {   // current service is member of announcement cluster and not alarm (already handled)
+                announcementHandler(pAsw);
+            }
+            else
+            {   // ignoring -> cluster not relevant for current service
 #if RADIO_CONTROL_VERBOSE > 1
-            qDebug() << "Ignoring announcement cluster ID" << pAnnouncement->clusterId;
+                qDebug() << "Ignoring announcement cluster ID" << pAsw->clusterId;
 #endif
+            }
+            pAsw += 1;
         }
-        delete pEvent->pAnnouncement;
+        delete pEvent->pAnnouncement;                
     }
         break;
     case RadioControlEventType::DATAGROUP_DL:
@@ -1480,7 +1486,7 @@ void RadioControl::stopAnnouncement()
     {  /* do nothing */ }
 }
 
-void RadioControl::announcementHandler(dabsdrNtfAnnouncement_t *pAnnouncement)
+void RadioControl::announcementHandler(dabsdrAsw_t *pAnnouncement)
 {
     switch (m_currentService.announcement.state)
     {
@@ -1497,6 +1503,12 @@ void RadioControl::announcementHandler(dabsdrNtfAnnouncement_t *pAnnouncement)
         {   // this is test mode
             // ETSI TS 103 176 V2.4.1 [Annex G]
             announcementId = static_cast<int>(DabAnnouncement::AlarmTest);
+        }
+        if ((static_cast<int>(DabAnnouncement::Alarm) == announcementId) && (0xFF != pAnnouncement->clusterId))
+        {   // ETSI TS 103 176 V2.4.1 [7.3.4]
+            // If the ASw flags field has set bit b0 to 1 with a Cluster Id or OE Cluster Id other than "1111 1111" (0xFF),
+            // the ASw field shall be ignored.
+            return;
         }
         if ((announcementId >= 0) && (pAnnouncement->ASwFlags & m_currentService.announcement.enaFlags))
         {   // valid ASw
@@ -1573,7 +1585,53 @@ void RadioControl::announcementHandler(dabsdrNtfAnnouncement_t *pAnnouncement)
             }
         }
         else
-        { /* During the announcement the receiver shall monitor ASw information for only the active Cluster Id */ }
+        {   /* During the announcement the receiver shall monitor ASw information for only the active Cluster Id */
+            // monitor for alarm announcement
+            DabAnnouncement announcementId = static_cast<DabAnnouncement>(DabTables::ASwValues.indexOf(pAnnouncement->ASwFlags));
+            if ((DabAnnouncement::Alarm == announcementId) && (0xFE == pAnnouncement->clusterId))
+            {   // this is test mode
+                // ETSI TS 103 176 V2.4.1 [Annex G]
+                announcementId = DabAnnouncement::AlarmTest;
+            }
+            if ((DabAnnouncement::Alarm == announcementId) && (0xFF != pAnnouncement->clusterId))
+            {   // ETSI TS 103 176 V2.4.1 [7.3.4]
+                // If the ASw flags field has set bit b0 to 1 with a Cluster Id or OE Cluster Id other than "1111 1111" (0xFF),
+                // the ASw field shall be ignored.
+                return;
+            }
+            if (((DabAnnouncement::Alarm == announcementId) || (DabAnnouncement::AlarmTest == announcementId))
+                && (pAnnouncement->ASwFlags & m_currentService.announcement.enaFlags))
+            {   // ETSI TS 103 176 V2.4.1 [7.6.3.2]
+                // The response to alarm announcements shall not be subject to any user setting;
+                // receivers shall switch to the target subchannel unconditionally,
+                // any active regular announcements shall be terminated.
+
+                // DabAnnouncement::Alarm or enabled DabAnnouncement::AlarmTest
+                //qDebug() << "OnCurrentService - alarm";
+
+                // stopping currnet announcement
+                stopAnnouncement();
+                // HMI will be notified when audio switches
+
+                m_currentService.announcement.suspendRequest = false;
+                if (startAnnouncement(pAnnouncement->subChId))
+                {   // found subchannel
+                    m_currentService.announcement.activeCluster = pAnnouncement->clusterId;
+                    m_currentService.announcement.timeoutTimer->start();
+                    m_currentService.announcement.id = static_cast<DabAnnouncement>(announcementId);
+                    if (!m_currentService.announcement.isOtherService)
+                    {   // announcement in current service
+                        m_currentService.announcement.state = RadioControlAnnouncementState::OnCurrentService;
+                    }
+                    else
+                    {   /* signal will be sent when audio changes from onAudioOutputRestart() */
+                        m_currentService.announcement.state = RadioControlAnnouncementState::OnOtherService;
+                    }
+                }
+                else
+                { /* subchannel not found -> ignoring */ }
+            }
+        }
     }
     break;
     case RadioControlAnnouncementState::OnOtherService:
@@ -1615,7 +1673,53 @@ void RadioControl::announcementHandler(dabsdrNtfAnnouncement_t *pAnnouncement)
             }
         }
         else
-        { /* During the announcement the receiver shall monitor ASw information for only the active Cluster Id */ }
+        {   /* During the announcement the receiver shall monitor ASw information for only the active Cluster Id */
+            // monitor for alarm announcement
+            DabAnnouncement announcementId = static_cast<DabAnnouncement>(DabTables::ASwValues.indexOf(pAnnouncement->ASwFlags));
+            if ((DabAnnouncement::Alarm == announcementId) && (0xFE == pAnnouncement->clusterId))
+            {   // this is test mode
+                // ETSI TS 103 176 V2.4.1 [Annex G]
+                announcementId = DabAnnouncement::AlarmTest;
+            }
+            if ((DabAnnouncement::Alarm == announcementId) && (0xFF != pAnnouncement->clusterId))
+            {   // ETSI TS 103 176 V2.4.1 [7.3.4]
+                // If the ASw flags field has set bit b0 to 1 with a Cluster Id or OE Cluster Id other than "1111 1111" (0xFF),
+                // the ASw field shall be ignored.
+                return;
+            }
+            if (((DabAnnouncement::Alarm == announcementId) || (DabAnnouncement::AlarmTest == announcementId))
+                && (pAnnouncement->ASwFlags & m_currentService.announcement.enaFlags))
+            {   // ETSI TS 103 176 V2.4.1 [7.6.3.2]                
+                // The response to alarm announcements shall not be subject to any user setting;
+                // receivers shall switch to the target subchannel unconditionally,
+                // any active regular announcements shall be terminated.
+
+                // DabAnnouncement::Alarm or enabled DabAnnouncement::AlarmTest
+                //qDebug() << "OnOtherService - alarm";
+
+                // stopping currnet announcement
+                stopAnnouncement();
+                // HMI will be notified when audio switches
+
+                m_currentService.announcement.suspendRequest = false;
+                if (startAnnouncement(pAnnouncement->subChId))
+                {   // found subchannel
+                    m_currentService.announcement.activeCluster = pAnnouncement->clusterId;
+                    m_currentService.announcement.timeoutTimer->start();
+                    m_currentService.announcement.id = static_cast<DabAnnouncement>(announcementId);
+                    if (!m_currentService.announcement.isOtherService)
+                    {   // announcement in current service
+                        m_currentService.announcement.state = RadioControlAnnouncementState::OnCurrentService;
+                    }
+                    else
+                    {   /* signal will be sent when audio changes from onAudioOutputRestart() */
+                        m_currentService.announcement.state = RadioControlAnnouncementState::OnOtherService;
+                    }
+                }
+                else
+                { /* subchannel not found -> ignoring */ }
+            }
+        }
     }
     break;
     case RadioControlAnnouncementState::Suspended:
@@ -1663,7 +1767,64 @@ void RadioControl::announcementHandler(dabsdrNtfAnnouncement_t *pAnnouncement)
             }
         }
         else
-        { /* During the announcement the receiver shall monitor ASw information for only the active Cluster Id */ }
+        {   /* During the announcement the receiver shall monitor ASw information for only the active Cluster Id */
+            // monitor for alarm announcement
+            DabAnnouncement announcementId = static_cast<DabAnnouncement>(DabTables::ASwValues.indexOf(pAnnouncement->ASwFlags));
+            if ((DabAnnouncement::Alarm == announcementId) && (0xFE == pAnnouncement->clusterId))
+            {   // this is test mode
+                // ETSI TS 103 176 V2.4.1 [Annex G]
+                announcementId = DabAnnouncement::AlarmTest;
+            }
+            if ((DabAnnouncement::Alarm == announcementId) && (0xFF != pAnnouncement->clusterId))
+            {   // ETSI TS 103 176 V2.4.1 [7.3.4]
+                // If the ASw flags field has set bit b0 to 1 with a Cluster Id or OE Cluster Id other than "1111 1111" (0xFF),
+                // the ASw field shall be ignored.
+                return;
+            }
+            if (((DabAnnouncement::Alarm == announcementId) || (DabAnnouncement::AlarmTest == announcementId))
+                && (pAnnouncement->ASwFlags & m_currentService.announcement.enaFlags))
+            {   // ETSI TS 103 176 V2.4.1 [7.6.3.2]
+                // The response to alarm announcements shall not be subject to any user setting;
+                // receivers shall switch to the target subchannel unconditionally,
+                // any active regular announcements shall be terminated.
+
+                // DabAnnouncement::Alarm or enabled DabAnnouncement::AlarmTest
+                //qDebug() << "Suspended - alarm";
+
+                // stopping currnet announcement
+                stopAnnouncement();
+                // HMI will be notified when audio switches
+
+                m_currentService.announcement.suspendRequest = false;
+                if (startAnnouncement(pAnnouncement->subChId))
+                {   // found subchannel
+                    m_currentService.announcement.activeCluster = pAnnouncement->clusterId;
+                    m_currentService.announcement.timeoutTimer->start();
+                    m_currentService.announcement.id = static_cast<DabAnnouncement>(announcementId);
+                    if (!m_currentService.announcement.isOtherService)
+                    {   // announcement in current service
+                        m_currentService.announcement.state = RadioControlAnnouncementState::OnCurrentService;
+
+                        //                        // delay to compensate audio delay somehow
+                        //                        serviceComponentIterator scIt;
+                        //                        if (getCurrentAudioServiceComponent(scIt))
+                        //                        {
+                        //                            // Inform HMI -> announcement on current service
+                        //                            RadioControlServiceComponent sc = *scIt;
+                        //                            QTimer::singleShot(1000, this, [this, sc](){
+                        //                                emit announcement(m_currentService.announcement.id, RadioControlAnnouncementState::OnCurrentService, sc);
+                        //                            });
+                        //                        }
+                    }
+                    else
+                    {   /* signal will be sent when audio changes from onAudioOutputRestart() */
+                        m_currentService.announcement.state = RadioControlAnnouncementState::OnOtherService;
+                    }
+                }
+                else
+                { /* subchannel not found -> ignoring */ }
+            }
+        }
     }
     break;
     }
@@ -1898,13 +2059,13 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;
-    case DABSDR_NID_ANNOUNCEMENT:
+    case DABSDR_NID_ANNOUNCEMENT_SWITCHING:
     {
-        dabsdrNtfAnnouncement_t * pAnnouncement = new dabsdrNtfAnnouncement_t;
-        memcpy(pAnnouncement, p->pData, sizeof(dabsdrNtfAnnouncement_t));
+        dabsdrNtfAnnouncementSwitching_t * pAnnouncement = new dabsdrNtfAnnouncementSwitching_t;
+        memcpy(pAnnouncement, p->pData, sizeof(dabsdrNtfAnnouncementSwitching_t));
 
         RadioControlEvent * pEvent = new RadioControlEvent;
-        pEvent->type = RadioControlEventType::ANNOUNCEMENT;
+        pEvent->type = RadioControlEventType::ANNOUNCEMENT_SWITCHING;
         pEvent->status = p->status;
         pEvent->pAnnouncement = pAnnouncement;
         radioCtrl->emit_dabEvent(pEvent);
