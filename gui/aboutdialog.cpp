@@ -38,7 +38,8 @@ AboutDialog::AboutDialog(QWidget *parent) :
                            "<li><a href=\"https://github.com/knik0/faad2\">FAAD2</a> Copyright © 2003-2005 M. Bakker, Nero AG</li>"
 #endif
                            "<li><a href=\"http://www.portaudio.com\">PortAudio</a> Copyright © 1999-2011 Ross Bencina and Phil Burk</li>"
-                           "</ul>");
+                           "</ul>"
+                           "AbracaDABra uses some artwork created by <a href=\"https://www.flaticon.com/authors/basic-miscellany/lineal-color\">Smashicons - Flaticon</a>");
     ui->disclaimer->setText("<p>Copyright © 2019-2023 Petr Kopecký</p>"
                             "<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software "
                             "and associated documentation files (the “Software”), to deal in the Software without restriction, "
