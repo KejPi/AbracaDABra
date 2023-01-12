@@ -1494,7 +1494,7 @@ void RadioControl::stopAnnouncement()
 
 void RadioControl::announcementHandler(dabsdrAsw_t *pAnnouncement)
 {
-#if 1
+#if 0
     switch (m_currentService.announcement.state)
     {
     case RadioControlAnnouncementState::None:
@@ -1858,11 +1858,11 @@ void RadioControl::announcementHandler(dabsdrAsw_t *pAnnouncement)
         }
         if ((announcementId >= 0) && (pAnnouncement->ASwFlags & m_currentService.announcement.enaFlags))
         {   // valid ASw
-    #if 1 // RADIO_CONTROL_VERBOSE > 1
+#if 1 // RADIO_CONTROL_VERBOSE > 1
             qDebug() << DabTables::getAnnouncementName(static_cast<DabAnnouncement>(announcementId))
                      << "announcement in subchannel" <<  pAnnouncement->subChId
                      << "cluster ID" << pAnnouncement->clusterId;
-    #endif
+#endif
             m_currentService.announcement.suspendRequest = false;
             if (startAnnouncement(pAnnouncement->subChId))
             {   // found subchannel
