@@ -17,7 +17,7 @@ It is based on Qt6 and uses _dabsdr_ demodulation library that is free for use b
 * Announcements (all types including alarm test)
 * Dynamic label (DL) and Dynamic label plus (DL+)
 * MOT slideshow (SLS) and categorized slideshow (CatSLS) from PAD or from secondary data service.
-* Audio services reconfiguration (experimental support)
+* Audio services reconfiguration
 * Ensemble structure view with all technical details.
 * Raw file dumping
 * Only band III and DAB mode 1 is supported.
@@ -38,6 +38,24 @@ In addition to basic mode, it shows ensemble tree with structure of services and
 Additionally it is possible to change the DAB channel manually in this mode. 
 This is particularly useful when antenna adjustment is done in order to receive ensemble the is not received during automatic band scan.
 Expert mode can be enabled in "three-dot" menu.
+
+## DAB Announcements support
+
+An announcement is a period of elevated interest within an audio programme. It is typically a spoken audio message, often with a lead-in and lead-out 
+audio pattern (for example, a musical jingle). It may refer to various types of information such as traffic, news, sports and others.
+
+All DAB(+) announcement types are supported by AbracaDABra, including test alarm feature (ClusterID 0xFE according to TS 103 176). 
+The application is monitoring an announcement switching information and when the announcement is active, AbracaDABra switches audio output to a target 
+subchannel (service). This behavior can be disabled by unchecking a particular announcement type in a Setup dialog. 
+If an announcement occurs on the currently tuned service, it is only indicated by an icon after the service name. This icon can be clicked on, which 
+suspends/resumes the ongoing announcement coming from another service. OE Announcements are not supported. 
+
+The option "Bring window to foreground" tries to focus the application window when the alarm announcement starts. 
+The alarm announcements carry emergency warning information that is of utmost importance to all radio listeners and it has the highest priority 
+(according to TS 103 176) in the sense that it cannot be disabled and it can interrupt any ongoing regular announcement.
+<img width="873" alt="Snímek obrazovky 2023-01-12 v 21 33 23" src="https://user-images.githubusercontent.com/6438380/212175162-c1110f73-3549-4423-97c8-656d99084e1d.png"><img width="612" alt="Snímek obrazovky 2023-01-12 v 21 26 12" src="https://user-images.githubusercontent.com/6438380/212173820-f7a90361-7f1b-4731-8d76-a6bd5631f47a.png">
+
+Announcements from other service display a thematic placeholder. <a href="https://www.flaticon.com/authors/basic-miscellany/lineal-color" title="linear color">The artwork of placeholders are created by Smashicons - Flaticon</a>
 
 ## Expert settings
 Some settings can only be changed by editting of the AbracaDABra.ini file. File location is OS dependent:
@@ -112,10 +130,9 @@ Then clone the project:
        make      
        
 ## Known limitations
-* Slower switching between ensembles
 * Reconfiguration not supported for data services
 * Only SLS data service is supported 
 * Application is hanging when audio output device is removed (like bluetooth headphones disconnected) - PortAudio does not support hot swap
+* MacOS Ventura refuses to start application downloaded from internet. Currently this command run from Terminal after installation seems to solve the problem:
 
-## Artwork
-Application uses <a href="https://www.flaticon.com/authors/basic-miscellany/lineal-color" title="linear color">Artwork created by Smashicons - Flaticon</a>
+       xattr -cr /Applications/AbracaDABra.app
