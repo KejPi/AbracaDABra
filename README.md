@@ -53,7 +53,9 @@ suspends/resumes the ongoing announcement coming from another service. OE Announ
 The option "Bring window to foreground" tries to focus the application window when the alarm announcement starts. 
 The alarm announcements carry emergency warning information that is of utmost importance to all radio listeners and it has the highest priority 
 (according to TS 103 176) in the sense that it cannot be disabled and it can interrupt any ongoing regular announcement.
-<img width="873" alt="Snímek obrazovky 2023-01-12 v 21 33 23" src="https://user-images.githubusercontent.com/6438380/212175162-c1110f73-3549-4423-97c8-656d99084e1d.png"><img width="612" alt="Snímek obrazovky 2023-01-12 v 21 26 12" src="https://user-images.githubusercontent.com/6438380/212173820-f7a90361-7f1b-4731-8d76-a6bd5631f47a.png">
+
+<img width="1279" alt="Snímek obrazovky 2023-01-12 v 22 07 17" src="https://user-images.githubusercontent.com/6438380/212181613-a7e163e2-d6e1-46cc-bf3d-6dfce276a8ae.png">
+
 
 Announcements from other service display a thematic placeholder. <a href="https://www.flaticon.com/authors/basic-miscellany/lineal-color" title="linear color">The artwork of placeholders are created by Smashicons - Flaticon</a>
 
