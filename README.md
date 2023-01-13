@@ -1,11 +1,14 @@
 # AbracaDABra
-Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) for RTL-SDR sticks. 
-It is based on Qt6 and uses _dabsdr_ demodulation library that is free for use but not open source. 
+Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR). It works with cheap RTL-SDR (RTL2832U) USB sticks but also with AirSpy devices and with devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
+
+Application is based on Qt6 cross-platform software development framework and can run on any platform supported by Qt6. 
+Prebuilt binaries are released for Windows, MacOS (both Intel and Apple Silicon) and Linux (AppImage). AbracaDABra can run also under Linux AARCH64 (ARM64)
+for example on Raspberry Pi 4. 
 
 <img width="1634" alt="Snímek obrazovky 2022-06-28 v 22 32 25" src="https://user-images.githubusercontent.com/6438380/176279785-1e212201-3c1d-428f-9416-b1b0b464238b.png">
 
 ## Features
-* Supports following input devices:
+* Following input devices supported:
   * RTL-SDR (default device)
   * Airspy (optional)
   * SoapySDR (optional)
@@ -16,27 +19,27 @@ It is based on Qt6 and uses _dabsdr_ demodulation library that is free for use b
 * DAB (mp2) and DAB+ (AAC) audio decoding
 * Announcements (all types including alarm test)
 * Dynamic label (DL) and Dynamic label plus (DL+)
-* MOT slideshow (SLS) and categorized slideshow (CatSLS) from PAD or from secondary data service.
+* MOT slideshow (SLS) and categorized slideshow (CatSLS) from PAD or from secondary data service
 * Audio services reconfiguration
 * Ensemble structure view with all technical details.
 * Raw file dumping
 * Only band III and DAB mode 1 is supported.
 * Simple user-friendly interface, trying to follow DAB _Rules of implementation (TS 103 176)_
-* Multiplatform
+* Multiplatform (Windows, MacOS and Linux)
 
 ## Basic mode
 <img width="663" alt="Snímek obrazovky 2022-06-28 v 22 19 47" src="https://user-images.githubusercontent.com/6438380/176277787-7737ca9b-adb1-4d91-bf5b-bd9331d27663.png">
 
 Simple user interface that is focused on radio listening. Just select your favorite service from service list on the right side 
-and enjoy the music with slide show and DL(+). 
+and enjoy the music with slideshow and DL(+). 
 Service can be easily added to favorites by clicking "star" icon.  Most of the elements in UI have tool tip with more information.
 
 ## Expert mode
 <img width="873" alt="Snímek obrazovky 2022-06-28 v 22 37 21" src="https://user-images.githubusercontent.com/6438380/176281878-405e3d99-64ef-4a95-a30e-7b74127b178e.png">
 
-In addition to basic mode, it shows ensemble tree with structure of services and additional details of currenly tuned service. 
-Additionally it is possible to change the DAB channel manually in this mode. 
-This is particularly useful when antenna adjustment is done in order to receive ensemble the is not received during automatic band scan.
+In addition to basic mode, expert mode shows ensemble tree with structure of services and additional details of currenly tuned service. 
+Furthermore it is possible to change the DAB channel manually in this mode. 
+This is particularly useful when antenna adjustment is done in order to receive ensemble that is not captured during automatic band scan.
 Expert mode can be enabled in "three-dot" menu.
 
 ## DAB Announcements support
@@ -133,8 +136,9 @@ Then clone the project:
        
 ## Known limitations
 * Reconfiguration not supported for data services
-* Only SLS data service is supported 
+* Only SLS data service is currently supported
 * Application is hanging when audio output device is removed (like bluetooth headphones disconnected) - PortAudio does not support hot swap
-* MacOS Ventura refuses to start application downloaded from internet. Currently this command run from Terminal after installation seems to solve the problem:
+* MacOS Ventura refuses to start application downloaded from internet. This command run from Terminal after installation seems to solve the problem:
 
        xattr -cr /Applications/AbracaDABra.app
+       
