@@ -24,9 +24,6 @@
 #include "rawfileinput.h"
 #include "rtlsdrinput.h"
 #include "rtltcpinput.h"
-#if HAVE_RARTTCP
-#include "rarttcpinput.h"
-#endif
 #if HAVE_AIRSPY
 #include "airspyinput.h"
 #endif
@@ -1330,8 +1327,6 @@ void MainWindow::onNewInputDeviceSettings()
     case InputDeviceId::RTLTCP:
         dynamic_cast<RtlTcpInput*>(m_inputDevice)->setGainMode(s.rtltcp.gainMode, s.rtltcp.gainIdx);
         break;
-    case InputDeviceId::RARTTCP:
-        break;
     case InputDeviceId::AIRSPY:
 #if HAVE_AIRSPY
         dynamic_cast<AirspyInput*>(m_inputDevice)->setGainMode(s.airspy.gain);
@@ -1493,55 +1488,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             m_setupDialog->resetInputDevice();
             initInputDevice(InputDeviceId::UNDEFINED);
         }
-    }
-    break;
-    case InputDeviceId::RARTTCP:
-    {
-#if HAVE_RARTTCP
-        inputDevice = new RartTcpInput();
-
-        // signals have to be connected before calling isAvailable
-        // RTL_TCP is opened immediately and starts receiving data
-
-        // HMI
-        connect(inputDevice, &InputDevice::deviceReady, this, &MainWindow::inputDeviceReady, Qt::QueuedConnection);
-        connect(inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
-
-        // tuning procedure
-        connect(radioControl, &RadioControl::tuneInputDevice, inputDevice, &InputDevice::tune, Qt::QueuedConnection);
-        connect(inputDevice, &InputDevice::tuned, radioControl, &RadioControl::start, Qt::QueuedConnection);
-
-        // set IP address and port
-        dynamic_cast<RartTcpInput*>(inputDevice)->setTcpIp(setupDialog->settings().rarttcp.tcpAddress, setupDialog->settings().rarttcp.tcpPort);
-
-        if (inputDevice->openDevice())
-        {  // rtl tcp is available
-            inputDeviceId = InputDeviceId::RARTTCP;
-
-            // enable band scan
-            bandScanAct->setEnabled(true);
-
-            // enable service list
-            ui->serviceListView->setEnabled(true);
-            ui->serviceTreeView->setEnabled(true);
-            ui->favoriteLabel->setEnabled(true);
-
-            // ensemble info dialog
-            connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, inputDevice, &InputDevice::startDumpToFile);
-            connect(ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, inputDevice, &InputDevice::stopDumpToFile);
-            connect(inputDevice, &InputDevice::dumpingToFile, ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
-            connect(inputDevice, &InputDevice::dumpedBytes, ensembleInfoDialog, &EnsembleInfoDialog::updateDumpStatus);
-            ensembleInfoDialog->enableDumpToFile(true);
-
-            // apply current settings
-            onNewSettings();
-        }
-        else
-        {
-            setupDialog->resetInputDevice();
-            initInputDevice(InputDeviceId::UNDEFINED);
-        }
-#endif
     }
     break;
     case InputDeviceId::AIRSPY:
@@ -1730,10 +1676,6 @@ void MainWindow::loadSettings()
     s.rtltcp.tcpAddress = settings->value("RTL-TCP/address", QString("127.0.0.1")).toString();
     s.rtltcp.tcpPort = settings->value("RTL-TCP/port", 1234).toInt();
 
-#if HAVE_RARTTCP
-    s.rarttcp.tcpAddress = settings->value("RART-TCP/address", QString("127.0.0.1")).toString();
-    s.rarttcp.tcpPort = settings->value("RART-TCP/port", 1235).toInt();
-#endif
 #if HAVE_AIRSPY
     s.airspy.gain.sensitivityGainIdx = settings->value("AIRSPY/sensitivityGainIdx", 9).toInt();
     s.airspy.gain.lnaGainIdx = settings->value("AIRSPY/lnaGainIdx", 0).toInt();
@@ -1771,8 +1713,7 @@ void MainWindow::loadSettings()
                 && (    (InputDeviceId::RTLSDR == m_inputDeviceId)
                      || (InputDeviceId::AIRSPY == m_inputDeviceId)
                      || (InputDeviceId::SOAPYSDR == m_inputDeviceId)
-                     || (InputDeviceId::RTLTCP == m_inputDeviceId)
-                     || (InputDeviceId::RARTTCP == m_inputDeviceId)))
+                     || (InputDeviceId::RTLTCP == m_inputDeviceId)))
         {   // restore channel
             int sid = settings->value("SID", 0).toInt();
             uint8_t scids = settings->value("SCIdS", 0).toInt();
@@ -1862,10 +1803,6 @@ void MainWindow::saveSettings()
     settings->setValue("RTL-TCP/address", s.rtltcp.tcpAddress);
     settings->setValue("RTL-TCP/port", s.rtltcp.tcpPort);
 
-#if HAVE_RARTTCP
-    settings->setValue("RART-TCP/address", s.rarttcp.tcpAddress);
-    settings->setValue("RART-TCP/port", s.rarttcp.tcpPort);
-#endif
     settings->setValue("RAW-FILE/filename", s.rawfile.file);
     settings->setValue("RAW-FILE/format", int(s.rawfile.format));
     settings->setValue("RAW-FILE/loop", s.rawfile.loopEna);

@@ -26,9 +26,6 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->inputCombo->addItem("Soapy SDR", QVariant(int(InputDeviceId::SOAPYSDR)));
 #endif
     ui->inputCombo->addItem("RTL TCP", QVariant(int(InputDeviceId::RTLTCP)));
-#if HAVE_RARTTCP
-    ui->inputCombo->addItem("RaRT TCP", QVariant(int(InputDeviceId::RARTTCP)));
-#endif
     ui->inputCombo->addItem("Raw file", QVariant(int(InputDeviceId::RAWFILE)));
     ui->inputCombo->setCurrentIndex(-1);  // undefined
 
@@ -50,7 +47,6 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
                                +                                + "(\\." + ipRange + ")$");
     QRegularExpressionValidator *ipValidator = new QRegularExpressionValidator(ipRegex, this);
     ui->rtltcpIpAddressEdit->setValidator(ipValidator);
-    ui->rarttcpIpAddressEdit->setValidator(ipValidator);
 
     // set announcement combos
     QGridLayout *gridLayout = new QGridLayout;
@@ -187,7 +183,6 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
 #endif // HAVE_SOAPYSDR
         break;
     case InputDeviceId::UNDEFINED:
-    case InputDeviceId::RARTTCP:
     case InputDeviceId::RAWFILE:
     case InputDeviceId::AIRSPY:
         return;
@@ -332,10 +327,6 @@ void SetupDialog::showEvent(QShowEvent *event)
     ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings.rawfile.format));
     ui->rtltcpIpAddressEdit->setText(m_settings.rtltcp.tcpAddress);
     ui->rtltcpIpPortSpinBox->setValue(m_settings.rtltcp.tcpPort);
-#if HAVE_RARTTCP
-    ui->rarttcpIpAddressEdit->setText(m_settings.rarttcp.tcpAddress);
-    ui->rarttcpIpPortSpinBox->setValue(m_settings.rarttcp.tcpPort);
-#endif
 
     setStatusLabel();
 
@@ -364,8 +355,6 @@ void SetupDialog::onConnectDeviceClicked()
         m_settings.rtltcp.tcpAddress = ui->rtltcpIpAddressEdit->text();
         m_settings.rtltcp.tcpPort = ui->rtltcpIpPortSpinBox->value();
         activateRtlTcpControls(true);
-        break;
-    case InputDeviceId::RARTTCP:
         break;
     case InputDeviceId::UNDEFINED:
         break;
@@ -660,9 +649,6 @@ void SetupDialog::setStatusLabel()
     case InputDeviceId::RTLTCP:
         ui->statusLabel->setText("RTL TCP device connected");
         break;
-    case InputDeviceId::RARTTCP:
-        ui->statusLabel->setText("RART TCP device connected");
-        break;
     case InputDeviceId::UNDEFINED:
         ui->statusLabel->setText("<span style=\"color:red\">No device connected</span>");
         break;
@@ -714,8 +700,6 @@ void SetupDialog::onInputChanged(int index)
             break;            
         case InputDeviceId::RTLTCP:
             activateRtlTcpControls(false);
-            break;
-        case InputDeviceId::RARTTCP:
             break;
         case InputDeviceId::UNDEFINED:
             break;
@@ -785,7 +769,6 @@ void SetupDialog::resetInputDevice()
         break;
     case InputDeviceId::RAWFILE:
         break;
-    case InputDeviceId::RARTTCP:
     case InputDeviceId::UNDEFINED:
     case InputDeviceId::AIRSPY:
 #if HAVE_AIRSPY

@@ -44,13 +44,6 @@ public:
             QString tcpAddress;
             int tcpPort;
         } rtltcp;
-#if HAVE_RARTTCP
-        struct
-        {
-            QString tcpAddress;
-            int tcpPort;
-        } rarttcp;
-#endif
 #if HAVE_AIRSPY
         struct
         {

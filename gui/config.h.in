@@ -12,7 +12,6 @@
 #cmakedefine01 HAVE_PORTAUDIO
 
 /* Optional devices */
-#cmakedefine01 HAVE_RARTTCP
 #cmakedefine01 HAVE_AIRSPY
 #cmakedefine01 HAVE_SOAPYSDR
 

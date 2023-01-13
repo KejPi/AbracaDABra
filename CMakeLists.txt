@@ -42,7 +42,6 @@ option (APPLE_BUILD_X86_64    "Build x86_64 binary for Apple"   OFF)
 # Devices
 option (AIRSPY                "Enable AirSpy devices"           OFF)
 option (SOAPYSDR              "Enable Soapy SDR devices"        OFF)
-option (RARTTCP               "Enable RaRT TCP device"          OFF)
 
 if(APPLE OR WIN32)
     # Apple and Win does not use system libs
@@ -331,15 +330,6 @@ if (USE_PORTAUDIO)
         endif()
     endif (USE_SYSTEM_PORTAUDIO)
 endif(USE_PORTAUDIO)
-
-#########################################################
-## RARTTCP
-if (RARTTCP)
-    # no specific check here
-    set(HAVE_RARTTCP ON)
-else(RARTTCP)
-    set(HAVE_RARTTCP OFF)
-endif(RARTTCP)
 
 #########################################################
 ## AIRSPY

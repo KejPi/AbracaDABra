@@ -70,8 +70,6 @@ add_executable(${TARGET}
     rtlsdrinput.cpp
     rtltcpinput.h
     rtltcpinput.cpp
-    rarttcpinput.h
-    rarttcpinput.cpp
     mscdatagroup.h
     mscdatagroup.cpp
     dldecoder.h
