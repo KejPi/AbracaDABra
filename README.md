@@ -24,7 +24,7 @@ for example on Raspberry Pi 4.
 * Ensemble structure view with all technical details.
 * Raw file dumping
 * Only band III and DAB mode 1 is supported.
-* Simple user-friendly interface, trying to follow DAB _Rules of implementation (TS 103 176)_
+* Simple user-friendly interface, trying to follow DAB _Rules of implementation (<a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>)_
 * Multiplatform (Windows, MacOS and Linux)
 
 ## Basic mode
@@ -45,17 +45,17 @@ Expert mode can be enabled in "three-dot" menu.
 ## DAB Announcements support
 
 An announcement is a period of elevated interest within an audio programme. It is typically a spoken audio message, often with a lead-in and lead-out 
-audio pattern (for example, a musical jingle). It may refer to various types of information such as traffic, news, sports and others.
+audio pattern (for example, a musical jingle). It may refer to various types of information such as traffic, news, sports and others. [<a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>]
 
-All DAB(+) announcement types are supported by AbracaDABra, including test alarm feature (ClusterID 0xFE according to TS 103 176). 
+All DAB(+) announcement types are supported by AbracaDABra, including test alarm feature (ClusterID 0xFE according to <a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>). 
 The application is monitoring an announcement switching information and when the announcement is active, AbracaDABra switches audio output to a target 
 subchannel (service). This behavior can be disabled by unchecking a particular announcement type in a Setup dialog. 
 If an announcement occurs on the currently tuned service, it is only indicated by an icon after the service name. This icon can be clicked on, which 
 suspends/resumes the ongoing announcement coming from another service. OE Announcements are not supported. 
 
 The option "Bring window to foreground" tries to focus the application window when the alarm announcement starts. 
-The alarm announcements carry emergency warning information that is of utmost importance to all radio listeners and it has the highest priority 
-(according to TS 103 176) in the sense that it cannot be disabled and it can interrupt any ongoing regular announcement.
+The alarm announcements carry emergency warning information that is of utmost importance to all radio listeners and they have the highest priority 
+(according to <a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>) in the sense that alarm announcement cannot be disabled and it can interrupt any ongoing regular announcement.
 
 <img width="1279" alt="Snímek obrazovky 2023-01-12 v 22 07 17" src="https://user-images.githubusercontent.com/6438380/212181613-a7e163e2-d6e1-46cc-bf3d-6dfce276a8ae.png">
 
