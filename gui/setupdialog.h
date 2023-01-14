@@ -8,7 +8,9 @@
 #include "QtWidgets/qcheckbox.h"
 #include "config.h"
 #include "inputdevice.h"
+#if HAVE_AIRSPY
 #include "airspyinput.h"
+#endif
 #include "rawfileinput.h"
 #include "dabtables.h"
 
