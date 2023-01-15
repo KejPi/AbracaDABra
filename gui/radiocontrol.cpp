@@ -325,17 +325,12 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
     break;
     case RadioControlEventType::ANNOUNCEMENT_SUPPORT:
     {        
-        m_numReqPendingEnsemble -= 1;
         if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
 #if RADIO_CONTROL_VERBOSE
             qDebug("RadioControlEventType::ANNOUNCEMENT_SUPPORT SId %8.8X", pEvent->SId);
 #endif
             eventHandler_announcementSupport(pEvent);
-        }
-        if (m_numReqPendingEnsemble <= 0)
-        {
-            onEnsembleInfoFinished();
         }
 
         delete pEvent->pAnnouncementSupport;
@@ -936,13 +931,7 @@ void RadioControl::onEnsembleInfoFinished()
 {
     m_ensembleInfoTimeoutTimer->stop();
     m_isEnsembleInfoFinished = true;
-    if (m_numReqPendingEnsemble <= 0)
-    {
-#if 1 // RADIO_CONTROL_VERBOSE
-        qDebug() << "=== Ensemble information should be complete";
-#endif
-        emit ensembleConfiguration(ensembleConfigurationString());
-    }
+    emit ensembleConfiguration(ensembleConfigurationString());
 }
 
 void RadioControl::resetCurrentService()
@@ -1037,7 +1026,6 @@ void RadioControl::eventHandler_serviceList(RadioControlEvent *pEvent)
             {   // only programme services support announcements
                 // get supported announcements -> delay request by 1 second
                 uint32_t sidVal = sid.value();
-                m_numReqPendingEnsemble += 1;
                 QTimer::singleShot(1000, this, [this, sidVal](){dabGetAnnouncementSupport(sidVal); } );
             }
         }
@@ -1266,10 +1254,6 @@ void RadioControl::eventHandler_userAppList(RadioControlEvent *pEvent)
             else { /* timeout occured */ }
         }
     }
-    if (m_numReqPendingEnsemble <= 0)
-    {
-        onEnsembleInfoFinished();
-    }
 }
 
 void RadioControl::eventHandler_serviceSelection(RadioControlEvent *pEvent)
@@ -1290,7 +1274,7 @@ void RadioControl::eventHandler_serviceSelection(RadioControlEvent *pEvent)
                     emit audioServiceSelection(*scIt);
 
                     // discovery point -> request UserApps and Announcements information update
-                    m_numReqPendingEnsemble += 2;
+                    m_numReqPendingEnsemble += 1;
                     dabGetUserApps(m_currentService.SId, m_currentService.SCIdS);
                     dabGetAnnouncementSupport(m_currentService.SId);
 
@@ -1349,20 +1333,7 @@ void RadioControl::eventHandler_announcementSupport(RadioControlEvent * pEvent)
         {
             serviceIt->ASu = pEvent->pAnnouncementSupport->ASu;
             serviceIt->clusterIds.clear();
-            if (0 == pEvent->pAnnouncementSupport->numClusterIds)
-            {   // no announcement support -> request update
-                // TSI EN 300 401 V2.1.1 [8.1.6.1]
-                // The FIG 0/18 has a repetition rate of once per second.
-                // Lets try again in 1 second -> we do not know if there are really no announcements supported or we missed FIG0/18
-                if (!m_isEnsembleInfoFinished)
-                {
-                    m_numReqPendingEnsemble += 1;
-                    uint32_t sidVal = serviceIt->SId.value();
-                    QTimer::singleShot(1000, this, [this, sidVal](){ dabGetAnnouncementSupport(sidVal); } );
-                }
-                else { /* timeout occured */ }
-            }
-            else
+            if (0 != pEvent->pAnnouncementSupport->numClusterIds)
             {   // announcements supported
                 for (int c = 0; c < pEvent->pAnnouncementSupport->numClusterIds; ++c)
                 {
@@ -1376,6 +1347,7 @@ void RadioControl::eventHandler_announcementSupport(RadioControlEvent * pEvent)
 
                 emit ensembleConfiguration(ensembleConfigurationString());
             }
+            else { /* no announcment support */ }
         }
         else
         {   // data services do not support announcements
