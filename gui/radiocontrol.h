@@ -244,6 +244,7 @@ enum class RadioControlEventType
     RECONFIGURATION,
     RESET,
     ANNOUNCEMENT_SWITCHING,
+    PROGRAMME_TYPE,
 };
 
 enum class RadioControlAnnouncementState
@@ -291,6 +292,8 @@ struct RadioControlEvent
         dabsdrNtfAnnouncementSwitching_t * pAnnouncement;
         // audio service instance
         dabsdrDecoderId_t decoderId;
+        // programme type change
+        dabsdrNtfPTy_t * pPty;
     };
 };
 
@@ -339,6 +342,7 @@ signals:
     void ensembleRemoved(const RadioControlEnsemble & ens);
     void announcement(DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent & s);
     void announcementAudioAvailable();
+    void programmeTypeChanged(const DabSId & sid, const struct DabPTy & pty);
 private:
     enum class AnnouncementSwitchState { NoAnnouncement, WaitForAnnouncement, OngoingAnnouncement };
 
@@ -422,6 +426,7 @@ private:
     void eventHandler_serviceStop(RadioControlEvent *pEvent);
     void eventHandler_announcementSupport(RadioControlEvent *pEvent);
     void eventHandler_announcementSwitching(RadioControlEvent * pEvent);
+    void eventHandler_programmeType(RadioControlEvent * pEvent);
 
     // wrapper functions for dabsdr API
     void dabTune(uint32_t freq) { dabsdrRequest_Tune(m_dabsdrHandle, freq); }

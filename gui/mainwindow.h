@@ -171,7 +171,7 @@ private:
     void onSwitchSourceClicked();
     void onAnnouncementClicked();
     void onSyncStatus(uint8_t sync);
-    void onSnrLevel(float snr);
+    void onSnrLevel(float snr);    
     void onServiceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
     void onDLComplete_Service(const QString &dl);
     void onDLComplete_Announcement(const QString & dl);
@@ -189,6 +189,7 @@ private:
     void onDLReset_Service();
     void onDLReset_Announcement();
     void onAudioParametersInfo(const AudioParameters &params);
+    void onProgrammeTypeChanged(const DabSId &sid, const struct DabPTy & pty);
     void onDabTime(const QDateTime & d);
     void onTuneChannel(uint32_t freq);
     void onTuneDone(uint32_t freq);

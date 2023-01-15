@@ -343,6 +343,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::dabTime, this, &MainWindow::onDabTime, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListEntry, this, &MainWindow::onServiceListEntry, Qt::BlockingQueuedConnection);
     connect(m_radioControl, &RadioControl::announcement, this, &MainWindow::onAnnouncement, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::programmeTypeChanged, this, &MainWindow::onProgrammeTypeChanged, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, m_radioControl, &RadioControl::setupAnnouncements, Qt::QueuedConnection);
     connect(m_audioOutput, &AudioOutput::audioOutputRestart, m_radioControl, &RadioControl::onAudioOutputRestart, Qt::QueuedConnection);
     connect(this, &MainWindow::toggleAnnouncement, m_radioControl, &RadioControl::suspendResumeAnnouncement, Qt::QueuedConnection);
@@ -813,6 +814,36 @@ void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)
     }
 }
 
+void MainWindow::onProgrammeTypeChanged(const DabSId &sid, const DabPTy &pty)
+{
+    if (m_SId.value() == sid.value())
+    {   // belongs to current service
+
+        // ETSI EN 300 401 V2.1.1 [8.1.5]
+        // At any one time, the PTy shall be either Static or Dynamic;
+        // there shall be only one PTy per service.
+
+        if (pty.d != 0)
+        {   // dynamic PTy available != static PTy
+            ui->programTypeLabel->setText(DabTables::getPtyName(pty.d));
+            ui->programTypeLabel->setToolTip(QString("<b>Programme Type</b><br>"
+                                                     "%1 (dynamic)")
+                                                 .arg(DabTables::getPtyName(pty.d)));
+
+
+        }
+        else
+        {
+            ui->programTypeLabel->setText(DabTables::getPtyName(pty.s));
+            ui->programTypeLabel->setToolTip(QString("<b>Programme Type</b><br>"
+                                                     "%1")
+                                                 .arg(DabTables::getPtyName(pty.s)));
+        }
+
+    }
+    else { /* ignoring - not current service */ }
+}
+
 void MainWindow::channelSelected()
 {
     m_hasListViewFocus = ui->serviceListView->hasFocus();
@@ -1078,25 +1109,8 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
                                      .arg(DabTables::getLangName(s.lang))
                                      .arg(DabTables::getCountryName(s.SId.value())));
 
-        if ((s.pty.d != 0) && (s.pty.d != s.pty.s))
-        {   // dynamic PTy available != static PTy
-            ui->programTypeLabel->setText(DabTables::getPtyName(s.pty.d));
-            ui->programTypeLabel->setToolTip(QString("<b>Programme Type</b><br>"
-                                                     "%1 (dynamic)<br>"
-                                                     "%2 (static)")
-                                             .arg(DabTables::getPtyName(s.pty.d))
-                                             .arg(DabTables::getPtyName(s.pty.s)));
 
-        }
-        else
-        {
-            ui->programTypeLabel->setText(DabTables::getPtyName(s.pty.s));
-            ui->programTypeLabel->setToolTip(QString("<b>Programme Type</b><br>"
-                                                     "%1")
-                                             .arg(DabTables::getPtyName(s.pty.s)));
-
-        }
-
+        onProgrammeTypeChanged(s.SId, s.pty);
         displaySubchParams(s);
     }
     else

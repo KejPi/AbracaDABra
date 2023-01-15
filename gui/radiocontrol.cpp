@@ -351,6 +351,16 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         delete pEvent->pAnnouncement;                
     }
         break;
+    case RadioControlEventType::PROGRAMME_TYPE:
+    {
+#if RADIO_CONTROL_VERBOSE > 1
+        qDebug() << "RadioControlEventType::PROGRAMME_TYPE";
+#endif
+        eventHandler_programmeType(pEvent);
+
+        delete pEvent->pPty;
+    }
+    break;
     case RadioControlEventType::DATAGROUP_DL:
     {
 #if RADIO_CONTROL_VERBOSE > 1
@@ -396,48 +406,6 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 
     delete pEvent;
 }
-
-void RadioControl::eventHandler_ensembleInfo(RadioControlEvent *pEvent)
-{
-    // process ensemble info
-    dabsdrNtfEnsemble_t * pInfo = pEvent->pEnsembleInfo;
-
-#if RADIO_CONTROL_VERBOSE
-    qDebug("RadioControlEvent::ENSEMBLE_INFO 0x%8.8X '%s'", pInfo->ueid, pInfo->label.str);
-#endif
-
-#if (RADIO_CONTROL_TEST_MODE)
-    if (pInfo->label.str[0] != '\0')  // allow ECC == 0 in test mode
-#else
-    if (((pInfo->ueid & 0x00FF0000) != 0) && (pInfo->label.str[0] != '\0'))
-#endif
-    {
-        //serviceList.clear();
-        m_ensemble.ueid = pInfo->ueid;
-        m_ensemble.frequency = pInfo->frequency;
-        m_ensemble.LTO = pInfo->LTO;
-        m_ensemble.intTable = pInfo->intTable;
-        m_ensemble.alarm = pInfo->alarm;
-        m_ensemble.label = DabTables::convertToQString(pInfo->label.str, pInfo->label.charset).trimmed();
-        m_ensemble.labelShort = toShortLabel(m_ensemble.label, pInfo->label.charField).trimmed();
-        emit ensembleInformation(m_ensemble);
-
-        // request service list
-        // ETSI EN 300 401 V2.1.1 (2017-01) [6.1]
-        // The complete MCI for one configuration shall normally be signalled in a 96ms period;
-        // the exceptions are that the FIG 0/8 for primary service components containing data applications and for data secondary service components,
-        // and the FIG 0/13 may be signalled at a slower rate but not less frequently than once per second.
-        // When the slower rate is used, the FIG 0/8 and FIG 0/13 for the same service component should be signalled in the FIBs corresponding to the same CIF.
-        QTimer::singleShot(200, this, &RadioControl::dabGetServiceList);
-    }
-
-    if ((RADIO_CONTROL_UEID_INVALID == m_ensemble.ueid) && (DABSDR_SYNC_LEVEL_FIC == m_syncLevel))
-    {   // valid ensemble sill not received
-        // wait some time and send new request
-        QTimer::singleShot(200, this, &RadioControl::dabGetEnsembleInfo);
-    }
-}
-
 
 void RadioControl::exit()
 {
@@ -725,14 +693,16 @@ QString RadioControl::ensembleConfigurationString() const
                               .arg(s.labelShort)
                               .arg(QString("%1").arg(s.SId.ecc(), 2, 16, QChar('0')).toUpper());
 
-            strOut << QString(" PTY: %1").arg(s.pty.s);
+            // ETSI EN 300 401 V2.1.1 [8.1.5]
+            // At any one time, the PTy shall be either Static or Dynamic;
+            // there shall be only one PTy per service.
             if (s.pty.d != 0)
             {
-                strOut << QString(" (dynamic %1), ").arg(s.pty.d);
+                strOut << QString(" PTY: %1 (dynamic), ").arg(s.pty.d);
             }
             else
             {
-                strOut << " (static), ";
+                strOut << QString(" PTY: %1 (static), ").arg(s.pty.s);
             }
             if (0 == s.ASu)
             {
@@ -968,7 +938,7 @@ void RadioControl::onEnsembleInfoFinished()
     m_isEnsembleInfoFinished = true;
     if (m_numReqPendingEnsemble <= 0)
     {
-#if 1 //RADIO_CONTROL_VERBOSE
+#if 1 // RADIO_CONTROL_VERBOSE
         qDebug() << "=== Ensemble information should be complete";
 #endif
         emit ensembleConfiguration(ensembleConfigurationString());
@@ -986,6 +956,47 @@ void RadioControl::resetCurrentService()
     m_currentService.announcement.switchState = AnnouncementSwitchState::NoAnnouncement;
     m_currentService.announcement.state = RadioControlAnnouncementState::None;
     m_currentService.announcement.id = DabAnnouncement::Undefined;
+}
+
+void RadioControl::eventHandler_ensembleInfo(RadioControlEvent *pEvent)
+{
+    // process ensemble info
+    dabsdrNtfEnsemble_t * pInfo = pEvent->pEnsembleInfo;
+
+#if RADIO_CONTROL_VERBOSE
+    qDebug("RadioControlEvent::ENSEMBLE_INFO 0x%8.8X '%s'", pInfo->ueid, pInfo->label.str);
+#endif
+
+#if (RADIO_CONTROL_TEST_MODE)
+    if (pInfo->label.str[0] != '\0')  // allow ECC == 0 in test mode
+#else
+    if (((pInfo->ueid & 0x00FF0000) != 0) && (pInfo->label.str[0] != '\0'))
+#endif
+    {
+        //serviceList.clear();
+        m_ensemble.ueid = pInfo->ueid;
+        m_ensemble.frequency = pInfo->frequency;
+        m_ensemble.LTO = pInfo->LTO;
+        m_ensemble.intTable = pInfo->intTable;
+        m_ensemble.alarm = pInfo->alarm;
+        m_ensemble.label = DabTables::convertToQString(pInfo->label.str, pInfo->label.charset).trimmed();
+        m_ensemble.labelShort = toShortLabel(m_ensemble.label, pInfo->label.charField).trimmed();
+        emit ensembleInformation(m_ensemble);
+
+        // request service list
+        // ETSI EN 300 401 V2.1.1 (2017-01) [6.1]
+        // The complete MCI for one configuration shall normally be signalled in a 96ms period;
+        // the exceptions are that the FIG 0/8 for primary service components containing data applications and for data secondary service components,
+        // and the FIG 0/13 may be signalled at a slower rate but not less frequently than once per second.
+        // When the slower rate is used, the FIG 0/8 and FIG 0/13 for the same service component should be signalled in the FIBs corresponding to the same CIF.
+        QTimer::singleShot(200, this, &RadioControl::dabGetServiceList);
+    }
+
+    if ((RADIO_CONTROL_UEID_INVALID == m_ensemble.ueid) && (DABSDR_SYNC_LEVEL_FIC == m_syncLevel))
+    {   // valid ensemble sill not received
+        // wait some time and send new request
+        QTimer::singleShot(200, this, &RadioControl::dabGetEnsembleInfo);
+    }
 }
 
 void RadioControl::eventHandler_serviceList(RadioControlEvent *pEvent)
@@ -1295,7 +1306,7 @@ void RadioControl::eventHandler_serviceSelection(RadioControlEvent *pEvent)
 #if RADIO_CONTROL_SPI_ENABLE
 #warning "Remove automatic SPI - this is for debug only"
                     startUserApplication(DabUserApplicationType::SPI, true);
-#endif \
+#endif
                     //#warning "Remove automatic TPEG - this is for debug only" \
                     //startUserApplication(DabUserApplicationType::TPEG, true);
                 }
@@ -1330,7 +1341,8 @@ void RadioControl::eventHandler_serviceStop(RadioControlEvent *pEvent)
 
 void RadioControl::eventHandler_announcementSupport(RadioControlEvent * pEvent)
 {
-    serviceIterator serviceIt = m_serviceList.find(pEvent->SId);
+    DabSId sid(pEvent->SId, m_ensemble.ecc());
+    serviceIterator serviceIt = m_serviceList.find(sid.value());
     if (serviceIt != m_serviceList.end())
     {   // service is in the list
         if (serviceIt->SId.isProgServiceId())
@@ -1395,6 +1407,38 @@ void RadioControl::eventHandler_announcementSwitching(RadioControlEvent * pEvent
         }
         pAsw += 1;
     }
+}
+
+void RadioControl::eventHandler_programmeType(RadioControlEvent * pEvent)
+{
+    DabSId sid(pEvent->SId, m_ensemble.ecc());
+    serviceIterator serviceIt = m_serviceList.find(sid.value());
+    if (serviceIt != m_serviceList.end())
+    {   // service is in the list
+        if (serviceIt->SId.isProgServiceId())
+        {   // found
+            serviceIt->pty.d = pEvent->pPty->d;
+            serviceIt->pty.s = pEvent->pPty->s;
+
+            // copy to all service components
+            for (auto & scIt : serviceIt->serviceComponents)
+            {
+                if (scIt.SId.isProgServiceId())
+                {
+                    scIt.pty = serviceIt->pty;
+                }
+            }
+
+            if (sid.value() == m_currentService.SId)
+            {
+                emit programmeTypeChanged(sid, serviceIt->pty);
+            }
+
+            emit ensembleConfiguration(ensembleConfigurationString());
+        }
+        else { /* not programme - should not happen  */ }
+    }
+    else { /* not found -> ignoring */ }
 }
 
 void RadioControl::setCurrentServiceAnnouncementSupport()
@@ -2322,6 +2366,19 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;
+    case DABSDR_NID_PTY:
+    {
+        dabsdrNtfPTy_t * pPty = new dabsdrNtfPTy_t;
+        memcpy(pPty, p->pData, sizeof(dabsdrNtfPTy_t));
+
+        RadioControlEvent * pEvent = new RadioControlEvent;
+        pEvent->type = RadioControlEventType::PROGRAMME_TYPE;
+        pEvent->status = p->status;
+        pEvent->SId = pPty->SId;
+        pEvent->pPty = pPty;
+        radioCtrl->emit_dabEvent(pEvent);
+    }
+    break;
     default:
         qDebug("Unexpected notification %d", p->nid);
     }    
