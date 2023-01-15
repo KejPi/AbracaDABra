@@ -399,19 +399,29 @@ private:
     bool getCurrentAudioServiceComponent(serviceComponentIterator & scIt);
     bool cgetCurrentAudioServiceComponent(serviceComponentConstIterator & scIt) const;
 
-    void updateSyncLevel(dabsdrSyncLevel_t s);
     QString toShortLabel(QString & label, uint16_t charField) const;
     QString ensembleConfigurationString() const;
     void clearEnsemble();
     void onEnsembleInfoFinished();
     bool isCurrentService(uint32_t sid, uint8_t scids) { return ((sid == m_currentService.SId) && (scids == m_currentService.SCIdS)); }
     void resetCurrentService();
+    void updateSyncStatus(dabsdrSyncLevel_t s);
     void setCurrentServiceAnnouncementSupport();
     void onAnnouncementTimeout();
     void onAnnouncementAudioAvailable();
     void announcementHandler(dabsdrAsw_t *pAnnouncement);
     bool startAnnouncement(uint8_t subChId);
     void stopAnnouncement();
+
+    // event handlers
+    void eventHandler_ensembleInfo(RadioControlEvent *pEvent);
+    void eventHandler_serviceList(RadioControlEvent *pEvent);
+    void eventHandler_serviceComponentList(RadioControlEvent *pEvent);
+    void eventHandler_userAppList(RadioControlEvent *pEvent);
+    void eventHandler_serviceSelection(RadioControlEvent *pEvent);
+    void eventHandler_serviceStop(RadioControlEvent *pEvent);
+    void eventHandler_announcementSupport(RadioControlEvent *pEvent);
+    void eventHandler_announcementSwitching(RadioControlEvent * pEvent);
 
     // wrapper functions for dabsdr API
     void dabTune(uint32_t freq) { dabsdrRequest_Tune(m_dabsdrHandle, freq); }
