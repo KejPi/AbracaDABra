@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.15)
 include (CheckLibraryExists)
 include (CheckSymbolExists)
 if(NOT WIN32)
@@ -8,7 +8,7 @@ endif()
 set(TARGET AbracaDABra)
 
 project(${TARGET}
-    VERSION 1.99.1
+    VERSION 1.99.2
     LANGUAGES CXX)
 
 # Select the release build type by default to get optimization flags
@@ -90,7 +90,6 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/dabsdr/CMakeLists.txt")
     set(DAB_INCLUDE_DIRS ${DABSDR_DIR}/src ${PROJECT_BINARY_DIR}/dabsdr/src)
 else()
     # dab library
-    #string(TOLOWER "${CMAKE_SYSTEM_NAME}_${CMAKE_HOST_SYSTEM_PROCESSOR}" PLATFORM)
     if (APPLE)
         if(CMAKE_OSX_ARCHITECTURES MATCHES "^x86")
             string(TOLOWER "${CMAKE_SYSTEM_NAME}_x86_64" PLATFORM)
@@ -106,13 +105,12 @@ else()
     else()
         string(TOLOWER "${CMAKE_SYSTEM_NAME}_${CMAKE_HOST_SYSTEM_PROCESSOR}" PLATFORM)
     endif()
-
     set(DABSDR_DIR "${PROJECT_SOURCE_DIR}/lib")
 
-    find_library(DAB_LINK_LIBRARIES dabsdr PATHS ${DABSDR_DIR}/${PLATFORM} NO_DEFAULT_PATH)
-    find_path(DAB_INCLUDE_DIRS dabsdr.h PATHS ${DABSDR_DIR}/${PLATFORM} NO_DEFAULT_PATH)
-    if (DAB_LINK_LIBRARIES)
-        message (STATUS "libdabsdr found: ${DAB_LINK_LIBRARIES}")
+    if (EXISTS "${DABSDR_DIR}/${PLATFORM}/cmake/dabsdr.cmake")
+        message (STATUS "libdabsdr found: ${DABSDR_DIR}/${PLATFORM}/cmake/dabsdr.cmake")
+        include(${DABSDR_DIR}/${PLATFORM}/cmake/dabsdr.cmake)
+        set(DAB_LINK_LIBRARIES dabsdr::dabsdr)
     else()
         message (FATAL_ERROR "libdabsdr not found.")
     endif()
@@ -430,3 +428,23 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia Svg REQUIRED)
 #########################################################
 ## AbracaDABra GUI
 add_subdirectory(gui)
+
+#########################################################
+## Install
+install(TARGETS ${TARGET} BUNDLE DESTINATION .)
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/dabsdr/CMakeLists.txt")
+    install(IMPORTED_RUNTIME_ARTIFACTS dabsdr::dabsdr)
+endif()
+
+#########################################################
+# Uninstall target
+if(NOT TARGET uninstall)
+  configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY)
+
+  add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+endif()
+

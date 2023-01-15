@@ -102,6 +102,7 @@ typedef enum dabsdrNotificationId_e
     DABSDR_NID_ENSEMBLE_INFO,
     DABSDR_NID_SERVICE_LIST,
     DABSDR_NID_SERVICE_COMPONENT_LIST,
+    DABSDR_NID_USER_APP_UPDATE,
     DABSDR_NID_USER_APP_LIST,
     DABSDR_NID_SERVICE_SELECTION,
     DABSDR_NID_SERVICE_STOP,
@@ -111,6 +112,7 @@ typedef enum dabsdrNotificationId_e
     DABSDR_NID_RESET,
     DABSDR_NID_ANNOUNCEMENT_SUPPORT,
     DABSDR_NID_ANNOUNCEMENT_SWITCHING,
+    DABSDR_NID_PTY,
 } dabsdrNotificationId_t;
 
 typedef enum dabsdrNotificationStatus_e
@@ -255,14 +257,14 @@ typedef struct
 
 typedef struct
 {
-    uint32_t SId;
+    uint32_t SId;   // Service ID (SId)
     uint8_t numServiceComponents;
     int (*getServiceComponentListItem)(dabsdrHandle_t handle, uint8_t scIdx, dabsdrServiceCompListItem_t * pServiceCompListItem);
 } dabsdrNtfServiceComponentList_t;
 
 typedef struct
 {   // service ID
-    uint32_t SId;
+    uint32_t SId;   // Service ID (SId)
 
     // Announcements support
     uint16_t ASu;
@@ -276,7 +278,13 @@ typedef struct
 
 typedef struct
 {
-    uint32_t SId;
+    uint32_t SId;   // Service ID (SId)
+    uint8_t SCIdS;  // Service Component Identifier within the Service (SCIdS)
+} dabsdrNtfUserAppUpdate_t;
+
+typedef struct
+{
+    uint32_t SId;   // Service ID (SId)
     uint8_t SCIdS;  // Service Component Identifier within the Service (SCIdS)
     uint8_t numUserApps;
     int (*getUserAppListItem)(dabsdrHandle_t handle, uint8_t uaIdx, dabsdrUserAppListItem_t * pUserAppListItem);
@@ -303,8 +311,8 @@ typedef struct
 
 typedef struct
 {
-    uint32_t SId;
-    uint8_t SCIdS;
+    uint32_t SId;   // Service ID (SId)
+    uint8_t SCIdS;  // Service Component Identifier within the Service (SCIdS)
     dabsdrDecoderId_t id;
 } dabsdrNtfServiceSelection_t;
 
@@ -333,6 +341,13 @@ typedef struct
 {
     dabsdrAsw_t asw[8];
 } dabsdrNtfAnnouncementSwitching_t;
+
+typedef  struct {
+    uint32_t SId;   // Service ID (SId)
+    uint8_t s;  // static
+    uint8_t d;  // dynamic
+} dabsdrNtfPTy_t;
+
 
 // input functions
 typedef void (*dabsdrInputFunc_t)(float [], uint16_t);
