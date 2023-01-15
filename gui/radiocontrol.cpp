@@ -183,6 +183,14 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         delete pEvent->pServiceCompList;
     }
         break;
+    case RadioControlEventType::USER_APP_UPDATE:
+    {
+#if RADIO_CONTROL_VERBOSE
+        qDebug("RadioControlEvent::USER_APP_UPDATE SID %8.8X SCIdS %d", pEvent->SId, pEvent->SCIdS);
+#endif
+        dabGetUserApps(pEvent->SId, pEvent->SCIdS);
+    }
+    break;
     case RadioControlEventType::USER_APP_LIST:
     {
 #if RADIO_CONTROL_VERBOSE
@@ -922,15 +930,12 @@ void RadioControl::clearEnsemble()
     m_ensemble.frequency = 0;
     m_ensemble.alarm = 0;
     m_ensembleInfoTimeoutTimer->stop();
-    m_isEnsembleInfoFinished = false;
 
     emit ensembleConfiguration("");
 }
 
 void RadioControl::onEnsembleInfoFinished()
 {
-    m_ensembleInfoTimeoutTimer->stop();
-    m_isEnsembleInfoFinished = true;
     emit ensembleConfiguration(ensembleConfigurationString());
 }
 
@@ -1001,7 +1006,6 @@ void RadioControl::eventHandler_serviceList(RadioControlEvent *pEvent)
     else
     {
         m_numReqPendingServiceList = 0;
-        m_numReqPendingEnsemble = 0;
         for (auto const & dabService : *pServiceList)
         {
             DabSId sid(dabService.sid, m_ensemble.ecc());
@@ -1150,8 +1154,11 @@ void RadioControl::eventHandler_serviceComponentList(RadioControlEvent *pEvent)
                 for (auto & serviceComp : serviceIt->serviceComponents)
                 {
                     serviceComp.userApps.clear();
-                    m_numReqPendingEnsemble += 1;
-                    dabGetUserApps(serviceIt->SId.value(), serviceComp.SCIdS);
+
+                    // request user apps -> wait 1 second before asking
+                    uint32_t sid = serviceIt->SId.value();
+                    uint8_t scids = serviceComp.SCIdS;
+                    QTimer::singleShot(1000, this, [this, sid, scids](){ dabGetUserApps(sid, scids); } );
                 }
                 if (--m_numReqPendingServiceList == 0)
                 {   // service list is complete
@@ -1178,7 +1185,6 @@ void RadioControl::eventHandler_serviceComponentList(RadioControlEvent *pEvent)
 
 void RadioControl::eventHandler_userAppList(RadioControlEvent *pEvent)
 {
-    m_numReqPendingEnsemble -= 1;
     if (DABSDR_NSTAT_SUCCESS == pEvent->status)
     {
         QList<dabsdrUserAppListItem_t> * pList = pEvent->pUserAppList;
@@ -1227,7 +1233,7 @@ void RadioControl::eventHandler_userAppList(RadioControlEvent *pEvent)
 #if RADIO_CONTROL_SPI_ENABLE
 #warning "Remove automatic SPI - this is for debug only"
                             startUserApplication(DabUserApplicationType::SPI, true);
-#endif \
+#endif
                             //#warning "Remove automatic TPEG - this is for debug only" \
                             //startUserApplication(DabUserApplicationType::TPEG, true);
                         }
@@ -1243,15 +1249,6 @@ void RadioControl::eventHandler_userAppList(RadioControlEvent *pEvent)
         {   // no user apps
             // TSI EN 300 401 V2.1.1 [6.1]
             // FIG 0/13 may be signalled at a slower rate but not less frequently than once per second.
-            // Lets try again in 1 second -> we do not know if there are really no user apps or we missed FIG0/13
-            if (!m_isEnsembleInfoFinished)
-            {
-                m_numReqPendingEnsemble += 1;
-                uint32_t sid = pEvent->SId;
-                uint8_t scids = pEvent->SCIdS;
-                QTimer::singleShot(1000, this, [this, sid, scids](){ dabGetUserApps(sid, scids); } );
-            }
-            else { /* timeout occured */ }
         }
     }
 }
@@ -1274,7 +1271,6 @@ void RadioControl::eventHandler_serviceSelection(RadioControlEvent *pEvent)
                     emit audioServiceSelection(*scIt);
 
                     // discovery point -> request UserApps and Announcements information update
-                    m_numReqPendingEnsemble += 1;
                     dabGetUserApps(m_currentService.SId, m_currentService.SCIdS);
                     dabGetAnnouncementSupport(m_currentService.SId);
 
@@ -2204,7 +2200,18 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
             qDebug("SId %4.4X not found", pInfo->SId);
         }
     }
-        break;
+    break;
+    case DABSDR_NID_USER_APP_UPDATE:
+    {
+        const dabsdrNtfUserAppUpdate_t * pUserApps = (const dabsdrNtfUserAppUpdate_t * ) p->pData;
+        RadioControlEvent * pEvent = new RadioControlEvent;
+        pEvent->type = RadioControlEventType::USER_APP_UPDATE;
+        pEvent->status = p->status;
+        pEvent->SId = pUserApps->SId;
+        pEvent->SCIdS = pUserApps->SCIdS;
+        radioCtrl->emit_dabEvent(pEvent);
+    }
+    break;
     case DABSDR_NID_USER_APP_LIST:
     {
         const dabsdrNtfUserAppList_t * pInfo = (const dabsdrNtfUserAppList_t * ) p->pData;

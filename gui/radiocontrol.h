@@ -232,6 +232,7 @@ enum class RadioControlEventType
     ENSEMBLE_INFO,
     SERVICE_LIST,
     SERVICE_COMPONENT_LIST,
+    USER_APP_UPDATE,
     USER_APP_LIST,
     ANNOUNCEMENT_SUPPORT,
     SERVICE_SELECTION,
@@ -294,6 +295,7 @@ struct RadioControlEvent
         dabsdrDecoderId_t decoderId;
         // programme type change
         dabsdrNtfPTy_t * pPty;
+
     };
 };
 
@@ -382,12 +384,7 @@ private:
     // when the service list is complete
     int m_numReqPendingServiceList = 0;
 
-    // this is a counter of requests to check
-    // when the service list is complete
-    int m_numReqPendingEnsemble = 0;
-
     // set when ensemble information is complete
-    bool m_isEnsembleInfoFinished = false;
     QTimer * m_ensembleInfoTimeoutTimer;
 
     bool m_isReconfigurationOngoing = false;
