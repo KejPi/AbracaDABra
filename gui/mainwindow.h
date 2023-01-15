@@ -98,6 +98,7 @@ private:
     // input device
     InputDeviceId m_inputDeviceId = InputDeviceId::UNDEFINED;
     InputDevice * m_inputDevice = nullptr;
+    InputDeviceId m_inputDeviceIdRequest = InputDeviceId::UNDEFINED;
 
     // audio decoder
     QThread * m_audioDecoderThread;

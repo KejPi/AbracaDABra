@@ -823,7 +823,6 @@ void MainWindow::channelSelected()
         ui->serviceTreeView->setEnabled(false);
     }
 
-
     clearEnsembleInformationLabels();
     ui->channelCombo->setDisabled(true);
     ui->frequencyLabel->setText("Tuning...  ");
@@ -909,7 +908,7 @@ void MainWindow::onTuneDone(uint32_t freq)
         clearServiceInformationLabels();
         if (m_deviceChangeRequested)
         {
-            initInputDevice(m_inputDeviceId);
+            initInputDevice(m_inputDeviceIdRequest);
         }
     }
 }
@@ -1347,8 +1346,8 @@ void MainWindow::onNewInputDeviceSettings()
 
 void MainWindow::changeInputDevice(const InputDeviceId & d)
 {
+    m_inputDeviceIdRequest = d;
     m_deviceChangeRequested = true;
-    m_inputDeviceId = d;
     if (m_isPlaying)
     { // stop
         stop();
@@ -1402,7 +1401,27 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
         if (m_inputDevice->openDevice())
-        {  // rtl sdr is available
+        {   // rtl sdr is available
+            if (InputDeviceId::RAWFILE == m_inputDeviceId)
+            {   // if switching from RAW load service list
+
+                // clear service list
+                m_serviceList->clear();
+
+                QSettings * settings;
+                if (m_iniFilename.isEmpty())
+                {
+                    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+                }
+                else
+                {
+                    settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+                }
+                m_serviceList->load(*settings);
+                delete settings;
+            }
+            else { /* keep service list as it is */}
+
             m_inputDeviceId = InputDeviceId::RTLSDR;
 
             // setup dialog
@@ -1459,6 +1478,26 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
         if (m_inputDevice->openDevice())
         {  // rtl tcp is available
+            if (InputDeviceId::RAWFILE == m_inputDeviceId)
+            {   // if switching from RAW load service list
+
+                // clear service list
+                m_serviceList->clear();
+
+                QSettings * settings;
+                if (m_iniFilename.isEmpty())
+                {
+                    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+                }
+                else
+                {
+                    settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+                }
+                m_serviceList->load(*settings);
+                delete settings;
+            }
+            else { /* keep service list as it is */}
+
             m_inputDeviceId = InputDeviceId::RTLTCP;
 
             // setup dialog
@@ -1492,7 +1531,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     break;
     case InputDeviceId::AIRSPY:
     {
-#if HAVE_AIRSPY
+#if HAVE_AIRSPY       
         m_inputDevice = new AirspyInput(m_setupDialog->settings().airspy.prefer4096kHz);
 
         // signals have to be connected before calling isAvailable
@@ -1507,6 +1546,26 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
         if (m_inputDevice->openDevice())
         {  // airspy is available
+            if (InputDeviceId::RAWFILE == m_inputDeviceId)
+            {   // if switching from RAW load service list
+
+                // clear service list
+                m_serviceList->clear();
+
+                QSettings * settings;
+                if (m_iniFilename.isEmpty())
+                {
+                    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+                }
+                else
+                {
+                    settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+                }
+                m_serviceList->load(*settings);
+                delete settings;
+            }
+            else { /* keep service list as it is */}
+
             m_inputDeviceId = InputDeviceId::AIRSPY;
 
             // enable band scan
@@ -1563,6 +1622,26 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
         if (m_inputDevice->openDevice())
         {  // SoapySDR is available
+            if (InputDeviceId::RAWFILE == m_inputDeviceId)
+            {   // if switching from RAW load service list
+
+                // clear service list
+                m_serviceList->clear();
+
+                QSettings * settings;
+                if (m_iniFilename.isEmpty())
+                {
+                    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+                }
+                else
+                {
+                    settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+                }
+                m_serviceList->load(*settings);
+                delete settings;
+            }
+            else { /* keep service list as it is */}
+
             m_inputDeviceId = InputDeviceId::SOAPYSDR;
 
             // setup dialog
@@ -1603,7 +1682,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     case InputDeviceId::RAWFILE:
     {
         m_inputDevice = new RawFileInput();
-        m_inputDeviceId = InputDeviceId::RAWFILE;
 
         // tuning procedure
         connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
@@ -1618,9 +1696,29 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
         // we can open device now
         if (m_inputDevice->openDevice())
-        {  // raw file is available
+        {   // raw file is available
+            if (InputDeviceId::RAWFILE != m_inputDeviceId)
+            {   // if switching from live source save current service list
+                QSettings * settings;
+                if (m_iniFilename.isEmpty())
+                {
+                    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+                }
+                else
+                {
+                    settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+                }
+                m_serviceList->save(*settings);
+                settings->sync();
+
+                delete settings;
+            }
+            else { /* do nothing if switching from RAW file */ }
+
             // clear service list
             m_serviceList->clear();
+
+            m_inputDeviceId = InputDeviceId::RAWFILE;
 
             // enable service list
             ui->serviceListView->setEnabled(true);
@@ -1807,28 +1905,31 @@ void MainWindow::saveSettings()
     settings->setValue("RAW-FILE/format", int(s.rawfile.format));
     settings->setValue("RAW-FILE/loop", s.rawfile.loopEna);
 
-    QModelIndex current = ui->serviceListView->currentIndex();
-    const SLModel * model = reinterpret_cast<const SLModel*>(current.model());
-    ServiceListConstIterator it = m_serviceList->findService(model->id(current));
-    if (m_serviceList->serviceListEnd() != it)
-    {
-        m_SId = (*it)->SId();
-        m_SCIdS = (*it)->SCIdS();
-        m_frequency = (*it)->getEnsemble()->frequency();
+    if ((InputDeviceId::RAWFILE != m_inputDeviceId) && (InputDeviceId::UNDEFINED != m_inputDeviceId))
+    {   // save current service and service list
+        QModelIndex current = ui->serviceListView->currentIndex();
+        const SLModel * model = reinterpret_cast<const SLModel*>(current.model());
+        ServiceListConstIterator it = m_serviceList->findService(model->id(current));
+        if (m_serviceList->serviceListEnd() != it)
+        {
+            m_SId = (*it)->SId();
+            m_SCIdS = (*it)->SCIdS();
+            m_frequency = (*it)->getEnsemble()->frequency();
 
-        settings->setValue("SID", m_SId.value());
-        settings->setValue("SCIdS", m_SCIdS);
-        settings->setValue("Frequency", m_frequency);
+            settings->setValue("SID", m_SId.value());
+            settings->setValue("SCIdS", m_SCIdS);
+            settings->setValue("Frequency", m_frequency);
+        }
+        settings->setValue("ExpertMode", m_expertMode);
+
+        m_serviceList->save(*settings);
     }
-    settings->setValue("ExpertMode", m_expertMode);
-
-    m_serviceList->save(*settings);
+    else { /* RAW file does not store service and service list */ }
 
     settings->sync();
 
     delete settings;
 }
-
 
 void MainWindow::onFavoriteToggled(bool checked)
 {
