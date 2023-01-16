@@ -84,11 +84,10 @@ EnsembleInfoDialog::~EnsembleInfoDialog()
 }
 
 void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
-{
+{    
     if (isVisible())
     {
         ui->ensStructureTextEdit->setHtml(txt);
-
         if (txt.isEmpty())
         {   // empty ensemble configuration means tuning to new frequency
             clearSignalInfo();

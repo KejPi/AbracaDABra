@@ -22,7 +22,7 @@
 // there are 12 FIB's in one DAB frame
 #define RADIO_CONTROL_NOTIFICATION_FIB_EXPECTED  (12*(1 << RADIO_CONTROL_NOTIFICATION_PERIOD))
 
-#define RADIO_CONTROL_ENSEMBLE_TIMEOUT_SEC (10)
+#define RADIO_CONTROL_ENSEMBLE_CONFIGURATION_UPDATE_TIMEOUT_SEC (1)
 #define RADIO_CONTROL_ANNOUNCEMENT_TIMEOUT_SEC (5)
 
 // this is used for testing of receiver perfomance, it allows ensemble ECC = 0
@@ -385,7 +385,8 @@ private:
     int m_numReqPendingServiceList = 0;
 
     // set when ensemble information is complete
-    QTimer * m_ensembleInfoTimeoutTimer;
+    QTimer * m_ensembleConfigurationTimer;
+    bool m_ensembleConfigurationUpdateRequest = false;
 
     bool m_isReconfigurationOngoing = false;
 
@@ -401,9 +402,11 @@ private:
     bool cgetCurrentAudioServiceComponent(serviceComponentConstIterator & scIt) const;
 
     QString toShortLabel(QString & label, uint16_t charField) const;
-    QString ensembleConfigurationString() const;
+
     void clearEnsemble();
-    void onEnsembleInfoFinished();
+    QString ensembleConfigurationString() const;
+    void ensembleConfigurationUpdate();
+    void ensembleConfigurationDispatch();
     bool isCurrentService(uint32_t sid, uint8_t scids) { return ((sid == m_currentService.SId) && (scids == m_currentService.SCIdS)); }
     void resetCurrentService();
     void updateSyncStatus(dabsdrSyncLevel_t s);

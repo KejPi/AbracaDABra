@@ -25,10 +25,10 @@ RadioControl::RadioControl(QObject *parent) : QObject(parent)
     m_frequency = 0;
     m_serviceList.clear();
     m_serviceRequest.SId = m_serviceRequest.SCIdS = 0;
-    m_ensembleInfoTimeoutTimer = new QTimer(this);
-    m_ensembleInfoTimeoutTimer->setSingleShot(true);
-    m_ensembleInfoTimeoutTimer->setInterval(RADIO_CONTROL_ENSEMBLE_TIMEOUT_SEC*1000);
-    connect(m_ensembleInfoTimeoutTimer, &QTimer::timeout, this, &RadioControl::onEnsembleInfoFinished);
+    m_ensembleConfigurationTimer = new QTimer(this);
+    m_ensembleConfigurationTimer->setSingleShot(true);
+    m_ensembleConfigurationTimer->setInterval(RADIO_CONTROL_ENSEMBLE_CONFIGURATION_UPDATE_TIMEOUT_SEC*1000);
+    connect(m_ensembleConfigurationTimer, &QTimer::timeout, this, &RadioControl::ensembleConfigurationDispatch);
 
     m_currentService.announcement.timeoutTimer = new QTimer(this);
     m_currentService.announcement.timeoutTimer->setSingleShot(true);
@@ -41,8 +41,8 @@ RadioControl::RadioControl(QObject *parent) : QObject(parent)
 
 RadioControl::~RadioControl()
 {
-    m_ensembleInfoTimeoutTimer->stop();
-    delete m_ensembleInfoTimeoutTimer;
+    m_ensembleConfigurationTimer->stop();
+    delete m_ensembleConfigurationTimer;
     m_currentService.announcement.timeoutTimer->stop();
     delete m_currentService.announcement.timeoutTimer;
 
@@ -929,14 +929,37 @@ void RadioControl::clearEnsemble()
     m_ensemble.labelShort.clear();
     m_ensemble.frequency = 0;
     m_ensemble.alarm = 0;
-    m_ensembleInfoTimeoutTimer->stop();
+    m_ensembleConfigurationTimer->stop();
+    m_ensembleConfigurationUpdateRequest = false;
 
-    emit ensembleConfiguration("");
+    emit ensembleConfiguration(QString());
 }
 
-void RadioControl::onEnsembleInfoFinished()
+void RadioControl::ensembleConfigurationUpdate()
 {
-    emit ensembleConfiguration(ensembleConfigurationString());
+    if (m_ensembleConfigurationTimer->isActive())
+    {   // will be done on timer timeout
+        m_ensembleConfigurationUpdateRequest = true;
+        //qDebug() << Q_FUNC_INFO << "delaying ensemble update";
+    }
+    else
+    {   // do update and start timer
+        m_ensembleConfigurationUpdateRequest = false;
+        emit ensembleConfiguration(ensembleConfigurationString());
+        m_ensembleConfigurationTimer->start();
+        //qDebug() << Q_FUNC_INFO << "immediate ensemble update";
+    }
+
+}
+
+void RadioControl::ensembleConfigurationDispatch()
+{
+    if (m_ensembleConfigurationUpdateRequest)
+    {
+        m_ensembleConfigurationUpdateRequest = false;
+        emit ensembleConfiguration(ensembleConfigurationString());
+    }
+    else { /* do nothing */ }
 }
 
 void RadioControl::resetCurrentService()
@@ -1170,9 +1193,6 @@ void RadioControl::eventHandler_serviceComponentList(RadioControlEvent *pEvent)
                     }
 
                     emit serviceListComplete(m_ensemble);
-
-                    // start timeout timer (10 sec) for getting info about uuser apps and announcements
-                    m_ensembleInfoTimeoutTimer->start();
                 }
             }
         }
@@ -1238,7 +1258,7 @@ void RadioControl::eventHandler_userAppList(RadioControlEvent *pEvent)
                             //startUserApplication(DabUserApplicationType::TPEG, true);
                         }
 
-                        emit ensembleConfiguration(ensembleConfigurationString());
+                        ensembleConfigurationUpdate();
                     }
                 }
                 else { /* SC not found - this should not happen */ }
@@ -1341,7 +1361,7 @@ void RadioControl::eventHandler_announcementSupport(RadioControlEvent * pEvent)
                     setCurrentServiceAnnouncementSupport();
                 }
 
-                emit ensembleConfiguration(ensembleConfigurationString());
+                ensembleConfigurationUpdate();
             }
             else { /* no announcment support */ }
         }
@@ -1401,8 +1421,7 @@ void RadioControl::eventHandler_programmeType(RadioControlEvent * pEvent)
             {
                 emit programmeTypeChanged(sid, serviceIt->pty);
             }
-
-            emit ensembleConfiguration(ensembleConfigurationString());
+            ensembleConfigurationUpdate();
         }
         else { /* not programme - should not happen  */ }
     }
