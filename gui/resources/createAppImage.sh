@@ -10,7 +10,7 @@ if [ -d build ]; then
 fi
 mkdir build
 cd build
-cmake .. -DAIRSPY=ON
+cmake .. -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON
 make
 
 # Prepare directory structure
@@ -18,7 +18,7 @@ mkdir -p ./$APPDIR/usr/bin/
 cp gui/AbracaDABra $APPDIR/usr/bin/
 
 mkdir -p ./$APPDIR/usr/lib/
-# libsdrdab will be copied automatically
+# libdabsdr will be copied automatically
 
 # create icon
 ICON_DIR=$APPDIR/usr/share/icons/hicolor/512x512/apps
