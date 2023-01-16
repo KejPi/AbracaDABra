@@ -1,19 +1,19 @@
 # AbracaDABra
-Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR). It works with cheap RTL-SDR (RTL2832U) USB sticks but also with AirSpy devices and with devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
+Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks but also with AirSpy devices and with devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
 
 Application is based on Qt6 cross-platform software development framework and can run on any platform supported by Qt6. 
-Prebuilt binaries are released for Windows, MacOS (both Intel and Apple Silicon) and Linux (AppImage). AbracaDABra can run also under Linux AARCH64 (ARM64)
-for example on Raspberry Pi 4. 
+Prebuilt binaries are released for Windows, MacOS (both Intel and Apple Silicon) and Linux x86-64 (AppImage). 
+AbracaDABra can run also under Linux AARCH64 (ARM64) for example on Raspberry Pi 4. 
 
 <img width="1634" alt="Snímek obrazovky 2022-06-28 v 22 32 25" src="https://user-images.githubusercontent.com/6438380/176279785-1e212201-3c1d-428f-9416-b1b0b464238b.png">
 
 ## Features
-* Following input devices supported:
+* Following input devices are supported:
   * RTL-SDR (default device)
   * Airspy (optional)
   * SoapySDR (optional)
   * RTL-TCP
-  * Raw file input (in expert mode only, int16_t or uint8_t format)
+  * Raw file input (in expert mode only, INT16 or UINT8 format)
 * Band scan with automatic service list
 * Service list management
 * DAB (mp2) and DAB+ (AAC) audio decoding
@@ -21,7 +21,7 @@ for example on Raspberry Pi 4.
 * Dynamic label (DL) and Dynamic label plus (DL+)
 * MOT slideshow (SLS) and categorized slideshow (CatSLS) from PAD or from secondary data service
 * Audio services reconfiguration
-* Ensemble structure view with all technical details.
+* Ensemble structure view with all technical details
 * Raw file dumping
 * Only band III and DAB mode 1 is supported.
 * Simple user-friendly interface, trying to follow DAB _Rules of implementation (<a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>)_
@@ -63,7 +63,7 @@ The alarm announcements carry emergency warning information that is of utmost im
 Announcements from other service display a thematic placeholder. <a href="https://www.flaticon.com/authors/basic-miscellany/lineal-color" title="linear color">The artwork of placeholders are created by Smashicons - Flaticon</a>
 
 ## Expert settings
-Some settings can only be changed by editting of the AbracaDABra.ini file. File location is OS dependent:
+Some settings can only be changed by editting of the INI file. File location is OS dependent:
 * MacOS & Linux: `$HOME/.config/AbracaDABra/AbracaDABra.ini`
 * Windows: `%USERPROFILE%\AppData\Roaming\AbracaDABra\AbracaDABra.ini`
 
@@ -79,7 +79,7 @@ Following settings can be changed by editing AbracaDABra.ini:
       [SOAPYSDR]
       bandwidth=0     # 0 means default bandwidth, positive value means bandwidth value in Hz (e.g. bandwidth=1530000 is 1.53MHz BW)
 
-Application shall not run while changing ini file, otherwise the settings will be overwritten.
+Application shall not run while changing INI file, otherwise the settings will be overwritten.
 
 It is also possible to use other than default INI file using `--ini` or `-i` command line parameter.
 
