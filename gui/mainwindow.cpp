@@ -2318,7 +2318,7 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object, Instance inst)
 
                 QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(dlPlusFrame->layout());
                 layout->insertLayout(index, uiObj->getLayout());
-                dlPlusFrame->setMaximumHeight(dlPlusFrame->minimumHeight() > 120 ? dlPlusFrame->minimumHeight() : 120);
+                //dlPlusFrame->setMaximumHeight(dlPlusFrame->minimumHeight() > 120 ? dlPlusFrame->minimumHeight() : 120);
             }
             else
             { /* objects that we do not display: Descriptors, PROGRAMME_FREQUENCY, INFO_DATE_TIME, PROGRAMME_SUBCHANNEL*/ }
@@ -2453,7 +2453,7 @@ DLPlusObjectUI::DLPlusObjectUI(const DLPlusObject &obj) : m_dlPlusObject(obj)
             m_tagText = new QLabel(obj.getTag());
         }
 
-        m_tagText->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
+        //m_tagText->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
         m_tagText->setWordWrap(true);
         m_tagText->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         m_layout->addWidget(m_tagText);

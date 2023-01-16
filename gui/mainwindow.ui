@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>921</width>
-    <height>677</height>
+    <height>633</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -357,6 +357,12 @@
     </item>
     <item row="3" column="0">
      <widget class="QStackedWidget" name="dlWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="currentIndex">
        <number>1</number>
       </property>
@@ -484,7 +490,13 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>120</height>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>130</height>
          </size>
         </property>
         <property name="frameShape">
