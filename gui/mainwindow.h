@@ -159,6 +159,7 @@ private:
     void serviceListViewUpdateSelection();
     void changeInputDevice(const InputDeviceId &d);
     void displaySubchParams(const RadioControlServiceComponent &s);
+    void toggleDLPlus(bool toggle);
 
     void onInputDeviceReady();
     void onEnsembleInfo(const RadioControlEnsemble &ens);
@@ -176,7 +177,6 @@ private:
     void onDLComplete_Service(const QString &dl);
     void onDLComplete_Announcement(const QString & dl);
     void onDLComplete(const QString & dl, QLabel * dlLabel);
-    void onDLPlusToggled(bool toggle);
     void onDLPlusObjReceived_Service(const DLPlusObject & object);
     void onDLPlusObjReceived_Announcement(const DLPlusObject & object);
     void onDLPlusObjReceived(const DLPlusObject & object, Instance inst);

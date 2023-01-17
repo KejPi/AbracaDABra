@@ -68,6 +68,7 @@ public:
 #endif
         uint16_t announcementEna;
         bool bringWindowToForeground;
+        bool dlPlusEna = true;
     };
 
     SetupDialog(QWidget *parent = nullptr);

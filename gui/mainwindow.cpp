@@ -73,7 +73,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     //QWindowsWindowFunctions::setWindowActivationBehavior(QWindowsWindowFunctions::AlwaysActivateWindow);
 #endif
 
-
     // favorites control
     ui->favoriteLabel->setCheckable(true);
     ui->favoriteLabel->setTooltip("Add service to favorites", false);
@@ -191,18 +190,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     volumeWidget->setLayout(volumeLayout);
 
     //DL+
-    ui->dlPlusLabel->setCheckable(true);
-    ui->dlPlusLabel->setTooltip("Show DL+", false);
-    ui->dlPlusLabel->setTooltip("Hide DL+", true);
-    ui->dlPlusLabel->setChecked(false);
     ui->dlPlusWidget->setVisible(false);
-
-    QSizePolicy sp_retain = ui->dlPlusLabel->sizePolicy();
-    sp_retain.setRetainSizeWhenHidden(true);
-    ui->dlPlusLabel->setSizePolicy(sp_retain);
-
-    ui->dlPlusLabel->setHidden(true);
-    connect(ui->dlPlusLabel, &ClickableLabel::toggled, this, &MainWindow::onDLPlusToggled);
 
     QGridLayout * layout = new QGridLayout(widget);
     layout->addWidget(m_timeBasicQualWidget, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
@@ -1212,16 +1200,10 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
             delete objPtr;
         }
         m_dlObjCache[Instance::Announcement].clear();
-        if (m_dlObjCache[Instance::Service].isEmpty())
-        {   // there are no DL+ objects from normal service ==> disabling switch
-            ui->dlPlusLabel->setVisible(false);
-            ui->dlPlusLabel->setChecked(false);
-            onDLPlusToggled(false);
-        }
-        else
-        {
-            ui->dlPlusLabel->setVisible(true);
-        }
+
+        // disabling DL+ if no objects
+        toggleDLPlus(!m_dlObjCache[Instance::Service].isEmpty());
+
         ui->slsWidget->setCurrentIndex(Instance::Service);
         ui->announcementLabel->setVisible(false);
         break;
@@ -1273,16 +1255,10 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
             delete objPtr;
         }
         m_dlObjCache[Instance::Announcement].clear();
-        if (m_dlObjCache[Instance::Service].isEmpty())
-        {   // there are no DL+ objects from normal service ==> disabling switch
-            ui->dlPlusLabel->setVisible(false);
-            ui->dlPlusLabel->setChecked(false);
-            onDLPlusToggled(false);
-        }
-        else
-        {
-            ui->dlPlusLabel->setVisible(true);
-        }
+
+        // disabling DL+ if no objects
+        toggleDLPlus(!m_dlObjCache[Instance::Service].isEmpty());
+
         ui->slsWidget->setCurrentIndex(Instance::Service);
 
         break;
@@ -2052,19 +2028,9 @@ void MainWindow::serviceListViewUpdateSelection()
     }
 }
 
-void MainWindow::onDLPlusToggled(bool toggle)
+void MainWindow::toggleDLPlus(bool toggle)
 {
-    int h = 0;
-    if (height() > minimumSizeHint().height())
-    {   // user changed window height
-        h = height();
-    }
-    ui->dlPlusWidget->setVisible(toggle);
-
-    //QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
-    QTimer::singleShot(10, this, [this, h](){
-        resize(width(), (h > minimumSizeHint().height()) ? h : minimumSizeHint().height());
-    } );
+    ui->dlPlusWidget->setVisible(toggle && m_setupDialog->settings().dlPlusEna);
 }
 
 void MainWindow::switchMode()
@@ -2220,9 +2186,6 @@ void MainWindow::setIcons()
         m_muteLabel->setIcon(":/resources/volume_on_dark.png", false);
         m_muteLabel->setIcon(":/resources/volume_off_dark.png", true);
 
-        ui->dlPlusLabel->setIcon(":/resources/down_dark.png", false);
-        ui->dlPlusLabel->setIcon(":/resources/up_dark.png", true);
-
         ui->catSlsLabel->setIcon(":/resources/catSls_dark.png");
 
         ui->announcementLabel->setIcon(":/resources/announcement_active_dark.png", true);
@@ -2239,9 +2202,6 @@ void MainWindow::setIcons()
 
         m_muteLabel->setIcon(":/resources/volume_on.png", false);
         m_muteLabel->setIcon(":/resources/volume_off.png", true);
-
-        ui->dlPlusLabel->setIcon(":/resources/down.png", false);
-        ui->dlPlusLabel->setIcon(":/resources/up.png", true);
 
         ui->catSlsLabel->setIcon(":/resources/catSls.png");
 
@@ -2285,7 +2245,7 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object, Instance inst)
     else
     { /* no dummy object */ }
 
-    ui->dlPlusLabel->setVisible(true);
+    toggleDLPlus(true);
 
     if (object.isDelete())
     {   // [ETSI TS 102 980 V2.1.2] 5.3.2 Deleting objects
@@ -2389,9 +2349,7 @@ void MainWindow::onDLPlusItemRunning(bool isRunning, Instance inst)
 void MainWindow::onDLReset_Service()
 {
     ui->dynamicLabel_Service->clear();
-    ui->dlPlusLabel->setVisible(false);
-    ui->dlPlusLabel->setChecked(false);
-    onDLPlusToggled(false);
+    toggleDLPlus(false);
 
     for (auto objPtr : m_dlObjCache[Instance::Service])
     {
@@ -2403,9 +2361,7 @@ void MainWindow::onDLReset_Service()
 void MainWindow::onDLReset_Announcement()
 {
     ui->dynamicLabel_Announcement->clear();
-    ui->dlPlusLabel->setVisible(false);
-    ui->dlPlusLabel->setChecked(false);
-    onDLPlusToggled(false);
+    toggleDLPlus(false);
 
     for (auto objPtr : m_dlObjCache[Instance::Announcement])
     {
