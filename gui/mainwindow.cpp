@@ -130,19 +130,21 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     onSnrLevel(0);
     onSyncStatus(uint8_t(DabSyncLevel::NoSync));
 
-    m_setupAction = new QAction("Setup...", this);
-    //setupAct->setStatusTip("Application settings");       // this is shown in status bar
+    m_setupAction = new QAction("Settings...", this);
     connect(m_setupAction, &QAction::triggered, this, &MainWindow::showSetupDialog);
 
     m_clearServiceListAction = new QAction("Clear service list", this);
     connect(m_clearServiceListAction, &QAction::triggered, this, &MainWindow::clearServiceList);
 
     m_bandScanAction = new QAction("Band scan...", this);
-    //scanAct->setStatusTip("Seach for available service"); // this is shown in status bar
     connect(m_bandScanAction, &QAction::triggered, this, &MainWindow::bandScan);
 
     m_switchModeAction = new QAction("Expert mode", this);
-    connect(m_switchModeAction, &QAction::triggered, this, &MainWindow::switchMode);
+    m_switchModeAction->setCheckable(true);
+    connect(m_switchModeAction, &QAction::toggled, this, &MainWindow::setExpertMode);
+
+    m_showDLPlusAction = new QAction("Dynamic Label Plus (DL+)", this);
+    m_showDLPlusAction->setCheckable(true);
 
     m_ensembleInfoAction = new QAction("Ensemble information", this);
     connect(m_ensembleInfoAction, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
@@ -153,9 +155,12 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_menu = new QMenu(this);
     m_menu->addAction(m_setupAction);
     m_menu->addAction(m_bandScanAction);
-    m_menu->addAction(m_switchModeAction);
-    m_menu->addAction(m_ensembleInfoAction);
     m_menu->addAction(m_clearServiceListAction);
+    m_menu->addSeparator();
+    m_menu->addAction(m_switchModeAction);
+    m_menu->addAction(m_showDLPlusAction);
+    m_menu->addSeparator();
+    m_menu->addAction(m_ensembleInfoAction);
     m_menu->addAction(m_aboutAction);
 
     m_settingsLabel = new ClickableLabel(this);
@@ -1751,9 +1756,16 @@ void MainWindow::loadSettings()
     // load servicelist
     m_serviceList->load(*settings);
     restoreGeometry(settings->value("windowGeometry").toByteArray());
-    m_expertMode = settings->value("ExpertMode").toBool();
-    setExpertMode(m_expertMode);
+    bool expertMode = settings->value("expertMode").toBool();
+    m_switchModeAction->setChecked(expertMode);
+    setExpertMode(expertMode);
+    m_showDLPlusAction->setChecked(settings->value("dlPlus", true).toBool());
     m_volumeSlider->setValue(settings->value("volume", 100).toInt());
+    bool mute = settings->value("mute", false).toBool();
+    if (mute)
+    {   // this sends signal
+        m_muteLabel->toggle();
+    }
 
     int inDevice = settings->value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();        
 
@@ -1863,9 +1875,12 @@ void MainWindow::saveSettings()
     settings->setValue("inputDeviceId", int(s.inputDevice));
     settings->setValue("dumpPath", m_ensembleInfoDialog->getDumpPath());
     settings->setValue("volume", m_volumeSlider->value());
+    settings->setValue("mute", m_muteLabel->isChecked());
     settings->setValue("windowGeometry", saveGeometry());
     settings->setValue("announcementEna", s.announcementEna);
     settings->setValue("bringWindowToForegroundOnAlarm", s.bringWindowToForeground);
+    settings->setValue("expertMode", m_switchModeAction->isChecked());
+    settings->setValue("dlPlus", m_showDLPlusAction->isChecked());
 
     settings->setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
     settings->setValue("RTL-SDR/gainMode", static_cast<int>(s.rtlsdr.gainMode));
@@ -1918,7 +1933,6 @@ void MainWindow::saveSettings()
             settings->setValue("SCIdS", m_SCIdS);
             settings->setValue("Frequency", m_frequency);
         }
-        settings->setValue("ExpertMode", m_expertMode);
 
         m_serviceList->save(*settings);
     }
@@ -2038,13 +2052,7 @@ void MainWindow::serviceListViewUpdateSelection()
 
 void MainWindow::toggleDLPlus(bool toggle)
 {
-    ui->dlPlusWidget->setVisible(toggle && m_setupDialog->settings().dlPlusEna);
-}
-
-void MainWindow::switchMode()
-{   // toggle expert mode
-    m_expertMode = !m_expertMode;
-    setExpertMode(m_expertMode);
+    ui->dlPlusWidget->setVisible(toggle && m_showDLPlusAction->isChecked());
 }
 
 void MainWindow::showEnsembleInfo()
@@ -2077,19 +2085,6 @@ void MainWindow::showCatSLS()
 
 void MainWindow::setExpertMode(bool ena)
 {
-    bool doResize = false;
-    if (ena)
-    {
-        m_switchModeAction->setText("Basic mode");
-    }
-    else
-    {
-       m_switchModeAction->setText("Expert mode");
-
-        // going to basic mode -> windows get resized if user did not resize before
-        // this always keeps minimum window size
-        doResize = (size() == minimumSizeHint());
-    }
     ui->channelFrame->setVisible(ena);
     ui->audioFrame->setVisible(ena);
     ui->programTypeLabel->setVisible(ena);
@@ -2105,7 +2100,7 @@ void MainWindow::setExpertMode(bool ena)
     ui->programTypeLabel->setVisible(ena);
 
     // set tab order
-    if (m_expertMode)
+    if (ena)
     {
         setTabOrder(ui->serviceListView, ui->serviceTreeView);
         setTabOrder(ui->serviceTreeView, m_volumeSlider);
@@ -2119,10 +2114,7 @@ void MainWindow::setExpertMode(bool ena)
 
     emit expertModeChanged(ena);
 
-    if (doResize)
-    {
-        QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
-    }
+    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
 }
 
 void MainWindow::bandScan()

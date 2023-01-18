@@ -88,6 +88,7 @@ private:
     QAction * m_clearServiceListAction;
     QAction * m_bandScanAction;
     QAction * m_switchModeAction;
+    QAction * m_showDLPlusAction;
     QAction * m_ensembleInfoAction;
     QAction * m_aboutAction;
 
@@ -116,7 +117,6 @@ private:
     QString m_iniFilename;
     bool m_isPlaying = false;
     bool m_deviceChangeRequested = false;
-    bool m_expertMode = false;
     bool m_exitRequested = false;
     uint32_t m_frequency = 0;
     DabSId m_SId;
@@ -139,7 +139,6 @@ private:
     void loadSettings();
     void saveSettings();
 
-    void switchMode();
     void showEnsembleInfo();
     void showAboutDialog();
     void showSetupDialog();

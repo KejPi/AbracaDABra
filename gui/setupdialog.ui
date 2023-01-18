@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>456</width>
+    <width>462</width>
     <height>339</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Setup</string>
+   <string>Settings</string>
   </property>
   <layout class="QGridLayout" name="mainLayout">
    <item row="0" column="0">
