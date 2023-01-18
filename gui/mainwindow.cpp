@@ -281,6 +281,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     setIcons();
 
+    // focus polisy
+    ui->channelCombo->setFocusPolicy(Qt::StrongFocus);
+    ui->scrollArea->setFocusPolicy(Qt::ClickFocus);
+
     resize(minimumSizeHint());
 
     // threads
@@ -901,6 +905,10 @@ void MainWindow::onTuneDone(uint32_t freq)
         else if (m_hasTreeViewFocus)
         {
             ui->serviceTreeView->setFocus();
+        }
+        else
+        {
+            ui->channelCombo->setFocus();
         }
 
         ui->frequencyLabel->setText(QString("%1 MHz").arg(freq/1000.0, 3, 'f', 3, QChar('0')));
@@ -2095,6 +2103,19 @@ void MainWindow::setExpertMode(bool ena)
     ui->channelFrame->setVisible(ena);
     ui->ensembleInfoLabel->setVisible(ena);
     ui->programTypeLabel->setVisible(ena);
+
+    // set tab order
+    if (m_expertMode)
+    {
+        setTabOrder(ui->serviceListView, ui->serviceTreeView);
+        setTabOrder(ui->serviceTreeView, m_volumeSlider);
+        setTabOrder(m_volumeSlider, ui->channelCombo);
+    }
+    else
+    {
+        setTabOrder(ui->serviceListView, m_volumeSlider);
+    }
+
 
     emit expertModeChanged(ena);
 
