@@ -48,8 +48,8 @@ const QStringList MainWindow::snrProgressStylesheet = {
 
 enum class SNR10Threhold
 {
-    SNR_BAD = 60,
-    SNR_GOOD = 90
+    SNR_BAD = 70,
+    SNR_GOOD = 100
 };
 
 MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
@@ -139,9 +139,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_bandScanAction = new QAction("Band scan...", this);
     connect(m_bandScanAction, &QAction::triggered, this, &MainWindow::bandScan);
 
-    m_switchModeAction = new QAction("Expert mode", this);
-    m_switchModeAction->setCheckable(true);
-    connect(m_switchModeAction, &QAction::toggled, this, &MainWindow::setExpertMode);
+    m_expertModeAction = new QAction("Expert mode", this);
+    m_expertModeAction->setCheckable(true);
+    connect(m_expertModeAction, &QAction::toggled, this, &MainWindow::onExpertModeToggled);
 
     m_showDLPlusAction = new QAction("Dynamic Label Plus (DL+)", this);
     m_showDLPlusAction->setCheckable(true);
@@ -157,7 +157,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_menu->addAction(m_bandScanAction);
     m_menu->addAction(m_clearServiceListAction);
     m_menu->addSeparator();
-    m_menu->addAction(m_switchModeAction);
+    m_menu->addAction(m_expertModeAction);
     m_menu->addAction(m_showDLPlusAction);
     m_menu->addSeparator();
     m_menu->addAction(m_ensembleInfoAction);
@@ -193,9 +193,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     volumeLayout->setContentsMargins(10,0,0,0);
     QWidget * volumeWidget = new QWidget();
     volumeWidget->setLayout(volumeLayout);
-
-    //DL+
-    ui->dlPlusWidget->setVisible(false);
 
     QGridLayout * layout = new QGridLayout(widget);
     layout->addWidget(m_timeBasicQualWidget, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
@@ -263,6 +260,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->dynamicLabel_Announcement->clear();
     ui->dlWidget->setCurrentIndex(Instance::Service);
     ui->dlPlusWidget->setCurrentIndex(Instance::Service);
+    ui->dlPlusWidget->setVisible(false);
 
     ui->audioEncodingLabel->setToolTip("Audio coding");
 
@@ -289,8 +287,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // focus polisy
     ui->channelCombo->setFocusPolicy(Qt::StrongFocus);
     ui->scrollArea->setFocusPolicy(Qt::ClickFocus);
-
-    resize(minimumSizeHint());
 
     // threads
     m_radioControl = new RadioControl();
@@ -1755,10 +1751,16 @@ void MainWindow::loadSettings()
 
     // load servicelist
     m_serviceList->load(*settings);
-    restoreGeometry(settings->value("windowGeometry").toByteArray());
+
     bool expertMode = settings->value("expertMode").toBool();
-    m_switchModeAction->setChecked(expertMode);
+    m_expertModeAction->setChecked(expertMode);
     setExpertMode(expertMode);
+
+    restoreGeometry(settings->value("windowGeometry").toByteArray());
+    // this is workaround to force size when window appears (not clear why it is necessary)
+    QSize sz = size();
+    QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
+
     m_showDLPlusAction->setChecked(settings->value("dlPlus", true).toBool());
     m_volumeSlider->setValue(settings->value("volume", 100).toInt());
     bool mute = settings->value("mute", false).toBool();
@@ -1879,7 +1881,7 @@ void MainWindow::saveSettings()
     settings->setValue("windowGeometry", saveGeometry());
     settings->setValue("announcementEna", s.announcementEna);
     settings->setValue("bringWindowToForegroundOnAlarm", s.bringWindowToForeground);
-    settings->setValue("expertMode", m_switchModeAction->isChecked());
+    settings->setValue("expertMode", m_expertModeAction->isChecked());
     settings->setValue("dlPlus", m_showDLPlusAction->isChecked());
 
     settings->setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
@@ -2083,6 +2085,12 @@ void MainWindow::showCatSLS()
     m_catSlsDialog->activateWindow();
 }
 
+void MainWindow::onExpertModeToggled(bool checked)
+{
+    setExpertMode(checked);
+    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
+}
+
 void MainWindow::setExpertMode(bool ena)
 {
     ui->channelFrame->setVisible(ena);
@@ -2111,10 +2119,7 @@ void MainWindow::setExpertMode(bool ena)
         setTabOrder(ui->serviceListView, m_volumeSlider);
     }
 
-
     emit expertModeChanged(ena);
-
-    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
 }
 
 void MainWindow::bandScan()

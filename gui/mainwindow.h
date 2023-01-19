@@ -87,7 +87,7 @@ private:
     QAction * m_setupAction;
     QAction * m_clearServiceListAction;
     QAction * m_bandScanAction;
-    QAction * m_switchModeAction;
+    QAction * m_expertModeAction;
     QAction * m_showDLPlusAction;
     QAction * m_ensembleInfoAction;
     QAction * m_aboutAction;
@@ -170,6 +170,7 @@ private:
     void onFavoriteToggled(bool checked);
     void onSwitchSourceClicked();
     void onAnnouncementClicked();
+    void onExpertModeToggled(bool checked);
     void onSyncStatus(uint8_t sync);
     void onSnrLevel(float snr);    
     void onServiceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
