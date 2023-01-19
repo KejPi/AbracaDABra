@@ -167,6 +167,11 @@ void BandScanDialog::onSyncStatus(uint8_t sync)
 
 void BandScanDialog::onEnsembleFound(const RadioControlEnsemble &)
 {
+    if (BandScanState::Idle == m_state)
+    {   // do nothing
+        return;
+    }
+
     m_timer->stop();
 
     ui->numEnsemblesFoundLabel->setText(QString("%1").arg(++m_numEnsemblesFound));
