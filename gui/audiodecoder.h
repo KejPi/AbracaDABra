@@ -20,10 +20,7 @@
 
 #if HAVE_FDKAAC
 #define AUDIO_DECODER_FDKAAC_CONCEALMENT 1
-// leave it disabled, not supported for FDK-AAC yet
-#define AUDIO_DECODER_MUTE_CONCEALMENT 0
 #else // HAVE_FDKAAC
-#define AUDIO_DECODER_MUTE_CONCEALMENT 1
 #define AUDIO_DECODER_BUFFER_SIZE   3840  // this is maximum buffer size for HE-AAC
 #define AUDIO_DECODER_FADE_TIME_MS    15
 #endif // HAVE_FDKAAC
@@ -96,7 +93,7 @@ private:
     int m_outFifoIdx;
     audioFifo_t * m_outFifoPtr;
 
-#if AUDIO_DECODER_MUTE_CONCEALMENT
+#if !HAVE_FDKAAC
     int16_t * m_outBufferPtr;
     size_t m_outputBufferSamples;
     int m_numChannels;

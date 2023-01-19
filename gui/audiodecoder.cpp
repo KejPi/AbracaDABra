@@ -15,7 +15,7 @@ AudioDecoder::AudioDecoder(QObject *parent) : QObject(parent)
 
     m_playbackState = PlaybackState::Stopped;
 
-#if AUDIO_DECODER_MUTE_CONCEALMENT
+#if !HAVE_FDKAAC
     m_outBufferPtr = new int16_t[AUDIO_DECODER_BUFFER_SIZE];
 
     m_muteRamp.clear();
@@ -66,7 +66,7 @@ AudioDecoder::~AudioDecoder()
         NeAACDecClose(m_aacDecoderHandle);
 #endif
     }
-#if AUDIO_DECODER_MUTE_CONCEALMENT
+#if !HAVE_FDKAAC
     delete [] m_outBufferPtr;
 #endif
 
@@ -414,11 +414,9 @@ void AudioDecoder::initAACDecoder()
         throw std::runtime_error("AACDecoderFAAD2: error while NeAACDecInit2: " + std::string(NeAACDecGetErrorMessage(-init_result)));
     }
 
-#if AUDIO_DECODER_MUTE_CONCEALMENT
     m_numChannels = numChannels;
     m_muteRampDsFactor = 48000 / sampleRate;
     m_outputBufferSamples = 960 * numChannels * (m_aacHeader.bits.sbr_flag ? 2 : 1);
-#endif
 
     qDebug("Output SR = %lu, channels = %d", sampleRate, numChannels);
 
@@ -643,7 +641,7 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
 
     if (nullptr == m_aacDecoderHandle)
     {   // this can happen when format changes from MP2 to AAC or during init
-#if AUDIO_DECODER_MUTE_CONCEALMENT
+#if !HAVE_FDKAAC
         // not necessary -> will be set in init state
         //memset(m_outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
         m_state = OutputState::Init;
@@ -678,7 +676,7 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
 
     if ((header.raw != m_aacHeader.raw) || (inData->id != m_inputDataDecoderId))
     {   // this is stream reconfiguration or announcement (different instance)
-#if AUDIO_DECODER_MUTE_CONCEALMENT
+#if !HAVE_FDKAAC
         // not necessary -> will be set in init state
         //memset(m_outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
         m_state = OutputState::Init;
@@ -776,7 +774,6 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
 #if !HAVE_FDKAAC
 void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, const uint8_t *inFramePtr)
 {
-#if AUDIO_DECODER_MUTE_CONCEALMENT
     if (frameInfo.samples != m_outputBufferSamples)
     {
         if (OutputState::Unmuted == m_state)
@@ -827,21 +824,6 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
 
     // copy data to output FIFO
     int64_t bytesToWrite = m_outputBufferSamples * sizeof(int16_t);
-#else
-    if (frameInfo.error)
-    {
-        qDebug() << "AAC error" << NeAACDecGetErrorMessage(frameInfo.error);
-    }
-
-    if (frameInfo.bytesconsumed == 0 && frameInfo.samples == 0)
-    {   // no output
-        return;
-    }
-
-    int64_t bytesToWrite = frameInfo.samples * sizeof(int16_t);
-
-    const uint8_t * m_outBufferPtr = inFramePtr;
-#endif
 
 #ifdef AUDIO_DECODER_RAW_OUT
     if (m_rawOut)
@@ -878,7 +860,6 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
     m_outFifoPtr->count += bytesToWrite;
     m_outFifoPtr->mutex.unlock();
 
-#if AUDIO_DECODER_MUTE_CONCEALMENT
     // copy new data to buffer
     if (frameInfo.samples != m_outputBufferSamples)
     {   // error
@@ -910,7 +891,6 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
             m_state = OutputState::Unmuted;
         }
     }
-#endif
 }
 #endif // HAVE_FDKAAC
 
