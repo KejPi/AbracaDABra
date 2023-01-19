@@ -1756,9 +1756,18 @@ void MainWindow::loadSettings()
     m_expertModeAction->setChecked(expertMode);
     setExpertMode(expertMode);
 
-    restoreGeometry(settings->value("windowGeometry").toByteArray());
-    // this is workaround to force size when window appears (not clear why it is necessary)
     QSize sz = size();
+    QByteArray geometry = settings->value("windowGeometry").toByteArray();
+    if (!geometry.isEmpty())
+    {
+        restoreGeometry(geometry);
+        sz = size();
+    }
+    else
+    {   // this should happen only when ini is deleted ot on the first run
+        sz = minimumSizeHint();
+    }
+    // this is workaround to force size when window appears (not clear why it is necessary)
     QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
 
     m_showDLPlusAction->setChecked(settings->value("dlPlus", true).toBool());
