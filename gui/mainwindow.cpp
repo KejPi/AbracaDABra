@@ -58,40 +58,17 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     , ui(new Ui::MainWindow)
     , m_iniFilename(iniFilename)
 {
+    initStyle(); // init style as soon as possible
+
     m_dlDecoder[Instance::Service] = new DLDecoder();
     m_dlDecoder[Instance::Announcement] = new DLDecoder();
 
     ui->setupUi(this);
+    ui->serviceListView->setIconSize(QSize(16,16));
     connect(ui->channelCombo, &QComboBox::currentIndexChanged, this, &MainWindow::onChannelChange);
 
     // set UI
     setWindowTitle("Abraca DAB Radio");
-
-    m_defaultStyleName = qApp->style()->name();
-    m_palette = qApp->palette();
-    QColor darkColor = QColor(45,45,45);
-    QColor disabledColor = QColor(90,90,90);
-    QColor lightColor = QColor(235,235,235);
-    m_darkPalette.setColor(QPalette::Window, darkColor);
-    m_darkPalette.setColor(QPalette::WindowText, lightColor);
-    m_darkPalette.setColor(QPalette::Base, QColor(18,18,18));
-    m_darkPalette.setColor(QPalette::AlternateBase, darkColor);
-    m_darkPalette.setColor(QPalette::ToolTipBase, QColor(64,64,64));
-    m_darkPalette.setColor(QPalette::ToolTipText, lightColor);
-    m_darkPalette.setColor(QPalette::Text, lightColor);
-    m_darkPalette.setColor(QPalette::Button, darkColor);
-    m_darkPalette.setColor(QPalette::ButtonText, lightColor);
-    m_darkPalette.setColor(QPalette::BrightText, Qt::red);
-    m_darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
-    m_darkPalette.setColor(QPalette::Highlight, QColor(6, 64, 198));
-    m_darkPalette.setColor(QPalette::HighlightedText, lightColor);
-
-    m_darkPalette.setColor(QPalette::Disabled, QPalette::Text, disabledColor);
-    m_darkPalette.setColor(QPalette::Disabled, QPalette::ButtonText, disabledColor);
-    m_darkPalette.setColor(QPalette::Disabled, QPalette::HighlightedText, disabledColor);
-    m_darkPalette.setColor(QPalette::Disabled, QPalette::WindowText, disabledColor);
-    m_darkPalette.setColor(QPalette::Disabled, QPalette::Highlight, QColor(55,55,55));
-    m_darkPalette.setColor(QPalette::Light, darkColor);
 
 #ifdef Q_OS_WIN
     // this is Windows specific code, not portable - allows to bring window to front (used for alarm announcement)
@@ -2240,12 +2217,39 @@ void MainWindow::onApplicationStyleChanged(ApplicationStyle style)
         sizePolicy.setVerticalStretch(1);
         ui->slsWidget->setSizePolicy(sizePolicy);
 
-        ui->serviceListView->setIconSize(QSize(16,16));
-
         setDarkMode(ApplicationStyle::Dark == style);
 
         break;
     }
+}
+
+void MainWindow::initStyle()
+{
+    m_defaultStyleName = qApp->style()->name();
+    m_palette = qApp->palette();
+    QColor darkColor = QColor(45,45,45);
+    QColor disabledColor = QColor(90,90,90);
+    QColor lightColor = QColor(235,235,235);
+    m_darkPalette.setColor(QPalette::Window, darkColor);
+    m_darkPalette.setColor(QPalette::WindowText, lightColor);
+    m_darkPalette.setColor(QPalette::Base, QColor(18,18,18));
+    m_darkPalette.setColor(QPalette::AlternateBase, darkColor);
+    m_darkPalette.setColor(QPalette::ToolTipBase, QColor(64,64,64));
+    m_darkPalette.setColor(QPalette::ToolTipText, lightColor);
+    m_darkPalette.setColor(QPalette::Text, lightColor);
+    m_darkPalette.setColor(QPalette::Button, darkColor);
+    m_darkPalette.setColor(QPalette::ButtonText, lightColor);
+    m_darkPalette.setColor(QPalette::BrightText, Qt::red);
+    m_darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
+    m_darkPalette.setColor(QPalette::Highlight, QColor(6, 64, 198));
+    m_darkPalette.setColor(QPalette::HighlightedText, lightColor);
+
+    m_darkPalette.setColor(QPalette::Disabled, QPalette::Text, disabledColor);
+    m_darkPalette.setColor(QPalette::Disabled, QPalette::ButtonText, disabledColor);
+    m_darkPalette.setColor(QPalette::Disabled, QPalette::HighlightedText, disabledColor);
+    m_darkPalette.setColor(QPalette::Disabled, QPalette::WindowText, disabledColor);
+    m_darkPalette.setColor(QPalette::Disabled, QPalette::Highlight, QColor(55,55,55));
+    m_darkPalette.setColor(QPalette::Light, darkColor);
 }
 
 bool MainWindow::isDarkMode()

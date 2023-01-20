@@ -153,7 +153,6 @@ private:
     void clearEnsembleInformationLabels();
     void clearServiceInformationLabels();
     void initInputDevice(const InputDeviceId &d);
-    void onApplicationStyleChanged(ApplicationStyle style);
     bool isDarkMode();
     void setDarkMode(bool ena);
     void setIcons();    
@@ -164,6 +163,7 @@ private:
     void changeInputDevice(const InputDeviceId &d);
     void displaySubchParams(const RadioControlServiceComponent &s);
     void toggleDLPlus(bool toggle);
+    void initStyle();
 
     void onInputDeviceReady();
     void onEnsembleInfo(const RadioControlEnsemble &ens);
@@ -175,7 +175,7 @@ private:
     void onFavoriteToggled(bool checked);
     void onSwitchSourceClicked();
     void onAnnouncementClicked();
-    void onInterfaceSettings();
+    void onApplicationStyleChanged(ApplicationStyle style);
     void onExpertModeToggled(bool checked);
     void onSyncStatus(uint8_t sync);
     void onSnrLevel(float snr);    
