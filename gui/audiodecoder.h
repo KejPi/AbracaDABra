@@ -131,11 +131,11 @@ private:
 #endif
 #ifdef AUDIO_DECODER_AAC_OUT
     FILE * m_aacOut;
-    void writeAACOutput(const char *data, uint16_t dataLen);
+    void writeAACOutput(const std::vector<uint8_t> & data);
 #endif
 #ifdef AUDIO_DECODER_MP2_OUT
     FILE * m_mp2Out;
-    void writeMP2Output(const char *data, uint16_t dataLen);
+    void writeMP2Output(const std::vector<uint8_t> & data);
 #endif
 };
 

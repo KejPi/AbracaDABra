@@ -509,7 +509,7 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
     }
 
 #ifdef AUDIO_DECODER_MP2_OUT
-    writeMP2Output(inData->data() + 2, inData->size() - 2);
+    writeMP2Output(inData->data);
 #endif
 
     if (inData->data.size() > 0)
@@ -786,7 +786,7 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     uint8_t * outputFrame = (uint8_t *)NeAACDecDecode(m_aacDecoderHandle, &m_aacDecFrameInfo, &inData->data[0], inData->data.size());
 
 #ifdef AUDIO_DECODER_AAC_OUT
-    writeAACOutput(aacData, len);
+    writeAACOutput(inData->data);
 #endif
     handleAudioOutputFAAD(m_aacDecFrameInfo, outputFrame);
 #endif // HAVE_FDKAAC
@@ -995,7 +995,7 @@ void AudioDecoder::setOutput(int sampleRate, int numChannels)
 }
 
 #ifdef AUDIO_DECODER_AAC_OUT
-void AudioDecoder::writeAACOutput(const char *data, uint16_t dataLen)
+void AudioDecoder::writeAACOutput(const std::vector<uint8_t> & data)
 {
     uint8_t adts_sfreqidx;
     uint8_t audioFs;
@@ -1020,7 +1020,7 @@ void AudioDecoder::writeAACOutput(const char *data, uint16_t dataLen)
         audioFs = 48;
         adts_sfreqidx = 0x3;  // 48 kHz
     }
-    uint16_t au_size = dataLen;
+    uint16_t au_size = data.size();
 
     uint8_t aac_header[20];
 
@@ -1113,7 +1113,7 @@ void AudioDecoder::writeAACOutput(const char *data, uint16_t dataLen)
     fwrite(aac_header, sizeof(uint8_t), 9 + m_aacHeader.bits.sbr_flag + au_size_255, m_aacOut);
 
     uint8_t byte = *aac_header_ptr;
-    const uint8_t * auPtr = (const uint8_t *)data; //&buffer[mscDataPtr->au_start[r]];
+    const uint8_t * auPtr = &data[0]; //&buffer[mscDataPtr->au_start[r]];
 
     for (int i = 0; i < au_size; ++i)
     {
@@ -1127,9 +1127,9 @@ void AudioDecoder::writeAACOutput(const char *data, uint16_t dataLen)
 #endif
 
 #ifdef AUDIO_DECODER_MP2_OUT
-void AudioDecoder::writeMP2Output(const char *data, uint16_t dataLen)
+void AudioDecoder::writeMP2Output(const std::vector<uint8_t> & data)
 {
-    fwrite(data, sizeof(uint8_t), dataLen, m_mp2Out);
+    fwrite(&data[0], sizeof(uint8_t), data.size(), m_mp2Out);
 }
 
 #endif
