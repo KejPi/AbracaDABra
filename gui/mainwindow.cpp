@@ -1800,10 +1800,6 @@ void MainWindow::loadSettings()
     QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
 
     s.applicationStyle = static_cast<ApplicationStyle>(settings->value("style", static_cast<int>(ApplicationStyle::Default)).toInt());
-    if (ApplicationStyle::Default != s.applicationStyle)
-    {
-        onApplicationStyleChanged(s.applicationStyle);
-    }
     s.dlPlusEna = settings->value("dlPlus", true).toBool();
 
     s.inputDevice = static_cast<InputDeviceId>(inDevice);
@@ -1845,6 +1841,12 @@ void MainWindow::loadSettings()
     s.rawfile.loopEna = settings->value("RAW-FILE/loop", false).toBool();
 
     m_setupDialog->setSettings(s);
+
+    // need to run here because it expects that settings is up-to-date
+    if (ApplicationStyle::Default != s.applicationStyle)
+    {
+        onApplicationStyleChanged(s.applicationStyle);
+    }
 
     m_ensembleInfoDialog->setDumpPath(settings->value("dumpPath", QVariant(QDir::homePath())).toString());
 
