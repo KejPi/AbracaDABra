@@ -18,6 +18,8 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class SetupDialog; }
 QT_END_NAMESPACE
 
+enum class ApplicationStyle { Default = 0, Light, Dark};
+
 class SetupDialog : public QDialog
 {
     Q_OBJECT
@@ -68,6 +70,9 @@ public:
 #endif
         uint16_t announcementEna;
         bool bringWindowToForeground;
+        ApplicationStyle applicationStyle;
+        bool expertModeEna;
+        bool dlPlusEna;
     };
 
     SetupDialog(QWidget *parent = nullptr);
@@ -81,12 +86,13 @@ signals:
     void inputDeviceChanged(const InputDeviceId & inputDevice);
     void newInputDeviceSettings();
     void newAnnouncementSettings(uint16_t enaFlags);
-
+    void expertModeToggled(bool enabled);
+    void applicationStyleChanged(ApplicationStyle style);
 protected:
     void showEvent(QShowEvent *event);
 
 private:
-    enum SetupDialogTabs { Device = 0, Announcement = 1 };
+    enum SetupDialogTabs { Device = 0, Announcement = 1, Other = 2 };
 
     Ui::SetupDialog *ui;
     Settings m_settings;
@@ -119,6 +125,10 @@ private:
     void onAnnouncementClicked();
     void onBringWindowToForegroundClicked(bool checked);
 
+    void onStyleChecked(bool checked);
+    void onExpertModeChecked(bool checked);
+    void onDLPlusChecked(bool checked);
+
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);
     void onAirspySensitivityGainSliderChanged(int val);
@@ -136,7 +146,7 @@ private:
     void onSoapySdrChannelEditFinished();
     void onSoapySdrGainModeToggled(bool checked);
     void activateSoapySdrControls(bool en);
-#endif
+#endif        
 };
 
 #endif // SETUPDIALOG_H

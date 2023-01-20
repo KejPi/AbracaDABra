@@ -67,10 +67,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // set UI
     setWindowTitle("Abraca DAB Radio");
 
-#if MAINWINDOW_DARKMODE_SUPPORT
-    qApp->setStyle(QStyleFactory::create("Fusion"));
+    m_defaultStyleName = qApp->style()->name();
     m_palette = qApp->palette();
-
     QColor darkColor = QColor(45,45,45);
     QColor disabledColor = QColor(90,90,90);
     QColor lightColor = QColor(235,235,235);
@@ -95,17 +93,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_darkPalette.setColor(QPalette::Disabled, QPalette::Highlight, QColor(55,55,55));
     m_darkPalette.setColor(QPalette::Light, darkColor);
 
-    QSizePolicy sizePolicy = ui->scrollArea->sizePolicy();
-    sizePolicy.setVerticalStretch(1);
-    ui->scrollArea->setSizePolicy(sizePolicy);
-
-    sizePolicy = ui->slsWidget->sizePolicy();
-    sizePolicy.setVerticalStretch(1);
-    ui->slsWidget->setSizePolicy(sizePolicy);
-
-    ui->serviceListView->setIconSize(QSize(16,16));
-#endif
-
 #ifdef Q_OS_WIN
     // this is Windows specific code, not portable - allows to bring window to front (used for alarm announcement)
     // does not exit on Qt6 yet
@@ -123,6 +110,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::inputDeviceChanged, this, &MainWindow::changeInputDevice);
     connect(this, &MainWindow::expertModeChanged, m_setupDialog, &SetupDialog::onExpertMode);
     connect(m_setupDialog, &SetupDialog::newInputDeviceSettings, this, &MainWindow::onNewInputDeviceSettings);
+    connect(m_setupDialog, &SetupDialog::applicationStyleChanged, this, &MainWindow::onApplicationStyleChanged);
+    connect(m_setupDialog, &SetupDialog::expertModeToggled, this, &MainWindow::onExpertModeToggled);
 
     m_ensembleInfoDialog = new EnsembleInfoDialog(this);
 
@@ -176,19 +165,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_bandScanAction = new QAction("Band scan...", this);
     connect(m_bandScanAction, &QAction::triggered, this, &MainWindow::bandScan);
 
-    m_expertModeAction = new QAction("Expert mode", this);
-    m_expertModeAction->setCheckable(true);
-    connect(m_expertModeAction, &QAction::toggled, this, &MainWindow::onExpertModeToggled);
-
-#if MAINWINDOW_DARKMODE_SUPPORT
-    m_darkModeAction = new QAction("Dark mode", this);
-    m_darkModeAction->setCheckable(true);
-    connect(m_darkModeAction, &QAction::toggled, this, &MainWindow::setDarkMode);
-#endif
-
-    m_showDLPlusAction = new QAction("Dynamic Label Plus (DL+)", this);
-    m_showDLPlusAction->setCheckable(true);
-
     m_ensembleInfoAction = new QAction("Ensemble information", this);
     connect(m_ensembleInfoAction, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
 
@@ -199,12 +175,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_menu->addAction(m_setupAction);
     m_menu->addAction(m_bandScanAction);
     m_menu->addAction(m_clearServiceListAction);
-    m_menu->addSeparator();
-    m_menu->addAction(m_expertModeAction);
-#if MAINWINDOW_DARKMODE_SUPPORT
-    m_menu->addAction(m_darkModeAction);
-#endif
-    m_menu->addAction(m_showDLPlusAction);
     m_menu->addSeparator();
     m_menu->addAction(m_ensembleInfoAction);
     m_menu->addAction(m_aboutAction);
@@ -1801,9 +1771,19 @@ void MainWindow::loadSettings()
     // load servicelist
     m_serviceList->load(*settings);
 
-    bool expertMode = settings->value("expertMode").toBool();
-    m_expertModeAction->setChecked(expertMode);
-    setExpertMode(expertMode);
+    m_volumeSlider->setValue(settings->value("volume", 100).toInt());
+    bool mute = settings->value("mute", false).toBool();
+    if (mute)
+    {   // this sends signal
+        m_muteLabel->toggle();
+    }
+
+    int inDevice = settings->value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();        
+
+    SetupDialog::Settings s;
+
+    s.expertModeEna = settings->value("expertMode", false).toBool();
+    setExpertMode(s.expertModeEna);
 
     QSize sz = size();
     QByteArray geometry = settings->value("windowGeometry").toByteArray();
@@ -1819,23 +1799,13 @@ void MainWindow::loadSettings()
     // this is workaround to force size when window appears (not clear why it is necessary)
     QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
 
-#if MAINWINDOW_DARKMODE_SUPPORT
-    bool darkMode = settings->value("darkMode", false).toBool();
-    m_darkModeAction->setChecked(darkMode);
-    setDarkMode(darkMode);
-#endif
-
-    m_showDLPlusAction->setChecked(settings->value("dlPlus", true).toBool());
-    m_volumeSlider->setValue(settings->value("volume", 100).toInt());
-    bool mute = settings->value("mute", false).toBool();
-    if (mute)
-    {   // this sends signal
-        m_muteLabel->toggle();
+    s.applicationStyle = static_cast<ApplicationStyle>(settings->value("style", static_cast<int>(ApplicationStyle::Default)).toInt());
+    if (ApplicationStyle::Default != s.applicationStyle)
+    {
+        onApplicationStyleChanged(s.applicationStyle);
     }
+    s.dlPlusEna = settings->value("dlPlus", true).toBool();
 
-    int inDevice = settings->value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();        
-
-    SetupDialog::Settings s;    
     s.inputDevice = static_cast<InputDeviceId>(inDevice);
     s.announcementEna = settings->value("announcementEna", 0x07FF).toUInt();
     s.bringWindowToForeground = settings->value("bringWindowToForegroundOnAlarm", true).toBool();
@@ -1943,13 +1913,11 @@ void MainWindow::saveSettings()
     settings->setValue("volume", m_volumeSlider->value());
     settings->setValue("mute", m_muteLabel->isChecked());
     settings->setValue("windowGeometry", saveGeometry());
+    settings->setValue("style", static_cast<int>(s.applicationStyle));
     settings->setValue("announcementEna", s.announcementEna);
     settings->setValue("bringWindowToForegroundOnAlarm", s.bringWindowToForeground);
-    settings->setValue("expertMode", m_expertModeAction->isChecked());
-#if MAINWINDOW_DARKMODE_SUPPORT
-    settings->setValue("darkMode", m_darkModeAction->isChecked());
-#endif
-    settings->setValue("dlPlus", m_showDLPlusAction->isChecked());
+    settings->setValue("expertMode", s.expertModeEna);
+    settings->setValue("dlPlus", s.dlPlusEna);
 
     settings->setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
     settings->setValue("RTL-SDR/gainMode", static_cast<int>(s.rtlsdr.gainMode));
@@ -2121,7 +2089,7 @@ void MainWindow::serviceListViewUpdateSelection()
 
 void MainWindow::toggleDLPlus(bool toggle)
 {
-    ui->dlPlusWidget->setVisible(toggle && m_showDLPlusAction->isChecked());
+    ui->dlPlusWidget->setVisible(toggle && m_setupDialog->settings().dlPlusEna);
 }
 
 void MainWindow::showEnsembleInfo()
@@ -2249,16 +2217,41 @@ void MainWindow::clearServiceList()
     m_serviceList->clear();
 }
 
+void MainWindow::onApplicationStyleChanged(ApplicationStyle style)
+{
+    switch(style)
+    {
+    case ApplicationStyle::Default:
+        qApp->setStyle(QStyleFactory::create(m_defaultStyleName));
+        qApp->setPalette(m_palette);
+        qApp->setStyleSheet("");
+        break;
+    case ApplicationStyle::Light:
+    case ApplicationStyle::Dark:
+        qApp->setStyle(QStyleFactory::create("Fusion"));
+
+        QSizePolicy sizePolicy = ui->scrollArea->sizePolicy();
+        sizePolicy.setVerticalStretch(1);
+        ui->scrollArea->setSizePolicy(sizePolicy);
+
+        sizePolicy = ui->slsWidget->sizePolicy();
+        sizePolicy.setVerticalStretch(1);
+        ui->slsWidget->setSizePolicy(sizePolicy);
+
+        ui->serviceListView->setIconSize(QSize(16,16));
+
+        setDarkMode(ApplicationStyle::Dark == style);
+
+        break;
+    }
+}
+
 bool MainWindow::isDarkMode()
 {
 #ifdef Q_OS_MACX
-    return macIsInDarkTheme();
+    return macIsInDarkTheme() || (ApplicationStyle::Dark == m_setupDialog->settings().applicationStyle);
 #else
-#if MAINWINDOW_DARKMODE_SUPPORT
-    return m_darkModeAction->isChecked();
-#else
-    return false;
-#endif
+    return (ApplicationStyle::Dark == m_setupDialog->settings().applicationStyle);
 #endif
 }
 

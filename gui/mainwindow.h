@@ -33,12 +33,6 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-#ifdef Q_OS_MACX
-#define MAINWINDOW_DARKMODE_SUPPORT   0
-#else
-#define MAINWINDOW_DARKMODE_SUPPORT   0
-#endif
-
 class DLPlusObjectUI;
 
 class MainWindow : public QMainWindow
@@ -93,15 +87,11 @@ private:
     QAction * m_setupAction;
     QAction * m_clearServiceListAction;
     QAction * m_bandScanAction;
-    QAction * m_expertModeAction;
-    QAction * m_showDLPlusAction;
     QAction * m_ensembleInfoAction;
-#if MAINWINDOW_DARKMODE_SUPPORT
-    QAction * m_darkModeAction;
-#endif
     QAction * m_aboutAction;
 
     // dark mode
+    QString m_defaultStyleName;
     QPalette m_palette;
     QPalette m_darkPalette;
 
@@ -163,6 +153,7 @@ private:
     void clearEnsembleInformationLabels();
     void clearServiceInformationLabels();
     void initInputDevice(const InputDeviceId &d);
+    void onApplicationStyleChanged(ApplicationStyle style);
     bool isDarkMode();
     void setDarkMode(bool ena);
     void setIcons();    
@@ -184,6 +175,7 @@ private:
     void onFavoriteToggled(bool checked);
     void onSwitchSourceClicked();
     void onAnnouncementClicked();
+    void onInterfaceSettings();
     void onExpertModeToggled(bool checked);
     void onSyncStatus(uint8_t sync);
     void onSnrLevel(float snr);    

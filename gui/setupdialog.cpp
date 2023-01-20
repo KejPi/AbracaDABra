@@ -17,6 +17,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 
     ui->tabWidget->setTabText(SetupDialogTabs::Device, "Device");
     ui->tabWidget->setTabText(SetupDialogTabs::Announcement, "Announcements");
+    ui->tabWidget->setTabText(SetupDialogTabs::Other, "Interface");
 
     ui->inputCombo->addItem("RTL SDR", QVariant(int(InputDeviceId::RTLSDR)));
 #if HAVE_AIRSPY
@@ -144,6 +145,25 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->soapysdrGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
     connect(ui->soapysdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
 #endif
+
+    ui->defaultRadioButton->setText("Default style (OS dependent)");
+    ui->lightRadioButton->setText("Light style (Fusion)");
+    ui->darkRadioButton->setText("Dark style (Fusion with dark colors)");
+
+    ui->defaultRadioButton->setToolTip("Set default OS style.");
+    ui->lightRadioButton->setToolTip("Force application light style.");
+    ui->darkRadioButton->setToolTip("Force application dark style.");
+    ui->expertCheckBox->setToolTip("User interface in expert mode");
+    ui->dlPlusCheckBox->setToolTip("Show Dynamic Label Plus (DL+) tags like artist, song name, etc.");
+
+    connect(ui->defaultRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
+    connect(ui->lightRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
+    connect(ui->darkRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
+    connect(ui->expertCheckBox, &QCheckBox::clicked, this, &SetupDialog::onExpertModeChecked);
+    connect(ui->dlPlusCheckBox, &QCheckBox::clicked, this, &SetupDialog::onDLPlusChecked);
+
+    ui->defaultRadioButton->setChecked(true);
+
     adjustSize();
 
     this->layout()->setSizeConstraint(QLayout::SetFixedSize);
@@ -330,7 +350,7 @@ void SetupDialog::showEvent(QShowEvent *event)
 
     setStatusLabel();
 
-    // announcments
+    // announcements
     uint16_t announcementEna = m_settings.announcementEna | (1 << static_cast<int>(DabAnnouncement::Alarm));  // enable alarm
     for (int a = 0; a < static_cast<int>(DabAnnouncement::Undefined); ++a)
     {
@@ -338,8 +358,23 @@ void SetupDialog::showEvent(QShowEvent *event)
         announcementEna >>= 1;
     }
     m_bringWindowToForegroundCheckbox->setChecked(m_settings.bringWindowToForeground);
-}
 
+    // other settings
+    switch (m_settings.applicationStyle)
+    {
+    case ApplicationStyle::Default:
+        ui->defaultRadioButton->setChecked(true);
+        break;
+    case ApplicationStyle::Light:
+        ui->lightRadioButton->setChecked(true);
+        break;
+    case ApplicationStyle::Dark:
+        ui->darkRadioButton->setChecked(true);
+        break;
+    }
+    ui->expertCheckBox->setChecked(m_settings.expertModeEna);
+    ui->dlPlusCheckBox->setChecked(m_settings.dlPlusEna);
+}
 
 void SetupDialog::onConnectDeviceClicked()
 {
@@ -804,4 +839,35 @@ void SetupDialog::onAnnouncementClicked()
 void SetupDialog::onBringWindowToForegroundClicked(bool checked)
 {
     m_settings.bringWindowToForeground = checked;
+}
+
+void SetupDialog::onStyleChecked(bool checked)
+{
+    if (checked)
+    {
+        if (ui->defaultRadioButton->isChecked())
+        {
+            m_settings.applicationStyle = ApplicationStyle::Default;
+        }
+        else if (ui->lightRadioButton->isChecked())
+        {
+            m_settings.applicationStyle = ApplicationStyle::Light;
+        }
+        else if (ui->darkRadioButton->isChecked())
+        {
+            m_settings.applicationStyle = ApplicationStyle::Dark;
+        }
+        emit applicationStyleChanged(m_settings.applicationStyle);
+    }
+}
+
+void SetupDialog::onExpertModeChecked(bool checked)
+{
+    m_settings.expertModeEna = checked;
+    emit expertModeToggled(checked);
+}
+
+void SetupDialog::onDLPlusChecked(bool checked)
+{
+    m_settings.dlPlusEna = checked;
 }
