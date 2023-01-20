@@ -73,13 +73,14 @@ public:
         ApplicationStyle applicationStyle;
         bool expertModeEna;
         bool dlPlusEna;
+        int noiseConcealmentLevel;
     };
 
     SetupDialog(QWidget *parent = nullptr);
     Settings settings() const;
     void setGainValues(const QList<float> & gainList);
     void resetInputDevice();
-    void onExpertMode(bool ena);
+    void onExpertMode(bool ena);    
     void setSettings(const Settings &settings);
 
 signals:
@@ -88,6 +89,7 @@ signals:
     void newAnnouncementSettings(uint16_t enaFlags);
     void expertModeToggled(bool enabled);
     void applicationStyleChanged(ApplicationStyle style);
+    void noiseConcealmentLevelChanged(int level);
 protected:
     void showEvent(QShowEvent *event);
 
@@ -128,6 +130,7 @@ private:
     void onStyleChecked(bool checked);
     void onExpertModeChecked(bool checked);
     void onDLPlusChecked(bool checked);
+    void onNoiseLevelChanged(int index);
 
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);

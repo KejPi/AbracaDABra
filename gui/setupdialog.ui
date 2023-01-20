@@ -19,8 +19,8 @@
   <property name="windowTitle">
    <string>Settings</string>
   </property>
-  <layout class="QGridLayout" name="mainLayout">
-   <item row="0" column="0">
+  <layout class="QVBoxLayout" name="verticalLayout_7">
+   <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -35,7 +35,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -819,7 +819,7 @@
       <attribute name="title">
        <string>Strana</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
+      <layout class="QVBoxLayout" name="verticalLayout_6">
        <item>
         <widget class="QGroupBox" name="styleGroupBox">
          <property name="title">
@@ -851,17 +851,45 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="expertCheckBox">
-         <property name="text">
-          <string>Expert mode UI</string>
+        <widget class="QGroupBox" name="uiGroupBox">
+         <property name="title">
+          <string>User Interface</string>
          </property>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QCheckBox" name="expertCheckBox">
+            <property name="text">
+             <string>Expert mode UI</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="dlPlusCheckBox">
+            <property name="text">
+             <string>Dynamic Label Plus (DL+)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="dlPlusCheckBox">
-         <property name="text">
-          <string>Dynamic Label Plus (DL+)</string>
+        <widget class="QGroupBox" name="audioDecoderGroupBox">
+         <property name="title">
+          <string>Audio Decoder</string>
          </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_9">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Noise level during audio drop-out:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="noiseConcealmentCombo"/>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>

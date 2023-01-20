@@ -29,15 +29,8 @@ AudioDecoder::AudioDecoder(QObject *parent) : QObject(parent)
     }
 #if AUDIO_DECODER_NOISE_CONCEALMENT
     m_noiseBufferPtr = new int16_t[AUDIO_DECODER_BUFFER_SIZE];
-    m_noiseFile = new QFile(QString("noise-%1dBFS.bin").arg(AUDIO_DECODER_NOISE_CONCEALMENT, 2));
-    if (!m_noiseFile->open(QIODevice::ReadOnly))
-    {
-        qDebug() << "AudioDecoder: Unable to open noise file";
-        delete m_noiseFile;
-        m_noiseFile = nullptr;
-        memset(m_noiseBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE*sizeof(int16_t));
-    }
-    else { /* OK */ }
+    m_noiseFile = nullptr;
+    memset(m_noiseBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE*sizeof(int16_t));
 #endif
 #endif
 
@@ -495,6 +488,35 @@ void AudioDecoder::getAudioParameters()
     {
         getFormatMP2();
     }
+}
+
+void AudioDecoder::setNoiseConcealment(int level)
+{
+#if !HAVE_FDKAAC && AUDIO_DECODER_NOISE_CONCEALMENT
+    if (nullptr != m_noiseFile)
+    {
+        m_noiseFile->close();
+        delete m_noiseFile;
+        m_noiseFile = nullptr;
+    }
+
+    if (level > 0)
+    {
+        m_noiseFile = new QFile(QString(":/resources/noise-%1dBFS.bin").arg(level, 2));
+        if (!m_noiseFile->open(QIODevice::ReadOnly))
+        {
+            qDebug() << "AudioDecoder: Unable to open noise file";
+            delete m_noiseFile;
+            m_noiseFile = nullptr;
+            memset(m_noiseBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE*sizeof(int16_t));
+        }
+        else { /* OK */ }
+    }
+    else
+    {   // set buffer to zero
+        memset(m_noiseBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE*sizeof(int16_t));
+    }
+#endif
 }
 
 void AudioDecoder::processMP2(RadioControlAudioData *inData)

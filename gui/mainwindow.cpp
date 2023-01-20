@@ -88,7 +88,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(this, &MainWindow::expertModeChanged, m_setupDialog, &SetupDialog::onExpertMode);
     connect(m_setupDialog, &SetupDialog::newInputDeviceSettings, this, &MainWindow::onNewInputDeviceSettings);
     connect(m_setupDialog, &SetupDialog::applicationStyleChanged, this, &MainWindow::onApplicationStyleChanged);
-    connect(m_setupDialog, &SetupDialog::expertModeToggled, this, &MainWindow::onExpertModeToggled);
+    connect(m_setupDialog, &SetupDialog::expertModeToggled, this, &MainWindow::onExpertModeToggled);    
 
     m_ensembleInfoDialog = new EnsembleInfoDialog(this);
 
@@ -306,6 +306,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_audioDecoder->moveToThread(m_audioDecoderThread);
     connect(m_audioDecoderThread, &QThread::finished, m_audioDecoder, &QObject::deleteLater);
     m_audioDecoderThread->start();
+    connect(m_setupDialog, &SetupDialog::noiseConcealmentLevelChanged, m_audioDecoder, &AudioDecoder::setNoiseConcealment, Qt::QueuedConnection);
 
     m_audioOutput = new AudioOutput();
 #if (!HAVE_PORTAUDIO)
@@ -381,7 +382,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::stopAudio, m_audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
     connect(m_audioDecoder, &AudioDecoder::startAudio, m_audioOutput, &AudioOutput::start, Qt::QueuedConnection);
     connect(m_audioDecoder, &AudioDecoder::switchAudio, m_audioOutput, &AudioOutput::restart, Qt::QueuedConnection);
-    connect(m_audioDecoder, &AudioDecoder::stopAudio, m_audioOutput, &AudioOutput::stop, Qt::QueuedConnection);
+    connect(m_audioDecoder, &AudioDecoder::stopAudio, m_audioOutput, &AudioOutput::stop, Qt::QueuedConnection);    
 
     // tune procedure:
     // 1. mainwindow tune -> radiocontrol tune (this stops DAB SDR - tune to 0)
@@ -1782,6 +1783,7 @@ void MainWindow::loadSettings()
     s.inputDevice = static_cast<InputDeviceId>(inDevice);
     s.announcementEna = settings->value("announcementEna", 0x07FF).toUInt();
     s.bringWindowToForeground = settings->value("bringWindowToForegroundOnAlarm", true).toBool();
+    s.noiseConcealmentLevel = settings->value("noiseConcealment", 0).toInt();
 
     s.rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
     s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
@@ -1897,6 +1899,7 @@ void MainWindow::saveSettings()
     settings->setValue("bringWindowToForegroundOnAlarm", s.bringWindowToForeground);
     settings->setValue("expertMode", s.expertModeEna);
     settings->setValue("dlPlus", s.dlPlusEna);
+    settings->setValue("noiseConcealment", s.noiseConcealmentLevel);
 
     settings->setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
     settings->setValue("RTL-SDR/gainMode", static_cast<int>(s.rtlsdr.gainMode));

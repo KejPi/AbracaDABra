@@ -25,7 +25,7 @@
 #else // HAVE_FDKAAC
 #define AUDIO_DECODER_BUFFER_SIZE     3840  // this is maximum buffer size for HE-AAC
 #define AUDIO_DECODER_FADE_TIME_MS      15
-#define AUDIO_DECODER_NOISE_CONCEALMENT  0  // 0 to disable or noise level (20,25,30,35,40)
+#define AUDIO_DECODER_NOISE_CONCEALMENT  1
 #endif // HAVE_FDKAAC
 
 // debug switches
@@ -64,6 +64,7 @@ public slots:
     void stop();
     void decodeData(RadioControlAudioData *inData);
     void getAudioParameters();
+    void setNoiseConcealment(int level);
 
 signals:
     void startAudio(audioFifo_t *buffer);

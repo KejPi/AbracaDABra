@@ -47,5 +47,10 @@
         <file>resources/announcement_suspended.png</file>
         <file>resources/announcement_active_dark.png</file>
         <file>resources/announcement_suspended_dark.png</file>
+        <file>resources/noise-20dBFS.bin</file>
+        <file>resources/noise-25dBFS.bin</file>
+        <file>resources/noise-30dBFS.bin</file>
+        <file>resources/noise-35dBFS.bin</file>
+        <file>resources/noise-40dBFS.bin</file>
     </qresource>
 </RCC>

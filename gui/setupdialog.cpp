@@ -5,6 +5,7 @@
 
 #include "setupdialog.h"
 #include "./ui_setupdialog.h"
+#include "audiodecoder.h"
 
 static const QString NO_FILE("No file selected");
 
@@ -17,7 +18,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 
     ui->tabWidget->setTabText(SetupDialogTabs::Device, "Device");
     ui->tabWidget->setTabText(SetupDialogTabs::Announcement, "Announcements");
-    ui->tabWidget->setTabText(SetupDialogTabs::Other, "Interface");
+    ui->tabWidget->setTabText(SetupDialogTabs::Other, "Others");
 
     ui->inputCombo->addItem("RTL SDR", QVariant(int(InputDeviceId::RTLSDR)));
 #if HAVE_AIRSPY
@@ -164,6 +165,18 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 
     ui->defaultRadioButton->setChecked(true);
 
+    ui->noiseConcealmentCombo->addItem("-20 dBFS", QVariant(20));
+    ui->noiseConcealmentCombo->addItem("-25 dBFS", QVariant(25));
+    ui->noiseConcealmentCombo->addItem("-30 dBFS", QVariant(30));
+    ui->noiseConcealmentCombo->addItem("-35 dBFS", QVariant(35));
+    ui->noiseConcealmentCombo->addItem("-40 dBFS", QVariant(40));
+    ui->noiseConcealmentCombo->addItem("Disabled", QVariant(0));
+#if AUDIO_DECODER_NOISE_CONCEALMENT
+    connect(ui->noiseConcealmentCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onNoiseLevelChanged);
+#else
+    ui->audioDecoderGroupBox->setVisible(false);
+#endif
+
     adjustSize();
 
     this->layout()->setSizeConstraint(QLayout::SetFixedSize);
@@ -214,6 +227,7 @@ void SetupDialog::setSettings(const Settings &settings)
     m_settings = settings;
     setStatusLabel();
     emit newAnnouncementSettings(m_settings.announcementEna);
+    emit noiseConcealmentLevelChanged(m_settings.noiseConcealmentLevel);
 }
 
 void SetupDialog::showEvent(QShowEvent *event)
@@ -374,6 +388,13 @@ void SetupDialog::showEvent(QShowEvent *event)
     }
     ui->expertCheckBox->setChecked(m_settings.expertModeEna);
     ui->dlPlusCheckBox->setChecked(m_settings.dlPlusEna);
+
+    index = ui->noiseConcealmentCombo->findData(QVariant(m_settings.noiseConcealmentLevel));
+    if (index < 0)
+    {   // not found
+        index = 0;
+    }
+    ui->noiseConcealmentCombo->setCurrentIndex(index);
 }
 
 void SetupDialog::onConnectDeviceClicked()
@@ -723,7 +744,6 @@ void SetupDialog::onInputChanged(int index)
 {
     int inputDeviceInt = ui->inputCombo->itemData(index).toInt();
     ui->deviceOptionsWidget->setCurrentIndex(inputDeviceInt-1);
-    adjustSize();
 
     ui->connectButton->setHidden(m_settings.inputDevice == static_cast<InputDeviceId>(inputDeviceInt));
     if (m_settings.inputDevice != static_cast<InputDeviceId>(inputDeviceInt))
@@ -870,4 +890,14 @@ void SetupDialog::onExpertModeChecked(bool checked)
 void SetupDialog::onDLPlusChecked(bool checked)
 {
     m_settings.dlPlusEna = checked;
+}
+
+void SetupDialog::onNoiseLevelChanged(int index)
+{
+    int noiseLevel = ui->noiseConcealmentCombo->itemData(index).toInt();
+    if (noiseLevel != m_settings.noiseConcealmentLevel)
+    {
+        m_settings.noiseConcealmentLevel = noiseLevel;
+        emit noiseConcealmentLevelChanged(noiseLevel);
+    }
 }
