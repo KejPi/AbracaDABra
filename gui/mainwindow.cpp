@@ -10,6 +10,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QMessageBox>
+#include <QStyleFactory>
 
 #include "mainwindow.h"
 #include "slsview.h"
@@ -65,6 +66,45 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     // set UI
     setWindowTitle("Abraca DAB Radio");
+
+#if MAINWINDOW_DARKMODE_SUPPORT
+    qApp->setStyle(QStyleFactory::create("Fusion"));
+    m_palette = qApp->palette();
+
+    QColor darkColor = QColor(45,45,45);
+    QColor disabledColor = QColor(90,90,90);
+    QColor lightColor = QColor(235,235,235);
+    m_darkPalette.setColor(QPalette::Window, darkColor);
+    m_darkPalette.setColor(QPalette::WindowText, lightColor);
+    m_darkPalette.setColor(QPalette::Base, QColor(18,18,18));
+    m_darkPalette.setColor(QPalette::AlternateBase, darkColor);
+    m_darkPalette.setColor(QPalette::ToolTipBase, QColor(64,64,64));
+    m_darkPalette.setColor(QPalette::ToolTipText, lightColor);
+    m_darkPalette.setColor(QPalette::Text, lightColor);
+    m_darkPalette.setColor(QPalette::Button, darkColor);
+    m_darkPalette.setColor(QPalette::ButtonText, lightColor);
+    m_darkPalette.setColor(QPalette::BrightText, Qt::red);
+    m_darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
+    m_darkPalette.setColor(QPalette::Highlight, QColor(6, 64, 198));
+    m_darkPalette.setColor(QPalette::HighlightedText, lightColor);
+
+    m_darkPalette.setColor(QPalette::Disabled, QPalette::Text, disabledColor);
+    m_darkPalette.setColor(QPalette::Disabled, QPalette::ButtonText, disabledColor);
+    m_darkPalette.setColor(QPalette::Disabled, QPalette::HighlightedText, disabledColor);
+    m_darkPalette.setColor(QPalette::Disabled, QPalette::WindowText, disabledColor);
+    m_darkPalette.setColor(QPalette::Disabled, QPalette::Highlight, QColor(55,55,55));
+    m_darkPalette.setColor(QPalette::Light, darkColor);
+
+    QSizePolicy sizePolicy = ui->scrollArea->sizePolicy();
+    sizePolicy.setVerticalStretch(1);
+    ui->scrollArea->setSizePolicy(sizePolicy);
+
+    sizePolicy = ui->slsWidget->sizePolicy();
+    sizePolicy.setVerticalStretch(1);
+    ui->slsWidget->setSizePolicy(sizePolicy);
+
+    ui->serviceListView->setIconSize(QSize(16,16));
+#endif
 
 #ifdef Q_OS_WIN
     // this is Windows specific code, not portable - allows to bring window to front (used for alarm announcement)
@@ -127,9 +167,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_signalQualityWidget = new QWidget();
     m_signalQualityWidget->setLayout(signalQualityLayout);
 
-    onSnrLevel(0);
-    onSyncStatus(uint8_t(DabSyncLevel::NoSync));
-
     m_setupAction = new QAction("Settings...", this);
     connect(m_setupAction, &QAction::triggered, this, &MainWindow::showSetupDialog);
 
@@ -142,6 +179,12 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_expertModeAction = new QAction("Expert mode", this);
     m_expertModeAction->setCheckable(true);
     connect(m_expertModeAction, &QAction::toggled, this, &MainWindow::onExpertModeToggled);
+
+#if MAINWINDOW_DARKMODE_SUPPORT
+    m_darkModeAction = new QAction("Dark mode", this);
+    m_darkModeAction->setCheckable(true);
+    connect(m_darkModeAction, &QAction::toggled, this, &MainWindow::setDarkMode);
+#endif
 
     m_showDLPlusAction = new QAction("Dynamic Label Plus (DL+)", this);
     m_showDLPlusAction->setCheckable(true);
@@ -158,10 +201,16 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_menu->addAction(m_clearServiceListAction);
     m_menu->addSeparator();
     m_menu->addAction(m_expertModeAction);
+#if MAINWINDOW_DARKMODE_SUPPORT
+    m_menu->addAction(m_darkModeAction);
+#endif
     m_menu->addAction(m_showDLPlusAction);
     m_menu->addSeparator();
     m_menu->addAction(m_ensembleInfoAction);
     m_menu->addAction(m_aboutAction);
+
+    onSnrLevel(0);
+    onSyncStatus(uint8_t(DabSyncLevel::NoSync));
 
     m_settingsLabel = new ClickableLabel(this);
     m_settingsLabel->setToolTip("Open menu");
@@ -1770,6 +1819,12 @@ void MainWindow::loadSettings()
     // this is workaround to force size when window appears (not clear why it is necessary)
     QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
 
+#if MAINWINDOW_DARKMODE_SUPPORT
+    bool darkMode = settings->value("darkMode", false).toBool();
+    m_darkModeAction->setChecked(darkMode);
+    setDarkMode(darkMode);
+#endif
+
     m_showDLPlusAction->setChecked(settings->value("dlPlus", true).toBool());
     m_volumeSlider->setValue(settings->value("volume", 100).toInt());
     bool mute = settings->value("mute", false).toBool();
@@ -1891,6 +1946,9 @@ void MainWindow::saveSettings()
     settings->setValue("announcementEna", s.announcementEna);
     settings->setValue("bringWindowToForegroundOnAlarm", s.bringWindowToForeground);
     settings->setValue("expertMode", m_expertModeAction->isChecked());
+#if MAINWINDOW_DARKMODE_SUPPORT
+    settings->setValue("darkMode", m_darkModeAction->isChecked());
+#endif
     settings->setValue("dlPlus", m_showDLPlusAction->isChecked());
 
     settings->setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
@@ -2196,9 +2254,27 @@ bool MainWindow::isDarkMode()
 #ifdef Q_OS_MACX
     return macIsInDarkTheme();
 #else
-    //return windowsIsInDarkTheme();
+#if MAINWINDOW_DARKMODE_SUPPORT
+    return m_darkModeAction->isChecked();
+#else
     return false;
 #endif
+#endif
+}
+
+void MainWindow::setDarkMode(bool ena)
+{
+    if (ena)
+    {
+        qApp->setPalette(m_darkPalette);
+        qApp->setStyleSheet("QToolTip { color: #f5f5f5; background-color: #404040; border: 1px solid #ebebeb; }");
+    }
+    else
+    {
+        qApp->setPalette(m_palette);
+        qApp->setStyleSheet("QToolTip { color: #000000; background-color: #ffffdf; border: 1px solid black; }");
+    }
+    setIcons();
 }
 
 void MainWindow::setIcons()

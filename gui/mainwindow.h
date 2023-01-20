@@ -33,6 +33,12 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+#ifdef Q_OS_MACX
+#define MAINWINDOW_DARKMODE_SUPPORT   0
+#else
+#define MAINWINDOW_DARKMODE_SUPPORT   0
+#endif
+
 class DLPlusObjectUI;
 
 class MainWindow : public QMainWindow
@@ -90,7 +96,14 @@ private:
     QAction * m_expertModeAction;
     QAction * m_showDLPlusAction;
     QAction * m_ensembleInfoAction;
+#if MAINWINDOW_DARKMODE_SUPPORT
+    QAction * m_darkModeAction;
+#endif
     QAction * m_aboutAction;
+
+    // dark mode
+    QPalette m_palette;
+    QPalette m_darkPalette;
 
     // radio control
     QThread * m_radioControlThread;
@@ -151,6 +164,7 @@ private:
     void clearServiceInformationLabels();
     void initInputDevice(const InputDeviceId &d);
     bool isDarkMode();
+    void setDarkMode(bool ena);
     void setIcons();    
     void serviceSelected();
     void channelSelected();
