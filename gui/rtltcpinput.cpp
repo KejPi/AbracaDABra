@@ -466,6 +466,9 @@ void RtlTcpInput::setGainMode(RtlGainMode gainMode, int gainIdx)
         sendCommand(RtlTcpCommand::SET_GAIN_MODE, (RtlGainMode::Hardware != gainMode));
 
         m_gainMode = gainMode;
+
+        // does nothing in (GainMode::Software != mode)
+        resetAgc();
     }
 
     if (RtlGainMode::Manual == m_gainMode)
@@ -480,8 +483,6 @@ void RtlTcpInput::setGainMode(RtlGainMode gainMode, int gainIdx)
     {   // signalize that gain is not available
         emit agcGain(NAN);
     }
-    // does nothing in (GainMode::Software != mode)
-    resetAgc();
 }
 
 void RtlTcpInput::setGain(int gainIdx)

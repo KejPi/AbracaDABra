@@ -337,6 +337,9 @@ void SoapySdrInput::setGainMode(SoapyGainMode gainMode, int gainIdx)
         }
 
         m_gainMode = gainMode;
+
+        // does nothing in (GainMode::Software != mode)
+        resetAgc();
     }
 
     if (SoapyGainMode::Manual == m_gainMode)
@@ -351,9 +354,6 @@ void SoapySdrInput::setGainMode(SoapyGainMode gainMode, int gainIdx)
     {   // signalize that gain is not available
         emit agcGain(NAN);
     }
-
-    // does nothing in (GainMode::Software != mode)    
-    resetAgc();
 }
 
 void SoapySdrInput::setGain(int gainIdx)

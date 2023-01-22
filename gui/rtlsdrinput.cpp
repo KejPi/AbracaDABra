@@ -185,6 +185,9 @@ void RtlSdrInput::setGainMode(RtlGainMode gainMode, int gainIdx)
         }
 
         m_gainMode = gainMode;
+
+        // does nothing in (GainMode::Software != mode)
+        resetAgc();
     }
 
     if (RtlGainMode::Manual == m_gainMode)
@@ -199,9 +202,6 @@ void RtlSdrInput::setGainMode(RtlGainMode gainMode, int gainIdx)
     {   // signalize that gain is not available
         emit agcGain(NAN);
     }
-
-    // does nothing in (GainMode::Software != mode)
-    resetAgc();
 }
 
 void RtlSdrInput::setGain(int gIdx)
