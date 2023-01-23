@@ -2207,6 +2207,7 @@ void MainWindow::onApplicationStyleChanged(ApplicationStyle style)
         qApp->setStyle(QStyleFactory::create(m_defaultStyleName));
         qApp->setPalette(m_palette);
         qApp->setStyleSheet("");
+        setIcons();
         break;
     case ApplicationStyle::Light:
     case ApplicationStyle::Dark:
