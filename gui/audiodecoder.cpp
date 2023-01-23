@@ -502,7 +502,7 @@ void AudioDecoder::setNoiseConcealment(int level)
 
     if (level > 0)
     {
-        m_noiseFile = new QFile(QString(":/resources/noise-%1dBFS.bin").arg(level, 2));
+        m_noiseFile = new QFile(":/resources/noise.bin");
         if (!m_noiseFile->open(QIODevice::ReadOnly))
         {
             qDebug() << "AudioDecoder: Unable to open noise file";
@@ -510,11 +510,15 @@ void AudioDecoder::setNoiseConcealment(int level)
             m_noiseFile = nullptr;
             memset(m_noiseBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE*sizeof(int16_t));
         }
-        else { /* OK */ }
+        else
+        {  // OK
+            m_noiseLevel = pow(10,  -1.0*level/20);
+        }
     }
     else
     {   // set buffer to zero
         memset(m_noiseBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE*sizeof(int16_t));
+        m_noiseLevel = 0.0;
     }
 #endif
 }
@@ -821,8 +825,6 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
     {
         if (OutputState::Unmuted == m_state)
         {   // do mute
-            //qDebug() << Q_FUNC_INFO << "muting, DS =" << muteRampDsFactor;
-
 #if AUDIO_DECODER_NOISE_CONCEALMENT
             // read noise samples
             int valuesToRead = m_muteRamp.size()*m_numChannels;
@@ -846,7 +848,7 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
                 for (uint_fast32_t ch = 0; ch < m_numChannels; ++ch)
                 {
 #if AUDIO_DECODER_NOISE_CONCEALMENT
-                    *dataPtr = int16_t(qRound(gain * *dataPtr)) + (1-gain) * *noisePtr++;
+                    *dataPtr = int16_t(qRound(gain * *dataPtr)) + (1-gain) * m_noiseLevel * *noisePtr++;
 #else
                     *dataPtr = int16_t(qRound(gain * *dataPtr));
 #endif
@@ -938,7 +940,12 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
             m_noiseFile->read((char *) m_noiseBufferPtr, valuesToRead*sizeof(int16_t));
         }
         // copy noise
-        memcpy(m_outBufferPtr, m_noiseBufferPtr, m_outputBufferSamples * sizeof(int16_t));
+        int16_t * dataPtr = m_outBufferPtr;
+        int16_t * noisePtr = m_noiseBufferPtr;
+        for (int n = 0; n < m_outputBufferSamples; ++n)
+        {
+            *dataPtr++ = m_noiseLevel * *noisePtr++;
+        }
         m_state = OutputState::Muted;
 #else
         if (OutputState::Unmuted == m_state)
@@ -979,7 +986,7 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
                 for (uint_fast32_t ch = 0; ch < m_numChannels; ++ch)
                 {
 #if AUDIO_DECODER_NOISE_CONCEALMENT
-                    *dataPtr = int16_t(qRound(gain * *dataPtr)) + (1-gain) * *noisePtr++;
+                    *dataPtr = int16_t(qRound(gain * *dataPtr)) + (1-gain) * m_noiseLevel * *noisePtr++;
 #else
                     *dataPtr = int16_t(qRound(gain * *dataPtr));
 #endif

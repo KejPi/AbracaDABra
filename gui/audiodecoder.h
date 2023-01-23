@@ -112,6 +112,7 @@ private:
 #if AUDIO_DECODER_NOISE_CONCEALMENT
     QFile * m_noiseFile = nullptr;
     int16_t * m_noiseBufferPtr;
+    float m_noiseLevel;
 #endif
 #endif
     void setOutput(int sampleRate, int numChannels);
