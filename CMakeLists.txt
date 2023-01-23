@@ -8,7 +8,7 @@ endif()
 set(TARGET AbracaDABra)
 
 project(${TARGET}
-    VERSION 1.99.2
+    VERSION 1.99.3
     LANGUAGES CXX)
 
 # Select the release build type by default to get optimization flags
