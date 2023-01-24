@@ -781,7 +781,7 @@ void SetupDialog::onOpenFileButtonClicked()
     {
         dir = QFileInfo(m_rawfilename).path();
     }
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open IQ stream"), dir, tr("Binary files (*.bin *.s16 *.u8 *.raw)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open IQ stream"), dir, tr("Binary files (*.bin *.s16 *.u8 *.raw *.sdr)"));
     if (!fileName.isEmpty())
     {
         m_rawfilename = fileName;
