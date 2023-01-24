@@ -24,7 +24,7 @@
 #define AUDIO_DECODER_NOISE_CONCEALMENT  0 // keep 0 here
 #else // HAVE_FDKAAC
 #define AUDIO_DECODER_BUFFER_SIZE     3840  // this is maximum buffer size for HE-AAC
-#define AUDIO_DECODER_FADE_TIME_MS      15
+#define AUDIO_DECODER_FADE_TIME_MS      20  // maximum is 20 ms
 #define AUDIO_DECODER_NOISE_CONCEALMENT  1
 #endif // HAVE_FDKAAC
 
@@ -101,7 +101,6 @@ private:
     int16_t * m_outBufferPtr;
     size_t m_outputBufferSamples;
     int m_numChannels;
-    int m_muteRampDsFactor;
     std::vector<float> m_muteRamp;
     enum class OutputState
     {

@@ -17,16 +17,6 @@ AudioDecoder::AudioDecoder(QObject *parent) : QObject(parent)
 
 #if !HAVE_FDKAAC
     m_outBufferPtr = new int16_t[AUDIO_DECODER_BUFFER_SIZE];
-
-    m_muteRamp.clear();
-    // mute ramp is sin^2 that changes from 0 to 1 during AUDIOOUTPUT_FADE_TIME_MS
-    // values are precalculated for 48 kHz to save MIPS in runtime
-    float coe = M_PI / (2.0 * AUDIO_DECODER_FADE_TIME_MS * 48);
-    for (int n = 0; n < AUDIO_DECODER_FADE_TIME_MS * 48; ++n)
-    {
-        float g = sinf(n * coe);
-        m_muteRamp.push_back(g * g);
-    }
 #if AUDIO_DECODER_NOISE_CONCEALMENT
     m_noiseBufferPtr = new int16_t[AUDIO_DECODER_BUFFER_SIZE];
     m_noiseFile = nullptr;
@@ -429,8 +419,18 @@ void AudioDecoder::initAACDecoder()
     }
 
     m_numChannels = numChannels;
-    m_muteRampDsFactor = 48000 / sampleRate;
     m_outputBufferSamples = 960 * numChannels * (m_aacHeader.bits.sbr_flag ? 2 : 1);
+
+    // calculate mute ramp
+    // mute ramp is sin^2 that changes from 0 to 1 during AUDIOOUTPUT_FADE_TIME_MS
+    m_muteRamp.clear();
+    int sampleRate_kHz = sampleRate/1000.0;
+    float coe = M_PI / (2.0 * AUDIO_DECODER_FADE_TIME_MS * sampleRate_kHz);
+    for (int n = 0; n < AUDIO_DECODER_FADE_TIME_MS * sampleRate_kHz; ++n)
+    {
+        float g = sinf(n * coe);
+        m_muteRamp.push_back(g * g);
+    }
 
     qDebug("Output SR = %lu, channels = %d", sampleRate, numChannels);
 
@@ -843,8 +843,7 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
             std::vector <float>::const_iterator it = m_muteRamp.cbegin();            
             while (it != m_muteRamp.end())
             {
-                float gain = *it;
-                it += m_muteRampDsFactor;
+                float gain = *it++;
                 for (uint_fast32_t ch = 0; ch < m_numChannels; ++ch)
                 {
 #if AUDIO_DECODER_NOISE_CONCEALMENT
@@ -873,8 +872,7 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
         std::vector <float>::const_iterator it = m_muteRamp.cbegin();
         while (it != m_muteRamp.end())
         {
-            float gain = *it;
-            it += m_muteRampDsFactor;
+            float gain = *it++;
             for (uint_fast32_t ch = 0; ch < m_numChannels; ++ch)
             {
                 *dataPtr = int16_t(qRound(gain * *dataPtr));
@@ -981,8 +979,7 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
             std::vector <float>::const_iterator it = m_muteRamp.cbegin();
             while (it != m_muteRamp.end())
             {
-                float gain = *it;
-                it += m_muteRampDsFactor;
+                float gain = *it++;
                 for (uint_fast32_t ch = 0; ch < m_numChannels; ++ch)
                 {
 #if AUDIO_DECODER_NOISE_CONCEALMENT
