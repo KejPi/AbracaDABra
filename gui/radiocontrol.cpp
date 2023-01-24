@@ -2446,7 +2446,7 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
             //qDebug() << "Ignoring announcement audio data";
         }
     }
-        return;
+        break;
     case AnnouncementSwitchState::WaitForAnnouncement:
     {   // announcement expected
         RadioControlAudioData * pAudioData = new RadioControlAudioData;
@@ -2462,6 +2462,7 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
         }
         else { /* normal service data */ }
     }
+        break;
     default:
     {   //
         if (DABSDR_ID_AUDIO_SECONDARY == p->id)
