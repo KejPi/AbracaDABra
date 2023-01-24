@@ -16,7 +16,7 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
     // remove question mark from titlebar
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    connect(ui->dumpButton, &QPushButton::clicked, this, &EnsembleInfoDialog::onDumpButtonClicked);
+    connect(ui->recordButton, &QPushButton::clicked, this, &EnsembleInfoDialog::onDumpButtonClicked);
 
     dumpPath = QDir::homePath();
 
@@ -73,7 +73,7 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
     ui->crcErrRateLabel->setToolTip("Audio frame (AU for DAB+) error rate");
     ui->crcErrRate->setToolTip("Audio frame (AU for DAB+) error rate");
 
-    ui->dumpButton->setToolTip("Dump raw IQ stream to file");
+    ui->recordButton->setToolTip("Record raw IQ stream to file");
 
     enableDumpToFile(false);
 }
@@ -128,7 +128,7 @@ void EnsembleInfoDialog::updateFreqOffset(float offset)
 
 void EnsembleInfoDialog::enableDumpToFile(bool ena)
 {
-    ui->dumpButton->setVisible(ena);       
+    ui->recordButton->setVisible(ena);
     ui->dumpSize->setText("");
     ui->dumpLength->setText("");
     showDumpingStat(false);
@@ -136,7 +136,7 @@ void EnsembleInfoDialog::enableDumpToFile(bool ena)
 
 void EnsembleInfoDialog::onDumpButtonClicked()
 {
-    ui->dumpButton->setEnabled(false);
+    ui->recordButton->setEnabled(false);
     if (!isDumping)
     {
         QString f = QString("%1/%2_%3.raw").arg(dumpPath,
@@ -144,7 +144,7 @@ void EnsembleInfoDialog::onDumpButtonClicked()
                 DabTables::channelList.value(frequency));
 
         QString fileName = QFileDialog::getSaveFileName(this,
-                                                        tr("Dump IQ stream"),
+                                                        tr("Record IQ stream"),
                                                         QDir::toNativeSeparators(f),
                                                         tr("Binary files (*.raw)"));
         if (!fileName.isEmpty())
@@ -154,7 +154,7 @@ void EnsembleInfoDialog::onDumpButtonClicked()
         }
         else
         {
-            ui->dumpButton->setEnabled(true);
+            ui->recordButton->setEnabled(true);
         }
     }
     else
@@ -168,7 +168,7 @@ void EnsembleInfoDialog::dumpToFileStateToggle(bool dumping, int bytesPerSample)
     isDumping = dumping;
     if (dumping)
     {
-        ui->dumpButton->setText("Stop dumping");
+        ui->recordButton->setText("Stop recording");
         bytesDumped = 0;
 
         // default is bytes/2048/2 => 2 bytes per sample, 2048 samples per milisecond => 2^-12
@@ -184,13 +184,13 @@ void EnsembleInfoDialog::dumpToFileStateToggle(bool dumping, int bytesPerSample)
     }
     else
     {
-        ui->dumpButton->setText("Dump raw data");
+        ui->recordButton->setText("Record raw data");
     }
     ui->dumpSize->setText("");
     ui->dumpLength->setText("");
 
     showDumpingStat(dumping);
-    ui->dumpButton->setEnabled(true);
+    ui->recordButton->setEnabled(true);
 }
 
 void EnsembleInfoDialog::updateDumpStatus(ssize_t bytes)

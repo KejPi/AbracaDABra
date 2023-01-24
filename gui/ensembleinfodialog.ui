@@ -605,9 +605,9 @@
       </layout>
      </item>
      <item>
-      <widget class="QPushButton" name="dumpButton">
+      <widget class="QPushButton" name="recordButton">
        <property name="text">
-        <string>Dump raw data</string>
+        <string>Record raw data</string>
        </property>
       </widget>
      </item>
