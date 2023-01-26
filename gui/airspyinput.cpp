@@ -4,12 +4,11 @@
 
 AirspyInput::AirspyInput(bool try4096kHz, QObject *parent) : InputDevice(parent)
 {
-    m_id = InputDeviceId::AIRSPY;
+    m_deviceDescription.id = InputDeviceId::AIRSPY;
 
     m_try4096kHz = try4096kHz;
     m_device = nullptr;
-    m_dumpFile = nullptr;
-    m_enaDumpToFile = false;
+    m_isRecording = false;
     m_signalLevelEmitCntr = 0;
     m_src = nullptr;
     m_filterOutBuffer = nullptr;
@@ -118,6 +117,19 @@ bool AirspyInput::openDevice()
     // set automatic gain
     m_gainMode = AirpyGainMode::Software;
     resetAgc();
+
+    m_deviceDescription.device.name = "AirSpy";
+    m_deviceDescription.device.model = "Unknown";
+    m_deviceDescription.sample.sampleRate = 2048000;
+#if AIRSPY_RECORD_INT16
+    m_deviceDescription.sample.channelBits = sizeof(int16_t) * 8;
+    m_deviceDescription.sample.containerBits = sizeof(int16_t) * 8;
+    m_deviceDescription.sample.channelContainer = "int16";
+#else // recording in float
+    m_deviceDescription.sample.channelBits = sizeof(float) * 8;
+    m_deviceDescription.sample.containerBits = sizeof(float) * 8;
+    m_deviceDescription.sample.channelContainer = "float";
+#endif
 
     emit deviceReady();
 
@@ -342,32 +354,9 @@ void AirspyInput::onWatchdogTimeout()
     }
 }
 
-void AirspyInput::startDumpToFile(const QString & filename)
+void AirspyInput::startStopRecording(bool start)
 {
-    m_dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "wb");
-    if (nullptr != m_dumpFile)
-    {
-        m_dumpfileMutex.lock();
-        m_enaDumpToFile = true;
-        m_dumpfileMutex.unlock();
-#if AIRSPY_DUMP_INT16
-        emit dumpingToFile(true, 2*sizeof(int16_t));
-#else
-        emit dumpingToFile(true, 2*sizeof(float));
-#endif
-    }
-}
-
-void AirspyInput::stopDumpToFile()
-{
-    m_enaDumpToFile = false;
-    m_dumpfileMutex.lock();
-    fflush(m_dumpFile);
-    fclose(m_dumpFile);
-    m_dumpFile = nullptr;
-    m_dumpfileMutex.unlock();
-
-    emit dumpingToFile(false);
+    m_isRecording = start;
 }
 
 void AirspyInput::setBiasT(bool ena)
@@ -389,28 +378,20 @@ void AirspyInput::setDataPacking(bool ena)
     }
 }
 
-void AirspyInput::dumpBuffer(unsigned char *buf, uint32_t len)
+void AirspyInput::doRecordBuffer(const float *buf, uint32_t len)
 {
-    m_dumpfileMutex.lock();
-    if (nullptr != m_dumpFile)
+#if AIRSPY_RECORD_INT16
+    // dumping in int16
+    int16_t int16Buf[len];
+    for (int n = 0; n < len; ++n)
     {
-#if AIRSPY_DUMP_INT16
-        // dumping in int16
-        float * floatBuf = (float *) buf;
-        int16_t int16Buf[len/sizeof(float)];
-        for (int n = 0; n < len/sizeof(float); ++n)
-        {
-            int16Buf[n] = *floatBuf++ * AIRSPY_DUMP_FLOAT2INT16;
-        }
-        ssize_t bytes = fwrite(int16Buf, 1, sizeof(int16Buf), m_dumpFile);
-
-#else
-        // dumping in float
-        ssize_t bytes = fwrite(buf, 1, len, dumpFile);
-#endif
-        emit dumpedBytes(bytes);
+        int16Buf[n] = *buf++ * AIRSPY_RECORD_FLOAT2INT16;
     }
-    m_dumpfileMutex.unlock();
+    emit recordBuffer((const uint8_t *) int16Buf, len * sizeof(int16_t));
+#else
+    // dumping in float
+    emit recordBuffer((const uint8_t *) buf, len * sizeof(float));
+#endif
 }
 
 int AirspyInput::callback(airspy_transfer* transfer)
@@ -452,9 +433,9 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
     }
 #endif
 
-    if (isDumpingIQ())
+    if (m_isRecording)
     {
-        dumpBuffer((unsigned char *) m_filterOutBuffer, bytesToWrite);
+        doRecordBuffer(m_filterOutBuffer, 2*numIQ);
     }
 
     // there is enough room in buffer

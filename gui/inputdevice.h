@@ -55,6 +55,24 @@ enum class InputDeviceErrorCode
     NoDataAvailable = -3,          // This can happen when TCP server is connected but stopped sending data for some reason
 };
 
+struct InputDeviceDescription
+{
+    InputDeviceId id = InputDeviceId::UNDEFINED;
+    struct
+    {
+        QString name;
+        QString model;
+    } device;
+    struct
+    {
+        int sampleRate;
+        int channelBits;          // I or Q
+        int containerBits;        // I or Q
+        QString channelContainer; // I or Q
+    } sample;
+};
+
+
 Q_DECLARE_METATYPE(InputDeviceErrorCode);
 
 class InputDevice : public QObject
@@ -64,23 +82,21 @@ public:
     InputDevice(QObject *parent = nullptr);
     ~InputDevice();
     virtual bool openDevice() = 0;
-    const InputDeviceId getDeviceId() const { return m_id; }
+    const InputDeviceDescription getDeviceDescription() const { return m_deviceDescription; }
 
 public slots:
     virtual void tune(uint32_t freq) = 0;
-    virtual void startDumpToFile(const QString & filename)  { /* do nothing by default */ };
-    virtual void stopDumpToFile() { /* do nothing by default */ };
+    virtual void startStopRecording(bool start) = 0;
 
 signals:
     void deviceReady();
     void tuned(uint32_t freq);
-    void dumpingToFile(bool running, int bytesPerSample = 2);
-    void dumpedBytes(ssize_t bytes);
     void agcGain(float gain);
+    void recordBuffer(const uint8_t * buf, uint32_t len);
     void error(const InputDeviceErrorCode errCode = InputDeviceErrorCode::Undefined);
 
 protected:
-    InputDeviceId m_id = InputDeviceId::UNDEFINED;
+    InputDeviceDescription m_deviceDescription;
 };
 
 extern fifo_t inputBuffer;

@@ -4,13 +4,12 @@
 
 RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
 {
-    m_id = InputDeviceId::RTLSDR;
+    m_deviceDescription.id = InputDeviceId::RTLSDR;
 
     m_device = nullptr;
     m_deviceUnpluggedFlag = true;
     m_deviceRunningFlag = false;
     m_gainList = nullptr;
-    m_dumpFile = nullptr;
 
     connect(&m_watchdogTimer, &QTimer::timeout, this, &RtlSdrInput::onWatchdogTimeout);
 }
@@ -87,6 +86,43 @@ bool RtlSdrInput::openDevice()
         return false;
     }
 
+    // store device information
+    char manufact[256];
+    char product[256];
+    char serial[256];
+    ret = rtlsdr_get_usb_strings(m_device, manufact, product, serial);
+    if (ret < 0)
+    {
+        qDebug() << "RTL-SDR: Unable to read device description";
+        m_deviceDescription.device.name = "rtlsdr";
+        m_deviceDescription.device.model = "Generic RTL2832U OEM";
+    }
+    else
+    {
+        QString tmp = QString(manufact);
+        if (tmp.isEmpty())
+        {
+            m_deviceDescription.device.name = "rtlsdr";
+        }
+        else
+        {
+            m_deviceDescription.device.name = tmp;
+        }
+        tmp = QString(product);
+        if (tmp.isEmpty())
+        {
+            m_deviceDescription.device.model = "Generic RTL2832U OEM";
+        }
+        else
+        {
+            m_deviceDescription.device.model = tmp;
+        }
+    }
+    m_deviceDescription.sample.sampleRate = 2048000;
+    m_deviceDescription.sample.channelBits = 8;
+    m_deviceDescription.sample.containerBits = 8;
+    m_deviceDescription.sample.channelContainer = "uint8";
+
     // Get tuner gains
     uint32_t gainsCount = rtlsdr_get_tuner_gains(m_device, NULL);
     qDebug() << "RTL-SDR: Supported gain values" << gainsCount;
@@ -130,7 +166,7 @@ void RtlSdrInput::run()
 
         m_worker = new RtlSdrWorker(m_device, this);
         connect(m_worker, &RtlSdrWorker::agcLevel, this, &RtlSdrInput::onAgcLevel, Qt::QueuedConnection);
-        connect(m_worker, &RtlSdrWorker::dumpedBytes, this, &InputDevice::dumpedBytes, Qt::QueuedConnection);
+        connect(m_worker, &RtlSdrWorker::recordBuffer, this, &InputDevice::recordBuffer, Qt::DirectConnection);
         connect(m_worker, &RtlSdrWorker::finished, this, &RtlSdrInput::onReadThreadStopped, Qt::QueuedConnection);
         connect(m_worker, &RtlSdrWorker::finished, m_worker, &QObject::deleteLater);
         m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
@@ -295,24 +331,9 @@ void RtlSdrInput::onWatchdogTimeout()
     }
 }
 
-void RtlSdrInput::startDumpToFile(const QString & filename)
+void RtlSdrInput::startStopRecording(bool start)
 {
-    m_dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "wb");
-    if (nullptr != m_dumpFile)
-    {
-        m_worker->dumpToFileStart(m_dumpFile);
-        emit dumpingToFile(true);
-    }
-}
-
-void RtlSdrInput::stopDumpToFile()
-{
-    m_worker->dumpToFileStop();
-
-    fflush(m_dumpFile);
-    fclose(m_dumpFile);
-
-    emit dumpingToFile(false);
+    m_worker->startStopRecording(start);
 }
 
 void RtlSdrInput::setBW(int bw)
@@ -355,8 +376,7 @@ QList<float> RtlSdrInput::getGainList() const
 
 RtlSdrWorker::RtlSdrWorker(struct rtlsdr_dev * device, QObject *parent) : QThread(parent)
 {
-    m_enaDumpToFile = false;
-    m_dumpFile = nullptr;
+    m_isRecording = false;
     m_rtlSdrPtr = parent;
     m_device = device;
 }
@@ -371,31 +391,9 @@ void RtlSdrWorker::run()
     rtlsdr_read_async(m_device, callback, (void*)this, 0, INPUT_CHUNK_IQ_SAMPLES*2*sizeof(uint8_t));
 }
 
-void RtlSdrWorker::dumpToFileStart(FILE * dumpFile)
+void RtlSdrWorker::startStopRecording(bool ena)
 {
-    m_dumpFileMutex.lock();
-    m_dumpFile = dumpFile;
-    m_enaDumpToFile = true;
-    m_dumpFileMutex.unlock();
-}
-
-void RtlSdrWorker::dumpToFileStop()
-{
-    m_enaDumpToFile = false;
-    m_dumpFileMutex.lock();
-    m_dumpFile = nullptr;
-    m_dumpFileMutex.unlock();
-}
-
-void RtlSdrWorker::dumpBuffer(unsigned char *buf, uint32_t len)
-{
-    m_dumpFileMutex.lock();
-    if (nullptr != m_dumpFile)
-    {
-        ssize_t bytes = fwrite(buf, 1, len, m_dumpFile);
-        emit dumpedBytes(bytes);
-    }
-    m_dumpFileMutex.unlock();
+    m_isRecording = ena;
 }
 
 bool RtlSdrWorker::isRunning()
@@ -424,9 +422,9 @@ void RtlSdrWorker::processInputData(unsigned char *buf, uint32_t len)
 #define LEV_CREL 0.0001
 #endif
 
-    if (isDumpingIQ())
+    if (m_isRecording)
     {
-        dumpBuffer(buf, len);
+        emit recordBuffer(buf, len);
     }
 
     // reset watchDog flag, timer sets it to true

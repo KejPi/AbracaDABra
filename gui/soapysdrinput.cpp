@@ -4,13 +4,12 @@
 
 SoapySdrInput::SoapySdrInput(QObject *parent) : InputDevice(parent)
 {
-    m_id = InputDeviceId::SOAPYSDR;
+    m_deviceDescription.id = InputDeviceId::SOAPYSDR;
 
     m_device = nullptr;
     m_deviceUnpluggedFlag = true;
     m_deviceRunningFlag = false;
     m_gainList = nullptr;
-    m_dumpFile = nullptr;
 
     connect(&m_watchdogTimer, &QTimer::timeout, this, &SoapySdrInput::onWatchdogTimeout);
 }
@@ -208,6 +207,25 @@ bool SoapySdrInput::openDevice()
     // set bandwidth
     setBW(SOAPYSDR_BANDWIDTH);
 
+//    SoapySDR::Kwargs info = m_device->getHardwareInfo();
+//    for (const auto& [key, value] : info)
+//    {
+//        qDebug() << "[" << key.c_str() << "] = " << value.c_str();
+//    }
+
+    m_deviceDescription.device.name = "SoapySDR";
+    m_deviceDescription.device.model = "Unknown";
+    m_deviceDescription.sample.sampleRate = 2048000;
+#if SOAPYSDR_RECORD_INT16
+    m_deviceDescription.sample.channelBits = sizeof(int16_t) * 8;
+    m_deviceDescription.sample.containerBits = sizeof(int16_t) * 8;
+    m_deviceDescription.sample.channelContainer = "int16";
+#else // recording in float
+    m_deviceDescription.sample.channelBits = sizeof(float) * 8;
+    m_deviceDescription.sample.containerBits = sizeof(float) * 8;
+    m_deviceDescription.sample.channelContainer = "float";
+#endif
+
     SoapySDR::Stream *stream;
     try
     {
@@ -272,7 +290,7 @@ void SoapySdrInput::run()
 
         m_worker = new SoapySdrWorker(m_device, m_sampleRate, m_rxChannel, this);
         connect(m_worker, &SoapySdrWorker::agcLevel, this, &SoapySdrInput::onAgcLevel, Qt::QueuedConnection);
-        connect(m_worker, &SoapySdrWorker::dumpedBytes, this, &InputDevice::dumpedBytes, Qt::QueuedConnection);
+        connect(m_worker, &SoapySdrWorker::recordBuffer, this, &InputDevice::recordBuffer, Qt::DirectConnection);
         connect(m_worker, &SoapySdrWorker::finished, this, &SoapySdrInput::onReadThreadStopped, Qt::QueuedConnection);
         connect(m_worker, &SoapySdrWorker::finished, m_worker, &QObject::deleteLater);
 
@@ -441,28 +459,9 @@ void SoapySdrInput::onWatchdogTimeout()
     }
 }
 
-void SoapySdrInput::startDumpToFile(const QString & filename)
+void SoapySdrInput::startStopRecording(bool start)
 {
-    m_dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "wb");
-    if (nullptr != m_dumpFile)
-    {
-        m_worker->dumpToFileStart(m_dumpFile);
-#if SOAPYSDR_DUMP_INT16
-        emit dumpingToFile(true, 2*sizeof(int16_t));
-#else
-        emit dumpingToFile(true, 2*sizeof(float));
-#endif
-    }
-}
-
-void SoapySdrInput::stopDumpToFile()
-{
-    m_worker->dumpToFileStop();
-
-    fflush(m_dumpFile);
-    fclose(m_dumpFile);
-
-    emit dumpingToFile(false);
+    m_worker->startStopRecording(start);
 }
 
 void SoapySdrInput::setBW(int bw)
@@ -485,8 +484,7 @@ void SoapySdrInput::setBW(int bw)
 SoapySdrWorker::SoapySdrWorker(SoapySDR::Device * device, double sampleRate, int rxChannel, QObject *parent)
     : QThread(parent)
 {
-    m_enaDumpToFile = false;
-    m_dumpFile = nullptr;
+    m_isRecording = false;
     m_device =  device;
     m_rxChannel = rxChannel;
 
@@ -573,43 +571,25 @@ void SoapySdrWorker::run()
     // exit of the thread
 }
 
-void SoapySdrWorker::dumpToFileStart(FILE * dumpFile)
+void SoapySdrWorker::startStopRecording(bool ena)
 {
-    m_dumpFileMutex.lock();
-    m_dumpFile = dumpFile;
-    m_enaDumpToFile = true;
-    m_dumpFileMutex.unlock();
+    m_isRecording = ena;
 }
 
-void SoapySdrWorker::dumpToFileStop()
+void SoapySdrWorker::doRecordBuffer(const float *buf, uint32_t len)
 {
-    m_enaDumpToFile = false;
-    m_dumpFileMutex.lock();
-    m_dumpFile = nullptr;
-    m_dumpFileMutex.unlock();
-}
-
-void SoapySdrWorker::dumpBuffer(const float *buf, uint32_t numIQ)
-{
-    m_dumpFileMutex.lock();
-    if (nullptr != m_dumpFile)
+#if SOAPYSDR_RECORD_INT16
+    // dumping in int16
+    int16_t int16Buf[len];
+    for (int n = 0; n < len; ++n)
     {
-#if SOAPYSDR_DUMP_INT16
-        // dumping in int16
-        int16_t int16Buf[numIQ * 2];
-        for (int n = 0; n < numIQ*2; ++n)
-        {
-            int16Buf[n] = int16_t(*buf++ * SOAPYSDR_DUMP_FLOAT2INT16);
-        }
-        ssize_t bytes = fwrite(int16Buf, 1, sizeof(int16Buf), m_dumpFile);
-
-#else
-        // dumping in float
-        ssize_t bytes = fwrite(buf, sizeof(float), 2*numIQ, m_dumpFile);
-#endif
-        emit dumpedBytes(bytes);
+        int16Buf[n] = int16_t(*buf++ * SOAPYSDR_RECORD_FLOAT2INT16);
     }
-    m_dumpFileMutex.unlock();
+    emit recordBuffer((const uint8_t *) int16Buf, len * sizeof(int16_t));
+#else
+    // dumping in float
+    emit recordBuffer((const uint8_t *) buf, len * sizeof(float));
+#endif
 }
 
 bool SoapySdrWorker::isRunning()
@@ -652,9 +632,9 @@ void SoapySdrWorker::processInputData(std::complex<float> buff[], size_t numSamp
         emit agcLevel(m_src->signalLevel());
     }
 
-    if (isDumpingIQ())
+    if (m_isRecording)
     {
-        dumpBuffer(m_filterOutBuffer, numOutputIQ);
+        doRecordBuffer(m_filterOutBuffer, 2*numOutputIQ);
     }
 
     // there is enough room in buffer

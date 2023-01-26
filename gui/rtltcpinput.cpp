@@ -39,11 +39,10 @@ static SocketInitialiseWrapper socketInitialiseWrapper;
 
 RtlTcpInput::RtlTcpInput(QObject *parent) : InputDevice(parent)
 {
-    m_id = InputDeviceId::RTLTCP;
+    m_deviceDescription.id = InputDeviceId::RTLTCP;
 
     m_deviceUnpluggedFlag = true;
     m_gainList = nullptr;
-    m_dumpFile = nullptr;
     m_worker = nullptr;
     m_frequency = 0;
     m_sock = INVALID_SOCKET;
@@ -394,10 +393,17 @@ bool RtlTcpInput::openDevice()
         // set automatic gain
         setGainMode(RtlGainMode::Software);
 
+        m_deviceDescription.device.name = "rtl_tcp";
+        m_deviceDescription.device.model = "Generic RTL2832U OEM";
+        m_deviceDescription.sample.sampleRate = 2048000;
+        m_deviceDescription.sample.channelBits = 8;
+        m_deviceDescription.sample.containerBits = 8;
+        m_deviceDescription.sample.channelContainer = "uint8";
+
         // need to create worker, server is pushing samples
         m_worker = new RtlTcpWorker(m_sock, this);
         connect(m_worker, &RtlTcpWorker::agcLevel, this, &RtlTcpInput::onAgcLevel, Qt::QueuedConnection);
-        connect(m_worker, &RtlTcpWorker::dumpedBytes, this, &InputDevice::dumpedBytes, Qt::QueuedConnection);
+        connect(m_worker, &RtlTcpWorker::recordBuffer, this, &InputDevice::recordBuffer, Qt::DirectConnection);
         connect(m_worker, &RtlTcpWorker::finished, this, &RtlTcpInput::onReadThreadStopped, Qt::QueuedConnection);
         connect(m_worker, &RtlTcpWorker::finished, m_worker, &QObject::deleteLater);
         m_worker->start();
@@ -576,23 +582,9 @@ void RtlTcpInput::onWatchdogTimeout()
     }
 }
 
-void RtlTcpInput::startDumpToFile(const QString & filename)
+void RtlTcpInput::startStopRecording(bool start)
 {
-    m_dumpFile = fopen(QDir::toNativeSeparators(filename).toUtf8().data(), "wb");
-    if (nullptr != m_dumpFile)
-    {
-        m_worker->dumpToFileStart(m_dumpFile);
-        emit dumpingToFile(true);
-    }
-}
-
-void RtlTcpInput::stopDumpToFile()
-{
-    m_worker->dumpToFileStop();
-
-    fclose(m_dumpFile);
-
-    emit dumpingToFile(false);
+    m_worker->startStopRecording(start);
 }
 
 QList<float> RtlTcpInput::getGainList() const
@@ -625,10 +617,14 @@ void RtlTcpInput::sendCommand(const RtlTcpCommand & cmd, uint32_t param)
 
 RtlTcpWorker::RtlTcpWorker(SOCKET sock, QObject *parent) : QThread(parent)
 {
-    m_enaDumpToFile = false;
+    m_isRecording = false;
     m_enaCaptureIQ = false;
-    m_dumpFile = nullptr;
     m_sock = sock;
+}
+
+void RtlTcpWorker::startStopRecording(bool ena)
+{
+    m_isRecording = ena;
 }
 
 void RtlTcpWorker::run()
@@ -724,33 +720,6 @@ void RtlTcpWorker::catureIQ(bool ena)
     m_enaCaptureIQ = ena;
 }
 
-void RtlTcpWorker::dumpToFileStart(FILE * dumpFile)
-{
-    m_dumpFileMutex.lock();
-    m_dumpFile = dumpFile;
-    m_enaDumpToFile = true;
-    m_dumpFileMutex.unlock();
-}
-
-void RtlTcpWorker::dumpToFileStop()
-{
-    m_dumpFileMutex.lock();
-    m_enaDumpToFile = false;
-    m_dumpFile = nullptr;
-    m_dumpFileMutex.unlock();
-}
-
-void RtlTcpWorker::dumpBuffer(unsigned char *buf, uint32_t len)
-{
-    m_dumpFileMutex.lock();
-    if (nullptr != m_dumpFile)
-    {
-        ssize_t bytes = fwrite(buf, 1, len, m_dumpFile);
-        emit dumpedBytes(bytes);
-    }
-    m_dumpFileMutex.unlock();
-}
-
 bool RtlTcpWorker::isRunning()
 {
     bool flag = m_watchdogFlag;
@@ -772,9 +741,9 @@ void RtlTcpWorker::processInputData(unsigned char *buf, uint32_t len)
 #define LEV_CREL 0.0001
 #endif
 
-    if (isDumpingIQ())
+    if (m_isRecording)
     {
-        dumpBuffer(buf, len);
+        emit recordBuffer(buf, len);
     }
 
     // retrieving memories

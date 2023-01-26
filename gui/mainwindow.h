@@ -19,6 +19,7 @@
 #include "ensembleinfodialog.h"
 #include "catslsdialog.h"
 #include "inputdevice.h"
+#include "inputdevicerecorder.h"
 #include "radiocontrol.h"
 #include "dldecoder.h"
 #include "slideshowapp.h"
@@ -103,6 +104,7 @@ private:
     InputDeviceId m_inputDeviceId = InputDeviceId::UNDEFINED;
     InputDevice * m_inputDevice = nullptr;
     InputDeviceId m_inputDeviceIdRequest = InputDeviceId::UNDEFINED;
+    InputDeviceRecorder * m_inputDeviceRecorder = nullptr;
 
     // audio decoder
     QThread * m_audioDecoderThread;

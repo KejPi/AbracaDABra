@@ -22,9 +22,9 @@ public:
 
     const QString &getDumpPath() const;
     void setDumpPath(const QString &newDumpPath);
-    void enableDumpToFile(bool ena);
-    void dumpToFileStateToggle(bool dumping, int bytesPerSample);
-    void updateDumpStatus(ssize_t bytes);
+    void enableRecording(bool ena);
+    void onRecording(bool isActive);
+    void updateRecordingStatus(uint64_t bytes, float ms);
     void updateAgcGain(float gain);
     void updateFIBstatus(int fibCount, int fibErrCount);
     void updateMSCstatus(int crcOkCount, int crcErrCount);
@@ -34,8 +34,8 @@ public:
     void serviceChanged(const RadioControlServiceComponent &s);
 
 signals:
-    void dumpToFileStart(const QString & filename);
-    void dumpToFileStop();
+    void recordingStart(const QString & filename);
+    void recordingStop();
     void requestEnsembleConfiguration();
 
 protected:
@@ -44,23 +44,21 @@ protected:
 private:
     Ui::EnsembleInfoDialog *ui;
 
-    bool isDumping = false;
-    ssize_t bytesDumped = 0;
-    int bytesToTimeShiftFactor = 12;
-    quint32 frequency;
-    QString dumpPath;
+    bool m_isRecordingActive = false;
+    quint32 m_frequency;
+    QString m_recordingPath;
 
-    quint32 fibCounter;
-    quint32 fibErrorCounter;
-    quint32 crcCounter;
-    quint32 crcErrorCounter;
+    quint32 m_fibCounter;
+    quint32 m_fibErrorCounter;
+    quint32 m_crcCounter;
+    quint32 m_crcErrorCounter;
 
-    void onDumpButtonClicked();
+    void onRecordingButtonClicked();
     void fibFrameContextMenu(const QPoint &pos);
     void clearServiceInfo();
     void clearSignalInfo();
     void clearFreqInfo();
-    void showDumpingStat(bool ena);
+    void showRecordingStat(bool ena);
 };
 
 #endif // ENSEMBLEINFODIALOG_H

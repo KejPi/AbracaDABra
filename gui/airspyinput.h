@@ -9,10 +9,10 @@
 #include "inputdevice.h"
 #include "inputdevicesrc.h"
 
-#define AIRSPY_AGC_ENABLE  1   // enable AGC
-#define AIRSPY_DUMP_INT16  1   // dump raw stream in int16 insetad of float
+#define AIRSPY_AGC_ENABLE  1     // enable AGC
+#define AIRSPY_RECORD_INT16  1   // record raw stream in int16 instead of float
 
-#define AIRSPY_DUMP_FLOAT2INT16  (16384*2)   // conversion constant to int16
+#define AIRSPY_RECORD_FLOAT2INT16  (16384*2)   // conversion constant to int16
 
 #define AIRSPY_SW_AGC_MIN      0
 #define AIRSPY_SW_AGC_MAX     17
@@ -48,13 +48,9 @@ public:
     explicit AirspyInput(bool try4096kHz, QObject *parent = nullptr);
     ~AirspyInput();
     bool openDevice() override;
-
     void tune(uint32_t frequency) override;
     void setGainMode(const AirspyGainStr & gain);
-
-    void startDumpToFile(const QString & filename) override;
-    void stopDumpToFile() override;
-
+    void startStopRecording(bool start) override;
     void setBiasT(bool ena);
     void setDataPacking(bool ena);
 signals:
@@ -66,9 +62,7 @@ private:
     QTimer m_watchdogTimer;
     AirpyGainMode m_gainMode = AirpyGainMode::Hybrid;
     int m_gainIdx;
-    std::atomic<bool> m_enaDumpToFile;
-    FILE * m_dumpFile;
-    QMutex m_dumpfileMutex;
+    std::atomic<bool> m_isRecording;
     bool m_try4096kHz;
     float * m_filterOutBuffer;
     InputDeviceSRC * m_src;
@@ -85,8 +79,7 @@ private:
     void onAgcLevel(float level);
     void onWatchdogTimeout();
 
-    bool isDumpingIQ() const { return m_enaDumpToFile; }
-    void dumpBuffer(unsigned char *buf, uint32_t len);
+    void doRecordBuffer(const float *buf, uint32_t len);
     void processInputData(airspy_transfer* transfer);
     static int callback(airspy_transfer* transfer);
 };

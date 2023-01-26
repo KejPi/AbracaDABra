@@ -38,24 +38,21 @@ class RtlTcpWorker : public QThread
     Q_OBJECT
 public:
     explicit RtlTcpWorker(SOCKET sock, QObject *parent = nullptr);
-    void dumpToFileStart(FILE * dumpFile);
-    void dumpToFileStop();
     void catureIQ(bool ena);
+    void startStopRecording(bool ena);
     bool isRunning();
 protected:
     void run() override;
 signals:
     void agcLevel(float level, int maxVal);
-    void dumpedBytes(ssize_t bytes);
+    void recordBuffer(const uint8_t * buf, uint32_t len);
 private:
     SOCKET m_sock;
 
-    std::atomic<bool> m_enaDumpToFile;
+    std::atomic<bool> m_isRecording;
     std::atomic<bool> m_enaCaptureIQ;
     std::atomic<bool> m_watchdogFlag;
-    FILE * m_dumpFile;
-    QMutex m_dumpFileMutex;
-    int m_captureStartCntr;
+    int m_captureStartCntr;   
 
     // DOC memory
     float m_dcI = 0.0;
@@ -67,8 +64,6 @@ private:
     // input buffer
     uint8_t m_bufferIQ[RTLTCP_CHUNK_SIZE];
 
-    bool isDumpingIQ() const { return m_enaDumpToFile; }
-    void dumpBuffer(unsigned char *buf, uint32_t len);
     void processInputData(unsigned char *buf, uint32_t len);
 };
 
@@ -107,15 +102,11 @@ public:
     explicit RtlTcpInput(QObject *parent = nullptr);
     ~RtlTcpInput();
     bool openDevice() override;
-
     void tune(uint32_t frequency) override;
     void setTcpIp(const QString & address, int port);
     void setGainMode(RtlGainMode gainMode, int gainIdx = 0);
     void setDAGC(bool ena);
-
-    void startDumpToFile(const QString & filename) override;
-    void stopDumpToFile() override;
-
+    void startStopRecording(bool start) override;
     QList<float> getGainList() const;
 private:    
     uint32_t m_frequency;
@@ -129,7 +120,6 @@ private:
     RtlGainMode m_gainMode = RtlGainMode::Hardware;
     int m_gainIdx;
     QList<int> * m_gainList;
-    FILE * m_dumpFile;
 
     void run();
     void stop();

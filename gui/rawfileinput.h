@@ -52,6 +52,7 @@ public slots:
     void tune(uint32_t freq) override;
     void setFile(const QString & fileName, const RawFileInputFormat & sampleFormat = RawFileInputFormat::SAMPLE_FORMAT_U8);
     void setFileFormat(const RawFileInputFormat & sampleFormat);
+    void startStopRecording(bool start) override { /* do nothing */ }
 
 private:
     RawFileInputFormat m_sampleFormat;

@@ -16,9 +16,9 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
     // remove question mark from titlebar
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    connect(ui->recordButton, &QPushButton::clicked, this, &EnsembleInfoDialog::onDumpButtonClicked);
+    connect(ui->recordButton, &QPushButton::clicked, this, &EnsembleInfoDialog::onRecordingButtonClicked);
 
-    dumpPath = QDir::homePath();
+    m_recordingPath = QDir::homePath();
 
     clearFreqInfo();
     clearSignalInfo();
@@ -75,7 +75,7 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
 
     ui->recordButton->setToolTip("Record raw IQ stream to file");
 
-    enableDumpToFile(false);
+    enableRecording(false);
 }
 
 EnsembleInfoDialog::~EnsembleInfoDialog()
@@ -126,22 +126,26 @@ void EnsembleInfoDialog::updateFreqOffset(float offset)
     ui->freqOffset->setText(QString("%1 Hz").arg(offset, 0, 'f', 1));
 }
 
-void EnsembleInfoDialog::enableDumpToFile(bool ena)
+void EnsembleInfoDialog::enableRecording(bool ena)
 {
     ui->recordButton->setVisible(ena);
     ui->dumpSize->setText("");
     ui->dumpLength->setText("");
-    showDumpingStat(false);
+    showRecordingStat(false);
+    if (!ena)
+    {
+        emit recordingStop();
+    }
 }
 
-void EnsembleInfoDialog::onDumpButtonClicked()
+void EnsembleInfoDialog::onRecordingButtonClicked()
 {
     ui->recordButton->setEnabled(false);
-    if (!isDumping)
+    if (!m_isRecordingActive)
     {
-        QString f = QString("%1/%2_%3.raw").arg(dumpPath,
+        QString f = QString("%1/%2_%3.raw").arg(m_recordingPath,
                 QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"),
-                DabTables::channelList.value(frequency));
+                DabTables::channelList.value(m_frequency));
 
         QString fileName = QFileDialog::getSaveFileName(this,
                                                         tr("Record IQ stream"),
@@ -149,8 +153,8 @@ void EnsembleInfoDialog::onDumpButtonClicked()
                                                         tr("Binary files (*.raw)"));
         if (!fileName.isEmpty())
         {
-            dumpPath = QFileInfo(fileName).path(); // store path for next time
-            emit dumpToFileStart(fileName);
+            m_recordingPath = QFileInfo(fileName).path(); // store path for next time
+            emit recordingStart(fileName);
         }
         else
         {
@@ -159,28 +163,16 @@ void EnsembleInfoDialog::onDumpButtonClicked()
     }
     else
     {
-        emit dumpToFileStop();
+        emit recordingStop();
     }
 }
 
-void EnsembleInfoDialog::dumpToFileStateToggle(bool dumping, int bytesPerSample)
+void EnsembleInfoDialog::onRecording(bool isActive)
 {
-    isDumping = dumping;
-    if (dumping)
+    m_isRecordingActive = isActive;
+    if (isActive)
     {
         ui->recordButton->setText("Stop recording");
-        bytesDumped = 0;
-
-        // default is bytes/2048/2 => 2 bytes per sample, 2048 samples per milisecond => 2^-12
-        //bytesToTimeShiftFactor = 12 + (4 == bytesPerSample);
-
-        bytesToTimeShiftFactor = 11;
-        int n = 1;
-        do
-        {
-            n <<= 1;
-            bytesToTimeShiftFactor+=1;
-        } while (n < bytesPerSample);
     }
     else
     {
@@ -189,16 +181,14 @@ void EnsembleInfoDialog::dumpToFileStateToggle(bool dumping, int bytesPerSample)
     ui->dumpSize->setText("");
     ui->dumpLength->setText("");
 
-    showDumpingStat(dumping);
+    showRecordingStat(m_isRecordingActive);
     ui->recordButton->setEnabled(true);
 }
 
-void EnsembleInfoDialog::updateDumpStatus(ssize_t bytes)
+void EnsembleInfoDialog::updateRecordingStatus(uint64_t bytes, float ms)
 {
-    bytesDumped += bytes;
-    ui->dumpSize->setText(QString::number(double(bytesDumped/(1024*1024.0)),'f', 1) + " MB");
-    int timeMs = bytesDumped >> bytesToTimeShiftFactor;
-    ui->dumpLength->setText(QString::number(double(timeMs * 0.001),'f', 1) + " sec");
+    ui->dumpSize->setText(QString::number(double(bytes/(1024*1024.0)),'f', 1) + " MB");
+    ui->dumpLength->setText(QString::number(double(ms * 0.001),'f', 1) + " sec");
 }
 
 void EnsembleInfoDialog::updateAgcGain(float gain)
@@ -213,30 +203,30 @@ void EnsembleInfoDialog::updateAgcGain(float gain)
 
 void EnsembleInfoDialog::updateFIBstatus(int fibCntr, int fibErrCount)
 {
-    fibCounter += (fibCntr - fibErrCount);
-    fibCounter &= 0x7FFFFFFF;       // wrapping
-    fibErrorCounter += fibErrCount;
-    fibErrorCounter &= 0x7FFFFFFF;  // wrapping
-    ui->fibCount->setText(QString::number(fibCounter));
-    ui->fibErrCount->setText(QString::number(fibErrorCounter));
-    ui->fibErrRate->setText(QString::number(double(fibErrorCounter)/fibCounter,'e', 4));
+    m_fibCounter += (fibCntr - fibErrCount);
+    m_fibCounter &= 0x7FFFFFFF;       // wrapping
+    m_fibErrorCounter += fibErrCount;
+    m_fibErrorCounter &= 0x7FFFFFFF;  // wrapping
+    ui->fibCount->setText(QString::number(m_fibCounter));
+    ui->fibErrCount->setText(QString::number(m_fibErrorCounter));
+    ui->fibErrRate->setText(QString::number(double(m_fibErrorCounter)/m_fibCounter,'e', 4));
 }
 
 void EnsembleInfoDialog::updateMSCstatus(int crcOkCount, int crcErrCount)
 {
-    crcCounter += (crcOkCount + crcErrCount);
-    crcCounter &= 0x7FFFFFFF;       // wrapping
-    crcErrorCounter += crcErrCount;
-    crcErrorCounter &= 0x7FFFFFFF;  // wrapping
-    ui->crcCount->setText(QString::number(crcCounter));
-    ui->crcErrCount->setText(QString::number(crcErrorCounter));
-    ui->crcErrRate->setText(QString::number(double(crcErrorCounter)/crcCounter,'e', 4));
+    m_crcCounter += (crcOkCount + crcErrCount);
+    m_crcCounter &= 0x7FFFFFFF;       // wrapping
+    m_crcErrorCounter += crcErrCount;
+    m_crcErrorCounter &= 0x7FFFFFFF;  // wrapping
+    ui->crcCount->setText(QString::number(m_crcCounter));
+    ui->crcErrCount->setText(QString::number(m_crcErrorCounter));
+    ui->crcErrRate->setText(QString::number(double(m_crcErrorCounter)/m_crcCounter,'e', 4));
 }
 
 void EnsembleInfoDialog::resetFibStat()
 {
-    fibCounter = 0;
-    fibErrorCounter = 0;
+    m_fibCounter = 0;
+    m_fibErrorCounter = 0;
     ui->fibCount->setText("0");
     ui->fibErrCount->setText("0");
     ui->fibErrRate->setText("N/A");
@@ -244,8 +234,8 @@ void EnsembleInfoDialog::resetFibStat()
 
 void EnsembleInfoDialog::resetMscStat()
 {
-    crcCounter = 0;
-    crcErrorCounter = 0;
+    m_crcCounter = 0;
+    m_crcErrorCounter = 0;
     ui->crcCount->setText("0");
     ui->crcErrCount->setText("0");
     ui->crcErrRate->setText("N/A");
@@ -253,11 +243,11 @@ void EnsembleInfoDialog::resetMscStat()
 
 void EnsembleInfoDialog::newFrequency(quint32 f)
 {
-    frequency = f;
-    if (frequency)
+    m_frequency = f;
+    if (m_frequency)
     {
-        ui->freq->setText(QString::number(frequency) + " kHz");
-        ui->channel->setText(DabTables::channelList.value(frequency));
+        ui->freq->setText(QString::number(m_frequency) + " kHz");
+        ui->channel->setText(DabTables::channelList.value(m_frequency));
     }
     else
     {
@@ -299,21 +289,21 @@ void EnsembleInfoDialog::showEvent(QShowEvent *event)
 
 void EnsembleInfoDialog::closeEvent(QCloseEvent *event)
 {
-    if (isDumping)
+    if (m_isRecordingActive)
     {
-        emit dumpToFileStop();
+        emit recordingStop();
     }
     event->accept();
 }
 
 const QString &EnsembleInfoDialog::getDumpPath() const
 {
-    return dumpPath;
+    return m_recordingPath;
 }
 
 void EnsembleInfoDialog::setDumpPath(const QString &newDumpPath)
 {
-    dumpPath = newDumpPath;
+    m_recordingPath = newDumpPath;
 }
 
 void EnsembleInfoDialog::fibFrameContextMenu(const QPoint& pos)
@@ -367,7 +357,7 @@ void EnsembleInfoDialog::clearFreqInfo()
     ui->channel->setText("");
 }
 
-void EnsembleInfoDialog::showDumpingStat(bool ena)
+void EnsembleInfoDialog::showRecordingStat(bool ena)
 {
     ui->dumpLengthLabel->setVisible(ena);
     ui->dumpSizeLabel->setVisible(ena);

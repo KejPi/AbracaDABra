@@ -83,14 +83,20 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->favoriteLabel->setTooltip("Remove service from favorites", true);
     ui->favoriteLabel->setChecked(false);
 
+    m_inputDeviceRecorder = new InputDeviceRecorder();
+
     m_setupDialog = new SetupDialog(this);
     connect(m_setupDialog, &SetupDialog::inputDeviceChanged, this, &MainWindow::changeInputDevice);
     connect(this, &MainWindow::expertModeChanged, m_setupDialog, &SetupDialog::onExpertMode);
     connect(m_setupDialog, &SetupDialog::newInputDeviceSettings, this, &MainWindow::onNewInputDeviceSettings);
     connect(m_setupDialog, &SetupDialog::applicationStyleChanged, this, &MainWindow::onApplicationStyleChanged);
-    connect(m_setupDialog, &SetupDialog::expertModeToggled, this, &MainWindow::onExpertModeToggled);    
+    connect(m_setupDialog, &SetupDialog::expertModeToggled, this, &MainWindow::onExpertModeToggled);
 
     m_ensembleInfoDialog = new EnsembleInfoDialog(this);
+    connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStart, m_inputDeviceRecorder, &InputDeviceRecorder::start);
+    connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStop, m_inputDeviceRecorder, &InputDeviceRecorder::stop);
+    connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_ensembleInfoDialog, &EnsembleInfoDialog::onRecording);
+    connect(m_inputDeviceRecorder, &InputDeviceRecorder::bytesRecorded, m_ensembleInfoDialog, &EnsembleInfoDialog::updateRecordingStatus, Qt::QueuedConnection);
 
     // status bar
     QWidget * widget = new QWidget();
@@ -456,6 +462,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete m_inputDevice;
+    delete m_inputDeviceRecorder;
 
     m_radioControlThread->quit();  // this deletes radioControl
     m_radioControlThread->wait();
@@ -1366,8 +1373,8 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     // disable band scan - will be enable when it makes sense (RTL-SDR at the moment)
     m_bandScanAction->setDisabled(true);
 
-    // disable file dumping
-    m_ensembleInfoDialog->enableDumpToFile(false);
+    // disable file recording
+    m_ensembleInfoDialog->enableRecording(false);
 
     switch (d)
     {
@@ -1431,13 +1438,14 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             ui->serviceTreeView->setEnabled(true);
             ui->favoriteLabel->setEnabled(true);
 
+            // recorder
+            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->getDeviceDescription());
+            connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
+            connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
+
             // ensemble info dialog
-            connect(m_ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, m_inputDevice, &InputDevice::startDumpToFile);
-            connect(m_ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, m_inputDevice, &InputDevice::stopDumpToFile);
-            connect(m_inputDevice, &InputDevice::dumpingToFile, m_ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
-            connect(m_inputDevice, &InputDevice::dumpedBytes, m_ensembleInfoDialog, &EnsembleInfoDialog::updateDumpStatus);
             connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
-            m_ensembleInfoDialog->enableDumpToFile(true);
+            m_ensembleInfoDialog->enableRecording(true);
 
             // these are settings that are configures in ini file manually
             // they are only set when device is initialized
@@ -1507,13 +1515,14 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             ui->serviceTreeView->setEnabled(true);
             ui->favoriteLabel->setEnabled(true);
 
+            // recorder
+            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->getDeviceDescription());
+            connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
+            connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
+
             // ensemble info dialog
-            connect(m_ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, m_inputDevice, &InputDevice::startDumpToFile);
-            connect(m_ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, m_inputDevice, &InputDevice::stopDumpToFile);
-            connect(m_inputDevice, &InputDevice::dumpingToFile, m_ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
-            connect(m_inputDevice, &InputDevice::dumpedBytes, m_ensembleInfoDialog, &EnsembleInfoDialog::updateDumpStatus);
             connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
-            m_ensembleInfoDialog->enableDumpToFile(true);
+            m_ensembleInfoDialog->enableRecording(true);
 
             // apply current settings
             onNewInputDeviceSettings();
@@ -1573,12 +1582,14 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             ui->favoriteLabel->setEnabled(true);
 
             // ensemble info dialog
-            connect(m_ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, m_inputDevice, &InputDevice::startDumpToFile);
-            connect(m_ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, m_inputDevice, &InputDevice::stopDumpToFile);
-            connect(m_inputDevice, &InputDevice::dumpingToFile, m_ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
-            connect(m_inputDevice, &InputDevice::dumpedBytes, m_ensembleInfoDialog, &EnsembleInfoDialog::updateDumpStatus);
+            // recorder
+            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->getDeviceDescription());
+            connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
+            connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
+
+            // ensemble info dialog
             connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
-            m_ensembleInfoDialog->enableDumpToFile(true);
+            m_ensembleInfoDialog->enableRecording(true);
 
             // these are settings that are configures in ini file manually
             // they are only set when device is initialized
@@ -1652,12 +1663,14 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             ui->favoriteLabel->setEnabled(true);
 
             // ensemble info dialog
-            connect(m_ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStart, m_inputDevice, &InputDevice::startDumpToFile);
-            connect(m_ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStop, m_inputDevice, &InputDevice::stopDumpToFile);
-            connect(m_inputDevice, &InputDevice::dumpingToFile, m_ensembleInfoDialog, &EnsembleInfoDialog::dumpToFileStateToggle);
-            connect(m_inputDevice, &InputDevice::dumpedBytes, m_ensembleInfoDialog, &EnsembleInfoDialog::updateDumpStatus);
+            // recorder
+            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->getDeviceDescription());
+            connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
+            connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
+
+            // ensemble info dialog
             connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
-            m_ensembleInfoDialog->enableDumpToFile(true);
+            m_ensembleInfoDialog->enableRecording(true);
 
             // these are settings that are configures in ini file manually
             // they are only set when device is initialized

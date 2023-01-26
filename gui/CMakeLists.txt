@@ -64,6 +64,8 @@ add_executable(${TARGET}
     inputdevice.cpp
     inputdevicesrc.h
     inputdevicesrc.cpp
+    inputdevicerecorder.h
+    inputdevicerecorder.cpp
     rawfileinput.h
     rawfileinput.cpp
     rtlsdrinput.h

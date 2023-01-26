@@ -10,8 +10,8 @@
 #include "inputdevice.h"
 #include "inputdevicesrc.h"
 
-#define SOAPYSDR_DUMP_INT16  1   // dump raw stream in int16 insetad of float
-#define SOAPYSDR_DUMP_FLOAT2INT16  (32768)   // conversion constant to int16
+#define SOAPYSDR_RECORD_INT16  1               // record raw stream in int16 instead of float
+#define SOAPYSDR_RECORD_FLOAT2INT16  (32768)   // conversion constant to int16
 
 #define SOAPYSDR_INPUT_SAMPLES (16384)
 
@@ -26,21 +26,18 @@ class SoapySdrWorker : public QThread
 public:
     explicit SoapySdrWorker(SoapySDR::Device *device, double sampleRate, int rxChannel = 0, QObject *parent = nullptr);
     ~SoapySdrWorker();
-    void dumpToFileStart(FILE * dumpFile);
-    void dumpToFileStop();
+    void startStopRecording(bool ena);
     bool isRunning();
     void stop();
 protected:
     void run() override;
 signals:
     void agcLevel(float level);
-    void dumpedBytes(ssize_t bytes);
+    void recordBuffer(const uint8_t * buf, uint32_t len);
 private:
     SoapySDR::Device * m_device;
     int m_rxChannel;
-    std::atomic<bool> m_enaDumpToFile;
-    FILE * m_dumpFile;
-    QMutex m_dumpFileMutex;
+    std::atomic<bool> m_isRecording;
     std::atomic<bool> m_watchdogFlag;
     std::atomic<bool> m_doReadIQ;
 
@@ -52,8 +49,7 @@ private:
     float m_agcLevel = 0.0;
     uint_fast8_t m_signalLevelEmitCntr;
 
-    bool isDumpingIQ() const { return m_enaDumpToFile; }
-    void dumpBuffer(const float *buf, uint32_t numIQ);
+    void doRecordBuffer(const float *buf, uint32_t len);
     void processInputData(std::complex<float> buff[], size_t numSamples);
 };
 
@@ -64,19 +60,13 @@ public:
     explicit SoapySdrInput(QObject *parent = nullptr);
     ~SoapySdrInput();
     bool openDevice() override;
-
     void tune(uint32_t frequency) override;
     void setDevArgs(const QString & devArgs) { m_devArgs = devArgs; }
     void setRxChannel(int rxChannel) { m_rxChannel = rxChannel; }
     void setAntenna(const QString & antenna) { m_antenna = antenna; }
-
     void setGainMode(SoapyGainMode gainMode, int gainIdx = 0);
-
-    void startDumpToFile(const QString & filename) override;
-    void stopDumpToFile() override;
-
+    void startStopRecording(bool start) override;
     void setBW(int bw);
-
     QList<float> getGainList() const { return * m_gainList; }
 
 private:
@@ -95,7 +85,6 @@ private:
     SoapyGainMode m_gainMode = SoapyGainMode::Manual;
     int m_gainIdx;
     QList<float> * m_gainList;
-    FILE * m_dumpFile;
 
     void run();           
     void stop();
