@@ -19,6 +19,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->tabWidget->setTabText(SetupDialogTabs::Device, "Device");
     ui->tabWidget->setTabText(SetupDialogTabs::Announcement, "Announcements");
     ui->tabWidget->setTabText(SetupDialogTabs::Other, "Others");
+    ui->tabWidget->setCurrentIndex(SetupDialogTabs::Device);
 
     ui->inputCombo->addItem("RTL SDR", QVariant(int(InputDeviceId::RTLSDR)));
 #if HAVE_AIRSPY
@@ -191,12 +192,14 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->darkRadioButton->setToolTip("Force application dark style.");
     ui->expertCheckBox->setToolTip("User interface in expert mode");
     ui->dlPlusCheckBox->setToolTip("Show Dynamic Label Plus (DL+) tags like artist, song name, etc.");
+    ui->xmlHeaderCheckBox->setToolTip("Include raw file XML header in IQ recording");
 
     connect(ui->defaultRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
     connect(ui->lightRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
     connect(ui->darkRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
     connect(ui->expertCheckBox, &QCheckBox::clicked, this, &SetupDialog::onExpertModeChecked);
     connect(ui->dlPlusCheckBox, &QCheckBox::clicked, this, &SetupDialog::onDLPlusChecked);
+    connect(ui->xmlHeaderCheckBox, &QCheckBox::clicked, this, &SetupDialog::onXmlHeaderChecked);
 
     ui->defaultRadioButton->setChecked(true);
 
@@ -206,6 +209,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->noiseConcealmentCombo->addItem("-35 dBFS", QVariant(35));
     ui->noiseConcealmentCombo->addItem("-40 dBFS", QVariant(40));
     ui->noiseConcealmentCombo->addItem("Disabled", QVariant(0));
+    ui->noiseConcealmentCombo->setToolTip("Select noise level that is generated during audio interruptions.<br>"
+                                          "This may help to improve listening experience and make the audio interruptions less annoying.");
 #if AUDIO_DECODER_NOISE_CONCEALMENT
     connect(ui->noiseConcealmentCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onNoiseLevelChanged);
 #else
@@ -263,6 +268,7 @@ void SetupDialog::setSettings(const Settings &settings)
     setStatusLabel();
     emit newAnnouncementSettings(m_settings.announcementEna);
     emit noiseConcealmentLevelChanged(m_settings.noiseConcealmentLevel);
+    emit xmlHeaderToggled(m_settings.xmlHeaderEna);
 }
 
 void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
@@ -463,6 +469,7 @@ void SetupDialog::showEvent(QShowEvent *event)
         index = 0;
     }
     ui->noiseConcealmentCombo->setCurrentIndex(index);
+    ui->xmlHeaderCheckBox->setChecked(m_settings.xmlHeaderEna);
 }
 
 void SetupDialog::onConnectDeviceClicked()
@@ -969,4 +976,10 @@ void SetupDialog::onNoiseLevelChanged(int index)
         m_settings.noiseConcealmentLevel = noiseLevel;
         emit noiseConcealmentLevelChanged(noiseLevel);
     }
+}
+
+void SetupDialog::onXmlHeaderChecked(bool checked)
+{
+    m_settings.xmlHeaderEna = checked;
+    emit xmlHeaderToggled(checked);
 }

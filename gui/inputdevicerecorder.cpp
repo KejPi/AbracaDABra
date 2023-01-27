@@ -86,20 +86,23 @@ void InputDeviceRecorder::stop()
     std::lock_guard<std::mutex> guard(m_fileMutex);
     if (nullptr != m_file)
     {
-        finishXmlHeader();
+        if (m_xmlHeaderEna)
+        {
+            finishXmlHeader();
 
-        // write xml header
-        QByteArray bytearray = m_xmlHeader.toByteArray();
-        fseek(m_file, 0, SEEK_SET);
-        fwrite(bytearray.data(), 1, bytearray.size(), m_file);
+            // write xml header
+            QByteArray bytearray = m_xmlHeader.toByteArray();
+            fseek(m_file, 0, SEEK_SET);
+            fwrite(bytearray.data(), 1, bytearray.size(), m_file);
 
-        // add padding
-        int paddingBytes = INPUTDEVICERECORDER_XML_PADDING - bytearray.size();
-        char * padding = new char[paddingBytes];
-        memset(padding, 0, paddingBytes);
-        fwrite(padding, 1, paddingBytes, m_file);
-        delete [] padding;
-
+            // add padding
+            int paddingBytes = INPUTDEVICERECORDER_XML_PADDING - bytearray.size();
+            char * padding = new char[paddingBytes];
+            memset(padding, 0, paddingBytes);
+            fwrite(padding, 1, paddingBytes, m_file);
+            delete [] padding;
+        }
+        else { /* XML header is not enabled */ }
         fflush(m_file);
         fclose(m_file);
         m_file = nullptr;

@@ -91,6 +91,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::newInputDeviceSettings, this, &MainWindow::onNewInputDeviceSettings);
     connect(m_setupDialog, &SetupDialog::applicationStyleChanged, this, &MainWindow::onApplicationStyleChanged);
     connect(m_setupDialog, &SetupDialog::expertModeToggled, this, &MainWindow::onExpertModeToggled);
+    connect(m_setupDialog, &SetupDialog::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
 
     m_ensembleInfoDialog = new EnsembleInfoDialog(this);
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStart, m_inputDeviceRecorder, &InputDeviceRecorder::start);
@@ -1801,6 +1802,7 @@ void MainWindow::loadSettings()
     s.announcementEna = settings->value("announcementEna", 0x07FF).toUInt();
     s.bringWindowToForeground = settings->value("bringWindowToForegroundOnAlarm", true).toBool();
     s.noiseConcealmentLevel = settings->value("noiseConcealment", 0).toInt();
+    s.xmlHeaderEna = settings->value("rawFileXmlHeader", true).toBool();
 
     s.rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
     s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
@@ -1917,6 +1919,7 @@ void MainWindow::saveSettings()
     settings->setValue("expertMode", s.expertModeEna);
     settings->setValue("dlPlus", s.dlPlusEna);
     settings->setValue("noiseConcealment", s.noiseConcealmentLevel);
+    settings->setValue("rawFileXmlHeader", s.xmlHeaderEna);
 
     settings->setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
     settings->setValue("RTL-SDR/gainMode", static_cast<int>(s.rtlsdr.gainMode));

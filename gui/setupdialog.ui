@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>462</width>
-    <height>373</height>
+    <height>407</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -35,7 +35,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -896,6 +896,22 @@
         </widget>
        </item>
        <item>
+        <widget class="QGroupBox" name="recordingGroupBox">
+         <property name="title">
+          <string>Raw Data Recording</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <item>
+           <widget class="QCheckBox" name="xmlHeaderCheckBox">
+            <property name="text">
+             <string>Include XML header</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -903,7 +919,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>40</height>
+           <height>0</height>
           </size>
          </property>
         </spacer>

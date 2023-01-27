@@ -75,6 +75,7 @@ public:
         bool expertModeEna;
         bool dlPlusEna;
         int noiseConcealmentLevel;
+        bool xmlHeaderEna;
     };
 
     SetupDialog(QWidget *parent = nullptr);
@@ -92,6 +93,7 @@ signals:
     void expertModeToggled(bool enabled);
     void applicationStyleChanged(ApplicationStyle style);
     void noiseConcealmentLevelChanged(int level);
+    void xmlHeaderToggled(bool enabled);
 protected:
     void showEvent(QShowEvent *event);
 
@@ -137,6 +139,7 @@ private:
     void onExpertModeChecked(bool checked);
     void onDLPlusChecked(bool checked);
     void onNoiseLevelChanged(int index);
+    void onXmlHeaderChecked(bool checked);
 
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);
