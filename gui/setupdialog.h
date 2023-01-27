@@ -6,6 +6,7 @@
 #include <QList>
 #include <QAbstractButton>
 #include "QtWidgets/qcheckbox.h"
+#include "QtWidgets/qlabel.h"
 #include "config.h"
 #include "inputdevice.h"
 #if HAVE_AIRSPY
@@ -82,6 +83,7 @@ public:
     void resetInputDevice();
     void onExpertMode(bool ena);    
     void setSettings(const Settings &settings);
+    void setXmlHeader(const InputDeviceDescription & desc);
 
 signals:
     void inputDeviceChanged(const InputDeviceId & inputDevice);
@@ -95,6 +97,9 @@ protected:
 
 private:
     enum SetupDialogTabs { Device = 0, Announcement = 1, Other = 2 };
+    enum SetupDialogXmlHeader { XMLDate = 0, XMLRecorder, XMLDevice,
+                                XMLSampleRate, XMLFreq, XMLLenght, XMLFormat,
+                                XMLNumLabels};
 
     Ui::SetupDialog *ui;
     Settings m_settings;
@@ -104,6 +109,7 @@ private:
     QList<float> m_soapysdrGainList;
     QCheckBox * m_announcementCheckBox[static_cast<int>(DabAnnouncement::Undefined)];
     QCheckBox * m_bringWindowToForegroundCheckbox;
+    QLabel * m_xmlHeaderLabel[SetupDialogXmlHeader::XMLNumLabels];
 
     void setStatusLabel();
 

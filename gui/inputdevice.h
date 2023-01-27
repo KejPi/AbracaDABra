@@ -70,6 +70,14 @@ struct InputDeviceDescription
         int containerBits;        // I or Q
         QString channelContainer; // I or Q
     } sample;
+    struct
+    {
+        bool hasXmlHeader;
+        QString recorder;
+        QString time;
+        uint32_t frequency_kHz;
+        uint64_t numSamples;
+    } rawFile;
 };
 
 

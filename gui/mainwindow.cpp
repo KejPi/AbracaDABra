@@ -1735,6 +1735,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             ui->serviceTreeView->setEnabled(true);
             ui->favoriteLabel->setEnabled(true);
 
+            // show XML header is available
+            m_setupDialog->setXmlHeader(m_inputDevice->deviceDescription());
+
             // apply current settings
             onNewInputDeviceSettings();
         }

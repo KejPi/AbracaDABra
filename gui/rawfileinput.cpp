@@ -1,6 +1,6 @@
 #include <QDebug>
 #include <QFile>
-
+#include <QDomDocument>
 #include <complex>
 #include "rawfileinput.h"
 
@@ -45,6 +45,35 @@ bool RawFileInput::openDevice()
         m_inputFile = nullptr;
 
         return false;
+    }
+
+    // check XML header
+    QDataStream in(m_inputFile);
+    QByteArray xml;
+    int idx = 0;
+    do
+    {   // read no more than RAWFILEINPUT_XML_PADDING bytes
+        char ch;
+        in.readRawData(&ch, 1);
+        if (0 == ch)
+        {   // zero indicates header padding bytes
+            break;
+        }
+        xml.append(ch);
+    } while (idx++ < RAWFILEINPUT_XML_PADDING);
+
+    if (idx < RAWFILEINPUT_XML_PADDING)
+    {   // try to parse header
+        parseXmlHeader(xml);
+    }
+    else
+    {   // not found
+        m_deviceDescription.rawFile.hasXmlHeader = false;
+    }
+
+    if (!m_deviceDescription.rawFile.hasXmlHeader)
+    {   // header was not correctly parsed or not found
+        m_inputFile->seek(0);
     }
 
     emit deviceReady();
@@ -92,9 +121,213 @@ void RawFileInput::rewind()
         // go to file beginning
         if (nullptr != m_inputFile)
         {
-            m_inputFile->seek(0);
+            m_inputFile->seek(m_deviceDescription.rawFile.hasXmlHeader ? (RAWFILEINPUT_XML_PADDING) : (0));
         }
     }
+}
+
+void RawFileInput::parseXmlHeader(const QByteArray &xml)
+{
+    QDomDocument xmlHeader;
+    if (xmlHeader.setContent(xml))
+    {
+        m_deviceDescription.rawFile.hasXmlHeader = true;
+
+        // print out the element names of all elements that are direct children
+        // of the outermost element.
+        QDomElement docElem = xmlHeader.documentElement();
+
+        QDomNode sdrNode = docElem.firstChild();
+        while (!sdrNode.isNull())
+        {
+            QDomElement sdrElement = sdrNode.toElement(); // try to convert the node to an element
+            if (!sdrElement.isNull())
+            {
+                if ("Recorder" == sdrElement.tagName())
+                {
+                    m_deviceDescription.rawFile.recorder = QString("%1 (%2)")
+                                                               .arg(sdrElement.attribute("Name", "N/A"),
+                                                                    sdrElement.attribute("Version", "N/A"));
+                }
+                else if ("Device" == sdrElement.tagName())
+                {
+                    m_deviceDescription.device.name = sdrElement.attribute("Name", "N/A");
+                    m_deviceDescription.device.model = sdrElement.attribute("Model", "N/A");
+                }
+                else if ("Time" == sdrElement.tagName())
+                {
+                    m_deviceDescription.rawFile.time = QString("%1 %2")
+                                                           .arg(sdrElement.attribute("Value", "N/A"),
+                                                                sdrElement.attribute("Unit", "N/A"));
+                }
+                else if ("Sample" == sdrElement.tagName())
+                {
+                    QDomNode sampleNode = sdrElement.firstChild();
+                    while (!sampleNode.isNull())
+                    {
+                        QDomElement sampleElement = sampleNode.toElement(); // try to convert the node to an element
+                        if (!sampleElement.isNull())
+                        {
+                            if ("Samplerate" == sampleElement.tagName())
+                            {
+                                bool isOK = false;
+                                int sampleRate = sampleElement.attribute("Value", "2048000").toInt(&isOK);
+                                if (!isOK)
+                                {
+                                    qDebug() << "RAW-FILE: Error in reading XML header: Samplerate";
+                                    sampleRate = 2048000;
+                                }
+                                else { /* OK */ }
+
+                                QString unit = sampleElement.attribute("Unit", "Hz");
+                                if ("hz" == unit.toLower())
+                                {
+                                    m_deviceDescription.sample.sampleRate = sampleRate;
+                                }
+                                else
+                                {
+                                    m_deviceDescription.sample.sampleRate = 1000 * sampleRate;
+                                }
+                            }
+                            else if ("Channels" == sampleElement.tagName())
+                            {
+                                bool isOK = false;
+                                int bits = sampleElement.attribute("Bits", "8").toInt(&isOK);
+                                if (!isOK)
+                                {
+                                    qDebug() << "RAW-FILE: Error in reading XML header: Channels->Bits";
+                                    bits = 8;
+                                }
+                                else { /* OK */ }
+                                m_deviceDescription.sample.channelBits = bits;
+                                m_deviceDescription.sample.channelContainer = sampleElement.attribute("Container", "uint8");
+                                if ("uint8" == m_deviceDescription.sample.channelContainer.toLower())
+                                {
+                                    m_deviceDescription.sample.containerBits = 8;
+                                    setFileFormat(RawFileInputFormat::SAMPLE_FORMAT_U8);
+                                }
+                                else if ("int16" == m_deviceDescription.sample.channelContainer.toLower())
+                                {
+                                    m_deviceDescription.sample.containerBits = 16;
+                                    setFileFormat(RawFileInputFormat::SAMPLE_FORMAT_S16);
+                                }
+                                else
+                                {
+                                    qDebug() << QString("RAW-FILE: Channel container '%1' not supported").arg(m_deviceDescription.sample.channelContainer);
+                                }
+#if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
+                                if ("MSB" == sampleElement.attribute("Ordering", "LSB"))
+                                {
+                                    qDebug() << "RAW-FILE: Error in reading XML header: MSB ordering not supported on this platform";
+                                }
+#else
+                                if ("LSB" == sampleElement.attribute("Ordering", "MSB"))
+                                {
+                                    qDebug() << "RAW-FILE: Error in reading XML header: LSB ordering not supported on this platform";
+                                }
+#endif
+
+#if 0 // skipping this, QI is order is not supported
+                                    QDomNode channelsNode = sampleElement.firstChild();
+                                    while (!channelsNode.isNull())
+                                    {
+                                        QDomElement channelsElement = channelsNode.toElement(); // try to convert the node to an element
+                                        if (!channelsElement.isNull())
+                                        {
+                                            if ("Channel" == channelsElement.tagName())
+                                            {
+                                                qDebug() << "Value:" << channelsElement.attribute("Value", "");
+                                            }
+                                        }
+                                        channelsNode = channelsNode.nextSibling();
+                                    }
+#endif
+                            }
+
+                        }
+                        sampleNode = sampleNode.nextSibling();
+                    }
+                }
+                else if ("Datablocks" == sdrElement.tagName())
+                {
+                    QDomNode datablocksNode = sdrElement.firstChild();
+                    if (!datablocksNode.isNull())
+                    {
+                        QDomElement datablocksElement = datablocksNode.toElement(); // try to convert the node to an element
+                        if (!datablocksElement.isNull())
+                        {
+                            if ("Datablock" == datablocksElement.tagName())
+                            {
+                                //qDebug() << "Number:" << datablocksElement.attribute("Number", "1");
+                                //qDebug() << "Unit:" << datablocksElement.attribute("Unit", "Channel");
+                                bool isOK = false;
+                                uint64_t numChannels = datablocksElement.attribute("Count", "0").toULongLong(&isOK);
+                                if (!isOK)
+                                {
+                                    qDebug() << "RAW-FILE: Error in reading XML header: Datablock->Count";
+                                    numChannels = 0;
+                                }
+                                else { /* OK */ }
+                                m_deviceDescription.rawFile.numSamples = numChannels / 2;
+
+                                QDomNode blockNode = datablocksElement.firstChild();
+                                while (!blockNode.isNull())
+                                {
+                                    QDomElement blockElement = blockNode.toElement(); // try to convert the node to an element
+                                    if (!blockElement.isNull())
+                                    {
+                                        if ("Frequency" == blockElement.tagName())
+                                        {
+                                            bool isOK = false;
+                                            uint32_t freq = blockElement.attribute("Value", "0").toUInt(&isOK);
+                                            if (!isOK)
+                                            {
+                                                qDebug() << "RAW-FILE: Error in reading XML header: Frequency";
+                                                freq = 0;
+                                            }
+                                            else { /* OK */ }
+
+                                            QString unit = blockElement.attribute("Unit", "kHz");
+                                            if ("hz" == unit.toLower())
+                                            {
+                                                m_deviceDescription.rawFile.frequency_kHz = freq*1000;
+                                            }
+                                            else
+                                            {
+                                                m_deviceDescription.rawFile.frequency_kHz = freq;
+                                            }
+
+                                        }
+                                    }
+                                    blockNode = blockNode.nextSibling();
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+            sdrNode = sdrNode.nextSibling();
+        }
+    }
+    else
+    {   // error in parser
+        m_deviceDescription.rawFile.hasXmlHeader = false;
+    }
+#if 0
+    qDebug() << "Recorder:" << m_deviceDescription.rawFile.recorder;
+    qDebug() << "Recording time:" << m_deviceDescription.rawFile.time;
+    qDebug() << "Device name:" << m_deviceDescription.device.name;
+    qDebug() << "Device model:" << m_deviceDescription.device.model;
+    qDebug() << "Samplerate [Hz]:" << m_deviceDescription.sample.sampleRate;
+    qDebug() << "Container:" << QString("%1 [%2 bits], channel data %3 bits")
+                                    .arg(m_deviceDescription.sample.channelContainer)
+                                    .arg(m_deviceDescription.sample.containerBits)
+                                    .arg(m_deviceDescription.sample.channelBits);
+    qDebug() << "Num samples:" << m_deviceDescription.rawFile.numSamples << "=>"
+             << m_deviceDescription.rawFile.numSamples * 1.0 / m_deviceDescription.sample.sampleRate << "sec";
+    qDebug() << "RF [kHz]:" << m_deviceDescription.rawFile.frequency_kHz;
+#endif
 }
 
 void RawFileInput::stop()

@@ -104,6 +104,41 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     vLayout->addItem(verticalSpacer);
     ui->tabAnnouncement->setLayout(vLayout);
 
+
+    //gridLayout_4->addWidget(xmlHeaderWidget, 3, 0, 1, 3);
+    gridLayout = new QGridLayout;
+    label = new QLabel("Recording date:");
+    m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDate] = new QLabel;
+    gridLayout->addWidget(label, SetupDialogXmlHeader::XMLDate, 0);
+    gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDate], SetupDialogXmlHeader::XMLDate, 1);
+    label = new QLabel("Recorder:");
+    m_xmlHeaderLabel[SetupDialogXmlHeader::XMLRecorder] = new QLabel;
+    gridLayout->addWidget(label, SetupDialogXmlHeader::XMLRecorder, 0);
+    gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLRecorder], SetupDialogXmlHeader::XMLRecorder, 1);
+    label = new QLabel("Device:");
+    m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDevice] = new QLabel;
+    gridLayout->addWidget(label, SetupDialogXmlHeader::XMLDevice, 0);
+    gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDevice], SetupDialogXmlHeader::XMLDevice, 1);
+    label = new QLabel("Sample rate [Hz]:");
+    m_xmlHeaderLabel[SetupDialogXmlHeader::XMLSampleRate] = new QLabel;
+    gridLayout->addWidget(label, SetupDialogXmlHeader::XMLSampleRate, 0);
+    gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLSampleRate], SetupDialogXmlHeader::XMLSampleRate, 1);
+    label = new QLabel("Frequency [kHz]:");
+    m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFreq] = new QLabel;
+    gridLayout->addWidget(label, SetupDialogXmlHeader::XMLFreq, 0);
+    gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFreq], SetupDialogXmlHeader::XMLFreq, 1);
+    label = new QLabel("Recording length [sec]:");
+    m_xmlHeaderLabel[SetupDialogXmlHeader::XMLLenght] = new QLabel;
+    gridLayout->addWidget(label, SetupDialogXmlHeader::XMLLenght, 0);
+    gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLLenght], SetupDialogXmlHeader::XMLLenght, 1);
+    label = new QLabel("Sample format:");
+    m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFormat] = new QLabel;
+    gridLayout->addWidget(label, SetupDialogXmlHeader::XMLFormat, 0);
+    gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFormat], SetupDialogXmlHeader::XMLFormat, 1);
+    ui->xmlHeaderWidget->setLayout(gridLayout);
+
+    ui->xmlHeaderWidget->setVisible(false);
+
     connect(ui->inputCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onInputChanged);
     connect(ui->openFileButton, &QPushButton::clicked, this, &SetupDialog::onOpenFileButtonClicked);
 
@@ -228,6 +263,39 @@ void SetupDialog::setSettings(const Settings &settings)
     setStatusLabel();
     emit newAnnouncementSettings(m_settings.announcementEna);
     emit noiseConcealmentLevelChanged(m_settings.noiseConcealmentLevel);
+}
+
+void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
+{
+    if (desc.rawFile.hasXmlHeader)
+    {
+        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDate]->setText(desc.rawFile.time);
+        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLRecorder]->setText(desc.rawFile.recorder);
+        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDevice]->setText(QString("%1 [ %2 ]").arg(desc.device.name, desc.device.model));
+        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLSampleRate]->setText(QString::number(desc.sample.sampleRate));
+        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFreq]->setText(QString::number(desc.rawFile.frequency_kHz));
+        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLLenght]->setText(QString::number(desc.rawFile.numSamples * 1.0 / desc.sample.sampleRate));
+        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFormat]->setText(desc.sample.channelContainer);
+
+        switch (desc.sample.containerBits)
+        {
+        case 8:
+            m_settings.rawfile.format = RawFileInputFormat::SAMPLE_FORMAT_U8;
+            break;
+        case 16:
+            m_settings.rawfile.format = RawFileInputFormat::SAMPLE_FORMAT_S16;
+            break;
+        }
+        ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings.rawfile.format));
+        ui->fileFormatCombo->setEnabled(false);
+        ui->xmlHeaderWidget->setVisible(true);
+    }
+    else
+    {
+        ui->fileFormatCombo->setEnabled(true);
+        ui->xmlHeaderWidget->setVisible(false);
+    }
+    adjustSize();
 }
 
 void SetupDialog::showEvent(QShowEvent *event)
@@ -803,6 +871,7 @@ void SetupDialog::onOpenFileButtonClicked()
         }
 
         ui->connectButton->setVisible(true);
+        ui->fileFormatCombo->setEnabled(true);
 
 #ifdef Q_OS_MACX // bug in Ventura
         show(); //bring window to top on OSX

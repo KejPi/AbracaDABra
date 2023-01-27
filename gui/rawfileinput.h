@@ -8,10 +8,9 @@
 #include <QThread>
 #include <QElapsedTimer>
 #include <QSemaphore>
-
-
 #include "inputdevice.h"
 
+#define RAWFILEINPUT_XML_PADDING 2048
 
 enum class RawFileInputFormat
 {
@@ -63,6 +62,7 @@ private:
     void stop();
     void rewind();
     void onEndOfFile() { emit error(InputDeviceErrorCode::EndOfFile); }
+    void parseXmlHeader(const QByteArray & xml);
 };
 
 

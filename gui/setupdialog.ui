@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>462</width>
-    <height>339</height>
+    <height>373</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -95,7 +95,7 @@
           <enum>QFrame::Sunken</enum>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="rtlsdrPage">
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -363,26 +363,6 @@
          </widget>
          <widget class="QWidget" name="rawfilePage">
           <layout class="QGridLayout" name="gridLayout_3">
-           <item row="1" column="0" colspan="3">
-            <widget class="QLabel" name="fileNameLabel">
-             <property name="text">
-              <string>Filename</string>
-             </property>
-             <property name="wordWrap">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QCheckBox" name="loopCheckbox">
-             <property name="toolTip">
-              <string>Play file in the loop</string>
-             </property>
-             <property name="text">
-              <string>Loop file</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0">
             <widget class="QPushButton" name="openFileButton">
              <property name="sizePolicy">
@@ -399,7 +379,20 @@
            <item row="0" column="1">
             <widget class="QComboBox" name="fileFormatCombo"/>
            </item>
+           <item row="0" column="2">
+            <widget class="QCheckBox" name="loopCheckbox">
+             <property name="toolTip">
+              <string>Play file in the loop</string>
+             </property>
+             <property name="text">
+              <string>Loop file</string>
+             </property>
+            </widget>
+           </item>
            <item row="2" column="0" colspan="3">
+            <widget class="QWidget" name="xmlHeaderWidget" native="true"/>
+           </item>
+           <item row="3" column="0" colspan="3">
             <spacer name="verticalSpacer_5">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -414,6 +407,16 @@
               </size>
              </property>
             </spacer>
+           </item>
+           <item row="1" column="0" colspan="3">
+            <widget class="QLabel" name="fileNameLabel">
+             <property name="text">
+              <string>Filename</string>
+             </property>
+             <property name="wordWrap">
+              <bool>false</bool>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
