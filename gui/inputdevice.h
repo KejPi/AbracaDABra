@@ -82,7 +82,7 @@ public:
     InputDevice(QObject *parent = nullptr);
     ~InputDevice();
     virtual bool openDevice() = 0;
-    const InputDeviceDescription getDeviceDescription() const { return m_deviceDescription; }
+    const InputDeviceDescription & deviceDescription() const { return m_deviceDescription; }
 
 public slots:
     virtual void tune(uint32_t freq) = 0;

@@ -1440,7 +1440,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             ui->favoriteLabel->setEnabled(true);
 
             // recorder
-            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->getDeviceDescription());
+            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
             connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
             connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
 
@@ -1517,7 +1517,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             ui->favoriteLabel->setEnabled(true);
 
             // recorder
-            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->getDeviceDescription());
+            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
             connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
             connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
 
@@ -1584,7 +1584,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // ensemble info dialog
             // recorder
-            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->getDeviceDescription());
+            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
             connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
             connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
 
@@ -1665,7 +1665,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // ensemble info dialog
             // recorder
-            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->getDeviceDescription());
+            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
             connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
             connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
 
