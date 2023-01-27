@@ -47,7 +47,6 @@ private:
 
     bool m_isRecordingActive = false;
     quint32 m_frequency;
-    QString m_recordingPath;
 
     quint32 m_fibCounter;
     quint32 m_fibErrorCounter;

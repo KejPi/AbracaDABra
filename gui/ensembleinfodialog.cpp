@@ -18,8 +18,6 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
 
     connect(ui->recordButton, &QPushButton::clicked, this, &EnsembleInfoDialog::onRecordingButtonClicked);
 
-    m_recordingPath = QDir::homePath();
-
     clearFreqInfo();
     clearSignalInfo();
     clearServiceInfo();
@@ -279,16 +277,6 @@ void EnsembleInfoDialog::closeEvent(QCloseEvent *event)
         emit recordingStop();
     }
     event->accept();
-}
-
-const QString &EnsembleInfoDialog::getDumpPath() const
-{
-    return m_recordingPath;
-}
-
-void EnsembleInfoDialog::setDumpPath(const QString &newDumpPath)
-{
-    m_recordingPath = newDumpPath;
 }
 
 void EnsembleInfoDialog::fibFrameContextMenu(const QPoint& pos)

@@ -193,7 +193,12 @@ if(WIN32)
 endif(WIN32)
 
 include_directories ( ${CMAKE_SOURCE_DIR} )
-target_link_libraries(${TARGET} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia Qt${QT_VERSION_MAJOR}::Svg)
+target_link_libraries(${TARGET} PRIVATE
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Multimedia
+    Qt${QT_VERSION_MAJOR}::Svg
+    Qt${QT_VERSION_MAJOR}::Xml
+)
 
 # Set a custom plist file for the app bundle
 if(APPLE)

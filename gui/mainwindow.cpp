@@ -1841,7 +1841,7 @@ void MainWindow::loadSettings()
         onApplicationStyleChanged(s.applicationStyle);
     }
 
-    m_ensembleInfoDialog->setDumpPath(settings->value("dumpPath", QVariant(QDir::homePath())).toString());
+    m_inputDeviceRecorder->setRecordingPath(settings->value("recordingPath", QVariant(QDir::homePath())).toString());
 
     if (InputDeviceId::UNDEFINED != static_cast<InputDeviceId>(inDevice))
     {
@@ -1904,7 +1904,7 @@ void MainWindow::saveSettings()
 
     const SetupDialog::Settings s = m_setupDialog->settings();
     settings->setValue("inputDeviceId", int(s.inputDevice));
-    settings->setValue("dumpPath", m_ensembleInfoDialog->getDumpPath());
+    settings->setValue("recordingPath", m_inputDeviceRecorder->recordingPath());
     settings->setValue("volume", m_volumeSlider->value());
     settings->setValue("mute", m_muteLabel->isChecked());
     settings->setValue("windowGeometry", saveGeometry());
