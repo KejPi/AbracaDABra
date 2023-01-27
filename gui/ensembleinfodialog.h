@@ -34,7 +34,8 @@ public:
     void serviceChanged(const RadioControlServiceComponent &s);
 
 signals:
-    void recordingStart(const QString & filename);
+    //void recordingStart(const QString & filename);
+    void recordingStart(QWidget * widgetParent);
     void recordingStop();
     void requestEnsembleConfiguration();
 

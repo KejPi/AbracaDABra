@@ -143,23 +143,8 @@ void EnsembleInfoDialog::onRecordingButtonClicked()
     ui->recordButton->setEnabled(false);
     if (!m_isRecordingActive)
     {
-        QString f = QString("%1/%2_%3.raw").arg(m_recordingPath,
-                QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"),
-                DabTables::channelList.value(m_frequency));
-
-        QString fileName = QFileDialog::getSaveFileName(this,
-                                                        tr("Record IQ stream"),
-                                                        QDir::toNativeSeparators(f),
-                                                        tr("Binary files (*.raw)"));
-        if (!fileName.isEmpty())
-        {
-            m_recordingPath = QFileInfo(fileName).path(); // store path for next time
-            emit recordingStart(fileName);
-        }
-        else
-        {
-            ui->recordButton->setEnabled(true);
-        }
+        ui->recordButton->setEnabled(false);
+        emit recordingStart(this);
     }
     else
     {

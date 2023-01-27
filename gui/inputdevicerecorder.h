@@ -12,9 +12,10 @@ public:
     InputDeviceRecorder();
     ~InputDeviceRecorder();
     void setDeviceDescription(const InputDeviceDescription & desc);
-    void start(const QString & filename);
+    void start(QWidget *callerWidget);
     void stop();
     void writeBuffer(const uint8_t *buf, uint32_t len);
+    void setCurrentFrequency(uint32_t frequency) { m_frequency = frequency; }
 
 signals:
     void recording(bool isActive);
@@ -25,6 +26,8 @@ private:
     std::mutex m_fileMutex;
     uint64_t m_bytesRecorded = 0;
     float m_bytes2ms;
+    uint32_t m_frequency;
+    QString m_recordingPath;
 };
 
 #endif // INPUTDEVICERECORDER_H
