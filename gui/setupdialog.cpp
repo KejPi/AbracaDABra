@@ -136,6 +136,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFormat] = new QLabel;
     gridLayout->addWidget(label, SetupDialogXmlHeader::XMLFormat, 0);
     gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFormat], SetupDialogXmlHeader::XMLFormat, 1);
+    gridLayout->setContentsMargins(0, 12, 0, 0);
     ui->xmlHeaderWidget->setLayout(gridLayout);
 
     ui->xmlHeaderWidget->setVisible(false);

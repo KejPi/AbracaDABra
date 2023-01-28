@@ -207,14 +207,8 @@ bool SoapySdrInput::openDevice()
     // set bandwidth
     setBW(SOAPYSDR_BANDWIDTH);
 
-//    SoapySDR::Kwargs info = m_device->getHardwareInfo();
-//    for (const auto& [key, value] : info)
-//    {
-//        qDebug() << "[" << key.c_str() << "] = " << value.c_str();
-//    }
-
-    m_deviceDescription.device.name = "SoapySDR";
-    m_deviceDescription.device.model = "Unknown";
+    m_deviceDescription.device.name = "SoapySDR | " + QString(m_device->getDriverKey().c_str());
+    m_deviceDescription.device.model = QString(m_device->getHardwareKey().c_str());
     m_deviceDescription.sample.sampleRate = 2048000;
 #if SOAPYSDR_RECORD_INT16
     m_deviceDescription.sample.channelBits = sizeof(int16_t) * 8;

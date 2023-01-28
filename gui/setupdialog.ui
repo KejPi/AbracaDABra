@@ -35,7 +35,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -362,37 +362,65 @@
           </layout>
          </widget>
          <widget class="QWidget" name="rawfilePage">
-          <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="0">
-            <widget class="QPushButton" name="openFileButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Open File...</string>
-             </property>
+          <layout class="QVBoxLayout" name="verticalLayout_9">
+           <item>
+            <widget class="QWidget" name="rawFileWidget" native="true">
+             <layout class="QGridLayout" name="gridLayout_3">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QPushButton" name="openFileButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Open File...</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="fileFormatCombo"/>
+              </item>
+              <item row="0" column="2">
+               <widget class="QCheckBox" name="loopCheckbox">
+                <property name="toolTip">
+                 <string>Play file in the loop</string>
+                </property>
+                <property name="text">
+                 <string>Loop file</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0" colspan="3">
+               <widget class="QLabel" name="fileNameLabel">
+                <property name="text">
+                 <string>Filename</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QComboBox" name="fileFormatCombo"/>
-           </item>
-           <item row="0" column="2">
-            <widget class="QCheckBox" name="loopCheckbox">
-             <property name="toolTip">
-              <string>Play file in the loop</string>
-             </property>
-             <property name="text">
-              <string>Loop file</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0" colspan="3">
+           <item>
             <widget class="QWidget" name="xmlHeaderWidget" native="true"/>
            </item>
-           <item row="3" column="0" colspan="3">
+           <item>
             <spacer name="verticalSpacer_5">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -407,16 +435,6 @@
               </size>
              </property>
             </spacer>
-           </item>
-           <item row="1" column="0" colspan="3">
-            <widget class="QLabel" name="fileNameLabel">
-             <property name="text">
-              <string>Filename</string>
-             </property>
-             <property name="wordWrap">
-              <bool>false</bool>
-             </property>
-            </widget>
            </item>
           </layout>
          </widget>

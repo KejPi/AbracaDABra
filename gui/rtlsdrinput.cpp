@@ -62,12 +62,21 @@ bool RtlSdrInput::openDevice()
     }
 
     //	Iterate over all found rtl-sdr devices and try to open it. Stops if one device is successfull opened.
+    const char * deviceName;
     for(uint32_t n=0; n<deviceCount; ++n)
     {
         ret = rtlsdr_open(&m_device, n);
         if (ret >= 0)
         {
-            qDebug() << "RTL-SDR: Opening rtl-sdr device" << n;
+            deviceName = rtlsdr_get_device_name(n);
+            if (NULL == deviceName)
+            {
+                qDebug() << "RTL-SDR: Opening rtl-sdr device" << n;
+            }
+            else
+            {
+                qDebug("RTL-SDR: Opening rtl-sdr device #%d: %s", n, deviceName);
+            }
             break;
         }
     }
@@ -87,36 +96,14 @@ bool RtlSdrInput::openDevice()
     }
 
     // store device information
-    char manufact[256];
-    char product[256];
-    char serial[256];
-    ret = rtlsdr_get_usb_strings(m_device, manufact, product, serial);
-    if (ret < 0)
+    m_deviceDescription.device.name = "rtl-sdr";
+    if (NULL == deviceName)
     {
-        qDebug() << "RTL-SDR: Unable to read device description";
-        m_deviceDescription.device.name = "rtlsdr";
         m_deviceDescription.device.model = "Generic RTL2832U OEM";
     }
     else
     {
-        QString tmp = QString(manufact);
-        if (tmp.isEmpty())
-        {
-            m_deviceDescription.device.name = "rtlsdr";
-        }
-        else
-        {
-            m_deviceDescription.device.name = tmp;
-        }
-        tmp = QString(product);
-        if (tmp.isEmpty())
-        {
-            m_deviceDescription.device.model = "Generic RTL2832U OEM";
-        }
-        else
-        {
-            m_deviceDescription.device.model = tmp;
-        }
+        m_deviceDescription.device.model = QString(deviceName);
     }
     m_deviceDescription.sample.sampleRate = 2048000;
     m_deviceDescription.sample.channelBits = 8;

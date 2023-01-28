@@ -119,7 +119,24 @@ bool AirspyInput::openDevice()
     resetAgc();
 
     m_deviceDescription.device.name = "AirSpy";
-    m_deviceDescription.device.model = "Unknown";
+
+    char version[255];
+    if (AIRSPY_SUCCESS == airspy_version_string_read(m_device, version, 255))
+    {
+        QString tmp(version);
+        if (tmp.startsWith("AirSpy MINI", Qt::CaseInsensitive))
+        {
+            m_deviceDescription.device.model = "Mini";
+        }
+        else
+        {   // TODO: how to detect R2 ???
+            m_deviceDescription.device.model = "Unknown";
+        }
+    }
+    else
+    {
+        m_deviceDescription.device.model = "Unknown";
+    }
     m_deviceDescription.sample.sampleRate = 2048000;
 #if AIRSPY_RECORD_INT16
     m_deviceDescription.sample.channelBits = sizeof(int16_t) * 8;
