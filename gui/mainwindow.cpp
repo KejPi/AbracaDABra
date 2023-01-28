@@ -1407,8 +1407,8 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
         if (m_inputDevice->openDevice())
         {   // rtl sdr is available
-            if (InputDeviceId::RAWFILE == m_inputDeviceId)
-            {   // if switching from RAW load service list
+            if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
+            {   // if switching from RAW or UNDEFINED load service list
 
                 // clear service list
                 m_serviceList->clear();
@@ -1484,8 +1484,8 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
         if (m_inputDevice->openDevice())
         {  // rtl tcp is available
-            if (InputDeviceId::RAWFILE == m_inputDeviceId)
-            {   // if switching from RAW load service list
+            if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
+            {   // if switching from RAW or UNDEFINED load service list
 
                 // clear service list
                 m_serviceList->clear();
@@ -1553,8 +1553,8 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
         if (m_inputDevice->openDevice())
         {  // airspy is available
-            if (InputDeviceId::RAWFILE == m_inputDeviceId)
-            {   // if switching from RAW load service list
+            if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
+            {   // if switching from RAW or UNDEFINED load service list
 
                 // clear service list
                 m_serviceList->clear();
@@ -1631,8 +1631,8 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
         if (m_inputDevice->openDevice())
         {  // SoapySDR is available
-            if (InputDeviceId::RAWFILE == m_inputDeviceId)
-            {   // if switching from RAW load service list
+            if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
+            {   // if switching from RAW or UNDEFINED load service list
 
                 // clear service list
                 m_serviceList->clear();
