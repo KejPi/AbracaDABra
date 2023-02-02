@@ -2,34 +2,46 @@
 
 VERSION=$1
 
-# Build 
-if [ -d build-aarch64 ]; then
-	rm -Rf build-aarch64
-fi
-mkdir build-aarch64
-cd build-aarch64
-cmake .. -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DDAB_LIBS_DIR=../AbracaDABra-libs-aarch64
-make && cd gui
-#mv AbracaDABra.app AbracaDABra-$VERSION.app
-#$QT_PATH/bin/macdeployqt AbracaDABra-$VERSION.app -dmg 
-$QT_PATH/bin/macdeployqt AbracaDABra.app -dmg 
-cd ../..
+DIR=`pwd`
 
-if [ -d build-x86_64 ]; then
-	rm -Rf build-x86_64
-fi
-mkdir build-x86_64
-cd build-x86_64
-cmake .. -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DAPPLE_BUILD_X86_64=ON -DDAB_LIBS_DIR=../AbracaDABra-libs-x86
-make && cd gui 
-#mv AbracaDABra.app AbracaDABra-$VERSION.app
-#$QT_PATH/bin/macdeployqt AbracaDABra-$VERSION.app -dmg 
-$QT_PATH/bin/macdeployqt AbracaDABra.app -dmg 
+### AARCH64
 
-cd ../..
+BUILD_DIR=build-aarch64
+if [ -d $BUILD_DIR ]; then
+	rm -Rf $BUILD_DIR
+fi
+mkdir $BUILD_DIR
+
+# cd $BUILD_DIR
+# cmake .. -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DDAB_LIBS_DIR=../AbracaDABra-libs-aarch64
+# make && cd gui
+cmake -G Xcode -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DEXTERNAL_LIBS_DIR=../AbracaDABra-libs-aarch64
+cmake --build $BUILD_DIR --target ALL_BUILD --config Release
+cd $BUILD_DIR/gui/Release
+
+$QT_PATH/bin/macdeployqt AbracaDABra.app -dmg -codesign="-"
+cd $DIR
+
+### Intel
+
+BUILD_DIR=build-x86_64
+if [ -d $BUILD_DIR ]; then
+	rm -Rf $BUILD_DIR
+fi
+mkdir $BUILD_DIR
+
+# cd $BUILD_DIR
+# cmake .. -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DDAB_LIBS_DIR=../AbracaDABra-libs-aarch64
+# make && cd gui
+cmake -G Xcode -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DAPPLE_BUILD_X86_64=ON -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DEXTERNAL_LIBS_DIR=../AbracaDABra-libs-x86
+cmake --build $BUILD_DIR --target ALL_BUILD --config Release
+cd $BUILD_DIR/gui/Release
+
+$QT_PATH/bin/macdeployqt AbracaDABra.app -dmg -codesign="-"
+cd $DIR
 
 # Move files to release folder
 mkdir release
-mv build-aarch64/gui/AbracaDABra.dmg release/AbracaDABra-$VERSION-AppleSilicon.dmg
-mv build-x86_64/gui/AbracaDABra.dmg release/AbracaDABra-$VERSION-Intel.dmg
+mv build-aarch64/gui/Release/AbracaDABra.dmg release/AbracaDABra-$VERSION-AppleSilicon.dmg
+mv build-x86_64/gui/Release/AbracaDABra.dmg release/AbracaDABra-$VERSION-Intel.dmg
 

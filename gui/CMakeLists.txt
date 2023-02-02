@@ -14,16 +14,18 @@ endif(WIN32)
 
 # Set some Apple MacOS Specific settings
 if (APPLE)
-    set(GUI_TYPE MACOSX_BUNDLE)
+    if (APPLE_APP_BUNDLE)
+        set(GUI_TYPE MACOSX_BUNDLE)
 
-    # NOTE: Don't include the path in MACOSX_BUNDLE_ICON_FILE -- this is
-    # the property added to Info.plist
-    set(MACOSX_BUNDLE_ICON_FILE appIcon.icns)
+        # NOTE: Don't include the path in MACOSX_BUNDLE_ICON_FILE -- this is
+        # the property added to Info.plist
+        set(MACOSX_BUNDLE_ICON_FILE appIcon.icns)
 
-    # And this part tells CMake where to find and install the file itself
-    set(APP_ICON_MACOSX ${CMAKE_CURRENT_SOURCE_DIR}/resources/appIcon.icns)
-    set_source_files_properties(${APP_ICON_MACOSX} PROPERTIES
-           MACOSX_PACKAGE_LOCATION "Resources")
+        # And this part tells CMake where to find and install the file itself
+        set(APP_ICON_MACOSX ${CMAKE_CURRENT_SOURCE_DIR}/resources/appIcon.icns)
+        set_source_files_properties(${APP_ICON_MACOSX} PROPERTIES
+               MACOSX_PACKAGE_LOCATION "Resources")
+    endif()
 
     set(APPLE_SOURCES
         mac.mm
@@ -201,6 +203,10 @@ target_link_libraries(${TARGET} PRIVATE
 )
 
 # Set a custom plist file for the app bundle
-if(APPLE)
-    set_target_properties(${TARGET} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/Info.plist.in)
-endif(APPLE)
+if(APPLE AND APPLE_APP_BUNDLE)
+    set_target_properties(${TARGET} PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/Info.plist.in
+        MACOSX_BUNDLE_BUNDLE_VERSION       "${PROJECT_VERSION}_${PROJECT_GIT_REV}"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+    )    
+endif(APPLE AND APPLE_APP_BUNDLE)
