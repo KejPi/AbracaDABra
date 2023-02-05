@@ -72,15 +72,30 @@ void InputDeviceRecorder::start(QWidget * callerWidget)
     std::lock_guard<std::mutex> guard(m_fileMutex);
     if (nullptr == m_file)
     {
-        QString f = QString("%1/%2_%3.raw").arg(m_recordingPath,
-                QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"),
-                DabTables::channelList.value(m_frequency));
-
         // dialog needs parrent => prvided from caller widget
-        QString fileName = QFileDialog::getSaveFileName(callerWidget,
-                                                        tr("Record IQ stream"),
-                                                        QDir::toNativeSeparators(f),
-                                                        tr("Binary files (*.raw)"));
+        QString fileName;
+        if (m_xmlHeaderEna)
+        {
+            QString f = QString("%1/%2_%3.uff").arg(m_recordingPath,
+                                                    QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"),
+                                                    DabTables::channelList.value(m_frequency));
+
+            fileName = QFileDialog::getSaveFileName(callerWidget,
+                                                    tr("Record IQ stream with XML header"),
+                                                    QDir::toNativeSeparators(f),
+                                                    tr("Binary XML files (*.uff)"));
+        }
+        else
+        {
+            QString f = QString("%1/%2_%3.raw").arg(m_recordingPath,
+                                                    QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"),
+                                                    DabTables::channelList.value(m_frequency));
+
+            fileName = QFileDialog::getSaveFileName(callerWidget,
+                                                    tr("Record IQ stream"),
+                                                    QDir::toNativeSeparators(f),
+                                                    tr("Binary files (*.raw)"));
+        }
         if (!fileName.isEmpty())
         {
             m_recordingPath = QFileInfo(fileName).path(); // store path for next time
