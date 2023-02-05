@@ -249,7 +249,7 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
     }
 
     uint8_t tag = *dataPtr;
-    int_fast32_t len = *(dataPtr+1);
+    int len = *(dataPtr+1);
     int_fast32_t bytesRead = 2;
 
     if (maxSize < len + 2)
