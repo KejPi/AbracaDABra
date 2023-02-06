@@ -313,10 +313,10 @@ void RawFileInput::parseXmlHeader(const QByteArray &xml)
                                             }
                                             else { /* OK */ }
 
-                                            QString unit = blockElement.attribute("Unit", "kHz");
+                                            QString unit = blockElement.attribute("Unit", "Hz");
                                             if ("hz" == unit.toLower())
                                             {
-                                                m_deviceDescription.rawFile.frequency_kHz = freq*1000;
+                                                m_deviceDescription.rawFile.frequency_kHz = freq/1000;
                                             }
                                             else
                                             {
