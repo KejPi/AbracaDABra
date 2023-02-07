@@ -81,9 +81,9 @@ void InputDeviceRecorder::start(QWidget * callerWidget)
                                                     DabTables::channelList.value(m_frequency));
 
             fileName = QFileDialog::getSaveFileName(callerWidget,
-                                                    tr("Record IQ stream with XML header"),
+                                                    tr("Record IQ stream (Raw File XML Header)"),
                                                     QDir::toNativeSeparators(f),
-                                                    tr("Binary XML files (*.uff)"));
+                                                    tr("Binary XML files")+" (*.uff)");
         }
         else
         {
@@ -94,7 +94,7 @@ void InputDeviceRecorder::start(QWidget * callerWidget)
             fileName = QFileDialog::getSaveFileName(callerWidget,
                                                     tr("Record IQ stream"),
                                                     QDir::toNativeSeparators(f),
-                                                    tr("Binary files (*.raw)"));
+                                                    tr("Binary files")+" (*.raw)");
         }
         if (!fileName.isEmpty())
         {
@@ -229,7 +229,7 @@ void InputDeviceRecorder::finishXmlHeader()
 
     QDomElement frequency = m_xmlHeader.createElement("Frequency");
     frequency.setAttribute("Value", QString("%1").arg(m_frequency));
-    frequency.setAttribute("Unit", "KHz");
+    frequency.setAttribute("Unit", "kHz");
     datablock.appendChild(frequency);
     QDomElement modulation = m_xmlHeader.createElement("Modulation");
     modulation.setAttribute("Value", "DAB");
