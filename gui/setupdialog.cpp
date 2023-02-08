@@ -33,7 +33,7 @@
 #include "./ui_setupdialog.h"
 #include "audiodecoder.h"
 
-static const QString NO_FILE("No file selected");
+static const QString NO_FILE(QObject::tr("No file selected"));
 
 SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDialog)
 {
@@ -42,9 +42,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     // remove question mark from titlebar
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    ui->tabWidget->setTabText(SetupDialogTabs::Device, "Device");
-    ui->tabWidget->setTabText(SetupDialogTabs::Announcement, "Announcements");
-    ui->tabWidget->setTabText(SetupDialogTabs::Other, "Others");
+    ui->tabWidget->setTabText(SetupDialogTabs::Device, tr("Device"));
+    ui->tabWidget->setTabText(SetupDialogTabs::Announcement, tr("Announcements"));
+    ui->tabWidget->setTabText(SetupDialogTabs::Other, tr("Others"));
     ui->tabWidget->setCurrentIndex(SetupDialogTabs::Device);
 
     ui->inputCombo->addItem("RTL SDR", QVariant(int(InputDeviceId::RTLSDR)));
@@ -55,19 +55,19 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->inputCombo->addItem("Soapy SDR", QVariant(int(InputDeviceId::SOAPYSDR)));
 #endif
     ui->inputCombo->addItem("RTL TCP", QVariant(int(InputDeviceId::RTLTCP)));
-    ui->inputCombo->addItem("Raw file", QVariant(int(InputDeviceId::RAWFILE)));
+    ui->inputCombo->addItem(tr("Raw file"), QVariant(int(InputDeviceId::RAWFILE)));
     ui->inputCombo->setCurrentIndex(-1);  // undefined
 
     ui->fileNameLabel->setText(NO_FILE);
     m_rawfilename = "";
 
-    ui->fileFormatCombo->insertItem(int(RawFileInputFormat::SAMPLE_FORMAT_U8), "Unsigned 8 bits");
-    ui->fileFormatCombo->insertItem(int(RawFileInputFormat::SAMPLE_FORMAT_S16), "Signed 16 bits");
+    ui->fileFormatCombo->insertItem(int(RawFileInputFormat::SAMPLE_FORMAT_U8), tr("Unsigned 8 bits"));
+    ui->fileFormatCombo->insertItem(int(RawFileInputFormat::SAMPLE_FORMAT_S16), tr("Signed 16 bits"));
 
     // this has to be aligned with mainwindow
     ui->loopCheckbox->setChecked(false);
 
-    ui->statusLabel->setText("<span style=\"color:red\">No device connected</span>");            
+    ui->statusLabel->setText(tr("<span style=\"color:red\">No device connected</span>"));            
 
     QString ipRange = "(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])";
     QRegularExpression ipRegex ("^" + ipRange
@@ -93,16 +93,16 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(m_announcementCheckBox[ann], &QCheckBox::clicked, this, &SetupDialog::onAnnouncementClicked);
     gridLayout->addWidget(m_announcementCheckBox[ann], 0, 1);
 
-    QLabel * label = new QLabel("<br>Note: Alarm announcement cannot be disabled.");
+    QLabel * label = new QLabel(tr("<br>Note: Alarm announcement cannot be disabled."));
     gridLayout->addWidget(label, 4, 0, 1, 2);
-    QGroupBox * groupBox = new QGroupBox("Alarm Announcements");
+    QGroupBox * groupBox = new QGroupBox(tr("Alarm Announcements"));
     groupBox->setLayout(gridLayout);
     QVBoxLayout *vLayout = new QVBoxLayout;
     vLayout->addWidget(groupBox);
 
     m_bringWindowToForegroundCheckbox = new QCheckBox();
-    m_bringWindowToForegroundCheckbox->setText("Bring window to foreground");
-    m_bringWindowToForegroundCheckbox->setToolTip("Check to bring window to foreground when (test) alarm announcement starts");
+    m_bringWindowToForegroundCheckbox->setText(tr("Bring window to foreground"));
+    m_bringWindowToForegroundCheckbox->setToolTip(tr("Check to bring window to foreground when (test) alarm announcement starts"));
     m_bringWindowToForegroundCheckbox->setChecked(true);
     connect(m_bringWindowToForegroundCheckbox, &QCheckBox::clicked, this, &SetupDialog::onBringWindowToForegroundClicked);
     gridLayout->addWidget(m_bringWindowToForegroundCheckbox, 5, 0, 1, 2);
@@ -123,7 +123,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
             column = 1;
         }
     }
-    groupBox = new QGroupBox("Regular Announcements");
+    groupBox = new QGroupBox(tr("Regular Announcements"));
     groupBox->setLayout(gridLayout);
     vLayout->addWidget(groupBox);
 
@@ -134,31 +134,31 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 
     //gridLayout_4->addWidget(xmlHeaderWidget, 3, 0, 1, 3);
     gridLayout = new QGridLayout;
-    label = new QLabel("Recording date:");
+    label = new QLabel(tr("Recording date:"));
     m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDate] = new QLabel;
     gridLayout->addWidget(label, SetupDialogXmlHeader::XMLDate, 0);
     gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDate], SetupDialogXmlHeader::XMLDate, 1);
-    label = new QLabel("Recorder:");
+    label = new QLabel(tr("Recorder:"));
     m_xmlHeaderLabel[SetupDialogXmlHeader::XMLRecorder] = new QLabel;
     gridLayout->addWidget(label, SetupDialogXmlHeader::XMLRecorder, 0);
     gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLRecorder], SetupDialogXmlHeader::XMLRecorder, 1);
-    label = new QLabel("Device:");
+    label = new QLabel(tr("Device:"));
     m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDevice] = new QLabel;
     gridLayout->addWidget(label, SetupDialogXmlHeader::XMLDevice, 0);
     gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDevice], SetupDialogXmlHeader::XMLDevice, 1);
-    label = new QLabel("Sample rate [Hz]:");
+    label = new QLabel(tr("Sample rate [Hz]:"));
     m_xmlHeaderLabel[SetupDialogXmlHeader::XMLSampleRate] = new QLabel;
     gridLayout->addWidget(label, SetupDialogXmlHeader::XMLSampleRate, 0);
     gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLSampleRate], SetupDialogXmlHeader::XMLSampleRate, 1);
-    label = new QLabel("Frequency [kHz]:");
+    label = new QLabel(tr("Frequency [kHz]:"));
     m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFreq] = new QLabel;
     gridLayout->addWidget(label, SetupDialogXmlHeader::XMLFreq, 0);
     gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFreq], SetupDialogXmlHeader::XMLFreq, 1);
-    label = new QLabel("Recording length [sec]:");
-    m_xmlHeaderLabel[SetupDialogXmlHeader::XMLLenght] = new QLabel;
-    gridLayout->addWidget(label, SetupDialogXmlHeader::XMLLenght, 0);
-    gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLLenght], SetupDialogXmlHeader::XMLLenght, 1);
-    label = new QLabel("Sample format:");
+    label = new QLabel(tr("Recording length [sec]:"));
+    m_xmlHeaderLabel[SetupDialogXmlHeader::XMLLength] = new QLabel;
+    gridLayout->addWidget(label, SetupDialogXmlHeader::XMLLength, 0);
+    gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLLength], SetupDialogXmlHeader::XMLLength, 1);
+    label = new QLabel(tr("Sample format:"));
     m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFormat] = new QLabel;
     gridLayout->addWidget(label, SetupDialogXmlHeader::XMLFormat, 0);
     gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFormat], SetupDialogXmlHeader::XMLFormat, 1);
@@ -210,16 +210,16 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->soapysdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
 #endif
 
-    ui->defaultRadioButton->setText("Default style (OS dependent)");
-    ui->lightRadioButton->setText("Light style (Fusion)");
-    ui->darkRadioButton->setText("Dark style (Fusion with dark colors)");
+    ui->defaultRadioButton->setText(tr("Default style (OS dependent)"));
+    ui->lightRadioButton->setText(tr("Light style (Fusion)"));
+    ui->darkRadioButton->setText(tr("Dark style (Fusion with dark colors)"));
 
-    ui->defaultRadioButton->setToolTip("Set default OS style.");
-    ui->lightRadioButton->setToolTip("Force application light style.");
-    ui->darkRadioButton->setToolTip("Force application dark style.");
-    ui->expertCheckBox->setToolTip("User interface in expert mode");
-    ui->dlPlusCheckBox->setToolTip("Show Dynamic Label Plus (DL+) tags like artist, song name, etc.");
-    ui->xmlHeaderCheckBox->setToolTip("Include raw file XML header in IQ recording");
+    ui->defaultRadioButton->setToolTip(tr("Set default OS style."));
+    ui->lightRadioButton->setToolTip(tr("Force application light style."));
+    ui->darkRadioButton->setToolTip(tr("Force application dark style."));
+    ui->expertCheckBox->setToolTip(tr("User interface in expert mode"));
+    ui->dlPlusCheckBox->setToolTip(tr("Show Dynamic Label Plus (DL+) tags like artist, song name, etc."));
+    ui->xmlHeaderCheckBox->setToolTip(tr("Include raw file XML header in IQ recording"));
 
     connect(ui->defaultRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
     connect(ui->lightRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
@@ -235,9 +235,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->noiseConcealmentCombo->addItem("-30 dBFS", QVariant(30));
     ui->noiseConcealmentCombo->addItem("-35 dBFS", QVariant(35));
     ui->noiseConcealmentCombo->addItem("-40 dBFS", QVariant(40));
-    ui->noiseConcealmentCombo->addItem("Disabled", QVariant(0));
-    ui->noiseConcealmentCombo->setToolTip("Select noise level that is generated during audio interruptions.<br>"
-                                          "This may help to improve listening experience and make the audio interruptions less annoying.");
+    ui->noiseConcealmentCombo->addItem(tr("Disabled"), QVariant(0));
+    ui->noiseConcealmentCombo->setToolTip(tr("Select noise level that is generated during audio interruptions.<br>"
+                                             "This may help to improve listening experience and make the audio interruptions less annoying."));
 #if AUDIO_DECODER_NOISE_CONCEALMENT
     connect(ui->noiseConcealmentCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onNoiseLevelChanged);
 #else
@@ -307,7 +307,7 @@ void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
         m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDevice]->setText(QString("%1 [ %2 ]").arg(desc.device.name, desc.device.model));
         m_xmlHeaderLabel[SetupDialogXmlHeader::XMLSampleRate]->setText(QString::number(desc.sample.sampleRate));
         m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFreq]->setText(QString::number(desc.rawFile.frequency_kHz));
-        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLLenght]->setText(QString::number(desc.rawFile.numSamples * 1.0 / desc.sample.sampleRate));
+        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLLength]->setText(QString::number(desc.rawFile.numSamples * 1.0 / desc.sample.sampleRate));
         m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFormat]->setText(desc.sample.channelContainer);
 
         switch (desc.sample.containerBits)
@@ -348,7 +348,7 @@ void SetupDialog::showEvent(QShowEvent *event)
     else
     {
         ui->rtlsdrGainSlider->setValue(0);
-        ui->rtlsdrGainValueLabel->setText("N/A");
+        ui->rtlsdrGainValueLabel->setText(tr("N/A"));
     }
     if (!m_rtltcpGainList.isEmpty())
     {
@@ -358,7 +358,7 @@ void SetupDialog::showEvent(QShowEvent *event)
     else
     {
         ui->rtltcpGainSlider->setValue(0);
-        ui->rtltcpGainValueLabel->setText("N/A");
+        ui->rtltcpGainValueLabel->setText(tr("N/A"));
     }
 
     switch (m_settings.rtlsdr.gainMode) {
@@ -438,7 +438,7 @@ void SetupDialog::showEvent(QShowEvent *event)
     else
     {
         ui->soapysdrGainSlider->setValue(0);
-        ui->soapysdrGainValueLabel->setText("N/A");
+        ui->soapysdrGainValueLabel->setText(tr("N/A"));
     }
 
     ui->soapysdrDevArgs->setText(m_settings.soapysdr.devArgs);
@@ -802,22 +802,22 @@ void SetupDialog::setStatusLabel()
     switch (m_settings.inputDevice)
     {
     case InputDeviceId::RTLSDR:
-        ui->statusLabel->setText("RTL SDR device connected");
+        ui->statusLabel->setText(tr("RTL SDR device connected"));
         break;
     case InputDeviceId::RTLTCP:
-        ui->statusLabel->setText("RTL TCP device connected");
+        ui->statusLabel->setText(tr("RTL TCP device connected"));
         break;
     case InputDeviceId::UNDEFINED:
-        ui->statusLabel->setText("<span style=\"color:red\">No device connected</span>");
+        ui->statusLabel->setText(tr("<span style=\"color:red\">No device connected</span>"));
         break;
     case InputDeviceId::RAWFILE:
-        ui->statusLabel->setText("Raw file connected");
+        ui->statusLabel->setText(tr("Raw file connected"));
         break;
     case InputDeviceId::AIRSPY:
-        ui->statusLabel->setText("Airspy device connected");
+        ui->statusLabel->setText(tr("Airspy device connected"));
         break;
     case InputDeviceId::SOAPYSDR:
-        ui->statusLabel->setText("Soapy SDR device connected");
+        ui->statusLabel->setText(tr("Soapy SDR device connected"));
         break;
     }
 }
@@ -838,7 +838,7 @@ void SetupDialog::onExpertMode(bool ena)
     // not found
     if (ena)
     {   // add item
-        ui->inputCombo->addItem("Raw file", QVariant(int(InputDeviceId::RAWFILE)));
+        ui->inputCombo->addItem(tr("Raw file"), QVariant(int(InputDeviceId::RAWFILE)));
     }
 }
 
@@ -883,7 +883,7 @@ void SetupDialog::onOpenFileButtonClicked()
     {
         dir = QFileInfo(m_rawfilename).path();
     }
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open IQ stream"), dir, tr("Binary files (*.bin *.s16 *.u8 *.raw *.sdr)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open IQ stream"), dir, tr("Binary files")+" (*.bin *.s16 *.u8 *.raw *.sdr *.uff)");
     if (!fileName.isEmpty())
     {
         m_rawfilename = fileName;

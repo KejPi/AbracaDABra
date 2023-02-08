@@ -24,10 +24,13 @@
  * SOFTWARE.
  */
 
-#include "mainwindow.h"
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QTranslator>
+#include "mainwindow.h"
 #include "config.h"
+
+using namespace Qt::StringLiterals;
 
 int main(int argc, char *argv[])
 {
@@ -39,13 +42,13 @@ int main(int argc, char *argv[])
 
 
     QCommandLineParser parser;
-    parser.setApplicationDescription("Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)");
+    parser.setApplicationDescription(QObject::tr("Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)"));
     parser.addHelpOption();
     parser.addVersionOption();
 
     // An option with a value
     QCommandLineOption iniFileOption(QStringList() << "i" << "ini",
-            "Optional INI file. If not specified AbracaDABra.ini in system directory will be used.", "ini");
+                                     QObject::tr("Optional INI file. If not specified AbracaDABra.ini in system directory will be used."), "ini");
     parser.addOption(iniFileOption);
 
     // Process the actual command line arguments given by the user
@@ -57,6 +60,11 @@ int main(int argc, char *argv[])
     // Set icon
     a.setWindowIcon(QIcon(":/resources/appIcon-linux.png"));
 #endif
+    QTranslator translator;
+    if (translator.load(QLocale::system(), u"AbracaDABra"_s, u"_"_s, u":/i18n"_s))
+    {
+        a.installTranslator(&translator);
+    }
 
     MainWindow w(iniFile);
     w.show();        

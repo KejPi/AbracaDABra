@@ -37,7 +37,9 @@
 #include <QUrl>
 #include <QMessageBox>
 #include <QStyleFactory>
+#include <QtGlobal>
 
+#include "QtCore/qglobal.h"
 #include "mainwindow.h"
 #include "slsview.h"
 #include "./ui_mainwindow.h"
@@ -63,10 +65,10 @@
 #endif
 
 const QString MainWindow::appName("AbracaDABra");
-const QStringList MainWindow::syncLevelLabels = {"No signal", "Signal found", "Sync"};
-const QStringList MainWindow::syncLevelTooltip = {"DAB signal not detected<br>Looking for signal...",
-                                      "Found DAB signal,<br>trying to synchronize...",
-                                      "Synchronized to DAB signal"};
+const char * MainWindow::syncLevelLabels[] = {QT_TR_NOOP("No signal"), QT_TR_NOOP("Signal found"), QT_TR_NOOP("Sync")};
+const char * MainWindow::syncLevelTooltip[] = {QT_TR_NOOP("DAB signal not detected<br>Looking for signal..."),
+                                               QT_TR_NOOP("Found DAB signal,<br>trying to synchronize..."),
+                                               QT_TR_NOOP("Synchronized to DAB signal")};
 const QStringList MainWindow::snrProgressStylesheet = {
     QString::fromUtf8("QProgressBar::chunk {background-color: #ff4b4b; }"),  // red
     QString::fromUtf8("QProgressBar::chunk {background-color: #ffb527; }"),  // yellow
@@ -105,8 +107,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     // favorites control
     ui->favoriteLabel->setCheckable(true);
-    ui->favoriteLabel->setTooltip("Add service to favorites", false);
-    ui->favoriteLabel->setTooltip("Remove service from favorites", true);
+    ui->favoriteLabel->setTooltip(tr("Add service to favorites"), false);
+    ui->favoriteLabel->setTooltip(tr("Remove service from favorites"), true);
     ui->favoriteLabel->setChecked(false);
 
     m_inputDeviceRecorder = new InputDeviceRecorder();
@@ -128,10 +130,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // status bar
     QWidget * widget = new QWidget();
     m_timeLabel = new QLabel("");
-    m_timeLabel->setToolTip("DAB time");
+    m_timeLabel->setToolTip(tr("DAB time"));
 
     m_basicSignalQualityLabel = new QLabel("");
-    m_basicSignalQualityLabel->setToolTip("DAB signal quality");
+    m_basicSignalQualityLabel->setToolTip(tr("DAB signal quality"));
 
     m_timeBasicQualWidget = new QStackedWidget;
     m_timeBasicQualWidget->addWidget(m_basicSignalQualityLabel);
@@ -146,13 +148,13 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_snrProgressbar->setFixedWidth(80);
     m_snrProgressbar->setFixedHeight(m_syncLabel->fontInfo().pixelSize());
     m_snrProgressbar->setTextVisible(false);
-    m_snrProgressbar->setToolTip(QString("DAB signal SNR"));
+    m_snrProgressbar->setToolTip(QString(tr("DAB signal SNR")));
 
     m_snrLabel = new QLabel();
     int width = m_snrLabel->fontMetrics().boundingRect("100.0 dB").width();
     m_snrLabel->setFixedWidth(width);
     m_snrLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    m_snrLabel->setToolTip(QString("DAB signal SNR"));
+    m_snrLabel->setToolTip(QString(tr("DAB signal SNR")));
 
     QHBoxLayout * signalQualityLayout = new QHBoxLayout();
     signalQualityLayout->addWidget(m_syncLabel);
@@ -166,19 +168,19 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_signalQualityWidget = new QWidget();
     m_signalQualityWidget->setLayout(signalQualityLayout);
 
-    m_setupAction = new QAction("Settings...", this);
+    m_setupAction = new QAction(tr("Settings..."), this);
     connect(m_setupAction, &QAction::triggered, this, &MainWindow::showSetupDialog);
 
-    m_clearServiceListAction = new QAction("Clear service list", this);
+    m_clearServiceListAction = new QAction(tr("Clear service list"), this);
     connect(m_clearServiceListAction, &QAction::triggered, this, &MainWindow::clearServiceList);
 
-    m_bandScanAction = new QAction("Band scan...", this);
+    m_bandScanAction = new QAction(tr("Band scan..."), this);
     connect(m_bandScanAction, &QAction::triggered, this, &MainWindow::bandScan);
 
-    m_ensembleInfoAction = new QAction("Ensemble information", this);
+    m_ensembleInfoAction = new QAction(tr("Ensemble information"), this);
     connect(m_ensembleInfoAction, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
 
-    m_aboutAction = new QAction("About", this);
+    m_aboutAction = new QAction(tr("About"), this);
     connect(m_aboutAction, &QAction::triggered, this, &MainWindow::showAboutDialog);
 
     m_menu = new QMenu(this);
@@ -193,20 +195,20 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     onSyncStatus(uint8_t(DabSyncLevel::NoSync));
 
     m_settingsLabel = new ClickableLabel(this);
-    m_settingsLabel->setToolTip("Open menu");
+    m_settingsLabel->setToolTip(tr("Open menu"));
     m_settingsLabel->setMenu(m_menu);
 
     m_muteLabel = new ClickableLabel(this);
     m_muteLabel->setCheckable(true);
-    m_muteLabel->setTooltip("Mute audio", false);
-    m_muteLabel->setTooltip("Unmute audio", true);
+    m_muteLabel->setTooltip(tr("Mute audio"), false);
+    m_muteLabel->setTooltip(tr("Unmute audio"), true);
     m_muteLabel->setChecked(false);
 
     m_volumeSlider = new QSlider(Qt::Horizontal, this);
     m_volumeSlider->setMinimum(0);
     m_volumeSlider->setMaximum(100);
     m_volumeSlider->setSingleStep(10);
-    m_volumeSlider->setToolTip("Audio volume");
+    m_volumeSlider->setToolTip(tr("Audio volume"));
 #ifdef Q_OS_WIN
     m_volumeSlider->setMaximumHeight(15);
 #endif
@@ -291,7 +293,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->dlPlusWidget->setCurrentIndex(Instance::Service);
     ui->dlPlusWidget->setVisible(false);
 
-    ui->audioEncodingLabel->setToolTip("Audio coding");
+    ui->audioEncodingLabel->setToolTip(tr("Audio coding"));
 
     ui->slsView_Service->setMinimumSize(QSize(322, 242));
     ui->slsView_Announcement->setMinimumSize(QSize(322, 242));
@@ -299,14 +301,14 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->slsView_Announcement->reset();
     ui->slsWidget->setCurrentIndex(Instance::Service);
 
-    ui->announcementLabel->setToolTip("Ongoing announcement");
+    ui->announcementLabel->setToolTip(tr("Ongoing announcement"));
     ui->announcementLabel->setHidden(true);
     ui->announcementLabel->setCheckable(true);
 
-    ui->catSlsLabel->setToolTip("Browse categorized slides");
+    ui->catSlsLabel->setToolTip(tr("Browse categorized slides"));
     ui->catSlsLabel->setHidden(true);
 
-    ui->switchSourceLabel->setToolTip("Change service source (ensemble)");
+    ui->switchSourceLabel->setToolTip(tr("Change service source (ensemble)"));
     ui->switchSourceLabel->setHidden(true);
 
     ui->serviceTreeView->setVisible(false);
@@ -609,11 +611,11 @@ void MainWindow::onInputDeviceReady()
 void MainWindow::onEnsembleInfo(const RadioControlEnsemble &ens)
 {
     ui->ensembleLabel->setText(ens.label);
-    ui->ensembleLabel->setToolTip(QString("<b>Ensemble:</b> %1<br>"
+    ui->ensembleLabel->setToolTip(QString(tr("<b>Ensemble:</b> %1<br>"
                                           "<b>Short label:</b> %2<br>"
                                           "<b>ECC:</b> 0x%3<br>"
                                           "<b>EID:</b> 0x%4<br>"
-                                          "<b>Country:</b> %5")
+                                             "<b>Country:</b> %5"))
                                   .arg(ens.label)
                                   .arg(ens.labelShort)
                                   .arg(QString("%1").arg(ens.ecc(), 2, 16, QChar('0')).toUpper())
@@ -667,8 +669,8 @@ void MainWindow::onSyncStatus(uint8_t sync)
             m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal0.png"));
         }
     }
-    m_syncLabel->setText(syncLevelLabels[sync]);
-    m_syncLabel->setToolTip(syncLevelTooltip[sync]);
+    m_syncLabel->setText(tr(syncLevelLabels[sync]));
+    m_syncLabel->setToolTip(tr(syncLevelTooltip[sync]));
 }
 
 void MainWindow::onSnrLevel(float snr)
@@ -776,7 +778,8 @@ void MainWindow::onDLComplete(const QString & dl, QLabel * dlLabel)
 
 void MainWindow::onDabTime(const QDateTime & d)
 {
-    m_timeLabel->setText(d.toString(QString("dddd, dd.MM.yyyy, hh:mm")));
+    //m_timeLabel->setText(d.toString(QString("dddd, dd.MM.yyyy, hh:mm")));
+    m_timeLabel->setText(QLocale::system().toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
 }
 
 void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)
@@ -785,19 +788,19 @@ void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)
     {
     case AudioCoding::MP2:
         ui->audioEncodingLabel->setText("MP2");
-        ui->audioEncodingLabel->setToolTip(QString("<b>DAB audio encoding</b><br>%1").arg("MPEG-1 layer 2"));
+        ui->audioEncodingLabel->setToolTip(QString(tr("<b>DAB audio encoding</b><br>%1")).arg(tr("MPEG-1 layer 2")));
         break;
     case AudioCoding::AACLC:
         ui->audioEncodingLabel->setText("AAC-LC");
-        ui->audioEncodingLabel->setToolTip(QString("<b>DAB+ audio encoding</b><br>%1").arg("MPEG-4 Low Complexity AAC"));
+        ui->audioEncodingLabel->setToolTip(QString(tr("<b>DAB+ audio encoding</b><br>%1")).arg(tr("MPEG-4 Low Complexity AAC")));
         break;
     case AudioCoding::HEAAC:
         ui->audioEncodingLabel->setText("HE-AAC");
-        ui->audioEncodingLabel->setToolTip(QString("<b>DAB+ audio encoding</b><br>%1").arg("MPEG-4 High Efficiency AAC"));
+        ui->audioEncodingLabel->setToolTip(QString(tr("<b>DAB+ audio encoding</b><br>%1")).arg(tr("MPEG-4 High Efficiency AAC")));
         break;
     case AudioCoding::HEAACv2:
         ui->audioEncodingLabel->setText("HE-AACv2");
-        ui->audioEncodingLabel->setToolTip(QString("<b>DAB+ audio encoding</b><br>%1").arg("MPEG-4 High Efficiency AAC v2"));
+        ui->audioEncodingLabel->setToolTip(QString(tr("<b>DAB+ audio encoding</b><br>%1")).arg(tr("MPEG-4 High Efficiency AAC v2")));
         break;
     }
 
@@ -806,17 +809,17 @@ void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)
         ui->stereoLabel->setText("STEREO");
         if (AudioCoding::MP2 == params.coding)
         {
-            ui->stereoLabel->setToolTip(QString("<b>Audio signal</b><br>%1Stereo<br>Sample rate: %2 kHz")
+            ui->stereoLabel->setToolTip(QString(tr("<b>Audio signal</b><br>%1Stereo<br>Sample rate: %2 kHz"))
                     .arg(params.sbr ? "Joint " : "")
                     .arg(params.sampleRateKHz)
                 );
         }
         else
         {
-            ui->stereoLabel->setToolTip(QString("<b>Audio signal</b><br>Stereo (PS %1)<br>Sample rate: %2 kHz (SBR %3)")
-                    .arg(params.parametricStereo? "on" : "off")
-                    .arg(params.sampleRateKHz)
-                    .arg(params.sbr ? "on" : "off")
+            ui->stereoLabel->setToolTip(QString(tr("<b>Audio signal</b><br>Stereo (PS %1)<br>Sample rate: %2 kHz (SBR %3)"))
+                                            .arg(params.parametricStereo? tr("on") : tr("off"))
+                                            .arg(params.sampleRateKHz)
+                                            .arg(params.sbr ? tr("on") : tr("off"))
                 );
         }
     }
@@ -825,13 +828,13 @@ void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)
         ui->stereoLabel->setText("MONO");
         if (AudioCoding::MP2 == params.coding)
         {
-            ui->stereoLabel->setToolTip(QString("<b>Audio signal</b><br>Mono<br>Sample rate: %1 kHz")
+            ui->stereoLabel->setToolTip(QString(tr("<b>Audio signal</b><br>Mono<br>Sample rate: %1 kHz"))
                         .arg(params.sampleRateKHz)
                     );
         }
         else
         {
-            ui->stereoLabel->setToolTip(QString("<b>Audio signal</b><br>Mono<br>Sample rate: %1 kHz (SBR: %2)")
+            ui->stereoLabel->setToolTip(QString(tr("<b>Audio signal</b><br>Mono<br>Sample rate: %1 kHz (SBR: %2)"))
                         .arg(params.sampleRateKHz)
                         .arg(params.sbr ? "on" : "off")
                     );
@@ -851,8 +854,8 @@ void MainWindow::onProgrammeTypeChanged(const DabSId &sid, const DabPTy &pty)
         if (pty.d != 0)
         {   // dynamic PTy available != static PTy
             ui->programTypeLabel->setText(DabTables::getPtyName(pty.d));
-            ui->programTypeLabel->setToolTip(QString("<b>Programme Type</b><br>"
-                                                     "%1 (dynamic)")
+            ui->programTypeLabel->setToolTip(QString(tr("<b>Programme Type</b><br>"
+                                                        "%1 (dynamic)"))
                                                  .arg(DabTables::getPtyName(pty.d)));
 
 
@@ -860,8 +863,8 @@ void MainWindow::onProgrammeTypeChanged(const DabSId &sid, const DabPTy &pty)
         else
         {
             ui->programTypeLabel->setText(DabTables::getPtyName(pty.s));
-            ui->programTypeLabel->setToolTip(QString("<b>Programme Type</b><br>"
-                                                     "%1")
+            ui->programTypeLabel->setToolTip(QString(tr("<b>Programme Type</b><br>"
+                                                        "%1"))
                                                  .arg(DabTables::getPtyName(pty.s)));
         }
 
@@ -881,7 +884,7 @@ void MainWindow::channelSelected()
 
     clearEnsembleInformationLabels();
     ui->channelCombo->setDisabled(true);
-    ui->frequencyLabel->setText("Tuning...  ");
+    ui->frequencyLabel->setText(tr("Tuning...  "));
 
     onSyncStatus(uint8_t(DabSyncLevel::NoSync));
     onSnrLevel(0);
@@ -983,16 +986,16 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
         {
             ui->channelCombo->setCurrentIndex(-1);
         }
-        m_timeLabel->setText("End of file");
+        m_timeLabel->setText(tr("End of file"));
         break;
     case InputDeviceErrorCode::DeviceDisconnected:
-        m_timeLabel->setText("Input device disconnected");
+        m_timeLabel->setText(tr("Input device disconnected"));
         // force no device
         m_setupDialog->resetInputDevice();
         changeInputDevice(InputDeviceId::UNDEFINED);
         break;
     case InputDeviceErrorCode::NoDataAvailable:
-        m_timeLabel->setText("No input data");
+        m_timeLabel->setText(tr("No input data"));
         // force no device
         m_setupDialog->resetInputDevice();
         changeInputDevice(InputDeviceId::UNDEFINED);
@@ -1118,19 +1121,21 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
                 ui->switchSourceLabel->setVisible(true);
                 int current = (*it)->currentEnsembleIdx();
                 const EnsembleListItem * ens = (*it)->getEnsemble(current+1);  // get next ensemble
-                ui->switchSourceLabel->setToolTip(QString("<b>Ensemble %1/%2</b><br>Click for switching to:<br><i>%3</i>")
+                ui->switchSourceLabel->setToolTip(QString(tr("<b>Ensemble %1/%2</b><br>"
+                                                             "Click for switching to:<br>"
+                                                             "<i>%3</i>"))
                                                   .arg(current+1)
                                                   .arg(numEns)
                                                   .arg(ens->label()));
             }
         }
         ui->serviceLabel->setText(s.label);
-        ui->serviceLabel->setToolTip(QString("<b>Service:</b> %1<br>"
+        ui->serviceLabel->setToolTip(QString(tr("<b>Service:</b> %1<br>"
                                              "<b>Short label:</b> %2<br>"
                                              "<b>SId:</b> 0x%3<br>"
                                              "<b>SCIdS:</b> %4<br>"
                                              "<b>Language:</b> %5<br>"
-                                             "<b>Country:</b> %6")
+                                                "<b>Country:</b> %6"))
                                      .arg(s.label)
                                      .arg(s.labelShort)
                                      .arg(QString("%1").arg(s.SId.countryServiceRef(), 4, 16, QChar('0')).toUpper() )
@@ -1170,9 +1175,9 @@ void MainWindow::displaySubchParams(const RadioControlServiceComponent &s)
             {  // EEP x+B
                 label = QString("EEP %1-%2").arg(int(s.protection.level) - int(DabProtectionLevel::EEP_1B) + 1).arg("B");
             }
-            toolTip = QString("<B>Error protection</b><br>"
-                              "%1<br>Coderate: %2/%3<br>"
-                              "Capacity units: %4 CU")
+            toolTip = QString(tr("<B>Error protection</b><br>"
+                                 "%1<br>Coderate: %2/%3<br>"
+                                 "Capacity units: %4 CU"))
                           .arg(label)
                           .arg(s.protection.codeRateUpper)
                           .arg(s.protection.codeRateLower)
@@ -1181,9 +1186,9 @@ void MainWindow::displaySubchParams(const RadioControlServiceComponent &s)
         else
         {  // UEP
             label = QString("UEP #%1").arg(s.protection.uepIndex);
-            toolTip = QString("<B>Error protection</b><br>"
-                              "%1<br>Protection level: %2<br>"
-                              "Capacity units: %3 CU")
+            toolTip = QString(tr("<B>Error protection</b><br>"
+                                 "%1<br>Protection level: %2<br>"
+                                 "Capacity units: %3 CU"))
                           .arg(label)
                           .arg(int(s.protection.level))
                           .arg(s.SubChSize);
@@ -1191,9 +1196,9 @@ void MainWindow::displaySubchParams(const RadioControlServiceComponent &s)
         ui->protectionLabel->setText(label);
         ui->protectionLabel->setToolTip(toolTip);
 
-        QString br = QString("%1 kbps").arg(s.streamAudioData.bitRate);
+        QString br = QString(tr("%1 kbps")).arg(s.streamAudioData.bitRate);
         ui->audioBitrateLabel->setText(br);
-        ui->audioBitrateLabel->setToolTip(QString("<b>Service bitrate</b><br>Audio & data: %1").arg(br));
+        ui->audioBitrateLabel->setToolTip(QString(tr("<b>Service bitrate</b><br>Audio & data: %1")).arg(br));
     }
     else
     {   /* this should not happen */ }
@@ -1215,8 +1220,8 @@ void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponen
         QString serviceLabel = ui->serviceLabel->text();
         clearServiceInformationLabels();
         ui->serviceLabel->setText(serviceLabel);
-        ui->programTypeLabel->setText("Service currently unavailable");
-        ui->programTypeLabel->setToolTip("Service was removed from ensemble");
+        ui->programTypeLabel->setText(tr("Service currently unavailable"));
+        ui->programTypeLabel->setToolTip(tr("Service was removed from ensemble"));
 
         emit stopUserApps();
         m_dlDecoder[Instance::Service]->reset();
@@ -1249,9 +1254,9 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
         ui->announcementLabel->setVisible(false);
         break;
     case RadioControlAnnouncementState::OnCurrentService:
-        ui->announcementLabel->setToolTip(QString("<b>%1</b><br>"
-                                                  "Ongoing announcement<br>"
-                                                  "on current service")
+        ui->announcementLabel->setToolTip(QString(tr("<b>%1</b><br>"
+                                                     "Ongoing announcement<br>"
+                                                     "on current service"))
                                               .arg(DabTables::getAnnouncementName(id)));
         ui->announcementLabel->setChecked(true);
         ui->announcementLabel->setEnabled(false);        
@@ -1260,13 +1265,12 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
 
         break;
     case RadioControlAnnouncementState::OnOtherService:
-        ui->announcementLabel->setToolTip(QString("<b>%1</b><br>"
-                                                  "Ongoing announcement<br>"
-                                                  "Source service: <i>%2</i><br>"
-                                                  "<br>"
-                                                  "Click to suspend this announcement")
-                                              .arg(DabTables::getAnnouncementName(id))
-                                              .arg(s.label));
+        ui->announcementLabel->setToolTip(QString(tr("<b>%1</b><br>"
+                                                     "Ongoing announcement<br>"
+                                                     "Source service: <i>%2</i><br>"
+                                                     "<br>"
+                                                     "Click to suspend this announcement"))
+                                              .arg(DabTables::getAnnouncementName(id), s.label));
         ui->announcementLabel->setChecked(true);
         ui->announcementLabel->setEnabled(true);
         ui->announcementLabel->setVisible(true);
@@ -1276,13 +1280,12 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
         ui->slsWidget->setCurrentIndex(Instance::Announcement);
         break;
     case RadioControlAnnouncementState::Suspended:
-        ui->announcementLabel->setToolTip(QString("<b>%1</b><br>"
-                                                  "Suspended announcement<br>"
-                                                  "Source service: <i>%2</i><br>"
-                                                  "<br>"
-                                                  "Click to resume this announcement")
-                                              .arg(DabTables::getAnnouncementName(id))
-                                              .arg(s.label));
+        ui->announcementLabel->setToolTip(QString(tr("<b>%1</b><br>"
+                                                     "Suspended announcement<br>"
+                                                     "Source service: <i>%2</i><br>"
+                                                     "<br>"
+                                                     "Click to resume this announcement"))
+                                              .arg(DabTables::getAnnouncementName(id), s.label));
         ui->announcementLabel->setChecked(false);
         ui->announcementLabel->setEnabled(true);
         ui->announcementLabel->setVisible(true);
@@ -1318,19 +1321,19 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
 void MainWindow::clearEnsembleInformationLabels()
 {
     m_timeLabel->setText("");
-    ui->ensembleLabel->setText("No ensemble");
-    ui->ensembleLabel->setToolTip("No ensemble tuned");
+    ui->ensembleLabel->setText(tr("No ensemble"));
+    ui->ensembleLabel->setToolTip(tr("No ensemble tuned"));
     ui->ensembleInfoLabel->setText("");
     ui->frequencyLabel->setText("");    
 }
 
 void MainWindow::clearServiceInformationLabels()
 {
-    ui->serviceLabel->setText("No service");
+    ui->serviceLabel->setText(tr("No service"));
     ui->favoriteLabel->setChecked(false);
     ui->catSlsLabel->setHidden(true);
     ui->announcementLabel->setHidden(true);
-    ui->serviceLabel->setToolTip("No service playing");
+    ui->serviceLabel->setToolTip(tr("No service playing"));
     ui->programTypeLabel->setText("");
     ui->audioEncodingLabel->setText("");
     ui->audioEncodingLabel->setToolTip("");
@@ -2129,7 +2132,6 @@ void MainWindow::showEnsembleInfo()
 
 void MainWindow::showAboutDialog()
 {
-    //QMessageBox::aboutQt(this, tr("About QT"));
     AboutDialog aboutDialog(this);
     aboutDialog.exec();
 }
@@ -2611,70 +2613,70 @@ QString DLPlusObjectUI::getLabel(DLPlusContentType type) const
     switch (type)
     {
     //case DLPlusContentType::DUMMY: label = "DUMMY"; break;
-    case DLPlusContentType::ITEM_TITLE: label = "Title"; break;
-    case DLPlusContentType::ITEM_ALBUM: label = "Album"; break;
-    case DLPlusContentType::ITEM_TRACKNUMBER: label = "Track Number:"; break;
-    case DLPlusContentType::ITEM_ARTIST: label = "Artist"; break;
-    case DLPlusContentType::ITEM_COMPOSITION: label = "Composition"; break;
-    case DLPlusContentType::ITEM_MOVEMENT: label = "Movement"; break;
-    case DLPlusContentType::ITEM_CONDUCTOR: label = "Conductor"; break;
-    case DLPlusContentType::ITEM_COMPOSER: label = "Composer"; break;
-    case DLPlusContentType::ITEM_BAND: label = "Band"; break;
-    case DLPlusContentType::ITEM_COMMENT: label = "Comment"; break;
-    case DLPlusContentType::ITEM_GENRE: label = "Genre"; break;
-    case DLPlusContentType::INFO_NEWS: label = "News"; break;
-    case DLPlusContentType::INFO_NEWS_LOCAL: label = "News (local)"; break;
-    case DLPlusContentType::INFO_STOCKMARKET: label = "Stock Market"; break;
-    case DLPlusContentType::INFO_SPORT: label = "Sport"; break;
-    case DLPlusContentType::INFO_LOTTERY: label = "Lottery"; break;
-    case DLPlusContentType::INFO_HOROSCOPE: label = "Horoscope"; break;
-    case DLPlusContentType::INFO_DAILY_DIVERSION: label = "Daily Diversion"; break;
-    case DLPlusContentType::INFO_HEALTH: label = "Health"; break;
-    case DLPlusContentType::INFO_EVENT: label = "Event"; break;
-    case DLPlusContentType::INFO_SCENE: label = "Scene"; break;
-    case DLPlusContentType::INFO_CINEMA: label = "Cinema"; break;
-    case DLPlusContentType::INFO_TV: label = "TV"; break;
+    case DLPlusContentType::ITEM_TITLE: label = QObject::tr("Title"); break;
+    case DLPlusContentType::ITEM_ALBUM: label = QObject::tr("Album"); break;
+    case DLPlusContentType::ITEM_TRACKNUMBER: label = QObject::tr("Track Number"); break;
+    case DLPlusContentType::ITEM_ARTIST: label = QObject::tr("Artist"); break;
+    case DLPlusContentType::ITEM_COMPOSITION: label = QObject::tr("Composition"); break;
+    case DLPlusContentType::ITEM_MOVEMENT: label = QObject::tr("Movement"); break;
+    case DLPlusContentType::ITEM_CONDUCTOR: label = QObject::tr("Conductor"); break;
+    case DLPlusContentType::ITEM_COMPOSER: label = QObject::tr("Composer"); break;
+    case DLPlusContentType::ITEM_BAND: label = QObject::tr("Band"); break;
+    case DLPlusContentType::ITEM_COMMENT: label = QObject::tr("Comment"); break;
+    case DLPlusContentType::ITEM_GENRE: label = QObject::tr("Genre"); break;
+    case DLPlusContentType::INFO_NEWS: label = QObject::tr("News"); break;
+    case DLPlusContentType::INFO_NEWS_LOCAL: label = QObject::tr("News (local)"); break;
+    case DLPlusContentType::INFO_STOCKMARKET: label = QObject::tr("Stock Market"); break;
+    case DLPlusContentType::INFO_SPORT: label = QObject::tr("Sport"); break;
+    case DLPlusContentType::INFO_LOTTERY: label = QObject::tr("Lottery"); break;
+    case DLPlusContentType::INFO_HOROSCOPE: label = QObject::tr("Horoscope"); break;
+    case DLPlusContentType::INFO_DAILY_DIVERSION: label = QObject::tr("Daily Diversion"); break;
+    case DLPlusContentType::INFO_HEALTH: label = QObject::tr("Health"); break;
+    case DLPlusContentType::INFO_EVENT: label = QObject::tr("Event"); break;
+    case DLPlusContentType::INFO_SCENE: label = QObject::tr("Scene"); break;
+    case DLPlusContentType::INFO_CINEMA: label = QObject::tr("Cinema"); break;
+    case DLPlusContentType::INFO_TV: label = QObject::tr("TV"); break;
         // [ETSI TS 102 980 V2.1.2] Annex A (normative): List of DL Plus content types
         // NOTE 6 : Intended for RT+ receivers; DL Plus equipped receivers ignore this content type.
         //case DLPlusContentType::INFO_DATE_TIME: label = "INFO_DATE_TIME"; break;
-    case DLPlusContentType::INFO_WEATHER: label = "Weather"; break;
-    case DLPlusContentType::INFO_TRAFFIC: label = "Traffic"; break;
-    case DLPlusContentType::INFO_ALARM: label = "Alarm"; break;
-    case DLPlusContentType::INFO_ADVERTISEMENT: label = "Advertisment"; break;
-    case DLPlusContentType::INFO_URL: label = "URL"; break;
-    case DLPlusContentType::INFO_OTHER: label = "Other"; break;
-    case DLPlusContentType::STATIONNAME_SHORT: label = "Station (short)"; break;
-    case DLPlusContentType::STATIONNAME_LONG: label = "Station"; break;
-    case DLPlusContentType::PROGRAMME_NOW: label = "Now"; break;
-    case DLPlusContentType::PROGRAMME_NEXT: label = "Next"; break;
-    case DLPlusContentType::PROGRAMME_PART: label = "Programme Part"; break;
-    case DLPlusContentType::PROGRAMME_HOST: label = "Host"; break;
-    case DLPlusContentType::PROGRAMME_EDITORIAL_STAFF: label = "Editorial"; break;
+    case DLPlusContentType::INFO_WEATHER: label = QObject::tr("Weather"); break;
+    case DLPlusContentType::INFO_TRAFFIC: label = QObject::tr("Traffic"); break;
+    case DLPlusContentType::INFO_ALARM: label = QObject::tr("Alarm"); break;
+    case DLPlusContentType::INFO_ADVERTISEMENT: label = QObject::tr("Advertisment"); break;
+    case DLPlusContentType::INFO_URL: label = QObject::tr("URL"); break;
+    case DLPlusContentType::INFO_OTHER: label = QObject::tr("Other"); break;
+    case DLPlusContentType::STATIONNAME_SHORT: label = QObject::tr("Station (short)"); break;
+    case DLPlusContentType::STATIONNAME_LONG: label = QObject::tr("Station"); break;
+    case DLPlusContentType::PROGRAMME_NOW: label = QObject::tr("Now"); break;
+    case DLPlusContentType::PROGRAMME_NEXT: label = QObject::tr("Next"); break;
+    case DLPlusContentType::PROGRAMME_PART: label = QObject::tr("Programme Part"); break;
+    case DLPlusContentType::PROGRAMME_HOST: label = QObject::tr("Host"); break;
+    case DLPlusContentType::PROGRAMME_EDITORIAL_STAFF: label = QObject::tr("Editorial"); break;
         // [ETSI TS 102 980 V2.1.2] Annex A (normative): List of DL Plus content types
         // NOTE 6 : Intended for RT+ receivers; DL Plus equipped receivers ignore this content type.
         //case DLPlusContentType::PROGRAMME_FREQUENCY: label = "Frequency"; break;
-    case DLPlusContentType::PROGRAMME_HOMEPAGE: label = "Homepage"; break;
+    case DLPlusContentType::PROGRAMME_HOMEPAGE: label = QObject::tr("Homepage"); break;
         // [ETSI TS 102 980 V2.1.2] Annex A (normative): List of DL Plus content types
         // NOTE 6 : Intended for RT+ receivers; DL Plus equipped receivers ignore this content type.
         //case DLPlusContentType::PROGRAMME_SUBCHANNEL: label = "Subchannel"; break;
-    case DLPlusContentType::PHONE_HOTLINE: label = "Phone (Hotline)"; break;
-    case DLPlusContentType::PHONE_STUDIO: label = "Phone (Studio)"; break;
-    case DLPlusContentType::PHONE_OTHER: label = "Phone (Other)"; break;
-    case DLPlusContentType::SMS_STUDIO: label = "SMS (Studio)"; break;
-    case DLPlusContentType::SMS_OTHER: label = "SMS (Other)"; break;
-    case DLPlusContentType::EMAIL_HOTLINE: label = "E-mail (Hotline)"; break;
-    case DLPlusContentType::EMAIL_STUDIO: label = "E-mail (Studio)"; break;
-    case DLPlusContentType::EMAIL_OTHER: label = "E-mail (Other)"; break;
-    case DLPlusContentType::MMS_OTHER: label = "MMS"; break;
-    case DLPlusContentType::CHAT: label = "Chat Message"; break;
-    case DLPlusContentType::CHAT_CENTER: label = "Chat"; break;
-    case DLPlusContentType::VOTE_QUESTION: label = "Vote Question"; break;
-    case DLPlusContentType::VOTE_CENTRE: label = "Vote Here"; break;
+    case DLPlusContentType::PHONE_HOTLINE: label = QObject::tr("Phone (Hotline)"); break;
+    case DLPlusContentType::PHONE_STUDIO: label = QObject::tr("Phone (Studio)"); break;
+    case DLPlusContentType::PHONE_OTHER: label = QObject::tr("Phone (Other)"); break;
+    case DLPlusContentType::SMS_STUDIO: label = QObject::tr("SMS (Studio)"); break;
+    case DLPlusContentType::SMS_OTHER: label = QObject::tr("SMS (Other)"); break;
+    case DLPlusContentType::EMAIL_HOTLINE: label = QObject::tr("E-mail (Hotline)"); break;
+    case DLPlusContentType::EMAIL_STUDIO: label = QObject::tr("E-mail (Studio)"); break;
+    case DLPlusContentType::EMAIL_OTHER: label = QObject::tr("E-mail (Other)"); break;
+    case DLPlusContentType::MMS_OTHER: label = QObject::tr("MMS"); break;
+    case DLPlusContentType::CHAT: label = QObject::tr("Chat Message"); break;
+    case DLPlusContentType::CHAT_CENTER: label = QObject::tr("Chat"); break;
+    case DLPlusContentType::VOTE_QUESTION: label = QObject::tr("Vote Question"); break;
+    case DLPlusContentType::VOTE_CENTRE: label = QObject::tr("Vote Here"); break;
         // rfu = 54
         // rfu = 55
-    case DLPlusContentType::PRIVATE_1: label = "Private 1"; break;
-    case DLPlusContentType::PRIVATE_2: label = "Private 2"; break;
-    case DLPlusContentType::PRIVATE_3: label = "Private 3"; break;
+    case DLPlusContentType::PRIVATE_1: label = QObject::tr("Private 1"); break;
+    case DLPlusContentType::PRIVATE_2: label = QObject::tr("Private 2"); break;
+    case DLPlusContentType::PRIVATE_3: label = QObject::tr("Private 3"); break;
 //    case DLPlusContentType::DESCRIPTOR_PLACE: label = "DESCRIPTOR_PLACE"; break;
 //    case DLPlusContentType::DESCRIPTOR_APPOINTMENT: label = "DESCRIPTOR_APPOINTMENT"; break;
 //    case DLPlusContentType::DESCRIPTOR_IDENTIFIER: label = "DESCRIPTOR_IDENTIFIER"; break;

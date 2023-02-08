@@ -95,7 +95,7 @@
           <enum>QFrame::Sunken</enum>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>4</number>
          </property>
          <widget class="QWidget" name="rtlsdrPage">
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -740,7 +740,7 @@
            <item row="1" column="3">
             <widget class="QLabel" name="soapySdrAntennalLabel">
              <property name="text">
-              <string>Antenna</string>
+              <string>Antenna:</string>
              </property>
             </widget>
            </item>

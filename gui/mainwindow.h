@@ -88,8 +88,8 @@ private:
     // constants
     enum Instance { Service = 0, Announcement = 1, NumInstances };
     static const QString appName;
-    static const QStringList syncLevelLabels;
-    static const QStringList syncLevelTooltip;
+    static const char * syncLevelLabels[];
+    static const char * syncLevelTooltip[];
     static const QStringList snrProgressStylesheet;
 
     // UI and dialogs

@@ -141,7 +141,7 @@ void SLSView::showAnnouncement(DabAnnouncement id)
 
     fitInViewTight(pic.rect(), Qt::KeepAspectRatio);
 
-    setToolTip(QString("Ongoing announcement:<br><b>%1</b>").arg(DabTables::getAnnouncementName(id)));
+    setToolTip(QString(tr("Ongoing announcement:")+"<br><b>%1</b>").arg(DabTables::getAnnouncementName(id)));
     setCursor(Qt::ArrowCursor);
     m_clickThroughURL.clear();
 }
@@ -254,7 +254,7 @@ void SLSView::showSlide(const Slide & slide)
     }
     if (0 != slide.getCategoryID())
     {
-        toolTip += QString("<b>Category:</b> %1").arg(slide.getCategoryTitle());
+        toolTip += QString(tr("<b>Category:</b> %1")).arg(slide.getCategoryTitle());
     }
     else
     { /* no catSLS */ }
@@ -303,7 +303,7 @@ void SLSView::mouseReleaseEvent(QMouseEvent *event)
             QDesktopServices::openUrl(QUrl(m_clickThroughURL, QUrl::TolerantMode));
         }
         else
-        { /* mouse was released outside teh view */ }
+        { /* mouse was released outside the view */ }
     }
     QGraphicsView::mouseReleaseEvent(event);
 }

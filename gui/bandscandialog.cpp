@@ -39,7 +39,7 @@ BandScanDialog::BandScanDialog(QWidget *parent, bool autoStart, Qt::WindowFlags 
     setSizeGripEnabled(false);
 
     m_buttonStart = ui->buttonBox->button(QDialogButtonBox::Ok);
-    m_buttonStart->setText("Start");
+    m_buttonStart->setText(tr("Start"));
     connect(m_buttonStart, &QPushButton::clicked, this, &BandScanDialog::startScan);
 
     m_buttonStop = ui->buttonBox->button(QDialogButtonBox::Cancel);
@@ -52,17 +52,16 @@ BandScanDialog::BandScanDialog(QWidget *parent, bool autoStart, Qt::WindowFlags 
     ui->progressBar->setMaximum(DabTables::channelList.size());
     ui->progressBar->setValue(0);
     ui->progressLabel->setText(QString("0 / %1").arg(DabTables::channelList.size()));
-    ui->progressChannel->setText("None");
+    ui->progressChannel->setText(tr("None"));
 
     ui->progressLabel->setVisible(false);
     ui->progressChannel->setVisible(false);
 
     if (!autoStart)
     {
-        ui->scanningLabel->setText("<span style=\"color:red\"><b>Warning:</b> Band scan deletes current service list and all favorites!</span>");
+        ui->scanningLabel->setText(tr("<span style=\"color:red\"><b>Warning:</b> Band scan deletes current service list and all favorites!</span>"));
     }
 
-    //layout()->setSizeConstraint( QLayout::SetFixedSize );
     setFixedSize( sizeHint() );
 
     if (autoStart)
@@ -109,12 +108,12 @@ void BandScanDialog::startScan()
 {
     m_isScanning = true;
 
-    ui->scanningLabel->setText("Scanning channel:");
+    ui->scanningLabel->setText(tr("Scanning channel:"));
     ui->progressLabel->setVisible(true);
     ui->progressChannel->setVisible(true);
 
     m_buttonStart->setVisible(false);
-    m_buttonStop->setText("Stop");
+    m_buttonStop->setText(tr("Stop"));
     m_buttonStop->setDefault(false);
 
     m_timer = new QTimer(this);
@@ -132,9 +131,6 @@ void BandScanDialog::scanStep()
     if (BandScanState::Init == m_state)
     {  // first step
        m_channelIt = DabTables::channelList.constBegin();
-
-       // debug
-       //channelIt = DabTables::channelList.find(225648);
     }
     else
     {  // next step

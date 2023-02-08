@@ -25,7 +25,7 @@ if (APPLE)
         set(APP_ICON_MACOSX ${CMAKE_CURRENT_SOURCE_DIR}/resources/appIcon.icns)
         set_source_files_properties(${APP_ICON_MACOSX} PROPERTIES
                MACOSX_PACKAGE_LOCATION "Resources")
-    endif()
+    endif(APPLE_APP_BUNDLE)
 
     set(APPLE_SOURCES
         mac.mm
@@ -202,11 +202,19 @@ target_link_libraries(${TARGET} PRIVATE
     Qt${QT_VERSION_MAJOR}::Xml
 )
 
+set(TSFILES
+    l10n/${TARGET}_cs.ts
+)
+qt_add_translations(${TARGET} TS_FILES ${TSFILES}
+    LUPDATE_OPTIONS "-noobsolete"
+)
+
+
 # Set a custom plist file for the app bundle
 if(APPLE AND APPLE_APP_BUNDLE)
     set_target_properties(${TARGET} PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/Info.plist.in
         MACOSX_BUNDLE_BUNDLE_VERSION       "${PROJECT_VERSION}_${PROJECT_GIT_REV}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
-    )    
+    )
 endif(APPLE AND APPLE_APP_BUNDLE)

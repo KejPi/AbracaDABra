@@ -60,44 +60,44 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
     connect(ui->FIBframe, &QWidget::customContextMenuRequested, this, &EnsembleInfoDialog::fibFrameContextMenu);
 
     // set tooltips
-    ui->freqLabel->setToolTip("Tuned frequency");
-    ui->freq->setToolTip("Tuned frequency");
-    ui->channelLabel->setToolTip("Tuned DAB channel");
-    ui->channel->setToolTip("Tuned DAB channel");
-    ui->freqOffsetLabel->setToolTip("Estimated frequency offset");
-    ui->freqOffset->setToolTip("Estimated frequency offset");
-    ui->snrLabel->setToolTip("Estimated SNR");
-    ui->snr->setToolTip("Estimated SNR");
-    ui->agcGainLabel->setToolTip("Current AGC gain<br>(only in software mode)");
-    ui->agcGain->setToolTip("Current AGC gain<br>(only in software mode)");
+    ui->freqLabel->setToolTip(tr("Tuned frequency"));
+    ui->freq->setToolTip(tr("Tuned frequency"));
+    ui->channelLabel->setToolTip(tr("Tuned DAB channel"));
+    ui->channel->setToolTip(tr("Tuned DAB channel"));
+    ui->freqOffsetLabel->setToolTip(tr("Estimated frequency offset"));
+    ui->freqOffset->setToolTip(tr("Estimated frequency offset"));
+    ui->snrLabel->setToolTip(tr("Estimated SNR"));
+    ui->snr->setToolTip(tr("Estimated SNR"));
+    ui->agcGainLabel->setToolTip(tr("Current AGC gain<br>(only in software mode)"));
+    ui->agcGain->setToolTip(tr("Current AGC gain<br>(only in software mode)"));
 
-    ui->serviceLabel->setToolTip("Current service name");
-    ui->service->setToolTip("Current service name");
-    ui->serviceIdLabel->setToolTip("Current Service Identifier");
-    ui->serviceId->setToolTip("Current Service Identifier");
-    ui->scidsLabel->setToolTip("Service Component Identifier within the Service");
-    ui->scids->setToolTip("Service Component Identifier within the Service");
-    ui->numCULabel->setToolTip("Number of capacity units used by sub-channel");
-    ui->numCU->setToolTip("Number of capacity units used by sub-channel");
-    ui->startCULabel->setToolTip("First capacity unit used by sub-channel");
-    ui->startCU->setToolTip("First capacity unit used by sub-channel");
-    ui->subChannelLabel->setToolTip("Sub-channel Identifier");
-    ui->subChannel->setToolTip("Sub-channel Identifier");
+    ui->serviceLabel->setToolTip(tr("Current service name"));
+    ui->service->setToolTip(tr("Current service name"));
+    ui->serviceIdLabel->setToolTip(tr("Current Service Identifier"));
+    ui->serviceId->setToolTip(tr("Current Service Identifier"));
+    ui->scidsLabel->setToolTip(tr("Service Component Identifier within the Service"));
+    ui->scids->setToolTip(tr("Service Component Identifier within the Service"));
+    ui->numCULabel->setToolTip(tr("Number of capacity units used by sub-channel"));
+    ui->numCU->setToolTip(tr("Number of capacity units used by sub-channel"));
+    ui->startCULabel->setToolTip(tr("First capacity unit used by sub-channel"));
+    ui->startCU->setToolTip(tr("First capacity unit used by sub-channel"));
+    ui->subChannelLabel->setToolTip(tr("Sub-channel Identifier"));
+    ui->subChannel->setToolTip(tr("Sub-channel Identifier"));
 
-    ui->fibCountLabel->setToolTip("Total number of FIB's");
-    ui->fibCount->setToolTip("Total number of FIB's");
-    ui->fibErrCountLabel->setToolTip("Number of FIB's with CRC error");
-    ui->fibErrCount->setToolTip("Number of FIB's with CRC error");
-    ui->fibErrRateLabel->setToolTip("FIB error rate");
-    ui->fibErrRate->setToolTip("FIB error rate");
-    ui->crcCountLabel->setToolTip("Total number of audio frames (AU for DAB+)");
-    ui->crcCount->setToolTip("Total number of audio frames (AU for DAB+)");
-    ui->crcErrCountLabel->setToolTip("Total number of audio frames with CRC error (AU for DAB+)");
-    ui->crcErrCount->setToolTip("Total number of audio frames with CRC error (AU for DAB+)");
-    ui->crcErrRateLabel->setToolTip("Audio frame (AU for DAB+) error rate");
-    ui->crcErrRate->setToolTip("Audio frame (AU for DAB+) error rate");
+    ui->fibCountLabel->setToolTip(tr("Total number of FIB's"));
+    ui->fibCount->setToolTip(tr("Total number of FIB's"));
+    ui->fibErrCountLabel->setToolTip(tr("Number of FIB's with CRC error"));
+    ui->fibErrCount->setToolTip(tr("Number of FIB's with CRC error"));
+    ui->fibErrRateLabel->setToolTip(tr("FIB error rate"));
+    ui->fibErrRate->setToolTip(tr("FIB error rate"));
+    ui->crcCountLabel->setToolTip(tr("Total number of audio frames (AU for DAB+)"));
+    ui->crcCount->setToolTip(tr("Total number of audio frames (AU for DAB+)"));
+    ui->crcErrCountLabel->setToolTip(tr("Total number of audio frames with CRC error (AU for DAB+)"));
+    ui->crcErrCount->setToolTip(tr("Total number of audio frames with CRC error (AU for DAB+)"));
+    ui->crcErrRateLabel->setToolTip(tr("Audio frame (AU for DAB+) error rate"));
+    ui->crcErrRate->setToolTip(tr("Audio frame (AU for DAB+) error rate"));
 
-    ui->recordButton->setToolTip("Record raw IQ stream to file");
+    ui->recordButton->setToolTip(tr("Record raw IQ stream to file"));
 
     enableRecording(false);
 }
@@ -124,7 +124,7 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
         }
         else
         {
-            ui->ensStructureTextEdit->setDocumentTitle("Ensemble information");
+            ui->ensStructureTextEdit->setDocumentTitle(tr("Ensemble information"));
 
             int minWidth = ui->ensStructureTextEdit->document()->idealWidth()
                            + ui->ensStructureTextEdit->contentsMargins().left()
@@ -181,11 +181,11 @@ void EnsembleInfoDialog::onRecording(bool isActive)
     m_isRecordingActive = isActive;
     if (isActive)
     {
-        ui->recordButton->setText("Stop recording");
+        ui->recordButton->setText(tr("Stop recording"));
     }
     else
     {
-        ui->recordButton->setText("Record raw data");
+        ui->recordButton->setText(tr("Record raw data"));
     }
     ui->dumpSize->setText("");
     ui->dumpLength->setText("");
@@ -197,14 +197,14 @@ void EnsembleInfoDialog::onRecording(bool isActive)
 void EnsembleInfoDialog::updateRecordingStatus(uint64_t bytes, float ms)
 {
     ui->dumpSize->setText(QString::number(double(bytes/(1024*1024.0)),'f', 1) + " MB");
-    ui->dumpLength->setText(QString::number(double(ms * 0.001),'f', 1) + " sec");
+    ui->dumpLength->setText(QString::number(double(ms * 0.001),'f', 1) + tr(" sec"));
 }
 
 void EnsembleInfoDialog::updateAgcGain(float gain)
 {
     if (std::isnan(gain))
     {   // gain is not available (input device in HW mode)
-        ui->agcGain->setText("N/A");
+        ui->agcGain->setText(tr("N/A"));
         return;
     }
     ui->agcGain->setText(QString::number(double(gain),'f', 1) + " dB");
@@ -238,7 +238,7 @@ void EnsembleInfoDialog::resetFibStat()
     m_fibErrorCounter = 0;
     ui->fibCount->setText("0");
     ui->fibErrCount->setText("0");
-    ui->fibErrRate->setText("N/A");
+    ui->fibErrRate->setText(tr("N/A"));
 }
 
 void EnsembleInfoDialog::resetMscStat()
@@ -247,7 +247,7 @@ void EnsembleInfoDialog::resetMscStat()
     m_crcErrorCounter = 0;
     ui->crcCount->setText("0");
     ui->crcErrCount->setText("0");
-    ui->crcErrRate->setText("N/A");
+    ui->crcErrRate->setText(tr("N/A"));
 }
 
 void EnsembleInfoDialog::newFrequency(quint32 f)
@@ -309,9 +309,8 @@ void EnsembleInfoDialog::fibFrameContextMenu(const QPoint& pos)
 {
     QPoint globalPos = ui->FIBframe->mapToGlobal(pos);
     QMenu menu(this);
-    QAction * fibResetAction = menu.addAction("Reset FIB statistics");
-    QAction * mscResetAction = menu.addAction("Reset MSC statistics");
-    QAction * allResetAction = menu.addAction("Reset all statistics");
+    QAction * fibResetAction = menu.addAction(tr("Reset FIB statistics"));
+    QAction * mscResetAction = menu.addAction(tr("Reset MSC statistics"));
     QAction * selectedItem = menu.exec(globalPos);
     if (nullptr == selectedItem)
     {  // nothing was chosen
@@ -345,9 +344,9 @@ void EnsembleInfoDialog::clearServiceInfo()
 
 void EnsembleInfoDialog::clearSignalInfo()
 {
-    ui->snr->setText("N/A");
-    ui->freqOffset->setText("N/A");
-    //ui->agcGain->setText("N/A");
+    ui->snr->setText(tr("N/A"));
+    ui->freqOffset->setText(tr("N/A"));
+    //ui->agcGain->setText(tr("N/A"));
 }
 
 void EnsembleInfoDialog::clearFreqInfo()

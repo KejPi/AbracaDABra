@@ -34,5 +34,7 @@
 	<string>True</string>	
         <key>LSMinimumSystemVersion</key>
         <string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+        <key>CFBundleAllowMixedLocalizations</key>
+        <true/>
 </dict>
 </plist>

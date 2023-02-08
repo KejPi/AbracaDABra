@@ -36,7 +36,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->appName->setText("<b>Abraca DAB radio</b>");
-    ui->author->setText("Developed by Petr Kopecký (<a href=\"mailto:xkejpi@gmail.com\">xkejpi@gmail.com</a>)");
+    ui->author->setText(tr("Developed by")+" Petr Kopecký (<a href=\"mailto:xkejpi@gmail.com\">xkejpi@gmail.com</a>)");
 
     dabsdrVersion_t dabsdrVer = {0};
     dabsdrGetVersion(&dabsdrVer);
@@ -44,13 +44,13 @@ AboutDialog::AboutDialog(QWidget *parent) :
 #if PROJECT_VERSION_RELEASE
     ui->version->setText(QString("Version %1 (%2)").arg(PROJECT_VER,"<a href=\"https://github.com/KejPi/AbracaDABra\">GitHub</a>"));
 #else
-    ui->version->setText(QString("Version %1+, revision %2 (%3)").arg(PROJECT_VER, PROJECT_GIT_REV)
+    ui->version->setText(QString(tr("Version %1+, revision %2 (%3)")).arg(PROJECT_VER, PROJECT_GIT_REV)
                              .arg("<a href=\"https://github.com/KejPi/AbracaDABra\">GitHub</a>"));
 #endif
-    ui->qtVersion->setText(QString("Based on Qt %1").arg(QT_VERSION_STR));
-    ui->dabsdrVersion->setText(QString("DAB SDR version %1.%2.%3").arg(dabsdrVer.major).arg(dabsdrVer.minor).arg(dabsdrVer.patch));
+    ui->qtVersion->setText(QString(tr("Based on Qt %1")).arg(QT_VERSION_STR));
+    ui->dabsdrVersion->setText(QString(tr("DAB SDR version %1.%2.%3")).arg(dabsdrVer.major).arg(dabsdrVer.minor).arg(dabsdrVer.patch));
 
-    ui->libraries->setText("AbracaDABra & DAB SDR library use following libraries (special thanks to):"
+    ui->libraries->setText(tr("AbracaDABra & DAB SDR library use following libraries (special thanks to):")+
                            "<ul>"
                            "<li><a href=\"https://github.com/anthonix/ffts\">FFTS</a> by Anthony Blake</li>"
                            "<li><a href=\"https://github.com/mborgerding/kissfft\">KISS FFT</a> by Mark Borgerding</li>"
@@ -71,8 +71,8 @@ AboutDialog::AboutDialog(QWidget *parent) :
                            "<li><a href=\"https://github.com/knik0/faad2\">FAAD2</a> Copyright © 2003-2005 M. Bakker, Nero AG</li>"
 #endif
                            "<li><a href=\"http://www.portaudio.com\">PortAudio</a> Copyright © 1999-2011 Ross Bencina and Phil Burk</li>"
-                           "</ul>"
-                           "AbracaDABra uses some artwork created by <a href=\"https://www.flaticon.com/authors/basic-miscellany/lineal-color\">Smashicons - Flaticon</a>");
+                           "</ul>"+
+                           tr("AbracaDABra uses some artwork created by")+" <a href=\"https://www.flaticon.com/authors/basic-miscellany/lineal-color\">Smashicons - Flaticon</a>");
     ui->disclaimer->setText("<p>Copyright © 2019-2023 Petr Kopecký</p>"
                             "<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software "
                             "and associated documentation files (the “Software”), to deal in the Software without restriction, "
@@ -100,6 +100,8 @@ AboutDialog::AboutDialog(QWidget *parent) :
                 ui->libraries, &QLabel::linkActivated,
                 [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
             );
+
+    //resize(minimumSizeHint());
 }
 
 AboutDialog::~AboutDialog()

@@ -437,6 +437,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 COMPONENTS Widgets Multimedia Svg Xml REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia Svg Xml REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS LinguistTools)
 
 #########################################################
 ## AbracaDABra GUI
@@ -448,11 +449,12 @@ if(APPLE AND APPLE_APP_BUNDLE)
     install(TARGETS ${TARGET} BUNDLE DESTINATION /Applications)
 else ()
     install(TARGETS ${TARGET})
+    #install(FILES ${qm_files} DESTINATION ${INSTALL_EXAMPLEDIR})
 
-    if(UNIX AND NOT APPLE)
-	 include(GNUInstallDirs)
-	 INSTALL (FILES ${PROJECT_SOURCE_DIR}/gui/resources/AbracaDABra.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications/ RENAME ${TARGET}.desktop)
-	 INSTALL (FILES ${PROJECT_SOURCE_DIR}/gui/resources/appIcon-linux-512x512.png DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/512x512/apps/ RENAME ${TARGET}.png)
+    if(UNIX AND NOT APPLE)        
+        include(GNUInstallDirs)
+        INSTALL (FILES ${PROJECT_SOURCE_DIR}/gui/resources/AbracaDABra.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications/ RENAME ${TARGET}.desktop)
+        INSTALL (FILES ${PROJECT_SOURCE_DIR}/gui/resources/appIcon-linux-512x512.png DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/512x512/apps/ RENAME ${TARGET}.png)
      endif()
 endif()
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/dabsdr/CMakeLists.txt")

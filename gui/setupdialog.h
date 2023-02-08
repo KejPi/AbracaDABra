@@ -126,7 +126,7 @@ protected:
 private:
     enum SetupDialogTabs { Device = 0, Announcement = 1, Other = 2 };
     enum SetupDialogXmlHeader { XMLDate = 0, XMLRecorder, XMLDevice,
-                                XMLSampleRate, XMLFreq, XMLLenght, XMLFormat,
+                                XMLSampleRate, XMLFreq, XMLLength, XMLFormat,
                                 XMLNumLabels};
 
     Ui::SetupDialog *ui;

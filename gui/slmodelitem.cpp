@@ -87,7 +87,7 @@ QVariant SLModelItem::data(int column, int role) const
                 ServiceListConstIterator it = m_slPtr->findService(m_id);
                 if (m_slPtr->serviceListEnd() != it)
                 {  // found
-                    QString tooltip = QString("<b>Short label:</b> %1<br><b>SId:</b> 0x%2").arg(it.value()->shortLabel(),
+                    QString tooltip = QString("<b>"+QObject::tr("Short label:")+"</b> %1<br><b>SId:</b> 0x%2").arg(it.value()->shortLabel(),
                                           QString("%1").arg(it.value()->SId().countryServiceRef(), 4, 16, QChar('0')).toUpper() );
                     return QVariant(tooltip);
 
@@ -98,7 +98,7 @@ QVariant SLModelItem::data(int column, int role) const
                 EnsembleListConstIterator it = m_slPtr->findEnsemble(m_id);
                 if (m_slPtr->ensembleListEnd() != it)
                 {  // found
-                    return QVariant(QString("Channel %1<br>Frequency: %2 MHz")
+                    return QVariant(QString(QObject::tr("Channel %1<br>Frequency: %2 MHz"))
                                         .arg(DabTables::channelList.value(it.value()->frequency()))
                                         .arg(it.value()->frequency()/1000.0, 3, 'f', 3, QChar('0')));
                 }

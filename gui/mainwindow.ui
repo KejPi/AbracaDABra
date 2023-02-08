@@ -17,7 +17,10 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string notr="true">MainWindow</string>
+  </property>
+  <property name="toolTip">
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -40,14 +43,14 @@
            </font>
           </property>
           <property name="text">
-           <string>Service Name</string>
+           <string notr="true">Service Name</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="ClickableLabel" name="announcementLabel">
           <property name="text">
-           <string>AN</string>
+           <string notr="true">AN</string>
           </property>
          </widget>
         </item>
@@ -67,7 +70,7 @@
         <item>
          <widget class="ClickableLabel" name="catSlsLabel">
           <property name="text">
-           <string>SLS</string>
+           <string notr="true">SLS</string>
           </property>
          </widget>
         </item>
@@ -80,7 +83,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>TX</string>
+           <string notr="true">TX</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -101,7 +104,7 @@
            </font>
           </property>
           <property name="text">
-           <string>☆</string>
+           <string notr="true">☆</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -113,7 +116,7 @@
       <item>
        <widget class="QLabel" name="programTypeLabel">
         <property name="text">
-         <string>Program Type</string>
+         <string notr="true">Program Type</string>
         </property>
        </widget>
       </item>
@@ -140,14 +143,14 @@
          </font>
         </property>
         <property name="text">
-         <string>Ensemble Name</string>
+         <string notr="true">Ensemble Name</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="ensembleInfoLabel">
         <property name="text">
-         <string>Ensemble information</string>
+         <string notr="true">Ensemble information</string>
         </property>
        </widget>
       </item>
@@ -187,7 +190,7 @@
        <item>
         <widget class="QLabel" name="audioBitrateLabel">
          <property name="text">
-          <string>XXX kbps</string>
+          <string notr="true">XXX kbps</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -197,7 +200,7 @@
        <item>
         <widget class="QLabel" name="stereoLabel">
          <property name="text">
-          <string>STEREO</string>
+          <string notr="true">STEREO</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -207,7 +210,7 @@
        <item>
         <widget class="QLabel" name="audioEncodingLabel">
          <property name="text">
-          <string>HE-AAC v2</string>
+          <string notr="true">HE-AAC v2</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -217,7 +220,7 @@
        <item>
         <widget class="QLabel" name="protectionLabel">
          <property name="text">
-          <string>EEP 4-B</string>
+          <string notr="true">EEP 4-B</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -531,7 +534,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
                </size>
               </property>
               <property name="text">
-               <string>DL Announcement</string>
+               <string notr="true">DL Announcement</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
