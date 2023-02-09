@@ -638,7 +638,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="133"/>
         <source>DAB time</source>
-        <translation>DAB čas</translation>
+        <translation>Čas z DAB vysílání</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="136"/>
@@ -859,12 +859,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="1268"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to suspend this announcement</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Probíhá hlášení&lt;br&gt;Na stanici: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknutím přerušíte toho hlášení</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Probíhá hlášení&lt;br&gt;Na stanici: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknutím pozastavíte toho hlášení</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1283"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Suspended announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to resume this announcement</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Přerušené hlášení&lt;br&gt;Na stanici: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknutím obnovíte toto hlášení</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Pozastavené hlášení&lt;br&gt;Na stanici: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknutím obnovíte toto hlášení</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1324"/>
@@ -3141,13 +3141,13 @@
         <location filename="../setupdialog.ui" line="400"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="780"/>
         <source>Play file in the loop</source>
-        <translation>Přehrávat soubor ve smyčce</translation>
+        <translation>Po skončení souboru opakovat od začátku</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="403"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="782"/>
         <source>Loop file</source>
-        <translation>Smyčka</translation>
+        <translation>Opakování</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="410"/>
