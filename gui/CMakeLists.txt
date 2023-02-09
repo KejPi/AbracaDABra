@@ -204,6 +204,8 @@ target_link_libraries(${TARGET} PRIVATE
 
 set(TSFILES
     l10n/${TARGET}_cs.ts
+    l10n/${TARGET}_de.ts
+    l10n/${TARGET}_pl.ts
 )
 qt_add_translations(${TARGET} TS_FILES ${TSFILES}
     LUPDATE_OPTIONS "-noobsolete"
