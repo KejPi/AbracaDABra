@@ -30,8 +30,6 @@
 #include "mainwindow.h"
 #include "config.h"
 
-using namespace Qt::StringLiterals;
-
 int main(int argc, char *argv[])
 {
 
@@ -60,8 +58,9 @@ int main(int argc, char *argv[])
     // Set icon
     a.setWindowIcon(QIcon(":/resources/appIcon-linux.png"));
 #endif
+
     QTranslator translator;
-    if (translator.load(QLocale::system(), u"AbracaDABra"_s, u"_"_s, u":/i18n"_s))
+    if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n")))
     {
         a.installTranslator(&translator);
     }
