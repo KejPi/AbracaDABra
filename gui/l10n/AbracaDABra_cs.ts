@@ -890,12 +890,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../main.cpp" line="45"/>
+        <location filename="../main.cpp" line="43"/>
         <source>Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)</source>
         <translation>Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="51"/>
+        <location filename="../main.cpp" line="49"/>
         <source>Optional INI file. If not specified AbracaDABra.ini in system directory will be used.</source>
         <translation>Volitelný INI soubor. Pokud není vybraný, AbracaDABra.použije výchozí ini soubor.</translation>
     </message>
@@ -2999,7 +2999,6 @@
         <translation>Nastavení</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="42"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="836"/>
         <source>Tab 1</source>
         <translation></translation>
@@ -3272,13 +3271,11 @@
         <translation>Žádné zařízení není připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="836"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="837"/>
         <source>Tab 2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="841"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="849"/>
         <source>Strana</source>
         <translation></translation>
@@ -3290,9 +3287,6 @@
         <translation>Styl aplikace</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="853"/>
-        <location filename="../setupdialog.ui" line="860"/>
-        <location filename="../setupdialog.ui" line="867"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="839"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="840"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="841"/>

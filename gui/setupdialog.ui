@@ -35,11 +35,11 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
-       <string>Tab 1</string>
+       <string notr="true">Tab 1</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
@@ -833,12 +833,12 @@
      </widget>
      <widget class="QWidget" name="tabAnnouncement">
       <attribute name="title">
-       <string>Tab 2</string>
+       <string notr="true">Tab 2</string>
       </attribute>
      </widget>
      <widget class="QWidget" name="tabOthers">
       <attribute name="title">
-       <string>Strana</string>
+       <string notr="true">Tab 3</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_6">
        <item>
@@ -850,21 +850,21 @@
           <item>
            <widget class="QRadioButton" name="defaultRadioButton">
             <property name="text">
-             <string>RadioButton</string>
+             <string notr="true">RadioButton</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QRadioButton" name="lightRadioButton">
             <property name="text">
-             <string>RadioButton</string>
+             <string notr="true">RadioButton</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QRadioButton" name="darkRadioButton">
             <property name="text">
-             <string>RadioButton</string>
+             <string notr="true">RadioButton</string>
             </property>
            </widget>
           </item>
