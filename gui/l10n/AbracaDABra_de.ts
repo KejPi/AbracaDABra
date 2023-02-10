@@ -7,7 +7,7 @@
         <location filename="../aboutdialog.ui" line="14"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_aboutdialog.h" line="120"/>
         <source>About AbracaDABra</source>
-        <translation type="unfinished"></translation>
+        <translation>Über AbracaDABra</translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="27"/>
@@ -31,49 +31,49 @@
         <location filename="../aboutdialog.ui" line="48"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_aboutdialog.h" line="124"/>
         <source>DAB SDR version 1.2.3</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">DAB SDR Vers</translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="55"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_aboutdialog.h" line="125"/>
         <source>Developed by Petr Kopecký (xkejpi@gmail.com)</source>
-        <translation type="unfinished"></translation>
+        <translation>Entwickelt von Petr Kopecký (xkejpi@gmail.com)</translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="103"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_aboutdialog.h" line="127"/>
         <source>AbracaDABra uses following libraries:</source>
-        <translation type="unfinished"></translation>
+        <translation>AbracaDABra verwendet folgende Bibliotheken:</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="39"/>
         <source>Developed by</source>
-        <translation type="unfinished"></translation>
+        <translation>Entwickelt von</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="47"/>
         <source>Version %1+, revision %2 (%3)</source>
-        <translation type="unfinished"></translation>
+        <translation>Version %1+, Revision %2 (%3)</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="50"/>
         <source>Based on Qt %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Basiert auf Qt %1</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="51"/>
         <source>DAB SDR version %1.%2.%3</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB SDR Version %1.%2.%3</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="53"/>
         <source>AbracaDABra &amp; DAB SDR library use following libraries (special thanks to):</source>
-        <translation type="unfinished"></translation>
+        <translation>AbracaDABra &amp; DAB SDR Bibliothek verwenden folgende Bibliotheken (spezieller Dank an):</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="75"/>
         <source>AbracaDABra uses some artwork created by</source>
-        <translation type="unfinished"></translation>
+        <translation>AbracaDABra verwendet einige Grafiken erstellt von</translation>
     </message>
 </context>
 <context>
@@ -82,14 +82,14 @@
         <location filename="../bandscandialog.ui" line="17"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="129"/>
         <source>Band scan</source>
-        <translation type="unfinished"></translation>
+        <translation>Suchlauf</translation>
     </message>
     <message>
         <location filename="../bandscandialog.ui" line="27"/>
         <location filename="../bandscandialog.cpp" line="111"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="130"/>
         <source>Scanning channel:</source>
-        <translation type="unfinished"></translation>
+        <translation>Durchsuche Kanal:</translation>
     </message>
     <message>
         <location filename="../bandscandialog.ui" line="34"/>
@@ -107,7 +107,7 @@
         <location filename="../bandscandialog.ui" line="64"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="133"/>
         <source>Services found:</source>
-        <translation type="unfinished"></translation>
+        <translation>Services gefunden:</translation>
     </message>
     <message>
         <location filename="../bandscandialog.ui" line="71"/>
@@ -119,7 +119,7 @@
         <location filename="../bandscandialog.ui" line="81"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="135"/>
         <source>Ensembles found:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ensembles gefunden:</translation>
     </message>
     <message>
         <location filename="../bandscandialog.ui" line="88"/>
@@ -140,12 +140,12 @@
     <message>
         <location filename="../bandscandialog.cpp" line="62"/>
         <source>&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Warning:&lt;/b&gt; Band scan deletes current service list and all favorites!&lt;/span&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Achtung:&lt;/b&gt; Der Suchlauf löscht die aktuelle Senderliste und alle Favouriten!&lt;/span&gt;</translation>
     </message>
     <message>
         <location filename="../bandscandialog.cpp" line="116"/>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Halt</translation>
     </message>
 </context>
 <context>
@@ -154,7 +154,7 @@
         <location filename="../catslsdialog.ui" line="14"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_catslsdialog.h" line="86"/>
         <source>Categorized Slideshow</source>
-        <translation type="unfinished"></translation>
+        <translation>Kategorisierte Slideshow</translation>
     </message>
     <message>
         <location filename="../catslsdialog.ui" line="35"/>
@@ -187,7 +187,7 @@
         <location filename="../ensembleinfodialog.ui" line="38"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="504"/>
         <source>Frequency:</source>
-        <translation type="unfinished"></translation>
+        <translation>Frequenz:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="45"/>
@@ -199,7 +199,7 @@
         <location filename="../ensembleinfodialog.ui" line="64"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="506"/>
         <source>Channel:</source>
-        <translation type="unfinished"></translation>
+        <translation>Kanal:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="71"/>
@@ -211,7 +211,7 @@
         <location filename="../ensembleinfodialog.ui" line="90"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="508"/>
         <source>SNR:</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="97"/>
@@ -223,7 +223,7 @@
         <location filename="../ensembleinfodialog.ui" line="116"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="510"/>
         <source>Frequency offset:</source>
-        <translation type="unfinished"></translation>
+        <translation>Frequenzoffset:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="123"/>
@@ -235,7 +235,7 @@
         <location filename="../ensembleinfodialog.ui" line="142"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="512"/>
         <source>AGC gain:</source>
-        <translation type="unfinished"></translation>
+        <translation>AGC Verstärkung:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="149"/>
@@ -307,7 +307,7 @@
         <location filename="../ensembleinfodialog.ui" line="310"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="524"/>
         <source>Number of CU:</source>
-        <translation type="unfinished"></translation>
+        <translation>Anzahl an CUs:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="317"/>
@@ -319,7 +319,7 @@
         <location filename="../ensembleinfodialog.ui" line="348"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="526"/>
         <source>FIB counter:</source>
-        <translation type="unfinished"></translation>
+        <translation>FIB-Zähler:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="355"/>
@@ -337,13 +337,13 @@
         <location filename="../ensembleinfodialog.ui" line="374"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="528"/>
         <source>FIB CRC errors:</source>
-        <translation type="unfinished"></translation>
+        <translation>FIB CRC Fehler:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="400"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="530"/>
         <source>FIB error rate:</source>
-        <translation type="unfinished"></translation>
+        <translation>FIB Fehlerrate:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="407"/>
@@ -357,25 +357,25 @@
         <location filename="../ensembleinfodialog.ui" line="426"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="532"/>
         <source>AU counter:</source>
-        <translation type="unfinished"></translation>
+        <translation>AU-Zähler:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="452"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="534"/>
         <source>AU CRC errors:</source>
-        <translation type="unfinished"></translation>
+        <translation>AU CRC Fehler:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="478"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="536"/>
         <source>AU error rate:</source>
-        <translation type="unfinished"></translation>
+        <translation>AU FehlerRate:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="543"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="538"/>
         <source>Length:</source>
-        <translation type="unfinished"></translation>
+        <translation>Länge:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="556"/>
@@ -387,7 +387,7 @@
         <location filename="../ensembleinfodialog.ui" line="585"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="540"/>
         <source>File size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Dateigröße:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="598"/>
@@ -400,124 +400,124 @@
         <location filename="../ensembleinfodialog.cpp" line="188"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="542"/>
         <source>Record raw data</source>
-        <translation type="unfinished"></translation>
+        <translation>Rohdaten speichern</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="63"/>
         <location filename="../ensembleinfodialog.cpp" line="64"/>
         <source>Tuned frequency</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gewählte Frequenz</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="65"/>
         <location filename="../ensembleinfodialog.cpp" line="66"/>
         <source>Tuned DAB channel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gewählter DAB-Kanal</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="67"/>
         <location filename="../ensembleinfodialog.cpp" line="68"/>
         <source>Estimated frequency offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Geschätzter Frequenzoffset</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="69"/>
         <location filename="../ensembleinfodialog.cpp" line="70"/>
         <source>Estimated SNR</source>
-        <translation type="unfinished"></translation>
+        <translation>Geschätzes SNR</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="71"/>
         <location filename="../ensembleinfodialog.cpp" line="72"/>
         <source>Current AGC gain&lt;br&gt;(only in software mode)</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuelle AGC Verstärkung&lt;br&gt;(nur im Softwaremodus)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="74"/>
         <location filename="../ensembleinfodialog.cpp" line="75"/>
         <source>Current service name</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktueller Servicename</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="76"/>
         <location filename="../ensembleinfodialog.cpp" line="77"/>
         <source>Current Service Identifier</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuelle Servicekennung</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="78"/>
         <location filename="../ensembleinfodialog.cpp" line="79"/>
         <source>Service Component Identifier within the Service</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Servicekomponentenkennung innerhalb des Services</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="80"/>
         <location filename="../ensembleinfodialog.cpp" line="81"/>
         <source>Number of capacity units used by sub-channel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Anzahl der Kapazitätseinheiten des Subkanals</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="82"/>
         <location filename="../ensembleinfodialog.cpp" line="83"/>
         <source>First capacity unit used by sub-channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Vom Subkanal verwendete erste Kapazitätseinheit</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="84"/>
         <location filename="../ensembleinfodialog.cpp" line="85"/>
         <source>Sub-channel Identifier</source>
-        <translation type="unfinished"></translation>
+        <translation>Subkanal-Kennung</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="87"/>
         <location filename="../ensembleinfodialog.cpp" line="88"/>
         <source>Total number of FIB&apos;s</source>
-        <translation type="unfinished"></translation>
+        <translation>Gesamtanzahl der FIBs</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="89"/>
         <location filename="../ensembleinfodialog.cpp" line="90"/>
         <source>Number of FIB&apos;s with CRC error</source>
-        <translation type="unfinished"></translation>
+        <translation>Anzahl der FIBs mit CRC-Fehler</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="91"/>
         <location filename="../ensembleinfodialog.cpp" line="92"/>
         <source>FIB error rate</source>
-        <translation type="unfinished"></translation>
+        <translation>FIB Fehlerrate</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="93"/>
         <location filename="../ensembleinfodialog.cpp" line="94"/>
         <source>Total number of audio frames (AU for DAB+)</source>
-        <translation type="unfinished"></translation>
+        <translation>Gesamtanzahl an Audioframes (AU bei DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="95"/>
         <location filename="../ensembleinfodialog.cpp" line="96"/>
         <source>Total number of audio frames with CRC error (AU for DAB+)</source>
-        <translation type="unfinished"></translation>
+        <translation>Gesamtanzahl an Audioframes mit CRC-Fehler (AU bei DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="97"/>
         <location filename="../ensembleinfodialog.cpp" line="98"/>
         <source>Audio frame (AU for DAB+) error rate</source>
-        <translation type="unfinished"></translation>
+        <translation>Audioframe-Fehlerrate (AU bei DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="100"/>
         <source>Record raw IQ stream to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Speichere IQ-Rohdatenstrom in Datei</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="127"/>
         <source>Ensemble information</source>
-        <translation type="unfinished"></translation>
+        <translation>Ensembleinformation</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="184"/>
         <source>Stop recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Aufnahme beenden</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="200"/>
@@ -536,12 +536,12 @@
     <message>
         <location filename="../ensembleinfodialog.cpp" line="312"/>
         <source>Reset FIB statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>FIB-Statistik zurücksetzen</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="313"/>
         <source>Reset MSC statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>MSC-Statistik zurücksetzen</translation>
     </message>
 </context>
 <context>
@@ -549,22 +549,22 @@
     <message>
         <location filename="../inputdevicerecorder.cpp" line="84"/>
         <source>Record IQ stream (Raw File XML Header)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Speichere IQ-Rohdatenstrom (XML Header)</translation>
     </message>
     <message>
         <location filename="../inputdevicerecorder.cpp" line="86"/>
         <source>Binary XML files</source>
-        <translation type="unfinished"></translation>
+        <translation>Binäre XML Dateien</translation>
     </message>
     <message>
         <location filename="../inputdevicerecorder.cpp" line="95"/>
         <source>Record IQ stream</source>
-        <translation type="unfinished"></translation>
+        <translation>Speichere IQ-Rohdatenstrom</translation>
     </message>
     <message>
         <location filename="../inputdevicerecorder.cpp" line="97"/>
         <source>Binary files</source>
-        <translation type="unfinished"></translation>
+        <translation>Binärdateien</translation>
     </message>
 </context>
 <context>
@@ -573,7 +573,7 @@
         <location filename="../mainwindow.ui" line="258"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_mainwindow.h" line="512"/>
         <source>Current frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuelle Frequenz</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="261"/>
@@ -590,12 +590,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="68"/>
         <source>No signal</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Signal</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="68"/>
         <source>Signal found</source>
-        <translation type="unfinished"></translation>
+        <translation>Signal gefunden</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="68"/>
@@ -605,103 +605,103 @@
     <message>
         <location filename="../mainwindow.cpp" line="69"/>
         <source>DAB signal not detected&lt;br&gt;Looking for signal...</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB signal nicht erkannt&lt;br&gt;Suche nach Signal...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="70"/>
         <source>Found DAB signal,&lt;br&gt;trying to synchronize...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">DAB Signal gefunden,&lt;br&gt;versuche zu synchronisieren...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="71"/>
         <source>Synchronized to DAB signal</source>
-        <translation type="unfinished"></translation>
+        <translation>Synchronisiert auf DAB-Signal</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="110"/>
         <source>Add service to favorites</source>
-        <translation type="unfinished"></translation>
+        <translation>Service zu Favoriten hinzufügen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="111"/>
         <source>Remove service from favorites</source>
-        <translation type="unfinished"></translation>
+        <translation>Service zu Favoriten entfernen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="133"/>
         <source>DAB time</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB-Zeit</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="136"/>
         <source>DAB signal quality</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB-Signalqualität</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="151"/>
         <location filename="../mainwindow.cpp" line="157"/>
         <source>DAB signal SNR</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB-Signal-SNR</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="171"/>
         <source>Settings...</source>
-        <translation type="unfinished"></translation>
+        <translation>Einstellungen...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="174"/>
         <source>Clear service list</source>
-        <translation type="unfinished"></translation>
+        <translation>Serviceliste leeren</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="177"/>
         <source>Band scan...</source>
-        <translation type="unfinished"></translation>
+        <translation>Suchlauf...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="180"/>
         <source>Ensemble information</source>
-        <translation type="unfinished"></translation>
+        <translation>Ensembleinformationen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="183"/>
         <source>About</source>
-        <translation type="unfinished"></translation>
+        <translation>Über</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="198"/>
         <source>Open menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Menü öffnen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="203"/>
         <source>Mute audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio stummschalten</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="204"/>
         <source>Unmute audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Stummschaltung aufheben</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="211"/>
         <source>Audio volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Audiolautstärke</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="296"/>
         <source>Audio coding</source>
-        <translation type="unfinished"></translation>
+        <translation>Audiokodierung</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="304"/>
         <source>Ongoing announcement</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuelle Durchsage</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="308"/>
         <source>Browse categorized slides</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kategorisierte Bilder durchblättern</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="311"/>
@@ -711,24 +711,24 @@
     <message>
         <location filename="../mainwindow.cpp" line="614"/>
         <source>&lt;b&gt;Ensemble:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %5</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;b&gt;Ensemble:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Kurzbezeichnung:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Land:&lt;/b&gt; %5</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="791"/>
         <source>&lt;b&gt;DAB audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;b&gt;DAB Audioformat&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="791"/>
         <source>MPEG-1 layer 2</source>
-        <translation type="unfinished"></translation>
+        <translation>MPEG-1 Layer 2</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="795"/>
         <location filename="../mainwindow.cpp" line="799"/>
         <location filename="../mainwindow.cpp" line="803"/>
         <source>&lt;b&gt;DAB+ audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;DAB+ Audioformat&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="795"/>
@@ -748,44 +748,44 @@
     <message>
         <location filename="../mainwindow.cpp" line="812"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Sample rate: %2 kHz</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Audiosignal&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Abtastrate: %2 kHz</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="819"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Sample rate: %2 kHz (SBR %3)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;b&gt;Audiosignal&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Abtastrate: %2 kHz (SBR %3)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="820"/>
         <location filename="../mainwindow.cpp" line="822"/>
         <source>on</source>
-        <translation type="unfinished"></translation>
+        <translation>ein</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="820"/>
         <location filename="../mainwindow.cpp" line="822"/>
         <source>off</source>
-        <translation type="unfinished"></translation>
+        <translation>aus</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="831"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Audiosignal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Abtastrate: %1 kHz</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="837"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz (SBR: %2)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Audiosignal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Abtastrate: %1 kHz (SBR: %2)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="857"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1 (dynamic)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Programmtyp&lt;/b&gt;&lt;br&gt;%1 (dynamisch)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="866"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Programmtyp&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="887"/>
@@ -795,37 +795,37 @@
     <message>
         <location filename="../mainwindow.cpp" line="989"/>
         <source>End of file</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Datei zu Ende</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="992"/>
         <source>Input device disconnected</source>
-        <translation type="unfinished"></translation>
+        <translation>Eingabegerät abgesteckt</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="998"/>
         <source>No input data</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Keine Daten empfangen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1124"/>
         <source>&lt;b&gt;Ensemble %1/%2&lt;/b&gt;&lt;br&gt;Click for switching to:&lt;br&gt;&lt;i&gt;%3&lt;/i&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Ensemble %1/%2&lt;/b&gt;&lt;br&gt;Klick um zu wechseln auf:&lt;br&gt;&lt;i&gt;%3&lt;/i&gt;</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1133"/>
         <source>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Language:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %6</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Kurzbezeichnung:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Sprache:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Land:&lt;/b&gt; %6</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1178"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Coderate: %2/%3&lt;br&gt;Capacity units: %4 CU</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;B&gt;Fehlerschutz&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Coderate: %2/%3&lt;br&gt;Kapazitätseinheiten: %4 CU</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1189"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Protection level: %2&lt;br&gt;Capacity units: %3 CU</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;B&gt;Fehlerschutz&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Fehlerschutzklasse: %2&lt;br&gt;Kapazitätseinheiten: %3 CU</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1199"/>
@@ -835,52 +835,52 @@
     <message>
         <location filename="../mainwindow.cpp" line="1201"/>
         <source>&lt;b&gt;Service bitrate&lt;/b&gt;&lt;br&gt;Audio &amp; data: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Servicebitrate&lt;/b&gt;&lt;br&gt;Audio &amp; Daten: %1</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1223"/>
         <source>Service currently unavailable</source>
-        <translation type="unfinished"></translation>
+        <translation>Service derzeit nicht verfügbar</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1224"/>
         <source>Service was removed from ensemble</source>
-        <translation type="unfinished"></translation>
+        <translation>Service wurde aus Ensemble entfernt</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1257"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;on current service</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Laufende Durchsage&lt;br&gt;auf aktuellem Kanal</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1268"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to suspend this announcement</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Laufende Durchsage&lt;br&gt;Quellservice: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Klicken um Durchsage zu unterbrechen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1283"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Suspended announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to resume this announcement</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Unterbrochene Durchsage&lt;br&gt;Quellservice: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Klicken um Durchsage fortzuführen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1324"/>
         <source>No ensemble</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Ensemble</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1325"/>
         <source>No ensemble tuned</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kein Ensembel abgestimmt</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1332"/>
         <source>No service</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Service</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1336"/>
         <source>No service playing</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Service wiedergegeben</translation>
     </message>
 </context>
 <context>
@@ -893,17 +893,17 @@
     <message>
         <location filename="../main.cpp" line="51"/>
         <source>Optional INI file. If not specified AbracaDABra.ini in system directory will be used.</source>
-        <translation type="unfinished"></translation>
+        <translation>Optionale INI-Datei. Falls nicht spezifiziert, wird AbracaDABra.ini im Systemverzeichnis verwendet.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2616"/>
         <source>Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Titel</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2617"/>
         <source>Album</source>
-        <translation type="unfinished"></translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2618"/>
@@ -913,7 +913,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="2619"/>
         <source>Artist</source>
-        <translation type="unfinished"></translation>
+        <translation>Interpret</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2620"/>
@@ -933,7 +933,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="2623"/>
         <source>Composer</source>
-        <translation type="unfinished"></translation>
+        <translation>Komponist</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2624"/>
@@ -1329,7 +1329,7 @@
     <message>
         <location filename="../dabtables.cpp" line="212"/>
         <source>Croatian</source>
-        <translation type="unfinished"></translation>
+        <translation>Kroatisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="213"/>
@@ -1339,27 +1339,27 @@
     <message>
         <location filename="../dabtables.cpp" line="214"/>
         <source>Czech</source>
-        <translation type="unfinished"></translation>
+        <translation>Tschechisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="215"/>
         <source>Danish</source>
-        <translation type="unfinished"></translation>
+        <translation>Dänisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="216"/>
         <source>German</source>
-        <translation type="unfinished"></translation>
+        <translation>Deutsch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="217"/>
         <source>English</source>
-        <translation type="unfinished"></translation>
+        <translation>Englisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="218"/>
         <source>Spanish</source>
-        <translation type="unfinished"></translation>
+        <translation>Spanisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="219"/>
@@ -1384,7 +1384,7 @@
     <message>
         <location filename="../dabtables.cpp" line="223"/>
         <source>French</source>
-        <translation type="unfinished"></translation>
+        <translation>Französisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="224"/>
@@ -1414,7 +1414,7 @@
     <message>
         <location filename="../dabtables.cpp" line="229"/>
         <source>Italian</source>
-        <translation type="unfinished"></translation>
+        <translation>Italienisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="230"/>
@@ -1454,12 +1454,12 @@
     <message>
         <location filename="../dabtables.cpp" line="237"/>
         <source>Dutch</source>
-        <translation type="unfinished"></translation>
+        <translation>Niederländisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="238"/>
         <source>Norwegian</source>
-        <translation type="unfinished"></translation>
+        <translation>Norwegisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="239"/>
@@ -1469,7 +1469,7 @@
     <message>
         <location filename="../dabtables.cpp" line="240"/>
         <source>Polish</source>
-        <translation type="unfinished"></translation>
+        <translation>Polnisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="241"/>
@@ -1489,17 +1489,17 @@
     <message>
         <location filename="../dabtables.cpp" line="244"/>
         <source>Serbian</source>
-        <translation type="unfinished"></translation>
+        <translation>Serbisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="245"/>
         <source>Slovak</source>
-        <translation type="unfinished"></translation>
+        <translation>Slowakisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="246"/>
         <source>Slovene</source>
-        <translation type="unfinished"></translation>
+        <translation>Slowenisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="247"/>
@@ -1509,12 +1509,12 @@
     <message>
         <location filename="../dabtables.cpp" line="248"/>
         <source>Swedish</source>
-        <translation type="unfinished"></translation>
+        <translation>Schwedisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="249"/>
         <source>Turkish</source>
-        <translation type="unfinished"></translation>
+        <translation>Türkisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="250"/>
@@ -2369,7 +2369,7 @@
     <message>
         <location filename="../dabtables.cpp" line="461"/>
         <source>Austria</source>
-        <translation type="unfinished"></translation>
+        <translation>Österreich</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="462"/>
@@ -2469,12 +2469,12 @@
     <message>
         <location filename="../dabtables.cpp" line="483"/>
         <source>Czech Republic</source>
-        <translation type="unfinished"></translation>
+        <translation>Tschechische Republik</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="484"/>
         <source>Poland</source>
-        <translation type="unfinished"></translation>
+        <translation>Polen</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="485"/>
@@ -2484,7 +2484,7 @@
     <message>
         <location filename="../dabtables.cpp" line="486"/>
         <source>Slovakia</source>
-        <translation type="unfinished"></translation>
+        <translation>Slowakei</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="487"/>
@@ -2519,17 +2519,17 @@
     <message>
         <location filename="../dabtables.cpp" line="493"/>
         <source>Serbia</source>
-        <translation type="unfinished"></translation>
+        <translation>Serbien</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="494"/>
         <source>Spain</source>
-        <translation type="unfinished"></translation>
+        <translation>Spanien</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="496"/>
         <source>Norway</source>
-        <translation type="unfinished"></translation>
+        <translation>Norwegen</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="497"/>
@@ -2544,7 +2544,7 @@
     <message>
         <location filename="../dabtables.cpp" line="499"/>
         <source>Turkey</source>
-        <translation type="unfinished"></translation>
+        <translation>Türkei</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="500"/>
@@ -2554,7 +2554,7 @@
     <message>
         <location filename="../dabtables.cpp" line="501"/>
         <source>Netherlands</source>
-        <translation type="unfinished"></translation>
+        <translation>Niederlande</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="502"/>
@@ -2574,7 +2574,7 @@
     <message>
         <location filename="../dabtables.cpp" line="505"/>
         <source>Croatia</source>
-        <translation type="unfinished"></translation>
+        <translation>Kroatien</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="506"/>
@@ -2584,7 +2584,7 @@
     <message>
         <location filename="../dabtables.cpp" line="507"/>
         <source>Sweden</source>
-        <translation type="unfinished"></translation>
+        <translation>Schweden</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="508"/>
@@ -2599,12 +2599,12 @@
     <message>
         <location filename="../dabtables.cpp" line="510"/>
         <source>Estonia</source>
-        <translation type="unfinished"></translation>
+        <translation>Estland</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="511"/>
         <source>Macedonia</source>
-        <translation type="unfinished"></translation>
+        <translation>Mazedonien</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="512"/>
@@ -2624,7 +2624,7 @@
     <message>
         <location filename="../dabtables.cpp" line="517"/>
         <source>Slovenia</source>
-        <translation type="unfinished"></translation>
+        <translation>Slowenien</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="518"/>
@@ -2959,17 +2959,17 @@
     <message>
         <location filename="../slmodelitem.cpp" line="90"/>
         <source>Short label:</source>
-        <translation type="unfinished"></translation>
+        <translation>Kurzbezeichnung:</translation>
     </message>
     <message>
         <location filename="../slmodelitem.cpp" line="101"/>
         <source>Channel %1&lt;br&gt;Frequency: %2 MHz</source>
-        <translation type="unfinished"></translation>
+        <translation>Kanal %1&lt;br&gt;Frequenz: %2 MHz</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="36"/>
         <source>No file selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine Datei ausgewählt</translation>
     </message>
 </context>
 <context>
@@ -2977,12 +2977,12 @@
     <message>
         <location filename="../slsview.cpp" line="144"/>
         <source>Ongoing announcement:</source>
-        <translation type="unfinished"></translation>
+        <translation>Laufende Durchsage:</translation>
     </message>
     <message>
         <location filename="../slsview.cpp" line="257"/>
         <source>&lt;b&gt;Category:&lt;/b&gt; %1</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Kategorie:&lt;/b&gt; %1</translation>
     </message>
 </context>
 <context>
@@ -2991,25 +2991,25 @@
         <location filename="../setupdialog.ui" line="20"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="742"/>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Einstellungen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="42"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="836"/>
         <source>Tab 1</source>
-        <translation type="unfinished"></translation>
+        <translation>Tab 1</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="52"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="743"/>
         <source>Input device:</source>
-        <translation type="unfinished"></translation>
+        <translation>Eingangsgerät:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="77"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="744"/>
         <source>Connect</source>
-        <translation type="unfinished"></translation>
+        <translation>Verbinden</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="105"/>
@@ -3021,7 +3021,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="784"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="822"/>
         <source>Gain control</source>
-        <translation type="unfinished"></translation>
+        <translation>Verstärkungseinstellung</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="111"/>
@@ -3031,7 +3031,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="766"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="824"/>
         <source>Gain controlled by software (SW AGC)</source>
-        <translation type="unfinished"></translation>
+        <translation>Softwarekontrollierte Verstärkung (SW AGC)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="114"/>
@@ -3043,7 +3043,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="788"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="826"/>
         <source>Software</source>
-        <translation type="unfinished"></translation>
+        <translation>Software</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="121"/>
@@ -3053,7 +3053,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="770"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="828"/>
         <source>Gain controlled internally by device (HW AGC)</source>
-        <translation type="unfinished"></translation>
+        <translation>Verstärkung intern vom Gerät kontrolliert (HW AGC)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="124"/>
@@ -3064,7 +3064,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="772"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="830"/>
         <source>Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Gerät</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="131"/>
@@ -3074,7 +3074,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="774"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="832"/>
         <source>Manual gain control</source>
-        <translation type="unfinished"></translation>
+        <translation>Manuelle Verstärkungseinstellung</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="134"/>
@@ -3086,7 +3086,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="800"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="834"/>
         <source>Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>Manuell</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="159"/>
@@ -3096,7 +3096,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="760"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="818"/>
         <source>Gain</source>
-        <translation type="unfinished"></translation>
+        <translation>Verstärkung</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="179"/>
@@ -3118,43 +3118,43 @@
         <location filename="../setupdialog.ui" line="283"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="763"/>
         <source>IP Address:</source>
-        <translation type="unfinished"></translation>
+        <translation>IP Adresse:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="342"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="777"/>
         <source>Port:</source>
-        <translation type="unfinished"></translation>
+        <translation>Port:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="390"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="778"/>
         <source>Open File...</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei öffnen...</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="400"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="780"/>
         <source>Play file in the loop</source>
-        <translation type="unfinished"></translation>
+        <translation>Spiele Datei in Schleife ab</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="403"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="782"/>
         <source>Loop file</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei wiederholen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="410"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="783"/>
         <source>Filename</source>
-        <translation type="unfinished"></translation>
+        <translation>Dateiname</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="452"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="786"/>
         <source>Gain controlled by software using sensitivity gain (SW AGC)</source>
-        <translation type="unfinished"></translation>
+        <translation>Softwarekontrollierte Verstärkung mit Empfindlichkeit (SW AGC)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="462"/>
@@ -3166,25 +3166,25 @@
         <location filename="../setupdialog.ui" line="465"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="792"/>
         <source>Hybrid</source>
-        <translation type="unfinished"></translation>
+        <translation>Hybrid</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="472"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="794"/>
         <source>Manual control of sensitivity gain</source>
-        <translation type="unfinished"></translation>
+        <translation>Manuelle Einstellung der Empfindlichkeit</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="475"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="796"/>
         <source>Sensitivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Empfindlichkeit</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="482"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="798"/>
         <source>Free manual control of all gains</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Freie manuelle Einstellung aller Verstärkungen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="504"/>
@@ -3202,7 +3202,7 @@
         <location filename="../setupdialog.ui" line="514"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="802"/>
         <source>Sensitivity gain</source>
-        <translation type="unfinished"></translation>
+        <translation>Empfindlichkeit</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="521"/>
@@ -3222,55 +3222,55 @@
         <location filename="../setupdialog.ui" line="531"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="807"/>
         <source>LNA gain</source>
-        <translation type="unfinished"></translation>
+        <translation>LNA Verstärkung</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="538"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="808"/>
         <source>Mixer gain</source>
-        <translation type="unfinished"></translation>
+        <translation>Mixer Verstärkung</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="595"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="812"/>
         <source>Mixer AGC</source>
-        <translation type="unfinished"></translation>
+        <translation>Mixer AGC</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="605"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="815"/>
         <source>IF gain</source>
-        <translation type="unfinished"></translation>
+        <translation>IF Verstärkung</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="662"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="817"/>
         <source>Device arguments:</source>
-        <translation type="unfinished"></translation>
+        <translation>Gerätargumente:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="717"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="820"/>
         <source>RX channel number:</source>
-        <translation type="unfinished"></translation>
+        <translation>RX Kanalnummer:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="743"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="821"/>
         <source>Antenna:</source>
-        <translation type="unfinished"></translation>
+        <translation>Antenne:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="825"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="835"/>
         <source>No device connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Gerät verbunden</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="836"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="837"/>
         <source>Tab 2</source>
-        <translation type="unfinished"></translation>
+        <translation>Tab 2</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="841"/>
@@ -3304,7 +3304,7 @@
         <location filename="../setupdialog.ui" line="883"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="843"/>
         <source>Expert mode UI</source>
-        <translation type="unfinished"></translation>
+        <translation>Expertenmodus UI</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="890"/>
@@ -3316,7 +3316,7 @@
         <location filename="../setupdialog.ui" line="900"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="845"/>
         <source>Audio Decoder</source>
-        <translation type="unfinished"></translation>
+        <translation>Audiodekoder</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="906"/>
@@ -3328,18 +3328,18 @@
         <location filename="../setupdialog.ui" line="919"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="847"/>
         <source>Raw Data Recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Rohdatenaufzeichnung</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="925"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="848"/>
         <source>Include XML header</source>
-        <translation type="unfinished"></translation>
+        <translation>Inklusive XML-Header</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="46"/>
         <source>Announcements</source>
-        <translation type="unfinished"></translation>
+        <translation>Durchsagen</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="47"/>
@@ -3350,7 +3350,7 @@
         <location filename="../setupdialog.cpp" line="58"/>
         <location filename="../setupdialog.cpp" line="841"/>
         <source>Raw file</source>
-        <translation type="unfinished"></translation>
+        <translation>Rohdatei</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="64"/>
@@ -3366,62 +3366,62 @@
         <location filename="../setupdialog.cpp" line="70"/>
         <location filename="../setupdialog.cpp" line="811"/>
         <source>&lt;span style=&quot;color:red&quot;&gt;No device connected&lt;/span&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;span style=&quot;color:red&quot;&gt;Kein Gerät verbunden&lt;/span&gt;</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="96"/>
         <source>&lt;br&gt;Note: Alarm announcement cannot be disabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;br&gt;Hinweis: Alarmdurchsagen können nicht deaktiviert werden.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="98"/>
         <source>Alarm Announcements</source>
-        <translation type="unfinished"></translation>
+        <translation>Alarmdurchsagen</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="104"/>
         <source>Bring window to foreground</source>
-        <translation type="unfinished"></translation>
+        <translation>Bringe Fenster in den Vordergrund</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="105"/>
         <source>Check to bring window to foreground when (test) alarm announcement starts</source>
-        <translation type="unfinished"></translation>
+        <translation>Auswählen, um das Fenster in den Vordergrund zu bringen, wenn (Test)Alarmdurchsage startet</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="126"/>
         <source>Regular Announcements</source>
-        <translation type="unfinished"></translation>
+        <translation>Reguläre Durchsagen</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="137"/>
         <source>Recording date:</source>
-        <translation type="unfinished"></translation>
+        <translation>Aufnahmedatum:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="141"/>
         <source>Recorder:</source>
-        <translation type="unfinished"></translation>
+        <translation>Aufnahmegerät:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="145"/>
         <source>Device:</source>
-        <translation type="unfinished"></translation>
+        <translation>Gerät:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="149"/>
         <source>Sample rate [Hz]:</source>
-        <translation type="unfinished"></translation>
+        <translation>Abtastrate [Hz]:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="153"/>
         <source>Frequency [kHz]:</source>
-        <translation type="unfinished"></translation>
+        <translation>Frequenz [kHz]:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="157"/>
         <source>Recording length [sec]:</source>
-        <translation type="unfinished"></translation>
+        <translation>Aufnahmelänge [sec]:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="161"/>
@@ -3446,7 +3446,7 @@
     <message>
         <location filename="../setupdialog.cpp" line="217"/>
         <source>Set default OS style.</source>
-        <translation type="unfinished"></translation>
+        <translation>Verwende OS Style.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="218"/>
@@ -3461,22 +3461,22 @@
     <message>
         <location filename="../setupdialog.cpp" line="220"/>
         <source>User interface in expert mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Benutzerinterface im Expertenmodus</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="221"/>
         <source>Show Dynamic Label Plus (DL+) tags like artist, song name, etc.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeige Dynamic Label Plus (DL+) Informationen wie Interpret, Liedname, etc.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="222"/>
         <source>Include raw file XML header in IQ recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Verwendet XML-Header in IQ-Rohdateien</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="238"/>
         <source>Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Deaktiviert</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="239"/>
@@ -3493,37 +3493,37 @@
     <message>
         <location filename="../setupdialog.cpp" line="805"/>
         <source>RTL SDR device connected</source>
-        <translation type="unfinished"></translation>
+        <translation>RTL SDR Gerät verbunden</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="808"/>
         <source>RTL TCP device connected</source>
-        <translation type="unfinished"></translation>
+        <translation>RTL TCP Gerät verbunden</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="814"/>
         <source>Raw file connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Rohdatei verbunden</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="817"/>
         <source>Airspy device connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Airspygerät verbunden</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="820"/>
         <source>Soapy SDR device connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Soapy SDR-Gerät verbunden</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="886"/>
         <source>Open IQ stream</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffne IQ-Datenstrom</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="886"/>
         <source>Binary files</source>
-        <translation type="unfinished"></translation>
+        <translation>Binärdateien</translation>
     </message>
 </context>
 </TS>
