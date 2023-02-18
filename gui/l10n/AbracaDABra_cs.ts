@@ -86,7 +86,7 @@
     </message>
     <message>
         <location filename="../bandscandialog.ui" line="27"/>
-        <location filename="../bandscandialog.cpp" line="111"/>
+        <location filename="../bandscandialog.cpp" line="112"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="134"/>
         <source>Scanning channel:</source>
         <translation>Prohledávám kanál:</translation>
@@ -109,17 +109,18 @@
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../bandscandialog.cpp" line="55"/>
+        <location filename="../bandscandialog.cpp" line="56"/>
         <source>None</source>
         <translation>Žádný</translation>
     </message>
     <message>
-        <location filename="../bandscandialog.cpp" line="62"/>
+        <location filename="../bandscandialog.cpp" line="63"/>
         <source>&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Warning:&lt;/b&gt; Band scan deletes current service list and all favorites!&lt;/span&gt;</source>
         <translation>&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Varování:&lt;/b&gt; Vyhledávání vymaže seznam stanic a oblíbené!&lt;/span&gt;</translation>
     </message>
     <message>
-        <location filename="../bandscandialog.cpp" line="116"/>
+        <location filename="../bandscandialog.cpp" line="46"/>
+        <location filename="../bandscandialog.cpp" line="117"/>
         <source>Stop</source>
         <translation>Stop</translation>
     </message>

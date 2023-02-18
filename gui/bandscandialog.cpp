@@ -43,6 +43,7 @@ BandScanDialog::BandScanDialog(QWidget *parent, bool autoStart, Qt::WindowFlags 
     connect(m_buttonStart, &QPushButton::clicked, this, &BandScanDialog::startScan);
 
     m_buttonStop = ui->buttonBox->button(QDialogButtonBox::Cancel);
+    m_buttonStop->setText(tr("Stop"));
     m_buttonStop->setDefault(true);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &BandScanDialog::stopPressed);
 
