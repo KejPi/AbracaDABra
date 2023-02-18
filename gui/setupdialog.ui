@@ -35,7 +35,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -95,7 +95,7 @@
           <enum>QFrame::Sunken</enum>
          </property>
          <property name="currentIndex">
-          <number>4</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="rtlsdrPage">
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -176,7 +176,7 @@
                  </size>
                 </property>
                 <property name="text">
-                 <string>18 dB</string>
+                 <string notr="true">18 dB</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
@@ -244,7 +244,7 @@
                  </size>
                 </property>
                 <property name="text">
-                 <string>18 dB</string>
+                 <string notr="true">18 dB</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
@@ -263,7 +263,7 @@
               </size>
              </property>
              <property name="text">
-              <string>127.0.0.1</string>
+              <string notr="true">127.0.0.1</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -501,7 +501,7 @@
                  </size>
                 </property>
                 <property name="text">
-                 <string>0</string>
+                 <string notr="true">0</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
@@ -542,7 +542,7 @@
               <item row="4" column="2">
                <widget class="QLabel" name="airspyLNAGainLabel">
                 <property name="text">
-                 <string>0</string>
+                 <string notr="true">0</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
@@ -572,7 +572,7 @@
               <item row="0" column="2">
                <widget class="QLabel" name="airspySensitivityGainLabel">
                 <property name="text">
-                 <string>0</string>
+                 <string notr="true">0</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
@@ -619,7 +619,7 @@
               <item row="6" column="2">
                <widget class="QLabel" name="airspyIFGainLabel">
                 <property name="text">
-                 <string>0</string>
+                 <string notr="true">0</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
@@ -701,7 +701,7 @@
                  </size>
                 </property>
                 <property name="text">
-                 <string>18 dB</string>
+                 <string notr="true">18 dB</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>

@@ -80,52 +80,28 @@
     <name>BandScanDialog</name>
     <message>
         <location filename="../bandscandialog.ui" line="17"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="129"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="133"/>
         <source>Band scan</source>
         <translation>Hledání stanic</translation>
     </message>
     <message>
         <location filename="../bandscandialog.ui" line="27"/>
         <location filename="../bandscandialog.cpp" line="111"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="130"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="134"/>
         <source>Scanning channel:</source>
         <translation>Prohledávám kanál:</translation>
     </message>
     <message>
-        <location filename="../bandscandialog.ui" line="34"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="131"/>
-        <source>9A</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../bandscandialog.ui" line="43"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="132"/>
-        <source>8/40</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../bandscandialog.ui" line="64"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="133"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="135"/>
         <source>Services found:</source>
         <translation>Počet stanic:</translation>
     </message>
     <message>
-        <location filename="../bandscandialog.ui" line="71"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="134"/>
-        <source>23</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../bandscandialog.ui" line="81"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="135"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="136"/>
         <source>Ensembles found:</source>
         <translation>Počet multiplexů:</translation>
-    </message>
-    <message>
-        <location filename="../bandscandialog.ui" line="88"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="136"/>
-        <source>2</source>
-        <translation></translation>
     </message>
     <message>
         <location filename="../bandscandialog.cpp" line="42"/>
@@ -152,248 +128,132 @@
     <name>CatSLSDialog</name>
     <message>
         <location filename="../catslsdialog.ui" line="14"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_catslsdialog.h" line="86"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_catslsdialog.h" line="89"/>
         <source>Categorized Slideshow</source>
         <translation>Kategorizovaná slideshow</translation>
-    </message>
-    <message>
-        <location filename="../catslsdialog.ui" line="35"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_catslsdialog.h" line="87"/>
-        <source>&lt;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../catslsdialog.ui" line="45"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_catslsdialog.h" line="88"/>
-        <source> 1 / 8</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../catslsdialog.ui" line="55"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_catslsdialog.h" line="89"/>
-        <source>&gt;</source>
-        <translation></translation>
     </message>
 </context>
 <context>
     <name>EnsembleInfoDialog</name>
     <message>
         <location filename="../ensembleinfodialog.ui" line="14"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="503"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="522"/>
         <source>Ensemble Information</source>
         <translation>Informace o multiplexu</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="38"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="504"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="523"/>
         <source>Frequency:</source>
         <translation>Frekvence:</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.ui" line="45"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="505"/>
-        <source>227360 kHz</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../ensembleinfodialog.ui" line="64"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="506"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="524"/>
         <source>Channel:</source>
         <translation>Kanál:</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.ui" line="71"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="507"/>
-        <source>12C</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../ensembleinfodialog.ui" line="90"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="508"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="525"/>
         <source>SNR:</source>
         <translation>SNR:</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.ui" line="97"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="509"/>
-        <source>18.8 dB</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../ensembleinfodialog.ui" line="116"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="510"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="526"/>
         <source>Frequency offset:</source>
         <translation>Frekvenční odchylka:</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.ui" line="123"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="511"/>
-        <source>12345 Hz</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../ensembleinfodialog.ui" line="142"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="512"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="527"/>
         <source>AGC gain:</source>
         <translation>Zisk AGC:</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.ui" line="149"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="513"/>
-        <source>36.4 dB</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../ensembleinfodialog.ui" line="180"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="514"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="528"/>
         <source>Service:</source>
         <translation>Stanice:</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.ui" line="187"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="515"/>
-        <source>Radio 123456</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../ensembleinfodialog.ui" line="206"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="516"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="529"/>
         <source>Service ID:</source>
         <translation>Identifikátor stanice:</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.ui" line="213"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="517"/>
-        <source>0x2456</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../ensembleinfodialog.ui" line="232"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="518"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="530"/>
         <source>SCIdS:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.ui" line="239"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="519"/>
-        <source>0</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../ensembleinfodialog.ui" line="258"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="520"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="531"/>
         <source>SubChannel:</source>
         <translation>Subkanál:</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.ui" line="265"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="521"/>
-        <source>28</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../ensembleinfodialog.ui" line="284"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="522"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="532"/>
         <source>Start CU:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.ui" line="291"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="523"/>
-        <source>568</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../ensembleinfodialog.ui" line="310"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="524"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="533"/>
         <source>Number of CU:</source>
         <translation>Počet CU:</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.ui" line="317"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="525"/>
-        <source>88</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../ensembleinfodialog.ui" line="348"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="526"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="534"/>
         <source>FIB counter:</source>
         <translation>Počet FIB:</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.ui" line="355"/>
-        <location filename="../ensembleinfodialog.ui" line="381"/>
-        <location filename="../ensembleinfodialog.ui" line="433"/>
-        <location filename="../ensembleinfodialog.ui" line="459"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="527"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="529"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="533"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="535"/>
-        <source>123456789</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../ensembleinfodialog.ui" line="374"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="528"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="535"/>
         <source>FIB CRC errors:</source>
         <translation>Počet chybných FIB:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="400"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="530"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="536"/>
         <source>FIB error rate:</source>
         <translation>Chybovost FIB:</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.ui" line="407"/>
-        <location filename="../ensembleinfodialog.ui" line="485"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="531"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="537"/>
-        <source>1.123e-5</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../ensembleinfodialog.ui" line="426"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="532"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="537"/>
         <source>AU counter:</source>
         <translation>Počet AU:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="452"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="534"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="538"/>
         <source>AU CRC errors:</source>
         <translation>Počet chybných AU:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="478"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="536"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="539"/>
         <source>AU error rate:</source>
         <translation>Chybovost AU:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="543"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="538"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="540"/>
         <source>Length:</source>
         <translation>Délka:</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.ui" line="556"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="539"/>
-        <source>22.7 sec</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../ensembleinfodialog.ui" line="585"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="540"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="541"/>
         <source>File size:</source>
         <translation>Velikost souboru:</translation>
-    </message>
-    <message>
-        <location filename="../ensembleinfodialog.ui" line="598"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="541"/>
-        <source>54.8 MB</source>
-        <translation></translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="610"/>
@@ -2994,24 +2854,19 @@
     <name>SetupDialog</name>
     <message>
         <location filename="../setupdialog.ui" line="20"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="742"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="756"/>
         <source>Settings</source>
         <translation>Nastavení</translation>
     </message>
     <message>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="836"/>
-        <source>Tab 1</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../setupdialog.ui" line="52"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="743"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="757"/>
         <source>Input device:</source>
         <translation>Vstupní zařízení:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="77"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="744"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="758"/>
         <source>Connect</source>
         <translation>Připojit</translation>
     </message>
@@ -3020,10 +2875,10 @@
         <location filename="../setupdialog.ui" line="290"/>
         <location filename="../setupdialog.ui" line="446"/>
         <location filename="../setupdialog.ui" line="750"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="745"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="764"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="784"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="822"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="759"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="775"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="795"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="828"/>
         <source>Gain control</source>
         <translation>Ovládání zesílení</translation>
     </message>
@@ -3031,9 +2886,9 @@
         <location filename="../setupdialog.ui" line="111"/>
         <location filename="../setupdialog.ui" line="296"/>
         <location filename="../setupdialog.ui" line="756"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="747"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="766"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="824"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="761"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="777"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="830"/>
         <source>Gain controlled by software (SW AGC)</source>
         <translation>Zesílení je řízeno softwarem (SW AGC)</translation>
     </message>
@@ -3042,10 +2897,10 @@
         <location filename="../setupdialog.ui" line="299"/>
         <location filename="../setupdialog.ui" line="455"/>
         <location filename="../setupdialog.ui" line="759"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="749"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="768"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="788"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="826"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="763"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="779"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="799"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="832"/>
         <source>Software</source>
         <translation>Software</translation>
     </message>
@@ -3053,9 +2908,9 @@
         <location filename="../setupdialog.ui" line="121"/>
         <location filename="../setupdialog.ui" line="306"/>
         <location filename="../setupdialog.ui" line="766"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="751"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="770"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="828"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="765"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="781"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="834"/>
         <source>Gain controlled internally by device (HW AGC)</source>
         <translation>Zesílení je řízeno vstupním zařízením (HW AGC)</translation>
     </message>
@@ -3064,9 +2919,9 @@
         <location filename="../setupdialog.ui" line="309"/>
         <location filename="../setupdialog.ui" line="769"/>
         <location filename="../setupdialog.cpp" line="45"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="753"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="772"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="830"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="767"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="783"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="836"/>
         <source>Device</source>
         <translation>Zařízení</translation>
     </message>
@@ -3074,9 +2929,9 @@
         <location filename="../setupdialog.ui" line="131"/>
         <location filename="../setupdialog.ui" line="316"/>
         <location filename="../setupdialog.ui" line="776"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="755"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="774"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="832"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="769"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="785"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="838"/>
         <source>Manual gain control</source>
         <translation>Ruční ovládání zesílení</translation>
     </message>
@@ -3085,10 +2940,10 @@
         <location filename="../setupdialog.ui" line="319"/>
         <location filename="../setupdialog.ui" line="485"/>
         <location filename="../setupdialog.ui" line="779"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="757"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="776"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="800"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="834"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="771"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="787"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="811"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="840"/>
         <source>Manual</source>
         <translation>Manuálně</translation>
     </message>
@@ -3096,242 +2951,197 @@
         <location filename="../setupdialog.ui" line="159"/>
         <location filename="../setupdialog.ui" line="227"/>
         <location filename="../setupdialog.ui" line="684"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="758"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="760"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="818"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="772"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="773"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="825"/>
         <source>Gain</source>
         <translation>Zesílení</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="179"/>
-        <location filename="../setupdialog.ui" line="247"/>
-        <location filename="../setupdialog.ui" line="704"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="759"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="761"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="819"/>
-        <source>18 dB</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../setupdialog.ui" line="266"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="762"/>
-        <source>127.0.0.1</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../setupdialog.ui" line="283"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="763"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="774"/>
         <source>IP Address:</source>
         <translation>IP adresa:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="342"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="777"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="788"/>
         <source>Port:</source>
         <translation>Port:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="390"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="778"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="789"/>
         <source>Open File...</source>
         <translation>Otevřít soubor...</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="400"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="780"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="791"/>
         <source>Play file in the loop</source>
         <translation>Po skončení souboru opakovat od začátku</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="403"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="782"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="793"/>
         <source>Loop file</source>
         <translation>Opakování</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="410"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="783"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="794"/>
         <source>Filename</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="452"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="786"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="797"/>
         <source>Gain controlled by software using sensitivity gain (SW AGC)</source>
         <translation>Zesílení je řízeno softwarem pomocí tzv. zesílení citlivosti (SW AGC)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="462"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="790"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="801"/>
         <source>LNA and Mixer controlled by device (HW AGC), IF gain controlled by software (SW AGC)</source>
         <translation>Zesílení LNA a mixeru je řízeno zařízením (HW AGC), zesílení IF je řízeno softwarem (SW AGC)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="465"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="792"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="803"/>
         <source>Hybrid</source>
         <translation>Hybridní</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="472"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="794"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="805"/>
         <source>Manual control of sensitivity gain</source>
         <translation>Ruční ovládání zesílení pomocí tzv. zesílení citlivosti</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="475"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="796"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="807"/>
         <source>Sensitivity</source>
         <translation>Citlivost</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="482"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="798"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="809"/>
         <source>Free manual control of all gains</source>
         <translation>Volné ruční ovládání všech zesílení</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="504"/>
-        <location filename="../setupdialog.ui" line="545"/>
-        <location filename="../setupdialog.ui" line="575"/>
-        <location filename="../setupdialog.ui" line="622"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="801"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="809"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="810"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="816"/>
-        <source>0</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../setupdialog.ui" line="514"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="802"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="812"/>
         <source>Sensitivity gain</source>
         <translation>Zesílení citlivosti</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="521"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="804"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="814"/>
         <source>LNA AGC </source>
         <translation>LNA AGC </translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="524"/>
         <location filename="../setupdialog.ui" line="598"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="806"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="814"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="816"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="822"/>
         <source>AGC</source>
         <translation>AGC</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="531"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="807"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="817"/>
         <source>LNA gain</source>
         <translation>Zesílení LNA</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="538"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="808"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="818"/>
         <source>Mixer gain</source>
         <translation>Zesílení mixeru</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="595"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="812"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="820"/>
         <source>Mixer AGC</source>
         <translation>AGC mixeru</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="605"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="815"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="823"/>
         <source>IF gain</source>
         <translation>Zesílení IF</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="662"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="817"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="824"/>
         <source>Device arguments:</source>
         <translation>Parametry zařízení:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="717"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="820"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="826"/>
         <source>RX channel number:</source>
         <translation>Číslo RX kanálu:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="743"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="821"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="827"/>
         <source>Antenna:</source>
         <translation>Anténa:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="825"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="835"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="841"/>
         <source>No device connected</source>
         <translation>Žádné zařízení není připojeno</translation>
     </message>
     <message>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="837"/>
-        <source>Tab 2</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="849"/>
-        <source>Strana</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../setupdialog.ui" line="847"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="838"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="842"/>
         <source>Visual Style</source>
         <translation>Styl aplikace</translation>
     </message>
     <message>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="839"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="840"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="841"/>
-        <source>RadioButton</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../setupdialog.ui" line="877"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="842"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="843"/>
         <source>User Interface</source>
         <translation>Uživatelské rozhraní</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="883"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="843"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="844"/>
         <source>Expert mode UI</source>
         <translation>Pokročilé uživatelské rozhraní</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="890"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="844"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="845"/>
         <source>Dynamic Label Plus (DL+)</source>
         <translation>Dynamic Label Plus (DL+)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="900"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="845"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="846"/>
         <source>Audio Decoder</source>
         <translation>Audio dekodér</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="906"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="846"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="847"/>
         <source>Noise level during audio drop-out:</source>
         <translation>Úroveň šumu při výpadku zvuku:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="919"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="847"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="848"/>
         <source>Raw Data Recording</source>
         <translation>Záznam vstupního signálu</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="925"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="848"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="849"/>
         <source>Include XML header</source>
         <translation>Vkládat XML záhlaví</translation>
     </message>

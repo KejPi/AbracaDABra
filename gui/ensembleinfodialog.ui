@@ -42,7 +42,7 @@
           <item>
            <widget class="QLabel" name="freq">
             <property name="text">
-             <string>227360 kHz</string>
+             <string notr="true">227360 kHz</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -68,7 +68,7 @@
           <item>
            <widget class="QLabel" name="channel">
             <property name="text">
-             <string>12C</string>
+             <string notr="true">12C</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -94,7 +94,7 @@
           <item>
            <widget class="QLabel" name="snr">
             <property name="text">
-             <string>18.8 dB</string>
+             <string notr="true">18.8 dB</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -120,7 +120,7 @@
           <item>
            <widget class="QLabel" name="freqOffset">
             <property name="text">
-             <string>12345 Hz</string>
+             <string notr="true">12345 Hz</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -146,7 +146,7 @@
           <item>
            <widget class="QLabel" name="agcGain">
             <property name="text">
-             <string>36.4 dB</string>
+             <string notr="true">36.4 dB</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -184,7 +184,7 @@
           <item>
            <widget class="QLabel" name="service">
             <property name="text">
-             <string>Radio 123456</string>
+             <string notr="true">Radio 123456</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -210,7 +210,7 @@
           <item>
            <widget class="QLabel" name="serviceId">
             <property name="text">
-             <string>0x2456</string>
+             <string notr="true">0x2456</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -236,7 +236,7 @@
           <item>
            <widget class="QLabel" name="scids">
             <property name="text">
-             <string>0</string>
+             <string notr="true">0</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -262,7 +262,7 @@
           <item>
            <widget class="QLabel" name="subChannel">
             <property name="text">
-             <string>28</string>
+             <string notr="true">28</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -288,7 +288,7 @@
           <item>
            <widget class="QLabel" name="startCU">
             <property name="text">
-             <string>568</string>
+             <string notr="true">568</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -314,7 +314,7 @@
           <item>
            <widget class="QLabel" name="numCU">
             <property name="text">
-             <string>88</string>
+             <string notr="true">88</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -352,7 +352,7 @@
           <item>
            <widget class="QLabel" name="fibCount">
             <property name="text">
-             <string>123456789</string>
+             <string notr="true">123456789</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -378,7 +378,7 @@
           <item>
            <widget class="QLabel" name="fibErrCount">
             <property name="text">
-             <string>123456789</string>
+             <string notr="true">123456789</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -404,7 +404,7 @@
           <item>
            <widget class="QLabel" name="fibErrRate">
             <property name="text">
-             <string>1.123e-5</string>
+             <string notr="true">1.123e-5</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -430,7 +430,7 @@
           <item>
            <widget class="QLabel" name="crcCount">
             <property name="text">
-             <string>123456789</string>
+             <string notr="true">123456789</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -456,7 +456,7 @@
           <item>
            <widget class="QLabel" name="crcErrCount">
             <property name="text">
-             <string>123456789</string>
+             <string notr="true">123456789</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -482,7 +482,7 @@
           <item>
            <widget class="QLabel" name="crcErrRate">
             <property name="text">
-             <string>1.123e-5</string>
+             <string notr="true">1.123e-5</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -553,7 +553,7 @@
           </size>
          </property>
          <property name="text">
-          <string>22.7 sec</string>
+          <string notr="true">22.7 sec</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -595,7 +595,7 @@
           </size>
          </property>
          <property name="text">
-          <string>54.8 MB</string>
+          <string notr="true">54.8 MB</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
