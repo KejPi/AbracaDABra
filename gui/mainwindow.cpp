@@ -778,15 +778,7 @@ void MainWindow::onDLComplete(const QString & dl, QLabel * dlLabel)
 
 void MainWindow::onDabTime(const QDateTime & d)
 {
-    //m_timeLabel->setText(d.toString(QString("dddd, dd.MM.yyyy, hh:mm")));
-    if (QLocale::AnyLanguage == m_setupDialog->settings().lang)
-    {
-        m_timeLabel->setText(QLocale::system().toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
-    }
-    else
-    {
-        m_timeLabel->setText(QLocale(m_setupDialog->settings().lang).toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
-    }
+    m_timeLabel->setText(QLocale(m_setupDialog->settings().lang).toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
 }
 
 void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)

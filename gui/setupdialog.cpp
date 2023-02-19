@@ -215,7 +215,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->darkRadioButton->setText(tr("Dark style (Fusion with dark colors)"));
 
     // create combo box with language selection
-    ui->langComboBox->addItem("< " + tr("System language") + ">", QVariant(QLocale::AnyLanguage));
+    ui->langComboBox->addItem("<" + tr("System language") + ">", QVariant(QLocale::AnyLanguage));
     ui->langComboBox->addItem("English", QVariant(QLocale::English));
     ui->langComboBox->addItem(QLocale(QLocale::Czech).nativeLanguageName(), QVariant(QLocale::Czech));
     ui->langComboBox->addItem(QLocale(QLocale::German).nativeLanguageName(), QVariant(QLocale::German));
