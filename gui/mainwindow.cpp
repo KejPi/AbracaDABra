@@ -779,7 +779,14 @@ void MainWindow::onDLComplete(const QString & dl, QLabel * dlLabel)
 void MainWindow::onDabTime(const QDateTime & d)
 {
     //m_timeLabel->setText(d.toString(QString("dddd, dd.MM.yyyy, hh:mm")));
-    m_timeLabel->setText(QLocale::system().toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
+    if (QLocale::AnyLanguage == m_setupDialog->settings().lang)
+    {
+        m_timeLabel->setText(QLocale::system().toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
+    }
+    else
+    {
+        m_timeLabel->setText(QLocale(m_setupDialog->settings().lang).toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
+    }
 }
 
 void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)
@@ -1826,6 +1833,7 @@ void MainWindow::loadSettings()
 
     s.applicationStyle = static_cast<ApplicationStyle>(settings->value("style", static_cast<int>(ApplicationStyle::Default)).toInt());
     s.dlPlusEna = settings->value("dlPlus", true).toBool();
+    s.lang = QLocale::codeToLanguage(settings->value("language", QString("")).toString());
 
     s.inputDevice = static_cast<InputDeviceId>(inDevice);
     s.announcementEna = settings->value("announcementEna", 0x07FF).toUInt();
@@ -1947,6 +1955,7 @@ void MainWindow::saveSettings()
     settings->setValue("bringWindowToForegroundOnAlarm", s.bringWindowToForeground);
     settings->setValue("expertMode", s.expertModeEna);
     settings->setValue("dlPlus", s.dlPlusEna);
+    settings->setValue("language", QLocale::languageToCode(s.lang));
     settings->setValue("noiseConcealment", s.noiseConcealmentLevel);
     settings->setValue("rawFileXmlHeader", s.xmlHeaderEna);
 

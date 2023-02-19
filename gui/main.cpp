@@ -27,6 +27,7 @@
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QTranslator>
+#include <QLibraryInfo>
 #include "mainwindow.h"
 #include "config.h"
 
@@ -59,10 +60,36 @@ int main(int argc, char *argv[])
     a.setWindowIcon(QIcon(":/resources/appIcon-linux.png"));
 #endif
 
-    QTranslator translator;
-    if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n")))
+    // loading of translation
+    // use system default or user selected
+    QSettings * settings;
+    if (iniFile.isEmpty())
     {
-        a.installTranslator(&translator);
+        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::applicationName(), QCoreApplication::applicationName());
+    }
+    else
+    {
+        settings = new QSettings(iniFile, QSettings::IniFormat);
+    }
+
+    QLocale::Language lang = QLocale::codeToLanguage(settings->value("language", QString("")).toString());
+
+    delete settings;
+
+    QTranslator translator;
+    if (QLocale::AnyLanguage == lang)
+    {   // system default
+        if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n")))
+        {
+            a.installTranslator(&translator);
+        }
+    }
+    else if (QLocale::English != lang)
+    {   // user selected translation
+        if (translator.load(QString("AbracaDABra_%1").arg(QLocale::languageToCode(lang)), QLatin1String(":/i18n")))
+        {
+            a.installTranslator(&translator);
+        }
     }
 
     MainWindow w(iniFile);

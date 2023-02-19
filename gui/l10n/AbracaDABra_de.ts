@@ -579,171 +579,171 @@
         <translation>&lt;b&gt;Ensemble:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Kurzbezeichnung:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Land:&lt;/b&gt; %5</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="791"/>
+        <location filename="../mainwindow.cpp" line="798"/>
         <source>&lt;b&gt;DAB audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation>&lt;b&gt;DAB Audioformat&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="791"/>
+        <location filename="../mainwindow.cpp" line="798"/>
         <source>MPEG-1 layer 2</source>
         <translation>MPEG-1 Layer 2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="795"/>
-        <location filename="../mainwindow.cpp" line="799"/>
-        <location filename="../mainwindow.cpp" line="803"/>
+        <location filename="../mainwindow.cpp" line="802"/>
+        <location filename="../mainwindow.cpp" line="806"/>
+        <location filename="../mainwindow.cpp" line="810"/>
         <source>&lt;b&gt;DAB+ audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation>&lt;b&gt;DAB+ Audioformat&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="795"/>
+        <location filename="../mainwindow.cpp" line="802"/>
         <source>MPEG-4 Low Complexity AAC</source>
         <translation>MPEG-4 Low Complexity AAC</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="799"/>
+        <location filename="../mainwindow.cpp" line="806"/>
         <source>MPEG-4 High Efficiency AAC</source>
         <translation>MPEG-4 High Efficiency AAC</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="803"/>
+        <location filename="../mainwindow.cpp" line="810"/>
         <source>MPEG-4 High Efficiency AAC v2</source>
         <translation>MPEG-4 High Efficiency AAC v2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="812"/>
+        <location filename="../mainwindow.cpp" line="819"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Sample rate: %2 kHz</source>
         <translation>&lt;b&gt;Audiosignal&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Abtastrate: %2 kHz</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="819"/>
+        <location filename="../mainwindow.cpp" line="826"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Sample rate: %2 kHz (SBR %3)</source>
         <translation>&lt;b&gt;Audiosignal&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Abtastrate: %2 kHz (SBR %3)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="820"/>
-        <location filename="../mainwindow.cpp" line="822"/>
+        <location filename="../mainwindow.cpp" line="827"/>
+        <location filename="../mainwindow.cpp" line="829"/>
         <source>on</source>
         <translation>ein</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="820"/>
-        <location filename="../mainwindow.cpp" line="822"/>
+        <location filename="../mainwindow.cpp" line="827"/>
+        <location filename="../mainwindow.cpp" line="829"/>
         <source>off</source>
         <translation>aus</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="831"/>
+        <location filename="../mainwindow.cpp" line="838"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz</source>
         <translation>&lt;b&gt;Audiosignal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Abtastrate: %1 kHz</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="837"/>
+        <location filename="../mainwindow.cpp" line="844"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz (SBR: %2)</source>
         <translation>&lt;b&gt;Audiosignal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Abtastrate: %1 kHz (SBR: %2)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="857"/>
+        <location filename="../mainwindow.cpp" line="864"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1 (dynamic)</source>
         <translation>&lt;b&gt;Programmtyp&lt;/b&gt;&lt;br&gt;%1 (dynamisch)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="866"/>
+        <location filename="../mainwindow.cpp" line="873"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1</source>
         <translation>&lt;b&gt;Programmtyp&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="887"/>
+        <location filename="../mainwindow.cpp" line="894"/>
         <source>Tuning...  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="989"/>
+        <location filename="../mainwindow.cpp" line="996"/>
         <source>End of file</source>
         <translation>Ende der Datei</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="992"/>
+        <location filename="../mainwindow.cpp" line="999"/>
         <source>Input device disconnected</source>
         <translation>Eingabegerät getrennt</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="998"/>
+        <location filename="../mainwindow.cpp" line="1005"/>
         <source>No input data</source>
         <translation>Keine Eingangsdaten</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1124"/>
+        <location filename="../mainwindow.cpp" line="1131"/>
         <source>&lt;b&gt;Ensemble %1/%2&lt;/b&gt;&lt;br&gt;Click for switching to:&lt;br&gt;&lt;i&gt;%3&lt;/i&gt;</source>
         <translation>&lt;b&gt;Ensemble %1/%2&lt;/b&gt;&lt;br&gt;Klicken, um zu wechseln auf:&lt;br&gt;&lt;i&gt;%3&lt;/i&gt;</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1133"/>
+        <location filename="../mainwindow.cpp" line="1140"/>
         <source>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Language:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %6</source>
         <translation>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Kurzbezeichnung:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Sprache:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Land:&lt;/b&gt; %6</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1178"/>
+        <location filename="../mainwindow.cpp" line="1185"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Coderate: %2/%3&lt;br&gt;Capacity units: %4 CU</source>
         <translation>&lt;B&gt;Fehlerschutz&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Coderate: %2/%3&lt;br&gt;Kapazitätseinheiten: %4 CU</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1189"/>
+        <location filename="../mainwindow.cpp" line="1196"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Protection level: %2&lt;br&gt;Capacity units: %3 CU</source>
         <translation>&lt;B&gt;Fehlerschutz&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Fehlerschutzklasse: %2&lt;br&gt;Kapazitätseinheiten: %3 CU</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1199"/>
+        <location filename="../mainwindow.cpp" line="1206"/>
         <source>%1 kbps</source>
         <translation>%1 kbps</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1201"/>
+        <location filename="../mainwindow.cpp" line="1208"/>
         <source>&lt;b&gt;Service bitrate&lt;/b&gt;&lt;br&gt;Audio &amp; data: %1</source>
         <translation>&lt;b&gt;Servicebitrate&lt;/b&gt;&lt;br&gt;Audio &amp; Daten: %1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1223"/>
+        <location filename="../mainwindow.cpp" line="1230"/>
         <source>Service currently unavailable</source>
         <translation>Service derzeit nicht verfügbar</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1224"/>
+        <location filename="../mainwindow.cpp" line="1231"/>
         <source>Service was removed from ensemble</source>
         <translation>Service wurde aus Ensemble entfernt</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1257"/>
+        <location filename="../mainwindow.cpp" line="1264"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;on current service</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Laufende Durchsage&lt;br&gt;auf derzeitigem Kanal</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1268"/>
+        <location filename="../mainwindow.cpp" line="1275"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to suspend this announcement</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Laufende Durchsage&lt;br&gt;Quellservice: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Klicken, um die Durchsage zu unterbrechen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1283"/>
+        <location filename="../mainwindow.cpp" line="1290"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Suspended announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to resume this announcement</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Unterbrochene Durchsage&lt;br&gt;Quellservice: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Klicken, um die Durchsage fortzuführen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1324"/>
+        <location filename="../mainwindow.cpp" line="1331"/>
         <source>No ensemble</source>
         <translation>Kein Ensemble</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1325"/>
+        <location filename="../mainwindow.cpp" line="1332"/>
         <source>No ensemble tuned</source>
         <translation>Kein Ensemble abgestimmt</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1332"/>
+        <location filename="../mainwindow.cpp" line="1339"/>
         <source>No service</source>
         <translation>Kein Service</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1336"/>
+        <location filename="../mainwindow.cpp" line="1343"/>
         <source>No service playing</source>
         <translation>Kein Service wiedergegeben</translation>
     </message>
@@ -751,283 +751,283 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../main.cpp" line="43"/>
+        <location filename="../main.cpp" line="44"/>
         <source>Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)</source>
         <translation>Abraca DAB Radio: DAB/DAB+ Software Defined Radio (SDR)</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="49"/>
+        <location filename="../main.cpp" line="50"/>
         <source>Optional INI file. If not specified AbracaDABra.ini in system directory will be used.</source>
         <translation>Optionale INI-Datei. Falls nicht spezifiziert, wird AbracaDABra.ini im Systemverzeichnis verwendet.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2616"/>
+        <location filename="../mainwindow.cpp" line="2625"/>
         <source>Title</source>
         <translation>Titel</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2617"/>
+        <location filename="../mainwindow.cpp" line="2626"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2618"/>
+        <location filename="../mainwindow.cpp" line="2627"/>
         <source>Track Number</source>
         <translation>Titelnummer</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2619"/>
+        <location filename="../mainwindow.cpp" line="2628"/>
         <source>Artist</source>
         <translation>Interpret</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2620"/>
+        <location filename="../mainwindow.cpp" line="2629"/>
         <source>Composition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2621"/>
+        <location filename="../mainwindow.cpp" line="2630"/>
         <source>Movement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2622"/>
+        <location filename="../mainwindow.cpp" line="2631"/>
         <source>Conductor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2623"/>
+        <location filename="../mainwindow.cpp" line="2632"/>
         <source>Composer</source>
         <translation>Komponist</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2624"/>
+        <location filename="../mainwindow.cpp" line="2633"/>
         <source>Band</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2625"/>
+        <location filename="../mainwindow.cpp" line="2634"/>
         <source>Comment</source>
         <translation>Bemerkung</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2626"/>
+        <location filename="../mainwindow.cpp" line="2635"/>
         <source>Genre</source>
         <translation>Genre</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2627"/>
+        <location filename="../mainwindow.cpp" line="2636"/>
         <location filename="../dabtables.cpp" line="169"/>
         <location filename="../dabtables.cpp" line="591"/>
         <source>News</source>
         <translation>Nachrichten</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2628"/>
+        <location filename="../mainwindow.cpp" line="2637"/>
         <source>News (local)</source>
         <translation>Nachrichten (lokal)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2629"/>
+        <location filename="../mainwindow.cpp" line="2638"/>
         <source>Stock Market</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2630"/>
+        <location filename="../mainwindow.cpp" line="2639"/>
         <location filename="../dabtables.cpp" line="172"/>
         <source>Sport</source>
         <translation>Sport</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2631"/>
+        <location filename="../mainwindow.cpp" line="2640"/>
         <source>Lottery</source>
         <translation>Lotterie</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2632"/>
+        <location filename="../mainwindow.cpp" line="2641"/>
         <source>Horoscope</source>
         <translation>Horoskop</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2633"/>
+        <location filename="../mainwindow.cpp" line="2642"/>
         <source>Daily Diversion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2634"/>
+        <location filename="../mainwindow.cpp" line="2643"/>
         <source>Health</source>
         <translation>Gesundheit</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2635"/>
+        <location filename="../mainwindow.cpp" line="2644"/>
         <location filename="../dabtables.cpp" line="593"/>
         <source>Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2636"/>
+        <location filename="../mainwindow.cpp" line="2645"/>
         <source>Scene</source>
         <translation>Szene</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2637"/>
+        <location filename="../mainwindow.cpp" line="2646"/>
         <source>Cinema</source>
         <translation>Kino</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2638"/>
+        <location filename="../mainwindow.cpp" line="2647"/>
         <source>TV</source>
         <translation>Fernsehen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2642"/>
+        <location filename="../mainwindow.cpp" line="2651"/>
         <location filename="../dabtables.cpp" line="592"/>
         <source>Weather</source>
         <translation>Wetter</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2643"/>
+        <location filename="../mainwindow.cpp" line="2652"/>
         <source>Traffic</source>
         <translation>Verkehr</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2644"/>
+        <location filename="../mainwindow.cpp" line="2653"/>
         <location filename="../dabtables.cpp" line="587"/>
         <source>Alarm</source>
         <translation>Alarm</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2645"/>
+        <location filename="../mainwindow.cpp" line="2654"/>
         <source>Advertisment</source>
         <translation>Werbung</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2646"/>
+        <location filename="../mainwindow.cpp" line="2655"/>
         <source>URL</source>
         <translation>URL</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2647"/>
+        <location filename="../mainwindow.cpp" line="2656"/>
         <source>Other</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2648"/>
+        <location filename="../mainwindow.cpp" line="2657"/>
         <source>Station (short)</source>
         <translation>Station (kurz)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2649"/>
+        <location filename="../mainwindow.cpp" line="2658"/>
         <source>Station</source>
         <translation>Station</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2650"/>
+        <location filename="../mainwindow.cpp" line="2659"/>
         <source>Now</source>
         <translation>Jetzt</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2651"/>
+        <location filename="../mainwindow.cpp" line="2660"/>
         <source>Next</source>
         <translation>Später</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2652"/>
+        <location filename="../mainwindow.cpp" line="2661"/>
         <source>Programme Part</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2653"/>
+        <location filename="../mainwindow.cpp" line="2662"/>
         <source>Host</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2654"/>
+        <location filename="../mainwindow.cpp" line="2663"/>
         <source>Editorial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2658"/>
+        <location filename="../mainwindow.cpp" line="2667"/>
         <source>Homepage</source>
         <translation>Homepage</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2662"/>
+        <location filename="../mainwindow.cpp" line="2671"/>
         <source>Phone (Hotline)</source>
         <translation>Telefon (Hotline)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2663"/>
+        <location filename="../mainwindow.cpp" line="2672"/>
         <source>Phone (Studio)</source>
         <translation>Telefon (Studio)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2664"/>
+        <location filename="../mainwindow.cpp" line="2673"/>
         <source>Phone (Other)</source>
         <translation>Telefon (andere)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2665"/>
+        <location filename="../mainwindow.cpp" line="2674"/>
         <source>SMS (Studio)</source>
         <translation>SMS (Studio)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2666"/>
+        <location filename="../mainwindow.cpp" line="2675"/>
         <source>SMS (Other)</source>
         <translation>SMS (andere)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2667"/>
+        <location filename="../mainwindow.cpp" line="2676"/>
         <source>E-mail (Hotline)</source>
         <translation>E-Mail (Hotline)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2668"/>
+        <location filename="../mainwindow.cpp" line="2677"/>
         <source>E-mail (Studio)</source>
         <translation>E-Mail (Hotline)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2669"/>
+        <location filename="../mainwindow.cpp" line="2678"/>
         <source>E-mail (Other)</source>
         <translation>E-Mail (andere)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2670"/>
+        <location filename="../mainwindow.cpp" line="2679"/>
         <source>MMS</source>
         <translation>MMS</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2671"/>
+        <location filename="../mainwindow.cpp" line="2680"/>
         <source>Chat Message</source>
         <translation>Chatnachricht</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2672"/>
+        <location filename="../mainwindow.cpp" line="2681"/>
         <source>Chat</source>
         <translation>Chat</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2673"/>
+        <location filename="../mainwindow.cpp" line="2682"/>
         <source>Vote Question</source>
         <translation>Abstimmungsfrage</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2674"/>
+        <location filename="../mainwindow.cpp" line="2683"/>
         <source>Vote Here</source>
         <translation>Hier abstimmen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2677"/>
+        <location filename="../mainwindow.cpp" line="2686"/>
         <source>Private 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2678"/>
+        <location filename="../mainwindow.cpp" line="2687"/>
         <source>Private 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2679"/>
+        <location filename="../mainwindow.cpp" line="2688"/>
         <source>Private 3</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2854,19 +2854,19 @@
     <name>SetupDialog</name>
     <message>
         <location filename="../setupdialog.ui" line="20"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="756"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="787"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="52"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="757"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="788"/>
         <source>Input device:</source>
         <translation>Eingangsgerät:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="77"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="758"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="789"/>
         <source>Connect</source>
         <translation>Verbinden</translation>
     </message>
@@ -2875,10 +2875,10 @@
         <location filename="../setupdialog.ui" line="290"/>
         <location filename="../setupdialog.ui" line="446"/>
         <location filename="../setupdialog.ui" line="750"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="759"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="775"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="795"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="828"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="790"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="806"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="826"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="859"/>
         <source>Gain control</source>
         <translation>Verstärkungseinstellung</translation>
     </message>
@@ -2886,9 +2886,9 @@
         <location filename="../setupdialog.ui" line="111"/>
         <location filename="../setupdialog.ui" line="296"/>
         <location filename="../setupdialog.ui" line="756"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="761"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="777"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="830"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="792"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="808"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="861"/>
         <source>Gain controlled by software (SW AGC)</source>
         <translation>Softwarekontrollierte Verstärkung (SW AGC)</translation>
     </message>
@@ -2897,10 +2897,10 @@
         <location filename="../setupdialog.ui" line="299"/>
         <location filename="../setupdialog.ui" line="455"/>
         <location filename="../setupdialog.ui" line="759"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="763"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="779"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="799"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="832"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="794"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="810"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="830"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="863"/>
         <source>Software</source>
         <translation>Software</translation>
     </message>
@@ -2908,9 +2908,9 @@
         <location filename="../setupdialog.ui" line="121"/>
         <location filename="../setupdialog.ui" line="306"/>
         <location filename="../setupdialog.ui" line="766"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="765"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="781"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="834"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="796"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="812"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="865"/>
         <source>Gain controlled internally by device (HW AGC)</source>
         <translation>Verstärkung intern vom Gerät kontrolliert (HW AGC)</translation>
     </message>
@@ -2919,9 +2919,9 @@
         <location filename="../setupdialog.ui" line="309"/>
         <location filename="../setupdialog.ui" line="769"/>
         <location filename="../setupdialog.cpp" line="45"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="767"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="783"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="836"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="798"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="814"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="867"/>
         <source>Device</source>
         <translation>Gerät</translation>
     </message>
@@ -2929,9 +2929,9 @@
         <location filename="../setupdialog.ui" line="131"/>
         <location filename="../setupdialog.ui" line="316"/>
         <location filename="../setupdialog.ui" line="776"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="769"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="785"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="838"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="800"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="816"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="869"/>
         <source>Manual gain control</source>
         <translation>Manuelle Verstärkungseinstellung</translation>
     </message>
@@ -2940,10 +2940,10 @@
         <location filename="../setupdialog.ui" line="319"/>
         <location filename="../setupdialog.ui" line="485"/>
         <location filename="../setupdialog.ui" line="779"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="771"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="787"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="811"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="840"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="802"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="818"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="842"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="871"/>
         <source>Manual</source>
         <translation>Manuell</translation>
     </message>
@@ -2951,197 +2951,205 @@
         <location filename="../setupdialog.ui" line="159"/>
         <location filename="../setupdialog.ui" line="227"/>
         <location filename="../setupdialog.ui" line="684"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="772"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="773"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="825"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="803"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="804"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="856"/>
         <source>Gain</source>
         <translation>Verstärkung</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="283"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="774"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="805"/>
         <source>IP Address:</source>
         <translation>IP Adresse:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="342"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="788"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="819"/>
         <source>Port:</source>
         <translation>Port:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="390"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="789"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="820"/>
         <source>Open File...</source>
         <translation>Datei öffnen...</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="400"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="791"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="822"/>
         <source>Play file in the loop</source>
         <translation>Spiele Datei in Schleife ab</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="403"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="793"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="824"/>
         <source>Loop file</source>
         <translation>Datei wiederholen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="410"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="794"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="825"/>
         <source>Filename</source>
         <translation>Dateiname</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="452"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="797"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="828"/>
         <source>Gain controlled by software using sensitivity gain (SW AGC)</source>
         <translation>Softwarekontrollierte Verstärkung mit Empfindlichkeit (SW AGC)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="462"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="801"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="832"/>
         <source>LNA and Mixer controlled by device (HW AGC), IF gain controlled by software (SW AGC)</source>
         <translation>LNA und Mixer werden vom Gerät kontrolliert (HW AGC), IF Verstärkung per Software (SW AGC)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="465"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="803"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="834"/>
         <source>Hybrid</source>
         <translation>Hybrid</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="472"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="805"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="836"/>
         <source>Manual control of sensitivity gain</source>
         <translation>Manuelle Einstellung der Empfindlichkeit</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="475"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="807"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="838"/>
         <source>Sensitivity</source>
         <translation>Empfindlichkeit</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="482"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="809"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="840"/>
         <source>Free manual control of all gains</source>
         <translation>Freie manuelle Einstellung aller Verstärkungen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="514"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="812"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="843"/>
         <source>Sensitivity gain</source>
         <translation>Empfindlichkeit</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="521"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="814"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="845"/>
         <source>LNA AGC </source>
         <translation>LNA AGC </translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="524"/>
         <location filename="../setupdialog.ui" line="598"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="816"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="822"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="847"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="853"/>
         <source>AGC</source>
         <translation>AGC</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="531"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="817"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="848"/>
         <source>LNA gain</source>
         <translation>LNA Verstärkung</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="538"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="818"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="849"/>
         <source>Mixer gain</source>
         <translation>Mixer Verstärkung</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="595"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="820"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="851"/>
         <source>Mixer AGC</source>
         <translation>Mixer AGC</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="605"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="823"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="854"/>
         <source>IF gain</source>
         <translation>IF Verstärkung</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="662"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="824"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="855"/>
         <source>Device arguments:</source>
         <translation>Gerätargumente:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="717"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="826"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="857"/>
         <source>RX channel number:</source>
         <translation>RX Kanalnummer:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="743"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="827"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="858"/>
         <source>Antenna:</source>
         <translation>Antenne:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="825"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="841"/>
+        <location filename="../setupdialog.cpp" line="70"/>
+        <location filename="../setupdialog.cpp" line="830"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="872"/>
         <source>No device connected</source>
         <translation>Kein Gerät verbunden</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="847"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="842"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="873"/>
         <source>Visual Style</source>
         <translation>Aussehen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="877"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="843"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="874"/>
         <source>User Interface</source>
         <translation>Benutzeroberfläche</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="883"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="844"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="875"/>
         <source>Expert mode UI</source>
         <translation>Expertenmodus UI</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="890"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="845"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="876"/>
         <source>Dynamic Label Plus (DL+)</source>
         <translation>Dynamic Label Plus (DL+)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="900"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="846"/>
+        <location filename="../setupdialog.ui" line="899"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="877"/>
+        <source>Language:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="937"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="878"/>
         <source>Audio Decoder</source>
         <translation>Audiodekoder</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="906"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="847"/>
+        <location filename="../setupdialog.ui" line="943"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="879"/>
         <source>Noise level during audio drop-out:</source>
         <translation>Geräuschpegel während des Audioausfalls:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="919"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="848"/>
+        <location filename="../setupdialog.ui" line="956"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="880"/>
         <source>Raw Data Recording</source>
         <translation>Rohdatenaufzeichnung</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="925"/>
-        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="849"/>
+        <location filename="../setupdialog.ui" line="962"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="881"/>
         <source>Include XML header</source>
         <translation>Inklusive XML-Kopfzeilen</translation>
     </message>
@@ -3157,7 +3165,7 @@
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="58"/>
-        <location filename="../setupdialog.cpp" line="841"/>
+        <location filename="../setupdialog.cpp" line="860"/>
         <source>Raw file</source>
         <translation>Rohdatei</translation>
     </message>
@@ -3170,12 +3178,6 @@
         <location filename="../setupdialog.cpp" line="65"/>
         <source>Signed 16 bits</source>
         <translation>Signed 16 Bits</translation>
-    </message>
-    <message>
-        <location filename="../setupdialog.cpp" line="70"/>
-        <location filename="../setupdialog.cpp" line="811"/>
-        <source>&lt;span style=&quot;color:red&quot;&gt;No device connected&lt;/span&gt;</source>
-        <translation>&lt;span style=&quot;color:red&quot;&gt;Kein Gerät verbunden&lt;/span&gt;</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="96"/>
@@ -3253,84 +3255,99 @@
         <translation>Dunkler Stil (Fusion mit dunklen Farben)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="217"/>
+        <location filename="../setupdialog.cpp" line="218"/>
+        <source>System language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="224"/>
+        <source>User interface language, the change will take effect after application restart.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="225"/>
+        <source>Language change will take effect after application restart.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="229"/>
         <source>Set default OS style.</source>
         <translation>Betriebssystem-Standardstil verwenden.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="218"/>
+        <location filename="../setupdialog.cpp" line="230"/>
         <source>Force application light style.</source>
         <translation>Hellen Stil erzwingen.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="219"/>
+        <location filename="../setupdialog.cpp" line="231"/>
         <source>Force application dark style.</source>
         <translation>Dunklen Stil erzwingen.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="220"/>
+        <location filename="../setupdialog.cpp" line="232"/>
         <source>User interface in expert mode</source>
         <translation>Benutzeroberfläche im Expertenmodus</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="221"/>
+        <location filename="../setupdialog.cpp" line="233"/>
         <source>Show Dynamic Label Plus (DL+) tags like artist, song name, etc.</source>
         <translation>Zeige Dynamic Label Plus (DL+) Informationen wie Interpret, Titelname, usw.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="222"/>
+        <location filename="../setupdialog.cpp" line="234"/>
         <source>Include raw file XML header in IQ recording</source>
         <translation>Verwendet XML-Kopfzeilen in IQ-Rohdateien</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="238"/>
+        <location filename="../setupdialog.cpp" line="250"/>
         <source>Disabled</source>
         <translation>Deaktiviert</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="239"/>
+        <location filename="../setupdialog.cpp" line="251"/>
         <source>Select noise level that is generated during audio interruptions.&lt;br&gt;This may help to improve listening experience and make the audio interruptions less annoying.</source>
         <translation>Wählen Sie den Geräuschpegel aus, der während Audiounterbrechungen erzeugt wird.&lt;br&gt;Dies kann dazu beitragen, das Hörerlebnis zu verbessern und die Audiounterbrechungen weniger störend zu machen.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="351"/>
-        <location filename="../setupdialog.cpp" line="361"/>
-        <location filename="../setupdialog.cpp" line="441"/>
+        <location filename="../setupdialog.cpp" line="363"/>
+        <location filename="../setupdialog.cpp" line="373"/>
+        <location filename="../setupdialog.cpp" line="453"/>
         <source>N/A</source>
         <translation>unzutreffend</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="805"/>
+        <location filename="../setupdialog.cpp" line="824"/>
         <source>RTL SDR device connected</source>
         <translation>RTL SDR Gerät verbunden</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="808"/>
+        <location filename="../setupdialog.cpp" line="827"/>
         <source>RTL TCP device connected</source>
         <translation>RTL TCP Gerät verbunden</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="814"/>
+        <location filename="../setupdialog.cpp" line="833"/>
         <source>Raw file connected</source>
         <translation>Rohdatei verbunden</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="817"/>
+        <location filename="../setupdialog.cpp" line="836"/>
         <source>Airspy device connected</source>
         <translation>Airspygerät verbunden</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="820"/>
+        <location filename="../setupdialog.cpp" line="839"/>
         <source>Soapy SDR device connected</source>
         <translation>Soapy SDR-Gerät verbunden</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="886"/>
+        <location filename="../setupdialog.cpp" line="905"/>
         <source>Open IQ stream</source>
         <translation>Öffne IQ-Datenstrom</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="886"/>
+        <location filename="../setupdialog.cpp" line="905"/>
         <source>Binary files</source>
         <translation>Binärdateien</translation>
     </message>

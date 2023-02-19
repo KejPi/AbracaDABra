@@ -31,6 +31,7 @@
 #include <QWidget>
 #include <QList>
 #include <QAbstractButton>
+#include <QLocale>
 #include "QtWidgets/qcheckbox.h"
 #include "QtWidgets/qlabel.h"
 #include "config.h"
@@ -98,6 +99,7 @@ public:
         uint16_t announcementEna;
         bool bringWindowToForeground;
         ApplicationStyle applicationStyle;
+        QLocale::Language lang;
         bool expertModeEna;
         bool dlPlusEna;
         int noiseConcealmentLevel;
@@ -164,7 +166,8 @@ private:
     void onStyleChecked(bool checked);
     void onExpertModeChecked(bool checked);
     void onDLPlusChecked(bool checked);
-    void onNoiseLevelChanged(int index);
+    void onLanguageChanged(int index);
+    void onNoiseLevelChanged(int index);    
     void onXmlHeaderChecked(bool checked);
 
 #if HAVE_AIRSPY

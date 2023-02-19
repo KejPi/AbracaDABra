@@ -67,7 +67,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     // this has to be aligned with mainwindow
     ui->loopCheckbox->setChecked(false);
 
-    ui->statusLabel->setText(tr("<span style=\"color:red\">No device connected</span>"));            
+    ui->statusLabel->setText("<span style=\"color:red\">"+tr("No device connected")+"</span>");
 
     QString ipRange = "(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])";
     QRegularExpression ipRegex ("^" + ipRange
@@ -213,6 +213,18 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->defaultRadioButton->setText(tr("Default style (OS dependent)"));
     ui->lightRadioButton->setText(tr("Light style (Fusion)"));
     ui->darkRadioButton->setText(tr("Dark style (Fusion with dark colors)"));
+
+    // create combo box with language selection
+    ui->langComboBox->addItem("< " + tr("System language") + ">", QVariant(QLocale::AnyLanguage));
+    ui->langComboBox->addItem("English", QVariant(QLocale::English));
+    ui->langComboBox->addItem(QLocale(QLocale::Czech).nativeLanguageName(), QVariant(QLocale::Czech));
+    ui->langComboBox->addItem(QLocale(QLocale::German).nativeLanguageName(), QVariant(QLocale::German));
+    ui->langComboBox->addItem(QLocale(QLocale::Polish).nativeLanguageName(), QVariant(QLocale::Polish));
+    ui->langComboBox->model()->sort(0);
+    ui->langComboBox->setToolTip(tr("User interface language, the change will take effect after application restart."));
+    ui->langWarningLabel->setText("<span style=\"color:red\">"+tr("Language change will take effect after application restart.")+"</span>");
+    ui->langWarningLabel->setVisible(false);
+    connect(ui->langComboBox, &QComboBox::currentIndexChanged, this, &SetupDialog::onLanguageChanged);
 
     ui->defaultRadioButton->setToolTip(tr("Set default OS style."));
     ui->lightRadioButton->setToolTip(tr("Force application light style."));
@@ -497,6 +509,13 @@ void SetupDialog::showEvent(QShowEvent *event)
     }
     ui->noiseConcealmentCombo->setCurrentIndex(index);
     ui->xmlHeaderCheckBox->setChecked(m_settings.xmlHeaderEna);
+
+    index = ui->langComboBox->findData(QVariant(m_settings.lang));
+    if (index < 0)
+    {   // not found
+        index = 0;
+    }
+    ui->langComboBox->setCurrentIndex(index);
 }
 
 void SetupDialog::onConnectDeviceClicked()
@@ -808,7 +827,7 @@ void SetupDialog::setStatusLabel()
         ui->statusLabel->setText(tr("RTL TCP device connected"));
         break;
     case InputDeviceId::UNDEFINED:
-        ui->statusLabel->setText(tr("<span style=\"color:red\">No device connected</span>"));
+        ui->statusLabel->setText("<span style=\"color:red\">"+tr("No device connected")+"</span>");
         break;
     case InputDeviceId::RAWFILE:
         ui->statusLabel->setText(tr("Raw file connected"));
@@ -994,6 +1013,17 @@ void SetupDialog::onDLPlusChecked(bool checked)
 {
     m_settings.dlPlusEna = checked;
 }
+
+void SetupDialog::onLanguageChanged(int index)
+{
+    QLocale::Language lang = static_cast<QLocale::Language>(ui->langComboBox->itemData(index).toInt());
+    if (lang != m_settings.lang)
+    {
+        m_settings.lang = lang;
+        ui->langWarningLabel->setVisible(true);
+    }
+}
+
 
 void SetupDialog::onNoiseLevelChanged(int index)
 {
