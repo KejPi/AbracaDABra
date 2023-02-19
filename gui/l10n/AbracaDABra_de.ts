@@ -109,6 +109,11 @@
         <translation>Start</translation>
     </message>
     <message>
+        <location filename="../bandscandialog.cpp" line="46"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../bandscandialog.cpp" line="56"/>
         <source>None</source>
         <translation>Keiner</translation>
@@ -119,7 +124,6 @@
         <translation>&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Achtung:&lt;/b&gt; Der Suchlauf löscht die derzeitige Senderliste und alle Favoriten!&lt;/span&gt;</translation>
     </message>
     <message>
-        <location filename="../bandscandialog.cpp" line="46"/>
         <location filename="../bandscandialog.cpp" line="117"/>
         <source>Stop</source>
         <translation>Stop</translation>

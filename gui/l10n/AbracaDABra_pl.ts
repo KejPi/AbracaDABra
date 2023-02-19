@@ -109,6 +109,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../bandscandialog.cpp" line="46"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../bandscandialog.cpp" line="56"/>
         <source>None</source>
         <translation type="unfinished"></translation>
@@ -119,7 +124,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bandscandialog.cpp" line="46"/>
         <location filename="../bandscandialog.cpp" line="117"/>
         <source>Stop</source>
         <translation type="unfinished"></translation>

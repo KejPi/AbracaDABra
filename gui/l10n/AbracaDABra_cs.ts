@@ -109,6 +109,11 @@
         <translation>Start</translation>
     </message>
     <message>
+        <location filename="../bandscandialog.cpp" line="46"/>
+        <source>Cancel</source>
+        <translation>Zrušit</translation>
+    </message>
+    <message>
         <location filename="../bandscandialog.cpp" line="56"/>
         <source>None</source>
         <translation>Žádný</translation>
@@ -119,7 +124,6 @@
         <translation>&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Varování:&lt;/b&gt; Vyhledávání vymaže seznam stanic a oblíbené!&lt;/span&gt;</translation>
     </message>
     <message>
-        <location filename="../bandscandialog.cpp" line="46"/>
         <location filename="../bandscandialog.cpp" line="117"/>
         <source>Stop</source>
         <translation>Stop</translation>
@@ -464,12 +468,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="68"/>
         <source>Signal found</source>
-        <translation>Signál detekován</translation>
+        <translation>Detekován signál</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="68"/>
         <source>Sync</source>
-        <translation>Sync</translation>
+        <translation>Příjem</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="69"/>
