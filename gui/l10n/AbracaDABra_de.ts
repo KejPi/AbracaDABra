@@ -73,7 +73,7 @@
     <message>
         <location filename="../aboutdialog.cpp" line="75"/>
         <source>AbracaDABra uses some artwork created by</source>
-        <translation type="unfinished">AbracaDABra verwendet einige Grafiken, erstellt von</translation>
+        <translation>AbracaDABra verwendet einige Grafiken, erstellt von</translation>
     </message>
 </context>
 <context>
@@ -111,7 +111,7 @@
     <message>
         <location filename="../bandscandialog.cpp" line="46"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Abbrechen</translation>
     </message>
     <message>
         <location filename="../bandscandialog.cpp" line="56"/>
@@ -192,7 +192,7 @@
         <location filename="../ensembleinfodialog.ui" line="232"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="530"/>
         <source>SCIdS:</source>
-        <translation type="unfinished"></translation>
+        <translation>SCIdS:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="258"/>
@@ -465,7 +465,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="68"/>
         <source>Sync</source>
-        <translation type="unfinished"></translation>
+        <translation>Sync</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="69"/>
@@ -598,17 +598,17 @@
     <message>
         <location filename="../mainwindow.cpp" line="795"/>
         <source>MPEG-4 Low Complexity AAC</source>
-        <translation type="unfinished"></translation>
+        <translation>MPEG-4 Low Complexity AAC</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="799"/>
         <source>MPEG-4 High Efficiency AAC</source>
-        <translation type="unfinished"></translation>
+        <translation>MPEG-4 High Efficiency AAC</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="803"/>
         <source>MPEG-4 High Efficiency AAC v2</source>
-        <translation type="unfinished"></translation>
+        <translation>MPEG-4 High Efficiency AAC v2</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="812"/>
@@ -2199,7 +2199,7 @@
     <message>
         <location filename="../dabtables.cpp" line="454"/>
         <source>Andorra</source>
-        <translation type="unfinished"></translation>
+        <translation>Andorra</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="455"/>
@@ -2224,7 +2224,7 @@
     <message>
         <location filename="../dabtables.cpp" line="459"/>
         <source>Palestine</source>
-        <translation type="unfinished"></translation>
+        <translation>Palästina</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="460"/>
@@ -3039,7 +3039,7 @@
         <location filename="../setupdialog.ui" line="521"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="814"/>
         <source>LNA AGC </source>
-        <translation type="unfinished"></translation>
+        <translation>LNA AGC </translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="524"/>
@@ -3047,7 +3047,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="816"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="822"/>
         <source>AGC</source>
-        <translation type="unfinished"></translation>
+        <translation>AGC</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="531"/>
