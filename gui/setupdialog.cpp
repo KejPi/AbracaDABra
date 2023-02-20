@@ -911,17 +911,13 @@ void SetupDialog::onOpenFileButtonClicked()
         if (fileName.endsWith(".s16"))
         {
             ui->fileFormatCombo->setCurrentIndex(int(RawFileInputFormat::SAMPLE_FORMAT_S16));
-            qDebug() << "Selected file :" << fileName << "SAMPLE_FORMAT_S16";
         }
         else if (fileName.endsWith(".u8"))
         {
             ui->fileFormatCombo->setCurrentIndex(int(RawFileInputFormat::SAMPLE_FORMAT_U8));
-            qDebug() << "Selected file :" << fileName << "SAMPLE_FORMAT_U8";
         }
         else
-        {
-            qDebug() << "Selected file :" << fileName << "Sample format unknown";
-        }
+        {   /* format cannot be guessed from extension - if XML header is recognized, then it will be set automatically */ }
 
         ui->connectButton->setVisible(true);
         ui->fileFormatCombo->setEnabled(true);
