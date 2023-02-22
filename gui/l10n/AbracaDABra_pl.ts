@@ -7,73 +7,73 @@
         <location filename="../aboutdialog.ui" line="14"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_aboutdialog.h" line="120"/>
         <source>About AbracaDABra</source>
-        <translation type="unfinished"></translation>
+        <translation>O AbracaDABra</translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="27"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_aboutdialog.h" line="121"/>
         <source>Abraca DAB radio</source>
-        <translation type="unfinished"></translation>
+        <translation>Abraca DAB radio</translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="34"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_aboutdialog.h" line="122"/>
         <source>Version 1.0+, build 4654e4f4</source>
-        <translation type="unfinished"></translation>
+        <translation>Wersja 1.0+, build 4654e4f4</translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="41"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_aboutdialog.h" line="123"/>
         <source>Based on Qt 6.2.2</source>
-        <translation type="unfinished"></translation>
+        <translation>Opierają się na Qt 6.2.2</translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="48"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_aboutdialog.h" line="124"/>
         <source>DAB SDR version 1.2.3</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB SDR wersja 1.2.3</translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="55"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_aboutdialog.h" line="125"/>
         <source>Developed by Petr Kopecký (xkejpi@gmail.com)</source>
-        <translation type="unfinished"></translation>
+        <translation>Opracowany przez Petr Kopecký (xkejpi@gmail.com)</translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="103"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_aboutdialog.h" line="127"/>
         <source>AbracaDABra uses following libraries:</source>
-        <translation type="unfinished"></translation>
+        <translation>AbracaDABra wykorzystuje nastepujące biblioteki:</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="39"/>
         <source>Developed by</source>
-        <translation type="unfinished"></translation>
+        <translation>Opracowany przez</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="47"/>
         <source>Version %1+, revision %2 (%3)</source>
-        <translation type="unfinished"></translation>
+        <translation>Wersja %1+, rewizja %2 (%3)</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="50"/>
         <source>Based on Qt %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Opierają się na Qt %1</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="51"/>
         <source>DAB SDR version %1.%2.%3</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB SDR wersja %1.%2.%3</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="53"/>
         <source>AbracaDABra &amp; DAB SDR library use following libraries (special thanks to):</source>
-        <translation type="unfinished"></translation>
+        <translation>Biblioteka AbracaDABra &amp; DAB SDR wykorzystuje nastepujące biblioteki (szczególne podziękowania dla):</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="75"/>
         <source>AbracaDABra uses some artwork created by</source>
-        <translation type="unfinished"></translation>
+        <translation>AbracaDABra korzystania z grafik utworzonych przez</translation>
     </message>
 </context>
 <context>
@@ -82,31 +82,31 @@
         <location filename="../bandscandialog.ui" line="17"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="133"/>
         <source>Band scan</source>
-        <translation type="unfinished"></translation>
+        <translation>Przeszukiwanie pasma</translation>
     </message>
     <message>
         <location filename="../bandscandialog.ui" line="27"/>
         <location filename="../bandscandialog.cpp" line="112"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="134"/>
         <source>Scanning channel:</source>
-        <translation type="unfinished"></translation>
+        <translation>Skanowanie kanału</translation>
     </message>
     <message>
         <location filename="../bandscandialog.ui" line="64"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="135"/>
         <source>Services found:</source>
-        <translation type="unfinished"></translation>
+        <translation>Znaleziono usługę</translation>
     </message>
     <message>
         <location filename="../bandscandialog.ui" line="81"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="136"/>
         <source>Ensembles found:</source>
-        <translation type="unfinished"></translation>
+        <translation>Znaleziono multipleks</translation>
     </message>
     <message>
         <location filename="../bandscandialog.cpp" line="42"/>
         <source>Start</source>
-        <translation type="unfinished"></translation>
+        <translation>start</translation>
     </message>
     <message>
         <location filename="../bandscandialog.cpp" line="46"/>
@@ -116,17 +116,17 @@
     <message>
         <location filename="../bandscandialog.cpp" line="56"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Brak</translation>
     </message>
     <message>
         <location filename="../bandscandialog.cpp" line="63"/>
         <source>&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Warning:&lt;/b&gt; Band scan deletes current service list and all favorites!&lt;/span&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Ostrzeżenie:&lt;/b&gt; Uruchomienie strojenia usunie listę usług i ulubionych stacji!&lt;/span&gt;</translation>
     </message>
     <message>
         <location filename="../bandscandialog.cpp" line="117"/>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>stop</translation>
     </message>
 </context>
 <context>
@@ -135,7 +135,7 @@
         <location filename="../catslsdialog.ui" line="14"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_catslsdialog.h" line="89"/>
         <source>Categorized Slideshow</source>
-        <translation type="unfinished"></translation>
+        <translation>Klasyfikowany pokazu slajdów</translation>
     </message>
 </context>
 <context>
@@ -144,250 +144,252 @@
         <location filename="../ensembleinfodialog.ui" line="14"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="522"/>
         <source>Ensemble Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informacje o multipleksie</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="38"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="523"/>
         <source>Frequency:</source>
-        <translation type="unfinished"></translation>
+        <translation>Częstotliwość:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="64"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="524"/>
         <source>Channel:</source>
-        <translation type="unfinished"></translation>
+        <translation>Kanał:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="90"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="525"/>
         <source>SNR:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Stosunek sygnału do szumu</translatorcomment>
+        <translation>SNR:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="116"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="526"/>
         <source>Frequency offset:</source>
-        <translation type="unfinished"></translation>
+        <translation>Przesunięcie częstotliwości:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="142"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="527"/>
         <source>AGC gain:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Automatyczna regulacja wzmocnienia</translatorcomment>
+        <translation>Zysk AGC:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="180"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="528"/>
         <source>Service:</source>
-        <translation type="unfinished"></translation>
+        <translation>Usługa:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="206"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="529"/>
         <source>Service ID:</source>
-        <translation type="unfinished"></translation>
+        <translation>Identyfikator usługi:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="232"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="530"/>
         <source>SCIdS:</source>
-        <translation type="unfinished"></translation>
+        <translation>SCIdS:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="258"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="531"/>
         <source>SubChannel:</source>
-        <translation type="unfinished"></translation>
+        <translation>Podkanał:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="284"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="532"/>
         <source>Start CU:</source>
-        <translation type="unfinished"></translation>
+        <translation>Początkowe jednostki pojemności (CU)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="310"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="533"/>
         <source>Number of CU:</source>
-        <translation type="unfinished"></translation>
+        <translation>Liczba jednostek pojemności (CU):</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="348"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="534"/>
         <source>FIB counter:</source>
-        <translation type="unfinished"></translation>
+        <translation>Licznik szybkich bloków informacyjnych:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="374"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="535"/>
         <source>FIB CRC errors:</source>
-        <translation type="unfinished"></translation>
+        <translation>Błędy sprawdzania cyklicznej redundancji bloków szybkich informacji:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="400"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="536"/>
         <source>FIB error rate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik błędów FIB:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="426"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="537"/>
         <source>AU counter:</source>
-        <translation type="unfinished"></translation>
+        <translation>Licznik AU:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="452"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="538"/>
         <source>AU CRC errors:</source>
-        <translation type="unfinished"></translation>
+        <translation>Błędy CRC AU:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="478"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="539"/>
         <source>AU error rate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik błędów AU:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="543"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="540"/>
         <source>Length:</source>
-        <translation type="unfinished"></translation>
+        <translation>Długość:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="585"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="541"/>
         <source>File size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozmiar pliku:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="610"/>
         <location filename="../ensembleinfodialog.cpp" line="188"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="542"/>
         <source>Record raw data</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisz surowe dane</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="63"/>
         <location filename="../ensembleinfodialog.cpp" line="64"/>
         <source>Tuned frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>Dostrojona częstotliwość</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="65"/>
         <location filename="../ensembleinfodialog.cpp" line="66"/>
         <source>Tuned DAB channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Dostrojony kanał</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="67"/>
         <location filename="../ensembleinfodialog.cpp" line="68"/>
         <source>Estimated frequency offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Szacowane przesunięcie częstotliwości</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="69"/>
         <location filename="../ensembleinfodialog.cpp" line="70"/>
         <source>Estimated SNR</source>
-        <translation type="unfinished"></translation>
+        <translation>Szacowany stosunek sygnału do szumu</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="71"/>
         <location filename="../ensembleinfodialog.cpp" line="72"/>
         <source>Current AGC gain&lt;br&gt;(only in software mode)</source>
-        <translation type="unfinished"></translation>
+        <translation>Bieżąca automatyczna regulacja wzmocnienia&lt;br&gt;(tylko w trybie programowym)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="74"/>
         <location filename="../ensembleinfodialog.cpp" line="75"/>
         <source>Current service name</source>
-        <translation type="unfinished"></translation>
+        <translation>Bieżąca nazwa usługi</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="76"/>
         <location filename="../ensembleinfodialog.cpp" line="77"/>
         <source>Current Service Identifier</source>
-        <translation type="unfinished"></translation>
+        <translation>Bieżący identyfikator usługi</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="78"/>
         <location filename="../ensembleinfodialog.cpp" line="79"/>
         <source>Service Component Identifier within the Service</source>
-        <translation type="unfinished"></translation>
+        <translation>Identyfikator komponentu usługi w ramach usługi</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="80"/>
         <location filename="../ensembleinfodialog.cpp" line="81"/>
         <source>Number of capacity units used by sub-channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Liczba jednostek pojemności używanych przez podkanał</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="82"/>
         <location filename="../ensembleinfodialog.cpp" line="83"/>
         <source>First capacity unit used by sub-channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Pierwsza jednostka pojemności używana przez podkanał</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="84"/>
         <location filename="../ensembleinfodialog.cpp" line="85"/>
         <source>Sub-channel Identifier</source>
-        <translation type="unfinished"></translation>
+        <translation>Identyfikator podkanału</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="87"/>
         <location filename="../ensembleinfodialog.cpp" line="88"/>
         <source>Total number of FIB&apos;s</source>
-        <translation type="unfinished"></translation>
+        <translation>Całkowita liczba szybkich bloków informacyjnych (FIB)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="89"/>
         <location filename="../ensembleinfodialog.cpp" line="90"/>
         <source>Number of FIB&apos;s with CRC error</source>
-        <translation type="unfinished"></translation>
+        <translation>Liczba bloków szybkich informacji z błędem cyklicznej kontroli redundancji</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="91"/>
         <location filename="../ensembleinfodialog.cpp" line="92"/>
         <source>FIB error rate</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik błędów FIB</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="93"/>
         <location filename="../ensembleinfodialog.cpp" line="94"/>
         <source>Total number of audio frames (AU for DAB+)</source>
-        <translation type="unfinished"></translation>
+        <translation>Całkowita liczba ramek audio (AU dla DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="95"/>
         <location filename="../ensembleinfodialog.cpp" line="96"/>
         <source>Total number of audio frames with CRC error (AU for DAB+)</source>
-        <translation type="unfinished"></translation>
+        <translation>Całkowita liczba ramek audio z błędem CRC (AU dla DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="97"/>
         <location filename="../ensembleinfodialog.cpp" line="98"/>
         <source>Audio frame (AU for DAB+) error rate</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik błędów ramki audio (AU dla DAB+).</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="100"/>
         <source>Record raw IQ stream to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisz surowy strumień IQ</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="127"/>
         <source>Ensemble information</source>
-        <translation type="unfinished"></translation>
+        <translation>O multipleksie</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="184"/>
         <source>Stop recording</source>
-        <translation type="unfinished"></translation>
+        <translation>zatrzymaj nagrywanie</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="200"/>
         <source> sec</source>
-        <translation type="unfinished"></translation>
+        <translation>sek.</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="207"/>
@@ -396,17 +398,17 @@
         <location filename="../ensembleinfodialog.cpp" line="347"/>
         <location filename="../ensembleinfodialog.cpp" line="348"/>
         <source>N/A</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie dotyczy</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="312"/>
         <source>Reset FIB statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>zresetuj statystykę FIB</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="313"/>
         <source>Reset MSC statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>zresetuj statystykę MSC</translation>
     </message>
 </context>
 <context>
@@ -414,22 +416,22 @@
     <message>
         <location filename="../inputdevicerecorder.cpp" line="84"/>
         <source>Record IQ stream (Raw File XML Header)</source>
-        <translation type="unfinished"></translation>
+        <translation>Nagrywaj strumień IQ (plik raw z nagłówkiem XML)</translation>
     </message>
     <message>
         <location filename="../inputdevicerecorder.cpp" line="86"/>
         <source>Binary XML files</source>
-        <translation type="unfinished"></translation>
+        <translation>Pliki binarne XML</translation>
     </message>
     <message>
         <location filename="../inputdevicerecorder.cpp" line="95"/>
         <source>Record IQ stream</source>
-        <translation type="unfinished"></translation>
+        <translation>Nagrywaj strumień IQ</translation>
     </message>
     <message>
         <location filename="../inputdevicerecorder.cpp" line="97"/>
         <source>Binary files</source>
-        <translation type="unfinished"></translation>
+        <translation>Pliki binarne</translation>
     </message>
 </context>
 <context>
@@ -438,314 +440,315 @@
         <location filename="../mainwindow.ui" line="258"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_mainwindow.h" line="512"/>
         <source>Current frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktualna częstotliwość</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="261"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_mainwindow.h" line="514"/>
         <source>227.360 MHz</source>
-        <translation type="unfinished"></translation>
+        <translation>227.360 MHz</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="581"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_mainwindow.h" line="515"/>
         <source>DL</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Dynamic Label</translatorcomment>
+        <translation>DL</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="68"/>
         <source>No signal</source>
-        <translation type="unfinished"></translation>
+        <translation>Brak sygnału</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="68"/>
         <source>Signal found</source>
-        <translation type="unfinished"></translation>
+        <translation>Sygnał znaleziony</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="68"/>
         <source>Sync</source>
-        <translation type="unfinished"></translation>
+        <translation>Synchronizacja</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="69"/>
         <source>DAB signal not detected&lt;br&gt;Looking for signal...</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie wykryto sygnału DAB&lt;br&gt;Trwa strojenie...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="70"/>
         <source>Found DAB signal,&lt;br&gt;trying to synchronize...</source>
-        <translation type="unfinished"></translation>
+        <translation>Znaleziono sygnał DAB,&lt;br&gt;próba synchronizacji...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="71"/>
         <source>Synchronized to DAB signal</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj do listy ulubionych stacji</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="110"/>
         <source>Add service to favorites</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj program do ulubionych</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="111"/>
         <source>Remove service from favorites</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń z listy ulubionych stacji</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="133"/>
         <source>DAB time</source>
-        <translation type="unfinished"></translation>
+        <translation>Czas</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="136"/>
         <source>DAB signal quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Jakość sygnału DAB</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="151"/>
         <location filename="../mainwindow.cpp" line="157"/>
         <source>DAB signal SNR</source>
-        <translation type="unfinished"></translation>
+        <translation>Jakość stosunek sygnału do szumu</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="171"/>
         <source>Settings...</source>
-        <translation type="unfinished"></translation>
+        <translation>Opcje…</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="174"/>
         <source>Clear service list</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyczyść listę usług</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="177"/>
         <source>Band scan...</source>
-        <translation type="unfinished"></translation>
+        <translation>Strojenie…</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="180"/>
         <source>Ensemble information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informacje o multipleksie</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="183"/>
         <source>About</source>
-        <translation type="unfinished"></translation>
+        <translation>O oprogramowaniu</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="198"/>
         <source>Open menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Otwórz menu</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="203"/>
         <source>Mute audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyciszenie dźwięku</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="204"/>
         <source>Unmute audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Anuluj wyciszenie dźwięku</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="211"/>
         <source>Audio volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Głośność</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="296"/>
         <source>Audio coding</source>
-        <translation type="unfinished"></translation>
+        <translation>kodowanie audio</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="304"/>
         <source>Ongoing announcement</source>
-        <translation type="unfinished"></translation>
+        <translation>komunikat na żywo</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="308"/>
         <source>Browse categorized slides</source>
-        <translation type="unfinished"></translation>
+        <translation>Przeglądaj skategoryzowane slajdy</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="311"/>
         <source>Change service source (ensemble)</source>
-        <translation type="unfinished"></translation>
+        <translation>Zmień źródło usługi (multipleks)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="614"/>
         <source>&lt;b&gt;Ensemble:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %5</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Multipleks:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Krótka nazwa stacji:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Kraj:&lt;/b&gt; %5</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="790"/>
         <source>&lt;b&gt;DAB audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;DAB kodowanie audio&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="790"/>
         <source>MPEG-1 layer 2</source>
-        <translation type="unfinished"></translation>
+        <translation>MPEG-1 warstwa 2</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="794"/>
         <location filename="../mainwindow.cpp" line="798"/>
         <location filename="../mainwindow.cpp" line="802"/>
         <source>&lt;b&gt;DAB+ audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;DAB+ kodowanie audio&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="794"/>
         <source>MPEG-4 Low Complexity AAC</source>
-        <translation type="unfinished"></translation>
+        <translation>MPEG-4 Low Complexity AAC</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="798"/>
         <source>MPEG-4 High Efficiency AAC</source>
-        <translation type="unfinished"></translation>
+        <translation>MPEG-4 High Efficiency AAC</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="802"/>
         <source>MPEG-4 High Efficiency AAC v2</source>
-        <translation type="unfinished"></translation>
+        <translation>MPEG-4 High Efficiency AAC v2</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="811"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Sample rate: %2 kHz</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Typ dźwięku&lt;/b&gt;&lt;br&gt;%1stereo&lt;br&gt;Częstotliwość próbkowania: %2 kHz</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="818"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Sample rate: %2 kHz (SBR %3)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Typ dźwięku&lt;/b&gt;&lt;br&gt;stereo (PS %1)&lt;br&gt;Częstotliwość próbkowania: %2 kHz (SBR %3)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="819"/>
         <location filename="../mainwindow.cpp" line="821"/>
         <source>on</source>
-        <translation type="unfinished"></translation>
+        <translation>włączać</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="819"/>
         <location filename="../mainwindow.cpp" line="821"/>
         <source>off</source>
-        <translation type="unfinished"></translation>
+        <translation>wyłączać</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="830"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Sygnał audio&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Częstotliwość próbkowania: %1 kHz</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="836"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz (SBR: %2)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Sygnał audio&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Częstotliwość próbkowania: %1 kHz (SBR: %2)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="856"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1 (dynamic)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Charakter programu&lt;/b&gt;&lt;br&gt;%1 (dynamiczny)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="865"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Charakter programu&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="886"/>
         <source>Tuning...  </source>
-        <translation type="unfinished"></translation>
+        <translation>Strojenie…</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="988"/>
         <source>End of file</source>
-        <translation type="unfinished"></translation>
+        <translation>Koniec pliku</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="991"/>
         <source>Input device disconnected</source>
-        <translation type="unfinished"></translation>
+        <translation>Urządzenie wejściowe odłączone</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="997"/>
         <source>No input data</source>
-        <translation type="unfinished"></translation>
+        <translation>Brak danych wejściowych</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1123"/>
         <source>&lt;b&gt;Ensemble %1/%2&lt;/b&gt;&lt;br&gt;Click for switching to:&lt;br&gt;&lt;i&gt;%3&lt;/i&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Multipleks %1/%2&lt;/b&gt;&lt;br&gt;kliknij, aby przejść do:&lt;br&gt;&lt;i&gt;%3&lt;/i&gt;</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1132"/>
         <source>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Language:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %6</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Język:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Kraj:&lt;/b&gt; %6</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1177"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Coderate: %2/%3&lt;br&gt;Capacity units: %4 CU</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;B&gt;Korekcja błędów&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Sprawność kodowania: %2/%3&lt;br&gt;Jednostki pojemności: %4 CU</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1188"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Protection level: %2&lt;br&gt;Capacity units: %3 CU</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;B&gt;Korekcja błędów&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Poziom ochrony: %2&lt;br&gt;Jednostki pojemności: %3 CU</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1198"/>
         <source>%1 kbps</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 kbps</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1200"/>
         <source>&lt;b&gt;Service bitrate&lt;/b&gt;&lt;br&gt;Audio &amp; data: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Przepływność&lt;/b&gt;&lt;br&gt;Dźwięk i dane związane z programem: %1</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1222"/>
         <source>Service currently unavailable</source>
-        <translation type="unfinished"></translation>
+        <translation>Usługa obecnie niedostępna</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1223"/>
         <source>Service was removed from ensemble</source>
-        <translation type="unfinished"></translation>
+        <translation>Usługa została usunięta z multipleksu</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1256"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;on current service</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Bieżący komunikat&lt;br&gt;na włączonej stacji</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1267"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to suspend this announcement</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Bieżący komunikat&lt;br&gt;Źródło: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknij, aby wstrzymać odtwarzanie</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1282"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Suspended announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to resume this announcement</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Wstrzymany komunikat&lt;br&gt;Źródło: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknij, aby wznowić odtwarzanie komunikatu</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1323"/>
         <source>No ensemble</source>
-        <translation type="unfinished"></translation>
+        <translation>Brak multipleksu</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1324"/>
         <source>No ensemble tuned</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie dostrojono żadnego multipleksu</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1331"/>
         <source>No service</source>
-        <translation type="unfinished"></translation>
+        <translation>Brak usługi</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1335"/>
         <source>No service playing</source>
-        <translation type="unfinished"></translation>
+        <translation>Brak odtwarzania usługi</translation>
     </message>
 </context>
 <context>
@@ -753,2088 +756,2217 @@
     <message>
         <location filename="../main.cpp" line="44"/>
         <source>Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)</source>
-        <translation type="unfinished"></translation>
+        <translation>Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="50"/>
         <source>Optional INI file. If not specified AbracaDABra.ini in system directory will be used.</source>
-        <translation type="unfinished"></translation>
+        <translation>Opcjonalny plik INI. Jeśli nie zostanie określony, zostanie użyty AbracaDABra.ini w katalogu systemowym.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2617"/>
         <source>Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Tytuł</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2618"/>
         <source>Album</source>
-        <translation type="unfinished"></translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2619"/>
         <source>Track Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Numer utworu</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2620"/>
         <source>Artist</source>
-        <translation type="unfinished"></translation>
+        <translation>Artysta</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2621"/>
         <source>Composition</source>
-        <translation type="unfinished"></translation>
+        <translation>Kompozycja</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2622"/>
         <source>Movement</source>
-        <translation type="unfinished"></translation>
+        <translation>Ruch</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2623"/>
         <source>Conductor</source>
-        <translation type="unfinished"></translation>
+        <translation>Dyrygent</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2624"/>
         <source>Composer</source>
-        <translation type="unfinished"></translation>
+        <translation>Kompozytor</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2625"/>
         <source>Band</source>
-        <translation type="unfinished"></translation>
+        <translation>Zespół</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2626"/>
         <source>Comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Komentarz</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2627"/>
         <source>Genre</source>
-        <translation type="unfinished"></translation>
+        <translation>Gatunek</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2628"/>
         <location filename="../dabtables.cpp" line="169"/>
         <location filename="../dabtables.cpp" line="591"/>
         <source>News</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiadomosci</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2629"/>
         <source>News (local)</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiadomości (lokalne)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2630"/>
         <source>Stock Market</source>
-        <translation type="unfinished"></translation>
+        <translation>Giełda Papierów Wartościowych</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2631"/>
         <location filename="../dabtables.cpp" line="172"/>
         <source>Sport</source>
-        <translation type="unfinished"></translation>
+        <translation>Sport</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2632"/>
         <source>Lottery</source>
-        <translation type="unfinished"></translation>
+        <translation>Loteria</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2633"/>
         <source>Horoscope</source>
-        <translation type="unfinished"></translation>
+        <translation>Horoskop</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2634"/>
         <source>Daily Diversion</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Where is this displayed? I am not happy with this translation</translatorcomment>
+        <translation>Codzienna rozrywka</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2635"/>
         <source>Health</source>
-        <translation type="unfinished"></translation>
+        <translation>Zdrowie</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2636"/>
         <location filename="../dabtables.cpp" line="593"/>
         <source>Event</source>
-        <translation type="unfinished"></translation>
+        <translation>Wydarzenie</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2637"/>
         <source>Scene</source>
-        <translation type="unfinished"></translation>
+        <translation>Scena</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2638"/>
         <source>Cinema</source>
-        <translation type="unfinished"></translation>
+        <translation>Kino</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2639"/>
         <source>TV</source>
-        <translation type="unfinished"></translation>
+        <translation>Telewizja</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2643"/>
         <location filename="../dabtables.cpp" line="592"/>
         <source>Weather</source>
-        <translation type="unfinished"></translation>
+        <translation>Pogoda</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2644"/>
         <source>Traffic</source>
-        <translation type="unfinished"></translation>
+        <translation>Ruch drogowy</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2645"/>
         <location filename="../dabtables.cpp" line="587"/>
         <source>Alarm</source>
-        <translation type="unfinished"></translation>
+        <translation>Alarm</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2646"/>
         <source>Advertisment</source>
-        <translation type="unfinished"></translation>
+        <translation>Reklama</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2647"/>
         <source>URL</source>
-        <translation type="unfinished"></translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2648"/>
         <source>Other</source>
-        <translation type="unfinished"></translation>
+        <translation>Inny</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2649"/>
         <source>Station (short)</source>
-        <translation type="unfinished"></translation>
+        <translation>Program (skrót nazwy)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2650"/>
         <source>Station</source>
-        <translation type="unfinished"></translation>
+        <translation>Program</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2651"/>
         <source>Now</source>
-        <translation type="unfinished"></translation>
+        <translation>Teraz</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2652"/>
         <source>Next</source>
-        <translation type="unfinished"></translation>
+        <translation>Następne</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2653"/>
         <source>Programme Part</source>
-        <translation type="unfinished"></translation>
+        <translation>Część programowa</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2654"/>
         <source>Host</source>
-        <translation type="unfinished"></translation>
+        <translation>prezenter/ka</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2655"/>
         <source>Editorial</source>
-        <translation type="unfinished"></translation>
+        <translation>Artykuł wstępny</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2659"/>
         <source>Homepage</source>
-        <translation type="unfinished"></translation>
+        <translation>Strona startowa</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2663"/>
         <source>Phone (Hotline)</source>
-        <translation type="unfinished"></translation>
+        <translation>Telefon (Infolinia)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2664"/>
         <source>Phone (Studio)</source>
-        <translation type="unfinished"></translation>
+        <translation>Telefon (Studio)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2665"/>
         <source>Phone (Other)</source>
-        <translation type="unfinished"></translation>
+        <translation>Telefon (inny)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2666"/>
         <source>SMS (Studio)</source>
-        <translation type="unfinished"></translation>
+        <translation>SMS (do studia)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2667"/>
         <source>SMS (Other)</source>
-        <translation type="unfinished"></translation>
+        <translation>SMS (inny)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2668"/>
         <source>E-mail (Hotline)</source>
-        <translation type="unfinished"></translation>
+        <translation>E-mail (Infolinia)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2669"/>
         <source>E-mail (Studio)</source>
-        <translation type="unfinished"></translation>
+        <translation>E-mail (Studio)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2670"/>
         <source>E-mail (Other)</source>
-        <translation type="unfinished"></translation>
+        <translation>E-mail (inny)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2671"/>
         <source>MMS</source>
-        <translation type="unfinished"></translation>
+        <translation>MMS</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2672"/>
         <source>Chat Message</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiadomość z czatu</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2673"/>
         <source>Chat</source>
-        <translation type="unfinished"></translation>
+        <translation>Czat</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2674"/>
         <source>Vote Question</source>
-        <translation type="unfinished"></translation>
+        <translation>Pytanie do głosowania</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2675"/>
         <source>Vote Here</source>
-        <translation type="unfinished"></translation>
+        <translation>Głosuj tutaj</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2678"/>
         <source>Private 1</source>
-        <translation type="unfinished"></translation>
+        <translation>Prywatny 1</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2679"/>
         <source>Private 2</source>
-        <translation type="unfinished"></translation>
+        <translation>Prywatny 2</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2680"/>
         <source>Private 3</source>
-        <translation type="unfinished"></translation>
+        <translation>Prywatny 3</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="170"/>
         <source>Current Affairs</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Wydarzenia Bieżące</translatorcomment>
+        <translation>Wydarze. Biezace</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="171"/>
         <source>Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informacje</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="173"/>
         <source>Education</source>
-        <translation type="unfinished"></translation>
+        <translation>Edukacja</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="174"/>
         <source>Drama</source>
-        <translation type="unfinished"></translation>
+        <translation>Dramat</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="175"/>
         <source>Culture</source>
-        <translation type="unfinished"></translation>
+        <translation>Kultura</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="176"/>
         <source>Science</source>
-        <translation type="unfinished"></translation>
+        <translation>Nauka</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="177"/>
         <source>Varied</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozne</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="178"/>
         <source>Pop Music</source>
-        <translation type="unfinished"></translation>
+        <translation>Muzyka Pop</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="179"/>
         <source>Rock Music</source>
-        <translation type="unfinished"></translation>
+        <translation>Muzyka Rock</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="180"/>
         <source>Easy Listening Music</source>
-        <translation type="unfinished"></translation>
+        <translation>Muzyka_Lekka</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="181"/>
         <source>Light Classical</source>
-        <translation type="unfinished"></translation>
+        <translation>Muz. Klas. Lekka</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="182"/>
         <source>Serious Classical</source>
-        <translation type="unfinished"></translation>
+        <translation>Muzyka Klasyczna Poważna</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="183"/>
         <source>Other Music</source>
-        <translation type="unfinished"></translation>
+        <translation>Muzyka_Inna</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="184"/>
         <source>Weather/meteorology</source>
-        <translation type="unfinished"></translation>
+        <translation>Pogoda</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="185"/>
         <source>Finance/Business</source>
-        <translation type="unfinished"></translation>
+        <translation>Finanse</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="186"/>
         <source>Children&apos;s programmes</source>
-        <translation type="unfinished"></translation>
+        <translation>Programy Dziecięce</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="187"/>
         <source>Social Affairs</source>
-        <translation type="unfinished"></translation>
+        <translation>Wydarzenia Społeczne</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="188"/>
         <source>Religion</source>
-        <translation type="unfinished"></translation>
+        <translation>Religia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="189"/>
         <source>Phone In</source>
-        <translation type="unfinished"></translation>
+        <translation>Audycja z telefonicznym udziałem słuchaczy</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="190"/>
         <source>Travel</source>
-        <translation type="unfinished"></translation>
+        <translation>Podruze</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="191"/>
         <source>Leisure</source>
-        <translation type="unfinished"></translation>
+        <translation>Czas Wolny</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="192"/>
         <source>Jazz Music</source>
-        <translation type="unfinished"></translation>
+        <translation>Muzyka Jazzowa</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="193"/>
         <source>Country Music</source>
-        <translation type="unfinished"></translation>
+        <translation>Muzyka Country</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="194"/>
         <source>National Music</source>
-        <translation type="unfinished"></translation>
+        <translation>Muzyka Narodowa</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="195"/>
         <source>Oldies Music</source>
-        <translation type="unfinished"></translation>
+        <translation>Muzyka Archiwalna</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="196"/>
         <source>Folk Music</source>
-        <translation type="unfinished"></translation>
+        <translation>Muzyka Ludowa</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="197"/>
         <source>Documentary</source>
-        <translation type="unfinished"></translation>
+        <translation>Dokument</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="200"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Niezdefiniowany</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="208"/>
         <source>Unknown/NA</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieznany/nie dotyczy</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="209"/>
         <source>Albanian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język albański</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="210"/>
         <source>Breton</source>
-        <translation type="unfinished"></translation>
+        <translation>Język bretoński</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="211"/>
         <source>Catalan</source>
-        <translation type="unfinished"></translation>
+        <translation>Język kataloński</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="212"/>
         <source>Croatian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język chorwacki</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="213"/>
         <source>Welsh</source>
-        <translation type="unfinished"></translation>
+        <translation>Język walijski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="214"/>
         <source>Czech</source>
-        <translation type="unfinished"></translation>
+        <translation>Język czeski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="215"/>
         <source>Danish</source>
-        <translation type="unfinished"></translation>
+        <translation>Język duński</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="216"/>
         <source>German</source>
-        <translation type="unfinished"></translation>
+        <translation>język niemiecki</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="217"/>
         <source>English</source>
-        <translation type="unfinished"></translation>
+        <translation>Język angielski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="218"/>
         <source>Spanish</source>
-        <translation type="unfinished"></translation>
+        <translation>Język hiszpański</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="219"/>
         <source>Esperanto</source>
-        <translation type="unfinished"></translation>
+        <translation>Esperanto</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="220"/>
         <source>Estonian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język estoński</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="221"/>
         <source>Basque</source>
-        <translation type="unfinished"></translation>
+        <translation>Język baskijski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="222"/>
         <source>Faroese</source>
-        <translation type="unfinished"></translation>
+        <translation>Język farerski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="223"/>
         <source>French</source>
-        <translation type="unfinished"></translation>
+        <translation>Język francuski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="224"/>
         <source>Frisian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język fryzyjski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="225"/>
         <source>Irish</source>
-        <translation type="unfinished"></translation>
+        <translation>Język irlandzki</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="226"/>
         <source>Gaelic</source>
-        <translation type="unfinished"></translation>
+        <translation>Języki goidelskie</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="227"/>
         <source>Galician</source>
-        <translation type="unfinished"></translation>
+        <translation>Język galicyjski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="228"/>
         <source>Icelandic</source>
-        <translation type="unfinished"></translation>
+        <translation>Język islandzki</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="229"/>
         <source>Italian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język włoski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="230"/>
         <source>Lappish</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Języki lapońskie</translatorcomment>
+        <translation>Języki saamskie</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="231"/>
         <source>Latin</source>
-        <translation type="unfinished"></translation>
+        <translation>Język łaciński</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="232"/>
         <source>Latvian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język łotewski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="233"/>
         <source>Luxembourgian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język luksemburski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="234"/>
         <source>Lithuanian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język litewski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="235"/>
         <source>Hungarian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język węgierski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="236"/>
         <source>Maltese</source>
-        <translation type="unfinished"></translation>
+        <translation>Język maltański</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="237"/>
         <source>Dutch</source>
-        <translation type="unfinished"></translation>
+        <translation>Język niderlandzki</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="238"/>
         <source>Norwegian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język norweski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="239"/>
         <source>Occitan</source>
-        <translation type="unfinished"></translation>
+        <translation>Język oksytański</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="240"/>
         <source>Polish</source>
-        <translation type="unfinished"></translation>
+        <translation>Język polski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="241"/>
         <source>Portuguese</source>
-        <translation type="unfinished"></translation>
+        <translation>Język portugalski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="242"/>
         <source>Romanian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język rumuński</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="243"/>
         <source>Romansh</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Język retoromański</translatorcomment>
+        <translation>Język romansz</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="244"/>
         <source>Serbian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język serbski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="245"/>
         <source>Slovak</source>
-        <translation type="unfinished"></translation>
+        <translation>Język słowacki</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="246"/>
         <source>Slovene</source>
-        <translation type="unfinished"></translation>
+        <translation>Język słoweński</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="247"/>
         <source>Finnish</source>
-        <translation type="unfinished"></translation>
+        <translation>Język fiński</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="248"/>
         <source>Swedish</source>
-        <translation type="unfinished"></translation>
+        <translation>Język szwedzki</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="249"/>
         <source>Turkish</source>
-        <translation type="unfinished"></translation>
+        <translation>Język turecki</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="250"/>
         <source>Flemish</source>
-        <translation type="unfinished"></translation>
+        <translation>Język flamandzki</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="251"/>
         <source>Walloon</source>
-        <translation type="unfinished"></translation>
+        <translation>Język waloński</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="252"/>
         <source>Background sound/clean feed</source>
-        <translation type="unfinished"></translation>
+        <translation>Dźwięk w tle / czysty kanał</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="253"/>
         <source>Zulu</source>
-        <translation type="unfinished"></translation>
+        <translation>Język zulu</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="254"/>
         <source>Vietnamese</source>
-        <translation type="unfinished"></translation>
+        <translation>Język wietnamski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="255"/>
         <source>Uzbek</source>
-        <translation type="unfinished"></translation>
+        <translation>Język uzbecki</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="256"/>
         <source>Urdu</source>
-        <translation type="unfinished"></translation>
+        <translation>Język urdu</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="257"/>
         <source>Ukranian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język ukraiński</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="258"/>
         <source>Thai</source>
-        <translation type="unfinished"></translation>
+        <translation>Język tajski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="259"/>
         <source>Telugu</source>
-        <translation type="unfinished"></translation>
+        <translation>Język telugu</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="260"/>
         <source>Tatar</source>
-        <translation type="unfinished"></translation>
+        <translation>Język tatarski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="261"/>
         <source>Tamil</source>
-        <translation type="unfinished"></translation>
+        <translation>Język tamilski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="262"/>
         <source>Tadzhik</source>
-        <translation type="unfinished"></translation>
+        <translation>Język tadżycki</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="263"/>
         <source>Swahili</source>
-        <translation type="unfinished"></translation>
+        <translation>Język suahili</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="264"/>
         <source>Sranan Tongo</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Język surinamski</translatorcomment>
+        <translation>Sranan tongo</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="265"/>
         <source>Somali</source>
-        <translation type="unfinished"></translation>
+        <translation>Język somalijski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="266"/>
         <source>Sinhalese</source>
-        <translation type="unfinished"></translation>
+        <translation>Język syngaleski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="267"/>
         <source>Shona</source>
-        <translation type="unfinished"></translation>
+        <translation>Język shona</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="268"/>
         <source>Serbo-Croat</source>
-        <translation type="unfinished"></translation>
+        <translation>Język serbsko-chorwacki</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="269"/>
         <source>Rusyn</source>
-        <translation type="unfinished"></translation>
+        <translation>Język rusiński</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="270"/>
         <source>Russian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język rosyjski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="271"/>
         <source>Quechua</source>
-        <translation type="unfinished"></translation>
+        <translation>Język keczua</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="272"/>
         <source>Pushtu</source>
-        <translation type="unfinished"></translation>
+        <translation>Język paszto</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="273"/>
         <source>Punjabi</source>
-        <translation type="unfinished"></translation>
+        <translation>Język pendżabski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="274"/>
         <source>Persian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język perski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="275"/>
         <source>Papiamento</source>
-        <translation type="unfinished"></translation>
+        <translation>Język papiamento</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="276"/>
         <source>Oriya</source>
-        <translation type="unfinished"></translation>
+        <translation>Język orija</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="277"/>
         <source>Nepali</source>
-        <translation type="unfinished"></translation>
+        <translation>Język nepalski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="278"/>
         <source>Ndebele</source>
-        <translation type="unfinished"></translation>
+        <translation>Język ndebele</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="279"/>
         <source>Marathi</source>
-        <translation type="unfinished"></translation>
+        <translation>Język marathi</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="280"/>
         <source>Moldavian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język mołdawski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="281"/>
         <source>Malaysian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język malezyjski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="282"/>
         <source>Malagasay</source>
-        <translation type="unfinished"></translation>
+        <translation>Język malgaski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="283"/>
         <source>Macedonian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język macedoński</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="284"/>
         <source>Laotian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język laotański</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="285"/>
         <source>Korean</source>
-        <translation type="unfinished"></translation>
+        <translation>Język koreański</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="286"/>
         <source>Khmer</source>
-        <translation type="unfinished"></translation>
+        <translation>Język khmerski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="287"/>
         <source>Kazakh</source>
-        <translation type="unfinished"></translation>
+        <translation>Język kazachski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="288"/>
         <source>Kannada</source>
-        <translation type="unfinished"></translation>
+        <translation>Kanada</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="289"/>
         <source>Japanese</source>
-        <translation type="unfinished"></translation>
+        <translation>Język japoński</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="290"/>
         <source>Indonesian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język indonezyjski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="291"/>
         <source>Hindi</source>
-        <translation type="unfinished"></translation>
+        <translation>Język hindi</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="292"/>
         <source>Hebrew</source>
-        <translation type="unfinished"></translation>
+        <translation>Język hebrajski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="293"/>
         <source>Hausa</source>
-        <translation type="unfinished"></translation>
+        <translation>Język hausa</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="294"/>
         <source>Gurani</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Język gurani, gorani, howrami</translatorcomment>
+        <translation>Język gurani</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="295"/>
         <source>Gujurati</source>
-        <translation type="unfinished"></translation>
+        <translation>Język gudźarati</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="296"/>
         <source>Greek</source>
-        <translation type="unfinished"></translation>
+        <translation>grecki</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="297"/>
         <source>Georgian</source>
-        <translation type="unfinished"></translation>
+        <translation>gruziński</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="298"/>
         <source>Fulani</source>
-        <translation type="unfinished"></translation>
+        <translation>Język ful</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="299"/>
         <source>Dari</source>
-        <translation type="unfinished"></translation>
+        <translation>dari</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="300"/>
         <source>Chuvash</source>
-        <translation type="unfinished"></translation>
+        <translation>Język czuwaski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="301"/>
         <source>Chinese</source>
-        <translation type="unfinished"></translation>
+        <translation>Język chiński</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="302"/>
         <source>Burmese</source>
-        <translation type="unfinished"></translation>
+        <translation>Język birmański</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="303"/>
         <source>Bulgarian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język bułgarski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="304"/>
         <source>Bengali</source>
-        <translation type="unfinished"></translation>
+        <translation>Język bengalski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="305"/>
         <source>Belorussian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język białoruski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="306"/>
         <source>Bambora</source>
-        <translation type="unfinished"></translation>
+        <translation>Język bambara</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="307"/>
         <source>Azerbaijani</source>
-        <translation type="unfinished"></translation>
+        <translation>Język azerbejdżański</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="308"/>
         <source>Assamese</source>
-        <translation type="unfinished"></translation>
+        <translation>Język asamski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="309"/>
         <source>Armenian</source>
-        <translation type="unfinished"></translation>
+        <translation>Język ormiański</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="310"/>
         <source>Arabic</source>
-        <translation type="unfinished"></translation>
+        <translation>Język arabski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="311"/>
         <source>Amharic</source>
-        <translation type="unfinished"></translation>
+        <translation>Język amharski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="312"/>
         <location filename="../dabtables.cpp" line="578"/>
         <location filename="../dabtables.cpp" line="599"/>
         <source>Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieznany</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="343"/>
         <source>USA/Puerto Rico</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Wspólnota Portoryka, Wolne Stowarzyszone Państwo Portoryko</translatorcomment>
+        <translation>Stany Zjednoczone/Portoryko</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="347"/>
         <source>Canada</source>
-        <translation type="unfinished"></translation>
+        <translation>Kanada</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="348"/>
         <source>Greenland</source>
-        <translation type="unfinished"></translation>
+        <translation>Grenlandia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="349"/>
         <source>Anguilla</source>
-        <translation type="unfinished"></translation>
+        <translation>Anguilla</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="350"/>
         <source>Antigua and Barbuda</source>
-        <translation type="unfinished"></translation>
+        <translation>Antigua i Barbuda</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="351"/>
         <source>Ecuador</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Ekwadoru</translatorcomment>
+        <translation>Ekwador</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="352"/>
         <source>Falkland Islands</source>
-        <translation type="unfinished"></translation>
+        <translation>Falklandy</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="353"/>
         <source>Barbados</source>
-        <translation type="unfinished"></translation>
+        <translation>Barbados</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="354"/>
         <source>Belize</source>
-        <translation type="unfinished"></translation>
+        <translation>Belize</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="355"/>
         <source>Cayman Islands</source>
-        <translation type="unfinished"></translation>
+        <translation>Kajmany</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="356"/>
         <source>Costa Rica</source>
-        <translation type="unfinished"></translation>
+        <translation>Kostaryka</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="357"/>
         <source>Cuba</source>
-        <translation type="unfinished"></translation>
+        <translation>Kuba</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="358"/>
         <source>Argentina</source>
-        <translation type="unfinished"></translation>
+        <translation>Argentyna</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="359"/>
         <location filename="../dabtables.cpp" line="398"/>
         <source>Brazil</source>
-        <translation type="unfinished"></translation>
+        <translation>Brazylia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="360"/>
         <source>Bermuda</source>
-        <translation type="unfinished"></translation>
+        <translation>Bermudy</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="361"/>
         <source>Netherlands Antilles</source>
-        <translation type="unfinished"></translation>
+        <translation>Antyle Holenderskie</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="362"/>
         <source>Guadeloupe</source>
-        <translation type="unfinished"></translation>
+        <translation>Gwadelupa</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="363"/>
         <source>Bahamas</source>
-        <translation type="unfinished"></translation>
+        <translation>Bahamy</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="364"/>
         <source>Bolivia</source>
-        <translation type="unfinished"></translation>
+        <translation>Boliwia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="365"/>
         <source>Colombia</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumbia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="366"/>
         <source>Jamaica</source>
-        <translation type="unfinished"></translation>
+        <translation>Jamajka</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="367"/>
         <source>Martinique</source>
-        <translation type="unfinished"></translation>
+        <translation>Martynika</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="368"/>
         <source>Paraguay</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Paragwaju</translatorcomment>
+        <translation>Paragwaj</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="369"/>
         <source>Nicaragua</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Nikaragui</translatorcomment>
+        <translation>Nikaragua</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="370"/>
         <source>Panama</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Panamy</translatorcomment>
+        <translation>Panama</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="371"/>
         <source>Dominica</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Wspólnota Dominiki</translatorcomment>
+        <translation>Dominika</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="372"/>
         <source>Dominican Republic</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Dominikańska</translatorcomment>
+        <translation>Dominikana</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="373"/>
         <source>Chile</source>
-        <translation type="unfinished"></translation>
+        <translation>Chile</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="374"/>
         <source>Grenada</source>
-        <translation type="unfinished"></translation>
+        <translation>Grenada</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="375"/>
         <source>Turks and Caicos islands</source>
-        <translation type="unfinished"></translation>
+        <translation>Turks i Caicos</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="376"/>
         <source>Guyana</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Kooperacyjna Republika Gujany</translatorcomment>
+        <translation>Gujana</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="377"/>
         <source>Guatemala</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Gwatemali</translatorcomment>
+        <translation>Gwatemala</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="378"/>
         <source>Honduras</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Hondurasu</translatorcomment>
+        <translation>Honduras</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="379"/>
         <source>Aruba</source>
-        <translation type="unfinished"></translation>
+        <translation>Aruba</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="380"/>
         <source>Montserrat</source>
-        <translation type="unfinished"></translation>
+        <translation>Montserrat</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="381"/>
         <source>Trinidad and Tobago</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Trynidadu i Tobago</translatorcomment>
+        <translation>Trynidad i Tobago</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="382"/>
         <source>Peru</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Peru</translatorcomment>
+        <translation>Peru</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="383"/>
         <source>Surinam</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Surinamu</translatorcomment>
+        <translation>Surinam</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="384"/>
         <source>Uruguay</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Wschodnia Republika Urugwaju</translatorcomment>
+        <translation>Urugwaj</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="385"/>
         <source>St. Kitts</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Federacja Saint Kitts i Nevis</translatorcomment>
+        <translation>Saint Kitts i Nevis</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="386"/>
         <source>St. Lucia</source>
-        <translation type="unfinished"></translation>
+        <translation>Saint Lucia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="387"/>
         <source>El Salvador</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Salwadoru</translatorcomment>
+        <translation>Salwador</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="388"/>
         <source>Haiti</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Haiti</translatorcomment>
+        <translation>Haiti</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="389"/>
         <source>Venezuela</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Boliwariańska Republika Wenezueli</translatorcomment>
+        <translation>Wenezuela</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="390"/>
         <location filename="../dabtables.cpp" line="394"/>
         <source>Mexico</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Meksykańskie Stany Zjednoczone</translatorcomment>
+        <translation>Meksyk</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="391"/>
         <source>St. Vincent</source>
-        <translation type="unfinished"></translation>
+        <translation>Saint Vincent i Grenadyny</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="399"/>
         <source>St. Pierre and Miquelon</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Wspólnota Saint-Pierre i Miquelon</translatorcomment>
+        <translation>Saint-Pierre i Miquelon</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="401"/>
         <source>Cameroon</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Kamerunu</translatorcomment>
+        <translation>Kamerun</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="402"/>
         <source>Central African Republic</source>
-        <translation type="unfinished"></translation>
+        <translation>Republika Środkowoafrykańska</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="403"/>
         <source>Djibouti</source>
-        <translation type="unfinished"></translation>
+        <translation>Dżibuti</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="404"/>
         <source>Madagascar</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Madagaskaru</translatorcomment>
+        <translation>Madagaskar</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="405"/>
         <source>Mali</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Mali</translatorcomment>
+        <translation>Mali</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="406"/>
         <source>Angola</source>
-        <translation type="unfinished"></translation>
+        <translation>Angola</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="407"/>
         <source>Equatorial Guinea</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Gwinei Równikowej</translatorcomment>
+        <translation>Gwinea Równikowa</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="408"/>
         <source>Gabon</source>
-        <translation type="unfinished"></translation>
+        <translation>Gabon</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="409"/>
         <source>Republic of Guinea</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Gwinei</translatorcomment>
+        <translation>Gwinea</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="410"/>
         <source>South Africa</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Południowej Afryki (RPA)</translatorcomment>
+        <translation>Południowa Afryka</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="411"/>
         <source>Burkina Faso</source>
-        <translation type="unfinished"></translation>
+        <translation>Burkina Faso</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="412"/>
         <source>Congo</source>
-        <translation type="unfinished"></translation>
+        <translation>Kongo</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="413"/>
         <source>Togo</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Togijska</translatorcomment>
+        <translation>Togo</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="414"/>
         <source>Benin</source>
-        <translation type="unfinished"></translation>
+        <translation>Benin</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="415"/>
         <source>Malawi</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Malawi</translatorcomment>
+        <translation>Malawi</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="416"/>
         <source>Namibia</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Namibii</translatorcomment>
+        <translation>Namibia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="417"/>
         <source>Liberia</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Liberii</translatorcomment>
+        <translation>Liberia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="418"/>
         <source>Ghana</source>
-        <translation type="unfinished"></translation>
+        <translation>Ghana</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="419"/>
         <source>Mauritania</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Islamska Republika Mauretańska</translatorcomment>
+        <translation>Mauretania</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="420"/>
         <source>Sao Tome and Principe</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Demokratyczna Republika Wysp Świętego Tomasza i Książęcej</translatorcomment>
+        <translation>Wyspy Świętego Tomasza i Książęca</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="421"/>
         <source>Cape Verde</source>
-        <translation type="unfinished"></translation>
+        <translation>Republika Zielonego Przylądka</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="422"/>
         <source>Senegal</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Senegalu</translatorcomment>
+        <translation>Senegal</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="423"/>
         <source>Gambia</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Gambii</translatorcomment>
+        <translation>Gambia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="424"/>
         <source>Burundi</source>
-        <translation type="unfinished"></translation>
+        <translation>Burundi</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="425"/>
         <source>Ascension Island</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyspa Wniebowstąpienia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="426"/>
         <source>Botswana</source>
-        <translation type="unfinished"></translation>
+        <translation>Botswana</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="427"/>
         <source>Comoros</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Związek Komorów</translatorcomment>
+        <translation>Komory</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="428"/>
         <source>Tanzania</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Zjednoczona Republika Tanzanii</translatorcomment>
+        <translation>Tanzania</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="429"/>
         <source>Ethiopia</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Federalna Demokratyczna Republika</translatorcomment>
+        <translation>Etiopia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="430"/>
         <source>Nigeria</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Federalna Republika Nigerii</translatorcomment>
+        <translation>Nigeria</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="431"/>
         <source>Sierra Leone</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Sierra Leone</translatorcomment>
+        <translation>Sierra Leone</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="432"/>
         <source>Zimbabwe</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Zimbabwe</translatorcomment>
+        <translation>Zimbabwe</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="433"/>
         <source>Mozambique</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Mozambiku</translatorcomment>
+        <translation>Mozambik</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="434"/>
         <source>Uganda</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Ugandy</translatorcomment>
+        <translation>Uganda</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="435"/>
         <source>Swaziland</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Królestwo Eswatini</translatorcomment>
+        <translation>Eswatini</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="436"/>
         <source>Kenya</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Kenii</translatorcomment>
+        <translation>Kenia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="437"/>
         <source>Somalia</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Federalna Republika Somalii</translatorcomment>
+        <translation>Somalia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="438"/>
         <source>Niger</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Nigru</translatorcomment>
+        <translation>Niger</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="439"/>
         <source>Chad</source>
-        <translation type="unfinished"></translation>
+        <translation>Czad</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="440"/>
         <source>Guinea-Bissau</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Gwinei Bissau</translatorcomment>
+        <translation>Gwinea Bissau</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="441"/>
         <source>Zaire</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Zairu</translatorcomment>
+        <translation>Zair</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="442"/>
         <source>Cote d&apos;Ivoire</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Wybrzeża Kości Słoniowej</translatorcomment>
+        <translation>Wybrzeże Kości Słoniowej</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="443"/>
         <source>Zanzibar</source>
-        <translation type="unfinished"></translation>
+        <translation>Zanzibar</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="444"/>
         <source>Zambia</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Zambii</translatorcomment>
+        <translation>Zambia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="445"/>
         <source>Western Sahara</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Saharyjska Arabska Republika Demokratyczna</translatorcomment>
+        <translation>Sahara Zachodnia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="446"/>
         <source>Rwanda</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Rwandy</translatorcomment>
+        <translation>Rwanda</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="447"/>
         <source>Lesotho</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Królestwo Lesotho</translatorcomment>
+        <translation>Lesotho</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="448"/>
         <source>Seychelles</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Seszeli</translatorcomment>
+        <translation>Seszele</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="449"/>
         <source>Mauritius</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Mauritiusu</translatorcomment>
+        <translation>Mauritius</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="450"/>
         <source>Sudan</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Sudanu</translatorcomment>
+        <translation>Sudan</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="452"/>
         <location filename="../dabtables.cpp" line="464"/>
         <source>Germany</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Federalna Niemiec (RFN)</translatorcomment>
+        <translation>Niemcy</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="453"/>
         <source>Algeria</source>
-        <translation type="unfinished"></translation>
+        <translation>Algieria</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="454"/>
         <source>Andorra</source>
-        <translation type="unfinished"></translation>
+        <translation>Andora</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="455"/>
         <source>Israel</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Państwo Izrael</translatorcomment>
+        <translation>Izrael</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="456"/>
         <source>Italy</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Włoska</translatorcomment>
+        <translation>Włochy</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="457"/>
         <source>Belgium</source>
-        <translation type="unfinished"></translation>
+        <translation>Belgia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="458"/>
         <source>Russian Federation</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Federacja Rosyjska</translatorcomment>
+        <translation>Federacja Rosyjska</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="459"/>
         <source>Palestine</source>
-        <translation type="unfinished"></translation>
+        <translation>Palestyna</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="460"/>
         <source>Albania</source>
-        <translation type="unfinished"></translation>
+        <translation>Albania</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="461"/>
         <source>Austria</source>
-        <translation type="unfinished"></translation>
+        <translation>Austria</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="462"/>
         <source>Hungary</source>
-        <translation type="unfinished"></translation>
+        <translation>Węgry</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="463"/>
         <source>Malta</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Malty</translatorcomment>
+        <translation>Malta</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="465"/>
         <source>Egypt</source>
-        <translation type="unfinished"></translation>
+        <translation>Egipt</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="466"/>
         <source>Greece</source>
-        <translation type="unfinished"></translation>
+        <translation>Grecja</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="467"/>
         <source>Cyprus</source>
-        <translation type="unfinished"></translation>
+        <translation>Cypr</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="468"/>
         <source>San Marino</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika San Marino</translatorcomment>
+        <translation>San Marino</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="469"/>
         <source>Switzerland</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Konfederacja Szwajcarska</translatorcomment>
+        <translation>Szwajcaria</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="470"/>
         <source>Jordan</source>
-        <translation type="unfinished"></translation>
+        <translation>Jordania</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="471"/>
         <source>Finland</source>
-        <translation type="unfinished"></translation>
+        <translation>Finlandia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="472"/>
         <source>Luxembourg</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Wielkie Księstwo Luksemburga</translatorcomment>
+        <translation>Luksemburg</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="473"/>
         <source>Bulgaria</source>
-        <translation type="unfinished"></translation>
+        <translation>Bułgaria</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="474"/>
         <source>Denmark</source>
-        <translation type="unfinished"></translation>
+        <translation>Dania</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="476"/>
         <source>Gibraltar</source>
-        <translation type="unfinished"></translation>
+        <translation>Gibraltar</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="477"/>
         <source>Iraq</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Iraku</translatorcomment>
+        <translation>Irak</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="478"/>
         <source>United Kingdom</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Zjednoczone Królestwo Wielkiej Brytanii i Irlandii Północnej</translatorcomment>
+        <translation>Wielka Brytania</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="479"/>
         <source>Libya</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Państwo Libia</translatorcomment>
+        <translation>Libia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="480"/>
         <source>Romania</source>
-        <translation type="unfinished"></translation>
+        <translation>Rumunia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="481"/>
         <source>France</source>
-        <translation type="unfinished"></translation>
+        <translation>Francja</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="482"/>
         <source>Morocco</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Królestwo Marokańskie</translatorcomment>
+        <translation>Maroko</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="483"/>
         <source>Czech Republic</source>
-        <translation type="unfinished"></translation>
+        <translation>Czechy</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="484"/>
         <source>Poland</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Rzeczpospolita Polska</translatorcomment>
+        <translation>Polska</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="485"/>
         <source>Vatican</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Państwo Watykańskie</translatorcomment>
+        <translation>Watykan</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="486"/>
         <source>Slovakia</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Słowacka</translatorcomment>
+        <translation>Słowacja</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="487"/>
         <source>Syria</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Syryjska Republika Arabska</translatorcomment>
+        <translation>Syria</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="488"/>
         <source>Tunisia</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Tunezyjska</translatorcomment>
+        <translation>Tunezja</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="489"/>
         <source>Liechtenstein</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Księstwo Liechtensteinu</translatorcomment>
+        <translation>Liechtenstein</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="490"/>
         <source>Iceland</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Islandii</translatorcomment>
+        <translation>Islandia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="491"/>
         <source>Monaco</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Księstwo Monako</translatorcomment>
+        <translation>Monako</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="492"/>
         <source>Lithuania</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Litewska</translatorcomment>
+        <translation>Litwa</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="493"/>
         <source>Serbia</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Serbii</translatorcomment>
+        <translation>Serbia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="494"/>
         <source>Spain</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Królestwo Hiszpanii</translatorcomment>
+        <translation>Hiszpania</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="496"/>
         <source>Norway</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Królestwo Norwegii</translatorcomment>
+        <translation>Norwegia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="497"/>
         <source>Montenegro</source>
-        <translation type="unfinished"></translation>
+        <translation>Czarnogóra</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="498"/>
         <source>Ireland</source>
-        <translation type="unfinished"></translation>
+        <translation>Irlandia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="499"/>
         <source>Turkey</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Turcji</translatorcomment>
+        <translation>Turcja</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="500"/>
         <source>Tajikistan</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Tadżykistanu</translatorcomment>
+        <translation>Tadżykistan</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="501"/>
         <source>Netherlands</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Królestwo Niderlandów</translatorcomment>
+        <translation>Holandia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="502"/>
         <source>Latvia</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Łotewska</translatorcomment>
+        <translation>Łotwa</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="503"/>
         <source>Lebanon</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Libańska</translatorcomment>
+        <translation>Liban</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="504"/>
         <source>Azerbaijan</source>
-        <translation type="unfinished"></translation>
+        <translation>Azerbejdżan</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="505"/>
         <source>Croatia</source>
-        <translation type="unfinished"></translation>
+        <translation>Chorwacja</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="506"/>
         <source>Kazakhstan</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Kazachstanu</translatorcomment>
+        <translation>Kazachstan</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="507"/>
         <source>Sweden</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Królestwo Szwecji</translatorcomment>
+        <translation>Szwecja</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="508"/>
         <source>Belarus</source>
-        <translation type="unfinished"></translation>
+        <translation>Białoruś</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="509"/>
         <source>Moldova</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Mołdawii</translatorcomment>
+        <translation>Mołdawia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="510"/>
         <source>Estonia</source>
-        <translation type="unfinished"></translation>
+        <translation>Estonia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="511"/>
         <source>Macedonia</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Macedonii Północnej</translatorcomment>
+        <translation>Macedonia Północna</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="512"/>
         <source>Ukraine</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukraina</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="513"/>
         <source>Kosovo</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Kosowa</translatorcomment>
+        <translation>Kosowo</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="516"/>
         <source>Portugal</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Portugalska</translatorcomment>
+        <translation>Portugalia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="517"/>
         <source>Slovenia</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Słowenii</translatorcomment>
+        <translation>Słowenia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="518"/>
         <source>Armenia</source>
-        <translation type="unfinished"></translation>
+        <translation>Armenia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="519"/>
         <source>Uzbekistan</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Uzbekistanu</translatorcomment>
+        <translation>Uzbekistan</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="520"/>
         <source>Georgia</source>
-        <translation type="unfinished"></translation>
+        <translation>Gruzja</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="521"/>
         <source>Turkmenistan</source>
-        <translation type="unfinished"></translation>
+        <translation>Turkmenistan</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="522"/>
         <source>Bosnia Herzegovina</source>
-        <translation type="unfinished"></translation>
+        <translation>Bośnia i Hercegowina</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="523"/>
         <source>Kyrgyzstan</source>
-        <translation type="unfinished"></translation>
+        <translation>Język koreański</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="525"/>
         <source>Australia: Capital Cities (commercial and community broadcasters)</source>
-        <translation type="unfinished"></translation>
+        <translation>Australia: Stolice (nadawcy komercyjni i społeczni)</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="526"/>
         <source>Australia: Regional New South Wales and ACT</source>
-        <translation type="unfinished"></translation>
+        <translation>Australia: Nowa Południowa Walia i Australijskie Terytorium Stołeczne</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="527"/>
         <source>Australia: Capital Cities (national broadcasters)</source>
-        <translation type="unfinished"></translation>
+        <translation>Australia: Stolice (nadawcy krajowi)</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="528"/>
         <source>Australia: Regional Queensland</source>
-        <translation type="unfinished"></translation>
+        <translation>Australia: Queensland</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="529"/>
         <source>Australia: Regional South Australia and Northern Territory</source>
-        <translation type="unfinished"></translation>
+        <translation>Australia: Australia Południowa i Terytoria Północne</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="530"/>
         <source>Australia: Regional Western Australia</source>
-        <translation type="unfinished"></translation>
+        <translation>Australia: Australia Zachodnia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="531"/>
         <source>Australia: Regional Victoria and Tasmania</source>
-        <translation type="unfinished"></translation>
+        <translation>Australia: Wiktoria i Tasmania</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="532"/>
         <source>Australia: Regional (future)</source>
-        <translation type="unfinished"></translation>
+        <translation>Australia: Regionalny (w przyszłości)</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="533"/>
         <source>Saudi Arabia</source>
-        <translation type="unfinished"></translation>
+        <translation>Arabia Saudyjska</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="534"/>
         <source>Afghanistan</source>
-        <translation type="unfinished"></translation>
+        <translation>Afganistan</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="535"/>
         <source>Myanmar (Burma)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Związku Mjanmy</translatorcomment>
+        <translation>Mjanma</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="536"/>
         <source>China</source>
-        <translation type="unfinished"></translation>
+        <translation>Chiny</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="537"/>
         <source>Korea (North)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Koreańska Republika Ludowo‑Demokratyczna</translatorcomment>
+        <translation>Korea Północna</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="538"/>
         <source>Bahrain</source>
-        <translation type="unfinished"></translation>
+        <translation>Bahrajn</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="539"/>
         <source>Malaysia</source>
-        <translation type="unfinished"></translation>
+        <translation>Malezja</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="540"/>
         <source>Kiribati</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Kiribati</translatorcomment>
+        <translation>Kiribati</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="541"/>
         <source>Bhutan</source>
-        <translation type="unfinished"></translation>
+        <translation>Bhutan</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="542"/>
         <source>Bangladesh</source>
-        <translation type="unfinished"></translation>
+        <translation>Bangladesz</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="543"/>
         <source>Pakistan</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Islamska Republika Pakistanu</translatorcomment>
+        <translation>Pakistan</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="544"/>
         <source>Fiji</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Fidżi</translatorcomment>
+        <translation>Fidżi</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="545"/>
         <source>Oman</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Sułtanat Omanu</translatorcomment>
+        <translation>Oman</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="546"/>
         <source>Nauru</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Nauru</translatorcomment>
+        <translation>Nauru</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="547"/>
         <source>Iran</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Islamska Republika Iranu</translatorcomment>
+        <translation>Iran</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="548"/>
         <source>New Zealand</source>
-        <translation type="unfinished"></translation>
+        <translation>Nowa Zelandia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="549"/>
         <source>Solomon Islands</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyspy Salomona</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="550"/>
         <source>Brunei Darussalam</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Państwo Brunei Darussalam</translatorcomment>
+        <translation>Brunei</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="551"/>
         <source>Sri Lanka</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Demokratyczno‑Socjalistyczna Republika Sri Lanki</translatorcomment>
+        <translation>Sri Lanka</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="552"/>
         <source>Taiwan</source>
-        <translation type="unfinished"></translation>
+        <translation>Tajwan</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="553"/>
         <source>Korea (South)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Korei</translatorcomment>
+        <translation>Korea Południowa</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="554"/>
         <source>Hong Kong</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Specjalny Region Administracyjny Hongkong Chińskiej Republiki Ludowej</translatorcomment>
+        <translation>Hongkong</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="555"/>
         <source>Kuwait</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Państwo Kuwejt</translatorcomment>
+        <translation>Kostaryka</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="556"/>
         <source>Qatar</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Państwo Katar</translatorcomment>
+        <translation>Katar</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="557"/>
         <source>Cambodia</source>
-        <translation type="unfinished"></translation>
+        <translation>Kambodża</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="558"/>
         <source>Western Samoa</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Niezależne Państwo Samoa</translatorcomment>
+        <translation>Samoa</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="559"/>
         <source>India</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Indii</translatorcomment>
+        <translation>Indie</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="560"/>
         <source>Macau</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Specjalny Region Administracyjny Makau</translatorcomment>
+        <translation>Makau</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="561"/>
         <source>Vietnam</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Socjalistyczna Republika Wietnamu</translatorcomment>
+        <translation>Wietnam</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="562"/>
         <source>Philippines</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Filipin</translatorcomment>
+        <translation>Filipiny</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="563"/>
         <source>Japan</source>
-        <translation type="unfinished"></translation>
+        <translation>Japonia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="564"/>
         <source>Singapore</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Singapuru</translatorcomment>
+        <translation>Singapur</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="565"/>
         <source>Maldives</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Malediwów</translatorcomment>
+        <translation>Malediwy</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="566"/>
         <source>Indonesia</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Indonezji</translatorcomment>
+        <translation>Indonezja</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="567"/>
         <source>United Arab Emirates</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Państwo Zjednoczonych Emiratów Arabskich (ZEA)</translatorcomment>
+        <translation>Zjednoczone Emiraty Arabskie</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="568"/>
         <source>Nepal</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepal</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="569"/>
         <source>Vanuatu</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Vanuatu</translatorcomment>
+        <translation>Vanuatu</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="570"/>
         <source>Laos</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Laotańska Republika Ludowo‑Demokratyczna</translatorcomment>
+        <translation>Laos</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="571"/>
         <source>Thailand</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Królestwo Tajlandii</translatorcomment>
+        <translation>Tajlandia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="572"/>
         <source>Tonga</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Królestwo Tonga</translatorcomment>
+        <translation>Tonga</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="573"/>
         <source>Papua New Guinea</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Niezależne Państwo Papui-Nowej Gwinei</translatorcomment>
+        <translation>Papua-Nowa Gwinea</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="574"/>
         <source>Yemen</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Republika Jemeńska</translatorcomment>
+        <translation>Jemen</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="575"/>
         <source>Micronesia</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Sfederowane Stany Mikronezji</translatorcomment>
+        <translation>Mikronezja</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="576"/>
         <source>Mongolia</source>
-        <translation type="unfinished"></translation>
+        <translation>Mongolia</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="588"/>
         <source>Traffic News</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiadomości drogowe</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="589"/>
         <source>Transport News</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiadomości transportowe</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="590"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Ostrzeżenie</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="594"/>
         <source>Special event</source>
-        <translation type="unfinished"></translation>
+        <translation>Specjalne wydarzenie</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="595"/>
         <source>Radio Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Informacje radiowe</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="596"/>
         <source>Sport news</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiadomości sportowe</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="597"/>
         <source>Financial news</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiadomości finansowe</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="598"/>
         <source>Alarm Test</source>
-        <translation type="unfinished"></translation>
+        <translation>Próba alarmu</translation>
     </message>
     <message>
         <location filename="../slmodelitem.cpp" line="90"/>
         <source>Short label:</source>
-        <translation type="unfinished"></translation>
+        <translation>Krótka nazwa programu:</translation>
     </message>
     <message>
         <location filename="../slmodelitem.cpp" line="101"/>
         <source>Channel %1&lt;br&gt;Frequency: %2 MHz</source>
-        <translation type="unfinished"></translation>
+        <translation>Kanał %1&lt;br&gt;Częstotliwość: %2 MHz</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="36"/>
         <source>No file selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie wybrano pliku</translation>
     </message>
 </context>
 <context>
@@ -2842,12 +2974,12 @@
     <message>
         <location filename="../slsview.cpp" line="144"/>
         <source>Ongoing announcement:</source>
-        <translation type="unfinished"></translation>
+        <translation>Bieżący komunikat:</translation>
     </message>
     <message>
         <location filename="../slsview.cpp" line="257"/>
         <source>&lt;b&gt;Category:&lt;/b&gt; %1</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Kategoria:&lt;/b&gt; %1</translation>
     </message>
 </context>
 <context>
@@ -2856,19 +2988,19 @@
         <location filename="../setupdialog.ui" line="20"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="787"/>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustawienia</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="52"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="788"/>
         <source>Input device:</source>
-        <translation type="unfinished"></translation>
+        <translation>Urządzenie wejściowe:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="77"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="789"/>
         <source>Connect</source>
-        <translation type="unfinished"></translation>
+        <translation>Połącz</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="105"/>
@@ -2880,7 +3012,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="826"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="859"/>
         <source>Gain control</source>
-        <translation type="unfinished"></translation>
+        <translation>Usawienia wzmocnienia</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="111"/>
@@ -2890,7 +3022,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="808"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="861"/>
         <source>Gain controlled by software (SW AGC)</source>
-        <translation type="unfinished"></translation>
+        <translation>Wzmocnienie kontrolowane przez oprogramowanie (SW AGC)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="114"/>
@@ -2902,7 +3034,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="830"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="863"/>
         <source>Software</source>
-        <translation type="unfinished"></translation>
+        <translation>Oprogramowanie</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="121"/>
@@ -2912,7 +3044,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="812"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="865"/>
         <source>Gain controlled internally by device (HW AGC)</source>
-        <translation type="unfinished"></translation>
+        <translation>Wzmocnienie kontrolowane wewnętrznie przez urządzenie (HW AGC)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="124"/>
@@ -2923,7 +3055,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="814"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="867"/>
         <source>Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Urządzenie</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="131"/>
@@ -2933,7 +3065,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="816"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="869"/>
         <source>Manual gain control</source>
-        <translation type="unfinished"></translation>
+        <translation>Ręczna regulacja wzmocnienia</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="134"/>
@@ -2945,7 +3077,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="842"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="871"/>
         <source>Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>Podręcznik</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="159"/>
@@ -2955,91 +3087,91 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="804"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="856"/>
         <source>Gain</source>
-        <translation type="unfinished"></translation>
+        <translation>Wzmocnienie</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="283"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="805"/>
         <source>IP Address:</source>
-        <translation type="unfinished"></translation>
+        <translation>Adres IP:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="342"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="819"/>
         <source>Port:</source>
-        <translation type="unfinished"></translation>
+        <translation>Port sprzętowy:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="390"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="820"/>
         <source>Open File...</source>
-        <translation type="unfinished"></translation>
+        <translation>Otwórz plik...</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="400"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="822"/>
         <source>Play file in the loop</source>
-        <translation type="unfinished"></translation>
+        <translation>Odtwórz plik w pętli</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="403"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="824"/>
         <source>Loop file</source>
-        <translation type="unfinished"></translation>
+        <translation>Plik pętli</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="410"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="825"/>
         <source>Filename</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa pliku</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="452"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="828"/>
         <source>Gain controlled by software using sensitivity gain (SW AGC)</source>
-        <translation type="unfinished"></translation>
+        <translation>Wzmocnienie kontrolowane przez oprogramowanie wykorzystujące wzmocnienie czułości (SW AGC)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="462"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="832"/>
         <source>LNA and Mixer controlled by device (HW AGC), IF gain controlled by software (SW AGC)</source>
-        <translation type="unfinished"></translation>
+        <translation>LNA i mikser kontrolowane przez urządzenie (HW AGC), wzmocnienie IF kontrolowane przez oprogramowanie (SW AGC)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="465"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="834"/>
         <source>Hybrid</source>
-        <translation type="unfinished"></translation>
+        <translation>Hybrydowy</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="472"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="836"/>
         <source>Manual control of sensitivity gain</source>
-        <translation type="unfinished"></translation>
+        <translation>Ręczna kontrola wzmocnienia czułości</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="475"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="838"/>
         <source>Sensitivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Wrażliwość</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="482"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="840"/>
         <source>Free manual control of all gains</source>
-        <translation type="unfinished"></translation>
+        <translation>Ręczna kontrola wszystkich wzmocnień</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="514"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="843"/>
         <source>Sensitivity gain</source>
-        <translation type="unfinished"></translation>
+        <translation>Wzmocnienie czułości</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="521"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="845"/>
         <source>LNA AGC </source>
-        <translation type="unfinished"></translation>
+        <translation>LNA AGC </translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="524"/>
@@ -3047,49 +3179,49 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="847"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="853"/>
         <source>AGC</source>
-        <translation type="unfinished"></translation>
+        <translation>AGC</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="531"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="848"/>
         <source>LNA gain</source>
-        <translation type="unfinished"></translation>
+        <translation>Wzmocnienie LNA</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="538"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="849"/>
         <source>Mixer gain</source>
-        <translation type="unfinished"></translation>
+        <translation>Wzmocnienie miksera</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="595"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="851"/>
         <source>Mixer AGC</source>
-        <translation type="unfinished"></translation>
+        <translation>Mikser AGC</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="605"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="854"/>
         <source>IF gain</source>
-        <translation type="unfinished"></translation>
+        <translation>Wzmocnienie IF</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="662"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="855"/>
         <source>Device arguments:</source>
-        <translation type="unfinished"></translation>
+        <translation>Argumenty urządzenia:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="717"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="857"/>
         <source>RX channel number:</source>
-        <translation type="unfinished"></translation>
+        <translation>Numer kanału RX:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="743"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="858"/>
         <source>Antenna:</source>
-        <translation type="unfinished"></translation>
+        <translation>Antena:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="825"/>
@@ -3097,31 +3229,31 @@
         <location filename="../setupdialog.cpp" line="830"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="872"/>
         <source>No device connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Brak podłączonego urządzenia</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="847"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="873"/>
         <source>Visual Style</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl wizualny</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="877"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="874"/>
         <source>User Interface</source>
-        <translation type="unfinished"></translation>
+        <translation>Interfejs użytkownika</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="883"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="875"/>
         <source>Expert mode UI</source>
-        <translation type="unfinished"></translation>
+        <translation>Interfejs trybu eksperckiego</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="890"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="876"/>
         <source>Dynamic Label Plus (DL+)</source>
-        <translation type="unfinished"></translation>
+        <translation>Dynamic Label Plus (DL+)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="899"/>
@@ -3133,126 +3265,127 @@
         <location filename="../setupdialog.ui" line="937"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="878"/>
         <source>Audio Decoder</source>
-        <translation type="unfinished"></translation>
+        <translation>Dekoder audio</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="943"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="879"/>
         <source>Noise level during audio drop-out:</source>
-        <translation type="unfinished"></translation>
+        <translation>Poziom hałasu podczas zaniku dźwięku:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="956"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="880"/>
         <source>Raw Data Recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejestrowanie surowych danych</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="962"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="881"/>
         <source>Include XML header</source>
-        <translation type="unfinished"></translation>
+        <translation>Dołącz nagłówek XML</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="46"/>
         <source>Announcements</source>
-        <translation type="unfinished"></translation>
+        <translation>Ogłoszenie</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="47"/>
         <source>Others</source>
-        <translation type="unfinished"></translation>
+        <translation>Inne</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="58"/>
         <location filename="../setupdialog.cpp" line="860"/>
         <source>Raw file</source>
-        <translation type="unfinished"></translation>
+        <translation>Plik surowy (RAW)</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="64"/>
         <source>Unsigned 8 bits</source>
-        <translation type="unfinished"></translation>
+        <translation>8-bitowy bez znaku</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="65"/>
         <source>Signed 16 bits</source>
-        <translation type="unfinished"></translation>
+        <translation>8-bitowy z znakiem</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="96"/>
         <source>&lt;br&gt;Note: Alarm announcement cannot be disabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;br&gt;Uwaga: Komunikat alarmowy nie można wyłączyć.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="98"/>
         <source>Alarm Announcements</source>
-        <translation type="unfinished"></translation>
+        <translation>Komunikat ewakuacyjny i alarmowy</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="104"/>
         <source>Bring window to foreground</source>
-        <translation type="unfinished"></translation>
+        <translation>Przenieś okno na pierwszy plan</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="105"/>
         <source>Check to bring window to foreground when (test) alarm announcement starts</source>
-        <translation type="unfinished"></translation>
+        <translation>Zaznacz, aby okno było wyświetlane na pierwszym planie, gdy rozpocznie się (testowa) zapowiedź alarmu</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="126"/>
         <source>Regular Announcements</source>
-        <translation type="unfinished"></translation>
+        <translation>Regularne ogłoszenia</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="137"/>
         <source>Recording date:</source>
-        <translation type="unfinished"></translation>
+        <translation>Data nagrania:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="141"/>
         <source>Recorder:</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejestrator:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="145"/>
         <source>Device:</source>
-        <translation type="unfinished"></translation>
+        <translation>Urządzenie:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="149"/>
         <source>Sample rate [Hz]:</source>
-        <translation type="unfinished"></translation>
+        <translation>Częstotliwość próbkowania [Hz]:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="153"/>
         <source>Frequency [kHz]:</source>
-        <translation type="unfinished"></translation>
+        <translation>Częstotliwość [kHz]:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="157"/>
         <source>Recording length [sec]:</source>
-        <translation type="unfinished"></translation>
+        <translation>Długość nagrywania [s]:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="161"/>
         <source>Sample format:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Který Sample máš na mysli?</translatorcomment>
+        <translation>Przykładowy format:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="213"/>
         <source>Default style (OS dependent)</source>
-        <translation type="unfinished"></translation>
+        <translation>Domyślny styl (zależny od systemu operacyjnego)</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="214"/>
         <source>Light style (Fusion)</source>
-        <translation type="unfinished"></translation>
+        <translation>Tryb jasny (Fusion)</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="215"/>
         <source>Dark style (Fusion with dark colors)</source>
-        <translation type="unfinished"></translation>
+        <translation>Tryb ciemny (Fusion z ciemnymi kolorami)</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="218"/>
@@ -3272,84 +3405,84 @@
     <message>
         <location filename="../setupdialog.cpp" line="229"/>
         <source>Set default OS style.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustaw domyślny styl systemu operacyjnego.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="230"/>
         <source>Force application light style.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wymuś zastosowanie jasnego stylu.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="231"/>
         <source>Force application dark style.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wymuś zastosowanie ciemnego stylu.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="232"/>
         <source>User interface in expert mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Interfejs użytkownika w trybie eksperckim</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="233"/>
         <source>Show Dynamic Label Plus (DL+) tags like artist, song name, etc.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokaż tagi Dynamic Label Plus (DL+), takie jak wykonawca, nazwa utworu itp.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="234"/>
         <source>Include raw file XML header in IQ recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Dołącz nagłówek do surowego pliku XML z nagraniem IQ</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="250"/>
         <source>Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyłączony</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="251"/>
         <source>Select noise level that is generated during audio interruptions.&lt;br&gt;This may help to improve listening experience and make the audio interruptions less annoying.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz poziom hałasu generowanego podczas przerw w dźwięku.&lt;br&gt;Może to poprawić wrażenia słuchowe i sprawić, że przerwy w dźwięku będą mniej irytujące.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="363"/>
         <location filename="../setupdialog.cpp" line="373"/>
         <location filename="../setupdialog.cpp" line="453"/>
         <source>N/A</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie dotyczy</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="824"/>
         <source>RTL SDR device connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Podłączono urządzenie TL SDR</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="827"/>
         <source>RTL TCP device connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Podłączono urządzenie RTL TCP</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="833"/>
         <source>Raw file connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Plik surowy podłączony</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="836"/>
         <source>Airspy device connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Podłączono urządzenie Airspy</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="839"/>
         <source>Soapy SDR device connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Podłączone urządzenie Soapy SDR</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="905"/>
         <source>Open IQ stream</source>
-        <translation type="unfinished"></translation>
+        <translation>Otwórz strumień IQ</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="905"/>
         <source>Binary files</source>
-        <translation type="unfinished"></translation>
+        <translation>Pliki binarne</translation>
     </message>
 </context>
 </TS>
