@@ -72,6 +72,26 @@
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="75"/>
+        <source>Translations:</source>
+        <translation>Překlady:</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="77"/>
+        <source>Czech</source>
+        <translation>Čeština</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="78"/>
+        <source>German</source>
+        <translation>Němčina</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="79"/>
+        <source>Polish</source>
+        <translation>Polština</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="81"/>
         <source>AbracaDABra uses some artwork created by</source>
         <translation>AbracaDABra využívá některé grafické prvky od</translation>
     </message>
@@ -473,7 +493,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="68"/>
         <source>Sync</source>
-        <translation>Sync</translation>
+        <translation>Synchronizace</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="69"/>

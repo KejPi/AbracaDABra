@@ -72,6 +72,26 @@
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="75"/>
+        <source>Translations:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="77"/>
+        <source>Czech</source>
+        <translation type="unfinished">Język czeski</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="78"/>
+        <source>German</source>
+        <translation type="unfinished">język niemiecki</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="79"/>
+        <source>Polish</source>
+        <translation type="unfinished">Język polski</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="81"/>
         <source>AbracaDABra uses some artwork created by</source>
         <translation>AbracaDABra korzystania z grafik utworzonych przez</translation>
     </message>
@@ -206,25 +226,29 @@
         <location filename="../ensembleinfodialog.ui" line="284"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="532"/>
         <source>Start CU:</source>
-        <translation>Początkowe jednostki pojemności (CU):</translation>
+        <translatorcomment>Use CU instead of &quot;jednostki pojemności&quot;, explanation of CU to be done in tooltip </translatorcomment>
+        <translation type="unfinished">Początkowe jednostki pojemności (CU):</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="310"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="533"/>
         <source>Number of CU:</source>
-        <translation>Liczba jednostek pojemności (CU):</translation>
+        <translatorcomment>Use CU instead of &quot;jednostek pojemności&quot;, explanation of CU to be done in tooltip</translatorcomment>
+        <translation type="unfinished">Liczba jednostek pojemności (CU):</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="348"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="534"/>
         <source>FIB counter:</source>
-        <translation>Licznik szybkich bloków informacyjnych:</translation>
+        <translatorcomment>Use FIB as it is (explanation cpould be done in tooltip), translate as &quot;Number of FIB&quot;</translatorcomment>
+        <translation type="unfinished">Licznik szybkich bloków informacyjnych:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="374"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="535"/>
         <source>FIB CRC errors:</source>
-        <translation>Błędy sprawdzania cyklicznej redundancji bloków szybkich informacji:</translation>
+        <translatorcomment>Translate as &quot;Number of erratic FIBs:&quot;</translatorcomment>
+        <translation type="unfinished">Błędy sprawdzania cyklicznej redundancji bloków szybkich informacji:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="400"/>
@@ -389,7 +413,7 @@
     <message>
         <location filename="../ensembleinfodialog.cpp" line="200"/>
         <source> sec</source>
-        <translation> sek.</translation>
+        <translation type="unfinished"> sek.</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="207"/>
@@ -403,12 +427,12 @@
     <message>
         <location filename="../ensembleinfodialog.cpp" line="312"/>
         <source>Reset FIB statistics</source>
-        <translation>zresetuj statystykę FIB</translation>
+        <translation>Zresetuj statystykę FIB</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="313"/>
         <source>Reset MSC statistics</source>
-        <translation>zresetuj statystykę MSC</translation>
+        <translation>Zresetuj statystykę MSC</translation>
     </message>
 </context>
 <context>
@@ -559,12 +583,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="296"/>
         <source>Audio coding</source>
-        <translation>kodowanie audio</translation>
+        <translation>Kodowanie audio</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="304"/>
         <source>Ongoing announcement</source>
-        <translation>komunikat na żywo</translation>
+        <translation>Komunikat na żywo</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="308"/>
@@ -621,7 +645,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="818"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Sample rate: %2 kHz (SBR %3)</source>
-        <translation>&lt;b&gt;Typ dźwięku&lt;/b&gt;&lt;br&gt;stereo (PS %1)&lt;br&gt;Częstotliwość próbkowania: %2 kHz (SBR %3)</translation>
+        <translation>&lt;b&gt;Typ dźwięku&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Częstotliwość próbkowania: %2 kHz (SBR %3)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="819"/>
@@ -678,7 +702,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1123"/>
         <source>&lt;b&gt;Ensemble %1/%2&lt;/b&gt;&lt;br&gt;Click for switching to:&lt;br&gt;&lt;i&gt;%3&lt;/i&gt;</source>
-        <translation>&lt;b&gt;Multipleks %1/%2&lt;/b&gt;&lt;br&gt;kliknij, aby przejść do:&lt;br&gt;&lt;i&gt;%3&lt;/i&gt;</translation>
+        <translation>&lt;b&gt;Multipleks %1/%2&lt;/b&gt;&lt;br&gt;Kliknij, aby przejść do:&lt;br&gt;&lt;i&gt;%3&lt;/i&gt;</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1132"/>
@@ -3369,7 +3393,7 @@
     <message>
         <location filename="../setupdialog.cpp" line="161"/>
         <source>Sample format:</source>
-        <translatorcomment>Který Sample máš na mysli?</translatorcomment>
+        <translatorcomment>Který Sample máš na mysli? ==&gt; It is XML header information, sample format is ether uin8 or int16, it is format of I/Q sample.</translatorcomment>
         <translation>Przykładowy format:</translation>
     </message>
     <message>

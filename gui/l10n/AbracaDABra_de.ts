@@ -72,6 +72,26 @@
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="75"/>
+        <source>Translations:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="77"/>
+        <source>Czech</source>
+        <translation type="unfinished">Tschechisch</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="78"/>
+        <source>German</source>
+        <translation type="unfinished">Deutsch</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="79"/>
+        <source>Polish</source>
+        <translation type="unfinished">Polnisch</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="81"/>
         <source>AbracaDABra uses some artwork created by</source>
         <translation>AbracaDABra verwendet einige Grafiken, erstellt von</translation>
     </message>
