@@ -98,7 +98,8 @@ For a fresh Ubuntu 22.04 installation you can use the following commands:
 
        sudo apt-get install git cmake build-essential mesa-common-dev
        sudo apt-get install libusb-dev librtlsdr-dev libfaad2 mpg123 libmpg123-dev libfaad-dev
-       sudo apt-get install portaudio19-dev qt6-base-dev qt6-multimedia-dev libqt6svg6-dev rtl-sdr       
+       sudo apt-get install portaudio19-dev qt6-base-dev qt6-multimedia-dev libqt6svg6-dev rtl-sdr   
+       sudo apt-get install qt6-tools-dev qt6-tools-dev-tools qt6-l10n-tools
        
 Optional Airspy support:       
 
