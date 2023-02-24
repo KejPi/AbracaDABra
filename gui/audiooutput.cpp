@@ -636,6 +636,52 @@ void AudioOutput::onStreamFinished()
         emit audioOutputRestart();
         start(m_restartFifoPtr);        
     }
+#if Q_OS_WIN
+    else if (!(m_cbRequest & Request::Stop))
+    {   // finished and not stop request ==> problem with output device
+        // start again
+        qDebug() << "AudioOutput: current audio device probably removed, trying new default device";
+
+        // hotplug handling
+        Pa_Terminate();
+        Pa_Initialize();
+
+        /* Open an audio I/O stream. */
+        PaError err = Pa_OpenDefaultStream( &m_outStream,
+                                           0,              /* no input channels */
+                                           m_numChannels,  /* stereo output */
+                                           paInt16,        /* 16 bit floating point output */
+                                           m_sampleRate_kHz*1000,
+                                           m_bufferFrames, /* frames per buffer, i.e. the number
+                                                           of sample frames that PortAudio will
+                                                           request from the callback. Many apps
+                                                           may want to use
+                                                           paFramesPerBufferUnspecified, which
+                                                           tells PortAudio to pick the best,
+                                                           possibly changing, buffer size.*/
+                                           portAudioCb,    /* callback */
+                                           (void *) this);
+        if (paNoError != err)
+        {
+            throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
+        }
+
+        err = Pa_SetStreamFinishedCallback(m_outStream, portAudioStreamFinishedCb);
+        if (paNoError != err)
+        {
+            throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
+        }
+
+        m_playbackState = AudioOutputPlaybackState::Muted;
+        m_cbRequest &= ~(Request::Stop | Request::Restart);  // reset stop and restart bits
+
+        err = Pa_StartStream(m_outStream);
+        if (paNoError != err)
+        {
+            throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
+        }
+    }
+#endif
     else { /* do nothing */ }
 }
 
