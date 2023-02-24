@@ -89,19 +89,19 @@
         <location filename="../bandscandialog.cpp" line="112"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="134"/>
         <source>Scanning channel:</source>
-        <translation>Skanowanie kanału</translation>
+        <translation>Skanowanie kanału:</translation>
     </message>
     <message>
         <location filename="../bandscandialog.ui" line="64"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="135"/>
         <source>Services found:</source>
-        <translation>Znaleziono usługę</translation>
+        <translation>Znaleziono usługę:</translation>
     </message>
     <message>
         <location filename="../bandscandialog.ui" line="81"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="136"/>
         <source>Ensembles found:</source>
-        <translation>Znaleziono multipleks</translation>
+        <translation>Znaleziono multipleks:</translation>
     </message>
     <message>
         <location filename="../bandscandialog.cpp" line="42"/>
@@ -111,7 +111,7 @@
     <message>
         <location filename="../bandscandialog.cpp" line="46"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <location filename="../bandscandialog.cpp" line="56"/>
@@ -206,7 +206,7 @@
         <location filename="../ensembleinfodialog.ui" line="284"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="532"/>
         <source>Start CU:</source>
-        <translation>Początkowe jednostki pojemności (CU)</translation>
+        <translation>Początkowe jednostki pojemności (CU):</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="310"/>
@@ -345,7 +345,7 @@
         <location filename="../ensembleinfodialog.cpp" line="89"/>
         <location filename="../ensembleinfodialog.cpp" line="90"/>
         <source>Number of FIB&apos;s with CRC error</source>
-        <translation>Liczba bloków szybkich informacji z błędem cyklicznej kontroli redundancji</translation>
+        <translation>Liczba bloków szybkich informacji z błędem CRC</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="91"/>
@@ -369,7 +369,7 @@
         <location filename="../ensembleinfodialog.cpp" line="97"/>
         <location filename="../ensembleinfodialog.cpp" line="98"/>
         <source>Audio frame (AU for DAB+) error rate</source>
-        <translation>Wskaźnik błędów ramki audio (AU dla DAB+).</translation>
+        <translation>Wskaźnik błędów ramki audio (AU dla DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="100"/>
@@ -389,7 +389,7 @@
     <message>
         <location filename="../ensembleinfodialog.cpp" line="200"/>
         <source> sec</source>
-        <translation>sek.</translation>
+        <translation> sek.</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="207"/>
@@ -658,7 +658,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="886"/>
         <source>Tuning...  </source>
-        <translation>Strojenie…</translation>
+        <translation>Strojenie…  </translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="988"/>
@@ -3259,7 +3259,7 @@
         <location filename="../setupdialog.ui" line="899"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="877"/>
         <source>Language:</source>
-        <translation type="unfinished"></translation>
+        <translation>Język:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="937"/>
@@ -3390,17 +3390,17 @@
     <message>
         <location filename="../setupdialog.cpp" line="218"/>
         <source>System language</source>
-        <translation type="unfinished"></translation>
+        <translation>Język systemowy</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="224"/>
         <source>User interface language, the change will take effect after application restart.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zmiana języka interfejsu użytkownika wymaga ponownego uruchomienia programu.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="225"/>
         <source>Language change will take effect after application restart.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zmiana języka wymaga ponownego uruchomienia programu.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="229"/>
