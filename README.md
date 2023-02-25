@@ -35,7 +35,7 @@ and enjoy the music with slideshow and DL(+).
 Service can be easily added to favorites by clicking "star" icon.  Most of the elements in UI have tool tip with more information.
 
 ## Expert mode
-<img width="873" alt="Snímek obrazovky 2022-06-28 v 22 37 21" src="https://user-images.githubusercontent.com/6438380/176281878-405e3d99-64ef-4a95-a30e-7b74127b178e.png">
+<img width="921" alt="Snímek obrazovky 2023-02-25 v 19 29 45" src="https://user-images.githubusercontent.com/6438380/221374046-2d5558fb-fe7e-4a32-b754-1174cb525bc0.png">
 
 In addition to basic mode, expert mode shows ensemble tree with structure of services and additional details of currenly tuned service. 
 Furthermore it is possible to change the DAB channel manually in this mode. 
