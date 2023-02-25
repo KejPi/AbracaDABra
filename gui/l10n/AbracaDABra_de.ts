@@ -19,7 +19,7 @@
         <location filename="../aboutdialog.ui" line="34"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_aboutdialog.h" line="122"/>
         <source>Version 1.0+, build 4654e4f4</source>
-        <translation type="unfinished"></translation>
+        <translation>Version 1.0+, build 4654e4f4</translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="41"/>
@@ -73,22 +73,22 @@
     <message>
         <location filename="../aboutdialog.cpp" line="75"/>
         <source>Translations:</source>
-        <translation type="unfinished"></translation>
+        <translation>Übersetzungen:</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="77"/>
         <source>Czech</source>
-        <translation type="unfinished">Tschechisch</translation>
+        <translation>Tschechisch</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="78"/>
         <source>German</source>
-        <translation type="unfinished">Deutsch</translation>
+        <translation>Deutsch</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="79"/>
         <source>Polish</source>
-        <translation type="unfinished">Polnisch</translation>
+        <translation>Polnisch</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="81"/>
@@ -3147,7 +3147,7 @@
         <location filename="../setupdialog.ui" line="899"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="877"/>
         <source>Language:</source>
-        <translation type="unfinished"></translation>
+        <translation>Sprache:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="937"/>
@@ -3277,17 +3277,17 @@
     <message>
         <location filename="../setupdialog.cpp" line="218"/>
         <source>System language</source>
-        <translation type="unfinished"></translation>
+        <translation>Systemsprache</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="224"/>
         <source>User interface language, the change will take effect after application restart.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sprache der Benutzeroberfläche, die Änderung erfolgt nach einem Programmneustart.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="225"/>
         <source>Language change will take effect after application restart.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Änderung der Sprache erfolgt nach Programmneustart.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="229"/>
