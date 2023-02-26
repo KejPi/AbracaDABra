@@ -99,7 +99,7 @@ void SLSView::showAnnouncement(DabAnnouncement id)
         m_pixmapItem = sc->addPixmap(pic);
 
         QFont font;
-        font.setPixelSize(28);
+        font.setPixelSize(24);
         font.setBold(true);
         //font.setFamily("Calibri");
 
@@ -114,7 +114,7 @@ void SLSView::showAnnouncement(DabAnnouncement id)
         if (nullptr == m_announcementText)
         {
             QFont font;
-            font.setPixelSize(28);
+            font.setPixelSize(24);
             font.setBold(true);
             //font.setFamily("Calibri");
 
