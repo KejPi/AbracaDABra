@@ -133,14 +133,18 @@ class AudioOutput : public QObject
     Q_OBJECT
 
 public:
-    AudioOutput(audioFifo_t *buffer, QObject *parent = nullptr);
+    AudioOutput(QObject *parent = nullptr);
     ~AudioOutput();
     void stop();
 
 public slots:
-    void start(uint32_t sRate, uint8_t numChannels);
+    void start(audioFifo_t *buffer);
+    void restart(audioFifo_t *buffer);
     void mute(bool on);
     void setVolume(int value);
+
+signals:
+    void audioOutputRestart();
 
 private:
     // Qt audio
@@ -152,6 +156,7 @@ private:
     void handleStateChanged(QAudio::State newState);
     int64_t bytesAvailable();
     void doStop();
+    void doRestart(audioFifo_t *buffer);
 };
 
 
@@ -167,7 +172,6 @@ public:
     qint64 writeData(const char *data, qint64 len) override;
     qint64 bytesAvailable() const override;
 
-    void setFormat(const QAudioFormat & format);
     void mute(bool on);
     bool isMuted() const { return AudioOutputPlaybackState::Muted == m_playbackState; }
 
