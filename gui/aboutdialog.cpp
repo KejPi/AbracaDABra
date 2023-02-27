@@ -72,11 +72,11 @@ AboutDialog::AboutDialog(QWidget *parent) :
 #endif
                            "<li><a href=\"http://www.portaudio.com\">PortAudio</a> Copyright © 1999-2011 Ross Bencina and Phil Burk</li>"
                            "</ul>"+
-                           tr("Translations:")+
+                           tr("Contributors to the translation:")+
                            "<ul>"
                            "<li>"+tr("Czech") +": Petr Kopecký</li>"
                            "<li>"+tr("German")+": Andreas Mikula</li>"
-                           "<li>"+tr("Polish")+": SeltenerBesucher</li>"
+                           "<li>"+tr("Polish")+": Marek Schirmer</li>"
                            "</ul>"+
                            tr("AbracaDABra uses some artwork created by")+" <a href=\"https://www.flaticon.com/authors/basic-miscellany/lineal-color\">Smashicons - Flaticon</a>");
     ui->disclaimer->setText("<p>Copyright © 2019-2023 Petr Kopecký</p>"

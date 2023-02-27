@@ -72,8 +72,8 @@
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="75"/>
-        <source>Translations:</source>
-        <translation>Překlady:</translation>
+        <source>Contributors to the translation:</source>
+        <translation>Přispěvatelé k překladu:</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="77"/>

@@ -72,23 +72,23 @@
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="75"/>
-        <source>Translations:</source>
-        <translation type="unfinished"></translation>
+        <source>Contributors to the translation:</source>
+        <translation>Współtwórcy tłumaczenia na język:</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="77"/>
         <source>Czech</source>
-        <translation type="unfinished">Język czeski</translation>
+        <translation>czeski</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="78"/>
         <source>German</source>
-        <translation type="unfinished">język niemiecki</translation>
+        <translation>niemiecki</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="79"/>
         <source>Polish</source>
-        <translation type="unfinished">Język polski</translation>
+        <translation>polski</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="81"/>
@@ -226,29 +226,29 @@
         <location filename="../ensembleinfodialog.ui" line="284"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="532"/>
         <source>Start CU:</source>
-        <translatorcomment>Use CU instead of &quot;jednostki pojemności&quot;, explanation of CU to be done in tooltip </translatorcomment>
-        <translation type="unfinished">Początkowe jednostki pojemności (CU):</translation>
+        <translatorcomment>Text for Tooltip: Początkowe jednostki pojemności (CU)</translatorcomment>
+        <translation>Początkowe CU:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="310"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="533"/>
         <source>Number of CU:</source>
-        <translatorcomment>Use CU instead of &quot;jednostek pojemności&quot;, explanation of CU to be done in tooltip</translatorcomment>
-        <translation type="unfinished">Liczba jednostek pojemności (CU):</translation>
+        <translatorcomment>Text for tooltip: Liczba jednostek pojemności (CU)</translatorcomment>
+        <translation>Liczba CU:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="348"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="534"/>
         <source>FIB counter:</source>
-        <translatorcomment>Use FIB as it is (explanation cpould be done in tooltip), translate as &quot;Number of FIB&quot;</translatorcomment>
-        <translation type="unfinished">Licznik szybkich bloków informacyjnych:</translation>
+        <translatorcomment>Text for Tooltip: Licznik szybkich bloków informacyjnych</translatorcomment>
+        <translation>Licznik FIB:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="374"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="535"/>
         <source>FIB CRC errors:</source>
-        <translatorcomment>Translate as &quot;Number of erratic FIBs:&quot;</translatorcomment>
-        <translation type="unfinished">Błędy sprawdzania cyklicznej redundancji bloków szybkich informacji:</translation>
+        <translatorcomment>Text for Tooltip: Błędy sprawdzania cyklicznej redundancji bloków szybkich informacji:</translatorcomment>
+        <translation>Błędy FIB CRC:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="400"/>
@@ -413,7 +413,7 @@
     <message>
         <location filename="../ensembleinfodialog.cpp" line="200"/>
         <source> sec</source>
-        <translation type="unfinished"> sek.</translation>
+        <translation>s</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="207"/>
