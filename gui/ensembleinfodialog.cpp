@@ -182,10 +182,12 @@ void EnsembleInfoDialog::onRecording(bool isActive)
     if (isActive)
     {
         ui->recordButton->setText(tr("Stop recording"));
+        ui->recordButton->setToolTip(tr("Stop recording of raw IQ stream"));
     }
     else
     {
         ui->recordButton->setText(tr("Record raw data"));
+        ui->recordButton->setToolTip(tr("Record raw IQ stream to file"));
     }
     ui->dumpSize->setText("");
     ui->dumpLength->setText("");

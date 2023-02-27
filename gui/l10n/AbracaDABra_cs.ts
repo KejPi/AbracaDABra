@@ -282,7 +282,7 @@
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="610"/>
-        <location filename="../ensembleinfodialog.cpp" line="188"/>
+        <location filename="../ensembleinfodialog.cpp" line="189"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="542"/>
         <source>Record raw data</source>
         <translation>Zaznamenat vstupní signál</translation>
@@ -391,6 +391,7 @@
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="100"/>
+        <location filename="../ensembleinfodialog.cpp" line="190"/>
         <source>Record raw IQ stream to file</source>
         <translation>Zaznamenat vstupní IQ signál do souboru</translation>
     </message>
@@ -405,26 +406,31 @@
         <translation>Ukončit záznam</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="200"/>
+        <location filename="../ensembleinfodialog.cpp" line="185"/>
+        <source>Stop recording of raw IQ stream</source>
+        <translation>Zastavit záznam vstupního IQ signálu</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="202"/>
         <source> sec</source>
         <translation> s</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="207"/>
-        <location filename="../ensembleinfodialog.cpp" line="241"/>
-        <location filename="../ensembleinfodialog.cpp" line="250"/>
-        <location filename="../ensembleinfodialog.cpp" line="347"/>
-        <location filename="../ensembleinfodialog.cpp" line="348"/>
+        <location filename="../ensembleinfodialog.cpp" line="209"/>
+        <location filename="../ensembleinfodialog.cpp" line="243"/>
+        <location filename="../ensembleinfodialog.cpp" line="252"/>
+        <location filename="../ensembleinfodialog.cpp" line="349"/>
+        <location filename="../ensembleinfodialog.cpp" line="350"/>
         <source>N/A</source>
         <translation>Nedostupný</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="312"/>
+        <location filename="../ensembleinfodialog.cpp" line="314"/>
         <source>Reset FIB statistics</source>
         <translation>Obnovit statistiku FIB</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="313"/>
+        <location filename="../ensembleinfodialog.cpp" line="315"/>
         <source>Reset MSC statistics</source>
         <translation>Onbovit statistiku MSC</translation>
     </message>
