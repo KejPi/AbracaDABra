@@ -659,6 +659,11 @@ void MainWindow::onSyncStatus(uint8_t sync)
     {   // hide time when no sync
         m_timeLabel->setText("");
 
+        if (DabSyncLevel::NoSync == DabSyncLevel(sync))
+        {
+            onSnrLevel(0.0);
+        }
+
         // set no signal quality when no sync
         if (isDarkMode())
         {
