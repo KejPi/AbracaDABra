@@ -636,7 +636,7 @@ void AudioOutput::onStreamFinished()
         emit audioOutputRestart();
         start(m_restartFifoPtr);        
     }
-#if Q_OS_WIN
+#ifdef Q_OS_WIN
     else if (!(m_cbRequest & Request::Stop))
     {   // finished and not stop request ==> problem with output device
         // start again
