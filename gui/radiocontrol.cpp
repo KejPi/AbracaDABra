@@ -468,36 +468,49 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
         if (SId)
         {
             if (m_serviceRequest.SId != 0)
-            {   // this can happen when service is selected while still acquiring ensemble infomation
-                // ignoring the request
-                return;
-            }
+            {   // pending request
+                // this can happen when service is selected while still acquiring ensemble infomation
+                // previously requested service is still not in service list -> we can chnage the request here
 
-            // clear request
-            m_serviceRequest.SId = 0;
+                auto serviceIt = m_serviceList.constFind(SId);
+                if (serviceIt != m_serviceList.cend())
+                {   // service found in service list => request service selection
+                    dabServiceSelection(SId, SCIdS, DABSDR_ID_AUDIO_PRIMARY);
 
-            // stop any service running in secondary instance (announcment)
-            dabsdrRequest_ServiceStop(m_dabsdrHandle, 0, 0, DABSDR_ID_AUDIO_SECONDARY);
-
-            // remove automatically enabled data services
-            serviceConstIterator serviceIt = m_serviceList.constFind(m_currentService.SId);
-            if (serviceIt != m_serviceList.cend())
-            {   // service is in the list
-                for (auto & sc : serviceIt->serviceComponents)
-                {
-                    if (sc.autoEnabled)
-                    {   // request stop
-                        dabServiceStop(m_currentService.SId, sc.SCIdS, DABSDR_ID_DATA);
-                    }
+                    // clear request
+                    m_serviceRequest.SId = 0;
+                }
+                else
+                {   // not found in service list ==> change request
+                    m_serviceRequest.SId = SId;
+                    m_serviceRequest.SCIdS = SCIdS;
                 }
             }
             else
-            { /* this should not happen */ }
+            {   // there is no pending request
+                // stop any service running in secondary instance (announcment)
+                dabsdrRequest_ServiceStop(m_dabsdrHandle, 0, 0, DABSDR_ID_AUDIO_SECONDARY);
 
-            // reset current service
-            resetCurrentService();
+                // remove automatically enabled data services
+                auto serviceIt = m_serviceList.constFind(m_currentService.SId);
+                if (serviceIt != m_serviceList.cend())
+                {   // service is in the list
+                    for (auto & sc : serviceIt->serviceComponents)
+                    {
+                        if (sc.autoEnabled)
+                        {   // request stop
+                            dabServiceStop(m_currentService.SId, sc.SCIdS, DABSDR_ID_DATA);
+                        }
+                    }
+                }
+                else
+                { /* this should not happen */ }
 
-            dabServiceSelection(SId, SCIdS, DABSDR_ID_AUDIO_PRIMARY);
+                // reset current service
+                resetCurrentService();
+
+                dabServiceSelection(SId, SCIdS, DABSDR_ID_AUDIO_PRIMARY);
+            }
         }
     }
     else
@@ -1217,6 +1230,9 @@ void RadioControl::eventHandler_serviceComponentList(RadioControlEvent *pEvent)
 
                         // find current service selection
                     }
+
+                    // clear any pending request => it can happen if requested service was not in the list
+                    m_serviceRequest.SId = 0;
 
                     emit serviceListComplete(m_ensemble);
                 }
