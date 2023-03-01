@@ -48,7 +48,7 @@
     <message>
         <location filename="../aboutdialog.cpp" line="39"/>
         <source>Developed by</source>
-        <translation>Opracowany przez</translation>
+        <translation>Opracowany przez:</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="47"/>
@@ -72,8 +72,8 @@
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="75"/>
-        <source>Contributors to the translation:</source>
-        <translation>Współtwórcy tłumaczenia na język:</translation>
+        <source>Translations:</source>
+        <translation>Tłumaczenie na język</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="77"/>
@@ -115,18 +115,18 @@
         <location filename="../bandscandialog.ui" line="64"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="135"/>
         <source>Services found:</source>
-        <translation>Znaleziono usługę:</translation>
+        <translation>Znaleziono stację/-e:</translation>
     </message>
     <message>
         <location filename="../bandscandialog.ui" line="81"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_bandscandialog.h" line="136"/>
         <source>Ensembles found:</source>
-        <translation>Znaleziono multipleks:</translation>
+        <translation>Znaleziono multipleks/-y/-ów:</translation>
     </message>
     <message>
         <location filename="../bandscandialog.cpp" line="42"/>
         <source>Start</source>
-        <translation>start</translation>
+        <translation>Start</translation>
     </message>
     <message>
         <location filename="../bandscandialog.cpp" line="46"/>
@@ -141,12 +141,12 @@
     <message>
         <location filename="../bandscandialog.cpp" line="63"/>
         <source>&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Warning:&lt;/b&gt; Band scan deletes current service list and all favorites!&lt;/span&gt;</source>
-        <translation>&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Ostrzeżenie:&lt;/b&gt; Uruchomienie strojenia usunie listę usług i ulubionych stacji!&lt;/span&gt;</translation>
+        <translation type="unfinished">&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Uwaga:&lt;/b&gt; Uruchomienie strojenia usunie listę wszystkich i ulubionych stacji!&lt;/span&gt;</translation>
     </message>
     <message>
         <location filename="../bandscandialog.cpp" line="117"/>
         <source>Stop</source>
-        <translation>stop</translation>
+        <translation>Stop</translation>
     </message>
 </context>
 <context>
@@ -288,7 +288,7 @@
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="610"/>
-        <location filename="../ensembleinfodialog.cpp" line="189"/>
+        <location filename="../ensembleinfodialog.cpp" line="188"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_ensembleinfodialog.h" line="542"/>
         <source>Record raw data</source>
         <translation>Zapisz surowe dane</translation>
@@ -397,7 +397,6 @@
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="100"/>
-        <location filename="../ensembleinfodialog.cpp" line="190"/>
         <source>Record raw IQ stream to file</source>
         <translation>Zapisz surowy strumień IQ</translation>
     </message>
@@ -412,31 +411,26 @@
         <translation>zatrzymaj nagrywanie</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="185"/>
-        <source>Stop recording of raw IQ stream</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ensembleinfodialog.cpp" line="202"/>
+        <location filename="../ensembleinfodialog.cpp" line="200"/>
         <source> sec</source>
         <translation>s</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="209"/>
-        <location filename="../ensembleinfodialog.cpp" line="243"/>
-        <location filename="../ensembleinfodialog.cpp" line="252"/>
-        <location filename="../ensembleinfodialog.cpp" line="349"/>
-        <location filename="../ensembleinfodialog.cpp" line="350"/>
+        <location filename="../ensembleinfodialog.cpp" line="207"/>
+        <location filename="../ensembleinfodialog.cpp" line="241"/>
+        <location filename="../ensembleinfodialog.cpp" line="250"/>
+        <location filename="../ensembleinfodialog.cpp" line="347"/>
+        <location filename="../ensembleinfodialog.cpp" line="348"/>
         <source>N/A</source>
         <translation>Nie dotyczy</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="314"/>
+        <location filename="../ensembleinfodialog.cpp" line="312"/>
         <source>Reset FIB statistics</source>
         <translation>Zresetuj statystykę FIB</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="315"/>
+        <location filename="../ensembleinfodialog.cpp" line="313"/>
         <source>Reset MSC statistics</source>
         <translation>Zresetuj statystykę MSC</translation>
     </message>
@@ -609,7 +603,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="614"/>
         <source>&lt;b&gt;Ensemble:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %5</source>
-        <translation>&lt;b&gt;Multipleks:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Krótka nazwa stacji:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Kraj:&lt;/b&gt; %5</translation>
+        <translation type="unfinished">&lt;b&gt;Multipleks:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Krótka nazwa multipleksu:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Kraj:&lt;/b&gt; %5</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="790"/>
@@ -657,13 +651,13 @@
         <location filename="../mainwindow.cpp" line="819"/>
         <location filename="../mainwindow.cpp" line="821"/>
         <source>on</source>
-        <translation>włączać</translation>
+        <translation>włączony</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="819"/>
         <location filename="../mainwindow.cpp" line="821"/>
         <source>off</source>
-        <translation>wyłączać</translation>
+        <translation>wyłączony</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="830"/>
@@ -713,7 +707,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1132"/>
         <source>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Language:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %6</source>
-        <translation>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Język:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Kraj:&lt;/b&gt; %6</translation>
+        <translation type="unfinished">&lt;b&gt;Stacja:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Skrót nazwy stacji:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Język:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Kraj:&lt;/b&gt; %6</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1177"/>
@@ -773,12 +767,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="1331"/>
         <source>No service</source>
-        <translation>Brak usługi</translation>
+        <translation>Brak stacji</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1335"/>
         <source>No service playing</source>
-        <translation>Brak odtwarzania usługi</translation>
+        <translation>Stacja nie gra, wybrać stację z listy</translation>
     </message>
 </context>
 <context>
@@ -853,7 +847,7 @@
         <location filename="../dabtables.cpp" line="169"/>
         <location filename="../dabtables.cpp" line="591"/>
         <source>News</source>
-        <translation>Wiadomosci</translation>
+        <translation>Wiadomości</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2629"/>
@@ -948,7 +942,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="2649"/>
         <source>Station (short)</source>
-        <translation>Program (skrót nazwy)</translation>
+        <translation>Stacja (skrót nazwy)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2650"/>
@@ -973,7 +967,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="2654"/>
         <source>Host</source>
-        <translation>prezenter/ka</translation>
+        <translation>Prezenter/-ka</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2655"/>
@@ -988,12 +982,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="2663"/>
         <source>Phone (Hotline)</source>
-        <translation>Telefon (Infolinia)</translation>
+        <translation>Telefon (infolinia)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2664"/>
         <source>Phone (Studio)</source>
-        <translation>Telefon (Studio)</translation>
+        <translation>Telefon (studio)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2665"/>
@@ -1013,12 +1007,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="2668"/>
         <source>E-mail (Hotline)</source>
-        <translation>E-mail (Infolinia)</translation>
+        <translation>E-mail (infolinia)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2669"/>
         <source>E-mail (Studio)</source>
-        <translation>E-mail (Studio)</translation>
+        <translation>E-mail (studio)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2670"/>
@@ -1129,7 +1123,7 @@
     <message>
         <location filename="../dabtables.cpp" line="183"/>
         <source>Other Music</source>
-        <translation>Muzyka_Inna</translation>
+        <translation>Muzyka Inna</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="184"/>
@@ -1204,12 +1198,12 @@
     <message>
         <location filename="../dabtables.cpp" line="200"/>
         <source>None</source>
-        <translation>Niezdefiniowany</translation>
+        <translation>Brak typu programu</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="208"/>
         <source>Unknown/NA</source>
-        <translation>Nieznany/nie dotyczy</translation>
+        <translation>Brak definicji</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="209"/>
@@ -2961,7 +2955,7 @@
     <message>
         <location filename="../dabtables.cpp" line="594"/>
         <source>Special event</source>
-        <translation>Specjalne wydarzenie</translation>
+        <translation>Wydarzenie specjalne</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="595"/>
@@ -3042,7 +3036,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="826"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="859"/>
         <source>Gain control</source>
-        <translation>Usawienia wzmocnienia</translation>
+        <translation>Wzmocnienie sygnału regulowane jest</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="111"/>
@@ -3107,7 +3101,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="842"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="871"/>
         <source>Manual</source>
-        <translation>Podręcznik</translation>
+        <translation>Ręcznie</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="159"/>
@@ -3318,7 +3312,7 @@
     <message>
         <location filename="../setupdialog.cpp" line="46"/>
         <source>Announcements</source>
-        <translation>Ogłoszenie</translation>
+        <translation>Ogłoszenia</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="47"/>
@@ -3349,7 +3343,7 @@
     <message>
         <location filename="../setupdialog.cpp" line="98"/>
         <source>Alarm Announcements</source>
-        <translation>Komunikat ewakuacyjny i alarmowy</translation>
+        <translation>Komunikaty ewakuacyjne i alarmowe</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="104"/>
@@ -3482,12 +3476,12 @@
     <message>
         <location filename="../setupdialog.cpp" line="824"/>
         <source>RTL SDR device connected</source>
-        <translation>Podłączono urządzenie TL SDR</translation>
+        <translation>Podłączono urządzenie: RTL SDR</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="827"/>
         <source>RTL TCP device connected</source>
-        <translation>Podłączono urządzenie RTL TCP</translation>
+        <translation>Podłączono urządzenie: RTL TCP</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="833"/>
@@ -3497,12 +3491,12 @@
     <message>
         <location filename="../setupdialog.cpp" line="836"/>
         <source>Airspy device connected</source>
-        <translation>Podłączono urządzenie Airspy</translation>
+        <translation>Podłączono urządzenie: Airspy</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="839"/>
         <source>Soapy SDR device connected</source>
-        <translation>Podłączone urządzenie Soapy SDR</translation>
+        <translation>Podłączono urządzenie: Soapy SDR</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="905"/>
