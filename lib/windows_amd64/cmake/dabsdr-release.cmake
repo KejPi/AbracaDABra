@@ -12,8 +12,8 @@ set_target_properties(dabsdr::dabsdr PROPERTIES
   IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/windows_amd64/libdabsdr.dll"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS dabsdr::dabsdr )
-list(APPEND _IMPORT_CHECK_FILES_FOR_dabsdr::dabsdr "${_IMPORT_PREFIX}/windows_amd64/libdabsdr.dll.a" "${_IMPORT_PREFIX}/windows_amd64/libdabsdr.dll" )
+list(APPEND _cmake_import_check_targets dabsdr::dabsdr )
+list(APPEND _cmake_import_check_files_for_dabsdr::dabsdr "${_IMPORT_PREFIX}/windows_amd64/libdabsdr.dll.a" "${_IMPORT_PREFIX}/windows_amd64/libdabsdr.dll" )
 
 # Commands beyond this point should not need to know the version.
 set(CMAKE_IMPORT_FILE_VERSION)
