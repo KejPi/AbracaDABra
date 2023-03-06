@@ -3,7 +3,7 @@ Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) application. It wo
 
 Application is based on Qt6 cross-platform software development framework and can run on any platform supported by Qt6. 
 Prebuilt binaries are released for Windows, MacOS (both Intel and Apple Silicon) and Linux x86-64 (AppImage). 
-AbracaDABra can run also under Linux AARCH64 (ARM64) for example on Raspberry Pi 4. 
+AbracaDABra can run also under Linux AARCH64 (ARM64) for example on Raspberry Pi 4. ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
 
 <img width="1634" alt="Snímek obrazovky 2022-06-28 v 22 32 25" src="https://user-images.githubusercontent.com/6438380/176279785-1e212201-3c1d-428f-9416-b1b0b464238b.png">
 
@@ -21,11 +21,14 @@ AbracaDABra can run also under Linux AARCH64 (ARM64) for example on Raspberry Pi
 * Dynamic label (DL) and Dynamic label plus (DL+)
 * MOT slideshow (SLS) and categorized slideshow (CatSLS) from PAD or from secondary data service
 * Audio services reconfiguration
+* Dynamic programme type (PTy)
 * Ensemble structure view with all technical details
 * Raw file dumping
 * Only band III and DAB mode 1 is supported.
 * Simple user-friendly interface, trying to follow DAB _Rules of implementation (<a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>)_
 * Multiplatform (Windows, MacOS and Linux)
+* Dark mode supported on all platforms
+* Localization to German, Polish and Czech
 
 ## Basic mode
 <img width="663" alt="Snímek obrazovky 2022-06-28 v 22 19 47" src="https://user-images.githubusercontent.com/6438380/176277787-7737ca9b-adb1-4d91-bf5b-bd9331d27663.png">
@@ -40,7 +43,7 @@ Service can be easily added to favorites by clicking "star" icon.  Most of the e
 In addition to basic mode, expert mode shows ensemble tree with structure of services and additional details of currenly tuned service. 
 Furthermore it is possible to change the DAB channel manually in this mode. 
 This is particularly useful when antenna adjustment is done in order to receive ensemble that is not captured during automatic band scan.
-Expert mode can be enabled in "three-dot" menu.
+Expert mode can be enabled in Settings dialog.
 
 ## DAB Announcements support
 
@@ -133,13 +136,9 @@ Then clone the project:
 
 3. Run make
 
-       make      
+       make             
        
 ## Known limitations
 * Reconfiguration not supported for data services
 * Only SLS data service is currently supported
-* Application is hanging when audio output device is removed (like bluetooth headphones disconnected) - PortAudio does not support hot swap
-* MacOS Ventura refuses to start application downloaded from internet. This command run from Terminal after installation seems to solve the problem:
-
-       xattr -cr /Applications/AbracaDABra.app
        
