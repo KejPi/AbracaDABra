@@ -73,7 +73,7 @@
     <message>
         <location filename="../aboutdialog.cpp" line="75"/>
         <source>Contributors to the translation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Współtwórcy tłumaczenia na język:</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="77"/>
