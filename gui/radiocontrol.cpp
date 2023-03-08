@@ -410,7 +410,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
     case RadioControlEventType::USERAPP_DATA:
     {
 #if RADIO_CONTROL_VERBOSE > 1
-        qDebug() << "RadioControlEvent::DATAGROUP_MSC";
+        qDebug() << "RadioControlEvent::DATAGROUP_MSC" << pEvent->pUserAppData->id;
 #endif
         switch (pEvent->pUserAppData->id)
         {
@@ -421,7 +421,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
             emit userAppData_Announcement(*(pEvent->pUserAppData));
             break;
         default:
-            emit userAppData(*(pEvent->pUserAppData));
+            emit userAppData_Service(*(pEvent->pUserAppData));
             break;
         }
 
@@ -600,7 +600,7 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
         QHash<DabUserApplicationType,RadioControlUserApp>::const_iterator uaIt = scIt->userApps.constFind(uaType);
         if (scIt->userApps.cend() != uaIt)
         {
-            //qDebug() << "Found XPAD app" << int(uaType);
+            qDebug() << "Found XPAD app" << int(uaType);
             dabXPadAppStart(uaIt->xpadData.xpadAppTy, 1, DABSDR_ID_AUDIO_PRIMARY);
             return;
         }
@@ -1345,20 +1345,16 @@ void RadioControl::eventHandler_serviceSelection(RadioControlEvent *pEvent)
                     // enable SLS automatically - if already available
                     startUserApplication(DabUserApplicationType::SlideShow, true);
 
-//#warning "Remove automatic Journaline - this is for debug only"
-//                          startUserApplication(DabUserApplicationType::Journaline, true);
 #if RADIO_CONTROL_SPI_ENABLE
 #warning "Remove automatic SPI - this is for debug only"
                     startUserApplication(DabUserApplicationType::SPI, true);
 #endif
-                    //#warning "Remove automatic TPEG - this is for debug only" \
-                    //startUserApplication(DabUserApplicationType::TPEG, true);
                 }
             }
         }
     }
-    else
-    {
+    else if (pEvent->decoderId == DABSDR_ID_AUDIO_SECONDARY)
+    {   // secondary is used for announceement on other service
 #if RADIO_CONTROL_VERBOSE > 1
         qDebug() << "RadioControlEvent::SERVICE_SELECTION success instance" << int(pEvent->decoderId);
 #endif
@@ -1366,6 +1362,10 @@ void RadioControl::eventHandler_serviceSelection(RadioControlEvent *pEvent)
 
         m_currentService.announcement.SId = pEvent->SId;
         m_currentService.announcement.SCIdS = pEvent->SCIdS;
+    }
+    else
+    {   // data service
+        qDebug() << "RadioControlEvent::SERVICE_SELECTION success instance" << int(pEvent->decoderId);
     }
 }
 
