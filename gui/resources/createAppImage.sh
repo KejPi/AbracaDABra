@@ -11,7 +11,7 @@ fi
 mkdir build
 cd build
 cmake .. -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON
-make
+make -j$(nproc)
 
 # Prepare directory structure
 mkdir -p ./$APPDIR/usr/bin/
