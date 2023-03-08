@@ -421,6 +421,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
             emit userAppData_Announcement(*(pEvent->pUserAppData));
             break;
         default:
+            // data services started automatically by primary service
             emit userAppData_Service(*(pEvent->pUserAppData));
             break;
         }
@@ -1365,7 +1366,9 @@ void RadioControl::eventHandler_serviceSelection(RadioControlEvent *pEvent)
     }
     else
     {   // data service
+#if RADIO_CONTROL_VERBOSE > 1
         qDebug() << "RadioControlEvent::SERVICE_SELECTION success instance" << int(pEvent->decoderId);
+#endif
     }
 }
 
