@@ -27,7 +27,7 @@ AbracaDABra can run also under Linux AARCH64 (ARM64) for example on Raspberry Pi
 * Only band III and DAB mode 1 is supported.
 * Simple user-friendly interface, trying to follow DAB _Rules of implementation (<a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>)_
 * Multiplatform (Windows, MacOS and Linux)
-* Dark mode supported on all platforms
+* Dark theme supported on all platforms
 * Localization to German, Polish and Czech
 
 ## Basic mode
@@ -85,6 +85,31 @@ Following settings can be changed by editing AbracaDABra.ini:
 Application shall not run while changing INI file, otherwise the settings will be overwritten.
 
 It is also possible to use other than default INI file using `--ini` or `-i` command line parameter.
+
+## How to install
+
+### MacOS
+
+Download latest DMG file from [release page](https://github.com/KejPi/AbracaDABra/releases/latest) and install it like any other application. 
+
+There are two versions of DMG, one for Intel Mac and the other from Apple Silicon Mac. Although Intel Mac application runs on both platforms, it is highly recommended to install Apple Silicon version if you have Apple Silicon Mac. Intel build requires at least MacOS Mojave (10.14) and Apple Silicon build needs at least MacOS BigSur (11).
+
+### Windows
+
+Download latest Windows zip file from [release page](https://github.com/KejPi/AbracaDABra/releases/latest) and unpack it to any folder on your drive. 
+
+RTL-SDR and Airspy devices need WinUSB driver for correct functionality under Windows. To install it, use Zadig that can be downloaded from [zadig.akeo.ie](https://zadig.akeo.ie). Please follow installation steps described [here](https://www.rtl-sdr.com/getting-the-rtl-sdr-to-work-on-windows-10/). When the driver is installed, start `AbracaDABra.exe` and first band scan should start automatically when RTL-SDR device is recognized. 
+
+Please note that other applications requiring Realtek driver will not work with WinUSB driver from Zadig. 
+
+### Linux
+
+The simplest way is to download latest AppImage file from [release page](https://github.com/KejPi/AbracaDABra/releases/latest), 
+make it executable and run it. 
+
+There are two versions of AppImage - one for Intel/AMD 64 bit CPU (x86_64) the other for ARM64 CPU (aarch64) so make soure you are donwloading the one matching your hardware.
+
+ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
 
 ## How to build
 Following libraries are required:
