@@ -98,6 +98,7 @@ void InputDeviceRecorder::start(QWidget * callerWidget)
         }
         if (!fileName.isEmpty())
         {
+            m_bytesRecorded = 0;
             m_recordingPath = QFileInfo(fileName).path(); // store path for next time
 
             m_file = fopen(QDir::toNativeSeparators(fileName).toUtf8().data(), "wb");
