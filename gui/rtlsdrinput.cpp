@@ -351,17 +351,21 @@ void RtlSdrInput::startStopRecording(bool start)
 
 void RtlSdrInput::setBW(int bw)
 {
-    if (bw > 0)
+    if (bw <= 0)
+    {   // setting default BW
+        bw = 1530000;   // 1.53 MHz
+    }
+    else
+    { /* BW set by user */ }
+
+    int ret = rtlsdr_set_tuner_bandwidth(m_device, bw);
+    if (ret != 0)
     {
-        int ret = rtlsdr_set_tuner_bandwidth(m_device, bw);
-        if (ret != 0)
-        {
-            qDebug() << "RTL-SDR: Failed to set tuner BW";
-        }
-        else
-        {
-            qDebug() << "RTL-SDR: bandwidth set to" << bw/1000.0 << "kHz";
-        }
+        qDebug() << "RTL-SDR: Failed to set tuner BW";
+    }
+    else
+    {
+        qDebug() << "RTL-SDR: bandwidth set to" << bw/1000.0 << "kHz";
     }
 }
 
