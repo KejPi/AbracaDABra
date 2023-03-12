@@ -1,16 +1,16 @@
 # AbracaDABra
-Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks but also with AirSpy devices and with devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
+Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks but also with Airspy R2 and Mini devices and with many devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
 
 Application is based on Qt6 cross-platform software development framework and can run on any platform supported by Qt6. 
-Prebuilt binaries are released for Windows, MacOS (both Intel and Apple Silicon) and Linux x86-64 (AppImage). 
-AbracaDABra can run also under Linux AARCH64 (ARM64) for example on Raspberry Pi 4. ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
+Prebuilt binaries are released for Windows, MacOS (both Intel and Apple Silicon) and Linux x86-64 and AARCH64 (AppImage). 
+ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
 
 <img width="1634" alt="Snímek obrazovky 2022-06-28 v 22 32 25" src="https://user-images.githubusercontent.com/6438380/176279785-1e212201-3c1d-428f-9416-b1b0b464238b.png">
 
 ## Features
 * Following input devices are supported:
   * RTL-SDR (default device)
-  * Airspy (optional)
+  * Airspy (optional) - only Airspy Mini and R2 are supported, HF+ devices do not work due to limited bandwidth
   * SoapySDR (optional)
   * RTL-TCP
   * Raw file input (in expert mode only, INT16 or UINT8 format)
