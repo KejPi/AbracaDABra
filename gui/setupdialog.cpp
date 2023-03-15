@@ -216,10 +216,11 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 
     // create combo box with language selection
     ui->langComboBox->addItem("<" + tr("System language") + ">", QVariant(QLocale::AnyLanguage));
-    ui->langComboBox->addItem("English", QVariant(QLocale::English));
-    ui->langComboBox->addItem(QLocale(QLocale::Czech).nativeLanguageName(), QVariant(QLocale::Czech));
-    ui->langComboBox->addItem(QLocale(QLocale::German).nativeLanguageName(), QVariant(QLocale::German));
-    ui->langComboBox->addItem(QLocale(QLocale::Polish).nativeLanguageName(), QVariant(QLocale::Polish));
+    ui->langComboBox->addItem("English", QVariant(QLocale::English));   // QLocale::English native name returns "American English" :-(
+    for (auto l : m_supportedLocalization)
+    {
+        ui->langComboBox->addItem(QLocale(l).nativeLanguageName(), QVariant(l));
+    }
     ui->langComboBox->model()->sort(0);
     ui->langComboBox->setToolTip(tr("User interface language, the change will take effect after application restart."));
     ui->langWarningLabel->setText("<span style=\"color:red\">"+tr("Language change will take effect after application restart.")+"</span>");
@@ -341,6 +342,26 @@ void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
         ui->xmlHeaderWidget->setVisible(false);
     }
     adjustSize();
+}
+
+QLocale::Language SetupDialog::applicationLanguage() const
+{
+    if (m_supportedLocalization.contains(m_settings.lang) || (QLocale::English == m_settings.lang))
+    {   // selected specific localization
+        return m_settings.lang;
+    }
+    else
+    {   // system default or not supported
+        // find if system default is supported
+        if (m_supportedLocalization.contains(QLocale::system().language()))
+        {
+            return QLocale::system().language();
+        }
+        else
+        {
+            return QLocale::English;
+        }
+    }
 }
 
 void SetupDialog::showEvent(QShowEvent *event)

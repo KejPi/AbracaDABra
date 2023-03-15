@@ -113,6 +113,7 @@ public:
     void onExpertMode(bool ena);    
     void setSettings(const Settings &settings);
     void setXmlHeader(const InputDeviceDescription & desc);
+    QLocale::Language applicationLanguage() const;
 
 signals:
     void inputDeviceChanged(const InputDeviceId & inputDevice);
@@ -130,6 +131,8 @@ private:
     enum SetupDialogXmlHeader { XMLDate = 0, XMLRecorder, XMLDevice,
                                 XMLSampleRate, XMLFreq, XMLLength, XMLFormat,
                                 XMLNumLabels};
+
+    const QList<QLocale::Language> m_supportedLocalization = { QLocale::Czech, QLocale::German, QLocale::Polish };
 
     Ui::SetupDialog *ui;
     Settings m_settings;

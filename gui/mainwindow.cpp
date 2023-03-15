@@ -783,7 +783,7 @@ void MainWindow::onDLComplete(const QString & dl, QLabel * dlLabel)
 
 void MainWindow::onDabTime(const QDateTime & d)
 {
-    m_timeLabel->setText(QLocale(m_setupDialog->settings().lang).toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
+    m_timeLabel->setText(m_timeLocale.toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
 }
 
 void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)
@@ -1831,7 +1831,6 @@ void MainWindow::loadSettings()
     s.applicationStyle = static_cast<ApplicationStyle>(settings->value("style", static_cast<int>(ApplicationStyle::Default)).toInt());
     s.dlPlusEna = settings->value("dlPlus", true).toBool();
     s.lang = QLocale::codeToLanguage(settings->value("language", QString("")).toString());
-
     s.inputDevice = static_cast<InputDeviceId>(inDevice);
     s.announcementEna = settings->value("announcementEna", 0x07FF).toUInt();
     s.bringWindowToForeground = settings->value("bringWindowToForegroundOnAlarm", true).toBool();
@@ -1873,6 +1872,9 @@ void MainWindow::loadSettings()
     s.rawfile.loopEna = settings->value("RAW-FILE/loop", false).toBool();
 
     m_setupDialog->setSettings(s);
+
+    // set DAB time locale
+    m_timeLocale = QLocale(m_setupDialog->applicationLanguage());
 
     // need to run here because it expects that settings is up-to-date
     if (ApplicationStyle::Default != s.applicationStyle)

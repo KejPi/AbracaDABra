@@ -104,6 +104,7 @@ private:
     // status bar widgets
     QStackedWidget * m_timeBasicQualWidget;
     QLabel  * m_timeLabel;
+    QLocale m_timeLocale;
     QLabel  * m_basicSignalQualityLabel;
     QWidget * m_signalQualityWidget;
     QLabel * m_syncLabel;
