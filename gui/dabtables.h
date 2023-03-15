@@ -141,7 +141,8 @@ public:
     static QString getPtyName(const uint8_t pty);
     static QString getLangName(int lang);
     static QString getCountryName(uint32_t SId);
-    static QString getAnnouncementName(DabAnnouncement announcement);    
+    static QString getAnnouncementName(DabAnnouncement announcement);
+    static QString getAnnouncementNameEnglish(DabAnnouncement announcement);
 };
 
 #endif // DABTABLES_H

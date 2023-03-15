@@ -758,7 +758,7 @@ QString RadioControl::ensembleConfigurationString() const
                 {
                     if ((1 << b) & s.ASu)
                     {
-                        strOut << DabTables::getAnnouncementName(static_cast<DabAnnouncement>(b)) << ", ";
+                        strOut << DabTables::getAnnouncementNameEnglish(static_cast<DabAnnouncement>(b)) << ", ";
                     }
                 }
                 strOut << QString("Cluster IDs [");
@@ -1639,7 +1639,7 @@ void RadioControl::announcementHandler(dabsdrAsw_t *pAnnouncement)
         if ((announcementId >= 0) && (pAnnouncement->ASwFlags & m_currentService.announcement.enaFlags))
         {   // valid ASw
 #if RADIO_CONTROL_VERBOSE > 0
-            qDebug() << DabTables::getAnnouncementName(static_cast<DabAnnouncement>(announcementId))
+            qDebug() << DabTables::getAnnouncementNameEnglish(static_cast<DabAnnouncement>(announcementId))
                      << "announcement in subchannel" <<  pAnnouncement->subChId
                      << "cluster ID" << pAnnouncement->clusterId;
 #endif
