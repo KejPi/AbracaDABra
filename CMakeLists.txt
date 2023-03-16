@@ -93,7 +93,8 @@ endif()
 
 #########################################################
 ## DAB library (backend)
-if(EXISTS "${PROJECT_SOURCE_DIR}/dabsdr/CMakeLists.txt")
+if(EXISTS "${PROJECT_SOURCE_DIR}/dabsdr/CMakeLists.txt" AND NOT PROJECT_VERSION_RELEASE)
+    message (STATUS "libdabsdr will be built from source")
     set(DABSDR_DIR "${PROJECT_SOURCE_DIR}/dabsdr")
 
     # dab library source code available
