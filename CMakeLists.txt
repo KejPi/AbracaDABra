@@ -458,7 +458,7 @@ else ()
         INSTALL (FILES ${PROJECT_SOURCE_DIR}/gui/resources/appIcon-linux-512x512.png DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/512x512/apps/ RENAME ${TARGET}.png)
      endif()
 endif()
-if(NOT EXISTS "${PROJECT_SOURCE_DIR}/dabsdr/CMakeLists.txt")
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/dabsdr/CMakeLists.txt" OR PROJECT_VERSION_RELEASE)
     install(IMPORTED_RUNTIME_ARTIFACTS dabsdr::dabsdr)
 endif()
 
