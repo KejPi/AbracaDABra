@@ -10,7 +10,7 @@ ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/
 ## Features
 * Following input devices are supported:
   * RTL-SDR (default device)
-  * Airspy (optional) - only Airspy Mini and R2 are supported, HF+ devices do not work due to limited bandwidth
+  * Airspy (optional) - only Airspy Mini and R2 are supported, HF+ devices do not work due to limited bandwidth. If you have problems with Airspy devices, please check the firmware version. Firmware update maybe required for correct functionality.
   * SoapySDR (optional)
   * RTL-TCP
   * Raw file input (in expert mode only, INT16 or UINT8 format)
