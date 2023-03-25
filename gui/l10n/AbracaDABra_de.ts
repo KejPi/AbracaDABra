@@ -408,7 +408,7 @@
     <message>
         <location filename="../ensembleinfodialog.cpp" line="185"/>
         <source>Stop recording of raw IQ stream</source>
-        <translation type="unfinished"></translation>
+        <translation>IQ-Rohdatenaufzeichung beenden</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="202"/>
@@ -935,7 +935,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="2653"/>
         <source>Other</source>
-        <translation type="unfinished"></translation>
+        <translation>Andere</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2654"/>
