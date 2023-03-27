@@ -64,7 +64,7 @@ class RtlTcpWorker : public QThread
     Q_OBJECT
 public:
     explicit RtlTcpWorker(SOCKET sock, QObject *parent = nullptr);
-    void catureIQ(bool ena);
+    void captureIQ(bool ena);
     void startStopRecording(bool ena);
     bool isRunning();
 protected:
@@ -72,20 +72,28 @@ protected:
 signals:
     void agcLevel(float level, int maxVal);
     void recordBuffer(const uint8_t * buf, uint32_t len);
+    void dataReady();
 private:
     SOCKET m_sock;
 
     std::atomic<bool> m_isRecording;
     std::atomic<bool> m_enaCaptureIQ;
     std::atomic<bool> m_watchdogFlag;
-    int m_captureStartCntr;   
+    std::atomic<int8_t> m_captureStartCntr;
 
     // DOC memory
     float m_dcI = 0.0;
     float m_dcQ = 0.0;
+#if (RTLTCP_DOC_ENABLE > 0)
+    constexpr static const float m_doc_c = 0.05;
+#endif
 
     // AGC memory
     float m_agcLevel = 0.0;
+#if (RTLTCP_AGC_ENABLE > 0)
+    constexpr static const float m_agcLevel_catt = 0.1;
+    constexpr static const float m_agcLevel_crel = 0.0001;
+#endif
 
     // input buffer
     uint8_t m_bufferIQ[RTLTCP_CHUNK_SIZE];
@@ -136,7 +144,6 @@ public:
     QList<float> getGainList() const;
 private:    
     uint32_t m_frequency;
-    bool m_deviceUnpluggedFlag;
     SOCKET m_sock;
     QString m_address;
     int m_port;
@@ -147,8 +154,6 @@ private:
     int m_gainIdx;
     QList<int> * m_gainList;
 
-    void run();
-    void stop();
     void resetAgc();
 
     // private function
