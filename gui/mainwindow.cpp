@@ -651,90 +651,6 @@ void MainWindow::onEnsembleRemoved(const RadioControlEnsemble &ens)
     m_serviceList->removeEnsemble(ens);
 }
 
-#if 0
-void MainWindow::onSyncStatus(uint8_t sync)
-{
-    if (DabSyncLevel::FullSync > DabSyncLevel(sync))
-    {   // hide time when no sync
-        m_timeLabel->setText("");
-
-        if (DabSyncLevel::NoSync == DabSyncLevel(sync))
-        {
-            onSnrLevel(0.0);
-        }
-
-        // set no signal quality when no sync
-        if (isDarkMode())
-        {
-            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal0_dark.png"));
-        }
-        else
-        {
-            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal0.png"));
-        }
-    }
-    m_syncLabel->setText(tr(syncLevelLabels[sync]));
-    m_syncLabel->setToolTip(tr(syncLevelTooltip[sync]));
-}
-
-void MainWindow::onSnrLevel(float snr)
-{
-    // limit SNR to progressbar maximum
-    int snr10 = qRound(snr*10);
-    if (snr10 > m_snrProgressbar->maximum())
-    {
-        snr10 = m_snrProgressbar->maximum();
-    }
-    m_snrProgressbar->setValue(snr10);
-
-    m_snrLabel->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
-    // progressbar styling -> it does not look good on Apple
-    if (static_cast<int>(SNR10Threhold::SNR_BAD) > snr10)
-    {   // bad SNR
-#ifndef __APPLE__
-        m_snrProgressbar->setStyleSheet(snrProgressStylesheet[0]);
-#endif
-        if (isDarkMode())
-        {
-            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal1_dark.png"));
-        }
-        else
-        {
-            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal1.png"));
-        }
-    }
-    else if (static_cast<int>(SNR10Threhold::SNR_GOOD) > snr10)
-    {   // medium SNR
-#ifndef __APPLE__
-        m_snrProgressbar->setStyleSheet(snrProgressStylesheet[1]);
-#endif
-        if (isDarkMode())
-        {
-            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal2_dark.png"));
-        }
-        else
-        {
-            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal2.png"));
-        }
-    }
-    else
-    {   // good SNR
-#ifndef __APPLE__
-        m_snrProgressbar->setStyleSheet(snrProgressStylesheet[2]);
-#endif
-        if (isDarkMode())
-        {
-            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal3_dark.png"));
-        }
-        else
-        {
-            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal3.png"));
-        }
-    }
-
-}
-#else
-
 void MainWindow::onSignalState(uint8_t sync, float snr)
 {
     if (DabSyncLevel::FullSync > DabSyncLevel(sync))
@@ -808,8 +724,6 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
         }
     }
 }
-
-#endif
 
 void MainWindow::onServiceListEntry(const RadioControlEnsemble &ens, const RadioControlServiceComponent &slEntry)
 {

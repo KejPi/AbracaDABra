@@ -206,8 +206,6 @@ private:
     void onAnnouncementClicked();
     void onApplicationStyleChanged(ApplicationStyle style);
     void onExpertModeToggled(bool checked);
-//    void onSyncStatus(uint8_t sync);
-//    void onSnrLevel(float snr);
     void onSignalState(uint8_t sync, float snr);
     void onServiceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
     void onDLComplete_Service(const QString &dl);
