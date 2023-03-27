@@ -89,13 +89,15 @@ bool SoapySdrInput::openDevice()
     }
     else
     {   // device args provided
-        m_device = SoapySDR::Device::make(m_devArgs.toStdString());
-        if (nullptr == m_device)
+        try
         {
-            qDebug() << "SoapySDR: Failed to make device with args:" << m_devArgs;
+            m_device = SoapySDR::Device::make(m_devArgs.toStdString());
+        }
+        catch(const std::exception &ex)
+        {
+            qDebug() << "SoapySDR: Failed to make device:" << ex.what();
             return false;
         }
-        else { /* success */ }
     }
 
     if (nullptr == m_device)
