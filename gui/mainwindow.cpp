@@ -1414,7 +1414,25 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     switch (d)
     {
     case InputDeviceId::UNDEFINED:
-        // do nothing
+        // store service list if previous was not RAWFILE or UNDEFINED
+        if ((InputDeviceId::RAWFILE != m_inputDeviceId) && (InputDeviceId::UNDEFINED != m_inputDeviceId))
+        {   // if switching from live source save current service list
+            QSettings * settings;
+            if (m_iniFilename.isEmpty())
+            {
+                settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+            }
+            else
+            {
+                settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+            }
+            m_serviceList->save(*settings);
+            settings->sync();
+
+            delete settings;
+        }
+        else { /* do nothing if switching from RAW file */ }
+
         m_inputDeviceId = InputDeviceId::UNDEFINED;
         m_inputDevice = nullptr;
         ui->channelCombo->setDisabled(true);   // it will be enabled when device is ready
