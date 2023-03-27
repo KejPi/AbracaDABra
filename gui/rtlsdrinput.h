@@ -36,6 +36,10 @@
 #define RTLSDR_DOC_ENABLE  1   // enable DOC
 #define RTLSDR_AGC_ENABLE  1   // enable AGC
 
+// init value of the counter used to reset buffer after tune
+// RTLSDR_START_COUNTER_INIT-1 buffers will be discarded
+#define RTLSDR_RESTART_COUNTER 2
+
 class RtlSdrWorker : public QThread
 {
     Q_OBJECT
@@ -43,23 +47,33 @@ public:
     explicit RtlSdrWorker(struct rtlsdr_dev *device, QObject *parent = nullptr);
     void startStopRecording(bool ena);
     bool isRunning();
+    void restart();
 protected:
     void run() override;
 signals:
     void agcLevel(float level, int maxVal);
     void recordBuffer(const uint8_t * buf, uint32_t len);
+    void dataReady();
 private:
     QObject * m_rtlSdrPtr;
     struct rtlsdr_dev * m_device;
     std::atomic<bool> m_isRecording;
     std::atomic<bool> m_watchdogFlag;
+    std::atomic<int8_t> m_captureStartCntr;
 
     // DOC memory
     float m_dcI = 0.0;
     float m_dcQ = 0.0;
+#if (RTLSDR_DOC_ENABLE > 0)
+    constexpr static const float m_doc_c = 0.05;
+#endif
 
     // AGC memory
     float m_agcLevel = 0.0;
+#if (RTLSDR_AGC_ENABLE > 0)
+    constexpr static const float m_agcLevel_catt = 0.1;
+    constexpr static const float m_agcLevel_crel = 0.0001;
+#endif
 
     void processInputData(unsigned char *buf, uint32_t len);
     static void callback(unsigned char *buf, uint32_t len, void *ctx);
@@ -81,8 +95,6 @@ public:
 
 private:
     uint32_t m_frequency;
-    bool m_deviceUnpluggedFlag;
-    bool m_deviceRunningFlag;
     struct rtlsdr_dev * m_device;
     RtlSdrWorker * m_worker;
     QTimer m_watchdogTimer;

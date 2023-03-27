@@ -33,8 +33,7 @@ RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
     m_deviceDescription.id = InputDeviceId::RTLSDR;
 
     m_device = nullptr;
-    m_deviceUnpluggedFlag = true;
-    m_deviceRunningFlag = false;
+    m_worker = nullptr;
     m_gainList = nullptr;
 
     connect(&m_watchdogTimer, &QTimer::timeout, this, &RtlSdrInput::onWatchdogTimeout);
@@ -42,8 +41,8 @@ RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
 
 RtlSdrInput::~RtlSdrInput()
 {
-    stop();
-    if (!m_deviceUnpluggedFlag)
+    RtlSdrInput::tune(0);  // this stops data acquisition thread
+    if (nullptr != m_device)
     {
         rtlsdr_close(m_device);
     }
@@ -56,18 +55,40 @@ RtlSdrInput::~RtlSdrInput()
 void RtlSdrInput::tune(uint32_t frequency)
 {
     m_frequency = frequency;
-    if ((m_deviceRunningFlag) || (0 == frequency))
-    {   // worker is running
-        //      sequence in this case is:
-        //      1) stop
-        //      2) wait for thread to finish
-        //      3) start new worker on new frequency
-        // ==> this way we can be sure that all buffers are reset and nothing left from previous channel
-        stop();
+    if (0 != frequency)
+    {   // tuning
+        if (nullptr == m_worker)
+        {   // reset endpoint before starting data acquisition
+            rtlsdr_reset_buffer(m_device);
+
+            rtlsdr_set_center_freq(m_device, m_frequency*1000);
+
+            // does nothing if not SW AGC
+            resetAgc();
+
+            // start worker
+            run();
+
+            // tuned(m_frequency) signal is emited when dataReady() from worker
+        }
+        else
+        {   // worker is already running
+            rtlsdr_set_center_freq(m_device, m_frequency*1000);
+
+            // does nothing if not SW AGC
+            resetAgc();
+
+            // restart data acquisition
+            m_worker->restart();
+
+            // tuned(m_frequency) signal is emited when dataReady() from worker
+        }
     }
     else
-    {   // worker is not running
-        run();
+    {   // frequency == 0 ==> go to idle
+        stop();
+
+        // tuned(0) will be emitted when worker finishes
     }
 }
 
@@ -105,13 +126,15 @@ bool RtlSdrInput::openDevice()
             }
             break;
         }
+        else { /* not successful */ }
     }
 
     if (ret < 0)
-    {
+    {   // no device found
         qDebug() << "RTL-SDR: Opening rtl-sdr failed";
         return false;
     }
+    else { /* some device was opened successfully */ }
 
     // Set sample rate
     ret = rtlsdr_set_sample_rate(m_device, 2048000);
@@ -120,6 +143,7 @@ bool RtlSdrInput::openDevice()
         qDebug() << "RTL-SDR: Setting sample rate failed";
         return false;
     }
+    else { /* OK */ }
 
     // store device information
     m_deviceDescription.device.name = "rtl-sdr";
@@ -151,8 +175,6 @@ bool RtlSdrInput::openDevice()
     // set automatic gain
     setGainMode(RtlGainMode::Software);
 
-    m_deviceUnpluggedFlag = false;
-
     emit deviceReady();
 
     return true;
@@ -160,47 +182,22 @@ bool RtlSdrInput::openDevice()
 
 void RtlSdrInput::run()
 {
-    // Reset endpoint before we start reading from it (mandatory)
-    if (rtlsdr_reset_buffer(m_device) < 0)
-    {
-        emit error(InputDeviceErrorCode::Undefined);
-    }
+    m_worker = new RtlSdrWorker(m_device, this);
+    connect(m_worker, &RtlSdrWorker::agcLevel, this, &RtlSdrInput::onAgcLevel, Qt::QueuedConnection);
+    connect(m_worker, &RtlSdrWorker::dataReady, this, [=](){ emit tuned(m_frequency); }, Qt::QueuedConnection);
+    connect(m_worker, &RtlSdrWorker::recordBuffer, this, &InputDevice::recordBuffer, Qt::DirectConnection);
+    connect(m_worker, &RtlSdrWorker::finished, this, &RtlSdrInput::onReadThreadStopped, Qt::QueuedConnection);
+    connect(m_worker, &RtlSdrWorker::finished, m_worker, &QObject::deleteLater);
+    connect(m_worker, &RtlSdrWorker::destroyed, this, [=]() { m_worker = nullptr; } );
 
-    // Reset buffer here - worker thread it not running, DAB waits for new data
-    inputBuffer.reset();
-
-    if (m_frequency != 0)
-    {   // Tune to new frequency
-
-        rtlsdr_set_center_freq(m_device, m_frequency*1000);
-
-        // does nothing if not SW AGC
-        resetAgc();
-
-        m_worker = new RtlSdrWorker(m_device, this);
-        connect(m_worker, &RtlSdrWorker::agcLevel, this, &RtlSdrInput::onAgcLevel, Qt::QueuedConnection);
-        connect(m_worker, &RtlSdrWorker::recordBuffer, this, &InputDevice::recordBuffer, Qt::DirectConnection);
-        connect(m_worker, &RtlSdrWorker::finished, this, &RtlSdrInput::onReadThreadStopped, Qt::QueuedConnection);
-        connect(m_worker, &RtlSdrWorker::finished, m_worker, &QObject::deleteLater);
-        m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
-
-        m_worker->start();
-
-        m_deviceRunningFlag = true;
-    }
-    else
-    { /* tune to 0 => going to idle */  }
-
-    emit tuned(m_frequency);
+    m_worker->start();
+    m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
 }
 
 void RtlSdrInput::stop()
 {
-    if (m_deviceRunningFlag)
-    {   // if devise is running, stop worker
-        m_deviceRunningFlag = false;       // this flag say that we want to stop worker intentionally
-                                     // (checked in readThreadStopped() slot)
-
+    if (nullptr != m_worker)
+    {   // if worker is running, stop worker
         rtlsdr_cancel_async(m_device);
 
         m_worker->wait(QDeadlineTimer(2000));
@@ -216,10 +213,27 @@ void RtlSdrInput::stop()
             m_worker->wait(2000);
         }
     }
-    else if (0 == m_frequency)
-    {   // going to idle
-        emit tuned(0);
+    else { /* not running - doing nothing */ }
+}
+
+void RtlSdrInput::onReadThreadStopped()
+{
+    m_watchdogTimer.stop();
+    if (0 != m_frequency)
+    {   // if device should be running then it means reading error thus device is disconnected
+        qDebug() << "RTL-SDR: device unplugged.";
+
+        // fill buffer (artificially to avoid blocking of the DAB processing thread)
+        inputBuffer.fillDummy();
+
+        m_frequency = 0;
+
+        emit error(InputDeviceErrorCode::DeviceDisconnected);
     }
+    else
+    { /* do nothing -> go to idle was requested */ }
+
+    emit tuned(0);
 }
 
 void RtlSdrInput::setGainMode(RtlGainMode gainMode, int gainIdx)
@@ -255,7 +269,7 @@ void RtlSdrInput::setGainMode(RtlGainMode gainMode, int gainIdx)
 
 void RtlSdrInput::setGain(int gIdx)
 {
-    // force index vaslidity
+    // force index validity
     if (gIdx < 0)
     {
         gIdx = 0;
@@ -305,33 +319,11 @@ void RtlSdrInput::onAgcLevel(float agcLevel, int maxVal)
     }
 }
 
-void RtlSdrInput::onReadThreadStopped()
-{
-    m_watchdogTimer.stop();
-    if (m_deviceRunningFlag)
-    {   // if device should be running then it measn reading error thus device is disconnected
-        qDebug() << "RTL-SDR: device unplugged.";
-        m_deviceUnpluggedFlag = true;
-        m_deviceRunningFlag = false;
-
-        // fill buffer (artificially to avoid blocking of the DAB processing thread)
-        inputBuffer.fillDummy();
-
-        emit error(InputDeviceErrorCode::DeviceDisconnected);
-    }
-    else
-    {
-        // in this thread was stopped by to tune to new frequency, there is no other reason to stop the thread
-        run();
-    }
-}
-
 void RtlSdrInput::onWatchdogTimeout()
 {
     if (nullptr != m_worker)
     {
-        bool isRunning = m_worker->isRunning();
-        if (!isRunning)
+        if (!m_worker->isRunning())
         {  // some problem in data input
             qDebug() << "RTL-SDR: watchdog timeout";
             inputBuffer.fillDummy();
@@ -404,6 +396,7 @@ void RtlSdrWorker::run()
     m_dcQ = 0.0;
     m_agcLevel = 0.0;
     m_watchdogFlag = false;  // first callback sets it to true
+    m_captureStartCntr = 1;  // first callback resets buffer
 
     rtlsdr_read_async(m_device, callback, (void*)this, 0, INPUT_CHUNK_IQ_SAMPLES*2*sizeof(uint8_t));
 }
@@ -411,6 +404,11 @@ void RtlSdrWorker::run()
 void RtlSdrWorker::startStopRecording(bool ena)
 {
     m_isRecording = ena;
+}
+
+void RtlSdrWorker::restart()
+{
+    m_captureStartCntr = RTLSDR_RESTART_COUNTER;
 }
 
 bool RtlSdrWorker::isRunning()
@@ -430,21 +428,49 @@ void RtlSdrWorker::processInputData(unsigned char *buf, uint32_t len)
 #if (RTLSDR_DOC_ENABLE > 0)
     int_fast32_t sumI = 0;
     int_fast32_t sumQ = 0;
-#define DC_C 0.05
 #endif
 
 #if (RTLSDR_AGC_ENABLE > 0)
     int maxVal = 0;
-#define LEV_CATT 0.1
-#define LEV_CREL 0.0001
 #endif
+
+    if (m_captureStartCntr > 0)
+    {   // reset procedure
+        if (0 == --m_captureStartCntr)
+        {   // restart finished
+
+            // clear buffer to avoid mixing of channels
+            inputBuffer.reset();
+
+            m_dcI = 0.0;
+            m_dcQ = 0.0;
+            //m_agcLevel = 0.0;
+
+            emit dataReady();
+        }
+        else
+        {   // only reecord if recording
+            if (m_isRecording)
+            {
+                emit recordBuffer(buf, len);
+            }
+            else { /* not recording */ }
+
+            // reset watchDog flag, timer sets it to false
+            m_watchdogFlag = true;
+
+            return;
+        }
+    }
+    else { /* normal operation */ }
 
     if (m_isRecording)
     {
         emit recordBuffer(buf, len);
     }
+    else { /* not recording */ }
 
-    // reset watchDog flag, timer sets it to true
+    // reset watchDog flag, timer sets it to false
     m_watchdogFlag = true;
 
     // retrieving memories
@@ -497,10 +523,10 @@ void RtlSdrWorker::processInputData(unsigned char *buf, uint32_t len)
             }
 
             // calculate signal level (rectifier, fast attack slow release)
-            float c = LEV_CREL;
+            float c = m_agcLevel_crel;
             if (absTmp > agcLev)
             {
-                c = LEV_CATT;
+                c = m_agcLevel_catt;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
 #endif  // (RTLSDR_AGC_ENABLE > 0)
@@ -547,10 +573,10 @@ void RtlSdrWorker::processInputData(unsigned char *buf, uint32_t len)
             }
 
             // calculate signal level (rectifier, fast attack slow release)
-            float c = LEV_CREL;
+            float c = m_agcLevel_crel;
             if (absTmp > agcLev)
             {
-                c = LEV_CATT;
+                c = m_agcLevel_catt;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
 #endif  // (RTLSDR_AGC_ENABLE > 0)
@@ -591,10 +617,10 @@ void RtlSdrWorker::processInputData(unsigned char *buf, uint32_t len)
             }
 
             // calculate signal level (rectifier, fast attack slow release)
-            float c = LEV_CREL;
+            float c = m_agcLevel_crel;
             if (absTmp > agcLev)
             {
-                c = LEV_CATT;
+                c = m_agcLevel_catt;
             }
             agcLev = c * absTmp + agcLev - c * agcLev;
 #endif  // (RTLSDR_AGC_ENABLE > 0)
@@ -621,8 +647,8 @@ void RtlSdrWorker::processInputData(unsigned char *buf, uint32_t len)
 
 #if (RTLSDR_DOC_ENABLE > 0)
     // calculate correction values for next input buffer
-    m_dcI = sumI * DC_C / (len >> 1) + dcI - DC_C * dcI;
-    m_dcQ = sumQ * DC_C / (len >> 1) + dcQ - DC_C * dcQ;
+    m_dcI = sumI * m_doc_c / (len >> 1) + dcI - m_doc_c * dcI;
+    m_dcQ = sumQ * m_doc_c / (len >> 1) + dcQ - m_doc_c * dcQ;
 #endif
 
 #if (RTLSDR_AGC_ENABLE > 0)
