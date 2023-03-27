@@ -132,11 +132,11 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         qDebug("Sync = %d", pEvent->syncLevel);
 #endif
 
-        if ((DABSDR_SYNC_LEVEL_FIC == pEvent->syncLevel) && (RADIO_CONTROL_UEID_INVALID == m_ensemble.ueid))
+        if ((DABSDR_SYNC_LEVEL_FIC == pEvent->syncStatus.syncLevel) && (RADIO_CONTROL_UEID_INVALID == m_ensemble.ueid))
         { // ask for ensemble info if not available
             dabGetEnsembleInfo();
         }
-        updateSyncStatus(pEvent->syncLevel);
+        updateSignalState(pEvent->syncStatus.syncLevel, pEvent->syncStatus.snr10);
     }
         break;
     case RadioControlEventType::TUNE:
@@ -155,6 +155,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
             else
             {   // tune is finished , notify HMI
                 emit tuneDone(pEvent->frequency);
+                emit signalState(uint8_t(DabSyncLevel::NoSync), 0.0);
 
                 // this is to request autontf when EID changes
                 m_enaAutoNotification = false;
@@ -296,7 +297,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::AUTO_NOTIFICATION:
     {
-         dabsdrNtfPeriodic_t * pData = pEvent->pNotifyData;
+        dabsdrNtfPeriodic_t * pData = pEvent->pNotifyData;
 
         if (pData->dateHoursMinutes != 0)
         {
@@ -335,15 +336,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 
             emit dabTime(dateAndTime);
         }
-        updateSyncStatus(pData->syncLevel);
-        if (pData->snr10 > 0)
-        {
-            emit snrLevel(pData->snr10/10.0);
-        }
-        else
-        {
-            emit snrLevel(0);
-        }
+        updateSignalState(pData->syncLevel, pData->snr10);
 
         emit freqOffset(pData->freqOffset*0.1);
         emit fibCounter(RADIO_CONTROL_NOTIFICATION_FIB_EXPECTED, pData->fibErrorCntr);
@@ -450,7 +443,7 @@ void RadioControl::start(uint32_t freq)
         m_enaAutoNotification = false;
         m_frequency = freq;
         m_syncLevel = DABSDR_SYNC_LEVEL_NO_SYNC;
-        emit syncStatus(uint8_t(DabSyncLevel::NoSync));
+        emit signalState(uint8_t(DabSyncLevel::NoSync), 0.0);
         m_serviceList.clear();
         clearEnsemble();
         dabTune(freq);
@@ -534,25 +527,22 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
      }
 }
 
-void RadioControl::updateSyncStatus(dabsdrSyncLevel_t s)
+void RadioControl::updateSignalState(dabsdrSyncLevel_t s, int16_t snr10)
 {   
-    if (s != m_syncLevel)
-    {   // new sync level => emit signal
-        m_syncLevel = s;
-        switch (m_syncLevel)
-        {
-        case DABSDR_SYNC_LEVEL_NO_SYNC:
-            emit syncStatus(uint8_t(DabSyncLevel::NoSync));
-            emit snrLevel(0);
-            break;
-        case DABSDR_SYNC_LEVEL_ON_NULL:
-            emit syncStatus(uint8_t(DabSyncLevel::NullSync));
-            break;
-        case DABSDR_SYNC_LEVEL_FIC:
-            emit syncStatus(uint8_t(DabSyncLevel::FullSync));
-            break;
-        }
+    m_syncLevel = s;
+    switch (m_syncLevel)
+    {
+    case DABSDR_SYNC_LEVEL_NO_SYNC:
+        emit signalState(uint8_t(DabSyncLevel::NoSync), 0.0);
+        break;
+    case DABSDR_SYNC_LEVEL_ON_NULL:
+        emit signalState(uint8_t(DabSyncLevel::NullSync), snr10/10.0);
+        break;
+    case DABSDR_SYNC_LEVEL_FIC:
+        emit signalState(uint8_t(DabSyncLevel::FullSync), snr10/10.0);
+        break;
     }
+
     if ((m_syncLevel > DABSDR_SYNC_LEVEL_NO_SYNC) && (!m_enaAutoNotification))
     {
         // enable auto notifications
@@ -1849,7 +1839,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
 
         pEvent->type = RadioControlEventType::SYNC_STATUS;
         pEvent->status = p->status;
-        pEvent->syncLevel = pInfo->syncLevel;
+        memcpy(&pEvent->syncStatus, p->pData, sizeof(dabsdrNtfSyncStatus_t));
         radioCtrl->emit_dabEvent(pEvent);
     }
         break;

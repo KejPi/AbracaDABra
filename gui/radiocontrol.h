@@ -291,8 +291,8 @@ struct RadioControlEvent
     uint8_t SCIdS;
     union
     {   // this is data payload transferred from DABSDR
-        // sync level
-        dabsdrSyncLevel_t syncLevel;
+        // sync status
+        dabsdrNtfSyncStatus_t syncStatus;
         // tuned frequency
         uint32_t frequency;
         // ensemble information
@@ -345,8 +345,7 @@ public:
 
 signals:
     void dabEvent(RadioControlEvent * pEvent);
-    void syncStatus(uint8_t sync);
-    void snrLevel(float snr);
+    void signalState(uint8_t sync, float snr);
     void freqOffset(float f);
     void fibCounter(int expected, int errors);
     void mscCounter(int correct, int errors);
@@ -434,7 +433,7 @@ private:
     void ensembleConfigurationDispatch();
     bool isCurrentService(uint32_t sid, uint8_t scids) { return ((sid == m_currentService.SId) && (scids == m_currentService.SCIdS)); }
     void resetCurrentService();
-    void updateSyncStatus(dabsdrSyncLevel_t s);
+    void updateSignalState(dabsdrSyncLevel_t s, int16_t snr10);
     void setCurrentServiceAnnouncementSupport();
     void onAnnouncementTimeout();
     void onAnnouncementAudioAvailable();

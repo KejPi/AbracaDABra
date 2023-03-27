@@ -140,7 +140,7 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
     }
 }
 
-void EnsembleInfoDialog::updateSnr(float snr)
+void EnsembleInfoDialog::updateSnr(uint8_t, float snr)
 {
     ui->snr->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
 }

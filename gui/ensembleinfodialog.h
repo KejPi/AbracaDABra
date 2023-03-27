@@ -43,7 +43,7 @@ public:
     explicit EnsembleInfoDialog(QWidget *parent = nullptr);
     ~EnsembleInfoDialog();
     void refreshEnsembleConfiguration(const QString & txt);
-    void updateSnr(float snr);
+    void updateSnr(uint8_t, float snr);
     void updateFreqOffset(float offset);
 
     const QString &getDumpPath() const;

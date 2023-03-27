@@ -175,7 +175,7 @@ void BandScanDialog::onTuneDone(uint32_t freq)
     }
 }
 
-void BandScanDialog::onSyncStatus(uint8_t sync)
+void BandScanDialog::onSyncStatus(uint8_t sync, float)
 {
     if (DabSyncLevel::NullSync <= DabSyncLevel(sync))
     {

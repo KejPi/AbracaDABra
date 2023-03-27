@@ -191,8 +191,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_menu->addAction(m_ensembleInfoAction);
     m_menu->addAction(m_aboutAction);
 
-    onSnrLevel(0);
-    onSyncStatus(uint8_t(DabSyncLevel::NoSync));
+    onSignalState(uint8_t(DabSyncLevel::NoSync), 0.0);
 
     m_settingsLabel = new ClickableLabel(this);
     m_settingsLabel->setToolTip(tr("Open menu"));
@@ -363,8 +362,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::ensembleInformation, this, &MainWindow::onEnsembleInfo, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleReconfiguration, this, &MainWindow::onEnsembleReconfiguration, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListComplete, this, &MainWindow::onServiceListComplete, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::syncStatus, this, &MainWindow::onSyncStatus, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::snrLevel, this, &MainWindow::onSnrLevel, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::signalState, this, &MainWindow::onSignalState, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::dabTime, this, &MainWindow::onDabTime, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListEntry, this, &MainWindow::onServiceListEntry, Qt::BlockingQueuedConnection);
     connect(m_radioControl, &RadioControl::announcement, this, &MainWindow::onAnnouncement, Qt::QueuedConnection);
@@ -374,7 +372,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(this, &MainWindow::toggleAnnouncement, m_radioControl, &RadioControl::suspendResumeAnnouncement, Qt::QueuedConnection);
 
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfiguration, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::snrLevel, m_ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::signalState, m_ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::freqOffset, m_ensembleInfoDialog, &EnsembleInfoDialog::updateFreqOffset, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleConfiguration, m_ensembleInfoDialog, &EnsembleInfoDialog::refreshEnsembleConfiguration, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::tuneDone, m_ensembleInfoDialog, &EnsembleInfoDialog::newFrequency, Qt::QueuedConnection);
@@ -653,6 +651,7 @@ void MainWindow::onEnsembleRemoved(const RadioControlEnsemble &ens)
     m_serviceList->removeEnsemble(ens);
 }
 
+#if 0
 void MainWindow::onSyncStatus(uint8_t sync)
 {
     if (DabSyncLevel::FullSync > DabSyncLevel(sync))
@@ -734,6 +733,83 @@ void MainWindow::onSnrLevel(float snr)
     }
 
 }
+#else
+
+void MainWindow::onSignalState(uint8_t sync, float snr)
+{
+    if (DabSyncLevel::FullSync > DabSyncLevel(sync))
+    {   // hide time when no sync
+        m_timeLabel->setText("");
+
+        // set no signal quality when no sync
+        if (isDarkMode())
+        {
+            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal0_dark.png"));
+        }
+        else
+        {
+            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal0.png"));
+        }
+    }
+    m_syncLabel->setText(tr(syncLevelLabels[sync]));
+    m_syncLabel->setToolTip(tr(syncLevelTooltip[sync]));
+
+
+    // limit SNR to progressbar maximum
+    int snr10 = qRound(snr*10);
+    if (snr10 > m_snrProgressbar->maximum())
+    {
+        snr10 = m_snrProgressbar->maximum();
+    }
+    m_snrProgressbar->setValue(snr10);
+
+    m_snrLabel->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
+    // progressbar styling -> it does not look good on Apple
+    if (static_cast<int>(SNR10Threhold::SNR_BAD) > snr10)
+    {   // bad SNR
+#ifndef __APPLE__
+        m_snrProgressbar->setStyleSheet(snrProgressStylesheet[0]);
+#endif
+        if (isDarkMode())
+        {
+            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal1_dark.png"));
+        }
+        else
+        {
+            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal1.png"));
+        }
+    }
+    else if (static_cast<int>(SNR10Threhold::SNR_GOOD) > snr10)
+    {   // medium SNR
+#ifndef __APPLE__
+        m_snrProgressbar->setStyleSheet(snrProgressStylesheet[1]);
+#endif
+        if (isDarkMode())
+        {
+            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal2_dark.png"));
+        }
+        else
+        {
+            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal2.png"));
+        }
+    }
+    else
+    {   // good SNR
+#ifndef __APPLE__
+        m_snrProgressbar->setStyleSheet(snrProgressStylesheet[2]);
+#endif
+        if (isDarkMode())
+        {
+            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal3_dark.png"));
+        }
+        else
+        {
+            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal3.png"));
+        }
+    }
+}
+
+#endif
 
 void MainWindow::onServiceListEntry(const RadioControlEnsemble &ens, const RadioControlServiceComponent &slEntry)
 {
@@ -890,8 +966,7 @@ void MainWindow::channelSelected()
     ui->channelCombo->setDisabled(true);
     ui->frequencyLabel->setText(tr("Tuning...  "));
 
-    onSyncStatus(uint8_t(DabSyncLevel::NoSync));
-    onSnrLevel(0);
+    onSignalState(uint8_t(DabSyncLevel::NoSync), 0.0);
 
     // hide switch to avoid conflict with tuning -> will be enabled when tune is finished
     ui->switchSourceLabel->setHidden(true);
@@ -2218,7 +2293,7 @@ void MainWindow::bandScan()
     BandScanDialog * dialog = new BandScanDialog(this, m_serviceList->numServices() == 0, Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
     connect(dialog, &BandScanDialog::finished, dialog, &QObject::deleteLater);
     connect(dialog, &BandScanDialog::tuneChannel, this, &MainWindow::onTuneChannel);
-    connect(m_radioControl, &RadioControl::syncStatus, dialog, &BandScanDialog::onSyncStatus, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::signalState, dialog, &BandScanDialog::onSyncStatus, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleInformation, dialog, &BandScanDialog::onEnsembleFound, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::tuneDone, dialog, &BandScanDialog::onTuneDone, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListComplete, dialog, &BandScanDialog::onServiceListComplete, Qt::QueuedConnection);

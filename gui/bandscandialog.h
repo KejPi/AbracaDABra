@@ -69,7 +69,7 @@ public:
     ~BandScanDialog();
 
     void onTuneDone(uint32_t freq);
-    void onSyncStatus(uint8_t sync);
+    void onSyncStatus(uint8_t sync, float);
     void onEnsembleFound(const RadioControlEnsemble &ens);
     void onServiceFound(const ServiceListId &);
     void onServiceListComplete(const RadioControlEnsemble &);
