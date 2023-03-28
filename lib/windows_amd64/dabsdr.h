@@ -142,16 +142,17 @@ typedef enum
 
 typedef struct
 {
-    dabsdrSyncLevel_t syncLevel;
+    dabsdrSyncLevel_t syncLevel;   // DAB synchronization level
+    int16_t snr10;                 // 10*SNR
 } dabsdrNtfSyncStatus_t;
 
 typedef struct
 {
-    dabsdrSyncLevel_t syncLevel;  // DAB synchronization level
+    dabsdrSyncLevel_t syncLevel;   // DAB synchronization level
+    int16_t snr10;                 // 10*SNR
     int32_t freqOffset;            // frequency offset * 10
     uint32_t dateHoursMinutes;     // DAB time date + hours + minutes
     uint16_t secMsec;              // DAB time sec + msec
-    int16_t snr10;                 // 10*SNR
     uint16_t fibErrorCntr;         // number of FIB CRC errors during notification period
     uint8_t mscCrcOkCntr;          // number of correct CRC [after RS (DAB+)]
     uint8_t mscCrcErrorCntr;       // number of CRC errors [after RS (DAB+)]
