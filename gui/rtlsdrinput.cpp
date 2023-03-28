@@ -123,7 +123,7 @@ bool RtlSdrInput::openDevice()
             else
             {
                 qDebug("RTL-SDR: Opening rtl-sdr device #%d: %s", n, deviceName);
-            }
+            }                        
             break;
         }
         else { /* not successful */ }
@@ -147,6 +147,29 @@ bool RtlSdrInput::openDevice()
 
     // store device information
     m_deviceDescription.device.name = "rtl-sdr";
+    switch (rtlsdr_get_tuner_type(m_device))
+    {
+    case RTLSDR_TUNER_E4000:
+        m_deviceDescription.device.name += " [E4000]";
+        break;
+    case RTLSDR_TUNER_FC0012:
+        m_deviceDescription.device.name += " [FC0012]";
+        break;
+    case RTLSDR_TUNER_FC0013:
+        m_deviceDescription.device.name += " [FC0013]";
+        break;
+    case RTLSDR_TUNER_FC2580:
+        m_deviceDescription.device.name += " [FC2580]";
+        break;
+    case RTLSDR_TUNER_R820T:
+        m_deviceDescription.device.name += " [R820T]";
+        break;
+    case RTLSDR_TUNER_R828D:
+        m_deviceDescription.device.name += " [R828D]";
+        break;
+    default:
+        break;
+    }
     if (NULL == deviceName)
     {
         m_deviceDescription.device.model = "Generic RTL2832U OEM";

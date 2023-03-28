@@ -345,39 +345,52 @@ bool RtlTcpInput::openDevice()
         dongleInfo.magic[2] == 'L' &&
         dongleInfo.magic[3] == '0')
     {
+        m_deviceDescription.device.name = "rtl_tcp";
+        m_deviceDescription.device.model = "Generic RTL2832U OEM";
+        m_deviceDescription.sample.sampleRate = 2048000;
+        m_deviceDescription.sample.channelBits = 8;
+        m_deviceDescription.sample.containerBits = 8;
+        m_deviceDescription.sample.channelContainer = "uint8";
+
         const int * gains = unknown_gains;
         int numGains = 0;
         switch(dongleInfo.tunerType)
         {
         case RTLSDR_TUNER_E4000:
-            qDebug() << "RTL-TCP: RTLSDR_TUNER_E4000";
+            qDebug() << "RTL-TCP: RTLSDR_TUNER_E4000";            
             gains = e4k_gains;
             numGains = *(&e4k_gains + 1) - e4k_gains;
+            m_deviceDescription.device.name += " [E4000]";
             break;
         case RTLSDR_TUNER_FC0012:
             qDebug() << "RTL-TCP: RTLSDR_TUNER_FC0012";
             gains = fc0012_gains;
             numGains = *(&fc0012_gains + 1) - fc0012_gains;
+            m_deviceDescription.device.name += " [FC0012]";
             break;
         case RTLSDR_TUNER_FC0013:
             qDebug() << "RTL-TCP: RTLSDR_TUNER_FC0013";
             gains = fc0013_gains;
             numGains = *(&fc0013_gains + 1) - fc0013_gains;
+            m_deviceDescription.device.name += " [FC0013]";
             break;
         case RTLSDR_TUNER_FC2580:
             qDebug() << "RTL-TCP: RTLSDR_TUNER_FC2580";
             gains = fc2580_gains;
             numGains = *(&fc2580_gains + 1) - fc2580_gains;
+            m_deviceDescription.device.name += " [FC2580]";
             break;
         case RTLSDR_TUNER_R820T:
             qDebug() << "RTL-TCP: RTLSDR_TUNER_R820T";
             gains = r82xx_gains;
             numGains = *(&r82xx_gains + 1) - r82xx_gains;
+            m_deviceDescription.device.name += " [R820T]";
             break;
         case RTLSDR_TUNER_R828D:
             qDebug() << "RTL-TCP: RTLSDR_TUNER_R828D";
             gains = r82xx_gains;
             numGains = *(&r82xx_gains + 1) - r82xx_gains;
+            m_deviceDescription.device.name += " [R828D]";
             break;
         case RTLSDR_TUNER_UNKNOWN:
         default:
@@ -412,13 +425,6 @@ bool RtlTcpInput::openDevice()
 
         // set automatic gain
         setGainMode(RtlGainMode::Software);
-
-        m_deviceDescription.device.name = "rtl_tcp";
-        m_deviceDescription.device.model = "Generic RTL2832U OEM";
-        m_deviceDescription.sample.sampleRate = 2048000;
-        m_deviceDescription.sample.channelBits = 8;
-        m_deviceDescription.sample.containerBits = 8;
-        m_deviceDescription.sample.channelContainer = "uint8";
 
         // need to create worker, server is pushing samples
         m_worker = new RtlTcpWorker(m_sock, this);

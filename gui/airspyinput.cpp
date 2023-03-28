@@ -154,8 +154,12 @@ bool AirspyInput::openDevice()
         {
             m_deviceDescription.device.model = "Mini";
         }
+        else if (tmp.startsWith("AirSpy NOS", Qt::CaseInsensitive))
+        {   // TODO: how to detect R2 correctly ???
+            m_deviceDescription.device.model = "R2";
+        }
         else
-        {   // TODO: how to detect R2 ???
+        {
             m_deviceDescription.device.model = "Unknown";
         }
     }
