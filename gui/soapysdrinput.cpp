@@ -36,6 +36,8 @@ SoapySdrInput::SoapySdrInput(QObject *parent) : InputDevice(parent)
     m_deviceUnpluggedFlag = true;
     m_deviceRunningFlag = false;
     m_gainList = nullptr;
+    m_frequency = 0;
+    m_bandwidth = 0;
 
     connect(&m_watchdogTimer, &QTimer::timeout, this, &SoapySdrInput::onWatchdogTimeout);
 }
@@ -140,11 +142,12 @@ bool SoapySdrInput::openDevice()
     // Set sample rate - prefered rates: 2048, 4096 and then the lowest above 2048
     SoapySDR::RangeList srRanges = m_device->getSampleRateRange( SOAPY_SDR_RX, m_rxChannel);
 
-    qDebug() << "SoapySDR: sample rate ranges:";
+    QString rangesStr = "";
     for(int n = 0; n < srRanges.size(); ++n)
     {
-        qDebug("[%g Hz - %g Hz], ", srRanges[n].minimum(), srRanges[n].maximum());
+        rangesStr += QString(" [%1kHz - %2kHz]").arg(srRanges[n].minimum()*0.001).arg(srRanges[n].maximum()*0.001);
     }
+    qDebug("SoapySDR: sample rate ranges: %s", rangesStr.toLocal8Bit().data());
 
     m_sampleRate = 10e8;  // dummy high value
     bool has2048 = false;
@@ -199,7 +202,7 @@ bool SoapySdrInput::openDevice()
         m_device = nullptr;
         return false;
     }
-    qDebug() << "SoapySDR: Sample rate set to" << m_sampleRate << "Hz";
+    qDebug() << "SoapySDR: Sample rate set to" << m_sampleRate/1000.0 << "kHz";
 
     // Get gains
     SoapySDR::Range gainRange = m_device->getGainRange(SOAPY_SDR_RX, m_rxChannel);
@@ -233,7 +236,7 @@ bool SoapySdrInput::openDevice()
     else { /* DC offset correction not available */ }
 
     // set bandwidth
-    setBW(SOAPYSDR_BANDWIDTH);
+    m_device->setFrequency(SOAPY_SDR_RX, m_rxChannel, 200000*1000);
 
     m_deviceDescription.device.name = "SoapySDR | " + QString(m_device->getDriverKey().c_str());
     m_deviceDescription.device.model = QString(m_device->getHardwareKey().c_str());
@@ -486,17 +489,26 @@ void SoapySdrInput::startStopRecording(bool start)
     m_worker->startStopRecording(start);
 }
 
-void SoapySdrInput::setBW(int bw)
+void SoapySdrInput::setBW(uint32_t bw)
 {
-    if (bw > 0)
+    if (bw <= 0)
+    {   // setting default BW
+        bw = INPUTDEVICE_BANDWIDTH;   // 1.53 MHz
+    }
+    else
+    { /* BW set by user */ }
+
+    if (bw != m_bandwidth)
     {
+        m_bandwidth = bw;
+
         try
         {
             m_device->setBandwidth(SOAPY_SDR_RX, m_rxChannel, bw);
         }
         catch(const std::exception &ex)
         {
-            qDebug() << "SoapySDR: failed to set bandwidth" << bw << ":" << ex.what();
+            qDebug() << "SoapySDR: failed to set bandwidth" << bw << "kHz:" << ex.what();
             return;
         }
         qDebug() << "SoapySDR: bandwidth set to" << bw/1000.0 << "kHz";

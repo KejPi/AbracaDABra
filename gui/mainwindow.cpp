@@ -1349,6 +1349,8 @@ void MainWindow::onNewInputDeviceSettings()
     {
     case InputDeviceId::RTLSDR:
         dynamic_cast<RtlSdrInput*>(m_inputDevice)->setGainMode(s.rtlsdr.gainMode, s.rtlsdr.gainIdx);
+        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setBW(s.rtlsdr.bandwidth);
+        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setBiasT(s.rtlsdr.biasT);
         break;
     case InputDeviceId::RTLTCP:
         dynamic_cast<RtlTcpInput*>(m_inputDevice)->setGainMode(s.rtltcp.gainMode, s.rtltcp.gainIdx);
@@ -1356,11 +1358,13 @@ void MainWindow::onNewInputDeviceSettings()
     case InputDeviceId::AIRSPY:
 #if HAVE_AIRSPY
         dynamic_cast<AirspyInput*>(m_inputDevice)->setGainMode(s.airspy.gain);
+        dynamic_cast<AirspyInput*>(m_inputDevice)->setBiasT(s.airspy.biasT);
 #endif
         break;
     case InputDeviceId::SOAPYSDR:
 #if HAVE_SOAPYSDR
         dynamic_cast<SoapySdrInput*>(m_inputDevice)->setGainMode(s.soapysdr.gainMode, s.soapysdr.gainIdx);
+        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setBW(s.soapysdr.bandwidth);
 #endif
         break;
     case InputDeviceId::RAWFILE:
@@ -1846,7 +1850,7 @@ void MainWindow::loadSettings()
 
     s.rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
     s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
-    s.rtlsdr.bandwidth = settings->value("RTL-SDR/bandwidth", 0).toInt();
+    s.rtlsdr.bandwidth = settings->value("RTL-SDR/bandwidth", 0).toUInt();
     s.rtlsdr.biasT = settings->value("RTL-SDR/bias-T", false).toBool();
 
     s.rtltcp.gainIdx = settings->value("RTL-TCP/gainIndex", 0).toInt();
@@ -1872,7 +1876,7 @@ void MainWindow::loadSettings()
     s.soapysdr.devArgs = settings->value("SOAPYSDR/devArgs", QString("driver=rtlsdr")).toString();
     s.soapysdr.antenna = settings->value("SOAPYSDR/antenna", QString("RX")).toString();
     s.soapysdr.channel = settings->value("SOAPYSDR/rxChannel", 0).toInt();
-    s.soapysdr.bandwidth = settings->value("SOAPYSDR/bandwidth", 0).toInt();
+    s.soapysdr.bandwidth = settings->value("SOAPYSDR/bandwidth", 0).toUInt();
 #endif
     s.rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
     s.rawfile.format = RawFileInputFormat(settings->value("RAW-FILE/format", 0).toInt());

@@ -65,8 +65,8 @@ public:
         struct
         {
             RtlGainMode gainMode;
-            int gainIdx;            
-            int bandwidth;
+            int gainIdx;
+            uint32_t bandwidth;
             bool biasT;
         } rtlsdr;
         struct
@@ -93,7 +93,7 @@ public:
             QString devArgs;
             QString antenna;
             int channel;
-            int bandwidth;
+            uint32_t bandwidth;
         } soapysdr;
 #endif
         uint16_t announcementEna;
@@ -124,7 +124,6 @@ signals:
     void noiseConcealmentLevelChanged(int level);
     void xmlHeaderToggled(bool enabled);
 protected:
-    void showEvent(QShowEvent *event);
 
 private:
     enum SetupDialogTabs { Device = 0, Announcement = 1, Other = 2 };
@@ -144,6 +143,7 @@ private:
     QCheckBox * m_bringWindowToForegroundCheckbox;
     QLabel * m_xmlHeaderLabel[SetupDialogXmlHeader::XMLNumLabels];
 
+    void setUiState();
     void setStatusLabel();
 
     void onButtonClicked(QAbstractButton *button);
@@ -152,8 +152,10 @@ private:
 
     void onConnectDeviceClicked();
 
-    void onRtlGainModeToggled(bool checked);
+    void onRtlSdrGainModeToggled(bool checked);
     void onRtlSdrGainSliderChanged(int val);
+    void onRtlSdrBandwidthChanged(int val);
+    void onRtlSdrBiasTChecked(bool en);
     void activateRtlSdrControls(bool en);
 
     void onTcpGainModeToggled(bool checked);
@@ -181,6 +183,7 @@ private:
     void onAirspyMixerGainSliderChanged(int val);
     void onAirspyLNAAGCstateChanged(int state);
     void onAirspyMixerAGCstateChanged(int state);
+    void onAirspyBiasTChecked(bool en);
     void activateAirspyControls(bool en);
 #endif
 #if HAVE_SOAPYSDR
@@ -189,6 +192,7 @@ private:
     void onSoapySdrAntennaEditFinished();
     void onSoapySdrChannelEditFinished();
     void onSoapySdrGainModeToggled(bool checked);
+    void onSoapySdrBandwidthChanged(int val);
     void activateSoapySdrControls(bool en);
 #endif        
 };

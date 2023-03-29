@@ -36,6 +36,10 @@ RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
     m_worker = nullptr;
     m_gainList = nullptr;
 
+    m_bandwidth = 0;
+    m_frequency = 0;
+    m_biasT = false;
+
     connect(&m_watchdogTimer, &QTimer::timeout, this, &RtlSdrInput::onWatchdogTimeout);
 }
 
@@ -183,6 +187,16 @@ bool RtlSdrInput::openDevice()
     m_deviceDescription.sample.containerBits = 8;
     m_deviceDescription.sample.channelContainer = "uint8";
 
+    // Try to tune -> this is required for successful BW settings
+    ret = rtlsdr_set_center_freq(m_device, 200000*1000);
+    if (ret < 0)
+    {
+        qDebug() << "RTL-SDR: Setting frequency failed";
+        // this is not fatal error
+    }
+    else { /* OK */ }
+
+
     // Get tuner gains
     uint32_t gainsCount = rtlsdr_get_tuner_gains(m_device, NULL);
     qDebug() << "RTL-SDR: Supported gain values" << gainsCount;
@@ -214,7 +228,7 @@ void RtlSdrInput::run()
     connect(m_worker, &RtlSdrWorker::destroyed, this, [=]() { m_worker = nullptr; } );
 
     m_worker->start();
-    m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
+    m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);    
 }
 
 void RtlSdrInput::stop()
@@ -364,34 +378,52 @@ void RtlSdrInput::startStopRecording(bool start)
     m_worker->startStopRecording(start);
 }
 
-void RtlSdrInput::setBW(int bw)
-{
+void RtlSdrInput::setBW(uint32_t bw)
+{   
     if (bw <= 0)
     {   // setting default BW
-        bw = 1530000;   // 1.53 MHz
+        bw = INPUTDEVICE_BANDWIDTH;   // 1.53 MHz
     }
     else
     { /* BW set by user */ }
 
-    int ret = rtlsdr_set_tuner_bandwidth(m_device, bw);
-    if (ret != 0)
+    if (bw != m_bandwidth)
     {
-        qDebug() << "RTL-SDR: Failed to set tuner BW";
-    }
-    else
-    {
-        qDebug() << "RTL-SDR: bandwidth set to" << bw/1000.0 << "kHz";
+        m_bandwidth = bw;
+        uint32_t applied_bw;
+
+        int ret = rtlsdr_set_and_get_tuner_bandwidth(m_device, bw, &applied_bw, 1);
+        if (ret != 0)
+        {
+            qDebug() << "RTL-SDR: Failed to set tuner bandwidth" << bw/1000 << "kHz";
+        }
+        else
+        {
+            if (applied_bw)
+            {
+                qDebug() << "RTL-SDR: Setting bandwidth" << bw/1000.0 << "kHz resulted to" << applied_bw/1000 << "kHz";
+            }
+            else
+            {
+                qDebug() << "RTL-SDR: Setting bandwidth" << bw/1000.0 << "kHz";
+            }
+        }
     }
 }
 
 void RtlSdrInput::setBiasT(bool ena)
 {
-    if (ena)
+    if (ena != m_biasT)
     {
         int ret = rtlsdr_set_bias_tee(m_device, ena);
         if (ret != 0)
         {
             qDebug() << "RTL-SDR: Failed to enable bias-T";
+        }
+        else
+        {
+            qDebug() << "RTL-SDR: Bias-T" << (ena ? "on" : "off");
+            m_biasT = ena;
         }
     }
 }

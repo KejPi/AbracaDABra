@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>462</width>
-    <height>455</height>
+    <width>465</width>
+    <height>453</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -35,7 +35,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -95,7 +95,7 @@
           <enum>QFrame::Sunken</enum>
          </property>
          <property name="currentIndex">
-          <number>3</number>
+          <number>4</number>
          </property>
          <widget class="QWidget" name="rtlsdrPage">
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -201,6 +201,58 @@
               </size>
              </property>
             </spacer>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="rtlsdrExpertGroup">
+             <property name="title">
+              <string>Expert settings</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_11">
+              <item>
+               <widget class="QLabel" name="rtlsdrBandwidthLabel">
+                <property name="text">
+                 <string>Bandwidth:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="rtlsdrBandwidth">
+                <property name="specialValueText">
+                 <string>Default</string>
+                </property>
+                <property name="suffix">
+                 <string notr="true"> kHz</string>
+                </property>
+                <property name="maximum">
+                 <number>3000</number>
+                </property>
+                <property name="singleStep">
+                 <number>100</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="rtlsdrBiasTCheckbox">
+                <property name="text">
+                 <string>Bias Tee</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -645,14 +697,56 @@
              </property>
             </spacer>
            </item>
+           <item>
+            <widget class="QGroupBox" name="airspyExpertGroup">
+             <property name="title">
+              <string>Expert settings</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_12">
+              <item>
+               <widget class="QCheckBox" name="airspyBiasTCheckbox">
+                <property name="text">
+                 <string>Bias Tee</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_5">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
           </layout>
          </widget>
          <widget class="QWidget" name="soapysdrPage">
           <layout class="QGridLayout" name="gridLayout">
-           <item row="3" column="0" colspan="5">
-            <widget class="Line" name="line_2">
+           <item row="1" column="2">
+            <spacer name="horizontalSpacer_2">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="1" column="3">
+            <widget class="QLabel" name="soapySdrAntennalLabel">
+             <property name="text">
+              <string>Antenna:</string>
              </property>
             </widget>
            </item>
@@ -663,7 +757,104 @@
              </property>
             </widget>
            </item>
+           <item row="2" column="0" colspan="5">
+            <widget class="Line" name="line_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="soapysdrChannelNumLabel">
+             <property name="text">
+              <string>RX channel number:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0" colspan="5">
+            <widget class="QGroupBox" name="soapysdrExpertGroup">
+             <property name="title">
+              <string>Expert settings</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_13">
+              <item>
+               <widget class="QLabel" name="soapysdrBandwidthLabel">
+                <property name="text">
+                 <string>Bandwidth:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="soapysdrBandwidth">
+                <property name="specialValueText">
+                 <string>Default</string>
+                </property>
+                <property name="suffix">
+                 <string notr="true"> kHz</string>
+                </property>
+                <property name="maximum">
+                 <number>3000</number>
+                </property>
+                <property name="singleStep">
+                 <number>100</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="soapysdrChannelNum"/>
+           </item>
+           <item row="0" column="1" colspan="4">
+            <widget class="QLineEdit" name="soapysdrDevArgs"/>
+           </item>
            <item row="5" column="0" colspan="5">
+            <spacer name="verticalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::MinimumExpanding</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="1" column="4">
+            <widget class="QLineEdit" name="soapySdrAntenna">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="5">
             <widget class="QWidget" name="soapysdrGainWidget" native="true">
              <layout class="QHBoxLayout" name="horizontalLayout_8">
               <property name="leftMargin">
@@ -711,40 +902,7 @@
              </layout>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="soapysdrChannelNumLabel">
-             <property name="text">
-              <string>RX channel number:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QSpinBox" name="soapysdrChannelNum"/>
-           </item>
-           <item row="1" column="4">
-            <widget class="QLineEdit" name="soapySdrAntenna">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>16777215</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QLabel" name="soapySdrAntennalLabel">
-             <property name="text">
-              <string>Antenna:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0" colspan="5">
+           <item row="3" column="0" colspan="5">
             <widget class="QGroupBox" name="soapysdrGainModeGroup">
              <property name="title">
               <string>Gain control</string>
@@ -782,38 +940,6 @@
               </item>
              </layout>
             </widget>
-           </item>
-           <item row="0" column="1" colspan="4">
-            <widget class="QLineEdit" name="soapysdrDevArgs"/>
-           </item>
-           <item row="1" column="2">
-            <spacer name="horizontalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="6" column="0" colspan="5">
-            <spacer name="verticalSpacer_6">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::MinimumExpanding</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-            </spacer>
            </item>
           </layout>
          </widget>

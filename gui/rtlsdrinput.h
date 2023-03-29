@@ -89,18 +89,20 @@ public:
     void tune(uint32_t frequency) override;
     void setGainMode(RtlGainMode gainMode, int gainIdx = 0);
     void startStopRecording(bool start) override;
-    void setBW(int bw);
+    void setBW(uint32_t bw);
     void setBiasT(bool ena);
     QList<float> getGainList() const;
-
 private:
     uint32_t m_frequency;
+    uint32_t m_bandwidth;
+    bool m_biasT;
     struct rtlsdr_dev * m_device;
     RtlSdrWorker * m_worker;
     QTimer m_watchdogTimer;
     RtlGainMode m_gainMode = RtlGainMode::Hardware;
     int m_gainIdx;
     QList<int> * m_gainList;
+
 
     void run();           
     void stop();

@@ -41,7 +41,6 @@
 
 #define SOAPYSDR_INPUT_SAMPLES (16384)
 
-#define SOAPYSDR_BANDWIDTH     (1700*1000)
 #define SOAPYSDR_LEVEL_THR_MAX (0.5)
 #define SOAPYSDR_LEVEL_THR_MIN (SOAPYSDR_LEVEL_THR_MAX/20.0)
 #define SOAPYSDR_LEVEL_RESET   ((SOAPYSDR_LEVEL_THR_MAX-SOAPYSDR_LEVEL_THR_MIN)/2.0 + SOAPYSDR_LEVEL_THR_MIN)
@@ -92,12 +91,13 @@ public:
     void setAntenna(const QString & antenna) { m_antenna = antenna; }
     void setGainMode(SoapyGainMode gainMode, int gainIdx = 0);
     void startStopRecording(bool start) override;
-    void setBW(int bw);
+    void setBW(uint32_t bw);
     QList<float> getGainList() const { return * m_gainList; }
 
 private:
     double m_sampleRate;
     uint32_t m_frequency;
+    uint32_t m_bandwidth;
     bool m_deviceUnpluggedFlag;
     bool m_deviceRunningFlag;
     SoapySDR::Device * m_device;

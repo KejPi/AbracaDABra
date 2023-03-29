@@ -84,6 +84,7 @@ signals:
 
 private:
     uint32_t m_frequency;
+    bool m_biasT;
     struct airspy_device *m_device;
     QTimer m_watchdogTimer;
     AirpyGainMode m_gainMode = AirpyGainMode::Hybrid;

@@ -42,6 +42,8 @@
 
 #define INPUTDEVICE_WDOG_TIMEOUT_SEC 2     // watchdog timeout in seconds (if implemented and enabled)
 
+#define INPUTDEVICE_BANDWIDTH  (1530*1000)
+
 struct ComplexFifo
 {
     uint64_t count;

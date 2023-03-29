@@ -38,6 +38,8 @@ AirspyInput::AirspyInput(bool try4096kHz, QObject *parent) : InputDevice(parent)
     m_signalLevelEmitCntr = 0;
     m_src = nullptr;
     m_filterOutBuffer = nullptr;
+    m_frequency = 0;
+    m_biasT = false;
 
     connect(this, &AirspyInput::agcLevel, this, &AirspyInput::onAgcLevel, Qt::QueuedConnection);
     connect(&m_watchdogTimer, &QTimer::timeout, this, &AirspyInput::onWatchdogTimeout);
@@ -408,11 +410,16 @@ void AirspyInput::startStopRecording(bool start)
 
 void AirspyInput::setBiasT(bool ena)
 {
-    if (ena)
+    if (ena != m_biasT)
     {
         if (AIRSPY_SUCCESS != airspy_set_rf_bias(m_device, ena))
         {
             qDebug() << "AIRSPY: Failed to enable bias-T";
+        }
+        else
+        {
+            qDebug() << "AIRSPY: Bias-T" << (ena ? "on" : "off");
+            m_biasT = ena;
         }
     }
 }
