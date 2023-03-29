@@ -81,7 +81,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
                                                    "<b>WARNING:</b> Before using the bias tee please ensure that you understand "
                                                    "that you should not use this option when the dongle is connected directly "
                                                    "to a DC short circuited antenna unless you are using an LNA.")));
-    ui->rtlsdrBandwidth->setToolTip(QString(tr("Input signal bandwidth in kHz. Value '0' means default bandwidth.")));
+    ui->rtlsdrBandwidth->setToolTip(QString(tr("Input signal bandwidth in kHz. Value '0' means default bandwidth %1 kHz.")).arg(INPUTDEVICE_BANDWIDTH/1000));
     ui->airspyBiasTCheckbox->setToolTip(ui->rtlsdrBiasTCheckbox->toolTip());
     ui->soapysdrBandwidth->setToolTip(ui->rtlsdrBandwidth->toolTip());
 
