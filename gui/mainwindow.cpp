@@ -203,20 +203,22 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_muteLabel->setTooltip(tr("Unmute audio"), true);
     m_muteLabel->setChecked(false);
 
-    m_volumeSlider = new QSlider(Qt::Horizontal, this);
-    m_volumeSlider->setMinimum(0);
-    m_volumeSlider->setMaximum(100);
-    m_volumeSlider->setSingleStep(10);
-    m_volumeSlider->setToolTip(tr("Audio volume"));
+    m_audioVolumeSlider = new QSlider(Qt::Horizontal, this);
+    m_audioVolumeSlider->setMinimum(0);
+    m_audioVolumeSlider->setMaximum(100);
+    m_audioVolumeSlider->setSingleStep(10);
+    m_audioVolumeSlider->setToolTip(tr("Audio volume"));
 #ifdef Q_OS_WIN
     m_volumeSlider->setMaximumHeight(15);
 #endif
-    connect(m_muteLabel, &ClickableLabel::toggled, m_volumeSlider, &QSlider::setDisabled);
+    connect(m_audioVolumeSlider, &QSlider::valueChanged, this, &MainWindow::onAudioVolumeSliderChanged);
+    connect(m_muteLabel, &ClickableLabel::toggled, this, &MainWindow::onMuteLabelToggled);
+
 
     QHBoxLayout * volumeLayout = new QHBoxLayout();
     volumeLayout->addWidget(m_muteLabel);
-    volumeLayout->addWidget(m_volumeSlider);
-    volumeLayout->setAlignment(m_volumeSlider, Qt::AlignCenter);
+    volumeLayout->addWidget(m_audioVolumeSlider);
+    volumeLayout->setAlignment(m_audioVolumeSlider, Qt::AlignCenter);
     volumeLayout->setStretch(0, 100);
     volumeLayout->setAlignment(m_muteLabel, Qt::AlignCenter);
     volumeLayout->setSpacing(10);
@@ -350,7 +352,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_audioOutputThread, &QThread::finished, m_audioOutput, &QObject::deleteLater);
     m_audioOutputThread->start();
 #endif
-    connect(m_volumeSlider, &QSlider::valueChanged, m_audioOutput, &AudioOutput::setVolume, Qt::QueuedConnection);
+    connect(this, &MainWindow::audioVolume, m_audioOutput, &AudioOutput::setVolume, Qt::QueuedConnection);
+    connect(this, &MainWindow::audioMute, m_audioOutput, &AudioOutput::mute, Qt::QueuedConnection);
+
 
     // Connect signals
     connect(m_muteLabel, &ClickableLabel::toggled, m_audioOutput, &AudioOutput::mute, Qt::QueuedConnection);
@@ -1811,7 +1815,8 @@ void MainWindow::loadSettings()
     // load servicelist
     m_serviceList->load(*settings);
 
-    m_volumeSlider->setValue(settings->value("volume", 100).toInt());
+    m_audioVolume = settings->value("volume", 100).toInt();
+    m_audioVolumeSlider->setValue(m_audioVolume);
     bool mute = settings->value("mute", false).toBool();
     if (mute)
     {   // this sends signal
@@ -1957,7 +1962,7 @@ void MainWindow::saveSettings()
     const SetupDialog::Settings s = m_setupDialog->settings();
     settings->setValue("inputDeviceId", int(s.inputDevice));
     settings->setValue("recordingPath", m_inputDeviceRecorder->recordingPath());
-    settings->setValue("volume", m_volumeSlider->value());
+    settings->setValue("volume", m_audioVolume);
     settings->setValue("mute", m_muteLabel->isChecked());
     settings->setValue("windowGeometry", saveGeometry());
     settings->setValue("style", static_cast<int>(s.applicationStyle));
@@ -2051,6 +2056,31 @@ void MainWindow::onFavoriteToggled(bool checked)
             break;
         }
     }
+}
+
+void MainWindow::onAudioVolumeSliderChanged(int volume)
+{
+    if (!m_muteLabel->isChecked())
+    {
+        m_audioVolume = volume;
+        emit audioVolume(volume);
+    }
+    else { /* we are muted -> no volume change for user is possible */ }
+}
+
+void MainWindow::onMuteLabelToggled(bool doMute)
+{
+    m_audioVolumeSlider->setDisabled(doMute);
+    if (doMute)
+    {   // store current volume
+        m_audioVolume = m_audioVolumeSlider->value();
+        m_audioVolumeSlider->setValue(0);  // --> this emits signal
+    }
+    else
+    {
+        m_audioVolumeSlider->setValue(m_audioVolume);
+    }
+    emit audioMute(doMute);
 }
 
 void MainWindow::onSwitchSourceClicked()
@@ -2195,12 +2225,12 @@ void MainWindow::setExpertMode(bool ena)
     if (ena)
     {
         setTabOrder(ui->serviceListView, ui->serviceTreeView);
-        setTabOrder(ui->serviceTreeView, m_volumeSlider);
-        setTabOrder(m_volumeSlider, ui->channelCombo);
+        setTabOrder(ui->serviceTreeView, m_audioVolumeSlider);
+        setTabOrder(m_audioVolumeSlider, ui->channelCombo);
     }
     else
     {
-        setTabOrder(ui->serviceListView, m_volumeSlider);
+        setTabOrder(ui->serviceListView, m_audioVolumeSlider);
     }
 
     emit expertModeChanged(ena);

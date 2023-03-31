@@ -78,6 +78,8 @@ signals:
     void getAudioInfo();
     void expertModeChanged(bool ena);
     void toggleAnnouncement();
+    void audioMute(bool doMute);
+    void audioVolume(int volume);
     void exit();
 
 protected:        
@@ -141,7 +143,7 @@ private:
 #if (!HAVE_PORTAUDIO)
     QThread * m_audioOutputThread;
 #endif
-    QSlider * m_volumeSlider;
+    QSlider * m_audioVolumeSlider;
 
     AudioOutput * m_audioOutput;
 
@@ -155,6 +157,7 @@ private:
     uint8_t m_SCIdS = 0;
     bool m_hasListViewFocus;
     bool m_hasTreeViewFocus;
+    int m_audioVolume = 100;
 
     // service list
     ServiceList * m_serviceList;
@@ -202,6 +205,8 @@ private:
     void onChannelChange(int index);
     void onBandScanFinished(int result);
     void onFavoriteToggled(bool checked);
+    void onAudioVolumeSliderChanged(int volume);
+    void onMuteLabelToggled(bool doMute);
     void onSwitchSourceClicked();
     void onAnnouncementClicked();
     void onApplicationStyleChanged(ApplicationStyle style);
