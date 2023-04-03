@@ -209,7 +209,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_audioVolumeSlider->setSingleStep(10);
     m_audioVolumeSlider->setToolTip(tr("Audio volume"));
 #ifdef Q_OS_WIN
-    m_volumeSlider->setMaximumHeight(15);
+    m_audioVolumeSlider->setMaximumHeight(15);
 #endif
     connect(m_audioVolumeSlider, &QSlider::valueChanged, this, &MainWindow::onAudioVolumeSliderChanged);
     connect(m_muteLabel, &ClickableLabel::toggled, this, &MainWindow::onMuteLabelToggled);
