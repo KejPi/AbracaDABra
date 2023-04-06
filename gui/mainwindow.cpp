@@ -489,7 +489,12 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     loadSettings();
 
-    QTimer::singleShot(1000, this, [this](){ ui->serviceListView->setFocus(Qt::OtherFocusReason); } );
+    // setting focus to something harmless that does not do eny visual effects
+    m_settingsLabel->setFocus();
+
+    // this causes focus to be set to service list when tune is finished
+    m_hasListViewFocus = true;
+    m_hasTreeViewFocus = false;
 }
 
 MainWindow::~MainWindow()
