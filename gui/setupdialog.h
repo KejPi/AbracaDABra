@@ -124,6 +124,7 @@ signals:
     void noiseConcealmentLevelChanged(int level);
     void xmlHeaderToggled(bool enabled);
 protected:
+    void showEvent(QShowEvent *event);
 
 private:
     enum SetupDialogTabs { Device = 0, Announcement = 1, Other = 2 };

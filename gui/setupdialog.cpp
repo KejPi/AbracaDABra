@@ -280,6 +280,13 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
+void SetupDialog::showEvent(QShowEvent *event)
+{
+    ui->tabWidget->setFocus();
+
+    QDialog::showEvent(event);
+}
+
 SetupDialog::Settings SetupDialog::settings() const
 {
     return m_settings;

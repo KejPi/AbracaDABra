@@ -489,7 +489,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     loadSettings();
 
-    QTimer::singleShot(1, this, [this](){ ui->serviceListView->setFocus(); } );
+    QTimer::singleShot(1000, this, [this](){ ui->serviceListView->setFocus(Qt::OtherFocusReason); } );
 }
 
 MainWindow::~MainWindow()
