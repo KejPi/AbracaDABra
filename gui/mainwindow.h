@@ -102,7 +102,7 @@ private:
     EnsembleInfoDialog * m_ensembleInfoDialog;
     CatSLSDialog * m_catSlsDialog;
     QProgressBar * m_snrProgressbar;
-    ClickableLabel * m_settingsLabel;
+    ClickableLabel * m_menuLabel;
     ClickableLabel * m_muteLabel;
 
     // status bar widgets

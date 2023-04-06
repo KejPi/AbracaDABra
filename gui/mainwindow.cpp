@@ -194,9 +194,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     onSignalState(uint8_t(DabSyncLevel::NoSync), 0.0);
 
-    m_settingsLabel = new ClickableLabel(this);
-    m_settingsLabel->setToolTip(tr("Open menu"));
-    m_settingsLabel->setMenu(m_menu);
+    m_menuLabel = new ClickableLabel(this);
+    m_menuLabel->setToolTip(tr("Open menu"));
+    m_menuLabel->setMenu(m_menu);
 
     m_muteLabel = new ClickableLabel(this);
     m_muteLabel->setCheckable(true);
@@ -231,7 +231,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     layout->addWidget(m_timeBasicQualWidget, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
     layout->addWidget(m_signalQualityWidget, 0, 1, Qt::AlignVCenter | Qt::AlignRight);
     layout->addWidget(volumeWidget, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
-    layout->addWidget(m_settingsLabel, 0, 3, Qt::AlignVCenter | Qt::AlignRight);
+    layout->addWidget(m_menuLabel, 0, 3, Qt::AlignVCenter | Qt::AlignRight);
 
     layout->setColumnStretch(0, 100);
     layout->setSpacing(20);
@@ -490,7 +490,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     loadSettings();
 
     // setting focus to something harmless that does not do eny visual effects
-    m_settingsLabel->setFocus();
+    m_menuLabel->setFocus();
 
     // this causes focus to be set to service list when tune is finished
     m_hasListViewFocus = true;
@@ -2502,7 +2502,7 @@ void MainWindow::setupDarkMode()
 {
     if (isDarkMode())
     {
-        m_settingsLabel->setIcon(":/resources/menu_dark.png");
+        m_menuLabel->setIcon(":/resources/menu_dark.png");
 
         ui->favoriteLabel->setIcon(":/resources/starEmpty_dark.png", false);
         ui->favoriteLabel->setIcon(":/resources/star_dark.png", true);
@@ -2522,7 +2522,7 @@ void MainWindow::setupDarkMode()
     }
     else
     {
-        m_settingsLabel->setIcon(":/resources/menu.png");
+        m_menuLabel->setIcon(":/resources/menu.png");
 
         ui->favoriteLabel->setIcon(":/resources/starEmpty.png", false);
         ui->favoriteLabel->setIcon(":/resources/star.png", true);
