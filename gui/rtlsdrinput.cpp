@@ -390,8 +390,10 @@ void RtlSdrInput::setBW(uint32_t bw)
     if (bw != m_bandwidth)
     {
         m_bandwidth = bw;
+#ifdef SI2168_CHIP_ID
+        // this code needs rtlsdr implementation from here: https://github.com/old-dab/rtlsdr
+        // how to detect it correctly ???
         uint32_t applied_bw;
-
         int ret = rtlsdr_set_and_get_tuner_bandwidth(m_device, bw, &applied_bw, 1);
         if (ret != 0)
         {
@@ -408,6 +410,17 @@ void RtlSdrInput::setBW(uint32_t bw)
                 qDebug() << "RTL-SDR: Setting bandwidth" << bw/1000.0 << "kHz";
             }
         }
+#else
+        int ret = rtlsdr_set_tuner_bandwidth(m_device, bw);
+        if (ret != 0)
+        {
+            qDebug() << "RTL-SDR: Failed to set tuner bandwidth" << bw/1000 << "kHz";
+        }
+        else
+        {
+            qDebug() << "RTL-SDR: Setting bandwidth" << bw/1000.0 << "kHz";
+        }
+#endif
     }
 }
 
