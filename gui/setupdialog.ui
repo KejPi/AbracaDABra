@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>465</width>
-    <height>453</height>
+    <height>464</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -35,7 +35,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -974,21 +974,21 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QRadioButton" name="defaultRadioButton">
+           <widget class="QRadioButton" name="defaultStyleRadioButton">
             <property name="text">
              <string notr="true">RadioButton</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="lightRadioButton">
+           <widget class="QRadioButton" name="lightStyleRadioButton">
             <property name="text">
              <string notr="true">RadioButton</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="darkRadioButton">
+           <widget class="QRadioButton" name="darkStyleRadioButton">
             <property name="text">
              <string notr="true">RadioButton</string>
             </property>

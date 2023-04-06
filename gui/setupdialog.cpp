@@ -227,9 +227,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->soapysdrBandwidth, &QSpinBox::valueChanged, this, &SetupDialog::onSoapySdrBandwidthChanged);
 #endif
 
-    ui->defaultRadioButton->setText(tr("Default style (OS dependent)"));
-    ui->lightRadioButton->setText(tr("Light style (Fusion)"));
-    ui->darkRadioButton->setText(tr("Dark style (Fusion with dark colors)"));    
+    ui->defaultStyleRadioButton->setText(tr("Default style (OS dependent)"));
+    ui->lightStyleRadioButton->setText(tr("Light style (Fusion with light colors)"));
+    ui->darkStyleRadioButton->setText(tr("Dark style (Fusion with dark colors)"));
 
     // create combo box with language selection
     ui->langComboBox->addItem("<" + tr("System language") + ">", QVariant(QLocale::AnyLanguage));
@@ -244,21 +244,22 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->langWarningLabel->setVisible(false);
     connect(ui->langComboBox, &QComboBox::currentIndexChanged, this, &SetupDialog::onLanguageChanged);
 
-    ui->defaultRadioButton->setToolTip(tr("Set default OS style."));
-    ui->lightRadioButton->setToolTip(tr("Force application light style."));
-    ui->darkRadioButton->setToolTip(tr("Force application dark style."));
+    ui->defaultStyleRadioButton->setToolTip(tr("Set default OS style."));
+    ui->lightStyleRadioButton->setToolTip(tr("Force application light style."));
+    ui->darkStyleRadioButton->setToolTip(tr("Force application dark style."));
+
     ui->expertCheckBox->setToolTip(tr("User interface in expert mode"));
     ui->dlPlusCheckBox->setToolTip(tr("Show Dynamic Label Plus (DL+) tags like artist, song name, etc."));
     ui->xmlHeaderCheckBox->setToolTip(tr("Include raw file XML header in IQ recording"));
 
-    connect(ui->defaultRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
-    connect(ui->lightRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
-    connect(ui->darkRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
+    connect(ui->defaultStyleRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
+    connect(ui->lightStyleRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
+    connect(ui->darkStyleRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
     connect(ui->expertCheckBox, &QCheckBox::clicked, this, &SetupDialog::onExpertModeChecked);
     connect(ui->dlPlusCheckBox, &QCheckBox::clicked, this, &SetupDialog::onDLPlusChecked);
     connect(ui->xmlHeaderCheckBox, &QCheckBox::clicked, this, &SetupDialog::onXmlHeaderChecked);
 
-    ui->defaultRadioButton->setChecked(true);
+    ui->defaultStyleRadioButton->setChecked(true);
 
     ui->noiseConcealmentCombo->addItem("-20 dBFS", QVariant(20));
     ui->noiseConcealmentCombo->addItem("-25 dBFS", QVariant(25));
@@ -541,13 +542,13 @@ void SetupDialog::setUiState()
     switch (m_settings.applicationStyle)
     {
     case ApplicationStyle::Default:
-        ui->defaultRadioButton->setChecked(true);
+        ui->defaultStyleRadioButton->setChecked(true);
         break;
     case ApplicationStyle::Light:
-        ui->lightRadioButton->setChecked(true);
+        ui->lightStyleRadioButton->setChecked(true);
         break;
     case ApplicationStyle::Dark:
-        ui->darkRadioButton->setChecked(true);
+        ui->darkStyleRadioButton->setChecked(true);
         break;
     }
     ui->expertCheckBox->setChecked(m_settings.expertModeEna);
@@ -1061,15 +1062,15 @@ void SetupDialog::onStyleChecked(bool checked)
 {
     if (checked)
     {
-        if (ui->defaultRadioButton->isChecked())
+        if (ui->defaultStyleRadioButton->isChecked())
         {
             m_settings.applicationStyle = ApplicationStyle::Default;
         }
-        else if (ui->lightRadioButton->isChecked())
+        else if (ui->lightStyleRadioButton->isChecked())
         {
             m_settings.applicationStyle = ApplicationStyle::Light;
         }
-        else if (ui->darkRadioButton->isChecked())
+        else if (ui->darkStyleRadioButton->isChecked())
         {
             m_settings.applicationStyle = ApplicationStyle::Dark;
         }

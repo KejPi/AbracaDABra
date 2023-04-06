@@ -1883,7 +1883,9 @@ void MainWindow::loadSettings()
     m_timeLocale = QLocale(m_setupDialog->applicationLanguage());
 
     // need to run here because it expects that settings is up-to-date
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && !defined(Q_OS_WIN)
     if (ApplicationStyle::Default != s.applicationStyle)
+#endif
     {
         onApplicationStyleChanged(s.applicationStyle);
     }
@@ -2316,8 +2318,16 @@ void MainWindow::onApplicationStyleChanged(ApplicationStyle style)
 
 void MainWindow::initStyle()
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
+#if defined(Q_OS_WIN)
+    // this forces Fusion on Windows
+    m_defaultStyleName = "Fusion";
+#else
     m_defaultStyleName = qApp->style()->name();
-
+#endif
+#else
+    m_defaultStyleName = qApp->style()->name();
+#endif
     QPalette * palette = &m_palette;
 
     //  Qt::ColorScheme::Light
@@ -2377,14 +2387,21 @@ void MainWindow::initStyle()
 // this is used to detect that system colors where changed (e.g. switching light and dark mode)
 void MainWindow::onColorSchemeChanged(Qt::ColorScheme colorScheme)
 {
+    // this is required here to keep consistency when forced styles have been used before
+    // palette should not be touched in case that only automatic dark mode switching is supported
+    if (ApplicationStyle::Default == m_setupDialog->settings().applicationStyle)
+    {
+        qApp->setPalette(qApp->style()->standardPalette());
+    }
     setupDarkMode();
 
 #if 0
     // this is used to get default and dark palette
     // output used to force light and dark theme
-    QPalette palette = qApp->palette();
+    //QPalette palette = qApp->palette();
+    QPalette palette = qApp->style()->standardPalette();
 
-    qDebug() << "// " << qApp->styleHints()->colorScheme();
+    qDebug() << "// standardPalette" << qApp->styleHints()->colorScheme();
 
     for (int r = QPalette::WindowText; r <= QPalette::PlaceholderText; ++r)
     {
@@ -2399,6 +2416,24 @@ void MainWindow::onColorSchemeChanged(Qt::ColorScheme colorScheme)
 
         qDebug("%s", line.toLatin1().data());
     }
+
+    qDebug() << "// palette" << qApp->styleHints()->colorScheme();
+    palette = qApp->palette();
+
+    for (int r = QPalette::WindowText; r <= QPalette::PlaceholderText; ++r)
+    {
+        const QPalette::ColorRole role = static_cast<const QPalette::ColorRole>(r);
+
+        QString line = QString("palette->setColor(QPalette::%1, QColor(%2, %3, %4, %5));")
+                           .arg(QVariant::fromValue(role).toString())
+                           .arg(palette.color(role).red())
+                           .arg(palette.color(role).green())
+                           .arg(palette.color(role).blue())
+                           .arg(palette.color(role).alpha());
+
+        qDebug("%s", line.toLatin1().data());
+    }
+
 #endif
 }
 
@@ -2408,7 +2443,7 @@ void MainWindow::changeEvent( QEvent* e )
 #ifdef Q_OS_MACX
     if ( e->type() == QEvent::PaletteChange )
     {
-        setDarkMode();
+        setupDarkMode();
     }
 #endif
     QMainWindow::changeEvent( e );
@@ -2447,7 +2482,6 @@ void MainWindow::forceDarkStyle(bool ena)
         qApp->setStyleSheet("QToolTip { color: rgba(230, 230, 230, 240); "
                             "background-color: rgba(100, 100, 100, 160); "
                             "border: 1px rgba(0, 0, 0, 128); }");
-
     }
     else
     {
