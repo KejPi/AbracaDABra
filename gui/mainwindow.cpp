@@ -38,6 +38,7 @@
 #include <QMessageBox>
 #include <QStyleFactory>
 #include <QtGlobal>
+#include <QStyleHints>
 
 #include "QtCore/qglobal.h"
 #include "mainwindow.h"
@@ -314,7 +315,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     ui->serviceTreeView->setVisible(false);
 
-    setIcons();
+    setupDarkMode();
 
     // focus polisy
     ui->channelCombo->setFocusPolicy(Qt::StrongFocus);
@@ -592,17 +593,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     }
 
     QMainWindow::resizeEvent(event);
-}
-
-void MainWindow::changeEvent( QEvent* e )
-{
-#ifdef Q_OS_MACX
-    if ( e->type() == QEvent::PaletteChange )
-    {
-        setIcons();
-    }
-#endif
-    QMainWindow::changeEvent( e );
 }
 
 void MainWindow::onInputDeviceReady()
@@ -2302,9 +2292,9 @@ void MainWindow::onApplicationStyleChanged(ApplicationStyle style)
     {
     case ApplicationStyle::Default:
         qApp->setStyle(QStyleFactory::create(m_defaultStyleName));
-        qApp->setPalette(m_palette);
+        qApp->setPalette(qApp->style()->standardPalette());
         qApp->setStyleSheet("");
-        setIcons();
+        setupDarkMode();
         break;
     case ApplicationStyle::Light:
     case ApplicationStyle::Dark:
@@ -2318,7 +2308,7 @@ void MainWindow::onApplicationStyleChanged(ApplicationStyle style)
         sizePolicy.setVerticalStretch(1);
         ui->slsWidget->setSizePolicy(sizePolicy);
 
-        setDarkMode(ApplicationStyle::Dark == style);
+        forceDarkStyle(ApplicationStyle::Dark == style);
 
         break;
     }
@@ -2327,57 +2317,149 @@ void MainWindow::onApplicationStyleChanged(ApplicationStyle style)
 void MainWindow::initStyle()
 {
     m_defaultStyleName = qApp->style()->name();
-    m_palette = qApp->palette();
-    QColor darkColor = QColor(45,45,45);
-    QColor disabledColor = QColor(90,90,90);
-    QColor lightColor = QColor(235,235,235);
-    m_darkPalette.setColor(QPalette::Window, darkColor);
-    m_darkPalette.setColor(QPalette::WindowText, lightColor);
-    m_darkPalette.setColor(QPalette::Base, QColor(18,18,18));
-    m_darkPalette.setColor(QPalette::AlternateBase, darkColor);
-    m_darkPalette.setColor(QPalette::ToolTipBase, QColor(64,64,64));
-    m_darkPalette.setColor(QPalette::ToolTipText, lightColor);
-    m_darkPalette.setColor(QPalette::Text, lightColor);
-    m_darkPalette.setColor(QPalette::Button, darkColor);
-    m_darkPalette.setColor(QPalette::ButtonText, lightColor);
-    m_darkPalette.setColor(QPalette::BrightText, Qt::red);
-    m_darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
-    m_darkPalette.setColor(QPalette::Highlight, QColor(6, 64, 198));
-    m_darkPalette.setColor(QPalette::HighlightedText, lightColor);
 
-    m_darkPalette.setColor(QPalette::Disabled, QPalette::Text, disabledColor);
-    m_darkPalette.setColor(QPalette::Disabled, QPalette::ButtonText, disabledColor);
-    m_darkPalette.setColor(QPalette::Disabled, QPalette::HighlightedText, disabledColor);
-    m_darkPalette.setColor(QPalette::Disabled, QPalette::WindowText, disabledColor);
-    m_darkPalette.setColor(QPalette::Disabled, QPalette::Highlight, QColor(55,55,55));
-    m_darkPalette.setColor(QPalette::Light, darkColor);
-}
+    QPalette * palette = &m_palette;
 
-bool MainWindow::isDarkMode()
-{
-#ifdef Q_OS_MACX
-    return macIsInDarkTheme() || (ApplicationStyle::Dark == m_setupDialog->settings().applicationStyle);
-#else
-    return (ApplicationStyle::Dark == m_setupDialog->settings().applicationStyle);
+    //  Qt::ColorScheme::Light
+    palette->setColor(QPalette::WindowText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Button, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Light, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Midlight, QColor(227, 227, 227, 255));
+    palette->setColor(QPalette::Dark, QColor(160, 160, 160, 255));
+    palette->setColor(QPalette::Mid, QColor(160, 160, 160, 255));
+    palette->setColor(QPalette::Text, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::BrightText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::ButtonText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Base, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Window, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Shadow, QColor(105, 105, 105, 255));
+    palette->setColor(QPalette::Highlight, QColor(0, 120, 215, 255));
+    palette->setColor(QPalette::HighlightedText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Link, QColor(0, 0, 255, 255));
+    palette->setColor(QPalette::LinkVisited, QColor(255, 0, 255, 255));
+    palette->setColor(QPalette::AlternateBase, QColor(233, 231, 227, 255));
+    palette->setColor(QPalette::NoRole, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::ToolTipBase, QColor(255, 255, 220, 255));
+    palette->setColor(QPalette::ToolTipText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::PlaceholderText, QColor(0, 0, 0, 128));
+
+    palette = &m_darkPalette;
+
+    //  Qt::ColorScheme::Dark
+    palette->setColor(QPalette::WindowText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Button, QColor(60, 60, 60, 255));
+    palette->setColor(QPalette::Light, QColor(120, 120, 120, 255));
+    palette->setColor(QPalette::Midlight, QColor(90, 90, 90, 255));
+    palette->setColor(QPalette::Dark, QColor(30, 30, 30, 255));
+    palette->setColor(QPalette::Mid, QColor(40, 40, 40, 255));
+    palette->setColor(QPalette::Text, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::BrightText, QColor(153, 187, 255, 255));
+    palette->setColor(QPalette::ButtonText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Base, QColor(45, 45, 45, 255));
+    palette->setColor(QPalette::Window, QColor(30, 30, 30, 255));
+    palette->setColor(QPalette::Shadow, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Highlight, QColor(0, 85, 255, 255));
+    palette->setColor(QPalette::HighlightedText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Link, QColor(0, 0, 255, 255));
+    palette->setColor(QPalette::LinkVisited, QColor(0, 49, 148, 255));
+    palette->setColor(QPalette::AlternateBase, QColor(0, 49, 148, 255));
+    palette->setColor(QPalette::NoRole, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::ToolTipBase, QColor(60, 60, 60, 255));
+    palette->setColor(QPalette::ToolTipText, QColor(212, 212, 212, 255));
+    palette->setColor(QPalette::PlaceholderText, QColor(255, 255, 255, 128));
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    connect(qApp->styleHints(), &QStyleHints::colorSchemeChanged, this, &MainWindow::onColorSchemeChanged);
 #endif
 }
 
-void MainWindow::setDarkMode(bool ena)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+// this is used to detect that system colors where changed (e.g. switching light and dark mode)
+void MainWindow::onColorSchemeChanged(Qt::ColorScheme colorScheme)
+{
+    setupDarkMode();
+
+#if 0
+    // this is used to get default and dark palette
+    // output used to force light and dark theme
+    QPalette palette = qApp->palette();
+
+    qDebug() << "// " << qApp->styleHints()->colorScheme();
+
+    for (int r = QPalette::WindowText; r <= QPalette::PlaceholderText; ++r)
+    {
+        const QPalette::ColorRole role = static_cast<const QPalette::ColorRole>(r);
+
+        QString line = QString("palette->setColor(QPalette::%1, QColor(%2, %3, %4, %5));")
+                           .arg(QVariant::fromValue(role).toString())
+                           .arg(palette.color(role).red())
+                           .arg(palette.color(role).green())
+                           .arg(palette.color(role).blue())
+                           .arg(palette.color(role).alpha());
+
+        qDebug("%s", line.toLatin1().data());
+    }
+#endif
+}
+
+#else // QT version < 6.5.0 -> switching is supported only on MacOS
+void MainWindow::changeEvent( QEvent* e )
+{
+#ifdef Q_OS_MACX
+    if ( e->type() == QEvent::PaletteChange )
+    {
+        setDarkMode();
+    }
+#endif
+    QMainWindow::changeEvent( e );
+}
+#endif
+
+
+bool MainWindow::isDarkMode()
+{
+    if (ApplicationStyle::Dark == m_setupDialog->settings().applicationStyle)
+    {
+        return true;
+    }
+    // else
+    if (ApplicationStyle::Light == m_setupDialog->settings().applicationStyle)
+    {
+        return false;
+    }
+    // else
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    return (Qt::ColorScheme::Dark == qApp->styleHints()->colorScheme());
+#else // QT < 6.5.0
+#ifdef Q_OS_MACX
+    return macIsInDarkTheme();
+#else
+    return false;
+#endif
+#endif
+}
+
+void MainWindow::forceDarkStyle(bool ena)
 {
     if (ena)
     {
         qApp->setPalette(m_darkPalette);
-        qApp->setStyleSheet("QToolTip { color: #f5f5f5; background-color: #404040; border: 1px solid #ebebeb; }");
+        qApp->setStyleSheet("QToolTip { color: rgba(230, 230, 230, 240); "
+                            "background-color: rgba(100, 100, 100, 160); "
+                            "border: 1px rgba(0, 0, 0, 128); }");
+
     }
     else
     {
         qApp->setPalette(m_palette);
-        qApp->setStyleSheet("QToolTip { color: #000000; background-color: #ffffdf; border: 1px solid black; }");
+        qApp->setStyleSheet("QToolTip { color: rgba(50, 50, 50, 240); "
+                            "background-color: rgba(255, 255, 255, 160); "
+                            "border: 1px rgba(0, 0, 0, 128); }");
     }
-    setIcons();
+    setupDarkMode();
 }
 
-void MainWindow::setIcons()
+void MainWindow::setupDarkMode()
 {
     if (isDarkMode())
     {
@@ -2395,6 +2477,9 @@ void MainWindow::setIcons()
         ui->announcementLabel->setIcon(":/resources/announcement_suspended_dark.png", false);
 
         ui->switchSourceLabel->setIcon(":/resources/broadcast_dark.png");
+
+        ui->slsView_Service->setupDarkMode(true);
+        ui->slsView_Announcement->setupDarkMode(true);
     }
     else
     {
@@ -2412,9 +2497,10 @@ void MainWindow::setIcons()
         ui->announcementLabel->setIcon(":/resources/announcement_suspended.png", false);
 
         ui->switchSourceLabel->setIcon(":/resources/broadcast.png");
+
+        ui->slsView_Service->setupDarkMode(false);
+        ui->slsView_Announcement->setupDarkMode(false);
     }
-    ui->slsView_Service->setDarkMode(isDarkMode());
-    ui->slsView_Announcement->setDarkMode(isDarkMode());
 }
 
 void MainWindow::onDLPlusObjReceived_Service(const DLPlusObject & object)

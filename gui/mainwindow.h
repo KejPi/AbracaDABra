@@ -85,7 +85,9 @@ signals:
 protected:        
     void closeEvent(QCloseEvent *event);
     void resizeEvent(QResizeEvent *event);
+#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
     void changeEvent( QEvent* e );
+#endif
 private:
     // constants
     enum Instance { Service = 0, Announcement = 1, NumInstances };
@@ -186,8 +188,8 @@ private:
     void clearServiceInformationLabels();
     void initInputDevice(const InputDeviceId &d);
     bool isDarkMode();
-    void setDarkMode(bool ena);
-    void setIcons();    
+    void forceDarkStyle(bool ena);
+    void setupDarkMode();
     void serviceSelected();
     void channelSelected();
     void serviceTreeViewUpdateSelection();
@@ -197,6 +199,9 @@ private:
     void toggleDLPlus(bool toggle);
     void initStyle();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    void onColorSchemeChanged(Qt::ColorScheme colorScheme);
+#endif
     void onInputDeviceReady();
     void onEnsembleInfo(const RadioControlEnsemble &ens);
     void onServiceListComplete(const RadioControlEnsemble &ens);

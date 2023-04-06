@@ -54,7 +54,7 @@ public:
     void fitInViewTight(const QRectF &rect, Qt::AspectRatioMode aspectRatioMode);
 
     //! @brief This method changes between light and dark mode
-    void setDarkMode(bool darkModeEna);
+    void setupDarkMode(bool darkModeEna);
 
 protected:
     //! @brief Reimplemented to scale image correctly

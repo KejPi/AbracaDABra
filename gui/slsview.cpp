@@ -182,7 +182,7 @@ void SLSView::fitInViewTight(const QRectF &rect, Qt::AspectRatioMode aspectRatio
     centerOn(rect.center());
 }
 
-void SLSView::setDarkMode(bool darkModeEna)
+void SLSView::setupDarkMode(bool darkModeEna)
 {
     if (darkModeEna != m_isDarkMode)
     {
