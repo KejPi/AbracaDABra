@@ -129,7 +129,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
     case RadioControlEventType::SYNC_STATUS:
     {
 #if RADIO_CONTROL_VERBOSE
-        qDebug("Sync = %d", pEvent->syncLevel);
+        qDebug("Sync = %d", pEvent->syncStatus.syncLevel);
 #endif
 
         if ((DABSDR_SYNC_LEVEL_FIC == pEvent->syncStatus.syncLevel) && (RADIO_CONTROL_UEID_INVALID == m_ensemble.ueid))
