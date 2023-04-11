@@ -480,7 +480,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_spiApp->moveToThread(m_radioControlThread);
     connect(m_radioControlThread, &QThread::finished, m_spiApp, &QObject::deleteLater);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &SPIApp::start);
-    //connect(spiApp, &SPIApp::resetTerminal, ui->slsView, &SLSView::reset, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::userAppData_Service, m_spiApp, &SPIApp::onUserAppData);
     connect(this, &MainWindow::stopUserApps, m_spiApp, &SPIApp::stop, Qt::QueuedConnection);
 #endif
 

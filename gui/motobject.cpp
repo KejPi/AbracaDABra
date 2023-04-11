@@ -464,12 +464,14 @@ bool MOTDirectory::parse(const QByteArray &dirData)
         return false;
     }
 
+#if MOTOBJECT_VERBOSE > 1
     QString dirStr;
     for (int d = 0; d < dirSize; ++d)
     {
         dirStr += QString("%1 ").arg((uint8_t) dataPtr[d], 2, 16, QLatin1Char('0'));
     }
     qDebug() << dirStr;
+#endif
 
     int numberOfObjects = (dataPtr[4] << 8) | dataPtr[5];
     int dataCarouselPeriod = (dataPtr[6] << 16) | (dataPtr[7] << 8) | dataPtr[8];
