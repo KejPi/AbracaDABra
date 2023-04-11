@@ -25,6 +25,7 @@
  */
 
 #include <QDesktopServices>
+#include <rtl-sdr.h>
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 #include "config.h"
@@ -55,7 +56,11 @@ AboutDialog::AboutDialog(QWidget *parent) :
                            "<li><a href=\"https://github.com/anthonix/ffts\">FFTS</a> by Anthony Blake</li>"
                            "<li><a href=\"https://github.com/mborgerding/kissfft\">KISS FFT</a> by Mark Borgerding</li>"
                            "<li><a href=\"https://github.com/Opendigitalradio/ka9q-fec\">FEC</a> by Phil Karn, KA9Q</li>"
-                           "<li><a href=\"https://osmocom.org/projects/rtl-sdr/wiki/Rtl-sdr\">rtl-sdr</a> by Steve Markgraf, Dimitri Stolnikov, and Hoernchen, with contributions by Kyle Keen, Christian Vogel and Harald Welte.</li>"
+#ifdef RTLSDR_OLD_DAB
+                           "<li><a href=\"https://github.com/old-dab/rtlsdr\">rtlsdr</a> by Steve Markgraf, Dimitri Stolnikov, and Hoernchen, with contributions by Kyle Keen, Christian Vogel, Harald Welte and Hayati Ayguen.</li>"
+#else
+                           "<li><a href=\"https://osmocom.org/projects/rtl-sdr/wiki/rtl-sdr\">rtl-sdr</a> by Steve Markgraf, Dimitri Stolnikov, and Hoernchen, with contributions by Kyle Keen, Christian Vogel and Harald Welte.</li>"
+#endif
 #ifdef HAVE_AIRSPY
                            "<li><a href=\"https://github.com/airspy\">AirSpy</a> by Benjamin Vernoux and Youssef Touil.</li>"
 #endif

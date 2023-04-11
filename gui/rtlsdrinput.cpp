@@ -390,7 +390,7 @@ void RtlSdrInput::setBW(uint32_t bw)
     if (bw != m_bandwidth)
     {
         m_bandwidth = bw;
-#ifdef SI2168_CHIP_ID
+#ifdef RTLSDR_OLD_DAB
         // this code needs rtlsdr implementation from here: https://github.com/old-dab/rtlsdr
         // how to detect it correctly ???
         uint32_t applied_bw;
