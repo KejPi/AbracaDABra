@@ -28,12 +28,15 @@
 #define SPIAPP_H
 
 #include <QObject>
-#include "dabtables.h"
+#include <QDomDocument>
+
 #include "radiocontrol.h"
 #include "motdecoder.h"
 #include "userapplication.h"
 
-#define SPI_APP_INVALID_TAG 0x7F
+//#define SPI_APP_INVALID_TAG 0x7F
+
+class SPIDomElement;
 
 class SPIApp : public UserApplication
 {
@@ -59,10 +62,15 @@ private:
     MOTDecoder * m_decoder;
 
     void parseServiceInfo(const MOTObject & motObj);
-    uint32_t parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize);
+    uint32_t parseTag(const uint8_t * dataPtr, QDomElement * parentElement, uint8_t parentTag, int maxSize);
     const uint8_t * parseAttributes(const uint8_t * attrPtr, uint8_t tag, int maxSize);
+    QString getString(const uint8_t *dataPtr, int len, bool doReplaceTokens = true);
+    QString getTime(const uint8_t *dataPtr, int len);
 
     QHash<uint8_t, QString> m_tokenTable;
+    QString m_defaultLanguage;
+
+    QDomDocument m_xmldocument;
 };
 
 namespace SPIElement
@@ -80,7 +88,8 @@ namespace SPIElement
         mediaDescription = 0x13,
         genre = 0x14,
         keywords= 0x16,
-        memberOf = 0x18,
+        memberOf = 0x17,
+        link = 0x18,
         location = 0x19,
         shortDescription = 0x1A,
         longDescription = 0x1B,
@@ -105,7 +114,8 @@ namespace SPIElement
         polygon = 0x35,
         onDemand = 0x36,
         presentationTime = 0x37,
-        acquisitionTime = 0x38
+        acquisitionTime = 0x38,
+        _invalid = 0x7F
     };
 
     namespace serviceInformation
@@ -144,7 +154,65 @@ namespace SPIElement
             height = 0x85
         };
     }
+    namespace shortName
+    {
+        enum class attribute
+        {
+            xml_lang = 0x80,
+        };
+    }
+    namespace mediumName
+    {
+        enum class attribute
+        {
+            xml_lang = 0x80,
+        };
+    }
+    namespace longName
+    {
+        enum class attribute
+        {
+            xml_lang = 0x80,
+        };
+    }
+    namespace shortDescription
+    {
+        enum class attribute
+        {
+            xml_lang = 0x80,
+        };
+    }
+    namespace longDescription
+    {
+        enum class attribute
+        {
+            xml_lang = 0x80,
+        };
+    }
+    namespace genre
+    {
+        enum class attribute
+        {
+            href = 0x80,
+            type = 0x81,
+        };
+    }
+
 }
+
+class SPIDomElement : public QDomElement
+{
+public:
+    SPIDomElement();
+    SPIDomElement(const QDomElement & e, uint8_t tag);
+    QDomElement element() const;
+    void setElement(const QDomElement &newElement);
+    SPIElement::Tag tag() const;
+    void setTag(uint8_t newTag);
+private:
+    QDomElement m_element;
+    SPIElement::Tag m_tag;
+};
 
 
 #endif // SPIAPP_H

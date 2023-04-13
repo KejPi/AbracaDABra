@@ -30,6 +30,7 @@
 #include <QObject>
 #include <QStringList>
 #include <QMap>
+#include <QDateTime>
 
 enum class DabProtectionLevel
 {
@@ -138,6 +139,7 @@ public:
     static const uint16_t ebuLatin2UCS2[];
     static const QList<uint16_t> ASwValues;
     static QString convertToQString(const char *c, uint8_t charset, uint8_t len = 16);
+    static QDateTime dabTimeToUTC(uint32_t dateHoursMinutes, uint16_t secMsec);
     static QString getPtyName(const uint8_t pty);
     static QString getLangName(int lang);
     static QString getCountryName(uint32_t SId);

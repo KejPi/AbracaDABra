@@ -476,7 +476,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // slide show application is created by default
     // ETSI TS 101 499 V3.1.1  [5.1.1]
     // The application should be automatically started when a SlideShow service is discovered for the current radio service
-    m_spiApp = new SPIApp(m_radioControl);
+    m_spiApp = new SPIApp();
     m_spiApp->moveToThread(m_radioControlThread);
     connect(m_radioControlThread, &QThread::finished, m_spiApp, &QObject::deleteLater);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &SPIApp::start);

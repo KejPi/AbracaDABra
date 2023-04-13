@@ -161,6 +161,42 @@ QString DabTables::convertToQString(const char *c, uint8_t charset, uint8_t len)
     return out;
 }
 
+QDateTime DabTables::dabTimeToUTC(uint32_t dateHoursMinutes, uint16_t secMsec)
+{
+    // decode time
+    // bits 30-14 MJD
+    int32_t mjd = (dateHoursMinutes >> 14) & 0x01FFFF;
+    // bit 13 LSI
+    // uint8_t lsi = (pData->dateHoursMinutes >> 13) & 0x01;
+    // bits 10-6 Hours
+    uint8_t h = (dateHoursMinutes >> 6) & 0x1F;
+    // bits 5-0 Minutes
+    uint8_t minute = dateHoursMinutes & 0x3F;
+
+    // Convert Modified Julian Date (according to wikipedia)
+    int32_t J   = mjd + 2400001;
+    int32_t j   = J + 32044;
+    int32_t g   = j / 146097;
+    int32_t dg  = j % 146097;
+    int32_t c   = ((dg / 36524) + 1) * 3 / 4;
+    int32_t dc  = dg - c * 36524;
+    int32_t b   = dc / 1461;
+    int32_t db  = dc%1461;
+    int32_t a   = ((db / 365) + 1) * 3 / 4;
+    int32_t da  = db - a * 365;
+    int32_t y   = g * 400 + c * 100 + b * 4 + a;
+    int32_t m   = ((da * 5 + 308) / 153) - 2;
+    int32_t d   = da - ((m + 4) * 153 / 5) + 122;
+    int32_t Y   = y - 4800 + ((m + 2) / 12);
+    int32_t M   = ((m + 2) % 12) + 1;
+    int32_t D   = d + 1;
+
+    int32_t sec = secMsec >> 10;
+    int32_t msec = secMsec & 0x3FF;
+
+    return QDateTime(QDate(Y, M, D), QTime(h, minute, sec, msec), Qt::UTC);
+}
+
 
 QString DabTables::getPtyName(const uint8_t pty)
 {

@@ -124,43 +124,6 @@ void SPIApp::onNewMOTDirectory()
                 continue;
             }
         }
-#if 0
-        MOTObject::paramsIterator paramIt;
-        for (paramIt = objIt->paramsBegin(); paramIt != objIt->paramsEnd(); ++paramIt)
-        {
-            switch (DabMotExtParameter(paramIt.key()))
-            {
-            case DabMotExtParameter::ProfileSubset:
-                qDebug() << "\tProfileSubset";
-                break;
-            case DabMotExtParameter::CompressionType:
-                qDebug() << "\tCompressionType";
-                break;
-            case DabMotExtParameter::CAInfo:
-                qDebug() << "\tCAInfo";
-                // ETSI TS 102 371 V3.2.1 (2016-05) [6.4.0 General] non CA capable devices shall discard encrypted objects
-                continue;
-                break;
-            default:
-                switch (Parameter(paramIt.key()))
-                {
-                case Parameter::ScopeStart:
-                    qDebug() << "\tScopeEnd";
-                    break;
-                case Parameter::ScopeEnd:
-                    qDebug() << "\tScopeStart";
-                    break;
-                case Parameter::ScopeID:
-                    qDebug() << "\tScopeID";
-                    break;
-                default:
-                    // not supported
-                    break;
-                }
-                break;
-            }
-        }
-#endif
     }
 }
 
@@ -191,7 +154,7 @@ void SPIApp::parseServiceInfo(const MOTObject &motObj)
         default:
             switch (Parameter(paramIt.key()))
             {
-#if 0
+#if 1
             case Parameter::ScopeStart:
                 // ETSI TS 102 371 V3.2.1 (2016-05) [6.4.6 ScopeStart] This parameter is used for Programme Information SPI objects only
                 qDebug() << "\tScopeStart";
@@ -228,17 +191,24 @@ void SPIApp::parseServiceInfo(const MOTObject &motObj)
     }
 
     const QByteArray data = motObj.getBody();
-    //QByteArray::const_iterator dataIt = data.constBegin();
+    m_xmldocument.clear();
+    m_tokenTable.clear();
+    m_defaultLanguage.clear();
+    QDomProcessingInstruction header = m_xmldocument.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"utf-8\"");
+    m_xmldocument.appendChild(header);
+    //m_xmldocument = QDomDocument("XML");
     const uint8_t * dataPtr = (uint8_t *) data.data();
-    dataPtr += parseTag(dataPtr, SPI_APP_INVALID_TAG, data.size());
+    dataPtr += parseTag(dataPtr, nullptr, uint8_t(SPIElement::Tag::_invalid), data.size());
+
+    qDebug("%s", m_xmldocument.toString().toLocal8Bit().data());
 }
 
 
-uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
+uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement *parentElement, uint8_t parentTag, int maxSize)
 {
-    qDebug("%2.2X %2.2X %2.2X %2.2X %2.2X %2.2X %2.2X %2.2X %2.2X %2.2X",
-            *dataPtr, *(dataPtr+1), *(dataPtr+2), *(dataPtr+3), *(dataPtr+4), *(dataPtr+5), *(dataPtr+6),
-            *(dataPtr+7), *(dataPtr+8), *(dataPtr+9));
+//    qDebug("%2.2X %2.2X %2.2X %2.2X %2.2X %2.2X %2.2X %2.2X %2.2X %2.2X",
+//            *dataPtr, *(dataPtr+1), *(dataPtr+2), *(dataPtr+3), *(dataPtr+4), *(dataPtr+5), *(dataPtr+6),
+//            *(dataPtr+7), *(dataPtr+8), *(dataPtr+9));
 
     if (maxSize < 2)
     {   // not enough data
@@ -286,12 +256,11 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
     { /* len < 0xFE */ }
 
     // we know that we have enough data here
-    qDebug("Tag = %2.2X, len = %d", tag, len);
+    //qDebug("Tag = %2.2X, len = %d", tag, len);
 
+    QDomElement element;
     if (tag < 0x80)
     {   // element tags
-        QString tagName("");
-
         switch (SPIElement::Tag(tag))
         {
         case SPIElement::Tag::CDATA:
@@ -307,13 +276,19 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
             }
             bytesRead += len;
             qDebug() << "CDATA" << cdata;
+            if (nullptr != parentElement)
+            {
+                parentElement->appendChild(m_xmldocument.createTextNode(cdata));
+            }
+            else { /* do nothing here */ }
+
         }
             break;
         case SPIElement::Tag::epg:
             // not supported
             break;
-        case SPIElement::Tag::serviceInformation:
-            tagName = "serviceInformation";
+        case SPIElement::Tag::serviceInformation:           
+            element = m_xmldocument.createElement("serviceInformation");
             break;
         case SPIElement::Tag::tokenTable:
             m_tokenTable.clear();
@@ -328,103 +303,164 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
             }
             break;
         case SPIElement::Tag::defaultLanguage:
-            tagName = "defaultLanguage";
+            // ETSI TS 102 371 V3.2.1 [4.11]
+            // This element is not defined in the XML specification. This element can only occur within the top-level elements
+            // serviceInformation and epg and, if present, it shall occur after the string token table (if present) and before any other child elements.
+            // This element applies to all elements within the parent top-level element and all children of the parent element.
+            // If the default language element is present, then whenever an xml:lang attribute with the same value as the default language occurs within an element,
+            // it does not need to be encoded. Whenever a decoder finds a missing xml:lang attribute for an element, then it shall use the default language value.
+            m_defaultLanguage = getString(dataPtr+bytesRead, len, false);
+            qDebug() << "defaultLanguage" << m_defaultLanguage;
+            bytesRead += len;
             break;
         case SPIElement::Tag::shortName:
-            tagName = "shortName";
+            element = m_xmldocument.createElement("shortName");
+            if (!m_defaultLanguage.isEmpty())
+            {
+                element.setAttribute("xml:lang", m_defaultLanguage);
+            }
+            else { /* no default language */ }
             break;
         case SPIElement::Tag::mediumName:
-            tagName = "mediumName";
+            element = m_xmldocument.createElement("mediumName");
+            if (!m_defaultLanguage.isEmpty())
+            {
+                element.setAttribute("xml:lang", m_defaultLanguage);
+            }
+            else { /* no default language */ }
             break;
         case SPIElement::Tag::longName:
-            tagName = "longName";
+            element = m_xmldocument.createElement("longName");
+            if (!m_defaultLanguage.isEmpty())
+            {
+                element.setAttribute("xml:lang", m_defaultLanguage);
+            }
+            else { /* no default language */ }
             break;
         case SPIElement::Tag::mediaDescription:
-            tagName = "mediaDescription";
+            element = m_xmldocument.createElement("mediaDescription");
             break;
         case SPIElement::Tag::genre:
-            tagName = "genre";
+            element = m_xmldocument.createElement("genre");
             break;
         case SPIElement::Tag::keywords:
-            tagName = "keywords";
+            element = m_xmldocument.createElement("keywords");
+            if (!m_defaultLanguage.isEmpty())
+            {
+                element.setAttribute("xml:lang", m_defaultLanguage);
+            }
+            else { /* no default language */ }
             break;
         case SPIElement::Tag::memberOf:
-            tagName = "memberOf";
+            element = m_xmldocument.createElement("memberOf");
             break;
-        case SPIElement::Tag::location:
-            tagName = "location";
+        case SPIElement::Tag::link:
+            element = m_xmldocument.createElement("link");
+            if (!m_defaultLanguage.isEmpty())
+            {
+                element.setAttribute("xml:lang", m_defaultLanguage);
+            }
+            else { /* no default language */ }
+            break;
+        case SPIElement::Tag::location:            
+            element = m_xmldocument.createElement("location");
             break;
         case SPIElement::Tag::shortDescription:
-            tagName = "shortDescription";
+            element = m_xmldocument.createElement("shortDescription");
+            if (!m_defaultLanguage.isEmpty())
+            {
+                element.setAttribute("xml:lang", m_defaultLanguage);
+            }
+            else { /* no default language */ }
             break;
         case SPIElement::Tag::longDescription:
-            tagName = "longDescription";
+            element = m_xmldocument.createElement("longDescription");
+            if (!m_defaultLanguage.isEmpty())
+            {
+                element.setAttribute("xml:lang", m_defaultLanguage);
+            }
+            else { /* no default language */ }
             break;
         case SPIElement::Tag::programme:
-            tagName = "programme";
+            element = m_xmldocument.createElement("programme");
+            if (!m_defaultLanguage.isEmpty())
+            {
+                element.setAttribute("xml:lang", m_defaultLanguage);
+            }
+            else { /* no default language */ }
             break;
         case SPIElement::Tag::programmeGroups:
-            tagName = "programmeGroups";
+            element = m_xmldocument.createElement("programmeGroups");
             break;
         case SPIElement::Tag::schedule:
-            tagName = "schedule";
+            element = m_xmldocument.createElement("schedule");
             break;
         case SPIElement::Tag::programmeGroup:
-            tagName = "programmeGroup";
+            element = m_xmldocument.createElement("programmeGroup");
             break;
         case SPIElement::Tag::scope:
-            tagName = "scope";
+            element = m_xmldocument.createElement("scope");
             break;
         case SPIElement::Tag::serviceScope:
-            tagName = "serviceScope";
+            element = m_xmldocument.createElement("serviceScope");
             break;
         case SPIElement::Tag::ensemble:
-            tagName = "ensemble";
+            element = m_xmldocument.createElement("ensemble");
             break;
         case SPIElement::Tag::service:
-            tagName = "service";
+            element = m_xmldocument.createElement("service");
             break;
         case SPIElement::Tag::bearer_serviceID:
-            tagName = "bearer_serviceID";
+            element = m_xmldocument.createElement("bearer");
             break;
         case SPIElement::Tag::multimedia:
-            tagName = "multimedia";
+            element = m_xmldocument.createElement("multimedia");
+            if (!m_defaultLanguage.isEmpty())
+            {
+                element.setAttribute("xml:lang", m_defaultLanguage);
+            }
+            else { /* no default language */ }
             break;
         case SPIElement::Tag::time:
-            tagName = "time";
+            element = m_xmldocument.createElement("time");
             break;
         case SPIElement::Tag::bearer:
-            tagName = "bearer";
+            element = m_xmldocument.createElement("bearer");
             break;
         case SPIElement::Tag::programmeEvent:
-            tagName = "programmeEvent";
+            element = m_xmldocument.createElement("programmeEvent");
+            if (!m_defaultLanguage.isEmpty())
+            {
+                element.setAttribute("xml:lang", m_defaultLanguage);
+            }
+            else { /* no default language */ }
             break;
         case SPIElement::Tag::relativeTime:
-            tagName = "relativeTime";
+            element = m_xmldocument.createElement("relativeTime");
             break;
         case SPIElement::Tag::radiodns:
-            tagName = "radiodns";
+            element = m_xmldocument.createElement("radiodns");
             break;
         case SPIElement::Tag::geolocation:
-            tagName = "geolocation";
+            element = m_xmldocument.createElement("geolocation");
             break;
         case SPIElement::Tag::country:
-            tagName = "country";
+            element = m_xmldocument.createElement("country");
             break;
         case SPIElement::Tag::point:
-            tagName = "point";
+            element = m_xmldocument.createElement("point");
             break;
         case SPIElement::Tag::polygon:
-            tagName = "polygon";
+            element = m_xmldocument.createElement("polygon");
             break;
         case SPIElement::Tag::onDemand:
-            tagName = "onDemand";
+            element = m_xmldocument.createElement("onDemand");
             break;
         case SPIElement::Tag::presentationTime:
-            tagName = "presentationTime";
+            element = m_xmldocument.createElement("presentationTime");
             break;
         case SPIElement::Tag::acquisitionTime:
-            tagName = "acquisitionTime";
+            element = m_xmldocument.createElement("acquisitionTime");
             break;
         default:
             // unknown
@@ -433,23 +469,31 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
         }
 
         // parse attributes
-        if (!tagName.isEmpty())
+        if (!element.tagName().isEmpty())
         {
-            qDebug("<%s>", tagName.toLatin1().data());
+            qDebug("<%s>", element.tagName().toLatin1().data());
             while (len > bytesRead)
             {
-                bytesRead += parseTag(dataPtr+bytesRead, tag, len);
+                bytesRead += parseTag(dataPtr+bytesRead, &element, tag, len);
             }
-            qDebug("</%s>", tagName.toLatin1().data());
+            qDebug("</%s>", element.tagName().toLatin1().data());
+
+            if (nullptr == parentElement)
+            {
+                m_xmldocument.appendChild(element);
+            }
+            else
+            {
+                parentElement->appendChild(element);
+            }
         }
-
-
     }
     else
     {   // attributes
-        switch (SPIElement::Tag(parent))
+        switch (SPIElement::Tag(parentTag))
         {
         case SPIElement::Tag::epg:
+            qDebug() << "attributes: epg";
             break;
         case SPIElement::Tag::serviceInformation:
             switch (SPIElement::serviceInformation::attribute(tag))
@@ -463,60 +507,159 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
                     version = (version << 8) | *(dataPtr+bytesRead+n);
                 }
                 qDebug("version=\"%d\"", version);
+                parentElement->setAttribute("version", version);
             }
                 break;
             case SPIElement::serviceInformation::attribute::creationTime:
-                qDebug() << "attribute:creationTime";
+            {
+                QString time  = getTime(dataPtr+bytesRead, len);
+                qDebug() << "attribute:creationTime" << time;
+                parentElement->setAttribute("creationTime", time);
+            }
                 break;
             case SPIElement::serviceInformation::attribute::originator:
-                qDebug() << "attribute:originator";
+            {
+                QString originator = getString(dataPtr+bytesRead, len, false);
+                qDebug() << "attribute:originator" << originator;
+                parentElement->setAttribute("originator", originator);
+
+            }
                 break;
             case SPIElement::serviceInformation::attribute::serviceProvider:
-                qDebug() << "attribute:serviceProvider";
+            {
+                QString serviceProvider = getString(dataPtr+bytesRead, len, false);
+                qDebug() << "attribute:serviceProvider" << serviceProvider;
+                parentElement->setAttribute("serviceProvider", serviceProvider);
+            }
                 break;
             }
             break;
-        case SPIElement::Tag::tokenTable:
-            break;
-        case SPIElement::Tag::defaultLanguage:
-            break;
+//        case SPIElement::Tag::tokenTable:
+//            break;
+//        case SPIElement::Tag::defaultLanguage:
+//            break;
         case SPIElement::Tag::shortName:
+            switch (SPIElement::shortName::attribute(tag))
+            {
+                case SPIElement::shortName::attribute::xml_lang:
+                {
+                    QString lang = getString(dataPtr+bytesRead, len, false);
+                    qDebug() << "xml:lang" << lang;
+                    parentElement->setAttribute("xml:lang", lang);
+                }
+            break;
+            }
             break;
         case SPIElement::Tag::mediumName:
+            switch (SPIElement::mediumName::attribute(tag))
+            {
+                case SPIElement::mediumName::attribute::xml_lang:
+                {
+                    QString lang = getString(dataPtr+bytesRead, len, false);
+                    qDebug() << "xml:lang" << lang;
+                    parentElement->setAttribute("xml:lang", lang);
+                }
+                    break;
+            }
             break;
         case SPIElement::Tag::longName:
+            switch (SPIElement::longName::attribute(tag))
+            {
+            case SPIElement::longName::attribute::xml_lang:
+            {
+                    QString lang = getString(dataPtr+bytesRead, len, false);
+                    qDebug() << "xml:lang" << lang;
+                    parentElement->setAttribute("xml:lang", lang);
+            }
             break;
-        case SPIElement::Tag::mediaDescription:
-            break;
-        case SPIElement::Tag::genre:
-            break;
-        case SPIElement::Tag::keywords:
-            break;
-        case SPIElement::Tag::memberOf:
-            break;
-        case SPIElement::Tag::location:
+            }
             break;
         case SPIElement::Tag::shortDescription:
+            switch (SPIElement::shortDescription::attribute(tag))
+            {
+            case SPIElement::shortDescription::attribute::xml_lang:
+            {
+                    QString lang = getString(dataPtr+bytesRead, len, false);
+                    qDebug() << "xml:lang" << lang;
+                    parentElement->setAttribute("xml:lang", lang);
+            }
+            break;
+            }
             break;
         case SPIElement::Tag::longDescription:
+            switch (SPIElement::longDescription::attribute(tag))
+            {
+            case SPIElement::longDescription::attribute::xml_lang:
+            {
+                    QString lang = getString(dataPtr+bytesRead, len, false);
+                    qDebug() << "xml:lang" << lang;
+                    parentElement->setAttribute("xml:lang", lang);
+            }
+            break;
+            }
+            break;
+//        case SPIElement::Tag::mediaDescription:
+//            break;
+        case SPIElement::Tag::genre:
+            switch (SPIElement::genre::attribute(tag))
+            {
+            case SPIElement::genre::attribute::href:
+                qDebug() << "genre::attribute::href";
+                break;
+            case SPIElement::genre::attribute::type:
+                switch (*(dataPtr+bytesRead))
+                {
+                case 0x01:
+                    qDebug() << "type=\"main\"";
+                    parentElement->setAttribute("type", "main");
+                    break;
+                case 0x02:
+                    qDebug() << "type=\"secondary\"";
+                    parentElement->setAttribute("type", "secondary");
+                    break;
+                case 0x03:
+                    qDebug() << "type=\"other\"";
+                    parentElement->setAttribute("type", "other");
+                    break;
+                }
+                break;
+            }
+            break;
+        case SPIElement::Tag::keywords:
+            qDebug() << "attributes: keywords";
+            break;
+        case SPIElement::Tag::memberOf:
+            qDebug() << "attributes: memberOf";
+            break;
+        case SPIElement::Tag::location:
+            qDebug() << "attributes: location";
             break;
         case SPIElement::Tag::programme:
+            qDebug() << "attributes: programme";
             break;
         case SPIElement::Tag::programmeGroups:
+            qDebug() << "attributes: programmeGroups";
             break;
         case SPIElement::Tag::schedule:
+            qDebug() << "attributes: schedule";
             break;
         case SPIElement::Tag::programmeGroup:
+            qDebug() << "attributes: programmeGroup";
             break;
         case SPIElement::Tag::scope:
+            qDebug() << "attributes: scope";
             break;
         case SPIElement::Tag::serviceScope:
+            qDebug() << "attributes: serviceScope";
             break;
         case SPIElement::Tag::ensemble:
             switch (SPIElement::ensemble::attribute(tag))
             {
             case SPIElement::ensemble::attribute::id:
-                qDebug() << "attribute:id";
+                uint8_t ecc = *(dataPtr+bytesRead);
+                uint16_t eid = (*(dataPtr+bytesRead+1) << 8) | *(dataPtr+bytesRead+2);
+                qDebug("attribute:id %2.2x.%4.4X", ecc, eid);
+                parentElement->setAttribute("id", QString("%1.%2").arg(ecc, 2, 16, QChar('0')).arg(eid, 4, 16, QChar('0')));
                 break;
             }
             break;
@@ -532,6 +675,7 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
                     version = (version << 8) | *(dataPtr+bytesRead+n);
                 }
                 qDebug("version=\"%d\"", version);
+                parentElement->setAttribute("version", version);
             }
                 break;
             }
@@ -549,11 +693,23 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
                 {  // long SId
                     sid = (*(dataPtr+4) << 24) | (*(dataPtr+5) << 16) | (*(dataPtr+6) << 8) | *(dataPtr+7);
                     qDebug("id=\"dab:c%2.2x:%4.4x.%8.8x.%d\"", ecc, eid, sid, scids);
+                    parentElement->setAttribute("id", QString("dab:c%1:%2.%3.%4")
+                                                          .arg(ecc, 2, 16, QChar('0'))
+                                                          .arg(eid, 4, 16, QChar('0'))
+                                                          .arg(sid, 8, 16, QChar('0'))
+                                                          .arg(scids)
+                                                );
                 }
                 else
                 {  // short SId
                     sid = (*(dataPtr+4) << 8) | *(dataPtr+5);
                     qDebug("id=\"dab:c%2.2x:%4.4x.%4.4x.%d\"", ecc,eid, sid, scids);
+                    parentElement->setAttribute("id", QString("dab:c%1:%2.%3.%4")
+                                                          .arg(ecc, 2, 16, QChar('0'))
+                                                          .arg(eid, 4, 16, QChar('0'))
+                                                          .arg(sid, 4, 16, QChar('0'))
+                                                          .arg(scids)
+                                                );
                 }
             }
         }
@@ -563,16 +719,24 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
             {
             case SPIElement::multimedia::attribute::mimeValue:
             {
-                QString mime = QString::fromUtf8((const char *)(dataPtr+bytesRead), len);
+                QString mime = getString(dataPtr+bytesRead, len, false);
                 qDebug() << "mime =" << mime;
+                parentElement->setAttribute("mimeValue", mime);
+                break;
             }
                 break;
             case SPIElement::multimedia::attribute::xml_lang:
+            {
+                QString lang = getString(dataPtr+bytesRead, len, false);
+                qDebug() << "xml:lang" << lang;
+                parentElement->setAttribute("xml:lang", lang);
+            }
                 break;
             case SPIElement::multimedia::attribute::url:
             {
                 QString url = QString::fromUtf8((const char *)(dataPtr+bytesRead), len);
                 qDebug() << "url =" << url;
+                parentElement->setAttribute("url", url);
             }
                 break;
             case SPIElement::multimedia::attribute::type:
@@ -580,45 +744,64 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, uint8_t parent, int maxSize)
                 {
                 case 0x02:
                     qDebug() << "type=\"logo_unrestricted\"";
+                    parentElement->setAttribute("type", "logo_unrestricted");
                     break;
                 case 0x04:
                     qDebug() << "type=\"logo_colour_square\"";
+                    parentElement->setAttribute("type", "logo_colour_square");
                     break;
                 case 0x06:
                     qDebug() << "type=\"logo_colour_rectangle\"";
+                    parentElement->setAttribute("type", "logo_colour_rectangle");
                     break;
                 }
 
                 break;
             case SPIElement::multimedia::attribute::width:
+                dataPtr += bytesRead;
+                parentElement->setAttribute("width", (*(dataPtr) << 8) | *(dataPtr+1));
                 break;
             case SPIElement::multimedia::attribute::height:
+                dataPtr += bytesRead;
+                parentElement->setAttribute("height", (*(dataPtr) << 8) | *(dataPtr+1));
                 break;
             }
             break;
         case SPIElement::Tag::time:
+            qDebug() << "attributes: time";
             break;
         case SPIElement::Tag::bearer:
+            qDebug() << "attributes: bearer";
             break;
         case SPIElement::Tag::programmeEvent:
+            qDebug() << "attributes: programmeEvent";
             break;
         case SPIElement::Tag::relativeTime:
+            qDebug() << "attributes: relativeTime";
             break;
         case SPIElement::Tag::radiodns:
+            qDebug() << "attributes: radiodns";
             break;
         case SPIElement::Tag::geolocation:
+            qDebug() << "attributes: geolocation";
             break;
         case SPIElement::Tag::country:
+            qDebug() << "attributes: country";
             break;
         case SPIElement::Tag::point:
+            qDebug() << "attributes: point";
             break;
         case SPIElement::Tag::polygon:
+            qDebug() << "attributes: polygon";
             break;
         case SPIElement::Tag::onDemand:
+            qDebug() << "attributes: onDemand";
             break;
         case SPIElement::Tag::presentationTime:
+            qDebug() << "attributes: presentationTime";
             break;
         case SPIElement::Tag::acquisitionTime:
+            qDebug() << "attributes: acquisitionTime";
             break;
         default:
             // unknown
@@ -641,4 +824,102 @@ const uint8_t *SPIApp::parseAttributes(const uint8_t *attrPtr, uint8_t tag, int 
     }
 
     return nullptr;
+}
+
+QString SPIApp::getString(const uint8_t *dataPtr, int len, bool doReplaceTokens)
+{
+    QString str = QString::fromUtf8((const char *) dataPtr, len);
+
+    if (!doReplaceTokens)
+    {   // we are done
+        return str;
+    }
+    else { /* need to replace tokens */ }
+
+    // replace tokens with strings
+    QHash<uint8_t, QString>::const_iterator it = m_tokenTable.constBegin();
+    while (it != m_tokenTable.cend())
+    {
+        str = str.replace(QChar(it.key()), it.value());
+        ++it;
+    }
+
+    return str;
+}
+
+QString SPIApp::getTime(const uint8_t *dataPtr, int len)
+{
+    uint32_t dateHoursMinutes = *dataPtr++;
+    dateHoursMinutes = (dateHoursMinutes << 8) + *dataPtr++;
+    dateHoursMinutes = (dateHoursMinutes << 8) + *dataPtr++;
+    dateHoursMinutes = (dateHoursMinutes << 8) + *dataPtr++;
+
+    uint16_t secMsec = 0;
+    if (dateHoursMinutes & (1 << 11))
+    {   // UTC flag
+        if (len < 6)
+        {
+            return QString();
+        }
+        else { /* enough data */}
+
+        secMsec = *dataPtr << 8;
+        dataPtr += 2;  // rfu
+    }
+    else { /* short form */ }
+
+    int8_t lto = 0;
+    if (dateHoursMinutes & (1 << 12))
+    {   // LTO flag
+        if (len < 7)
+        {
+            return QString();
+        }
+        else { /* enough data */}
+
+        lto = *dataPtr & 0x1F;
+        if (*dataPtr & (1 << 5))
+        {
+            lto = -lto;
+        }
+        else { /* positive */ }
+    }
+    else { /* no LTO */ }
+
+    // construct time
+    QDateTime dateAndTime = DabTables::dabTimeToUTC(dateHoursMinutes, secMsec).toOffsetFromUtc(60*(lto * 30));
+
+    // convert to string
+    return dateAndTime.toString(Qt::ISODateWithMs);
+}
+
+SPIDomElement::SPIDomElement()
+{
+    m_tag = SPIElement::Tag::_invalid;
+}
+
+SPIDomElement::SPIDomElement(const QDomElement &e, uint8_t tag)
+    : m_element(e)
+    , m_tag(SPIElement::Tag(tag))
+{
+}
+
+QDomElement SPIDomElement::element() const
+{
+    return m_element;
+}
+
+void SPIDomElement::setElement(const QDomElement &newElement)
+{
+    m_element = newElement;
+}
+
+SPIElement::Tag SPIDomElement::tag() const
+{
+    return m_tag;
+}
+
+void SPIDomElement::setTag(uint8_t newTag)
+{
+    m_tag = SPIElement::Tag(newTag);
 }
