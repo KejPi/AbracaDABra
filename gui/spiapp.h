@@ -62,10 +62,17 @@ private:
     MOTDecoder * m_decoder;
 
     void parseServiceInfo(const MOTObject & motObj);
-    uint32_t parseTag(const uint8_t * dataPtr, QDomElement * parentElement, uint8_t parentTag, int maxSize);
+    uint32_t parseTag(const uint8_t * dataPtr, QDomElement & parentElement, uint8_t parentTag, int maxSize);
     const uint8_t * parseAttributes(const uint8_t * attrPtr, uint8_t tag, int maxSize);
     QString getString(const uint8_t *dataPtr, int len, bool doReplaceTokens = true);
     QString getTime(const uint8_t *dataPtr, int len);
+    QString getDoubleList(const uint8_t *dataPtr, int len);
+
+    void setAttribute_string(QDomElement & element, const QString &name, const uint8_t *dataPtr, int len, bool doReplaceTokens);
+    void setAttribute_timePoint(QDomElement & element, const QString &name, const uint8_t *dataPtr, int len);
+    void setAttribute_uint16(QDomElement & element, const QString & name, const uint8_t *dataPtr, int len);
+    void setAttribute_uint24(QDomElement & element, const QString & name, const uint8_t *dataPtr, int len);
+    void setAttribute_duration(QDomElement & element, const QString & name, const uint8_t *dataPtr, int len);
 
     QHash<uint8_t, QString> m_tokenTable;
     QString m_defaultLanguage;
@@ -195,6 +202,133 @@ namespace SPIElement
         {
             href = 0x80,
             type = 0x81,
+        };
+    }
+    namespace keywords
+    {
+        enum class attribute
+        {
+            xml_lang = 0x80,
+        };
+    }
+    namespace link
+    {
+        enum class attribute
+        {
+            uri = 0x80,
+            mimeValue = 0x81,
+            xml_lang = 0x82,
+            description = 0x83,
+            expiryTime = 0x84,
+        };
+    }
+    namespace memberOf
+    {
+        enum class attribute
+        {
+            id = 0x80,
+            shortId = 0x81,
+            index = 0x82,
+        };
+    }
+    namespace programme_programmeEvent
+    {
+        enum class attribute
+        {
+            id = 0x80,
+            shortId = 0x81,
+            version = 0x82,
+            recommendation = 0x83,
+            broadcast = 0x84,
+            // Not used 0x85
+            xml_lang = 0x86,
+            // Not used 0x87
+        };
+    }
+    namespace programmeGroups_schedule
+    {
+        enum class attribute
+        {
+            version = 0x80,
+            creationTime = 0x81,
+            originator = 0x82,
+        };
+    }
+    namespace programmeGroup
+    {
+        enum class attribute
+        {
+            id = 0x80,
+            shortId = 0x81,
+            version = 0x82,
+            type = 0x83,
+            numOfItems = 0x84,
+        };
+    }
+    namespace scope
+    {
+        enum class attribute
+        {
+            startTime = 0x80,
+            stopTime = 0x81,
+        };
+    }
+    namespace serviceScope
+    {
+        enum class attribute
+        {
+            id = 0x80,
+        };
+    }
+    namespace bearer
+    {
+        enum class attribute
+        {
+            id = 0x80,
+            url = 0x82,
+        };
+    }
+    namespace time_relativeTime
+    {
+        enum class attribute
+        {
+            time = 0x80,
+            duration = 0x81,
+            actualTime = 0x82,
+            actualDuration = 0x83,
+        };
+    }
+    namespace radiodns
+    {
+        enum class attribute
+        {
+            fqdn = 0x80,
+            serviceIdentifier = 0x81,
+        };
+    }
+    namespace geolocation
+    {
+        enum class attribute
+        {
+            xml_id = 0x80,
+            ref = 0x81,
+        };
+    }
+    namespace presentationTime
+    {
+        enum class attribute
+        {
+            start = 0x80,
+            end = 0x81,
+            duration = 0x82,
+        };
+    }
+    namespace acquisitionTime
+    {
+        enum class attribute
+        {
+            start = 0x80,
+            end = 0x81,
         };
     }
 
