@@ -115,9 +115,11 @@ void SPIApp::onNewMOTDirectory()
                 break;
             case 1:
                 qDebug() << "\tProgramme Information";
+                parseServiceInfo(*objIt);
                 break;
             case 2:
                 qDebug() << "\tGroup Information";
+                parseServiceInfo(*objIt);
                 break;
             default:
                 // not supported
@@ -193,13 +195,12 @@ void SPIApp::parseServiceInfo(const MOTObject &motObj)
     const QByteArray data = motObj.getBody();
     m_xmldocument.clear();
     m_tokenTable.clear();
-    m_defaultLanguage.clear();
     QDomProcessingInstruction header = m_xmldocument.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"utf-8\"");
     m_xmldocument.appendChild(header);
     const uint8_t * dataPtr = (uint8_t *) data.data();
 
     QDomElement empty;
-    dataPtr += parseTag(dataPtr, empty, uint8_t(SPIElement::Tag::_invalid), data.size());
+    qDebug() << "Total bytes" << data.size() << "Read bytes" << parseTag(dataPtr, empty, uint8_t(SPIElement::Tag::_invalid), data.size());
 
     qDebug("%s", m_xmldocument.toString().toLocal8Bit().data());
 }
@@ -268,18 +269,19 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
         {   // ETSI TS 102 371 V3.2.1 [4.5.0]
             if (!parentElement.isNull())
             {
-                QString str;
                 if (("point" == parentElement.tagName()) || ("polygon" == parentElement.tagName()))
                 {   // point or polygon are coded as doubleListType
-                    str = getDoubleList(dataPtr+bytesRead, len);
+                    QString str = getDoubleList(dataPtr+bytesRead, len);
+                    parentElement.appendChild(m_xmldocument.createTextNode(str));
                 }
                 else
                 {
-                    str = getString(dataPtr+bytesRead, len, true);
+                    QString str = getString(dataPtr+bytesRead, len, true);
+                    parentElement.appendChild(m_xmldocument.createTextNode(str));
+                    //parentElement.appendChild(m_xmldocument.createCDATASection(str));
                 }
 
-                qDebug() << "STRING" << str;
-                parentElement.appendChild(m_xmldocument.createTextNode(str));
+                //qDebug() << "STRING" << str;
             }
             else { /* error - do nothing here */ }
 
@@ -287,7 +289,7 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
         }
             break;
         case SPIElement::Tag::epg:
-            // not supported
+            element = m_xmldocument.createElement("epg");
             break;
         case SPIElement::Tag::serviceInformation:           
             element = m_xmldocument.createElement("serviceInformation");
@@ -301,43 +303,31 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 QString token = QString::fromUtf8((const char *)(dataPtr+bytesRead+2), tokenLen);
                 m_tokenTable.insert(tokenId, token);
                 bytesRead += tokenLen+2;
-                qDebug() << "\t\ttoken" << tokenId << " : " << token;
+                //qDebug() << "\t\ttoken" << tokenId << " : " << token;
             }
             break;
         case SPIElement::Tag::defaultLanguage:
+        {
             // ETSI TS 102 371 V3.2.1 [4.11]
             // This element is not defined in the XML specification. This element can only occur within the top-level elements
             // serviceInformation and epg and, if present, it shall occur after the string token table (if present) and before any other child elements.
             // This element applies to all elements within the parent top-level element and all children of the parent element.
             // If the default language element is present, then whenever an xml:lang attribute with the same value as the default language occurs within an element,
             // it does not need to be encoded. Whenever a decoder finds a missing xml:lang attribute for an element, then it shall use the default language value.
-            m_defaultLanguage = getString(dataPtr+bytesRead, len, false);
-            qDebug() << "defaultLanguage" << m_defaultLanguage;
+            QString defaultLang = getString(dataPtr+bytesRead, len, false);
+            // qDebug() << "defaultLanguage" << m_defaultLanguage;
+            parentElement.setAttribute("xml:lang", defaultLang);
             bytesRead += len;
+        }
             break;
         case SPIElement::Tag::shortName:
             element = m_xmldocument.createElement("shortName");
-            if (!m_defaultLanguage.isEmpty())
-            {
-                element.setAttribute("xml:lang", m_defaultLanguage);
-            }
-            else { /* no default language */ }
             break;
         case SPIElement::Tag::mediumName:
             element = m_xmldocument.createElement("mediumName");
-            if (!m_defaultLanguage.isEmpty())
-            {
-                element.setAttribute("xml:lang", m_defaultLanguage);
-            }
-            else { /* no default language */ }
             break;
         case SPIElement::Tag::longName:
             element = m_xmldocument.createElement("longName");
-            if (!m_defaultLanguage.isEmpty())
-            {
-                element.setAttribute("xml:lang", m_defaultLanguage);
-            }
-            else { /* no default language */ }
             break;
         case SPIElement::Tag::mediaDescription:
             element = m_xmldocument.createElement("mediaDescription");
@@ -347,49 +337,24 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
             break;
         case SPIElement::Tag::keywords:
             element = m_xmldocument.createElement("keywords");
-            if (!m_defaultLanguage.isEmpty())
-            {
-                element.setAttribute("xml:lang", m_defaultLanguage);
-            }
-            else { /* no default language */ }
             break;
         case SPIElement::Tag::memberOf:
             element = m_xmldocument.createElement("memberOf");
             break;
         case SPIElement::Tag::link:
             element = m_xmldocument.createElement("link");
-            if (!m_defaultLanguage.isEmpty())
-            {
-                element.setAttribute("xml:lang", m_defaultLanguage);
-            }
-            else { /* no default language */ }
             break;
         case SPIElement::Tag::location:            
             element = m_xmldocument.createElement("location");
             break;
         case SPIElement::Tag::shortDescription:
             element = m_xmldocument.createElement("shortDescription");
-            if (!m_defaultLanguage.isEmpty())
-            {
-                element.setAttribute("xml:lang", m_defaultLanguage);
-            }
-            else { /* no default language */ }
             break;
         case SPIElement::Tag::longDescription:
             element = m_xmldocument.createElement("longDescription");
-            if (!m_defaultLanguage.isEmpty())
-            {
-                element.setAttribute("xml:lang", m_defaultLanguage);
-            }
-            else { /* no default language */ }
             break;
         case SPIElement::Tag::programme:
             element = m_xmldocument.createElement("programme");
-            if (!m_defaultLanguage.isEmpty())
-            {
-                element.setAttribute("xml:lang", m_defaultLanguage);
-            }
-            else { /* no default language */ }
             break;
         case SPIElement::Tag::programmeGroups:
             element = m_xmldocument.createElement("programmeGroups");
@@ -414,11 +379,6 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
             break;
         case SPIElement::Tag::multimedia:
             element = m_xmldocument.createElement("multimedia");
-            if (!m_defaultLanguage.isEmpty())
-            {
-                element.setAttribute("xml:lang", m_defaultLanguage);
-            }
-            else { /* no default language */ }
             break;
         case SPIElement::Tag::time:
             element = m_xmldocument.createElement("time");
@@ -429,11 +389,6 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
             break;
         case SPIElement::Tag::programmeEvent:
             element = m_xmldocument.createElement("programmeEvent");
-            if (!m_defaultLanguage.isEmpty())
-            {
-                element.setAttribute("xml:lang", m_defaultLanguage);
-            }
-            else { /* no default language */ }
             break;
         case SPIElement::Tag::relativeTime:
             element = m_xmldocument.createElement("relativeTime");
@@ -471,12 +426,12 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
         // parse attributes
         if (!element.tagName().isEmpty())
         {
-            qDebug("<%s>", element.tagName().toLatin1().data());
+            // qDebug("<%s>", element.tagName().toLatin1().data());
             while (len > bytesRead)
             {
                 bytesRead += parseTag(dataPtr+bytesRead, element, tag, len);
             }
-            qDebug("</%s>", element.tagName().toLatin1().data());
+            // qDebug("</%s>", element.tagName().toLatin1().data());
 
             if (parentElement.isNull())
             {
@@ -563,21 +518,66 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
             switch (SPIElement::genre::attribute(tag))
             {
             case SPIElement::genre::attribute::href:
-                qDebug() << "genre::attribute::href";
+            {   // example: <genre href="urn:tva:metadata:ContentCS:2010:3.6.9">
+                dataPtr += bytesRead;
+                uint8_t cs = *dataPtr++ & 0x0F;
+                if ((cs < 1) || (cs > 8))
+                {   // Undefined. Genres with this CS shall be ignored.
+                    break;
+                }
+
+                QString href;
+                switch (cs)
+                {
+                case 1:
+                    href = "urn:tva:metadata:IntentionCS:2010:1";
+                    break;
+                case 2:
+                    href = "urn:tva:metadata:FormatCS:2010:2";
+                    break;
+                case 3:
+                    href = "urn:tva:metadata:ContentCS:2010:3";
+                    break;
+                case 4:
+                    href = "urn:tva:metadata:IntendedAudienceCS:2010:4";
+                    break;
+                case 5:
+                    href = "urn:tva:metadata:OriginationCS:2010:5";
+                    break;
+                case 6:
+                    href = "urn:tva:metadata:ContentAlertCS:2010:6";
+                    break;
+                case 7:
+                    href = "urn:tva:metadata:MediaTypeCS:2010:7";
+                    break;
+                case 8:
+                    href = "urn:tva:metadata:AtmosphereCS:2010:8";
+                    break;
+                }
+
+                for (int n = 1; (n < len) && (n < 4); ++n)
+                {
+                    href += QString(".%1").arg(*dataPtr++);
+                }
+
+                parentElement.setAttribute("href", href);
+
+                // qDebug() << "attribute href =" << href;
+            }
                 break;
             case SPIElement::genre::attribute::type:
                 switch (*(dataPtr+bytesRead))
                 {
                 case 0x01:
-                    qDebug() << "type=\"main\"";
+                    // qDebug() << "type=\"main\"";
                     parentElement.setAttribute("type", "main");
                     break;
                 case 0x02:
-                    qDebug() << "type=\"secondary\"";
+                    // qDebug() << "type=\"secondary\"";
                     parentElement.setAttribute("type", "secondary");
                     break;
                 case 0x03:
-                    qDebug() << "type=\"other\"";
+                    // qDebug() << "type=\"other\"";
                     parentElement.setAttribute("type", "other");
                     break;
                 }
@@ -652,11 +652,11 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 switch (*(dataPtr+bytesRead))
                 {
                 case 0x01:
-                    qDebug() << "no";
+                    // qDebug() << "no";
                     parentElement.setAttribute("recommendation", "no");
                     break;
                 case 0x02:
-                    qDebug() << "yes";
+                    // qDebug() << "yes";
                     parentElement.setAttribute("recommendation", "yes");
                     break;
                 }
@@ -665,11 +665,11 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 switch (*(dataPtr+bytesRead))
                 {
                 case 0x01:
-                    qDebug() << "on-air";
+                    // qDebug() << "on-air";
                     parentElement.setAttribute("broadcast", "on-air");
                     break;
                 case 0x02:
-                    qDebug() << "off-air";
+                    // qDebug() << "off-air";
                     parentElement.setAttribute("broadcast", "off-air");
                     break;
                 }
@@ -716,35 +716,35 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 switch (*(dataPtr+bytesRead))
                 {
                 case 0x02:
-                    qDebug() << "series";
+                    // qDebug() << "series";
                     parentElement.setAttribute("type", "series");
                     break;
                 case 0x03:
-                    qDebug() << "show";
+                    // qDebug() << "show";
                     parentElement.setAttribute("type", "show");
                     break;
                 case 0x04:
-                    qDebug() << "programConcept";
+                    // qDebug() << "programConcept";
                     parentElement.setAttribute("type", "programConcept");
                     break;
                 case 0x05:
-                    qDebug() << "magazine";
+                    // qDebug() << "magazine";
                     parentElement.setAttribute("type", "magazine");
                     break;
                 case 0x06:
-                    qDebug() << "programCompilation";
+                    // qDebug() << "programCompilation";
                     parentElement.setAttribute("type", "programCompilation");
                     break;
                 case 0x07:
-                    qDebug() << "otherCollection";
+                    // qDebug() << "otherCollection";
                     parentElement.setAttribute("type", "otherCollection");
                     break;
                 case 0x08:
-                    qDebug() << "otherChoice";
+                    // qDebug() << "otherChoice";
                     parentElement.setAttribute("type", "otherChoice");
                     break;
                 case 0x09:
-                    qDebug() << "topic";
+                    // qDebug() << "topic";
                     parentElement.setAttribute("type", "topic");
                     break;
                 }
@@ -771,7 +771,9 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
             switch (SPIElement::serviceScope::attribute(tag))
             {
             case SPIElement::serviceScope::attribute::id:
-                setAttribute_string(parentElement, "id", dataPtr+bytesRead, len, false);
+                // When the domain of the id attribute matches the delivery system, it shall be encoded according to clause 4.7.6.
+                // ==> bearerURI DAB
+                setAttribute_dabBearerURI(parentElement, "id", dataPtr+bytesRead, len);
                 break;
             }
             break;
@@ -807,49 +809,9 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
             switch (SPIElement::bearer::attribute(tag))
             {
             case SPIElement::bearer::attribute::id:
-                // id ==> matches dab
-                if (len >= 6)
-                {
-                    dataPtr += bytesRead;
-                    uint8_t longSId = *dataPtr & 0x10;
-
-                    uint8_t scids = *dataPtr++ & 0x0F;
-                    uint8_t ecc = *dataPtr++;
-                    uint16_t eid = *dataPtr++;
-                    eid = (eid << 8) | *dataPtr++;
-                    if (longSId)
-                    {  // long SId
-                        if (len >= 8)
-                        {
-                            uint32_t sid = *dataPtr++;
-                            sid = (sid << 8) | *dataPtr++;
-                            sid = (sid << 8) | *dataPtr++;
-                            sid = (sid << 8) | *dataPtr;
-
-                            qDebug("id=\"dab:c%2.2x:%4.4x.%8.8x.%d\"", ecc, eid, sid, scids);
-                            parentElement.setAttribute("id", QString("dab:c%1:%2.%3.%4")
-                                                             .arg(ecc, 2, 16, QChar('0'))
-                                                             .arg(eid, 4, 16, QChar('0'))
-                                                             .arg(sid, 8, 16, QChar('0'))
-                                                             .arg(scids)
-                                                   );
-                        }
-                        else { /* not enough data */ }
-                    }
-                    else
-                    {  // short SId
-                        uint32_t sid = *dataPtr++;
-                        sid = (sid << 8) | *dataPtr;
-
-                        qDebug("id=\"dab:c%2.2x:%4.4x.%4.4x.%d\"", ecc,eid, sid, scids);
-                        parentElement.setAttribute("id", QString("dab:c%1:%2.%3.%4")
-                                                             .arg(ecc, 2, 16, QChar('0'))
-                                                             .arg(eid, 4, 16, QChar('0'))
-                                                             .arg(sid, 4, 16, QChar('0'))
-                                                             .arg(scids)
-                                                   );
-                    }
-                }
+                // When the domain of the id attribute matches the delivery system, it shall be encoded according to clause 4.7.6.
+                // ==> bearerURI DAB
+                setAttribute_dabBearerURI(parentElement, "id", dataPtr+len, len);
                 break;
             case SPIElement::bearer::attribute::url:
                 setAttribute_string(parentElement, "url", dataPtr+bytesRead, len, false);
@@ -874,15 +836,15 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 switch (*(dataPtr+bytesRead))
                 {
                 case 0x02:
-                    qDebug() << "type=\"logo_unrestricted\"";
+                    // qDebug() << "type=\"logo_unrestricted\"";
                     parentElement.setAttribute("type", "logo_unrestricted");
                     break;
                 case 0x04:
-                    qDebug() << "type=\"logo_colour_square\"";
+                    // qDebug() << "type=\"logo_colour_square\"";
                     parentElement.setAttribute("type", "logo_colour_square");
                     break;
                 case 0x06:
-                    qDebug() << "type=\"logo_colour_rectangle\"";
+                    // qDebug() << "type=\"logo_colour_rectangle\"";
                     parentElement.setAttribute("type", "logo_colour_rectangle");
                     break;
                 }
@@ -1021,7 +983,7 @@ void SPIApp::setAttribute_string(QDomElement & element, const QString & name, co
 {
     QString str = getString(dataPtr, len, doReplaceTokens);
 
-    qDebug() << "attribute:" << str;
+    // qDebug() << "attribute:" << str;
 
     element.setAttribute(name, str);
 }
@@ -1031,6 +993,7 @@ QString SPIApp::getTime(const uint8_t *dataPtr, int len)
     if (len < 4)
     {   // not enough data
         qDebug() << Q_FUNC_INFO << "not enough data";
+
         return QString();
     }
     else { /* enough data */}
@@ -1043,13 +1006,6 @@ QString SPIApp::getTime(const uint8_t *dataPtr, int len)
     uint16_t secMsec = 0;
     if (dateHoursMinutes & (1 << 11))
     {   // UTC flag
-        if (len < 6)
-        {
-            qDebug() << Q_FUNC_INFO << "not enough data";
-            return QString();
-        }
-        else { /* enough data */}
-
         secMsec = *dataPtr << 8;
         dataPtr += 2;  // rfu
     }
@@ -1058,13 +1014,6 @@ QString SPIApp::getTime(const uint8_t *dataPtr, int len)
     int8_t lto = 0;
     if (dateHoursMinutes & (1 << 12))
     {   // LTO flag
-        if (len < 7)
-        {
-            qDebug() << Q_FUNC_INFO << "not enough data";
-            return QString();
-        }
-        else { /* enough data */}
-
         lto = *dataPtr & 0x1F;
         if (*dataPtr & (1 << 5))
         {
@@ -1110,7 +1059,7 @@ QString SPIApp::getDoubleList(const uint8_t *dataPtr, int len)
 
         doubleList += QString("%1 %2 ").arg(lat).arg(lon);
 
-        qDebug() << "\t\tlatitude" << lat << "longitude" << lon;
+        // qDebug() << "\t\tlatitude" << lat << "longitude" << lon;
     }
 
     return doubleList;
@@ -1178,6 +1127,53 @@ void SPIApp::setAttribute_duration(QDomElement &element, const QString &name, co
 
     QTime time = QTime(0, 0).addSecs(numSec);
     element.setAttribute(name, time.toString(Qt::ISODate));
+}
+
+void SPIApp::setAttribute_dabBearerURI(QDomElement &element, const QString &name, const uint8_t *dataPtr, int len)
+{
+    if (len >= 6)
+    {
+        uint8_t longSId = *dataPtr & 0x10;
+
+        uint8_t scids = *dataPtr++ & 0x0F;
+        uint8_t ecc = *dataPtr++;
+        uint16_t eid = *dataPtr++;
+        eid = (eid << 8) | *dataPtr++;
+        if (longSId)
+        {  // long SId
+            if (len >= 8)
+            {
+                uint32_t sid = *dataPtr++;
+                sid = (sid << 8) | *dataPtr++;
+                sid = (sid << 8) | *dataPtr++;
+                sid = (sid << 8) | *dataPtr;
+
+                //qDebug("id=\"dab:%1.1x%2.2x:%4.4x.%8.8x.%d\"", (sid >> 20) & 0x0F, ecc, eid, sid, scids);
+                element.setAttribute(name, QString("dab:%1%2:%3.%4.%5")
+                                                     .arg((sid >> 20) & 0x0F, 1, 16)
+                                                     .arg(ecc, 2, 16, QChar('0'))
+                                                     .arg(eid, 4, 16, QChar('0'))
+                                                     .arg(sid, 8, 16, QChar('0'))
+                                                     .arg(scids)
+                                           );
+            }
+            else { /* not enough data */ }
+        }
+        else
+        {  // short SId
+            uint32_t sid = *dataPtr++;
+            sid = (sid << 8) | *dataPtr;
+
+            //qDebug("id=\"dab:%1.1x%2.2x:%4.4x.%4.4x.%d\"", (sid >> 12) & 0x0F, ecc, eid, sid, scids);
+            element.setAttribute(name, QString("dab:%1%2:%3.%4.%5")
+                                                 .arg((sid >> 12) & 0x0F, 1, 16)
+                                                 .arg(ecc, 2, 16, QChar('0'))
+                                                 .arg(eid, 4, 16, QChar('0'))
+                                                 .arg(sid, 4, 16, QChar('0'))
+                                                 .arg(scids)
+                                       );
+        }
+    }
 }
 
 SPIDomElement::SPIDomElement()

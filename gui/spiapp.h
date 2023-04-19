@@ -73,9 +73,9 @@ private:
     void setAttribute_uint16(QDomElement & element, const QString & name, const uint8_t *dataPtr, int len);
     void setAttribute_uint24(QDomElement & element, const QString & name, const uint8_t *dataPtr, int len);
     void setAttribute_duration(QDomElement & element, const QString & name, const uint8_t *dataPtr, int len);
+    void setAttribute_dabBearerURI(QDomElement & element, const QString & name, const uint8_t *dataPtr, int len);
 
     QHash<uint8_t, QString> m_tokenTable;
-    QString m_defaultLanguage;
 
     QDomDocument m_xmldocument;
 };
