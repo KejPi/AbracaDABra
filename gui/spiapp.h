@@ -61,7 +61,7 @@ public:
 private:
     MOTDecoder * m_decoder;
 
-    void parseServiceInfo(const MOTObject & motObj);
+    void parseBinaryInfo(const MOTObject & motObj);
     uint32_t parseTag(const uint8_t * dataPtr, QDomElement & parentElement, uint8_t parentTag, int maxSize);
     const uint8_t * parseAttributes(const uint8_t * attrPtr, uint8_t tag, int maxSize);
     QString getString(const uint8_t *dataPtr, int len, bool doReplaceTokens = true);
