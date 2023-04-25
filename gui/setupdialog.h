@@ -113,6 +113,8 @@ public:
     void onExpertMode(bool ena);    
     void setSettings(const Settings &settings);
     void setXmlHeader(const InputDeviceDescription & desc);
+    void onFileLength(int msec);
+    void onFileProgress(int msec);
     QLocale::Language applicationLanguage() const;
 
 signals:
@@ -175,6 +177,7 @@ private:
     void onLanguageChanged(int index);
     void onNoiseLevelChanged(int index);    
     void onXmlHeaderChecked(bool checked);
+    void onRawFileProgressChanged(int val);
 
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);

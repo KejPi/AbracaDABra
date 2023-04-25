@@ -259,6 +259,10 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->dlPlusCheckBox, &QCheckBox::clicked, this, &SetupDialog::onDLPlusChecked);
     connect(ui->xmlHeaderCheckBox, &QCheckBox::clicked, this, &SetupDialog::onXmlHeaderChecked);
 
+    connect(ui->rawFileProgressBar, &QProgressBar::valueChanged, this, &SetupDialog::onRawFileProgressChanged);
+    // reset UI
+    onFileLength(0);
+
     ui->defaultStyleRadioButton->setChecked(true);
 
     ui->noiseConcealmentCombo->addItem("-20 dBFS", QVariant(20));
@@ -368,6 +372,22 @@ void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
         ui->xmlHeaderWidget->setVisible(false);
     }
     adjustSize();
+}
+
+void SetupDialog::onFileLength(int msec)
+{    
+    ui->rawFileProgressBar->setMinimum(0);
+    ui->rawFileProgressBar->setMaximum(msec);
+    ui->rawFileProgressBar->setValue(0);
+    onRawFileProgressChanged(0);
+
+    ui->rawFileProgressBar->setVisible(0 != msec);
+    ui->rawFileTime->setVisible(0 != msec);
+}
+
+void SetupDialog::onFileProgress(int msec)
+{
+    ui->rawFileProgressBar->setValue(msec);
 }
 
 QLocale::Language SetupDialog::applicationLanguage() const
@@ -718,7 +738,7 @@ void SetupDialog::onRawFileFormatChanged(int idx)
 {
     if (static_cast<RawFileInputFormat>(idx) != m_settings.rawfile.format)
     {
-        ui->connectButton->setVisible(true);
+        ui->connectButton->setVisible(true);               
     }
 }
 
@@ -1008,6 +1028,9 @@ void SetupDialog::onOpenFileButtonClicked()
         ui->connectButton->setVisible(true);
         ui->fileFormatCombo->setEnabled(true);
 
+        // we do not know the length yet
+        onFileLength(0);
+
 #ifdef Q_OS_MACX // bug in Ventura
         show(); //bring window to top on OSX
         raise(); //bring window from minimized state on OSX
@@ -1121,4 +1144,9 @@ void SetupDialog::onXmlHeaderChecked(bool checked)
 {
     m_settings.xmlHeaderEna = checked;
     emit xmlHeaderToggled(checked);
+}
+
+void SetupDialog::onRawFileProgressChanged(int val)
+{
+    ui->rawFileTime->setText(QString("%1 / %2 "+tr("sec")).arg(val/1000.0, 0, 'f', 1).arg(ui->rawFileProgressBar->maximum()/1000.0, 0, 'f', 1));
 }

@@ -54,6 +54,7 @@ public:
 protected:
     void run() override;
 signals:
+    void bytesRead(qint64 numBytes);
     void endOfFile();
 private:
     QAtomicInt m_stopRequest = false;
@@ -62,6 +63,7 @@ private:
     QElapsedTimer m_elapsedTimer;
     qint64 m_lastTriggerTime = 0;
     RawFileInputFormat m_sampleFormat;
+    qint64 m_bytesRead;
 };
 
 
@@ -71,13 +73,14 @@ class RawFileInput : public InputDevice
 public:
     explicit RawFileInput(QObject *parent = nullptr);
     ~RawFileInput();
-    bool openDevice() override;
-
-public slots:
+    bool openDevice() override;    
     void tune(uint32_t freq) override;
     void setFile(const QString & fileName, const RawFileInputFormat & sampleFormat = RawFileInputFormat::SAMPLE_FORMAT_U8);
     void setFileFormat(const RawFileInputFormat & sampleFormat);
     void startStopRecording(bool start) override { /* do nothing */ }
+signals:
+    void fileLength(int msec);
+    void fileProgress(int msec);
 
 private:
     RawFileInputFormat m_sampleFormat;
@@ -87,6 +90,7 @@ private:
     QTimer * m_inputTimer = nullptr;
     void stop();
     void rewind();
+    void onBytesRead(quint64 bytesRead);
     void onEndOfFile() { emit error(InputDeviceErrorCode::EndOfFile); }
     void parseXmlHeader(const QByteArray & xml);
 };
