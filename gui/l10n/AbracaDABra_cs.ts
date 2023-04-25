@@ -3322,12 +3322,12 @@
     <message>
         <location filename="../setupdialog.cpp" line="231"/>
         <source>Light style (Fusion with light colors)</source>
-        <translation type="unfinished"></translation>
+        <translation>Světlý vzhled (Fusion se světlými barvami)</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1151"/>
         <source>sec</source>
-        <translation type="unfinished"></translation>
+        <translation>s</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="232"/>
