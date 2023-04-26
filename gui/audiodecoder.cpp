@@ -54,21 +54,21 @@ AudioDecoder::AudioDecoder(QObject *parent) : QObject(parent)
     m_rawOut = fopen("audio.raw", "wb");
     if (!m_rawOut)
     {
-        qDebug("Unable to open file: audio.raw");
+        qDebug("AudioDecoder: Unable to open file: audio.raw");
     }
 #endif
 #ifdef AUDIO_DECODER_AAC_OUT
     m_aacOut = fopen("audio.aac", "wb");
     if (!m_aacOut)
     {
-        qDebug("Unable to open file: audio.aac");
+        qDebug("AudioDecoder: Unable to open file: audio.aac");
     }
 #endif
 #ifdef AUDIO_DECODER_MP2_OUT
     m_mp2Out = fopen("audio.mp2", "wb");
     if (!m_mp2Out)
     {
-        qDebug("Unable to open file: audio.mp2");
+        qDebug("AudioDecoder: Unable to open file: audio.mp2");
     }
 #endif
 }
@@ -105,7 +105,7 @@ AudioDecoder::~AudioDecoder()
         int res = mpg123_close(m_mp2DecoderHandle);
         if (MPG123_OK != res)
         {
-            qDebug("%s: error while mpg123_close: %s\n", Q_FUNC_INFO, mpg123_plain_strerror(res));
+            qDebug("AudioDecoder: error while mpg123_close: %s\n", mpg123_plain_strerror(res));
         }
 
         mpg123_delete(m_mp2DecoderHandle);
@@ -216,7 +216,7 @@ void AudioDecoder::deinitMPG123()
         int res = mpg123_close(m_mp2DecoderHandle);
         if (MPG123_OK != res)
         {
-            qDebug("%s: error while mpg123_close: %s\n", Q_FUNC_INFO, mpg123_plain_strerror(res));
+            qDebug("AudioDecoder: error while mpg123_close: %s\n", mpg123_plain_strerror(res));
         }
 
         mpg123_delete(m_mp2DecoderHandle);
@@ -257,7 +257,7 @@ void AudioDecoder::readAACHeader()
 
     emit audioParametersInfo(m_audioParameters);
 
-    qDebug("%s %d kHz %s",
+    qDebug("AudioDecoder: %s %d kHz %s",
            (m_aacHeader.bits.sbr_flag ? (m_aacHeader.bits.ps_flag ? "HE-AAC v2" : "HE-AAC") : "AAC-LC"),
            (m_aacHeader.bits.dac_rate ? 48 : 32),
            (m_aacHeader.bits.aac_channel_mode || m_aacHeader.bits.ps_flag ? "stereo" : "mono")
@@ -392,7 +392,7 @@ void AudioDecoder::initAACDecoder()
     }
     m_outputFrame = new uint8_t[m_outputFrameLen];
 
-    qDebug("Output SR = %d, channels = %d", m_aacHeader.bits.dac_rate ? 48000 : 32000, channels);
+    qDebug("AudioDecoder: Output sample rate %d Hz, channels: %d", m_aacHeader.bits.dac_rate ? 48000 : 32000, channels);
 
 //    m_outFifoPtr->numChannels = uint8_t(channels);
 //    m_outFifoPtr->sampleRate = uint32_t(m_aacHeader.bits.dac_rate ? 48000 : 32000);
@@ -458,7 +458,7 @@ void AudioDecoder::initAACDecoder()
         m_muteRamp.push_back(g * g);
     }
 
-    qDebug("Output SR = %lu, channels = %d", sampleRate, numChannels);
+    qDebug("AudioDecoder: Output sample rate %lu Hz, channels: %d", sampleRate, numChannels);
 
     setOutput(sampleRate, numChannels);
 }
@@ -582,7 +582,7 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
             int numChannels, enc;
             mpg123_getformat(m_mp2DecoderHandle, &sampleRate, &numChannels, &enc);
 
-            qDebug("New MP2 format: %ld Hz, %d channels, encoding %d", sampleRate, numChannels, enc);
+            qDebug("AudioDecoder: New MP2 format: %ld Hz, %d channels, encoding %d", sampleRate, numChannels, enc);
 
             setOutput(sampleRate, numChannels);
 
@@ -673,7 +673,7 @@ void AudioDecoder::getFormatMP2()
 
     if (MPG123_OK != res)
     {
-        qDebug("%s: error while mpg123_info: %s", Q_FUNC_INFO, mpg123_plain_strerror(res));
+        qDebug("AudioDecoder: error while mpg123_info: %s", mpg123_plain_strerror(res));
     }
 
     m_audioParameters.coding = AudioCoding::MP2;
@@ -788,7 +788,7 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     result = aacDecoder_DecodeFrame(m_aacDecoderHandle, (INT_PCM *)m_outputFrame, m_outputFrameLen / sizeof(INT_PCM), AACDEC_CONCEAL * conceal);
     if (AAC_DEC_OK != result)
     {
-        qDebug() << "Error decoding AAC frame: " << result;
+        qDebug() << "AudioDecoder: Error decoding AAC frame: " << result;
     }
 
     //qDebug("error = %d | samples = %d", !IS_OUTPUT_VALID(result), m_outputFrameLen / sizeof(INT_PCM));

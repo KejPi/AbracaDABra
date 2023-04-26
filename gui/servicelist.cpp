@@ -63,7 +63,7 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     bool newService = false;
     bool updatedService = false;
 
-    qDebug("\tService: %s SID = 0x%X, SCIdS = %d", s.label.toLocal8Bit().data(), s.SId.value(), s.SCIdS);
+    qDebug("ServiceList:           [%6.6X] %-18s %X : %d", e.ueid, s.label.toLocal8Bit().data(), s.SId.value(), s.SCIdS);
 
     ServiceListItem * pService = nullptr;
     ServiceListId servId(s);
@@ -234,13 +234,13 @@ void ServiceList::load(QSettings & settings)
         item.SId.set(settings.value("SID").toUInt(&ok));
         if (!ok)
         {
-            qDebug() << "Problem loading SID item:" << s;
+            qDebug() << "ServiceList: Problem loading SID item:" << s;
             continue;
         }
         item.SCIdS = settings.value("SCIdS").toUInt(&ok);
         if (!ok)
         {
-            qDebug() << "Problem loading SCIdS item:" << s;
+            qDebug() << "ServiceList: Problem loading SCIdS item:" << s;
             continue;
         }
         item.label = settings.value("Label").toString();
@@ -255,13 +255,13 @@ void ServiceList::load(QSettings & settings)
             ens.ueid = settings.value("UEID").toUInt(&ok);
             if (!ok)
             {
-                qDebug() << "Problem loading service" << s << "ensemble UEID" << e;
+                qDebug() << "ServiceList: Problem loading service" << s << "ensemble UEID" << e;
                 continue;
             }
             ens.frequency = settings.value("Frequency").toUInt(&ok);
             if (!ok)
             {
-                qDebug() << "Problem loading service" << s << "ensemble frequency" << e;
+                qDebug() << "ServiceList: Problem loading service" << s << "ensemble frequency" << e;
                 continue;
             }
             ens.label = settings.value("Label").toString();
@@ -314,7 +314,7 @@ void ServiceList::endEnsembleUpdate(const RadioControlEnsemble & e)
     {
         if ((*it)->isObsolete())
         {   // service is obsolete
-            qDebug("\tRemoving from ens %6.6X: %s SID = 0x%X, SCIdS = %d", e.ueid, (*it)->label().toLocal8Bit().data(), (*it)->SId().value(), (*it)->SCIdS());
+            qDebug("ServiceList: Removing service: [%6.6X] %-18s %X : %d", e.ueid, (*it)->label().toLocal8Bit().data(), (*it)->SId().value(), (*it)->SCIdS());
 
             emit serviceRemovedFromEnsemble(ensId, (*it)->id());
 
@@ -343,7 +343,7 @@ void ServiceList::removeEnsemble(const RadioControlEnsemble &e)
     EnsembleListIterator eit = m_ensembleList.find(ensId);
     if (m_ensembleList.end() != eit)
     {
-        qDebug("\tRemoving ens %6.6X from service list", e.ueid);
+        qDebug("ServiceList: Removing ens %6.6X from service list", e.ueid);
 
         beginEnsembleUpdate(e);
         endEnsembleUpdate(e);
