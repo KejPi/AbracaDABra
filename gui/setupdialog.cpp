@@ -307,8 +307,8 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
         ui->rtlsdrGainSlider->setMinimum(0);
         ui->rtlsdrGainSlider->setMaximum(m_rtlsdrGainList.size()-1);
         ui->rtlsdrGainSlider->setValue((m_settings.rtlsdr.gainIdx >= 0) ? m_settings.rtlsdr.gainIdx : 0);
-        ui->rtlsdrGainSlider->setDisabled(m_rtltcpGainList.empty());
-        ui->rtlsdrGainModeManual->setDisabled(m_rtltcpGainList.empty());
+        ui->rtlsdrGainSlider->setDisabled(m_rtlsdrGainList.empty());
+        ui->rtlsdrGainModeManual->setDisabled(m_rtlsdrGainList.empty());
         break;
     case InputDeviceId::RTLTCP:
         m_rtltcpGainList.clear();
