@@ -339,7 +339,6 @@ bool RtlTcpInput::openDevice()
     // Convert the byte order
     dongleInfo.tunerType = ntohl(dongleInfo.tunerType);
     dongleInfo.tunerGainCount = ntohl(dongleInfo.tunerGainCount);
-
     if(dongleInfo.magic[0] == 'R' &&
         dongleInfo.magic[1] == 'T' &&
         dongleInfo.magic[2] == 'L' &&
@@ -508,22 +507,26 @@ void RtlTcpInput::setGainMode(RtlGainMode gainMode, int gainIdx)
 
 void RtlTcpInput::setGain(int gainIdx)
 {
-    // force index validity
-    if (gainIdx < 0)
+    if (!m_gainList->empty())
     {
-        gainIdx = 0;
-    }
-    if (gainIdx >= m_gainList->size())
-    {
-        gainIdx = m_gainList->size() - 1;
-    }
+        // force index validity
+        if (gainIdx < 0)
+        {
+            gainIdx = 0;
+        }
+        if (gainIdx >= m_gainList->size())
+        {
+            gainIdx = m_gainList->size() - 1;
+        }
 
-    if (gainIdx != m_gainIdx)
-    {
-        m_gainIdx = gainIdx;
-        sendCommand(RtlTcpCommand::SET_GAIN_IDX, m_gainIdx);
-        emit agcGain(m_gainList->at(m_gainIdx)*0.1);
+        if (gainIdx != m_gainIdx)
+        {
+            m_gainIdx = gainIdx;
+            sendCommand(RtlTcpCommand::SET_GAIN_IDX, m_gainIdx);
+            emit agcGain(m_gainList->at(m_gainIdx)*0.1);
+        }
     }
+    else { /* empy gain list => do nothing */}
 }
 
 void RtlTcpInput::resetAgc()

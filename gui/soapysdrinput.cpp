@@ -401,22 +401,26 @@ void SoapySdrInput::setGainMode(SoapyGainMode gainMode, int gainIdx)
 
 void SoapySdrInput::setGain(int gainIdx)
 {
-    // force index vaslidity
-    if (gainIdx < 0)
+    if (!m_gainList->empty())
     {
-        gainIdx = 0;
-    }
-    if (gainIdx >= m_gainList->size())
-    {
-        gainIdx = m_gainList->size() - 1;
-    }
+        // force index vaslidity
+        if (gainIdx < 0)
+        {
+            gainIdx = 0;
+        }
+        if (gainIdx >= m_gainList->size())
+        {
+            gainIdx = m_gainList->size() - 1;
+        }
 
-    if (gainIdx != m_gainIdx)
-    {
-        m_gainIdx = gainIdx;
-        m_device->setGain(SOAPY_SDR_RX, m_rxChannel, m_gainList->at(m_gainIdx));
-        emit agcGain(m_gainList->at(m_gainIdx));
+        if (gainIdx != m_gainIdx)
+        {
+            m_gainIdx = gainIdx;
+            m_device->setGain(SOAPY_SDR_RX, m_rxChannel, m_gainList->at(m_gainIdx));
+            emit agcGain(m_gainList->at(m_gainIdx));
+        }
     }
+    else { /* empy gain list => do nothing */}
 }
 
 void SoapySdrInput::resetAgc()

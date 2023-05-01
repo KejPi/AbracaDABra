@@ -307,6 +307,8 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
         ui->rtlsdrGainSlider->setMinimum(0);
         ui->rtlsdrGainSlider->setMaximum(m_rtlsdrGainList.size()-1);
         ui->rtlsdrGainSlider->setValue((m_settings.rtlsdr.gainIdx >= 0) ? m_settings.rtlsdr.gainIdx : 0);
+        ui->rtlsdrGainSlider->setDisabled(m_rtltcpGainList.empty());
+        ui->rtlsdrGainModeManual->setDisabled(m_rtltcpGainList.empty());
         break;
     case InputDeviceId::RTLTCP:
         m_rtltcpGainList.clear();
@@ -314,6 +316,8 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
         ui->rtltcpGainSlider->setMinimum(0);
         ui->rtltcpGainSlider->setMaximum(m_rtltcpGainList.size()-1);
         ui->rtltcpGainSlider->setValue((m_settings.rtltcp.gainIdx >= 0) ? m_settings.rtltcp.gainIdx : 0);
+        ui->rtltcpGainSlider->setDisabled(m_rtltcpGainList.empty());
+        ui->rtltcpGainModeManual->setDisabled(m_rtltcpGainList.empty());
         break;
     case InputDeviceId::SOAPYSDR:
 #if HAVE_SOAPYSDR
@@ -322,6 +326,8 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
         ui->soapysdrGainSlider->setMinimum(0);
         ui->soapysdrGainSlider->setMaximum(m_soapysdrGainList.size()-1);
         ui->soapysdrGainSlider->setValue((m_settings.soapysdr.gainIdx >= 0) ? m_settings.soapysdr.gainIdx : 0);
+        ui->soapysdrGainSlider->setDisabled(m_soapysdrGainList.empty());
+        ui->soapysdrGainModeManual->setDisabled(m_soapysdrGainList.empty());
 #endif // HAVE_SOAPYSDR
         break;
     case InputDeviceId::UNDEFINED:
@@ -638,9 +644,13 @@ void SetupDialog::onConnectDeviceClicked()
 
 void SetupDialog::onRtlSdrGainSliderChanged(int val)
 {
-    ui->rtlsdrGainValueLabel->setText(QString("%1 dB").arg(m_rtlsdrGainList.at(val)));
-    m_settings.rtlsdr.gainIdx = val;
-    emit newInputDeviceSettings();
+    if (!m_rtlsdrGainList.empty())
+    {
+        ui->rtlsdrGainValueLabel->setText(QString("%1 dB").arg(m_rtlsdrGainList.at(val)));
+        m_settings.rtlsdr.gainIdx = val;
+        emit newInputDeviceSettings();
+    }
+    else { /* empy gain list => do nothing */}
 }
 
 void SetupDialog::onRtlSdrBandwidthChanged(int val)
@@ -685,9 +695,13 @@ void SetupDialog::activateRtlSdrControls(bool en)
 
 void SetupDialog::onRtlTcpGainSliderChanged(int val)
 {
-    ui->rtltcpGainValueLabel->setText(QString("%1 dB").arg(m_rtltcpGainList.at(val)));
-    m_settings.rtltcp.gainIdx = val;
-    emit newInputDeviceSettings();
+    if (!m_rtltcpGainList.empty())
+    {
+        ui->rtltcpGainValueLabel->setText(QString("%1 dB").arg(m_rtltcpGainList.at(val)));
+        m_settings.rtltcp.gainIdx = val;
+        emit newInputDeviceSettings();
+    }
+    else { /* empy gain list => do nothing */}
 }
 
 void SetupDialog::onRtlTcpIpAddrEditFinished()
@@ -857,9 +871,13 @@ void SetupDialog::onAirspyBiasTChecked(bool en)
 #if HAVE_SOAPYSDR
 void SetupDialog::onSoapySdrGainSliderChanged(int val)
 {
-    ui->soapysdrGainValueLabel->setText(QString("%1 dB").arg(m_soapysdrGainList.at(val)));
-    m_settings.soapysdr.gainIdx = val;
-    emit newInputDeviceSettings();
+    if (!m_soapysdrGainList.empty())
+    {
+        ui->soapysdrGainValueLabel->setText(QString("%1 dB").arg(m_soapysdrGainList.at(val)));
+        m_settings.soapysdr.gainIdx = val;
+        emit newInputDeviceSettings();
+    }
+    else { /* empy gain list => do nothing */}
 }
 
 void SetupDialog::activateSoapySdrControls(bool en)
