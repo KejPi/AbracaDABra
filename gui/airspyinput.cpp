@@ -26,7 +26,10 @@
 
 #include <QDir>
 #include <QDebug>
+#include <QLoggingCategory>
 #include "airspyinput.h"
+
+Q_LOGGING_CATEGORY(airspyInput, "AirspyInput", QtInfoMsg)
 
 AirspyInput::AirspyInput(bool try4096kHz, QObject *parent) : InputDevice(parent)
 {
@@ -87,7 +90,7 @@ bool AirspyInput::openDevice()
     // open first device
     if (AIRSPY_SUCCESS != airspy_open(&m_device))
     {
-        qDebug() << "AIRSPY: Failed opening device";
+        qCCritical(airspyInput) << "Failed opening device";
         m_device = nullptr;
         return false;
     }
@@ -95,7 +98,7 @@ bool AirspyInput::openDevice()
     // set sample type
     if (AIRSPY_SUCCESS != airspy_set_sample_type(m_device, AIRSPY_SAMPLE_FLOAT32_IQ))
     {
-        qDebug() << "AIRSPY: Cannot set sample format";
+        qCCritical(airspyInput) << "Cannot set sample format";
         return false;
     }
 
@@ -108,7 +111,7 @@ bool AirspyInput::openDevice()
     if (m_try4096kHz && (AIRSPY_SUCCESS == airspy_set_samplerate(m_device, 4096*1000)))
     {   // succesfull
         sampleRate = 4096*1000;
-        qDebug() << "AIRSPY: Sample rate set to" << sampleRate << "Hz";
+        qCInfo(airspyInput) << "Sample rate set to" << sampleRate << "Hz";
     }
     else
     {   // find lowest supported sample rated that is >= 2048kHz
@@ -128,12 +131,12 @@ bool AirspyInput::openDevice()
         // Set sample rate
         if (AIRSPY_SUCCESS != airspy_set_samplerate(m_device, sampleRate))
         {
-            qDebug() << "AIRSPY: Setting sample rate failed";
+            qCCritical(airspyInput) << "Setting sample rate failed";
             return false;
         }
         else
         {
-            qDebug() << "AIRSPY: Sample rate set to" << sampleRate << "Hz";
+            qCInfo(airspyInput) << "Sample rate set to" << sampleRate << "Hz";
         }
     }
 
@@ -196,7 +199,7 @@ void AirspyInput::run()
     {   // Tune to new frequency
         if (AIRSPY_SUCCESS != airspy_set_freq(m_device, m_frequency*1000))
         {
-            qDebug("AIRSPY: Tune to %d kHz failed", m_frequency);
+            qCCritical(airspyInput, "Tune to %d kHz failed", m_frequency);
             emit error(InputDeviceErrorCode::DeviceDisconnected);
             return;
         }
@@ -207,7 +210,7 @@ void AirspyInput::run()
 
         if (AIRSPY_SUCCESS != airspy_start_rx(m_device, AirspyInput::callback, (void*)this))
         {
-            qDebug("AIRSPY: Failed to start RX");
+            qCCritical(airspyInput, "Failed to start RX");
             emit error(InputDeviceErrorCode::DeviceDisconnected);
             return;
         }
@@ -228,7 +231,7 @@ void AirspyInput::stop()
         QThread::msleep(50);
         while (AIRSPY_TRUE == airspy_is_streaming(m_device))
         {
-            qDebug() << "AIRSPY: not finished after timeout - this should not happen :-(";
+            qCWarning(airspyInput) << "not finished after timeout - this should not happen :-(";
 
             // reset buffer - and tell the thread it is empty - buffer will be reset in any case
             pthread_mutex_lock(&inputBuffer.countMutex);
@@ -322,11 +325,11 @@ void AirspyInput::setGain(int gainIdx)
 
         if (AIRSPY_SUCCESS != airspy_set_vga_gain(m_device, m_gainIdx))
         {
-            qDebug() << "AIRSPY: Failed to set tuner gain";
+            qCWarning(airspyInput) << "Failed to set tuner gain";
         }
         else
         {
-            //qDebug() << "AIRSPY: Tuner VGA gain set to" << gainIdx;
+            qCDebug(airspyInput) << "Tuner VGA gain set to" << gainIdx;
             //emit agcGain(gainList->at(gainIdx));
         }
         return;
@@ -351,12 +354,11 @@ void AirspyInput::setGain(int gainIdx)
 
         if (AIRSPY_SUCCESS != airspy_set_sensitivity_gain(m_device, m_gainIdx))
         {
-            qDebug() << "AIRSPY: Failed to set tuner gain";
+            qCWarning(airspyInput) << "Failed to set tuner gain";
         }
         else
         {
-            //qDebug() << "AIRSPY: Tuner Sensitivity gain set to" << gainIdx;
-            //emit agcGain(gainList->at(gainIdx));
+            qCDebug(airspyInput) << "Tuner Sensitivity gain set to" << gainIdx;
         }
         return;
     }
@@ -397,7 +399,7 @@ void AirspyInput::onWatchdogTimeout()
 {
     if (AIRSPY_TRUE != airspy_is_streaming(m_device))
     {
-        qDebug() << "AIRSPY: watchdog timeout";
+        qCCritical(airspyInput) << "watchdog timeout";
         inputBuffer.fillDummy();
         emit error(InputDeviceErrorCode::NoDataAvailable);
     }
@@ -414,11 +416,11 @@ void AirspyInput::setBiasT(bool ena)
     {
         if (AIRSPY_SUCCESS != airspy_set_rf_bias(m_device, ena))
         {
-            qDebug() << "AIRSPY: Failed to enable bias-T";
+            qCWarning(airspyInput) << "Failed to enable bias-T";
         }
         else
         {
-            qDebug() << "AIRSPY: Bias-T" << (ena ? "on" : "off");
+            qCInfo(airspyInput) << "Bias-T" << (ena ? "on" : "off");
             m_biasT = ena;
         }
     }
@@ -428,7 +430,7 @@ void AirspyInput::setDataPacking(bool ena)
 {
     if (AIRSPY_SUCCESS != airspy_set_packing(m_device, ena))
     {
-        qDebug() << "AIRSPY: Failed to set data packing";
+        qCWarning(airspyInput) << "Failed to set data packing";
     }
 }
 
@@ -458,7 +460,7 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
 {    
     if (transfer->dropped_samples > 0)
     {
-        qDebug() << "AIRSPY: dropping" << transfer->dropped_samples << "samples";
+        qCWarning(airspyInput) << "Dropping" << transfer->dropped_samples << "samples";
     }
 
     // len is number of I and Q samples
@@ -476,7 +478,7 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
 
     if ((INPUT_FIFO_SIZE - count) < bytesToWrite)
     {
-        qDebug() << "AIRSPY: dropping" << transfer->sample_count << "IQ samples...";
+        qCWarning(airspyInput) << "Dropping" << transfer->sample_count << "IQ samples...";
         return;
     }
 

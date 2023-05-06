@@ -25,10 +25,13 @@
  */
 
 #include <QDebug>
+#include <QLoggingCategory>
 #include <QFile>
 #include <QDomDocument>
 #include <complex>
 #include "rawfileinput.h"
+
+Q_LOGGING_CATEGORY(rawFileInput, "RawFileInput", QtInfoMsg)
 
 RawFileInput::RawFileInput(QObject *parent) : InputDevice(parent)
 {
@@ -66,7 +69,7 @@ bool RawFileInput::openDevice()
     m_inputFile = new QFile(m_fileName);
     if (!m_inputFile->open(QIODevice::ReadOnly))
     {
-        qDebug() << "RAW-FILE: Unable to open file: " << m_fileName;
+        qCCritical(rawFileInput) << "RAW-FILE: Unable to open file: " << m_fileName;
         delete m_inputFile;
         m_inputFile = nullptr;
 
@@ -255,7 +258,7 @@ void RawFileInput::parseXmlHeader(const QByteArray &xml)
                                 int sampleRate = sampleElement.attribute("Value", "2048000").toInt(&isOK);
                                 if (!isOK)
                                 {
-                                    qDebug() << "RAW-FILE: Error in reading XML header: Samplerate";
+                                    qCWarning(rawFileInput) << "RAW-FILE: Error in reading XML header: Samplerate";
                                     sampleRate = 2048000;
                                 }
                                 else { /* OK */ }
@@ -276,7 +279,7 @@ void RawFileInput::parseXmlHeader(const QByteArray &xml)
                                 int bits = sampleElement.attribute("Bits", "8").toInt(&isOK);
                                 if (!isOK)
                                 {
-                                    qDebug() << "RAW-FILE: Error in reading XML header: Channels->Bits";
+                                    qCWarning(rawFileInput) << "RAW-FILE: Error in reading XML header: Channels->Bits";
                                     bits = 8;
                                 }
                                 else { /* OK */ }
@@ -294,17 +297,17 @@ void RawFileInput::parseXmlHeader(const QByteArray &xml)
                                 }
                                 else
                                 {
-                                    qDebug() << QString("RAW-FILE: Channel container '%1' not supported").arg(m_deviceDescription.sample.channelContainer);
+                                    qCWarning(rawFileInput) << QString("RAW-FILE: Channel container '%1' not supported").arg(m_deviceDescription.sample.channelContainer);
                                 }
 #if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
                                 if ("MSB" == sampleElement.attribute("Ordering", "LSB"))
                                 {
-                                    qDebug() << "RAW-FILE: Error in reading XML header: MSB ordering not supported on this platform";
+                                    qCWarning(rawFileInput) << "RAW-FILE: Error in reading XML header: MSB ordering not supported on this platform";
                                 }
 #else
                                 if ("LSB" == sampleElement.attribute("Ordering", "MSB"))
                                 {
-                                    qDebug() << "RAW-FILE: Error in reading XML header: LSB ordering not supported on this platform";
+                                    qCWarning(rawFileInput) << "RAW-FILE: Error in reading XML header: LSB ordering not supported on this platform";
                                 }
 #endif
 
@@ -317,7 +320,7 @@ void RawFileInput::parseXmlHeader(const QByteArray &xml)
                                         {
                                             if ("Channel" == channelsElement.tagName())
                                             {
-                                                qDebug() << "Value:" << channelsElement.attribute("Value", "");
+                                                qCWarning(rawFileInput) << "Value:" << channelsElement.attribute("Value", "");
                                             }
                                         }
                                         channelsNode = channelsNode.nextSibling();
@@ -339,13 +342,11 @@ void RawFileInput::parseXmlHeader(const QByteArray &xml)
                         {
                             if ("Datablock" == datablocksElement.tagName())
                             {
-                                //qDebug() << "Number:" << datablocksElement.attribute("Number", "1");
-                                //qDebug() << "Unit:" << datablocksElement.attribute("Unit", "Channel");
                                 bool isOK = false;
                                 uint64_t numChannels = datablocksElement.attribute("Count", "0").toULongLong(&isOK);
                                 if (!isOK)
                                 {
-                                    qDebug() << "RAW-FILE: Error in reading XML header: Datablock->Count";
+                                    qCCritical(rawFileInput) << "RAW-FILE: Error in reading XML header: Datablock->Count";
                                     numChannels = 0;
                                 }
                                 else { /* OK */ }
@@ -363,7 +364,7 @@ void RawFileInput::parseXmlHeader(const QByteArray &xml)
                                             uint32_t freq = blockElement.attribute("Value", "0").toUInt(&isOK);
                                             if (!isOK)
                                             {
-                                                qDebug() << "RAW-FILE: Error in reading XML header: Frequency";
+                                                qCWarning(rawFileInput) << "RAW-FILE: Error in reading XML header: Frequency";
                                                 freq = 0;
                                             }
                                             else { /* OK */ }
@@ -395,20 +396,19 @@ void RawFileInput::parseXmlHeader(const QByteArray &xml)
     {   // error in parser
         m_deviceDescription.rawFile.hasXmlHeader = false;
     }
-#if 0
-    qDebug() << "Recorder:" << m_deviceDescription.rawFile.recorder;
-    qDebug() << "Recording time:" << m_deviceDescription.rawFile.time;
-    qDebug() << "Device name:" << m_deviceDescription.device.name;
-    qDebug() << "Device model:" << m_deviceDescription.device.model;
-    qDebug() << "Samplerate [Hz]:" << m_deviceDescription.sample.sampleRate;
-    qDebug() << "Container:" << QString("%1 [%2 bits], channel data %3 bits")
+
+    qCDebug(rawFileInput) << "Recorder:" << m_deviceDescription.rawFile.recorder;
+    qCDebug(rawFileInput) << "Recording time:" << m_deviceDescription.rawFile.time;
+    qCDebug(rawFileInput) << "Device name:" << m_deviceDescription.device.name;
+    qCDebug(rawFileInput) << "Device model:" << m_deviceDescription.device.model;
+    qCDebug(rawFileInput) << "Samplerate [Hz]:" << m_deviceDescription.sample.sampleRate;
+    qCDebug(rawFileInput) << "Container:" << QString("%1 [%2 bits], channel data %3 bits")
                                     .arg(m_deviceDescription.sample.channelContainer)
                                     .arg(m_deviceDescription.sample.containerBits)
                                     .arg(m_deviceDescription.sample.channelBits);
-    qDebug() << "Num samples:" << m_deviceDescription.rawFile.numSamples << "=>"
+    qCDebug(rawFileInput) << "Num samples:" << m_deviceDescription.rawFile.numSamples << "=>"
              << m_deviceDescription.rawFile.numSamples * 1.0 / m_deviceDescription.sample.sampleRate << "sec";
-    qDebug() << "RF [kHz]:" << m_deviceDescription.rawFile.frequency_kHz;
-#endif
+    qCDebug(rawFileInput) << "RF [kHz]:" << m_deviceDescription.rawFile.frequency_kHz;
 }
 
 void RawFileInput::stop()
@@ -565,7 +565,7 @@ void RawFileWorker::run()
 
         if (samplesRead < input_chunk_iq_samples*2)
         {
-            qDebug() << "RAW-FILE: End of file";
+            qCInfo(rawFileInput) << "RAW-FILE: End of file";
             m_inputFile->seek(0);
             m_bytesRead = 0;
             emit endOfFile();

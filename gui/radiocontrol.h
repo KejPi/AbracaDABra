@@ -41,7 +41,6 @@
 
 
 #define RADIO_CONTROL_UEID_INVALID  0xFF000000
-#define RADIO_CONTROL_VERBOSE  0
 #define RADIO_CONTROL_N_CHANNELS_ENABLE  0
 #define RADIO_CONTROL_NOTIFICATION_PERIOD  3  // 2^3 = 8 DAB frames = 8*96ms = 768ms
 // number of FIB expected to be received during noticication period

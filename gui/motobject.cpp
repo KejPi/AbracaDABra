@@ -27,6 +27,8 @@
 #include "motobject.h"
 #include "dabtables.h"
 #include <QDebug>
+#include <QLoggingCategory>
+Q_LOGGING_CATEGORY(motObject, "MOTObject", QtInfoMsg)
 
 MOTEntity::MOTEntity()
 {
@@ -52,7 +54,7 @@ bool MOTEntity::isComplete() const
 
     if (m_numSegments != m_segments.size())
     {
-        qDebug() << "numSegments != segments.size()";
+        qCWarning(motObject) << "numSegments != segments.size()";
     }
 
     for (int n = 0; n < m_numSegments-1; ++n)
@@ -171,7 +173,7 @@ void MOTObjectData::parseHeader()
     // minium header size is 56 bits => 7 bytes (header core)
     if (headerData.size() < 7)
     {
-        qDebug() << "Unexpected header length";
+        qCWarning(motObject) << "Unexpected header length";
         objectIsComplete = false;
         bodySize = -1;
     }
@@ -194,17 +196,6 @@ void MOTObjectData::parseHeader()
     bodySize = (dataPtr[0] << 20) | (dataPtr[1] << 12) | (dataPtr[2] << 4) | ((dataPtr[3] >> 4) & 0x0F);
     contentType = (dataPtr[5] >> 1) & 0x3F;
     contentSubType = ((dataPtr[5] & 0x01) << 8) | dataPtr[6];
-
-#if MOTOBJECT_VERBOSE
-    qDebug() << bodySize << headerSize << contentType << contentSubType;
-
-    QString header;
-    for (int d = 0; d < headerSize-7; ++d)
-    {
-        header += QString("%1 ").arg((uint8_t) dataPtr[d+7], 2, 16, QLatin1Char('0'));
-    }
-    qDebug() << header;
-#endif // MOTOBJECT_VERBOSE
 
     bool isOk = true;
     int n = 7;
@@ -257,7 +248,7 @@ void MOTObjectData::parseHeader()
             {
                 dataStr += QString("%1 ").arg((uint8_t) dataPtr[n+d], 2, 16, QLatin1Char('0'));
             }
-            qDebug("%s: PLI=%d, ParamID = 0x%2.2X, DataLength = %d: DataField = %s",
+            qCDebug(motObject, "%s: PLI=%d, ParamID = 0x%2.2X, DataLength = %d: DataField = %s",
                    Q_FUNC_INFO, PLI, paramId, dataFieldLen, dataStr.toStdString().c_str());
 #endif // MOTOBJECT_VERBOSE
 
@@ -267,7 +258,7 @@ void MOTObjectData::parseHeader()
                 // One MOT parameter is mandatory for both content provider and MOT decoder: ContentName.
                 contentName = DabTables::convertToQString((const char*) (dataPtr+n+1), ((dataPtr[n] >> 4) & 0x0F), dataFieldLen-1);
 #if MOTOBJECT_VERBOSE
-                qDebug() << contentName;
+                qCDebug(motObject) << contentName;
 #endif
                 break;
 
@@ -278,13 +269,13 @@ void MOTObjectData::parseHeader()
             // but it shall be able to identify and discard objects that it can not process.
             case DabMotExtParameter::CAInfo:
                 // ignoring scrembled data
-                qDebug() << "MOT CA scrambled ignoring";
+                qCWarning(motObject) << "MOT CA scrambled ignoring";
                 bodySize = -1;
                 isOk = false;
                 break;
             case DabMotExtParameter::CompressionType:
                 // ignoring compressed data
-                qDebug() << "MOT compressed ignoring";
+                qCWarning(motObject) << "MOT compressed ignoring";
                 bodySize = -1;
                 isOk = false;
                 break;
@@ -293,7 +284,7 @@ void MOTObjectData::parseHeader()
                 // some user app parameter or parameter not handled by MOT decoder
                 if (userAppParams.end() != userAppParams.find(paramId))
                 {
-                    qDebug() << Q_FUNC_INFO << "Removing duplicate header parameter" << paramId;
+                    qCWarning(motObject) << "Removing duplicate header parameter" << paramId;
                     userAppParams.remove(paramId);
                 }
                 else
@@ -405,15 +396,15 @@ bool MOTDirectory::addSegment(const uint8_t *segment, uint16_t segmentNum, uint1
     m_dir.addSegment(segment, segmentNum, segmentSize, lastFlag);
     if (m_dir.isComplete())
     {
-        qDebug() << "MOT directory is complete";
+        qCInfo(motObject) << "MOT directory is complete";
         if (!parse(m_dir.getData()))
         {   // something is wrong - header could not be parsed, objects is not complete
-            qDebug() << "MOT directory parsing failed";
+            qCWarning(motObject) << "MOT directory parsing failed";
         }
     }
     else
     {
-        qDebug() << "MOT directory segment received, not complete yet";
+        qCDebug(motObject) << "MOT directory segment received, not complete yet";
     }
 
     return true;
@@ -425,9 +416,8 @@ void MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *se
     MOTObjectCache::iterator it = m_carousel->findMotObj(transportId);
     if (m_carousel->end() == it)
     {  // object does not exist in carousel - this should not happen for current directory
-#if MOTOBJECT_VERBOSE
-        qDebug() << "New MOT object" << transportId << "number of objects in carousel" << m_carousel->size();
-#endif
+        qCDebug(motObject) << "New MOT object" << transportId << "number of objects in carousel" << m_carousel->size();
+
         // add new object to cache
         it = m_carousel->addMotObj(MOTObject(transportId));
     }
@@ -437,7 +427,7 @@ void MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *se
     it->addSegment(segment, segmentNum, segmentSize, lastFlag);
     if (it->isComplete())
     {
-        qDebug() << "MOT complete: ID" << transportId;
+        qCInfo(motObject) << "MOT complete: ID" << transportId;
     }
 }
 
@@ -447,7 +437,7 @@ bool MOTDirectory::parse(const QByteArray &dirData)
     // minimum dir size 13 bytes
     if (dirData.size() < 13)
     {
-        qDebug() << "Unexpected MOT directory length";
+        qCWarning(motObject) << "Unexpected MOT directory length";
         return false;
     }
 
@@ -469,14 +459,14 @@ bool MOTDirectory::parse(const QByteArray &dirData)
     {
         dirStr += QString("%1 ").arg((uint8_t) dataPtr[d], 2, 16, QLatin1Char('0'));
     }
-    qDebug() << dirStr;
+    qCDebug(motObject) << dirStr;
 
     int numberOfObjects = (dataPtr[4] << 8) | dataPtr[5];
     int dataCarouselPeriod = (dataPtr[6] << 16) | (dataPtr[7] << 8) | dataPtr[8];
     int segmentSize = ((dataPtr[9] & 0x1F) << 8) | dataPtr[10];
     int directoryExtensionLength = (dataPtr[11] << 8) | dataPtr[12];
 
-    qDebug("\tDirectorySize = %d\n"
+    qCInfo(motObject, "\tDirectorySize = %d\n"
            "\tNumberOfObjects = %d\n"
            "\tDataCarouselPeriod = %d\n"
            "\tSegmentSize = %d\n"
@@ -534,7 +524,7 @@ bool MOTDirectory::parse(const QByteArray &dirData)
             {
                 dataStr += QString("%1 ").arg((uint8_t) dataPtr[n+d], 2, 16, QLatin1Char('0'));
             }
-            qDebug("%s: PLI=%d, ParamID = 0x%2.2X, DataLength = %d: DataField = %s",
+            qCDebug(motObject, "%s: PLI=%d, ParamID = 0x%2.2X, DataLength = %d: DataField = %s",
                    Q_FUNC_INFO, PLI, paramId, dataFieldLen, dataStr.toStdString().c_str());
 #endif // MOTOBJECT_VERBOSE
         }
@@ -547,7 +537,7 @@ bool MOTDirectory::parse(const QByteArray &dirData)
     }
 
     // directory extension is parsed here
-    qDebug() << "\tReading MOT objects";
+    qCInfo(motObject) << "Reading MOT objects";
 
     // set all object in carousel obsolete
     m_carousel->markAllObsolete();
@@ -557,19 +547,19 @@ bool MOTDirectory::parse(const QByteArray &dirData)
     {
         if (numObjRead++ >= numberOfObjects)
         {   // something is wrong - this is a protection condition
-            qDebug() << "Unexpected number of objects in MOT directory";
+            qCWarning(motObject) << "Unexpected number of objects in MOT directory";
             break;
         }
 
         int objTransportID = (dataPtr[n] << 8) | dataPtr[n+1];
         int headerSize = ((dataPtr[n+2+3] & 0x0F) << 9) | (dataPtr[n+2+4] << 1) | ((dataPtr[n+2+5] >> 7) & 0x01);
-        qDebug() << "\t* ID" << objTransportID << "| header size " << headerSize;
+        qCInfo(motObject) << "\t* ID" << objTransportID << "| header size " << headerSize;
 
         // mark all objects in directory as active (non-obsolete)
         MOTObjectCache::iterator it = m_carousel->markObjObsolete(objTransportID, false);
         if (m_carousel->end() == it)
         {   // not found create new object in carousel
-            qDebug() << "Object not found in the cache: ID" << objTransportID;
+            qCInfo(motObject) << "Object not found in the cache: ID" << objTransportID;
             it = m_carousel->addMotObj(MOTObject(objTransportID));
         }
         else
@@ -585,14 +575,14 @@ bool MOTDirectory::parse(const QByteArray &dirData)
     m_carousel->deleteObsolete();
 
 #if MOTOBJECT_VERBOSE
-    qDebug() << "MOT directory carousel contents:";
+    qCDebug(motObject) << "MOT directory carousel contents:";
     for (MOTObjectCache::const_iterator it = m_carousel->cbegin(); it < m_carousel->cend(); ++it)
     {
-        qDebug("\tID: %d, isComplete = %d, body size = %lld, name = %s", it->getId(), it->isComplete(), it->getBody().size(), it->getContentName().toLocal8Bit().data());
+        qCDebug(motObject, "\tID: %d, isComplete = %d, body size = %lld, name = %s", it->getId(), it->isComplete(), it->getBody().size(), it->getContentName().toLocal8Bit().data());
 
         if (it->isComplete())
         {
-            qDebug("\t\t%2.2X %2.2X %2.2X %2.2X %2.2X %2.2X ", uint8_t(it->getBody().at(0)), uint8_t(it->getBody().at(1)),
+            qCDebug(motObject, "\t\t%2.2X %2.2X %2.2X %2.2X %2.2X %2.2X ", uint8_t(it->getBody().at(0)), uint8_t(it->getBody().at(1)),
                    uint8_t(it->getBody().at(2)), uint8_t(it->getBody().at(3)), uint8_t(it->getBody().at(5)), uint8_t(it->getBody().at(5)));
         }
 

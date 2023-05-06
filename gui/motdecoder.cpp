@@ -25,8 +25,11 @@
  */
 
 #include <QDebug>
+#include <QLoggingCategory>
 #include "motdecoder.h"
 #include "mscdatagroup.h"
+
+Q_LOGGING_CATEGORY(motDecoder, "MOTDecoder", QtInfoMsg)
 
 MOTDecoder::MOTDecoder(QObject *parent) : QObject(parent)
 {
@@ -55,9 +58,7 @@ void MOTDecoder::reset()
 
 void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
 {
-#if MOTDECODER_VERBOSE
-    qDebug() << Q_FUNC_INFO << "Data group len=" << dataGroup.size();
-#endif
+    qCDebug(motDecoder) << Q_FUNC_INFO << "Data group len=" << dataGroup.size();
 
     MSCDataGroup mscDataGroup(dataGroup);
     if (!mscDataGroup.isValid())
@@ -71,20 +72,16 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
     const uint8_t * dataFieldPtr = reinterpret_cast<const uint8_t *>(mscDataGroup.dataFieldConstBegin());
 
     // [ETSI EN 301 234, 5.1.1 Segmentation header]
-#if MOTDECODER_VERBOSE
     uint8_t repetitionCount = (*dataFieldPtr >> 5) & 0x7;
-#endif
     // [ETSI EN 301 234, 5.1 Segmentation of MOT entities]
     // MOT entities will be split up in segments with equal size.
     // Only the last segment may have a smaller size (to carry the remaining bytes of the MOT entity).
     uint16_t segmentSize = (*dataFieldPtr++ << 8) & 0x1FFF;
     segmentSize += *dataFieldPtr++;
 
-#if MOTDECODER_VERBOSE
-    qDebug() << "Data group type =" << mscDataGroup.getType();
-    qDebug() << "Segment number = "<< mscDataGroup.getSegmentNum() << ", last = " << mscDataGroup.getLastFlag();
-    qDebug() << "Segment size = " << segmentSize << ", Repetition count = " << repetitionCount;
-#endif
+    qCDebug(motDecoder) << "Data group type =" << mscDataGroup.getType();
+    qCDebug(motDecoder) << "Segment number = "<< mscDataGroup.getSegmentNum() << ", last = " << mscDataGroup.getLastFlag();
+    qCDebug(motDecoder) << "Segment size = " << segmentSize << ", Repetition count = " << repetitionCount;
 
     switch (mscDataGroup.getType())
     {
@@ -95,9 +92,8 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         MOTObjectCache::iterator objIt = m_objCache->findMotObj(mscDataGroup.getTransportId());
         if (m_objCache->end() == objIt)
         {  // object does not exist in cache
-#if MOTDECODER_VERBOSE
-            qDebug() << "New MOT header ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << objCache->size();
-#endif
+            qCDebug(motDecoder) << "New MOT header ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << m_objCache->size();
+
             // all existing object shall be removed, only one MOT object is transmitted in header mode
             m_objCache->clear();
 
@@ -138,9 +134,8 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
             if (m_objCache->end() == objIt)
             {   // does not exist in cache -> body without header
                 // add new object to cache
-#if MOTDECODER_VERBOSE
-                qDebug() << "New MOT object ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << objCache->size();
-#endif
+                qCDebug(motDecoder) << "New MOT object ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << m_objCache->size();
+
                 objIt = m_objCache->addMotObj(MOTObject(mscDataGroup.getTransportId()));
             }
             objIt->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
@@ -148,9 +143,8 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
             if (objIt->isComplete())
             {
                 QByteArray body = objIt->getBody();
-#if MOTDECODER_VERBOSE
-                qDebug() << "MOT complete :)";
-#endif // MOTDECODER_VERBOSE
+                qCDebug(motDecoder) << "MOT complete :)";
+
                 emit newMOTObject(*objIt);
 
                 m_objCache->deleteMotObj(objIt->getId());
@@ -179,14 +173,14 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
 
         if (m_directory->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag()))
         {
-            qDebug() << "MOT Directory is complete";
+            qCInfo(motDecoder) << "MOT Directory is complete";
             emit newMOTDirectory();
         }
         break;
     case 7:
         // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]
         // The segments of a compressed MOT directory shall be transported in MSC Data Group type 7.
-        qDebug() << "Compressed MOT directory not supported";
+        qCWarning(motDecoder) << "Compressed MOT directory not supported";
         break;
     default:
         return;

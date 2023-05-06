@@ -26,9 +26,12 @@
 
 #include <QDebug>
 #include <QFile>
+#include <QLoggingCategory>
 #include <math.h>
 
 #include "audiodecoder.h"
+
+Q_LOGGING_CATEGORY(audioDecoder, "AudioDecoder", QtInfoMsg)
 
 audioFifo_t audioFifo[2];
 
@@ -54,21 +57,21 @@ AudioDecoder::AudioDecoder(QObject *parent) : QObject(parent)
     m_rawOut = fopen("audio.raw", "wb");
     if (!m_rawOut)
     {
-        qDebug("AudioDecoder: Unable to open file: audio.raw");
+        qCWarning(audioDecoder, "Unable to open file: audio.raw");
     }
 #endif
 #ifdef AUDIO_DECODER_AAC_OUT
     m_aacOut = fopen("audio.aac", "wb");
     if (!m_aacOut)
     {
-        qDebug("AudioDecoder: Unable to open file: audio.aac");
+        qCWarning(audioDecoder, "Unable to open file: audio.aac");
     }
 #endif
 #ifdef AUDIO_DECODER_MP2_OUT
     m_mp2Out = fopen("audio.mp2", "wb");
     if (!m_mp2Out)
     {
-        qDebug("AudioDecoder: Unable to open file: audio.mp2");
+        qCWarning(audioDecoder, "Unable to open file: audio.mp2");
     }
 #endif
 }
@@ -105,7 +108,7 @@ AudioDecoder::~AudioDecoder()
         int res = mpg123_close(m_mp2DecoderHandle);
         if (MPG123_OK != res)
         {
-            qDebug("AudioDecoder: error while mpg123_close: %s\n", mpg123_plain_strerror(res));
+            qCCritical(audioDecoder, "error while mpg123_close: %s\n", mpg123_plain_strerror(res));
         }
 
         mpg123_delete(m_mp2DecoderHandle);
@@ -133,7 +136,6 @@ AudioDecoder::~AudioDecoder()
 
 void AudioDecoder::start(const RadioControlServiceComponent&s)
 {
-    //qDebug() << Q_FUNC_INFO;
     if (s.isAudioService())
     {
         if (PlaybackState::Stopped != m_playbackState)
@@ -150,7 +152,6 @@ void AudioDecoder::start(const RadioControlServiceComponent&s)
 
 void AudioDecoder::stop()
 {
-    //qDebug() << Q_FUNC_INFO;
     m_playbackState = PlaybackState::Stopped;
 
     deinitAACDecoder();
@@ -216,7 +217,7 @@ void AudioDecoder::deinitMPG123()
         int res = mpg123_close(m_mp2DecoderHandle);
         if (MPG123_OK != res)
         {
-            qDebug("AudioDecoder: error while mpg123_close: %s\n", mpg123_plain_strerror(res));
+            qCCritical(audioDecoder, "error while mpg123_close: %s\n", mpg123_plain_strerror(res));
         }
 
         mpg123_delete(m_mp2DecoderHandle);
@@ -257,7 +258,7 @@ void AudioDecoder::readAACHeader()
 
     emit audioParametersInfo(m_audioParameters);
 
-    qDebug("AudioDecoder: %s %d kHz %s",
+    qCInfo(audioDecoder, "%s %d kHz %s",
            (m_aacHeader.bits.sbr_flag ? (m_aacHeader.bits.ps_flag ? "HE-AAC v2" : "HE-AAC") : "AAC-LC"),
            (m_aacHeader.bits.dac_rate ? 48 : 32),
            (m_aacHeader.bits.aac_channel_mode || m_aacHeader.bits.ps_flag ? "stereo" : "mono")
@@ -392,7 +393,7 @@ void AudioDecoder::initAACDecoder()
     }
     m_outputFrame = new uint8_t[m_outputFrameLen];
 
-    qDebug("AudioDecoder: Output sample rate %d Hz, channels: %d", m_aacHeader.bits.dac_rate ? 48000 : 32000, channels);
+    qCInfo(audioDecoder, "Output sample rate %d Hz, channels: %d", m_aacHeader.bits.dac_rate ? 48000 : 32000, channels);
 
 //    m_outFifoPtr->numChannels = uint8_t(channels);
 //    m_outFifoPtr->sampleRate = uint32_t(m_aacHeader.bits.dac_rate ? 48000 : 32000);
@@ -458,7 +459,7 @@ void AudioDecoder::initAACDecoder()
         m_muteRamp.push_back(g * g);
     }
 
-    qDebug("AudioDecoder: Output sample rate %lu Hz, channels: %d", sampleRate, numChannels);
+    qCInfo(audioDecoder, "Output sample rate %lu Hz, channels: %d", sampleRate, numChannels);
 
     setOutput(sampleRate, numChannels);
 }
@@ -531,7 +532,7 @@ void AudioDecoder::setNoiseConcealment(int level)
         m_noiseFile = new QFile(":/resources/noise.bin");
         if (!m_noiseFile->open(QIODevice::ReadOnly))
         {
-            qDebug() << "AudioDecoder: Unable to open noise file";
+            qCWarning(audioDecoder) << "Unable to open noise file";
             delete m_noiseFile;
             m_noiseFile = nullptr;
             memset(m_noiseBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE*sizeof(int16_t));
@@ -582,7 +583,7 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
             int numChannels, enc;
             mpg123_getformat(m_mp2DecoderHandle, &sampleRate, &numChannels, &enc);
 
-            qDebug("AudioDecoder: New MP2 format: %ld Hz, %d channels, encoding %d", sampleRate, numChannels, enc);
+            qCInfo(audioDecoder, "New MP2 format: %ld Hz, %d channels, encoding %d", sampleRate, numChannels, enc);
 
             setOutput(sampleRate, numChannels);
 
@@ -609,7 +610,6 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
         if (m_mp2DRC != 0)
         {   // multiply buffer by gain
             float gain = pow(10, m_mp2DRC * 0.0125);    // 0.0125 = 1/(4*20)
-            //qDebug("DRC = %fdB => %f", mp2DRC*0.25, gain);
             for (int n = 0; n < int (size >> 1); ++n)     // considering int16_t data => 2 bytes
             {   // multiply all samples by gain
                 outBuf[n] = int16_t(qRound(outBuf[n] * gain));
@@ -673,7 +673,7 @@ void AudioDecoder::getFormatMP2()
 
     if (MPG123_OK != res)
     {
-        qDebug("AudioDecoder: error while mpg123_info: %s", mpg123_plain_strerror(res));
+        qCCritical(audioDecoder, "error while mpg123_info: %s", mpg123_plain_strerror(res));
     }
 
     m_audioParameters.coding = AudioCoding::MP2;
@@ -788,10 +788,8 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     result = aacDecoder_DecodeFrame(m_aacDecoderHandle, (INT_PCM *)m_outputFrame, m_outputFrameLen / sizeof(INT_PCM), AACDEC_CONCEAL * conceal);
     if (AAC_DEC_OK != result)
     {
-        qDebug() << "AudioDecoder: Error decoding AAC frame: " << result;
+        qCWarning(audioDecoder, "Error decoding AAC frame: " << result;
     }
-
-    //qDebug("error = %d | samples = %d", !IS_OUTPUT_VALID(result), m_outputFrameLen / sizeof(INT_PCM));
 
     if (!IS_OUTPUT_VALID(result))
     {   // no output
@@ -812,7 +810,6 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     uint64_t count = m_outFifoPtr->count;
     while (int64_t(AUDIO_FIFO_SIZE - count) < bytesToWrite)
     {
-        //qDebug("%s %lld: %lld < %lld", Q_FUNC_INFO, AUDIO_FIFO_SIZE, int64_t(AUDIO_FIFO_SIZE - count), bytesToWrite);
         m_outFifoPtr->countChanged.wait(&m_outFifoPtr->mutex);
         count = m_outFifoPtr->count;
     }
@@ -925,7 +922,6 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
     uint64_t count = m_outFifoPtr->count;
     while (int64_t(AUDIO_FIFO_SIZE - count) < bytesToWrite)
     {
-        //qDebug("%s %lld: %lld < %lld", Q_FUNC_INFO, AUDIO_FIFO_SIZE, int64_t(AUDIO_FIFO_SIZE - count), bytesToWrite);
         m_outFifoPtr->countChanged.wait(&m_outFifoPtr->mutex);
         count = m_outFifoPtr->count;
     }
@@ -1034,13 +1030,11 @@ void AudioDecoder::setOutput(int sampleRate, int numChannels)
 
     if (PlaybackState::Running == m_playbackState)
     {   // switch audio source
-        //qDebug() << Q_FUNC_INFO << static_cast<int>(m_playbackState) << "==> switch: idx =" << m_outFifoIdx;
         emit switchAudio(m_outFifoPtr);
 
     }
     else
     {   // start audio
-        //qDebug() << Q_FUNC_INFO << static_cast<int>(m_playbackState) << "==> start: idx =" << m_outFifoIdx;
         m_playbackState = PlaybackState::Running;
         emit startAudio(m_outFifoPtr);
     }

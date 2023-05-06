@@ -25,11 +25,14 @@
  */
 
 #include <QDebug>
+#include <QLoggingCategory>
 #include <QThread>
 #include <QAudioSink>
 #include <QAudioDevice>
 
 #include "audiooutput.h"
+
+Q_LOGGING_CATEGORY(audioOutput, "AudioOutput", QtInfoMsg)
 
 #if HAVE_PORTAUDIO
 
@@ -50,7 +53,7 @@ AudioOutput::AudioOutput( QObject *parent) : QObject(parent)
     m_rawOut = fopen("audio.raw", "wb");
     if (!m_rawOut)
     {
-        qDebug("AudioOutput: Unable to open file: audio.raw");
+        qCWarning(audioOutput, "Unable to open file: audio.raw");
     }
 #endif
 
@@ -72,7 +75,7 @@ AudioOutput::~AudioOutput()
     PaError err = Pa_Terminate();
     if (paNoError != err)
     {
-        qDebug("AudioOutput: PortAudio Pa_Terminate() error: %s", Pa_GetErrorText(err));
+        qCCritical(audioOutput, "PortAudio Pa_Terminate() error: %s", Pa_GetErrorText(err));
     }
 
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
@@ -213,7 +216,7 @@ int AudioOutput::portAudioCb( const void *inputBuffer, void *outputBuffer, unsig
 #else
     if (statusFlags)
     {
-        qDebug() << "AudioOutput: Port Audio statusFlags =" << statusFlags;
+        qCWarning(audioOutput) << "Port Audio statusFlags =" << statusFlags;
     }
 
     return static_cast<AudioOutput*>(ctx)->portAudioCbPrivate(outputBuffer, nBufferFrames);
@@ -348,7 +351,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
         }
         else
         {   // not enough samples ==> inserting silence
-            //qDebug("Muted: Inserting silence [%lu ms]", nBufferFrames/m_sampleRate_kHz);                       
+            qCDebug(audioOutput, "Muted: Inserting silence [%lu ms]", nBufferFrames/m_sampleRate_kHz);
             memset(outputBuffer, 0, bytesToRead);
 
             if (request & (Request::Stop | Request::Restart))
@@ -370,7 +373,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             // minimum mute time is 1ms (m_sampleRate_kHz samples) , if less then hard mute
             if (m_sampleRate_kHz*m_bytesPerFrame > count)
             {   // nothing to play (cannot apply mute ramp)
-                qDebug("AudioOutput: Hard mute [no samples available]");
+                qCInfo(audioOutput, "Hard mute [no samples available]");
                 memset(outputBuffer, 0, bytesToRead);
                 m_playbackState = AudioOutputPlaybackState::Muted;
                 return paContinue;
@@ -570,7 +573,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     // unmute
     if (Request::None == request)
     {   // unmute can be requested only when there is enough samples
-        qDebug() << "AudioOutput: Unmuting audio";
+        qCInfo(audioOutput) << "Unmuting audio";
 
         float coe = 2.0 - m_muteFactor;
         float gain = AUDIOOUTPUT_FADE_MIN_LIN;
@@ -593,7 +596,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     else
     {   // there is so request => muting
         // mute can be requested when there is not enough samples or from HMI
-        qDebug("AudioOutput: Muting... [available %u samples]", availableSamples);
+        qCInfo(audioOutput, "Muting... [available %u samples]", availableSamples);
         float coe = m_muteFactor;
         if (availableSamples < AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz)
         {   // less samples than expected available => need to calculate new coef
@@ -640,7 +643,7 @@ void AudioOutput::onStreamFinished()
     else if (!(m_cbRequest & Request::Stop))
     {   // finished and not stop request ==> problem with output device
         // start again
-        qDebug() << "AudioOutput: current audio device probably removed, trying new default device";
+        qCWarning(audioOutput, "Current audio device probably removed, trying new default device";
 
         // hotplug handling
         Pa_Terminate();
@@ -953,7 +956,6 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
         }
         else
         {   // not enough samples ==> inserting silence
-            //qDebug("AudioOutput: Muted: Inserting silence [%lu ms]", nBufferFrames/m_sampleRate_kHz);
             memset(data, 0, bytesToRead);
 
             // done
@@ -970,7 +972,7 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
             // minimum mute time is 1ms (m_sampleRate_kHz samples) , if less then hard mute
             if (m_sampleRate_kHz*m_bytesPerFrame > count)
             {   // nothing to play
-                qDebug("AudioOutput: Hard mute [no samples available]");
+                qCInfo(audioOutput, "Hard mute [no samples available]");
                 memset(data, 0, bytesToRead);
                 m_playbackState = AudioOutputPlaybackState::Muted;
                 return bytesToRead;
@@ -1038,7 +1040,7 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
     // unmute
     if (false == muteRequest)
     {   // unmute can be requested only when there is enough samples
-        qDebug() << "AudioOutput: Unmuting audio";
+        qCInfo(audioOutput) << "Unmuting audio";
 
         float coe = 2.0 - m_muteFactor;
         float gain = AUDIOOUTPUT_FADE_MIN_LIN;
@@ -1059,7 +1061,7 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
     }
     else
     {   // mute can be requested when there is not enough samples or from HMI
-        qDebug("AudioOutput: Muting... [available %u samples]", availableSamples);
+        qCInfo(audioOutput, "Muting... [available %u samples]", availableSamples);
         float coe = m_muteFactor;
         if (availableSamples < AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz)
         {   // less samples than expected available => need to calculate new coef

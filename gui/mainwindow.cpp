@@ -29,6 +29,7 @@
 #include <QDir>
 #include <QMap>
 #include <QDebug>
+#include <QLoggingCategory>
 #include <QGraphicsScene>
 #include <QToolButton>
 #include <QFormLayout>
@@ -65,6 +66,8 @@
 #include "mac.h"
 #endif
 
+Q_LOGGING_CATEGORY(mainWindow, "MainWindow", QtInfoMsg)
+
 const QString MainWindow::appName("AbracaDABra");
 const char * MainWindow::syncLevelLabels[] = {QT_TR_NOOP("No signal"), QT_TR_NOOP("Signal found"), QT_TR_NOOP("Sync")};
 const char * MainWindow::syncLevelTooltip[] = {QT_TR_NOOP("DAB signal not detected<br>Looking for signal..."),
@@ -82,6 +85,37 @@ enum class SNR10Threhold
     SNR_GOOD = 100
 };
 
+void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+#ifdef QT_NO_DEBUG
+    const QString timeFormat = "hh:mm:ss";
+#else
+    const QString timeFormat = "hh:mm:ss.zzzzzz";
+#endif
+    QString category = context.category;
+    QString txt;
+    switch (type) {
+    case QtDebugMsg:
+        txt = QString("%1 [D] %2: %3").arg(QTime::currentTime().toString(timeFormat), category, msg);
+        break;
+    case QtInfoMsg:
+        txt = QString("%1 [I] %2: %3").arg(QTime::currentTime().toString(timeFormat), category, msg);
+        break;
+    case QtWarningMsg:
+        txt = QString("%1 [W] %2: %3").arg(QTime::currentTime().toString(timeFormat), category, msg);
+        break;
+    case QtCriticalMsg:
+        txt = QString("%1 [C] %2: %3").arg(QTime::currentTime().toString(timeFormat), category, msg);
+        break;
+    case QtFatalMsg:
+        txt = QString("%1 [F] %2: %3").arg(QTime::currentTime().toString(timeFormat), category, msg);
+        abort();
+        break;
+    }
+
+    fprintf(stderr,  "%s\n", txt.toLocal8Bit().data());
+}
+
 MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -96,8 +130,11 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->serviceListView->setIconSize(QSize(16,16));
     connect(ui->channelCombo, &QComboBox::currentIndexChanged, this, &MainWindow::onChannelChange);
 
+    qInstallMessageHandler(myMessageOutput);
+
     // set UI
     setWindowTitle("Abraca DAB Radio");
+
 
 #ifdef Q_OS_WIN
     // this is Windows specific code, not portable - allows to bring window to front (used for alarm announcement)
@@ -332,7 +369,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // initialize radio control
     if (!m_radioControl->init())
     {
-        qDebug() << "RadioControl() init failed";
+        qCFatal(mainWindow) << "RadioControl() init failed";
         close();
         qApp->quit();
     }
@@ -993,7 +1030,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
         changeInputDevice(InputDeviceId::UNDEFINED);
         break;
     default:
-        qDebug() << "InputDevice error" << int(errCode);
+        qCWarning(mainWindow) << "InputDevice error" << int(errCode);
     }
 }
 
@@ -1225,7 +1262,6 @@ void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponen
 
 void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent & s)
 {
-    //qDebug() << Q_FUNC_INFO << DabTables::getAnnouncementName(id) << int(state);
     switch (state)
     {
     case RadioControlAnnouncementState::None:
@@ -2409,7 +2445,7 @@ void MainWindow::onColorSchemeChanged(Qt::ColorScheme colorScheme)
     //QPalette palette = qApp->palette();
     QPalette palette = qApp->style()->standardPalette();
 
-    qDebug() << "// standardPalette" << qApp->styleHints()->colorScheme();
+    qCDebug(mainWindow) << "// standardPalette" << qApp->styleHints()->colorScheme();
 
     for (int r = QPalette::WindowText; r <= QPalette::PlaceholderText; ++r)
     {
@@ -2422,10 +2458,10 @@ void MainWindow::onColorSchemeChanged(Qt::ColorScheme colorScheme)
                            .arg(palette.color(role).blue())
                            .arg(palette.color(role).alpha());
 
-        qDebug("%s", line.toLatin1().data());
+        qCDebug(mainWindow, "%s", line.toLatin1().data());
     }
 
-    qDebug() << "// palette" << qApp->styleHints()->colorScheme();
+    qCDebug(mainWindow) << "// palette" << qApp->styleHints()->colorScheme();
     palette = qApp->palette();
 
     for (int r = QPalette::WindowText; r <= QPalette::PlaceholderText; ++r)
@@ -2439,7 +2475,7 @@ void MainWindow::onColorSchemeChanged(Qt::ColorScheme colorScheme)
                            .arg(palette.color(role).blue())
                            .arg(palette.color(role).alpha());
 
-        qDebug("%s", line.toLatin1().data());
+        qCDebug(mainWindow, "%s", line.toLatin1().data());
     }
 
 #endif

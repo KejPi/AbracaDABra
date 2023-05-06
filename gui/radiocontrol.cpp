@@ -29,9 +29,14 @@
 #include <QTime>
 
 #include <QDebug>
+#include <QLoggingCategory>
 #include <QIODevice>
 #include "radiocontrol.h"
 #include "inputdevice.h"
+
+//Q_LOGGING_CATEGORY(radioControl, "RadioControl", QtWarningMsg)
+Q_LOGGING_CATEGORY(radioControl, "RadioControl", QtInfoMsg)
+//Q_LOGGING_CATEGORY(radioControl, "RadioControl", QtDebugMsg)
 
 const uint8_t RadioControl::EEPCoderate[] =
 { // ETSI EN 300 401 V2.1.1 [6.2.1 Basic sub-channel organization] table 9 & 10
@@ -92,7 +97,7 @@ bool RadioControl::init()
     }
     else
     {
-        qDebug() << "RadioControl: DAB processing init failed";
+        qCFatal(radioControl) << "DAB processing init failed";
         m_dabsdrHandle = nullptr;
 
         return false;
@@ -109,9 +114,8 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::RESET:
     {
-#if RADIO_CONTROL_VERBOSE
-        qDebug() << "RadioControlEventType::RESET";
-#endif
+        qCDebug(radioControl) << "RadioControlEventType::RESET";
+
         switch (pEvent->resetFlag)
         {
         case DABSDR_RESET_INIT:
@@ -128,9 +132,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::SYNC_STATUS:
     {
-#if RADIO_CONTROL_VERBOSE
-        qDebug("RadioControl: Sync = %d", pEvent->syncStatus.syncLevel);
-#endif
+        qCDebug(radioControl, "Sync = %d", pEvent->syncStatus.syncLevel);
 
         if ((DABSDR_SYNC_LEVEL_FIC == pEvent->syncStatus.syncLevel) && (RADIO_CONTROL_UEID_INVALID == m_ensemble.ueid))
         { // ask for ensemble info if not available
@@ -143,9 +145,8 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
     {
         if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
-#if RADIO_CONTROL_VERBOSE > 1
-            qDebug() << "RadioControl: Tune success" << pEvent->frequency;
-#endif
+            qCDebug(radioControl) << "Tune success" << pEvent->frequency;
+
             if ((pEvent->frequency != m_frequency) || (0 == m_frequency))
             {   // in first step, DAB is tuned to 0 that is != desired frequency
                 // or if we want to tune to 0 by purpose (tgo to IDLE)
@@ -160,12 +161,12 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
                 // this is to request autontf when EID changes
                 m_enaAutoNotification = false;
 
-                qDebug("RadioControl: Current frequency %.3f MHz", pEvent->frequency/1000.0);;
+                qCInfo(radioControl, "Current frequency %.3f MHz", pEvent->frequency/1000.0);;
             }
         }
         else
         {
-            qDebug() << "RadioControl: Tune error" << pEvent->status;
+            qCCritical(radioControl) << "Tune error" << pEvent->status;
         }
     }
         break;
@@ -179,9 +180,8 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::RECONFIGURATION:
     {
-#if RADIO_CONTROL_VERBOSE
-        qDebug() << "RadioControlEventType::RECONFIGURATION";
-#endif
+        qCDebug(radioControl) << "RadioControlEventType::RECONFIGURATION";
+
         m_isReconfigurationOngoing = true;
 
         emit ensembleReconfiguration(m_ensemble);
@@ -196,35 +196,32 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 
     case RadioControlEventType::SERVICE_LIST:
     {
-#if RADIO_CONTROL_VERBOSE
-        qDebug() << "RadioControlEventType::SERVICE_LIST";
-#endif
+        qCDebug(radioControl) << "RadioControlEventType::SERVICE_LIST";
+
         eventHandler_serviceList(pEvent);
         delete pEvent->pServiceList;
     }
         break;
     case RadioControlEventType::SERVICE_COMPONENT_LIST:
     {
-#if RADIO_CONTROL_VERBOSE
-        qDebug() << "RadioControlEvent::SERVICE_COMPONENT_LIST";
-#endif
+        qCDebug(radioControl) << "RadioControlEvent::SERVICE_COMPONENT_LIST";
+
         eventHandler_serviceComponentList(pEvent);
         delete pEvent->pServiceCompList;
     }
         break;
     case RadioControlEventType::USER_APP_UPDATE:
     {
-#if RADIO_CONTROL_VERBOSE
-        qDebug("RadioControlEvent::USER_APP_UPDATE SID %8.8X SCIdS %d", pEvent->SId, pEvent->SCIdS);
-#endif
+
+        qCDebug(radioControl, "RadioControlEvent::USER_APP_UPDATE SID %8.8X SCIdS %d", pEvent->SId, pEvent->SCIdS);
+
         dabGetUserApps(pEvent->SId, pEvent->SCIdS);
     }
     break;
     case RadioControlEventType::USER_APP_LIST:
     {
-#if RADIO_CONTROL_VERBOSE
-        qDebug("RadioControlEvent::USER_APP_LIST SID %8.8X SCIdS %d", pEvent->SId, pEvent->SCIdS);
-#endif
+        qCDebug(radioControl, "RadioControlEvent::USER_APP_LIST SID %8.8X SCIdS %d", pEvent->SId, pEvent->SCIdS);
+
         eventHandler_userAppList(pEvent);
         delete pEvent->pUserAppList;
     }
@@ -233,16 +230,13 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
     {
         if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
-#if RADIO_CONTROL_VERBOSE
-            qDebug() << "RadioControlEvent::SERVICE_SELECTION success";
-#endif
+            qCDebug(radioControl) <<  "RadioControlEvent::SERVICE_SELECTION success";
             eventHandler_serviceSelection(pEvent);
         }        
         else
         {
-#if RADIO_CONTROL_VERBOSE
-            qDebug() << "RadioControlEvent::SERVICE_SELECTION error" << pEvent->status;
-#endif
+            qCWarning(radioControl) << "RadioControlEvent::SERVICE_SELECTION error" << pEvent->status;
+
             if (pEvent->decoderId == DABSDR_ID_AUDIO_PRIMARY)
             {
                 if (m_isReconfigurationOngoing)
@@ -256,9 +250,8 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
             }
             else
             {   // this is error when starting announcement
-#if RADIO_CONTROL_VERBOSE
-                qDebug() << "RadioControlEvent::SERVICE_SELECTION error" << pEvent->status << "on announcement start";
-#endif
+                qCDebug(radioControl) << "RadioControlEvent::SERVICE_SELECTION error" << pEvent->status << "on announcement start";
+
                 // try to stop announcement
                 onAnnouncementTimeout();
             }
@@ -270,14 +263,13 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
     {
         if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
-#if RADIO_CONTROL_VERBOSE
-            qDebug() << "RadioControlEvent::SERVICE_STOP success";
-#endif
+            qCDebug(radioControl) << "RadioControlEvent::SERVICE_STOP success";
+
             eventHandler_serviceStop(pEvent);
         }
         else
         {
-            qDebug() << "RadioControlEvent::SERVICE_STOP error" << pEvent->status;
+            qCWarning(radioControl) << "RadioControlEvent::SERVICE_STOP error" << pEvent->status;
         }
     }
         break;
@@ -286,13 +278,11 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         //dabsdrXpadAppStartStop_t * pData = pEvent->pXpadAppStartStopInfo;
         if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
-#if RADIO_CONTROL_VERBOSE
-            qDebug() << "RadioControlEvent::XPAD_APP_START_STOP success";
-#endif
+            qCDebug(radioControl) << "RadioControlEvent::XPAD_APP_START_STOP success";
         }
         else
         {
-            qDebug() << "RadioControlEvent::XPAD_APP_START_STOP error" << pEvent->status;
+            qCWarning(radioControl) << "RadioControlEvent::XPAD_APP_START_STOP error" << pEvent->status;
         }
         delete pEvent->pXpadAppStartStopInfo;
      }
@@ -344,10 +334,8 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         emit fibCounter(RADIO_CONTROL_NOTIFICATION_FIB_EXPECTED, pData->fibErrorCntr);
         emit mscCounter(pData->mscCrcOkCntr, pData->mscCrcErrorCntr);
 
-#if RADIO_CONTROL_VERBOSE > 0
-        qDebug("RadioControl: AutoNotify: sync %d, freq offset = %.1f Hz, SNR = %.1f dB",
+        qCDebug(radioControl, "AutoNotify: sync %d, freq offset = %.1f Hz, SNR = %.1f dB",
                pData->syncLevel, pData->freqOffset*0.1, pData->snr10/10.0);
-#endif
 
         delete pEvent->pNotifyData;
     }
@@ -356,9 +344,8 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
     {        
         if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
-#if RADIO_CONTROL_VERBOSE
-            qDebug("RadioControlEventType::ANNOUNCEMENT_SUPPORT SId %8.8X", pEvent->SId);
-#endif
+            qCDebug(radioControl, "RadioControlEventType::ANNOUNCEMENT_SUPPORT SId %8.8X", pEvent->SId);
+
             eventHandler_announcementSupport(pEvent);
         }
 
@@ -367,9 +354,8 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
     break;
     case RadioControlEventType::ANNOUNCEMENT_SWITCHING:
     {
-#if RADIO_CONTROL_VERBOSE > 1
-        qDebug() << "RadioControlEventType::ANNOUNCEMENT";
-#endif
+        qCDebug(radioControl) << "RadioControlEventType::ANNOUNCEMENT";
+
         eventHandler_announcementSwitching(pEvent);
 
         delete pEvent->pAnnouncement;                
@@ -377,9 +363,8 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::PROGRAMME_TYPE:
     {
-#if RADIO_CONTROL_VERBOSE > 1
-        qDebug() << "RadioControlEventType::PROGRAMME_TYPE";
-#endif
+        qCDebug(radioControl) << "RadioControlEventType::PROGRAMME_TYPE";
+
         eventHandler_programmeType(pEvent);
 
         delete pEvent->pPty;
@@ -387,9 +372,8 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
     break;
     case RadioControlEventType::DATAGROUP_DL:
     {
-#if RADIO_CONTROL_VERBOSE > 1
-        qDebug() << "RadioControlEvent::DATAGROUP_DL";
-#endif
+        qCDebug(radioControl) << "RadioControlEvent::DATAGROUP_DL";
+
         if (DABSDR_ID_AUDIO_PRIMARY == pEvent->pDynamicLabelData->id)
         {
             emit dlDataGroup_Service(pEvent->pDynamicLabelData->data);
@@ -404,9 +388,8 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::USERAPP_DATA:
     {
-#if RADIO_CONTROL_VERBOSE > 1
-        qDebug() << "RadioControlEvent::DATAGROUP_MSC" << pEvent->pUserAppData->id;
-#endif
+        qCDebug(radioControl) << "RadioControlEvent::DATAGROUP_MSC" << pEvent->pUserAppData->id;
+
         switch (pEvent->pUserAppData->id)
         {
         case DABSDR_ID_AUDIO_PRIMARY:
@@ -426,7 +409,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         break;
 
     default:
-        qDebug() << "RadioControl: ERROR: Unsupported event" << int(pEvent->type);
+        qCWarning(radioControl) << "ERROR: Unsupported event" << int(pEvent->type);
     }
 
     delete pEvent;
@@ -511,7 +494,7 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
     }
     else
     {
-        qDebug("RadioControl: Tuning %.3f -> %.3f MHz ...", m_frequency/1000.0, freq/1000.0);
+        qCInfo(radioControl, "Tuning %.3f -> %.3f MHz ...", m_frequency/1000.0, freq/1000.0);
 
         // service selection will be done after tune
         m_enaAutoNotification = false;
@@ -596,7 +579,7 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
         QHash<DabUserApplicationType,RadioControlUserApp>::const_iterator uaIt = scIt->userApps.constFind(uaType);
         if (scIt->userApps.cend() != uaIt)
         {
-            qDebug() << "RadioControl: Found XPAD app" << int(uaType);
+            qCInfo(radioControl) << "Found XPAD app" << int(uaType);
             dabXPadAppStart(uaIt->xpadData.xpadAppTy, 1, DABSDR_ID_AUDIO_PRIMARY);
             return;
         }
@@ -975,14 +958,12 @@ void RadioControl::ensembleConfigurationUpdate()
     if (m_ensembleConfigurationTimer->isActive())
     {   // will be done on timer timeout
         m_ensembleConfigurationUpdateRequest = true;
-        //qDebug() << Q_FUNC_INFO << "delaying ensemble update";
     }
     else
     {   // do update and start timer
         m_ensembleConfigurationUpdateRequest = false;
         emit ensembleConfiguration(ensembleConfigurationString());
         m_ensembleConfigurationTimer->start();
-        //qDebug() << Q_FUNC_INFO << "immediate ensemble update";
     }
 
 }
@@ -1015,9 +996,7 @@ void RadioControl::eventHandler_ensembleInfo(RadioControlEvent *pEvent)
     // process ensemble info
     dabsdrNtfEnsemble_t * pInfo = pEvent->pEnsembleInfo;
 
-#if RADIO_CONTROL_VERBOSE
-    qDebug("RadioControlEvent::ENSEMBLE_INFO 0x%8.8X '%s'", pInfo->ueid, pInfo->label.str);
-#endif
+    qCDebug(radioControl, "RadioControlEvent::ENSEMBLE_INFO 0x%8.8X '%s'", pInfo->ueid, pInfo->label.str);
 
 #if (RADIO_CONTROL_TEST_MODE)
     if (pInfo->label.str[0] != '\0')  // allow ECC == 0 in test mode
@@ -1100,9 +1079,7 @@ void RadioControl::eventHandler_serviceComponentList(RadioControlEvent *pEvent)
     if (!pList->isEmpty() && m_ensemble.isValid())
     {   // all service components belong to the same SId
         DabSId sid(pEvent->SId, m_ensemble.ecc());
-#if RADIO_CONTROL_VERBOSE
-        qDebug("RadioControlEvent::SERVICE_COMPONENT_LIST %8.8X", sid.value());
-#endif
+        qCDebug(radioControl, "RadioControlEvent::SERVICE_COMPONENT_LIST %8.8X", sid.value());
 
         // find service ID
         serviceIterator serviceIt = m_serviceList.find(sid.value());
@@ -1236,9 +1213,7 @@ void RadioControl::eventHandler_serviceComponentList(RadioControlEvent *pEvent)
         }
         else
         {   // SId not found
-#if RADIO_CONTROL_VERBOSE > 0
-            qDebug("RadioControl: Service SID %8.8X not in service list", sid.value());
-#endif
+            qCDebug(radioControl, "Service SID %8.8X not in service list", sid.value());
         }
     }
 }
@@ -1325,7 +1300,7 @@ void RadioControl::eventHandler_serviceSelection(RadioControlEvent *pEvent)
             {   // service components exists in service
                 if (!scIt->autoEnabled)
                 {   // if not data service that is automatically enabled
-                    qDebug("RadioControl: Playing: [%6.6X] %-18s %6.6X : %d", m_ensemble.ueid, scIt->label.toLocal8Bit().data(), pEvent->SId, pEvent->SCIdS);
+                    qCInfo(radioControl, "Playing: [%6.6X] %-18s %6.6X : %d", m_ensemble.ueid, scIt->label.toLocal8Bit().data(), pEvent->SId, pEvent->SCIdS);
                     // store current service
                     m_currentService.SId = pEvent->SId;
                     m_currentService.SCIdS = pEvent->SCIdS;
@@ -1352,9 +1327,8 @@ void RadioControl::eventHandler_serviceSelection(RadioControlEvent *pEvent)
     }
     else if (pEvent->decoderId == DABSDR_ID_AUDIO_SECONDARY)
     {   // secondary is used for announceement on other service
-#if RADIO_CONTROL_VERBOSE > 1
-        qDebug() << "RadioControlEvent::SERVICE_SELECTION success instance" << int(pEvent->decoderId);
-#endif
+        qCDebug(radioControl) << "RadioControlEvent::SERVICE_SELECTION success instance" << int(pEvent->decoderId);
+
         m_currentService.announcement.switchState = AnnouncementSwitchState::WaitForAnnouncement;
 
         m_currentService.announcement.SId = pEvent->SId;
@@ -1362,9 +1336,7 @@ void RadioControl::eventHandler_serviceSelection(RadioControlEvent *pEvent)
     }
     else
     {   // data service
-#if RADIO_CONTROL_VERBOSE > 1
-        qDebug() << "RadioControlEvent::SERVICE_SELECTION success instance" << int(pEvent->decoderId);
-#endif
+        qCDebug(radioControl) << "RadioControlEvent::SERVICE_SELECTION success instance" << int(pEvent->decoderId);
     }
 }
 
@@ -1377,9 +1349,7 @@ void RadioControl::eventHandler_serviceStop(RadioControlEvent *pEvent)
         if (scIt != serviceIt->serviceComponents.end())
         {   // found service component
             scIt->autoEnabled = false;
-#if RADIO_CONTROL_VERBOSE > 1
-            qDebug() << "RadioControlEvent::SERVICE_STOP" << pEvent->SId << pEvent->SCIdS;
-#endif
+            qCDebug(radioControl) << "RadioControlEvent::SERVICE_STOP" << pEvent->SId << pEvent->SCIdS;
         }
     }
 }
@@ -1434,9 +1404,7 @@ void RadioControl::eventHandler_announcementSwitching(RadioControlEvent * pEvent
         }
         else
         {   // ignoring -> cluster not relevant for current service
-#if RADIO_CONTROL_VERBOSE > 1
-            qDebug() << "RadioControl: Ignoring announcement cluster ID" << pAsw->clusterId;
-#endif
+            qCDebug(radioControl) << "Ignoring announcement cluster ID" << pAsw->clusterId;
         }
         pAsw += 1;
     }
@@ -1634,12 +1602,11 @@ void RadioControl::announcementHandler(dabsdrAsw_t *pAnnouncement)
         }
         if ((announcementId >= 0) && (pAnnouncement->ASwFlags & m_currentService.announcement.enaFlags))
         {   // valid ASw
-#if RADIO_CONTROL_VERBOSE > 0
-            qDebug() << "RadioControl:"
+            qCDebug(radioControl)
                      << DabTables::getAnnouncementNameEnglish(static_cast<DabAnnouncement>(announcementId))
                      << "announcement in subchannel" <<  pAnnouncement->subChId
                      << "cluster ID" << pAnnouncement->clusterId;
-#endif
+
             m_currentService.announcement.suspendRequest = false;
             if (startAnnouncement(pAnnouncement->subChId))
             {   // found subchannel
@@ -1840,9 +1807,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         RadioControlEvent * pEvent = new RadioControlEvent;
 
         const dabsdrNtfSyncStatus_t * pInfo = static_cast<const dabsdrNtfSyncStatus_t *>(p->pData);
-#if RADIO_CONTROL_VERBOSE
-        qDebug("DABSDR_NID_SYNC_STATUS: %d", pInfo->syncLevel);
-#endif
+        qCDebug(radioControl, "DABSDR_NID_SYNC_STATUS: %d", pInfo->syncLevel);
 
         pEvent->type = RadioControlEventType::SYNC_STATUS;
         pEvent->status = p->status;
@@ -1852,9 +1817,8 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         break;
     case DABSDR_NID_TUNE:
     {
-#if RADIO_CONTROL_VERBOSE
-        qDebug("DABSDR_NID_TUNE: status %d", p->status);
-#endif
+        qCDebug(radioControl, "DABSDR_NID_TUNE: status %d", p->status);
+
         RadioControlEvent * pEvent = new RadioControlEvent;
         pEvent->type = RadioControlEventType::TUNE;
         pEvent->status = p->status;
@@ -1864,9 +1828,8 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         break;
     case DABSDR_NID_ENSEMBLE_INFO:
     {
-#if RADIO_CONTROL_VERBOSE
-        qDebug("DABSDR_NID_ENSEMBLE_INFO: status %d", p->status);
-#endif
+        qCDebug(radioControl, "DABSDR_NID_ENSEMBLE_INFO: status %d", p->status);
+
         RadioControlEvent * pEvent = new RadioControlEvent;
         pEvent->type = RadioControlEventType::ENSEMBLE_INFO;
         pEvent->status = p->status;        
@@ -1878,9 +1841,8 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
     case DABSDR_NID_SERVICE_LIST:
     {
         const dabsdrNtfServiceList_t * pInfo = (const dabsdrNtfServiceList_t *) p->pData;
-#if RADIO_CONTROL_VERBOSE
-        qDebug("DABSDR_NID_SERVICE_LIST: num services %d", pInfo->numServices);
-#endif
+        qCDebug(radioControl, "DABSDR_NID_SERVICE_LIST: num services %d", pInfo->numServices);
+
         dabsdrServiceListItem_t item;
         QList<dabsdrServiceListItem_t> *pServiceList = new QList<dabsdrServiceListItem_t>;
         for (int s = 0; s < pInfo->numServices; ++s)
@@ -1919,9 +1881,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         }
         else
         {
-#if RADIO_CONTROL_VERBOSE > 0
-            qDebug("RadioControl: SId %4.4X not found", pInfo->SId);
-#endif
+            qCWarning(radioControl, "SId %4.4X not found", pInfo->SId);
         }
     }
     break;
@@ -1960,9 +1920,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         }
         else
         {
-#if RADIO_CONTROL_VERBOSE > 0
-            qDebug("RadioControl: SId %4.4X, SCIdS %2.2X not found", pInfo->SId, pInfo->SCIdS);
-#endif
+            qCWarning(radioControl, "SId %4.4X, SCIdS %2.2X not found", pInfo->SId, pInfo->SCIdS);
         }
     }
     break;
@@ -2026,9 +1984,8 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         break;
     case DABSDR_NID_RECONFIGURATION:
     {
-#if RADIO_CONTROL_VERBOSE
-        qDebug("DABSDR_NID_RECONFIGURATION: status %d", p->status);
-#endif
+        qCDebug(radioControl, "DABSDR_NID_RECONFIGURATION: status %d", p->status);
+
         RadioControlEvent * pEvent = new RadioControlEvent;
         pEvent->type = RadioControlEventType::RECONFIGURATION;
 
@@ -2085,7 +2042,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
     }
     break;
     default:
-        qDebug("RadioControl: Unexpected notification %d", p->nid);
+        qCWarning(radioControl, "Unexpected notification %d", p->nid);
     }    
 }
 
@@ -2093,9 +2050,8 @@ void RadioControl::dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx)
 {
     if (0 == p->len)
     {   // do nothing - empty data group
-#if RADIO_CONTROL_VERBOSE > 0
-        qDebug("RadioControl: Empty DL data received\n");
-#endif
+        qCDebug(radioControl, "Empty DL data received\n");
+
         return;
     }
     RadioControl * radioCtrl = static_cast<RadioControl *>(ctx);
@@ -2114,9 +2070,7 @@ void RadioControl::dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx)
 {
     if (0 == p->dgLen)
     {   // do nothing - empty data group
-#if RADIO_CONTROL_VERBOSE > 0
-        qDebug("RadioControl: Empty data group type %d received\n", p->userAppType);
-#endif
+        qCDebug(radioControl, "Empty data group type %d received\n", p->userAppType);
         return;
     }
 
@@ -2154,7 +2108,7 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
         }
         else
         {
-            //qDebug() << "Ignoring announcement audio data";
+            //qCDebug(radioControl) << "Ignoring announcement audio data";
         }
     }
         break;
@@ -2188,7 +2142,7 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
         }
         else
         {
-            //qDebug() << "Ignoring non-announcement audio data";
+            //qCDebug(radioControl) << "Ignoring non-announcement audio data";
         }
     }
     }
