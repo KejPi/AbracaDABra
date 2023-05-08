@@ -26,6 +26,9 @@
 
 #include "dabtables.h"
 #include "slideshowapp.h"
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(slideShowApp, "SlideShowApp", QtInfoMsg)
 
 SlideShowApp::SlideShowApp(QObject *parent) : UserApplication(parent)
 {
@@ -97,7 +100,7 @@ void SlideShowApp::onUserAppData(const RadioControlUserAppData & data)
 void SlideShowApp::onNewMOTObject(const MOTObject & obj)
 {
 #if (USER_APPLICATION_VERBOSE > 1)
-    qDebug() << Q_FUNC_INFO << obj.getId() << obj.getContentName();
+    qCDebug(slideShowApp) << Q_FUNC_INFO << obj.getId() << obj.getContentName();
 #endif
     Slide slide;
 
@@ -111,13 +114,13 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         switch (obj.getContentSubType())
         {
         case 1:
-            qDebug() << "Image / JFIF (JPEG)";
+            qCDebug(slideShowApp) << "Image / JFIF (JPEG)";
             break;
         case 3:
-            qDebug() << "Image / PNG";
+            qCDebug(slideShowApp) << "Image / PNG";
             break;
         default:
-            qDebug() << "Image /" << obj.getContentSubType() << "not supported by Slideshow application";
+            qCDebug(slideShowApp) << "Image /" << obj.getContentSubType() << "not supported by Slideshow application";
             return;
         }
 #endif
@@ -129,7 +132,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         {
         case 0:
 #if (USER_APPLICATION_VERBOSE > 0)
-            qDebug() << "MOT transport / Header update";
+            qCDebug(slideShowApp) << "MOT transport / Header update";
 #endif
             // ETSI TS 101 499 V3.1.1 [6.2.3]
             // The MOT transport ContentSubType Header update is used to signal an update to parameters
@@ -141,14 +144,14 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
             // body data. It should thus only be relevant to IP-connected devices which can acquire
             // the image data over IP.
 #if (USER_APPLICATION_VERBOSE > 0)
-            qDebug() << "MOT transport / Header only";
+            qCDebug(slideShowApp) << "MOT transport / Header only";
 #endif
             // ignoring this
             return;
             break;
         default:
 #if (USER_APPLICATION_VERBOSE > 1)
-            qDebug() << "MOT transport /" << obj.getContentSubType() << "not supported by Slideshow application";
+            qCDebug(slideShowApp) << "MOT transport /" << obj.getContentSubType() << "not supported by Slideshow application";
 #endif
             return;
         }
@@ -156,7 +159,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
     default:
     {
 #if (USER_APPLICATION_VERBOSE > 1)
-        qDebug() << "ContentType" << obj.getContentSubType() << "not supported by Slideshow application";
+        qCDebug(slideShowApp) << "ContentType" << obj.getContentSubType() << "not supported by Slideshow application";
 #endif
         return;
     }
@@ -174,7 +177,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
                 {   // ETSI EN 301 234 V2.1.1 [6.2.4.1]
                     // Validity flag = 0: "Now"; MJD and UTC shall be ignored and be set to 0
 #if (USER_APPLICATION_VERBOSE > 1)
-                    qDebug() << "ExpireTime: NOW";
+                    qCDebug(slideShowApp) << "ExpireTime: NOW";
 #endif
                 }
                 else
@@ -185,14 +188,14 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
                         paramsDataStr += QString("%1 ").arg((uint8_t) it.value().at(d), 2, 16, QLatin1Char('0'));
                     }
 #if (USER_APPLICATION_VERBOSE > 0)
-                    qDebug() << "ExpireTime:" << paramsDataStr;
+                    qCDebug(slideShowApp) << "ExpireTime:" << paramsDataStr;
 #endif
                 }
             }
             else
             {   // unexpected length
 #if (USER_APPLICATION_VERBOSE > 1)
-               qDebug() << "ExpireTime: error";
+               qCDebug(slideShowApp) << "ExpireTime: error";
 #endif
             }
             break;
@@ -203,7 +206,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
                 {   // ETSI EN 301 234 V2.1.1 [6.2.4.1]
                     // Validity flag = 0: "Now"; MJD and UTC shall be ignored and be set to 0
 #if (USER_APPLICATION_VERBOSE > 1)
-                    qDebug() << "TriggerTime: NOW";
+                    qCDebug(slideShowApp) << "TriggerTime: NOW";
 #endif
                 }
                 else
@@ -214,14 +217,14 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
                         paramsDataStr += QString("%1 ").arg((uint8_t) it.value().at(d), 2, 16, QLatin1Char('0'));
                     }
 #if (USER_APPLICATION_VERBOSE > 0)
-                    qDebug() << "TriggerTime:" << paramsDataStr;
+                    qCDebug(slideShowApp) << "TriggerTime:" << paramsDataStr;
 #endif
                 }
             }
             else
             {   // unexpected length
 #if (USER_APPLICATION_VERBOSE > 1)
-               qDebug() << "TriggerTime: error";
+               qCDebug(slideShowApp) << "TriggerTime: error";
 #endif
             }
             break;
@@ -233,7 +236,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
             if (it.value().size() >= 2)
             {
 #if (USER_APPLICATION_VERBOSE > 1)
-                qDebug("CategoryID: %d/%d", uint8_t(it.value().at(0)), uint8_t(it.value().at(1)));
+                qCDebug(slideShowApp, "CategoryID: %d/%d", uint8_t(it.value().at(0)), uint8_t(it.value().at(1)));
 #endif
                 slide.setCategoryID(uint8_t(it.value().at(0)));
                 slide.setSlideID(uint8_t(it.value().at(1)));
@@ -241,43 +244,43 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
             else
             {   // unexpected length
 #if (USER_APPLICATION_VERBOSE > 1)
-               qDebug() << "CategoryID: error";
+               qCDebug(slideShowApp) << "CategoryID: error";
 #endif
             }
             break;
         case Parameter::CategoryTitle:
             slide.setCategoryTitle(DabTables::convertToQString(it.value().data(), uint8_t(DabCharset::UTF8), it.value().size()));
 #if (USER_APPLICATION_VERBOSE > 1)
-            qDebug() << "CategoryTitle:" << slide.getCategoryTitle();
+            qCDebug(slideShowApp) << "CategoryTitle:" << slide.getCategoryTitle();
 #endif
             break;
         case Parameter::ClickThroughURL:
             slide.setClickThroughURL(DabTables::convertToQString(it.value().data(), uint8_t(DabCharset::UTF8), it.value().size()));
 #if (USER_APPLICATION_VERBOSE > 1)
-            qDebug() << "ClickThroughURL:" << slide.getClickThroughURL();
+            qCDebug(slideShowApp) << "ClickThroughURL:" << slide.getClickThroughURL();
 #endif
             break;
         case Parameter::AlternativeLocationURL:
             slide.setAlternativeLocationURL(DabTables::convertToQString(it.value().data(), uint8_t(DabCharset::UTF8), it.value().size()));
 #if (USER_APPLICATION_VERBOSE > 1)
-            qDebug() << "AlternativeLocationURL:" << slide.getAlternativeLocationURL();
+            qCDebug(slideShowApp) << "AlternativeLocationURL:" << slide.getAlternativeLocationURL();
 #endif
             break;
         case Parameter::Alert:
 #if (USER_APPLICATION_VERBOSE > 0)
             if (it.value().size() >= 1)
             {
-                qDebug() << "Alert: %d" << uint8_t(it.value().at(0));
+                qCDebug(slideShowApp) << "Alert: %d" << uint8_t(it.value().at(0));
             }
             else
             {   // unexpected length
-               qDebug() << "Alert: error";
+               qCDebug(slideShowApp) << "Alert: error";
             }
 #endif
             break;
         default:
 #if (USER_APPLICATION_VERBOSE > 1)
-            qDebug() << "Parameter"<< it.key() << "not supported by Slideshow application";
+            qCDebug(slideShowApp) << "Parameter"<< it.key() << "not supported by Slideshow application";
 #endif
             break;
         }
@@ -307,7 +310,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         if (m_cache.cend() != cacheIt)
         {   // item is in the cache -> decategorize and delete from cache
 #if (USER_APPLICATION_VERBOSE > 1)
-            qDebug() << "Item" << obj.getContentName() << "is already in cache";
+            qCDebug(slideShowApp) << "Item" << obj.getContentName() << "is already in cache";
 #endif
             // remove old slide from category
             removeSlideFromCategory(*cacheIt);
@@ -327,7 +330,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         if (m_cache.cend() != cacheIt)
         {   // item is already received
 #if (USER_APPLICATION_VERBOSE > 1)
-            qDebug() << "Item" << obj.getContentName() << "is already in cache";
+            qCDebug(slideShowApp) << "Item" << obj.getContentName() << "is already in cache";
 #endif
             // ETSI TS 101 499 V3.1.1 [6.3 Updating parameters]
             // The CategoryID/SlideID parameter is used to change the category and/or ordering of a previously delivered slide or to decategorize the slide.
@@ -337,7 +340,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
             if ((cacheIt->getCategoryID() != slide.getCategoryID()) || (cacheIt->getSlideID() != slide.getSlideID()))
             {   // change of category
 #if (USER_APPLICATION_VERBOSE > 1)
-                qDebug() << "Changing slide category";
+                qCDebug(slideShowApp) << "Changing slide category";
 #endif
                 // remove old slide from category
                 removeSlideFromCategory(*cacheIt);
@@ -357,7 +360,7 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         // adding new slide to cache
         m_cache.insert(slide.getContentName(), slide);
 #if (USER_APPLICATION_VERBOSE > 1)
-        qDebug() << "Cache contains" << cache.size() << "slides";
+        qCDebug(slideShowApp) << "Cache contains" << m_cache.size() << "slides";
 #endif
         // adding new slide to category
         addSlideToCategory(slide);
@@ -365,23 +368,23 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
 #if (USER_APPLICATION_VERBOSE > 1)
 //---------------------------------
         // print categories
-        qDebug() << "Categories:";
-        for (QHash<int, Category>::iterator catSlsIt = catSls.begin(); catSlsIt != catSls.end(); ++catSlsIt)
+        qCDebug(slideShowApp) << "Categories:";
+        for (QHash<int, Category>::iterator catSlsIt = m_catSls.begin(); catSlsIt != m_catSls.end(); ++catSlsIt)
         {
-            qDebug() << catSlsIt->getTitle() << "[" << catSlsIt.key() << "]";
-            qDebug() << "Current slide index is" << catSlsIt->getCurrentIndex();
+            qCDebug(slideShowApp) << catSlsIt->getTitle() << "[" << catSlsIt.key() << "]";
+            qCDebug(slideShowApp) << "Current slide index is" << catSlsIt->getCurrentIndex();
             QString slideName = catSlsIt->getCurrentSlide();
             for (int n = 0; n < catSlsIt->size(); ++n)
             {
-                QHash<QString, Slide>::const_iterator cacheIt = cache.constFind(slideName);
-                if (cache.cend() != cacheIt)
+                QHash<QString, Slide>::const_iterator cacheIt = m_cache.constFind(slideName);
+                if (m_cache.cend() != cacheIt)
                 {   // item is in cache
-                    qDebug() << QString("   Slide %1/%2: %3 [%4]")
+                    qCDebug(slideShowApp) << QString("   Slide %1/%2: %3 [%4]")
                                 .arg(n+1).arg(catSlsIt->size()).arg(slideName).arg(cacheIt->getSlideID());
                 }
                 else
                 {
-                    qDebug() << "   Slide #" << n << slideName << "in not in cache";
+                    qCDebug(slideShowApp) << "   Slide #" << n << slideName << "in not in cache";
                 }
                 slideName = catSlsIt->getNextSlide();
             }
@@ -400,7 +403,7 @@ void SlideShowApp::addSlideToCategory(const Slide & slide)
     if (m_catSls.end() != catIt)
     {   // category already exists
 #if (USER_APPLICATION_VERBOSE > 1)
-        qDebug() << "Category" << catIt->getTitle() << "exists, adding slide ID" << slide.getSlideID();
+        qCDebug(slideShowApp) << "Category" << catIt->getTitle() << "exists, adding slide ID" << slide.getSlideID();
 #endif
         catIt->insertSlide(slide);
 
@@ -421,7 +424,7 @@ void SlideShowApp::addSlideToCategory(const Slide & slide)
         newCat.insertSlide(slide);
         m_catSls.insert(slide.getCategoryID(), newCat);
 #if (USER_APPLICATION_VERBOSE > 1)
-        qDebug() << "New category" << catName << "created";
+        qCDebug(slideShowApp) << "New category" << catName << "created";
 #endif
 
         if (1 == m_catSls.size())
@@ -681,7 +684,7 @@ int SlideShowApp::Category::removeSlide(int id)
             if (m_currentSlideIdx == idx)
             {   // removed current -> emit signal
 #if (USER_APPLICATION_VERBOSE > 1)
-                qDebug() << "Current slide removed";
+                qCDebug(slideShowApp) << "Current slide removed";
 #endif
             }
             if (m_currentSlideIdx > idx)
@@ -692,7 +695,7 @@ int SlideShowApp::Category::removeSlide(int id)
                 }
             }
 #if (USER_APPLICATION_VERBOSE > 1)
-            qDebug() << "Current slide is" << currentSlideIdx;
+            qCDebug(slideShowApp) << "Current slide is" << m_currentSlideIdx;
 #endif
             return idx;
         }

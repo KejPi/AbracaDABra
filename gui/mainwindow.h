@@ -39,6 +39,7 @@
 #include <QUrl>
 #include <QStackedWidget>
 #include <QSlider>
+#include <QLoggingCategory>
 
 #include "clickablelabel.h"
 #include "setupdialog.h"
@@ -55,10 +56,14 @@
 #include "servicelist.h"
 #include "slmodel.h"
 #include "sltreemodel.h"
+#include "logdialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
+
+// in a header
+Q_DECLARE_LOGGING_CATEGORY(application)
 
 class DLPlusObjectUI;
 
@@ -101,7 +106,8 @@ private:
     SetupDialog * m_setupDialog;
     EnsembleInfoDialog * m_ensembleInfoDialog;
     CatSLSDialog * m_catSlsDialog;
-    QProgressBar * m_snrProgressbar;
+    LogDialog * m_logDialog;
+    QProgressBar * m_snrProgressbar;    
     ClickableLabel * m_menuLabel;
     ClickableLabel * m_muteLabel;
 
@@ -121,6 +127,7 @@ private:
     QAction * m_bandScanAction;
     QAction * m_ensembleInfoAction;
     QAction * m_aboutAction;
+    QAction * m_logAction;
 
     // dark mode
     QString m_defaultStyleName;
@@ -179,6 +186,7 @@ private:
     void showEnsembleInfo();
     void showAboutDialog();
     void showSetupDialog();
+    void showLog();
     void showCatSLS();
     void setExpertMode(bool ena);
     void stop();

@@ -108,6 +108,9 @@ add_executable(${TARGET}
     bandscandialog.h
     bandscandialog.cpp
     bandscandialog.ui
+    logdialog.h
+    logdialog.cpp
+    logdialog.ui
 
     ensembleinfodialog.h
     ensembleinfodialog.cpp
