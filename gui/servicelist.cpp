@@ -66,7 +66,9 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     bool newService = false;
     bool updatedService = false;
 
-    qCInfo(serviceList, "          [%6.6X] %-18s %X : %d", e.ueid, s.label.toUtf8().data(), s.SId.value(), s.SCIdS);
+    qCInfo(serviceList, "          [%6.6X @ %6d kHz | %3s] %-18s %X : %d", e.ueid, e.frequency, DabTables::channelList.value(e.frequency).toUtf8().data(),
+                                                                            s.label.toUtf8().data(), s.SId.value(), s.SCIdS);
+
 
     ServiceListItem * pService = nullptr;
     ServiceListId servId(s);

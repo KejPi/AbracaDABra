@@ -1309,7 +1309,8 @@ void RadioControl::eventHandler_serviceSelection(RadioControlEvent *pEvent)
             {   // service components exists in service
                 if (!scIt->autoEnabled)
                 {   // if not data service that is automatically enabled
-                    qCInfo(radioControl, "Playing: [%6.6X] %-18s %6.6X : %d", m_ensemble.ueid, scIt->label.toUtf8().data(), pEvent->SId, pEvent->SCIdS);
+                    qCInfo(radioControl, "Playing: [%6.6X @ %6d kHz | %3s] %-18s %6.6X : %d", m_ensemble.ueid, m_ensemble.frequency, DabTables::channelList.value(m_ensemble.frequency).toUtf8().data(),
+                            scIt->label.toUtf8().data(), pEvent->SId, pEvent->SCIdS);
                     // store current service
                     m_currentService.SId = pEvent->SId;
                     m_currentService.SCIdS = pEvent->SCIdS;
