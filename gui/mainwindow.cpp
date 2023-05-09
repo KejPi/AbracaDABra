@@ -313,7 +313,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->serviceListView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->serviceListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->serviceListView->installEventFilter(this);
-    connect(ui->serviceListView, &QListView::clicked, this, &MainWindow::onServiceListClicked);
+    connect(ui->serviceListView->selectionModel(), &QItemSelectionModel::currentChanged, this, &MainWindow::onServiceListSelection);
 
     m_slTreeModel = new SLTreeModel(m_serviceList, this);
     connect(m_serviceList, &ServiceList::serviceAddedToEnsemble, m_slTreeModel, &SLTreeModel::addEnsembleService);
@@ -325,7 +325,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->serviceTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->serviceTreeView->setHeaderHidden(true);
     ui->serviceTreeView->installEventFilter(this);
-    connect(ui->serviceTreeView, &QTreeView::clicked, this, &MainWindow::onServiceListTreeClicked);
+    connect(ui->serviceTreeView->selectionModel(), &QItemSelectionModel::currentChanged, this, &MainWindow::onServiceListTreeSelection);
     connect(m_serviceList, &ServiceList::empty, m_slTreeModel, &SLTreeModel::clear);
 
     // fill channel list
@@ -589,7 +589,7 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
             QKeyEvent * event = static_cast<QKeyEvent *>(e);
             if (Qt::Key_Return == event->key())
             {
-                onServiceListClicked(ui->serviceListView->currentIndex());
+                onServiceListSelection(ui->serviceListView->currentIndex());
                 return true;
             }
             if (Qt::Key_Space == event->key())
@@ -607,7 +607,7 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
             QKeyEvent * event = static_cast<QKeyEvent *>(e);
             if (Qt::Key_Return == event->key())
             {
-                onServiceListTreeClicked(ui->serviceTreeView->currentIndex());
+                onServiceListTreeSelection(ui->serviceTreeView->currentIndex());
                 return true;
             }
         }
@@ -1053,7 +1053,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
     }
 }
 
-void MainWindow::onServiceListClicked(const QModelIndex &index)
+void MainWindow::onServiceListSelection(const QModelIndex &index)
 {
     const SLModel * model = reinterpret_cast<const SLModel*>(index.model());
     if (model->id(index) == ServiceListId(m_SId.value(), m_SCIdS))
@@ -1090,7 +1090,7 @@ void MainWindow::onServiceListClicked(const QModelIndex &index)
     }
 }
 
-void MainWindow::onServiceListTreeClicked(const QModelIndex &index)
+void MainWindow::onServiceListTreeSelection(const QModelIndex &index)
 {
     const SLTreeModel * model = reinterpret_cast<const SLTreeModel*>(index.model());
 
@@ -1979,7 +1979,7 @@ void MainWindow::loadSettings()
                 if (model->id(index) == id)
                 {   // found
                     ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
-                    onServiceListClicked(index);   // this selects service
+                    onServiceListSelection(index);   // this selects service
                     break;
                 }
             }
@@ -2326,7 +2326,7 @@ void MainWindow::onBandScanFinished(int result)
             const SLModel * model = reinterpret_cast<const SLModel*>(ui->serviceListView->model());
             QModelIndex index = model->index(0, 0);
             ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
-            onServiceListClicked(index);   // this selects service
+            onServiceListSelection(index);   // this selects service
             ui->serviceListView->setFocus();
         }
     }

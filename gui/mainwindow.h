@@ -247,8 +247,8 @@ private:
     void onTuneDone(uint32_t freq);
     void onNewInputDeviceSettings();
     void onInputDeviceError(const InputDeviceErrorCode errCode);
-    void onServiceListClicked(const QModelIndex &index);
-    void onServiceListTreeClicked(const QModelIndex &index);
+    void onServiceListSelection(const QModelIndex &index);
+    void onServiceListTreeSelection(const QModelIndex &index);
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
     void onAudioServiceReconfiguration(const RadioControlServiceComponent &s);
     void onAnnouncement(const DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent &s);
