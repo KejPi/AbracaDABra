@@ -269,7 +269,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         }
         else
         {
-            qCWarning(radioControl) << "RadioControlEvent::SERVICE_STOP error" << pEvent->status;
+            qCDebug(radioControl) << "RadioControlEvent::SERVICE_STOP error" << pEvent->status;
         }
     }
         break;
@@ -579,7 +579,7 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
         QHash<DabUserApplicationType,RadioControlUserApp>::const_iterator uaIt = scIt->userApps.constFind(uaType);
         if (scIt->userApps.cend() != uaIt)
         {
-            qCInfo(radioControl) << "Found XPAD app" << int(uaType);
+            qCInfo(radioControl, "Starting user application #%d from XPAD", int(uaType));
             dabXPadAppStart(uaIt->xpadData.xpadAppTy, 1, DABSDR_ID_AUDIO_PRIMARY);
             return;
         }
@@ -596,6 +596,7 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
                     sc.autoEnabled = start;
                     if (start)
                     {
+                        qCInfo(radioControl, "Found user application #%d in secondary data service SCIdS %d. Starting the service...", int(uaType), sc.SCIdS);
                         dabServiceSelection(sc.SId.value(), sc.SCIdS, DABSDR_ID_DATA);
                     }
                     else
@@ -623,6 +624,8 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
                             sc.autoEnabled = start;
                             if (start)
                             {
+                                qCInfo(radioControl, "Found user application #%d within ensemble in data service SId %8.8X, SCIdS %d. Starting the service...",
+                                       int(uaType), sc.SId.value(), sc.SCIdS);
                                 dabServiceSelection(sc.SId.value(), sc.SCIdS, DABSDR_ID_DATA);
                             }
                             else
@@ -1213,7 +1216,7 @@ void RadioControl::eventHandler_serviceComponentList(RadioControlEvent *pEvent)
         }
         else
         {   // SId not found
-            qCDebug(radioControl, "Service SID %8.8X not in service list", sid.value());
+            qCWarning(radioControl, "Cannot add service component. Service SID %8.8X not in service list", sid.value());
         }
     }
 }
@@ -1258,24 +1261,9 @@ void RadioControl::eventHandler_userAppList(RadioControlEvent *pEvent)
 
                         scIt->userApps.insert(newUserApp.uaType, newUserApp);
 
-                        if (isCurrentService(pEvent->SId, pEvent->SCIdS))
-                        {   // if is is current service ==> start user applications
-                            // enable SLS automatically - if available
-                            startUserApplication(DabUserApplicationType::SlideShow, true);
-
-//#warning "Remove automatic Journaline - this is for debug only"
-//                        startUserApplication(DabUserApplicationType::Journaline, true);
-#if RADIO_CONTROL_SPI_ENABLE
-#warning "Remove automatic SPI - this is for debug only"
-                            startUserApplication(DabUserApplicationType::SPI, true);
-#endif
-                            //#warning "Remove automatic TPEG - this is for debug only" \
-                            //startUserApplication(DabUserApplicationType::TPEG, true);
-                        }
-
                         ensembleConfigurationUpdate();
                     }
-                }
+                }                
                 else { /* SC not found - this should not happen */ }
             }
             else { /* service not found - this should not happen */ }
@@ -1285,7 +1273,24 @@ void RadioControl::eventHandler_userAppList(RadioControlEvent *pEvent)
             // TSI EN 300 401 V2.1.1 [6.1]
             // FIG 0/13 may be signalled at a slower rate but not less frequently than once per second.
         }
+
+        if (isCurrentService(pEvent->SId, pEvent->SCIdS))
+        {   // if is is current service ==> start user applications
+            // enable SLS automatically - if available
+            startUserApplication(DabUserApplicationType::SlideShow, true);
+
+//#warning "Remove automatic Journaline - this is for debug only"
+//                        startUserApplication(DabUserApplicationType::Journaline, true);
+#if RADIO_CONTROL_SPI_ENABLE
+#warning "Remove automatic SPI - this is for debug only"
+            startUserApplication(DabUserApplicationType::SPI, true);
+#endif
+            //#warning "Remove automatic TPEG - this is for debug only"
+            //startUserApplication(DabUserApplicationType::TPEG, true);
+        }
     }
+    else
+    { /* error */ }
 }
 
 void RadioControl::eventHandler_serviceSelection(RadioControlEvent *pEvent)
@@ -1307,20 +1312,13 @@ void RadioControl::eventHandler_serviceSelection(RadioControlEvent *pEvent)
                     emit audioServiceSelection(*scIt);
 
                     // discovery point -> request UserApps and Announcements information update
+                    // user application will be enabled when userApp list is received
                     dabGetUserApps(m_currentService.SId, m_currentService.SCIdS);
                     dabGetAnnouncementSupport(m_currentService.SId);
 
                     // announcements and user apps are enabled when updated info is received
                     // setup announcements
                     setCurrentServiceAnnouncementSupport();
-
-                    // enable SLS automatically - if already available
-                    startUserApplication(DabUserApplicationType::SlideShow, true);
-
-#if RADIO_CONTROL_SPI_ENABLE
-#warning "Remove automatic SPI - this is for debug only"
-                    startUserApplication(DabUserApplicationType::SPI, true);
-#endif
                 }
             }
         }
@@ -1602,7 +1600,7 @@ void RadioControl::announcementHandler(dabsdrAsw_t *pAnnouncement)
         }
         if ((announcementId >= 0) && (pAnnouncement->ASwFlags & m_currentService.announcement.enaFlags))
         {   // valid ASw
-            qCDebug(radioControl)
+            qCInfo(radioControl)
                      << DabTables::getAnnouncementNameEnglish(static_cast<DabAnnouncement>(announcementId))
                      << "announcement in subchannel" <<  pAnnouncement->subChId
                      << "cluster ID" << pAnnouncement->clusterId;
@@ -1881,7 +1879,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         }
         else
         {
-            qCWarning(radioControl, "SId %4.4X not found", pInfo->SId);
+            qCWarning(radioControl, "DABSDR_NID_SERVICE_COMPONENT_LIST SId %4.4XL: status %d", pInfo->SId, p->status);
         }
     }
     break;
@@ -1920,7 +1918,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         }
         else
         {
-            qCWarning(radioControl, "SId %4.4X, SCIdS %2.2X not found", pInfo->SId, pInfo->SCIdS);
+            qCWarning(radioControl, "DABSDR_NID_USER_APP_LIST SId %4.4X, SCIdS %2.2X: status %d", pInfo->SId, pInfo->SCIdS, p->status);
         }
     }
     break;
