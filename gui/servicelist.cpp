@@ -66,7 +66,7 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     bool newService = false;
     bool updatedService = false;
 
-    qCInfo(serviceList, "          [%6.6X] %-18s %X : %d", e.ueid, s.label.toLocal8Bit().data(), s.SId.value(), s.SCIdS);
+    qCInfo(serviceList, "          [%6.6X] %-18s %X : %d", e.ueid, s.label.toUtf8().data(), s.SId.value(), s.SCIdS);
 
     ServiceListItem * pService = nullptr;
     ServiceListId servId(s);
@@ -317,7 +317,7 @@ void ServiceList::endEnsembleUpdate(const RadioControlEnsemble & e)
     {
         if ((*it)->isObsolete())
         {   // service is obsolete
-            qCInfo(serviceList, "Removing service: [%6.6X] %-18s %X : %d", e.ueid, (*it)->label().toLocal8Bit().data(), (*it)->SId().value(), (*it)->SCIdS());
+            qCInfo(serviceList, "Removing service: [%6.6X] %-18s %X : %d", e.ueid, (*it)->label().toUtf8().data(), (*it)->SId().value(), (*it)->SCIdS());
 
             emit serviceRemovedFromEnsemble(ensId, (*it)->id());
 
