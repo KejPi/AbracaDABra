@@ -388,7 +388,11 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // initialize radio control
     if (!m_radioControl->init())
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
         qCFatal(application) << "RadioControl() init failed";
+#else
+        qCCritical(application) << "RadioControl() init failed";
+#endif
         close();
         qApp->quit();
     }

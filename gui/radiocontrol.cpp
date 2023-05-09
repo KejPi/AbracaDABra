@@ -97,7 +97,11 @@ bool RadioControl::init()
     }
     else
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
         qCFatal(radioControl) << "DAB processing init failed";
+#else
+        qCCritical(radioControl) << "DAB processing init failed";
+#endif
         m_dabsdrHandle = nullptr;
 
         return false;
