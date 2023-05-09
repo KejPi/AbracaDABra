@@ -643,7 +643,7 @@ void AudioOutput::onStreamFinished()
     else if (!(m_cbRequest & Request::Stop))
     {   // finished and not stop request ==> problem with output device
         // start again
-        qCWarning(audioOutput, "Current audio device probably removed, trying new default device";
+        qCWarning(audioOutput, "Current audio device probably removed, trying new default device");
 
         // hotplug handling
         Pa_Terminate();
