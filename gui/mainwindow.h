@@ -62,9 +62,6 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-// in a header
-Q_DECLARE_LOGGING_CATEGORY(application)
-
 class DLPlusObjectUI;
 
 class MainWindow : public QMainWindow

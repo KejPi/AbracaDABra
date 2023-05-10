@@ -5,11 +5,12 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QStandardPaths>
+#include <QLoggingCategory>
 #include <QClipboard>
-#include "mainwindow.h"
 #include "logdialog.h"
 #include "ui_logdialog.h"
 
+Q_DECLARE_LOGGING_CATEGORY(application)
 
 class LogModel : public QAbstractListModel
 {
