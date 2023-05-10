@@ -850,6 +850,7 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
         {   // do mute
 #if AUDIO_DECODER_NOISE_CONCEALMENT
             // read noise samples
+            qCInfo(audioDecoder) << "Audio decoding errors -> muting audio";
             int valuesToRead = m_muteRamp.size()*m_numChannels;
             if (nullptr != m_noiseFile)
             {
@@ -860,6 +861,8 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
                 m_noiseFile->read((char *) m_noiseBufferPtr, valuesToRead*sizeof(int16_t));
             }
             int16_t * noisePtr = m_noiseBufferPtr;
+#else
+
 #endif
 
             int16_t * dataPtr = &m_outBufferPtr[m_outputBufferSamples - 1];  // last sample
@@ -981,7 +984,7 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
 
         if (OutputState::Muted == m_state)
         {   // do unmute
-
+            qCInfo(audioDecoder) << "Audio decoding OK -> umuting audio";
 #if AUDIO_DECODER_NOISE_CONCEALMENT
             // read noise
             int valuesToRead = m_muteRamp.size()*m_numChannels;

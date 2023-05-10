@@ -583,7 +583,7 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
         QHash<DabUserApplicationType,RadioControlUserApp>::const_iterator uaIt = scIt->userApps.constFind(uaType);
         if (scIt->userApps.cend() != uaIt)
         {
-            qCInfo(radioControl, "Starting user application #%d from XPAD", int(uaType));
+            qCInfo(radioControl, "Starting user application type %d from XPAD", int(uaType));
             dabXPadAppStart(uaIt->xpadData.xpadAppTy, 1, DABSDR_ID_AUDIO_PRIMARY);
             return;
         }
@@ -600,7 +600,7 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
                     sc.autoEnabled = start;
                     if (start)
                     {
-                        qCInfo(radioControl, "Found user application #%d in secondary data service SCIdS %d. Starting the service...", int(uaType), sc.SCIdS);
+                        qCInfo(radioControl, "Found user application type %d in secondary data service SCIdS %d. Starting the service...", int(uaType), sc.SCIdS);
                         dabServiceSelection(sc.SId.value(), sc.SCIdS, DABSDR_ID_DATA);
                     }
                     else
@@ -628,7 +628,7 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
                             sc.autoEnabled = start;
                             if (start)
                             {
-                                qCInfo(radioControl, "Found user application #%d within ensemble in data service SId %8.8X, SCIdS %d. Starting the service...",
+                                qCInfo(radioControl, "Found user application type %d within ensemble in data service SId %8.8X, SCIdS %d. Starting the service...",
                                        int(uaType), sc.SId.value(), sc.SCIdS);
                                 dabServiceSelection(sc.SId.value(), sc.SCIdS, DABSDR_ID_DATA);
                             }
@@ -1652,6 +1652,8 @@ void RadioControl::announcementHandler(dabsdrAsw_t *pAnnouncement)
                 //      pAnnouncement->ASwFlags == 0  (end of announcment)
                 // or
                 //      pAnnouncement->ASwFlags & m_announcementEnaFlags == 0 (disabled announcment)
+
+                qCInfo(radioControl) << "End of announcement";
 
                 switch (m_currentService.announcement.state)
                 {
