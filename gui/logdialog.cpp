@@ -1,7 +1,6 @@
 #include <QDebug>
 #include <QString>
 #include <QScrollBar>
-#include <QFontDatabase>
 #include <QFileDialog>
 #include <QFile>
 #include <QStandardPaths>
@@ -12,106 +11,113 @@
 
 Q_DECLARE_LOGGING_CATEGORY(application)
 
-class LogModel : public QAbstractListModel
+int LogModel::rowCount(const QModelIndex &parent) const
 {
-public:
-    LogModel(QObject *parent = nullptr) : QAbstractListModel(parent) {}
+    return m_msgList.size();
+}
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override
+QVariant LogModel::data(const QModelIndex &index, int role) const
+{
+    if (!index.isValid())
     {
-        return m_msgList.size();
-    }
-    QVariant data(const QModelIndex &index, int role) const override
-    {
-        if (!index.isValid())
-        {
-            return QVariant();
-        }
-
-        if (m_msgList.size() > index.row())
-        {
-            switch (role)
-            {
-            case Qt::FontRole:
-                return QVariant(fixedFont);
-            case Qt::ForegroundRole:
-                return QVariant(m_msgList.at(index.row()).color);
-            case Qt::DisplayRole:
-                return m_msgList.at(index.row()).msg;
-            default:
-                return QVariant();
-            }
-        }
-
         return QVariant();
     }
-    bool setData(const QModelIndex & index, const QVariant & value, int role) override
+
+    if (m_msgList.size() > index.row())
     {
-        if (!index.isValid())
+        switch (role)
         {
-            return false;
-        }
-        if (m_msgList.size() > index.row())
-        {
-            m_msgList[index.row()].msg = value.toString();
-            switch (static_cast<QtMsgType>(role))
+        case Qt::FontRole:
+            return QVariant(fixedFont);
+        case Qt::ForegroundRole:
+            if (m_isDarkMode)
             {
-                case QtDebugMsg:
-                    m_msgList[index.row()].color = QColor(Qt::blue);
-                break;
+                switch (m_msgList.at(index.row()).type)
+                {
                 case QtInfoMsg:
-                    m_msgList[index.row()].color = QColor(Qt::black);
-                break;
+                    return QVariant();
+                case QtDebugMsg:
+                    return QVariant(QColor(Qt::cyan));
                 case QtWarningMsg:
-                    m_msgList[index.row()].color = QColor(Qt::magenta);
-                break;
+                    return QVariant(QColor(Qt::yellow));
                 case QtCriticalMsg:
-                    m_msgList[index.row()].color = QColor(Qt::red);
-                break;
+                    return QVariant(QColor(Qt::red));
                 case QtFatalMsg:
-                    m_msgList[index.row()].color = QColor(Qt::red);
-                break;
+                    return QVariant(QColor(Qt::red));
+                default:
+                    return QVariant();
+                }
             }
-            return true;
-        }
-        else
-        {
-            return false;
+            else
+            {
+                switch (m_msgList.at(index.row()).type)
+                {
+                case QtInfoMsg:
+                    return QVariant();
+                case QtDebugMsg:
+                    return QVariant(QColor(Qt::blue));
+                case QtWarningMsg:
+                    return QVariant(QColor(Qt::magenta));
+                case QtCriticalMsg:
+                    return QVariant(QColor(Qt::red));
+                case QtFatalMsg:
+                    return QVariant(QColor(Qt::red));
+                default:
+                    return QVariant();
+                }
+            }
+            break;
+        case Qt::DisplayRole:
+            return m_msgList.at(index.row()).msg;
+        default:
+            return QVariant();
         }
     }
-    bool insertRows(int position, int rows, const QModelIndex &index = QModelIndex()) override
+
+    return QVariant();
+}
+
+bool LogModel::setData(const QModelIndex & index, const QVariant & value, int role)
+{
+    if (!index.isValid())
     {
-        beginInsertRows(QModelIndex(), position, position+rows-1);
-
-        for (int row = 0; row < rows; ++row) {
-            m_msgList.insert(position, LogItem());
-        }
-
-        endInsertRows();
+        return false;
+    }
+    if (m_msgList.size() > index.row())
+    {
+        m_msgList[index.row()].msg = value.toString();
+        m_msgList[index.row()].type = static_cast<QtMsgType>(role);
         return true;
     }
-    bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override
+    else
     {
-        beginRemoveRows(QModelIndex(), position, position+rows-1);
-
-        for (int row = 0; row < rows; ++row) {
-            m_msgList.removeAt(position);
-        }
-
-        endRemoveRows();
-        return true;
+        return false;
     }
-private:
-    const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    struct LogItem
-    {
-        QString msg;
-        QColor color;
-    };
+}
 
-    QList<struct LogItem> m_msgList;
-};
+bool LogModel::insertRows(int position, int rows, const QModelIndex &index)
+{
+    beginInsertRows(QModelIndex(), position, position+rows-1);
 
+    for (int row = 0; row < rows; ++row) {
+        m_msgList.insert(position, LogItem());
+    }
+
+    endInsertRows();
+    return true;
+}
+
+bool LogModel::removeRows(int position, int rows, const QModelIndex &index)
+{
+    beginRemoveRows(QModelIndex(), position, position+rows-1);
+
+    for (int row = 0; row < rows; ++row) {
+        m_msgList.removeAt(position);
+    }
+
+    endRemoveRows();
+    return true;
+}
 
 LogDialog::LogDialog(QWidget *parent) :
     QDialog(parent),
@@ -156,6 +162,11 @@ LogDialog::~LogDialog()
 QAbstractItemModel *LogDialog::getModel() const
 {
     return ui->logListView->model();
+}
+
+void LogDialog::setupDarkMode(bool darkModeEna)
+{
+    m_dataModel->setupDarkMode(darkModeEna);
 }
 
 void LogDialog::saveLogToFile()

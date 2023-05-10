@@ -261,7 +261,7 @@ void RtlSdrInput::onReadThreadStopped()
     m_watchdogTimer.stop();
     if (0 != m_frequency)
     {   // if device should be running then it means reading error thus device is disconnected
-        qCWarning(rtlsdrInput) << "Device unplugged.";
+        qCCritical(rtlsdrInput) << "Device unplugged.";
 
         // fill buffer (artificially to avoid blocking of the DAB processing thread)
         inputBuffer.fillDummy();
