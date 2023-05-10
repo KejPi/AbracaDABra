@@ -2991,7 +2991,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="966"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="971"/>
         <source>Expert settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Experteneinstellungen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="214"/>
@@ -2999,7 +2999,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="912"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="972"/>
         <source>Bandwidth:</source>
-        <translation type="unfinished"></translation>
+        <translation>Bandbreite:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="221"/>
@@ -3007,7 +3007,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="913"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="973"/>
         <source>Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Standard</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="250"/>
@@ -3015,7 +3015,7 @@
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="914"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="967"/>
         <source>Bias Tee</source>
-        <translation type="unfinished"></translation>
+        <translation>Bias-Tee</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="335"/>
@@ -3242,12 +3242,12 @@
     <message>
         <location filename="../setupdialog.cpp" line="80"/>
         <source>Enable/disable bias tee.&lt;br&gt;&lt;br&gt;&lt;b&gt;WARNING:&lt;/b&gt; Before using the bias tee please ensure that you understand that you should not use this option when the dongle is connected directly to a DC short circuited antenna unless you are using an LNA.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bias-Tee an/ausschalten.&lt;br&gt;&lt;br&gt;&lt;b&gt;WARNUNG:&lt;/b&gt; Vor der Verwendung der Bias-Tee-Funktion stellen Sie sicher, dass Sie diese Option nicht verwenden, wenn der Empfänger direkt mit einer DC kurzgeschlossenen Antenne verbunden ist, es sei denn, Sie verwenden einen LNA.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="84"/>
         <source>Input signal bandwidth in kHz. Value &apos;0&apos; means default bandwidth %1 kHz.</source>
-        <translation type="unfinished"></translation>
+        <translation>Eingangssignalbandbreite in kHz. Der Wert &apos;0&apos; bedeutet die Standardbandbreite %1 kHz.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="104"/>
@@ -3317,12 +3317,12 @@
     <message>
         <location filename="../setupdialog.cpp" line="231"/>
         <source>Light style (Fusion with light colors)</source>
-        <translation type="unfinished"></translation>
+        <translation>Heller Stil (Fusion mit hellen Farben)</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1151"/>
         <source>sec</source>
-        <translation type="unfinished"></translation>
+        <translation>sec</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="232"/>
