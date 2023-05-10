@@ -444,24 +444,61 @@
 <context>
     <name>InputDeviceRecorder</name>
     <message>
-        <location filename="../inputdevicerecorder.cpp" line="84"/>
+        <location filename="../inputdevicerecorder.cpp" line="85"/>
         <source>Record IQ stream (Raw File XML Header)</source>
         <translation>Nagrywaj strumień IQ (plik raw z nagłówkiem XML)</translation>
     </message>
     <message>
-        <location filename="../inputdevicerecorder.cpp" line="86"/>
+        <location filename="../inputdevicerecorder.cpp" line="87"/>
         <source>Binary XML files</source>
         <translation>Pliki binarne XML</translation>
     </message>
     <message>
-        <location filename="../inputdevicerecorder.cpp" line="95"/>
+        <location filename="../inputdevicerecorder.cpp" line="96"/>
         <source>Record IQ stream</source>
         <translation>Nagrywaj strumień IQ</translation>
     </message>
     <message>
-        <location filename="../inputdevicerecorder.cpp" line="97"/>
+        <location filename="../inputdevicerecorder.cpp" line="98"/>
         <source>Binary files</source>
         <translation>Pliki binarne</translation>
+    </message>
+</context>
+<context>
+    <name>LogDialog</name>
+    <message>
+        <location filename="../logdialog.ui" line="14"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_logdialog.h" line="78"/>
+        <source>Application log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../logdialog.ui" line="25"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_logdialog.h" line="79"/>
+        <source>Save to file...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../logdialog.ui" line="32"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_logdialog.h" line="80"/>
+        <source>Copy to clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../logdialog.ui" line="52"/>
+        <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_logdialog.h" line="81"/>
+        <source>Clear</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../logdialog.cpp" line="167"/>
+        <source>Save application log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../logdialog.cpp" line="169"/>
+        <source>Log files</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -486,297 +523,302 @@
         <translation>DL</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="69"/>
+        <location filename="../mainwindow.cpp" line="73"/>
         <source>No signal</source>
         <translation>Brak sygnału</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="69"/>
+        <location filename="../mainwindow.cpp" line="73"/>
         <source>Signal found</source>
         <translation>Sygnał znaleziony</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="69"/>
+        <location filename="../mainwindow.cpp" line="73"/>
         <source>Sync</source>
         <translation>Synchronizacja</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="70"/>
+        <location filename="../mainwindow.cpp" line="74"/>
         <source>DAB signal not detected&lt;br&gt;Looking for signal...</source>
         <translation>Nie wykryto sygnału DAB&lt;br&gt;Trwa strojenie...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="71"/>
+        <location filename="../mainwindow.cpp" line="75"/>
         <source>Found DAB signal,&lt;br&gt;trying to synchronize...</source>
         <translation>Znaleziono sygnał DAB,&lt;br&gt;próba synchronizacji...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="72"/>
+        <location filename="../mainwindow.cpp" line="76"/>
         <source>Synchronized to DAB signal</source>
         <translation>Dodaj do listy ulubionych stacji</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="111"/>
+        <location filename="../mainwindow.cpp" line="163"/>
         <source>Add service to favorites</source>
         <translation>Dodaj program do ulubionych</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="112"/>
+        <location filename="../mainwindow.cpp" line="164"/>
         <source>Remove service from favorites</source>
         <translation>Usuń z listy ulubionych stacji</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="134"/>
+        <location filename="../mainwindow.cpp" line="186"/>
         <source>DAB time</source>
         <translation>Czas</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="137"/>
+        <location filename="../mainwindow.cpp" line="189"/>
         <source>DAB signal quality</source>
         <translation>Jakość sygnału DAB</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="152"/>
-        <location filename="../mainwindow.cpp" line="158"/>
+        <location filename="../mainwindow.cpp" line="204"/>
+        <location filename="../mainwindow.cpp" line="210"/>
         <source>DAB signal SNR</source>
         <translation>Jakość stosunek sygnału do szumu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="172"/>
+        <location filename="../mainwindow.cpp" line="224"/>
         <source>Settings...</source>
         <translation>Opcje…</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="175"/>
+        <location filename="../mainwindow.cpp" line="227"/>
         <source>Clear service list</source>
         <translation>Wyczyść listę usług</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="178"/>
+        <location filename="../mainwindow.cpp" line="230"/>
         <source>Band scan...</source>
         <translation>Strojenie…</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="181"/>
+        <location filename="../mainwindow.cpp" line="233"/>
         <source>Ensemble information</source>
         <translation>Informacje o multipleksie</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="184"/>
+        <location filename="../mainwindow.cpp" line="236"/>
+        <source>Application log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="239"/>
         <source>About</source>
         <translation>O oprogramowaniu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="198"/>
+        <location filename="../mainwindow.cpp" line="254"/>
         <source>Open menu</source>
         <translation>Otwórz menu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="203"/>
+        <location filename="../mainwindow.cpp" line="259"/>
         <source>Mute audio</source>
         <translation>Wyciszenie dźwięku</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="204"/>
+        <location filename="../mainwindow.cpp" line="260"/>
         <source>Unmute audio</source>
         <translation>Anuluj wyciszenie dźwięku</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="211"/>
+        <location filename="../mainwindow.cpp" line="267"/>
         <source>Audio volume</source>
         <translation>Głośność</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="298"/>
+        <location filename="../mainwindow.cpp" line="354"/>
         <source>Audio coding</source>
         <translation>Kodowanie audio</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="306"/>
+        <location filename="../mainwindow.cpp" line="362"/>
         <source>Ongoing announcement</source>
         <translation>Komunikat na żywo</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="310"/>
+        <location filename="../mainwindow.cpp" line="366"/>
         <source>Browse categorized slides</source>
         <translation>Przeglądaj skategoryzowane slajdy</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="313"/>
+        <location filename="../mainwindow.cpp" line="369"/>
         <source>Change service source (ensemble)</source>
         <translation>Zmień źródło usługi (multipleks)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="611"/>
+        <location filename="../mainwindow.cpp" line="671"/>
         <source>&lt;b&gt;Ensemble:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %5</source>
         <translation type="unfinished">&lt;b&gt;Multipleks:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Krótka nazwa multipleksu:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Kraj:&lt;/b&gt; %5</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="784"/>
+        <location filename="../mainwindow.cpp" line="844"/>
         <source>&lt;b&gt;DAB audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation>&lt;b&gt;DAB kodowanie audio&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="784"/>
+        <location filename="../mainwindow.cpp" line="844"/>
         <source>MPEG-1 layer 2</source>
         <translation>MPEG-1 warstwa 2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="788"/>
-        <location filename="../mainwindow.cpp" line="792"/>
-        <location filename="../mainwindow.cpp" line="796"/>
+        <location filename="../mainwindow.cpp" line="848"/>
+        <location filename="../mainwindow.cpp" line="852"/>
+        <location filename="../mainwindow.cpp" line="856"/>
         <source>&lt;b&gt;DAB+ audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation>&lt;b&gt;DAB+ kodowanie audio&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="788"/>
+        <location filename="../mainwindow.cpp" line="848"/>
         <source>MPEG-4 Low Complexity AAC</source>
         <translation>MPEG-4 Low Complexity AAC</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="792"/>
+        <location filename="../mainwindow.cpp" line="852"/>
         <source>MPEG-4 High Efficiency AAC</source>
         <translation>MPEG-4 High Efficiency AAC</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="796"/>
+        <location filename="../mainwindow.cpp" line="856"/>
         <source>MPEG-4 High Efficiency AAC v2</source>
         <translation>MPEG-4 High Efficiency AAC v2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="805"/>
+        <location filename="../mainwindow.cpp" line="865"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Sample rate: %2 kHz</source>
         <translation>&lt;b&gt;Typ dźwięku&lt;/b&gt;&lt;br&gt;%1stereo&lt;br&gt;Częstotliwość próbkowania: %2 kHz</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="812"/>
+        <location filename="../mainwindow.cpp" line="872"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Sample rate: %2 kHz (SBR %3)</source>
         <translation>&lt;b&gt;Typ dźwięku&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Częstotliwość próbkowania: %2 kHz (SBR %3)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="813"/>
-        <location filename="../mainwindow.cpp" line="815"/>
+        <location filename="../mainwindow.cpp" line="873"/>
+        <location filename="../mainwindow.cpp" line="875"/>
         <source>on</source>
         <translation>włączony</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="813"/>
-        <location filename="../mainwindow.cpp" line="815"/>
+        <location filename="../mainwindow.cpp" line="873"/>
+        <location filename="../mainwindow.cpp" line="875"/>
         <source>off</source>
         <translation>wyłączony</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="824"/>
+        <location filename="../mainwindow.cpp" line="884"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz</source>
         <translation>&lt;b&gt;Sygnał audio&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Częstotliwość próbkowania: %1 kHz</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="830"/>
+        <location filename="../mainwindow.cpp" line="890"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz (SBR: %2)</source>
         <translation>&lt;b&gt;Sygnał audio&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Częstotliwość próbkowania: %1 kHz (SBR: %2)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="850"/>
+        <location filename="../mainwindow.cpp" line="910"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1 (dynamic)</source>
         <translation>&lt;b&gt;Charakter programu&lt;/b&gt;&lt;br&gt;%1 (dynamiczny)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="859"/>
+        <location filename="../mainwindow.cpp" line="919"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1</source>
         <translation>&lt;b&gt;Charakter programu&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="880"/>
+        <location filename="../mainwindow.cpp" line="940"/>
         <source>Tuning...  </source>
         <translation>Strojenie…  </translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="981"/>
+        <location filename="../mainwindow.cpp" line="1041"/>
         <source>End of file</source>
         <translation>Koniec pliku</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="984"/>
+        <location filename="../mainwindow.cpp" line="1044"/>
         <source>Input device disconnected</source>
         <translation>Urządzenie wejściowe odłączone</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="990"/>
+        <location filename="../mainwindow.cpp" line="1050"/>
         <source>No input data</source>
         <translation>Brak danych wejściowych</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1116"/>
+        <location filename="../mainwindow.cpp" line="1176"/>
         <source>&lt;b&gt;Ensemble %1/%2&lt;/b&gt;&lt;br&gt;Click for switching to:&lt;br&gt;&lt;i&gt;%3&lt;/i&gt;</source>
         <translation>&lt;b&gt;Multipleks %1/%2&lt;/b&gt;&lt;br&gt;Kliknij, aby przejść do:&lt;br&gt;&lt;i&gt;%3&lt;/i&gt;</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1125"/>
+        <location filename="../mainwindow.cpp" line="1185"/>
         <source>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Language:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %6</source>
         <translation type="unfinished">&lt;b&gt;Stacja:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Skrót nazwy stacji:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Język:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Kraj:&lt;/b&gt; %6</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1170"/>
+        <location filename="../mainwindow.cpp" line="1230"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Coderate: %2/%3&lt;br&gt;Capacity units: %4 CU</source>
         <translation>&lt;B&gt;Korekcja błędów&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Sprawność kodowania: %2/%3&lt;br&gt;Jednostki pojemności: %4 CU</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1181"/>
+        <location filename="../mainwindow.cpp" line="1241"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Protection level: %2&lt;br&gt;Capacity units: %3 CU</source>
         <translation>&lt;B&gt;Korekcja błędów&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Poziom ochrony: %2&lt;br&gt;Jednostki pojemności: %3 CU</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1191"/>
+        <location filename="../mainwindow.cpp" line="1251"/>
         <source>%1 kbps</source>
         <translation>%1 kbps</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1193"/>
+        <location filename="../mainwindow.cpp" line="1253"/>
         <source>&lt;b&gt;Service bitrate&lt;/b&gt;&lt;br&gt;Audio &amp; data: %1</source>
         <translation>&lt;b&gt;Przepływność&lt;/b&gt;&lt;br&gt;Dźwięk i dane związane z programem: %1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1215"/>
+        <location filename="../mainwindow.cpp" line="1275"/>
         <source>Service currently unavailable</source>
         <translation>Usługa obecnie niedostępna</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1216"/>
+        <location filename="../mainwindow.cpp" line="1276"/>
         <source>Service was removed from ensemble</source>
         <translation>Usługa została usunięta z multipleksu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1249"/>
+        <location filename="../mainwindow.cpp" line="1308"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;on current service</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Bieżący komunikat&lt;br&gt;na włączonej stacji</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1260"/>
+        <location filename="../mainwindow.cpp" line="1319"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to suspend this announcement</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Bieżący komunikat&lt;br&gt;Źródło: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknij, aby wstrzymać odtwarzanie</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1275"/>
+        <location filename="../mainwindow.cpp" line="1334"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Suspended announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to resume this announcement</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Wstrzymany komunikat&lt;br&gt;Źródło: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknij, aby wznowić odtwarzanie komunikatu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1316"/>
+        <location filename="../mainwindow.cpp" line="1375"/>
         <source>No ensemble</source>
         <translation>Brak multipleksu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1317"/>
+        <location filename="../mainwindow.cpp" line="1376"/>
         <source>No ensemble tuned</source>
         <translation>Nie dostrojono żadnego multipleksu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1324"/>
+        <location filename="../mainwindow.cpp" line="1383"/>
         <source>No service</source>
         <translation>Brak stacji</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1328"/>
+        <location filename="../mainwindow.cpp" line="1387"/>
         <source>No service playing</source>
         <translation>Stacja nie gra, wybrać stację z listy</translation>
     </message>
@@ -784,284 +826,284 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../main.cpp" line="44"/>
+        <location filename="../main.cpp" line="43"/>
         <source>Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)</source>
         <translation>Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="50"/>
+        <location filename="../main.cpp" line="49"/>
         <source>Optional INI file. If not specified AbracaDABra.ini in system directory will be used.</source>
         <translation>Opcjonalny plik INI. Jeśli nie zostanie określony, zostanie użyty AbracaDABra.ini w katalogu systemowym.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2793"/>
+        <location filename="../mainwindow.cpp" line="2859"/>
         <source>Title</source>
         <translation>Tytuł</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2794"/>
+        <location filename="../mainwindow.cpp" line="2860"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2795"/>
+        <location filename="../mainwindow.cpp" line="2861"/>
         <source>Track Number</source>
         <translation>Numer utworu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2796"/>
+        <location filename="../mainwindow.cpp" line="2862"/>
         <source>Artist</source>
         <translation>Artysta</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2797"/>
+        <location filename="../mainwindow.cpp" line="2863"/>
         <source>Composition</source>
         <translation>Kompozycja</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2798"/>
+        <location filename="../mainwindow.cpp" line="2864"/>
         <source>Movement</source>
         <translation>Ruch</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2799"/>
+        <location filename="../mainwindow.cpp" line="2865"/>
         <source>Conductor</source>
         <translation>Dyrygent</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2800"/>
+        <location filename="../mainwindow.cpp" line="2866"/>
         <source>Composer</source>
         <translation>Kompozytor</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2801"/>
+        <location filename="../mainwindow.cpp" line="2867"/>
         <source>Band</source>
         <translation>Zespół</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2802"/>
+        <location filename="../mainwindow.cpp" line="2868"/>
         <source>Comment</source>
         <translation>Komentarz</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2803"/>
+        <location filename="../mainwindow.cpp" line="2869"/>
         <source>Genre</source>
         <translation>Gatunek</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2804"/>
+        <location filename="../mainwindow.cpp" line="2870"/>
         <location filename="../dabtables.cpp" line="169"/>
         <location filename="../dabtables.cpp" line="591"/>
         <source>News</source>
         <translation>Wiadomości</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2805"/>
+        <location filename="../mainwindow.cpp" line="2871"/>
         <source>News (local)</source>
         <translation>Wiadomości (lokalne)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2806"/>
+        <location filename="../mainwindow.cpp" line="2872"/>
         <source>Stock Market</source>
         <translation>Giełda Papierów Wartościowych</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2807"/>
+        <location filename="../mainwindow.cpp" line="2873"/>
         <location filename="../dabtables.cpp" line="172"/>
         <source>Sport</source>
         <translation>Sport</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2808"/>
+        <location filename="../mainwindow.cpp" line="2874"/>
         <source>Lottery</source>
         <translation>Loteria</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2809"/>
+        <location filename="../mainwindow.cpp" line="2875"/>
         <source>Horoscope</source>
         <translation>Horoskop</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2810"/>
+        <location filename="../mainwindow.cpp" line="2876"/>
         <source>Daily Diversion</source>
         <translatorcomment>Where is this displayed? I am not happy with this translation</translatorcomment>
         <translation>Codzienna rozrywka</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2811"/>
+        <location filename="../mainwindow.cpp" line="2877"/>
         <source>Health</source>
         <translation>Zdrowie</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2812"/>
+        <location filename="../mainwindow.cpp" line="2878"/>
         <location filename="../dabtables.cpp" line="593"/>
         <source>Event</source>
         <translation>Wydarzenie</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2813"/>
+        <location filename="../mainwindow.cpp" line="2879"/>
         <source>Scene</source>
         <translation>Scena</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2814"/>
+        <location filename="../mainwindow.cpp" line="2880"/>
         <source>Cinema</source>
         <translation>Kino</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2815"/>
+        <location filename="../mainwindow.cpp" line="2881"/>
         <source>TV</source>
         <translation>Telewizja</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2819"/>
+        <location filename="../mainwindow.cpp" line="2885"/>
         <location filename="../dabtables.cpp" line="592"/>
         <source>Weather</source>
         <translation>Pogoda</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2820"/>
+        <location filename="../mainwindow.cpp" line="2886"/>
         <source>Traffic</source>
         <translation>Ruch drogowy</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2821"/>
+        <location filename="../mainwindow.cpp" line="2887"/>
         <location filename="../dabtables.cpp" line="587"/>
         <source>Alarm</source>
         <translation>Alarm</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2822"/>
+        <location filename="../mainwindow.cpp" line="2888"/>
         <source>Advertisment</source>
         <translation>Reklama</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2823"/>
+        <location filename="../mainwindow.cpp" line="2889"/>
         <source>URL</source>
         <translation>URL</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2824"/>
+        <location filename="../mainwindow.cpp" line="2890"/>
         <source>Other</source>
         <translation>Inny</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2825"/>
+        <location filename="../mainwindow.cpp" line="2891"/>
         <source>Station (short)</source>
         <translation>Stacja (skrót nazwy)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2826"/>
+        <location filename="../mainwindow.cpp" line="2892"/>
         <source>Station</source>
         <translation>Program</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2827"/>
+        <location filename="../mainwindow.cpp" line="2893"/>
         <source>Now</source>
         <translation>Teraz</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2828"/>
+        <location filename="../mainwindow.cpp" line="2894"/>
         <source>Next</source>
         <translation>Następne</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2829"/>
+        <location filename="../mainwindow.cpp" line="2895"/>
         <source>Programme Part</source>
         <translation>Część programowa</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2830"/>
+        <location filename="../mainwindow.cpp" line="2896"/>
         <source>Host</source>
         <translation>Prezenter/-ka</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2831"/>
+        <location filename="../mainwindow.cpp" line="2897"/>
         <source>Editorial</source>
         <translation>Artykuł wstępny</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2835"/>
+        <location filename="../mainwindow.cpp" line="2901"/>
         <source>Homepage</source>
         <translation>Strona startowa</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2839"/>
+        <location filename="../mainwindow.cpp" line="2905"/>
         <source>Phone (Hotline)</source>
         <translation>Telefon (infolinia)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2840"/>
+        <location filename="../mainwindow.cpp" line="2906"/>
         <source>Phone (Studio)</source>
         <translation>Telefon (studio)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2841"/>
+        <location filename="../mainwindow.cpp" line="2907"/>
         <source>Phone (Other)</source>
         <translation>Telefon (inny)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2842"/>
+        <location filename="../mainwindow.cpp" line="2908"/>
         <source>SMS (Studio)</source>
         <translation>SMS (do studia)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2843"/>
+        <location filename="../mainwindow.cpp" line="2909"/>
         <source>SMS (Other)</source>
         <translation>SMS (inny)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2844"/>
+        <location filename="../mainwindow.cpp" line="2910"/>
         <source>E-mail (Hotline)</source>
         <translation>E-mail (infolinia)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2845"/>
+        <location filename="../mainwindow.cpp" line="2911"/>
         <source>E-mail (Studio)</source>
         <translation>E-mail (studio)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2846"/>
+        <location filename="../mainwindow.cpp" line="2912"/>
         <source>E-mail (Other)</source>
         <translation>E-mail (inny)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2847"/>
+        <location filename="../mainwindow.cpp" line="2913"/>
         <source>MMS</source>
         <translation>MMS</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2848"/>
+        <location filename="../mainwindow.cpp" line="2914"/>
         <source>Chat Message</source>
         <translation>Wiadomość z czatu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2849"/>
+        <location filename="../mainwindow.cpp" line="2915"/>
         <source>Chat</source>
         <translation>Czat</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2850"/>
+        <location filename="../mainwindow.cpp" line="2916"/>
         <source>Vote Question</source>
         <translation>Pytanie do głosowania</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2851"/>
+        <location filename="../mainwindow.cpp" line="2917"/>
         <source>Vote Here</source>
         <translation>Głosuj tutaj</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2854"/>
+        <location filename="../mainwindow.cpp" line="2920"/>
         <source>Private 1</source>
         <translation>Prywatny 1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2855"/>
+        <location filename="../mainwindow.cpp" line="2921"/>
         <source>Private 2</source>
         <translation>Prywatny 2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2856"/>
+        <location filename="../mainwindow.cpp" line="2922"/>
         <source>Private 3</source>
         <translation>Prywatny 3</translation>
     </message>
@@ -3290,7 +3332,7 @@
     <message>
         <location filename="../setupdialog.ui" line="978"/>
         <location filename="../setupdialog.cpp" line="70"/>
-        <location filename="../setupdialog.cpp" line="936"/>
+        <location filename="../setupdialog.cpp" line="954"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="988"/>
         <source>No device connected</source>
         <translation>Brak podłączonego urządzenia</translation>
@@ -3361,7 +3403,7 @@
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="58"/>
-        <location filename="../setupdialog.cpp" line="966"/>
+        <location filename="../setupdialog.cpp" line="984"/>
         <source>Raw file</source>
         <translation>Plik surowy (RAW)</translation>
     </message>
@@ -3457,7 +3499,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1151"/>
+        <location filename="../setupdialog.cpp" line="1169"/>
         <source>sec</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3522,44 +3564,44 @@
         <translation>Wybierz poziom hałasu generowanego podczas przerw w dźwięku.&lt;br&gt;Może to poprawić wrażenia słuchowe i sprawić, że przerwy w dźwięku będą mniej irytujące.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="433"/>
-        <location filename="../setupdialog.cpp" line="443"/>
-        <location filename="../setupdialog.cpp" line="529"/>
+        <location filename="../setupdialog.cpp" line="439"/>
+        <location filename="../setupdialog.cpp" line="449"/>
+        <location filename="../setupdialog.cpp" line="535"/>
         <source>N/A</source>
         <translation>Nie dotyczy</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="930"/>
+        <location filename="../setupdialog.cpp" line="948"/>
         <source>RTL SDR device connected</source>
         <translation>Podłączono urządzenie: RTL SDR</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="933"/>
+        <location filename="../setupdialog.cpp" line="951"/>
         <source>RTL TCP device connected</source>
         <translation>Podłączono urządzenie: RTL TCP</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="939"/>
+        <location filename="../setupdialog.cpp" line="957"/>
         <source>Raw file connected</source>
         <translation>Plik surowy podłączony</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="942"/>
+        <location filename="../setupdialog.cpp" line="960"/>
         <source>Airspy device connected</source>
         <translation>Podłączono urządzenie: Airspy</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="945"/>
+        <location filename="../setupdialog.cpp" line="963"/>
         <source>Soapy SDR device connected</source>
         <translation>Podłączono urządzenie: Soapy SDR</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1011"/>
+        <location filename="../setupdialog.cpp" line="1029"/>
         <source>Open IQ stream</source>
         <translation>Otwórz strumień IQ</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1011"/>
+        <location filename="../setupdialog.cpp" line="1029"/>
         <source>Binary files</source>
         <translation>Pliki binarne</translation>
     </message>
