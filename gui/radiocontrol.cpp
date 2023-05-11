@@ -777,7 +777,7 @@ QString RadioControl::ensembleConfigurationString() const
                 strOut << ((sc.ps) ? " (primary)," : " (secondary),");
                 strOut << QString(" SCIdS: %1,").arg(sc.SCIdS);
                 strOut << QString(" SCId: %1,").arg(sc.packetData.SCId);
-                strOut << QString(" Language: %1,").arg(DabTables::getLangName(sc.lang));
+                strOut << QString(" Language: %1,").arg(sc.lang);
             }
             else
             {
