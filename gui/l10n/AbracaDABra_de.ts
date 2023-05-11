@@ -464,35 +464,35 @@
         <location filename="../logdialog.ui" line="14"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_logdialog.h" line="78"/>
         <source>Application log</source>
-        <translation type="unfinished"></translation>
+        <translation>Anwendungsprotokoll</translation>
     </message>
     <message>
         <location filename="../logdialog.ui" line="25"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_logdialog.h" line="79"/>
         <source>Save to file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Speichern unter...</translation>
     </message>
     <message>
         <location filename="../logdialog.ui" line="32"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_logdialog.h" line="80"/>
         <source>Copy to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>In die Zwischenablage kopieren</translation>
     </message>
     <message>
         <location filename="../logdialog.ui" line="52"/>
         <location filename="../../build-test/gui/AbracaDABra_autogen/include/ui_logdialog.h" line="81"/>
         <source>Clear</source>
-        <translation type="unfinished"></translation>
+        <translation>Leeren</translation>
     </message>
     <message>
         <location filename="../logdialog.cpp" line="167"/>
         <source>Save application log</source>
-        <translation type="unfinished"></translation>
+        <translation>Anwendungsprotokoll speichern</translation>
     </message>
     <message>
         <location filename="../logdialog.cpp" line="169"/>
         <source>Log files</source>
-        <translation type="unfinished"></translation>
+        <translation>Logdateien</translation>
     </message>
 </context>
 <context>
@@ -594,7 +594,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="236"/>
         <source>Application log</source>
-        <translation type="unfinished"></translation>
+        <translation>Anwendungsprotokoll</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="239"/>
