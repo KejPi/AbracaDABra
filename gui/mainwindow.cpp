@@ -1950,7 +1950,8 @@ void MainWindow::loadSettings()
     m_timeLocale = QLocale(m_setupDialog->applicationLanguage());
 
     // need to run here because it expects that settings is up-to-date
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && !defined(Q_OS_WIN)
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && !defined(Q_OS_WIN) && !defined(Q_OS_LINUX)
+    // theme color looks horible on Linux -> always force color theme
     if (ApplicationStyle::Default != s.applicationStyle)
 #endif
     {
@@ -2367,11 +2368,13 @@ void MainWindow::onApplicationStyleChanged(ApplicationStyle style)
     switch(style)
     {
     case ApplicationStyle::Default:
+#ifndef Q_OS_LINUX
         qApp->setStyle(QStyleFactory::create(m_defaultStyleName));
         qApp->setPalette(qApp->style()->standardPalette());
         qApp->setStyleSheet("");
         setupDarkMode();
         break;
+#endif
     case ApplicationStyle::Light:
     case ApplicationStyle::Dark:
         qApp->setStyle(QStyleFactory::create("Fusion"));
