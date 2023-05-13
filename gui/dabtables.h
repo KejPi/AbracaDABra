@@ -139,8 +139,11 @@ public:
     static const QList<uint16_t> ASwValues;
     static QString convertToQString(const char *c, uint8_t charset, uint8_t len = 16);
     static QString getPtyName(const uint8_t pty);
+    static QString getPtyNameEnglish(const uint8_t pty);
     static QString getLangName(int lang);
+    static QString getLangNameEnglish(int lang);
     static QString getCountryName(uint32_t SId);
+    static QString getCountryNameEnglish(uint32_t SId);
     static QString getAnnouncementName(DabAnnouncement announcement);
     static QString getAnnouncementNameEnglish(DabAnnouncement announcement);
 };
