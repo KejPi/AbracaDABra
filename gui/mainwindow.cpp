@@ -2287,6 +2287,10 @@ void MainWindow::setExpertMode(bool ena)
     ui->ensembleInfoLabel->setVisible(ena);
     ui->programTypeLabel->setVisible(ena);
 
+    ui->slsView_Service->setExpertMode(ena);
+    ui->slsView_Announcement->setExpertMode(ena);
+    m_catSlsDialog->setExpertMode(ena);
+
     // set tab order
     if (ena)
     {

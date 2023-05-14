@@ -213,6 +213,11 @@ void SLSView::setupDarkMode(bool darkModeEna)
     }
 }
 
+void SLSView::setExpertMode(bool expertModeEna)
+{
+    m_isExpertMode = expertModeEna;
+}
+
 void SLSView::showSlide(const Slide & slide)
 {
     QGraphicsScene * sc = scene();
@@ -258,6 +263,19 @@ void SLSView::showSlide(const Slide & slide)
     }
     else
     { /* no catSLS */ }
+
+    if (m_isExpertMode)
+    {
+        if (!toolTip.isEmpty())
+        {
+            toolTip += "<br>";
+        }
+        toolTip += QString(tr("<b>Resolution:</b> %1x%2 pixels<br>")).arg(slide.getPixmap().width()).arg(slide.getPixmap().height());
+        toolTip += QString(tr("<b>Size:</b> %1 bytes<br>")).arg(slide.getNumBytes());
+        toolTip += QString(tr("<b>Format:</b> %1<br>")).arg(slide.getFormat());
+        toolTip += QString(tr("<b>Content name:</b> \"%1\"")).arg(slide.getContentName());
+    }
+
 
     if (toolTip.isEmpty())
     {

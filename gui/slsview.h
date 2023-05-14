@@ -56,6 +56,9 @@ public:
     //! @brief This method changes between light and dark mode
     void setupDarkMode(bool darkModeEna);
 
+    //! @brief This method enables expert mode features
+    void setExpertMode(bool expertModeEna);
+
 protected:
     //! @brief Reimplemented to scale image correctly
     void resizeEvent(QResizeEvent *event);
@@ -81,6 +84,9 @@ private:
 
     //! @brief shows slide
     bool m_isShowingSlide = false;
+
+    //! @brief expert mode
+    bool m_isExpertMode = false;
 };
 
 #endif // SLSVIEW_H

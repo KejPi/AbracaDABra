@@ -110,20 +110,21 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
     // this is not necessary
     case 2:
     {
-#if (USER_APPLICATION_VERBOSE > 1)
         switch (obj.getContentSubType())
         {
         case 1:
+            slide.setFormat("JPEG");
             qCDebug(slideShowApp) << "Image / JFIF (JPEG)";
             break;
         case 3:
+            slide.setFormat("PNG");
             qCDebug(slideShowApp) << "Image / PNG";
             break;
         default:
+            slide.setFormat("Unknown");
             qCDebug(slideShowApp) << "Image /" << obj.getContentSubType() << "not supported by Slideshow application";
             return;
-        }
-#endif
+        }        
         slide.setContentName(obj.getContentName());
     }
         break;
@@ -506,8 +507,10 @@ SlideData::SlideData()
     categoryTitle = QString("");
     clickThroughURL = QString("");
     alternativeLocationURL = QString("");
+    format = QString("");
     categoryID = 0;
     slideID = 0;
+    numBytes = 0;
 }
 
 SlideData::SlideData(const SlideData & other) :
@@ -516,9 +519,21 @@ SlideData::SlideData(const SlideData & other) :
     categoryTitle(other.categoryTitle),
     clickThroughURL(other.clickThroughURL),
     alternativeLocationURL(other.alternativeLocationURL),
+    format(other.format),
     categoryID(other.categoryID),
-    slideID(other.slideID)
+    slideID(other.slideID),
+    numBytes(other.numBytes)
 {
+}
+
+QString SlideData::getFormat() const
+{
+    return format;
+}
+
+void SlideData::setFormat(const QString &newFormat)
+{
+    format = newFormat;
 }
 
 Slide::Slide()
@@ -533,6 +548,7 @@ QPixmap Slide::getPixmap() const
 
 bool Slide::setPixmap(const QByteArray &data)
 {
+    d->numBytes = data.size();
     return d->pixmap.loadFromData(data);
 }
 
@@ -570,6 +586,17 @@ void Slide::setClickThroughURL(const QString &newClickThroughURL)
 {
     d->clickThroughURL = newClickThroughURL;
 }
+
+const QString &Slide::getFormat() const
+{
+    return d->format;
+}
+
+void Slide::setFormat(const QString &newFormat)
+{
+    d->format = newFormat;
+}
+
 
 void Slide::setCategoryID(int newCategoryID)
 {
