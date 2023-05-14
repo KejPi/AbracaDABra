@@ -111,7 +111,6 @@ void logToModelHandler(QtMsgType type, const QMessageLogContext &context, const 
         break;
     case QtFatalMsg:
         txt = QString("[F] %1: %2").arg(category, msg);
-        abort();
         break;
     }
 

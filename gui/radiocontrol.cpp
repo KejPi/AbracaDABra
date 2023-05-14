@@ -184,7 +184,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::RECONFIGURATION:
     {
-        qCDebug(radioControl) << "RadioControlEventType::RECONFIGURATION";
+        qCInfo(radioControl) << "Ensemble reconfiguration";
 
         m_isReconfigurationOngoing = true;
 
@@ -239,14 +239,14 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         }        
         else
         {
-            qCWarning(radioControl) << "RadioControlEvent::SERVICE_SELECTION error" << pEvent->status;
-
             if (pEvent->decoderId == DABSDR_ID_AUDIO_PRIMARY)
             {
+                qCWarning(radioControl) << "RadioControlEvent::SERVICE_SELECTION error" << pEvent->status;
                 if (m_isReconfigurationOngoing)
                 {
                     if (isCurrentService(pEvent->SId, pEvent->SCIdS))
                     {   // current service is no longer available -> playback will be stopped => emit dummy service component
+                        qCWarning(radioControl) << "Current service is no longer available";
                         emit audioServiceReconfiguration(RadioControlServiceComponent());
                     }
                 }
