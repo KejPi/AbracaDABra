@@ -472,7 +472,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
          <x>0</x>
          <y>0</y>
          <width>327</width>
-         <height>100</height>
+         <height>113</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -533,8 +533,11 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
                 <height>100</height>
                </size>
               </property>
+              <property name="toolTip">
+               <string>Click to copy Dynamic Label</string>
+              </property>
               <property name="text">
-               <string notr="true">DL Announcement</string>
+               <string notr="true">DL</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -577,8 +580,11 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
                 <height>100</height>
                </size>
               </property>
+              <property name="toolTip">
+               <string>Click to copy Dynamic Label</string>
+              </property>
               <property name="text">
-               <string>DL</string>
+               <string>DL Announcement</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -621,7 +627,13 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
           <property name="lineWidth">
            <number>0</number>
           </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
           <widget class="QWidget" name="dlPlusFrame_Service">
+           <property name="toolTip">
+            <string>Click to copy Dynamic Label +</string>
+           </property>
            <layout class="QVBoxLayout" name="verticalLayout">
             <property name="spacing">
              <number>0</number>
@@ -657,6 +669,9 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
            </layout>
           </widget>
           <widget class="QWidget" name="dlPlusFrame_Announcement">
+           <property name="toolTip">
+            <string>Click to copy Dynamic Label +</string>
+           </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <property name="spacing">
              <number>0</number>
@@ -705,7 +720,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
      <x>0</x>
      <y>0</y>
      <width>900</width>
-     <height>37</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

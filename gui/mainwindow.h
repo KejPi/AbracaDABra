@@ -260,14 +260,13 @@ public:
     void update(const DLPlusObject & obj);
     void setVisible(bool visible);
     const DLPlusObject &getDlPlusObject() const;
+    QString getLabel(DLPlusContentType type) const;
 
 private:
     DLPlusObject m_dlPlusObject;
     QHBoxLayout* m_layout;
     QLabel * m_tagLabel;
-    QLabel * m_tagText;
-
-    QString getLabel(DLPlusContentType type) const;
+    QLabel * m_tagText;   
 };
 
 

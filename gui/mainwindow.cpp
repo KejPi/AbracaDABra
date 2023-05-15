@@ -40,6 +40,8 @@
 #include <QStyleFactory>
 #include <QtGlobal>
 #include <QStyleHints>
+#include <QClipboard>
+#include <QToolTip>
 #include <iostream>
 
 #include "QtCore/qglobal.h"
@@ -350,6 +352,12 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->dlPlusWidget->setCurrentIndex(Instance::Service);
     ui->dlPlusWidget->setVisible(false);
 
+    // text copying
+    ui->dynamicLabel_Service->installEventFilter(this);
+    ui->dlPlusFrame_Service->installEventFilter(this);
+    ui->dynamicLabel_Announcement->installEventFilter(this);
+    ui->dlPlusFrame_Announcement->installEventFilter(this);
+
     ui->audioEncodingLabel->setToolTip(tr("Audio coding"));
 
     ui->slsView_Service->setMinimumSize(QSize(322, 242));
@@ -611,6 +619,45 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
             if (Qt::Key_Return == event->key())
             {
                 onServiceListTreeSelection(ui->serviceTreeView->currentIndex());
+                return true;
+            }
+        }
+        return QObject::eventFilter(o, e);
+    }
+    if ((o == ui->dynamicLabel_Service) || (o == ui->dynamicLabel_Announcement))
+    {
+        if (e->type() == QEvent::MouseButtonRelease)
+        {
+            QMouseEvent * event = static_cast<QMouseEvent *>(e);
+            if (Qt::LeftButton == event->button())
+            {
+                QLabel * label = static_cast<QLabel *>(o);
+                QGuiApplication::clipboard()->setText(label->text());
+                QToolTip::showText(label->mapToGlobal(event->pos()), tr("<i>DL text copied to clipboard</i>"));
+                return true;
+            }
+        }
+        return QObject::eventFilter(o, e);
+    }
+    if ((o == ui->dlPlusFrame_Service) || (o == ui->dlPlusFrame_Announcement))
+    {
+        if (e->type() == QEvent::MouseButtonRelease)
+        {
+            QMouseEvent * event = static_cast<QMouseEvent *>(e);
+            if (Qt::LeftButton == event->button())
+            {   // create text representation
+                QMap<DLPlusContentType, DLPlusObjectUI*> * dlObjCachePtr = &m_dlObjCache[Instance::Service];
+                if (o == ui->dlPlusFrame_Announcement)
+                {
+                    dlObjCachePtr = &m_dlObjCache[Instance::Announcement];
+                }
+                QString text;
+                for (auto & obj : *dlObjCachePtr)
+                {
+                    text += QString("%1: %2\n").arg(obj->getLabel(obj->getDlPlusObject().getType()), obj->getDlPlusObject().getTag());
+                }
+                QGuiApplication::clipboard()->setText(text);
+                QToolTip::showText(ui->dlPlusFrame_Service->mapToGlobal(event->pos()), tr("<i>DL+ text copied to clipboard</i>"));
                 return true;
             }
         }
@@ -2796,15 +2843,17 @@ DLPlusObjectUI::DLPlusObjectUI(const DLPlusObject &obj) : m_dlPlusObject(obj)
         case DLPlusContentType::PROGRAMME_HOMEPAGE:
         case DLPlusContentType::INFO_URL:
             m_tagText = new QLabel(QString("<a href=\"%1\">%1</a>").arg(obj.getTag()));
+            m_tagText->setToolTip(QString(QObject::tr("Open link")));
             QObject::connect(
                         m_tagText, &QLabel::linkActivated,
                         [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
-                    );
+                    );            
             break;
         case DLPlusContentType::EMAIL_HOTLINE:
         case DLPlusContentType::EMAIL_STUDIO:
         case DLPlusContentType::EMAIL_OTHER:
             m_tagText = new QLabel(QString("<a href=\"mailto:%1\">%1</a>").arg(obj.getTag()));
+            m_tagText->setToolTip(QString(QObject::tr("Open link")));
             QObject::connect(
                         m_tagText, &QLabel::linkActivated,
                         [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
