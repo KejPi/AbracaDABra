@@ -584,7 +584,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
                <string>Click to copy Dynamic Label</string>
               </property>
               <property name="text">
-               <string>DL Announcement</string>
+               <string notr="true">DL Announcement</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
