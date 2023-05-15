@@ -692,7 +692,7 @@ QString RadioControl::ensembleConfigurationString() const
 
     strOut << "<dl>";
     strOut << "<dt>Ensemble:</dt>";
-    strOut << QString("<dd>0x%1 <b>%2</b> [ <i>%3</i> ]  ECC = 0x%4, UTC %5 min, INT = %6, alarm announcements = %7</dd>")
+    strOut << QString("<dd>0x%1 <b>%2</b> [ <i>%3</i> ]  ECC: 0x%4, UTC %5 min, INT: %6, alarm announcements: %7</dd>")
               .arg(QString("%1").arg(m_ensemble.eid(), 4, 16, QChar('0')).toUpper())
               .arg(m_ensemble.label)
               .arg(m_ensemble.labelShort)
@@ -715,22 +715,23 @@ QString RadioControl::ensembleConfigurationString() const
         strOut << "<dt>";
         if (s.SId.isProgServiceId())
         {   // programme service
-            strOut << QString("0x%1 <b>%2</b> [ <i>%3</i> ] ECC = 0x%4,")
+            strOut << QString("0x%1 <b>%2</b> [ <i>%3</i> ] ECC: 0x%4, Country: %5,")
                               .arg(QString("%1").arg(s.SId.progSId(), 4, 16, QChar('0')).toUpper())
                               .arg(s.label)
                               .arg(s.labelShort)
-                              .arg(QString("%1").arg(s.SId.ecc(), 2, 16, QChar('0')).toUpper());
+                              .arg(QString("%1").arg(s.SId.ecc(), 2, 16, QChar('0')).toUpper())
+                              .arg(DabTables::getCountryNameEnglish(s.SId.value()));
 
             // ETSI EN 300 401 V2.1.1 [8.1.5]
             // At any one time, the PTy shall be either Static or Dynamic;
             // there shall be only one PTy per service.
             if (s.pty.d != 0)
             {
-                strOut << QString(" PTY: %1 (dynamic), ").arg(s.pty.d);
+                strOut << QString(" PTy: %1 (dynamic), ").arg(DabTables::getPtyNameEnglish(s.pty.d));
             }
             else
             {
-                strOut << QString(" PTY: %1 (static), ").arg(s.pty.s);
+                strOut << QString(" PTy: %1 (static), ").arg(DabTables::getPtyNameEnglish(s.pty.s));
             }
             if (0 == s.ASu)
             {
@@ -777,7 +778,7 @@ QString RadioControl::ensembleConfigurationString() const
                 strOut << ((sc.ps) ? " (primary)," : " (secondary),");
                 strOut << QString(" SCIdS: %1,").arg(sc.SCIdS);
                 strOut << QString(" SCId: %1,").arg(sc.packetData.SCId);
-                strOut << QString(" Language: %1,").arg(sc.lang);
+                strOut << QString(" Language: %1,").arg(DabTables::getLangNameEnglish(sc.lang));
             }
             else
             {
@@ -836,7 +837,7 @@ QString RadioControl::ensembleConfigurationString() const
             strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             strOut << QString("SubChId: %1, Language: %2, StartCU: %3, NumCU: %4,")
                       .arg(sc.SubChId)
-                      .arg(sc.lang)
+                      .arg(DabTables::getLangNameEnglish(sc.lang))
                       .arg(sc.SubChAddr)
                       .arg(sc.SubChSize);
             if (sc.protection.isEEP())
