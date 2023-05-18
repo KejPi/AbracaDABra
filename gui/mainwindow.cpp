@@ -400,8 +400,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 #else
         qCCritical(application) << "RadioControl() init failed";
 #endif
-        close();
-        qApp->quit();
+        ::exit(1);
     }
 
     m_audioDecoder = new AudioDecoder(nullptr);

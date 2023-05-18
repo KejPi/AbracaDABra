@@ -421,7 +421,10 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 
 void RadioControl::exit()
 {
-    dabsdrRequest_Exit(m_dabsdrHandle);
+    if (nullptr != m_dabsdrHandle)
+    {
+        dabsdrRequest_Exit(m_dabsdrHandle);
+    }
 }
 
 void RadioControl::start(uint32_t freq)
