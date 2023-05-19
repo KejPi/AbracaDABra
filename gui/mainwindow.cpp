@@ -97,22 +97,23 @@ Q_GLOBAL_STATIC(LogToModelData, logToModelData)
 void logToModelHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     QString category = context.category;
+    QString timeStamp = QTime::currentTime().toString("HH:mm:ss.zzz");
     QString txt;
     switch (type) {
     case QtDebugMsg:
-        txt = QString("[D] %1: %2").arg(category, msg);
+        txt = QString("%1 [D] %2: %3").arg(timeStamp, category, msg);
         break;
     case QtInfoMsg:
-        txt = QString("[I] %1: %2").arg(category, msg);
+        txt = QString("%1 [I] %2: %3").arg(timeStamp, category, msg);
         break;
     case QtWarningMsg:
-        txt = QString("[W] %1: %2").arg(category, msg);
+        txt = QString("%1 [W] %2: %3").arg(timeStamp, category, msg);
         break;
     case QtCriticalMsg:
-        txt = QString("[C] %1: %2").arg(category, msg);
+        txt = QString("%1 [C] %2: %3").arg(timeStamp, category, msg);
         break;
     case QtFatalMsg:
-        txt = QString("[F] %1: %2").arg(category, msg);
+        txt = QString("%1 [F] %2: %3").arg(timeStamp, category, msg);
         break;
     }
 
