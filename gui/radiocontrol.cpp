@@ -586,7 +586,7 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
         QHash<DabUserApplicationType,RadioControlUserApp>::const_iterator uaIt = scIt->userApps.constFind(uaType);
         if (scIt->userApps.cend() != uaIt)
         {
-            qCInfo(radioControl, "Starting user application type %d from XPAD", int(uaType));
+            qCInfo(radioControl, "Starting user application '%s' from XPAD.", DabTables::getUserApplicationName(uaType).toLocal8Bit().data());
             dabXPadAppStart(uaIt->xpadData.xpadAppTy, 1, DABSDR_ID_AUDIO_PRIMARY);
             return;
         }
@@ -603,7 +603,8 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
                     sc.autoEnabled = start;
                     if (start)
                     {
-                        qCInfo(radioControl, "Found user application type %d in secondary data service SCIdS %d. Starting the service...", int(uaType), sc.SCIdS);
+                        qCInfo(radioControl, "Found user application type '%s' in secondary data service SCIdS %d. Starting the service...",
+                               DabTables::getUserApplicationName(uaType).toLocal8Bit().data(), sc.SCIdS);
                         dabServiceSelection(sc.SId.value(), sc.SCIdS, DABSDR_ID_DATA);
                     }
                     else
@@ -631,8 +632,8 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
                             sc.autoEnabled = start;
                             if (start)
                             {
-                                qCInfo(radioControl, "Found user application type %d within ensemble in data service SId %8.8X, SCIdS %d. Starting the service...",
-                                       int(uaType), sc.SId.value(), sc.SCIdS);
+                                qCInfo(radioControl, "Found user application type '%s' within ensemble in data service SId %8.8X, SCIdS %d. Starting the service...",
+                                       DabTables::getUserApplicationName(uaType).toLocal8Bit().data(), sc.SId.value(), sc.SCIdS);
                                 dabServiceSelection(sc.SId.value(), sc.SCIdS, DABSDR_ID_DATA);
                             }
                             else
@@ -881,33 +882,8 @@ QString RadioControl::ensembleConfigurationString() const
                           .arg(ua.label)
                           .arg(ua.labelShort);
 
-                switch (ua.uaType)
-                {
-                case DabUserApplicationType::SlideShow:
-                    strOut << QString("UAType: 0x%1 (SlideShow)").arg(QString::number(int(ua.uaType), 16).toUpper());
-                    break;
-                case DabUserApplicationType::TPEG:
-                    strOut << QString("UAType: 0x%1 (TPEG)").arg(QString::number(int(ua.uaType), 16).toUpper());
-                    break;
-                case DabUserApplicationType::SPI:
-                    strOut << QString("UAType: 0x%1 (SPI)").arg(QString::number(int(ua.uaType), 16).toUpper());
-                    break;
-                case DabUserApplicationType::DMB:
-                    strOut << QString("UAType: 0x%1 (DMB)").arg(QString::number(int(ua.uaType), 16).toUpper());
-                    break;
-                case DabUserApplicationType::Filecasting:
-                    strOut << QString("UAType: 0x%1 (Filecasting)").arg(QString::number(int(ua.uaType), 16).toUpper());
-                    break;
-                case DabUserApplicationType::FIS:
-                    strOut << QString("UAType: 0x%1 (FIS)").arg(QString::number(int(ua.uaType), 16).toUpper());
-                    break;
-                case DabUserApplicationType::Journaline:
-                    strOut << QString("UAType: 0x%1 (Journaline)").arg(QString::number(int(ua.uaType), 16).toUpper());
-                    break;
-                default:
-                    strOut << QString("UAType: 0x%1 (unknown)").arg(QString::number(int(ua.uaType), 16).toUpper());
-                    break;
-                }
+
+                strOut << QString("UAType: 0x%1 (%2)").arg(QString::number(int(ua.uaType), 16).toUpper(), DabTables::getUserApplicationName(ua.uaType));
 
                 if (sc.isAudioService())
                 {

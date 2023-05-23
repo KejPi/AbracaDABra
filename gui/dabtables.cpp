@@ -24,6 +24,7 @@
  * SOFTWARE.
  */
 
+#include <QDebug>
 #include "dabtables.h"
 
 const QMap<uint32_t, QString> DabTables::channelList =
@@ -1052,4 +1053,19 @@ const QList<uint16_t> DabTables::ASwValues =
     (1 << static_cast<int>(DabAnnouncement::Sport)),
     (1 << static_cast<int>(DabAnnouncement::Financial)),
 };
+
+QString DabTables::getUserApplicationName(DabUserApplicationType type)
+{
+    switch (type)
+    {
+    case DabUserApplicationType::SlideShow: return QString("SlideShow");
+    case DabUserApplicationType::TPEG: return QString("TPEG");
+    case DabUserApplicationType::SPI: return QString("SPI");
+    case DabUserApplicationType::DMB: return QString("DMB");
+    case DabUserApplicationType::Filecasting: return QString("Filecasting");
+    case DabUserApplicationType::FIS: return QString("FIS");
+    case DabUserApplicationType::Journaline: return QString("Journaline");
+    default: return QString("Unknown");
+    }
+}
 

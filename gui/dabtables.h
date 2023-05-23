@@ -146,6 +146,7 @@ public:
     static QString getCountryNameEnglish(uint32_t SId);
     static QString getAnnouncementName(DabAnnouncement announcement);
     static QString getAnnouncementNameEnglish(DabAnnouncement announcement);
+    static QString getUserApplicationName(DabUserApplicationType type);
 };
 
 #endif // DABTABLES_H
