@@ -152,6 +152,7 @@ private:
     QMediaDevices * m_devices;
     QAudioSink * m_audioSink;
     float m_linearVolume;
+    audioFifo_t * m_restartFifoPtr = nullptr;
 
     void handleStateChanged(QAudio::State newState);
     int64_t bytesAvailable();
@@ -163,10 +164,11 @@ private:
 class AudioIODevice : public QIODevice
 {
 public:
-    AudioIODevice(audioFifo_t *buffer, QObject *parent = nullptr);
+    AudioIODevice(QObject *parent = nullptr);
 
     void start();
     void stop();
+    void setBuffer(audioFifo_t * buffer);
 
     qint64 readData(char *data, qint64 maxlen) override;
     qint64 writeData(const char *data, qint64 len) override;
@@ -182,6 +184,7 @@ private:
     uint32_t m_sampleRate_kHz;
     uint8_t m_numChannels;
     float m_muteFactor;
+    bool m_doStop = false;
 
     std::atomic<bool> m_muteFlag  = false;
     std::atomic<bool> m_stopFlag  = false;

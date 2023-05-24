@@ -416,7 +416,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 #if (!HAVE_PORTAUDIO)
     m_audioOutputThread = new QThread(this);
     m_audioOutputThread->setObjectName("audioOutThr");
-    m_audioOutputThread->moveToThread(m_audioOutputThread);
+    m_audioOutput->moveToThread(m_audioOutputThread);
     connect(m_audioOutputThread, &QThread::finished, m_audioOutput, &QObject::deleteLater);
     m_audioOutputThread->start();
 #endif

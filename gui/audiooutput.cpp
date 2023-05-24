@@ -696,6 +696,7 @@ AudioOutput::AudioOutput(QObject *parent) : QObject(parent)
     m_audioSink = nullptr;
     m_ioDevice = nullptr;
     m_linearVolume = 1.0;
+    m_ioDevice = new AudioIODevice();
 }
 
 AudioOutput::~AudioOutput()
@@ -705,11 +706,8 @@ AudioOutput::~AudioOutput()
         m_audioSink->stop();
         delete m_audioSink;
     }
-    if (nullptr != m_ioDevice)
-    {
-        m_ioDevice->close();
-        delete m_ioDevice;
-    }
+    m_ioDevice->close();
+    delete m_ioDevice;
 }
 
 void AudioOutput::start(audioFifo_t *buffer)
@@ -765,12 +763,8 @@ void AudioOutput::start(audioFifo_t *buffer)
     m_audioSink->setVolume(m_linearVolume);
 
     // start IO device
-    if (nullptr != m_ioDevice)
-    {
-        m_ioDevice->close();
-        delete m_ioDevice;
-    }
-    m_ioDevice = new AudioIODevice(buffer);
+    m_ioDevice->close();
+    m_ioDevice->setBuffer(buffer);
     m_ioDevice->start();
     m_audioSink->start(m_ioDevice);
 }
@@ -781,15 +775,16 @@ void AudioOutput::restart(audioFifo_t *buffer)
     {
         if (!m_ioDevice->isMuted())
         {   // delay stop until audio is muted
+            m_restartFifoPtr = buffer;
             m_ioDevice->stop();
-            QTimer::singleShot(2*AUDIOOUTPUT_FADE_TIME_MS, this, [this, buffer]() { doRestart(buffer); } );
             return;
         }
         else
-        { /* were are already muted - doStop now */ }
-    }
+        { /* were are already muted - doRestart now */ }
 
-    doRestart(buffer);
+        doRestart(buffer);
+    }
+    else { /* do nothing */ }
 }
 
 void AudioOutput::mute(bool on)
@@ -815,30 +810,26 @@ void AudioOutput::stop()
         if (!m_ioDevice->isMuted())
         {   // delay stop until audio is muted
             m_ioDevice->stop();
-            QTimer::singleShot(2*AUDIOOUTPUT_FADE_TIME_MS, this, &AudioOutput::doStop);
             return;
         }
-        else
+        else                       
         { /* were are already muted - doStop now */ }
-    }
 
-    doStop();
+        doStop();
+    }
+    else { /* do nothing */ }
 }
 
 void AudioOutput::doStop()
 {
-    if (nullptr != m_audioSink)
-    {
-        m_audioSink->stop();
-    }
-    if (nullptr != m_ioDevice)
-    {
-        m_ioDevice->close();
-    }
+    m_audioSink->stop();
+    m_ioDevice->close();
 }
 
 void AudioOutput::doRestart(audioFifo_t *buffer)
 {
+    m_restartFifoPtr = nullptr;
+    m_audioSink->stop();
     emit audioOutputRestart();
     start(buffer);
 }
@@ -848,10 +839,27 @@ void AudioOutput::handleStateChanged(QAudio::State newState)
     switch (newState)
     {
     case QAudio::ActiveState:
-        //destroyTimer();
+        // do nothing
         break;
     case QAudio::IdleState:
         // no more data
+        if ((QAudio::Error::UnderrunError == m_audioSink->error()) && m_ioDevice->isMuted())
+        {   // this is correct state when stop is requested
+            if (nullptr != m_restartFifoPtr)
+            {   // restart was requested
+                doRestart(m_restartFifoPtr);
+            }
+            else
+            {   // stop was requested
+                doStop();
+            }
+        }
+        else
+        {   // some error -> doing stop
+            // TODO: add error handling
+            qCWarning(audioOutput) << "Audio going to Idle state with following error state:" << m_audioSink->error();
+            doStop();
+        }
         break;
 
     case QAudio::StoppedState:
@@ -865,7 +873,11 @@ void AudioOutput::handleStateChanged(QAudio::State newState)
 }
 
 
-AudioIODevice::AudioIODevice(audioFifo_t *buffer, QObject *parent) : QIODevice(parent)
+AudioIODevice::AudioIODevice(QObject *parent) : QIODevice(parent)
+{
+}
+
+void AudioIODevice::setBuffer(audioFifo_t * buffer)
 {
     m_inFifoPtr = buffer;
 
@@ -878,11 +890,13 @@ AudioIODevice::AudioIODevice(audioFifo_t *buffer, QObject *parent) : QIODevice(p
     // unmute ramp is then calculated as 2.0 - m_muteFactor in runtime
     // m_muteFactor is calculated for change from 0dB to AUDIOOUTPUT_FADE_MIN_DB in AUDIOOUTPUT_FADE_TIME_MS
     m_muteFactor = powf(10, AUDIOOUTPUT_FADE_MIN_DB/(20.0*AUDIOOUTPUT_FADE_TIME_MS*m_sampleRate_kHz));
+
 }
 
 void AudioIODevice::start()
 {
     m_stopFlag = false;
+    m_doStop = false;
     m_playbackState = AudioOutputPlaybackState::Muted;
     open(QIODevice::ReadOnly);
 }
@@ -894,9 +908,10 @@ void AudioIODevice::stop()
 
 qint64 AudioIODevice::readData(char *data, qint64 len)
 {
-    if (0 == len)
+    if (m_doStop || (0 == len))
     {
-        return len;
+        //qDebug() << Q_FUNC_INFO << m_doStop << len;
+        return 0;
     }
 
     // read samples from input buffer
@@ -904,7 +919,8 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
     uint64_t count = m_inFifoPtr->count;
     m_inFifoPtr->mutex.unlock();
 
-    bool muteRequest = m_muteFlag ||  m_stopFlag;
+    bool muteRequest = m_muteFlag || m_stopFlag;
+    m_doStop = m_stopFlag;
 
     //uint64_t bytesToRead = len;
     uint64_t bytesToRead = qMin(uint64_t(len), AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz * m_bytesPerFrame);
@@ -956,6 +972,8 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
         }
         else
         {   // not enough samples ==> inserting silence
+            qCDebug(audioOutput, "Muted: Inserting silence [%llu ms]", bytesToRead / (m_bytesPerFrame * m_sampleRate_kHz));
+
             memset(data, 0, bytesToRead);
 
             // done
@@ -1008,7 +1026,7 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
             muteRequest = true;  // mute
         }
         else
-        {   // reading samples
+        {   // enough sample available -> reading samples
             uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
             if (bytesToEnd < bytesToRead)
             {
