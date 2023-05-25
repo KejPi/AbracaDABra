@@ -2519,6 +2519,18 @@ void MainWindow::onColorSchemeChanged(Qt::ColorScheme colorScheme)
     if (ApplicationStyle::Default == m_setupDialog->settings().applicationStyle)
     {
         qApp->setPalette(qApp->style()->standardPalette());
+#ifdef Q_OS_WIN
+        // this hack forces correct change for the colors on Windows
+        if (colorScheme == Qt::ColorScheme::Dark)
+        {
+            onApplicationStyleChanged(ApplicationStyle::Dark);
+        }
+        else
+        {
+            onApplicationStyleChanged(ApplicationStyle::Light);
+        }
+        onApplicationStyleChanged(ApplicationStyle::Default);
+#endif
     }
     setupDarkMode();
 
