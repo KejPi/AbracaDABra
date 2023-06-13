@@ -95,6 +95,7 @@ protected:
 private:
     // constants
     enum Instance { Service = 0, Announcement = 1, NumInstances };
+    enum AudioFramework { Qt = 0, Pa = 1 };
     static const QString appName;
     static const char * syncLevelLabels[];
     static const char * syncLevelTooltip[];
@@ -152,11 +153,8 @@ private:
     AudioDecoder * m_audioDecoder;
 
     // audio output
-#if (!HAVE_PORTAUDIO)
-    QThread * m_audioOutputThread;
-#endif
+    QThread * m_audioOutputThread = nullptr;
     QSlider * m_audioVolumeSlider;
-
     AudioOutput * m_audioOutput;
 
     // state variables
@@ -185,6 +183,7 @@ private:
     // methods
     void loadSettings();
     void saveSettings();
+    AudioFramework getAudioFramework();
 
     void showEnsembleInfo();
     void showAboutDialog();
@@ -256,12 +255,10 @@ private:
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
     void onAudioServiceReconfiguration(const RadioControlServiceComponent &s);
     void onAnnouncement(const DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent &s);
-#if (!HAVE_PORTAUDIO)
     void onAudioDevicesList(QList<QAudioDevice> list);
     void onAudioOutputError();
     void onAudioOutputSelected(QAction * action);
     void onAudioDeviceChanged(const QByteArray & id);
-#endif
 };
 
 class DLPlusObjectUI

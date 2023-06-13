@@ -40,6 +40,9 @@ endif(HAVE_AIRSPY)
 if (HAVE_SOAPYSDR)
     set(SOAPYSDR_SOURCES soapysdrinput.h soapysdrinput.cpp)
 endif(HAVE_SOAPYSDR)
+if (HAVE_PORTAUDIO)
+    set(PORTAUDIO_SOURCES audiooutputpa.h audiooutputpa.cpp)
+endif(HAVE_PORTAUDIO)
 
 #########################################################
 ## SOURCES & HEADERS
@@ -52,6 +55,7 @@ add_executable(${TARGET}
     ${CMAKE_CURRENT_BINARY_DIR}/config.h    
     ${AIRSPY_SOURCES}
     ${SOAPYSDR_SOURCES}
+    ${PORTAUDIO_SOURCES}
     main.cpp
     mainwindow.cpp
     mainwindow.h
@@ -87,7 +91,8 @@ add_executable(${TARGET}
     audiofifo.h
     audiofifo.cpp
     audiooutput.h
-    audiooutput.cpp
+    audiooutputqt.h
+    audiooutputqt.cpp
     servicelistid.h
     servicelist.h
     servicelist.cpp

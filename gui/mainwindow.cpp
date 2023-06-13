@@ -54,6 +54,11 @@
 #include "bandscandialog.h"
 #include "config.h"
 #include "aboutdialog.h"
+#include "audiooutputqt.h"
+#if HAVE_PORTAUDIO
+#include "audiooutputpa.h"
+#endif
+
 
 // Input devices
 #include "rawfileinput.h"
@@ -151,8 +156,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(ui->channelCombo, &QComboBox::currentIndexChanged, this, &MainWindow::onChannelChange);
 
     // set UI
-    setWindowTitle("Abraca DAB Radio");
-
+    setWindowTitle("Abraca DAB Radio");    
 
 #ifdef Q_OS_WIN
     // this is Windows specific code, not portable - allows to bring window to front (used for alarm announcement)
@@ -248,11 +252,17 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_aboutAction = new QAction(tr("About"), this);
     connect(m_aboutAction, &QAction::triggered, this, &MainWindow::showAboutDialog);
 
+    // load audio framework setting from ini file
+    AudioFramework audioFramework = getAudioFramework();
+
     m_menu = new QMenu(this);
-#if (!HAVE_PORTAUDIO)
-    m_audioOutputMenu = m_menu->addMenu(tr("Audio output"));
-    connect(m_audioOutputMenu, &QMenu::triggered, this, &MainWindow::onAudioOutputSelected);
-#endif
+
+    if (AudioFramework::Qt == audioFramework)
+    {
+        m_audioOutputMenu = m_menu->addMenu(tr("Audio output"));
+        connect(m_audioOutputMenu, &QMenu::triggered, this, &MainWindow::onAudioOutputSelected);
+    }
+
     m_menu->addAction(m_setupAction);   
     m_menu->addAction(m_bandScanAction);
     m_menu->addAction(m_clearServiceListAction);
@@ -424,22 +434,28 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::noiseConcealmentLevelChanged, m_audioDecoder, &AudioDecoder::setNoiseConcealment, Qt::QueuedConnection);
     connect(this, &MainWindow::audioStop, m_audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
 
-    m_audioOutput = new AudioOutput();
-#if (!HAVE_PORTAUDIO)
-    connect(m_audioOutput, &AudioOutput::audioDevicesList, this, &MainWindow::onAudioDevicesList, Qt::QueuedConnection);
-    connect(m_audioOutput, &AudioOutput::audioDeviceChanged, this, &MainWindow::onAudioDeviceChanged, Qt::QueuedConnection);
-    connect(m_audioOutput, &AudioOutput::audioOutputError, this, &MainWindow::onAudioOutputError, Qt::QueuedConnection);
-    connect(this, &MainWindow::audioOutput, m_audioOutput, &AudioOutput::setAudioDevice, Qt::QueuedConnection);
-    onAudioDevicesList(m_audioOutput->getAudioDevices());
-    m_audioOutputThread = new QThread(this);
-    m_audioOutputThread->setObjectName("audioOutThr");
-    m_audioOutput->moveToThread(m_audioOutputThread);
-    connect(m_audioOutputThread, &QThread::finished, m_audioOutput, &QObject::deleteLater);
-    m_audioOutputThread->start();
+#if (HAVE_PORTAUDIO)
+    if (AudioFramework::Pa == audioFramework)
+    {
+        m_audioOutput = new AudioOutputPa();
+    }
+    else
 #endif
+    {
+        m_audioOutput = new AudioOutputQt();
+        connect(static_cast<AudioOutputQt *>(m_audioOutput), &AudioOutputQt::audioDevicesList, this, &MainWindow::onAudioDevicesList, Qt::QueuedConnection);
+        connect(static_cast<AudioOutputQt *>(m_audioOutput), &AudioOutputQt::audioDeviceChanged, this, &MainWindow::onAudioDeviceChanged, Qt::QueuedConnection);
+        connect(static_cast<AudioOutputQt *>(m_audioOutput), &AudioOutputQt::audioOutputError, this, &MainWindow::onAudioOutputError, Qt::QueuedConnection);
+        connect(this, &MainWindow::audioOutput, static_cast<AudioOutputQt *>(m_audioOutput), &AudioOutputQt::setAudioDevice, Qt::QueuedConnection);
+        onAudioDevicesList(static_cast<AudioOutputQt *>(m_audioOutput)->getAudioDevices());
+        m_audioOutputThread = new QThread(this);
+        m_audioOutputThread->setObjectName("audioOutThr");
+        m_audioOutput->moveToThread(m_audioOutputThread);
+        connect(m_audioOutputThread, &QThread::finished, m_audioOutput, &QObject::deleteLater);
+        m_audioOutputThread->start();
+    }
     connect(this, &MainWindow::audioVolume, m_audioOutput, &AudioOutput::setVolume, Qt::QueuedConnection);
     connect(this, &MainWindow::audioMute, m_audioOutput, &AudioOutput::mute, Qt::QueuedConnection);
-
 
     // Connect signals
     connect(m_muteLabel, &ClickableLabel::toggled, m_audioOutput, &AudioOutput::mute, Qt::QueuedConnection);
@@ -594,13 +610,16 @@ MainWindow::~MainWindow()
     m_audioDecoderThread->wait();
     delete m_audioDecoderThread;
 
-#if HAVE_PORTAUDIO
-    delete m_audioOutput;
-#else
-    m_audioOutputThread->quit();  // this deletes audiodecoder
-    m_audioOutputThread->wait();
-    delete m_audioOutputThread;
-#endif
+    if (nullptr != m_audioOutputThread)
+    {  // Qt audio
+        m_audioOutputThread->quit();  // this deletes audiooutput
+        m_audioOutputThread->wait();
+        delete m_audioOutputThread;
+    }
+    else
+    {   // PortAudio
+        delete m_audioOutput;
+    }
 
     delete m_dlDecoder[Instance::Service];
     delete m_dlDecoder[Instance::Announcement];
@@ -1451,7 +1470,6 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
     }
 }
 
-#if (!HAVE_PORTAUDIO)
 void MainWindow::onAudioDevicesList(QList<QAudioDevice> list)
 {
     m_audioOutputMenu->clear();
@@ -1506,8 +1524,6 @@ void MainWindow::onAudioDeviceChanged(const QByteArray &id)
         m_audioDevicesGroup->actions().at(0)->setChecked(true);
     }
 }
-#endif
-
 
 void MainWindow::clearEnsembleInformationLabels()
 {
@@ -2152,6 +2168,28 @@ void MainWindow::loadSettings()
     }
 }
 
+MainWindow::AudioFramework MainWindow::getAudioFramework()
+{
+#if (HAVE_PORTAUDIO)
+    QSettings * settings;
+    if (m_iniFilename.isEmpty())
+    {
+        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+    }
+    else
+    {
+        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+    }
+
+    int val = settings->value("audioFramework", AudioFramework::Qt).toInt();
+    delete settings;
+
+    return static_cast<AudioFramework>(val);
+#else
+    return AudioFramework::Qt;
+#endif
+}
+
 void MainWindow::saveSettings()
 {
     QSettings * settings;
@@ -2167,12 +2205,20 @@ void MainWindow::saveSettings()
     const SetupDialog::Settings s = m_setupDialog->settings();
     settings->setValue("inputDeviceId", int(s.inputDevice));
     settings->setValue("recordingPath", m_inputDeviceRecorder->recordingPath());
-#if (!HAVE_PORTAUDIO)
     if (nullptr != m_audioDevicesGroup)
     {
         settings->setValue("audioDevice", m_audioDevicesGroup->checkedAction()->data().value<QAudioDevice>().id());
     }
+#if (HAVE_PORTAUDIO)
+    if (nullptr != dynamic_cast<AudioOutputPa *>(m_audioOutput))
+    {
+        settings->setValue("audioFramework", static_cast<int>(AudioFramework::Pa));
+    }
+    else
 #endif
+    {
+        settings->setValue("audioFramework", static_cast<int>(AudioFramework::Qt));
+    }
     settings->setValue("volume", m_audioVolume);
     settings->setValue("mute", m_muteLabel->isChecked());    
     settings->setValue("windowGeometry", saveGeometry());
