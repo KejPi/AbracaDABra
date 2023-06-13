@@ -967,7 +967,7 @@ void AudioIODevice::start()
     open(QIODevice::ReadOnly);
 
     // for testing of error
-    QTimer::singleShot(10000, this, [this](){ m_doStop = true; } );
+    //QTimer::singleShot(10000, this, [this](){ m_doStop = true; } );
 }
 
 void AudioIODevice::stop()
