@@ -42,6 +42,7 @@
 #include <QStyleHints>
 #include <QClipboard>
 #include <QToolTip>
+#include <QActionGroup>
 #include <iostream>
 
 #include "QtCore/qglobal.h"
@@ -190,9 +191,15 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_basicSignalQualityLabel = new QLabel("");
     m_basicSignalQualityLabel->setToolTip(tr("DAB signal quality"));
 
-    m_timeBasicQualWidget = new QStackedWidget;
-    m_timeBasicQualWidget->addWidget(m_basicSignalQualityLabel);
-    m_timeBasicQualWidget->addWidget(m_timeLabel);
+    m_infoLabel = new QLabel();
+    QFont font;
+    font.setBold(true);
+    m_infoLabel->setFont(font);
+
+    m_timeBasicQualInfoWidget = new QStackedWidget;
+    m_timeBasicQualInfoWidget->addWidget(m_basicSignalQualityLabel);
+    m_timeBasicQualInfoWidget->addWidget(m_timeLabel);
+    m_timeBasicQualInfoWidget->addWidget(m_infoLabel);
 
     m_syncLabel = new QLabel();
     m_syncLabel->setAlignment(Qt::AlignRight);
@@ -242,7 +249,11 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_aboutAction, &QAction::triggered, this, &MainWindow::showAboutDialog);
 
     m_menu = new QMenu(this);
-    m_menu->addAction(m_setupAction);
+#if (!HAVE_PORTAUDIO)
+    m_audioOutputMenu = m_menu->addMenu(tr("Audio output"));
+    connect(m_audioOutputMenu, &QMenu::triggered, this, &MainWindow::onAudioOutputSelected);
+#endif
+    m_menu->addAction(m_setupAction);   
     m_menu->addAction(m_bandScanAction);
     m_menu->addAction(m_clearServiceListAction);
     m_menu->addSeparator();
@@ -286,7 +297,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     volumeWidget->setLayout(volumeLayout);
 
     QGridLayout * layout = new QGridLayout(widget);
-    layout->addWidget(m_timeBasicQualWidget, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
+    layout->addWidget(m_timeBasicQualInfoWidget, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
     layout->addWidget(m_signalQualityWidget, 0, 1, Qt::AlignVCenter | Qt::AlignRight);
     layout->addWidget(volumeWidget, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
     layout->addWidget(m_menuLabel, 0, 3, Qt::AlignVCenter | Qt::AlignRight);
@@ -411,9 +422,15 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_audioDecoderThread, &QThread::finished, m_audioDecoder, &QObject::deleteLater);
     m_audioDecoderThread->start();
     connect(m_setupDialog, &SetupDialog::noiseConcealmentLevelChanged, m_audioDecoder, &AudioDecoder::setNoiseConcealment, Qt::QueuedConnection);
+    connect(this, &MainWindow::audioStop, m_audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
 
     m_audioOutput = new AudioOutput();
 #if (!HAVE_PORTAUDIO)
+    connect(m_audioOutput, &AudioOutput::audioDevicesList, this, &MainWindow::onAudioDevicesList, Qt::QueuedConnection);
+    connect(m_audioOutput, &AudioOutput::audioDeviceChanged, this, &MainWindow::onAudioDeviceChanged, Qt::QueuedConnection);
+    connect(m_audioOutput, &AudioOutput::audioOutputError, this, &MainWindow::onAudioOutputError, Qt::QueuedConnection);
+    connect(this, &MainWindow::audioOutput, m_audioOutput, &AudioOutput::setAudioDevice, Qt::QueuedConnection);
+    onAudioDevicesList(m_audioOutput->getAudioDevices());
     m_audioOutputThread = new QThread(this);
     m_audioOutputThread->setObjectName("audioOutThr");
     m_audioOutput->moveToThread(m_audioOutputThread);
@@ -676,7 +693,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->accept();
     }
     else
-    {
+    {   // message is needed for Windows -> stopping RTL SDR thread may take long time :-(
+        m_infoLabel->setText(tr("Stopping DAB processing, please wait..."));
+        m_infoLabel->setToolTip("");
+        m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
+
         m_exitRequested = true;
         emit stopUserApps();
         emit serviceRequest(0,0,0);
@@ -709,6 +730,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 void MainWindow::onInputDeviceReady()
 {
     ui->channelCombo->setEnabled(true);
+    restoreTimeQualWidget();
 }
 
 void MainWindow::onEnsembleInfo(const RadioControlEnsemble &ens)
@@ -1080,20 +1102,33 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
     {
     case InputDeviceErrorCode::EndOfFile:
         // tune to 0
+        m_infoLabel->setText(tr("End of file"));
+        m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
         if (!m_setupDialog->settings().rawfile.loopEna)
         {
-            ui->channelCombo->setCurrentIndex(-1);
+            m_infoLabel->setToolTip(tr("Choose any service to restart"));
+            ui->channelCombo->setCurrentIndex(-1);            
         }
-        m_timeLabel->setText(tr("End of file"));
+        else
+        {   // rewind - restore info after timeout
+            m_infoLabel->setToolTip("");
+            QTimer::singleShot(2000, this, [this](){ restoreTimeQualWidget(); });
+        }
         break;
     case InputDeviceErrorCode::DeviceDisconnected:
-        m_timeLabel->setText(tr("Input device disconnected"));
+        m_infoLabel->setText(tr("Input device error: Device disconnected"));
+        m_infoLabel->setToolTip(tr("Go to settigs and try to reconnect the device"));
+        m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
+
         // force no device
         m_setupDialog->resetInputDevice();
         changeInputDevice(InputDeviceId::UNDEFINED);
         break;
     case InputDeviceErrorCode::NoDataAvailable:
-        m_timeLabel->setText(tr("No input data"));
+        m_infoLabel->setText(tr("Input device error: No data"));
+        m_infoLabel->setToolTip(tr("Go to settigs and try to reconnect the device"));
+        m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
+
         // force no device
         m_setupDialog->resetInputDevice();
         changeInputDevice(InputDeviceId::UNDEFINED);
@@ -1244,6 +1279,7 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
 
         onProgrammeTypeChanged(s.SId, s.pty);
         displaySubchParams(s);
+        restoreTimeQualWidget();
     }
     else
     {   // sid it not equal to selected sid -> this should not happen
@@ -1415,6 +1451,64 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
     }
 }
 
+#if (!HAVE_PORTAUDIO)
+void MainWindow::onAudioDevicesList(QList<QAudioDevice> list)
+{
+    m_audioOutputMenu->clear();
+    if (nullptr != m_audioDevicesGroup)
+    {
+        delete m_audioDevicesGroup;
+    }
+    m_audioDevicesGroup = new QActionGroup(m_audioOutputMenu);
+    for (const QAudioDevice &device : list)
+    {
+        //qDebug() << device.description() << device.minimumSampleRate() << device.maximumSampleRate() << device.maximumChannelCount();
+        QAction * action = new QAction(device.description(), m_audioDevicesGroup);
+        action->setData(QVariant::fromValue(device));
+        action->setCheckable(true);
+    }
+    m_audioOutputMenu->addActions(m_audioDevicesGroup->actions());
+}
+
+void MainWindow::onAudioOutputError()
+{   // tuning to 0
+    // no service is selected
+    m_SId.set(0);
+
+    qCWarning(application, "Audio output error");
+    m_infoLabel->setText(tr("Audio Output Error"));
+    m_infoLabel->setToolTip(tr("Try to select other service to recover"));
+    m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
+    emit audioStop();
+}
+
+void MainWindow::onAudioOutputSelected(QAction *action)
+{
+    //qDebug() << "Audio output selected:" << action->data().value<QAudioDevice>().description();
+    emit audioOutput(action->data().value<QAudioDevice>().id());
+}
+
+void MainWindow::onAudioDeviceChanged(const QByteArray &id)
+{
+    for (const auto & action : m_audioDevicesGroup->actions())
+    {
+        if (action->data().value<QAudioDevice>().id() == id)
+        {
+            action->setChecked(true);
+            qCInfo(application) << "Audio device selected" << action->data().value<QAudioDevice>().description();
+            return;
+        }
+    }
+
+    if (m_audioDevicesGroup->actions().size() > 0)
+    {
+        qCInfo(application) << "Default audio device selected" << m_audioDevicesGroup->actions().at(0)->data().value<QAudioDevice>().description();
+        m_audioDevicesGroup->actions().at(0)->setChecked(true);
+    }
+}
+#endif
+
+
 void MainWindow::clearEnsembleInformationLabels()
 {
     m_timeLabel->setText("");
@@ -1441,9 +1535,13 @@ void MainWindow::clearServiceInformationLabels()
     ui->audioBitrateLabel->setText("");
     ui->audioBitrateLabel->setToolTip("");
     ui->announcementLabel->setVisible(false);
+    ui->slsWidget->setCurrentIndex(Instance::Service);
     ui->dlPlusWidget->setCurrentIndex(Instance::Service);
     ui->dlWidget->setCurrentIndex(Instance::Service);
-    ui->slsWidget->setCurrentIndex(Instance::Service);
+    onDLReset_Service();
+    onDLReset_Announcement();
+    ui->serviceListView->setCurrentIndex(QModelIndex());
+    ui->serviceTreeView->setCurrentIndex(QModelIndex());
 }
 
 void MainWindow::onNewInputDeviceSettings()
@@ -1925,6 +2023,7 @@ void MainWindow::loadSettings()
     {   // this sends signal
         m_muteLabel->toggle();
     }
+    emit audioOutput(settings->value("audioDevice", "").toByteArray());
 
     int inDevice = settings->value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();        
 
@@ -1954,7 +2053,7 @@ void MainWindow::loadSettings()
     s.announcementEna = settings->value("announcementEna", 0x07FF).toUInt();
     s.bringWindowToForeground = settings->value("bringWindowToForegroundOnAlarm", true).toBool();
     s.noiseConcealmentLevel = settings->value("noiseConcealment", 0).toInt();
-    s.xmlHeaderEna = settings->value("rawFileXmlHeader", true).toBool();
+    s.xmlHeaderEna = settings->value("rawFileXmlHeader", true).toBool();    
 
     s.rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
     s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
@@ -2068,8 +2167,14 @@ void MainWindow::saveSettings()
     const SetupDialog::Settings s = m_setupDialog->settings();
     settings->setValue("inputDeviceId", int(s.inputDevice));
     settings->setValue("recordingPath", m_inputDeviceRecorder->recordingPath());
+#if (!HAVE_PORTAUDIO)
+    if (nullptr != m_audioDevicesGroup)
+    {
+        settings->setValue("audioDevice", m_audioDevicesGroup->checkedAction()->data().value<QAudioDevice>().id());
+    }
+#endif
     settings->setValue("volume", m_audioVolume);
-    settings->setValue("mute", m_muteLabel->isChecked());
+    settings->setValue("mute", m_muteLabel->isChecked());    
     settings->setValue("windowGeometry", saveGeometry());
     settings->setValue("style", static_cast<int>(s.applicationStyle));
     settings->setValue("announcementEna", s.announcementEna);
@@ -2327,7 +2432,10 @@ void MainWindow::setExpertMode(bool ena)
 
     ui->serviceTreeView->setVisible(ena);
     m_signalQualityWidget->setVisible(ena);
-    m_timeBasicQualWidget->setCurrentIndex(ena ? 1 : 0);
+    if (m_timeBasicQualInfoWidget->currentIndex() != 2)
+    {   // if not information
+        m_timeBasicQualInfoWidget->setCurrentIndex(ena ? 1 : 0);
+    }
 
     ui->audioFrame->setVisible(ena);
     ui->channelFrame->setVisible(ena);
@@ -2510,6 +2618,12 @@ void MainWindow::initStyle()
 #endif
 }
 
+void MainWindow::restoreTimeQualWidget()
+{
+    //qDebug() << Q_FUNC_INFO;
+    m_timeBasicQualInfoWidget->setCurrentIndex(m_setupDialog->settings().expertModeEna ? 1 : 0);
+}
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
 // this is used to detect that system colors where changed (e.g. switching light and dark mode)
 void MainWindow::onColorSchemeChanged(Qt::ColorScheme colorScheme)
@@ -2620,8 +2734,7 @@ void MainWindow::forceDarkStyle(bool ena)
         qApp->setPalette(m_darkPalette);
         qApp->setStyleSheet("QToolTip { color: rgba(230, 230, 230, 240); "
                             "background-color: rgba(100, 100, 100, 160); "
-                            "border: 1px rgba(0, 0, 0, 128); }");
-    }
+                            "border: 1px rgba(0, 0, 0, 128); }");    }    
     else
     {
         qApp->setPalette(m_palette);

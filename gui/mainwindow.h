@@ -82,6 +82,8 @@ signals:
     void toggleAnnouncement();
     void audioMute(bool doMute);
     void audioVolume(int volume);
+    void audioOutput(const QByteArray & deviceId);
+    void audioStop();
     void exit();
 
 protected:        
@@ -109,22 +111,26 @@ private:
     ClickableLabel * m_muteLabel;
 
     // status bar widgets
-    QStackedWidget * m_timeBasicQualWidget;
-    QLabel  * m_timeLabel;
+    QStackedWidget * m_timeBasicQualInfoWidget;
+    QLabel * m_timeLabel;
     QLocale m_timeLocale;
-    QLabel  * m_basicSignalQualityLabel;
+    QLabel * m_basicSignalQualityLabel;
+    QLabel * m_infoLabel;
     QWidget * m_signalQualityWidget;
     QLabel * m_syncLabel;
     QLabel * m_snrLabel;
 
     // application menu
     QMenu * m_menu;
+    QMenu * m_audioOutputMenu;
+
     QAction * m_setupAction;
     QAction * m_clearServiceListAction;
     QAction * m_bandScanAction;
     QAction * m_ensembleInfoAction;
     QAction * m_aboutAction;
     QAction * m_logAction;
+    QActionGroup * m_audioDevicesGroup = nullptr;
 
     // dark mode
     QString m_defaultStyleName;
@@ -203,6 +209,7 @@ private:
     void displaySubchParams(const RadioControlServiceComponent &s);
     void toggleDLPlus(bool toggle);
     void initStyle();
+    void restoreTimeQualWidget();
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     void onColorSchemeChanged(Qt::ColorScheme colorScheme);
@@ -249,6 +256,12 @@ private:
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
     void onAudioServiceReconfiguration(const RadioControlServiceComponent &s);
     void onAnnouncement(const DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent &s);
+#if (!HAVE_PORTAUDIO)
+    void onAudioDevicesList(QList<QAudioDevice> list);
+    void onAudioOutputError();
+    void onAudioOutputSelected(QAction * action);
+    void onAudioDeviceChanged(const QByteArray & id);
+#endif
 };
 
 class DLPlusObjectUI

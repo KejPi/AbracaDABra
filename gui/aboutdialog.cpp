@@ -75,7 +75,9 @@ AboutDialog::AboutDialog(QWidget *parent) :
 #else
                            "<li><a href=\"https://github.com/knik0/faad2\">FAAD2</a> Copyright © 2003-2005 M. Bakker, Nero AG</li>"
 #endif
+#if HAVE_PORTAUDIO
                            "<li><a href=\"http://www.portaudio.com\">PortAudio</a> Copyright © 1999-2011 Ross Bencina and Phil Burk</li>"
+#endif
                            "</ul>"+
                            tr("Contributors to the translation:")+
                            "<ul>"

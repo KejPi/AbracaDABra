@@ -142,9 +142,14 @@ public slots:
     void restart(audioFifo_t *buffer);
     void mute(bool on);
     void setVolume(int value);
+    QList<QAudioDevice> getAudioDevices();
+    void setAudioDevice(const QByteArray & deviceId);
 
 signals:
+    void audioOutputError();
     void audioOutputRestart();
+    void audioDevicesList(QList<QAudioDevice> deviceList);
+    void audioDeviceChanged(const QByteArray & id);
 
 private:
     // Qt audio
@@ -152,12 +157,15 @@ private:
     QMediaDevices * m_devices;
     QAudioSink * m_audioSink;
     float m_linearVolume;
+    audioFifo_t * m_currentFifoPtr = nullptr;
     audioFifo_t * m_restartFifoPtr = nullptr;
+    QAudioDevice m_currentAudioDevice;
 
     void handleStateChanged(QAudio::State newState);
     int64_t bytesAvailable();
     void doStop();
     void doRestart(audioFifo_t *buffer);
+    void updateAudioDevices();
 };
 
 
