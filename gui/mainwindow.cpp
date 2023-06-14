@@ -2040,6 +2040,7 @@ void MainWindow::loadSettings()
         m_muteLabel->toggle();
     }
     emit audioOutput(settings->value("audioDevice", "").toByteArray());
+    m_keepServiceListOnScan = settings->value("keepServiceListOnScan", false).toBool();
 
     int inDevice = settings->value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();        
 
@@ -2220,7 +2221,8 @@ void MainWindow::saveSettings()
         settings->setValue("audioFramework", static_cast<int>(AudioFramework::Qt));
     }
     settings->setValue("volume", m_audioVolume);
-    settings->setValue("mute", m_muteLabel->isChecked());    
+    settings->setValue("mute", m_muteLabel->isChecked());
+    settings->setValue("keepServiceListOnScan", m_keepServiceListOnScan);
     settings->setValue("windowGeometry", saveGeometry());
     settings->setValue("style", static_cast<int>(s.applicationStyle));
     settings->setValue("announcementEna", s.announcementEna);
@@ -2509,7 +2511,7 @@ void MainWindow::setExpertMode(bool ena)
 
 void MainWindow::bandScan()
 {
-    BandScanDialog * dialog = new BandScanDialog(this, m_serviceList->numServices() == 0, Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+    BandScanDialog * dialog = new BandScanDialog(this, (m_serviceList->numServices() == 0) || m_keepServiceListOnScan, Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
     connect(dialog, &BandScanDialog::finished, dialog, &QObject::deleteLater);
     connect(dialog, &BandScanDialog::tuneChannel, this, &MainWindow::onTuneChannel);
     connect(m_radioControl, &RadioControl::signalState, dialog, &BandScanDialog::onSyncStatus, Qt::QueuedConnection);
@@ -2517,7 +2519,10 @@ void MainWindow::bandScan()
     connect(m_radioControl, &RadioControl::tuneDone, dialog, &BandScanDialog::onTuneDone, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListComplete, dialog, &BandScanDialog::onServiceListComplete, Qt::QueuedConnection);
     connect(m_serviceList, &ServiceList::serviceAdded, dialog, &BandScanDialog::onServiceFound);
-    connect(dialog, &BandScanDialog::scanStarts, this, &MainWindow::clearServiceList);
+    if (!m_keepServiceListOnScan)
+    {
+        connect(dialog, &BandScanDialog::scanStarts, this, &MainWindow::clearServiceList);
+    }
     connect(dialog, &BandScanDialog::finished, this, &MainWindow::onBandScanFinished);
 
     dialog->open();

@@ -168,6 +168,7 @@ private:
     bool m_hasListViewFocus;
     bool m_hasTreeViewFocus;
     int m_audioVolume = 100;
+    bool m_keepServiceListOnScan;
 
     // service list
     ServiceList * m_serviceList;
