@@ -39,7 +39,7 @@ ServiceList::~ServiceList()
     clear();
 }
 
-void ServiceList::clear()
+void ServiceList::clear(bool clearFavorites)
 {
     foreach (ServiceListItem * item, m_serviceList)
     {
@@ -52,6 +52,11 @@ void ServiceList::clear()
         delete item;
     }
     m_ensembleList.clear();
+
+    if (clearFavorites)
+    {
+        m_favoritesList.clear();
+    }
 
     emit empty();
 }
@@ -75,8 +80,12 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     ServiceListIterator sit = m_serviceList.find(servId);
     if (m_serviceList.end() == sit)
     {  // not found
-        pService = new ServiceListItem(s, fav, currentEns);
+        pService = new ServiceListItem(s, currentEns);
         m_serviceList.insert(servId, pService);
+        if (fav)
+        {
+            m_favoritesList.insert(servId);
+        }
         newService = true;
     }
     else
@@ -142,21 +151,39 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
 
 void ServiceList::setServiceFavorite(const ServiceListId & servId, bool ena)
 {
+#if 0
     ServiceListIterator sit = m_serviceList.find(servId);
     if (m_serviceList.end() != sit)
     {   // found
         (*sit)->setFavorite(ena);
     }
+#else
+    if (ena)
+    {
+        if (m_serviceList.find(servId) != m_serviceList.cend())
+        {   // if service exists in the list
+            m_favoritesList.insert(servId);
+        }
+    }
+    else
+    {
+        m_favoritesList.remove(servId);
+    }
+#endif
 }
 
 bool ServiceList::isServiceFavorite(const ServiceListId & servId) const
 {
+#if 0
     ServiceListConstIterator sit = m_serviceList.find(servId);
     if (m_serviceList.end() != sit)
     {   // found
         return (*sit)->isFavorite();
     }
     return false;
+#else
+    return m_favoritesList.contains(servId);
+#endif
 }
 
 int ServiceList::numEnsembles(const ServiceListId & servId) const
@@ -208,7 +235,8 @@ void ServiceList::save(QSettings & settings)
         settings.setValue("SCIdS", (*it)->SCIdS());
         settings.setValue("Label", (*it)->label());
         settings.setValue("ShortLabel", (*it)->shortLabel());
-        settings.setValue("Fav", (*it)->isFavorite());
+        //settings.setValue("Fav", (*it)->isFavorite());
+        settings.setValue("Fav", m_favoritesList.contains(ServiceListId(id)));
         settings.setValue("LastEns", (*it)->currentEnsembleIdx());
         settings.beginWriteArray("Ensemble", (*it)->numEnsembles());
         for (int e = 0; e < (*it)->numEnsembles(); ++e)

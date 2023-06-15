@@ -60,7 +60,7 @@ public:
     int numServices() const { return m_serviceList.size(); }
     int numEnsembles(const ServiceListId &servId = 0) const;
     int currentEnsembleIdx(const ServiceListId &servId) const;
-    void clear();
+    void clear(bool clearFavorites = true);
 
     void setServiceFavorite(const ServiceListId &servId, bool ena);
     bool isServiceFavorite(const ServiceListId &servId) const;
@@ -91,6 +91,7 @@ signals:
 private:
     QHash<ServiceListId, ServiceListItem *> m_serviceList;
     QHash<ServiceListId, EnsembleListItem *> m_ensembleList;
+    QSet<ServiceListId> m_favoritesList;
 };
 
 #endif // SERVICELIST_H

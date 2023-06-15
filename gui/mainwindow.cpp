@@ -1065,6 +1065,15 @@ void MainWindow::onChannelChange(int index)
     }
 }
 
+void MainWindow::onBandScanStart()
+{
+    stop();
+    if (!m_keepServiceListOnScan)
+    {
+        m_serviceList->clear(false);  // do not clear favorites
+    }
+}
+
 void MainWindow::onTuneDone(uint32_t freq)
 {   // this slot is called when tune is complete
     m_frequency = freq;
@@ -1266,7 +1275,8 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
         ServiceListConstIterator it = m_serviceList->findService(id);
         if (it != m_serviceList->serviceListEnd())
         {
-            ui->favoriteLabel->setChecked((*it)->isFavorite());
+            //ui->favoriteLabel->setChecked((*it)->isFavorite());
+            ui->favoriteLabel->setChecked(m_serviceList->isServiceFavorite(id));
             int numEns = (*it)->numEnsembles();
             if (numEns > 1)
             {
@@ -2519,10 +2529,7 @@ void MainWindow::bandScan()
     connect(m_radioControl, &RadioControl::tuneDone, dialog, &BandScanDialog::onTuneDone, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListComplete, dialog, &BandScanDialog::onServiceListComplete, Qt::QueuedConnection);
     connect(m_serviceList, &ServiceList::serviceAdded, dialog, &BandScanDialog::onServiceFound);
-    if (!m_keepServiceListOnScan)
-    {
-        connect(dialog, &BandScanDialog::scanStarts, this, &MainWindow::clearServiceList);
-    }
+    connect(dialog, &BandScanDialog::scanStarts, this, &MainWindow::onBandScanStart);
     connect(dialog, &BandScanDialog::finished, this, &MainWindow::onBandScanFinished);
 
     dialog->open();

@@ -220,6 +220,7 @@ private:
     void onEnsembleReconfiguration(const RadioControlEnsemble &ens) const;
     void onEnsembleRemoved(const RadioControlEnsemble &ens);
     void onChannelChange(int index);
+    void onBandScanStart();
     void onBandScanFinished(int result);
     void onFavoriteToggled(bool checked);
     void onAudioVolumeSliderChanged(int volume);
