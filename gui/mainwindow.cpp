@@ -165,8 +165,11 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     //QWindowsWindowFunctions::setWindowActivationBehavior(QWindowsWindowFunctions::AlwaysActivateWindow);
 #endif
 
-    ui->channelDown->setText(QString::fromUtf8("\u276E"));
-    ui->channelUp->setText(QString::fromUtf8("\u276F"));
+//    ui->channelDown->setText(QString::fromUtf8("\u276E"));
+//    ui->channelUp->setText(QString::fromUtf8("\u276F"));
+    ui->channelDown->setText(QString::fromUtf8("\u2039"));
+    ui->channelUp->setText(QString::fromUtf8("\u203A"));
+
     connect(ui->channelDown, &ClickableLabel::clicked, this, &MainWindow::onChannelDownClicked);
     connect(ui->channelUp, &ClickableLabel::clicked, this, &MainWindow::onChannelUpClicked);
 
@@ -2860,6 +2863,9 @@ void MainWindow::setupDarkMode()
 
         ui->switchSourceLabel->setIcon(":/resources/broadcast_dark.png");
 
+        ui->channelDown->setIcon(":/resources/chevron-left_dark.png");
+        ui->channelUp->setIcon(":/resources/chevron-right_dark.png");
+
         ui->slsView_Service->setupDarkMode(true);
         ui->slsView_Announcement->setupDarkMode(true);
         m_logDialog->setupDarkMode(true);
@@ -2880,6 +2886,9 @@ void MainWindow::setupDarkMode()
         ui->announcementLabel->setIcon(":/resources/announcement_suspended.png", false);
 
         ui->switchSourceLabel->setIcon(":/resources/broadcast.png");
+
+        ui->channelDown->setIcon(":/resources/chevron-left.png");
+        ui->channelUp->setIcon(":/resources/chevron-right.png");
 
         ui->slsView_Service->setupDarkMode(false);
         ui->slsView_Announcement->setupDarkMode(false);
