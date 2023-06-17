@@ -92,7 +92,8 @@ void AudioOutputQt::start(audioFifo_t *buffer)
     m_audioSink = new QAudioSink(m_currentAudioDevice, format, this);
 
     // set buffer size to 2* AUDIO_FIFO_CHUNK_MS ms
-    m_audioSink->setBufferSize(2 * AUDIO_FIFO_CHUNK_MS * sRate/1000 * numCh * sizeof(int16_t));
+    // this is causing problem on Windows
+    //m_audioSink->setBufferSize(2 * AUDIO_FIFO_CHUNK_MS * sRate/1000 * numCh * sizeof(int16_t));
 
     connect(m_audioSink, &QAudioSink::stateChanged, this, &AudioOutputQt::handleStateChanged);
 
