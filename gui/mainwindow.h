@@ -221,6 +221,8 @@ private:
     void onEnsembleRemoved(const RadioControlEnsemble &ens);
     void onChannelChange(int index);
     void onBandScanStart();
+    void onChannelUpClicked();
+    void onChannelDownClicked();
     void onBandScanFinished(int result);
     void onFavoriteToggled(bool checked);
     void onAudioVolumeSliderChanged(int volume);

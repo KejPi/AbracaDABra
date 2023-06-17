@@ -165,6 +165,11 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     //QWindowsWindowFunctions::setWindowActivationBehavior(QWindowsWindowFunctions::AlwaysActivateWindow);
 #endif
 
+    ui->channelDown->setText(QString::fromUtf8("\u276E"));
+    ui->channelUp->setText(QString::fromUtf8("\u276F"));
+    connect(ui->channelDown, &ClickableLabel::clicked, this, &MainWindow::onChannelDownClicked);
+    connect(ui->channelUp, &ClickableLabel::clicked, this, &MainWindow::onChannelUpClicked);
+
     // favorites control
     ui->favoriteLabel->setCheckable(true);
     ui->favoriteLabel->setTooltip(tr("Add service to favorites"), false);
@@ -352,13 +357,23 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_serviceList, &ServiceList::empty, m_slTreeModel, &SLTreeModel::clear);
 
     // fill channel list
-    dabChannelList_t::const_iterator i = DabTables::channelList.constBegin();
-    while (i != DabTables::channelList.constEnd()) {
-        ui->channelCombo->addItem(i.value(), i.key());
-        ++i;
+    int freqLabelMaxWidth = 0;
+    dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
+    while (it != DabTables::channelList.constEnd()) {
+        // insert to combo
+        ui->channelCombo->addItem(it.value(), it.key());
+
+        // calculate label size
+        QString freqStr = QString("%1 MHz").arg(it.key()/1000.0, 3, 'f', 3, QChar('0'));
+        if (freqLabelMaxWidth < ui->frequencyLabel->fontMetrics().boundingRect(freqStr).width())
+        {
+            freqLabelMaxWidth = ui->frequencyLabel->fontMetrics().boundingRect(freqStr).width();
+        }
+        ++it;
     }
     ui->channelCombo->setCurrentIndex(-1);
     ui->channelCombo->setDisabled(true);
+    ui->frequencyLabel->setFixedWidth(freqLabelMaxWidth);
 
     // disable service list - it is enabled when some valid device is selected1
     ui->serviceListView->setEnabled(false);
@@ -1074,6 +1089,28 @@ void MainWindow::onBandScanStart()
     }
 }
 
+void MainWindow::onChannelUpClicked()
+{
+    int ch = ui->channelCombo->currentIndex();
+    ch = (ch + 1) % ui->channelCombo->count();
+    ui->channelCombo->setCurrentIndex(ch);
+}
+
+void MainWindow::onChannelDownClicked()
+{
+    int ch = ui->channelCombo->currentIndex();
+    ch -= 1;
+    if (ch < 0)
+    {
+        ch = ui->channelCombo->count() - 1;
+    }
+    else
+    {
+        ch = ch % ui->channelCombo->count();
+    }
+    ui->channelCombo->setCurrentIndex(ch);
+}
+
 void MainWindow::onTuneDone(uint32_t freq)
 {   // this slot is called when tune is complete
     m_frequency = freq;
@@ -1540,8 +1577,8 @@ void MainWindow::clearEnsembleInformationLabels()
     m_timeLabel->setText("");
     ui->ensembleLabel->setText(tr("No ensemble"));
     ui->ensembleLabel->setToolTip(tr("No ensemble tuned"));
+    ui->frequencyLabel->setText("");
     ui->ensembleInfoLabel->setText("");
-    ui->frequencyLabel->setText("");    
 }
 
 void MainWindow::clearServiceInformationLabels()
@@ -2486,7 +2523,6 @@ void MainWindow::setExpertMode(bool ena)
     ui->channelFrame->setVisible(ena);
     ui->audioFrame->setVisible(ena);
     ui->programTypeLabel->setVisible(ena);
-    ui->ensembleInfoLabel->setVisible(ena);
 
     ui->serviceTreeView->setVisible(ena);
     m_signalQualityWidget->setVisible(ena);
@@ -2497,8 +2533,10 @@ void MainWindow::setExpertMode(bool ena)
 
     ui->audioFrame->setVisible(ena);
     ui->channelFrame->setVisible(ena);
-    ui->ensembleInfoLabel->setVisible(ena);
+    ui->channelDown->setVisible(ena);
+    ui->channelUp->setVisible(ena);
     ui->programTypeLabel->setVisible(ena);
+    ui->ensembleInfoLabel->setVisible(ena);
 
     ui->slsView_Service->setExpertMode(ena);
     ui->slsView_Announcement->setExpertMode(ena);

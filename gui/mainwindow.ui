@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
-    <height>548</height>
+    <width>897</width>
+    <height>535</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -150,7 +150,7 @@
       <item>
        <widget class="QLabel" name="ensembleInfoLabel">
         <property name="text">
-         <string notr="true">Ensemble information</string>
+         <string notr="true">Info</string>
         </property>
        </widget>
       </item>
@@ -247,21 +247,77 @@
        </property>
        <item>
         <widget class="QComboBox" name="channelCombo">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="focusPolicy">
           <enum>Qt::ClickFocus</enum>
          </property>
         </widget>
        </item>
        <item>
+        <widget class="ClickableLabel" name="channelDown">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>15</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string notr="true">&lt;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="frequencyLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="toolTip">
           <string>Current frequency</string>
          </property>
          <property name="text">
-          <string>227.360 MHz</string>
+          <string notr="true">227.360 MHz</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="ClickableLabel" name="channelUp">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>15</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string notr="true">&gt;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -471,8 +527,8 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>327</width>
-         <height>113</height>
+         <width>324</width>
+         <height>100</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -719,7 +775,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>900</width>
+     <width>897</width>
      <height>24</height>
     </rect>
    </property>
