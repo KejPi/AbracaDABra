@@ -419,8 +419,18 @@ void RawFileInput::stop()
     }
     if (nullptr != m_worker)
     {
-        m_worker->stop();
+        m_worker->stop();        
         m_worker->wait(INPUT_CHUNK_MS*2);
+        while (!m_worker->isFinished())
+        {
+            // reset buffer - and tell the thread it is empty - buffer will be reset in any case
+            pthread_mutex_lock(&inputBuffer.countMutex);
+            inputBuffer.count = 0;
+            pthread_cond_signal(&inputBuffer.countCondition);
+            pthread_mutex_unlock(&inputBuffer.countMutex);
+            m_worker->wait(INPUT_CHUNK_MS*2);
+        }
+        delete m_worker;
         m_worker = nullptr;
     }
 }
