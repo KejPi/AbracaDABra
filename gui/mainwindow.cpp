@@ -153,10 +153,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     logToModel(m_logDialog->getModel());
 
     ui->serviceListView->setIconSize(QSize(16,16));
-    connect(ui->channelCombo, &QComboBox::currentIndexChanged, this, &MainWindow::onChannelChange);
 
     // set UI
-    setWindowTitle("Abraca DAB Radio");    
+    setWindowTitle("Abraca DAB Radio");
 
 #ifdef Q_OS_WIN
     // this is Windows specific code, not portable - allows to bring window to front (used for alarm announcement)
@@ -166,9 +165,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 #endif
 
     ui->channelDown->setText(QString::fromUtf8("\u2039"));
-    ui->channelDown->setTooltip(tr("Tune down"));
     ui->channelUp->setText(QString::fromUtf8("\u203A"));
-    ui->channelUp->setTooltip(tr("Tune up"));
 
     connect(ui->channelDown, &ClickableLabel::clicked, this, &MainWindow::onChannelDownClicked);
     connect(ui->channelUp, &ClickableLabel::clicked, this, &MainWindow::onChannelUpClicked);
@@ -271,7 +268,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         connect(m_audioOutputMenu, &QMenu::triggered, this, &MainWindow::onAudioOutputSelected);
     }
 
-    m_menu->addAction(m_setupAction);   
+    m_menu->addAction(m_setupAction);
     m_menu->addAction(m_bandScanAction);
     m_menu->addAction(m_clearServiceListAction);
     m_menu->addSeparator();
@@ -374,6 +371,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         }
         ++it;
     }
+    connect(ui->channelCombo, &QComboBox::currentIndexChanged, this, &MainWindow::onChannelChange);
     ui->channelCombo->setCurrentIndex(-1);
     ui->channelCombo->setDisabled(true);
     ui->channelDown->setDisabled(true);
@@ -542,7 +540,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::stopAudio, m_audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
     connect(m_audioDecoder, &AudioDecoder::startAudio, m_audioOutput, &AudioOutput::start, Qt::QueuedConnection);
     connect(m_audioDecoder, &AudioDecoder::switchAudio, m_audioOutput, &AudioOutput::restart, Qt::QueuedConnection);
-    connect(m_audioDecoder, &AudioDecoder::stopAudio, m_audioOutput, &AudioOutput::stop, Qt::QueuedConnection);    
+    connect(m_audioDecoder, &AudioDecoder::stopAudio, m_audioOutput, &AudioOutput::stop, Qt::QueuedConnection);
 
     // tune procedure:
     // 1. mainwindow tune -> radiocontrol tune (this stops DAB SDR - tune to 0)
@@ -1081,6 +1079,7 @@ void MainWindow::onChannelChange(int index)
         ui->serviceListView->clearSelection();
         ui->serviceTreeView->clearSelection();
         channelSelected();
+
         if (index < 0)
         {   // this indx is set when service list is cleared by user -> we want combo enabled
             ui->channelCombo->setEnabled(true);
@@ -1090,6 +1089,21 @@ void MainWindow::onChannelChange(int index)
 
         emit serviceRequest(ui->channelCombo->itemData(index).toUInt(), 0, 0);
     }
+
+    // update up/down button tooltip text
+    int nextIdx = (index + 1) % ui->channelCombo->count();
+    ui->channelUp->setTooltip(QString(tr("Tune to %1")).arg(ui->channelCombo->itemText(nextIdx)));
+
+    int prevIdx = index - 1;
+    if (prevIdx < 0)
+    {
+        prevIdx = ui->channelCombo->count() - 1;
+    }
+    else
+    {
+        prevIdx = prevIdx % ui->channelCombo->count();
+    }
+    ui->channelDown->setTooltip(QString(tr("Tune to %1")).arg(DabTables::channelList[ui->channelCombo->itemData(prevIdx).toUInt()]));
 }
 
 void MainWindow::onBandScanStart()
@@ -1186,7 +1200,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
         if (!m_setupDialog->settings().rawfile.loopEna)
         {
             m_infoLabel->setToolTip(tr("Choose any service to restart"));
-            ui->channelCombo->setCurrentIndex(-1);            
+            ui->channelCombo->setCurrentIndex(-1);
         }
         else
         {   // rewind - restore info after timeout
@@ -1472,7 +1486,7 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
                                                      "on current service"))
                                               .arg(DabTables::getAnnouncementName(id)));
         ui->announcementLabel->setChecked(true);
-        ui->announcementLabel->setEnabled(false);        
+        ui->announcementLabel->setEnabled(false);
         ui->announcementLabel->setVisible(true);
         ui->slsWidget->setCurrentIndex(Instance::Service);
 
@@ -1865,7 +1879,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     break;
     case InputDeviceId::AIRSPY:
     {
-#if HAVE_AIRSPY       
+#if HAVE_AIRSPY
         m_inputDevice = new AirspyInput(m_setupDialog->settings().airspy.prefer4096kHz);
 
         // signals have to be connected before calling isAvailable
@@ -2107,7 +2121,7 @@ void MainWindow::loadSettings()
     emit audioOutput(settings->value("audioDevice", "").toByteArray());
     m_keepServiceListOnScan = settings->value("keepServiceListOnScan", false).toBool();
 
-    int inDevice = settings->value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();        
+    int inDevice = settings->value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();
 
     SetupDialog::Settings s;
 
@@ -2135,7 +2149,7 @@ void MainWindow::loadSettings()
     s.announcementEna = settings->value("announcementEna", 0x07FF).toUInt();
     s.bringWindowToForeground = settings->value("bringWindowToForegroundOnAlarm", true).toBool();
     s.noiseConcealmentLevel = settings->value("noiseConcealment", 0).toInt();
-    s.xmlHeaderEna = settings->value("rawFileXmlHeader", true).toBool();    
+    s.xmlHeaderEna = settings->value("rawFileXmlHeader", true).toBool();
 
     s.rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
     s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
@@ -2848,7 +2862,7 @@ void MainWindow::forceDarkStyle(bool ena)
         qApp->setPalette(m_darkPalette);
         qApp->setStyleSheet("QToolTip { color: rgba(230, 230, 230, 240); "
                             "background-color: rgba(100, 100, 100, 160); "
-                            "border: 1px rgba(0, 0, 0, 128); }");    }    
+                            "border: 1px rgba(0, 0, 0, 128); }");    }
     else
     {
         qApp->setPalette(m_palette);
@@ -2994,7 +3008,7 @@ void MainWindow::onDLPlusItemToggle_Announcement()
 }
 
 void MainWindow::onDLPlusItemToggle(Instance inst)
-{    
+{
     QMap<DLPlusContentType, DLPlusObjectUI*> * dlObjCachePtr = &m_dlObjCache[inst];
 
     // delete all ITEMS.*
@@ -3092,7 +3106,7 @@ DLPlusObjectUI::DLPlusObjectUI(const DLPlusObject &obj) : m_dlPlusObject(obj)
             QObject::connect(
                         m_tagText, &QLabel::linkActivated,
                         [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
-                    );            
+                    );
             break;
         case DLPlusContentType::EMAIL_HOTLINE:
         case DLPlusContentType::EMAIL_STUDIO:
