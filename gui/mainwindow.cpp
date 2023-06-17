@@ -165,10 +165,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     //QWindowsWindowFunctions::setWindowActivationBehavior(QWindowsWindowFunctions::AlwaysActivateWindow);
 #endif
 
-//    ui->channelDown->setText(QString::fromUtf8("\u276E"));
-//    ui->channelUp->setText(QString::fromUtf8("\u276F"));
     ui->channelDown->setText(QString::fromUtf8("\u2039"));
+    ui->channelDown->setTooltip(tr("Tune down"));
     ui->channelUp->setText(QString::fromUtf8("\u203A"));
+    ui->channelUp->setTooltip(tr("Tune up"));
 
     connect(ui->channelDown, &ClickableLabel::clicked, this, &MainWindow::onChannelDownClicked);
     connect(ui->channelUp, &ClickableLabel::clicked, this, &MainWindow::onChannelUpClicked);
@@ -376,6 +376,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     }
     ui->channelCombo->setCurrentIndex(-1);
     ui->channelCombo->setDisabled(true);
+    ui->channelDown->setDisabled(true);
+    ui->channelUp->setDisabled(true);
+
     ui->frequencyLabel->setFixedWidth(freqLabelMaxWidth);
 
     // disable service list - it is enabled when some valid device is selected1
@@ -767,6 +770,8 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 void MainWindow::onInputDeviceReady()
 {
     ui->channelCombo->setEnabled(true);
+    ui->channelDown->setEnabled(true);
+    ui->channelUp->setEnabled(true);
     restoreTimeQualWidget();
 }
 
@@ -1042,6 +1047,8 @@ void MainWindow::channelSelected()
 
     clearEnsembleInformationLabels();
     ui->channelCombo->setDisabled(true);
+    ui->channelDown->setDisabled(true);
+    ui->channelUp->setDisabled(true);
     ui->frequencyLabel->setText(tr("Tuning...  "));
 
     onSignalState(uint8_t(DabSyncLevel::NoSync), 0.0);
@@ -1077,6 +1084,8 @@ void MainWindow::onChannelChange(int index)
         if (index < 0)
         {   // this indx is set when service list is cleared by user -> we want combo enabled
             ui->channelCombo->setEnabled(true);
+            ui->channelDown->setEnabled(true);
+            ui->channelUp->setEnabled(true);
         }
 
         emit serviceRequest(ui->channelCombo->itemData(index).toUInt(), 0, 0);
@@ -1120,6 +1129,8 @@ void MainWindow::onTuneDone(uint32_t freq)
     if (freq != 0)
     {
         ui->channelCombo->setEnabled(true);
+        ui->channelDown->setEnabled(true);
+        ui->channelUp->setEnabled(true);
         ui->serviceListView->setEnabled(true);
         ui->serviceTreeView->setEnabled(true);
         if (m_hasListViewFocus)
@@ -1651,6 +1662,8 @@ void MainWindow::changeInputDevice(const InputDeviceId & d)
     { // stop
         stop();
         ui->channelCombo->setDisabled(true);  // enabled when device is ready
+        ui->channelDown->setDisabled(true);
+        ui->channelUp->setDisabled(true);
     }
     else
     { // device is not playing
@@ -1697,6 +1710,8 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         m_inputDeviceId = InputDeviceId::UNDEFINED;
         m_inputDevice = nullptr;
         ui->channelCombo->setDisabled(true);   // it will be enabled when device is ready
+        ui->channelDown->setDisabled(true);
+        ui->channelUp->setDisabled(true);
 
         ui->serviceListView->setEnabled(false);
         ui->serviceTreeView->setEnabled(false);
