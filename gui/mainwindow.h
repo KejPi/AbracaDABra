@@ -95,7 +95,7 @@ protected:
 private:
     // constants
     enum Instance { Service = 0, Announcement = 1, NumInstances };
-    enum AudioFramework { Qt = 0, Pa = 1 };
+    enum AudioFramework { Pa = 0, Qt = 1};
     static const QString appName;
     static const char * syncLevelLabels[];
     static const char * syncLevelTooltip[];
