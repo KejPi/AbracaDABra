@@ -205,10 +205,10 @@ int AudioOutputPa::portAudioCb( const void *inputBuffer, void *outputBuffer, uns
     Q_UNUSED(timeInfo);
 
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
-    int ret = static_cast<AudioOutput*>(ctx)->portAudioCbPrivate(outputBuffer, nBufferFrames);
-    if (static_cast<AudioOutput*>(ctx)->m_rawOut)
+    int ret = static_cast<AudioOutputPa*>(ctx)->portAudioCbPrivate(outputBuffer, nBufferFrames);
+    if (static_cast<AudioOutputPa*>(ctx)->m_rawOut)
     {
-        fwrite(outputBuffer, sizeof(int16_t), nBufferFrames * static_cast<AudioOutput*>(ctx)->m_numChannels, static_cast<AudioOutput*>(ctx)->m_rawOut);
+        fwrite(outputBuffer, sizeof(int16_t), nBufferFrames * static_cast<AudioOutputPa*>(ctx)->m_numChannels, static_cast<AudioOutputPa*>(ctx)->m_rawOut);
     }
     return ret;
 #else
