@@ -2261,7 +2261,7 @@ MainWindow::AudioFramework MainWindow::getAudioFramework()
         settings = new QSettings(m_iniFilename, QSettings::IniFormat);
     }
 
-    int val = settings->value("audioFramework", AudioFramework::Qt).toInt();
+    int val = settings->value("audioFramework", AudioFramework::Pa).toInt();
     delete settings;
 
     return static_cast<AudioFramework>(val);
