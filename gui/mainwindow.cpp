@@ -1596,14 +1596,13 @@ void MainWindow::onAudioDeviceChanged(const QByteArray &id)
         if (action->data().value<QAudioDevice>().id() == id)
         {
             action->setChecked(true);
-            qCInfo(application) << "Audio device selected" << action->data().value<QAudioDevice>().description();
             return;
         }
     }
 
     if (m_audioDevicesGroup->actions().size() > 0)
     {
-        qCInfo(application) << "Default audio device selected" << m_audioDevicesGroup->actions().at(0)->data().value<QAudioDevice>().description();
+        qCWarning(application) << "Default audio device selected" << m_audioDevicesGroup->actions().at(0)->data().value<QAudioDevice>().description();
         m_audioDevicesGroup->actions().at(0)->setChecked(true);
     }
 }

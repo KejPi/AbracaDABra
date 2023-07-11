@@ -667,7 +667,6 @@ void AudioOutputPa::onStreamFinished()
         emit audioOutputRestart();
         start(m_restartFifoPtr);
     }
-#if 1 // def Q_OS_WIN
     else if (!(m_cbRequest & Request::Stop))
     {   // finished and not stop request ==> problem with audio device or user want to chnage device
         PaError err;
@@ -708,72 +707,9 @@ void AudioOutputPa::onStreamFinished()
         {
             qCCritical(audioOutput) << "Pa_Initialize error:" << Pa_GetErrorText(err);
         }
-#if 0
-#ifdef Q_OS_LINUX
-        /* Open an audio I/O stream. */
-        err = Pa_OpenDefaultStream( &m_outStream,
-                                   0,              /* no input channels */
-                                   m_numChannels,
-                                   paInt16,        /* 16 bit floating point output */
-                                       m_sampleRate_kHz * 1000,
-                                   m_bufferFrames, /* frames per buffer, i.e. the number
-                                                           of sample frames that PortAudio will
-                                                           request from the callback. Many apps
-                                                           may want to use
-                                                           paFramesPerBufferUnspecified, which
-                                                           tells PortAudio to pick the best,
-                                                           possibly changing, buffer size.*/
-                                   portAudioCb,    /* callback */
-                                   (void *) this);
-#else
-        PaStreamParameters outputParameters;
-        outputParameters.device = getCurrentDeviceIdx();
-        outputParameters.channelCount = m_numChannels;
-        outputParameters.sampleFormat = paInt16;
-        outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultLowOutputLatency;
-        outputParameters.hostApiSpecificStreamInfo = nullptr;
-
-        /* Open an audio I/O stream. */
-        err = Pa_OpenStream(&m_outStream,
-                            nullptr, // no input
-                            &outputParameters,
-                            m_sampleRate_kHz * 1000,
-                            m_bufferFrames, /* frames per buffer, i.e. the number
-                                                   of sample frames that PortAudio will
-                                                   request from the callback. Many apps
-                                                   may want to use
-                                                   paFramesPerBufferUnspecified, which
-                                                   tells PortAudio to pick the best,
-                                                   possibly changing, buffer size.*/
-                            paNoFlag,
-                            portAudioCb,    /* callback */
-                            (void *) this);
-#endif
-        if (paNoError != err)
-        {
-            qCCritical(audioOutput) << "Pa_OpenDefaultStream error:" << Pa_GetErrorText(err);
-        }
-
-        err = Pa_SetStreamFinishedCallback(m_outStream, portAudioStreamFinishedCb);
-        if (paNoError != err)
-        {
-            qCCritical(audioOutput) << "Pa_SetStreamFinishedCallback error:" << Pa_GetErrorText(err);
-        }
-
-        m_playbackState = AudioOutputPlaybackState::Muted;
-        m_cbRequest &= ~(Request::Stop | Request::Restart);  // reset stop and restart bits
-
-        err = Pa_StartStream(m_outStream);
-        if (paNoError != err)
-        {
-            qCCritical(audioOutput) << "Pa_StartStream error:" << Pa_GetErrorText(err);
-        }
-#else
         m_reloadDevice = true;
         start(m_inFifoPtr);
-#endif
     }
-#endif
     else { /* do nothing */ }
 }
 
