@@ -266,7 +266,7 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
     if (AudioOutputPlaybackState::Muted == m_playbackState)
     {   // muted
         // condition to unmute is enough samples && !muteFlag
-        if (count > 6*bytesToRead)
+        if (count > 7*bytesToRead)
         {   // enough samples => reading data from input fifo
             if (Request::None != request)
             {   // staying muted -> setting output buffer to 0
