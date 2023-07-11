@@ -60,6 +60,7 @@ public:
     void stop() override;
     void mute(bool on) override;
     void setVolume(int value) override;
+    void setAudioDevice(const QByteArray & deviceId) override;
 
 private:
     enum Request
@@ -80,8 +81,8 @@ private:
     uint8_t m_bytesPerFrame;
     float m_muteFactor;
     std::atomic<float> m_linearVolume;
-
     AudioOutputPlaybackState m_playbackState;
+    bool m_reloadDevice = false;
 
     int portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames);
     void portAudioStreamFinishedPrivateCb() { emit streamFinished(); }
@@ -95,8 +96,10 @@ private:
 #endif
 
     void onStreamFinished();
+    PaDeviceIndex getCurrentDeviceIdx();
+
 signals:
-    void streamFinished();     // this signal is emited from portAudioStreamFinishedCb
+    void streamFinished();     // this signal is emited from portAudioStreamFinishedCb   
 };
 
 

@@ -36,14 +36,10 @@ Q_LOGGING_CATEGORY(audioOutput, "AudioOutput", QtInfoMsg)
 
 AudioOutputQt::AudioOutputQt(QObject *parent) : AudioOutput(parent)
 {
-    m_devices = new  QMediaDevices(this);
     m_audioSink = nullptr;
     m_ioDevice = nullptr;
     m_linearVolume = 1.0;
     m_ioDevice = new AudioIODevice();
-
-    //m_currentAudioDevice = m_devices->defaultAudioOutput();
-    connect(m_devices, &QMediaDevices::audioOutputsChanged, this, &AudioOutputQt::updateAudioDevices);
 }
 
 AudioOutputQt::~AudioOutputQt()
@@ -139,23 +135,6 @@ void AudioOutputQt::setVolume(int value)
     {
         m_audioSink->setVolume(m_linearVolume);
     }
-}
-
-QList<QAudioDevice> AudioOutputQt::getAudioDevices()
-{
-    QList<QAudioDevice> list;
-    const QAudioDevice &defaultDeviceInfo = m_devices->defaultAudioOutput();
-    list.append(defaultDeviceInfo);
-
-    for (auto &deviceInfo : m_devices->audioOutputs())
-    {
-        //qDebug() << deviceInfo.description() << deviceInfo.id() << "?=" << m_currentAudioDevice.description() << m_currentAudioDevice.id();
-        if (deviceInfo != defaultDeviceInfo)
-        {
-            list.append(deviceInfo);
-        }
-    }
-    return list;
 }
 
 void AudioOutputQt::setAudioDevice(const QByteArray & deviceId)
@@ -259,30 +238,6 @@ void AudioOutputQt::handleStateChanged(QAudio::State newState)
         // ... other cases as appropriate
         break;
     }
-}
-
-void AudioOutputQt::updateAudioDevices()
-{
-    QList<QAudioDevice> list = getAudioDevices();
-
-    emit audioDevicesList(list);
-
-    bool currentDeviceFound = false;
-    for (auto & dev : list)
-    {
-        if (dev.id() == m_currentAudioDevice.id())
-        {
-            currentDeviceFound = true;
-            break;
-        }
-    }
-
-    if (!currentDeviceFound)
-    {   // current device no longer exists => default is used
-        m_currentAudioDevice = m_devices->defaultAudioOutput();
-        //qDebug() << "New output device" << m_currentAudioDevice.description();
-    }
-    emit audioDeviceChanged(m_currentAudioDevice.id());
 }
 
 AudioIODevice::AudioIODevice(QObject *parent) : QIODevice(parent)

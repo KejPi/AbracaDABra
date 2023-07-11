@@ -58,15 +58,62 @@ class AudioOutput : public QObject
     Q_OBJECT
 
 public:
-    AudioOutput(QObject *parent = nullptr) {};
+    AudioOutput(QObject *parent = nullptr)
+    {
+        m_devices = new QMediaDevices(this);
+        connect(m_devices, &QMediaDevices::audioOutputsChanged, this, &AudioOutput::updateAudioDevices);
+    }
     virtual void start(audioFifo_t *buffer) = 0;
     virtual void restart(audioFifo_t *buffer) = 0;
     virtual void stop() = 0;
     virtual void mute(bool on) = 0;
     virtual void setVolume(int value) = 0;
+    virtual void setAudioDevice(const QByteArray & deviceId) = 0;
+    QList<QAudioDevice> getAudioDevices()
+    {
+        QList<QAudioDevice> list;
+        const QAudioDevice &defaultDeviceInfo = m_devices->defaultAudioOutput();
+        list.append(defaultDeviceInfo);
+
+        for (auto &deviceInfo : m_devices->audioOutputs())
+        {
+            if (deviceInfo != defaultDeviceInfo)
+            {
+                list.append(deviceInfo);
+            }
+        }
+        return list;
+    }
 signals:
     void audioOutputError();
     void audioOutputRestart();
+    void audioDevicesList(QList<QAudioDevice> deviceList);
+    void audioDeviceChanged(const QByteArray & id);
+protected:
+    QMediaDevices * m_devices;
+    QAudioDevice m_currentAudioDevice;
+    void updateAudioDevices()
+    {
+        QList<QAudioDevice> list = getAudioDevices();
+
+        emit audioDevicesList(list);
+
+        bool currentDeviceFound = false;
+        for (auto & dev : list)
+        {
+            if (dev.id() == m_currentAudioDevice.id())
+            {
+                currentDeviceFound = true;
+                break;
+            }
+        }
+
+        if (!currentDeviceFound)
+        {   // current device no longer exists => default is used
+            m_currentAudioDevice = m_devices->defaultAudioOutput();
+        }
+        emit audioDeviceChanged(m_currentAudioDevice.id());
+    }
 };
 
 #endif // AUDIOOUTPUT_H

@@ -262,7 +262,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     m_menu = new QMenu(this);
 
+#ifdef Q_OS_LINUX
     if (AudioFramework::Qt == audioFramework)
+#endif
     {
         m_audioOutputMenu = m_menu->addMenu(tr("Audio output"));
         connect(m_audioOutputMenu, &QMenu::triggered, this, &MainWindow::onAudioOutputSelected);
@@ -457,16 +459,22 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     if (AudioFramework::Pa == audioFramework)
     {
         m_audioOutput = new AudioOutputPa();
+#ifndef Q_OS_LINUX
+        connect(m_audioOutput, &AudioOutput::audioDevicesList, this, &MainWindow::onAudioDevicesList);
+        connect(m_audioOutput, &AudioOutput::audioDeviceChanged, this, &MainWindow::onAudioDeviceChanged);
+        connect(this, &MainWindow::audioOutput, m_audioOutput, &AudioOutput::setAudioDevice);
+        onAudioDevicesList(m_audioOutput->getAudioDevices());
+#endif
     }
     else
 #endif
     {
         m_audioOutput = new AudioOutputQt();
-        connect(static_cast<AudioOutputQt *>(m_audioOutput), &AudioOutputQt::audioDevicesList, this, &MainWindow::onAudioDevicesList, Qt::QueuedConnection);
-        connect(static_cast<AudioOutputQt *>(m_audioOutput), &AudioOutputQt::audioDeviceChanged, this, &MainWindow::onAudioDeviceChanged, Qt::QueuedConnection);
+        connect(m_audioOutput, &AudioOutput::audioDevicesList, this, &MainWindow::onAudioDevicesList);
+        connect(m_audioOutput, &AudioOutput::audioDeviceChanged, this, &MainWindow::onAudioDeviceChanged);
         connect(static_cast<AudioOutputQt *>(m_audioOutput), &AudioOutputQt::audioOutputError, this, &MainWindow::onAudioOutputError, Qt::QueuedConnection);
-        connect(this, &MainWindow::audioOutput, static_cast<AudioOutputQt *>(m_audioOutput), &AudioOutputQt::setAudioDevice, Qt::QueuedConnection);
-        onAudioDevicesList(static_cast<AudioOutputQt *>(m_audioOutput)->getAudioDevices());
+        connect(this, &MainWindow::audioOutput, m_audioOutput, &AudioOutput::setAudioDevice, Qt::QueuedConnection);
+        onAudioDevicesList(m_audioOutput->getAudioDevices());
         m_audioOutputThread = new QThread(this);
         m_audioOutputThread->setObjectName("audioOutThr");
         m_audioOutput->moveToThread(m_audioOutputThread);

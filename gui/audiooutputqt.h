@@ -53,28 +53,20 @@ public:
     void stop() override;
     void mute(bool on) override;
     void setVolume(int value) override;
-    QList<QAudioDevice> getAudioDevices();
-    void setAudioDevice(const QByteArray & deviceId);
-
-signals:
-    void audioDevicesList(QList<QAudioDevice> deviceList);
-    void audioDeviceChanged(const QByteArray & id);
+    void setAudioDevice(const QByteArray & deviceId) override;
 
 private:
     // Qt audio
     AudioIODevice * m_ioDevice;
-    QMediaDevices * m_devices;
     QAudioSink * m_audioSink;
     float m_linearVolume;
     audioFifo_t * m_currentFifoPtr = nullptr;
     audioFifo_t * m_restartFifoPtr = nullptr;
-    QAudioDevice m_currentAudioDevice;
 
     void handleStateChanged(QAudio::State newState);
     int64_t bytesAvailable();
     void doStop();
     void doRestart(audioFifo_t *buffer);
-    void updateAudioDevices();
 };
 
 
