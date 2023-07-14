@@ -1207,7 +1207,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
         m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
         if (!m_setupDialog->settings().rawfile.loopEna)
         {
-            m_infoLabel->setToolTip(tr("Choose any service to restart"));
+            m_infoLabel->setToolTip(tr("Select any service to restart"));
             ui->channelCombo->setCurrentIndex(-1);
         }
         else
@@ -1218,7 +1218,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
         break;
     case InputDeviceErrorCode::DeviceDisconnected:
         m_infoLabel->setText(tr("Input device error: Device disconnected"));
-        m_infoLabel->setToolTip(tr("Go to settigs and try to reconnect the device"));
+        m_infoLabel->setToolTip(tr("Go to settings and try to reconnect the device"));
         m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
 
         // force no device
@@ -1227,7 +1227,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
         break;
     case InputDeviceErrorCode::NoDataAvailable:
         m_infoLabel->setText(tr("Input device error: No data"));
-        m_infoLabel->setToolTip(tr("Go to settigs and try to reconnect the device"));
+        m_infoLabel->setToolTip(tr("Go to settings and try to reconnect the device"));
         m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
 
         // force no device

@@ -765,19 +765,19 @@
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1210"/>
-        <source>Choose any service to restart</source>
+        <source>Select any service to restart</source>
         <translation>Přehrávání se restartuje po zvolení stanice</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1221"/>
+        <location filename="../mainwindow.cpp" line="1230"/>
+        <source>Go to settings and try to reconnect the device</source>
+        <translation>Otevřete nastavení a zkuste znovu připojit zařízení</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1220"/>
         <source>Input device error: Device disconnected</source>
         <translation>Chyba vstupního zařízení: Zařízení odpojeno</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1221"/>
-        <location filename="../mainwindow.cpp" line="1230"/>
-        <source>Go to settigs and try to reconnect the device</source>
-        <translation>Otevřete nastavení a zkuste znovu připojit zařízení</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1229"/>

@@ -768,18 +768,18 @@
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1210"/>
-        <source>Choose any service to restart</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1220"/>
-        <source>Input device error: Device disconnected</source>
+        <source>Select any service to restart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1221"/>
         <location filename="../mainwindow.cpp" line="1230"/>
-        <source>Go to settigs and try to reconnect the device</source>
+        <source>Go to settings and try to reconnect the device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1220"/>
+        <source>Input device error: Device disconnected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

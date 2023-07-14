@@ -762,19 +762,19 @@
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1210"/>
-        <source>Choose any service to restart</source>
+        <source>Select any service to restart</source>
         <translation>Ein Service wählen um neu zu starten</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1221"/>
+        <location filename="../mainwindow.cpp" line="1230"/>
+        <source>Go to settings and try to reconnect the device</source>
+        <translation>In die Einstellungen gehen und versuchen, das Eingabegerät neu zu verbinden</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1220"/>
         <source>Input device error: Device disconnected</source>
         <translation>Fehler des Eingabegeräts: Verbindung getrennt</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1221"/>
-        <location filename="../mainwindow.cpp" line="1230"/>
-        <source>Go to settigs and try to reconnect the device</source>
-        <translation>In die Einstellungen gehen und versuchen, das Eingabegerät neu zu verbinden</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1229"/>
