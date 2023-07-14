@@ -141,7 +141,7 @@
     <message>
         <location filename="../bandscandialog.cpp" line="63"/>
         <source>&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Warning:&lt;/b&gt; Band scan deletes current service list!&lt;/span&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Warnung:&lt;/b&gt; Suchlauf löscht die aktuelle Serviceliste!&lt;/span&gt;</translation>
     </message>
     <message>
         <location filename="../bandscandialog.cpp" line="117"/>
@@ -509,7 +509,7 @@
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_mainwindow.h" line="539"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_mainwindow.h" line="542"/>
         <source>Click to copy Dynamic Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Klicken um Dynamic label zu kopieren</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="673"/>
@@ -517,7 +517,7 @@
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_mainwindow.h" line="545"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_mainwindow.h" line="548"/>
         <source>Click to copy Dynamic Label +</source>
-        <translation type="unfinished"></translation>
+        <translation>Klicken um Dynamic Label + zu kopieren</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="81"/>
@@ -608,7 +608,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="269"/>
         <source>Audio output</source>
-        <translation type="unfinished"></translation>
+        <translation>Audioausgabe</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="284"/>
@@ -653,17 +653,17 @@
     <message>
         <location filename="../mainwindow.cpp" line="699"/>
         <source>&lt;i&gt;DL text copied to clipboard&lt;/i&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;DL Text in die Zwischenablage kopiert&lt;/i&gt;</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="723"/>
         <source>&lt;i&gt;DL+ text copied to clipboard&lt;/i&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;DL+ Text in die Zwischenablage kopiert&lt;/i</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="743"/>
         <source>Stopping DAB processing, please wait...</source>
-        <translation type="unfinished"></translation>
+        <translation>Stoppe DAB Verarbeitung, bitte warten...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="787"/>
@@ -747,13 +747,13 @@
     <message>
         <location filename="../mainwindow.cpp" line="1058"/>
         <source>Tuning...  </source>
-        <translation type="unfinished"></translation>
+        <translation>Tune...  </translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1103"/>
         <location filename="../mainwindow.cpp" line="1114"/>
         <source>Tune to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Tune auf %1</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1206"/>
@@ -763,23 +763,23 @@
     <message>
         <location filename="../mainwindow.cpp" line="1210"/>
         <source>Select any service to restart</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein Service wählen um neu zu starten</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1221"/>
         <location filename="../mainwindow.cpp" line="1230"/>
         <source>Go to settings and try to reconnect the device</source>
-        <translation type="unfinished"></translation>
+        <translation>In die Einstellungen gehen und versuchen, das Eingabegerät neu zu verbinden</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1220"/>
         <source>Input device error: Device disconnected</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler des Eingabegeräts: Verbindung getrennt</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1229"/>
         <source>Input device error: No data</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler des Eingabegeräts: Keine Daten</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1359"/>
@@ -839,12 +839,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="1580"/>
         <source>Audio Output Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler bei der Audioausgabe</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1581"/>
         <source>Try to select other service to recover</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ein anderes Service auswählen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1613"/>
@@ -883,7 +883,7 @@
         <location filename="../mainwindow.cpp" line="3112"/>
         <location filename="../mainwindow.cpp" line="3122"/>
         <source>Open link</source>
-        <translation type="unfinished"></translation>
+        <translation>Link öffnen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="3182"/>
@@ -1309,7 +1309,7 @@
     <message>
         <location filename="../dabtables.cpp" line="250"/>
         <source>Breton</source>
-        <translation type="unfinished"></translation>
+        <translation>Bretonisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="251"/>
@@ -1379,7 +1379,7 @@
     <message>
         <location filename="../dabtables.cpp" line="264"/>
         <source>Frisian</source>
-        <translation type="unfinished"></translation>
+        <translation>Friesisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="265"/>
@@ -1389,12 +1389,12 @@
     <message>
         <location filename="../dabtables.cpp" line="266"/>
         <source>Gaelic</source>
-        <translation type="unfinished"></translation>
+        <translation>Gälisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="267"/>
         <source>Galician</source>
-        <translation type="unfinished"></translation>
+        <translation>Galizisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="268"/>
@@ -1409,7 +1409,7 @@
     <message>
         <location filename="../dabtables.cpp" line="270"/>
         <source>Lappish</source>
-        <translation type="unfinished"></translation>
+        <translation>Lappländisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="271"/>
@@ -1454,7 +1454,7 @@
     <message>
         <location filename="../dabtables.cpp" line="279"/>
         <source>Occitan</source>
-        <translation type="unfinished"></translation>
+        <translation>Provenzalisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="280"/>
@@ -1474,7 +1474,7 @@
     <message>
         <location filename="../dabtables.cpp" line="283"/>
         <source>Romansh</source>
-        <translation type="unfinished"></translation>
+        <translation>Rätoromanisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="284"/>
@@ -1514,7 +1514,7 @@
     <message>
         <location filename="../dabtables.cpp" line="291"/>
         <source>Walloon</source>
-        <translation type="unfinished"></translation>
+        <translation>Wallonisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="292"/>
@@ -1524,7 +1524,7 @@
     <message>
         <location filename="../dabtables.cpp" line="293"/>
         <source>Zulu</source>
-        <translation type="unfinished"></translation>
+        <translation>Zulu</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="294"/>
@@ -1534,12 +1534,12 @@
     <message>
         <location filename="../dabtables.cpp" line="295"/>
         <source>Uzbek</source>
-        <translation type="unfinished"></translation>
+        <translation>Usbekisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="296"/>
         <source>Urdu</source>
-        <translation type="unfinished"></translation>
+        <translation>Urdu</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="297"/>
@@ -1559,22 +1559,22 @@
     <message>
         <location filename="../dabtables.cpp" line="300"/>
         <source>Tatar</source>
-        <translation type="unfinished"></translation>
+        <translation>Tatarisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="301"/>
         <source>Tamil</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamil</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="302"/>
         <source>Tadzhik</source>
-        <translation type="unfinished"></translation>
+        <translation>Tadschikisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="303"/>
         <source>Swahili</source>
-        <translation type="unfinished"></translation>
+        <translation>Suaheli</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="304"/>
@@ -1584,7 +1584,7 @@
     <message>
         <location filename="../dabtables.cpp" line="305"/>
         <source>Somali</source>
-        <translation type="unfinished"></translation>
+        <translation>Somali</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="306"/>
@@ -1689,7 +1689,7 @@
     <message>
         <location filename="../dabtables.cpp" line="326"/>
         <source>Khmer</source>
-        <translation type="unfinished"></translation>
+        <translation>Khmer</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="327"/>
@@ -1769,7 +1769,7 @@
     <message>
         <location filename="../dabtables.cpp" line="342"/>
         <source>Burmese</source>
-        <translation type="unfinished"></translation>
+        <translation>Burmesisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="343"/>
@@ -1779,7 +1779,7 @@
     <message>
         <location filename="../dabtables.cpp" line="344"/>
         <source>Bengali</source>
-        <translation type="unfinished"></translation>
+        <translation>Bengalisch</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="345"/>
@@ -2977,22 +2977,22 @@
     <message>
         <location filename="../slsview.cpp" line="273"/>
         <source>&lt;b&gt;Resolution:&lt;/b&gt; %1x%2 pixels&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Auflösung:&lt;/b&gt; %1x%2 Pixel&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../slsview.cpp" line="274"/>
         <source>&lt;b&gt;Size:&lt;/b&gt; %1 bytes&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Größe:&lt;/b&gt; %1 Bytes&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../slsview.cpp" line="275"/>
         <source>&lt;b&gt;Format:&lt;/b&gt; %1&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Format:&lt;/b&gt; %1&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../slsview.cpp" line="276"/>
         <source>&lt;b&gt;Content name:&lt;/b&gt; &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Inhaltsname:&lt;/b&gt; &quot;%1&quot;</translation>
     </message>
 </context>
 <context>
