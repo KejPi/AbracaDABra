@@ -72,16 +72,11 @@ Some settings can only be changed by editting of the INI file. File location is 
 
 Following settings can be changed by editing AbracaDABra.ini:
 
-      [RTL-SDR]
-      bandwidth=0     # 0 means automatic bandwidth, positive value means bandwidth value in Hz (e.g. bandwidth=1530000 is 1.53MHz BW)
-      bias-T=false    # set to true to enable bias-T
+      [General]
+      audioFramework=0             # 0 means PortAudio (default if available), 1 means Qt audio framework
+      keepServiceListOnScan=false  # keep (false, default) or delete (true) current service list when running band scan 
+                                   # note: favorites are not deleted
       
-      [AIRSPY]
-      bias-T=false    # set to true to enable bias-T      
-
-      [SOAPYSDR]
-      bandwidth=0     # 0 means default bandwidth, positive value means bandwidth value in Hz (e.g. bandwidth=1530000 is 1.53MHz BW)
-
 Application shall not run while changing INI file, otherwise the settings will be overwritten.
 
 It is also possible to use other than default INI file using `--ini` or `-i` command line parameter.
