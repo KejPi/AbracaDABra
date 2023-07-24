@@ -29,13 +29,13 @@
 #include <QTranslator>
 #include <QLibraryInfo>
 #include "mainwindow.h"
-#include "version.h"
+#include "config.h"
 
 int main(int argc, char *argv[])
 {
 
     QCoreApplication::setApplicationName("AbracaDABra");
-    QCoreApplication::setApplicationVersion(ABRACADABRA_VERSION);
+    QCoreApplication::setApplicationVersion(PROJECT_VER);
 
     QApplication a(argc, argv);
 

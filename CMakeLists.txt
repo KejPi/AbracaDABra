@@ -77,17 +77,18 @@ endif()
 
 #########################################################
 ## VERSION
-find_package(Git)
-add_custom_target(version
-    ${CMAKE_COMMAND} -D SRC=${CMAKE_CURRENT_SOURCE_DIR}/gui/version.h.in
-                     -D DST=${CMAKE_CURRENT_BINARY_DIR}/gui/version.h
-                     -D GIT_EXECUTABLE=${GIT_EXECUTABLE}
-                     -D FALLBACK_VERSION=${PROJECT_VERSION}
-                     -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateVersionHeader.cmake
-)
-
 if (NOT PROJECT_VERSION_RELEASE)
     set(PROJECT_VERSION_RELEASE OFF)
+endif()
+
+execute_process(COMMAND git log --pretty=format:%h -n 1
+                WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+                OUTPUT_VARIABLE PROJECT_GIT_REV
+                ERROR_QUIET)
+
+# Check whether we got any revision
+if ("${PROJECT_GIT_REV}" STREQUAL "")
+    set(PROJECT_GIT_REV "N/A")
 endif()
 
 #########################################################
