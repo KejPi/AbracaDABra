@@ -2455,6 +2455,7 @@ void MainWindow::onSwitchSourceClicked()
             emit serviceRequest(m_frequency, m_SId.value(), m_SCIdS);
 
             // synchronize tree view with service selection
+            serviceListViewUpdateSelection();
             serviceTreeViewUpdateSelection();
         }
     }
