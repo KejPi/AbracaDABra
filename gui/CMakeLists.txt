@@ -32,7 +32,7 @@ if (APPLE)
         mac.h)
 endif(APPLE)
 
-configure_file (config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
+configure_file(config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 if (HAVE_AIRSPY)
     set(AIRSPY_SOURCES airspyinput.h airspyinput.cpp)
@@ -52,10 +52,10 @@ add_executable(${TARGET}
     ${APP_ICON_MACOSX}
     ${APP_ICON_RESOURCE_WINDOWS}
     ${APP_RESOURCE_WINDOWS}
-    ${CMAKE_CURRENT_BINARY_DIR}/config.h    
     ${AIRSPY_SOURCES}
     ${SOAPYSDR_SOURCES}
     ${PORTAUDIO_SOURCES}
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h
     main.cpp
     mainwindow.cpp
     mainwindow.h
@@ -141,14 +141,15 @@ add_executable(${TARGET}
 
     ${APPLE_SOURCES}
   )
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+# Generate version
+add_dependencies(${TARGET} version)
 
 #add_definitions(-fsanitize=undefined)
 #target_link_options(${TARGET} PUBLIC -fsanitize=undefined)
 #add_definitions(-fsanitize=thread)
 #target_link_options(${TARGET} PUBLIC -fsanitize=thread)
-
 
 # config.h
 include_directories(${CMAKE_CURRENT_BINARY_DIR})

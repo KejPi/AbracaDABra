@@ -24,18 +24,10 @@
  * SOFTWARE.
  */
 
-#ifndef CONFIG_H
-#define CONFIG_H
-
-#cmakedefine01 HAVE_FDKAAC
-#cmakedefine01 HAVE_PORTAUDIO
-
-/* Optional devices */
-#cmakedefine01 HAVE_AIRSPY
-#cmakedefine01 HAVE_SOAPYSDR
-
-#endif // CONFIG_H
-
+#ifndef VERSION_H_
+#define VERSION_H_
+#define ABRACADABRA_VERSION "@ABRACADABRA_VERSION@"
+#endif  /* VERSION_H_ */
 
 
 

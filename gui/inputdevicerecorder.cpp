@@ -29,7 +29,7 @@
 #include <QLoggingCategory>
 #include "inputdevicerecorder.h"
 #include "dabtables.h"
-#include "config.h"
+#include "version.h"
 
 Q_LOGGING_CATEGORY(inputDeviceRecorder, "InputDeviceRecorder", QtInfoMsg)
 
@@ -176,11 +176,7 @@ void InputDeviceRecorder::startXmlHeader()
 
     QDomElement recorder = xmlHeader.createElement("Recorder");
     recorder.setAttribute("Name", "AbracaDABra");
-#if PROJECT_VERSION_RELEASE
-    recorder.setAttribute("Version", QString("%1").arg(PROJECT_VER));
-#else
-    recorder.setAttribute("Version", QString("%1+").arg(PROJECT_VER));
-#endif
+    recorder.setAttribute("Version", QString("%1").arg(ABRACADABRA_VERSION));
     root.appendChild(recorder);
 
     QDomElement device = xmlHeader.createElement("Device");

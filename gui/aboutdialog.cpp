@@ -29,6 +29,7 @@
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 #include "config.h"
+#include "version.h"
 #include "dabsdr.h"
 
 AboutDialog::AboutDialog(QWidget *parent) :
@@ -42,13 +43,9 @@ AboutDialog::AboutDialog(QWidget *parent) :
     dabsdrVersion_t dabsdrVer = {0};
     dabsdrGetVersion(&dabsdrVer);
 
-#if PROJECT_VERSION_RELEASE
-    ui->version->setText(QString("Version %1 (%2)").arg(PROJECT_VER,"<a href=\"https://github.com/KejPi/AbracaDABra\">GitHub</a>"));
-#else
-    ui->version->setText(QString(tr("Version %1+, revision %2 (%3)")).arg(PROJECT_VER, PROJECT_GIT_REV)
-                             .arg("<a href=\"https://github.com/KejPi/AbracaDABra\">GitHub</a>"));
-#endif
-    ui->qtVersion->setText(QString(tr("Based on Qt %1")).arg(QT_VERSION_STR));
+    ui->version->setText(QString("Version %1 (%2)").arg(ABRACADABRA_VERSION,"<a href=\"https://github.com/KejPi/AbracaDABra\">GitHub</a>"));
+
+    ui->qtVersion->setText(QString(tr("Based on Qt %1")).arg(QT_VERSION_STR));    
     ui->dabsdrVersion->setText(QString(tr("DAB SDR version %1.%2.%3")).arg(dabsdrVer.major).arg(dabsdrVer.minor).arg(dabsdrVer.patch));
 
     ui->libraries->setText(tr("AbracaDABra & DAB SDR library use following libraries (special thanks to):")+
