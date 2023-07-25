@@ -26,7 +26,10 @@
 
 #include <QDir>
 #include <QDebug>
+#include <QLoggingCategory>
 #include "rtlsdrinput.h"
+
+Q_LOGGING_CATEGORY(rtlsdrInput, "RtlSdrInput", QtInfoMsg)
 
 RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
 {
@@ -104,12 +107,12 @@ bool RtlSdrInput::openDevice()
     uint32_t deviceCount = rtlsdr_get_device_count();
     if (deviceCount == 0)
     {
-        qDebug() << "RTL-SDR: No devices found";
+        qCWarning(rtlsdrInput) << "No devices found";
         return false;
     }
     else
     {
-        qDebug() << "RTL-SDR: Found" << deviceCount << "devices";
+        qCInfo(rtlsdrInput) << "Found" << deviceCount << "devices";
     }
 
     //	Iterate over all found rtl-sdr devices and try to open it. Stops if one device is successfull opened.
@@ -122,11 +125,11 @@ bool RtlSdrInput::openDevice()
             deviceName = rtlsdr_get_device_name(n);
             if (NULL == deviceName)
             {
-                qDebug() << "RTL-SDR: Opening rtl-sdr device" << n;
+                qCInfo(rtlsdrInput) << "Opening rtl-sdr device" << n;
             }
             else
             {
-                qDebug("RTL-SDR: Opening rtl-sdr device #%d: %s", n, deviceName);
+                qCInfo(rtlsdrInput, "Opening rtl-sdr device #%d: %s", n, deviceName);
             }                        
             break;
         }
@@ -135,7 +138,7 @@ bool RtlSdrInput::openDevice()
 
     if (ret < 0)
     {   // no device found
-        qDebug() << "RTL-SDR: Opening rtl-sdr failed";
+        qCCritical(rtlsdrInput) << "Opening rtl-sdr failed";
         return false;
     }
     else { /* some device was opened successfully */ }
@@ -144,7 +147,7 @@ bool RtlSdrInput::openDevice()
     ret = rtlsdr_set_sample_rate(m_device, 2048000);
     if (ret < 0)
     {
-        qDebug() << "RTL-SDR: Setting sample rate failed";
+        qCCritical(rtlsdrInput) << "Setting sample rate failed";
         return false;
     }
     else { /* OK */ }
@@ -191,7 +194,7 @@ bool RtlSdrInput::openDevice()
     ret = rtlsdr_set_center_freq(m_device, 200000*1000);
     if (ret < 0)
     {
-        qDebug() << "RTL-SDR: Setting frequency failed";
+        qCWarning(rtlsdrInput) << "Setting frequency failed";
         // this is not fatal error
     }
     else { /* OK */ }
@@ -199,7 +202,7 @@ bool RtlSdrInput::openDevice()
 
     // Get tuner gains
     uint32_t gainsCount = rtlsdr_get_tuner_gains(m_device, NULL);
-    qDebug() << "RTL-SDR: Supported gain values" << gainsCount;
+    qCInfo(rtlsdrInput) << "Supported gain values" << gainsCount;
     int * gains = new int[gainsCount];
     gainsCount = rtlsdr_get_tuner_gains(m_device, gains);
 
@@ -240,7 +243,7 @@ void RtlSdrInput::stop()
         m_worker->wait(QDeadlineTimer(2000));
         while (!m_worker->isFinished())
         {
-            qDebug() << "RTL-SDR: Worker thread not finished after timeout - this should not happen :-(";
+            qCWarning(rtlsdrInput) << "Worker thread not finished after timeout - this should not happen :-(";
 
             // reset buffer - and tell the thread it is empty - buffer will be reset in any case
             pthread_mutex_lock(&inputBuffer.countMutex);
@@ -258,7 +261,7 @@ void RtlSdrInput::onReadThreadStopped()
     m_watchdogTimer.stop();
     if (0 != m_frequency)
     {   // if device should be running then it means reading error thus device is disconnected
-        qDebug() << "RTL-SDR: device unplugged.";
+        qCCritical(rtlsdrInput) << "Device unplugged.";
 
         // fill buffer (artificially to avoid blocking of the DAB processing thread)
         inputBuffer.fillDummy();
@@ -281,7 +284,7 @@ void RtlSdrInput::setGainMode(RtlGainMode gainMode, int gainIdx)
         int ret = rtlsdr_set_tuner_gain_mode(m_device, (RtlGainMode::Hardware != gainMode));
         if (ret != 0)
         {
-            qDebug() << "RTL-SDR: Failed to set tuner gain";
+            qCWarning(rtlsdrInput) << "Failed to set tuner gain";
         }
 
         m_gainMode = gainMode;
@@ -322,7 +325,7 @@ void RtlSdrInput::setGain(int gIdx)
         int ret = rtlsdr_set_tuner_gain(m_device, m_gainList->at(m_gainIdx));
         if (ret != 0)
         {
-            qDebug() << "RTL-SDR: Failed to set tuner gain";
+            qCWarning(rtlsdrInput) << "Failed to set tuner gain";
         }
         else
         {
@@ -362,7 +365,7 @@ void RtlSdrInput::onWatchdogTimeout()
     {
         if (!m_worker->isRunning())
         {  // some problem in data input
-            qDebug() << "RTL-SDR: watchdog timeout";
+            qCCritical(rtlsdrInput) << "Watchdog timeout";
             inputBuffer.fillDummy();
             emit error(InputDeviceErrorCode::NoDataAvailable);
         }
@@ -397,28 +400,28 @@ void RtlSdrInput::setBW(uint32_t bw)
         int ret = rtlsdr_set_and_get_tuner_bandwidth(m_device, bw, &applied_bw, 1);
         if (ret != 0)
         {
-            qDebug() << "RTL-SDR: Failed to set tuner bandwidth" << bw/1000 << "kHz";
+            qCWarning(rtlsdrInput) << "Failed to set tuner bandwidth" << bw/1000 << "kHz";
         }
         else
         {
             if (applied_bw)
             {
-                qDebug() << "RTL-SDR: Setting bandwidth" << bw/1000.0 << "kHz resulted to" << applied_bw/1000 << "kHz";
+                qCInfo(rtlsdrInput) << "Setting bandwidth" << bw/1000.0 << "kHz resulted to" << applied_bw/1000 << "kHz";
             }
             else
             {
-                qDebug() << "RTL-SDR: Setting bandwidth" << bw/1000.0 << "kHz";
+                qCInfo(rtlsdrInput) << "Setting bandwidth" << bw/1000.0 << "kHz";
             }
         }
 #else
         int ret = rtlsdr_set_tuner_bandwidth(m_device, bw);
         if (ret != 0)
         {
-            qDebug() << "RTL-SDR: Failed to set tuner bandwidth" << bw/1000 << "kHz";
+            qCWarning(rtlsdrInput) << "Failed to set tuner bandwidth" << bw/1000 << "kHz";
         }
         else
         {
-            qDebug() << "RTL-SDR: Setting bandwidth" << bw/1000.0 << "kHz";
+            qCInfo(rtlsdrInput) << "Setting bandwidth" << bw/1000.0 << "kHz";
         }
 #endif
     }
@@ -431,11 +434,11 @@ void RtlSdrInput::setBiasT(bool ena)
         int ret = rtlsdr_set_bias_tee(m_device, ena);
         if (ret != 0)
         {
-            qDebug() << "RTL-SDR: Failed to enable bias-T";
+            qCWarning(rtlsdrInput) << "Failed to enable bias-T";
         }
         else
         {
-            qDebug() << "RTL-SDR: Bias-T" << (ena ? "on" : "off");
+            qCInfo(rtlsdrInput) << "Bias-T" << (ena ? "on" : "off");
             m_biasT = ena;
         }
     }
@@ -560,7 +563,7 @@ void RtlSdrWorker::processInputData(unsigned char *buf, uint32_t len)
 
     if ((INPUT_FIFO_SIZE - count) < len*sizeof(float))
     {
-        qDebug() << "RTL-SDR: dropping" << len << "bytes...";
+        qCWarning(rtlsdrInput) << "Dropping" << len << "bytes...";
         return;
     }
 

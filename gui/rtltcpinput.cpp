@@ -26,8 +26,10 @@
 
 #include <QDir>
 #include <QDebug>
-
+#include <QLoggingCategory>
 #include "rtltcpinput.h"
+
+Q_LOGGING_CATEGORY(rtlTcpInput, "RtlTcpInput", QtInfoMsg)
 
 const int RtlTcpInput::e4k_gains[] = { -10, 15, 40, 65, 90, 115, 140, 165, 190, 215, 240, 290, 340, 420 };
 const int RtlTcpInput::fc0012_gains[] = { -99, -40, 71, 179, 192 };
@@ -46,10 +48,12 @@ class SocketInitialiseWrapper {
 public:
     SocketInitialiseWrapper() {
         WSADATA wsa;
-        qDebug() << "RTL-TCP: Initialising Winsock...";
+        qCInfo(rtlTcpInput) << "RTL-TCP: Initialising Winsock...";
 
         if (WSAStartup(MAKEWORD(2,2),&wsa) != 0)
-            qDebug() << "RTL-TCP: Winsock init failed. Error Code:" << WSAGetLastError();
+        {
+            qCCritical(rtlTcpInput) << "RTL-TCP: Winsock init failed. Error Code:" << WSAGetLastError();
+        }
     }
 
     ~SocketInitialiseWrapper() {
@@ -96,7 +100,7 @@ RtlTcpInput::~RtlTcpInput()
 
         while  (!m_worker->isFinished())
         {
-            qDebug() << "RTL-TCP: Worker thread not finished after timeout - this should not happen :-(";
+            qCWarning(rtlTcpInput) << "Worker thread not finished after timeout - this should not happen :-(";
 
             // reset buffer - and tell the thread it is empty - buffer will be reset in any case
             pthread_mutex_lock(&inputBuffer.countMutex);
@@ -134,9 +138,9 @@ bool RtlTcpInput::openDevice()
     if (s != 0)
     {
 #if defined(_WIN32)
-        qDebug() << "RTL-TCP: getaddrinfo error:" << gai_strerrorA(s);
+        qCCritical(rtlTcpInput) << "getaddrinfo error:" << gai_strerrorA(s);
 #else
-        qDebug() << "RTL-TCP: getaddrinfo error:" << gai_strerror(s);
+        qCCritical(rtlTcpInput) << "getaddrinfo error:" << gai_strerror(s);
 #endif
         return false;
     }
@@ -163,11 +167,11 @@ bool RtlTcpInput::openDevice()
         u_long flags = 1;  // If flags != 0, non-blocking mode is enabled.
         if (NO_ERROR != ioctlsocket(sfd, FIONBIO, &flags))
         {
-            qDebug() << "RTL-TCP: Failed to set non-blocking socket";
+            qCWarning(rtlTcpInput) << "Failed to set non-blocking socket";
         }
 
         struct sockaddr_in *sa = (struct sockaddr_in *) rp->ai_addr;
-        qDebug("RTL-TCP: Trying to connect to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
+        qCInfo(rtlTcpInput, "Trying to connect to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
         ::connect(sfd, rp->ai_addr, rp->ai_addrlen);
         // https://docs.microsoft.com/en-us/previous-versions/windows/embedded/aa450263(v=msdn.10)
         //  It is normal for WSAEWOULDBLOCK to be reported as the result from calling connect (Windows Sockets)
@@ -178,12 +182,12 @@ bool RtlTcpInput::openDevice()
         pfd.events = POLLIN;
         if (WSAPoll(&pfd, 1, 2000) > 0)
         {
-            qDebug("RTL-TCP: Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
+            qCInfo(rtlTcpInput, "Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
 
             flags = 0;  // If flags != 0, non-blocking mode is enabled.
             if (NO_ERROR != ioctlsocket(sfd, FIONBIO, &flags))
             {
-                qDebug() << "RTL-TCP: Failed to set blocking socket";
+                qCWarning(rtlTcpInput) << "Failed to set blocking socket";
             }
 
             m_sock = sfd;
@@ -191,7 +195,7 @@ bool RtlTcpInput::openDevice()
         }
         else
         {   // -1 is error, 0 is timeout
-            qDebug() << "RTL-TCP: Unable to connect";
+            qCCritical(rtlTcpInput) << "Unable to connect";
         }
 #else   // (_WIN32_WINNT < 0x0600)
         // poll API does not exist :-(
@@ -206,12 +210,12 @@ bool RtlTcpInput::openDevice()
         connTimeout.tv_usec = 0;
         if (::select(sfd+1, nullptr, &connFd, nullptr, &connTimeout) > 0)
         {
-            qDebug("RTL-TCP: Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
+            qCInfo(rtlTcpInput, "Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
 
             flags = 0;  // If flags != 0, non-blocking mode is enabled.
             if (NO_ERROR != ioctlsocket(sfd, FIONBIO, &flags))
             {
-                qDebug() << "RTL-TCP: Failed to set blocking socket";
+                qCWarning(rtlTcpInput) << "Failed to set blocking socket";
             }
 
             m_sock = sfd;
@@ -219,7 +223,7 @@ bool RtlTcpInput::openDevice()
         }
         else
         {   // -1 is error, 0 is timeout
-            qDebug() << "RTL-TCP: Unable to connect";
+            qCCritical(rtlTcpInput) << "Unable to connect";
         }
 #endif
 
@@ -227,16 +231,16 @@ bool RtlTcpInput::openDevice()
         long arg;
         if( (arg = fcntl(sfd, F_GETFL, NULL)) < 0)
         {
-            qDebug("RTL-TCP: Error fcntl(..., F_GETFL) (%s)", strerror(errno));
+            qCWarning(rtlTcpInput, "Error fcntl(..., F_GETFL) (%s)", strerror(errno));
         }
         arg |= O_NONBLOCK;
         if( fcntl(sfd, F_SETFL, arg) < 0)
         {
-            qDebug("RTL-TCP: Error fcntl(..., F_SETFL) (%s)", strerror(errno));
+            qCWarning(rtlTcpInput, "Error fcntl(..., F_SETFL) (%s)", strerror(errno));
         }
 
         struct sockaddr_in *sa = (struct sockaddr_in *) rp->ai_addr;
-        qDebug("RTL-TCP: Trying to connect to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
+        qCInfo(rtlTcpInput, "Trying to connect to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
         ::connect(sfd, rp->ai_addr, rp->ai_addrlen);
 
         struct pollfd pfd;
@@ -244,17 +248,17 @@ bool RtlTcpInput::openDevice()
         pfd.events = POLLIN;
         if (poll(&pfd, 1, 2000) > 0)
         {
-            qDebug("RTL-TCP: Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
+            qCInfo(rtlTcpInput, "Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
 
             // set bloking mode again
             if( (arg = fcntl(sfd, F_GETFL, NULL)) < 0)
             {
-                qDebug("RTL-TCP: Error fcntl(..., F_GETFL) (%s)", strerror(errno));
+                qCWarning(rtlTcpInput, "Error fcntl(..., F_GETFL) (%s)", strerror(errno));
             }
             arg &= (~O_NONBLOCK);
             if( fcntl(sfd, F_SETFL, arg) < 0)
             {
-                qDebug("RTL-TCP: Error fcntl(..., F_SETFL) (%s)", strerror(errno));
+                qCWarning(rtlTcpInput, "Error fcntl(..., F_SETFL) (%s)", strerror(errno));
             }
 
             m_sock = sfd;
@@ -262,7 +266,7 @@ bool RtlTcpInput::openDevice()
         }
         else
         {   // -1 is error, 0 is timeout
-            qDebug() << "RTL-TCP: Unable to connect";
+            qCCritical(rtlTcpInput) << "Unable to connect";
         }
 #endif
 
@@ -275,7 +279,7 @@ bool RtlTcpInput::openDevice()
 
     if (NULL == rp)
     {   /* No address succeeded */
-        qDebug() << "RTL-TCP: Could not connect";
+        qCCritical(rtlTcpInput) << "Could not connect";
         return false;
     }
 
@@ -298,7 +302,7 @@ bool RtlTcpInput::openDevice()
     }
     else
     {   // -1 is error, 0 is timeout
-        qDebug() << "RTL-TCP: Unable to get RTL dongle infomation";
+        qCCritical(rtlTcpInput) << "Unable to get RTL dongle infomation";
         return false;
     }
 #else
@@ -317,7 +321,7 @@ bool RtlTcpInput::openDevice()
     }
     else
     {   // -1 is error, 0 is timeout
-        qDebug() << "RTL-TCP: Unable to get RTL dongle infomation";
+        qCCritical(rtlTcpInput) << "Unable to get RTL dongle infomation";
         return false;
     }
 #endif
@@ -331,7 +335,7 @@ bool RtlTcpInput::openDevice()
     }
     else
     {   // -1 is error, 0 is timeout
-        qDebug() << "RTL-TCP: Unable to get RTL dongle infomation";
+        qCCritical(rtlTcpInput) << "Unable to get RTL dongle infomation";
         return false;
     }
 #endif
@@ -339,7 +343,6 @@ bool RtlTcpInput::openDevice()
     // Convert the byte order
     dongleInfo.tunerType = ntohl(dongleInfo.tunerType);
     dongleInfo.tunerGainCount = ntohl(dongleInfo.tunerGainCount);
-
     if(dongleInfo.magic[0] == 'R' &&
         dongleInfo.magic[1] == 'T' &&
         dongleInfo.magic[2] == 'L' &&
@@ -357,37 +360,37 @@ bool RtlTcpInput::openDevice()
         switch(dongleInfo.tunerType)
         {
         case RTLSDR_TUNER_E4000:
-            qDebug() << "RTL-TCP: RTLSDR_TUNER_E4000";            
+            qCInfo(rtlTcpInput) << "RTLSDR_TUNER_E4000";
             gains = e4k_gains;
             numGains = *(&e4k_gains + 1) - e4k_gains;
             m_deviceDescription.device.name += " [E4000]";
             break;
         case RTLSDR_TUNER_FC0012:
-            qDebug() << "RTL-TCP: RTLSDR_TUNER_FC0012";
+            qCInfo(rtlTcpInput) << "RTLSDR_TUNER_FC0012";
             gains = fc0012_gains;
             numGains = *(&fc0012_gains + 1) - fc0012_gains;
             m_deviceDescription.device.name += " [FC0012]";
             break;
         case RTLSDR_TUNER_FC0013:
-            qDebug() << "RTL-TCP: RTLSDR_TUNER_FC0013";
+            qCInfo(rtlTcpInput) << "RTLSDR_TUNER_FC0013";
             gains = fc0013_gains;
             numGains = *(&fc0013_gains + 1) - fc0013_gains;
             m_deviceDescription.device.name += " [FC0013]";
             break;
         case RTLSDR_TUNER_FC2580:
-            qDebug() << "RTL-TCP: RTLSDR_TUNER_FC2580";
+            qCInfo(rtlTcpInput) << "RTLSDR_TUNER_FC2580";
             gains = fc2580_gains;
             numGains = *(&fc2580_gains + 1) - fc2580_gains;
             m_deviceDescription.device.name += " [FC2580]";
             break;
         case RTLSDR_TUNER_R820T:
-            qDebug() << "RTL-TCP: RTLSDR_TUNER_R820T";
+            qCInfo(rtlTcpInput) << "RTLSDR_TUNER_R820T";
             gains = r82xx_gains;
             numGains = *(&r82xx_gains + 1) - r82xx_gains;
             m_deviceDescription.device.name += " [R820T]";
             break;
         case RTLSDR_TUNER_R828D:
-            qDebug() << "RTL-TCP: RTLSDR_TUNER_R828D";
+            qCInfo(rtlTcpInput) << "RTLSDR_TUNER_R828D";
             gains = r82xx_gains;
             numGains = *(&r82xx_gains + 1) - r82xx_gains;
             m_deviceDescription.device.name += " [R828D]";
@@ -395,14 +398,14 @@ bool RtlTcpInput::openDevice()
         case RTLSDR_TUNER_UNKNOWN:
         default:
         {
-            qDebug() << "RTL-TCP: RTLSDR_TUNER_UNKNOWN";
+            qCWarning(rtlTcpInput) << "RTLSDR_TUNER_UNKNOWN";
             dongleInfo.tunerGainCount = 0;
         }
         }
 
         if (dongleInfo.tunerGainCount != numGains)
         {
-            qDebug() << "RTL_TCP WARNING: unexpected number of gain values reported by server" << dongleInfo.tunerGainCount;
+            qCWarning(rtlTcpInput) << "unexpected number of gain values reported by server" << dongleInfo.tunerGainCount;
             if (dongleInfo.tunerGainCount > numGains)
             {
                 dongleInfo.tunerGainCount = numGains;
@@ -440,7 +443,7 @@ bool RtlTcpInput::openDevice()
     }
     else
     {
-        qDebug() << "RTL-TCP: \"RTL0\" magic key not found. Server not supported";
+        qCCritical(rtlTcpInput) << "RTL-TCP: \"RTL0\" magic key not found. Server not supported";
         return false;
     }
 
@@ -508,22 +511,26 @@ void RtlTcpInput::setGainMode(RtlGainMode gainMode, int gainIdx)
 
 void RtlTcpInput::setGain(int gainIdx)
 {
-    // force index validity
-    if (gainIdx < 0)
+    if (!m_gainList->empty())
     {
-        gainIdx = 0;
-    }
-    if (gainIdx >= m_gainList->size())
-    {
-        gainIdx = m_gainList->size() - 1;
-    }
+        // force index validity
+        if (gainIdx < 0)
+        {
+            gainIdx = 0;
+        }
+        if (gainIdx >= m_gainList->size())
+        {
+            gainIdx = m_gainList->size() - 1;
+        }
 
-    if (gainIdx != m_gainIdx)
-    {
-        m_gainIdx = gainIdx;
-        sendCommand(RtlTcpCommand::SET_GAIN_IDX, m_gainIdx);
-        emit agcGain(m_gainList->at(m_gainIdx)*0.1);
+        if (gainIdx != m_gainIdx)
+        {
+            m_gainIdx = gainIdx;
+            sendCommand(RtlTcpCommand::SET_GAIN_IDX, m_gainIdx);
+            emit agcGain(m_gainList->at(m_gainIdx)*0.1);
+        }
     }
+    else { /* empy gain list => do nothing */}
 }
 
 void RtlTcpInput::resetAgc()
@@ -558,7 +565,7 @@ void RtlTcpInput::onAgcLevel(float agcLevel, int maxVal)
 
 void RtlTcpInput::onReadThreadStopped()
 {
-    qDebug() << "RTL-TCP: server disconnected.";
+    qCCritical(rtlTcpInput) << "server disconnected.";
 
     // close socket
 #if defined(_WIN32)
@@ -581,7 +588,7 @@ void RtlTcpInput::onWatchdogTimeout()
     {
         if (!m_worker->isRunning())
         {  // some problem in data input
-            qDebug() << "RTL-TCP: watchdog timeout";
+            qCCritical(rtlTcpInput) << "watchdog timeout";
             inputBuffer.fillDummy();
             emit error(InputDeviceErrorCode::NoDataAvailable);
         }
@@ -653,7 +660,7 @@ void RtlTcpWorker::run()
             ssize_t ret = ::recv(m_sock, (char *) m_bufferIQ+read, RTLTCP_CHUNK_SIZE - read, 0);
             if (0 == ret)
             {   // disconnected => finish thread operation
-                qDebug() << "RTL-TCP: socket disconnected";
+                qCCritical(rtlTcpInput) << "socket disconnected";
                 goto worker_exit;
             }
             else if (-1 == ret)
@@ -666,17 +673,17 @@ void RtlTcpWorker::run()
                 else if (WSAECONNABORTED == WSAGetLastError())
                 {   // disconnected => finish thread operation
                     // when socket is diconnected under Win, recv returns -1 but error code is 0
-                    qDebug() << "RTL-TCP: socket disconnected";
+                    qCCritical(rtlTcpInput) << "RTL-TCP: socket disconnected";
                     goto worker_exit;
                 }
                 else if ((WSAECONNRESET == WSAGetLastError()) || (WSAEBADF == WSAGetLastError()))
                 {   // disconnected => finish thread operation
-                    qDebug() << "RTL-TCP: socket read error:" << strerror(WSAGetLastError());
+                    qCCritical(rtlTcpInput) << "RTL-TCP: socket read error:" << strerror(WSAGetLastError());
                     goto worker_exit;
                 }
                 else
                 {
-                    qDebug() << "RTL-TCP: socket read error:" << strerror(WSAGetLastError());
+                    qCWarning(rtlTcpInput) << "RTL-TCP: socket read error:" << strerror(WSAGetLastError());
                 }
 #else
                 if ((EAGAIN == errno) || (EINTR == errno))
@@ -685,12 +692,12 @@ void RtlTcpWorker::run()
                 }
                 else if ((ECONNRESET == errno) || (EBADF == errno))
                 {   // disconnected => finish thread operation
-                    qDebug() << "RTL-TCP: error: " << strerror(errno);
+                    qCCritical(rtlTcpInput) << "error: " << strerror(errno);
                     goto worker_exit;
                 }
                 else
                 {
-                    qDebug() << "RTL-TCP: socket read error:" << strerror(errno);
+                    qCWarning(rtlTcpInput) << "socket read error:" << strerror(errno);
                 }
 #endif
             }
@@ -792,7 +799,7 @@ void RtlTcpWorker::processInputData(unsigned char *buf, uint32_t len)
 
     if ((INPUT_FIFO_SIZE - count) < len*sizeof(float))
     {
-        qDebug() << "RTL-TCP: dropping" << len << "bytes...";
+        qCWarning(rtlTcpInput) << "dropping" << len << "bytes...";
         return;
     }
 

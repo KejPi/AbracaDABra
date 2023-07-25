@@ -38,12 +38,12 @@ class EnsembleListItem;
 class ServiceListItem
 {
 public:
-    ServiceListItem(const RadioControlServiceComponent & item, bool fav = false, int currentEns = 0);
+    ServiceListItem(const RadioControlServiceComponent & item, int currentEns = 0);
 
     bool update(const RadioControlServiceComponent &item);
     bool addEnsemble(EnsembleListItem * ensPtr);     // returns true when new ensemble was added
     bool removeEnsemble(EnsembleListItem * ensPtr);     // returns true when new ensemble was added
-    void setFavorite(bool ena) { m_favorite = ena; }
+    //void setFavorite(bool ena) { m_favorite = ena; }
 
     ServiceListId id() const { return m_id; }
 
@@ -52,7 +52,7 @@ public:
     QString label() const { return m_label; }
     QString shortLabel() const { return m_shortLabel; }
     int numEnsembles() const { return m_ensembleList.size(); }
-    bool isFavorite() const { return m_favorite; }
+    //bool isFavorite() const { return m_favorite; }
     const EnsembleListItem * getEnsemble(int num = -1) const;          // returns ensemble idx (wraps over end of list)
     const EnsembleListItem * switchEnsemble(const ServiceListId &id);  // switches current ensemble, returns ensemble
     uint32_t currentEnsembleIdx() const { return m_currentEnsemble; }  // used to save service list
@@ -68,7 +68,7 @@ private:
     uint8_t m_scids;        // service component ID within the service
     QString m_label;        // Service label
     QString m_shortLabel;   // Short label
-    bool m_favorite;        // Favorite service
+    //bool m_favorite;        // Favorite service
     int m_currentEnsemble;
     bool m_isObsolete;      // this is used for ensemble update
 

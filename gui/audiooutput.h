@@ -32,15 +32,10 @@
 #include <QWaitCondition>
 #include <QMutex>
 #include <QTimer>
-#include "config.h"
-#include "audiofifo.h"
-
-#if HAVE_PORTAUDIO
-#include "portaudio.h"
-#else
 #include <QAudioSink>
 #include <QMediaDevices>
-#endif
+
+#include "audiofifo.h"
 
 // muting
 #define AUDIOOUTPUT_FADE_TIME_MS    60
@@ -58,135 +53,67 @@ enum class AudioOutputPlaybackState
 };
 
 
-#if HAVE_PORTAUDIO
-
-#define AUDIOOUTPUT_PORTAUDIO_VOLUME_ROUND      1
-
-// port audio allows to set number of samples in callback
-// this number must be aligned between AUDIOOUTPUT_FADE_TIME_MS and AUDIO_FIFO_CHUNK_MS
-#if (AUDIOOUTPUT_FADE_TIME_MS != AUDIO_FIFO_CHUNK_MS)
-#error "(AUDIOOUTPUT_FADE_TIME_MS != AUDIO_FIFO_CHUNK_MS)"
-#endif
-
 class AudioOutput : public QObject
 {
     Q_OBJECT
 
 public:
-    AudioOutput(QObject *parent = nullptr);
-    ~AudioOutput();
-    void stop();
-
-public slots:
-    void start(audioFifo_t *buffer);
-    void restart(audioFifo_t *buffer);
-    void mute(bool on);
-    void setVolume(int value);
-
-signals:
-    void audioOutputRestart();
-
-private:
-    enum Request
+    AudioOutput(QObject *parent = nullptr)
     {
-        None = 0,          // no bit
-        Mute = (1 << 0),   // bit #0
-        Stop = (1 << 1),   // bit #1
-        Restart = (1 << 2) // bit #2
-    };
-    std::atomic<unsigned int> m_cbRequest = Request::None;
+        m_devices = new QMediaDevices(this);
+        connect(m_devices, &QMediaDevices::audioOutputsChanged, this, &AudioOutput::updateAudioDevices);
+    }
+    virtual void start(audioFifo_t *buffer) = 0;
+    virtual void restart(audioFifo_t *buffer) = 0;
+    virtual void stop() = 0;
+    virtual void mute(bool on) = 0;
+    virtual void setVolume(int value) = 0;
+    virtual void setAudioDevice(const QByteArray & deviceId) = 0;
+    QList<QAudioDevice> getAudioDevices()
+    {
+        QList<QAudioDevice> list;
+        const QAudioDevice &defaultDeviceInfo = m_devices->defaultAudioOutput();
+        list.append(defaultDeviceInfo);
 
-    PaStream * m_outStream = nullptr;
-    audioFifo_t * m_inFifoPtr = nullptr;
-    audioFifo_t * m_restartFifoPtr = nullptr;
-    uint8_t m_numChannels;
-    uint32_t m_sampleRate_kHz;
-    unsigned int m_bufferFrames;
-    uint8_t m_bytesPerFrame;
-    float m_muteFactor;
-    std::atomic<float> m_linearVolume;
-
-    AudioOutputPlaybackState m_playbackState;
-
-    int portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames);
-    void portAudioStreamFinishedPrivateCb() { emit streamFinished(); }
-
-    static int portAudioCb(const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
-                           const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx);
-    static void portAudioStreamFinishedCb(void *ctx);
-
-#ifdef AUDIOOUTPUT_RAW_FILE_OUT
-    FILE * m_rawOut;
-#endif
-
-    void onStreamFinished();
+        for (auto &deviceInfo : m_devices->audioOutputs())
+        {
+            if (deviceInfo != defaultDeviceInfo)
+            {
+                list.append(deviceInfo);
+            }
+        }
+        return list;
+    }
 signals:
-    void streamFinished();     // this signal is emited from portAudioStreamFinishedCb
-};
-
-#else // HAVE_PORTAUDIO
-
-class AudioIODevice;
-
-class AudioOutput : public QObject
-{
-    Q_OBJECT
-
-public:
-    AudioOutput(QObject *parent = nullptr);
-    ~AudioOutput();
-    void stop();
-
-public slots:
-    void start(audioFifo_t *buffer);
-    void restart(audioFifo_t *buffer);
-    void mute(bool on);
-    void setVolume(int value);
-
-signals:
+    void audioOutputError();
     void audioOutputRestart();
-
-private:
-    // Qt audio
-    AudioIODevice * m_ioDevice;
+    void audioDevicesList(QList<QAudioDevice> deviceList);
+    void audioDeviceChanged(const QByteArray & id);
+protected:
     QMediaDevices * m_devices;
-    QAudioSink * m_audioSink;
-    float m_linearVolume;
+    QAudioDevice m_currentAudioDevice;
+    void updateAudioDevices()
+    {
+        QList<QAudioDevice> list = getAudioDevices();
 
-    void handleStateChanged(QAudio::State newState);
-    int64_t bytesAvailable();
-    void doStop();
-    void doRestart(audioFifo_t *buffer);
+        emit audioDevicesList(list);
+
+        bool currentDeviceFound = false;
+        for (auto & dev : list)
+        {
+            if (dev.id() == m_currentAudioDevice.id())
+            {
+                currentDeviceFound = true;
+                break;
+            }
+        }
+
+        if (!currentDeviceFound)
+        {   // current device no longer exists => default is used
+            m_currentAudioDevice = m_devices->defaultAudioOutput();
+        }
+        emit audioDeviceChanged(m_currentAudioDevice.id());
+    }
 };
-
-
-class AudioIODevice : public QIODevice
-{
-public:
-    AudioIODevice(audioFifo_t *buffer, QObject *parent = nullptr);
-
-    void start();
-    void stop();
-
-    qint64 readData(char *data, qint64 maxlen) override;
-    qint64 writeData(const char *data, qint64 len) override;
-    qint64 bytesAvailable() const override;
-
-    void mute(bool on);
-    bool isMuted() const { return AudioOutputPlaybackState::Muted == m_playbackState; }
-
-private:
-    audioFifo_t * m_inFifoPtr = nullptr;
-    AudioOutputPlaybackState m_playbackState;
-    uint8_t m_bytesPerFrame;
-    uint32_t m_sampleRate_kHz;
-    uint8_t m_numChannels;
-    float m_muteFactor;
-
-    std::atomic<bool> m_muteFlag  = false;
-    std::atomic<bool> m_stopFlag  = false;
-};
-
-#endif
 
 #endif // AUDIOOUTPUT_H

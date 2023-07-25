@@ -78,7 +78,6 @@ void EnsembleListItem::beginUpdate()
 {
     for (auto & s : m_serviceList)
     {
-        //qDebug("\tMarking obsolete: Service %s SID = 0x%X, SCIdS = %d", s->label().toLocal8Bit().data(), s->SId().value(), s->SCIdS());
         s->setIsObsolete(true);
     }
 }

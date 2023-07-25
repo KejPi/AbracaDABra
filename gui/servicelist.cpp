@@ -24,7 +24,10 @@
  * SOFTWARE.
  */
 
+#include <QLoggingCategory>
 #include "servicelist.h"
+
+Q_LOGGING_CATEGORY(serviceList, "ServiceList", QtInfoMsg)
 
 ServiceList::ServiceList(QObject * parent) : QObject(parent)
 {
@@ -36,7 +39,7 @@ ServiceList::~ServiceList()
     clear();
 }
 
-void ServiceList::clear()
+void ServiceList::clear(bool clearFavorites)
 {
     foreach (ServiceListItem * item, m_serviceList)
     {
@@ -49,6 +52,11 @@ void ServiceList::clear()
         delete item;
     }
     m_ensembleList.clear();
+
+    if (clearFavorites)
+    {
+        m_favoritesList.clear();
+    }
 
     emit empty();
 }
@@ -63,15 +71,21 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     bool newService = false;
     bool updatedService = false;
 
-    qDebug("\tService: %s SID = 0x%X, SCIdS = %d", s.label.toLocal8Bit().data(), s.SId.value(), s.SCIdS);
+    qCInfo(serviceList, "          [%6.6X @ %6d kHz | %3s] %-18s %X : %d", e.ueid, e.frequency, DabTables::channelList.value(e.frequency).toUtf8().data(),
+                                                                            s.label.toUtf8().data(), s.SId.value(), s.SCIdS);
+
 
     ServiceListItem * pService = nullptr;
     ServiceListId servId(s);
     ServiceListIterator sit = m_serviceList.find(servId);
     if (m_serviceList.end() == sit)
     {  // not found
-        pService = new ServiceListItem(s, fav, currentEns);
+        pService = new ServiceListItem(s, currentEns);
         m_serviceList.insert(servId, pService);
+        if (fav)
+        {
+            m_favoritesList.insert(servId);
+        }
         newService = true;
     }
     else
@@ -137,21 +151,39 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
 
 void ServiceList::setServiceFavorite(const ServiceListId & servId, bool ena)
 {
+#if 0
     ServiceListIterator sit = m_serviceList.find(servId);
     if (m_serviceList.end() != sit)
     {   // found
         (*sit)->setFavorite(ena);
     }
+#else
+    if (ena)
+    {
+        if (m_serviceList.find(servId) != m_serviceList.cend())
+        {   // if service exists in the list
+            m_favoritesList.insert(servId);
+        }
+    }
+    else
+    {
+        m_favoritesList.remove(servId);
+    }
+#endif
 }
 
 bool ServiceList::isServiceFavorite(const ServiceListId & servId) const
 {
+#if 0
     ServiceListConstIterator sit = m_serviceList.find(servId);
     if (m_serviceList.end() != sit)
     {   // found
         return (*sit)->isFavorite();
     }
     return false;
+#else
+    return m_favoritesList.contains(servId);
+#endif
 }
 
 int ServiceList::numEnsembles(const ServiceListId & servId) const
@@ -203,7 +235,8 @@ void ServiceList::save(QSettings & settings)
         settings.setValue("SCIdS", (*it)->SCIdS());
         settings.setValue("Label", (*it)->label());
         settings.setValue("ShortLabel", (*it)->shortLabel());
-        settings.setValue("Fav", (*it)->isFavorite());
+        //settings.setValue("Fav", (*it)->isFavorite());
+        settings.setValue("Fav", m_favoritesList.contains(ServiceListId(id)));
         settings.setValue("LastEns", (*it)->currentEnsembleIdx());
         settings.beginWriteArray("Ensemble", (*it)->numEnsembles());
         for (int e = 0; e < (*it)->numEnsembles(); ++e)
@@ -234,13 +267,13 @@ void ServiceList::load(QSettings & settings)
         item.SId.set(settings.value("SID").toUInt(&ok));
         if (!ok)
         {
-            qDebug() << "Problem loading SID item:" << s;
+            qCWarning(serviceList) << "Problem loading SID item:" << s;
             continue;
         }
         item.SCIdS = settings.value("SCIdS").toUInt(&ok);
         if (!ok)
         {
-            qDebug() << "Problem loading SCIdS item:" << s;
+            qCWarning(serviceList) << "Problem loading SCIdS item:" << s;
             continue;
         }
         item.label = settings.value("Label").toString();
@@ -255,13 +288,13 @@ void ServiceList::load(QSettings & settings)
             ens.ueid = settings.value("UEID").toUInt(&ok);
             if (!ok)
             {
-                qDebug() << "Problem loading service" << s << "ensemble UEID" << e;
+                qCWarning(serviceList) << "Problem loading service" << s << "ensemble UEID" << e;
                 continue;
             }
             ens.frequency = settings.value("Frequency").toUInt(&ok);
             if (!ok)
             {
-                qDebug() << "Problem loading service" << s << "ensemble frequency" << e;
+                qCWarning(serviceList) << "Problem loading service" << s << "ensemble frequency" << e;
                 continue;
             }
             ens.label = settings.value("Label").toString();
@@ -314,7 +347,7 @@ void ServiceList::endEnsembleUpdate(const RadioControlEnsemble & e)
     {
         if ((*it)->isObsolete())
         {   // service is obsolete
-            qDebug("\tRemoving from ens %6.6X: %s SID = 0x%X, SCIdS = %d", e.ueid, (*it)->label().toLocal8Bit().data(), (*it)->SId().value(), (*it)->SCIdS());
+            qCInfo(serviceList, "Removing service: [%6.6X] %-18s %X : %d", e.ueid, (*it)->label().toUtf8().data(), (*it)->SId().value(), (*it)->SCIdS());
 
             emit serviceRemovedFromEnsemble(ensId, (*it)->id());
 
@@ -343,7 +376,7 @@ void ServiceList::removeEnsemble(const RadioControlEnsemble &e)
     EnsembleListIterator eit = m_ensembleList.find(ensId);
     if (m_ensembleList.end() != eit)
     {
-        qDebug("\tRemoving ens %6.6X from service list", e.ueid);
+        qCInfo(serviceList, "Removing ens %6.6X from service list", e.ueid);
 
         beginEnsembleUpdate(e);
         endEnsembleUpdate(e);

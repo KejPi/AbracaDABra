@@ -27,13 +27,13 @@
 #include "servicelistitem.h"
 #include "ensemblelistitem.h"
 
-ServiceListItem::ServiceListItem(const RadioControlServiceComponent &item, bool fav, int currentEns) : m_id(item)
+ServiceListItem::ServiceListItem(const RadioControlServiceComponent &item, int currentEns) : m_id(item)
 {
     m_sid = item.SId;
     m_scids = item.SCIdS;
     m_label = item.label;
     m_shortLabel = item.labelShort;
-    m_favorite = fav;
+    //m_favorite = fav;
     m_currentEnsemble = currentEns;
     m_isObsolete = false;
 }

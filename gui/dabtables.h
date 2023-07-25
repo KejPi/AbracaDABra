@@ -141,10 +141,14 @@ public:
     static QString convertToQString(const char *c, uint8_t charset, uint8_t len = 16);
     static QDateTime dabTimeToUTC(uint32_t dateHoursMinutes, uint16_t secMsec);
     static QString getPtyName(const uint8_t pty);
+    static QString getPtyNameEnglish(const uint8_t pty);
     static QString getLangName(int lang);
+    static QString getLangNameEnglish(int lang);
     static QString getCountryName(uint32_t SId);
+    static QString getCountryNameEnglish(uint32_t SId);
     static QString getAnnouncementName(DabAnnouncement announcement);
     static QString getAnnouncementNameEnglish(DabAnnouncement announcement);
+    static QString getUserApplicationName(DabUserApplicationType type);
 };
 
 #endif // DABTABLES_H

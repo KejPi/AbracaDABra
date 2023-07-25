@@ -58,6 +58,9 @@ public:
     //! @brief Slot for new slide to come
     void onCatSlide(const Slide & slide, int catId, int slideIdx, int numSlides);
 
+    //! @brief This method enables expert mode features
+    void setExpertMode(bool expertModeEna);
+
 signals:
     //! @brief Signal to get current slide in category (when user changes category or when category is updated)
     void getCurrentCatSlide(int catId);

@@ -28,6 +28,9 @@
 #include "dabtables.h"
 #include <QString>
 #include <QDebug>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(dlDecoder, "DLDecoder", QtInfoMsg)
 
 QDebug operator<<(QDebug debug, DLPlusContentType type);
 
@@ -84,9 +87,7 @@ void DLDecoder::newDataGroup(const QByteArray & dataGroup)
         case 0b0001:
             // [ETSI EN 300 401 V2.1.1]
             // [0 0 0 1: clear display command - remove the dynamic label message from the display;]
-#if DLDECODER_VERBOSE>0
-            qDebug() << "DL: clear display command";
-#endif
+            qCDebug(dlDecoder) << "Clear display command";
             emit resetTerminal();
             break;
         case 0b0010:
@@ -108,11 +109,11 @@ void DLDecoder::newDataGroup(const QByteArray & dataGroup)
 #if DLDECODER_VERBOSE>1
                 if (t != cmdToggle)
                 {
-                    qDebug() << "New DL+ command";
+                    qCDebug(dlDecoder) << "New DL+ command";
                 }
                 else
                 {
-                    qDebug() << "Duplicate DL+ command";
+                    qCDebug(dlDecoder) << "Duplicate DL+ command";
                 }
 #endif
                 cmdToggle = t;
@@ -121,7 +122,7 @@ void DLDecoder::newDataGroup(const QByteArray & dataGroup)
             }
             break;
         default:
-            qDebug() << "DL: Unexpected DL command";
+            qCWarning(dlDecoder) << "Unexpected DL command";
         }
     }
     else
@@ -134,11 +135,11 @@ void DLDecoder::newDataGroup(const QByteArray & dataGroup)
 #if DLDECODER_VERBOSE>1
             if (t != labelToggle)
             {
-                qDebug() << "New DL" << message;
+                qCDebug(dlDecoder) << "New DL" << message;
             }
             else
             {
-                qDebug() << "Duplicate DL" << message;
+                qCDebug(dlDecoder) << "Duplicate DL" << message;
             }
 #endif
             labelToggle = t;
@@ -186,7 +187,7 @@ bool DLDecoder::assembleDL(const QByteArray & dataGroup)
     {   // last
 #if DLDECODER_VERBOSE>1
         int8_t t = (dataGroup.at(0) & 0x80) != 0;
-        qDebug() << QString("DL[new=%1] (charset %2) [len=%3]: %4").arg(t != labelToggle).arg(charset).arg(label.size()).arg(QString(label));
+        qCDebug(dlDecoder) << QString("DL[new=%1] (charset %2) [len=%3]: %4").arg(t != labelToggle).arg(charset).arg(label.size()).arg(QString(label));
 #endif
         return true;
     }
@@ -224,7 +225,7 @@ bool DLDecoder::assembleDLPlusCommand(const QByteArray &dataGroup)
             // or unexpected value of link bit (many segments dropped and receiving already next command)
             // or command is just too long
 
-            qDebug() << "DL+ corrupted message";
+            qCWarning(dlDecoder) << "DL+ corrupted message";
 
             dlCommand.clear();
             segmentCntr = 0;
@@ -254,16 +255,13 @@ void DLDecoder::parseDLPlusCommand()
     {
     case 0:
     {   // "0 0 0 0": DL Plus tags command
-#if DLDECODER_VERBOSE>1
-        qDebug("DL+ CId = %d, CB = %d", cid, dlCommand.at(0) & 0x0F);
-#endif
+        qCDebug(dlDecoder, "DL+ CId = %d, CB = %d", cid, dlCommand.at(0) & 0x0F);
 
         if (cmdLink != labelToggle)
         {   // // [ETSI TS 102 980 V2.1.2] 7.4 Transmission sequence
             // The L (Link) bit of the DL Plus tags command shall be set to the same value as the T (Toggle) bit of the related DL message.
-#if DLDECODER_VERBOSE>0
-            qDebug() << "DL+ link bit does not match DL toggle bit";
-#endif
+            qCDebug(dlDecoder) << "DL+ link bit does not match DL toggle bit";
+
             break;
         }
 
@@ -293,16 +291,15 @@ void DLDecoder::parseDLPlusCommand()
         // NOTE: The DL Plus tag(s) may in future be followed by other data which is reserved for future amendments.
         if (numTags * 3 + 1 > dlCommand.size())
         {
-#if DLDECODER_VERBOSE>0
-            qDebug() << "DL+ unexpected command length";
-#endif
+            qCWarning(dlDecoder) << "DL+ unexpected command length";
+
             break;
         }
         else
         { /* there is enough data available */ }
 
 #if DLDECODER_VERBOSE>1
-        qDebug("DL+ Item toggle %d, Item Running %d, Num tags %d [0x%2.2X]", itToggle, itRunning, numTags, dlCommand.at(0));
+        qCDebug(dlDecoder, "DL+ Item toggle %d, Item Running %d, Num tags %d [0x%2.2X]", itToggle, itRunning, numTags, dlCommand.at(0));
 #endif
 
         // each tag is 24 bits
@@ -315,7 +312,7 @@ void DLDecoder::parseDLPlusCommand()
             if (startMarker + lengthMarker > message.size())
             {   // something is wrong
 #if DLDECODER_VERBOSE>1
-                qDebug("DL+ unexpected tag %d size: start %d, length %d", contentsType, startMarker, lengthMarker);
+                qCDebug(dlDecoder, "DL+ unexpected tag %d size: start %d, length %d", contentsType, startMarker, lengthMarker);
 #endif
                 // fix length
                 lengthMarker = message.size() - startMarker;
@@ -335,13 +332,13 @@ void DLDecoder::parseDLPlusCommand()
             emit dlPlusObject(object);
 
 #if DLDECODER_VERBOSE>1
-            qDebug("DL+ tag %d, start %d, length %d", contentsType, startMarker, lengthMarker);
+            qCDebug(dlDecoder, "DL+ tag %d, start %d, length %d", contentsType, startMarker, lengthMarker);
 #endif
         }
     }
         break;
     default:
-        qDebug() << "DL+ unsupported command ID" << cid;
+        qCWarning(dlDecoder) << "DL+ unsupported command ID" << cid;
     }
 }
 

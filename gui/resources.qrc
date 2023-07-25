@@ -48,5 +48,9 @@
         <file>resources/announcement_active_dark.png</file>
         <file>resources/announcement_suspended_dark.png</file>
         <file>resources/noise.bin</file>
+        <file>resources/chevron-left.png</file>
+        <file>resources/chevron-right.png</file>
+        <file>resources/chevron-left_dark.png</file>
+        <file>resources/chevron-right_dark.png</file>
     </qresource>
 </RCC>

@@ -32,8 +32,6 @@
 
 #include "motobject.h"
 
-#define MOTDECODER_VERBOSE 0
-
 class MOTDecoder : public QObject
 {
     Q_OBJECT

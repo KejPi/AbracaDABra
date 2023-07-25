@@ -132,6 +132,11 @@ void CatSLSDialog::onCatSlide(const Slide & slide, int catId, int slideIdx, int 
     ui->slsView->showSlide(slide);
 }
 
+void CatSLSDialog::setExpertMode(bool expertModeEna)
+{
+    ui->slsView->setExpertMode(expertModeEna);
+}
+
 void CatSLSDialog::onBackButtonClicked()
 {
     emit getNextCatSlide(ui->categoryView->currentIndex().data(Qt::UserRole).toUInt(), false);

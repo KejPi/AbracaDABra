@@ -26,7 +26,10 @@
 
 #include <QDir>
 #include <QDebug>
+#include <QLoggingCategory>
 #include "soapysdrinput.h"
+
+Q_LOGGING_CATEGORY(soapySdrInput, "SoapySdrInput", QtInfoMsg)
 
 SoapySdrInput::SoapySdrInput(QObject *parent) : InputDevice(parent)
 {
@@ -64,12 +67,12 @@ bool SoapySdrInput::openDevice()
         SoapySDR::KwargsList devs = SoapySDR::Device::enumerate();
         if (0 == devs.size())
         {
-            qDebug() << "SoapySDR: No devices found";
+            qCCritical(soapySdrInput) << "No devices found";
             return false;
         }
         else
         {
-            qDebug() << "SoapySDR: Found " << devs.size() << " devices. Using the first working one";
+            qCInfo(soapySdrInput) << "Found " << devs.size() << " devices. Using the first working one";
         }
 
         // iterate through th devices and open first working
@@ -78,11 +81,11 @@ bool SoapySdrInput::openDevice()
             m_device = SoapySDR::Device::make(devs[n]);
             if (nullptr != m_device)
             {
-                qDebug("SoapySDR: Making device #%d", n);
+                qCInfo(soapySdrInput, "Making device #%d", n);
                 SoapySDR::Kwargs::iterator it;
                 for( it = devs[n].begin(); it != devs[n].end(); ++it)
                 {
-                    qDebug("    %s = %s\n", it->first.c_str(), it->second.c_str());
+                    qCInfo(soapySdrInput, "    %s = %s\n", it->first.c_str(), it->second.c_str());
                 }
                 break;
             }
@@ -97,21 +100,21 @@ bool SoapySdrInput::openDevice()
         }
         catch(const std::exception &ex)
         {
-            qDebug() << "SoapySDR: Failed to make device:" << ex.what();
+            qCCritical(soapySdrInput) << "Failed to make device:" << ex.what();
             return false;
         }
     }
 
     if (nullptr == m_device)
     {
-        qDebug() << "SoapySDR: Failed to make device";
+        qCCritical(soapySdrInput)  << "Failed to make device";
         return false;
     }
     else { /* success */ }
 
     if (m_rxChannel >= m_device->getNumChannels(SOAPY_SDR_RX))
     {
-        qDebug("SoapySDR: channel #%d not supported. Using channel 0", m_rxChannel);
+        qCWarning(soapySdrInput, "Channel #%d not supported. Using channel 0", m_rxChannel);
         m_rxChannel = 0;
     }
     else { /* OK */ }
@@ -122,7 +125,7 @@ bool SoapySdrInput::openDevice()
     }
     catch(const std::exception &ex)
     {
-        qDebug() << "SoapySDR: Error setting antenna" << ex.what();
+        qCCritical(soapySdrInput) << "Error setting antenna" << ex.what();
         SoapySDR::Device::unmake(m_device);
         m_device = nullptr;
         return false;
@@ -132,7 +135,7 @@ bool SoapySdrInput::openDevice()
     std::vector<std::string> formats = m_device->getStreamFormats(SOAPY_SDR_RX, m_rxChannel);
     if (std::find(formats.begin(), formats.end(), SOAPY_SDR_CF32) == formats.end())
     {   // not found
-        qDebug() << "SoapySDR: Failed to open device. CF32 format not supported.";
+        qCCritical(soapySdrInput) << "Failed to open device. CF32 format not supported.";
         SoapySDR::Device::unmake(m_device);
         m_device = nullptr;
         return false;
@@ -147,7 +150,7 @@ bool SoapySdrInput::openDevice()
     {
         rangesStr += QString(" [%1kHz - %2kHz]").arg(srRanges[n].minimum()*0.001).arg(srRanges[n].maximum()*0.001);
     }
-    qDebug("SoapySDR: sample rate ranges: %s", rangesStr.toLocal8Bit().data());
+    qCInfo(soapySdrInput, "Sample rate ranges: %s", rangesStr.toLocal8Bit().data());
 
     m_sampleRate = 10e8;  // dummy high value
     bool has2048 = false;
@@ -197,12 +200,12 @@ bool SoapySdrInput::openDevice()
     }
     catch(const std::exception &ex)
     {
-        qDebug() << "SoapySDR: Error setting sample rate" << ex.what();
+        qCCritical(soapySdrInput) << "Error setting sample rate" << ex.what();
         SoapySDR::Device::unmake(m_device);
         m_device = nullptr;
         return false;
     }
-    qDebug() << "SoapySDR: Sample rate set to" << m_sampleRate/1000.0 << "kHz";
+    qCInfo(soapySdrInput) << "Sample rate set to" << m_sampleRate/1000.0 << "kHz";
 
     // Get gains
     SoapySDR::Range gainRange = m_device->getGainRange(SOAPY_SDR_RX, m_rxChannel);
@@ -258,7 +261,7 @@ bool SoapySdrInput::openDevice()
     }
     catch(const std::exception &ex)
     {
-        qDebug() << "SoapySDR: Error setting stream" << ex.what();
+        qCCritical(soapySdrInput) << "Error setting stream" << ex.what();
         SoapySDR::Device::unmake(m_device);
         m_device = nullptr;
         return false;
@@ -266,7 +269,7 @@ bool SoapySdrInput::openDevice()
 
     if (nullptr == stream)
     {
-        qDebug() << "SoapySDR: failed to setup stream";
+        qCCritical(soapySdrInput) << "Failed to setup stream";
         SoapySDR::Device::unmake(m_device);
         m_device = nullptr;
         return false;
@@ -342,7 +345,7 @@ void SoapySdrInput::stop()
         m_worker->wait(QDeadlineTimer(2000));
         while (!m_worker->isFinished())
         {
-            qDebug() << "SoapySDR: Worker thread not finished after timeout - this should not happen :-(";
+            qCWarning(soapySdrInput) << "Worker thread not finished after timeout - this should not happen :-(";
 
             // reset buffer - and tell the thread it is empty - buffer will be reset in any case
             pthread_mutex_lock(&inputBuffer.countMutex);
@@ -401,22 +404,26 @@ void SoapySdrInput::setGainMode(SoapyGainMode gainMode, int gainIdx)
 
 void SoapySdrInput::setGain(int gainIdx)
 {
-    // force index vaslidity
-    if (gainIdx < 0)
+    if (!m_gainList->empty())
     {
-        gainIdx = 0;
-    }
-    if (gainIdx >= m_gainList->size())
-    {
-        gainIdx = m_gainList->size() - 1;
-    }
+        // force index vaslidity
+        if (gainIdx < 0)
+        {
+            gainIdx = 0;
+        }
+        if (gainIdx >= m_gainList->size())
+        {
+            gainIdx = m_gainList->size() - 1;
+        }
 
-    if (gainIdx != m_gainIdx)
-    {
-        m_gainIdx = gainIdx;
-        m_device->setGain(SOAPY_SDR_RX, m_rxChannel, m_gainList->at(m_gainIdx));
-        emit agcGain(m_gainList->at(m_gainIdx));
+        if (gainIdx != m_gainIdx)
+        {
+            m_gainIdx = gainIdx;
+            m_device->setGain(SOAPY_SDR_RX, m_rxChannel, m_gainList->at(m_gainIdx));
+            emit agcGain(m_gainList->at(m_gainIdx));
+        }
     }
+    else { /* empy gain list => do nothing */}
 }
 
 void SoapySdrInput::resetAgc()
@@ -450,7 +457,7 @@ void SoapySdrInput::onReadThreadStopped()
 
     if (m_deviceRunningFlag)
     {   // if device should be running then it measn reading error thus device is disconnected
-        qDebug() << "SoapySDR: device is unplugged.";
+        qCCritical(soapySdrInput) << "Device is unplugged.";
         m_deviceUnpluggedFlag = true;
         m_deviceRunningFlag = false;
 
@@ -473,7 +480,7 @@ void SoapySdrInput::onWatchdogTimeout()
         bool isRunning = m_worker->isRunning();
         if (!isRunning)
         {  // some problem in data input
-            qDebug() << "SoapySDR: watchdog timeout";
+            qCCritical(soapySdrInput) << "Watchdog timeout";
             inputBuffer.fillDummy();
             emit error(InputDeviceErrorCode::NoDataAvailable);
         }
@@ -508,10 +515,10 @@ void SoapySdrInput::setBW(uint32_t bw)
         }
         catch(const std::exception &ex)
         {
-            qDebug() << "SoapySDR: failed to set bandwidth" << bw << "kHz:" << ex.what();
+            qCWarning(soapySdrInput) << "Failed to set bandwidth" << bw << "kHz:" << ex.what();
             return;
         }
-        qDebug() << "SoapySDR: bandwidth set to" << bw/1000.0 << "kHz";
+        qCInfo(soapySdrInput) << "Bandwidth set to" << bw/1000.0 << "kHz";
     }
 }
 
@@ -548,7 +555,7 @@ void SoapySdrWorker::run()
     }
     catch(const std::exception &ex)
     {
-        qDebug() << "SoapySDR: Error setup stream" << ex.what();
+        qCCritical(soapySdrInput) << "Error setup stream" << ex.what();
         return;
     }
 
@@ -572,22 +579,22 @@ void SoapySdrWorker::run()
         {
             if (ret == SOAPY_SDR_TIMEOUT)
             {
-                qDebug() << "SoapySDR: Stream timeout";
+                qCCritical(soapySdrInput) << "Stream timeout";
                 break;
             }
             if (ret == SOAPY_SDR_OVERFLOW)
             {
-                qDebug() << "SoapySDR: Stream overflow";
+                qCCritical(soapySdrInput) << "Stream overflow";
                 continue;
             }
             if (ret == SOAPY_SDR_UNDERFLOW)
             {
-                qDebug() << "SoapySDR: Stream underflow";
+                qCCritical(soapySdrInput) << "Stream underflow";
                 continue;
             }
             if (ret < 0)
             {
-                qDebug() << "SoapySDR: Unexpected stream error" << SoapySDR_errToStr(ret);
+                qCCritical(soapySdrInput) << "Unexpected stream error" << SoapySDR_errToStr(ret);
                 break;
             }
         }
@@ -657,7 +664,7 @@ void SoapySdrWorker::processInputData(std::complex<float> buff[], size_t numSamp
 
     if ((INPUT_FIFO_SIZE - count) < bytesToWrite)
     {
-        qDebug() << "SoapySDR: dropping" << numSamples << "IQ samples...";
+        qCWarning(soapySdrInput) << "Dropping" << numSamples << "IQ samples...";
         return;
     }
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
-    <height>548</height>
+    <width>897</width>
+    <height>535</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -150,7 +150,7 @@
       <item>
        <widget class="QLabel" name="ensembleInfoLabel">
         <property name="text">
-         <string notr="true">Ensemble information</string>
+         <string notr="true">Info</string>
         </property>
        </widget>
       </item>
@@ -253,15 +253,59 @@
         </widget>
        </item>
        <item>
+        <widget class="ClickableLabel" name="channelDown">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>15</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string notr="true">&lt;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="frequencyLabel">
          <property name="toolTip">
           <string>Current frequency</string>
          </property>
          <property name="text">
-          <string>227.360 MHz</string>
+          <string notr="true">227.360 MHz</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="ClickableLabel" name="channelUp">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>15</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string notr="true">&gt;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -354,12 +398,6 @@
        <size>
         <width>180</width>
         <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>16777215</height>
        </size>
       </property>
      </widget>
@@ -471,7 +509,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>327</width>
+         <width>324</width>
          <height>100</height>
         </rect>
        </property>
@@ -533,8 +571,11 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
                 <height>100</height>
                </size>
               </property>
+              <property name="toolTip">
+               <string>Click to copy Dynamic Label</string>
+              </property>
               <property name="text">
-               <string notr="true">DL Announcement</string>
+               <string notr="true">DL</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -577,8 +618,11 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
                 <height>100</height>
                </size>
               </property>
+              <property name="toolTip">
+               <string>Click to copy Dynamic Label</string>
+              </property>
               <property name="text">
-               <string>DL</string>
+               <string notr="true">DL Announcement</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -621,7 +665,13 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
           <property name="lineWidth">
            <number>0</number>
           </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
           <widget class="QWidget" name="dlPlusFrame_Service">
+           <property name="toolTip">
+            <string>Click to copy Dynamic Label +</string>
+           </property>
            <layout class="QVBoxLayout" name="verticalLayout">
             <property name="spacing">
              <number>0</number>
@@ -657,6 +707,9 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
            </layout>
           </widget>
           <widget class="QWidget" name="dlPlusFrame_Announcement">
+           <property name="toolTip">
+            <string>Click to copy Dynamic Label +</string>
+           </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <property name="spacing">
              <number>0</number>
@@ -704,8 +757,8 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>900</width>
-     <height>37</height>
+     <width>897</width>
+     <height>24</height>
     </rect>
    </property>
   </widget>

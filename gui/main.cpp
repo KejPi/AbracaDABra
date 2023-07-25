@@ -39,7 +39,6 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
-
     QCommandLineParser parser;
     parser.setApplicationDescription(QObject::tr("Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)"));
     parser.addHelpOption();

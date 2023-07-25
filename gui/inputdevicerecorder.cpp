@@ -26,9 +26,12 @@
 
 #include <QDir>
 #include <QFileDialog>
+#include <QLoggingCategory>
 #include "inputdevicerecorder.h"
 #include "dabtables.h"
 #include "config.h"
+
+Q_LOGGING_CATEGORY(inputDeviceRecorder, "InputDeviceRecorder", QtInfoMsg)
 
 InputDeviceRecorder::InputDeviceRecorder()
 {
@@ -58,13 +61,11 @@ void InputDeviceRecorder::setDeviceDescription(const InputDeviceDescription &des
     // 1 / (2 channels(IQ) * channel containerBits/8.0 * sampleRate/1000.0)
     m_bytes2ms = 8*1000.0/(2 * m_deviceDescription.sample.containerBits * m_deviceDescription.sample.sampleRate);
 
-#if 0
-    qDebug() << "name:" << m_deviceDescription.device.name;
-    qDebug() << "model:" << m_deviceDescription.device.model;
-    qDebug() << "sampleRate:" << m_deviceDescription.sample.sampleRate;
-    qDebug() << "channelBits:" << m_deviceDescription.sample.channelBits;
-    qDebug() << "channelContainer:" << m_deviceDescription.sample.channelContainer;
-#endif
+    qCDebug(inputDeviceRecorder) << "name:" << m_deviceDescription.device.name;
+    qCDebug(inputDeviceRecorder) << "model:" << m_deviceDescription.device.model;
+    qCDebug(inputDeviceRecorder) << "sampleRate:" << m_deviceDescription.sample.sampleRate;
+    qCDebug(inputDeviceRecorder) << "channelBits:" << m_deviceDescription.sample.channelBits;
+    qCDebug(inputDeviceRecorder) << "channelContainer:" << m_deviceDescription.sample.channelContainer;
 }
 
 void InputDeviceRecorder::start(QWidget * callerWidget)

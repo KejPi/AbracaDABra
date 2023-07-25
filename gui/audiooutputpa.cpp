@@ -25,15 +25,16 @@
  */
 
 #include <QDebug>
+#include <QLoggingCategory>
 #include <QThread>
 #include <QAudioSink>
 #include <QAudioDevice>
 
-#include "audiooutput.h"
+#include "audiooutputpa.h"
 
-#if HAVE_PORTAUDIO
+Q_DECLARE_LOGGING_CATEGORY(audioOutput)
 
-AudioOutput::AudioOutput( QObject *parent) : QObject(parent)
+AudioOutputPa::AudioOutputPa( QObject *parent) : AudioOutput(parent)
 {
     m_inFifoPtr = nullptr;
     m_outStream = nullptr;
@@ -50,14 +51,14 @@ AudioOutput::AudioOutput( QObject *parent) : QObject(parent)
     m_rawOut = fopen("audio.raw", "wb");
     if (!m_rawOut)
     {
-        qDebug("Unable to open file: audio.raw");
+        qCWarning(audioOutput, "Unable to open file: audio.raw");
     }
 #endif
 
-    connect(this, &AudioOutput::streamFinished, this, &AudioOutput::onStreamFinished, Qt::QueuedConnection);
+    connect(this, &AudioOutputPa::streamFinished, this, &AudioOutputPa::onStreamFinished, Qt::QueuedConnection);
 }
 
-AudioOutput::~AudioOutput()
+AudioOutputPa::~AudioOutputPa()
 {
     if (nullptr != m_outStream)
     {
@@ -72,7 +73,7 @@ AudioOutput::~AudioOutput()
     PaError err = Pa_Terminate();
     if (paNoError != err)
     {
-        qDebug("PortAudio Pa_Terminate() error: %s", Pa_GetErrorText(err));
+        qCCritical(audioOutput, "PortAudio Pa_Terminate() error: %s", Pa_GetErrorText(err));
     }
 
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
@@ -83,14 +84,15 @@ AudioOutput::~AudioOutput()
 #endif
 }
 
-void AudioOutput::start(audioFifo_t *buffer)
+void AudioOutputPa::start(audioFifo_t *buffer)
 {
     uint32_t sRate = buffer->sampleRate;
     uint8_t numCh = buffer->numChannels;
 
     bool isNewStreamParams = (m_sampleRate_kHz != sRate/1000) || (m_numChannels != numCh);
-    if (isNewStreamParams)
+    if (isNewStreamParams || m_reloadDevice)
     {
+        m_reloadDevice = false;
         if (nullptr != m_outStream)
         {
             if (!Pa_IsStreamStopped(m_outStream))
@@ -114,6 +116,7 @@ void AudioOutput::start(audioFifo_t *buffer)
         // m_muteFactor is calculated for change from 0dB to AUDIOOUTPUT_FADE_MIN_DB in AUDIOOUTPUT_FADE_TIME_MS
         m_muteFactor = powf(10, AUDIOOUTPUT_FADE_MIN_DB/(20.0*AUDIOOUTPUT_FADE_TIME_MS*m_sampleRate_kHz));
 
+#ifdef Q_OS_LINUX
         /* Open an audio I/O stream. */
         PaError err = Pa_OpenDefaultStream( &m_outStream,
                                            0,              /* no input channels */
@@ -129,6 +132,31 @@ void AudioOutput::start(audioFifo_t *buffer)
                                                            possibly changing, buffer size.*/
                                            portAudioCb,    /* callback */
                                            (void *) this);
+#else
+        PaStreamParameters outputParameters;
+        outputParameters.device = getCurrentDeviceIdx();
+        outputParameters.channelCount = numCh;
+        outputParameters.sampleFormat = paInt16;
+        outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultLowOutputLatency;
+        outputParameters.hostApiSpecificStreamInfo = nullptr;
+
+        /* Open an audio I/O stream. */
+        PaError err = Pa_OpenStream(&m_outStream,
+                                    nullptr, // no input
+                                    &outputParameters,
+                                    sRate,
+                                    m_bufferFrames, /* frames per buffer, i.e. the number
+                                                           of sample frames that PortAudio will
+                                                           request from the callback. Many apps
+                                                           may want to use
+                                                           paFramesPerBufferUnspecified, which
+                                                           tells PortAudio to pick the best,
+                                                           possibly changing, buffer size.*/
+                                    paNoFlag,
+                                    portAudioCb,    /* callback */
+                                    (void *) this);
+
+#endif
         if (paNoError != err)
         {
             throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
@@ -156,12 +184,12 @@ void AudioOutput::start(audioFifo_t *buffer)
     PaError err = Pa_StartStream(m_outStream);
     if (paNoError != err)
     {
-        throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
+        qCCritical(audioOutput) << "Pa_StartStream error:" << Pa_GetErrorText(err);
     }
 
 }
 
-void AudioOutput::restart(audioFifo_t *buffer)
+void AudioOutputPa::restart(audioFifo_t *buffer)
 {
     if (nullptr != m_outStream)
     {
@@ -170,7 +198,7 @@ void AudioOutput::restart(audioFifo_t *buffer)
     }
 }
 
-void AudioOutput::stop()
+void AudioOutputPa::stop()
 {
     if (nullptr != m_outStream)
     {
@@ -178,7 +206,7 @@ void AudioOutput::stop()
     }
 }
 
-void AudioOutput::mute(bool on)
+void AudioOutputPa::mute(bool on)
 {
     if (on)
     {   // set mute bit
@@ -190,38 +218,40 @@ void AudioOutput::mute(bool on)
     }
 }
 
-void AudioOutput::setVolume(int value)
+void AudioOutputPa::setVolume(int value)
 {
     m_linearVolume = QAudio::convertVolume(value / qreal(100),
                                            QAudio::LogarithmicVolumeScale,
                                            QAudio::LinearVolumeScale);
 }
 
-int AudioOutput::portAudioCb( const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
+int AudioOutputPa::portAudioCb( const void *inputBuffer, void *outputBuffer, unsigned long nBufferFrames,
                              const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *ctx)
 {
     Q_UNUSED(inputBuffer);
     Q_UNUSED(timeInfo);
 
 #ifdef AUDIOOUTPUT_RAW_FILE_OUT
-    int ret = static_cast<AudioOutput*>(ctx)->portAudioCbPrivate(outputBuffer, nBufferFrames);
-    if (static_cast<AudioOutput*>(ctx)->m_rawOut)
+    int ret = static_cast<AudioOutputPa*>(ctx)->portAudioCbPrivate(outputBuffer, nBufferFrames);
+    if (static_cast<AudioOutputPa*>(ctx)->m_rawOut)
     {
-        fwrite(outputBuffer, sizeof(int16_t), nBufferFrames * static_cast<AudioOutput*>(ctx)->m_numChannels, static_cast<AudioOutput*>(ctx)->m_rawOut);
+        fwrite(outputBuffer, sizeof(int16_t), nBufferFrames * static_cast<AudioOutputPa*>(ctx)->m_numChannels, static_cast<AudioOutputPa*>(ctx)->m_rawOut);
     }
     return ret;
 #else
     if (statusFlags)
     {
-        qDebug() << "Port Audio statusFlags =" << statusFlags;
+        qCWarning(audioOutput) << "Port Audio statusFlags =" << statusFlags;
     }
 
-    return static_cast<AudioOutput*>(ctx)->portAudioCbPrivate(outputBuffer, nBufferFrames);
+    return static_cast<AudioOutputPa*>(ctx)->portAudioCbPrivate(outputBuffer, nBufferFrames);
 #endif
 }
 
-int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames)
+int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFrames)
 {
+    //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
+
     // read samples from input buffer
     m_inFifoPtr->mutex.lock();
     uint64_t count = m_inFifoPtr->count;
@@ -236,7 +266,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     if (AudioOutputPlaybackState::Muted == m_playbackState)
     {   // muted
         // condition to unmute is enough samples && !muteFlag
-        if (count > 6*bytesToRead)
+        if (count > 7*bytesToRead)
         {   // enough samples => reading data from input fifo
             if (Request::None != request)
             {   // staying muted -> setting output buffer to 0
@@ -348,7 +378,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
         }
         else
         {   // not enough samples ==> inserting silence
-            //qDebug("Muted: Inserting silence [%lu ms]", nBufferFrames/m_sampleRate_kHz);                       
+            qCDebug(audioOutput, "Muted: Inserting silence [%lu ms]", nBufferFrames/m_sampleRate_kHz);
             memset(outputBuffer, 0, bytesToRead);
 
             if (request & (Request::Stop | Request::Restart))
@@ -370,7 +400,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
             // minimum mute time is 1ms (m_sampleRate_kHz samples) , if less then hard mute
             if (m_sampleRate_kHz*m_bytesPerFrame > count)
             {   // nothing to play (cannot apply mute ramp)
-                qDebug("Hard mute [no samples available]");
+                qCInfo(audioOutput, "Hard mute [no samples available]");
                 memset(outputBuffer, 0, bytesToRead);
                 m_playbackState = AudioOutputPlaybackState::Muted;
                 return paContinue;
@@ -570,7 +600,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     // unmute
     if (Request::None == request)
     {   // unmute can be requested only when there is enough samples
-        qDebug() << "Unmuting audio";
+        qCInfo(audioOutput) << "Unmuting audio";
 
         float coe = 2.0 - m_muteFactor;
         float gain = AUDIOOUTPUT_FADE_MIN_LIN;
@@ -593,7 +623,7 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     else
     {   // there is so request => muting
         // mute can be requested when there is not enough samples or from HMI
-        qDebug("Muting... [available %u samples]", availableSamples);
+        qCInfo(audioOutput, "Muting... [available %u samples]", availableSamples);
         float coe = m_muteFactor;
         if (availableSamples < AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz)
         {   // less samples than expected available => need to calculate new coef
@@ -624,487 +654,117 @@ int AudioOutput::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferFra
     return paContinue;
 }
 
-void AudioOutput::portAudioStreamFinishedCb(void *ctx)
+void AudioOutputPa::portAudioStreamFinishedCb(void *ctx)
 {
-    static_cast<AudioOutput*>(ctx)->portAudioStreamFinishedPrivateCb();
+    //qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
+    static_cast<AudioOutputPa*>(ctx)->portAudioStreamFinishedPrivateCb();
 }
 
-void AudioOutput::onStreamFinished()
+void AudioOutputPa::onStreamFinished()
 {
     if (m_cbRequest & Request::Restart)
     {   // restart was requested (flag is cleared in start routine)
         emit audioOutputRestart();
-        start(m_restartFifoPtr);        
+        start(m_restartFifoPtr);
     }
-#ifdef Q_OS_WIN
     else if (!(m_cbRequest & Request::Stop))
-    {   // finished and not stop request ==> problem with output device
-        // start again
-        qDebug() << "AudioOutput: current audio device probably removed, trying new default device";
-
-        // hotplug handling
-        Pa_Terminate();
-        Pa_Initialize();
-
-        /* Open an audio I/O stream. */
-        PaError err = Pa_OpenDefaultStream( &m_outStream,
-                                           0,              /* no input channels */
-                                           m_numChannels,  /* stereo output */
-                                           paInt16,        /* 16 bit floating point output */
-                                           m_sampleRate_kHz*1000,
-                                           m_bufferFrames, /* frames per buffer, i.e. the number
-                                                           of sample frames that PortAudio will
-                                                           request from the callback. Many apps
-                                                           may want to use
-                                                           paFramesPerBufferUnspecified, which
-                                                           tells PortAudio to pick the best,
-                                                           possibly changing, buffer size.*/
-                                           portAudioCb,    /* callback */
-                                           (void *) this);
-        if (paNoError != err)
+    {   // finished and not stop request ==> problem with audio device or user want to chnage device
+        PaError err;
+        err = Pa_IsStreamActive(m_outStream);
+        if (err < 0)
         {
-            throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
+            qCCritical(audioOutput) << "Pa_IsStreamActive error:" << Pa_GetErrorText(err);
+        }
+        else if (err != 0)
+        {
+            err = Pa_AbortStream(m_outStream);
+            if (paNoError != err)
+            {
+                qCCritical(audioOutput) << "Pa_AbortStream error:" << Pa_GetErrorText(err);
+            }
+
+            qCWarning(audioOutput, "Aborting stream");
+            return;
         }
 
-        err = Pa_SetStreamFinishedCallback(m_outStream, portAudioStreamFinishedCb);
+        qCWarning(audioOutput, "Audio stream finished");
+
+        err = Pa_CloseStream(m_outStream);
         if (paNoError != err)
         {
-            throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
+            qCCritical(audioOutput) << "Pa_CloseStream error:" << Pa_GetErrorText(err);
         }
+        m_outStream = nullptr;
 
-        m_playbackState = AudioOutputPlaybackState::Muted;
-        m_cbRequest &= ~(Request::Stop | Request::Restart);  // reset stop and restart bits
-
-        err = Pa_StartStream(m_outStream);
+        err = Pa_Terminate();
         if (paNoError != err)
         {
-            throw std::runtime_error(std::string(Q_FUNC_INFO) + "PortAudio error:" + Pa_GetErrorText( err ) );
+            qCCritical(audioOutput) << "Pa_Terminate error:" << Pa_GetErrorText(err);
         }
+
+        err = Pa_Initialize();
+        if (paNoError != err)
+        {
+            qCCritical(audioOutput) << "Pa_Initialize error:" << Pa_GetErrorText(err);
+        }
+        m_reloadDevice = true;
+        start(m_inFifoPtr);
     }
-#endif
     else { /* do nothing */ }
 }
 
-#else // HAVE_PORTAUDIO
-
-AudioOutput::AudioOutput(QObject *parent) : QObject(parent)
+void AudioOutputPa::setAudioDevice(const QByteArray & deviceId)
 {
-    m_devices = new  QMediaDevices(this);
-    m_audioSink = nullptr;
-    m_ioDevice = nullptr;
-    m_linearVolume = 1.0;
-}
+    if ((!deviceId.isEmpty()) && (deviceId == m_currentAudioDevice.id()))
+    {   // do nothing
+        return;
+    }
 
-AudioOutput::~AudioOutput()
-{
-    if (nullptr != m_audioSink)
+    m_currentAudioDevice = m_devices->defaultAudioOutput();
+
+    QList<QAudioDevice> list = getAudioDevices();
+    for (const auto & dev : list)
     {
-        m_audioSink->stop();
-        delete m_audioSink;
-    }
-    if (nullptr != m_ioDevice)
-    {
-        m_ioDevice->close();
-        delete m_ioDevice;
-    }
-}
-
-void AudioOutput::start(audioFifo_t *buffer)
-{
-    uint32_t sRate = buffer->sampleRate;
-    uint8_t numCh = buffer->numChannels;
-
-    QAudioFormat format;    
-    format.setSampleRate(sRate);
-    format.setSampleFormat(QAudioFormat::Int16);
-    format.setChannelCount(numCh);
-    if (numCh > 1)
-    {
-        format.setChannelConfig(QAudioFormat::ChannelConfigStereo);
-    }
-    else
-    {
-        format.setChannelConfig(QAudioFormat::ChannelConfigMono);
-    }
-
-    const QAudioDevice &defaultDeviceInfo = m_devices->defaultAudioOutput();
-    if (!defaultDeviceInfo.isFormatSupported(format))
-    {
-        qWarning() << "Default format not supported - trying to use preferred";
-        format = defaultDeviceInfo.preferredFormat();
-    }
-
-    if (nullptr != m_audioSink)
-    {
-        // audioSink exists
-        if (format != m_audioSink->format())
-        {   // need to create new audio sink
-            delete m_audioSink;
-            m_audioSink = nullptr;
-        }
-        else
-        { /* do nothing - format is the same */ }
-    }
-
-    if (nullptr == m_audioSink)
-    {
-        // create audio sink
-        m_audioSink = new QAudioSink(defaultDeviceInfo, format, this);
-
-        // set buffer size to 2* AUDIO_FIFO_CHUNK_MS ms
-        m_audioSink->setBufferSize(2 * AUDIO_FIFO_CHUNK_MS * sRate/1000 * numCh * sizeof(int16_t));
-
-        connect(m_audioSink, &QAudioSink::stateChanged, this, &AudioOutput::handleStateChanged);
-    }
-    else
-    {  /* do nothing */ }
-
-    m_audioSink->setVolume(m_linearVolume);
-
-    // start IO device
-    if (nullptr != m_ioDevice)
-    {
-        m_ioDevice->close();
-        delete m_ioDevice;
-    }
-    m_ioDevice = new AudioIODevice(buffer);
-    m_ioDevice->start();
-    m_audioSink->start(m_ioDevice);
-}
-
-void AudioOutput::restart(audioFifo_t *buffer)
-{
-    if (nullptr != m_audioSink)
-    {
-        if (!m_ioDevice->isMuted())
-        {   // delay stop until audio is muted
-            m_ioDevice->stop();
-            QTimer::singleShot(2*AUDIOOUTPUT_FADE_TIME_MS, this, [this, buffer]() { doRestart(buffer); } );
-            return;
-        }
-        else
-        { /* were are already muted - doStop now */ }
-    }
-
-    doRestart(buffer);
-}
-
-void AudioOutput::mute(bool on)
-{
-    m_ioDevice->mute(on);
-}
-
-void AudioOutput::setVolume(int value)
-{
-    m_linearVolume = QAudio::convertVolume(value / qreal(100),
-                                           QAudio::LogarithmicVolumeScale,
-                                           QAudio::LinearVolumeScale);
-    if (nullptr != m_audioSink)
-    {
-        m_audioSink->setVolume(m_linearVolume);
-    }
-}
-
-void AudioOutput::stop()
-{
-    if (nullptr != m_audioSink)
-    {
-        if (!m_ioDevice->isMuted())
-        {   // delay stop until audio is muted
-            m_ioDevice->stop();
-            QTimer::singleShot(2*AUDIOOUTPUT_FADE_TIME_MS, this, &AudioOutput::doStop);
-            return;
-        }
-        else
-        { /* were are already muted - doStop now */ }
-    }
-
-    doStop();
-}
-
-void AudioOutput::doStop()
-{
-    if (nullptr != m_audioSink)
-    {
-        m_audioSink->stop();
-    }
-    if (nullptr != m_ioDevice)
-    {
-        m_ioDevice->close();
-    }
-}
-
-void AudioOutput::doRestart(audioFifo_t *buffer)
-{
-    emit audioOutputRestart();
-    start(buffer);
-}
-
-void AudioOutput::handleStateChanged(QAudio::State newState)
-{
-    switch (newState)
-    {
-    case QAudio::ActiveState:
-        //destroyTimer();
-        break;
-    case QAudio::IdleState:
-        // no more data
-        break;
-
-    case QAudio::StoppedState:
-        // Stopped for other reasons
-        break;
-
-    default:
-        // ... other cases as appropriate
-        break;
-    }
-}
-
-
-AudioIODevice::AudioIODevice(audioFifo_t *buffer, QObject *parent) : QIODevice(parent)
-{
-    m_inFifoPtr = buffer;
-
-    m_sampleRate_kHz = buffer->sampleRate / 1000;
-    m_numChannels = buffer->numChannels;
-    m_bytesPerFrame = m_numChannels * sizeof(int16_t);
-
-    // mute ramp is exponential
-    // value are precalculated to save MIPS in runtime
-    // unmute ramp is then calculated as 2.0 - m_muteFactor in runtime
-    // m_muteFactor is calculated for change from 0dB to AUDIOOUTPUT_FADE_MIN_DB in AUDIOOUTPUT_FADE_TIME_MS
-    m_muteFactor = powf(10, AUDIOOUTPUT_FADE_MIN_DB/(20.0*AUDIOOUTPUT_FADE_TIME_MS*m_sampleRate_kHz));
-}
-
-void AudioIODevice::start()
-{
-    m_stopFlag = false;
-    m_playbackState = AudioOutputPlaybackState::Muted;
-    open(QIODevice::ReadOnly);
-}
-
-void AudioIODevice::stop()
-{
-    m_stopFlag = true;     // set stop bit
-}
-
-qint64 AudioIODevice::readData(char *data, qint64 len)
-{
-    if (0 == len)
-    {
-        return len;
-    }
-
-    // read samples from input buffer
-    m_inFifoPtr->mutex.lock();
-    uint64_t count = m_inFifoPtr->count;
-    m_inFifoPtr->mutex.unlock();
-
-    bool muteRequest = m_muteFlag ||  m_stopFlag;
-
-    //uint64_t bytesToRead = len;
-    uint64_t bytesToRead = qMin(uint64_t(len), AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz * m_bytesPerFrame);
-    uint32_t availableSamples = bytesToRead / m_bytesPerFrame;
-
-    if (AudioOutputPlaybackState::Muted == m_playbackState)
-    {   // muted
-        // condition to unmute is enough samples
-        if (count > 8*bytesToRead)
-        {   // enough samples => reading data from input fifo
-            Q_ASSERT((bytesToRead >= AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz * m_bytesPerFrame));
-            if (muteRequest)
-            {   // staying muted -> setting output buffer to 0
-                memset(data, 0, bytesToRead);
-
-                // shifting buffer pointers
-                m_inFifoPtr->tail = (m_inFifoPtr->tail + bytesToRead) % AUDIO_FIFO_SIZE;
-                m_inFifoPtr->mutex.lock();
-                m_inFifoPtr->count -= bytesToRead;
-                m_inFifoPtr->countChanged.wakeAll();
-                m_inFifoPtr->mutex.unlock();
-
-                // done
-                return bytesToRead;
-            }
-            else { /* no request */ }
-
-            // at this point we have enough sample to unmute and there is no request => preparing data
-            uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
-            if (bytesToEnd < bytesToRead)
-            {
-                memcpy((uint8_t*)data, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
-                memcpy((uint8_t*)data + bytesToEnd, m_inFifoPtr->buffer, (bytesToRead - bytesToEnd));
-                m_inFifoPtr->tail = bytesToRead - bytesToEnd;
-            }
-            else
-            {
-                memcpy((uint8_t*) data, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToRead);
-                m_inFifoPtr->tail += bytesToRead;
-            }
-
-            m_inFifoPtr->mutex.lock();
-            m_inFifoPtr->count -= bytesToRead;
-            m_inFifoPtr->countChanged.wakeAll();
-            m_inFifoPtr->mutex.unlock();
-
-            // unmute request
-            muteRequest = false;
-        }
-        else
-        {   // not enough samples ==> inserting silence
-            //qDebug("Muted: Inserting silence [%lu ms]", nBufferFrames/m_sampleRate_kHz);
-            memset(data, 0, bytesToRead);
-
-            // done
-            return bytesToRead;
-        }
-    }
-    else
-    {   // (AudioOutputPlaybackState::Muted != m_playbackState)
-        // cannot be anything else than Muted or Playing ==> playing
-
-        // condition to mute is not enough samples || muteFlag
-        if (count < bytesToRead)
-        {   // not enough samples -> reading what we have and filling rest with zeros
-            // minimum mute time is 1ms (m_sampleRate_kHz samples) , if less then hard mute
-            if (m_sampleRate_kHz*m_bytesPerFrame > count)
-            {   // nothing to play
-                qDebug("Hard mute [no samples available]");
-                memset(data, 0, bytesToRead);
-                m_playbackState = AudioOutputPlaybackState::Muted;
-                return bytesToRead;
-            }
-
-            // there are some samples available
-            availableSamples = count/m_bytesPerFrame;
-
-            Q_ASSERT(count == availableSamples*m_bytesPerFrame);
-
-            // copy all available samples to output buffer
-            uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
-            if (bytesToEnd < count)
-            {
-                memcpy((uint8_t*)data, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
-                memcpy((uint8_t*)data + bytesToEnd, m_inFifoPtr->buffer, (count - bytesToEnd));
-                m_inFifoPtr->tail = count - bytesToEnd;
-            }
-            else
-            {
-                memcpy((uint8_t*) data, m_inFifoPtr->buffer+m_inFifoPtr->tail, count);
-                m_inFifoPtr->tail += count;
-            }
-            // set rest of the samples to be 0
-            memset((uint8_t*)data+count, 0, bytesToRead-count);
-
-            m_inFifoPtr->mutex.lock();
-            m_inFifoPtr->count -= count;
-            m_inFifoPtr->countChanged.wakeAll();
-            m_inFifoPtr->mutex.unlock();
-
-            // request to apply mute ramp
-            muteRequest = true;  // mute
-        }
-        else
-        {   // reading samples
-            uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
-            if (bytesToEnd < bytesToRead)
-            {
-                memcpy((uint8_t*)data, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
-                memcpy((uint8_t*)data + bytesToEnd, m_inFifoPtr->buffer, (bytesToRead - bytesToEnd));
-                m_inFifoPtr->tail = bytesToRead - bytesToEnd;
-            }
-            else
-            {
-                memcpy((uint8_t*) data, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToRead);
-                m_inFifoPtr->tail += bytesToRead;
-            }
-
-            m_inFifoPtr->mutex.lock();
-            m_inFifoPtr->count -= bytesToRead;
-            m_inFifoPtr->countChanged.wakeAll();
-            m_inFifoPtr->mutex.unlock();
-
-            if (!muteRequest)
-            {   // done
-                return bytesToRead;
-            }
-        }
-    }
-
-    // at this point we have buffer that needs to be muted or unmuted
-    // it is indicated by playbackState variable
-
-    // unmute
-    if (false == muteRequest)
-    {   // unmute can be requested only when there is enough samples
-        qDebug() << "Unmuting audio";
-
-        float coe = 2.0 - m_muteFactor;
-        float gain = AUDIOOUTPUT_FADE_MIN_LIN;
-        int16_t * dataPtr = (int16_t *) data;
-        for (uint_fast32_t n = 0; n < availableSamples; ++n)
+        if (dev.id() == deviceId)
         {
-            for (uint_fast8_t c = 0; c < m_numChannels; ++c)
-            {
-                *dataPtr = int16_t(qRound(gain * *dataPtr));
-                dataPtr++;
-            }
-            gain = gain * coe;  // after by purpose
+            m_currentAudioDevice = dev;
+            break;
         }
-
-        m_playbackState = AudioOutputPlaybackState::Playing; // playing
-
-        return bytesToRead;
     }
-    else
-    {   // mute can be requested when there is not enough samples or from HMI
-        qDebug("Muting... [available %u samples]", availableSamples);
-        float coe = m_muteFactor;
-        if (availableSamples < AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz)
-        {   // less samples than expected available => need to calculate new coef
-            coe = powf(10, AUDIOOUTPUT_FADE_MIN_DB/(20.0*availableSamples));
-        }
 
-        float gain = 1.0;
+    emit audioDeviceChanged(m_currentAudioDevice.id());
+    // change output device to newly selected
+    m_reloadDevice = true;
 
-        int16_t * dataPtr = (int16_t *) data;
-        for (uint_fast32_t n = 0; n < availableSamples; ++n)
+    if (nullptr != m_outStream)
+    {
+        PaError err = Pa_AbortStream(m_outStream);
+        if (paNoError != err)
         {
-            gain = gain * coe;  // before by purpose
-            for (uint_fast8_t c = 0; c < m_numChannels; ++c)
-            {
-                *dataPtr = int16_t(qRound(gain * *dataPtr));
-                dataPtr++;
-            }
+            qCCritical(audioOutput) << "Pa_AbortStream error:" << Pa_GetErrorText(err);
         }
+    }
+}
 
-        m_playbackState = AudioOutputPlaybackState::Muted; // muted
+PaDeviceIndex AudioOutputPa::getCurrentDeviceIdx()
+{
+    PaDeviceIndex idx = Pa_GetDefaultOutputDevice();
+    if (idx < 0)
+    {
+        qCCritical(audioOutput) << "Pa_GetDefaultOutputDevice error:" << Pa_GetErrorText(idx);
+        return 0;
     }
 
-    return bytesToRead;
+    for (int d = 0; d < Pa_GetDeviceCount(); ++d)
+    {
+        const PaDeviceInfo * devInfo = Pa_GetDeviceInfo(d);
+        if ((devInfo->maxOutputChannels > 1) && (m_currentAudioDevice.description().startsWith(QString(devInfo->name).trimmed(), Qt::CaseInsensitive)))
+        {
+            qCInfo(audioOutput) << "Audio device" << m_currentAudioDevice.description() << (idx == d ? "[default]" : "");
+            return d;
+        }
+    }
+
+    qCWarning(audioOutput) << "Audio device" << m_currentAudioDevice.description() << "not found, trying default";
+    return idx;
 }
-
-qint64 AudioIODevice::writeData(const char *data, qint64 len)
-{
-    Q_UNUSED(data);
-    Q_UNUSED(len);
-
-    return 0;
-}
-
-qint64 AudioIODevice::bytesAvailable() const
-{
-    m_inFifoPtr->mutex.lock();
-    int64_t count = m_inFifoPtr->count;
-    m_inFifoPtr->mutex.unlock();
-
-    return count;
-}
-
-void AudioIODevice::mute(bool on)
-{
-   m_muteFlag = on;
-}
-
-#endif // HAVE_PORTAUDIO

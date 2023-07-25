@@ -48,8 +48,12 @@ public:
     QString categoryTitle;
     QString clickThroughURL;
     QString alternativeLocationURL;
+    QString format;
     int categoryID;
     int slideID;
+    int numBytes;
+    QString getFormat() const;
+    void setFormat(const QString &newFormat);
 };
 
 class Slide
@@ -70,11 +74,16 @@ public:
     const QString &getClickThroughURL() const;
     void setClickThroughURL(const QString &newClickThroughURL);
 
+    const QString &getFormat() const;
+    void setFormat(const QString &newFormat);
+
     int getCategoryID() const;
     void setCategoryID(int newCategoryID);
 
     int getSlideID() const;
     void setSlideID(int newSlideID);
+
+    int getNumBytes() const { return d->numBytes; }
 
     const QString &getAlternativeLocationURL() const;
     void setAlternativeLocationURL(const QString &newAlternativeLocationURL);

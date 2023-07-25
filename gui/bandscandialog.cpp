@@ -60,7 +60,7 @@ BandScanDialog::BandScanDialog(QWidget *parent, bool autoStart, Qt::WindowFlags 
 
     if (!autoStart)
     {
-        ui->scanningLabel->setText(tr("<span style=\"color:red\"><b>Warning:</b> Band scan deletes current service list and all favorites!</span>"));
+        ui->scanningLabel->setText(tr("<span style=\"color:red\"><b>Warning:</b> Band scan deletes current service list!</span>"));
     }
 
     setFixedSize( sizeHint() );

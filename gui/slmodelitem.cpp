@@ -146,6 +146,7 @@ bool SLModelItem::isService() const
 
 bool SLModelItem::isFavoriteService() const
 {
+#if 0
     if (m_id.isService())
     {
         ServiceListConstIterator it = m_slPtr->findService(m_id);
@@ -155,6 +156,9 @@ bool SLModelItem::isFavoriteService() const
         }
     }
     return false;
+#else
+    return m_slPtr->isServiceFavorite(m_id);
+#endif
 }
 
 bool SLModelItem::isEnsemble() const
