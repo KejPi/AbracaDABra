@@ -87,9 +87,11 @@ public:
     }
     uint32_t countryServiceRef() const { return (isProgServiceId() ? (m_eccsid & 0x0000FFFF) : (m_eccsid & 0x00FFFFFF));  }
     bool isValid() const { return m_eccsid != 0; }
+    inline bool operator==(const DabSId & other) const { return m_eccsid == other.m_eccsid; }
 private:
     uint32_t m_eccsid;
 };
+inline size_t qHash(const DabSId & sid, size_t seed = 0) { return sid.value(); }
 
 struct DabProtection
 {

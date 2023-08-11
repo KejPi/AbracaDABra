@@ -113,6 +113,7 @@ public:
     typedef QList<MOTObject>::const_iterator const_iterator;
 
     MOTObjectCache::iterator findMotObj(uint16_t transportId);   // find MOT object in the cache
+    MOTObjectCache::const_iterator cfindMotObj(uint16_t transportId);   // find MOT object in the cache
     MOTObjectCache::iterator addMotObj(const MOTObject &obj);          // add MOT boject to cache
     void deleteMotObj(uint16_t transportId);        // delete mote object from the cache, this deletes the object completely
 
@@ -138,6 +139,7 @@ public:
     uint_fast32_t getTransportId() const { return m_id; }
     MOTObjectCache::const_iterator begin() const { return  m_carousel->cbegin(); }
     MOTObjectCache::const_iterator end() const { return  m_carousel->cend(); }
+    MOTObjectCache::const_iterator cfind(uint16_t transportId) const { return  m_carousel->cfindMotObj(transportId); }
 private:
     uint_fast32_t m_id;
     MOTEntity m_dir;

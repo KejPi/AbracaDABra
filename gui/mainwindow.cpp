@@ -58,6 +58,7 @@
 #if HAVE_PORTAUDIO
 #include "audiooutputpa.h"
 #endif
+#include "metadatamanager.h"
 
 
 // Input devices
@@ -565,10 +566,11 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(this, &MainWindow::exit, m_radioControl, &RadioControl::exit, Qt::QueuedConnection);
 
     // user applications
+    m_metadataManager = new MetadataManager(this);
 
     // slide show application is created by default
     // ETSI TS 101 499 V3.1.1  [5.1.1]
-    // The application should be automatically started when a SlideShow service is discovered for the current radio service
+    // The application should be automatically started when a SlideShow service is discovered for the current radio service    
     m_slideShowApp[Instance::Service] = new SlideShowApp();
     m_slideShowApp[Instance::Announcement] = new SlideShowApp();
 
@@ -577,8 +579,12 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControlThread, &QThread::finished, m_slideShowApp[Instance::Service], &QObject::deleteLater);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_slideShowApp[Instance::Service], &SlideShowApp::start);
     connect(m_radioControl, &RadioControl::userAppData_Service, m_slideShowApp[Instance::Service], &SlideShowApp::onUserAppData);
+
+    connect(this, &MainWindow::serviceRequest, m_metadataManager, &MetadataManager::onServiceRequest);
+
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::currentSlide, ui->slsView_Service, &SLSView::showSlide, Qt::QueuedConnection);
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::resetTerminal, ui->slsView_Service, &SLSView::reset, Qt::QueuedConnection);
+    connect(m_metadataManager, &MetadataManager::stationLogoSlide, ui->slsView_Service, &SLSView::setStationLogo);
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::catSlsAvailable, ui->catSlsLabel, &ClickableLabel::setVisible, Qt::QueuedConnection);
     connect(this, &MainWindow::stopUserApps, m_slideShowApp[Instance::Service], &SlideShowApp::stop, Qt::QueuedConnection);
 
@@ -587,6 +593,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::userAppData_Announcement, m_slideShowApp[Instance::Announcement], &SlideShowApp::onUserAppData);
     connect(m_slideShowApp[Instance::Announcement], &SlideShowApp::currentSlide, ui->slsView_Announcement, &SLSView::showSlide, Qt::QueuedConnection);
     connect(m_slideShowApp[Instance::Announcement], &SlideShowApp::resetTerminal, ui->slsView_Announcement, &SLSView::reset, Qt::QueuedConnection);
+    connect(m_metadataManager, &MetadataManager::stationLogoSlide, ui->slsView_Announcement, &SLSView::setStationLogo);
     connect(m_radioControl, &RadioControl::announcement, ui->slsView_Announcement, &SLSView::showAnnouncement, Qt::QueuedConnection);
     connect(this, &MainWindow::stopUserApps, m_slideShowApp[Instance::Announcement], &SlideShowApp::stop, Qt::QueuedConnection);
 
@@ -599,6 +606,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_catSlsDialog, &CatSLSDialog::getNextCatSlide, m_slideShowApp[Instance::Service], &SlideShowApp::getNextCatSlide, Qt::QueuedConnection);
 
 #if RADIO_CONTROL_SPI_ENABLE
+
 #warning "Remove automatic creation of SPI app"
     // slide show application is created by default
     // ETSI TS 101 499 V3.1.1  [5.1.1]
@@ -609,6 +617,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &SPIApp::start);
     connect(m_radioControl, &RadioControl::userAppData_Service, m_spiApp, &SPIApp::onUserAppData);
     connect(this, &MainWindow::stopUserApps, m_spiApp, &SPIApp::stop, Qt::QueuedConnection);
+
+    connect(m_spiApp, &SPIApp::xmlDocument, m_metadataManager, &MetadataManager::processXML, Qt::QueuedConnection);
+    connect(m_metadataManager, &MetadataManager::getFile, m_spiApp, &SPIApp::onFileRequest, Qt::QueuedConnection);
+    connect(m_spiApp, &SPIApp::requestedFile, m_metadataManager, &MetadataManager::onFileReceived, Qt::QueuedConnection);
 #endif
 
     // input device connections
@@ -1382,6 +1394,8 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
         onProgrammeTypeChanged(s.SId, s.pty);
         displaySubchParams(s);
         restoreTimeQualWidget();
+
+        qDebug() << s.SId.value() << s.SId.isProgServiceId();
     }
     else
     {   // sid it not equal to selected sid -> this should not happen

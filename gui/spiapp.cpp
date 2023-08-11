@@ -25,6 +25,7 @@
  */
 
 #include "spiapp.h"
+#include <QSaveFile>
 
 SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
 {
@@ -53,6 +54,7 @@ void SPIApp::start()
     connect(m_decoder, &MOTDecoder::newMOTObject, this, &SPIApp::onNewMOTObject);
     connect(m_decoder, &MOTDecoder::newMOTDirectory, this, &SPIApp::onNewMOTDirectory);
 
+    m_parsedDirectoryId = UINT32_MAX;
     m_isRunning = true;
 }
 
@@ -90,35 +92,68 @@ void SPIApp::onUserAppData(const RadioControlUserAppData & data)
 
 void SPIApp::onNewMOTDirectory()
 {
-    qDebug() << Q_FUNC_INFO << "New MOT directory";
+    //qDebug() << Q_FUNC_INFO << "New MOT directory";
+    if (m_decoder->getDirectoryId() == m_parsedDirectoryId)
+    {   // directory is already processed
+        return;
+    }
+
     MOTObjectCache::const_iterator objIt;
     for (objIt = m_decoder->directoryBegin(); objIt != m_decoder->directoryEnd(); ++objIt)
     {
         if (!objIt->isComplete())
-        {
-            qDebug() << Q_FUNC_INFO << "MOT object, ID =" << objIt->getId() << ", contentsName =" << objIt->getContentName() << "is NOT complete!";
-            continue;
+        {   // object not complete ==> carousel not complete
+            return;
         }
-        else
-        { /* MOT object is complete */ }
+        else { /* object is complete */ }
+    }
 
-        qDebug() << Q_FUNC_INFO << "MOT object, ID =" << objIt->getId() << ", contentsName =" << objIt->getContentName()
-                 << "Content type/subtype =" << objIt->getContentType() << "/" << objIt->getContentSubType();
+    for (objIt = m_decoder->directoryBegin(); objIt != m_decoder->directoryEnd(); ++objIt)
+    {
+        //qDebug() << Q_FUNC_INFO << "MOT object, ID =" << objIt->getId() << ", contentsName =" << objIt->getContentName()
+        //         << "Content type/subtype =" << objIt->getContentType() << "/" << objIt->getContentSubType();
 
-        if (objIt->getContentType() == 7)
+        switch (objIt->getContentType())
+        {
+#if 0  // storing of images
+        case 2:
+        {
+            // logos
+            switch (objIt->getContentSubType())
+            {
+            case 1:
+                qDebug() << "Image / JFIF (JPEG)" << objIt->getContentName();
+                break;
+            case 3:
+            {
+                qDebug() << "Image / PNG" << objIt->getContentName();
+                QSaveFile file(objIt->getContentName());
+                file.open(QIODevice::WriteOnly);
+                file.write(objIt->getBody());
+                file.commit();
+            }
+                break;
+            default:
+                qDebug() << "Image /" <<objIt->getContentSubType() << "not supported by SPI application";
+                return;
+            }
+        }
+            break;
+#endif
+        case 7:
         {   // SPI content type/subtype values
             switch (objIt->getContentSubType())
             {
             case 0:
-                qDebug() << "\tService Information";
+                qDebug() << "\tService Information" << objIt->getContentName();
                 parseBinaryInfo(*objIt);
                 break;
             case 1:
-                qDebug() << "\tProgramme Information";
+                qDebug() << "\tProgramme Information" << objIt->getContentName();
                 parseBinaryInfo(*objIt);
                 break;
             case 2:
-                qDebug() << "\tGroup Information";
+                qDebug() << "\tGroup Information" << objIt->getContentName();
                 parseBinaryInfo(*objIt);
                 break;
             default:
@@ -126,6 +161,19 @@ void SPIApp::onNewMOTDirectory()
                 continue;
             }
         }
+        break;
+        }
+    }
+
+    m_parsedDirectoryId = m_decoder->getDirectoryId();
+}
+
+void SPIApp::onFileRequest(const QString &url, const QString &requestId)
+{
+    const auto it = m_decoder->find(url);
+    if (it != m_decoder->directoryEnd())
+    {
+        emit requestedFile(it->getBody(), requestId);
     }
 }
 
@@ -200,7 +248,10 @@ void SPIApp::parseBinaryInfo(const MOTObject &motObj)
     QDomElement empty;
     qDebug() << "Total bytes" << data.size() << "Read bytes" << parseTag(dataPtr, empty, uint8_t(SPIElement::Tag::_invalid), data.size());
 
-    qDebug("%s", m_xmldocument.toString().toLocal8Bit().data());
+
+    //qDebug("%s", m_xmldocument.toString().toLocal8Bit().data());
+
+    emit xmlDocument(m_xmldocument.toString());
 }
 
 
@@ -374,7 +425,8 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
             element = m_xmldocument.createElement("serviceScope");
             break;
         case SPIElement::Tag::ensemble:
-            element = m_xmldocument.createElement("ensemble");
+            // ETSI TS 102 818 V3.4.1 (2022-05) Annex F: ensemble element has been replaced by the services element
+            element = m_xmldocument.createElement("services");
             break;
         case SPIElement::Tag::service:
             element = m_xmldocument.createElement("service");

@@ -282,14 +282,15 @@ void MOTObjectData::parseHeader()
 
             default:
                 // some user app parameter or parameter not handled by MOT decoder
+#if 0
                 if (userAppParams.end() != userAppParams.find(paramId))
                 {
-                    qCWarning(motObject) << "Removing duplicate header parameter" << paramId;
+                    //qCWarning(motObject) << "Removing duplicate header parameter" << paramId;
                     userAppParams.remove(paramId);
                 }
                 else
                 { /* paramId does not exist */ }
-
+#endif
                 userAppParams.insert(paramId, QByteArray( (const char *)(dataPtr+n), dataFieldLen));
                 break;
             }
@@ -397,17 +398,18 @@ bool MOTDirectory::addSegment(const uint8_t *segment, uint16_t segmentNum, uint1
     if (m_dir.isComplete())
     {
         qCInfo(motObject) << "MOT directory is complete";
-        if (!parse(m_dir.getData()))
-        {   // something is wrong - header could not be parsed, objects is not complete
-            qCWarning(motObject) << "MOT directory parsing failed";
+        if (parse(m_dir.getData()))
+        {
+            return true;
         }
+        // something is wrong - header could not be parsed, objects is not complete
+        qCWarning(motObject) << "MOT directory parsing failed";
     }
     else
     {
         qCDebug(motObject) << "MOT directory segment received, not complete yet";
     }
-
-    return true;
+    return false;
 }
 
 void MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
@@ -621,6 +623,20 @@ MOTObjectCache::iterator MOTObjectCache::findMotObj(uint16_t transportId)
     }
     return it;
 }
+
+MOTObjectCache::const_iterator MOTObjectCache::cfindMotObj(uint16_t transportId)
+{
+    MOTObjectCache::const_iterator it;
+    for (it = m_cache.cbegin(); it < m_cache.cend(); ++it)
+    {
+        if (it->getId() == transportId)
+        {
+            return it;
+        }
+    }
+    return it;
+}
+
 
 void MOTObjectCache::deleteMotObj(uint16_t transportId)
 {

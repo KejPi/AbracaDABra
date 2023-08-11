@@ -56,6 +56,18 @@ void MOTDecoder::reset()
     m_objCache->clear();
 }
 
+MOTObjectCache::const_iterator MOTDecoder::find(const QString &filename) const
+{
+    for (auto it = m_directory->begin(); it < m_directory->end(); ++it)
+    {
+        if (it->getContentName() == filename)
+        {
+            return it;
+        }
+    }
+    return m_directory->end();
+}
+
 void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
 {
     qCDebug(motDecoder) << Q_FUNC_INFO << "Data group len=" << dataGroup.size();
@@ -128,7 +140,7 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
 #endif
         }
         else
-        {   // this can be euth directory mode but directoy was not recieved yet or it can be header mode
+        {   // this can be either directory mode but directory was not recieved yet or it can be header mode
             // Header mode is handled within the cache
             MOTObjectCache::iterator objIt = m_objCache->findMotObj(mscDataGroup.getTransportId());
             if (m_objCache->end() == objIt)

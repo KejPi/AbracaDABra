@@ -42,6 +42,7 @@
 #include <QLoggingCategory>
 
 #include "clickablelabel.h"
+#include "metadatamanager.h"
 #include "setupdialog.h"
 #include "ensembleinfodialog.h"
 #include "catslsdialog.h"
@@ -180,6 +181,7 @@ private:
     QMap<DLPlusContentType, DLPlusObjectUI*> m_dlObjCache[Instance::NumInstances];
     SlideShowApp * m_slideShowApp[Instance::NumInstances];
     SPIApp * m_spiApp;
+    MetadataManager * m_metadataManager;
 
     // methods
     void loadSettings();

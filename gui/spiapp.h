@@ -55,9 +55,14 @@ public:
     void onNewMOTObject(const MOTObject & obj) override;
     void onUserAppData(const RadioControlUserAppData & data) override;
     void onNewMOTDirectory();
+    void onFileRequest(const QString & url, const QString & requestId);
     void start() override;
     void stop() override;
     void restart() override;
+
+signals:
+    void xmlDocument(const QString &xmldocument);
+    void requestedFile(const QByteArray &data, const QString &requestId);
 private:
     MOTDecoder * m_decoder;
 
@@ -76,8 +81,8 @@ private:
     void setAttribute_dabBearerURI(QDomElement & element, const QString & name, const uint8_t *dataPtr, int len);
 
     QHash<uint8_t, QString> m_tokenTable;
-
     QDomDocument m_xmldocument;
+    uint_fast32_t m_parsedDirectoryId;
 };
 
 namespace SPIElement

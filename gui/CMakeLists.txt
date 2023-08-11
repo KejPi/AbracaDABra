@@ -139,7 +139,10 @@ add_executable(${TARGET}
     aboutdialog.cpp
     aboutdialog.ui
 
-    ${APPLE_SOURCES}
+    metadatamanager.h
+    metadatamanager.cpp
+
+    ${APPLE_SOURCES}   
   )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

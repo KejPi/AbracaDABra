@@ -59,6 +59,9 @@ public:
     //! @brief This method enables expert mode features
     void setExpertMode(bool expertModeEna);
 
+    //! @brief This method sets station logo used when view is reset
+    void setStationLogo(const QPixmap &logo);
+
 protected:
     //! @brief Reimplemented to scale image correctly
     void resizeEvent(QResizeEvent *event);
@@ -87,6 +90,12 @@ private:
 
     //! @brief expert mode
     bool m_isExpertMode = false;
+
+    //! @brief station logo
+    QPixmap m_stationLogo;
+
+    //! @brief returns logo to show when no slide is available
+    QPixmap getLogo() const;
 };
 
 #endif // SLSVIEW_H

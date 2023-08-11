@@ -37,16 +37,7 @@ SLSView::SLSView(QWidget *parent) : QGraphicsView(parent)
 
 void SLSView::reset()
 {
-    QPixmap pic;
-    if (m_isDarkMode)
-    {
-        pic.load(":/resources/sls_logo_dark.png");
-    }
-    else
-    {
-        pic.load(":/resources/sls_logo.png");
-    }
-
+    QPixmap pic = getLogo();
     QGraphicsScene * sc = scene();
     if (nullptr == sc)
     {
@@ -83,7 +74,7 @@ void SLSView::showAnnouncement(DabAnnouncement id)
 
     if (DabAnnouncement::Undefined == id)
     {
-        pic.load(":/resources/sls_logo.png");
+        pic = getLogo();
         m_isShowingSlide = false;
     }
     else
@@ -192,15 +183,13 @@ void SLSView::setupDarkMode(bool darkModeEna)
         {
             if (!m_isShowingSlide)
             {
-                QPixmap pic;
+                QPixmap pic = getLogo();
                 if (m_isDarkMode)
                 {
-                    pic.load(":/resources/sls_logo_dark.png");
                     sc->setBackgroundBrush(Qt::black);
                 }
                 else
                 {
-                    pic.load(":/resources/sls_logo.png");
                     sc->setBackgroundBrush(Qt::white);
                 }
 
@@ -216,6 +205,11 @@ void SLSView::setupDarkMode(bool darkModeEna)
 void SLSView::setExpertMode(bool expertModeEna)
 {
     m_isExpertMode = expertModeEna;
+}
+
+void SLSView::setStationLogo(const QPixmap &logo)
+{
+    m_stationLogo = logo;
 }
 
 void SLSView::showSlide(const Slide & slide)
@@ -324,4 +318,24 @@ void SLSView::mouseReleaseEvent(QMouseEvent *event)
         { /* mouse was released outside the view */ }
     }
     QGraphicsView::mouseReleaseEvent(event);
+}
+
+QPixmap SLSView::getLogo() const
+{
+    if (m_stationLogo.isNull()) {
+        QPixmap pic;
+        if (m_isDarkMode)
+        {
+            pic.load(":/resources/sls_logo_dark.png");
+        }
+        else
+        {
+            pic.load(":/resources/sls_logo.png");
+        }
+        return pic;
+    }
+    else
+    {
+        return m_stationLogo;
+    }
 }
