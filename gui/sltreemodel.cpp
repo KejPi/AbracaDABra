@@ -24,7 +24,10 @@
  * SOFTWARE.
  */
 
+#include <QLoggingCategory>
 #include "sltreemodel.h"
+
+Q_DECLARE_LOGGING_CATEGORY(serviceList)
 
 SLTreeModel::SLTreeModel(const ServiceList *sl, QObject *parent)
     : QAbstractItemModel(parent)
@@ -211,7 +214,7 @@ void SLTreeModel::addEnsembleService(const ServiceListId & ensId, const ServiceL
         }
         else
         {
-            qDebug() << Q_FUNC_INFO << "Service not found - adding secondary service as regular service";
+            qCInfo(serviceList, "Adding %6.6X : %d as primary service [old DAB standard]", servId.sid(), servId.scids());
             serviceChild = ensChild->findChildId(servId);
             if (nullptr == serviceChild)
             {  // new service to be added
