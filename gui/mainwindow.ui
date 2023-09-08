@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>897</width>
-    <height>535</height>
+    <width>913</width>
+    <height>543</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,7 +27,17 @@
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="serviceLayout">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
+       <layout class="QHBoxLayout" name="serviceNameLayout">
+        <item>
+         <widget class="QLabel" name="logoLabel">
+          <property name="text">
+           <string notr="true">LOGO</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QLabel" name="serviceLabel">
           <property name="sizePolicy">
@@ -35,6 +45,12 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>32</height>
+           </size>
           </property>
           <property name="font">
            <font>
@@ -136,6 +152,12 @@
      <layout class="QVBoxLayout" name="ensembleLayout">
       <item>
        <widget class="QLabel" name="ensembleLabel">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>36</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <pointsize>20</pointsize>
@@ -509,7 +531,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>324</width>
+         <width>340</width>
          <height>100</height>
         </rect>
        </property>
@@ -757,7 +779,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>897</width>
+     <width>913</width>
      <height>24</height>
     </rect>
    </property>

@@ -64,12 +64,10 @@ public:
 
     void processXML(const QString &xmldocument);
     void onFileReceived(const QByteArray & data, const QString & requestId);
-    void onServiceRequest(uint32_t freq, uint32_t SId, uint8_t SCIdS);
     QPixmap getStationLogo(uint32_t sid, uint8_t SCIdS, MetadataManager::StationLogoRole role);
 
 signals:
     void getFile(const QString & url, const QString & requestId);
-    void stationLogoSlide(const QPixmap & slide);    // this signal is used to emit slide when service is selected
 
 private:
 //    static MetadataManager * m_instancePtr;    // static pointer which will points to the instance of this class

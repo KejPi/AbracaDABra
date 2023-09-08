@@ -207,35 +207,9 @@ void SLSView::setExpertMode(bool expertModeEna)
     m_isExpertMode = expertModeEna;
 }
 
-void SLSView::setStationLogo(const QPixmap &logo)
-{
-    m_stationLogo = logo;
-}
-
 void SLSView::showSlide(const Slide & slide)
 {
-    QGraphicsScene * sc = scene();
-    if (nullptr == sc)
-    {
-        sc = new QGraphicsScene(this);
-        m_pixmapItem = sc->addPixmap(slide.getPixmap());
-        setScene(sc);
-    }
-    else
-    {
-        if (nullptr != m_announcementText)
-        {
-            sc->removeItem(m_announcementText);
-            delete m_announcementText;
-            m_announcementText = nullptr;
-        }
-
-        m_pixmapItem->setPixmap(slide.getPixmap());
-    }
-
-    sc->setSceneRect(slide.getPixmap().rect());
-    sc->setBackgroundBrush(Qt::black);
-    fitInViewTight(slide.getPixmap().rect(), Qt::KeepAspectRatio);
+    displayPixmap(slide.getPixmap());
 
     // update tool tip
     QString toolTip;
@@ -283,6 +257,20 @@ void SLSView::showSlide(const Slide & slide)
     m_isShowingSlide = true;
 }
 
+void SLSView::showStationLogo(const QPixmap & logo)
+{
+    if (logo.isNull())
+    {
+        return;
+    }
+
+    displayPixmap(logo);
+
+    setToolTip("");
+    m_isShowingSlide = true;
+}
+
+
 void SLSView::resizeEvent(QResizeEvent *event)
 {
     QGraphicsScene * sc = scene();
@@ -322,20 +310,40 @@ void SLSView::mouseReleaseEvent(QMouseEvent *event)
 
 QPixmap SLSView::getLogo() const
 {
-    if (m_stationLogo.isNull()) {
-        QPixmap pic;
-        if (m_isDarkMode)
-        {
-            pic.load(":/resources/sls_logo_dark.png");
-        }
-        else
-        {
-            pic.load(":/resources/sls_logo.png");
-        }
-        return pic;
+    QPixmap pic;
+    if (m_isDarkMode)
+    {
+        pic.load(":/resources/sls_logo_dark.png");
     }
     else
     {
-        return m_stationLogo;
+        pic.load(":/resources/sls_logo.png");
     }
+    return pic;
+}
+
+void SLSView::displayPixmap(const QPixmap &pixmap)
+{
+    QGraphicsScene * sc = scene();
+    if (nullptr == sc)
+    {
+        sc = new QGraphicsScene(this);
+        m_pixmapItem = sc->addPixmap(pixmap);
+        setScene(sc);
+    }
+    else
+    {
+        if (nullptr != m_announcementText)
+        {
+            sc->removeItem(m_announcementText);
+            delete m_announcementText;
+            m_announcementText = nullptr;
+        }
+
+        m_pixmapItem->setPixmap(pixmap);
+    }
+
+    sc->setSceneRect(pixmap.rect());
+    sc->setBackgroundBrush(Qt::black);
+    fitInViewTight(pixmap.rect(), Qt::KeepAspectRatio);
 }

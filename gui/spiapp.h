@@ -60,6 +60,11 @@ public:
     void stop() override;
     void restart() override;
 
+    // RadioDNS
+    void enableRadioDNS(bool ena) { m_enaRadioDNS = ena; }
+    void onEnsembleInformation(const RadioControlEnsemble & ens);
+    void onAudioServiceSelection(const RadioControlServiceComponent & s);
+
 signals:
     void xmlDocument(const QString &xmldocument);
     void requestedFile(const QByteArray &data, const QString &requestId);
@@ -83,6 +88,16 @@ private:
     QHash<uint8_t, QString> m_tokenTable;
     QDomDocument m_xmldocument;
     uint_fast32_t m_parsedDirectoryId;
+
+    // RadioDNS
+    bool m_enaRadioDNS;
+    uint8_t m_ecc;
+    uint16_t m_eid;
+    DabSId m_sid;
+    uint8_t m_scids;
+    void radioDNSQuery();
+    QString getRadioDNSFQDN() const;
+    QString getGCC() const;
 };
 
 namespace SPIElement

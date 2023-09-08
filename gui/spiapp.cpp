@@ -30,6 +30,7 @@
 SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
 {
     m_decoder = nullptr;
+    m_enaRadioDNS = true;
 }
 
 SPIApp::~SPIApp()
@@ -55,6 +56,9 @@ void SPIApp::start()
     connect(m_decoder, &MOTDecoder::newMOTDirectory, this, &SPIApp::onNewMOTDirectory);
 
     m_parsedDirectoryId = UINT32_MAX;
+    m_eid = 0;
+    m_sid = DabSId();
+    m_scids = 0;
     m_isRunning = true;
 }
 
@@ -75,6 +79,25 @@ void SPIApp::restart()
 {
     stop();
     start();
+}
+
+void SPIApp::onEnsembleInformation(const RadioControlEnsemble &ens)
+{
+    if (ens.isValid())
+    {
+        m_eid = ens.eid();
+    }
+}
+
+void SPIApp::onAudioServiceSelection(const RadioControlServiceComponent &s)
+{
+    m_sid = s.SId;
+    m_scids = s.SCIdS;
+
+    if (m_enaRadioDNS)
+    {   // query RadioDNS
+        radioDNSQuery();
+    }
 }
 
 void SPIApp::onUserAppData(const RadioControlUserAppData & data)
@@ -110,8 +133,8 @@ void SPIApp::onNewMOTDirectory()
 
     for (objIt = m_decoder->directoryBegin(); objIt != m_decoder->directoryEnd(); ++objIt)
     {
-        //qDebug() << Q_FUNC_INFO << "MOT object, ID =" << objIt->getId() << ", contentsName =" << objIt->getContentName()
-        //         << "Content type/subtype =" << objIt->getContentType() << "/" << objIt->getContentSubType();
+        qDebug() << Q_FUNC_INFO << "MOT object, ID =" << objIt->getId() << ", contentsName =" << objIt->getContentName()
+                 << "Content type/subtype =" << objIt->getContentType() << "/" << objIt->getContentSubType();
 
         switch (objIt->getContentType())
         {
@@ -170,7 +193,8 @@ void SPIApp::onNewMOTDirectory()
 
 void SPIApp::onFileRequest(const QString &url, const QString &requestId)
 {
-    const auto it = m_decoder->find(url);
+    QString filename = url.mid(url.lastIndexOf('/')+1, url.size());
+    const auto it = m_decoder->find(filename);
     if (it != m_decoder->directoryEnd())
     {
         emit requestedFile(it->getBody(), requestId);
@@ -1232,6 +1256,26 @@ void SPIApp::setAttribute_dabBearerURI(QDomElement &element, const QString &name
                                        );
         }
     }
+}
+
+void SPIApp::radioDNSQuery()
+{
+    qDebug() << getRadioDNSFQDN();
+}
+
+QString SPIApp::getRadioDNSFQDN() const
+{
+    return QString("%1.%2.%3.%4.dab.radiodns.org")
+        .arg(m_scids)
+        .arg(m_sid.progSId(), 4, 16, QChar('0'))
+        .arg(m_eid, 4, 16, QChar('0'))
+        .arg(getGCC());
+}
+
+QString SPIApp::getGCC() const
+{
+    return QString("%1%2").arg(QString("%1%").arg(m_sid.progSId(), 4, 16, QChar('0')).at(0))
+        .arg(m_sid.ecc(), 4, 16, QChar('0'));
 }
 
 SPIDomElement::SPIDomElement()

@@ -420,6 +420,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->switchSourceLabel->setToolTip(tr("Change service source (ensemble)"));
     ui->switchSourceLabel->setHidden(true);
 
+    ui->logoLabel->setHidden(true);
+
     ui->serviceTreeView->setVisible(false);
 
     setupDarkMode();
@@ -580,11 +582,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_slideShowApp[Instance::Service], &SlideShowApp::start);
     connect(m_radioControl, &RadioControl::userAppData_Service, m_slideShowApp[Instance::Service], &SlideShowApp::onUserAppData);
 
-    connect(this, &MainWindow::serviceRequest, m_metadataManager, &MetadataManager::onServiceRequest);
+    //connect(this, &MainWindow::serviceRequest, m_metadataManager, &MetadataManager::onServiceRequest);
 
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::currentSlide, ui->slsView_Service, &SLSView::showSlide, Qt::QueuedConnection);
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::resetTerminal, ui->slsView_Service, &SLSView::reset, Qt::QueuedConnection);
-    connect(m_metadataManager, &MetadataManager::stationLogoSlide, ui->slsView_Service, &SLSView::setStationLogo);
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::catSlsAvailable, ui->catSlsLabel, &ClickableLabel::setVisible, Qt::QueuedConnection);
     connect(this, &MainWindow::stopUserApps, m_slideShowApp[Instance::Service], &SlideShowApp::stop, Qt::QueuedConnection);
 
@@ -593,7 +594,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::userAppData_Announcement, m_slideShowApp[Instance::Announcement], &SlideShowApp::onUserAppData);
     connect(m_slideShowApp[Instance::Announcement], &SlideShowApp::currentSlide, ui->slsView_Announcement, &SLSView::showSlide, Qt::QueuedConnection);
     connect(m_slideShowApp[Instance::Announcement], &SlideShowApp::resetTerminal, ui->slsView_Announcement, &SLSView::reset, Qt::QueuedConnection);
-    connect(m_metadataManager, &MetadataManager::stationLogoSlide, ui->slsView_Announcement, &SLSView::setStationLogo);
     connect(m_radioControl, &RadioControl::announcement, ui->slsView_Announcement, &SLSView::showAnnouncement, Qt::QueuedConnection);
     connect(this, &MainWindow::stopUserApps, m_slideShowApp[Instance::Announcement], &SlideShowApp::stop, Qt::QueuedConnection);
 
@@ -1396,6 +1396,16 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
         restoreTimeQualWidget();
 
         qDebug() << s.SId.value() << s.SId.isProgServiceId();
+
+        QPixmap logo = m_metadataManager->getStationLogo(s.SId.value(), s.SCIdS, MetadataManager::SmallLogo);
+        //QPixmap logo = m_metadataManager->getStationLogo(0xE0d220, 0, MetadataManager::SmallLogo);
+        if (!logo.isNull())
+        {
+            ui->logoLabel->setPixmap(logo);
+            ui->logoLabel->setVisible(true);
+        }
+
+        ui->slsView_Service->showStationLogo(m_metadataManager->getStationLogo(s.SId.value(), s.SCIdS, MetadataManager::SLSLogo));
     }
     else
     {   // sid it not equal to selected sid -> this should not happen
@@ -1635,6 +1645,7 @@ void MainWindow::clearServiceInformationLabels()
     ui->serviceLabel->setText(tr("No service"));
     ui->favoriteLabel->setChecked(false);
     ui->catSlsLabel->setHidden(true);
+    ui->logoLabel->setHidden(true);
     ui->announcementLabel->setHidden(true);
     ui->serviceLabel->setToolTip(tr("No service playing"));
     ui->programTypeLabel->setText("");

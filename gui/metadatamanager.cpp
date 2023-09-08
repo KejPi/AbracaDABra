@@ -311,19 +311,12 @@ void MetadataManager::onFileReceived(const QByteArray & data, const QString & re
     //    file.commit();
 }
 
-void MetadataManager::onServiceRequest(uint32_t freq, uint32_t SId, uint8_t SCIdS)
-{
-    Q_UNUSED(freq)
-    QPixmap pic = getStationLogo(SId, SCIdS, StationLogoRole::SLSLogo);
-    emit stationLogoSlide(pic);
-}
-
 QPixmap MetadataManager::getStationLogo(uint32_t sid, uint8_t SCIdS, StationLogoRole role)
 {
     QPixmap pixmap;
     QString sidStr = QString("%1.%2").arg(sid, 6, 16, QChar('0')).arg(SCIdS);
     switch (role) {
-    case MetadataManager::StationLogoRole::SLSLogo:
+    case SLSLogo:
     {
         QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + QString("%1/320x240.png").arg(sidStr);
         if (QFileInfo::exists(filename))
@@ -334,7 +327,7 @@ QPixmap MetadataManager::getStationLogo(uint32_t sid, uint8_t SCIdS, StationLogo
         break;
     case SmallLogo:
     {
-        QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + QString("%1/32x32.png").arg(sid);
+        QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + QString("%1/32x32.png").arg(sidStr);
         if (QFileInfo::exists(filename))
         {
             pixmap.load(filename);
