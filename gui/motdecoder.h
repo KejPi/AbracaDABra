@@ -41,6 +41,7 @@ public:
     ~MOTDecoder();
     void newDataGroup(const QByteArray &dataGroup);
     void reset();
+    bool hasDirectory() const { return m_directory != nullptr; }
     uint_fast32_t getDirectoryId() const { return m_directory->getTransportId(); }
     MOTObjectCache::const_iterator find(uint16_t transportId) const { return m_directory->cfind(transportId); }
     MOTObjectCache::const_iterator find(const QString & filename) const;

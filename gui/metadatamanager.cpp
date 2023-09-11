@@ -32,6 +32,7 @@
 #include <QStandardPaths>
 #include <QCryptographicHash>
 #include <QFileInfo>
+#include <QThread>
 #include "metadatamanager.h"
 
 // initializing instancePtr with NULL
@@ -45,6 +46,8 @@ MetadataManager::MetadataManager(QObject *parent)
 
 void MetadataManager::processXML(const QString &xml)
 {
+    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
+
     //qDebug() << Q_FUNC_INFO;
     QDomDocument xmldocument;
     if (!xmldocument.setContent(xml))
@@ -55,7 +58,7 @@ void MetadataManager::processXML(const QString &xml)
     QDomElement docElem = xmldocument.documentElement();
     if ("serviceInformation" ==  docElem.tagName())
     {
-        qDebug("%s", xmldocument.toString().toLocal8Bit().data());
+        //qDebug("%s", xmldocument.toString().toLocal8Bit().data());
 
         QDomNode node = docElem.firstChild();
         while (!node.isNull())
@@ -218,7 +221,7 @@ void MetadataManager::processXML(const QString &xml)
                                                             QString url = mediaDescElement.attribute("url");
                                                             QString width = mediaDescElement.attribute("width");
                                                             QString height = mediaDescElement.attribute("height");
-
+                                                            QString ext = "png";
                                                             if ("logo_colour_square" == type)
                                                             {
                                                                 width = height = "32";
@@ -228,15 +231,21 @@ void MetadataManager::processXML(const QString &xml)
                                                                 width = "112";
                                                                 height = "32";
                                                             }
+                                                            else
+                                                            {
+                                                                if (mediaDescElement.attribute("mimeValue") == "image/jpeg")
+                                                                {
+                                                                    ext = "jpg";
+                                                                }
+                                                            }
                                                             int widthVal = width.toInt();
                                                             int heightVal = height.toInt();
 
-                                                            QString ext = url.mid(url.lastIndexOf('.'), url.size()-1);
                                                             // only SLS size or logo size is accepted
                                                             if (((widthVal == 320) && (heightVal == 240)) ||
                                                                 ((widthVal == 32) && (heightVal == 32)))
                                                             {
-                                                                QString filename = QString("%1/%2x%3%4").arg(sidStr, width, height, ext);
+                                                                QString filename = QString("%1/%2x%3.%4").arg(sidStr, width, height, ext);
                                                                 qDebug() << url << "===>" << filename;
 
                                                                 emit getFile(url, filename);
@@ -272,6 +281,7 @@ void MetadataManager::onFileReceived(const QByteArray & data, const QString & re
     QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/"+ requestId;
     qDebug() << Q_FUNC_INFO << requestId << filename;
 
+    const QRegularExpression re("([0-9a-f]{6})\\.(\\d+)/(\\d+x\\d+)\\..*", QRegularExpression::CaseInsensitiveOption);
 
     QDir dir;
     dir.mkpath(QFileInfo(filename).absolutePath());
@@ -284,8 +294,8 @@ void MetadataManager::onFileReceived(const QByteArray & data, const QString & re
         file.open(QIODevice::ReadOnly);
         md5gen.addData(file.readAll());
         file.close();
-        QByteArray md5FileInCache = md5gen.result();
 
+        QByteArray md5FileInCache = md5gen.result();
         md5gen.reset();
         md5gen.addData(data);
         if (md5gen.result() != md5FileInCache)
@@ -293,6 +303,19 @@ void MetadataManager::onFileReceived(const QByteArray & data, const QString & re
             file.open(QIODevice::WriteOnly);
             file.write(data);
             file.close();
+
+            QRegularExpressionMatch match = re.match(requestId);
+            if (match.hasMatch())
+            {
+                uint32_t sid = match.captured(1).toUInt(nullptr, 16);
+                uint8_t scids = match.captured(2).toUInt();
+                QString size = match.captured(3);
+                StationLogoRole role = StationLogoRole::SLSLogo;
+                if (size == "32x32") {
+                    role = StationLogoRole::SmallLogo;
+                }
+                emit logoUpdated(sid, scids, role);
+            }
         }
         else
         {   /* do nothing, file is the same */
@@ -304,11 +327,20 @@ void MetadataManager::onFileReceived(const QByteArray & data, const QString & re
         file.open(QIODevice::WriteOnly);
         file.write(data);
         file.close();
+
+        QRegularExpressionMatch match = re.match(requestId);
+        if (match.hasMatch())
+        {
+            uint32_t sid = match.captured(1).toUInt(nullptr, 16);
+            uint8_t scids = match.captured(2).toUInt();
+            QString size = match.captured(3);
+            StationLogoRole role = StationLogoRole::SLSLogo;
+            if (size == "32x32") {
+                role = StationLogoRole::SmallLogo;
+            }
+            emit logoUpdated(sid, scids, role);
+        }
     }
-//    QSaveFile file(filename);
-//    file.open(QIODevice::WriteOnly);
-//    file.write(motObj.getBody());
-    //    file.commit();
 }
 
 QPixmap MetadataManager::getStationLogo(uint32_t sid, uint8_t SCIdS, StationLogoRole role)
@@ -318,19 +350,28 @@ QPixmap MetadataManager::getStationLogo(uint32_t sid, uint8_t SCIdS, StationLogo
     switch (role) {
     case SLSLogo:
     {
-        QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + QString("%1/320x240.png").arg(sidStr);
-        if (QFileInfo::exists(filename))
+        QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + QString("%1/320x240.").arg(sidStr);
+        if (QFileInfo::exists(filename+"png"))
         {
-            pixmap.load(filename);
+            pixmap.load(filename+"png");
         }
+        else if (QFileInfo::exists(filename+"jpg"))
+        {
+            pixmap.load(filename+"jpg");
+        }
+
     }
         break;
     case SmallLogo:
     {
-        QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + QString("%1/32x32.png").arg(sidStr);
-        if (QFileInfo::exists(filename))
+        QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + QString("%1/32x32.").arg(sidStr);
+        if (QFileInfo::exists(filename+"png"))
         {
-            pixmap.load(filename);
+            pixmap.load(filename+"png");
+        }
+        else if (QFileInfo::exists(filename+"jpg"))
+        {
+            pixmap.load(filename+"jpg");
         }
     }
         break;

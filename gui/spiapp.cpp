@@ -25,11 +25,19 @@
  */
 
 #include "spiapp.h"
+#include <QStandardPaths>
 #include <QSaveFile>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QNetworkDiskCache>
+#include <QNetworkProxyFactory>
+
 
 SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
 {
     m_decoder = nullptr;
+    m_dnsLookup = nullptr;
+    m_netAccessManager = nullptr;
     m_enaRadioDNS = true;
 }
 
@@ -38,6 +46,14 @@ SPIApp::~SPIApp()
     if (nullptr != m_decoder)
     {
         delete m_decoder;
+    }
+    if (nullptr != m_dnsLookup)
+    {
+        delete m_dnsLookup;
+    }
+    if (nullptr != m_netAccessManager)
+    {
+        delete m_netAccessManager;
     }
 }
 
@@ -55,10 +71,21 @@ void SPIApp::start()
     connect(m_decoder, &MOTDecoder::newMOTObject, this, &SPIApp::onNewMOTObject);
     connect(m_decoder, &MOTDecoder::newMOTDirectory, this, &SPIApp::onNewMOTDirectory);
 
+    m_dnsLookup = new QDnsLookup();
+    connect(m_dnsLookup, &QDnsLookup::finished, this, &SPIApp::handleRadioDNSLookup);
+
+    m_netAccessManager = new QNetworkAccessManager();
+    QNetworkProxyFactory::setUseSystemConfiguration(true);
+    connect(m_netAccessManager, &QNetworkAccessManager::finished, this, &SPIApp::onFileDownloaded);
+
+    QNetworkDiskCache *diskCache = new QNetworkDiskCache(this);
+    QString directory = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1StringView("/cacheDir/");
+    diskCache->setCacheDirectory(directory);
+    m_netAccessManager->setCache(diskCache);
+
+    m_downloadReqQueue.clear();
+
     m_parsedDirectoryId = UINT32_MAX;
-    m_eid = 0;
-    m_sid = DabSId();
-    m_scids = 0;
     m_isRunning = true;
 }
 
@@ -68,6 +95,16 @@ void SPIApp::stop()
     {
         delete m_decoder;
         m_decoder = nullptr;
+    }
+    if (nullptr != m_dnsLookup)
+    {
+        delete m_dnsLookup;
+        m_dnsLookup = nullptr;
+    }
+    if (nullptr != m_netAccessManager)
+    {
+        delete m_netAccessManager;
+        m_netAccessManager = nullptr;
     }
     m_isRunning = false;
 
@@ -83,20 +120,18 @@ void SPIApp::restart()
 
 void SPIApp::onEnsembleInformation(const RadioControlEnsemble &ens)
 {
-    if (ens.isValid())
-    {
-        m_eid = ens.eid();
-    }
+    m_eid = QString("%1").arg(ens.eid(), 4, 16, QChar('0'));
 }
 
 void SPIApp::onAudioServiceSelection(const RadioControlServiceComponent &s)
 {
-    m_sid = s.SId;
-    m_scids = s.SCIdS;
+    m_sid = QString("%1").arg(s.SId.progSId(), 4, 16, QChar('0'));
+    m_scids = QString("%1").arg(s.SCIdS);
+    m_gcc = getGCC(s.SId);
 
     if (m_enaRadioDNS)
     {   // query RadioDNS
-        radioDNSQuery();
+        radioDNSLookup();
     }
 }
 
@@ -133,8 +168,8 @@ void SPIApp::onNewMOTDirectory()
 
     for (objIt = m_decoder->directoryBegin(); objIt != m_decoder->directoryEnd(); ++objIt)
     {
-        qDebug() << Q_FUNC_INFO << "MOT object, ID =" << objIt->getId() << ", contentsName =" << objIt->getContentName()
-                 << "Content type/subtype =" << objIt->getContentType() << "/" << objIt->getContentSubType();
+        // qDebug() << Q_FUNC_INFO << "MOT object, ID =" << objIt->getId() << ", contentsName =" << objIt->getContentName()
+        //         << "Content type/subtype =" << objIt->getContentType() << "/" << objIt->getContentSubType();
 
         switch (objIt->getContentType())
         {
@@ -194,10 +229,21 @@ void SPIApp::onNewMOTDirectory()
 void SPIApp::onFileRequest(const QString &url, const QString &requestId)
 {
     QString filename = url.mid(url.lastIndexOf('/')+1, url.size());
-    const auto it = m_decoder->find(filename);
-    if (it != m_decoder->directoryEnd())
+    if (m_decoder->hasDirectory())
     {
-        emit requestedFile(it->getBody(), requestId);
+        const auto it = m_decoder->find(filename);
+        if (it != m_decoder->directoryEnd())
+        {
+            emit requestedFile(it->getBody(), requestId);
+        }
+        else
+        {   // not found -> try to download it
+            downloadFile(url, requestId);
+        }
+    }
+    else
+    {
+        downloadFile(url, requestId);
     }
 }
 
@@ -865,7 +911,7 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 uint16_t eid = *dataPtr++;
                 eid = (eid << 8) | *dataPtr++;
 
-                qDebug("attribute:id %2.2x.%4.4X", ecc, eid);
+                //qDebug("attribute:id %2.2x.%4.4X", ecc, eid);
                 parentElement.setAttribute("id", QString("%1.%2").arg(ecc, 2, 16, QChar('0')).arg(eid, 4, 16, QChar('0')));
                 break;
             }
@@ -1258,24 +1304,106 @@ void SPIApp::setAttribute_dabBearerURI(QDomElement &element, const QString &name
     }
 }
 
-void SPIApp::radioDNSQuery()
+void SPIApp::radioDNSLookup()
 {
-    qDebug() << getRadioDNSFQDN();
+    // qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
+
+    m_dnsLookup->setType(QDnsLookup::CNAME);
+    m_dnsLookup->setName(getRadioDNSFQDN());
+    m_dnsLookup->lookup();
 }
 
 QString SPIApp::getRadioDNSFQDN() const
 {
     return QString("%1.%2.%3.%4.dab.radiodns.org")
         .arg(m_scids)
-        .arg(m_sid.progSId(), 4, 16, QChar('0'))
-        .arg(m_eid, 4, 16, QChar('0'))
-        .arg(getGCC());
+        .arg(m_sid)
+        .arg(m_eid)
+        .arg(m_gcc);
 }
 
-QString SPIApp::getGCC() const
+QString SPIApp::getGCC(const DabSId & sid) const
 {
-    return QString("%1%2").arg(QString("%1%").arg(m_sid.progSId(), 4, 16, QChar('0')).at(0))
-        .arg(m_sid.ecc(), 4, 16, QChar('0'));
+    return QString("%1%2").arg(QString("%1").arg(sid.progSId(), 4, 16, QChar('0')).at(0))
+        .arg(sid.ecc(), 2, 16, QChar('0'));
+}
+
+void SPIApp::handleRadioDNSLookup()
+{
+    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
+
+    // Check the lookup succeeded.
+    if (m_dnsLookup->error() != QDnsLookup::NoError)
+    {
+        qWarning("DNS lookup failed");
+        return;
+    }
+
+    // Handle the results.
+    if (m_dnsLookup->canonicalNameRecords().count() > 0)
+    {
+        const auto & record = m_dnsLookup->canonicalNameRecords().at(0);
+
+        qDebug() << "canonicalNameRecord:" << record.name() << record.value();
+        m_dnsLookup->setType(QDnsLookup::SRV);
+        m_dnsLookup->setName("_radioepg._tcp." + record.value());
+        m_dnsLookup->lookup();
+    }
+    else if (m_dnsLookup->serviceRecords().count() > 0)
+    {
+        const auto & record = m_dnsLookup->serviceRecords().at(0);
+        qDebug() << "serviceRecord:" << record.name() << record.target();
+
+        downloadFile(QString("http://%1/radiodns/spi/3.1/SI.xml").arg(record.target()), "XML");
+    }
+}
+
+void SPIApp::downloadFile(const QString &url, const QString &requestId)
+{
+    if (m_downloadReqQueue.isEmpty()) {
+        m_downloadReqQueue.enqueue({url, requestId});
+
+        QNetworkRequest request;
+        request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache);
+        request.setUrl(QUrl(url));
+        m_netAccessManager->get(request);
+    }
+    else
+    {
+        m_downloadReqQueue.enqueue({url, requestId});
+    }
+    //qDebug() << Q_FUNC_INFO << m_downloadReqQueue;
+
+}
+
+void SPIApp::onFileDownloaded(QNetworkReply *reply)
+{
+    // QVariant fromCache = reply->attribute(QNetworkRequest::SourceIsFromCacheAttribute);
+    // qDebug() << "page from cache?" << fromCache.toBool();
+
+    QString requestId = m_downloadReqQueue.head().second;
+    if (requestId == "XML") {
+        QByteArray data = reply->readAll();
+        emit xmlDocument(QString(data));
+    }
+    else
+    {   // logo
+        // qDebug() << "File downloaded" << requestId << reply->bytesAvailable();
+        emit requestedFile(reply->readAll(), requestId);
+    }
+
+    m_downloadReqQueue.dequeue();
+
+    //qDebug() << Q_FUNC_INFO << m_downloadReqQueue;
+
+    if (!m_downloadReqQueue.isEmpty()) {
+        QNetworkRequest request;
+        request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache);
+        request.setUrl(QUrl(m_downloadReqQueue.head().first));
+        m_netAccessManager->get(request);
+    }
+
+    reply->deleteLater();
 }
 
 SPIDomElement::SPIDomElement()

@@ -569,6 +569,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     // user applications
     m_metadataManager = new MetadataManager(this);
+    connect(m_metadataManager, &MetadataManager::logoUpdated, this, &MainWindow::onLogoUpdated);
 
     // slide show application is created by default
     // ETSI TS 101 499 V3.1.1  [5.1.1]
@@ -616,6 +617,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControlThread, &QThread::finished, m_spiApp, &QObject::deleteLater);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &SPIApp::start);
     connect(m_radioControl, &RadioControl::userAppData_Service, m_spiApp, &SPIApp::onUserAppData);
+    connect(m_radioControl, &RadioControl::ensembleInformation, m_spiApp, &SPIApp::onEnsembleInformation);
+    connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &SPIApp::onAudioServiceSelection);
     connect(this, &MainWindow::stopUserApps, m_spiApp, &SPIApp::stop, Qt::QueuedConnection);
 
     connect(m_spiApp, &SPIApp::xmlDocument, m_metadataManager, &MetadataManager::processXML, Qt::QueuedConnection);
@@ -1628,6 +1631,29 @@ void MainWindow::onAudioDeviceChanged(const QByteArray &id)
     {
         qCWarning(application) << "Default audio device selected" << m_audioDevicesGroup->actions().at(0)->data().value<QAudioDevice>().description();
         m_audioDevicesGroup->actions().at(0)->setChecked(true);
+    }
+}
+
+void MainWindow::onLogoUpdated(uint32_t sid, uint8_t scids, MetadataManager::StationLogoRole role)
+{
+    if ((sid == m_SId.value()) && (scids == m_SCIdS))
+    {  // current service logo
+        switch (role)
+        {
+        case MetadataManager::StationLogoRole::SLSLogo:
+            ui->slsView_Service->showStationLogo(m_metadataManager->getStationLogo(sid, scids, MetadataManager::SLSLogo));
+            break;
+        case MetadataManager::SmallLogo:
+        {
+            QPixmap logo = m_metadataManager->getStationLogo(sid, scids, MetadataManager::SmallLogo);
+            if (!logo.isNull())
+            {
+                ui->logoLabel->setPixmap(logo);
+                ui->logoLabel->setVisible(true);
+            }
+        }
+            break;
+        }
     }
 }
 

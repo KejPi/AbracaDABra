@@ -45,29 +45,13 @@ public:
     };
 
     explicit MetadataManager(QObject *parent = nullptr);
-//    // singleton pattern
-//    MetadataManager(const MetadataManager & obj) = delete; // deleting copy constructor
-//    static MetadataManager * getInstance()
-//    {
-//        // If there is no instance of class then we can create an instance.
-//        if (m_instancePtr == nullptr)
-//        {
-//            m_instancePtr = new MetadataManager();
-//            return m_instancePtr;
-//        }
-//        else
-//        {   // if instancePtr != nullptr that means the class already have an instance.
-//            // So, we are returning that instance and not creating new one.
-//            return m_instancePtr;
-//        }
-//    }
-
     void processXML(const QString &xmldocument);
     void onFileReceived(const QByteArray & data, const QString & requestId);
     QPixmap getStationLogo(uint32_t sid, uint8_t SCIdS, MetadataManager::StationLogoRole role);
 
 signals:
     void getFile(const QString & url, const QString & requestId);
+    void logoUpdated(uint32_t sid, uint8_t SCIdS, MetadataManager::StationLogoRole role);
 
 private:
 //    static MetadataManager * m_instancePtr;    // static pointer which will points to the instance of this class

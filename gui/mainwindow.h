@@ -265,6 +265,7 @@ private:
     void onAudioOutputError();
     void onAudioOutputSelected(QAction * action);
     void onAudioDeviceChanged(const QByteArray & id);
+    void onLogoUpdated(uint32_t sid, uint8_t scids, MetadataManager::StationLogoRole role);
 };
 
 class DLPlusObjectUI

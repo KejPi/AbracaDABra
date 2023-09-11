@@ -264,10 +264,13 @@ void SLSView::showStationLogo(const QPixmap & logo)
         return;
     }
 
-    displayPixmap(logo);
+    if (!m_isShowingSlide)
+    {
+        displayPixmap(logo);
 
-    setToolTip("");
-    m_isShowingSlide = true;
+        setToolTip("");
+        m_isShowingSlide = true;
+    }
 }
 
 

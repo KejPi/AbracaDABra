@@ -29,6 +29,10 @@
 
 #include <QObject>
 #include <QDomDocument>
+#include <QDnsLookup>
+#include <QNetworkAccessManager>
+#include <QQueue>
+#include <QPair>
 
 #include "radiocontrol.h"
 #include "motdecoder.h"
@@ -91,13 +95,20 @@ private:
 
     // RadioDNS
     bool m_enaRadioDNS;
-    uint8_t m_ecc;
-    uint16_t m_eid;
-    DabSId m_sid;
-    uint8_t m_scids;
-    void radioDNSQuery();
+    QString m_gcc;
+    QString m_eid;
+    QString m_sid;
+    QString m_scids;
+
+    QDnsLookup * m_dnsLookup;
+    QNetworkAccessManager *m_netAccessManager;
+    QQueue<QPair<QString, QString>> m_downloadReqQueue;
+    void radioDNSLookup();
     QString getRadioDNSFQDN() const;
-    QString getGCC() const;
+    QString getGCC(const DabSId & sid) const;
+    void handleRadioDNSLookup();
+    void downloadFile(const QString &url, const QString &requestId);
+    void onFileDownloaded(QNetworkReply *reply);
 };
 
 namespace SPIElement
