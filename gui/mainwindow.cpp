@@ -836,6 +836,8 @@ void MainWindow::onEnsembleRemoved(const RadioControlEnsemble &ens)
     m_dlDecoder[Instance::Announcement]->reset();
 
     clearServiceInformationLabels();
+    ui->serviceListView->setCurrentIndex(QModelIndex());
+    ui->serviceTreeView->setCurrentIndex(QModelIndex());
     ui->favoriteLabel->setEnabled(false);
 
     m_serviceList->removeEnsemble(ens);
@@ -1205,6 +1207,8 @@ void MainWindow::onTuneDone(uint32_t freq)
         m_isPlaying = false;
         clearEnsembleInformationLabels();
         clearServiceInformationLabels();
+        ui->serviceListView->setCurrentIndex(QModelIndex());
+        ui->serviceTreeView->setCurrentIndex(QModelIndex());
         if (m_deviceChangeRequested)
         {
             initInputDevice(m_inputDeviceIdRequest);
@@ -1482,6 +1486,8 @@ void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponen
 
         QString serviceLabel = ui->serviceLabel->text();
         clearServiceInformationLabels();
+        ui->serviceListView->setCurrentIndex(QModelIndex());
+        ui->serviceTreeView->setCurrentIndex(QModelIndex());
         ui->serviceLabel->setText(serviceLabel);
         ui->programTypeLabel->setText(tr("Service currently unavailable"));
         ui->programTypeLabel->setToolTip(tr("Service was removed from ensemble"));
@@ -1689,8 +1695,6 @@ void MainWindow::clearServiceInformationLabels()
     ui->dlWidget->setCurrentIndex(Instance::Service);
     onDLReset_Service();
     onDLReset_Announcement();
-    ui->serviceListView->setCurrentIndex(QModelIndex());
-    ui->serviceTreeView->setCurrentIndex(QModelIndex());
 }
 
 void MainWindow::onNewInputDeviceSettings()
