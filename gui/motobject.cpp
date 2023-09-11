@@ -397,7 +397,7 @@ bool MOTDirectory::addSegment(const uint8_t *segment, uint16_t segmentNum, uint1
     m_dir.addSegment(segment, segmentNum, segmentSize, lastFlag);
     if (m_dir.isComplete())
     {
-        qCInfo(motObject) << "MOT directory is complete";
+        qCDebug(motObject) << "MOT directory is complete";
         if (parse(m_dir.getData()))
         {
             return true;
@@ -429,7 +429,7 @@ void MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *se
     it->addSegment(segment, segmentNum, segmentSize, lastFlag);
     if (it->isComplete())
     {
-        qCInfo(motObject) << "MOT complete: ID" << transportId;
+        qCDebug(motObject) << "MOT complete: ID" << transportId;
     }
 }
 
@@ -470,7 +470,7 @@ bool MOTDirectory::parse(const QByteArray &dirData)
     int segmentSize = ((dataPtr[9] & 0x1F) << 8) | dataPtr[10];
     int directoryExtensionLength = (dataPtr[11] << 8) | dataPtr[12];
 
-    qCInfo(motObject, "\tDirectorySize = %d\n"
+    qCDebug(motObject, "\tDirectorySize = %d\n"
            "\tNumberOfObjects = %d\n"
            "\tDataCarouselPeriod = %d\n"
            "\tSegmentSize = %d\n"
@@ -541,7 +541,7 @@ bool MOTDirectory::parse(const QByteArray &dirData)
     }
 
     // directory extension is parsed here
-    qCInfo(motObject) << "Reading MOT objects";
+    qCDebug(motObject) << "Reading MOT objects";
 
     // set all object in carousel obsolete
     m_carousel->markAllObsolete();
@@ -557,13 +557,13 @@ bool MOTDirectory::parse(const QByteArray &dirData)
 
         int objTransportID = (dataPtr[n] << 8) | dataPtr[n+1];
         int headerSize = ((dataPtr[n+2+3] & 0x0F) << 9) | (dataPtr[n+2+4] << 1) | ((dataPtr[n+2+5] >> 7) & 0x01);
-        qCInfo(motObject) << "\t* ID" << objTransportID << "| header size " << headerSize;
+        qCDebug(motObject) << "\t* ID" << objTransportID << "| header size " << headerSize;
 
         // mark all objects in directory as active (non-obsolete)
         MOTObjectCache::iterator it = m_carousel->markObjObsolete(objTransportID, false);
         if (m_carousel->end() == it)
         {   // not found create new object in carousel
-            qCInfo(motObject) << "Object not found in the cache: ID" << objTransportID;
+            qCDebug(motObject) << "Object not found in the cache: ID" << objTransportID;
             it = m_carousel->addMotObj(MOTObject(objTransportID));
         }
         else

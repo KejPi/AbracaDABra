@@ -1402,8 +1402,6 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
         displaySubchParams(s);
         restoreTimeQualWidget();
 
-        qDebug() << s.SId.value() << s.SId.isProgServiceId();
-
         QPixmap logo = m_metadataManager->getStationLogo(s.SId.value(), s.SCIdS, MetadataManager::SmallLogo);
         //QPixmap logo = m_metadataManager->getStationLogo(0xE0d220, 0, MetadataManager::SmallLogo);
         if (!logo.isNull())
@@ -1596,7 +1594,6 @@ void MainWindow::onAudioDevicesList(QList<QAudioDevice> list)
     m_audioDevicesGroup = new QActionGroup(m_audioOutputMenu);
     for (const QAudioDevice &device : list)
     {
-        //qDebug() << device.description() << device.minimumSampleRate() << device.maximumSampleRate() << device.maximumChannelCount();
         QAction * action = new QAction(device.description(), m_audioDevicesGroup);
         action->setData(QVariant::fromValue(device));
         action->setCheckable(true);
@@ -1618,7 +1615,6 @@ void MainWindow::onAudioOutputError()
 
 void MainWindow::onAudioOutputSelected(QAction *action)
 {
-    //qDebug() << "Audio output selected:" << action->data().value<QAudioDevice>().description();
     emit audioOutput(action->data().value<QAudioDevice>().id());
 }
 
@@ -2811,7 +2807,6 @@ void MainWindow::initStyle()
 
 void MainWindow::restoreTimeQualWidget()
 {
-    //qDebug() << Q_FUNC_INFO;
     m_timeBasicQualInfoWidget->setCurrentIndex(m_setupDialog->settings().expertModeEna ? 1 : 0);
 }
 

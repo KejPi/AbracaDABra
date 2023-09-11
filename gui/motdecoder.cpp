@@ -185,7 +185,7 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
 
         if (m_directory->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag()))
         {
-            qCInfo(motDecoder) << "MOT Directory is complete";
+            qCDebug(motDecoder) << "MOT Directory is complete";
             emit newMOTDirectory();
         }
         break;

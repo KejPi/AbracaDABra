@@ -33,10 +33,11 @@
 #include <QCryptographicHash>
 #include <QFileInfo>
 #include <QThread>
+#include <QLoggingCategory>
 #include "metadatamanager.h"
 
-// initializing instancePtr with NULL
-//MetadataManager * MetadataManager::m_instancePtr = nullptr;
+
+Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtInfoMsg)
 
 MetadataManager::MetadataManager(QObject *parent)
     : QObject(parent)
@@ -46,20 +47,15 @@ MetadataManager::MetadataManager(QObject *parent)
 
 void MetadataManager::processXML(const QString &xml)
 {
-    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
-
-    //qDebug() << Q_FUNC_INFO;
     QDomDocument xmldocument;
     if (!xmldocument.setContent(xml))
     {
-        qDebug() << "Failed to parse SPI document";
+        qCWarning(metadataManager) << "Failed to parse SPI document";
     }
 
     QDomElement docElem = xmldocument.documentElement();
     if ("serviceInformation" ==  docElem.tagName())
     {
-        //qDebug("%s", xmldocument.toString().toLocal8Bit().data());
-
         QDomNode node = docElem.firstChild();
         while (!node.isNull())
         {
@@ -68,7 +64,7 @@ void MetadataManager::processXML(const QString &xml)
             {
                 if (("services" == element.tagName()) || ("ensemble" == element.tagName()))
                 {
-                    qDebug() << "====> Service information" << element.tagName();
+                    qCDebug(metadataManager) << "====> Service information" << element.tagName();
 
                     QDomNode servicesNode = element.firstChild();
                     while (!servicesNode.isNull())
@@ -79,92 +75,10 @@ void MetadataManager::processXML(const QString &xml)
                             if ("service" == servicesElement.tagName())
                             {
                                 serviceInfo_t serviceInfo;
-#if 0
-
-                                QHash<QString, QString> mediaList;
-                                QDomNode serviceNode = servicesElement.firstChild();
-                                while (!serviceNode.isNull())
-                                {
-                                    QDomElement serviceElement = serviceNode.toElement(); // try to convert the node to an element
-                                    if (!serviceElement.isNull())
-                                    {
-                                        if (("shortName" == serviceElement.tagName()) ||
-                                            ("mediumName" == serviceElement.tagName()) ||
-                                            ("longName" == serviceElement.tagName()))
-                                        {
-                                            serviceInfo[serviceElement.tagName()] = serviceElement.text();
-                                        }
-                                        else if ("mediaDescription" == serviceElement.tagName())
-                                        {
-                                            QDomNode mediaDescNode = serviceElement.firstChild();
-                                            while (!mediaDescNode.isNull())
-                                            {
-                                                QDomElement mediaDescElement = mediaDescNode.toElement(); // try to convert the node to an element
-                                                if (!mediaDescElement.isNull())
-                                                {
-                                                    if (("shortDescription" == mediaDescElement.tagName()) ||
-                                                        ("longDescription" == mediaDescElement.tagName()))
-                                                    {
-                                                        serviceInfo[mediaDescElement.tagName()] = mediaDescElement.text();
-                                                    }
-                                                    else if ("multimedia" == mediaDescElement.tagName())
-                                                    {
-                                                        QString type = mediaDescElement.attribute("type");
-                                                        QString url = mediaDescElement.attribute("url");
-                                                        QString width = mediaDescElement.attribute("width");
-                                                        QString height = mediaDescElement.attribute("height");
-
-                                                        if ("logo_colour_square" == type)
-                                                        {
-                                                            width = height = "32";
-                                                        }
-                                                        else if ("logo_colour_rectangle" == type)
-                                                        {
-                                                            width = "112";
-                                                            height = "32";
-                                                        }
-
-                                                        QString ext = url.mid(url.lastIndexOf('.'), url.size()-1);
-                                                        QString filename = QString("%1x%2__######%3").arg(width, height, ext);
-                                                        qDebug() << url << "===>" << filename;
-
-                                                        emit getFile(url, filename);
-
-                                                    }
-                                                }
-                                                mediaDescNode = mediaDescNode.nextSibling();
-                                            }
-                                        }
-                                        else if ("bearer" == serviceElement.tagName())
-                                        {
-                                            QString bearer = serviceElement.attribute("id", "");
-                                            static const QRegularExpression sidRegex("dab:[a-f0-9]([a-f0-9]{2}).\\w{4}.(\\w{4}).*", QRegularExpression::CaseInsensitiveOption);
-                                            QRegularExpressionMatch match = sidRegex.match(bearer);
-                                            if (match.hasMatch())
-                                            {
-                                                //qDebug() << match.captured(1) << match.captured(2);
-                                                QString sidStr = match.captured(1) + match.captured(2);
-                                                bool ok;
-                                                uint32_t sidValue = sidStr.toInt(&ok, 16);
-                                                if (ok)
-                                                {
-                                                    sid = sidValue;
-                                                }
-                                                //qDebug("%X", sidStr.toInt(&ok, 16));
-                                            }
-                                        }
-                                    }
-                                    serviceNode = serviceNode.nextSibling();
-                                }
-
-                                qDebug() << "Service IDs:" << sid;
-                                qDebug() << serviceInfo;
-#else
                                 QString sidStr;
                                 QDomNodeList bearerList = servicesElement.elementsByTagName("bearer");
                                 for (int b = 0; b < bearerList.count(); ++b)
                                 {
-                                    //qDebug() << bearerList.at(b).toElement().attribute("id", "UNKNOWN BEARER");
                                     QDomElement bearerElement = bearerList.at(b).toElement(); // try to convert the node to an element
                                     if (!bearerElement.isNull())
                                     {
@@ -246,7 +160,7 @@ void MetadataManager::processXML(const QString &xml)
                                                                 ((widthVal == 32) && (heightVal == 32)))
                                                             {
                                                                 QString filename = QString("%1/%2x%3.%4").arg(sidStr, width, height, ext);
-                                                                qDebug() << url << "===>" << filename;
+                                                                qCDebug(metadataManager) << url << "===>" << filename;
 
                                                                 emit getFile(url, filename);
                                                             }
@@ -258,11 +172,8 @@ void MetadataManager::processXML(const QString &xml)
                                         }
                                         serviceNode = serviceNode.nextSibling();
                                     }
-                                    qDebug() << "Service IDs:" << sidStr;
-                                    qDebug() << serviceInfo;
                                     m_info.insert(sidStr, serviceInfo);
                                 }
-#endif
                             }
                         }
                         servicesNode = servicesNode.nextSibling();
@@ -279,7 +190,7 @@ void MetadataManager::processXML(const QString &xml)
 void MetadataManager::onFileReceived(const QByteArray & data, const QString & requestId)
 {
     QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/"+ requestId;
-    qDebug() << Q_FUNC_INFO << requestId << filename;
+    qCDebug(metadataManager) << requestId << filename;
 
     const QRegularExpression re("([0-9a-f]{6})\\.(\\d+)/(\\d+x\\d+)\\..*", QRegularExpression::CaseInsensitiveOption);
 
@@ -319,7 +230,7 @@ void MetadataManager::onFileReceived(const QByteArray & data, const QString & re
         }
         else
         {   /* do nothing, file is the same */
-            qDebug() << filename << "is the same";
+            qCDebug(metadataManager) << filename << "is the same";
         }
     }
     else
