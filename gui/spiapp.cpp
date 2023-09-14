@@ -32,8 +32,9 @@
 #include <QNetworkDiskCache>
 #include <QNetworkProxyFactory>
 #include <QLoggingCategory>
+#include <QJsonDocument>
 
-Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtInfoMsg)
+Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtDebugMsg)
 
 SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
 {
@@ -41,6 +42,7 @@ SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
     m_dnsLookup = nullptr;
     m_netAccessManager = nullptr;
     m_enaRadioDNS = true;
+    m_useDoH = false;
 }
 
 SPIApp::~SPIApp()
@@ -84,6 +86,14 @@ void SPIApp::start()
     QString directory = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1StringView("/cacheDir/");
     diskCache->setCacheDirectory(directory);
     m_netAccessManager->setCache(diskCache);
+
+    QNetworkProxyQuery npq(QUrl(QLatin1String("https://dns.google")));
+    QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+    foreach (QNetworkProxy p, listOfProxies) {
+        qDebug() << "Proxy hostname:" << p.hostName() << p.type();
+    }
+
+    QNetworkProxyFactory::setUseSystemConfiguration(true);
 
     m_downloadReqQueue.clear();
 
@@ -153,19 +163,27 @@ void SPIApp::onUserAppData(const RadioControlUserAppData & data)
 void SPIApp::onNewMOTDirectory()
 {
     if (m_decoder->getDirectoryId() == m_parsedDirectoryId)
-    {   // directory is already processed
+    {   // directory is already processed        
         return;
     }
 
     MOTObjectCache::const_iterator objIt;
+    bool dirIsComplete = true;
     for (objIt = m_decoder->directoryBegin(); objIt != m_decoder->directoryEnd(); ++objIt)
     {
         if (!objIt->isComplete())
         {   // object not complete ==> carousel not complete
-            return;
+            dirIsComplete = false;
+            qCDebug(spiApp, "Object %d is not complete", objIt->getId());
         }
         else { /* object is complete */ }
     }
+    if (!dirIsComplete) {
+        qCDebug(spiApp, "MOT directory is not complete");
+        return;
+    }
+
+    qCDebug(spiApp, "Processing MOT directory");
 
     for (objIt = m_decoder->directoryBegin(); objIt != m_decoder->directoryEnd(); ++objIt)
     {
@@ -1254,9 +1272,17 @@ void SPIApp::setAttribute_dabBearerURI(QDomElement &element, const QString &name
 
 void SPIApp::radioDNSLookup()
 {
-    m_dnsLookup->setType(QDnsLookup::CNAME);
-    m_dnsLookup->setName(getRadioDNSFQDN());
-    m_dnsLookup->lookup();
+    if (m_useDoH)
+    {   // DNS over http
+        QString cnameUrl = QString("https://dns.google/resolve?name=%1&type=CNAME").arg(getRadioDNSFQDN());
+        qDebug() << "DNS CNAME query:" << cnameUrl;
+        downloadFile(cnameUrl, "DOH_CNAME", false);
+    }
+    else {
+        m_dnsLookup->setType(QDnsLookup::CNAME);
+        m_dnsLookup->setName(getRadioDNSFQDN());
+        m_dnsLookup->lookup();
+    }
 }
 
 QString SPIApp::getRadioDNSFQDN() const
@@ -1302,13 +1328,17 @@ void SPIApp::handleRadioDNSLookup()
     }
 }
 
-void SPIApp::downloadFile(const QString &url, const QString &requestId)
+void SPIApp::downloadFile(const QString &url, const QString &requestId, bool useCache)
 {
+    qDebug() << Q_FUNC_INFO << url;
     if (m_downloadReqQueue.isEmpty()) {
         m_downloadReqQueue.enqueue({url, requestId});
 
         QNetworkRequest request;
-        request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache);
+        if (useCache)
+        {
+            request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache);
+        }
         request.setUrl(QUrl(url));
         m_netAccessManager->get(request);
     }
@@ -1319,11 +1349,61 @@ void SPIApp::downloadFile(const QString &url, const QString &requestId)
 }
 
 void SPIApp::onFileDownloaded(QNetworkReply *reply)
-{
+{    
     QString requestId = m_downloadReqQueue.head().second;
     if (requestId == "XML") {
         QByteArray data = reply->readAll();
         emit xmlDocument(QString(data));
+    }
+    else if (requestId == "DOH_CNAME")
+    {
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        qDebug() << qPrintable(jsonDoc.toJson());
+
+        QVariantMap map = jsonDoc.toVariant().toMap();
+        if (map.contains("Answer"))
+        {
+            QVariantList answer = map["Answer"].toList();
+            if (answer.length() > 0)
+            {
+                QString data = answer.at(0).toMap().value("data", QVariant("")).toString();
+                if (!data.isEmpty())
+                {
+                    if (data.endsWith('.'))
+                    {
+                        data = data.first(data.length()-1);
+                    }
+                    QString srvUrl = QString("https://dns.google/resolve?name=_radioepg._tcp.%1&type=SRV").arg(data);
+                    qDebug() << srvUrl;
+                    downloadFile(srvUrl, "DOH_SRV", false);
+                }
+            }
+        }
+    }
+    else if (requestId == "DOH_SRV")
+    {
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        qDebug() << qPrintable(jsonDoc.toJson());
+
+        QVariantMap map = jsonDoc.toVariant().toMap();
+        if (map.contains("Answer"))
+        {
+            QVariantList answer = map["Answer"].toList();
+            if (answer.length() > 0)
+            {
+                QString data = answer.at(0).toMap().value("data", QVariant("")).toString();
+                if (!data.isEmpty())
+                {
+                    static const QRegularExpression re("[\\d\\s]+\\s+(.*\\w)\\.?");
+                    QRegularExpressionMatch match = re.match(data);
+                    if (match.hasMatch())
+                    {
+                        downloadFile(QString("http://%1/radiodns/spi/3.1/SI.xml").arg(match.captured(1)), "XML");
+                    }
+                }
+            }
+        }
+
     }
     else
     {   // logo

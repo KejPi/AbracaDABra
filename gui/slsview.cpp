@@ -268,7 +268,7 @@ void SLSView::showStationLogo(const QPixmap & logo)
     {
         displayPixmap(logo);
 
-        setToolTip("");
+        setToolTip(tr("Station logo"));
         m_isShowingSlide = true;
     }
 }

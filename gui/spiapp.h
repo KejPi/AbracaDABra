@@ -95,6 +95,7 @@ private:
 
     // RadioDNS
     bool m_enaRadioDNS;
+    bool m_useDoH;
     QString m_gcc;
     QString m_eid;
     QString m_sid;
@@ -107,7 +108,7 @@ private:
     QString getRadioDNSFQDN() const;
     QString getGCC(const DabSId & sid) const;
     void handleRadioDNSLookup();
-    void downloadFile(const QString &url, const QString &requestId);
+    void downloadFile(const QString &url, const QString &requestId, bool useCache = true);
     void onFileDownloaded(QNetworkReply *reply);
 };
 
