@@ -239,6 +239,7 @@ struct RadioControlDataDL
 struct RadioControlUserAppData
 {
     dabsdrDecoderId_t id;
+    uint16_t SCId;
     DabUserApplicationType userAppType;
     QByteArray data;
 };
@@ -465,7 +466,7 @@ private:
     void dabServiceStop(uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t decoderId) { dabsdrRequest_ServiceStop(m_dabsdrHandle, SId, SCIdS, decoderId); }
     void dabXPadAppStart(uint8_t appType, bool start, dabsdrDecoderId_t decoderId) { dabsdrRequest_XPadAppStart(m_dabsdrHandle, appType, start, decoderId); }
 
-    // wrappers unsed in callback functions (emit requires class instance)
+    // wrappers used in callback functions (emit requires class instance)
     void emit_dabEvent(RadioControlEvent * pEvent) { emit dabEvent(pEvent); }
     void emit_audioData(RadioControlAudioData * pData) { emit audioData(pData); }
     void emit_announcementAudioAvailable() { emit announcementAudioAvailable(); }

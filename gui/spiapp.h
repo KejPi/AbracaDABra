@@ -60,11 +60,14 @@ public:
     void onUserAppData(const RadioControlUserAppData & data) override;
     void onNewMOTDirectory();
     void onFileRequest(const QString & url, const QString & requestId);
+    void onSettingsChanged(bool useInternet, bool enaRadioDNS) { m_useInternet = useInternet; m_enaRadioDNS = enaRadioDNS; }
     void start() override;
     void stop() override;
     void restart() override;
+    void reset() override;
 
     // RadioDNS
+    void useInternet(bool ena) { m_useInternet = ena; }
     void enableRadioDNS(bool ena) { m_enaRadioDNS = ena; }
     void onEnsembleInformation(const RadioControlEnsemble & ens);
     void onAudioServiceSelection(const RadioControlServiceComponent & s);
@@ -73,8 +76,7 @@ signals:
     void xmlDocument(const QString &xmldocument);
     void requestedFile(const QByteArray &data, const QString &requestId);
 private:
-    MOTDecoder * m_decoder;
-
+    QHash<uint16_t, MOTDecoder *> m_decoderMap;
     void parseBinaryInfo(const MOTObject & motObj);
     uint32_t parseTag(const uint8_t * dataPtr, QDomElement & parentElement, uint8_t parentTag, int maxSize);
     const uint8_t * parseAttributes(const uint8_t * attrPtr, uint8_t tag, int maxSize);
@@ -94,6 +96,7 @@ private:
     uint_fast32_t m_parsedDirectoryId;
 
     // RadioDNS
+    bool m_useInternet;
     bool m_enaRadioDNS;
     bool m_useDoH;
     QString m_gcc;

@@ -43,8 +43,8 @@ public:
     virtual void onUserAppData(const RadioControlUserAppData & data) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
-    virtual void restart() = 0;    
-
+    virtual void restart() = 0;
+    virtual void reset() { stop(); }
 signals:
     void resetTerminal();
 

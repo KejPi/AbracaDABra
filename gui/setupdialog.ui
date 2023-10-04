@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>465</width>
-    <height>402</height>
+    <width>462</width>
+    <height>546</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -35,7 +35,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -1113,6 +1113,32 @@
            <widget class="QCheckBox" name="xmlHeaderCheckBox">
             <property name="text">
              <string>Include XML header</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="spiAppGroupBox">
+         <property name="title">
+          <string>SPI Application</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <item>
+           <widget class="QCheckBox" name="internetCheckBox">
+            <property name="text">
+             <string>Use internet connection</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="radioDNSCheckBox">
+            <property name="toolTip">
+             <string>Use RadioDNS to retrieve SPI. This option requires internet connection.</string>
+            </property>
+            <property name="text">
+             <string>RadioDNS</string>
             </property>
            </widget>
           </item>

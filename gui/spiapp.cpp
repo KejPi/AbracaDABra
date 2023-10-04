@@ -38,19 +38,26 @@ Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtDebugMsg)
 
 SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
 {
-    m_decoder = nullptr;
+    //m_decoder = nullptr;
     m_dnsLookup = nullptr;
     m_netAccessManager = nullptr;
-    m_enaRadioDNS = true;
+    m_useInternet = false;
+    m_enaRadioDNS = false;    
     m_useDoH = false;
 }
 
 SPIApp::~SPIApp()
 {
-    if (nullptr != m_decoder)
+//    if (nullptr != m_decoder)
+//    {
+//        delete m_decoder;
+//    }
+    // delete all decoders
+    for (const auto & decoder : m_decoderMap)
     {
-        delete m_decoder;
+        delete decoder;
     }
+    m_decoderMap.clear();
     if (nullptr != m_dnsLookup)
     {
         delete m_dnsLookup;
@@ -70,22 +77,28 @@ void SPIApp::start()
     else
     { /* not running */ }
 
-    // create new decoder
-    m_decoder = new MOTDecoder();
-    connect(m_decoder, &MOTDecoder::newMOTObject, this, &SPIApp::onNewMOTObject);
-    connect(m_decoder, &MOTDecoder::newMOTDirectory, this, &SPIApp::onNewMOTDirectory);
+//    // create new decoder
+//    m_decoder = new MOTDecoder();
+//    connect(m_decoder, &MOTDecoder::newMOTObject, this, &SPIApp::onNewMOTObject);
+//    connect(m_decoder, &MOTDecoder::newMOTDirectory, this, &SPIApp::onNewMOTDirectory);
 
-    m_dnsLookup = new QDnsLookup();
-    connect(m_dnsLookup, &QDnsLookup::finished, this, &SPIApp::handleRadioDNSLookup);
+    if (nullptr == m_dnsLookup)
+    {
+        m_dnsLookup = new QDnsLookup();
+        connect(m_dnsLookup, &QDnsLookup::finished, this, &SPIApp::handleRadioDNSLookup);
+    }
 
-    m_netAccessManager = new QNetworkAccessManager();
-    QNetworkProxyFactory::setUseSystemConfiguration(true);
-    connect(m_netAccessManager, &QNetworkAccessManager::finished, this, &SPIApp::onFileDownloaded);
+    if (nullptr == m_netAccessManager)
+    {
+        m_netAccessManager = new QNetworkAccessManager();
+        QNetworkProxyFactory::setUseSystemConfiguration(true);
+        connect(m_netAccessManager, &QNetworkAccessManager::finished, this, &SPIApp::onFileDownloaded);
 
-    QNetworkDiskCache *diskCache = new QNetworkDiskCache(this);
-    QString directory = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1StringView("/cacheDir/");
-    diskCache->setCacheDirectory(directory);
-    m_netAccessManager->setCache(diskCache);
+        QNetworkDiskCache *diskCache = new QNetworkDiskCache(this);
+        QString directory = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1StringView("/cacheDir/");
+        diskCache->setCacheDirectory(directory);
+        m_netAccessManager->setCache(diskCache);
+    }
 
     QNetworkProxyQuery npq(QUrl(QLatin1String("https://dns.google")));
     QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
@@ -103,31 +116,44 @@ void SPIApp::start()
 
 void SPIApp::stop()
 {
-    if (nullptr != m_decoder)
+    // get XPAD application decoder (SCID == 0xFFFF)
+    MOTDecoder * decoderPtr = m_decoderMap.value(0xFFFF, nullptr);
+    if (nullptr != decoderPtr)
     {
-        delete m_decoder;
-        m_decoder = nullptr;
+        delete decoderPtr;
+        m_decoderMap.remove(0xFFFF);
     }
-    if (nullptr != m_dnsLookup)
-    {
-        delete m_dnsLookup;
-        m_dnsLookup = nullptr;
-    }
-    if (nullptr != m_netAccessManager)
-    {
-        delete m_netAccessManager;
-        m_netAccessManager = nullptr;
-    }
+//    if (nullptr != m_dnsLookup)
+//    {
+//        delete m_dnsLookup;
+//        m_dnsLookup = nullptr;
+//    }
+//    if (nullptr != m_netAccessManager)
+//    {
+//        delete m_netAccessManager;
+//        m_netAccessManager = nullptr;
+//    }
     m_isRunning = false;
-
-    // ask HMI to clear data
-    emit resetTerminal();
 }
 
 void SPIApp::restart()
 {
     stop();
     start();
+}
+
+void SPIApp::reset()
+{
+    qDebug() << Q_FUNC_INFO;
+    // delete all decoders
+    for (const auto & decoder : m_decoderMap)
+    {
+        delete decoder;
+    }
+    m_decoderMap.clear();
+
+    // ask HMI to clear data
+    emit resetTerminal();
 }
 
 void SPIApp::onEnsembleInformation(const RadioControlEnsemble &ens)
@@ -141,7 +167,7 @@ void SPIApp::onAudioServiceSelection(const RadioControlServiceComponent &s)
     m_scids = QString("%1").arg(s.SCIdS);
     m_gcc = getGCC(s.SId);
 
-    if (m_enaRadioDNS)
+    if (m_useInternet && m_enaRadioDNS)
     {   // query RadioDNS
         radioDNSLookup();
     }
@@ -152,9 +178,20 @@ void SPIApp::onUserAppData(const RadioControlUserAppData & data)
     if ((DabUserApplicationType::SPI == data.userAppType) && (m_isRunning))
     {
         // application is running and user application type matches
-        // data is for this application
+        MOTDecoder * decoderPtr = m_decoderMap.value(data.SCId, nullptr);
+        if (nullptr == decoderPtr)
+        {   // we do not have decoder for this channel
+            // create new decoder
+            decoderPtr = new MOTDecoder(this);
+            connect(decoderPtr, &MOTDecoder::newMOTObject, this, &SPIApp::onNewMOTObject);
+            connect(decoderPtr, &MOTDecoder::newMOTDirectory, this, &SPIApp::onNewMOTDirectory);
+            m_decoderMap[data.SCId] = decoderPtr;
+
+            qDebug() << "Adding MOT decoder for SCID" << data.SCId;
+        }
+
         // send data to decoder
-        m_decoder->newDataGroup(data.data);
+        decoderPtr->newDataGroup(data.data);
     }
     else
     { /* do nothing */ }
@@ -162,102 +199,115 @@ void SPIApp::onUserAppData(const RadioControlUserAppData & data)
 
 void SPIApp::onNewMOTDirectory()
 {
-    if (m_decoder->getDirectoryId() == m_parsedDirectoryId)
+    MOTDecoder * decoderPtr = dynamic_cast<MOTDecoder *>(QObject::sender());
+    Q_ASSERT(decoderPtr != nullptr);
+
+    if (decoderPtr->getDirectoryId() == m_parsedDirectoryId)
     {   // directory is already processed        
         return;
     }
 
     MOTObjectCache::const_iterator objIt;
     bool dirIsComplete = true;
-    for (objIt = m_decoder->directoryBegin(); objIt != m_decoder->directoryEnd(); ++objIt)
+    for (objIt = decoderPtr->directoryBegin(); objIt != decoderPtr->directoryEnd(); ++objIt)
     {
         if (!objIt->isComplete())
         {   // object not complete ==> carousel not complete
             dirIsComplete = false;
             qCDebug(spiApp, "Object %d is not complete", objIt->getId());
         }
-        else { /* object is complete */ }
+        else { /* object is complete */
+            qCDebug(spiApp, "Object %d is complete: %s", objIt->getId(), objIt->getContentName().toLocal8Bit().data());
+        }
     }
     if (!dirIsComplete) {
         qCDebug(spiApp, "MOT directory is not complete");
-        return;
+        // return;
     }
 
     qCDebug(spiApp, "Processing MOT directory");
 
-    for (objIt = m_decoder->directoryBegin(); objIt != m_decoder->directoryEnd(); ++objIt)
+    for (objIt = decoderPtr->directoryBegin(); objIt != decoderPtr->directoryEnd(); ++objIt)
     {
-        switch (objIt->getContentType())
+        if (objIt->isComplete())
         {
+            switch (objIt->getContentType())
+            {
 #if 0  // storing of images
-        case 2:
-        {
-            // logos
-            switch (objIt->getContentSubType())
-            {
-            case 1:
-                qCDebug(spiApp) << "Image / JFIF (JPEG)" << objIt->getContentName();
-                break;
-            case 3:
-            {
-                qCDebug(spiApp) << "Image / PNG" << objIt->getContentName();
-                QSaveFile file(objIt->getContentName());
-                file.open(QIODevice::WriteOnly);
-                file.write(objIt->getBody());
-                file.commit();
-            }
-                break;
-            default:
-                qCDebug(spiApp) << "Image /" <<objIt->getContentSubType() << "not supported by SPI application";
-                return;
-            }
-        }
-            break;
-#endif
-        case 7:
-        {   // SPI content type/subtype values
-            switch (objIt->getContentSubType())
-            {
-            case 0:
-                qCDebug(spiApp) << "\tService Information" << objIt->getContentName();
-                parseBinaryInfo(*objIt);
-                break;
-            case 1:
-                qCDebug(spiApp) << "\tProgramme Information" << objIt->getContentName();
-                parseBinaryInfo(*objIt);
-                break;
             case 2:
-                qCDebug(spiApp) << "\tGroup Information" << objIt->getContentName();
-                parseBinaryInfo(*objIt);
-                break;
-            default:
-                // not supported
-                continue;
+            {
+                // logos
+                switch (objIt->getContentSubType())
+                {
+                case 1:
+                    qCDebug(spiApp) << "Image / JFIF (JPEG)" << objIt->getContentName();
+                    break;
+                case 3:
+                {
+                    qCDebug(spiApp) << "Image / PNG" << objIt->getContentName();
+                    QSaveFile file(objIt->getContentName());
+                    file.open(QIODevice::WriteOnly);
+                    file.write(objIt->getBody());
+                    file.commit();
+                }
+                    break;
+                default:
+                    qCDebug(spiApp) << "Image /" <<objIt->getContentSubType() << "not supported by SPI application";
+                    return;
+                }
             }
-        }
-        break;
+                break;
+#endif
+            case 7:
+            {   // SPI content type/subtype values
+                switch (objIt->getContentSubType())
+                {
+                case 0:
+                    qCDebug(spiApp) << "\tService Information" << objIt->getContentName();
+                    parseBinaryInfo(*objIt);
+                    break;                    
+                case 1:
+                    qCDebug(spiApp) << "\tProgramme Information" << objIt->getContentName();
+                    // parseBinaryInfo(*objIt);
+                    break;
+                case 2:
+                    qCDebug(spiApp) << "\tGroup Information" << objIt->getContentName();
+                    // parseBinaryInfo(*objIt);
+                    break;
+                default:
+                    // not supported
+                    continue;
+                }
+            }
+            break;
+            }
         }
     }
 
-    m_parsedDirectoryId = m_decoder->getDirectoryId();
+    if (dirIsComplete)
+    {
+        m_parsedDirectoryId = decoderPtr->getDirectoryId();
+    }
 }
 
 void SPIApp::onFileRequest(const QString &url, const QString &requestId)
 {
     QString filename = url.mid(url.lastIndexOf('/')+1, url.size());
-    if (m_decoder->hasDirectory())
+    for (const auto & decoder : m_decoderMap)
     {
-        const auto it = m_decoder->find(filename);
-        if (it != m_decoder->directoryEnd())
+        if (decoder->hasDirectory())
         {
-            emit requestedFile(it->getBody(), requestId);
-        }
-        else
-        {   // not found -> try to download it
-            downloadFile(url, requestId);
+            const auto it = decoder->find(filename);
+            if (it != decoder->directoryEnd() && it->isComplete())
+            {
+                emit requestedFile(it->getBody(), requestId);
+                return;
+            }
         }
     }
-    else
+
+    // not found -> try to download it
+    if (QUrl(url).isValid())
     {
         downloadFile(url, requestId);
     }
@@ -1331,6 +1381,11 @@ void SPIApp::handleRadioDNSLookup()
 void SPIApp::downloadFile(const QString &url, const QString &requestId, bool useCache)
 {
     qDebug() << Q_FUNC_INFO << url;
+    if (!m_useInternet)
+    {   // do nothing, internet connection is not enabled
+        return;
+    }
+
     if (m_downloadReqQueue.isEmpty()) {
         m_downloadReqQueue.enqueue({url, requestId});
 

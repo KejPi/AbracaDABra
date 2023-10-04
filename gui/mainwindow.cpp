@@ -595,6 +595,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::userAppData_Announcement, m_slideShowApp[Instance::Announcement], &SlideShowApp::onUserAppData);
     connect(m_slideShowApp[Instance::Announcement], &SlideShowApp::currentSlide, ui->slsView_Announcement, &SLSView::showSlide, Qt::QueuedConnection);
     connect(m_slideShowApp[Instance::Announcement], &SlideShowApp::resetTerminal, ui->slsView_Announcement, &SLSView::reset, Qt::QueuedConnection);
+    //connect(m_radioControl, &RadioControl::announcement, ui->slsView_Service, &SLSView::showAnnouncement, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::announcement, ui->slsView_Announcement, &SLSView::showAnnouncement, Qt::QueuedConnection);
     connect(this, &MainWindow::stopUserApps, m_slideShowApp[Instance::Announcement], &SlideShowApp::stop, Qt::QueuedConnection);
 
@@ -609,9 +610,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 #if RADIO_CONTROL_SPI_ENABLE
 
 #warning "Remove automatic creation of SPI app"
-    // slide show application is created by default
-    // ETSI TS 101 499 V3.1.1  [5.1.1]
-    // The application should be automatically started when a SlideShow service is discovered for the current radio service
     m_spiApp = new SPIApp();
     m_spiApp->moveToThread(m_radioControlThread);
     connect(m_radioControlThread, &QThread::finished, m_spiApp, &QObject::deleteLater);
@@ -620,10 +618,13 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::ensembleInformation, m_spiApp, &SPIApp::onEnsembleInformation);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &SPIApp::onAudioServiceSelection);
     connect(this, &MainWindow::stopUserApps, m_spiApp, &SPIApp::stop, Qt::QueuedConnection);
+    connect(this, &MainWindow::resetUserApps, m_spiApp, &SPIApp::reset, Qt::QueuedConnection);
 
     connect(m_spiApp, &SPIApp::xmlDocument, m_metadataManager, &MetadataManager::processXML, Qt::QueuedConnection);
     connect(m_metadataManager, &MetadataManager::getFile, m_spiApp, &SPIApp::onFileRequest, Qt::QueuedConnection);
     connect(m_spiApp, &SPIApp::requestedFile, m_metadataManager, &MetadataManager::onFileReceived, Qt::QueuedConnection);
+    connect(m_setupDialog, &SetupDialog::spiApplicationSettingsChanged, m_spiApp, &SPIApp::onSettingsChanged, Qt::QueuedConnection);
+
 #endif
 
     // input device connections
@@ -760,7 +761,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
 
         m_exitRequested = true;
-        emit stopUserApps();
+        emit resetUserApps();
         emit serviceRequest(0,0,0);
         event->ignore();
     }
@@ -830,7 +831,7 @@ void MainWindow::onServiceListComplete(const RadioControlEnsemble &ens)
 
 void MainWindow::onEnsembleRemoved(const RadioControlEnsemble &ens)
 {
-    emit stopUserApps();
+    emit resetUserApps();
 
     m_dlDecoder[Instance::Service]->reset();
     m_dlDecoder[Instance::Announcement]->reset();
@@ -1193,10 +1194,12 @@ void MainWindow::onTuneDone(uint32_t freq)
         {
             ui->switchSourceLabel->setVisible(true);
         }
+
+        emit resetUserApps();  // new channel -> reset user apps
     }
     else
     {
-        // this can only happen when device is changed, or ehen exit is requested
+        // this can only happen when device is changed, or when exit is requested
         if (m_exitRequested)
         {   // processing in IDLE, close window
             close();
@@ -2208,6 +2211,8 @@ void MainWindow::loadSettings()
     s.bringWindowToForeground = settings->value("bringWindowToForegroundOnAlarm", true).toBool();
     s.noiseConcealmentLevel = settings->value("noiseConcealment", 0).toInt();
     s.xmlHeaderEna = settings->value("rawFileXmlHeader", true).toBool();
+    s.useInternet = settings->value("useInternet", true).toBool();
+    s.radioDnsEna = settings->value("radioDNS", true).toBool();
 
     s.rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
     s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
@@ -2369,6 +2374,8 @@ void MainWindow::saveSettings()
     settings->setValue("language", QLocale::languageToCode(s.lang));
     settings->setValue("noiseConcealment", s.noiseConcealmentLevel);
     settings->setValue("rawFileXmlHeader", s.xmlHeaderEna);
+    settings->setValue("useInternet", s.useInternet);
+    settings->setValue("radioDNS", s.radioDnsEna);
 
     settings->setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
     settings->setValue("RTL-SDR/gainMode", static_cast<int>(s.rtlsdr.gainMode));

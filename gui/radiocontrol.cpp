@@ -45,11 +45,6 @@ const uint8_t RadioControl::EEPCoderate[] =
 };
 
 
-void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx);
-void dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx);
-void dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx);
-void audioDataCb(dabsdrAudioCBData_t * p, void * ctx);
-
 RadioControl::RadioControl(QObject *parent) : QObject(parent)
 {
     m_dabsdrHandle = nullptr;
@@ -361,7 +356,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::USERAPP_DATA:
     {
-        qCDebug(radioControl) << "RadioControlEvent::DATAGROUP_MSC" << pEvent->pUserAppData->id;
+        qCDebug(radioControl) << "RadioControlEvent::DATAGROUP_MSC" << pEvent->pUserAppData->SCId;
 
         switch (pEvent->pUserAppData->id)
         {
@@ -559,7 +554,6 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
             dabXPadAppStart(uaIt->xpadData.xpadAppTy, 1, DABSDR_ID_AUDIO_PRIMARY);
             return;
         }
-
         // not found in XPAD - try secondary data services
         serviceIterator serviceIt = m_serviceList.find(m_currentService.SId);
         for (auto & sc : serviceIt->serviceComponents)
@@ -2032,6 +2026,7 @@ void RadioControl::dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx)
     RadioControlUserAppData * pData = new RadioControlUserAppData;
     pData->userAppType = DabUserApplicationType(p->userAppType);
     pData->id = p->id;
+    pData->SCId = p->SCId;
     // copy data to QByteArray
     pData->data = QByteArray((const char *)p->pDgData, p->dgLen);
 

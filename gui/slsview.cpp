@@ -70,8 +70,7 @@ void SLSView::reset()
 
 void SLSView::showAnnouncement(DabAnnouncement id)
 {
-    QPixmap pic;
-
+    QPixmap pic;   
     if (DabAnnouncement::Undefined == id)
     {
         pic = getLogo();

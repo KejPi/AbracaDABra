@@ -104,6 +104,8 @@ public:
         bool dlPlusEna;
         int noiseConcealmentLevel;
         bool xmlHeaderEna;
+        bool useInternet;
+        bool radioDnsEna;
     };
 
     SetupDialog(QWidget *parent = nullptr);
@@ -125,6 +127,7 @@ signals:
     void applicationStyleChanged(ApplicationStyle style);
     void noiseConcealmentLevelChanged(int level);
     void xmlHeaderToggled(bool enabled);
+    void spiApplicationSettingsChanged(bool useInterent, bool enaRadioDNS);
 protected:
     void showEvent(QShowEvent *event);
 
@@ -178,6 +181,8 @@ private:
     void onNoiseLevelChanged(int index);    
     void onXmlHeaderChecked(bool checked);
     void onRawFileProgressChanged(int val);
+    void onUseInternetChecked(bool checked);
+    void onRadioDnsChecked(bool checked);
 
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);
