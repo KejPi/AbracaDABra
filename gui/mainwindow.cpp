@@ -97,7 +97,7 @@ enum class SNR10Threhold
 
 struct LogToModelData
 {
-    QAbstractItemModel * model;
+    LogModel * model;
 };
 Q_GLOBAL_STATIC(LogToModelData, logToModelData)
 
@@ -124,16 +124,16 @@ void logToModelHandler(QtMsgType type, const QMessageLogContext &context, const 
         break;
     }
 
-    auto row = logToModelData->model->rowCount();
-    logToModelData->model->insertRow(row);
-    logToModelData->model->setData(logToModelData->model->index(row, 0), txt, type);
+    QMetaObject::invokeMethod(logToModelData->model, "appendRow", Qt::QueuedConnection,
+                              Q_ARG(QString, txt),
+                              Q_ARG(int, type));
 
     std::cerr << txt.toStdString() << std::endl;
 }
 
 void logToModel(QAbstractItemModel *model)
 {
-    logToModelData->model = model;
+    logToModelData->model = dynamic_cast<LogModel *>(model);
     qInstallMessageHandler(logToModelHandler);
 }
 

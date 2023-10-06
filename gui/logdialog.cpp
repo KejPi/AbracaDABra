@@ -119,6 +119,14 @@ bool LogModel::removeRows(int position, int rows, const QModelIndex &index)
     return true;
 }
 
+void LogModel::appendRow(const QString & rowTxt, int role)
+{
+    int row = rowCount();
+    insertRow(row);
+    setData(index(row, 0), rowTxt, role);
+
+}
+
 LogDialog::LogDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::LogDialog)

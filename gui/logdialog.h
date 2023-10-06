@@ -12,6 +12,7 @@ class LogDialog;
 
 class LogModel : public QAbstractListModel
 {
+    Q_OBJECT
 public:
     LogModel(QObject *parent = nullptr) : m_isDarkMode(false), QAbstractListModel(parent) {}
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -20,6 +21,7 @@ public:
     bool insertRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
     void setupDarkMode(bool darkModeEna) { m_isDarkMode = darkModeEna; }
+    Q_INVOKABLE void appendRow(const QString & rowTxt, int role);
 
 private:
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
