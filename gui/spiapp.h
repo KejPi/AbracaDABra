@@ -93,7 +93,7 @@ private:
 
     QHash<uint8_t, QString> m_tokenTable;
     QDomDocument m_xmldocument;
-    uint_fast32_t m_parsedDirectoryId;
+    QHash<uint16_t, int_fast32_t> m_parsedDirectoryIds;
 
     // RadioDNS
     bool m_useInternet;

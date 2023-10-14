@@ -339,7 +339,7 @@ public:
     void exit();
     void tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS);
     void getEnsembleConfiguration();
-    void startUserApplication(DabUserApplicationType uaType, bool start);
+    void startUserApplication(DabUserApplicationType uaType, bool start, bool singleChannel = true);
     uint32_t getEnsembleUEID() const { return m_ensemble.ueid; }
     void onAudioOutputRestart();
     void setupAnnouncements(uint16_t enaFlags);

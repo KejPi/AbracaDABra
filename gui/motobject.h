@@ -137,9 +137,10 @@ public:
     bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
     void addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
     uint_fast32_t getTransportId() const { return m_id; }
+    int size() const { return m_carousel->size(); }
     MOTObjectCache::const_iterator begin() const { return  m_carousel->cbegin(); }
     MOTObjectCache::const_iterator end() const { return  m_carousel->cend(); }
-    MOTObjectCache::const_iterator cfind(uint16_t transportId) const { return  m_carousel->cfindMotObj(transportId); }
+    MOTObjectCache::const_iterator cfind(uint16_t transportId) const { return  m_carousel->cfindMotObj(transportId); }    
 private:
     uint_fast32_t m_id;
     MOTEntity m_dir;

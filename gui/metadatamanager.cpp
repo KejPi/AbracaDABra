@@ -53,7 +53,7 @@ void MetadataManager::processXML(const QString &xml)
         qCWarning(metadataManager) << "Failed to parse SPI document";
     }
 
-    qDebug() << qPrintable(xmldocument.toString());
+    qCDebug(metadataManager) << qPrintable(xmldocument.toString());
 
     QDomElement docElem = xmldocument.documentElement();
     if ("serviceInformation" ==  docElem.tagName())

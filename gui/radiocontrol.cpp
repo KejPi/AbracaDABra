@@ -541,7 +541,7 @@ void RadioControl::getEnsembleConfiguration()
     emit ensembleConfiguration(ensembleConfigurationString());
 }
 
-void RadioControl::startUserApplication(DabUserApplicationType uaType, bool start)
+void RadioControl::startUserApplication(DabUserApplicationType uaType, bool start, bool singleChannel)
 {
     serviceComponentConstIterator scIt;
     if (cgetCurrentAudioServiceComponent(scIt))
@@ -552,7 +552,10 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
         {
             qCInfo(radioControl, "Starting user application '%s' from XPAD.", DabTables::getUserApplicationName(uaType).toLocal8Bit().data());
             dabXPadAppStart(uaIt->xpadData.xpadAppTy, 1, DABSDR_ID_AUDIO_PRIMARY);
-            return;
+            if (singleChannel)
+            {
+                return;
+            }
         }
         // not found in XPAD - try secondary data services
         serviceIterator serviceIt = m_serviceList.find(m_currentService.SId);
@@ -574,17 +577,17 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
                     {
                         dabServiceStop(sc.SId.value(), sc.SCIdS, DABSDR_ID_DATA);
                     }
-                    return;
+                    if (singleChannel) {
+                        return;
+                    }
                 }
             }
         }
 
-        // TODO: not found - try ensemble
-        // #warning "Debug - remove or make implementation clean"
         for (auto & service : m_serviceList)
         {
-            if (!service.SId.isProgServiceId())
-            {   // data service
+            if ((service.SId.value() != m_currentService.SId) && !service.SId.isProgServiceId())
+            {   // not current service and data service
                 for (auto & sc : service.serviceComponents)
                 {
                     if (!sc.isAudioService())
@@ -603,7 +606,9 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
                             {
                                 dabServiceStop(sc.SId.value(), sc.SCIdS, DABSDR_ID_DATA);
                             }
-                            return;
+                            if (singleChannel) {
+                                return;
+                            }
                         }
                     }
                 }
@@ -1226,11 +1231,10 @@ void RadioControl::eventHandler_userAppList(RadioControlEvent *pEvent)
             // enable SLS automatically - if available
             startUserApplication(DabUserApplicationType::SlideShow, true);
 
-//#warning "Remove automatic Journaline - this is for debug only"
-//                        startUserApplication(DabUserApplicationType::Journaline, true);
+            //#warning "Remove automatic Journaline - this is for debug only"
+            // startUserApplication(DabUserApplicationType::Journaline, true);
 #if RADIO_CONTROL_SPI_ENABLE
-#warning "Remove automatic SPI - this is for debug only"
-            startUserApplication(DabUserApplicationType::SPI, true);
+            startUserApplication(DabUserApplicationType::SPI, true, false);
 #endif
             //#warning "Remove automatic TPEG - this is for debug only"
             //startUserApplication(DabUserApplicationType::TPEG, true);
