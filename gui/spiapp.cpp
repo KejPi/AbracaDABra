@@ -34,7 +34,7 @@
 #include <QLoggingCategory>
 #include <QJsonDocument>
 
-Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtInfoMsg)
+Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtDebugMsg)
 
 SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
 {
@@ -218,25 +218,29 @@ void SPIApp::onNewMOTDirectory()
     }
 
     MOTObjectCache::const_iterator objIt;
-    bool dirIsComplete = true;
+    int incompleteObjCount = 0;
     for (objIt = decoderPtr->directoryBegin(); objIt != decoderPtr->directoryEnd(); ++objIt)
     {
         if (!objIt->isComplete())
         {   // object not complete ==> carousel not complete
-            dirIsComplete = false;
-            qCDebug(spiApp, "%d: Object %d is not complete", decoderId, objIt->getId());
+            incompleteObjCount += 1;
+            // qCDebug(spiApp, "%d: Object %d is not complete", decoderId, objIt->getId());
         }
         else { /* object is complete */
             // qCDebug(spiApp, "%d: Object %d is complete: %s", decoderId, objIt->getId(), objIt->getContentName().toLocal8Bit().data());
         }
     }
-    if (!dirIsComplete) {
-        qCDebug(spiApp, "%d: MOT directory NOT complete", decoderId);
-        // return;
+    if (incompleteObjCount != 0) {
+        qCDebug(spiApp, "%d: MOT directory NOT complete (missing %d / %d)", decoderId, incompleteObjCount, decoderPtr->size());
+        return;
     }
     else
     {
         qCInfo(spiApp, "%d: MOT directory complete", decoderId);
+        for (objIt = decoderPtr->directoryBegin(); objIt != decoderPtr->directoryEnd(); ++objIt)
+        {
+            qCDebug(spiApp, "%d:     Object %d -> %s", decoderId, objIt->getId(), objIt->getContentName().toLocal8Bit().data());
+        }
     }
 
     qCDebug(spiApp, "%d: Processing MOT directory", decoderId);
@@ -281,12 +285,12 @@ void SPIApp::onNewMOTDirectory()
                     parseBinaryInfo(*objIt);
                     break;                    
                 case 1:
-                    //qCDebug(spiApp) << "\tProgramme Information" << objIt->getContentName();
-                    // parseBinaryInfo(*objIt);
+                    qCDebug(spiApp) << "\tProgramme Information" << objIt->getContentName();
+                    parseBinaryInfo(*objIt);
                     break;
                 case 2:
-                    //qCDebug(spiApp) << "\tGroup Information" << objIt->getContentName();
-                    // parseBinaryInfo(*objIt);
+                    qCDebug(spiApp) << "\tGroup Information" << objIt->getContentName();
+                    parseBinaryInfo(*objIt);
                     break;
                 default:
                     // not supported
@@ -298,7 +302,7 @@ void SPIApp::onNewMOTDirectory()
         }
     }
 
-    if (dirIsComplete)
+    if (incompleteObjCount == 0)
     {
         m_parsedDirectoryIds[decoderId] = decoderPtr->getDirectoryId();
     }

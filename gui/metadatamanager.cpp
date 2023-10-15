@@ -37,7 +37,7 @@
 #include "metadatamanager.h"
 
 
-Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtInfoMsg)
+Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtDebugMsg)
 
 MetadataManager::MetadataManager(QObject *parent)
     : QObject(parent)
@@ -99,7 +99,6 @@ void MetadataManager::processXML(const QString &xml)
                                             serviceInfo["mediumName"] = mediumName;
                                             QString longName = servicesElement.attribute("longName");
                                             serviceInfo["longName"] = mediumName;
-
                                         }
                                     }
                                 }
@@ -223,11 +222,11 @@ void MetadataManager::onFileReceived(const QByteArray & data, const QString & re
                 uint32_t sid = match.captured(1).toUInt(nullptr, 16);
                 uint8_t scids = match.captured(2).toUInt();
                 QString size = match.captured(3);
-                StationLogoRole role = StationLogoRole::SLSLogo;
+                MetadataRole role = MetadataRole::SLSLogo;
                 if (size == "32x32") {
-                    role = StationLogoRole::SmallLogo;
+                    role = MetadataRole::SmallLogo;
                 }
-                emit logoUpdated(sid, scids, role);
+                emit dataUpdated(sid, scids, role);
             }
         }
         else
@@ -247,18 +246,17 @@ void MetadataManager::onFileReceived(const QByteArray & data, const QString & re
             uint32_t sid = match.captured(1).toUInt(nullptr, 16);
             uint8_t scids = match.captured(2).toUInt();
             QString size = match.captured(3);
-            StationLogoRole role = StationLogoRole::SLSLogo;
+            MetadataRole role = MetadataRole::SLSLogo;
             if (size == "32x32") {
-                role = StationLogoRole::SmallLogo;
+                role = MetadataRole::SmallLogo;
             }
-            emit logoUpdated(sid, scids, role);
+            emit dataUpdated(sid, scids, role);
         }
     }
 }
 
-QPixmap MetadataManager::getStationLogo(uint32_t sid, uint8_t SCIdS, StationLogoRole role)
+QVariant MetadataManager::data(uint32_t sid, uint8_t SCIdS, MetadataRole role)
 {
-    QPixmap pixmap;
     QString sidStr = QString("%1.%2").arg(sid, 6, 16, QChar('0')).arg(SCIdS);
     switch (role) {
     case SLSLogo:
@@ -266,31 +264,38 @@ QPixmap MetadataManager::getStationLogo(uint32_t sid, uint8_t SCIdS, StationLogo
         QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + QString("%1/320x240.").arg(sidStr);
         if (QFileInfo::exists(filename+"png"))
         {
+            QPixmap pixmap;
             pixmap.load(filename+"png");
+            return QVariant(pixmap);
         }
         else if (QFileInfo::exists(filename+"jpg"))
         {
+            QPixmap pixmap;
             pixmap.load(filename+"jpg");
+            return QVariant(pixmap);
         }
-
     }
-        break;
+    break;
     case SmallLogo:
     {
         QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + QString("%1/32x32.").arg(sidStr);
         if (QFileInfo::exists(filename+"png"))
         {
+            QPixmap pixmap;
             pixmap.load(filename+"png");
+            return QVariant(pixmap);
         }
         else if (QFileInfo::exists(filename+"jpg"))
         {
+            QPixmap pixmap;
             pixmap.load(filename+"jpg");
+            return QVariant(pixmap);
         }
     }
-        break;
+    break;
     default:
         break;
     }
 
-    return pixmap;
+    return QVariant();
 }

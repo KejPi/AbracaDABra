@@ -39,19 +39,22 @@ class MetadataManager : public QObject
     Q_OBJECT
 
 public:
-    enum StationLogoRole{
+    enum MetadataRole{
         SmallLogo = Qt::UserRole,
-        SLSLogo
+        SLSLogo,
+        ShortName,
+        MediumName,
+        LongName,
     };
 
     explicit MetadataManager(QObject *parent = nullptr);
     void processXML(const QString &xmldocument);
     void onFileReceived(const QByteArray & data, const QString & requestId);
-    QPixmap getStationLogo(uint32_t sid, uint8_t SCIdS, MetadataManager::StationLogoRole role);
+    QVariant data(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role);
 
 signals:
     void getFile(const QString & url, const QString & requestId);
-    void logoUpdated(uint32_t sid, uint8_t SCIdS, MetadataManager::StationLogoRole role);
+    void dataUpdated(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role);
 
 private:
 //    static MetadataManager * m_instancePtr;    // static pointer which will points to the instance of this class

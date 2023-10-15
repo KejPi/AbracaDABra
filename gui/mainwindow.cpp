@@ -569,7 +569,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     // user applications
     m_metadataManager = new MetadataManager(this);
-    connect(m_metadataManager, &MetadataManager::logoUpdated, this, &MainWindow::onLogoUpdated);
+    connect(m_metadataManager, &MetadataManager::dataUpdated, this, &MainWindow::onMetadataUpdated);
 
     // slide show application is created by default
     // ETSI TS 101 499 V3.1.1  [5.1.1]
@@ -1405,15 +1405,14 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
         displaySubchParams(s);
         restoreTimeQualWidget();
 
-        QPixmap logo = m_metadataManager->getStationLogo(s.SId.value(), s.SCIdS, MetadataManager::SmallLogo);
-        //QPixmap logo = m_metadataManager->getStationLogo(0xE0d220, 0, MetadataManager::SmallLogo);
+        QPixmap logo = m_metadataManager->data(s.SId.value(), s.SCIdS, MetadataManager::SmallLogo).value<QPixmap>();
         if (!logo.isNull())
         {
             ui->logoLabel->setPixmap(logo);
             ui->logoLabel->setVisible(true);
         }
 
-        ui->slsView_Service->showStationLogo(m_metadataManager->getStationLogo(s.SId.value(), s.SCIdS, MetadataManager::SLSLogo));
+        ui->slsView_Service->showStationLogo(m_metadataManager->data(s.SId.value(), s.SCIdS, MetadataManager::SLSLogo).value<QPixmap>());
     }
     else
     {   // sid it not equal to selected sid -> this should not happen
@@ -1639,24 +1638,26 @@ void MainWindow::onAudioDeviceChanged(const QByteArray &id)
     }
 }
 
-void MainWindow::onLogoUpdated(uint32_t sid, uint8_t scids, MetadataManager::StationLogoRole role)
+void MainWindow::onMetadataUpdated(uint32_t sid, uint8_t scids, MetadataManager::MetadataRole role)
 {
     if ((sid == m_SId.value()) && (scids == m_SCIdS))
-    {  // current service logo
+    {  // current service data
         switch (role)
         {
-        case MetadataManager::StationLogoRole::SLSLogo:
-            ui->slsView_Service->showStationLogo(m_metadataManager->getStationLogo(sid, scids, MetadataManager::SLSLogo));
+        case MetadataManager::MetadataRole::SLSLogo:
+            ui->slsView_Service->showStationLogo(m_metadataManager->data(sid, scids, MetadataManager::SLSLogo).value<QPixmap>());
             break;
         case MetadataManager::SmallLogo:
         {
-            QPixmap logo = m_metadataManager->getStationLogo(sid, scids, MetadataManager::SmallLogo);
+            QPixmap logo = m_metadataManager->data(sid, scids, MetadataManager::SmallLogo).value<QPixmap>();
             if (!logo.isNull())
             {
                 ui->logoLabel->setPixmap(logo);
                 ui->logoLabel->setVisible(true);
             }
         }
+            break;
+        default:
             break;
         }
     }
