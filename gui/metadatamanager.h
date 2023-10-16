@@ -48,7 +48,7 @@ public:
     };
 
     explicit MetadataManager(QObject *parent = nullptr);
-    void processXML(const QString &xmldocument);
+    void processXML(const QString &xmldocument, const QString & scopeId);
     void onFileReceived(const QByteArray & data, const QString & requestId);
     QVariant data(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role);
 

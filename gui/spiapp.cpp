@@ -34,7 +34,7 @@
 #include <QLoggingCategory>
 #include <QJsonDocument>
 
-Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtDebugMsg)
+Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtInfoMsg)
 
 SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
 {
@@ -103,7 +103,7 @@ void SPIApp::start()
     QNetworkProxyQuery npq(QUrl(QLatin1String("https://dns.google")));
     QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
     foreach (QNetworkProxy p, listOfProxies) {
-        qDebug() << "Proxy hostname:" << p.hostName() << p.type();
+        qCDebug(spiApp) << "Proxy hostname:" << p.hostName() << p.type();
     }
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);
@@ -123,16 +123,16 @@ void SPIApp::stop()
         delete decoderPtr;
         m_decoderMap.remove(0xFFFF);
     }
-//    if (nullptr != m_dnsLookup)
-//    {
-//        delete m_dnsLookup;
-//        m_dnsLookup = nullptr;
-//    }
-//    if (nullptr != m_netAccessManager)
-//    {
-//        delete m_netAccessManager;
-//        m_netAccessManager = nullptr;
-//    }
+    if (nullptr != m_dnsLookup)
+    {
+        delete m_dnsLookup;
+        m_dnsLookup = nullptr;
+    }
+    if (nullptr != m_netAccessManager)
+    {
+        delete m_netAccessManager;
+        m_netAccessManager = nullptr;
+    }
     m_isRunning = false;
 }
 
@@ -159,7 +159,7 @@ void SPIApp::reset()
 
 void SPIApp::onEnsembleInformation(const RadioControlEnsemble &ens)
 {
-    m_eid = QString("%1").arg(ens.eid(), 4, 16, QChar('0'));
+    m_ueid = QString("%1").arg(ens.ueid, 6, 16, QChar('0'));
 }
 
 void SPIApp::onAudioServiceSelection(const RadioControlServiceComponent &s)
@@ -286,11 +286,11 @@ void SPIApp::onNewMOTDirectory()
                     break;                    
                 case 1:
                     qCDebug(spiApp) << "\tProgramme Information" << objIt->getContentName();
-                    parseBinaryInfo(*objIt);
+                    //parseBinaryInfo(*objIt);
                     break;
                 case 2:
                     qCDebug(spiApp) << "\tGroup Information" << objIt->getContentName();
-                    parseBinaryInfo(*objIt);
+                    //parseBinaryInfo(*objIt);
                     break;
                 default:
                     // not supported
@@ -338,6 +338,7 @@ void SPIApp::onNewMOTObject(const MOTObject & obj)
 
 void SPIApp::parseBinaryInfo(const MOTObject &motObj)
 {
+    QString scopeId("");
     MOTObject::paramsIterator paramIt;
     for (paramIt = motObj.paramsBegin(); paramIt != motObj.paramsEnd(); ++paramIt)
     {
@@ -370,6 +371,7 @@ void SPIApp::parseBinaryInfo(const MOTObject &motObj)
                 if (paramIt.value().size() >= 3)
                 {
                     uint32_t ueid = (uint8_t(paramIt.value().at(0)) << 16) | (uint8_t(paramIt.value().at(1)) << 8) | uint8_t(paramIt.value().at(2));
+                    scopeId = QString("%1").arg(ueid, 6, 16, QChar('0'));
                     qCDebug(spiApp, "\tScopeID: %6.6X", ueid);
 
 //                    if (m_radioControl->getEnsembleUEID() != ueid)
@@ -400,9 +402,9 @@ void SPIApp::parseBinaryInfo(const MOTObject &motObj)
     const uint8_t * dataPtr = (uint8_t *) data.data();
 
     QDomElement empty;
-    qCDebug(spiApp) << "Total bytes" << data.size() << "Read bytes" << parseTag(dataPtr, empty, uint8_t(SPIElement::Tag::_invalid), data.size());
+    parseTag(dataPtr, empty, uint8_t(SPIElement::Tag::_invalid), data.size());
 
-    emit xmlDocument(m_xmldocument.toString());
+    emit xmlDocument(m_xmldocument.toString(), scopeId);
 }
 
 
@@ -962,7 +964,7 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 uint16_t eid = *dataPtr++;
                 eid = (eid << 8) | *dataPtr++;
 
-                parentElement.setAttribute("id", QString("%1.%2").arg(ecc, 2, 16, QChar('0')).arg(eid, 4, 16, QChar('0')));
+                parentElement.setAttribute("id", QString("%1%2").arg(ecc, 2, 16, QChar('0')).arg(eid, 4, 16, QChar('0')));
                 break;
             }
             break;
@@ -1358,7 +1360,7 @@ QString SPIApp::getRadioDNSFQDN() const
     return QString("%1.%2.%3.%4.dab.radiodns.org")
         .arg(m_scids)
         .arg(m_sid)
-        .arg(m_eid)
+        .arg(m_ueid.last(4))
         .arg(m_gcc);
 }
 
@@ -1398,7 +1400,7 @@ void SPIApp::handleRadioDNSLookup()
 
 void SPIApp::downloadFile(const QString &url, const QString &requestId, bool useCache)
 {
-    qDebug() << Q_FUNC_INFO << url;
+    qCDebug(spiApp) << Q_FUNC_INFO << url;
     if (!m_useInternet)
     {   // do nothing, internet connection is not enabled
         return;
@@ -1426,7 +1428,7 @@ void SPIApp::onFileDownloaded(QNetworkReply *reply)
     QString requestId = m_downloadReqQueue.head().second;
     if (requestId == "XML") {
         QByteArray data = reply->readAll();
-        emit xmlDocument(QString(data));
+        emit xmlDocument(QString(data), m_ueid);
     }
     else if (requestId == "DOH_CNAME")
     {

@@ -73,7 +73,7 @@ public:
     void onAudioServiceSelection(const RadioControlServiceComponent & s);
 
 signals:
-    void xmlDocument(const QString &xmldocument);
+    void xmlDocument(const QString &xmldocument, const QString & scopeId);
     void requestedFile(const QByteArray &data, const QString &requestId);
 private:
     QHash<uint16_t, MOTDecoder *> m_decoderMap;
@@ -100,7 +100,7 @@ private:
     bool m_enaRadioDNS;
     bool m_useDoH;
     QString m_gcc;
-    QString m_eid;
+    QString m_ueid;
     QString m_sid;
     QString m_scids;
 

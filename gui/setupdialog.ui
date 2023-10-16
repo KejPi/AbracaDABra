@@ -1128,7 +1128,7 @@
           <item>
            <widget class="QCheckBox" name="internetCheckBox">
             <property name="text">
-             <string>Use internet connection</string>
+             <string>Download data from internet</string>
             </property>
            </widget>
           </item>
