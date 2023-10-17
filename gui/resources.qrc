@@ -52,7 +52,5 @@
         <file>resources/chevron-right.png</file>
         <file>resources/chevron-left_dark.png</file>
         <file>resources/chevron-right_dark.png</file>
-        <file>resources/dots-horizontal.png</file>
-        <file>resources/dots-horizontal_dark.png</file>
     </qresource>
 </RCC>
