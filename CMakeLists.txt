@@ -70,9 +70,10 @@ if(PROJECT_GIT_VERSION MATCHES "^v([0-9]+).([0-9]+).([0-9]+)(-([0-9]+-g[0-9A-Za-
 #   set( version_patch "${CMAKE_MATCH_3}" )
 #   set( identifiers   "${CMAKE_MATCH_5}" )
 #   set( metadata      "${CMAKE_MATCH_6}" )
- else()
-   message( FATAL_ERROR "Git tag is invalid: [${PROJECT_GIT_VERSION}]" )
- endif()
+    message( STATUS "Version: ${PROJECT_GIT_VERSION}" )
+else()
+    message( FATAL_ERROR "Version not valid: [${PROJECT_GIT_VERSION}]" )
+endif()
 
 #########################################################
 
