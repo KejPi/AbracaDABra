@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>462</width>
-    <height>546</height>
+    <height>557</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -1126,7 +1126,20 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <item>
+           <widget class="QCheckBox" name="spiAppCheckBox">
+            <property name="toolTip">
+             <string>Enable Service and Programme Information (SPI) application.</string>
+            </property>
+            <property name="text">
+             <string>Enable SPI application</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="internetCheckBox">
+            <property name="toolTip">
+             <string>Use internet connection to download data like station logo.</string>
+            </property>
             <property name="text">
              <string>Download data from internet</string>
             </property>

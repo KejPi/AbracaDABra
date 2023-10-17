@@ -608,8 +608,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_catSlsDialog, &CatSLSDialog::getNextCatSlide, m_slideShowApp[Instance::Service], &SlideShowApp::getNextCatSlide, Qt::QueuedConnection);
 
 #if RADIO_CONTROL_SPI_ENABLE
-
-#warning "Remove automatic creation of SPI app"
     m_spiApp = new SPIApp();
     m_spiApp->moveToThread(m_radioControlThread);
     connect(m_radioControlThread, &QThread::finished, m_spiApp, &QObject::deleteLater);
@@ -623,8 +621,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_spiApp, &SPIApp::xmlDocument, m_metadataManager, &MetadataManager::processXML, Qt::QueuedConnection);
     connect(m_metadataManager, &MetadataManager::getFile, m_spiApp, &SPIApp::onFileRequest, Qt::QueuedConnection);
     connect(m_spiApp, &SPIApp::requestedFile, m_metadataManager, &MetadataManager::onFileReceived, Qt::QueuedConnection);
-    connect(m_setupDialog, &SetupDialog::spiApplicationSettingsChanged, m_spiApp, &SPIApp::onSettingsChanged, Qt::QueuedConnection);
-
+    connect(m_setupDialog, &SetupDialog::spiApplicationEnabled, m_radioControl, &RadioControl::onSpiApplicationEnabled, Qt::QueuedConnection);
+    connect(m_setupDialog, &SetupDialog::spiApplicationEnabled, m_spiApp, &SPIApp::enable, Qt::QueuedConnection);
+    connect(m_setupDialog, &SetupDialog::spiApplicationSettingsChanged, m_spiApp, &SPIApp::onSettingsChanged, Qt::QueuedConnection);   
 #endif
 
     // input device connections
@@ -2212,6 +2211,7 @@ void MainWindow::loadSettings()
     s.bringWindowToForeground = settings->value("bringWindowToForegroundOnAlarm", true).toBool();
     s.noiseConcealmentLevel = settings->value("noiseConcealment", 0).toInt();
     s.xmlHeaderEna = settings->value("rawFileXmlHeader", true).toBool();
+    s.spiAppEna = settings->value("spiAppEna", true).toBool();
     s.useInternet = settings->value("useInternet", true).toBool();
     s.radioDnsEna = settings->value("radioDNS", true).toBool();
 
@@ -2375,6 +2375,7 @@ void MainWindow::saveSettings()
     settings->setValue("language", QLocale::languageToCode(s.lang));
     settings->setValue("noiseConcealment", s.noiseConcealmentLevel);
     settings->setValue("rawFileXmlHeader", s.xmlHeaderEna);
+    settings->setValue("spiAppEna", s.spiAppEna);
     settings->setValue("useInternet", s.useInternet);
     settings->setValue("radioDNS", s.radioDnsEna);
 

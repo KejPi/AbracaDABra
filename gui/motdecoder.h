@@ -43,7 +43,7 @@ public:
     void reset();
     bool hasDirectory() const { return m_directory != nullptr; }
     int size() const { return hasDirectory() ? m_directory->size() : -1; }
-    uint_fast32_t getDirectoryId() const { return m_directory->getTransportId(); }
+    uint_fast32_t getDirectoryId() const { return hasDirectory() ? m_directory->getTransportId() : 0xFFFFFFFF; }
     MOTObjectCache::const_iterator find(uint16_t transportId) const { return m_directory->cfind(transportId); }
     MOTObjectCache::const_iterator find(const QString & filename) const;    
     MOTObjectCache::const_iterator directoryBegin() const { return  m_directory->begin(); }

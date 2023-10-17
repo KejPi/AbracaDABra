@@ -258,6 +258,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->expertCheckBox, &QCheckBox::clicked, this, &SetupDialog::onExpertModeChecked);
     connect(ui->dlPlusCheckBox, &QCheckBox::clicked, this, &SetupDialog::onDLPlusChecked);
     connect(ui->xmlHeaderCheckBox, &QCheckBox::clicked, this, &SetupDialog::onXmlHeaderChecked);
+    connect(ui->spiAppCheckBox, &QCheckBox::clicked, this, &SetupDialog::onSpiAppChecked);
     connect(ui->internetCheckBox, &QCheckBox::clicked, this, &SetupDialog::onUseInternetChecked);
     connect(ui->radioDNSCheckBox, &QCheckBox::clicked, this, &SetupDialog::onRadioDnsChecked);
 
@@ -347,7 +348,8 @@ void SetupDialog::setSettings(const Settings &settings)
     emit newAnnouncementSettings(m_settings.announcementEna);
     emit noiseConcealmentLevelChanged(m_settings.noiseConcealmentLevel);
     emit xmlHeaderToggled(m_settings.xmlHeaderEna);
-    emit spiApplicationSettingsChanged(m_settings.useInternet, m_settings.radioDnsEna);
+    onUseInternetChecked(m_settings.useInternet);
+    onSpiAppChecked(m_settings.spiAppEna);
 }
 
 void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
@@ -597,9 +599,9 @@ void SetupDialog::setUiState()
     }
     ui->noiseConcealmentCombo->setCurrentIndex(index);
     ui->xmlHeaderCheckBox->setChecked(m_settings.xmlHeaderEna);
+    ui->spiAppCheckBox->setChecked(m_settings.spiAppEna);
     ui->internetCheckBox->setChecked(m_settings.useInternet);
     ui->radioDNSCheckBox->setChecked(m_settings.radioDnsEna);
-    ui->radioDNSCheckBox->setEnabled(m_settings.useInternet);
 
     index = ui->langComboBox->findData(QVariant(m_settings.lang));
     if (index < 0)
@@ -1173,6 +1175,14 @@ void SetupDialog::onXmlHeaderChecked(bool checked)
 void SetupDialog::onRawFileProgressChanged(int val)
 {
     ui->rawFileTime->setText(QString("%1 / %2 "+tr("sec")).arg(val/1000.0, 0, 'f', 1).arg(ui->rawFileProgressBar->maximum()/1000.0, 0, 'f', 1));
+}
+
+void SetupDialog::onSpiAppChecked(bool checked)
+{
+    m_settings.spiAppEna = checked;
+    ui->internetCheckBox->setEnabled(checked);
+    ui->radioDNSCheckBox->setEnabled(checked && m_settings.useInternet);
+    emit spiApplicationEnabled(m_settings.spiAppEna);
 }
 
 void SetupDialog::onUseInternetChecked(bool checked)

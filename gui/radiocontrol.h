@@ -344,6 +344,7 @@ public:
     void onAudioOutputRestart();
     void setupAnnouncements(uint16_t enaFlags);
     void suspendResumeAnnouncement();
+    void onSpiApplicationEnabled(bool enabled);
 
 signals:
     void dabEvent(RadioControlEvent * pEvent);
@@ -415,6 +416,7 @@ private:
     bool m_ensembleConfigurationUpdateRequest = false;
 
     bool m_isReconfigurationOngoing = false;
+    bool m_spiAppEnabled = false;
 
     RadioControlEnsemble m_ensemble;
     RadioControlServiceList m_serviceList;

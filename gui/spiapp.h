@@ -65,6 +65,7 @@ public:
     void stop() override;
     void restart() override;
     void reset() override;
+    void enable(bool ena);
 
     // RadioDNS
     void useInternet(bool ena) { m_useInternet = ena; }

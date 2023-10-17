@@ -104,6 +104,7 @@ public:
         bool dlPlusEna;
         int noiseConcealmentLevel;
         bool xmlHeaderEna;
+        bool spiAppEna;
         bool useInternet;
         bool radioDnsEna;
     };
@@ -127,6 +128,7 @@ signals:
     void applicationStyleChanged(ApplicationStyle style);
     void noiseConcealmentLevelChanged(int level);
     void xmlHeaderToggled(bool enabled);
+    void spiApplicationEnabled(bool enabled);
     void spiApplicationSettingsChanged(bool useInterent, bool enaRadioDNS);
 protected:
     void showEvent(QShowEvent *event);
@@ -181,6 +183,7 @@ private:
     void onNoiseLevelChanged(int index);    
     void onXmlHeaderChecked(bool checked);
     void onRawFileProgressChanged(int val);
+    void onSpiAppChecked(bool checked);
     void onUseInternetChecked(bool checked);
     void onRadioDnsChecked(bool checked);
 

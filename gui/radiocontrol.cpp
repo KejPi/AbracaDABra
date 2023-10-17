@@ -550,8 +550,15 @@ void RadioControl::startUserApplication(DabUserApplicationType uaType, bool star
         QHash<DabUserApplicationType,RadioControlUserApp>::const_iterator uaIt = scIt->userApps.constFind(uaType);
         if (scIt->userApps.cend() != uaIt)
         {
-            qCInfo(radioControl, "Starting user application '%s' from XPAD.", DabTables::getUserApplicationName(uaType).toLocal8Bit().data());
-            dabXPadAppStart(uaIt->xpadData.xpadAppTy, 1, DABSDR_ID_AUDIO_PRIMARY);
+            if (start) {
+                qCInfo(radioControl, "Starting user application '%s' from XPAD.", DabTables::getUserApplicationName(uaType).toLocal8Bit().data());
+                dabXPadAppStart(uaIt->xpadData.xpadAppTy, 1, DABSDR_ID_AUDIO_PRIMARY);
+            }
+            else
+            {
+                qCInfo(radioControl, "Stopping user application '%s' from XPAD.", DabTables::getUserApplicationName(uaType).toLocal8Bit().data());
+                dabXPadAppStart(uaIt->xpadData.xpadAppTy, 0, DABSDR_ID_AUDIO_PRIMARY);
+            }
             if (singleChannel)
             {
                 return;
@@ -650,6 +657,22 @@ void RadioControl::suspendResumeAnnouncement()
 {
     m_currentService.announcement.suspendRequest = !m_currentService.announcement.suspendRequest;
 
+}
+
+void RadioControl::onSpiApplicationEnabled(bool enabled)
+{
+    m_spiAppEnabled = enabled;
+    if (enabled)
+    {
+        if (m_currentService.SId != 0)
+        {  // we are receiving service -> start SPI application
+            startUserApplication(DabUserApplicationType::SPI, true, false);
+        }
+    }
+    else
+    {   // stop SPI application
+        startUserApplication(DabUserApplicationType::SPI, false, false);
+    }
 }
 
 QString RadioControl::ensembleConfigurationString() const
@@ -1234,7 +1257,10 @@ void RadioControl::eventHandler_userAppList(RadioControlEvent *pEvent)
             //#warning "Remove automatic Journaline - this is for debug only"
             // startUserApplication(DabUserApplicationType::Journaline, true);
 #if RADIO_CONTROL_SPI_ENABLE
-            startUserApplication(DabUserApplicationType::SPI, true, false);
+            if (m_spiAppEnabled)
+            {
+                startUserApplication(DabUserApplicationType::SPI, true, false);
+            }
 #endif
             //#warning "Remove automatic TPEG - this is for debug only"
             //startUserApplication(DabUserApplicationType::TPEG, true);

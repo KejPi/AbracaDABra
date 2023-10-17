@@ -34,7 +34,7 @@
 #include <QLoggingCategory>
 #include <QJsonDocument>
 
-Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtInfoMsg)
+Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtDebugMsg)
 
 SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
 {
@@ -144,7 +144,6 @@ void SPIApp::restart()
 
 void SPIApp::reset()
 {
-    qDebug() << Q_FUNC_INFO;
     // delete all decoders
     for (const auto & decoder : m_decoderMap)
     {
@@ -152,9 +151,23 @@ void SPIApp::reset()
     }
     m_decoderMap.clear();
     m_parsedDirectoryIds.clear();
+    m_isRunning = false;
 
     // ask HMI to clear data
     emit resetTerminal();
+}
+
+void SPIApp::enable(bool ena)
+{
+    reset();
+    if (ena)
+    {
+        start();
+    }
+    else
+    {
+        stop();
+    }
 }
 
 void SPIApp::onEnsembleInformation(const RadioControlEnsemble &ens)
