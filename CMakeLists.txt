@@ -47,8 +47,35 @@ endif()
 set(TARGET AbracaDABra)
 
 project(${TARGET}
-    VERSION 2.2.4
     LANGUAGES CXX)
+
+#########################################################
+## VERSION
+execute_process(COMMAND git describe
+                WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+                OUTPUT_VARIABLE PROJECT_GIT_VERSION
+                ERROR_QUIET)
+# Check whether we got any revision
+if ("${PROJECT_GIT_VERSION}" STREQUAL "")
+    # load version FROM VERSION FILE
+    file (STRINGS "APP_VERSION" PROJECT_GIT_VERSION)
+endif()
+
+# parse version
+string(STRIP ${PROJECT_GIT_VERSION} PROJECT_GIT_VERSION)
+
+if(PROJECT_GIT_VERSION MATCHES "^v([0-9]+).([0-9]+).([0-9]+)(-([0-9]+-g[0-9A-Za-z]+))?" )
+#   set( version_major "${CMAKE_MATCH_1}" )
+#   set( version_minor "${CMAKE_MATCH_2}" )
+#   set( version_patch "${CMAKE_MATCH_3}" )
+#   set( identifiers   "${CMAKE_MATCH_5}" )
+#   set( metadata      "${CMAKE_MATCH_6}" )
+ else()
+   message( FATAL_ERROR "Git tag is invalid: [${PROJECT_GIT_VERSION}]" )
+ endif()
+
+#########################################################
+
 
 # Select the release build type by default to get optimization flags
 if(NOT CMAKE_BUILD_TYPE)
@@ -73,22 +100,6 @@ endif()
 
 if (APPLE_BUILD_X86_64)
     set(CMAKE_OSX_ARCHITECTURES "x86_64")
-endif()
-
-#########################################################
-## VERSION
-if (NOT PROJECT_VERSION_RELEASE)
-    set(PROJECT_VERSION_RELEASE OFF)
-endif()
-
-execute_process(COMMAND git log --pretty=format:%h -n 1
-                WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                OUTPUT_VARIABLE PROJECT_GIT_REV
-                ERROR_QUIET)
-
-# Check whether we got any revision
-if ("${PROJECT_GIT_REV}" STREQUAL "")
-    set(PROJECT_GIT_REV "N/A")
 endif()
 
 #########################################################

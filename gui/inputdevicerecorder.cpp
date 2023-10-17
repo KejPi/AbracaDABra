@@ -176,11 +176,7 @@ void InputDeviceRecorder::startXmlHeader()
 
     QDomElement recorder = xmlHeader.createElement("Recorder");
     recorder.setAttribute("Name", "AbracaDABra");
-#if PROJECT_VERSION_RELEASE
     recorder.setAttribute("Version", QString("%1").arg(PROJECT_VER));
-#else
-    recorder.setAttribute("Version", QString("%1+").arg(PROJECT_VER));
-#endif
     root.appendChild(recorder);
 
     QDomElement device = xmlHeader.createElement("Device");
