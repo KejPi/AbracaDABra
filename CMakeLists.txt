@@ -63,13 +63,11 @@ endif()
 
 # parse version
 string(STRIP ${PROJECT_GIT_VERSION} PROJECT_GIT_VERSION)
-
 if(PROJECT_GIT_VERSION MATCHES "^v([0-9]+).([0-9]+).([0-9]+)(-([0-9]+-g[0-9A-Za-z]+))?" )
 #   set( version_major "${CMAKE_MATCH_1}" )
 #   set( version_minor "${CMAKE_MATCH_2}" )
 #   set( version_patch "${CMAKE_MATCH_3}" )
-#   set( identifiers   "${CMAKE_MATCH_5}" )
-#   set( metadata      "${CMAKE_MATCH_6}" )
+#   set( git_state     "${CMAKE_MATCH_5}" )
     message( STATUS "Version: ${PROJECT_GIT_VERSION}" )
 else()
     message( FATAL_ERROR "Version not valid: [${PROJECT_GIT_VERSION}]" )
