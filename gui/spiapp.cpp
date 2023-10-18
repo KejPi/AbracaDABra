@@ -95,7 +95,11 @@ void SPIApp::start()
         connect(m_netAccessManager, &QNetworkAccessManager::finished, this, &SPIApp::onFileDownloaded);
 
         QNetworkDiskCache *diskCache = new QNetworkDiskCache(this);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
         QString directory = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1StringView("/cacheDir/");
+#else
+        QString directory = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QString("/cacheDir/");
+#endif
         diskCache->setCacheDirectory(directory);
         m_netAccessManager->setCache(diskCache);
     }
