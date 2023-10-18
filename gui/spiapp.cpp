@@ -34,7 +34,7 @@
 #include <QLoggingCategory>
 #include <QJsonDocument>
 
-Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtDebugMsg)
+Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtInfoMsg)
 
 SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
 {
