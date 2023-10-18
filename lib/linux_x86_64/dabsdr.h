@@ -89,7 +89,8 @@ typedef struct
 typedef struct
 {
     dabsdrDecoderId_t id;
-    int16_t userAppType;
+    uint16_t SCId;         // SCId (Service Component Identifier): this 12-bit field shall uniquely
+    uint16_t userAppType;
     uint16_t dgLen;
     const uint8_t * pDgData;
 } dabsdrDataGroupCBData_t;
