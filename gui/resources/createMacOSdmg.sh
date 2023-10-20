@@ -1,6 +1,6 @@
 #! /bin/bash
 
-VERSION=$1
+VERSION=`git decribe`
 
 DIR=`pwd`
 
