@@ -24,37 +24,36 @@
  * SOFTWARE.
  */
 
-#ifndef LOGDIALOG_H
-#define LOGDIALOG_H
+#ifndef LOGMODEL_H
+#define LOGMODEL_H
 
-#include <QDialog>
-#include <QAbstractItemModel>
-#include <QStringListModel>
 #include <QFontDatabase>
-#include "logmodel.h"
+#include <QAbstractListModel>
+#include <QObject>
 
-namespace Ui {
-class LogDialog;
-}
-
-class LogDialog : public QDialog
+class LogModel : public QAbstractListModel
 {
     Q_OBJECT
-
 public:
-    explicit LogDialog(QWidget *parent = nullptr);
-    ~LogDialog();
-
-    QAbstractItemModel * getModel() const;
-
-    void setupDarkMode(bool darkModeEna);
+    LogModel(QObject *parent = nullptr) : m_isDarkMode(false), QAbstractListModel(parent) {}
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    bool setData(const QModelIndex & index, const QVariant & value, int role) override;
+    bool insertRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
+    bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
+    void setupDarkMode(bool darkModeEna) { m_isDarkMode = darkModeEna; }
+    Q_INVOKABLE void appendRow(const QString & rowTxt, int role);
 
 private:
-    Ui::LogDialog *ui;
-    LogModel * m_dataModel;
+    const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    struct LogItem
+    {
+        QString msg;
+        QtMsgType type = QtInfoMsg;
+    };
 
-    void saveLogToFile();
-    void copyToClipboard();
+    bool m_isDarkMode;
+    QList<struct LogItem> m_msgList;
 };
 
-#endif // LOGDIALOG_H
+#endif // LOGMODEL_H

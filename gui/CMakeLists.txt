@@ -116,6 +116,8 @@ add_executable(${TARGET}
     logdialog.h
     logdialog.cpp
     logdialog.ui
+    logmodel.h
+    logmodel.cpp
 
     ensembleinfodialog.h
     ensembleinfodialog.cpp
@@ -142,7 +144,7 @@ add_executable(${TARGET}
     metadatamanager.h
     metadatamanager.cpp
 
-    ${APPLE_SOURCES}   
+    ${APPLE_SOURCES}
   )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
