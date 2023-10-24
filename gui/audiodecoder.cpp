@@ -788,7 +788,7 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     result = aacDecoder_DecodeFrame(m_aacDecoderHandle, (INT_PCM *)m_outputFrame, m_outputFrameLen / sizeof(INT_PCM), AACDEC_CONCEAL * conceal);
     if (AAC_DEC_OK != result)
     {
-        qCWarning(audioDecoder, "Error decoding AAC frame: " << result;
+        qCWarning(audioDecoder) << "Error decoding AAC frame:" << result;
     }
 
     if (!IS_OUTPUT_VALID(result))
