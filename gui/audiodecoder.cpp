@@ -43,9 +43,12 @@ AudioDecoder::AudioDecoder(QObject *parent) : QObject(parent)
     m_mp2DecoderHandle = nullptr;
 
     m_playbackState = PlaybackState::Stopped;
+#if HAVE_FDKAAC
+    Q_ASSERT(sizeof(int16_t) == sizeof(INT_PCM));
+#endif
+    m_outBufferPtr = new int16_t[AUDIO_DECODER_BUFFER_SIZE];
 
 #if !HAVE_FDKAAC
-    m_outBufferPtr = new int16_t[AUDIO_DECODER_BUFFER_SIZE];
 #if AUDIO_DECODER_NOISE_CONCEALMENT
     m_noiseBufferPtr = new int16_t[AUDIO_DECODER_BUFFER_SIZE];
     m_noiseFile = nullptr;
@@ -82,17 +85,13 @@ AudioDecoder::~AudioDecoder()
     {
 #if HAVE_FDKAAC
         aacDecoder_Close(m_aacDecoderHandle);
-        if (nullptr != m_outputFrame)
-        {
-            delete [] m_outputFrame;
-        }
 #else
         NeAACDecClose(m_aacDecoderHandle);
 #endif
     }
-#if !HAVE_FDKAAC
     delete [] m_outBufferPtr;
 
+#if !HAVE_FDKAAC
 #if AUDIO_DECODER_NOISE_CONCEALMENT
     if (nullptr != m_noiseFile)
     {
@@ -385,13 +384,7 @@ void AudioDecoder::initAACDecoder()
         throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while aacDecoder_ConfigRaw: " + std::to_string(init_result));
     }
 
-    m_outputFrameLen = 960 * sizeof(INT_PCM) * channels * (m_aacHeader.bits.sbr_flag ? 2 : 1);
-
-    if (nullptr != m_outputFrame)
-    {
-        delete [] m_outputFrame;
-    }
-    m_outputFrame = new uint8_t[m_outputFrameLen];
+    m_outputFrameLen = 960 * channels * (m_aacHeader.bits.sbr_flag ? 2 : 1);
 
     qCInfo(audioDecoder, "Output sample rate %d Hz, channels: %d", m_aacHeader.bits.dac_rate ? 48000 : 32000, channels);
 
@@ -646,7 +639,7 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
             if (bytesToEnd < size)
             {
                 memcpy(m_outFifoPtr->buffer + m_outFifoPtr->head, outBuf, bytesToEnd);
-                memcpy(m_outFifoPtr->buffer, outBuf + bytesToEnd, size - bytesToEnd);
+                memcpy(m_outFifoPtr->buffer, reinterpret_cast<uint8_t *>(outBuf) + bytesToEnd, size - bytesToEnd);
                 m_outFifoPtr->head = (size - bytesToEnd);
             }
             else
@@ -785,7 +778,7 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     }
 
     // decode audio
-    result = aacDecoder_DecodeFrame(m_aacDecoderHandle, (INT_PCM *)m_outputFrame, m_outputFrameLen / sizeof(INT_PCM), AACDEC_CONCEAL * conceal);
+    result = aacDecoder_DecodeFrame(m_aacDecoderHandle, (INT_PCM *)m_outBufferPtr, m_outputFrameLen, AACDEC_CONCEAL * conceal);
     if (AAC_DEC_OK != result)
     {
         qCWarning(audioDecoder) << "Error decoding AAC frame:" << result;
@@ -799,11 +792,11 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
 #ifdef AUDIO_DECODER_RAW_OUT
     if (m_rawOut)
     {
-        fwrite(m_outputFrame, 1, m_outputFrameLen, m_rawOut);
+        fwrite(m_outBufferPtr, sizeof(int16_t), m_outputFrameLen, m_rawOut);
     }
 #endif
 
-    int64_t bytesToWrite = m_outputFrameLen;
+    int64_t bytesToWrite = m_outputFrameLen * sizeof(int16_t);
 
     // wait for space in ouput buffer
     m_outFifoPtr->mutex.lock();
@@ -818,13 +811,13 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     int64_t bytesToEnd = AUDIO_FIFO_SIZE - m_outFifoPtr->head;
     if (bytesToEnd < bytesToWrite)
     {
-        memcpy(m_outFifoPtr->buffer + m_outFifoPtr->head, m_outputFrame, bytesToEnd);
-        memcpy(m_outFifoPtr->buffer, m_outputFrame + bytesToEnd, bytesToWrite - bytesToEnd);
+        memcpy(m_outFifoPtr->buffer + m_outFifoPtr->head, m_outBufferPtr, bytesToEnd);
+        memcpy(m_outFifoPtr->buffer, reinterpret_cast<uint8_t *>(m_outBufferPtr) + bytesToEnd, bytesToWrite - bytesToEnd);
         m_outFifoPtr->head = bytesToWrite - bytesToEnd;
     }
     else
     {
-        memcpy(m_outFifoPtr->buffer + m_outFifoPtr->head, m_outputFrame, bytesToWrite);
+        memcpy(m_outFifoPtr->buffer + m_outFifoPtr->head, m_outBufferPtr, bytesToWrite);
         m_outFifoPtr->head += bytesToWrite;
     }
 
@@ -934,7 +927,7 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
     if (bytesToEnd < bytesToWrite)
     {
         memcpy(m_outFifoPtr->buffer + m_outFifoPtr->head, m_outBufferPtr, bytesToEnd);
-        memcpy(m_outFifoPtr->buffer, m_outBufferPtr + bytesToEnd, bytesToWrite - bytesToEnd);
+        memcpy(m_outFifoPtr->buffer, reinterpret_cast<uint8_t *>(m_outBufferPtr) + bytesToEnd, bytesToWrite - bytesToEnd);
         m_outFifoPtr->head = bytesToWrite - bytesToEnd;
     }
     else

@@ -45,11 +45,11 @@
 #include "radiocontrol.h"
 #include "audiofifo.h"
 
+#define AUDIO_DECODER_BUFFER_SIZE     3840  // this is maximum buffer size for HE-AAC
 #if HAVE_FDKAAC
 #define AUDIO_DECODER_FDKAAC_CONCEALMENT 1
 #define AUDIO_DECODER_NOISE_CONCEALMENT  0 // keep 0 here
 #else // HAVE_FDKAAC
-#define AUDIO_DECODER_BUFFER_SIZE     3840  // this is maximum buffer size for HE-AAC
 #define AUDIO_DECODER_FADE_TIME_MS      20  // maximum is 20 ms
 #define AUDIO_DECODER_NOISE_CONCEALMENT  1
 #endif // HAVE_FDKAAC
@@ -84,8 +84,6 @@ class AudioDecoder : public QObject
 public:
     explicit AudioDecoder(QObject *parent = nullptr);
     ~AudioDecoder();
-
-public slots:
     void start(const RadioControlServiceComponent &s);
     void stop();
     void decodeData(RadioControlAudioData *inData);
@@ -97,6 +95,8 @@ signals:
     void switchAudio(audioFifo_t *buffer);
     void stopAudio();
     void audioParametersInfo(const AudioParameters & params);
+    void inputData(const std::vector<uint8_t> &data);
+    void outputData(const int16_t *data, size_t numSamples);
 
 private:
     enum class PlaybackState { Stopped = 0, WaitForInit, Running } m_playbackState;
@@ -104,9 +104,9 @@ private:
     dabsdrAudioFrameHeader_t m_aacHeader;
     AudioParameters m_audioParameters;
 
+    int16_t * m_outBufferPtr;
 #if HAVE_FDKAAC
     HANDLE_AACDECODER m_aacDecoderHandle;
-    uint8_t * m_outputFrame = nullptr;
     size_t m_outputFrameLen;
 #else
     NeAACDecHandle m_aacDecoderHandle;
@@ -124,7 +124,6 @@ private:
     audioFifo_t * m_outFifoPtr;
 
 #if !HAVE_FDKAAC
-    int16_t * m_outBufferPtr;
     size_t m_outputBufferSamples;
     int m_numChannels;
     std::vector<float> m_muteRamp;
