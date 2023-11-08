@@ -59,6 +59,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->inputCombo->addItem(tr("Raw file"), QVariant(int(InputDeviceId::RAWFILE)));
     ui->inputCombo->setCurrentIndex(-1);  // undefined
 
+    ui->fileNameLabel->setElideMode(Qt::ElideLeft);
     ui->fileNameLabel->setText(NO_FILE);
     m_rawfilename = "";
 
@@ -253,6 +254,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->dlPlusCheckBox->setToolTip(tr("Show Dynamic Label Plus (DL+) tags like artist, song name, etc."));
     ui->xmlHeaderCheckBox->setToolTip(tr("Include raw file XML header in IQ recording"));
 
+    ui->audioRecordingFolderLabel->setElideMode(Qt::ElideMiddle);
+
     connect(ui->defaultStyleRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
     connect(ui->lightStyleRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
     connect(ui->darkStyleRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
@@ -288,8 +291,6 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 #endif
 
     adjustSize();
-
-    this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 void SetupDialog::showEvent(QShowEvent *event)
@@ -568,7 +569,7 @@ void SetupDialog::setUiState()
     }
     else
     {
-        ui->fileNameLabel->setText(QFileInfo(m_settings.rawfile.file).fileName());
+        ui->fileNameLabel->setText(m_settings.rawfile.file);
         m_rawfilename = m_settings.rawfile.file;
         ui->fileNameLabel->setToolTip(m_settings.rawfile.file);
     }
@@ -1061,7 +1062,7 @@ void SetupDialog::onOpenFileButtonClicked()
     if (!fileName.isEmpty())
     {
         m_rawfilename = fileName;
-        ui->fileNameLabel->setText(QFileInfo(fileName).fileName());
+        ui->fileNameLabel->setText(fileName);
         ui->fileNameLabel->setToolTip(fileName);
         if (fileName.endsWith(".s16"))
         {

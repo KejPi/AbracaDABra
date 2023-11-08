@@ -148,6 +148,7 @@ add_executable(${TARGET}
     audiorecorder.cpp
 
     ${APPLE_SOURCES}
+    elidedlabel.h elidedlabel.cpp
 
 
 

@@ -457,7 +457,13 @@
                </widget>
               </item>
               <item row="1" column="0" colspan="3">
-               <widget class="QLabel" name="fileNameLabel">
+               <widget class="ElidedLabel" name="fileNameLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="text">
                  <string>Filename</string>
                 </property>
@@ -1046,7 +1052,13 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="audioRecordingFolderLabel">
+               <widget class="ElidedLabel" name="audioRecordingFolderLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="text">
                  <string notr="true">/current/folder</string>
                 </property>
@@ -1289,6 +1301,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ElidedLabel</class>
+   <extends>QLabel</extends>
+   <header location="global">elidedlabel.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
