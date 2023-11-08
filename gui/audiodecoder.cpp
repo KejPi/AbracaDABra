@@ -447,11 +447,6 @@ void AudioDecoder::decodeData(RadioControlAudioData *inData)
         return;
     }
 
-    if (inData->id != m_inputDataDecoderId)
-    {   // announcement
-        m_recorder->stop();
-    }
-
     switch (inData->ASCTy)
     {
     case DabAudioDataSCty::DAB_AUDIO:
@@ -552,8 +547,13 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
 
             getFormatMP2();
 
+            if (inData->id != m_inputDataDecoderId)
+            {   // announcement -> should not happen
+                m_recorder->stop();
+            }
+
             m_inputDataDecoderId = inData->id;
-            m_mp2DRC = 0;                        
+            m_mp2DRC = 0;
         }
 
         m_outputBufferSamples = size / sizeof(int16_t);
@@ -706,6 +706,11 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
         //memset(m_outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
         m_state = OutputState::Init;
 #endif
+
+        if (inData->id != m_inputDataDecoderId)
+        {   // announcement -> should not happen
+            m_recorder->stop();
+        }
 
         m_aacHeader.raw = header.raw;
         m_inputDataDecoderId = inData->id;
