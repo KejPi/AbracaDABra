@@ -223,9 +223,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     QHBoxLayout * audioRecordingLayout = new QHBoxLayout();
     audioRecordingLayout->addWidget(m_audioRecordingLabel);
     audioRecordingLayout->addWidget(m_audioRecordingProgressLabel);
-    //volumeLayout->setAlignment(m_audioVolumeSlider, Qt::AlignCenter);
-    //volumeLayout->setStretch(0, 100);
-    //volumeLayout->setAlignment(m_muteLabel, Qt::AlignCenter);
     audioRecordingLayout->setStretch(1, 100);
     audioRecordingLayout->setSpacing(5);
     audioRecordingLayout->setContentsMargins(0,0,0,0);
@@ -345,7 +342,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     QGridLayout * layout = new QGridLayout(widget);
     layout->addWidget(m_timeBasicQualInfoWidget, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
-    layout->addWidget(m_audioRecordingWidget, 0, 1, Qt::AlignLeft);
+    layout->addWidget(m_audioRecordingWidget, 0, 1, Qt::AlignVCenter | Qt::AlignLeft);
     layout->addWidget(m_signalQualityWidget, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
     layout->addWidget(volumeWidget, 0, 3, Qt::AlignVCenter | Qt::AlignRight);
     layout->addWidget(m_menuLabel, 0, 4, Qt::AlignVCenter | Qt::AlignRight);
