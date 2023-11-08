@@ -204,9 +204,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_basicSignalQualityLabel->setToolTip(tr("DAB signal quality"));
 
     m_infoLabel = new QLabel();
-    QFont font;
-    font.setBold(true);
-    m_infoLabel->setFont(font);
+    QFont boldFont;
+    boldFont.setBold(true);
+    m_infoLabel->setFont(boldFont);
 
     m_timeBasicQualInfoWidget = new QStackedWidget;
     m_timeBasicQualInfoWidget->addWidget(m_basicSignalQualityLabel);
@@ -217,7 +217,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_audioRecordingLabel->setTooltip(tr("Stop audio recording"));
     connect(m_audioRecordingLabel, &ClickableLabel::clicked, this, &MainWindow::audioRecordingToggle);
     m_audioRecordingProgressLabel = new QLabel();
-    m_audioRecordingProgressLabel->setFont(font);   // bold font
+    // m_audioRecordingProgressLabel->setFont(boldFont);   // bold font
     m_audioRecordingProgressLabel->setAlignment(Qt::AlignCenter);
 
     QHBoxLayout * audioRecordingLayout = new QHBoxLayout();
@@ -1139,8 +1139,16 @@ void MainWindow::serviceSelected()
 
 void MainWindow::onChannelChange(int index)
 {
+    int idx = ui->channelCombo->findData(m_frequency, Qt::UserRole);
+    if (index == idx)
+    {   // no change (it can happen when audio recording is ongoing and channel change is rejected)
+        return;
+    }
+
     if (!stopAudioRecordingMsg(tr("Audio recording is ongoing. It will be stopped and saved if you change DAB channel.")))
     {
+        // restore previous index
+        ui->channelCombo->setCurrentIndex(idx);
         return;
     }
 
@@ -1191,15 +1199,6 @@ void MainWindow::onBandScanStart()
 
 void MainWindow::onChannelUpClicked()
 {
-    if (stopAudioRecordingMsg(tr("Audio recording is ongoing. It will be stopped and saved if you change DAB channel.")))
-    {   // this is to avoid double message when channel combo changes
-        m_audioRecordingActive = false;
-    }
-    else
-    {
-        return;
-    }
-
     int ch = ui->channelCombo->currentIndex();
     ch = (ch + 1) % ui->channelCombo->count();
     ui->channelCombo->setCurrentIndex(ch);
@@ -1207,15 +1206,6 @@ void MainWindow::onChannelUpClicked()
 
 void MainWindow::onChannelDownClicked()
 {
-    if (stopAudioRecordingMsg(tr("Audio recording is ongoing. It will be stopped and saved if you change DAB channel.")))
-    {   // this is to avoid double message when channel combo changes
-        m_audioRecordingActive = false;
-    }
-    else
-    {
-        return;
-    }
-
     int ch = ui->channelCombo->currentIndex();
     ch -= 1;
     if (ch < 0)
