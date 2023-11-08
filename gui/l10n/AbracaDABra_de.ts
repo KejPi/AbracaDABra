@@ -897,7 +897,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1783"/>
         <source>Audio recording: %1:%2</source>
-        <translation>Audioaufnahme´: %1:%2</translation>
+        <translation>Audioaufnahme: %1:%2</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1784"/>
