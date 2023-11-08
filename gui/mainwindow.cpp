@@ -258,7 +258,11 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     signalQualityLayout->setAlignment(m_syncLabel, Qt::AlignCenter);
     signalQualityLayout->addWidget(m_snrLabel);
     signalQualityLayout->setSpacing(10);
-    signalQualityLayout->setContentsMargins(0,3,0,0);
+#ifdef Q_OS_MAC
+    signalQualityLayout->setContentsMargins(0,2,0,0);
+#else
+    signalQualityLayout->setContentsMargins(0,0,0,0);
+#endif
     m_signalQualityWidget = new QWidget();
     m_signalQualityWidget->setLayout(signalQualityLayout);
 
