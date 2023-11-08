@@ -40,7 +40,7 @@ class InputDeviceRecorder : public QObject
 public:
     InputDeviceRecorder();
     ~InputDeviceRecorder();
-    const QString &recordingPath() const;
+    const QString recordingPath() const;
     void setRecordingPath(const QString &recordingPath);
     void setDeviceDescription(const InputDeviceDescription & desc);
     void start(QWidget *callerWidget);

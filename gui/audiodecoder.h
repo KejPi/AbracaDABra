@@ -32,7 +32,6 @@
 #include <QDataStream>
 #include <QFile>
 #include <mpg123.h>
-
 #include "config.h"
 
 #if HAVE_FDKAAC
@@ -44,6 +43,7 @@
 
 #include "radiocontrol.h"
 #include "audiofifo.h"
+#include "audiorecorder.h"
 
 #define AUDIO_DECODER_BUFFER_SIZE     3840  // this is maximum buffer size for HE-AAC
 #if HAVE_FDKAAC
@@ -82,7 +82,7 @@ class AudioDecoder : public QObject
 {
     Q_OBJECT
 public:
-    explicit AudioDecoder(QObject *parent = nullptr);
+    explicit AudioDecoder(AudioRecorder* recorder, QObject *parent = nullptr);
     ~AudioDecoder();
     void start(const RadioControlServiceComponent &s);
     void stop();
@@ -95,19 +95,19 @@ signals:
     void switchAudio(audioFifo_t *buffer);
     void stopAudio();
     void audioParametersInfo(const AudioParameters & params);
-    void inputData(const std::vector<uint8_t> &data);
-    void outputData(const int16_t *data, size_t numSamples);
 
 private:
     enum class PlaybackState { Stopped = 0, WaitForInit, Running } m_playbackState;
+
+    AudioRecorder * m_recorder;
 
     dabsdrAudioFrameHeader_t m_aacHeader;
     AudioParameters m_audioParameters;
 
     int16_t * m_outBufferPtr;
+    size_t m_outputBufferSamples;
 #if HAVE_FDKAAC
     HANDLE_AACDECODER m_aacDecoderHandle;
-    size_t m_outputFrameLen;
 #else
     NeAACDecHandle m_aacDecoderHandle;
     NeAACDecFrameInfo m_aacDecFrameInfo;
@@ -124,7 +124,6 @@ private:
     audioFifo_t * m_outFifoPtr;
 
 #if !HAVE_FDKAAC
-    size_t m_outputBufferSamples;
     int m_numChannels;
     std::vector<float> m_muteRamp;
     enum class OutputState
@@ -151,7 +150,7 @@ private:
     void processMP2(RadioControlAudioData *inData);
     void getFormatMP2();
 
-    // this is for dubugging
+    // this is for debugging
 #ifdef AUDIO_DECODER_RAW_OUT
     FILE * m_rawOut;
 #endif

@@ -144,7 +144,13 @@ add_executable(${TARGET}
     metadatamanager.h
     metadatamanager.cpp
 
+    audiorecorder.h
+    audiorecorder.cpp
+
     ${APPLE_SOURCES}
+
+
+
   )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

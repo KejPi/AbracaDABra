@@ -44,6 +44,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 
     ui->tabWidget->setTabText(SetupDialogTabs::Device, tr("Device"));
     ui->tabWidget->setTabText(SetupDialogTabs::Announcement, tr("Announcements"));
+    ui->tabWidget->setTabText(SetupDialogTabs::Audio, tr("Audio"));
     ui->tabWidget->setTabText(SetupDialogTabs::Other, tr("Others"));
     ui->tabWidget->setCurrentIndex(SetupDialogTabs::Device);
 
@@ -261,6 +262,10 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->spiAppCheckBox, &QCheckBox::clicked, this, &SetupDialog::onSpiAppChecked);
     connect(ui->internetCheckBox, &QCheckBox::clicked, this, &SetupDialog::onUseInternetChecked);
     connect(ui->radioDNSCheckBox, &QCheckBox::clicked, this, &SetupDialog::onRadioDnsChecked);
+    connect(ui->audioRecordingFolderButton, &QPushButton::clicked, this, &SetupDialog::onAudioRecordingFolderButtonClicked);
+    connect(ui->audioInRecordingRadioButton, &QRadioButton::clicked, this, &SetupDialog::onAudioRecordingChecked);
+    connect(ui->audioOutRecordingRadioButton, &QRadioButton::clicked, this, &SetupDialog::onAudioRecordingChecked);
+    connect(ui->autoStopRecordingCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings.audioRecAutoStopEna = checked; });
 
     connect(ui->rawFileProgressBar, &QProgressBar::valueChanged, this, &SetupDialog::onRawFileProgressChanged);
     // reset UI
@@ -345,9 +350,10 @@ void SetupDialog::setSettings(const Settings &settings)
     m_settings = settings;
     setUiState();
     setStatusLabel();
-    emit newAnnouncementSettings(m_settings.announcementEna);
+    emit newAnnouncementSettings();
     emit noiseConcealmentLevelChanged(m_settings.noiseConcealmentLevel);
     emit xmlHeaderToggled(m_settings.xmlHeaderEna);
+    emit audioRecordingSettings(m_settings.audioRecFolder, m_settings.audioRecCaptureOutput);
     onUseInternetChecked(m_settings.useInternet);
     onSpiAppChecked(m_settings.spiAppEna);
 }
@@ -399,6 +405,12 @@ void SetupDialog::onFileLength(int msec)
 void SetupDialog::onFileProgress(int msec)
 {
     ui->rawFileProgressBar->setValue(msec);
+}
+
+void SetupDialog::setAudioRecAutoStop(bool ena)
+{
+    m_settings.audioRecAutoStopEna = ena;
+    ui->autoStopRecordingCheckBox->setChecked(ena);
 }
 
 QLocale::Language SetupDialog::applicationLanguage() const
@@ -609,6 +621,17 @@ void SetupDialog::setUiState()
         index = 0;
     }
     ui->langComboBox->setCurrentIndex(index);
+
+    ui->audioRecordingFolderLabel->setText(m_settings.audioRecFolder);
+    if (m_settings.audioRecCaptureOutput)
+    {
+        ui->audioOutRecordingRadioButton->setChecked(true);
+    }
+    else
+    {
+        ui->audioInRecordingRadioButton->setChecked(true);
+    }
+    ui->autoStopRecordingCheckBox->setChecked(m_settings.audioRecAutoStopEna);
 }
 
 void SetupDialog::onConnectDeviceClicked()
@@ -1105,7 +1128,7 @@ void SetupDialog::onAnnouncementClicked()
     if (m_settings.announcementEna != announcementEna)
     {
         m_settings.announcementEna = announcementEna;
-        emit newAnnouncementSettings(announcementEna);
+        emit newAnnouncementSettings();
     }
 }
 
@@ -1197,4 +1220,32 @@ void SetupDialog::onRadioDnsChecked(bool checked)
 {
     m_settings.radioDnsEna = checked;
     emit spiApplicationSettingsChanged(m_settings.useInternet, m_settings.radioDnsEna);
+}
+
+void SetupDialog::onAudioRecordingFolderButtonClicked()
+{
+    QString dir = QDir::homePath();
+    if (!m_settings.audioRecFolder.isEmpty())
+    {
+        dir = QFileInfo(m_settings.audioRecFolder).path();
+    }
+    dir = QFileDialog::getExistingDirectory(this, tr("Audio recording folder"), dir);
+    if (!dir.isEmpty())
+    {
+        m_settings.audioRecFolder = dir;
+        ui->audioRecordingFolderLabel->setText(dir);
+        emit audioRecordingSettings(m_settings.audioRecFolder, m_settings.audioRecCaptureOutput);
+
+#ifdef Q_OS_MACX // bug in Ventura
+        show(); //bring window to top on OSX
+        raise(); //bring window from minimized state on OSX
+        activateWindow(); //bring window to front/unminimize on windows
+#endif
+    }
+}
+
+void SetupDialog::onAudioRecordingChecked(bool checked)
+{
+    m_settings.audioRecCaptureOutput = ui->audioOutRecordingRadioButton->isChecked();
+    emit audioRecordingSettings(m_settings.audioRecFolder, m_settings.audioRecCaptureOutput);
 }

@@ -1040,7 +1040,6 @@ void RadioControl::eventHandler_serviceList(RadioControlEvent *pEvent)
             m_serviceList.insert(sid.value(), newService);
             m_numReqPendingServiceList++;
             dabGetServiceComponent(sid.value());
-
             if (sid.isProgServiceId())
             {   // only programme services support announcements
                 // get supported announcements -> delay request by 1 second

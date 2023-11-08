@@ -44,7 +44,7 @@ InputDeviceRecorder::~InputDeviceRecorder()
     stop();
 }
 
-const QString &InputDeviceRecorder::recordingPath() const
+const QString InputDeviceRecorder::recordingPath() const
 {
     return m_recordingPath;
 }

@@ -52,6 +52,7 @@
 #include "dldecoder.h"
 #include "slideshowapp.h"
 #include "spiapp.h"
+#include "audiorecorder.h"
 #include "audiodecoder.h"
 #include "audiooutput.h"
 #include "servicelist.h"
@@ -86,6 +87,9 @@ signals:
     void audioVolume(int volume);
     void audioOutput(const QByteArray & deviceId);
     void audioStop();
+    void startAudioRecording();
+    void stopAudioRecording();
+    void announcementMask(uint16_t mask);
     void exit();
 
 protected:        
@@ -111,15 +115,16 @@ private:
     LogDialog * m_logDialog;
     QProgressBar * m_snrProgressbar;    
     ClickableLabel * m_menuLabel;
-    ClickableLabel * m_muteLabel;
-
-    // status bar widgets
+    ClickableLabel * m_muteLabel;   
     QStackedWidget * m_timeBasicQualInfoWidget;
     QLabel * m_timeLabel;
     QLocale m_timeLocale;
     QLabel * m_basicSignalQualityLabel;
     QLabel * m_infoLabel;
     QWidget * m_signalQualityWidget;
+    ClickableLabel * m_audioRecordingLabel;
+    QLabel * m_audioRecordingProgressLabel;
+    QWidget * m_audioRecordingWidget;
     QLabel * m_syncLabel;
     QLabel * m_snrLabel;
 
@@ -133,6 +138,7 @@ private:
     QAction * m_ensembleInfoAction;
     QAction * m_aboutAction;
     QAction * m_logAction;
+    QAction * m_audioRecordingAction;
     QActionGroup * m_audioDevicesGroup = nullptr;
 
     // dark mode
@@ -151,8 +157,9 @@ private:
     InputDeviceRecorder * m_inputDeviceRecorder = nullptr;
 
     // audio decoder
-    QThread * m_audioDecoderThread;
+    QThread * m_audioDecoderThread;    
     AudioDecoder * m_audioDecoder;
+    AudioRecorder * m_audioRecorder;
 
     // audio output
     QThread * m_audioOutputThread = nullptr;
@@ -171,6 +178,8 @@ private:
     bool m_hasTreeViewFocus;
     int m_audioVolume = 100;
     bool m_keepServiceListOnScan;
+    bool m_audioRecordingActive;
+    QString m_audioRecordingFile;
 
     // service list
     ServiceList * m_serviceList;
@@ -197,6 +206,8 @@ private:
     void setExpertMode(bool ena);
     void stop();
     void bandScan();
+    void audioRecordingToggle();
+    void setAudioRecordingUI();
     void clearServiceList();
     void clearEnsembleInformationLabels();
     void clearServiceInformationLabels();
@@ -213,6 +224,7 @@ private:
     void toggleDLPlus(bool toggle);
     void initStyle();
     void restoreTimeQualWidget();
+    bool stopAudioRecordingMsg(const QString &infoText);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     void onColorSchemeChanged(Qt::ColorScheme colorScheme);
@@ -256,9 +268,10 @@ private:
     void onTuneChannel(uint32_t freq);
     void onTuneDone(uint32_t freq);
     void onNewInputDeviceSettings();
+    void onNewAnnouncementSettings();
     void onInputDeviceError(const InputDeviceErrorCode errCode);
-    void onServiceListSelection(const QModelIndex &index);
-    void onServiceListTreeSelection(const QModelIndex &index);
+    void onServiceListSelection(const QModelIndex &currentIndex, const QModelIndex &previousIndex = QModelIndex());
+    void onServiceListTreeSelection(const QModelIndex &currentIndex, const QModelIndex &previousIndex = QModelIndex());
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
     void onAudioServiceReconfiguration(const RadioControlServiceComponent &s);
     void onAnnouncement(const DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent &s);
@@ -266,6 +279,9 @@ private:
     void onAudioOutputError();
     void onAudioOutputSelected(QAction * action);
     void onAudioDeviceChanged(const QByteArray & id);
+    void onAudioRecordingStarted(const QString & filename);
+    void onAudioRecordingStopped();
+    void onAudioRecordingProgress(size_t bytes, size_t timeSec);
     void onMetadataUpdated(uint32_t sid, uint8_t scids, MetadataManager::MetadataRole role);
 };
 

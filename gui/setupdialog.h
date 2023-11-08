@@ -107,6 +107,9 @@ public:
         bool spiAppEna;
         bool useInternet;
         bool radioDnsEna;
+        QString audioRecFolder;
+        bool audioRecCaptureOutput;
+        bool audioRecAutoStopEna;
     };
 
     SetupDialog(QWidget *parent = nullptr);
@@ -118,23 +121,25 @@ public:
     void setXmlHeader(const InputDeviceDescription & desc);
     void onFileLength(int msec);
     void onFileProgress(int msec);
+    void setAudioRecAutoStop(bool ena);
     QLocale::Language applicationLanguage() const;
 
 signals:
     void inputDeviceChanged(const InputDeviceId & inputDevice);
     void newInputDeviceSettings();
-    void newAnnouncementSettings(uint16_t enaFlags);
+    void newAnnouncementSettings();
     void expertModeToggled(bool enabled);
     void applicationStyleChanged(ApplicationStyle style);
     void noiseConcealmentLevelChanged(int level);
     void xmlHeaderToggled(bool enabled);
     void spiApplicationEnabled(bool enabled);
     void spiApplicationSettingsChanged(bool useInterent, bool enaRadioDNS);
+    void audioRecordingSettings(const QString &folder, bool doOutputRecording);
 protected:
     void showEvent(QShowEvent *event);
 
 private:
-    enum SetupDialogTabs { Device = 0, Announcement = 1, Other = 2 };
+    enum SetupDialogTabs { Device = 0, Audio = 1, Announcement = 2, Other = 3 };
     enum SetupDialogXmlHeader { XMLDate = 0, XMLRecorder, XMLDevice,
                                 XMLSampleRate, XMLFreq, XMLLength, XMLFormat,
                                 XMLNumLabels};
@@ -186,6 +191,8 @@ private:
     void onSpiAppChecked(bool checked);
     void onUseInternetChecked(bool checked);
     void onRadioDnsChecked(bool checked);
+    void onAudioRecordingFolderButtonClicked();
+    void onAudioRecordingChecked(bool checked);
 
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);

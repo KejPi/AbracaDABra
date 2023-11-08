@@ -43,9 +43,10 @@
 #include <QClipboard>
 #include <QToolTip>
 #include <QActionGroup>
+#include <QStandardPaths>
+#include <QtGlobal>
 #include <iostream>
 
-#include "QtCore/qglobal.h"
 #include "mainwindow.h"
 #include "slsview.h"
 #include "./ui_mainwindow.h"
@@ -185,6 +186,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::newInputDeviceSettings, this, &MainWindow::onNewInputDeviceSettings);
     connect(m_setupDialog, &SetupDialog::applicationStyleChanged, this, &MainWindow::onApplicationStyleChanged);
     connect(m_setupDialog, &SetupDialog::expertModeToggled, this, &MainWindow::onExpertModeToggled);
+    connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, this, &MainWindow::onNewAnnouncementSettings);
     connect(m_setupDialog, &SetupDialog::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
 
     m_ensembleInfoDialog = new EnsembleInfoDialog(this);
@@ -211,6 +213,29 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_timeBasicQualInfoWidget->addWidget(m_timeLabel);
     m_timeBasicQualInfoWidget->addWidget(m_infoLabel);
 
+    m_audioRecordingLabel = new ClickableLabel(this);
+    m_audioRecordingLabel->setTooltip(tr("Stop audio recording"));
+    connect(m_audioRecordingLabel, &ClickableLabel::clicked, this, &MainWindow::audioRecordingToggle);
+    m_audioRecordingProgressLabel = new QLabel();
+    m_audioRecordingProgressLabel->setFont(font);   // bold font
+    m_audioRecordingProgressLabel->setAlignment(Qt::AlignCenter);
+
+    QHBoxLayout * audioRecordingLayout = new QHBoxLayout();
+    audioRecordingLayout->addWidget(m_audioRecordingLabel);
+    audioRecordingLayout->addWidget(m_audioRecordingProgressLabel);
+    //volumeLayout->setAlignment(m_audioVolumeSlider, Qt::AlignCenter);
+    //volumeLayout->setStretch(0, 100);
+    //volumeLayout->setAlignment(m_muteLabel, Qt::AlignCenter);
+    audioRecordingLayout->setStretch(1, 100);
+    audioRecordingLayout->setSpacing(5);
+    audioRecordingLayout->setContentsMargins(0,0,0,0);
+    audioRecordingLayout->setAlignment(m_audioRecordingLabel, Qt::AlignCenter);
+    audioRecordingLayout->setAlignment(m_audioRecordingProgressLabel, Qt::AlignLeft | Qt::AlignHCenter);
+    m_audioRecordingWidget = new QWidget(this);
+    m_audioRecordingWidget->setLayout(audioRecordingLayout);
+    m_audioRecordingWidget->setVisible(false);
+    m_audioRecordingActive = false;
+
     m_syncLabel = new QLabel();
     m_syncLabel->setAlignment(Qt::AlignRight);
 
@@ -236,7 +261,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     signalQualityLayout->setAlignment(m_syncLabel, Qt::AlignCenter);
     signalQualityLayout->addWidget(m_snrLabel);
     signalQualityLayout->setSpacing(10);
-    signalQualityLayout->setContentsMargins(0,0,0,0);
+    signalQualityLayout->setContentsMargins(0,3,0,0);
     m_signalQualityWidget = new QWidget();
     m_signalQualityWidget->setLayout(signalQualityLayout);
 
@@ -251,6 +276,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     m_ensembleInfoAction = new QAction(tr("Ensemble information"), this);
     connect(m_ensembleInfoAction, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
+
+    m_audioRecordingAction = new QAction(tr("Start audio recording"), this);
+    connect(m_audioRecordingAction, &QAction::triggered, this, &MainWindow::audioRecordingToggle);
 
     m_logAction = new QAction(tr("Application log"), this);
     connect(m_logAction, &QAction::triggered, this, &MainWindow::showLog);
@@ -270,8 +298,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         m_audioOutputMenu = m_menu->addMenu(tr("Audio output"));
         connect(m_audioOutputMenu, &QMenu::triggered, this, &MainWindow::onAudioOutputSelected);
     }
-
-    m_menu->addAction(m_setupAction);
+    m_menu->addAction(m_audioRecordingAction);
+    m_menu->addSeparator();
+    m_menu->addAction(m_setupAction);   
     m_menu->addAction(m_bandScanAction);
     m_menu->addAction(m_clearServiceListAction);
     m_menu->addSeparator();
@@ -316,11 +345,11 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     QGridLayout * layout = new QGridLayout(widget);
     layout->addWidget(m_timeBasicQualInfoWidget, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
-    layout->addWidget(m_signalQualityWidget, 0, 1, Qt::AlignVCenter | Qt::AlignRight);
-    layout->addWidget(volumeWidget, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
-    layout->addWidget(m_menuLabel, 0, 3, Qt::AlignVCenter | Qt::AlignRight);
-
-    layout->setColumnStretch(0, 100);
+    layout->addWidget(m_audioRecordingWidget, 0, 1, Qt::AlignLeft);
+    layout->addWidget(m_signalQualityWidget, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
+    layout->addWidget(volumeWidget, 0, 3, Qt::AlignVCenter | Qt::AlignRight);
+    layout->addWidget(m_menuLabel, 0, 4, Qt::AlignVCenter | Qt::AlignRight);
+    layout->setColumnStretch(1, 100);
     layout->setSpacing(20);
     ui->statusbar->addWidget(widget,1);
 
@@ -343,7 +372,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->serviceListView->setModel(m_slModel);
     ui->serviceListView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->serviceListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->serviceListView->installEventFilter(this);
+    ui->serviceListView->installEventFilter(this);    
     connect(ui->serviceListView->selectionModel(), &QItemSelectionModel::currentChanged, this, &MainWindow::onServiceListSelection);
 
     m_slTreeModel = new SLTreeModel(m_serviceList, this);
@@ -387,9 +416,11 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->serviceTreeView->setEnabled(false);
     ui->favoriteLabel->setEnabled(false);
 
+    m_audioRecordingAction->setEnabled(false);
+    onAudioRecordingStopped();
 
     clearEnsembleInformationLabels();
-    clearServiceInformationLabels();
+    clearServiceInformationLabels();    
     ui->dynamicLabel_Service->clear();
     ui->dynamicLabel_Announcement->clear();
     ui->dlWidget->setCurrentIndex(Instance::Service);
@@ -449,14 +480,24 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         ::exit(1);
     }
 
-    m_audioDecoder = new AudioDecoder(nullptr);
+    m_audioRecorder = new AudioRecorder(this);
+    m_audioDecoder = new AudioDecoder(m_audioRecorder);
     m_audioDecoderThread = new QThread(this);
     m_audioDecoderThread->setObjectName("audioDecoderThr");
     m_audioDecoder->moveToThread(m_audioDecoderThread);
+    m_audioRecorder->moveToThread(m_audioDecoderThread);
     connect(m_audioDecoderThread, &QThread::finished, m_audioDecoder, &QObject::deleteLater);
+    connect(m_audioDecoderThread, &QThread::finished, m_audioRecorder, &QObject::deleteLater);
     m_audioDecoderThread->start();
+
     connect(m_setupDialog, &SetupDialog::noiseConcealmentLevelChanged, m_audioDecoder, &AudioDecoder::setNoiseConcealment, Qt::QueuedConnection);
     connect(this, &MainWindow::audioStop, m_audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
+    connect(this, &MainWindow::startAudioRecording, m_audioRecorder, &AudioRecorder::start, Qt::QueuedConnection);
+    connect(this, &MainWindow::stopAudioRecording, m_audioRecorder, &AudioRecorder::stop, Qt::QueuedConnection);
+    connect(m_audioRecorder, &AudioRecorder::recordingStarted, this, &MainWindow::onAudioRecordingStarted, Qt::QueuedConnection);
+    connect(m_audioRecorder, &AudioRecorder::recordingStopped, this, &MainWindow::onAudioRecordingStopped, Qt::QueuedConnection);
+    connect(m_audioRecorder, &AudioRecorder::recordingProgress, this, &MainWindow::onAudioRecordingProgress, Qt::QueuedConnection);
+    connect(m_setupDialog, &SetupDialog::audioRecordingSettings, m_audioRecorder, &AudioRecorder::setup, Qt::QueuedConnection);
 
 #if (HAVE_PORTAUDIO)
     if (AudioFramework::Pa == audioFramework)
@@ -501,8 +542,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::dabTime, this, &MainWindow::onDabTime, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListEntry, this, &MainWindow::onServiceListEntry, Qt::BlockingQueuedConnection);
     connect(m_radioControl, &RadioControl::announcement, this, &MainWindow::onAnnouncement, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::programmeTypeChanged, this, &MainWindow::onProgrammeTypeChanged, Qt::QueuedConnection);
-    connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, m_radioControl, &RadioControl::setupAnnouncements, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::programmeTypeChanged, this, &MainWindow::onProgrammeTypeChanged, Qt::QueuedConnection);    
+    connect(this, &MainWindow::announcementMask, m_radioControl, &RadioControl::setupAnnouncements, Qt::QueuedConnection);
     connect(m_audioOutput, &AudioOutput::audioOutputRestart, m_radioControl, &RadioControl::onAudioOutputRestart, Qt::QueuedConnection);
     connect(this, &MainWindow::toggleAnnouncement, m_radioControl, &RadioControl::suspendResumeAnnouncement, Qt::QueuedConnection);
 
@@ -839,8 +880,9 @@ void MainWindow::onEnsembleRemoved(const RadioControlEnsemble &ens)
     ui->serviceListView->setCurrentIndex(QModelIndex());
     ui->serviceTreeView->setCurrentIndex(QModelIndex());
     ui->favoriteLabel->setEnabled(false);
+    m_audioRecordingAction->setDisabled(true);
 
-    m_serviceList->removeEnsemble(ens);
+    m_serviceList->removeEnsemble(ens);        
 }
 
 void MainWindow::onSignalState(uint8_t sync, float snr)
@@ -1026,6 +1068,7 @@ void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)
                     );
         }
     }
+    m_audioRecordingAction->setEnabled(true);
 }
 
 void MainWindow::onProgrammeTypeChanged(const DabSId &sid, const DabPTy &pty)
@@ -1091,10 +1134,16 @@ void MainWindow::serviceSelected()
     ui->dlPlusWidget->setCurrentIndex(Instance::Service);
     ui->favoriteLabel->setEnabled(false);
     ui->slsWidget->setCurrentIndex(Instance::Service);
+    m_audioRecordingAction->setDisabled(true);
 }
 
 void MainWindow::onChannelChange(int index)
 {
+    if (!stopAudioRecordingMsg(tr("Audio recording is ongoing. It will be stopped and saved if you change DAB channel.")))
+    {
+        return;
+    }
+
     if (m_frequency != ui->channelCombo->itemData(index).toUInt())
     {
         // no service is selected
@@ -1142,6 +1191,15 @@ void MainWindow::onBandScanStart()
 
 void MainWindow::onChannelUpClicked()
 {
+    if (stopAudioRecordingMsg(tr("Audio recording is ongoing. It will be stopped and saved if you change DAB channel.")))
+    {   // this is to avoid double message when channel combo changes
+        m_audioRecordingActive = false;
+    }
+    else
+    {
+        return;
+    }
+
     int ch = ui->channelCombo->currentIndex();
     ch = (ch + 1) % ui->channelCombo->count();
     ui->channelCombo->setCurrentIndex(ch);
@@ -1149,6 +1207,15 @@ void MainWindow::onChannelUpClicked()
 
 void MainWindow::onChannelDownClicked()
 {
+    if (stopAudioRecordingMsg(tr("Audio recording is ongoing. It will be stopped and saved if you change DAB channel.")))
+    {   // this is to avoid double message when channel combo changes
+        m_audioRecordingActive = false;
+    }
+    else
+    {
+        return;
+    }
+
     int ch = ui->channelCombo->currentIndex();
     ch -= 1;
     if (ch < 0)
@@ -1211,6 +1278,7 @@ void MainWindow::onTuneDone(uint32_t freq)
         clearServiceInformationLabels();
         ui->serviceListView->setCurrentIndex(QModelIndex());
         ui->serviceTreeView->setCurrentIndex(QModelIndex());
+        m_audioRecordingAction->setDisabled(true);
         if (m_deviceChangeRequested)
         {
             initInputDevice(m_inputDeviceIdRequest);
@@ -1260,15 +1328,50 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
     }
 }
 
-void MainWindow::onServiceListSelection(const QModelIndex &index)
+bool MainWindow::stopAudioRecordingMsg(const QString & infoText)
 {
-    const SLModel * model = reinterpret_cast<const SLModel*>(index.model());
-    if (model->id(index) == ServiceListId(m_SId.value(), m_SCIdS))
+    if (m_audioRecordingActive && !m_setupDialog->settings().audioRecAutoStopEna)
+    //if (!m_setupDialog->settings().audioRecAutoStopEna)
+    {
+        QMessageBox msgBox(QMessageBox::Warning, tr("Warning"),
+                           tr("Do you want to stop audio recording?"), {}, this);
+        msgBox.setInformativeText(infoText);
+
+        QPushButton * keepButton = msgBox.addButton(tr("Keep recording"), QMessageBox::AcceptRole);
+        QPushButton * doNotShowButton = msgBox.addButton(tr("Stop recording and do not ask again"), QMessageBox::RejectRole);
+        QPushButton * stopButton = msgBox.addButton(tr("Stop recording"), QMessageBox::RejectRole);
+
+        msgBox.setEscapeButton(keepButton);
+        msgBox.exec();
+        if (msgBox.clickedButton() == keepButton)
+        {
+            return false;
+        }
+        if (msgBox.clickedButton() == doNotShowButton)
+        {
+            m_setupDialog->setAudioRecAutoStop(true);
+        }
+        return true;
+    }
+    return true;
+}
+
+void MainWindow::onServiceListSelection(const QModelIndex &currentIndex, const QModelIndex &previousIndex)
+{
+    //qDebug() << currentIndex << previousIndex;
+    const SLModel * model = reinterpret_cast<const SLModel*>(currentIndex.model());
+    if (model->id(currentIndex) == ServiceListId(m_SId.value(), m_SCIdS))
     {
         return;
     }
 
-    ServiceListConstIterator it = m_serviceList->findService(model->id(index));
+    if (!stopAudioRecordingMsg(tr("Audio recording is ongoing. It will be stopped and saved if you switch current service.")))
+    {
+        QTimer::singleShot(1, this, [this, previousIndex](){ ui->serviceListView->selectionModel()->setCurrentIndex(previousIndex, QItemSelectionModel::Clear | QItemSelectionModel::Select | QItemSelectionModel::Current); });
+        return;
+    }
+
+    ServiceListConstIterator it = m_serviceList->findService(model->id(currentIndex));
     if (m_serviceList->serviceListEnd() != it)
     {
         m_SId = (*it)->SId();
@@ -1297,11 +1400,11 @@ void MainWindow::onServiceListSelection(const QModelIndex &index)
     }
 }
 
-void MainWindow::onServiceListTreeSelection(const QModelIndex &index)
+void MainWindow::onServiceListTreeSelection(const QModelIndex &currentIndex, const QModelIndex &previousIndex)
 {
-    const SLTreeModel * model = reinterpret_cast<const SLTreeModel*>(index.model());
+    const SLTreeModel * model = reinterpret_cast<const SLTreeModel*>(currentIndex.model());
 
-    if (index.parent().isValid())
+    if (currentIndex.parent().isValid())
     {   // service, not ensemble selected
         // if both service ID and ensemble ID are the same then return
         ServiceListId currentServiceId(m_SId.value(), m_SCIdS);
@@ -1312,18 +1415,24 @@ void MainWindow::onServiceListTreeSelection(const QModelIndex &index)
             currentEnsId = (*it)->getEnsemble((*it)->currentEnsembleIdx())->id();
         }
 
-        if ((model->id(index) == currentServiceId) && (model->id(index.parent()) == currentEnsId))
+        if ((model->id(currentIndex) == currentServiceId) && (model->id(currentIndex.parent()) == currentEnsId))
         {
             return;
         }
 
-        it = m_serviceList->findService(model->id(index));
+        if (!stopAudioRecordingMsg(tr("Audio recording is ongoing. It will be stopped and saved if you switch current service.")))
+        {
+            QTimer::singleShot(1, this, [this, previousIndex](){ ui->serviceTreeView->selectionModel()->setCurrentIndex(previousIndex, QItemSelectionModel::Clear | QItemSelectionModel::Select | QItemSelectionModel::Current); });
+            return;
+        }
+
+        it = m_serviceList->findService(model->id(currentIndex));
         if (m_serviceList->serviceListEnd() != it)
         {
             m_SId = (*it)->SId();
             m_SCIdS = (*it)->SCIdS();
 
-            uint32_t newFrequency = (*it)->switchEnsemble(model->id(index.parent()))->frequency();
+            uint32_t newFrequency = (*it)->switchEnsemble(model->id(currentIndex.parent()))->frequency();
             if (newFrequency != m_frequency)
             {
                 m_frequency = newFrequency;
@@ -1496,6 +1605,7 @@ void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponen
         m_dlDecoder[Instance::Announcement]->reset();
 
         ui->favoriteLabel->setEnabled(false);
+        m_audioRecordingAction->setDisabled(true);
     }
 }
 
@@ -1519,6 +1629,9 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
 
         ui->slsWidget->setCurrentIndex(Instance::Service);
         ui->announcementLabel->setVisible(false);
+
+        // enable audio recording menu item
+        m_audioRecordingAction->setEnabled(true);
         break;
     case RadioControlAnnouncementState::OnCurrentService:
         ui->announcementLabel->setToolTip(QString(tr("<b>%1</b><br>"
@@ -1530,6 +1643,8 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
         ui->announcementLabel->setVisible(true);
         ui->slsWidget->setCurrentIndex(Instance::Service);
 
+        // enable audio recording menu item
+        m_audioRecordingAction->setEnabled(true);
         break;
     case RadioControlAnnouncementState::OnOtherService:
         ui->announcementLabel->setToolTip(QString(tr("<b>%1</b><br>"
@@ -1540,11 +1655,15 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
                                               .arg(DabTables::getAnnouncementName(id), s.label));
         ui->announcementLabel->setChecked(true);
         ui->announcementLabel->setEnabled(true);
-        ui->announcementLabel->setVisible(true);
+        ui->announcementLabel->setVisible(true);        
 
         ui->dlWidget->setCurrentIndex(Instance::Announcement);
         ui->dlPlusWidget->setCurrentIndex(Instance::Announcement);
         ui->slsWidget->setCurrentIndex(Instance::Announcement);
+
+        // disable audio recording menu item
+        m_audioRecordingAction->setEnabled(false);
+
         break;
     case RadioControlAnnouncementState::Suspended:
         ui->announcementLabel->setToolTip(QString(tr("<b>%1</b><br>"
@@ -1572,6 +1691,8 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
 
         ui->slsWidget->setCurrentIndex(Instance::Service);
 
+        // enable audio recording menu item
+        m_audioRecordingAction->setEnabled(true);
         break;
     }
 
@@ -1637,6 +1758,56 @@ void MainWindow::onAudioDeviceChanged(const QByteArray &id)
     }
 }
 
+void MainWindow::audioRecordingToggle()
+{
+    if (m_audioRecordingActive)
+    {
+        emit stopAudioRecording();
+    }
+    else
+    {
+        emit startAudioRecording();
+    }
+}
+
+void MainWindow::onAudioRecordingStarted(const QString &filename)
+{
+    emit announcementMask(0x0001);             // disable announcements during recording (only alarm is enabled)
+    m_audioRecordingFile = filename;
+    m_audioRecordingActive = true;
+    onAudioRecordingProgress(0, 0);
+    setAudioRecordingUI();
+}
+
+void MainWindow::onAudioRecordingStopped()
+{    
+    m_audioRecordingActive = false;
+    setAudioRecordingUI();
+    emit announcementMask(m_setupDialog->settings().announcementEna);   // restore announcement settings
+}
+
+void MainWindow::onAudioRecordingProgress(size_t bytes, size_t timeSec)
+{
+    int min = timeSec / 60;
+    m_audioRecordingProgressLabel->setText(QString(tr("Audio recording: %1:%2")).arg(min).arg(timeSec - min * 60, 2, 10, QChar('0')));
+    m_audioRecordingProgressLabel->setToolTip(QString(tr("Audio recording ongoing (%2 kBytes recorded)\n"
+                                                         "File: %1")).arg(m_audioRecordingFile).arg(bytes >> 10));
+}
+
+void MainWindow::setAudioRecordingUI()
+{
+    if (m_audioRecordingActive)
+    {
+        m_audioRecordingWidget->setVisible(true);
+        m_audioRecordingAction->setText(tr("Stop audio recording"));
+    }
+    else
+    {   m_audioRecordingWidget->setVisible(false);
+        m_audioRecordingAction->setText(tr("Start audio recording"));
+    }
+}
+
+
 void MainWindow::onMetadataUpdated(uint32_t sid, uint8_t scids, MetadataManager::MetadataRole role)
 {
     if ((sid == m_SId.value()) && (scids == m_SCIdS))
@@ -1694,6 +1865,14 @@ void MainWindow::clearServiceInformationLabels()
     ui->dlWidget->setCurrentIndex(Instance::Service);
     onDLReset_Service();
     onDLReset_Announcement();
+}
+
+void MainWindow::onNewAnnouncementSettings()
+{
+    if (!m_audioRecordingActive)
+    {
+        emit announcementMask(m_setupDialog->settings().announcementEna);
+    }
 }
 
 void MainWindow::onNewInputDeviceSettings()
@@ -2214,6 +2393,9 @@ void MainWindow::loadSettings()
     s.spiAppEna = settings->value("spiAppEna", true).toBool();
     s.useInternet = settings->value("useInternet", true).toBool();
     s.radioDnsEna = settings->value("radioDNS", true).toBool();
+    s.audioRecFolder = settings->value("audioRecFolder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
+    s.audioRecCaptureOutput = settings->value("audioRecCaptureOutput", false).toBool();
+    s.audioRecAutoStopEna = settings->value("audioRecAutoStop", false).toBool();
 
     s.rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
     s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
@@ -2378,6 +2560,9 @@ void MainWindow::saveSettings()
     settings->setValue("spiAppEna", s.spiAppEna);
     settings->setValue("useInternet", s.useInternet);
     settings->setValue("radioDNS", s.radioDnsEna);
+    settings->setValue("audioRecFolder", s.audioRecFolder);
+    settings->setValue("audioRecCaptureOutput", s.audioRecCaptureOutput);
+    settings->setValue("audioRecAutoStop", s.audioRecAutoStopEna);
 
     settings->setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
     settings->setValue("RTL-SDR/gainMode", static_cast<int>(s.rtlsdr.gainMode));
@@ -2659,6 +2844,11 @@ void MainWindow::setExpertMode(bool ena)
 
 void MainWindow::bandScan()
 {
+    if (!stopAudioRecordingMsg(tr("Audio recording is ongoing. It will be stopped and saved before starting band scan.")))
+    {
+        return;
+    }
+
     BandScanDialog * dialog = new BandScanDialog(this, (m_serviceList->numServices() == 0) || m_keepServiceListOnScan, Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
     connect(dialog, &BandScanDialog::finished, dialog, &QObject::deleteLater);
     connect(dialog, &BandScanDialog::tuneChannel, this, &MainWindow::onTuneChannel);
@@ -2672,6 +2862,7 @@ void MainWindow::bandScan()
 
     dialog->open();
 }
+
 
 void MainWindow::onBandScanFinished(int result)
 {
@@ -2962,6 +3153,8 @@ void MainWindow::setupDarkMode()
         ui->channelDown->setIcon(":/resources/chevron-left_dark.png");
         ui->channelUp->setIcon(":/resources/chevron-right_dark.png");
 
+        m_audioRecordingLabel->setIcon(":/resources/record.png");
+
         ui->slsView_Service->setupDarkMode(true);
         ui->slsView_Announcement->setupDarkMode(true);
         m_logDialog->setupDarkMode(true);
@@ -2985,6 +3178,8 @@ void MainWindow::setupDarkMode()
 
         ui->channelDown->setIcon(":/resources/chevron-left.png");
         ui->channelUp->setIcon(":/resources/chevron-right.png");
+
+        m_audioRecordingLabel->setIcon(":/resources/record.png");
 
         ui->slsView_Service->setupDarkMode(false);
         ui->slsView_Announcement->setupDarkMode(false);

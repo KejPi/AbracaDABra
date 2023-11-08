@@ -27,22 +27,27 @@
 #include <QDebug>
 #include <QFile>
 #include <QLoggingCategory>
+#include <QStandardPaths>
 #include <math.h>
 
 #include "audiodecoder.h"
 
-Q_LOGGING_CATEGORY(audioDecoder, "AudioDecoder", QtInfoMsg)
+Q_LOGGING_CATEGORY(audioDecoder, "AudioDecoder", QtDebugMsg)
 
 audioFifo_t audioFifo[2];
 
-AudioDecoder::AudioDecoder(QObject *parent) : QObject(parent)
+AudioDecoder::AudioDecoder(AudioRecorder *recorder, QObject *parent) : QObject(parent)
 {
     m_outFifoIdx = 0;
     m_outFifoPtr = &audioFifo[m_outFifoIdx];
     m_aacDecoderHandle = nullptr;
     m_mp2DecoderHandle = nullptr;
 
+    Q_ASSERT(recorder != nullptr);
+    m_recorder = recorder;
+
     m_playbackState = PlaybackState::Stopped;
+
 #if HAVE_FDKAAC
     Q_ASSERT(sizeof(int16_t) == sizeof(INT_PCM));
 #endif
@@ -142,6 +147,7 @@ void AudioDecoder::start(const RadioControlServiceComponent&s)
             stop();
         }
         m_playbackState = PlaybackState::WaitForInit;
+        m_recorder->setAudioService(s);
     }
     else
     {   // no audio service -> can happen during reconfiguration
@@ -152,6 +158,7 @@ void AudioDecoder::start(const RadioControlServiceComponent&s)
 void AudioDecoder::stop()
 {
     m_playbackState = PlaybackState::Stopped;
+    m_recorder->stop();
 
     deinitAACDecoder();
     deinitMPG123();
@@ -255,6 +262,7 @@ void AudioDecoder::readAACHeader()
     m_audioParameters.parametricStereo = m_aacHeader.bits.ps_flag;
     m_audioParameters.sbr = m_aacHeader.bits.sbr_flag;
 
+    m_recorder->setDataFormat(m_audioParameters.sampleRateKHz, true);
     emit audioParametersInfo(m_audioParameters);
 
     qCInfo(audioDecoder, "%s %d kHz %s",
@@ -384,13 +392,13 @@ void AudioDecoder::initAACDecoder()
         throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while aacDecoder_ConfigRaw: " + std::to_string(init_result));
     }
 
-    m_outputFrameLen = 960 * channels * (m_aacHeader.bits.sbr_flag ? 2 : 1);
+    m_outputBufferSamples = 960 * channels * (m_aacHeader.bits.sbr_flag ? 2 : 1);
 
     qCInfo(audioDecoder, "Output sample rate %d Hz, channels: %d", m_aacHeader.bits.dac_rate ? 48000 : 32000, channels);
 
-//    m_outFifoPtr->numChannels = uint8_t(channels);
-//    m_outFifoPtr->sampleRate = uint32_t(m_aacHeader.bits.dac_rate ? 48000 : 32000);
-//    emit startAudio(m_outFifoPtr);
+    //    m_outFifoPtr->numChannels = uint8_t(channels);
+    //    m_outFifoPtr->sampleRate = uint32_t(m_aacHeader.bits.dac_rate ? 48000 : 32000);
+    //    emit startAudio(m_outFifoPtr);
     setOutput(m_aacHeader.bits.dac_rate ? 48000 : 32000, channels);
 }
 
@@ -479,19 +487,26 @@ void AudioDecoder::decodeData(RadioControlAudioData *inData)
         return;
     }
 
+    if (inData->id != m_inputDataDecoderId)
+    {   // announcement
+        m_recorder->stop();
+    }
+
     switch (inData->ASCTy)
     {
-        case DabAudioDataSCty::DAB_AUDIO:
-            processMP2(inData);
-            break;
+    case DabAudioDataSCty::DAB_AUDIO:
+        processMP2(inData);
+        break;
 
-        case DabAudioDataSCty::DABPLUS_AUDIO:
-            processAAC(inData);
-            break;
+    case DabAudioDataSCty::DABPLUS_AUDIO:
+        processAAC(inData);
+        break;
 
-        default:
-            ; // do nothing
+    default:
+        ; // do nothing
     }
+
+    m_recorder->recordData(inData, m_outBufferPtr, m_outputBufferSamples);
 
     // free input data
     delete inData;
@@ -545,8 +560,8 @@ void AudioDecoder::setNoiseConcealment(int level)
 
 void AudioDecoder::processMP2(RadioControlAudioData *inData)
 {
-    #define MP2_FRAME_PCM_SAMPLES (2 * 1152)
-    #define MP2_DRC_ENABLE        1
+#define MP2_FRAME_PCM_SAMPLES (2 * 1152)
+#define MP2_DRC_ENABLE        1
 
     if (nullptr == m_mp2DecoderHandle)
     {   // this can happen when audio changes from AAC to MP2
@@ -557,7 +572,6 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
 #ifdef AUDIO_DECODER_MP2_OUT
     writeMP2Output(inData->data);
 #endif
-
     if (inData->data.size() > 0)
     {
         // [ETSI TS 103 466 V1.2.1 (2019-09)]
@@ -565,11 +579,10 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
         // It shall further divide this bit stream into audio frames, each corresponding to 1152 PCM audio samples,
         // which is equivalent to a duration of 24 ms in the case of 48 kHz sampling frequency
         // and 48 ms in the case of 24 kHz sampling frequency.
-        int16_t * outBuf = new int16_t[MP2_FRAME_PCM_SAMPLES];
 
         /* Feed input chunk and get first chunk of decoded audio. */
         size_t size;
-        int ret = mpg123_decode(m_mp2DecoderHandle, &inData->data[0], inData->data.size(), outBuf, MP2_FRAME_PCM_SAMPLES * sizeof(int16_t), &size);
+        int ret = mpg123_decode(m_mp2DecoderHandle, &inData->data[0], inData->data.size(), m_outBufferPtr, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t), &size);
         if ((MPG123_NEW_FORMAT == ret) || (inData->id != m_inputDataDecoderId))
         {   // this is stream reconfiguration or announcement (different instance)
             long sampleRate;
@@ -583,77 +596,65 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
             getFormatMP2();
 
             m_inputDataDecoderId = inData->id;
-            m_mp2DRC = 0;
+            m_mp2DRC = 0;                        
         }
 
-        // lets store data to FIFO
+        m_outputBufferSamples = size / sizeof(int16_t);
+
+        // there should be nothing more to decode, but try to be sure
+        while (ret != MPG123_ERR && ret != MPG123_NEED_MORE)
+        {   // Get all decoded audio that is available now before feeding more input
+            ret = mpg123_decode(m_mp2DecoderHandle, NULL, 0, m_outBufferPtr + m_outputBufferSamples, (AUDIO_DECODER_BUFFER_SIZE - m_outputBufferSamples) * sizeof(int16_t), &size);
+
+            m_outputBufferSamples += size / sizeof(int16_t);
+
+            if ((0 == size) || (m_outputBufferSamples >= AUDIO_DECODER_BUFFER_SIZE))
+            {
+                break;
+            }
+        }
+
+        // we have m_outputBufferSamples decoded
+
+#if MP2_DRC_ENABLE
+        if (m_mp2DRC != 0)
+        {   // multiply buffer by gain
+            float gain = pow(10, m_mp2DRC * 0.0125);    // 0.0125 = 1/(4*20)
+            for (int n = 0; n < m_outputBufferSamples; ++n)     // considering int16_t data => 2 bytes
+            {   // multiply all samples by gain
+                m_outBufferPtr[n] = int16_t(qRound(m_outBufferPtr[n] * gain));
+            }
+        }
+#endif // MP2_DRC_ENABLE
+
+        int64_t bytesToWrite = m_outputBufferSamples * sizeof(int16_t);
+
+        // wait for space in ouput buffer
         m_outFifoPtr->mutex.lock();
         uint64_t count = m_outFifoPtr->count;
-        while ((AUDIO_FIFO_SIZE - count) < size)
+        while (int64_t(AUDIO_FIFO_SIZE - count) < bytesToWrite)
         {
             m_outFifoPtr->countChanged.wait(&m_outFifoPtr->mutex);
             count = m_outFifoPtr->count;
         }
         m_outFifoPtr->mutex.unlock();
 
-        // we know that size is available in buffer
-        uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_outFifoPtr->head;
-
-#if MP2_DRC_ENABLE
-        if (m_mp2DRC != 0)
-        {   // multiply buffer by gain
-            float gain = pow(10, m_mp2DRC * 0.0125);    // 0.0125 = 1/(4*20)
-            for (int n = 0; n < int (size >> 1); ++n)     // considering int16_t data => 2 bytes
-            {   // multiply all samples by gain
-                outBuf[n] = int16_t(qRound(outBuf[n] * gain));
-            }
-        }
-#endif // MP2_DRC_ENABLE
-        if (bytesToEnd < size)
+        int64_t bytesToEnd = AUDIO_FIFO_SIZE - m_outFifoPtr->head;
+        if (bytesToEnd < bytesToWrite)
         {
-            memcpy(m_outFifoPtr->buffer + m_outFifoPtr->head, outBuf, bytesToEnd);
-            memcpy(m_outFifoPtr->buffer, outBuf + bytesToEnd, size - bytesToEnd);
-            m_outFifoPtr->head = (size - bytesToEnd);
+            memcpy(m_outFifoPtr->buffer + m_outFifoPtr->head, m_outBufferPtr, bytesToEnd);
+            memcpy(m_outFifoPtr->buffer, reinterpret_cast<uint8_t *>(m_outBufferPtr) + bytesToEnd, bytesToWrite - bytesToEnd);
+            m_outFifoPtr->head = bytesToWrite - bytesToEnd;
         }
         else
         {
-            memcpy(m_outFifoPtr->buffer + m_outFifoPtr->head, outBuf, size);
-            m_outFifoPtr->head += size;
+            memcpy(m_outFifoPtr->buffer + m_outFifoPtr->head, m_outBufferPtr, bytesToWrite);
+            m_outFifoPtr->head += bytesToWrite;
         }
 
         m_outFifoPtr->mutex.lock();
-        m_outFifoPtr->count += size;
+        m_outFifoPtr->count += bytesToWrite;
         m_outFifoPtr->mutex.unlock();
-
-        // there should be nothing more to decode, but try to be sure
-        while (ret != MPG123_ERR && ret != MPG123_NEED_MORE)
-        {   // Get all decoded audio that is available now before feeding more input
-            ret = mpg123_decode(m_mp2DecoderHandle, NULL, 0, outBuf, MP2_FRAME_PCM_SAMPLES * sizeof(int16_t), &size);
-
-            if (0 == size)
-            {
-                break;
-            }
-
-            bytesToEnd = AUDIO_FIFO_SIZE - m_outFifoPtr->head;
-            if (bytesToEnd < size)
-            {
-                memcpy(m_outFifoPtr->buffer + m_outFifoPtr->head, outBuf, bytesToEnd);
-                memcpy(m_outFifoPtr->buffer, reinterpret_cast<uint8_t *>(outBuf) + bytesToEnd, size - bytesToEnd);
-                m_outFifoPtr->head = (size - bytesToEnd);
-            }
-            else
-            {
-                memcpy(m_outFifoPtr->buffer + m_outFifoPtr->head, outBuf, size);
-                m_outFifoPtr->head += size;
-            }
-
-            m_outFifoPtr->mutex.lock();
-            m_outFifoPtr->count += size;
-            m_outFifoPtr->mutex.unlock();
-        }
-
-        delete [] outBuf;
     }
     // store DRC for next frame
     m_mp2DRC = inData->header.mp2DRC;
@@ -673,30 +674,31 @@ void AudioDecoder::getFormatMP2()
     m_audioParameters.parametricStereo = false;
     switch (info.mode)
     {
-        case MPG123_M_STEREO:
-            m_audioParameters.stereo = true;
-            m_audioParameters.sbr = false;
-            break;
+    case MPG123_M_STEREO:
+        m_audioParameters.stereo = true;
+        m_audioParameters.sbr = false;
+        break;
 
-        case MPG123_M_JOINT:
-            m_audioParameters.stereo = true;
-            m_audioParameters.sbr = true;
-            break;
+    case MPG123_M_JOINT:
+        m_audioParameters.stereo = true;
+        m_audioParameters.sbr = true;
+        break;
 
-        case MPG123_M_DUAL:
-            // this should not happen -> not supported by DAB
-            m_audioParameters.stereo = true;
-            m_audioParameters.sbr = false;
-            break;
+    case MPG123_M_DUAL:
+        // this should not happen -> not supported by DAB
+        m_audioParameters.stereo = true;
+        m_audioParameters.sbr = false;
+        break;
 
-        case MPG123_M_MONO:
-            m_audioParameters.stereo = false;
-            m_audioParameters.sbr = false;
-            break;
+    case MPG123_M_MONO:
+        m_audioParameters.stereo = false;
+        m_audioParameters.sbr = false;
+        break;
     }
 
     m_audioParameters.sampleRateKHz = info.rate / 1000;
-    emit audioParametersInfo(m_audioParameters);
+    m_recorder->setDataFormat(m_audioParameters.sampleRateKHz, false);
+    emit audioParametersInfo(m_audioParameters);    
 }
 
 void AudioDecoder::processAAC(RadioControlAudioData *inData)
@@ -754,7 +756,7 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
         initAACDecoder();
     }
 
-    // decode audio
+// decode audio
 #if HAVE_FDKAAC
     uint8_t * aacData[1] = {  &inData->data[0] };
     unsigned int len[1];
@@ -778,7 +780,7 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     }
 
     // decode audio
-    result = aacDecoder_DecodeFrame(m_aacDecoderHandle, (INT_PCM *)m_outBufferPtr, m_outputFrameLen, AACDEC_CONCEAL * conceal);
+    result = aacDecoder_DecodeFrame(m_aacDecoderHandle, (INT_PCM *)m_outBufferPtr, m_outputBufferSamples, AACDEC_CONCEAL * conceal);
     if (AAC_DEC_OK != result)
     {
         qCWarning(audioDecoder) << "Error decoding AAC frame:" << result;
@@ -792,11 +794,15 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
 #ifdef AUDIO_DECODER_RAW_OUT
     if (m_rawOut)
     {
-        fwrite(m_outBufferPtr, sizeof(int16_t), m_outputFrameLen, m_rawOut);
+        fwrite(m_outBufferPtr, sizeof(int16_t), m_outputBufferSamples, m_rawOut);
     }
 #endif
+//    if (RecordingState::RecordingWav == m_recordingState)
+//    {
+//        writeWav(m_outBufferPtr, m_outputBufferSamples);
+//    }
 
-    int64_t bytesToWrite = m_outputFrameLen * sizeof(int16_t);
+    int64_t bytesToWrite = m_outputBufferSamples * sizeof(int16_t);
 
     // wait for space in ouput buffer
     m_outFifoPtr->mutex.lock();
@@ -830,6 +836,11 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
 #ifdef AUDIO_DECODER_AAC_OUT
     writeAACOutput(inData->data);
 #endif
+//    if (RecordingState::RecordingAAC == m_recordingState)
+//    {
+//        writeAAC(inData->data);
+//    }
+
     handleAudioOutputFAAD(m_aacDecFrameInfo, outputFrame);
 #endif // HAVE_FDKAAC
 }
@@ -912,6 +923,11 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
         fwrite(m_outBufferPtr, 1, bytesToWrite, m_rawOut);
     }
 #endif
+//    if (RecordingState::RecordingWav == m_recordingState)
+//    {
+//        writeWav(m_outBufferPtr, m_outputBufferSamples);
+//    }
+
 
     // wait for space in ouput buffer
     m_outFifoPtr->mutex.lock();
@@ -1174,3 +1190,4 @@ void AudioDecoder::writeMP2Output(const std::vector<uint8_t> & data)
 }
 
 #endif
+
