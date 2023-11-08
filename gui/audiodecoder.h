@@ -54,11 +54,6 @@
 #define AUDIO_DECODER_NOISE_CONCEALMENT  1
 #endif // HAVE_FDKAAC
 
-// debug switches
-//#define AUDIO_DECODER_RAW_OUT
-//#define AUDIO_DECODER_AAC_OUT
-//#define AUDIO_DECODER_MP2_OUT
-
 enum class AudioCoding
 {
     MP2 = 0,
@@ -149,19 +144,6 @@ private:
     void deinitMPG123();
     void processMP2(RadioControlAudioData *inData);
     void getFormatMP2();
-
-    // this is for debugging
-#ifdef AUDIO_DECODER_RAW_OUT
-    FILE * m_rawOut;
-#endif
-#ifdef AUDIO_DECODER_AAC_OUT
-    FILE * m_aacOut;
-    void writeAACOutput(const std::vector<uint8_t> & data);
-#endif
-#ifdef AUDIO_DECODER_MP2_OUT
-    FILE * m_mp2Out;
-    void writeMP2Output(const std::vector<uint8_t> & data);
-#endif
 };
 
 #endif // AUDIODECODER_H

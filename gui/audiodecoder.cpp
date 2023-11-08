@@ -60,28 +60,6 @@ AudioDecoder::AudioDecoder(AudioRecorder *recorder, QObject *parent) : QObject(p
     memset(m_noiseBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE*sizeof(int16_t));
 #endif
 #endif
-
-#ifdef AUDIO_DECODER_RAW_OUT
-    m_rawOut = fopen("audio.raw", "wb");
-    if (!m_rawOut)
-    {
-        qCWarning(audioDecoder, "Unable to open file: audio.raw");
-    }
-#endif
-#ifdef AUDIO_DECODER_AAC_OUT
-    m_aacOut = fopen("audio.aac", "wb");
-    if (!m_aacOut)
-    {
-        qCWarning(audioDecoder, "Unable to open file: audio.aac");
-    }
-#endif
-#ifdef AUDIO_DECODER_MP2_OUT
-    m_mp2Out = fopen("audio.mp2", "wb");
-    if (!m_mp2Out)
-    {
-        qCWarning(audioDecoder, "Unable to open file: audio.mp2");
-    }
-#endif
 }
 
 AudioDecoder::~AudioDecoder()
@@ -118,24 +96,6 @@ AudioDecoder::~AudioDecoder()
         mpg123_delete(m_mp2DecoderHandle);
         mpg123_exit();
     }
-#ifdef AUDIO_DECODER_RAW_OUT
-    if (m_rawOut)
-    {
-        fclose(m_rawOut);
-    }
-#endif
-#ifdef AUDIO_DECODER_AAC_OUT
-    if (m_aacOut)
-    {
-        fclose(m_aacOut);
-    }
-#endif
-#ifdef AUDIO_DECODER_MP2_OUT
-    if (m_mp2Out)
-    {
-        fclose(m_mp2Out);
-    }
-#endif
 }
 
 void AudioDecoder::start(const RadioControlServiceComponent&s)
@@ -569,9 +529,6 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
         initMPG123();
     }
 
-#ifdef AUDIO_DECODER_MP2_OUT
-    writeMP2Output(inData->data);
-#endif
     if (inData->data.size() > 0)
     {
         // [ETSI TS 103 466 V1.2.1 (2019-09)]
@@ -766,10 +723,6 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     // fill internal input buffer
     AAC_DECODER_ERROR result = aacDecoder_Fill(m_aacDecoderHandle, aacData, len, &bytesValid);
 
-#ifdef AUDIO_DECODER_AAC_OUT
-    writeAACOutput((char *)aacData[0], len[0]);
-#endif
-
     if (result != AAC_DEC_OK)
     {
         throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while aacDecoder_Fill: " + std::to_string(result));
@@ -790,17 +743,6 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     {   // no output
         return;
     }
-
-#ifdef AUDIO_DECODER_RAW_OUT
-    if (m_rawOut)
-    {
-        fwrite(m_outBufferPtr, sizeof(int16_t), m_outputBufferSamples, m_rawOut);
-    }
-#endif
-//    if (RecordingState::RecordingWav == m_recordingState)
-//    {
-//        writeWav(m_outBufferPtr, m_outputBufferSamples);
-//    }
 
     int64_t bytesToWrite = m_outputBufferSamples * sizeof(int16_t);
 
@@ -832,14 +774,6 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     m_outFifoPtr->mutex.unlock();
 #else // HAVE_FDKAAC
     uint8_t * outputFrame = (uint8_t *)NeAACDecDecode(m_aacDecoderHandle, &m_aacDecFrameInfo, &inData->data[0], inData->data.size());
-
-#ifdef AUDIO_DECODER_AAC_OUT
-    writeAACOutput(inData->data);
-#endif
-//    if (RecordingState::RecordingAAC == m_recordingState)
-//    {
-//        writeAAC(inData->data);
-//    }
 
     handleAudioOutputFAAD(m_aacDecFrameInfo, outputFrame);
 #endif // HAVE_FDKAAC
@@ -916,18 +850,6 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
 
     // copy data to output FIFO
     int64_t bytesToWrite = m_outputBufferSamples * sizeof(int16_t);
-
-#ifdef AUDIO_DECODER_RAW_OUT
-    if (m_rawOut)
-    {
-        fwrite(m_outBufferPtr, 1, bytesToWrite, m_rawOut);
-    }
-#endif
-//    if (RecordingState::RecordingWav == m_recordingState)
-//    {
-//        writeWav(m_outBufferPtr, m_outputBufferSamples);
-//    }
-
 
     // wait for space in ouput buffer
     m_outFifoPtr->mutex.lock();
@@ -1050,144 +972,3 @@ void AudioDecoder::setOutput(int sampleRate, int numChannels)
         emit startAudio(m_outFifoPtr);
     }
 }
-
-#ifdef AUDIO_DECODER_AAC_OUT
-void AudioDecoder::writeAACOutput(const std::vector<uint8_t> & data)
-{
-    uint8_t adts_sfreqidx;
-    uint8_t audioFs;
-
-    if ((m_aacHeader.bits.dac_rate == 0) && (m_aacHeader.bits.sbr_flag == 1))
-    {
-        audioFs = 16 * 2;
-        adts_sfreqidx = 0x8;  // 16 kHz
-    }
-    if ((m_aacHeader.bits.dac_rate == 1) && (m_aacHeader.bits.sbr_flag == 1))
-    {
-        audioFs = 24 * 2;
-        adts_sfreqidx = 0x6;  // 24 kHz
-    }
-    if ((m_aacHeader.bits.dac_rate == 0) && (m_aacHeader.bits.sbr_flag == 0))
-    {
-        audioFs = 32;
-        adts_sfreqidx = 0x5;  // 32 kHz
-    }
-    if ((m_aacHeader.bits.dac_rate == 1) && (m_aacHeader.bits.sbr_flag == 0))
-    {
-        audioFs = 48;
-        adts_sfreqidx = 0x3;  // 48 kHz
-    }
-    uint16_t au_size = data.size();
-
-    uint8_t aac_header[20];
-
-    // [11 bits] 0x2B7 syncword
-    aac_header[0] = 0x2B7 >> 3;          // (8 bits)
-    aac_header[1] = (0x2B7 << 5) & 0xE0; // (3 bits)
-    // [13 bits] audioMuxLengthBytes - written later
-    // aac_header[1]                   // (5 bits)
-    aac_header[2] = 0;                 // (8 bits)
-
-    // [1 bit] useSameStreamMux = 0
-    // [1 bit] audioMuxVersion = 0
-    // [1 bit] allStreamsSameTimeFraming = 1
-    // [6 bits] numSubFrames = 000000
-    // [4 bits] numProgram  = 0000
-    // [3 bits] numLayer = 000
-    aac_header[3] = 0b00100000;
-    aac_header[4] = 0b00000000;
-
-    uint8_t * aac_header_ptr = &aac_header[5];
-    uint_fast8_t sbr_flag = m_aacHeader.bits.sbr_flag;
-
-    if (sbr_flag)
-    {
-        // [5 bits] // SBR
-        *aac_header_ptr = 0b00101 << 3;   // SBR
-        // [4 bits] sampling freq index
-        *aac_header_ptr++ |= (adts_sfreqidx >> 1) & 0x7;
-        *aac_header_ptr  = (adts_sfreqidx & 0x1) << 7;
-        // [4 bits] channel configuration
-        *aac_header_ptr |= (m_aacHeader.bits.aac_channel_mode + 1) << 3;
-        // [4 bits] extension sample rate index = 3 or 5
-        *aac_header_ptr++ |= (5 - 2 * m_aacHeader.bits.dac_rate) >> 1;
-        *aac_header_ptr  = ((5 - 2 * m_aacHeader.bits.dac_rate) & 0x1) << 7;
-        // [5 bits] AAC LC
-        *aac_header_ptr |= 0b00010 << 2;
-        // [3 bits] GASpecificConfig() with 960 transform = 0b100
-        *aac_header_ptr++ |= 0b10;
-        //aac_header[8]  = 0b0 << 7;
-        // [3 bits] frameLengthType = 0b000
-        *aac_header_ptr = 0b000 << 4;
-        // [8 bits] latmBufferFullness = 0xFF
-        *aac_header_ptr++ |= 0x0F;
-        *aac_header_ptr  = 0xF0;
-        // [1 bit] otherDataPresent = 0
-        // [1 bit] crcCheckPresent = 0;
-
-        // 2 bits remainig
-    }
-    else
-    {
-        // [5 bits] AAC LC
-        *aac_header_ptr = 0b00010 << 3;
-        // [4 bits] samplingFrequencyIndex
-        *aac_header_ptr++ |= (adts_sfreqidx >> 1) & 0x7;
-        *aac_header_ptr  = (adts_sfreqidx & 0x1) << 7;
-        // [4 bits] channel configuration
-        *aac_header_ptr |= (m_aacHeader.bits.aac_channel_mode + 1) << 3;
-        // [3 bits] GASpecificConfig() with 960 transform = 0b100
-        *aac_header_ptr++ |= 0b100;
-        // [3 bits] frameLengthType = 0b000
-        // aac_header[7] = 0b000 << 5;
-        // [8 bits] latmBufferFullness = 0xFF
-        *aac_header_ptr++ = 0x1F;
-        *aac_header_ptr = 0xE0;
-        // [1 bit] otherDataPresent = 0
-        // [1 bit] crcCheckPresent = 0;
-
-        // 3 bits remainig
-    }
-    //	PayloadLengthInfo()
-    // 0xFF for each 255 bytes
-    int au_size_255 = au_size / 255;
-
-    for (int i = 0; i < au_size_255; i++)
-    {
-        *aac_header_ptr++ |= (uint8_t)(0xFF >> (5 + sbr_flag));
-        *aac_header_ptr = (uint8_t)(0xFF << (3 - sbr_flag));
-    }
-    // the rest is (au_size % 255);
-    *aac_header_ptr++ |= (au_size % 255) >> (5 + sbr_flag);
-    *aac_header_ptr = (au_size % 255) << (3 - sbr_flag);
-
-    // total length = total size - 3 (length is in byte 1-2, thus -3 bytes)
-    int len = 9 + m_aacHeader.bits.sbr_flag + au_size_255 + 1 + au_size - 3;
-
-    aac_header[1] |= (len >> 8) & 0x1F;
-    aac_header[2] = len & 0xFF;
-
-    fwrite(aac_header, sizeof(uint8_t), 9 + m_aacHeader.bits.sbr_flag + au_size_255, m_aacOut);
-
-    uint8_t byte = *aac_header_ptr;
-    const uint8_t * auPtr = &data[0]; //&buffer[mscDataPtr->au_start[r]];
-
-    for (int i = 0; i < au_size; ++i)
-    {
-        byte |= (*auPtr) >> (5 + sbr_flag);
-        fwrite(&byte, sizeof(uint8_t), 1, m_aacOut);
-        byte = (uint8_t)*auPtr++ << (3 - sbr_flag);
-    }
-    fwrite(&byte, sizeof(uint8_t), 1, m_aacOut);
-}
-
-#endif
-
-#ifdef AUDIO_DECODER_MP2_OUT
-void AudioDecoder::writeMP2Output(const std::vector<uint8_t> & data)
-{
-    fwrite(&data[0], sizeof(uint8_t), data.size(), m_mp2Out);
-}
-
-#endif
-
