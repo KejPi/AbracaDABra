@@ -1327,10 +1327,18 @@ bool MainWindow::stopAudioRecordingMsg(const QString & infoText)
         QMessageBox msgBox(QMessageBox::Warning, tr("Warning"),
                            tr("Do you want to stop audio recording?"), {}, this);
         msgBox.setInformativeText(infoText);
-
-        QPushButton * keepButton = msgBox.addButton(tr("Keep recording"), QMessageBox::AcceptRole);
-        QPushButton * doNotShowButton = msgBox.addButton(tr("Stop recording and do not ask again"), QMessageBox::RejectRole);
-        QPushButton * stopButton = msgBox.addButton(tr("Stop recording"), QMessageBox::RejectRole);
+#ifdef Q_OS_LINUX
+#define KEEP_BUTTON_ROLE      QMessageBox::RejectRole
+#define DONOTSHOW_BUTTON_ROLE QMessageBox::YesRole
+#define STOP_BUTTON_ROLE      QMessageBox::AcceptRole
+#else
+#define KEEP_BUTTON_ROLE      QMessageBox::AcceptRole
+#define DONOTSHOW_BUTTON_ROLE QMessageBox::RejectRole
+#define STOP_BUTTON_ROLE      QMessageBox::RejectRole
+#endif
+        QPushButton * keepButton = msgBox.addButton(tr("Keep recording"), KEEP_BUTTON_ROLE);
+        QPushButton * doNotShowButton = msgBox.addButton(tr("Stop recording and do not ask again"), DONOTSHOW_BUTTON_ROLE);
+        QPushButton * stopButton = msgBox.addButton(tr("Stop recording"), STOP_BUTTON_ROLE);
 
         msgBox.setEscapeButton(keepButton);
         msgBox.exec();
