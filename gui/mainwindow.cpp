@@ -73,7 +73,7 @@
 #include "soapysdrinput.h"
 #endif
 
-#ifdef Q_OS_MACX
+#ifdef Q_OS_MACOS
 #include "mac.h"
 #endif
 
@@ -1338,7 +1338,7 @@ bool MainWindow::stopAudioRecordingMsg(const QString & infoText)
 #endif
         QPushButton * keepButton = msgBox.addButton(tr("Keep recording"), KEEP_BUTTON_ROLE);
         QPushButton * doNotShowButton = msgBox.addButton(tr("Stop recording and do not ask again"), DONOTSHOW_BUTTON_ROLE);
-        QPushButton * stopButton = msgBox.addButton(tr("Stop recording"), STOP_BUTTON_ROLE);
+        msgBox.addButton(tr("Stop recording"), STOP_BUTTON_ROLE);
 
         msgBox.setEscapeButton(keepButton);
         msgBox.exec();

@@ -1081,7 +1081,7 @@ void SetupDialog::onOpenFileButtonClicked()
         // we do not know the length yet
         onFileLength(0);
 
-#ifdef Q_OS_MACX // bug in Ventura
+#ifdef Q_OS_MACOS // bug in Ventura
         show(); //bring window to top on OSX
         raise(); //bring window from minimized state on OSX
         activateWindow(); //bring window to front/unminimize on windows
@@ -1237,7 +1237,7 @@ void SetupDialog::onAudioRecordingFolderButtonClicked()
         ui->audioRecordingFolderLabel->setText(dir);
         emit audioRecordingSettings(m_settings.audioRecFolder, m_settings.audioRecCaptureOutput);
 
-#ifdef Q_OS_MACX // bug in Ventura
+#ifdef Q_OS_MACOS // bug in Ventura
         show(); //bring window to top on OSX
         raise(); //bring window from minimized state on OSX
         activateWindow(); //bring window to front/unminimize on windows
