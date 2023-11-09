@@ -389,7 +389,6 @@ void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
         ui->fileFormatCombo->setEnabled(true);
         ui->xmlHeaderWidget->setVisible(false);
     }
-    adjustSize();
 }
 
 void SetupDialog::onFileLength(int msec)
