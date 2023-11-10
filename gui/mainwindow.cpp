@@ -481,7 +481,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         ::exit(1);
     }
 
-    m_audioRecorder = new AudioRecorder(this);
+    m_audioRecorder = new AudioRecorder();
     m_audioDecoder = new AudioDecoder(m_audioRecorder);
     m_audioDecoderThread = new QThread(this);
     m_audioDecoderThread->setObjectName("audioDecoderThr");
