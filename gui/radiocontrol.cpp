@@ -196,25 +196,30 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
     case RadioControlEventType::SERVICE_LIST:
     {
         qCDebug(radioControl) << "RadioControlEventType::SERVICE_LIST";
-
-        eventHandler_serviceList(pEvent);
+        if (m_ensemble.isValid())
+        {
+            eventHandler_serviceList(pEvent);
+        }
         delete pEvent->pServiceList;
     }
         break;
     case RadioControlEventType::SERVICE_COMPONENT_LIST:
     {
         qCDebug(radioControl) << "RadioControlEvent::SERVICE_COMPONENT_LIST";
-
-        eventHandler_serviceComponentList(pEvent);
+        if (m_ensemble.isValid())
+        {
+            eventHandler_serviceComponentList(pEvent);
+        }
         delete pEvent->pServiceCompList;
     }
         break;
     case RadioControlEventType::USER_APP_UPDATE:
     {
-
         qCDebug(radioControl, "RadioControlEvent::USER_APP_UPDATE SID %8.8X SCIdS %d", pEvent->SId, pEvent->SCIdS);
-
-        dabGetUserApps(pEvent->SId, pEvent->SCIdS);
+        if (m_ensemble.isValid())
+        {
+            dabGetUserApps(pEvent->SId, pEvent->SCIdS);
+        }
     }
     break;
     case RadioControlEventType::USER_APP_LIST:
@@ -313,8 +318,10 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
             qCDebug(radioControl, "RadioControlEventType::ANNOUNCEMENT_SUPPORT SId %8.8X", pEvent->SId);
-
-            eventHandler_announcementSupport(pEvent);
+            if (m_ensemble.isValid())
+            {
+                eventHandler_announcementSupport(pEvent);
+            }
         }
 
         delete pEvent->pAnnouncementSupport;
@@ -323,8 +330,10 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
     case RadioControlEventType::ANNOUNCEMENT_SWITCHING:
     {
         qCDebug(radioControl) << "RadioControlEventType::ANNOUNCEMENT";
-
-        eventHandler_announcementSwitching(pEvent);
+        if (m_ensemble.isValid())
+        {
+            eventHandler_announcementSwitching(pEvent);
+        }
 
         delete pEvent->pAnnouncement;                
     }
@@ -333,8 +342,10 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
     {
         qCDebug(radioControl) << "RadioControlEventType::PROGRAMME_TYPE";
 
-        eventHandler_programmeType(pEvent);
-
+        if (m_ensemble.isValid())
+        {
+            eventHandler_programmeType(pEvent);
+        }
         delete pEvent->pPty;
     }
     break;
@@ -476,8 +487,6 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
 
         m_serviceRequest.SId = SId;
         m_serviceRequest.SCIdS = SCIdS;
-
-        m_serviceList.clear();
 
         dabTune(0);
 
@@ -1240,7 +1249,10 @@ void RadioControl::eventHandler_userAppList(RadioControlEvent *pEvent)
                 }                
                 else { /* SC not found - this should not happen */ }
             }
-            else { /* service not found - this should not happen */ }
+            else
+            {   // service not found - this should not happen
+                return;
+            }
         }
         else
         {   // no user apps
@@ -1858,7 +1870,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         }
         else
         {
-            qCWarning(radioControl, "DABSDR_NID_SERVICE_COMPONENT_LIST SId %4.4XL: status %d", pInfo->SId, p->status);
+            qCWarning(radioControl, "DABSDR_NID_SERVICE_COMPONENT_LIST SId %4.4X: status %d", pInfo->SId, p->status);
         }
     }
     break;
