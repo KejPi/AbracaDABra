@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>462</width>
+    <width>505</width>
     <height>490</height>
    </rect>
   </property>
@@ -1083,8 +1083,11 @@
           </item>
           <item>
            <widget class="QCheckBox" name="autoStopRecordingCheckBox">
+            <property name="toolTip">
+             <string>Audio recording must be stopped when service changes.&lt;br&gt;If you select this option, application stops recording and saves the file automatically without asking.</string>
+            </property>
             <property name="text">
-             <string>Do not ask to stop recording on service selection</string>
+             <string>Do not ask to stop audio recording when service changes</string>
             </property>
            </widget>
           </item>
