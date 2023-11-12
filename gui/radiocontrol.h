@@ -444,6 +444,7 @@ private:
     void announcementHandler(dabsdrAsw_t *pAnnouncement);
     bool startAnnouncement(uint8_t subChId);
     void stopAnnouncement();
+    inline QString removeTrailingSpaces(QString & s) const;
 
     // event handlers
     void eventHandler_ensembleInfo(RadioControlEvent *pEvent);

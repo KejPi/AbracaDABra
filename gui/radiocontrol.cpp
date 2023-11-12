@@ -31,6 +31,7 @@
 #include <QDebug>
 #include <QLoggingCategory>
 #include <QIODevice>
+#include <QRegularExpression>
 #include "radiocontrol.h"
 #include "inputdevice.h"
 
@@ -43,7 +44,6 @@ const uint8_t RadioControl::EEPCoderate[] =
     0x14, 0x38, 0x12, 0x34,   // EEP 1-A..4-A : 1/4 3/8 1/2 3/4
     0x49, 0x47, 0x46, 0x45    // EEP 1-B..4-B : 4/9 4/7 4/6 4/5
 };
-
 
 RadioControl::RadioControl(QObject *parent) : QObject(parent)
 {
@@ -791,7 +791,9 @@ QString RadioControl::ensembleConfigurationString() const
                 strOut << QString(" SCIdS: %1,").arg(sc.SCIdS);
             }
 
-            strOut << QString(" Label: '%1' [ '%2' ], ").arg(sc.label).arg(sc.labelShort);
+            QString scLabel = sc.label;
+            QString scLabelShort = sc.labelShort;
+            strOut << QString(" Label: '%1' [ '%2' ], ").arg(scLabel.replace(QRegularExpression("\\s"), "&nbsp;"), scLabelShort.replace(QRegularExpression("\\s"), "&nbsp;"));
 
             DabAudioDataSCty scType;
             if (sc.isDataPacketService())
@@ -997,9 +999,11 @@ void RadioControl::eventHandler_ensembleInfo(RadioControlEvent *pEvent)
         m_ensemble.LTO = pInfo->LTO;
         m_ensemble.intTable = pInfo->intTable;
         m_ensemble.alarm = pInfo->alarm;
-        m_ensemble.label = DabTables::convertToQString(pInfo->label.str, pInfo->label.charset).trimmed();
-        m_ensemble.labelShort = toShortLabel(m_ensemble.label, pInfo->label.charField).trimmed();
-        emit ensembleInformation(m_ensemble);
+        QString label = DabTables::convertToQString(pInfo->label.str, pInfo->label.charset);
+        m_ensemble.labelShort = toShortLabel(label, pInfo->label.charField);
+        m_ensemble.label = removeTrailingSpaces(label);
+
+        emit ensembleInformation(m_ensemble);                
 
         // request service list
         // ETSI EN 300 401 V2.1.1 (2017-01) [6.1]
@@ -1040,8 +1044,9 @@ void RadioControl::eventHandler_serviceList(RadioControlEvent *pEvent)
             }
             RadioControlService newService;
             newService.SId = sid;
-            newService.label = DabTables::convertToQString(dabService.label.str, dabService.label.charset).trimmed();
-            newService.labelShort = toShortLabel(newService.label, dabService.label.charField).trimmed();
+            QString label = DabTables::convertToQString(dabService.label.str, dabService.label.charset);
+            newService.labelShort = toShortLabel(label, dabService.label.charField);
+            newService.label = removeTrailingSpaces(label);
             newService.pty.s = dabService.pty.s;
             newService.pty.d = dabService.pty.d;
             newService.CAId = dabService.CAId;
@@ -1120,8 +1125,9 @@ void RadioControl::eventHandler_serviceComponentList(RadioControlEvent *pEvent)
                 }
                 else
                 {
-                    newServiceComp.label = DabTables::convertToQString(dabServiceComp.label.str, dabServiceComp.label.charset).trimmed();
-                    newServiceComp.labelShort = toShortLabel(newServiceComp.label, dabServiceComp.label.charField).trimmed();
+                    QString label = DabTables::convertToQString(dabServiceComp.label.str, dabServiceComp.label.charset);
+                    newServiceComp.labelShort = toShortLabel(label, dabServiceComp.label.charField);
+                    newServiceComp.label = removeTrailingSpaces(label);
                 }
 
                 newServiceComp.autoEnabled = false;
@@ -1225,8 +1231,9 @@ void RadioControl::eventHandler_userAppList(RadioControlEvent *pEvent)
                     for (auto const & userApp : *pList)
                     {
                         RadioControlUserApp newUserApp;
-                        newUserApp.label = DabTables::convertToQString(userApp.label.str, userApp.label.charset).trimmed();
-                        newUserApp.labelShort = toShortLabel(newUserApp.label, userApp.label.charField).trimmed();
+                        QString label = DabTables::convertToQString(userApp.label.str, userApp.label.charset);
+                        newUserApp.labelShort = toShortLabel(label, userApp.label.charField);
+                        newUserApp.label = removeTrailingSpaces(label);
                         newUserApp.uaType = DabUserApplicationType(userApp.type);
                         for (int n = 0; n < userApp.dataLen; ++n)
                         {
@@ -1563,6 +1570,12 @@ void RadioControl::stopAnnouncement()
     }
     else
     {  /* do nothing */ }
+}
+
+QString RadioControl::removeTrailingSpaces(QString &s) const
+{
+    static const QRegularExpression trailingSpacesRegex("\\s*$");
+    return s.replace(trailingSpacesRegex, "");
 }
 
 void RadioControl::announcementHandler(dabsdrAsw_t *pAnnouncement)
