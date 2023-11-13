@@ -256,7 +256,7 @@ void SLSView::showSlide(const Slide & slide)
     m_isShowingSlide = true;
 }
 
-void SLSView::showStationLogo(const QPixmap & logo)
+void SLSView::showServiceLogo(const QPixmap & logo)
 {
     if (logo.isNull())
     {
@@ -267,7 +267,7 @@ void SLSView::showStationLogo(const QPixmap & logo)
     {
         displayPixmap(logo);
 
-        setToolTip(tr("Station logo"));
+        setToolTip(tr("Service logo"));
         m_isShowingSlide = true;
     }
 }

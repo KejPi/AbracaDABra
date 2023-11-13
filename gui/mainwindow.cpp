@@ -1524,7 +1524,7 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
             ui->logoLabel->setVisible(true);
         }
 
-        ui->slsView_Service->showStationLogo(m_metadataManager->data(s.SId.value(), s.SCIdS, MetadataManager::SLSLogo).value<QPixmap>());
+        ui->slsView_Service->showServiceLogo(m_metadataManager->data(s.SId.value(), s.SCIdS, MetadataManager::SLSLogo).value<QPixmap>());
     }
     else
     {   // sid it not equal to selected sid -> this should not happen
@@ -1819,7 +1819,7 @@ void MainWindow::onMetadataUpdated(uint32_t sid, uint8_t scids, MetadataManager:
         switch (role)
         {
         case MetadataManager::MetadataRole::SLSLogo:
-            ui->slsView_Service->showStationLogo(m_metadataManager->data(sid, scids, MetadataManager::SLSLogo).value<QPixmap>());
+            ui->slsView_Service->showServiceLogo(m_metadataManager->data(sid, scids, MetadataManager::SLSLogo).value<QPixmap>());
             break;
         case MetadataManager::SmallLogo:
         {

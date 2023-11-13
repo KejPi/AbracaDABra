@@ -60,7 +60,7 @@ public:
     void setExpertMode(bool expertModeEna);
 
     //! @brief This method shows station logo
-    void showStationLogo(const QPixmap & logo);
+    void showServiceLogo(const QPixmap & logo);
 
 protected:
     //! @brief Reimplemented to scale image correctly
