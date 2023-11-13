@@ -1918,8 +1918,6 @@ void MainWindow::changeInputDevice(const InputDeviceId & d)
     m_deviceChangeRequested = true;
     if (m_isPlaying)
     { // stop
-        emit stopAudioRecording();
-        m_audioRecordingActive = false;
         stop();
         ui->channelCombo->setDisabled(true);  // enabled when device is ready
         ui->channelDown->setDisabled(true);
@@ -2847,12 +2845,6 @@ void MainWindow::setExpertMode(bool ena)
 
 void MainWindow::bandScan()
 {
-    if (!stopAudioRecordingMsg(tr("Audio recording is ongoing. It will be stopped and saved before starting band scan.")))
-    {
-        return;
-    }
-    emit stopAudioRecording();
-
     BandScanDialog * dialog = new BandScanDialog(this, (m_serviceList->numServices() == 0) || m_keepServiceListOnScan, Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
     connect(dialog, &BandScanDialog::finished, dialog, &QObject::deleteLater);
     connect(dialog, &BandScanDialog::tuneChannel, this, &MainWindow::onTuneChannel);
@@ -2901,6 +2893,9 @@ void MainWindow::stop()
 {
     if (m_isPlaying)
     { // stop
+        emit stopAudioRecording();
+        m_audioRecordingActive = false;
+
         // tune to 0
         ui->channelCombo->setCurrentIndex(-1);
     }
