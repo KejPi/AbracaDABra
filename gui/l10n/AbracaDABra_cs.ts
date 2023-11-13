@@ -825,7 +825,7 @@
         <location filename="../mainwindow.cpp" line="1355"/>
         <location filename="../mainwindow.cpp" line="1422"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you switch current service.</source>
-        <translation>Probíhá nahrávání audia. Nahrávání bude ukončeno a uloženo přepnete na jinou stanici.</translation>
+        <translation>Probíhá nahrávání audia. Nahrávání bude ukončeno a uloženo pokud přepnete na jinou stanici.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1493"/>
