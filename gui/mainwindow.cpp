@@ -372,9 +372,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     ui->serviceListView->setModel(m_slModel);
     ui->serviceListView->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->serviceListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->serviceListView->installEventFilter(this);    
-    connect(ui->serviceListView->selectionModel(), &QItemSelectionModel::currentChanged, this, &MainWindow::onServiceListSelection);
+    ui->serviceListView->setEditTriggers(QAbstractItemView::NoEditTriggers);    
+    ui->serviceListView->installEventFilter(this);
+    connect(ui->serviceListView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::onServiceListSelection);
 
     m_slTreeModel = new SLTreeModel(m_serviceList, this);
     connect(m_serviceList, &ServiceList::serviceAddedToEnsemble, m_slTreeModel, &SLTreeModel::addEnsembleService);
@@ -386,7 +386,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->serviceTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->serviceTreeView->setHeaderHidden(true);
     ui->serviceTreeView->installEventFilter(this);
-    connect(ui->serviceTreeView->selectionModel(), &QItemSelectionModel::currentChanged, this, &MainWindow::onServiceListTreeSelection);
+    connect(ui->serviceTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::onServiceListTreeSelection);
     connect(m_serviceList, &ServiceList::empty, m_slTreeModel, &SLTreeModel::clear);
 
     // fill channel list
@@ -718,27 +718,9 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
         if(e->type() == QEvent::KeyPress)
         {
             QKeyEvent * event = static_cast<QKeyEvent *>(e);
-            if (Qt::Key_Return == event->key())
-            {
-                onServiceListSelection(ui->serviceListView->currentIndex());
-                return true;
-            }
             if (Qt::Key_Space == event->key())
             {
                 ui->favoriteLabel->toggle();
-                return true;
-            }
-        }
-        return QObject::eventFilter(o, e);
-    }
-    if (o == ui->serviceTreeView)
-    {
-        if(e->type() == QEvent::KeyPress)
-        {
-            QKeyEvent * event = static_cast<QKeyEvent *>(e);
-            if (Qt::Key_Return == event->key())
-            {
-                onServiceListTreeSelection(ui->serviceTreeView->currentIndex());
                 return true;
             }
         }
@@ -1355,9 +1337,15 @@ bool MainWindow::stopAudioRecordingMsg(const QString & infoText)
     return true;
 }
 
-void MainWindow::onServiceListSelection(const QModelIndex &currentIndex, const QModelIndex &previousIndex)
+void MainWindow::onServiceListSelection(const QItemSelection &selected, const QItemSelection &deselected)
 {
-    //qDebug() << currentIndex << previousIndex;
+    QModelIndexList	selectedList = selected.indexes();
+    if (0 == selectedList.count()) {
+        // no selection => return
+        return;
+    }
+
+    QModelIndex currentIndex = selectedList.at(0);
     const SLModel * model = reinterpret_cast<const SLModel*>(currentIndex.model());
     if (model->id(currentIndex) == ServiceListId(m_SId.value(), m_SCIdS))
     {
@@ -1366,8 +1354,13 @@ void MainWindow::onServiceListSelection(const QModelIndex &currentIndex, const Q
 
     if (!stopAudioRecordingMsg(tr("Audio recording is ongoing. It will be stopped and saved if you switch current service.")))
     {
-        QTimer::singleShot(1, this, [this, previousIndex](){ ui->serviceListView->selectionModel()->setCurrentIndex(previousIndex, QItemSelectionModel::Clear | QItemSelectionModel::Select | QItemSelectionModel::Current); });
-        return;
+        QModelIndexList	deselectedList = deselected.indexes();
+        if (deselectedList.count() > 0)
+        {
+            QModelIndex previousIndex = deselectedList.at(0);
+            ui->serviceListView->setCurrentIndex(previousIndex);
+            return;
+        }
     }
 
     ServiceListConstIterator it = m_serviceList->findService(model->id(currentIndex));
@@ -1399,8 +1392,15 @@ void MainWindow::onServiceListSelection(const QModelIndex &currentIndex, const Q
     }
 }
 
-void MainWindow::onServiceListTreeSelection(const QModelIndex &currentIndex, const QModelIndex &previousIndex)
+void MainWindow::onServiceListTreeSelection(const QItemSelection &selected, const QItemSelection &deselected)
 {
+    QModelIndexList	selectedList = selected.indexes();
+    if (0 == selectedList.count()) {
+        // no selection => return
+        return;
+    }
+
+    QModelIndex currentIndex = selectedList.at(0);
     const SLTreeModel * model = reinterpret_cast<const SLTreeModel*>(currentIndex.model());
 
     if (currentIndex.parent().isValid())
@@ -1421,8 +1421,13 @@ void MainWindow::onServiceListTreeSelection(const QModelIndex &currentIndex, con
 
         if (!stopAudioRecordingMsg(tr("Audio recording is ongoing. It will be stopped and saved if you switch current service.")))
         {
-            QTimer::singleShot(1, this, [this, previousIndex](){ ui->serviceTreeView->selectionModel()->setCurrentIndex(previousIndex, QItemSelectionModel::Clear | QItemSelectionModel::Select | QItemSelectionModel::Current); });
-            return;
+            QModelIndexList	deselectedList = deselected.indexes();
+            if (deselectedList.count() > 0)
+            {
+                QModelIndex previousIndex = deselectedList.at(0);
+                ui->serviceTreeView->setCurrentIndex(previousIndex);
+                return;
+            }
         }
 
         it = m_serviceList->findService(model->id(currentIndex));
@@ -2469,8 +2474,8 @@ void MainWindow::loadSettings()
                 index = model->index(r, 0);
                 if (model->id(index) == id)
                 {   // found
-                    ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
-                    onServiceListSelection(index);   // this selects service
+                    ui->serviceListView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
+                    //onServiceListSelection(index);   // this selects service
                     break;
                 }
             }
@@ -2614,7 +2619,6 @@ void MainWindow::saveSettings()
             settings->setValue("SCIdS", m_SCIdS);
             settings->setValue("Frequency", m_frequency);
         }
-
         m_serviceList->save(*settings);
     }
     else { /* RAW file does not store service and service list */ }
@@ -2640,7 +2644,7 @@ void MainWindow::onFavoriteToggled(bool checked)
         index = model->index(r, 0);
         if (model->id(index) == id)
         {   // found
-            ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
+            ui->serviceListView->setCurrentIndex(index);
             ui->serviceListView->setFocus();
             break;
         }
@@ -2731,8 +2735,7 @@ void MainWindow::serviceTreeViewUpdateSelection()
                 QModelIndex serviceIndex = model->index(s, 0, ensembleIndex);
                 if (model->id(serviceIndex) == serviceId)
                 {  // found
-                    ui->serviceTreeView->selectionModel()->setCurrentIndex(serviceIndex,
-                           QItemSelectionModel::Clear | QItemSelectionModel::Select | QItemSelectionModel::Current);
+                    ui->serviceTreeView->setCurrentIndex(serviceIndex);
                     return;
                 }
             }
@@ -2750,8 +2753,7 @@ void MainWindow::serviceListViewUpdateSelection()
         index = model->index(r, 0);
         if (model->id(index) == id)
         {   // found
-            ui->serviceListView->selectionModel()->setCurrentIndex(index,
-                           QItemSelectionModel::Clear | QItemSelectionModel::Select | QItemSelectionModel::Current);
+            ui->serviceListView->setCurrentIndex(index);
             return;
         }
     }
@@ -2847,6 +2849,7 @@ void MainWindow::bandScan()
     {
         return;
     }
+    emit stopAudioRecording();
 
     BandScanDialog * dialog = new BandScanDialog(this, (m_serviceList->numServices() == 0) || m_keepServiceListOnScan, Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
     connect(dialog, &BandScanDialog::finished, dialog, &QObject::deleteLater);
@@ -2873,9 +2876,9 @@ void MainWindow::onBandScanFinished(int result)
         if (m_serviceList->numServices() > 0)
         {   // going to select first service
             const SLModel * model = reinterpret_cast<const SLModel*>(ui->serviceListView->model());
+            //ui->serviceListView->setSe
             QModelIndex index = model->index(0, 0);
-            ui->serviceListView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
-            onServiceListSelection(index);   // this selects service
+            ui->serviceListView->setCurrentIndex(index);
             ui->serviceListView->setFocus();
         }
     }

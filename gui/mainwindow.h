@@ -40,6 +40,7 @@
 #include <QStackedWidget>
 #include <QSlider>
 #include <QLoggingCategory>
+#include <QItemSelection>
 
 #include "clickablelabel.h"
 #include "metadatamanager.h"
@@ -270,8 +271,8 @@ private:
     void onNewInputDeviceSettings();
     void onNewAnnouncementSettings();
     void onInputDeviceError(const InputDeviceErrorCode errCode);
-    void onServiceListSelection(const QModelIndex &currentIndex, const QModelIndex &previousIndex = QModelIndex());
-    void onServiceListTreeSelection(const QModelIndex &currentIndex, const QModelIndex &previousIndex = QModelIndex());
+    void onServiceListSelection(const QItemSelection &selected, const QItemSelection &deselected);
+    void onServiceListTreeSelection(const QItemSelection &selected, const QItemSelection &deselected);
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
     void onAudioServiceReconfiguration(const RadioControlServiceComponent &s);
     void onAnnouncement(const DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent &s);
