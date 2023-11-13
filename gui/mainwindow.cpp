@@ -1918,6 +1918,8 @@ void MainWindow::changeInputDevice(const InputDeviceId & d)
     m_deviceChangeRequested = true;
     if (m_isPlaying)
     { // stop
+        emit stopAudioRecording();
+        m_audioRecordingActive = false;
         stop();
         ui->channelCombo->setDisabled(true);  // enabled when device is ready
         ui->channelDown->setDisabled(true);
