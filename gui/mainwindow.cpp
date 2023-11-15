@@ -1888,6 +1888,7 @@ void MainWindow::onNewInputDeviceSettings()
         dynamic_cast<RtlSdrInput*>(m_inputDevice)->setGainMode(s.rtlsdr.gainMode, s.rtlsdr.gainIdx);
         dynamic_cast<RtlSdrInput*>(m_inputDevice)->setBW(s.rtlsdr.bandwidth);
         dynamic_cast<RtlSdrInput*>(m_inputDevice)->setBiasT(s.rtlsdr.biasT);
+        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setAgcLevelMax(s.rtlsdr.agcLevelMax);
         break;
     case InputDeviceId::RTLTCP:
         dynamic_cast<RtlTcpInput*>(m_inputDevice)->setGainMode(s.rtltcp.gainMode, s.rtltcp.gainIdx);
@@ -2034,10 +2035,10 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             m_ensembleInfoDialog->enableRecording(true);
 
-            // these are settings that are configures in ini file manually
             // they are only set when device is initialized
             dynamic_cast<RtlSdrInput*>(m_inputDevice)->setBW(m_setupDialog->settings().rtlsdr.bandwidth);
             dynamic_cast<RtlSdrInput*>(m_inputDevice)->setBiasT(m_setupDialog->settings().rtlsdr.biasT);
+            dynamic_cast<RtlSdrInput*>(m_inputDevice)->setAgcLevelMax(m_setupDialog->settings().rtlsdr.agcLevelMax);
 
             // apply current settings
             onNewInputDeviceSettings();
@@ -2405,6 +2406,7 @@ void MainWindow::loadSettings()
     s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
     s.rtlsdr.bandwidth = settings->value("RTL-SDR/bandwidth", 0).toUInt();
     s.rtlsdr.biasT = settings->value("RTL-SDR/bias-T", false).toBool();
+    s.rtlsdr.agcLevelMax = settings->value("RTL-SDR/agcLevelMax", 0).toFloat();
 
     s.rtltcp.gainIdx = settings->value("RTL-TCP/gainIndex", 0).toInt();
     s.rtltcp.gainMode = static_cast<RtlGainMode>(settings->value("RTL-TCP/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
@@ -2572,6 +2574,7 @@ void MainWindow::saveSettings()
     settings->setValue("RTL-SDR/gainMode", static_cast<int>(s.rtlsdr.gainMode));
     settings->setValue("RTL-SDR/bandwidth", s.rtlsdr.bandwidth);
     settings->setValue("RTL-SDR/bias-T", s.rtlsdr.biasT);
+    settings->setValue("RTL-SDR/agcLevelMax", s.rtlsdr.agcLevelMax);
 
 #if HAVE_AIRSPY
     settings->setValue("AIRSPY/sensitivityGainIdx", s.airspy.gain.sensitivityGainIdx);

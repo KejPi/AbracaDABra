@@ -68,6 +68,7 @@ public:
             int gainIdx;
             uint32_t bandwidth;
             bool biasT;
+            int agcLevelMax;
         } rtlsdr;
         struct
         {
@@ -168,7 +169,8 @@ private:
     void onRtlSdrGainModeToggled(bool checked);
     void onRtlSdrGainSliderChanged(int val);
     void onRtlSdrBandwidthChanged(int val);
-    void onRtlSdrBiasTChecked(bool en);
+    void onRtlSdrSwAgcMaxLevelChanged(int val);
+    void onRtlSdrBiasTCurrentIdxChanged(int);
     void activateRtlSdrControls(bool en);
 
     void onTcpGainModeToggled(bool checked);
@@ -202,7 +204,7 @@ private:
     void onAirspyMixerGainSliderChanged(int val);
     void onAirspyLNAAGCstateChanged(int state);
     void onAirspyMixerAGCstateChanged(int state);
-    void onAirspyBiasTChecked(bool en);
+    void onAirspyBiasTCurrentIdxChanged(int);
     void activateAirspyControls(bool en);
 #endif
 #if HAVE_SOAPYSDR

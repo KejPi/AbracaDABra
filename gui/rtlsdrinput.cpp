@@ -38,6 +38,10 @@ RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
     m_device = nullptr;
     m_worker = nullptr;
     m_gainList = nullptr;
+    m_agcLevelMinFactorList = nullptr;
+
+    m_agcLevelMax = RTLSDR_AGC_LEVEL_MAX_DEFAULT;
+    m_agcLevelMin = 60;
 
     m_bandwidth = 0;
     m_frequency = 0;
@@ -56,6 +60,10 @@ RtlSdrInput::~RtlSdrInput()
     if (nullptr != m_gainList)
     {
         delete m_gainList;
+    }
+    if (nullptr != m_agcLevelMinFactorList)
+    {
+        delete m_agcLevelMinFactorList;
     }
 }
 
@@ -212,6 +220,14 @@ bool RtlSdrInput::openDevice()
     }
     delete [] gains;
 
+    m_agcLevelMinFactorList = new QList<float>();
+    for (int i = 1; i < m_gainList->count(); i++) {
+        // up step + 0.5dB
+        m_agcLevelMinFactorList->append(qPow(10.0, (m_gainList->at(i-1) - m_gainList->at(i) - 5)/200.0));
+    }
+    // last factor does not matter
+    m_agcLevelMinFactorList->append(qPow(10.0, -5.0 / 20.0));
+
     // set automatic gain
     setGainMode(RtlGainMode::Software);
 
@@ -322,6 +338,8 @@ void RtlSdrInput::setGain(int gIdx)
     if (gIdx != m_gainIdx)
     {
         m_gainIdx = gIdx;
+        m_agcLevelMin = m_agcLevelMinFactorList->at(m_gainIdx) * m_agcLevelMax;
+        //qDebug() << m_agcLevelMax << m_agcLevelMin;
         int ret = rtlsdr_set_tuner_gain(m_device, m_gainList->at(m_gainIdx));
         if (ret != 0)
         {
@@ -342,19 +360,18 @@ void RtlSdrInput::resetAgc()
     }
 }
 
-void RtlSdrInput::onAgcLevel(float agcLevel, int maxVal)
+void RtlSdrInput::onAgcLevel(float agcLevel)
 {
+    //qDebug() << agcLevel;
     if (RtlGainMode::Software == m_gainMode)
     {
-        // AGC correction
-        if (maxVal >= 127)
+        if (agcLevel < m_agcLevelMin)
         {
-           setGain(m_gainIdx-1);
+            setGain(m_gainIdx+1);
         }
-        else if ((agcLevel < 50) && (maxVal < 100))
-        {  // (maxVal < 100) is required to avoid toggling => change gain only if there is some headroom
-           // this could be problem on E4000 tuner with big AGC gain steps
-           setGain(m_gainIdx+1);
+        if (agcLevel > m_agcLevelMax)
+        {
+            setGain(m_gainIdx-1);
         }
     }
 }
@@ -444,6 +461,16 @@ void RtlSdrInput::setBiasT(bool ena)
     }
 }
 
+void RtlSdrInput::setAgcLevelMax(float agcLevelMax)
+{
+    if (agcLevelMax <= 0)
+    {   // default value
+        agcLevelMax = RTLSDR_AGC_LEVEL_MAX_DEFAULT;
+    }
+    m_agcLevelMax = agcLevelMax;
+    m_agcLevelMin = m_agcLevelMinFactorList->at(m_gainIdx) * m_agcLevelMax;
+}
+
 QList<float> RtlSdrInput::getGainList() const
 {
     QList<float> ret;
@@ -499,10 +526,6 @@ void RtlSdrWorker::processInputData(unsigned char *buf, uint32_t len)
 #if (RTLSDR_DOC_ENABLE > 0)
     int_fast32_t sumI = 0;
     int_fast32_t sumQ = 0;
-#endif
-
-#if (RTLSDR_AGC_ENABLE > 0)
-    int maxVal = 0;
 #endif
 
     if (m_captureStartCntr > 0)
@@ -587,12 +610,6 @@ void RtlSdrWorker::processInputData(unsigned char *buf, uint32_t len)
 #if (RTLSDR_AGC_ENABLE > 0)
             int_fast8_t absTmp = abs(tmp);
 
-            // catch maximum value (used to avoid overflow)
-            if (absTmp > maxVal)
-            {
-                maxVal = absTmp;
-            }
-
             // calculate signal level (rectifier, fast attack slow release)
             float c = m_agcLevel_crel;
             if (absTmp > agcLev)
@@ -637,12 +654,6 @@ void RtlSdrWorker::processInputData(unsigned char *buf, uint32_t len)
 #if (RTLSDR_AGC_ENABLE > 0)
             int_fast8_t absTmp = abs(tmp);
 
-            // catch maximum value (used to avoid overflow)
-            if (absTmp > maxVal)
-            {
-                maxVal = absTmp;
-            }
-
             // calculate signal level (rectifier, fast attack slow release)
             float c = m_agcLevel_crel;
             if (absTmp > agcLev)
@@ -680,12 +691,6 @@ void RtlSdrWorker::processInputData(unsigned char *buf, uint32_t len)
 
 #if (RTLSDR_AGC_ENABLE > 0)
             int_fast8_t absTmp = abs(tmp);
-
-            // catch maximum value (used to avoid overflow)
-            if (absTmp > maxVal)
-            {
-                maxVal = absTmp;
-            }
 
             // calculate signal level (rectifier, fast attack slow release)
             float c = m_agcLevel_crel;
@@ -726,7 +731,7 @@ void RtlSdrWorker::processInputData(unsigned char *buf, uint32_t len)
     // store memory
     m_agcLevel = agcLev;
 
-    emit agcLevel(agcLev, maxVal);
+    emit agcLevel(agcLev);
 #endif
 
     pthread_mutex_lock(&inputBuffer.countMutex);

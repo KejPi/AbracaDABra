@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>505</width>
-    <height>490</height>
+    <width>550</width>
+    <height>550</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>0</width>
-    <height>0</height>
+    <width>530</width>
+    <height>530</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -35,7 +35,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -82,12 +82,6 @@
        </item>
        <item>
         <widget class="QStackedWidget" name="deviceOptionsWidget">
-         <property name="minimumSize">
-          <size>
-           <width>414</width>
-           <height>221</height>
-          </size>
-         </property>
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -95,7 +89,7 @@
           <enum>QFrame::Sunken</enum>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>4</number>
          </property>
          <widget class="QWidget" name="rtlsdrPage">
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -207,15 +201,8 @@
              <property name="title">
               <string>Expert settings</string>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_11">
-              <item>
-               <widget class="QLabel" name="rtlsdrBandwidthLabel">
-                <property name="text">
-                 <string>Bandwidth:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
+             <layout class="QGridLayout" name="gridLayout_6">
+              <item row="2" column="1">
                <widget class="QSpinBox" name="rtlsdrBandwidth">
                 <property name="specialValueText">
                  <string>Default</string>
@@ -231,7 +218,73 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="4" column="1">
+               <widget class="QComboBox" name="rtlsdrBiasTCombo"/>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="rtlsdrBandwidthLabel">
+                <property name="text">
+                 <string>Bandwidth:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="4">
+               <widget class="QPushButton" name="rtlsdrBandwidthDefault">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Set default</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="4">
+               <widget class="QPushButton" name="rtlsdrSwAgcMaxLevelDefault">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Set default</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="rtlsdrSwAgcLevelLabel">
+                <property name="text">
+                 <string>SW AGC Maximum Level:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="rtlsdrBiasTLabel">
+                <property name="text">
+                 <string>Bias Tee:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QSpinBox" name="rtlsdrSwAgcMaxLevel">
+                <property name="specialValueText">
+                 <string>Default</string>
+                </property>
+                <property name="suffix">
+                 <string notr="true"/>
+                </property>
+                <property name="minimum">
+                 <number>0</number>
+                </property>
+                <property name="maximum">
+                 <number>127</number>
+                </property>
+                <property name="singleStep">
+                 <number>1</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="5">
                <spacer name="horizontalSpacer_4">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -243,13 +296,6 @@
                  </size>
                 </property>
                </spacer>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="rtlsdrBiasTCheckbox">
-                <property name="text">
-                 <string>Bias Tee</string>
-                </property>
-               </widget>
               </item>
              </layout>
             </widget>
@@ -737,11 +783,14 @@
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_12">
               <item>
-               <widget class="QCheckBox" name="airspyBiasTCheckbox">
+               <widget class="QLabel" name="airspyBiasTLabel">
                 <property name="text">
-                 <string>Bias Tee</string>
+                 <string>Bias Tee:</string>
                 </property>
                </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="airspyBiasTCombo"/>
               </item>
               <item>
                <spacer name="horizontalSpacer_5">
@@ -830,6 +879,16 @@
                 </property>
                 <property name="singleStep">
                  <number>100</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="soapysdrBandwidthDefault">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Set default</string>
                 </property>
                </widget>
               </item>
