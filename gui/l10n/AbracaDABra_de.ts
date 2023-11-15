@@ -3052,7 +3052,7 @@ Datei: %1</translation>
     <message>
         <location filename="../slsview.cpp" line="270"/>
         <source>Service logo</source>
-        <translation type="unfinished"></translation>
+        <translation>Servicelogo</translation>
     </message>
 </context>
 <context>
@@ -3414,13 +3414,13 @@ Datei: %1</translation>
         <location filename="../setupdialog.ui" line="1087"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1119"/>
         <source>Audio recording must be stopped when service changes.&lt;br&gt;If you select this option, application stops recording and saves the file automatically without asking.</source>
-        <translation type="unfinished"></translation>
+        <translation>Eine Audioaufnahme muss beendet werden, falls sich das Service ändert.&lt;br&gt;Wenn diese Option ausgewählt wird, wird die Audioaufnahme beendet und die Datei ohne Rückfrage automatisch gespeichert.</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1090"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1121"/>
         <source>Do not ask to stop audio recording when service changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Bei Serviceänderung nicht nachfragen, die Audioaufzeichnung zu beenden</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1236"/>
