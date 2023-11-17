@@ -76,6 +76,7 @@ public:
             int gainIdx;
             QString tcpAddress;
             int tcpPort;
+            int agcLevelMax;
         } rtltcp;
 #if HAVE_AIRSPY
         struct
@@ -177,6 +178,7 @@ private:
     void onRtlTcpGainSliderChanged(int val);
     void onRtlTcpIpAddrEditFinished();
     void onRtlTcpPortValueChanged(int val);
+    void onRtlTcpSwAgcMaxLevelChanged(int val);
     void activateRtlTcpControls(bool en);
 
     void onRawFileFormatChanged(int idx);    

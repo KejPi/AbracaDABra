@@ -1892,6 +1892,7 @@ void MainWindow::onNewInputDeviceSettings()
         break;
     case InputDeviceId::RTLTCP:
         dynamic_cast<RtlTcpInput*>(m_inputDevice)->setGainMode(s.rtltcp.gainMode, s.rtltcp.gainIdx);
+        dynamic_cast<RtlTcpInput*>(m_inputDevice)->setAgcLevelMax(s.rtltcp.agcLevelMax);
         break;
     case InputDeviceId::AIRSPY:
 #if HAVE_AIRSPY
@@ -2034,11 +2035,6 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             // ensemble info dialog
             connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             m_ensembleInfoDialog->enableRecording(true);
-
-            // they are only set when device is initialized
-            dynamic_cast<RtlSdrInput*>(m_inputDevice)->setBW(m_setupDialog->settings().rtlsdr.bandwidth);
-            dynamic_cast<RtlSdrInput*>(m_inputDevice)->setBiasT(m_setupDialog->settings().rtlsdr.biasT);
-            dynamic_cast<RtlSdrInput*>(m_inputDevice)->setAgcLevelMax(m_setupDialog->settings().rtlsdr.agcLevelMax);
 
             // apply current settings
             onNewInputDeviceSettings();
@@ -2406,12 +2402,13 @@ void MainWindow::loadSettings()
     s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
     s.rtlsdr.bandwidth = settings->value("RTL-SDR/bandwidth", 0).toUInt();
     s.rtlsdr.biasT = settings->value("RTL-SDR/bias-T", false).toBool();
-    s.rtlsdr.agcLevelMax = settings->value("RTL-SDR/agcLevelMax", 0).toFloat();
+    s.rtlsdr.agcLevelMax = settings->value("RTL-SDR/agcLevelMax", 0).toInt();
 
     s.rtltcp.gainIdx = settings->value("RTL-TCP/gainIndex", 0).toInt();
     s.rtltcp.gainMode = static_cast<RtlGainMode>(settings->value("RTL-TCP/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
     s.rtltcp.tcpAddress = settings->value("RTL-TCP/address", QString("127.0.0.1")).toString();
     s.rtltcp.tcpPort = settings->value("RTL-TCP/port", 1234).toInt();
+    s.rtltcp.agcLevelMax = settings->value("RTL-TCP/agcLevelMax", 0).toInt();
 
 #if HAVE_AIRSPY
     s.airspy.gain.sensitivityGainIdx = settings->value("AIRSPY/sensitivityGainIdx", 9).toInt();
@@ -2602,6 +2599,7 @@ void MainWindow::saveSettings()
     settings->setValue("RTL-TCP/gainMode", static_cast<int>(s.rtltcp.gainMode));
     settings->setValue("RTL-TCP/address", s.rtltcp.tcpAddress);
     settings->setValue("RTL-TCP/port", s.rtltcp.tcpPort);
+    settings->setValue("RTL-TCP/agcLevelMax", s.rtltcp.agcLevelMax);
 
     settings->setValue("RAW-FILE/filename", s.rawfile.file);
     settings->setValue("RAW-FILE/format", int(s.rawfile.format));

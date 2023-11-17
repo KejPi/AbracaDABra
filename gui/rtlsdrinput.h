@@ -109,7 +109,6 @@ private:
     float m_agcLevelMin;
     QList<float> * m_agcLevelMinFactorList;
 
-
     void run();           
     void stop();
     void resetAgc();

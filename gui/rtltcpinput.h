@@ -59,6 +59,8 @@
 #define RTLTCP_AGC_ENABLE 1         // enable AGC
 #define RTLTCP_START_COUNTER_INIT 2 // init value of the counter used to reset buffer after tune
 
+#define RTLTCP_AGC_LEVEL_MAX_DEFAULT 105
+
 class RtlTcpWorker : public QThread
 {
     Q_OBJECT
@@ -70,7 +72,7 @@ public:
 protected:
     void run() override;
 signals:
-    void agcLevel(float level, int maxVal);
+    void agcLevel(float level);
     void recordBuffer(const uint8_t * buf, uint32_t len);
     void dataReady();
 private:
@@ -92,7 +94,7 @@ private:
     float m_agcLevel = 0.0;
 #if (RTLTCP_AGC_ENABLE > 0)
     constexpr static const float m_agcLevel_catt = 0.1;
-    constexpr static const float m_agcLevel_crel = 0.0001;
+    constexpr static const float m_agcLevel_crel = 0.00005;
 #endif
 
     // input buffer
@@ -139,6 +141,7 @@ public:
     void tune(uint32_t frequency) override;
     void setTcpIp(const QString & address, int port);
     void setGainMode(RtlGainMode gainMode, int gainIdx = 0);
+    void setAgcLevelMax(float agcLevelMax);
     void setDAGC(bool ena);
     void startStopRecording(bool start) override;
     QList<float> getGainList() const;
@@ -153,6 +156,9 @@ private:
     RtlGainMode m_gainMode = RtlGainMode::Hardware;
     int m_gainIdx;
     QList<int> * m_gainList;
+    float m_agcLevelMax;
+    float m_agcLevelMin;
+    QList<float> * m_agcLevelMinFactorList;
 
     void resetAgc();
 
@@ -161,7 +167,7 @@ private:
     void setGain(int gainIdx);
 
     // used by worker
-    void onAgcLevel(float agcLevel, int maxVal);
+    void onAgcLevel(float agcLevel);
 
     void sendCommand(const RtlTcpCommand & cmd, uint32_t param);
 private slots:

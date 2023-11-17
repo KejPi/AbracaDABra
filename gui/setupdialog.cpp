@@ -78,6 +78,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
                                +                                + "(\\." + ipRange + ")$");
     QRegularExpressionValidator *ipValidator = new QRegularExpressionValidator(ipRegex, this);
     ui->rtltcpIpAddressEdit->setValidator(ipValidator);
+    ui->rtltcpSwAgcMaxLevel->setToolTip(ui->rtlsdrSwAgcMaxLevel->toolTip());
+    ui->rtltcpSwAgcMaxLevel->setMinimumWidth(ui->rtlsdrSwAgcMaxLevel->width());
 
     ui->rtlsdrBiasTCombo->addItem(tr("Off"), false);
     ui->rtlsdrBiasTCombo->addItem(tr("On"), true);
@@ -91,6 +93,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->airspyBiasTCombo->addItem(tr("On"), true);
     ui->airspyBiasTCombo->setToolTip(ui->rtlsdrBiasTCombo->toolTip());
     ui->soapysdrBandwidth->setToolTip(ui->rtlsdrBandwidth->toolTip());
+    ui->soapysdrBandwidth->setMinimumWidth(ui->rtlsdrSwAgcMaxLevel->width());
 
     // set announcement combos
     QGridLayout *gridLayout = new QGridLayout;
@@ -203,6 +206,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->rtltcpGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onTcpGainModeToggled);
     connect(ui->rtltcpIpAddressEdit, &QLineEdit::editingFinished, this, &SetupDialog::onRtlTcpIpAddrEditFinished);
     connect(ui->rtltcpIpPortSpinBox, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpPortValueChanged);
+    connect(ui->rtltcpSwAgcMaxLevel, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpSwAgcMaxLevelChanged);
+    connect(ui->rtltcpSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtltcpSwAgcMaxLevel->setValue(0); } );
+
 
     connect(ui->loopCheckbox, &QCheckBox::stateChanged, this, [=](int val) { m_settings.rawfile.loopEna = (Qt::Unchecked != val); });
     connect(ui->fileFormatCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onRawFileFormatChanged);
@@ -506,6 +512,7 @@ void SetupDialog::setUiState()
     default:
         break;
     }
+    ui->rtltcpSwAgcMaxLevel->setValue(m_settings.rtltcp.agcLevelMax);
 
 #if HAVE_AIRSPY
     switch (m_settings.airspy.gain.mode) {
@@ -788,6 +795,13 @@ void SetupDialog::onTcpGainModeToggled(bool checked)
         activateRtlTcpControls(true);
         emit newInputDeviceSettings();
     }
+}
+
+void SetupDialog::onRtlTcpSwAgcMaxLevelChanged(int val)
+{
+    m_settings.rtltcp.agcLevelMax = val;
+    ui->rtltcpSwAgcMaxLevelDefault->setEnabled(val > 0);
+    emit newInputDeviceSettings();
 }
 
 void SetupDialog::activateRtlTcpControls(bool en)

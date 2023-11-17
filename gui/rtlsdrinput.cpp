@@ -39,7 +39,6 @@ RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
     m_worker = nullptr;
     m_gainList = nullptr;
     m_agcLevelMinFactorList = nullptr;
-
     m_agcLevelMax = RTLSDR_AGC_LEVEL_MAX_DEFAULT;
     m_agcLevelMin = 60;
 
