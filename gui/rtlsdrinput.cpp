@@ -339,7 +339,7 @@ void RtlSdrInput::setGain(int gIdx)
     {
         m_gainIdx = gIdx;
         m_agcLevelMin = m_agcLevelMinFactorList->at(m_gainIdx) * m_agcLevelMax;
-        //qDebug() << m_agcLevelMax << m_agcLevelMin;
+        // qDebug() << m_agcLevelMax << m_agcLevelMin;
         int ret = rtlsdr_set_tuner_gain(m_device, m_gainList->at(m_gainIdx));
         if (ret != 0)
         {
@@ -362,7 +362,7 @@ void RtlSdrInput::resetAgc()
 
 void RtlSdrInput::onAgcLevel(float agcLevel)
 {
-    //qDebug() << agcLevel;
+    // qDebug() << agcLevel;
     if (RtlGainMode::Software == m_gainMode)
     {
         if (agcLevel < m_agcLevelMin)

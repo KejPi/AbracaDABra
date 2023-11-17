@@ -939,280 +939,280 @@ Soubor: %1</translation>
         <translation>Volitelný INI soubor. Pokud není vybraný, AbracaDABra.použije výchozí ini soubor.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3366"/>
-        <location filename="../mainwindow.cpp" line="3376"/>
+        <location filename="../mainwindow.cpp" line="3369"/>
+        <location filename="../mainwindow.cpp" line="3379"/>
         <source>Open link</source>
         <translation>Otevřít odkaz</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3436"/>
+        <location filename="../mainwindow.cpp" line="3439"/>
         <source>Title</source>
         <translation>Název</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3437"/>
+        <location filename="../mainwindow.cpp" line="3440"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3438"/>
+        <location filename="../mainwindow.cpp" line="3441"/>
         <source>Track Number</source>
         <oldsource>Track Number:</oldsource>
         <translation>Číslo skladby</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3439"/>
+        <location filename="../mainwindow.cpp" line="3442"/>
         <source>Artist</source>
         <translation>Umělec</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3440"/>
+        <location filename="../mainwindow.cpp" line="3443"/>
         <source>Composition</source>
         <translation>Skladbe</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3441"/>
+        <location filename="../mainwindow.cpp" line="3444"/>
         <source>Movement</source>
         <translation>Věta</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3442"/>
+        <location filename="../mainwindow.cpp" line="3445"/>
         <source>Conductor</source>
         <translation>Dirigent</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3443"/>
+        <location filename="../mainwindow.cpp" line="3446"/>
         <source>Composer</source>
         <translation>Skladatel</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3444"/>
+        <location filename="../mainwindow.cpp" line="3447"/>
         <source>Band</source>
         <translation>Skupina</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3445"/>
+        <location filename="../mainwindow.cpp" line="3448"/>
         <source>Comment</source>
         <translation>Komentář</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3446"/>
+        <location filename="../mainwindow.cpp" line="3449"/>
         <source>Genre</source>
         <translation>Žánr</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3447"/>
+        <location filename="../mainwindow.cpp" line="3450"/>
         <location filename="../dabtables.cpp" line="206"/>
         <location filename="../dabtables.cpp" line="1045"/>
         <source>News</source>
         <translation>Zprávy</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3448"/>
+        <location filename="../mainwindow.cpp" line="3451"/>
         <source>News (local)</source>
         <translation>Zprávy (místní)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3449"/>
+        <location filename="../mainwindow.cpp" line="3452"/>
         <source>Stock Market</source>
         <translation>Burza</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3450"/>
+        <location filename="../mainwindow.cpp" line="3453"/>
         <location filename="../dabtables.cpp" line="209"/>
         <source>Sport</source>
         <translation>Sport</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3451"/>
+        <location filename="../mainwindow.cpp" line="3454"/>
         <source>Lottery</source>
         <translation>Loterie</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3452"/>
+        <location filename="../mainwindow.cpp" line="3455"/>
         <source>Horoscope</source>
         <translation>Horoskop</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3453"/>
+        <location filename="../mainwindow.cpp" line="3456"/>
         <source>Daily Diversion</source>
         <translation>Pro tento den</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3454"/>
+        <location filename="../mainwindow.cpp" line="3457"/>
         <source>Health</source>
         <translation>Zdraví</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3455"/>
+        <location filename="../mainwindow.cpp" line="3458"/>
         <location filename="../dabtables.cpp" line="1047"/>
         <source>Event</source>
         <translation>Událost</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3456"/>
+        <location filename="../mainwindow.cpp" line="3459"/>
         <source>Scene</source>
         <translation>Scéna</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3457"/>
+        <location filename="../mainwindow.cpp" line="3460"/>
         <source>Cinema</source>
         <translation>Kino</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3458"/>
+        <location filename="../mainwindow.cpp" line="3461"/>
         <source>TV</source>
         <translation>TV</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3462"/>
+        <location filename="../mainwindow.cpp" line="3465"/>
         <location filename="../dabtables.cpp" line="1046"/>
         <source>Weather</source>
         <translation>Počasí</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3463"/>
+        <location filename="../mainwindow.cpp" line="3466"/>
         <source>Traffic</source>
         <translation>Doprava</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3464"/>
+        <location filename="../mainwindow.cpp" line="3467"/>
         <location filename="../dabtables.cpp" line="1041"/>
         <source>Alarm</source>
         <translation>Alarm</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3465"/>
+        <location filename="../mainwindow.cpp" line="3468"/>
         <source>Advertisment</source>
         <translation>Reklama</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3466"/>
+        <location filename="../mainwindow.cpp" line="3469"/>
         <source>URL</source>
         <translation>URL</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3467"/>
+        <location filename="../mainwindow.cpp" line="3470"/>
         <source>Other</source>
         <translation>Ostatní</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3468"/>
+        <location filename="../mainwindow.cpp" line="3471"/>
         <source>Station (short)</source>
         <translation>Stanice (krátce)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3469"/>
+        <location filename="../mainwindow.cpp" line="3472"/>
         <source>Station</source>
         <translation>Stanice</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3470"/>
+        <location filename="../mainwindow.cpp" line="3473"/>
         <source>Now</source>
         <translation>Právě teď</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3471"/>
+        <location filename="../mainwindow.cpp" line="3474"/>
         <source>Next</source>
         <translation>Další</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3472"/>
+        <location filename="../mainwindow.cpp" line="3475"/>
         <source>Programme Part</source>
         <translation>Programová část</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3473"/>
+        <location filename="../mainwindow.cpp" line="3476"/>
         <source>Host</source>
         <translation>Moderátor</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3474"/>
+        <location filename="../mainwindow.cpp" line="3477"/>
         <source>Editorial</source>
         <translation>Redakce</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3478"/>
+        <location filename="../mainwindow.cpp" line="3481"/>
         <source>Homepage</source>
         <translation>Web</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3482"/>
+        <location filename="../mainwindow.cpp" line="3485"/>
         <source>Phone (Hotline)</source>
         <translation>Telefon (hotline)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3483"/>
+        <location filename="../mainwindow.cpp" line="3486"/>
         <source>Phone (Studio)</source>
         <translation>Telefon (studio)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3484"/>
+        <location filename="../mainwindow.cpp" line="3487"/>
         <source>Phone (Other)</source>
         <translation>Telefon (jiný)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3485"/>
+        <location filename="../mainwindow.cpp" line="3488"/>
         <source>SMS (Studio)</source>
         <translation>SMS (studio)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3486"/>
+        <location filename="../mainwindow.cpp" line="3489"/>
         <source>SMS (Other)</source>
         <translation>SMS (jiný)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3487"/>
+        <location filename="../mainwindow.cpp" line="3490"/>
         <source>E-mail (Hotline)</source>
         <translation>Email (hotline)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3488"/>
+        <location filename="../mainwindow.cpp" line="3491"/>
         <source>E-mail (Studio)</source>
         <translation>Email (studio)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3489"/>
+        <location filename="../mainwindow.cpp" line="3492"/>
         <source>E-mail (Other)</source>
         <translation>Email (jiný)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3490"/>
+        <location filename="../mainwindow.cpp" line="3493"/>
         <source>MMS</source>
         <translation>MMS</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3491"/>
+        <location filename="../mainwindow.cpp" line="3494"/>
         <source>Chat Message</source>
         <translation>Z chatu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3492"/>
+        <location filename="../mainwindow.cpp" line="3495"/>
         <source>Chat</source>
         <translation>Chat</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3493"/>
+        <location filename="../mainwindow.cpp" line="3496"/>
         <source>Vote Question</source>
         <translation>Hlasovací otázka</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3494"/>
+        <location filename="../mainwindow.cpp" line="3497"/>
         <source>Vote Here</source>
         <translation>Hlasujte</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3497"/>
+        <location filename="../mainwindow.cpp" line="3500"/>
         <source>Private 1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3498"/>
+        <location filename="../mainwindow.cpp" line="3501"/>
         <source>Private 2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="3499"/>
+        <location filename="../mainwindow.cpp" line="3502"/>
         <source>Private 3</source>
         <translation></translation>
     </message>
@@ -3064,420 +3064,444 @@ Soubor: %1</translation>
     <name>SetupDialog</name>
     <message>
         <location filename="../setupdialog.ui" line="20"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1018"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1067"/>
         <source>Settings</source>
         <translation>Nastavení</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="52"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1019"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1068"/>
         <source>Input device:</source>
         <translation>Vstupní zařízení:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="77"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1020"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1069"/>
         <source>Connect</source>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="105"/>
-        <location filename="../setupdialog.ui" line="342"/>
-        <location filename="../setupdialog.ui" line="531"/>
-        <location filename="../setupdialog.ui" line="941"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1021"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1041"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1061"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1099"/>
+        <location filename="../setupdialog.ui" line="99"/>
+        <location filename="../setupdialog.ui" line="391"/>
+        <location filename="../setupdialog.ui" line="580"/>
+        <location filename="../setupdialog.ui" line="1003"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1070"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1097"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1117"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1156"/>
         <source>Gain control</source>
         <translation>Ovládání zesílení</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="111"/>
-        <location filename="../setupdialog.ui" line="348"/>
-        <location filename="../setupdialog.ui" line="947"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1023"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1043"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1101"/>
+        <location filename="../setupdialog.ui" line="105"/>
+        <location filename="../setupdialog.ui" line="397"/>
+        <location filename="../setupdialog.ui" line="1009"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1072"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1099"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1158"/>
         <source>Gain controlled by software (SW AGC)</source>
         <translation>Zesílení je řízeno softwarem (SW AGC)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="114"/>
-        <location filename="../setupdialog.ui" line="351"/>
-        <location filename="../setupdialog.ui" line="540"/>
-        <location filename="../setupdialog.ui" line="950"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1025"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1045"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1065"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1103"/>
+        <location filename="../setupdialog.ui" line="108"/>
+        <location filename="../setupdialog.ui" line="400"/>
+        <location filename="../setupdialog.ui" line="589"/>
+        <location filename="../setupdialog.ui" line="1012"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1074"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1101"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1121"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1160"/>
         <source>Software</source>
         <translation>Software</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="121"/>
-        <location filename="../setupdialog.ui" line="358"/>
-        <location filename="../setupdialog.ui" line="957"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1027"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1047"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1105"/>
+        <location filename="../setupdialog.ui" line="115"/>
+        <location filename="../setupdialog.ui" line="407"/>
+        <location filename="../setupdialog.ui" line="1019"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1076"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1103"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1162"/>
         <source>Gain controlled internally by device (HW AGC)</source>
         <translation>Zesílení je řízeno vstupním zařízením (HW AGC)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="124"/>
-        <location filename="../setupdialog.ui" line="361"/>
-        <location filename="../setupdialog.ui" line="960"/>
+        <location filename="../setupdialog.ui" line="118"/>
+        <location filename="../setupdialog.ui" line="410"/>
+        <location filename="../setupdialog.ui" line="1022"/>
         <location filename="../setupdialog.cpp" line="45"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1029"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1049"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1107"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1078"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1105"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1164"/>
         <source>Device</source>
         <translation>Zařízení</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="131"/>
-        <location filename="../setupdialog.ui" line="368"/>
-        <location filename="../setupdialog.ui" line="967"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1031"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1051"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1109"/>
+        <location filename="../setupdialog.ui" line="125"/>
+        <location filename="../setupdialog.ui" line="417"/>
+        <location filename="../setupdialog.ui" line="1029"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1080"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1107"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1166"/>
         <source>Manual gain control</source>
         <translation>Ruční ovládání zesílení</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="134"/>
-        <location filename="../setupdialog.ui" line="371"/>
-        <location filename="../setupdialog.ui" line="570"/>
-        <location filename="../setupdialog.ui" line="970"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1033"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1053"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1077"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1111"/>
+        <location filename="../setupdialog.ui" line="128"/>
+        <location filename="../setupdialog.ui" line="420"/>
+        <location filename="../setupdialog.ui" line="619"/>
+        <location filename="../setupdialog.ui" line="1032"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1082"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1109"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1133"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1168"/>
         <source>Manual</source>
         <translation>Manuálně</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="159"/>
-        <location filename="../setupdialog.ui" line="279"/>
-        <location filename="../setupdialog.ui" line="908"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1034"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1039"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1098"/>
+        <location filename="../setupdialog.ui" line="153"/>
+        <location filename="../setupdialog.ui" line="328"/>
+        <location filename="../setupdialog.ui" line="970"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1083"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1095"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1155"/>
         <source>Gain</source>
         <translation>Zesílení</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="208"/>
-        <location filename="../setupdialog.ui" line="736"/>
-        <location filename="../setupdialog.ui" line="810"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1035"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1090"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1095"/>
+        <location filename="../setupdialog.ui" line="202"/>
+        <location filename="../setupdialog.ui" line="785"/>
+        <location filename="../setupdialog.ui" line="862"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1084"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1146"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1151"/>
         <source>Expert settings</source>
         <translation>Pokročilá nastavení</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="214"/>
-        <location filename="../setupdialog.ui" line="816"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1036"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1096"/>
+        <location filename="../setupdialog.ui" line="227"/>
+        <location filename="../setupdialog.ui" line="868"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1086"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1152"/>
         <source>Bandwidth:</source>
         <translation>Šířka pásma:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="221"/>
-        <location filename="../setupdialog.ui" line="823"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1037"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1097"/>
+        <location filename="../setupdialog.ui" line="208"/>
+        <location filename="../setupdialog.ui" line="271"/>
+        <location filename="../setupdialog.ui" line="875"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1085"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1094"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1153"/>
         <source>Default</source>
         <translation>Výchozí</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="250"/>
-        <location filename="../setupdialog.ui" line="742"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1038"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1091"/>
-        <source>Bias Tee</source>
-        <translation>Fantom (bias-t)</translation>
+        <location filename="../setupdialog.ui" line="254"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1089"/>
+        <source>SW AGC level threshold:</source>
+        <translation>SW AGC práh úrovně:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="335"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1040"/>
+        <location filename="../setupdialog.ui" line="268"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1092"/>
+        <source>Maximum signal level</source>
+        <translation>Nejvyšší úroveň signálu</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="384"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1096"/>
         <source>IP Address:</source>
         <translation>IP adresa:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="394"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1054"/>
+        <location filename="../setupdialog.ui" line="443"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1110"/>
         <source>Port:</source>
         <translation>Port:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="442"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1055"/>
+        <location filename="../setupdialog.ui" line="491"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1111"/>
         <source>Open File...</source>
         <translation>Otevřít soubor...</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="452"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1057"/>
+        <location filename="../setupdialog.ui" line="501"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1113"/>
         <source>Play file in the loop</source>
         <translation>Po skončení souboru opakovat od začátku</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="455"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1059"/>
+        <location filename="../setupdialog.ui" line="504"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1115"/>
         <source>Loop file</source>
         <translation>Opakování</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="468"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1060"/>
+        <location filename="../setupdialog.ui" line="517"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1116"/>
         <source>Filename</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="537"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1063"/>
+        <location filename="../setupdialog.ui" line="586"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1119"/>
         <source>Gain controlled by software using sensitivity gain (SW AGC)</source>
         <translation>Zesílení je řízeno softwarem pomocí tzv. zesílení citlivosti (SW AGC)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="547"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1067"/>
+        <location filename="../setupdialog.ui" line="596"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1123"/>
         <source>LNA and Mixer controlled by device (HW AGC), IF gain controlled by software (SW AGC)</source>
         <translation>Zesílení LNA a mixeru je řízeno zařízením (HW AGC), zesílení IF je řízeno softwarem (SW AGC)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="550"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1069"/>
+        <location filename="../setupdialog.ui" line="599"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1125"/>
         <source>Hybrid</source>
         <translation>Hybridní</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="557"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1071"/>
+        <location filename="../setupdialog.ui" line="606"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1127"/>
         <source>Manual control of sensitivity gain</source>
         <translation>Ruční ovládání zesílení pomocí tzv. zesílení citlivosti</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="560"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1073"/>
+        <location filename="../setupdialog.ui" line="609"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1129"/>
         <source>Sensitivity</source>
         <translation>Citlivost</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="567"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1075"/>
+        <location filename="../setupdialog.ui" line="616"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1131"/>
         <source>Free manual control of all gains</source>
         <translation>Volné ruční ovládání všech zesílení</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="599"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1078"/>
+        <location filename="../setupdialog.ui" line="648"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1134"/>
         <source>Sensitivity gain</source>
         <translation>Zesílení citlivosti</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="606"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1080"/>
+        <location filename="../setupdialog.ui" line="655"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1136"/>
         <source>LNA AGC </source>
         <translation>LNA AGC </translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="609"/>
-        <location filename="../setupdialog.ui" line="683"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1082"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1088"/>
+        <location filename="../setupdialog.ui" line="658"/>
+        <location filename="../setupdialog.ui" line="732"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1138"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1144"/>
         <source>AGC</source>
         <translation>AGC</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="616"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1083"/>
+        <location filename="../setupdialog.ui" line="665"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1139"/>
         <source>LNA gain</source>
         <translation>Zesílení LNA</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="623"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1084"/>
+        <location filename="../setupdialog.ui" line="672"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1140"/>
         <source>Mixer gain</source>
         <translation>Zesílení mixeru</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="680"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1086"/>
+        <location filename="../setupdialog.ui" line="729"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1142"/>
         <source>Mixer AGC</source>
         <translation>AGC mixeru</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="690"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1089"/>
+        <location filename="../setupdialog.ui" line="739"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1145"/>
         <source>IF gain</source>
         <translation>Zesílení IF</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="789"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1093"/>
+        <location filename="../setupdialog.ui" line="841"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1149"/>
         <source>Device arguments:</source>
         <translation>Parametry zařízení:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="803"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1094"/>
+        <location filename="../setupdialog.ui" line="855"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1150"/>
         <source>RX channel number:</source>
         <translation>Číslo RX kanálu:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1020"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1115"/>
+        <location filename="../setupdialog.ui" line="1082"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1172"/>
         <source>Audio Recording</source>
         <translation>Nahávání audia</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1028"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1116"/>
+        <location filename="../setupdialog.ui" line="1090"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1173"/>
         <source>Change recording folder...</source>
         <translation>Změnit nahrávací složku...</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1050"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1117"/>
+        <location filename="../setupdialog.ui" line="1112"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1174"/>
         <source>Folder:</source>
         <translation>Složka:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1087"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1119"/>
+        <location filename="../setupdialog.ui" line="1149"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1176"/>
         <source>Audio recording must be stopped when service changes.&lt;br&gt;If you select this option, application stops recording and saves the file automatically without asking.</source>
         <translation>Nahrávání audio musí být ukončeno, když se změní stanice.&lt;br&gt;Pokud vyberete tuto možnost, aplikace ukončí nahrávání a uloží soubor automaticky bez ptaní.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1090"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1121"/>
+        <location filename="../setupdialog.ui" line="1152"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1178"/>
         <source>Do not ask to stop audio recording when service changes</source>
         <translation>Neptat se na ukončení nahrávání audia při změně stanice</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1104"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1122"/>
+        <location filename="../setupdialog.ui" line="1166"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1179"/>
         <source>Record encoded DAB/DAB+ stream (MP2 or AAC format)</source>
         <translation>Nahrávat kodovaná DAB/DAB+ data (MP2 nebo AAC formát)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1111"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1123"/>
+        <location filename="../setupdialog.ui" line="1173"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1180"/>
         <source>Record decoded audio (WAV format)</source>
         <translation>Nahrávat dekodované audio (WAV formát)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1252"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1131"/>
+        <location filename="../setupdialog.ui" line="1314"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1188"/>
         <source>SPI Application</source>
         <translation>SPI Aplikace</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1258"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1133"/>
+        <location filename="../setupdialog.ui" line="1320"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1190"/>
         <source>Enable Service and Programme Information (SPI) application.</source>
         <translation>Povolit SPI (Service and Programme) aplikaci.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1261"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1135"/>
+        <location filename="../setupdialog.ui" line="1323"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1192"/>
         <source>Enable SPI application</source>
         <translation>Povolit SPI aplikaci</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1268"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1137"/>
+        <location filename="../setupdialog.ui" line="1330"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1194"/>
         <source>Use internet connection to download data like station logo.</source>
         <translation>Používat internetové připojení pro stahování dat jako jsou např. loga stanic.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1271"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1139"/>
+        <location filename="../setupdialog.ui" line="1333"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1196"/>
         <source>Download data from internet</source>
         <translation>Stahovat data z internetu</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1278"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1141"/>
+        <location filename="../setupdialog.ui" line="1340"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1198"/>
         <source>Use RadioDNS to retrieve SPI. This option requires internet connection.</source>
         <translation>Používat RadioDNS pro příjem SPI. Tato možnost vyžaduje internetové připojení.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1281"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1143"/>
+        <location filename="../setupdialog.ui" line="1343"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1200"/>
         <source>RadioDNS</source>
         <translation>RadioDNS</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="782"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1092"/>
+        <location filename="../setupdialog.ui" line="834"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1148"/>
         <source>Antenna:</source>
         <translation>Anténa:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="984"/>
+        <location filename="../setupdialog.ui" line="237"/>
+        <location filename="../setupdialog.ui" line="247"/>
+        <location filename="../setupdialog.ui" line="894"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1087"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1088"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1154"/>
+        <source>Set default</source>
+        <translation>Nastavit výchozí</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="261"/>
+        <location filename="../setupdialog.ui" line="791"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1090"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1147"/>
+        <source>Bias Tee:</source>
+        <translation>Bias Tee:</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="1046"/>
         <location filename="../setupdialog.cpp" line="72"/>
-        <location filename="../setupdialog.cpp" line="985"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1112"/>
+        <location filename="../setupdialog.cpp" line="1003"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1169"/>
         <source>No device connected</source>
         <translation>Žádné zařízení není připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1146"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1124"/>
+        <location filename="../setupdialog.ui" line="1208"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1181"/>
         <source>Visual Style</source>
         <translation>Styl aplikace</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1176"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1125"/>
+        <location filename="../setupdialog.ui" line="1238"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1182"/>
         <source>User Interface</source>
         <translation>Uživatelské rozhraní</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1182"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1126"/>
+        <location filename="../setupdialog.ui" line="1244"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1183"/>
         <source>Expert mode UI</source>
         <translation>Pokročilé uživatelské rozhraní</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1189"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1127"/>
+        <location filename="../setupdialog.ui" line="1251"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1184"/>
         <source>Dynamic Label Plus (DL+)</source>
         <translation>Dynamic Label Plus (DL+)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1198"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1128"/>
+        <location filename="../setupdialog.ui" line="1260"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1185"/>
         <source>Language:</source>
         <translation>Jazyk:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1001"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1113"/>
+        <location filename="../setupdialog.ui" line="1063"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1170"/>
         <source>Audio Decoder</source>
         <translation>Audio dekodér</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1007"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1114"/>
+        <location filename="../setupdialog.ui" line="1069"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1171"/>
         <source>Noise level during audio drop-out:</source>
         <translation>Úroveň šumu při výpadku zvuku:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1236"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1129"/>
+        <location filename="../setupdialog.ui" line="1298"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1186"/>
         <source>Raw Data Recording</source>
         <translation>Záznam vstupního signálu</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1242"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1130"/>
+        <location filename="../setupdialog.ui" line="1304"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1187"/>
         <source>Include XML header</source>
         <translation>Vkládat XML záhlaví</translation>
     </message>
@@ -3498,7 +3522,7 @@ Soubor: %1</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="59"/>
-        <location filename="../setupdialog.cpp" line="1015"/>
+        <location filename="../setupdialog.cpp" line="1033"/>
         <source>Raw file</source>
         <translation>Raw soubor</translation>
     </message>
@@ -3514,193 +3538,205 @@ Soubor: %1</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="82"/>
+        <location filename="../setupdialog.cpp" line="90"/>
+        <source>Off</source>
+        <translation>Vypnuto</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="83"/>
+        <location filename="../setupdialog.cpp" line="91"/>
+        <source>On</source>
+        <translation>Zapnuto</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="84"/>
         <source>Enable/disable bias tee.&lt;br&gt;&lt;br&gt;&lt;b&gt;WARNING:&lt;/b&gt; Before using the bias tee please ensure that you understand that you should not use this option when the dongle is connected directly to a DC short circuited antenna unless you are using an LNA.</source>
         <translation>Povolit/zakázat fantom (bias-t).&lt;br&gt;&lt;br&gt;&lt;b&gt;VAROVÁNÍ:&lt;/b&gt; Než použijete fantom, tak se ujistěte, že přijímač není připojený přímo ke stejnosměrně zkratované anténě bez LNA.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="86"/>
+        <location filename="../setupdialog.cpp" line="89"/>
         <source>Input signal bandwidth in kHz. Value &apos;0&apos; means default bandwidth %1 kHz.</source>
         <translation>Šířka pásma vstupního signálu. Hodnota &apos;0&apos; znamená výchozí šířku pásma %1 kHz.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="106"/>
+        <location filename="../setupdialog.cpp" line="111"/>
         <source>&lt;br&gt;Note: Alarm announcement cannot be disabled.</source>
         <translation>&lt;br&gt;Poznámka: Hlášení alarmu nelze deaktivovat.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="108"/>
+        <location filename="../setupdialog.cpp" line="113"/>
         <source>Alarm Announcements</source>
         <translation>Hlášení alarmu</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="114"/>
+        <location filename="../setupdialog.cpp" line="119"/>
         <source>Bring window to foreground</source>
         <translation>Přenést okno do popředí</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="115"/>
+        <location filename="../setupdialog.cpp" line="120"/>
         <source>Check to bring window to foreground when (test) alarm announcement starts</source>
         <translation>Zaškrtněte pro přenesení okna do popředí, pokud probíhá hlášení alarmu (i testovací)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="136"/>
+        <location filename="../setupdialog.cpp" line="141"/>
         <source>Regular Announcements</source>
         <translation>Běžná hlášení</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="147"/>
+        <location filename="../setupdialog.cpp" line="152"/>
         <source>Recording date:</source>
         <translation>Datum záznamu:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="151"/>
+        <location filename="../setupdialog.cpp" line="156"/>
         <source>Recorder:</source>
         <translation>Zaznamenáno pomocí:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="155"/>
+        <location filename="../setupdialog.cpp" line="160"/>
         <source>Device:</source>
         <translation>Zařízení:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="159"/>
+        <location filename="../setupdialog.cpp" line="164"/>
         <source>Sample rate [Hz]:</source>
         <translation>Vzorkovací frekvence [Hz]:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="163"/>
+        <location filename="../setupdialog.cpp" line="168"/>
         <source>Frequency [kHz]:</source>
         <translation>Frekvence [kHz]:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="167"/>
+        <location filename="../setupdialog.cpp" line="172"/>
         <source>Recording length [sec]:</source>
         <translation>Délka záznamu [s]:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="171"/>
+        <location filename="../setupdialog.cpp" line="176"/>
         <source>Sample format:</source>
         <translation>Formát vzorků:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="232"/>
+        <location filename="../setupdialog.cpp" line="241"/>
         <source>Default style (OS dependent)</source>
         <translation>Výchozí vzhled (v zavislosti na OS)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="233"/>
+        <location filename="../setupdialog.cpp" line="242"/>
         <source>Light style (Fusion with light colors)</source>
         <translation>Světlý vzhled (Fusion se světlými barvami)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1200"/>
+        <location filename="../setupdialog.cpp" line="1218"/>
         <source>sec</source>
         <translation>s</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1232"/>
+        <location filename="../setupdialog.cpp" line="1250"/>
         <source>Audio recording folder</source>
         <translation>Složka pro ukládaní audio nahrávek</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="234"/>
+        <location filename="../setupdialog.cpp" line="243"/>
         <source>Dark style (Fusion with dark colors)</source>
         <translation>Tmavý vzhled (Fusion s tmavými barvami)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="237"/>
+        <location filename="../setupdialog.cpp" line="246"/>
         <source>System language</source>
         <translation>Jazyk systému</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="244"/>
+        <location filename="../setupdialog.cpp" line="253"/>
         <source>User interface language, the change will take effect after application restart.</source>
         <translation>Jayk uživatelského rozhraní, změna se projeví až po restartu aplikace.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="245"/>
+        <location filename="../setupdialog.cpp" line="254"/>
         <source>Language change will take effect after application restart.</source>
         <translation>Změna jazyka se projeví po restartu aplikace.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="249"/>
+        <location filename="../setupdialog.cpp" line="258"/>
         <source>Set default OS style.</source>
         <translation>Nastavit vzhled podle operačního systému.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="250"/>
+        <location filename="../setupdialog.cpp" line="259"/>
         <source>Force application light style.</source>
         <translation>Vynutit světlý vzhled aplikace.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="251"/>
+        <location filename="../setupdialog.cpp" line="260"/>
         <source>Force application dark style.</source>
         <translation>Vynutit tmavý vzhled aplikace.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="253"/>
+        <location filename="../setupdialog.cpp" line="262"/>
         <source>User interface in expert mode</source>
         <translation>Rozhraní pro pokročilé uživatele</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="254"/>
+        <location filename="../setupdialog.cpp" line="263"/>
         <source>Show Dynamic Label Plus (DL+) tags like artist, song name, etc.</source>
         <translation>Zobrazovat značky Dynamic Lable Plus (DL+) jako jsou jméno interpreta, skladby, apod.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="255"/>
+        <location filename="../setupdialog.cpp" line="264"/>
         <source>Include raw file XML header in IQ recording</source>
         <translation>Vkládat XML záhlaví na začátek souboru při záznamu vstupního signálu</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="284"/>
+        <location filename="../setupdialog.cpp" line="293"/>
         <source>Disabled</source>
         <translation>Zakázáno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="285"/>
+        <location filename="../setupdialog.cpp" line="294"/>
         <source>Select noise level that is generated during audio interruptions.&lt;br&gt;This may help to improve listening experience and make the audio interruptions less annoying.</source>
         <translation>Vyberte úroveň šumu, ktery je generovaný během výpadku zvuku.&lt;br&gt;Toto nastavení může zlepšit posluchačský zážitek a zmírnit nepříjemný vjem způsobený výpadkem zvuku.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="456"/>
-        <location filename="../setupdialog.cpp" line="466"/>
-        <location filename="../setupdialog.cpp" line="552"/>
+        <location filename="../setupdialog.cpp" line="465"/>
+        <location filename="../setupdialog.cpp" line="475"/>
+        <location filename="../setupdialog.cpp" line="561"/>
         <source>N/A</source>
         <translation>Nedostupný</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="979"/>
+        <location filename="../setupdialog.cpp" line="997"/>
         <source>RTL SDR device connected</source>
         <translation>RTL SDR zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="982"/>
+        <location filename="../setupdialog.cpp" line="1000"/>
         <source>RTL TCP device connected</source>
         <translation>RTL TCP zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="988"/>
+        <location filename="../setupdialog.cpp" line="1006"/>
         <source>Raw file connected</source>
         <translation>Raw soubor připojen</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="991"/>
+        <location filename="../setupdialog.cpp" line="1009"/>
         <source>Airspy device connected</source>
         <translation>Airspy zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="994"/>
+        <location filename="../setupdialog.cpp" line="1012"/>
         <source>Soapy SDR device connected</source>
         <translation>Soapy SDR zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1060"/>
+        <location filename="../setupdialog.cpp" line="1078"/>
         <source>Open IQ stream</source>
         <translation>Otevřít IQ soubor</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1060"/>
+        <location filename="../setupdialog.cpp" line="1078"/>
         <source>Binary files</source>
         <translation>Binární soubory</translation>
     </message>

@@ -89,7 +89,7 @@
           <enum>QFrame::Sunken</enum>
          </property>
          <property name="currentIndex">
-          <number>4</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="rtlsdrPage">
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -251,7 +251,7 @@
               <item row="3" column="0">
                <widget class="QLabel" name="rtlsdrSwAgcLevelLabel">
                 <property name="text">
-                 <string>SW AGC Maximum Level:</string>
+                 <string>SW AGC level threshold:</string>
                 </property>
                </widget>
               </item>
@@ -264,6 +264,9 @@
               </item>
               <item row="3" column="1">
                <widget class="QSpinBox" name="rtlsdrSwAgcMaxLevel">
+                <property name="toolTip">
+                 <string>Maximum signal level</string>
+                </property>
                 <property name="specialValueText">
                  <string>Default</string>
                 </property>
