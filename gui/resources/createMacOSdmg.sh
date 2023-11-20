@@ -18,11 +18,12 @@ function createDmg () {
 	create-dmg \
 	  --volname "${VOLUME_NAME}" \
 	  --window-pos 200 120 \
-	  --window-size 800 400 \
+	  --window-size 640 440 \
+      --background ../gui/resources/macos_dmg_bg.png \
 	  --icon-size 100 \
-	  --icon "${APP_NAME}.app" 200 190 \
+	  --icon "${APP_NAME}.app" 140 250 \
 	  --hide-extension "${APP_NAME}.app" \
-	  --app-drop-link 600 185 \
+	  --app-drop-link 500 250 \
 	  --no-internet-enable \
 	  "${DMG_FILE_NAME}" \
 	  "${SOURCE_FOLDER_PATH}"
@@ -58,7 +59,7 @@ cmake -G Xcode -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DAPPLE_BUILD_X86_64=ON 
 cmake --build $BUILD_DIR --target ALL_BUILD --config Release
 
 cd $BUILD_DIR/gui/Release
-$QT_PATH_6_4/bin/macdeployqt AbracaDABra.app -codesign="-" # -dmg 
+$QT_PATH_6_4/bin/macdeployqt AbracaDABra.app -codesign="-" # -dmg
 
 cd ../..
 createDmg
