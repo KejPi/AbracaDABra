@@ -414,20 +414,25 @@
         <location filename="../ensembleinfodialog.cpp" line="209"/>
         <location filename="../ensembleinfodialog.cpp" line="243"/>
         <location filename="../ensembleinfodialog.cpp" line="252"/>
-        <location filename="../ensembleinfodialog.cpp" line="349"/>
-        <location filename="../ensembleinfodialog.cpp" line="350"/>
+        <location filename="../ensembleinfodialog.cpp" line="351"/>
+        <location filename="../ensembleinfodialog.cpp" line="352"/>
         <source>N/A</source>
         <translation>Nedostupný</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="314"/>
-        <source>Reset FIB statistics</source>
-        <translation>Obnovit statistiku FIB</translation>
+        <source>Reset statistics</source>
+        <translation>Vynulovat statistiky</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="315"/>
+        <location filename="../ensembleinfodialog.cpp" line="316"/>
+        <source>Reset FIB statistics</source>
+        <translation>Vynulovat statistiku FIB</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="317"/>
         <source>Reset MSC statistics</source>
-        <translation>Onbovit statistiku MSC</translation>
+        <translation>Vynulovat statistiku MSC</translation>
     </message>
 </context>
 <context>
@@ -3456,7 +3461,7 @@ Soubor: %1</translation>
     <message>
         <location filename="../setupdialog.ui" line="1113"/>
         <location filename="../setupdialog.cpp" line="72"/>
-        <location filename="../setupdialog.cpp" line="1017"/>
+        <location filename="../setupdialog.cpp" line="1020"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1216"/>
         <source>No device connected</source>
         <translation>Žádné zařízení není připojeno</translation>
@@ -3532,7 +3537,7 @@ Soubor: %1</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="59"/>
-        <location filename="../setupdialog.cpp" line="1047"/>
+        <location filename="../setupdialog.cpp" line="1050"/>
         <source>Raw file</source>
         <translation>Raw soubor</translation>
     </message>
@@ -3629,124 +3634,124 @@ Soubor: %1</translation>
         <translation>Formát vzorků:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="247"/>
+        <location filename="../setupdialog.cpp" line="248"/>
         <source>Default style (OS dependent)</source>
         <translation>Výchozí vzhled (v zavislosti na OS)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="248"/>
+        <location filename="../setupdialog.cpp" line="249"/>
         <source>Light style (Fusion with light colors)</source>
         <translation>Světlý vzhled (Fusion se světlými barvami)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1232"/>
+        <location filename="../setupdialog.cpp" line="1235"/>
         <source>sec</source>
         <translation>s</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1264"/>
+        <location filename="../setupdialog.cpp" line="1267"/>
         <source>Audio recording folder</source>
         <translation>Složka pro ukládaní audio nahrávek</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="249"/>
+        <location filename="../setupdialog.cpp" line="250"/>
         <source>Dark style (Fusion with dark colors)</source>
         <translation>Tmavý vzhled (Fusion s tmavými barvami)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="252"/>
+        <location filename="../setupdialog.cpp" line="253"/>
         <source>System language</source>
         <translation>Jazyk systému</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="259"/>
+        <location filename="../setupdialog.cpp" line="260"/>
         <source>User interface language, the change will take effect after application restart.</source>
         <translation>Jayk uživatelského rozhraní, změna se projeví až po restartu aplikace.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="260"/>
+        <location filename="../setupdialog.cpp" line="261"/>
         <source>Language change will take effect after application restart.</source>
         <translation>Změna jazyka se projeví po restartu aplikace.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="264"/>
+        <location filename="../setupdialog.cpp" line="265"/>
         <source>Set default OS style.</source>
         <translation>Nastavit vzhled podle operačního systému.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="265"/>
+        <location filename="../setupdialog.cpp" line="266"/>
         <source>Force application light style.</source>
         <translation>Vynutit světlý vzhled aplikace.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="266"/>
+        <location filename="../setupdialog.cpp" line="267"/>
         <source>Force application dark style.</source>
         <translation>Vynutit tmavý vzhled aplikace.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="268"/>
+        <location filename="../setupdialog.cpp" line="269"/>
         <source>User interface in expert mode</source>
         <translation>Rozhraní pro pokročilé uživatele</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="269"/>
+        <location filename="../setupdialog.cpp" line="270"/>
         <source>Show Dynamic Label Plus (DL+) tags like artist, song name, etc.</source>
         <translation>Zobrazovat značky Dynamic Lable Plus (DL+) jako jsou jméno interpreta, skladby, apod.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="270"/>
+        <location filename="../setupdialog.cpp" line="271"/>
         <source>Include raw file XML header in IQ recording</source>
         <translation>Vkládat XML záhlaví na začátek souboru při záznamu vstupního signálu</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="299"/>
+        <location filename="../setupdialog.cpp" line="300"/>
         <source>Disabled</source>
         <translation>Zakázáno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="300"/>
+        <location filename="../setupdialog.cpp" line="301"/>
         <source>Select noise level that is generated during audio interruptions.&lt;br&gt;This may help to improve listening experience and make the audio interruptions less annoying.</source>
         <translation>Vyberte úroveň šumu, ktery je generovaný během výpadku zvuku.&lt;br&gt;Toto nastavení může zlepšit posluchačský zážitek a zmírnit nepříjemný vjem způsobený výpadkem zvuku.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="471"/>
-        <location filename="../setupdialog.cpp" line="481"/>
-        <location filename="../setupdialog.cpp" line="568"/>
+        <location filename="../setupdialog.cpp" line="472"/>
+        <location filename="../setupdialog.cpp" line="482"/>
+        <location filename="../setupdialog.cpp" line="570"/>
         <source>N/A</source>
         <translation>Nedostupný</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1011"/>
+        <location filename="../setupdialog.cpp" line="1014"/>
         <source>RTL SDR device connected</source>
         <translation>RTL SDR zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1014"/>
+        <location filename="../setupdialog.cpp" line="1017"/>
         <source>RTL TCP device connected</source>
         <translation>RTL TCP zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1020"/>
+        <location filename="../setupdialog.cpp" line="1023"/>
         <source>Raw file connected</source>
         <translation>Raw soubor připojen</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1023"/>
+        <location filename="../setupdialog.cpp" line="1026"/>
         <source>Airspy device connected</source>
         <translation>Airspy zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1026"/>
+        <location filename="../setupdialog.cpp" line="1029"/>
         <source>Soapy SDR device connected</source>
         <translation>Soapy SDR zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1092"/>
+        <location filename="../setupdialog.cpp" line="1095"/>
         <source>Open IQ stream</source>
         <translation>Otevřít IQ soubor</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1092"/>
+        <location filename="../setupdialog.cpp" line="1095"/>
         <source>Binary files</source>
         <translation>Binární soubory</translation>
     </message>

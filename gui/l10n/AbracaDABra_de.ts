@@ -408,18 +408,23 @@
         <location filename="../ensembleinfodialog.cpp" line="209"/>
         <location filename="../ensembleinfodialog.cpp" line="243"/>
         <location filename="../ensembleinfodialog.cpp" line="252"/>
-        <location filename="../ensembleinfodialog.cpp" line="349"/>
-        <location filename="../ensembleinfodialog.cpp" line="350"/>
+        <location filename="../ensembleinfodialog.cpp" line="351"/>
+        <location filename="../ensembleinfodialog.cpp" line="352"/>
         <source>N/A</source>
         <translation>unzutreffend</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="314"/>
+        <source>Reset statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="316"/>
         <source>Reset FIB statistics</source>
         <translation>FIB-Statistik zurücksetzen</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="315"/>
+        <location filename="../ensembleinfodialog.cpp" line="317"/>
         <source>Reset MSC statistics</source>
         <translation>MSC-Statistik zurücksetzen</translation>
     </message>
@@ -3367,7 +3372,7 @@ Datei: %1</translation>
     <message>
         <location filename="../setupdialog.ui" line="1113"/>
         <location filename="../setupdialog.cpp" line="72"/>
-        <location filename="../setupdialog.cpp" line="1017"/>
+        <location filename="../setupdialog.cpp" line="1020"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1216"/>
         <source>No device connected</source>
         <translation>Kein Gerät verbunden</translation>
@@ -3485,7 +3490,7 @@ Datei: %1</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="59"/>
-        <location filename="../setupdialog.cpp" line="1047"/>
+        <location filename="../setupdialog.cpp" line="1050"/>
         <source>Raw file</source>
         <translation>Rohdatei</translation>
     </message>
@@ -3582,124 +3587,124 @@ Datei: %1</translation>
         <translation>Datenformat:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="247"/>
+        <location filename="../setupdialog.cpp" line="248"/>
         <source>Default style (OS dependent)</source>
         <translation>Standardstil (betriebssystemabhängig)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="248"/>
+        <location filename="../setupdialog.cpp" line="249"/>
         <source>Light style (Fusion with light colors)</source>
         <translation>Heller Stil (Fusion mit hellen Farben)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1232"/>
+        <location filename="../setupdialog.cpp" line="1235"/>
         <source>sec</source>
         <translation>sec</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1264"/>
+        <location filename="../setupdialog.cpp" line="1267"/>
         <source>Audio recording folder</source>
         <translation>Audioaufnahmeordner</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="249"/>
+        <location filename="../setupdialog.cpp" line="250"/>
         <source>Dark style (Fusion with dark colors)</source>
         <translation>Dunkler Stil (Fusion mit dunklen Farben)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="252"/>
+        <location filename="../setupdialog.cpp" line="253"/>
         <source>System language</source>
         <translation>Systemsprache</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="259"/>
+        <location filename="../setupdialog.cpp" line="260"/>
         <source>User interface language, the change will take effect after application restart.</source>
         <translation>Sprache der Benutzeroberfläche, die Änderung erfolgt nach einem Programmneustart.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="260"/>
+        <location filename="../setupdialog.cpp" line="261"/>
         <source>Language change will take effect after application restart.</source>
         <translation>Die Änderung der Sprache erfolgt nach Programmneustart.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="264"/>
+        <location filename="../setupdialog.cpp" line="265"/>
         <source>Set default OS style.</source>
         <translation>Betriebssystem-Standardstil verwenden.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="265"/>
+        <location filename="../setupdialog.cpp" line="266"/>
         <source>Force application light style.</source>
         <translation>Hellen Stil erzwingen.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="266"/>
+        <location filename="../setupdialog.cpp" line="267"/>
         <source>Force application dark style.</source>
         <translation>Dunklen Stil erzwingen.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="268"/>
+        <location filename="../setupdialog.cpp" line="269"/>
         <source>User interface in expert mode</source>
         <translation>Benutzeroberfläche im Expertenmodus</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="269"/>
+        <location filename="../setupdialog.cpp" line="270"/>
         <source>Show Dynamic Label Plus (DL+) tags like artist, song name, etc.</source>
         <translation>Zeige Dynamic Label Plus (DL+) Informationen wie Interpret, Titelname, usw.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="270"/>
+        <location filename="../setupdialog.cpp" line="271"/>
         <source>Include raw file XML header in IQ recording</source>
         <translation>Verwendet XML-Kopfzeilen in IQ-Rohdateien</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="299"/>
+        <location filename="../setupdialog.cpp" line="300"/>
         <source>Disabled</source>
         <translation>Deaktiviert</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="300"/>
+        <location filename="../setupdialog.cpp" line="301"/>
         <source>Select noise level that is generated during audio interruptions.&lt;br&gt;This may help to improve listening experience and make the audio interruptions less annoying.</source>
         <translation>Wählen Sie den Geräuschpegel aus, der während Audiounterbrechungen erzeugt wird.&lt;br&gt;Dies kann dazu beitragen, das Hörerlebnis zu verbessern und die Audiounterbrechungen weniger störend zu machen.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="471"/>
-        <location filename="../setupdialog.cpp" line="481"/>
-        <location filename="../setupdialog.cpp" line="568"/>
+        <location filename="../setupdialog.cpp" line="472"/>
+        <location filename="../setupdialog.cpp" line="482"/>
+        <location filename="../setupdialog.cpp" line="570"/>
         <source>N/A</source>
         <translation>unzutreffend</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1011"/>
+        <location filename="../setupdialog.cpp" line="1014"/>
         <source>RTL SDR device connected</source>
         <translation>RTL SDR Gerät verbunden</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1014"/>
+        <location filename="../setupdialog.cpp" line="1017"/>
         <source>RTL TCP device connected</source>
         <translation>RTL TCP Gerät verbunden</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1020"/>
+        <location filename="../setupdialog.cpp" line="1023"/>
         <source>Raw file connected</source>
         <translation>Rohdatei verbunden</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1023"/>
+        <location filename="../setupdialog.cpp" line="1026"/>
         <source>Airspy device connected</source>
         <translation>Airspygerät verbunden</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1026"/>
+        <location filename="../setupdialog.cpp" line="1029"/>
         <source>Soapy SDR device connected</source>
         <translation>Soapy SDR-Gerät verbunden</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1092"/>
+        <location filename="../setupdialog.cpp" line="1095"/>
         <source>Open IQ stream</source>
         <translation>Öffne IQ-Datenstrom</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1092"/>
+        <location filename="../setupdialog.cpp" line="1095"/>
         <source>Binary files</source>
         <translation>Binärdateien</translation>
     </message>
