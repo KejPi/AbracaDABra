@@ -311,6 +311,8 @@ void EnsembleInfoDialog::fibFrameContextMenu(const QPoint& pos)
 {
     QPoint globalPos = ui->FIBframe->mapToGlobal(pos);
     QMenu menu(this);
+    QAction * resetAllAction = menu.addAction(tr("Reset statistics"));
+    menu.addSeparator();
     QAction * fibResetAction = menu.addAction(tr("Reset FIB statistics"));
     QAction * mscResetAction = menu.addAction(tr("Reset MSC statistics"));
     QAction * selectedItem = menu.exec(globalPos);
