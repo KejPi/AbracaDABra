@@ -509,6 +509,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         connect(m_audioOutput, &AudioOutput::audioDeviceChanged, this, &MainWindow::onAudioDeviceChanged);
         connect(this, &MainWindow::audioOutput, m_audioOutput, &AudioOutput::setAudioDevice);
         onAudioDevicesList(m_audioOutput->getAudioDevices());
+
+        qCInfo(application) << "Using PortAudio output";
 #endif
     }
     else
@@ -525,6 +527,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         m_audioOutput->moveToThread(m_audioOutputThread);
         connect(m_audioOutputThread, &QThread::finished, m_audioOutput, &QObject::deleteLater);
         m_audioOutputThread->start();
+
+        qCInfo(application) << "Using Qt audio output";
     }
     connect(this, &MainWindow::audioVolume, m_audioOutput, &AudioOutput::setVolume, Qt::QueuedConnection);
     connect(this, &MainWindow::audioMute, m_audioOutput, &AudioOutput::mute, Qt::QueuedConnection);
