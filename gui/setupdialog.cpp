@@ -214,8 +214,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->fileFormatCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onRawFileFormatChanged);
 
     connect(this, &SetupDialog::expertModeToggled, ui->rtlsdrExpertGroup, &QGroupBox::setVisible);
+    connect(this, &SetupDialog::expertModeToggled, ui->rtltcpExpertGroup, &QGroupBox::setVisible);
     connect(this, &SetupDialog::expertModeToggled, ui->airspyExpertGroup, &QGroupBox::setVisible);
-    connect(this, &SetupDialog::expertModeToggled, ui->soapysdrExpertGroup, &QGroupBox::setVisible);
+    connect(this, &SetupDialog::expertModeToggled, ui->soapysdrExpertGroup, &QGroupBox::setVisible);    
 
 
 #if HAVE_AIRSPY
@@ -513,6 +514,7 @@ void SetupDialog::setUiState()
         break;
     }
     ui->rtltcpSwAgcMaxLevel->setValue(m_settings.rtltcp.agcLevelMax);
+    ui->rtltcpExpertGroup->setVisible(m_settings.expertModeEna);
 
 #if HAVE_AIRSPY
     switch (m_settings.airspy.gain.mode) {
@@ -808,6 +810,7 @@ void SetupDialog::activateRtlTcpControls(bool en)
 {
     ui->rtltcpGainModeGroup->setEnabled(en);
     ui->rtltcpGainWidget->setEnabled(en && (RtlGainMode::Manual == m_settings.rtltcp.gainMode));
+    ui->rtltcpExpertGroup->setEnabled(en);
 }
 
 void SetupDialog::onRawFileFormatChanged(int idx)
