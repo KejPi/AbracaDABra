@@ -74,7 +74,7 @@ Following settings can be changed by editing AbracaDABra.ini:
 
       [General]
       audioFramework=0             # 0 means PortAudio (default if available), 1 means Qt audio framework
-      keepServiceListOnScan=false  # keep (false, default) or delete (true) current service list when running band scan 
+      keepServiceListOnScan=false  # delete (false, default value) or keep (true) current service list when running band scan 
                                    # note: favorites are not deleted
       
 Application shall not run while changing INI file, otherwise the settings will be overwritten.
@@ -157,7 +157,18 @@ Then clone the project:
 3. Run make
 
        make             
-       
+
+4. Install application for all users (optional)
+
+       sudo make install
+       sudo ldconfig
+
+
+_Note:_ `CMAKE_INSTALL_PREFIX` is `/usr/local` by default. It means that application installs to `/usr/local/bin` and library is installed to `/usr/local/lib`. Make sure that `/usr/local/lib` is in your `ldconfig` path, if it is not then use `LD_LIBRARY_PATH` evironment variable when running AbracaDABra:
+
+       LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH /usr/local/bin/AbracaDABra &
+
+
 ## Known limitations
 * Reconfiguration not supported for data services
 * Only SLS data service is currently supported
