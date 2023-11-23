@@ -341,7 +341,7 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
         }
         else
         {   // not enough samples ==> inserting silence
-            qCDebug(audioOutput, "Muted: Inserting silence [%lu ms]", bytesToRead / (m_bytesPerFrame * m_sampleRate_kHz));
+            qCDebug(audioOutput, "Muted: Inserting silence [%llu ms]", bytesToRead / (m_bytesPerFrame * m_sampleRate_kHz));
 
             memset(data, 0, bytesToRead);
 
@@ -480,7 +480,7 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
     }
     else
     {   // mute can be requested when there is not enough samples or from HMI
-        qCInfo(audioOutput, "Muting... [available %lu samples]", numSamples);
+        qCInfo(audioOutput, "Muting... [available %llu samples]", numSamples);
         if (numSamples < AUDIOOUTPUT_FADE_TIME_MS*m_sampleRate_kHz)
         {
             float gain = 1.0;
