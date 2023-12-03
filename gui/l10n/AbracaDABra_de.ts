@@ -416,7 +416,7 @@
     <message>
         <location filename="../ensembleinfodialog.cpp" line="314"/>
         <source>Reset statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Statistik zurücksetzen</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="316"/>
@@ -1288,7 +1288,7 @@ Datei: %1</translation>
     <message>
         <location filename="../dabtables.cpp" line="237"/>
         <source>None</source>
-        <translation type="unfinished">Keiner</translation>
+        <translation>Kein</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="284"/>
@@ -3205,7 +3205,7 @@ Datei: %1</translation>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1129"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1137"/>
         <source>SW AGC level threshold:</source>
-        <translation type="unfinished"></translation>
+        <translation>SW AGC Pegelschwelle:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="268"/>
@@ -3213,7 +3213,7 @@ Datei: %1</translation>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1132"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1139"/>
         <source>Maximum signal level</source>
-        <translation type="unfinished"></translation>
+        <translation>Maximaler Signalpegel</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="313"/>
@@ -3359,7 +3359,7 @@ Datei: %1</translation>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1142"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1201"/>
         <source>Set default</source>
-        <translation type="unfinished"></translation>
+        <translation>Standardwerte</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="261"/>
@@ -3367,7 +3367,7 @@ Datei: %1</translation>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1130"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1194"/>
         <source>Bias Tee:</source>
-        <translation type="unfinished"></translation>
+        <translation>Fernspeisespannung:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1113"/>
@@ -3508,13 +3508,13 @@ Datei: %1</translation>
         <location filename="../setupdialog.cpp" line="84"/>
         <location filename="../setupdialog.cpp" line="92"/>
         <source>Off</source>
-        <translation type="unfinished"></translation>
+        <translation>aus</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="85"/>
         <location filename="../setupdialog.cpp" line="93"/>
         <source>On</source>
-        <translation type="unfinished"></translation>
+        <translation>ein</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="86"/>
