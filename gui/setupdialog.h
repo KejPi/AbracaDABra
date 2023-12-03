@@ -68,6 +68,7 @@ public:
             int gainIdx;
             uint32_t bandwidth;
             bool biasT;
+            int agcLevelMax;
         } rtlsdr;
         struct
         {
@@ -75,6 +76,7 @@ public:
             int gainIdx;
             QString tcpAddress;
             int tcpPort;
+            int agcLevelMax;
         } rtltcp;
 #if HAVE_AIRSPY
         struct
@@ -168,13 +170,15 @@ private:
     void onRtlSdrGainModeToggled(bool checked);
     void onRtlSdrGainSliderChanged(int val);
     void onRtlSdrBandwidthChanged(int val);
-    void onRtlSdrBiasTChecked(bool en);
+    void onRtlSdrSwAgcMaxLevelChanged(int val);
+    void onRtlSdrBiasTCurrentIdxChanged(int);
     void activateRtlSdrControls(bool en);
 
     void onTcpGainModeToggled(bool checked);
     void onRtlTcpGainSliderChanged(int val);
     void onRtlTcpIpAddrEditFinished();
     void onRtlTcpPortValueChanged(int val);
+    void onRtlTcpSwAgcMaxLevelChanged(int val);
     void activateRtlTcpControls(bool en);
 
     void onRawFileFormatChanged(int idx);    
@@ -202,7 +206,7 @@ private:
     void onAirspyMixerGainSliderChanged(int val);
     void onAirspyLNAAGCstateChanged(int state);
     void onAirspyMixerAGCstateChanged(int state);
-    void onAirspyBiasTChecked(bool en);
+    void onAirspyBiasTCurrentIdxChanged(int);
     void activateAirspyControls(bool en);
 #endif
 #if HAVE_SOAPYSDR

@@ -40,6 +40,8 @@
 // RTLSDR_START_COUNTER_INIT-1 buffers will be discarded
 #define RTLSDR_RESTART_COUNTER 2
 
+#define RTLSDR_AGC_LEVEL_MAX_DEFAULT 105
+
 class RtlSdrWorker : public QThread
 {
     Q_OBJECT
@@ -51,7 +53,7 @@ public:
 protected:
     void run() override;
 signals:
-    void agcLevel(float level, int maxVal);
+    void agcLevel(float level);
     void recordBuffer(const uint8_t * buf, uint32_t len);
     void dataReady();
 private:
@@ -72,7 +74,7 @@ private:
     float m_agcLevel = 0.0;
 #if (RTLSDR_AGC_ENABLE > 0)
     constexpr static const float m_agcLevel_catt = 0.1;
-    constexpr static const float m_agcLevel_crel = 0.0001;
+    constexpr static const float m_agcLevel_crel = 0.00005;
 #endif
 
     void processInputData(unsigned char *buf, uint32_t len);
@@ -91,7 +93,8 @@ public:
     void startStopRecording(bool start) override;
     void setBW(uint32_t bw);
     void setBiasT(bool ena);
-    QList<float> getGainList() const;
+    void setAgcLevelMax(float agcMaxValue);
+    QList<float> getGainList() const;    
 private:
     uint32_t m_frequency;
     uint32_t m_bandwidth;
@@ -102,7 +105,9 @@ private:
     RtlGainMode m_gainMode = RtlGainMode::Hardware;
     int m_gainIdx;
     QList<int> * m_gainList;
-
+    float m_agcLevelMax;
+    float m_agcLevelMin;
+    QList<float> * m_agcLevelMinFactorList;
 
     void run();           
     void stop();
@@ -113,7 +118,7 @@ private:
     void setGain(int gIdx);
 
     // used by worker
-    void onAgcLevel(float agcLevel, int maxVal);
+    void onAgcLevel(float agcLevel);
 
     void onReadThreadStopped();
     void onWatchdogTimeout();
