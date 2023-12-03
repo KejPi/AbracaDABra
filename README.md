@@ -6,7 +6,6 @@ Prebuilt binaries are released for Windows, MacOS (both Intel and Apple Silicon)
 ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
 <p align="center" width="100%">
     <img width="889" alt="AbracaDABra application window" src="https://github.com/KejPi/AbracaDABra/assets/6438380/717ed65e-314b-4307-9e32-968c5582eeda"> 
-    <img width="964" alt="Ensemble details" src="https://github.com/KejPi/AbracaDABra/assets/6438380/de037933-c5fe-4122-9a16-54fd996ee8bb">
 </p>
 
 ## Features
@@ -36,14 +35,19 @@ ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/
 * Localization to German, Polish and Czech
 
 ## Basic mode
-<img width="663" alt="Snímek obrazovky 2023-12-03 v 16 50 56" src="https://github.com/KejPi/AbracaDABra/assets/6438380/a3d0a656-9a7c-47bd-a2e2-bc8d283d080b">
+<p align="center" width="100%">
+    <img width="663" alt="Application in basic mode" src="https://github.com/KejPi/AbracaDABra/assets/6438380/a3d0a656-9a7c-47bd-a2e2-bc8d283d080b">
+</p>
 
 Simple user interface that is focused on radio listening. Just select your favorite service from service list on the right side 
 and enjoy the music with slideshow and DL(+). 
 Service can be easily added to favorites by clicking "star" icon.  Most of the elements in UI have tool tip with more information.
 
 ## Expert mode
-<img width="889" alt="Snímek obrazovky 2023-12-02 v 17 31 25" src="https://github.com/KejPi/AbracaDABra/assets/6438380/a1fae228-4148-477a-8c95-96fcc3080297">
+<p align="center" width="100%">
+    <img width="889" alt="Application in expert mode" src="https://github.com/KejPi/AbracaDABra/assets/6438380/a1fae228-4148-477a-8c95-96fcc3080297">
+    <img width="1152" alt="Ensemble details" src="https://github.com/KejPi/AbracaDABra/assets/6438380/d2d552c2-360c-4f44-b3c7-8baa214ba7f9">
+</p>
 
 In addition to basic mode, expert mode shows ensemble tree with structure of services and additional details of currenly tuned service. 
 Furthermore it is possible to change the DAB channel manually in this mode. 
@@ -71,16 +75,24 @@ Announcements from other service display a thematic placeholder. <a href="https:
 
 ## SPI application and RadioDNS
 
-<a href="https://www.worlddab.org/dab/data-applications/service-and-programme-information">Service and programme information</a> information (SPI) is supported partially. When SPI application is enabled in the settings and is SPI available for selected service and/or in the ensemble, application start its decoding automatically. SPI from X-PAD, from secondary service and from dedicated data service is supported, it can be even decoded from more sources in parallel. 
-SPI application is very slow and it takes several minutes to acquire all MOT objects in general. AbracaDABra can use internet connetion to download service logos and to retrieve service information using RadioDNS if supported by selected service. 
+<a href="https://www.worlddab.org/dab/data-applications/service-and-programme-information">Service and programme information</a> (SPI) is supported partially. When SPI application is enabled in the settings and SPI is available for selected service and/or in the ensemble, application starts its decoding automatically.
+SPI from X-PAD, from secondary service and from dedicated data service is supported, it can be even decoded from more sources in parallel. 
+In general, SPI application is very slow and it takes several minutes to acquire all objects. AbracaDABra can use internet connection to download service logos and to retrieve service information using RadioDNS if it is supported by broadcaster of the selected service. 
 Both internet connection and RadioDNS are optional features that are enabled by default.
 
-<img width="642" alt="Snímek obrazovky 2023-12-03 v 18 28 40" src="https://github.com/KejPi/AbracaDABra/assets/6438380/1b1ee56a-263f-4ade-90dd-36e1ddce52cd">
+<p align="center" width="100%">
+    <img width="642" alt="Snímek obrazovky 2023-12-03 v 18 28 40" src="https://github.com/KejPi/AbracaDABra/assets/6438380/1b1ee56a-263f-4ade-90dd-36e1ddce52cd">
+</p>
+
+Service logos and internet download cache are stored in dedicated directory on the disk. Location of the cache is OS dependent:
+* MacOS: `$HOME/Library/Caches/AbracaDABra/`
+* Windows: `%USERPROFILE%\AppData\Local\AbracaDABra\cache\`
+* Linux: `$HOME/.cache/AbracaDABra/`
 
 ## Audio recording
 
 AbracaDABra features audio recording. Two options are available:
-* Encoded DAB*DAB+ stream in MP2 or AAC format respectively
+* Encoded DAB/DAB+ stream in MP2 or AAC format respectively
 * Decoded audio in WAV format
 
 Audio recording can be started and stopped from application menu. It can be also stopped from status bar. The recording files are stored automatically in predefined folder. 
@@ -91,8 +103,9 @@ _Note:_  Audio recording stops when enseble reconfigures or when any tuning oper
 
 ## Expert settings
 Some settings can only be changed by editting of the INI file. File location is OS dependent:
-* MacOS & Linux: `$HOME/.config/AbracaDABra/AbracaDABra.ini`
+* MacOS: `$HOME/.config/AbracaDABra/AbracaDABra.ini`
 * Windows: `%USERPROFILE%\AppData\Roaming\AbracaDABra\AbracaDABra.ini`
+* Linux: `$HOME/.config/AbracaDABra/AbracaDABra.ini`
 
 Following settings can be changed by editing AbracaDABra.ini:
 
@@ -108,13 +121,13 @@ It is also possible to use other than default INI file using `--ini` or `-i` com
 ## How to install
 
 ### MacOS
-
 Download latest DMG file from [release page](https://github.com/KejPi/AbracaDABra/releases/latest) and install it like any other application. 
 
 There are two versions of DMG, one for Intel Mac and the other from Apple Silicon Mac. Although Intel Mac application runs on both platforms, it is highly recommended to install Apple Silicon version if you have Apple Silicon Mac. Intel build requires at least MacOS Mojave (10.14) and Apple Silicon build needs at least MacOS BigSur (11).
 
-### Windows
+<img width="752" alt="Snímek obrazovky 2023-12-03 v 19 03 37" src="https://github.com/KejPi/AbracaDABra/assets/6438380/395a0384-ae2d-48e9-aca1-56169d631a4d">
 
+### Windows
 Download latest Windows zip file from [release page](https://github.com/KejPi/AbracaDABra/releases/latest) and unpack it to any folder on your drive. 
 
 RTL-SDR devices need WinUSB driver for correct functionality under Windows. To install it, use Zadig that can be downloaded from [zadig.akeo.ie](https://zadig.akeo.ie). Please follow installation steps described [here](https://www.rtl-sdr.com/getting-the-rtl-sdr-to-work-on-windows-10/). When the driver is installed, start `AbracaDABra.exe` and first band scan should start automatically when RTL-SDR device is recognized. 
@@ -122,11 +135,10 @@ RTL-SDR devices need WinUSB driver for correct functionality under Windows. To i
 Please note that other applications requiring Realtek driver will not work with WinUSB driver from Zadig. 
 
 ### Linux
-
 The simplest way is to download latest AppImage file from [release page](https://github.com/KejPi/AbracaDABra/releases/latest), 
 make it executable and run it. 
 
-There are two versions of AppImage - one for Intel/AMD 64 bit CPU (x86_64) the other for ARM64 CPU (aarch64) so make soure you are donwloading the one matching your hardware.
+There are two versions of AppImage - one for Intel/AMD 64 bit CPU (x86_64) the other for ARM64 CPU (aarch64) so make sure you are downloading the one matching your hardware.
 
 ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
 
@@ -137,7 +149,7 @@ Following libraries are required:
 * rtldsdr
 * faad2 (default) or fdk-aac (optional)
 * mpg123
-* portaudio
+* portaudio (optional but recommended)
 * airspy (optional)
 * SoapySDR (optional)
 
@@ -194,5 +206,5 @@ _Note:_ `CMAKE_INSTALL_PREFIX` is `/usr/local` by default. It means that applica
 
 
 ## Known limitations
-* Only service logos are used from SPI application
+* Only service logos are currently supported from SPI application
        
