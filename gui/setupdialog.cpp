@@ -1241,6 +1241,7 @@ void SetupDialog::onSpiAppChecked(bool checked)
     ui->internetCheckBox->setEnabled(checked);
     ui->radioDNSCheckBox->setEnabled(checked && m_settings.useInternet);
     emit spiApplicationEnabled(m_settings.spiAppEna);
+    emit spiApplicationSettingsChanged(m_settings.useInternet && m_settings.spiAppEna, m_settings.radioDnsEna && m_settings.spiAppEna);
 }
 
 void SetupDialog::onUseInternetChecked(bool checked)
