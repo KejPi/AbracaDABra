@@ -84,6 +84,7 @@ private:
     QString getString(const uint8_t *dataPtr, int len, bool doReplaceTokens = true);
     QString getTime(const uint8_t *dataPtr, int len);
     QString getDoubleList(const uint8_t *dataPtr, int len);
+    QString getBearerURI(const uint8_t *dataPtr, int len);
 
     void setAttribute_string(QDomElement & element, const QString &name, const uint8_t *dataPtr, int len, bool doReplaceTokens);
     void setAttribute_timePoint(QDomElement & element, const QString &name, const uint8_t *dataPtr, int len);

@@ -683,6 +683,14 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // this causes focus to be set to service list when tune is finished
     m_hasListViewFocus = true;
     m_hasTreeViewFocus = false;
+
+    QFile xmlfile("/Users/kejpi/Devel/AbracaDABra/20231206_PI.xml");
+    if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream in(&xmlfile);
+        m_metadataManager->processXML(qPrintable(in.readAll()), "");
+        xmlfile.close();
+    }
 }
 
 MainWindow::~MainWindow()

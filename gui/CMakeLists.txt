@@ -149,6 +149,8 @@ add_executable(${TARGET}
 
     ${APPLE_SOURCES}
     elidedlabel.h elidedlabel.cpp
+    epgmodel.h epgmodel.cpp
+    epgmodelitem.h epgmodelitem.cpp
 
 
 

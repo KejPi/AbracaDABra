@@ -24,47 +24,55 @@
  * SOFTWARE.
  */
 
-#ifndef METADATAMANAGER_H
-#define METADATAMANAGER_H
+#ifndef EPGMODELITEM_H
+#define EPGMODELITEM_H
 
-#include <QObject>
-#include <QDomDocument>
-#include <QPixmap>
-#include <QHash>
-#include "epgmodel.h"
+#include <QString>
+#include <QDateTime>
 
-typedef QHash<QString, QString> serviceInfo_t;
-
-class MetadataManager : public QObject
+class EPGModelItem
 {
-    Q_OBJECT
-
 public:
-    enum MetadataRole{
-        SmallLogo = Qt::UserRole,
-        SLSLogo,
-        ShortName,
-        MediumName,
-        LongName,
-    };
+    EPGModelItem();
+    //~EPGModelItem() { }
 
-    explicit MetadataManager(QObject *parent = nullptr);
-    void processXML(const QString &xmldocument, const QString & scopeId);
-    void onFileReceived(const QByteArray & data, const QString & requestId);
-    QVariant data(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role);
+    QString longName() const;
+    void setLongName(const QString &newLongName);
+
+    QString mediumName() const;
+    void setMediumName(const QString &newMediumName);
+
+    QString shortName() const;
+    void setShortName(const QString &newShortName);
+
+    QDateTime startTime() const;
+    void setStartTime(const QDateTime &newStartTime);
+
+    int durationSec() const;
+    void setDurationSec(int newDurationSec);
+
+    QString longDescription() const;
+    void setLongDescription(const QString &newLongDescription);
+
+    QString shortDescription() const;
+    void setShortDescription(const QString &newShortDescription);
+
+    bool isValid() const;
+
+    int shortId() const;
+    void setShortId(int newShortId);
 
 signals:
-    void getFile(const QString & url, const QString & requestId);
-    void dataUpdated(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role);
 
 private:
-//    static MetadataManager * m_instancePtr;    // static pointer which will points to the instance of this class
-    QHash<QString, serviceInfo_t> m_info;
-    EPGModel * m_epgModel;
-
-    void parseProgramme(const QDomElement &element);
-    void parseDescription(const QDomElement &element, EPGModelItem *progItem);
-    void parseLocation(const QDomElement &element, EPGModelItem *progItem);
+    QString m_longName;
+    QString m_mediumName;
+    QString m_shortName;
+    QDateTime m_startTime;
+    int m_durationSec;
+    QString m_longDescription;
+    QString m_shortDescription;
+    int m_shortId;
 };
 
-#endif // METADATAMANAGER_H
+#endif // EPGMODELITEM_H

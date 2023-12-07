@@ -34,7 +34,7 @@
 #include <QLoggingCategory>
 #include <QJsonDocument>
 
-Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtInfoMsg)
+Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtDebugMsg)
 
 SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
 {
@@ -249,7 +249,7 @@ void SPIApp::onNewMOTDirectory()
     }
     if (incompleteObjCount != 0) {
         qCDebug(spiApp, "%d: MOT directory NOT complete (missing %d / %d)", decoderId, incompleteObjCount, decoderPtr->size());
-        return;
+        // return;
     }
     else
     {
@@ -303,11 +303,11 @@ void SPIApp::onNewMOTDirectory()
                     break;                    
                 case 1:
                     qCDebug(spiApp) << "\tProgramme Information" << objIt->getContentName();
-                    //parseBinaryInfo(*objIt);
+                    parseBinaryInfo(*objIt);
                     break;
                 case 2:
                     qCDebug(spiApp) << "\tGroup Information" << objIt->getContentName();
-                    //parseBinaryInfo(*objIt);
+                    parseBinaryInfo(*objIt);
                     break;
                 default:
                     // not supported
@@ -378,28 +378,36 @@ void SPIApp::parseBinaryInfo(const MOTObject &motObj)
             {
             case Parameter::ScopeStart:
                 // ETSI TS 102 371 V3.2.1 (2016-05) [6.4.6 ScopeStart] This parameter is used for Programme Information SPI objects only
-                qCDebug(spiApp) << "\tScopeStart";
+                if (motObj.getContentSubType() == 1)
+                {   // programme info
+                    qCDebug(spiApp) << "\t\tScopeStart" << getTime(reinterpret_cast<const uint8_t *>(paramIt.value().data()), paramIt.value().length());
+                }
                 break;
             case Parameter::ScopeEnd:
                 // ETSI TS 102 371 V3.2.1 (2016-05) [6.4.7 ScopeEnd] This parameter is used for Programme Information SPI objects only
-                qCDebug(spiApp) << "\tScopeEnd";
+                if (motObj.getContentSubType() == 1)
+                {   // programme info
+                    qCDebug(spiApp) << "\t\tScopeEnd" << getTime(reinterpret_cast<const uint8_t *>(paramIt.value().data()), paramIt.value().length());
+                }
                 break;
             case Parameter::ScopeID:
                 if (paramIt.value().size() >= 3)
                 {
-                    uint32_t ueid = (uint8_t(paramIt.value().at(0)) << 16) | (uint8_t(paramIt.value().at(1)) << 8) | uint8_t(paramIt.value().at(2));
-                    scopeId = QString("%1").arg(ueid, 6, 16, QChar('0'));
-                    qCDebug(spiApp, "\tScopeID: %6.6X", ueid);
-
-//                    if (m_radioControl->getEnsembleUEID() != ueid)
-//                    {
-//                        qDebug("ScopeID: %6.6X is not current ensemble. Service info for current ensemble is only supported!", ueid);
-//                        return;
-//                    }
+                    if (motObj.getContentSubType() == 1)
+                    {   // programme info
+                        scopeId = getBearerURI(reinterpret_cast<const uint8_t *>(paramIt.value().data()), paramIt.value().length());
+                        qCDebug(spiApp) << "\t\tScopeID:" << scopeId;
+                    }
+                    else
+                    {
+                        uint32_t ueid = (uint8_t(paramIt.value().at(0)) << 16) | (uint8_t(paramIt.value().at(1)) << 8) | uint8_t(paramIt.value().at(2));
+                        scopeId = QString("%1").arg(ueid, 6, 16, QChar('0'));
+                        qCDebug(spiApp, "\t\tScopeID: %6.6X", ueid);
+                    }
                 }
                 else
                 {   // unexpected length
-                   qCWarning(spiApp) << "\tScopeID: error";
+                   qCWarning(spiApp) << "\t\tScopeID: error";
                 }
 
                 break;
@@ -493,8 +501,8 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 else
                 {
                     QString str = getString(dataPtr, len, true);
-                    parentElement.appendChild(m_xmldocument.createTextNode(str));
-                    //parentElement.appendChild(m_xmldocument.createCDATASection(str));
+                    //parentElement.appendChild(m_xmldocument.createTextNode(str));
+                    parentElement.appendChild(m_xmldocument.createCDATASection(str));
                 }
             }
             else { /* error - do nothing here */ }
@@ -1311,10 +1319,10 @@ void SPIApp::setAttribute_duration(QDomElement &element, const QString &name, co
     numSec = (numSec << 8) | *dataPtr++;
 
     QTime time = QTime(0, 0).addSecs(numSec);
-    element.setAttribute(name, time.toString(Qt::ISODate));
+    element.setAttribute(name, QString("PT%1H%2M%3S").arg(time.hour(), time.minute(), time.second()));
 }
 
-void SPIApp::setAttribute_dabBearerURI(QDomElement &element, const QString &name, const uint8_t *dataPtr, int len)
+QString SPIApp::getBearerURI(const uint8_t *dataPtr, int len)
 {
     if (len >= 6)
     {
@@ -1332,13 +1340,12 @@ void SPIApp::setAttribute_dabBearerURI(QDomElement &element, const QString &name
                 sid = (sid << 8) | *dataPtr++;
                 sid = (sid << 8) | *dataPtr++;
                 sid = (sid << 8) | *dataPtr;
-                element.setAttribute(name, QString("dab:%1%2:%3.%4.%5")
-                                                     .arg((sid >> 20) & 0x0F, 1, 16)
-                                                     .arg(ecc, 2, 16, QChar('0'))
-                                                     .arg(eid, 4, 16, QChar('0'))
-                                                     .arg(sid, 8, 16, QChar('0'))
-                                                     .arg(scids)
-                                           );
+                return QString("dab:%1%2:%3.%4.%5")
+                                   .arg((sid >> 20) & 0x0F, 1, 16)
+                                   .arg(ecc, 2, 16, QChar('0'))
+                                   .arg(eid, 4, 16, QChar('0'))
+                                   .arg(sid, 8, 16, QChar('0'))
+                                   .arg(scids);
             }
             else { /* not enough data */ }
         }
@@ -1346,15 +1353,26 @@ void SPIApp::setAttribute_dabBearerURI(QDomElement &element, const QString &name
         {  // short SId
             uint32_t sid = *dataPtr++;
             sid = (sid << 8) | *dataPtr;
-            element.setAttribute(name, QString("dab:%1%2:%3.%4.%5")
-                                                 .arg((sid >> 12) & 0x0F, 1, 16)
-                                                 .arg(ecc, 2, 16, QChar('0'))
-                                                 .arg(eid, 4, 16, QChar('0'))
-                                                 .arg(sid, 4, 16, QChar('0'))
-                                                 .arg(scids)
-                                       );
+            return QString("dab:%1%2:%3.%4.%5")
+                                   .arg((sid >> 12) & 0x0F, 1, 16)
+                                   .arg(ecc, 2, 16, QChar('0'))
+                                   .arg(eid, 4, 16, QChar('0'))
+                                   .arg(sid, 4, 16, QChar('0'))
+                                   .arg(scids);
         }
     }
+    return QString();
+}
+
+void SPIApp::setAttribute_dabBearerURI(QDomElement &element, const QString &name, const uint8_t *dataPtr, int len)
+{
+    QString str = getBearerURI(dataPtr, len);
+    if (!str.isEmpty())
+    {
+        element.setAttribute(name, str);
+    }
+    else { /* string is empty => some error happened */ }
+
 }
 
 void SPIApp::radioDNSLookup()
@@ -1404,14 +1422,15 @@ void SPIApp::handleRadioDNSLookup()
         qCDebug(spiApp) << "canonicalNameRecord:" << record.name() << record.value();
         m_dnsLookup->setType(QDnsLookup::SRV);
         m_dnsLookup->setName("_radioepg._tcp." + record.value());
+        //m_dnsLookup->setName("_radiospi._tcp." + record.value());
         m_dnsLookup->lookup();
     }
     else if (m_dnsLookup->serviceRecords().count() > 0)
     {
         const auto & record = m_dnsLookup->serviceRecords().at(0);
-        qCDebug(spiApp) << "serviceRecord:" << record.name() << record.target();
+        qCDebug(spiApp) << "serviceRecord:" << record.name() << record.target() << record.port();
 
-        downloadFile(QString("http://%1/radiodns/spi/3.1/SI.xml").arg(record.target()), "XML");
+        downloadFile(QString("http://%1:%2/radiodns/spi/3.1/SI.xml").arg(record.target()).arg(record.port()), "XML");
     }
 }
 

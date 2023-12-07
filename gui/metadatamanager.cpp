@@ -34,6 +34,7 @@
 #include <QFileInfo>
 #include <QThread>
 #include <QLoggingCategory>
+
 #include "metadatamanager.h"
 
 
@@ -42,7 +43,7 @@ Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtInfoMsg)
 MetadataManager::MetadataManager(QObject *parent)
     : QObject(parent)
 {
-
+    m_epgModel = new EPGModel(this);
 }
 
 void MetadataManager::processXML(const QString &xml, const QString &scopeId)
@@ -227,6 +228,136 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId)
             }
             node = node.nextSibling();
         }
+    }
+    else if ("epg" ==  docElem.tagName())
+    {
+        // qCInfo(metadataManager) << "======================= EPG =========================>";
+        // qCInfo(metadataManager) << qPrintable(xmldocument.toString());
+        // qCInfo(metadataManager) << "<=====================================================";
+
+        QDomNode node = docElem.firstChild();
+        while (!node.isNull())
+        {
+            QDomElement element = node.toElement(); // try to convert the node to an element.
+            if(!element.isNull() && ("schedule" == element.tagName()))
+            {
+                QDomElement child = element.firstChildElement("programme");
+                while (!child.isNull())
+                {
+                    parseProgramme(child);
+                    child = child.nextSiblingElement("programme");
+                }
+            }
+            node = node.nextSibling();
+        }
+    }
+    else
+    {
+        qCInfo(metadataManager) << "=====================================================>";
+        qCInfo(metadataManager) << qPrintable(xmldocument.toString());
+        qCInfo(metadataManager) << "<=====================================================";
+    }
+}
+
+void MetadataManager::parseProgramme(const QDomElement &element)
+{
+    QDomElement child = element.firstChildElement();
+    EPGModelItem * progItem = new EPGModelItem;
+    progItem->setShortId(element.attribute("shortId").toInt());
+    while (!child.isNull())
+    {
+        //qDebug() << "---" << child.tagName();
+        if ("location" == child.tagName())
+        {
+            parseLocation(child, progItem);
+        }
+        else if ("longName" == child.tagName())
+        {
+            progItem->setLongName(child.text());
+        }
+        else if ("mediumName" == child.tagName())
+        {
+            progItem->setMediumName(child.text());
+        }
+        else if ("shortName" == child.tagName())
+        {
+            progItem->setShortName(child.text());
+        }
+        else if ("mediaDescription" == child.tagName())
+        {
+            parseDescription(child, progItem);
+        }
+
+        child = child.nextSiblingElement();
+    }
+
+    if (progItem->isValid())
+    {
+        m_epgModel->addItem(progItem);
+    }
+    else
+    {
+        qDebug() << "Invalid item:" << element.attribute("shortId");
+    }
+}
+
+void MetadataManager::parseDescription(const QDomElement &element, EPGModelItem *progItem)
+{
+    QDomElement child = element.firstChildElement();
+    while (!child.isNull())
+    {
+        //qDebug() << "---" << child.tagName();
+        if ("location" == child.tagName())
+        {
+            parseLocation(child, progItem);
+        }
+        else if ("shortDescription" == child.tagName())
+        {
+            progItem->setShortDescription(child.text());
+        }
+        else if ("longDescription" == child.tagName())
+        {
+            progItem->setLongDescription(child.text());
+        }
+
+        child = child.nextSiblingElement();
+    }
+}
+void MetadataManager::parseLocation(const QDomElement &element, EPGModelItem * progItem)
+{
+    QDomElement child = element.firstChildElement();
+    while (!child.isNull())
+    {
+        //qDebug() << "---" << child.tagName();
+        if ("time" == child.tagName())
+        {
+            qDebug() << child.attribute("time") << QDateTime::fromString(child.attribute("time"), Qt::ISODate);
+            progItem->setStartTime(QDateTime::fromString(child.attribute("time"), Qt::ISODate));
+
+            // ETSI TS 102 818 V3.3.1 (2020-08) [5.2.5 duration type]
+            // Duration is based on the ISO 8601 [2] format: PTnHnMnS, where "T" represents the date/time separator,
+            // "nH" the number of hours, "nM" the number of minutes and "nS" the number of seconds.
+            static const QRegularExpression durationRe("^PT((\\d+)H)?((\\d+)M)?((\\d+)S)?");
+            QRegularExpressionMatch match = durationRe.match(child.attribute("duration"));
+            int duration = 0;
+            if (match.hasMatch())
+            {
+                // hours
+                duration += 3600 * (match.captured(2).isEmpty() ? 0 : match.captured(2).toInt());
+                // minutes
+                duration += 60 * (match.captured(4).isEmpty() ? 0 : match.captured(4).toInt());
+                // seconds
+                duration += (match.captured(6).isEmpty() ? 0 : match.captured(6).toInt());
+            }
+            // qDebug() << child.attribute("duration") << "===>" << duration;
+            progItem->setDurationSec(duration);
+        }
+        else if ("bearer" == child.tagName())
+        {
+            qDebug() << child.text();
+        }
+
+        child = child.nextSiblingElement();
     }
 }
 
