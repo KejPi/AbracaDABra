@@ -96,46 +96,81 @@ enum class SNR10Threhold
     SNR_GOOD = 100
 };
 
-struct LogToModelData
-{
-    LogModel * model;
-};
-Q_GLOBAL_STATIC(LogToModelData, logToModelData)
+static LogModel * logModel;
 
-void logToModelHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+// this is default log handler printing the sam format to log windows and to stderr
+void logToModelHandlerDefault(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-    QString category = context.category;
     QString timeStamp = QTime::currentTime().toString("HH:mm:ss.zzz");
     QString txt;
     switch (type) {
     case QtDebugMsg:
-        txt = QString("%1 [D] %2: %3").arg(timeStamp, category, msg);
+        txt = QString("%1 [D] %2: %3").arg(timeStamp, context.category, msg);
         break;
     case QtInfoMsg:
-        txt = QString("%1 [I] %2: %3").arg(timeStamp, category, msg);
+        txt = QString("%1 [I] %2: %3").arg(timeStamp, context.category, msg);
         break;
     case QtWarningMsg:
-        txt = QString("%1 [W] %2: %3").arg(timeStamp, category, msg);
+        txt = QString("%1 [W] %2: %3").arg(timeStamp, context.category, msg);
         break;
     case QtCriticalMsg:
-        txt = QString("%1 [C] %2: %3").arg(timeStamp, category, msg);
+        txt = QString("%1 [C] %2: %3").arg(timeStamp, context.category, msg);
         break;
     case QtFatalMsg:
-        txt = QString("%1 [F] %2: %3").arg(timeStamp, category, msg);
+        txt = QString("%1 [F] %2: %3").arg(timeStamp, context.category, msg);
         break;
     }
 
-    QMetaObject::invokeMethod(logToModelData->model, "appendRow", Qt::QueuedConnection,
+    QMetaObject::invokeMethod(logModel, "appendRow", Qt::QueuedConnection,
                               Q_ARG(QString, txt),
                               Q_ARG(int, type));
 
     std::cerr << txt.toStdString() << std::endl;
 }
 
-void logToModel(QAbstractItemModel *model)
+// this is custom log handler printing default format to log window and custom format to stderr
+void logToModelHandlerCustom(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-    logToModelData->model = dynamic_cast<LogModel *>(model);
-    qInstallMessageHandler(logToModelHandler);
+    QString timeStamp = QTime::currentTime().toString("HH:mm:ss.zzz");
+    QString txt;
+
+    std::cerr << qFormatLogMessage(type, context, msg).toStdString() << std::endl;
+
+    switch (type) {
+    case QtDebugMsg:
+        txt = QString("%1 [D] %2: %3").arg(timeStamp, context.category, msg);
+        break;
+    case QtInfoMsg:
+        txt = QString("%1 [I] %2: %3").arg(timeStamp, context.category, msg);
+        break;
+    case QtWarningMsg:
+        txt = QString("%1 [W] %2: %3").arg(timeStamp, context.category, msg);
+        break;
+    case QtCriticalMsg:
+        txt = QString("%1 [C] %2: %3").arg(timeStamp, context.category, msg);
+        break;
+    case QtFatalMsg:
+        txt = QString("%1 [F] %2: %3").arg(timeStamp, context.category, msg);
+        break;
+    }
+
+    QMetaObject::invokeMethod(logModel, "appendRow", Qt::QueuedConnection,
+                              Q_ARG(QString, txt),
+                              Q_ARG(int, type));
+}
+
+void setLogToModel(QAbstractItemModel *model)
+{
+    logModel = dynamic_cast<LogModel *>(model);
+
+    if (qEnvironmentVariable("QT_MESSAGE_PATTERN", "").isEmpty())
+    {
+        qInstallMessageHandler(logToModelHandlerDefault);
+    }
+    else
+    {
+        qInstallMessageHandler(logToModelHandlerCustom);
+    }
 }
 
 MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
@@ -152,7 +187,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     // creating log windows as soon as possible
     m_logDialog = new LogDialog(this);
-    logToModel(m_logDialog->getModel());
+    setLogToModel(m_logDialog->getModel());
 
     ui->serviceListView->setIconSize(QSize(16,16));
 
