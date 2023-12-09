@@ -1319,7 +1319,7 @@ void SPIApp::setAttribute_duration(QDomElement &element, const QString &name, co
     numSec = (numSec << 8) | *dataPtr++;
 
     QTime time = QTime(0, 0).addSecs(numSec);
-    element.setAttribute(name, QString("PT%1H%2M%3S").arg(time.hour(), time.minute(), time.second()));
+    element.setAttribute(name, QString("PT%1H%2M%3S").arg(time.hour()).arg(time.minute()).arg(time.second()));
 }
 
 QString SPIApp::getBearerURI(const uint8_t *dataPtr, int len)

@@ -37,12 +37,64 @@ EPGModel::~EPGModel()
 
 QVariant EPGModel::data(const QModelIndex &index, int role) const
 {
+    if (!index.isValid())
+    {
+        return QVariant();
+    }
+    if (index.row() >= rowCount())
+    {
+        return QVariant();
+    }
+    // valid index
+    const EPGModelItem * item = m_itemList.at(index.row());
+    switch (static_cast<EPGModelRoles>(role)) {
+    case EPGModelRoles::ShortIdRole:
+        return QVariant(item->shortId());
+    case LongNameRole:
+        return QVariant(item->longName());
+    case MediumNameRole:
+        return QVariant(item->mediumName());
+    case ShortNameRole:
+        return QVariant(item->shortName());
+    case StartTimeRole:
+        return QVariant(item->startTime());
+    case DurationSecRole:
+        return QVariant(item->durationSec());
+    case LongDescriptionRole:
+        return QVariant(item->longDescription());
+    case ShortDescriptionRole:
+        return QVariant(item->shortDescription());
+        break;
+    }
 
     return QVariant();
 }
 
+QHash<int, QByteArray> EPGModel::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+
+    roles[EPGModelRoles::ShortIdRole] = "shortId";
+    roles[EPGModelRoles::LongNameRole] = "longName";
+    roles[EPGModelRoles::MediumNameRole] = "mediumName";
+    roles[EPGModelRoles::ShortNameRole] = "shortName";
+    roles[EPGModelRoles::StartTimeRole] = "startTime";
+    roles[EPGModelRoles::DurationSecRole] = "durationSec";
+    roles[EPGModelRoles::LongDescriptionRole] = "longDescription";
+    roles[EPGModelRoles::ShortDescriptionRole] = "shortDescription";
+
+    return roles;
+}
+
 void EPGModel::addItem(EPGModelItem *item)
 {
-    qDebug() << "Adding item #" << item->shortId() << item->mediumName() << item->startTime().toString() << item->durationSec();
-    m_itemList.append(item);
+    if (item->isValid())
+    {
+        qDebug() << "Adding item #" << item->shortId() << item->mediumName() << item->startTime().toString() << item->durationSec();
+        m_itemList.append(item);
+    }
+    else
+    {
+        qDebug() << "Invalid item:" << item->shortId();
+    }
 }

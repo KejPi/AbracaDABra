@@ -49,7 +49,7 @@ public:
     };
 
     explicit MetadataManager(QObject *parent = nullptr);
-    void processXML(const QString &xmldocument, const QString & scopeId);
+    void processXML(const QString &xmldocument, QString scopeId);
     void onFileReceived(const QByteArray & data, const QString & requestId);
     QVariant data(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role);
 
@@ -62,7 +62,7 @@ private:
     QHash<QString, serviceInfo_t> m_info;
     EPGModel * m_epgModel;
 
-    void parseProgramme(const QDomElement &element);
+    void parseProgramme(const QDomElement &element, const QString &scopeId);
     void parseDescription(const QDomElement &element, EPGModelItem *progItem);
     void parseLocation(const QDomElement &element, EPGModelItem *progItem);
 };

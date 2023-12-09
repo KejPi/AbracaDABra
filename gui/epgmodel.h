@@ -30,6 +30,17 @@
 #include <QAbstractListModel>
 #include "epgmodelitem.h"
 
+enum EPGModelRoles {
+    ShortIdRole = Qt::UserRole,
+    LongNameRole,
+    MediumNameRole,
+    ShortNameRole,
+    StartTimeRole,
+    DurationSecRole,
+    LongDescriptionRole,
+    ShortDescriptionRole,
+};
+
 class EPGModel : public QAbstractListModel
 {
 public:
@@ -38,6 +49,7 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const { return m_itemList.count(); }
+    QHash<int, QByteArray> roleNames() const;
 
     void addItem(EPGModelItem * item);
 private:

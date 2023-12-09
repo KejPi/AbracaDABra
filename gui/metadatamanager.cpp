@@ -46,7 +46,7 @@ MetadataManager::MetadataManager(QObject *parent)
     m_epgModel = new EPGModel(this);
 }
 
-void MetadataManager::processXML(const QString &xml, const QString &scopeId)
+void MetadataManager::processXML(const QString &xml, QString scopeId)
 {
     QDomDocument xmldocument;
     if (!xmldocument.setContent(xml))
@@ -241,10 +241,19 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId)
             QDomElement element = node.toElement(); // try to convert the node to an element.
             if(!element.isNull() && ("schedule" == element.tagName()))
             {
+                if (!element.firstChildElement("scope").isNull())
+                {   // found scope element
+                    QDomElement serviceScope = element.firstChildElement("scope").firstChildElement("serviceScope");
+                    if (!serviceScope.isNull())
+                    {   // found serviceScope
+                        scopeId = serviceScope.attribute("id");
+                        qDebug() << "Found scopeId:" << scopeId;
+                    }
+                }
                 QDomElement child = element.firstChildElement("programme");
                 while (!child.isNull())
                 {
-                    parseProgramme(child);
+                    parseProgramme(child, scopeId);
                     child = child.nextSiblingElement("programme");
                 }
             }
@@ -259,7 +268,7 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId)
     }
 }
 
-void MetadataManager::parseProgramme(const QDomElement &element)
+void MetadataManager::parseProgramme(const QDomElement &element, const QString & scopeId)
 {
     QDomElement child = element.firstChildElement();
     EPGModelItem * progItem = new EPGModelItem;
@@ -291,14 +300,7 @@ void MetadataManager::parseProgramme(const QDomElement &element)
         child = child.nextSiblingElement();
     }
 
-    if (progItem->isValid())
-    {
-        m_epgModel->addItem(progItem);
-    }
-    else
-    {
-        qDebug() << "Invalid item:" << element.attribute("shortId");
-    }
+    m_epgModel->addItem(progItem);
 }
 
 void MetadataManager::parseDescription(const QDomElement &element, EPGModelItem *progItem)
