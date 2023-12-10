@@ -53,6 +53,8 @@ public:
     void onFileReceived(const QByteArray & data, const QString & requestId);
     QVariant data(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role);
 
+    EPGModel *epgModel() const;
+
 signals:
     void getFile(const QString & url, const QString & requestId);
     void dataUpdated(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role);

@@ -63,6 +63,18 @@ QDateTime EPGModelItem::startTime() const
     return m_startTime;
 }
 
+int EPGModelItem::startTimeSec() const
+{
+    QTime time = m_startTime.time();
+    return time.hour()*3600 + time.minute() * 60 + time.second();
+}
+
+int EPGModelItem::endTimeSec() const
+{
+    QTime time = m_startTime.addSecs(m_durationSec).time();
+    return time.hour()*3600 + time.minute() * 60 + time.second();
+}
+
 void EPGModelItem::setStartTime(const QDateTime &newStartTime)
 {
     m_startTime = newStartTime;

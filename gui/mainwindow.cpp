@@ -227,7 +227,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_ensembleInfoDialog = new EnsembleInfoDialog(this);
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStart, m_inputDeviceRecorder, &InputDeviceRecorder::start);
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStop, m_inputDeviceRecorder, &InputDeviceRecorder::stop);
-    connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_ensembleInfoDialog, &EnsembleInfoDialog::onRecording);
+    connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_ensembleInfoDialog, &EnsembleInfoDialog::onRecording);       
     connect(m_inputDeviceRecorder, &InputDeviceRecorder::bytesRecorded, m_ensembleInfoDialog, &EnsembleInfoDialog::updateRecordingStatus, Qt::QueuedConnection);
 
     // status bar
@@ -316,6 +316,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_audioRecordingAction = new QAction(tr("Start audio recording"), this);
     connect(m_audioRecordingAction, &QAction::triggered, this, &MainWindow::audioRecordingToggle);
 
+    m_epgAction = new QAction(tr("Programme guide..."), this);
+    connect(m_epgAction, &QAction::triggered, this, &MainWindow::showEPG);
+
     m_logAction = new QAction(tr("Application log"), this);
     connect(m_logAction, &QAction::triggered, this, &MainWindow::showLog);
 
@@ -340,6 +343,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_menu->addAction(m_bandScanAction);
     m_menu->addAction(m_clearServiceListAction);
     m_menu->addSeparator();
+    m_menu->addAction(m_epgAction);
     m_menu->addAction(m_ensembleInfoAction);
     m_menu->addAction(m_logAction);
     m_menu->addAction(m_aboutAction);
@@ -651,6 +655,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // user applications
     m_metadataManager = new MetadataManager(this);
     connect(m_metadataManager, &MetadataManager::dataUpdated, this, &MainWindow::onMetadataUpdated);
+
+    m_epgDialog = new EPGDialog(m_metadataManager, this);
 
     // slide show application is created by default
     // ETSI TS 101 499 V3.1.1  [5.1.1]
@@ -2817,6 +2823,13 @@ void MainWindow::showEnsembleInfo()
     m_ensembleInfoDialog->show();
     m_ensembleInfoDialog->raise();
     m_ensembleInfoDialog->activateWindow();
+}
+
+void MainWindow::showEPG()
+{
+    m_epgDialog->show();
+    m_epgDialog->raise();
+    m_epgDialog->activateWindow();
 }
 
 void MainWindow::showAboutDialog()

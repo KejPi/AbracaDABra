@@ -151,12 +151,23 @@ add_executable(${TARGET}
     elidedlabel.h elidedlabel.cpp
     epgmodel.h epgmodel.cpp
     epgmodelitem.h epgmodelitem.cpp
-
-
-
+    epgdialog.h epgdialog.cpp epgdialog.ui
   )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+# QML
+set_source_files_properties(qml/epg.qml PROPERTIES
+    QT_RESOURCE_ALIAS epg.qml
+)
+qt6_add_qml_module(${TARGET}
+    URI EPG
+    QML_FILES
+        qml/epg.qml
+    RESOURCES
+        #img/world.png
+    VERSION 1.0
+)
 
 #add_definitions(-fsanitize=undefined)
 #target_link_options(${TARGET} PUBLIC -fsanitize=undefined)
@@ -223,6 +234,7 @@ target_link_libraries(${TARGET} PRIVATE
     Qt${QT_VERSION_MAJOR}::Svg
     Qt${QT_VERSION_MAJOR}::Xml
     Qt${QT_VERSION_MAJOR}::Network
+    Qt${QT_VERSION_MAJOR}::Quick
 )
 
 set(TSFILES

@@ -28,14 +28,18 @@
 #define EPGMODEL_H
 
 #include <QAbstractListModel>
+#include <QtQmlIntegration>
 #include "epgmodelitem.h"
 
 enum EPGModelRoles {
     ShortIdRole = Qt::UserRole,
+    NameRole,
     LongNameRole,
     MediumNameRole,
     ShortNameRole,
     StartTimeRole,
+    StartTimeSecRole,
+    EndTimeSecRole,
     DurationSecRole,
     LongDescriptionRole,
     ShortDescriptionRole,
@@ -43,6 +47,8 @@ enum EPGModelRoles {
 
 class EPGModel : public QAbstractListModel
 {
+    Q_OBJECT
+    QML_ELEMENT
 public:
     explicit EPGModel(QObject *parent = nullptr);
     ~EPGModel();

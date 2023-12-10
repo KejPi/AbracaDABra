@@ -50,6 +50,24 @@ QVariant EPGModel::data(const QModelIndex &index, int role) const
     switch (static_cast<EPGModelRoles>(role)) {
     case EPGModelRoles::ShortIdRole:
         return QVariant(item->shortId());
+    case EPGModelRoles::NameRole:
+#if 0
+        if (item->durationSec() < 10 * 60) {
+            if (!item->shortName().isEmpty()) {
+                return QVariant(item->shortName());
+            }
+        }
+        if (item->durationSec() > 15 * 60) {
+            if (!item->longName().isEmpty()) {
+                return QVariant(item->longName());
+            }
+        }
+#endif
+        if (!item->longName().isEmpty()) {
+            return QVariant(item->longName());
+        }
+        return QVariant(item->mediumName());
+        break;
     case LongNameRole:
         return QVariant(item->longName());
     case MediumNameRole:
@@ -58,13 +76,16 @@ QVariant EPGModel::data(const QModelIndex &index, int role) const
         return QVariant(item->shortName());
     case StartTimeRole:
         return QVariant(item->startTime());
+    case StartTimeSecRole:
+        return QVariant(item->startTimeSec());
+    case EndTimeSecRole:
+        return QVariant(item->endTimeSec());
     case DurationSecRole:
         return QVariant(item->durationSec());
     case LongDescriptionRole:
         return QVariant(item->longDescription());
     case ShortDescriptionRole:
         return QVariant(item->shortDescription());
-        break;
     }
 
     return QVariant();
@@ -75,10 +96,13 @@ QHash<int, QByteArray> EPGModel::roleNames() const
     QHash<int, QByteArray> roles;
 
     roles[EPGModelRoles::ShortIdRole] = "shortId";
+    roles[EPGModelRoles::NameRole] = "name";
     roles[EPGModelRoles::LongNameRole] = "longName";
     roles[EPGModelRoles::MediumNameRole] = "mediumName";
     roles[EPGModelRoles::ShortNameRole] = "shortName";
     roles[EPGModelRoles::StartTimeRole] = "startTime";
+    roles[EPGModelRoles::StartTimeSecRole] = "startTimeSec";
+    roles[EPGModelRoles::EndTimeSecRole] = "endTimeSec";
     roles[EPGModelRoles::DurationSecRole] = "durationSec";
     roles[EPGModelRoles::LongDescriptionRole] = "longDescription";
     roles[EPGModelRoles::ShortDescriptionRole] = "shortDescription";
@@ -90,8 +114,11 @@ void EPGModel::addItem(EPGModelItem *item)
 {
     if (item->isValid())
     {
-        qDebug() << "Adding item #" << item->shortId() << item->mediumName() << item->startTime().toString() << item->durationSec();
+        qDebug() << "Adding item #" << item->shortId() <<item->shortName() << item->mediumName() << item->longName()
+                                    << item->startTime().toString() << item->durationSec();
+        beginResetModel();
         m_itemList.append(item);
+        endResetModel();
     }
     else
     {

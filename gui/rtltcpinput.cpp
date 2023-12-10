@@ -580,7 +580,7 @@ void RtlTcpInput::setDAGC(bool ena)
 
 void RtlTcpInput::onAgcLevel(float agcLevel)
 {
-    // qDebug() << agcLevel;
+    qDebug() << agcLevel;
     if (RtlGainMode::Software == m_gainMode)
     {
         if (agcLevel < m_agcLevelMin)

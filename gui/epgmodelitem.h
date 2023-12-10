@@ -58,6 +58,8 @@ public:
     void setShortDescription(const QString &newShortDescription);
 
     bool isValid() const;
+    int startTimeSec() const;
+    int endTimeSec() const;
 
     int shortId() const;
     void setShortId(int newShortId);

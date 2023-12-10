@@ -333,7 +333,7 @@ void MetadataManager::parseLocation(const QDomElement &element, EPGModelItem * p
         //qDebug() << "---" << child.tagName();
         if ("time" == child.tagName())
         {
-            qDebug() << child.attribute("time") << QDateTime::fromString(child.attribute("time"), Qt::ISODate);
+            // qDebug() << child.attribute("time") << QDateTime::fromString(child.attribute("time"), Qt::ISODate);
             progItem->setStartTime(QDateTime::fromString(child.attribute("time"), Qt::ISODate));
 
             // ETSI TS 102 818 V3.3.1 (2020-08) [5.2.5 duration type]
@@ -473,4 +473,9 @@ QVariant MetadataManager::data(uint32_t sid, uint8_t SCIdS, MetadataRole role)
     }
 
     return QVariant();
+}
+
+EPGModel *MetadataManager::epgModel() const
+{
+    return m_epgModel;
 }

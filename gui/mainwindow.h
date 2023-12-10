@@ -43,6 +43,7 @@
 #include <QItemSelection>
 
 #include "clickablelabel.h"
+#include "epgdialog.h"
 #include "metadatamanager.h"
 #include "setupdialog.h"
 #include "ensembleinfodialog.h"
@@ -113,6 +114,7 @@ private:
     SetupDialog * m_setupDialog;
     EnsembleInfoDialog * m_ensembleInfoDialog;
     CatSLSDialog * m_catSlsDialog;
+    EPGDialog * m_epgDialog;
     LogDialog * m_logDialog;
     QProgressBar * m_snrProgressbar;    
     ClickableLabel * m_menuLabel;
@@ -140,6 +142,7 @@ private:
     QAction * m_aboutAction;
     QAction * m_logAction;
     QAction * m_audioRecordingAction;
+    QAction * m_epgAction;
     QActionGroup * m_audioDevicesGroup = nullptr;
 
     // dark mode
@@ -200,6 +203,7 @@ private:
     AudioFramework getAudioFramework();
 
     void showEnsembleInfo();
+    void showEPG();
     void showAboutDialog();
     void showSetupDialog();
     void showLog();
