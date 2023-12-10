@@ -534,7 +534,7 @@ void RtlTcpInput::setAgcLevelMax(float agcLevelMax)
     m_agcLevelMax = agcLevelMax;
     m_agcLevelMin = m_agcLevelMinFactorList->at(m_gainIdx) * m_agcLevelMax;
 
-    qDebug() << m_agcLevelMax << m_agcLevelMin;
+    //qDebug() << m_agcLevelMax << m_agcLevelMin;
 }
 
 void RtlTcpInput::setGain(int gainIdx)
