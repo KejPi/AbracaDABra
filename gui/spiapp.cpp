@@ -248,8 +248,8 @@ void SPIApp::onNewMOTDirectory()
         }
     }
     if (incompleteObjCount != 0) {
-        qCDebug(spiApp, "%d: MOT directory NOT complete (missing %d / %d)", decoderId, incompleteObjCount, decoderPtr->size());
-        return;
+        qCInfo(spiApp, "%d: MOT directory NOT complete (decoded %d / %d)", decoderId, decoderPtr->size()-incompleteObjCount, decoderPtr->size());
+        //return;
     }
     else
     {
@@ -327,7 +327,10 @@ void SPIApp::onNewMOTDirectory()
 
 void SPIApp::onFileRequest(const QString &url, const QString &requestId)
 {
-    QString filename = url.mid(url.lastIndexOf('/')+1, url.size());
+    QString filename = url;
+    if (!QUrl(url).isRelative()) {
+        filename = url.mid(url.lastIndexOf('/')+1, url.size());
+    }
     for (const auto & decoder : m_decoderMap)
     {
         if (decoder->hasDirectory())
@@ -341,8 +344,8 @@ void SPIApp::onFileRequest(const QString &url, const QString &requestId)
         }
     }
 
-    // not found -> try to download it
-    if (QUrl(url).isValid())
+    // not found -> try to download it if not relative URL
+    if (QUrl(url).isValid() && !QUrl(url).isRelative())
     {
         downloadFile(url, requestId);
     }
