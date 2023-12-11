@@ -132,6 +132,7 @@ class RtlTcpInput : public InputDevice
     static const int fc0013_gains[];
     static const int fc2580_gains[];
     static const int r82xx_gains[];
+    static const int r82xx_gains_olddab[];
     static const int unknown_gains[];
 
 public:
