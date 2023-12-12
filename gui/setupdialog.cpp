@@ -1088,7 +1088,7 @@ void SetupDialog::onInputChanged(int index)
 void SetupDialog::onOpenFileButtonClicked()
 {
     QString dir = QDir::homePath();
-    if (!m_rawfilename.isEmpty())
+    if (!m_rawfilename.isEmpty() && QFileInfo::exists(m_rawfilename))
     {
         dir = QFileInfo(m_rawfilename).path();
     }
