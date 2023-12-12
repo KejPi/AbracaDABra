@@ -78,13 +78,14 @@ signals:
     void requestedFile(const QByteArray &data, const QString &requestId);
 private:
     QHash<uint16_t, MOTDecoder *> m_decoderMap;
+
+    void processMOTDirectory(MOTDecoder * decoderPtr);
     void parseBinaryInfo(const MOTObject & motObj);
     uint32_t parseTag(const uint8_t * dataPtr, QDomElement & parentElement, uint8_t parentTag, int maxSize);
     const uint8_t * parseAttributes(const uint8_t * attrPtr, uint8_t tag, int maxSize);
     QString getString(const uint8_t *dataPtr, int len, bool doReplaceTokens = true);
     QString getTime(const uint8_t *dataPtr, int len);
-    QString getDoubleList(const uint8_t *dataPtr, int len);
-
+    QString getDoubleList(const uint8_t *dataPtr, int len);        
     void setAttribute_string(QDomElement & element, const QString &name, const uint8_t *dataPtr, int len, bool doReplaceTokens);
     void setAttribute_timePoint(QDomElement & element, const QString &name, const uint8_t *dataPtr, int len);
     void setAttribute_uint16(QDomElement & element, const QString & name, const uint8_t *dataPtr, int len);

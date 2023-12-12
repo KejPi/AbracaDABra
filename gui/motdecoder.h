@@ -52,6 +52,7 @@ public:
 signals:
     void newMOTObject(const MOTObject & obj);
     void newMOTDirectory();
+    void newMOTObjectInDirectory(uint16_t transportId);
 
 private:
     MOTDirectory * m_directory;

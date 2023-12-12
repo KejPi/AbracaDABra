@@ -200,9 +200,13 @@ void SPIApp::onUserAppData(const RadioControlUserAppData & data)
         if (nullptr == decoderPtr)
         {   // we do not have decoder for this channel
             // create new decoder
-            decoderPtr = new MOTDecoder(this);
-            // connect(decoderPtr, &MOTDecoder::newMOTObject, this, &SPIApp::onNewMOTObject);
+            decoderPtr = new MOTDecoder(this);            
             connect(decoderPtr, &MOTDecoder::newMOTDirectory, this, &SPIApp::onNewMOTDirectory);
+            connect(decoderPtr, &MOTDecoder::newMOTObjectInDirectory, this, [this](uint16_t id) {
+                // temporary solution
+                MOTDecoder * decoderPtr = dynamic_cast<MOTDecoder *>(QObject::sender());
+                processMOTDirectory(decoderPtr);
+            });
             m_decoderMap[data.SCId] = decoderPtr;
 
             qCDebug(spiApp) << "Adding MOT decoder for SCID" << data.SCId;
@@ -218,6 +222,11 @@ void SPIApp::onUserAppData(const RadioControlUserAppData & data)
 void SPIApp::onNewMOTDirectory()
 {
     MOTDecoder * decoderPtr = dynamic_cast<MOTDecoder *>(QObject::sender());
+    processMOTDirectory(decoderPtr);
+}
+
+void SPIApp::processMOTDirectory(MOTDecoder * decoderPtr)
+{
     Q_ASSERT(decoderPtr != nullptr);
 
     int decoderId = 0xF000;

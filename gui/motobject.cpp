@@ -412,7 +412,7 @@ bool MOTDirectory::addSegment(const uint8_t *segment, uint16_t segmentNum, uint1
     return false;
 }
 
-void MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
+bool MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
 {
     // first find if object already exists in carousel
     MOTObjectCache::iterator it = m_carousel->findMotObj(transportId);
@@ -426,11 +426,15 @@ void MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *se
     else
     {  /* do nothing - it already exists, just adding next segment */ }
 
-    it->addSegment(segment, segmentNum, segmentSize, lastFlag);
-    if (it->isComplete())
-    {
-        qCDebug(motObject) << "MOT complete: ID" << transportId;
+    if (!it->isComplete()) {
+        it->addSegment(segment, segmentNum, segmentSize, lastFlag);
+        if (it->isComplete())
+        {
+            qCDebug(motObject) << "MOT complete: ID" << transportId;
+            return true;
+        }
     }
+    return false;
 }
 
 bool MOTDirectory::parse(const QByteArray &dirData)

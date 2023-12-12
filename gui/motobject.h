@@ -135,7 +135,7 @@ class MOTDirectory
 public:
     MOTDirectory(uint_fast32_t transportId, MOTObjectCache * cachePtr);
     bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
-    void addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
+    bool addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
     uint_fast32_t getTransportId() const { return m_id; }
     int size() const { return m_carousel->size(); }
     MOTObjectCache::const_iterator begin() const { return  m_carousel->cbegin(); }
