@@ -1248,10 +1248,14 @@ void RadioControl::eventHandler_userAppList(RadioControlEvent *pEvent)
                             newUserApp.xpadData.dgFlag = (0 != (userApp.data[1] & 0x80));
                             newUserApp.xpadData.DScTy = DabAudioDataSCty(userApp.data[1] & 0x3F);
                         }
-
                         scIt->userApps.insert(newUserApp.uaType, newUserApp);
-
                         ensembleConfigurationUpdate();
+
+                        if ((newUserApp.uaType == DabUserApplicationType::SPI) && m_spiAppEnabled)
+                        {
+                            startUserApplication(DabUserApplicationType::SPI, true, false);
+                        }
+
                     }
                 }                
                 else { /* SC not found - this should not happen */ }
@@ -1271,17 +1275,10 @@ void RadioControl::eventHandler_userAppList(RadioControlEvent *pEvent)
         {   // if is is current service ==> start user applications
             // enable SLS automatically - if available
             startUserApplication(DabUserApplicationType::SlideShow, true);
-
-            //#warning "Remove automatic Journaline - this is for debug only"
-            // startUserApplication(DabUserApplicationType::Journaline, true);
-#if RADIO_CONTROL_SPI_ENABLE
             if (m_spiAppEnabled)
             {
                 startUserApplication(DabUserApplicationType::SPI, true, false);
             }
-#endif
-            //#warning "Remove automatic TPEG - this is for debug only"
-            //startUserApplication(DabUserApplicationType::TPEG, true);
         }
     }
     else

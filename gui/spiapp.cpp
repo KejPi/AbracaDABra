@@ -200,9 +200,13 @@ void SPIApp::onUserAppData(const RadioControlUserAppData & data)
         if (nullptr == decoderPtr)
         {   // we do not have decoder for this channel
             // create new decoder
-            decoderPtr = new MOTDecoder(this);
-            // connect(decoderPtr, &MOTDecoder::newMOTObject, this, &SPIApp::onNewMOTObject);
+            decoderPtr = new MOTDecoder(this);            
             connect(decoderPtr, &MOTDecoder::newMOTDirectory, this, &SPIApp::onNewMOTDirectory);
+            connect(decoderPtr, &MOTDecoder::newMOTObjectInDirectory, this, [this](uint16_t id) {
+                // temporary solution
+                MOTDecoder * decoderPtr = dynamic_cast<MOTDecoder *>(QObject::sender());
+                processMOTDirectory(decoderPtr);
+            });
             m_decoderMap[data.SCId] = decoderPtr;
 
             qCDebug(spiApp) << "Adding MOT decoder for SCID" << data.SCId;
@@ -218,6 +222,11 @@ void SPIApp::onUserAppData(const RadioControlUserAppData & data)
 void SPIApp::onNewMOTDirectory()
 {
     MOTDecoder * decoderPtr = dynamic_cast<MOTDecoder *>(QObject::sender());
+    processMOTDirectory(decoderPtr);
+}
+
+void SPIApp::processMOTDirectory(MOTDecoder * decoderPtr)
+{
     Q_ASSERT(decoderPtr != nullptr);
 
     int decoderId = 0xF000;
@@ -248,8 +257,8 @@ void SPIApp::onNewMOTDirectory()
         }
     }
     if (incompleteObjCount != 0) {
-        qCDebug(spiApp, "%d: MOT directory NOT complete (missing %d / %d)", decoderId, incompleteObjCount, decoderPtr->size());
-        // return;
+        qCInfo(spiApp, "%d: MOT directory NOT complete (decoded %d / %d)", decoderId, decoderPtr->size()-incompleteObjCount, decoderPtr->size());
+        //return;
     }
     else
     {
@@ -327,7 +336,10 @@ void SPIApp::onNewMOTDirectory()
 
 void SPIApp::onFileRequest(const QString &url, const QString &requestId)
 {
-    QString filename = url.mid(url.lastIndexOf('/')+1, url.size());
+    QString filename = url;
+    if (!QUrl(url).isRelative()) {
+        filename = url.mid(url.lastIndexOf('/')+1, url.size());
+    }
     for (const auto & decoder : m_decoderMap)
     {
         if (decoder->hasDirectory())
@@ -341,8 +353,8 @@ void SPIApp::onFileRequest(const QString &url, const QString &requestId)
         }
     }
 
-    // not found -> try to download it
-    if (QUrl(url).isValid())
+    // not found -> try to download it if not relative URL
+    if (QUrl(url).isValid() && !QUrl(url).isRelative())
     {
         downloadFile(url, requestId);
     }

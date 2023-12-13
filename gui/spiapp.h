@@ -78,6 +78,8 @@ signals:
     void requestedFile(const QByteArray &data, const QString &requestId);
 private:
     QHash<uint16_t, MOTDecoder *> m_decoderMap;
+
+    void processMOTDirectory(MOTDecoder * decoderPtr);
     void parseBinaryInfo(const MOTObject & motObj);
     uint32_t parseTag(const uint8_t * dataPtr, QDomElement & parentElement, uint8_t parentTag, int maxSize);
     const uint8_t * parseAttributes(const uint8_t * attrPtr, uint8_t tag, int maxSize);

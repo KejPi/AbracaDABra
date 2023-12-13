@@ -694,7 +694,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_catSlsDialog, &CatSLSDialog::getCurrentCatSlide, m_slideShowApp[Instance::Service], &SlideShowApp::getCurrentCatSlide, Qt::QueuedConnection);
     connect(m_catSlsDialog, &CatSLSDialog::getNextCatSlide, m_slideShowApp[Instance::Service], &SlideShowApp::getNextCatSlide, Qt::QueuedConnection);
 
-#if RADIO_CONTROL_SPI_ENABLE
     m_spiApp = new SPIApp();
     m_spiApp->moveToThread(m_radioControlThread);
     connect(m_radioControlThread, &QThread::finished, m_spiApp, &QObject::deleteLater);
@@ -711,7 +710,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::spiApplicationEnabled, m_radioControl, &RadioControl::onSpiApplicationEnabled, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::spiApplicationEnabled, m_spiApp, &SPIApp::enable, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::spiApplicationSettingsChanged, m_spiApp, &SPIApp::onSettingsChanged, Qt::QueuedConnection);   
-#endif
 
     // input device connections
     initInputDevice(InputDeviceId::UNDEFINED);

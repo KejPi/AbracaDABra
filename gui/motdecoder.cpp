@@ -128,16 +128,11 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         // first check if we are in direcory mode
         if (nullptr != m_directory)
         {  // directory mode
-            m_directory->addObjectSegment(mscDataGroup.getTransportId(), (const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(),
-                                        segmentSize, mscDataGroup.getLastFlag());
-
-#if 0       // this could be used in theory for SLS that violates standard and uses MOT directory in transmission
-            MOTObjectCache::iterator objIt = objCache->findMotObj(mscDataGroup.getTransportId());
-            if (objIt->isComplete())
-            {
-                emit newMOTObject(*objIt);
+            if (m_directory->addObjectSegment(mscDataGroup.getTransportId(), (const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(),
+                                              segmentSize, mscDataGroup.getLastFlag()))
+            {   // directory updated
+                emit newMOTObjectInDirectory(mscDataGroup.getTransportId());
             }
-#endif
         }
         else
         {   // this can be either directory mode but directory was not recieved yet or it can be header mode

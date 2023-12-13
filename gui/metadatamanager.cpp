@@ -365,6 +365,11 @@ void MetadataManager::parseLocation(const QDomElement &element, EPGModelItem * p
 
 void MetadataManager::onFileReceived(const QByteArray & data, const QString & requestId)
 {
+    if (data.size() == 0)
+    {   // empty data, do nothing
+        return;
+    }
+
     QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/"+ requestId;
     qCDebug(metadataManager) << requestId << filename;
 

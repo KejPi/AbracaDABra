@@ -41,6 +41,8 @@ const int RtlTcpInput::r82xx_gains[] = { 0, 9, 14, 27, 37, 77, 87, 125, 144, 157
                                         166, 197, 207, 229, 254, 280, 297, 328,
                                         338, 364, 372, 386, 402, 421, 434, 439,
                                         445, 480, 496 };
+const int RtlTcpInput::r82xx_gains_olddab[] = {
+                                        0,34,68,102,137,171,207,240,278,312,346,382,416,453,488,527};
 const int RtlTcpInput::unknown_gains[] = { 0 /* no gain values */ };
 
 #if defined(_WIN32)
@@ -393,14 +395,26 @@ bool RtlTcpInput::openDevice()
             break;
         case RTLSDR_TUNER_R820T:
             qCInfo(rtlTcpInput) << "RTLSDR_TUNER_R820T";
-            gains = r82xx_gains;
-            numGains = *(&r82xx_gains + 1) - r82xx_gains;
+            numGains = *(&r82xx_gains_olddab + 1) - r82xx_gains_olddab;
+            if (dongleInfo.tunerGainCount == numGains) {
+                gains = r82xx_gains_olddab;
+            }
+            else {
+                numGains = *(&r82xx_gains + 1) - r82xx_gains;
+                gains = r82xx_gains;
+            }
             m_deviceDescription.device.name += " [R820T]";
             break;
         case RTLSDR_TUNER_R828D:
             qCInfo(rtlTcpInput) << "RTLSDR_TUNER_R828D";
-            gains = r82xx_gains;
-            numGains = *(&r82xx_gains + 1) - r82xx_gains;
+            numGains = *(&r82xx_gains_olddab + 1) - r82xx_gains_olddab;
+            if (dongleInfo.tunerGainCount == numGains) {
+                gains = r82xx_gains_olddab;
+            }
+            else {
+                numGains = *(&r82xx_gains + 1) - r82xx_gains;
+                gains = r82xx_gains;
+            }
             m_deviceDescription.device.name += " [R828D]";
             break;
         case RTLSDR_TUNER_UNKNOWN:
@@ -503,7 +517,7 @@ void RtlTcpInput::setGainMode(RtlGainMode gainMode, int gainIdx)
     if (gainMode != m_gainMode)
     {
         // set automatic gain 0 or manual 1
-        sendCommand(RtlTcpCommand::SET_GAIN_MODE, (RtlGainMode::Hardware != gainMode));
+        sendCommand(RtlTcpCommand::SET_GAIN_MODE, (RtlGainMode::Hardware != gainMode));        
 
         m_gainMode = gainMode;
 
@@ -534,7 +548,7 @@ void RtlTcpInput::setAgcLevelMax(float agcLevelMax)
     m_agcLevelMax = agcLevelMax;
     m_agcLevelMin = m_agcLevelMinFactorList->at(m_gainIdx) * m_agcLevelMax;
 
-    qDebug() << m_agcLevelMax << m_agcLevelMin;
+    //qDebug() << m_agcLevelMax << m_agcLevelMin;
 }
 
 void RtlTcpInput::setGain(int gainIdx)
@@ -566,6 +580,7 @@ void RtlTcpInput::resetAgc()
 {
     // set automatic gain 0 or manual 1
     sendCommand(RtlTcpCommand::SET_GAIN_MODE, (RtlGainMode::Hardware != m_gainMode));
+    setDAGC(RtlGainMode::Hardware == m_gainMode);   // enable for HW, disable otherwise
 
     if (RtlGainMode::Software == m_gainMode)
     {
@@ -580,7 +595,7 @@ void RtlTcpInput::setDAGC(bool ena)
 
 void RtlTcpInput::onAgcLevel(float agcLevel)
 {
-    qDebug() << agcLevel;
+    //qDebug() << agcLevel;
     if (RtlGainMode::Software == m_gainMode)
     {
         if (agcLevel < m_agcLevelMin)
