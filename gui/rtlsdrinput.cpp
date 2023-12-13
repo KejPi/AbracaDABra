@@ -361,7 +361,7 @@ void RtlSdrInput::resetAgc()
 
 void RtlSdrInput::onAgcLevel(float agcLevel)
 {
-    qDebug() << agcLevel;
+    // qDebug() << agcLevel;
     if (RtlGainMode::Software == m_gainMode)
     {
         if (agcLevel < m_agcLevelMin)
