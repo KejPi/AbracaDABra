@@ -55,19 +55,19 @@ public:
     MOTObjectData(const MOTObjectData &other);
     ~MOTObjectData() { }
 
-    int_fast32_t id;
-    int32_t bodySize;
-    bool objectIsComplete;
-    bool objectIsObsolete;   // this is used to remove obosolete obcect when new MOT directory is received
+    int_fast32_t m_id;
+    int32_t m_bodySize;
+    bool m_objectIsComplete;
+    bool m_objectIsObsolete;   // this is used to remove obosolete obcect when new MOT directory is received
 
-    uint16_t contentType;
-    uint16_t contentSubType;
-    QString contentName;
+    uint16_t m_contentType;
+    uint16_t m_contentSubType;
+    QString m_contentName;
 
-    MOTEntity header;
-    MOTEntity body;
+    MOTEntity m_header;
+    MOTEntity m_body;
 
-    QHash<int, QByteArray> userAppParams;
+    QHash<int, QByteArray> m_userAppParams;
 
     void parseHeader();
 };
@@ -79,12 +79,12 @@ public:
 
     MOTObject(const MOTObject &other) : d (other.d) { }
 
-    uint16_t getId() const { return d->id; }
+    uint16_t getId() const { return d->m_id; }
     bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag, bool isHeader = false);
-    bool isComplete() const { return d->objectIsComplete; };
+    bool isComplete() const { return d->m_objectIsComplete; };
     QByteArray getBody() const;
-    bool isObsolete() const { return d->objectIsObsolete; }
-    void setObsolete(bool obsolete) { d->objectIsObsolete = obsolete; };
+    bool isObsolete() const { return d->m_objectIsObsolete; }
+    void setObsolete(bool obsolete) { d->m_objectIsObsolete = obsolete; };
 
     uint16_t getContentType() const;
     uint16_t getContentSubType() const;
@@ -93,8 +93,8 @@ public:
     // iterator access to user parameters
     typedef QHash<int, QByteArray>::const_iterator paramsIterator;
 
-    MOTObject::paramsIterator paramsBegin() const { return d->userAppParams.cbegin(); }
-    MOTObject::paramsIterator paramsEnd() const { return d->userAppParams.cend(); }
+    MOTObject::paramsIterator paramsBegin() const { return d->m_userAppParams.cbegin(); }
+    MOTObject::paramsIterator paramsEnd() const { return d->m_userAppParams.cend(); }
 private:
     QSharedDataPointer<MOTObjectData> d;
 };
