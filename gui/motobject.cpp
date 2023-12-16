@@ -279,7 +279,6 @@ void MOTObjectData::parseHeader()
                 m_bodySize = -1;
                 isOk = false;
                 break;
-
             default:
                 // some user app parameter or parameter not handled by MOT decoder
 #if 0
@@ -390,6 +389,7 @@ MOTDirectory::MOTDirectory(uint_fast32_t transportId, MOTObjectCache * cachePtr)
     // decoder is still adding segments, even segments that do not exist in directoy yet
     // crousel/cache maintenence is performed when new directory is received
     m_carousel = cachePtr;
+    m_numComplete = 0;
 }
 
 bool MOTDirectory::addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
@@ -430,6 +430,7 @@ bool MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *se
         it->addSegment(segment, segmentNum, segmentSize, lastFlag);
         if (it->isComplete())
         {
+            m_numComplete += 1;
             qCDebug(motObject) << "MOT complete: ID" << transportId;
             return true;
         }
@@ -549,6 +550,7 @@ bool MOTDirectory::parse(const QByteArray &dirData)
 
     // set all object in carousel obsolete
     m_carousel->markAllObsolete();
+    m_numComplete = 0;
 
     int numObjRead = 0;
     while (n < dirSize)
@@ -577,6 +579,11 @@ bool MOTDirectory::parse(const QByteArray &dirData)
         // number 0, last = true, size is the rest of the directory, object takes what it needs
         it->addSegment((const uint8_t *) (dataPtr + n + 2), 0, headerSize, true, true);
         n += 2 + headerSize;
+
+        if (it->isComplete())
+        {
+            m_numComplete += 1;
+        }
     }
 
     // done -> delete all remaining obsolete objects

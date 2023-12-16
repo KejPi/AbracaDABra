@@ -202,11 +202,7 @@ void SPIApp::onUserAppData(const RadioControlUserAppData & data)
             // create new decoder
             decoderPtr = new MOTDecoder(this);            
             connect(decoderPtr, &MOTDecoder::newMOTDirectory, this, &SPIApp::onNewMOTDirectory);
-            connect(decoderPtr, &MOTDecoder::newMOTObjectInDirectory, this, [this](uint16_t id) {
-                // temporary solution
-                MOTDecoder * decoderPtr = dynamic_cast<MOTDecoder *>(QObject::sender());
-                processMOTDirectory(decoderPtr);
-            });
+            connect(decoderPtr, &MOTDecoder::newMOTObjectInDirectory, this, &SPIApp::onNewMOTObjectInDirectory);
             m_decoderMap[data.SCId] = decoderPtr;
 
             qCDebug(spiApp) << "Adding MOT decoder for SCID" << data.SCId;
@@ -222,11 +218,6 @@ void SPIApp::onUserAppData(const RadioControlUserAppData & data)
 void SPIApp::onNewMOTDirectory()
 {
     MOTDecoder * decoderPtr = dynamic_cast<MOTDecoder *>(QObject::sender());
-    processMOTDirectory(decoderPtr);
-}
-
-void SPIApp::processMOTDirectory(MOTDecoder * decoderPtr)
-{
     Q_ASSERT(decoderPtr != nullptr);
 
     int decoderId = 0xF000;
@@ -244,93 +235,113 @@ void SPIApp::processMOTDirectory(MOTDecoder * decoderPtr)
     }
 
     MOTObjectCache::const_iterator objIt;
-    int incompleteObjCount = 0;
-    for (objIt = decoderPtr->directoryBegin(); objIt != decoderPtr->directoryEnd(); ++objIt)
-    {
-        if (!objIt->isComplete())
-        {   // object not complete ==> carousel not complete
-            incompleteObjCount += 1;
-            // qCDebug(spiApp, "%d: Object %d is not complete", decoderId, objIt->getId());
-        }
-        else { /* object is complete */
-            // qCDebug(spiApp, "%d: Object %d is complete: %s", decoderId, objIt->getId(), objIt->getContentName().toLocal8Bit().data());
-        }
-    }
-    if (incompleteObjCount != 0) {
-        qCInfo(spiApp, "%d: MOT directory NOT complete (decoded %d / %d)", decoderId, decoderPtr->size()-incompleteObjCount, decoderPtr->size());
-        //return;
-    }
-    else
-    {
-        qCInfo(spiApp, "%d: MOT directory complete", decoderId);
-        for (objIt = decoderPtr->directoryBegin(); objIt != decoderPtr->directoryEnd(); ++objIt)
-        {
-            qCDebug(spiApp, "%d:     Object %d -> %s", decoderId, objIt->getId(), objIt->getContentName().toLocal8Bit().data());
-        }
-    }
-
     qCDebug(spiApp, "%d: Processing MOT directory", decoderId);
 
-    for (objIt = decoderPtr->directoryBegin(); objIt != decoderPtr->directoryEnd(); ++objIt)
+    for (objIt = decoderPtr->directoryBegin(); objIt != decoderPtr->directoryEnd(); ++objIt)    
     {
         if (objIt->isComplete())
         {
-            switch (objIt->getContentType())
-            {
-#if 0  // storing of images
-            case 2:
-            {
-                // logos
-                switch (objIt->getContentSubType())
-                {
-                case 1:
-                    qCDebug(spiApp) << "Image / JFIF (JPEG)" << objIt->getContentName();
-                    break;
-                case 3:
-                {
-                    qCDebug(spiApp) << "Image / PNG" << objIt->getContentName();
-                    QSaveFile file(objIt->getContentName());
-                    file.open(QIODevice::WriteOnly);
-                    file.write(objIt->getBody());
-                    file.commit();
-                }
-                    break;
-                default:
-                    qCDebug(spiApp) << "Image /" <<objIt->getContentSubType() << "not supported by SPI application";
-                    return;
-                }
-            }
-                break;
-#endif
-            case 7:
-            {   // SPI content type/subtype values
-                switch (objIt->getContentSubType())
-                {
-                case 0:
-                    qCDebug(spiApp) << "\tService Information" << objIt->getContentName();
-                    parseBinaryInfo(*objIt);
-                    break;                    
-                case 1:
-                    qCDebug(spiApp) << "\tProgramme Information" << objIt->getContentName();
-                    parseBinaryInfo(*objIt);
-                    break;
-                case 2:
-                    qCDebug(spiApp) << "\tGroup Information" << objIt->getContentName();
-                    parseBinaryInfo(*objIt);
-                    break;
-                default:
-                    // not supported
-                    continue;
-                }
-            }
-            break;
-            }
+            qCDebug(spiApp, "%d:     Object %d -> %s [complete]", decoderId, objIt->getId(), objIt->getContentName().toLocal8Bit().data());
+            processObject(objIt);
         }
     }
 
-    if (incompleteObjCount == 0)
+    if (decoderPtr->directoryIsComplete())
     {
         m_parsedDirectoryIds[decoderId] = decoderPtr->getDirectoryId();
+        qCInfo(spiApp, "%d: MOT directory complete", decoderId);
+    }
+    else
+    {
+        qCInfo(spiApp, "%d: MOT directory NOT complete (decoded %d / %d)", decoderId, decoderPtr->directoryCountCompleted(), decoderPtr->directoryCount());
+    }
+}
+
+void SPIApp::onNewMOTObjectInDirectory(const QString &contentName)
+{
+    MOTDecoder * decoderPtr = dynamic_cast<MOTDecoder *>(QObject::sender());
+    Q_ASSERT(decoderPtr != nullptr);
+
+    int decoderId = 0xF000;
+    for (const auto & key : m_decoderMap.keys()) {
+        if (m_decoderMap.value(key) == decoderPtr) {
+            decoderId = key;
+            break;
+        }
+    }
+
+    if (decoderPtr->getDirectoryId() == m_parsedDirectoryIds.value(decoderId, 0))
+    {   // directory is already processed
+        // qCDebug(spiApp) << decoderId << ": Directory" << decoderPtr->getDirectoryId() << "was processed already, skipping";
+        return;
+    }
+
+    MOTObjectCache::const_iterator objIt = decoderPtr->find(contentName);
+    if (objIt != decoderPtr->directoryEnd())
+    {
+        processObject(objIt);
+        if (decoderPtr->directoryIsComplete())
+        {
+            qCInfo(spiApp, "%d: MOT directory complete", decoderId);
+        }
+        else
+        {
+            qCInfo(spiApp, "%d: MOT directory NOT complete (decoded %d / %d)", decoderId, decoderPtr->directoryCountCompleted(), decoderPtr->directoryCount());
+        }
+    }
+}
+
+void SPIApp::processObject(MOTObjectCache::const_iterator objIt)
+{
+    switch (objIt->getContentType())
+    {
+#if 0  // storing of images
+    case 2:
+    {
+        // logos
+        switch (objIt->getContentSubType())
+        {
+        case 1:
+            qCDebug(spiApp) << "Image / JFIF (JPEG)" << objIt->getContentName();
+            break;
+        case 3:
+        {
+            qCDebug(spiApp) << "Image / PNG" << objIt->getContentName();
+            QSaveFile file(objIt->getContentName());
+            file.open(QIODevice::WriteOnly);
+            file.write(objIt->getBody());
+            file.commit();
+        }
+            break;
+        default:
+            qCDebug(spiApp) << "Image /" <<objIt->getContentSubType() << "not supported by SPI application";
+            return;
+        }
+    }
+        break;
+#endif
+    case 7:
+    {   // SPI content type/subtype values
+        switch (objIt->getContentSubType())
+        {
+        case 0:
+            qCDebug(spiApp) << "\tService Information" << objIt->getContentName();
+            parseBinaryInfo(*objIt);
+            break;
+        case 1:
+            qCDebug(spiApp) << "\tProgramme Information" << objIt->getContentName();
+            parseBinaryInfo(*objIt);
+            break;
+        case 2:
+            qCDebug(spiApp) << "\tGroup Information" << objIt->getContentName();
+            parseBinaryInfo(*objIt);
+            break;
+        default:
+            // not supported
+            break;
+        }
+    }
+    break;
     }
 }
 
@@ -358,11 +369,6 @@ void SPIApp::onFileRequest(const QString &url, const QString &requestId)
     {
         downloadFile(url, requestId);
     }
-}
-
-void SPIApp::onNewMOTObject(const MOTObject & obj)
-{
-    Q_UNUSED(obj)
 }
 
 void SPIApp::parseBinaryInfo(const MOTObject &motObj)

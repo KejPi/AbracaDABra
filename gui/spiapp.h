@@ -56,9 +56,10 @@ class SPIApp : public UserApplication
 public:
     SPIApp(QObject *parent = nullptr);
     ~SPIApp();
-    void onNewMOTObject(const MOTObject & obj) override;
+    void onNewMOTObject(const MOTObject & obj) override { Q_UNUSED(obj); }
     void onUserAppData(const RadioControlUserAppData & data) override;
     void onNewMOTDirectory();
+    void onNewMOTObjectInDirectory(const QString & contentName);
     void onFileRequest(const QString & url, const QString & requestId);
     void onSettingsChanged(bool useInternet, bool enaRadioDNS) { m_useInternet = useInternet; m_enaRadioDNS = enaRadioDNS; }
     void start() override;
@@ -79,7 +80,7 @@ signals:
 private:
     QHash<uint16_t, MOTDecoder *> m_decoderMap;
 
-    void processMOTDirectory(MOTDecoder * decoderPtr);
+    void processObject(MOTObjectCache::const_iterator objIt);
     void parseBinaryInfo(const MOTObject & motObj);
     uint32_t parseTag(const uint8_t * dataPtr, QDomElement & parentElement, uint8_t parentTag, int maxSize);
     const uint8_t * parseAttributes(const uint8_t * attrPtr, uint8_t tag, int maxSize);
@@ -97,6 +98,7 @@ private:
 
     QHash<uint8_t, QString> m_tokenTable;
     QDomDocument m_xmldocument;
+
     QHash<uint16_t, int_fast32_t> m_parsedDirectoryIds;
 
     // RadioDNS

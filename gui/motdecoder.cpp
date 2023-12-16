@@ -131,7 +131,10 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
             if (m_directory->addObjectSegment(mscDataGroup.getTransportId(), (const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(),
                                               segmentSize, mscDataGroup.getLastFlag()))
             {   // directory updated
-                emit newMOTObjectInDirectory(mscDataGroup.getTransportId());
+                emit newMOTObjectInDirectory(m_directory->cfind(mscDataGroup.getTransportId())->getContentName());
+                if (m_directory->isComplete()) {
+                    emit directoryComplete();
+                }
             }
         }
         else

@@ -137,7 +137,9 @@ public:
     bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
     bool addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
     uint_fast32_t getTransportId() const { return m_id; }
-    int size() const { return m_carousel->size(); }
+    int count() const { return m_carousel->size(); }
+    int countCompleted() const { return m_numComplete; }
+    bool isComplete() const { return m_numComplete >= count(); }
     MOTObjectCache::const_iterator begin() const { return  m_carousel->cbegin(); }
     MOTObjectCache::const_iterator end() const { return  m_carousel->cend(); }
     MOTObjectCache::const_iterator cfind(uint16_t transportId) const { return  m_carousel->cfindMotObj(transportId); }    
@@ -145,6 +147,7 @@ private:
     uint_fast32_t m_id;
     MOTEntity m_dir;
     MOTObjectCache * m_carousel;
+    int m_numComplete;
 
     bool parse(const QByteArray &dirData);
 };
