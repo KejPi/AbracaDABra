@@ -35,13 +35,26 @@
 #include "slmodelitem.h"
 
 #include "servicelist.h"
+#include "metadatamanager.h"
+
+// enum SLModelRoles {
+//     ShortIdRole = Qt::UserRole,
+// };
+
+enum SLModelRole{
+    IdRole = Qt::UserRole,
+    SmallLogoTole,
+    EpgModelRole,
+};
+
 
 class SLModel : public QAbstractItemModel
 {
     Q_OBJECT
+    QML_ELEMENT
 
 public:
-    explicit SLModel(const ServiceList * sl, QObject *parent = 0);
+    explicit SLModel(const ServiceList * sl, const MetadataManager * mm, QObject *parent = 0);
     ~SLModel();
 
     QVariant data(const QModelIndex &index, int role) const override;
@@ -52,6 +65,7 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
+    QHash<int, QByteArray> roleNames() const override;
 
     ServiceListId id(const QModelIndex &index) const;
     bool isFavoriteService(const QModelIndex &index) const;
@@ -60,11 +74,13 @@ public slots:
     void addService(const ServiceListId & servId);
     void updateService(const ServiceListId & servId);
     void removeService(const ServiceListId & servId);
+    void epgModelAvailable(const ServiceListId & servId);
     void clear();
 
 private:
     const ServiceList * m_slPtr;
-    QList<SLModelItem *> m_serviceItems;
+    const MetadataManager * m_metadataMgrPtr;
+    QList<SLModelItem *> m_serviceItems;    
 
     QIcon m_favIcon;
     QIcon m_noIcon;

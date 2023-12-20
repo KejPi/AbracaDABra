@@ -157,13 +157,11 @@ add_executable(${TARGET}
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # QML
-set_source_files_properties(qml/epg.qml PROPERTIES
-    QT_RESOURCE_ALIAS epg.qml
-)
 qt6_add_qml_module(${TARGET}
     URI EPG
     QML_FILES
         qml/epg.qml
+        #qml/EPGItem.qml
     RESOURCES
         #img/world.png
     VERSION 1.0

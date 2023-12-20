@@ -27,10 +27,14 @@
 #include "slmodel.h"
 #include <QFlags>
 
-SLModel::SLModel(const ServiceList *sl, QObject *parent)
+SLModel::SLModel(const ServiceList *sl, const MetadataManager *mm, QObject *parent)
     : QAbstractItemModel(parent)
     , m_slPtr(sl)
+    , m_metadataMgrPtr(mm)
 {
+
+    connect(m_metadataMgrPtr, &MetadataManager::epgModelAvailable, this, &SLModel::epgModelAvailable);
+
     QPixmap nopic(20,20);
     nopic.fill(Qt::transparent);
     m_noIcon = QIcon(nopic);
@@ -86,6 +90,9 @@ QVariant SLModel::data(const QModelIndex &index, int role) const
         {
         case Qt::DisplayRole:
         case Qt::ToolTipRole:
+        case SLModelRole::IdRole:
+        case SLModelRole::SmallLogoTole:
+        case SLModelRole::EpgModelRole:
               return item->data(index.column(), role);
         case Qt::DecorationRole:
         {
@@ -184,7 +191,7 @@ int SLModel::rowCount(const QModelIndex &parent) const
 void SLModel::addService(const ServiceListId & servId)
 {  // new service in service list
     beginInsertRows(QModelIndex(), m_serviceItems.size(), m_serviceItems.size());
-    m_serviceItems.append(new SLModelItem(m_slPtr, servId));
+    m_serviceItems.append(new SLModelItem(m_slPtr, m_metadataMgrPtr, servId));
     endInsertRows();
 
     sort(0);
@@ -207,6 +214,21 @@ void SLModel::removeService(const ServiceListId & servId)
             m_serviceItems.removeAt(row);
             delete item;
             endRemoveRows();
+            return;
+        }
+    }
+}
+
+void SLModel::epgModelAvailable(const ServiceListId &servId)
+{
+    qDebug() << Q_FUNC_INFO;
+    // first find service in the list
+    for (int row = 0; row < m_serviceItems.size(); ++row)
+    {
+        if (m_serviceItems.at(row)->id() == servId)
+        {   // found
+            qDebug() << Q_FUNC_INFO << "data changed";
+            dataChanged(index(row, 0), index(row, 0), {SLModelRole::EpgModelRole});
             return;
         }
     }
@@ -258,5 +280,16 @@ void SLModel::sort(int column, Qt::SortOrder order)
     endResetModel();
 
     emit dataChanged(QModelIndex(), QModelIndex());
+}
+
+QHash<int, QByteArray> SLModel::roleNames() const
+{
+    QHash<int, QByteArray> roles = QAbstractItemModel::roleNames();
+
+    roles[SLModelRole::IdRole] = "serviceId";
+    roles[SLModelRole::SmallLogoTole] = "smallLogo";
+    roles[SLModelRole::EpgModelRole] = "epgModelRole";
+
+    return roles;
 }
 

@@ -56,10 +56,12 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const { return m_itemList.count(); }
     QHash<int, QByteArray> roleNames() const;
-
-    void addItem(EPGModelItem * item);
+    void addItem(EPGModelItem *item);
+    void populateWithList(const QList<EPGModelItem *> & list);
 private:
+    QSet<int> m_shortIdList;
     QList<EPGModelItem *> m_itemList;
+    //QHash<uint32_t, EPGModelItem*> m_itemList;
 };
 
 #endif // EPGMODEL_H

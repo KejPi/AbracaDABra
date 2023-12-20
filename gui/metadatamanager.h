@@ -31,11 +31,13 @@
 #include <QDomDocument>
 #include <QPixmap>
 #include <QHash>
+#include <QQuickImageProvider>
+#include "servicelistid.h"
 #include "epgmodel.h"
 
 typedef QHash<QString, QString> serviceInfo_t;
 
-class MetadataManager : public QObject
+class MetadataManager : public QQuickImageProvider
 {
     Q_OBJECT
 
@@ -48,25 +50,30 @@ public:
         LongName,
     };
 
-    explicit MetadataManager(QObject *parent = nullptr);
+    explicit MetadataManager();
     void processXML(const QString &xmldocument, QString scopeId);
     void onFileReceived(const QByteArray & data, const QString & requestId);
-    QVariant data(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role);
+    QVariant data(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role) const;
+    QVariant data(const ServiceListId & id, MetadataManager::MetadataRole role) const;
+    QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize) override;
 
-    EPGModel *epgModel() const;
+    EPGModel *epgModel(const ServiceListId & id) const;
 
 signals:
     void getFile(const QString & url, const QString & requestId);
     void dataUpdated(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role);
+    void epgModelAvailable(const ServiceListId & id);
 
 private:
 //    static MetadataManager * m_instancePtr;    // static pointer which will points to the instance of this class
     QHash<QString, serviceInfo_t> m_info;
-    EPGModel * m_epgModel;
+    QHash<ServiceListId, EPGModel *> m_epgList;
 
-    void parseProgramme(const QDomElement &element, const QString &scopeId);
+    void parseProgramme(const QDomElement &element, const ServiceListId &id);
     void parseDescription(const QDomElement &element, EPGModelItem *progItem);
     void parseLocation(const QDomElement &element, EPGModelItem *progItem);
+
+    ServiceListId bearerToServiceId(const QString & bearerUri) const;
 };
 
 #endif // METADATAMANAGER_H

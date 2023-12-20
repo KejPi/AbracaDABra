@@ -400,10 +400,14 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     f.setBold(true);
     ui->serviceLabel->setFont(f);
 
+    // metadata
+    m_metadataManager = new MetadataManager();
+    connect(m_metadataManager, &MetadataManager::dataUpdated, this, &MainWindow::onMetadataUpdated);
+
     // service list
     m_serviceList = new ServiceList;
 
-    m_slModel = new SLModel(m_serviceList, this);
+    m_slModel = new SLModel(m_serviceList, m_metadataManager, this);
     connect(m_serviceList, &ServiceList::serviceAdded, m_slModel, &SLModel::addService);
     connect(m_serviceList, &ServiceList::serviceUpdated, m_slModel, &SLModel::updateService);
     connect(m_serviceList, &ServiceList::serviceRemoved, m_slModel, &SLModel::removeService);
@@ -415,7 +419,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->serviceListView->installEventFilter(this);
     connect(ui->serviceListView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::onServiceListSelection);
 
-    m_slTreeModel = new SLTreeModel(m_serviceList, this);
+    m_slTreeModel = new SLTreeModel(m_serviceList, m_metadataManager, this);
     connect(m_serviceList, &ServiceList::serviceAddedToEnsemble, m_slTreeModel, &SLTreeModel::addEnsembleService);
     connect(m_serviceList, &ServiceList::serviceUpdatedInEnsemble, m_slTreeModel, &SLTreeModel::updateEnsembleService);
     connect(m_serviceList, &ServiceList::serviceRemovedFromEnsemble, m_slTreeModel, &SLTreeModel::removeEnsembleService);
@@ -653,10 +657,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(this, &MainWindow::exit, m_radioControl, &RadioControl::exit, Qt::QueuedConnection);
 
     // user applications
-    m_metadataManager = new MetadataManager(this);
-    connect(m_metadataManager, &MetadataManager::dataUpdated, this, &MainWindow::onMetadataUpdated);
-
-    m_epgDialog = new EPGDialog(m_metadataManager, this);
+    m_epgDialog = new EPGDialog(m_slModel, m_metadataManager, this);
 
     // slide show application is created by default
     // ETSI TS 101 499 V3.1.1  [5.1.1]
@@ -723,13 +724,13 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_hasListViewFocus = true;
     m_hasTreeViewFocus = false;
 
-    QFile xmlfile("/Users/kejpi/Devel/AbracaDABra/20231206_PI.xml");
-    if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        QTextStream in(&xmlfile);
-        m_metadataManager->processXML(qPrintable(in.readAll()), "");
-        xmlfile.close();
-    }
+    // QFile xmlfile("/Users/kejpi/Devel/AbracaDABra/20231206_PI.xml");
+    // if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
+    // {
+    //     QTextStream in(&xmlfile);
+    //     m_metadataManager->processXML(qPrintable(in.readAll()), "");
+    //     xmlfile.close();
+    // }
 }
 
 MainWindow::~MainWindow()
@@ -759,6 +760,7 @@ MainWindow::~MainWindow()
     delete m_dlDecoder[Instance::Service];
     delete m_dlDecoder[Instance::Announcement];
     delete m_serviceList;
+    delete m_metadataManager;
     delete ui;
 }
 

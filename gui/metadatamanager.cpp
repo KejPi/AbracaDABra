@@ -40,10 +40,8 @@
 
 Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtInfoMsg)
 
-MetadataManager::MetadataManager(QObject *parent)
-    : QObject(parent)
+MetadataManager::MetadataManager() : QQuickImageProvider(QQuickImageProvider::Pixmap)
 {
-    m_epgModel = new EPGModel(this);
 }
 
 void MetadataManager::processXML(const QString &xml, QString scopeId)
@@ -234,13 +232,13 @@ void MetadataManager::processXML(const QString &xml, QString scopeId)
         // qCInfo(metadataManager) << "======================= EPG =========================>";
         // qCInfo(metadataManager) << qPrintable(xmldocument.toString());
         // qCInfo(metadataManager) << "<=====================================================";
-
         QDomNode node = docElem.firstChild();
         while (!node.isNull())
         {
             QDomElement element = node.toElement(); // try to convert the node to an element.
             if(!element.isNull() && ("schedule" == element.tagName()))
             {
+                QString startTime;
                 if (!element.firstChildElement("scope").isNull())
                 {   // found scope element
                     QDomElement serviceScope = element.firstChildElement("scope").firstChildElement("serviceScope");
@@ -249,12 +247,28 @@ void MetadataManager::processXML(const QString &xml, QString scopeId)
                         scopeId = serviceScope.attribute("id");
                         qDebug() << "Found scopeId:" << scopeId;
                     }
+                    startTime = element.firstChildElement("scope").attribute("startTime");
+                    qDebug() << "Found scope start:" << startTime;
+                    qDebug() << "Found scope stop:" << element.firstChildElement("scope").attribute("stopTime");
                 }
-                QDomElement child = element.firstChildElement("programme");
-                while (!child.isNull())
+
+                if (!scopeId.isEmpty() && !startTime.isEmpty())
                 {
-                    parseProgramme(child, scopeId);
-                    child = child.nextSiblingElement("programme");
+                    ServiceListId id = bearerToServiceId(scopeId);
+                    if (id.isValid()) {
+                        QDomElement child = element.firstChildElement("programme");
+                        while (!child.isNull())
+                        {
+                            parseProgramme(child, id);
+                            child = child.nextSiblingElement("programme");
+                        }
+
+                        // save parsed file to the cache
+                        // "20140805_e1.ce15.c221.0_PI.xml" for DAB.
+
+                        //QString filename = QString("%1_%2_PI.xml").arg(QDateTime::fromString(startTime, Qt::ISODate).toString("yyyyMMdd"), scopeId);
+                        //qDebug() << filename;
+                    }
                 }
             }
             node = node.nextSibling();
@@ -268,7 +282,7 @@ void MetadataManager::processXML(const QString &xml, QString scopeId)
     }
 }
 
-void MetadataManager::parseProgramme(const QDomElement &element, const QString & scopeId)
+void MetadataManager::parseProgramme(const QDomElement &element, const ServiceListId & id)
 {
     QDomElement child = element.firstChildElement();
     EPGModelItem * progItem = new EPGModelItem;
@@ -300,7 +314,12 @@ void MetadataManager::parseProgramme(const QDomElement &element, const QString &
         child = child.nextSiblingElement();
     }
 
-    m_epgModel->addItem(progItem);
+    if (!m_epgList.contains(id))
+    {
+        m_epgList[id] = new EPGModel(this);
+        emit epgModelAvailable(id);
+    }
+    m_epgList[id]->addItem(progItem);
 }
 
 void MetadataManager::parseDescription(const QDomElement &element, EPGModelItem *progItem)
@@ -363,6 +382,26 @@ void MetadataManager::parseLocation(const QDomElement &element, EPGModelItem * p
     }
 }
 
+ServiceListId MetadataManager::bearerToServiceId(const QString &bearerUri) const
+{   // ETSI TS 103 270 V1.4.1 (2022-05) [5.1.2.4 Construction of bearerURI]
+    // The bearerURI for a DAB/DAB+ service is compiled as follows:
+    // dab:<gcc>.<eid>.<sid>.<scids>[.<uatype>]
+    // example: dab:de0.10bc.d210.0
+    static const QRegularExpression re("dab:[0-9a-f]([0-9a-f]{2})\\.[0-9a-f]{4}\\.([0-9a-f]{4})\\.(\\d).*", QRegularExpression::CaseInsensitiveOption);
+
+    QRegularExpressionMatch match = re.match(bearerUri);
+    if (match.hasMatch())
+    {
+        qDebug() << QString(match.captured(1) + match.captured(2));  // ECC + SId
+        qDebug() << match.captured(3);  // SCIds
+
+        uint32_t sid = QString(match.captured(1) + match.captured(2)).toUInt(nullptr, 16);
+        uint8_t scids = match.captured(3).toInt();
+        return ServiceListId(sid, scids);
+    }
+    return ServiceListId();
+}
+
 void MetadataManager::onFileReceived(const QByteArray & data, const QString & requestId)
 {
     if (data.size() == 0)
@@ -373,7 +412,7 @@ void MetadataManager::onFileReceived(const QByteArray & data, const QString & re
     QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/"+ requestId;
     qCDebug(metadataManager) << requestId << filename;
 
-    const QRegularExpression re("([0-9a-f]{6})\\.(\\d+)/(\\d+x\\d+)\\..*", QRegularExpression::CaseInsensitiveOption);
+    static const QRegularExpression re("([0-9a-f]{6})\\.(\\d+)/(\\d+x\\d+)\\..*", QRegularExpression::CaseInsensitiveOption);
 
     QDir dir;
     dir.mkpath(QFileInfo(filename).absolutePath());
@@ -435,9 +474,14 @@ void MetadataManager::onFileReceived(const QByteArray & data, const QString & re
     }
 }
 
-QVariant MetadataManager::data(uint32_t sid, uint8_t SCIdS, MetadataRole role)
+QVariant MetadataManager::data(uint32_t sid, uint8_t SCIdS, MetadataRole role) const
 {
-    QString sidStr = QString("%1.%2").arg(sid, 6, 16, QChar('0')).arg(SCIdS);
+    return data(ServiceListId(sid, SCIdS), role);
+}
+
+QVariant MetadataManager::data(const ServiceListId &id, MetadataRole role) const
+{
+    QString sidStr = QString("%1.%2").arg(id.sid(), 6, 16, QChar('0')).arg(id.scids());
     switch (role) {
     case SLSLogo:
     {
@@ -480,7 +524,25 @@ QVariant MetadataManager::data(uint32_t sid, uint8_t SCIdS, MetadataRole role)
     return QVariant();
 }
 
-EPGModel *MetadataManager::epgModel() const
+QPixmap MetadataManager::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
 {
-    return m_epgModel;
+    QPixmap logo = data(ServiceListId(static_cast<uint64_t>(id.toUInt())), MetadataRole::SmallLogo).value<QPixmap>();
+    if (logo.isNull())
+    {
+        logo = QPixmap(requestedSize.width() > 0 ? requestedSize.width() : 32,
+                              requestedSize.height() > 0 ? requestedSize.height() : 32);
+        logo.fill(QColor(Qt::white).rgba());
+    }
+
+    if (size)
+    {
+        *size = QSize(logo.width(), logo.height());
+    }
+
+    return logo;
+}
+
+EPGModel *MetadataManager::epgModel(const ServiceListId & id) const
+{
+    return m_epgList.value(id, nullptr);
 }

@@ -110,15 +110,28 @@ QHash<int, QByteArray> EPGModel::roleNames() const
     return roles;
 }
 
+void EPGModel::populateWithList(const QList<EPGModelItem *> &list)
+{
+
+}
+
 void EPGModel::addItem(EPGModelItem *item)
 {
     if (item->isValid())
     {
+        if (m_shortIdList.contains(item->shortId()))
+        {   // already in list
+            delete item;
+            return;
+        }
+
+        // we are here if item was not in list
         qDebug() << "Adding item #" << item->shortId() <<item->shortName() << item->mediumName() << item->longName()
                                     << item->startTime().toString() << item->durationSec();
-        beginResetModel();
+        beginInsertRows(QModelIndex(), m_itemList.size(), m_itemList.size());
+        m_shortIdList.insert(item->shortId());
         m_itemList.append(item);
-        endResetModel();
+        endInsertRows();
     }
     else
     {

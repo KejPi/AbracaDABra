@@ -373,7 +373,9 @@ void SPIApp::onFileRequest(const QString &url, const QString &requestId)
 
 void SPIApp::parseBinaryInfo(const MOTObject &motObj)
 {
-    QString scopeId("");
+    QString scopeId;
+    QString scopeStart;
+    QString scopeEnd;
     MOTObject::paramsIterator paramIt;
     for (paramIt = motObj.paramsBegin(); paramIt != motObj.paramsEnd(); ++paramIt)
     {
@@ -1358,7 +1360,7 @@ QString SPIApp::getBearerURI(const uint8_t *dataPtr, int len)
                 sid = (sid << 8) | *dataPtr++;
                 sid = (sid << 8) | *dataPtr++;
                 sid = (sid << 8) | *dataPtr;
-                return QString("dab:%1%2:%3.%4.%5")
+                return QString("dab:%1%2.%3.%4.%5")
                                    .arg((sid >> 20) & 0x0F, 1, 16)
                                    .arg(ecc, 2, 16, QChar('0'))
                                    .arg(eid, 4, 16, QChar('0'))
@@ -1371,7 +1373,7 @@ QString SPIApp::getBearerURI(const uint8_t *dataPtr, int len)
         {  // short SId
             uint32_t sid = *dataPtr++;
             sid = (sid << 8) | *dataPtr;
-            return QString("dab:%1%2:%3.%4.%5")
+            return QString("dab:%1%2.%3.%4.%5")
                                    .arg((sid >> 12) & 0x0F, 1, 16)
                                    .arg(ecc, 2, 16, QChar('0'))
                                    .arg(eid, 4, 16, QChar('0'))
