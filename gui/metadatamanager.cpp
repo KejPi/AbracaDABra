@@ -40,7 +40,7 @@
 
 Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtInfoMsg)
 
-MetadataManager::MetadataManager() : QQuickImageProvider(QQuickImageProvider::Pixmap)
+MetadataManager::MetadataManager(QObject *parent) : QObject(parent)
 {
 }
 
@@ -522,24 +522,6 @@ QVariant MetadataManager::data(const ServiceListId &id, MetadataRole role) const
     }
 
     return QVariant();
-}
-
-QPixmap MetadataManager::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
-{
-    QPixmap logo = data(ServiceListId(static_cast<uint64_t>(id.toUInt())), MetadataRole::SmallLogo).value<QPixmap>();
-    if (logo.isNull())
-    {
-        logo = QPixmap(requestedSize.width() > 0 ? requestedSize.width() : 32,
-                              requestedSize.height() > 0 ? requestedSize.height() : 32);
-        logo.fill(QColor(Qt::white).rgba());
-    }
-
-    if (size)
-    {
-        *size = QSize(logo.width(), logo.height());
-    }
-
-    return logo;
 }
 
 EPGModel *MetadataManager::epgModel(const ServiceListId & id) const

@@ -152,20 +152,24 @@ add_executable(${TARGET}
     epgmodel.h epgmodel.cpp
     epgmodelitem.h epgmodelitem.cpp
     epgdialog.h epgdialog.cpp epgdialog.ui
+    epgproxymodel.h epgproxymodel.cpp
   )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # QML
 qt6_add_qml_module(${TARGET}
-    URI EPG
+    URI ProgrammeGuide
     QML_FILES
         qml/epg.qml
         #qml/EPGItem.qml
     RESOURCES
         #img/world.png
+    NO_RESOURCE_TARGET_PATH
+    # SOURCES epgproxymodel.h epgproxymodel.cpp
     VERSION 1.0
 )
+
 
 #add_definitions(-fsanitize=undefined)
 #target_link_options(${TARGET} PUBLIC -fsanitize=undefined)

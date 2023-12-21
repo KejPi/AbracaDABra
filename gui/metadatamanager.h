@@ -31,13 +31,12 @@
 #include <QDomDocument>
 #include <QPixmap>
 #include <QHash>
-#include <QQuickImageProvider>
 #include "servicelistid.h"
 #include "epgmodel.h"
 
 typedef QHash<QString, QString> serviceInfo_t;
 
-class MetadataManager : public QQuickImageProvider
+class MetadataManager : public QObject
 {
     Q_OBJECT
 
@@ -50,12 +49,11 @@ public:
         LongName,
     };
 
-    explicit MetadataManager();
+    explicit MetadataManager(QObject * parent = nullptr);
     void processXML(const QString &xmldocument, QString scopeId);
     void onFileReceived(const QByteArray & data, const QString & requestId);
     QVariant data(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role) const;
     QVariant data(const ServiceListId & id, MetadataManager::MetadataRole role) const;
-    QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize) override;
 
     EPGModel *epgModel(const ServiceListId & id) const;
 
