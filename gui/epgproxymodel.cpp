@@ -25,7 +25,9 @@ bool EPGProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourcePar
     QDateTime date = sourceModel()->data(index, EPGModelRoles::StartTimeRole).value<QDateTime>();
     // QDateTime fakeToday;
     // fakeToday.setDate(QDate(2023, 12, 02));
-    QDate fakeToday(2023, 12, 02);
+    //QDate fakeToday(2023, 12, 02);
+    QDate fakeToday(2020, 01, 29);
+    //QDate fakeToday(2008, 10, 10);
 
     return date.date() ==  fakeToday.addDays(m_dayFilter);
 }

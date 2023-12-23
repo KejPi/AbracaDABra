@@ -287,7 +287,7 @@ private:
     void onAudioRecordingStarted(const QString & filename);
     void onAudioRecordingStopped();
     void onAudioRecordingProgress(size_t bytes, size_t timeSec);
-    void onMetadataUpdated(uint32_t sid, uint8_t scids, MetadataManager::MetadataRole role);
+    void onMetadataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role);
 };
 
 class DLPlusObjectUI

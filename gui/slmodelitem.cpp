@@ -118,8 +118,16 @@ QVariant SLModelItem::data(int column, int role) const
         break;
         case SLModelRole::IdRole:
             return QVariant(m_id);
-        case SLModelRole::SmallLogoTole:
+        case SLModelRole::SmallLogoRole:
             return m_metadataMgrPtr->data(m_id, MetadataManager::SmallLogo);
+        case SLModelRole::SmallLogoIdRole:
+        {
+            if (m_metadataMgrPtr->data(m_id, MetadataManager::SmallLogo).value<QPixmap>().isNull())
+            {
+                return QVariant(0);
+            }
+            return QVariant(m_id);
+        }
         case SLModelRole::EpgModelRole:
             return QVariant::fromValue(m_metadataMgrPtr->epgModel(m_id));
         }        

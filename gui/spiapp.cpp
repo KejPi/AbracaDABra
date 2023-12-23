@@ -33,6 +33,7 @@
 #include <QNetworkProxyFactory>
 #include <QLoggingCategory>
 #include <QJsonDocument>
+#include <QFile>
 
 Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtDebugMsg)
 
@@ -113,6 +114,7 @@ void SPIApp::start()
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
     m_downloadReqQueue.clear();
+    m_motObjRequestList.clear();
 
     m_isRunning = true;
 }
@@ -220,7 +222,7 @@ void SPIApp::onNewMOTDirectory()
     MOTDecoder * decoderPtr = dynamic_cast<MOTDecoder *>(QObject::sender());
     Q_ASSERT(decoderPtr != nullptr);
 
-    int decoderId = 0xF000;
+    int decoderId = SPI_APP_INVALID_DECODER_ID;
     for (const auto & key : m_decoderMap.keys()) {
         if (m_decoderMap.value(key) == decoderPtr) {
             decoderId = key;
@@ -242,13 +244,14 @@ void SPIApp::onNewMOTDirectory()
         if (objIt->isComplete())
         {
             qCDebug(spiApp, "%d:     Object %d -> %s [complete]", decoderId, objIt->getId(), objIt->getContentName().toLocal8Bit().data());
-            processObject(objIt);
+            processObject(decoderId, objIt);
         }
     }
 
     if (decoderPtr->directoryIsComplete())
     {
         m_parsedDirectoryIds[decoderId] = decoderPtr->getDirectoryId();
+        m_motObjRequestList[decoderId].clear();
         qCInfo(spiApp, "%d: MOT directory complete", decoderId);
     }
     else
@@ -262,7 +265,7 @@ void SPIApp::onNewMOTObjectInDirectory(const QString &contentName)
     MOTDecoder * decoderPtr = dynamic_cast<MOTDecoder *>(QObject::sender());
     Q_ASSERT(decoderPtr != nullptr);
 
-    int decoderId = 0xF000;
+    int decoderId = SPI_APP_INVALID_DECODER_ID;
     for (const auto & key : m_decoderMap.keys()) {
         if (m_decoderMap.value(key) == decoderPtr) {
             decoderId = key;
@@ -279,9 +282,11 @@ void SPIApp::onNewMOTObjectInDirectory(const QString &contentName)
     MOTObjectCache::const_iterator objIt = decoderPtr->find(contentName);
     if (objIt != decoderPtr->directoryEnd())
     {
-        processObject(objIt);
+        processObject(decoderId, objIt);
         if (decoderPtr->directoryIsComplete())
         {
+            m_parsedDirectoryIds[decoderId] = decoderPtr->getDirectoryId();
+            m_motObjRequestList[decoderId].clear();
             qCInfo(spiApp, "%d: MOT directory complete", decoderId);
         }
         else
@@ -291,50 +296,51 @@ void SPIApp::onNewMOTObjectInDirectory(const QString &contentName)
     }
 }
 
-void SPIApp::processObject(MOTObjectCache::const_iterator objIt)
+void SPIApp::processObject(uint16_t decoderId, MOTObjectCache::const_iterator objIt)
 {
+    qDebug() << "Processing object:" << objIt->getContentName();
     switch (objIt->getContentType())
     {
-#if 0  // storing of images
     case 2:
-    {
-        // logos
-        switch (objIt->getContentSubType())
+    {   // logos
+        if (m_motObjRequestList[decoderId].contains(objIt->getContentName()))
         {
-        case 1:
-            qCDebug(spiApp) << "Image / JFIF (JPEG)" << objIt->getContentName();
-            break;
-        case 3:
-        {
-            qCDebug(spiApp) << "Image / PNG" << objIt->getContentName();
-            QSaveFile file(objIt->getContentName());
-            file.open(QIODevice::WriteOnly);
-            file.write(objIt->getBody());
-            file.commit();
-        }
-            break;
-        default:
-            qCDebug(spiApp) << "Image /" <<objIt->getContentSubType() << "not supported by SPI application";
-            return;
+            qDebug() << "Found requested file" << objIt->getContentName();
+            emit requestedFile(objIt->getBody(), m_motObjRequestList[decoderId][objIt->getContentName()]);
+            m_motObjRequestList[decoderId].remove(objIt->getContentName());
         }
     }
         break;
-#endif
     case 7:
     {   // SPI content type/subtype values
         switch (objIt->getContentSubType())
         {
         case 0:
             qCDebug(spiApp) << "\tService Information" << objIt->getContentName();
-            parseBinaryInfo(*objIt);
+            parseBinaryInfo(decoderId, *objIt);
             break;
         case 1:
             qCDebug(spiApp) << "\tProgramme Information" << objIt->getContentName();
-            parseBinaryInfo(*objIt);
+            parseBinaryInfo(decoderId, *objIt);
+            {
+                QString filename = QString("/Users/kejpi/Devel/AbracaDABra/_cache/%1.xml").arg(objIt->getContentName());
+                QFile file(filename);
+                if (file.exists())
+                {
+                    qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!! File EXISTS";
+                }
+                else
+                {
+                    file.open(QIODevice::WriteOnly);
+                    QTextStream output(&file);
+                    output << qPrintable(m_xmldocument.toString());
+                    file.close();
+                }
+            }
             break;
         case 2:
             qCDebug(spiApp) << "\tGroup Information" << objIt->getContentName();
-            parseBinaryInfo(*objIt);
+            parseBinaryInfo(decoderId, *objIt);
             break;
         default:
             // not supported
@@ -345,14 +351,15 @@ void SPIApp::processObject(MOTObjectCache::const_iterator objIt)
     }
 }
 
-void SPIApp::onFileRequest(const QString &url, const QString &requestId)
+void SPIApp::onFileRequest(uint16_t decoderId, const QString &url, const QString &requestId)
 {
     QString filename = url;
     if (!QUrl(url).isRelative()) {
         filename = url.mid(url.lastIndexOf('/')+1, url.size());
     }
-    for (const auto & decoder : m_decoderMap)
+    if (m_decoderMap.contains(decoderId))
     {
+        MOTDecoder * decoder = m_decoderMap[decoderId];
         if (decoder->hasDirectory())
         {
             const auto it = decoder->find(filename);
@@ -363,6 +370,11 @@ void SPIApp::onFileRequest(const QString &url, const QString &requestId)
             }
         }
     }
+    // not found
+    if (decoderId != SPI_APP_INVALID_DECODER_ID)
+    {
+        m_motObjRequestList[decoderId][url] = requestId;
+    }
 
     // not found -> try to download it if not relative URL
     if (QUrl(url).isValid() && !QUrl(url).isRelative())
@@ -371,7 +383,7 @@ void SPIApp::onFileRequest(const QString &url, const QString &requestId)
     }
 }
 
-void SPIApp::parseBinaryInfo(const MOTObject &motObj)
+void SPIApp::parseBinaryInfo(uint16_t decoderId, const MOTObject &motObj)
 {
     QString scopeId;
     QString scopeStart;
@@ -400,14 +412,16 @@ void SPIApp::parseBinaryInfo(const MOTObject &motObj)
                 // ETSI TS 102 371 V3.2.1 (2016-05) [6.4.6 ScopeStart] This parameter is used for Programme Information SPI objects only
                 if (motObj.getContentSubType() == 1)
                 {   // programme info
-                    qCDebug(spiApp) << "\t\tScopeStart" << getTime(reinterpret_cast<const uint8_t *>(paramIt.value().data()), paramIt.value().length());
+                    scopeStart = getTime(reinterpret_cast<const uint8_t *>(paramIt.value().data()), paramIt.value().length());
+                    qCDebug(spiApp) << "\t\tScopeStart" << scopeStart;
                 }
                 break;
             case Parameter::ScopeEnd:
                 // ETSI TS 102 371 V3.2.1 (2016-05) [6.4.7 ScopeEnd] This parameter is used for Programme Information SPI objects only
                 if (motObj.getContentSubType() == 1)
                 {   // programme info
-                    qCDebug(spiApp) << "\t\tScopeEnd" << getTime(reinterpret_cast<const uint8_t *>(paramIt.value().data()), paramIt.value().length());
+                    scopeEnd = getTime(reinterpret_cast<const uint8_t *>(paramIt.value().data()), paramIt.value().length());
+                    qCDebug(spiApp) << "\t\tScopeEnd" << scopeEnd;
                 }
                 break;
             case Parameter::ScopeID:
@@ -449,7 +463,7 @@ void SPIApp::parseBinaryInfo(const MOTObject &motObj)
     QDomElement empty;
     parseTag(dataPtr, empty, uint8_t(SPIElement::Tag::_invalid), data.size());
 
-    emit xmlDocument(m_xmldocument.toString(), scopeId);
+    emit xmlDocument(m_xmldocument.toString(), decoderId, scopeId, scopeStart, scopeEnd);
 }
 
 
@@ -869,6 +883,9 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
 //            break;
         case SPIElement::Tag::programme:
         case SPIElement::Tag::programmeEvent:
+            // optional attributes default values
+            parentElement.setAttribute("broadcast", "on-air");
+            parentElement.setAttribute("recommendation", "no");
             switch (SPIElement::programme_programmeEvent::attribute(tag))
             {
             case SPIElement::programme_programmeEvent::attribute::id:
@@ -1484,7 +1501,7 @@ void SPIApp::onFileDownloaded(QNetworkReply *reply)
     QString requestId = m_downloadReqQueue.head().second;
     if (requestId == "XML") {
         QByteArray data = reply->readAll();
-        emit xmlDocument(QString(data), m_ueid);
+        emit xmlDocument(QString(data), SPI_APP_INVALID_DECODER_ID, m_ueid);
     }
     else if (requestId == "DOH_CNAME")
     {
@@ -1534,7 +1551,6 @@ void SPIApp::onFileDownloaded(QNetworkReply *reply)
                 }
             }
         }
-
     }
     else
     {   // logo

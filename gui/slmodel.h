@@ -43,7 +43,8 @@
 
 enum SLModelRole{
     IdRole = Qt::UserRole,
-    SmallLogoTole,
+    SmallLogoRole,
+    SmallLogoIdRole,   // this role is used to trick QML for loading the logo when available
     EpgModelRole,
 };
 
@@ -75,6 +76,7 @@ public slots:
     void updateService(const ServiceListId & servId);
     void removeService(const ServiceListId & servId);
     void epgModelAvailable(const ServiceListId & servId);
+    void metadataUpdated(const ServiceListId &servId, MetadataManager::MetadataRole role);
     void clear();
 
 private:

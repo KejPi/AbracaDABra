@@ -63,10 +63,17 @@ QVariant EPGModel::data(const QModelIndex &index, int role) const
             }
         }
 #endif
-        if (!item->longName().isEmpty()) {
-            return QVariant(item->longName());
-        }
-        return QVariant(item->mediumName());
+        // if (!item->longName().isEmpty()) {
+        //     return QVariant(item->longName());
+        // }
+        // return QVariant(item->mediumName());
+
+        return QVariant(QString("%1 %2 %3-%4 [%5]").arg(item->shortId()).arg(item->startTime().toString("dd.MM hh:mm"))
+                                                                                 .arg(item->startTimeSec())
+                                                                                 .arg(item->endTimeSec())
+                                                                                 .arg(item->durationSec())
+                                                                             );
+
         break;
     case LongNameRole:
         return QVariant(item->longName());

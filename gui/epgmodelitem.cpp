@@ -71,8 +71,13 @@ int EPGModelItem::startTimeSec() const
 
 int EPGModelItem::endTimeSec() const
 {
-    QTime time = m_startTime.addSecs(m_durationSec).time();
-    return time.hour()*3600 + time.minute() * 60 + time.second();
+    return startTimeSec() + m_durationSec;
+    // QTime endTime = m_startTime.addSecs(m_durationSec).time();
+    // int ret = endTime.hour()*3600 + endTime.minute() * 60 + endTime.second();
+    // if (ret < startTimeSec()) {
+    //     ret += 24*3600;   // add one day day
+    // }
+    // return ret;
 }
 
 void EPGModelItem::setStartTime(const QDateTime &newStartTime)

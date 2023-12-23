@@ -34,6 +34,7 @@ SLModel::SLModel(const ServiceList *sl, const MetadataManager *mm, QObject *pare
 {
 
     connect(m_metadataMgrPtr, &MetadataManager::epgModelAvailable, this, &SLModel::epgModelAvailable);
+    connect(m_metadataMgrPtr, &MetadataManager::dataUpdated, this, &SLModel::metadataUpdated);
 
     QPixmap nopic(20,20);
     nopic.fill(Qt::transparent);
@@ -91,7 +92,8 @@ QVariant SLModel::data(const QModelIndex &index, int role) const
         case Qt::DisplayRole:
         case Qt::ToolTipRole:
         case SLModelRole::IdRole:
-        case SLModelRole::SmallLogoTole:
+        case SLModelRole::SmallLogoRole:
+        case SLModelRole::SmallLogoIdRole:
         case SLModelRole::EpgModelRole:
               return item->data(index.column(), role);
         case Qt::DecorationRole:
@@ -221,15 +223,29 @@ void SLModel::removeService(const ServiceListId & servId)
 
 void SLModel::epgModelAvailable(const ServiceListId &servId)
 {
-    qDebug() << Q_FUNC_INFO;
     // first find service in the list
     for (int row = 0; row < m_serviceItems.size(); ++row)
     {
         if (m_serviceItems.at(row)->id() == servId)
         {   // found
-            qDebug() << Q_FUNC_INFO << "data changed";
             dataChanged(index(row, 0), index(row, 0), {SLModelRole::EpgModelRole});
             return;
+        }
+    }
+}
+
+void SLModel::metadataUpdated(const ServiceListId &servId, MetadataManager::MetadataRole role)
+{
+    if (role == MetadataManager::MetadataRole::SmallLogo)
+    {
+        // first find service in the list
+        for (int row = 0; row < m_serviceItems.size(); ++row)
+        {
+            if (m_serviceItems.at(row)->id() == servId)
+            {   // found
+                dataChanged(index(row, 0), index(row, 0), {SLModelRole::SmallLogoIdRole});
+                return;
+            }
         }
     }
 }
@@ -287,7 +303,8 @@ QHash<int, QByteArray> SLModel::roleNames() const
     QHash<int, QByteArray> roles = QAbstractItemModel::roleNames();
 
     roles[SLModelRole::IdRole] = "serviceId";
-    roles[SLModelRole::SmallLogoTole] = "smallLogo";
+    roles[SLModelRole::SmallLogoRole] = "smallLogo";
+    roles[SLModelRole::SmallLogoIdRole] = "smallLogoId";
     roles[SLModelRole::EpgModelRole] = "epgModelRole";
 
     return roles;

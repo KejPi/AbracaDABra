@@ -39,6 +39,7 @@
 #include "userapplication.h"
 
 //#define SPI_APP_INVALID_TAG 0x7F
+#define SPI_APP_INVALID_DECODER_ID 0xF000
 
 class SPIDomElement;
 
@@ -60,7 +61,7 @@ public:
     void onUserAppData(const RadioControlUserAppData & data) override;
     void onNewMOTDirectory();
     void onNewMOTObjectInDirectory(const QString & contentName);
-    void onFileRequest(const QString & url, const QString & requestId);
+    void onFileRequest(uint16_t decoderId, const QString & url, const QString & requestId);
     void onSettingsChanged(bool useInternet, bool enaRadioDNS) { m_useInternet = useInternet; m_enaRadioDNS = enaRadioDNS; }
     void start() override;
     void stop() override;
@@ -75,13 +76,13 @@ public:
     void onAudioServiceSelection(const RadioControlServiceComponent & s);
 
 signals:
-    void xmlDocument(const QString &xmldocument, const QString & scopeId);
+    void xmlDocument(const QString &xmldocument, uint16_t decoderId, const QString & scopeId, const QString & scopeStart = "", const QString & scopeEnd = "");
     void requestedFile(const QByteArray &data, const QString &requestId);
 private:
     QHash<uint16_t, MOTDecoder *> m_decoderMap;
 
-    void processObject(MOTObjectCache::const_iterator objIt);
-    void parseBinaryInfo(const MOTObject & motObj);
+    void processObject(uint16_t decoderId, MOTObjectCache::const_iterator objIt);
+    void parseBinaryInfo(uint16_t decoderId, const MOTObject & motObj);
     uint32_t parseTag(const uint8_t * dataPtr, QDomElement & parentElement, uint8_t parentTag, int maxSize);
     const uint8_t * parseAttributes(const uint8_t * attrPtr, uint8_t tag, int maxSize);
     QString getString(const uint8_t *dataPtr, int len, bool doReplaceTokens = true);
@@ -113,6 +114,7 @@ private:
     QDnsLookup * m_dnsLookup;
     QNetworkAccessManager *m_netAccessManager;
     QQueue<QPair<QString, QString>> m_downloadReqQueue;
+    QHash<uint16_t, QHash<QString, QString>> m_motObjRequestList;
     void radioDNSLookup();
     QString getRadioDNSFQDN() const;
     QString getGCC(const DabSId & sid) const;

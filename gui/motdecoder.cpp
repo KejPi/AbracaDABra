@@ -163,7 +163,7 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
     }
         break;
     case 6:
-        // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]
+    {   // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]
         // The segments of an uncompressed MOT directory shall be transported in MSC Data Group type 6.
         if (nullptr != m_directory)
         {   // some directory exists
@@ -182,10 +182,11 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         }
 
         if (m_directory->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag()))
-        {
+        {   // directory just completed
             qCDebug(motDecoder) << "MOT Directory is complete";
             emit newMOTDirectory();
         }
+    }
         break;
     case 7:
         // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]

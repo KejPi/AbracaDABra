@@ -724,11 +724,12 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_hasListViewFocus = true;
     m_hasTreeViewFocus = false;
 
-    // QFile xmlfile("/Users/kejpi/Devel/AbracaDABra/20231206_PI.xml");
+    // //QFile xmlfile("/Users/kejpi/Devel/AbracaDABra/20231206_PI.xml");
+    // QFile xmlfile("/Users/kejpi/Devel/AbracaDABra/_cache/w20081011dD220c0.EHB.xml");
     // if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
     // {
     //     QTextStream in(&xmlfile);
-    //     m_metadataManager->processXML(qPrintable(in.readAll()), "");
+    //     m_metadataManager->processXML(qPrintable(in.readAll()), "dab:de0.d06c.d220.0");
     //     xmlfile.close();
     // }
 }
@@ -1865,18 +1866,18 @@ void MainWindow::setAudioRecordingUI()
 }
 
 
-void MainWindow::onMetadataUpdated(uint32_t sid, uint8_t scids, MetadataManager::MetadataRole role)
+void MainWindow::onMetadataUpdated(const ServiceListId & id, MetadataManager::MetadataRole role)
 {
-    if ((sid == m_SId.value()) && (scids == m_SCIdS))
+    if ((id.sid() == m_SId.value()) && (id.scids() == m_SCIdS))
     {  // current service data
         switch (role)
         {
         case MetadataManager::MetadataRole::SLSLogo:
-            ui->slsView_Service->showServiceLogo(m_metadataManager->data(sid, scids, MetadataManager::SLSLogo).value<QPixmap>());
+            ui->slsView_Service->showServiceLogo(m_metadataManager->data(id, MetadataManager::SLSLogo).value<QPixmap>());
             break;
         case MetadataManager::SmallLogo:
         {
-            QPixmap logo = m_metadataManager->data(sid, scids, MetadataManager::SmallLogo).value<QPixmap>();
+            QPixmap logo = m_metadataManager->data(id, MetadataManager::SmallLogo).value<QPixmap>();
             if (!logo.isNull())
             {
                 ui->logoLabel->setPixmap(logo);

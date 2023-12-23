@@ -50,7 +50,6 @@ bool MOTEntity::isComplete() const
     // MOT entities will be split up in segments with equal size. Only the last segment may have a smaller size
     // (to carry the remaining bytes of the MOT entity). Every MOT entity (e.g. every MOT body) can use a different segmentation size.
     int lastSegmentSize = m_segments.last().size();
-    bool ret = true;
 
     if (m_numSegments != m_segments.size())
     {
@@ -61,12 +60,10 @@ bool MOTEntity::isComplete() const
     {
         if (m_segments.at(n).size() < lastSegmentSize)
         {  // some segment is smaller than last segment thus not received
-            ret = false;
-            break;
+            return false;
         }
     }
-
-    return ret;
+    return true;
 }
 
 int MOTEntity::size()
@@ -392,29 +389,33 @@ MOTDirectory::MOTDirectory(uint_fast32_t transportId, MOTObjectCache * cachePtr)
     m_numComplete = 0;
 }
 
+// retrurn true is directory is just completed
 bool MOTDirectory::addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
 {
-    m_dir.addSegment(segment, segmentNum, segmentSize, lastFlag);
-    if (m_dir.isComplete())
+    if (!m_dir.isComplete())
     {
-        qCDebug(motObject) << "MOT directory is complete";
-        if (parse(m_dir.getData()))
+        m_dir.addSegment(segment, segmentNum, segmentSize, lastFlag);
+        if (m_dir.isComplete())
         {
-            return true;
+            qCDebug(motObject) << "MOT directory is complete";
+            if (parse(m_dir.getData()))
+            {
+                return true;
+            }
+            // something is wrong - header could not be parsed, objects is not complete
+            qCWarning(motObject) << "MOT directory parsing failed";
         }
-        // something is wrong - header could not be parsed, objects is not complete
-        qCWarning(motObject) << "MOT directory parsing failed";
-    }
-    else
-    {
-        qCDebug(motObject) << "MOT directory segment received, not complete yet";
+        else
+        {
+            qCDebug(motObject) << "MOT directory segment received, not complete yet";
+        }
     }
     return false;
 }
 
+// returns true if object is completed
 bool MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
-{
-    // first find if object already exists in carousel
+{   // first find if object already exists in carousel
     MOTObjectCache::iterator it = m_carousel->findMotObj(transportId);
     if (m_carousel->end() == it)
     {  // object does not exist in carousel - this should not happen for current directory

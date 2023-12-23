@@ -50,7 +50,7 @@ public:
     };
 
     explicit MetadataManager(QObject * parent = nullptr);
-    void processXML(const QString &xmldocument, QString scopeId);
+    void processXML(const QString &xmldocument, uint16_t decoderId, QString scopeId, QString scopeStart = "", QString scopeEnd = "");
     void onFileReceived(const QByteArray & data, const QString & requestId);
     QVariant data(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role) const;
     QVariant data(const ServiceListId & id, MetadataManager::MetadataRole role) const;
@@ -58,8 +58,8 @@ public:
     EPGModel *epgModel(const ServiceListId & id) const;
 
 signals:
-    void getFile(const QString & url, const QString & requestId);
-    void dataUpdated(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role);
+    void getFile(uint16_t decoderId, const QString & url, const QString & requestId);
+    void dataUpdated(const ServiceListId & id, MetadataManager::MetadataRole role);
     void epgModelAvailable(const ServiceListId & id);
 
 private:

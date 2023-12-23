@@ -44,7 +44,7 @@ MetadataManager::MetadataManager(QObject *parent) : QObject(parent)
 {
 }
 
-void MetadataManager::processXML(const QString &xml, QString scopeId)
+void MetadataManager::processXML(const QString &xml, uint16_t decoderId, QString scopeId, QString scopeStart, QString scopeEnd)
 {
     QDomDocument xmldocument;
     if (!xmldocument.setContent(xml))
@@ -178,7 +178,7 @@ void MetadataManager::processXML(const QString &xml, QString scopeId)
                                                                     QString filename = QString("%1/%2x%3.%4").arg(sidStr, width, height, ext);
                                                                     qCDebug(metadataManager) << url << "===>" << filename;
 
-                                                                    emit getFile(url, filename);
+                                                                    emit getFile(decoderId, url, filename);
                                                                 }
                                                             }
                                                         }
@@ -238,7 +238,6 @@ void MetadataManager::processXML(const QString &xml, QString scopeId)
             QDomElement element = node.toElement(); // try to convert the node to an element.
             if(!element.isNull() && ("schedule" == element.tagName()))
             {
-                QString startTime;
                 if (!element.firstChildElement("scope").isNull())
                 {   // found scope element
                     QDomElement serviceScope = element.firstChildElement("scope").firstChildElement("serviceScope");
@@ -247,12 +246,12 @@ void MetadataManager::processXML(const QString &xml, QString scopeId)
                         scopeId = serviceScope.attribute("id");
                         qDebug() << "Found scopeId:" << scopeId;
                     }
-                    startTime = element.firstChildElement("scope").attribute("startTime");
-                    qDebug() << "Found scope start:" << startTime;
-                    qDebug() << "Found scope stop:" << element.firstChildElement("scope").attribute("stopTime");
+                    scopeStart = element.firstChildElement("scope").attribute("startTime");
+                    //qDebug() << "Found scope start:" << scopeStart;
+                    //qDebug() << "Found scope stop:" << element.firstChildElement("scope").attribute("stopTime");
                 }
 
-                if (!scopeId.isEmpty() && !startTime.isEmpty())
+                if (!scopeId.isEmpty() && !scopeStart.isEmpty())
                 {
                     ServiceListId id = bearerToServiceId(scopeId);
                     if (id.isValid()) {
@@ -266,8 +265,8 @@ void MetadataManager::processXML(const QString &xml, QString scopeId)
                         // save parsed file to the cache
                         // "20140805_e1.ce15.c221.0_PI.xml" for DAB.
 
-                        //QString filename = QString("%1_%2_PI.xml").arg(QDateTime::fromString(startTime, Qt::ISODate).toString("yyyyMMdd"), scopeId);
-                        //qDebug() << filename;
+                        QString filename = QString("%1_%2_PI.xml").arg(QDateTime::fromString(scopeStart, Qt::ISODate).toString("yyyyMMdd"), scopeId);
+                        qDebug() << filename;
                     }
                 }
             }
@@ -283,7 +282,7 @@ void MetadataManager::processXML(const QString &xml, QString scopeId)
 }
 
 void MetadataManager::parseProgramme(const QDomElement &element, const ServiceListId & id)
-{
+{        
     QDomElement child = element.firstChildElement();
     EPGModelItem * progItem = new EPGModelItem;
     progItem->setShortId(element.attribute("shortId").toInt());
@@ -319,6 +318,7 @@ void MetadataManager::parseProgramme(const QDomElement &element, const ServiceLi
         m_epgList[id] = new EPGModel(this);
         emit epgModelAvailable(id);
     }
+    //qDebug() << "Adding item" << progItem->shortId();
     m_epgList[id]->addItem(progItem);
 }
 
@@ -392,8 +392,8 @@ ServiceListId MetadataManager::bearerToServiceId(const QString &bearerUri) const
     QRegularExpressionMatch match = re.match(bearerUri);
     if (match.hasMatch())
     {
-        qDebug() << QString(match.captured(1) + match.captured(2));  // ECC + SId
-        qDebug() << match.captured(3);  // SCIds
+        //qDebug() << QString(match.captured(1) + match.captured(2));  // ECC + SId
+        //qDebug() << match.captured(3);  // SCIds
 
         uint32_t sid = QString(match.captured(1) + match.captured(2)).toUInt(nullptr, 16);
         uint8_t scids = match.captured(3).toInt();
@@ -445,7 +445,7 @@ void MetadataManager::onFileReceived(const QByteArray & data, const QString & re
                 if (size == "32x32") {
                     role = MetadataRole::SmallLogo;
                 }
-                emit dataUpdated(sid, scids, role);
+                emit dataUpdated(ServiceListId(sid, scids), role);
             }
         }
         else
@@ -469,7 +469,7 @@ void MetadataManager::onFileReceived(const QByteArray & data, const QString & re
             if (size == "32x32") {
                 role = MetadataRole::SmallLogo;
             }
-            emit dataUpdated(sid, scids, role);
+            emit dataUpdated(ServiceListId(sid, scids), role);
         }
     }
 }

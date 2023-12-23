@@ -190,7 +190,8 @@ Item {
                                 Image {
                                     id: logoId
                                     anchors.verticalCenter: parent.verticalCenter
-                                    source: "image://metadata/"  + serviceId
+                                    source: "image://metadata/"  + smallLogoId
+                                    cache: false
                                 }
                                 Text {
                                     id: labelId
@@ -226,8 +227,8 @@ Item {
                                 model: slModel
                                 Rectangle {
                                     color: "transparent"
-                                    // border.color: "black"
-                                    // border.width: 1
+                                    border.color: "darkgray"
+                                    border.width: 1
                                     height: lineHeight
                                     anchors.left: parent.left
                                     //anchors.right: parent.right
@@ -237,7 +238,7 @@ Item {
                                     EPGProxyModel {
                                         id: proxyModel
                                         sourceModel: epgModelRole
-                                        dayFilter: 4
+                                        dayFilter: 1
                                     }
 
                                     Repeater {
