@@ -3,31 +3,28 @@
 
 EPGProxyModel::EPGProxyModel(QObject *parent)
     : QSortFilterProxyModel{parent}
-{}
-
-
-int EPGProxyModel::dayFilter() const
 {
-    return m_dayFilter;
-}
-
-void EPGProxyModel::setDayFilter(int newDayFilter)
-{
-    if (m_dayFilter == newDayFilter)
-        return;
-    m_dayFilter = newDayFilter;
-    emit dayFilterChanged();
+    qDebug() << "Proxy model created";
 }
 
 bool EPGProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
-    QDateTime date = sourceModel()->data(index, EPGModelRoles::StartTimeRole).value<QDateTime>();
-    // QDateTime fakeToday;
-    // fakeToday.setDate(QDate(2023, 12, 02));
-    //QDate fakeToday(2023, 12, 02);
-    QDate fakeToday(2020, 01, 29);
-    //QDate fakeToday(2008, 10, 10);
+    QDate date = sourceModel()->data(index, EPGModelRoles::StartTimeRole).value<QDateTime>().date();
+    return date == m_dateFilter;
+}
 
-    return date.date() ==  fakeToday.addDays(m_dayFilter);
+QDate EPGProxyModel::dateFilter() const
+{
+    return m_dateFilter;
+}
+
+void EPGProxyModel::setDateFilter(const QDate &newDateFilter)
+{
+    if (m_dateFilter == newDateFilter)
+        return;
+    m_dateFilter = newDateFilter;
+    emit dateFilterChanged();
+
+    qDebug() << "Date filter set" << m_dateFilter;
 }

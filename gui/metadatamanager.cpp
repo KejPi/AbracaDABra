@@ -258,6 +258,7 @@ void MetadataManager::processXML(const QString &xml, uint16_t decoderId, QString
                         QDomElement child = element.firstChildElement("programme");
                         while (!child.isNull())
                         {
+                            // qDebug() << scopeStart;
                             parseProgramme(child, id);
                             child = child.nextSiblingElement("programme");
                         }
@@ -320,6 +321,7 @@ void MetadataManager::parseProgramme(const QDomElement &element, const ServiceLi
     }
     //qDebug() << "Adding item" << progItem->shortId();
     m_epgList[id]->addItem(progItem);
+    addEpgDate(progItem->startTime().date());
 }
 
 void MetadataManager::parseDescription(const QDomElement &element, EPGModelItem *progItem)
@@ -527,4 +529,23 @@ QVariant MetadataManager::data(const ServiceListId &id, MetadataRole role) const
 EPGModel *MetadataManager::epgModel(const ServiceListId & id) const
 {
     return m_epgList.value(id, nullptr);
+}
+
+QStringList MetadataManager::epgDatesList() const
+{
+    return m_epgDates.values();
+}
+
+void MetadataManager::addEpgDate(const QDate &date)
+{
+    if (!m_epgDates.contains(date))
+    {
+        m_epgDates[date] = date.toString("dd. MM. yyyy");
+        emit epgDatesListChanged();
+    }    
+}
+
+QDate MetadataManager::epgDate(int idx) const {
+    if ((idx < 0) || (idx >= m_epgDates.keys().size())) return QDate();
+    return m_epgDates.keys().at(idx);
 }

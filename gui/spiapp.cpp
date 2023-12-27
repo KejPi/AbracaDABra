@@ -1230,6 +1230,12 @@ QString SPIApp::getTime(const uint8_t *dataPtr, int len)
     }
     else { /* enough data */}
 
+    // QString dbg;
+    // for (int n = 0; n<len; ++n)
+    // {
+    //     dbg += QString("%1").arg(static_cast<int>(dataPtr[n]), 2, 16, QChar('0'));
+    // }
+
     uint32_t dateHoursMinutes = *dataPtr++;
     dateHoursMinutes = (dateHoursMinutes << 8) + *dataPtr++;
     dateHoursMinutes = (dateHoursMinutes << 8) + *dataPtr++;
@@ -1257,6 +1263,8 @@ QString SPIApp::getTime(const uint8_t *dataPtr, int len)
 
     // construct time
     QDateTime dateAndTime = DabTables::dabTimeToUTC(dateHoursMinutes, secMsec).toOffsetFromUtc(60*(lto * 30));
+
+    //qDebug() << dbg << DabTables::dabTimeToUTC(dateHoursMinutes, secMsec) << lto << dateAndTime;
 
     // convert to string
     return dateAndTime.toString(Qt::ISODateWithMs);

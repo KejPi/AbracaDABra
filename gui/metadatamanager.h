@@ -39,6 +39,7 @@ typedef QHash<QString, QString> serviceInfo_t;
 class MetadataManager : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QStringList epgDatesList READ epgDatesList NOTIFY epgDatesListChanged FINAL)
 
 public:
     enum MetadataRole{
@@ -57,13 +58,19 @@ public:
 
     EPGModel *epgModel(const ServiceListId & id) const;
 
+    Q_INVOKABLE QDate epgDate(int idx) const;
+    QStringList epgDatesList() const;
+    void setEpgDatesList(const QStringList &newEpgDatesList);
+
 signals:
     void getFile(uint16_t decoderId, const QString & url, const QString & requestId);
     void dataUpdated(const ServiceListId & id, MetadataManager::MetadataRole role);
     void epgModelAvailable(const ServiceListId & id);
 
+    void epgDatesListChanged();
+
 private:
-//    static MetadataManager * m_instancePtr;    // static pointer which will points to the instance of this class
+    QMap<QDate, QString> m_epgDates;
     QHash<QString, serviceInfo_t> m_info;
     QHash<ServiceListId, EPGModel *> m_epgList;
 
@@ -72,6 +79,8 @@ private:
     void parseLocation(const QDomElement &element, EPGModelItem *progItem);
 
     ServiceListId bearerToServiceId(const QString & bearerUri) const;
+
+    void addEpgDate(const QDate &date);
 };
 
 #endif // METADATAMANAGER_H

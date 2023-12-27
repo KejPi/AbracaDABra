@@ -8,18 +8,20 @@ class EPGProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
     QML_ELEMENT
-    Q_PROPERTY(int dayFilter READ dayFilter WRITE setDayFilter NOTIFY dayFilterChanged FINAL)
+    Q_PROPERTY(QDate dateFilter READ dateFilter WRITE setDateFilter NOTIFY dateFilterChanged FINAL)
 public:
     explicit EPGProxyModel(QObject *parent = nullptr);
-    int dayFilter() const;
-    void setDayFilter(int newDayFilter);
 
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 
+    QDate dateFilter() const;
+    void setDateFilter(const QDate &newDateFilter);
+
 signals:
-    void dayFilterChanged();
+    void dateFilterChanged();
+
 private:
-    int m_dayFilter;
+    QDate m_dateFilter;
 };
 
 #endif // EPGPROXYMODEL_H

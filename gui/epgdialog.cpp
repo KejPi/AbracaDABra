@@ -50,6 +50,7 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, MetadataManager * metadataManag
 
     QQmlContext * context = qmlView->rootContext();
     context->setContextProperty("slModel", m_serviceListModel);
+    context->setContextProperty("metadataManager", m_metadataManager);
     context->setContextProperty("epgDialog", this);
 
     QQmlEngine *engine = qmlView->engine();

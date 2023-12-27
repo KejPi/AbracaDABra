@@ -51,6 +51,7 @@
 #include "slsview.h"
 #include "./ui_mainwindow.h"
 #include "dabtables.h"
+#include "dabtime.h"
 #include "radiocontrol.h"
 #include "bandscandialog.h"
 #include "config.h"
@@ -401,7 +402,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->serviceLabel->setFont(f);
 
     // metadata
-    m_metadataManager = new MetadataManager();
+    m_metadataManager = new MetadataManager(this);
     connect(m_metadataManager, &MetadataManager::dataUpdated, this, &MainWindow::onMetadataUpdated);
 
     // service list
@@ -761,6 +762,7 @@ MainWindow::~MainWindow()
     delete m_dlDecoder[Instance::Service];
     delete m_dlDecoder[Instance::Announcement];
     delete m_serviceList;
+    delete m_epgDialog;
     delete m_metadataManager;
     delete ui;
 }
@@ -1045,6 +1047,7 @@ void MainWindow::onDLComplete(const QString & dl, QLabel * dlLabel)
 void MainWindow::onDabTime(const QDateTime & d)
 {
     m_timeLabel->setText(m_timeLocale.toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
+    DABTime::getInstance()->onDabTime(d);
 }
 
 void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)

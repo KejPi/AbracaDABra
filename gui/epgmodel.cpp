@@ -133,8 +133,8 @@ void EPGModel::addItem(EPGModelItem *item)
         }
 
         // we are here if item was not in list
-        qDebug() << "Adding item #" << item->shortId() <<item->shortName() << item->mediumName() << item->longName()
-                                    << item->startTime().toString() << item->durationSec();
+        //qDebug() << "Adding item #" << item->shortId() <<item->shortName() << item->mediumName() << item->longName()
+        //                            << item->startTime().toString() << item->durationSec();
         beginInsertRows(QModelIndex(), m_itemList.size(), m_itemList.size());
         m_shortIdList.insert(item->shortId());
         m_itemList.append(item);
