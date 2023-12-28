@@ -93,6 +93,10 @@ QVariant EPGModel::data(const QModelIndex &index, int role) const
         return QVariant(item->longDescription());
     case ShortDescriptionRole:
         return QVariant(item->shortDescription());
+    case StartTimeSecSinceEpochRole:
+        return QVariant(item->startTimeSecSinceEpoch());
+    case EPGModelRoles::EndTimeSecSinceEpochRole:
+        return QVariant(item->endTimeSecSinceEpoch());
     }
 
     return QVariant();
@@ -109,7 +113,9 @@ QHash<int, QByteArray> EPGModel::roleNames() const
     roles[EPGModelRoles::ShortNameRole] = "shortName";
     roles[EPGModelRoles::StartTimeRole] = "startTime";
     roles[EPGModelRoles::StartTimeSecRole] = "startTimeSec";
+    roles[EPGModelRoles::StartTimeSecSinceEpochRole] = "startTimeSecSinceEpoch";
     roles[EPGModelRoles::EndTimeSecRole] = "endTimeSec";
+    roles[EPGModelRoles::EndTimeSecSinceEpochRole] = "endTimeSecSinceEpoch";
     roles[EPGModelRoles::DurationSecRole] = "durationSec";
     roles[EPGModelRoles::LongDescriptionRole] = "longDescription";
     roles[EPGModelRoles::ShortDescriptionRole] = "shortDescription";

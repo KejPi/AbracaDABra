@@ -83,6 +83,7 @@ int EPGModelItem::endTimeSec() const
 void EPGModelItem::setStartTime(const QDateTime &newStartTime)
 {
     m_startTime = newStartTime;
+    m_startTimeSecSinceEpoch = m_startTime.toSecsSinceEpoch();
 }
 
 int EPGModelItem::durationSec() const
@@ -132,4 +133,14 @@ int EPGModelItem::shortId() const
 void EPGModelItem::setShortId(int newShortId)
 {
     m_shortId = newShortId;
+}
+
+qint64 EPGModelItem::startTimeSecSinceEpoch() const
+{
+    return m_startTimeSecSinceEpoch;
+}
+
+qint64 EPGModelItem::endTimeSecSinceEpoch() const
+{
+    return m_startTimeSecSinceEpoch + m_durationSec;
 }

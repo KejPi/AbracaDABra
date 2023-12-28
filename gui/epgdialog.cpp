@@ -31,6 +31,7 @@
 
 #include "epgproxymodel.h"
 #include "epgdialog.h"
+#include "dabtime.h"
 #include "ui_epgdialog.h"
 
 EPGDialog::EPGDialog(SLModel * serviceListModel, MetadataManager * metadataManager, QWidget *parent)
@@ -51,6 +52,7 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, MetadataManager * metadataManag
     QQmlContext * context = qmlView->rootContext();
     context->setContextProperty("slModel", m_serviceListModel);
     context->setContextProperty("metadataManager", m_metadataManager);
+    context->setContextProperty("dabTime", DABTime::getInstance());
     context->setContextProperty("epgDialog", this);
 
     QQmlEngine *engine = qmlView->engine();

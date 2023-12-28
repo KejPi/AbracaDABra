@@ -42,9 +42,24 @@ Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtInfoMsg)
 
 MetadataManager::MetadataManager(QObject *parent) : QObject(parent)
 {
+    // load all files in cache
+#if 0
+    QDir directory("/Users/kejpi/Devel/AbracaDABra/_cache/");
+    QStringList xmlFiles = directory.entryList(QStringList() << "*.xml",QDir::Files);
+    for (const QString & filename : xmlFiles)
+    {
+        QFile xmlfile("/Users/kejpi/Devel/AbracaDABra/_cache/" + filename);
+        if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            QTextStream in(&xmlfile);
+            processXML(qPrintable(in.readAll()), "dab:de0.d06c.d220.0");
+            xmlfile.close();
+        }
+    }
+#endif
 }
 
-void MetadataManager::processXML(const QString &xml, uint16_t decoderId, QString scopeId, QString scopeStart, QString scopeEnd)
+void MetadataManager::processXML(const QString &xml, uint16_t decoderId)
 {
     QDomDocument xmldocument;
     if (!xmldocument.setContent(xml))
@@ -238,6 +253,7 @@ void MetadataManager::processXML(const QString &xml, uint16_t decoderId, QString
             QDomElement element = node.toElement(); // try to convert the node to an element.
             if(!element.isNull() && ("schedule" == element.tagName()))
             {
+                QString scopeId, scopeStart;
                 if (!element.firstChildElement("scope").isNull())
                 {   // found scope element
                     QDomElement serviceScope = element.firstChildElement("scope").firstChildElement("serviceScope");
@@ -320,8 +336,8 @@ void MetadataManager::parseProgramme(const QDomElement &element, const ServiceLi
         emit epgModelAvailable(id);
     }
     //qDebug() << "Adding item" << progItem->shortId();
-    m_epgList[id]->addItem(progItem);
     addEpgDate(progItem->startTime().date());
+    m_epgList[id]->addItem(progItem);
 }
 
 void MetadataManager::parseDescription(const QDomElement &element, EPGModelItem *progItem)
@@ -538,7 +554,7 @@ QStringList MetadataManager::epgDatesList() const
 
 void MetadataManager::addEpgDate(const QDate &date)
 {
-    if (!m_epgDates.contains(date))
+    if (date.isValid() && !m_epgDates.contains(date))
     {
         m_epgDates[date] = date.toString("dd. MM. yyyy");
         emit epgDatesListChanged();

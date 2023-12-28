@@ -76,7 +76,7 @@ public:
     void onAudioServiceSelection(const RadioControlServiceComponent & s);
 
 signals:
-    void xmlDocument(const QString &xmldocument, uint16_t decoderId, const QString & scopeId, const QString & scopeStart = "", const QString & scopeEnd = "");
+    void xmlDocument(const QString &xmldocument, uint16_t decoderId);
     void requestedFile(const QByteArray &data, const QString &requestId);
 private:
     QHash<uint16_t, MOTDecoder *> m_decoderMap;

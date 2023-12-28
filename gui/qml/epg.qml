@@ -10,7 +10,7 @@ Item {
     anchors.fill: parent
 
     property int secPerPoint: 15
-    property int currentTimeSec: 45*60
+    property int currentTimeSec: dabTime.secSinceEpoch
     property int lineHeight: 50
     property int serviceListWidth: 200
 
@@ -32,8 +32,8 @@ Item {
                 id: rect
                 property bool textFits: (textId.width + 10) <= width
                 color: {
-                    if (endTimeSec <= currentTimeSec) return "lightgrey";
-                    if (startTimeSec >= currentTimeSec) return "white";
+                    if (endTimeSecSinceEpoch <= currentTimeSec) return "lightgrey";
+                    if (startTimeSecSinceEpoch >= currentTimeSec) return "white";
                     return "lemonchiffon";
                 }
                 border.color: "darkgray"
@@ -46,7 +46,7 @@ Item {
 
                 Rectangle {
                     id: remainingTime
-                    visible: (startTimeSec < currentTimeSec) && (endTimeSec > currentTimeSec)
+                    visible: (startTimeSecSinceEpoch < currentTimeSec) && (endTimeSecSinceEpoch > currentTimeSec)
                     color: "gold"
                     anchors {
                         left: parent.left
@@ -56,7 +56,7 @@ Item {
                         bottomMargin: 1
                         leftMargin: 1
                     }
-                    width: (currentTimeSec - startTimeSec) / secPerPoint
+                    width: (currentTimeSec - startTimeSecSinceEpoch) / secPerPoint
                 }
                 Text {
                     id: textId
@@ -287,16 +287,6 @@ Item {
                                         }
                                     }
                                 }
-
-                                Timer {
-                                    id: currentTimerTimer
-                                    interval: 100
-                                    repeat: true
-                                    onTriggered: {
-                                        currentTimeSec = (currentTimeSec + 60) % (3600*24)
-                                    }
-                                }
-                                Component.onCompleted: currentTimerTimer.start()
 
                                 onContentXChanged: {
                                     if (StackLayout.isCurrentItem && (timelinebox.contentX != contentX)) {

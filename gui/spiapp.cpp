@@ -463,7 +463,38 @@ void SPIApp::parseBinaryInfo(uint16_t decoderId, const MOTObject &motObj)
     QDomElement empty;
     parseTag(dataPtr, empty, uint8_t(SPIElement::Tag::_invalid), data.size());
 
-    emit xmlDocument(m_xmldocument.toString(), decoderId, scopeId, scopeStart, scopeEnd);
+    // add service scope if not in XML
+    if (motObj.getContentSubType() == 1)
+    {
+        QDomElement root = m_xmldocument.documentElement();
+        if (root.tagName() == "epg")
+        {
+            QDomElement schedule = root.firstChildElement("schedule");
+            if (!schedule.isNull())
+            {
+                QDomElement scope = schedule.firstChildElement("scope");
+                if (scope.isNull())
+                {   // scope not found creating using MOT objects params
+                    //qDebug() << motObj.getContentName() << "does not define scope";
+                    scope = m_xmldocument.createElement("scope");
+                    scope.setAttribute("startTime", scopeStart);
+                    if (scopeEnd.isEmpty())
+                    {
+                        scopeEnd = QDateTime::fromString(scopeStart, Qt::ISODate).addDays(1).toString(Qt::ISODate);
+                        // qDebug() << "ScopeEnd not defined ==> using scopeStart:" << scopeStart << "===>" << scopeEnd;
+                    }
+                    scope.setAttribute("stopTime", scopeEnd);
+
+                    QDomElement serviceScope = m_xmldocument.createElement("serviceScope");
+                    serviceScope.setAttribute("id", scopeId);
+                    scope.appendChild(serviceScope);
+                    schedule.insertBefore(scope, QDomNode());
+                }
+            }
+        }
+    }
+
+    emit xmlDocument(m_xmldocument.toString(), decoderId);
 }
 
 
@@ -1509,7 +1540,7 @@ void SPIApp::onFileDownloaded(QNetworkReply *reply)
     QString requestId = m_downloadReqQueue.head().second;
     if (requestId == "XML") {
         QByteArray data = reply->readAll();
-        emit xmlDocument(QString(data), SPI_APP_INVALID_DECODER_ID, m_ueid);
+        emit xmlDocument(QString(data), SPI_APP_INVALID_DECODER_ID);
     }
     else if (requestId == "DOH_CNAME")
     {

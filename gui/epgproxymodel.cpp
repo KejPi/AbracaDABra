@@ -4,7 +4,6 @@
 EPGProxyModel::EPGProxyModel(QObject *parent)
     : QSortFilterProxyModel{parent}
 {
-    qDebug() << "Proxy model created";
 }
 
 bool EPGProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
@@ -25,6 +24,4 @@ void EPGProxyModel::setDateFilter(const QDate &newDateFilter)
         return;
     m_dateFilter = newDateFilter;
     emit dateFilterChanged();
-
-    qDebug() << "Date filter set" << m_dateFilter;
 }

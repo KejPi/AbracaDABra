@@ -39,7 +39,9 @@ enum EPGModelRoles {
     ShortNameRole,
     StartTimeRole,
     StartTimeSecRole,
+    StartTimeSecSinceEpochRole,
     EndTimeSecRole,
+    EndTimeSecSinceEpochRole,
     DurationSecRole,
     LongDescriptionRole,
     ShortDescriptionRole,
@@ -60,9 +62,7 @@ public:
     void populateWithList(const QList<EPGModelItem *> & list);
 private:
     QSet<int> m_shortIdList;
-    //QSet<QDateTime> m_dateList;
     QList<EPGModelItem *> m_itemList;
-    //QHash<uint32_t, EPGModelItem*> m_itemList;
 };
 
 #endif // EPGMODEL_H
