@@ -658,7 +658,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(this, &MainWindow::exit, m_radioControl, &RadioControl::exit, Qt::QueuedConnection);
 
     // user applications
-    m_epgDialog = new EPGDialog(m_slModel, m_metadataManager, this);
 
     // slide show application is created by default
     // ETSI TS 101 499 V3.1.1  [5.1.1]
@@ -762,7 +761,6 @@ MainWindow::~MainWindow()
     delete m_dlDecoder[Instance::Service];
     delete m_dlDecoder[Instance::Announcement];
     delete m_serviceList;
-    delete m_epgDialog;
     delete m_metadataManager;
     delete ui;
 }
@@ -2831,9 +2829,11 @@ void MainWindow::showEnsembleInfo()
 
 void MainWindow::showEPG()
 {
-    m_epgDialog->show();
-    m_epgDialog->raise();
-    m_epgDialog->activateWindow();
+    EPGDialog * epgDialog = new EPGDialog(m_slModel, m_metadataManager, this);
+    connect(epgDialog, &QDialog::finished, epgDialog, &QDialog::deleteLater);
+    epgDialog->show();
+    epgDialog->raise();
+    epgDialog->activateWindow();
 }
 
 void MainWindow::showAboutDialog()

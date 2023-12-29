@@ -39,7 +39,6 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, MetadataManager * metadataManag
     , ui(new Ui::EPGDialog)
     , m_serviceListModel(serviceListModel)
     , m_metadataManager(metadataManager)
-    , m_isVisible(false)
 {
     ui->setupUi(this);
 
@@ -73,31 +72,4 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, MetadataManager * metadataManag
 EPGDialog::~EPGDialog()
 {
     delete ui;
-}
-
-bool EPGDialog::isVisible() const
-{
-    return m_isVisible;
-}
-
-void EPGDialog::setIsVisible(bool newIsVisible)
-{
-    if (m_isVisible == newIsVisible)
-        return;
-    m_isVisible = newIsVisible;
-    emit isVisibleChanged();
-}
-
-void EPGDialog::showEvent(QShowEvent *event)
-{
-    qDebug() << "show event";
-    setIsVisible(true);
-    QDialog::showEvent(event);
-}
-
-void EPGDialog::closeEvent(QCloseEvent *event)
-{
-    qDebug() << "close event";
-    setIsVisible(false);
-    QDialog::closeEvent(event);
 }

@@ -114,7 +114,6 @@ private:
     SetupDialog * m_setupDialog;
     EnsembleInfoDialog * m_ensembleInfoDialog;
     CatSLSDialog * m_catSlsDialog;
-    EPGDialog * m_epgDialog;
     LogDialog * m_logDialog;
     QProgressBar * m_snrProgressbar;    
     ClickableLabel * m_menuLabel;

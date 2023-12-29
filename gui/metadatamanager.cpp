@@ -43,7 +43,7 @@ Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtInfoMsg)
 
 MetadataManager::MetadataManager(QObject *parent) : QObject(parent)
 {
-    //loadEpg();
+    loadEpg();
 }
 
 void MetadataManager::processXML(const QString &xml, uint16_t decoderId)
@@ -558,8 +558,12 @@ void MetadataManager::loadEpg()
     // load all files in cache
     QDir directory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)  + "/EPG/");
     QStringList xmlFiles = directory.entryList({"*.xml"}, QDir::Files);
+    int cntr = 0;
     for (const QString & filename : xmlFiles)
     {
+        // if (cntr++ > 10) {
+        //     break;
+        // }
         QFile xmlfile(directory.absolutePath() + "/" + filename);
         qDebug() << "Loading:" << xmlfile.fileName();
         if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))

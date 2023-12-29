@@ -163,7 +163,7 @@ qt6_add_qml_module(${TARGET}
     URI ProgrammeGuide
     QML_FILES
         qml/epg.qml
-        #qml/EPGItem.qml
+        qml/EPGItem.qml
     RESOURCES
         #img/world.png
     NO_RESOURCE_TARGET_PATH
