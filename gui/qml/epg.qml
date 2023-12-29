@@ -73,117 +73,113 @@ Item {
                 }
             }
         }
-        Item {
-            id: viewItem
+        Flickable {
+            id: mainView
+            flickableDirection: Flickable.VerticalFlick
+            boundsBehavior: Flickable.StopAtBounds
             anchors {
                 top: timelinebox.bottom
                 left: parent.left
                 right: parent.right
                 bottom: parent.bottom
             }
-            Flickable {
-                id: mainView
-                flickableDirection: Flickable.VerticalFlick
-                boundsBehavior: Flickable.StopAtBounds
-                anchors.fill: parent
-                contentHeight: epgItem.height
-                contentWidth: epgItem.width
-                clip: true
-                Item {
-                    id: epgItem
-                    height: serviceColumnId.height
-                    width: parent.width
-                    Column {
-                        id: serviceColumnId
-                        Repeater {
-                            id: serviceList
-                            model: slModel
-                            delegate: Rectangle {
-                                color: "transparent"
-                                border.color: "darkgray"
-                                border.width: 1
-                                height: lineHeight
-                                width: serviceListWidth
-                                Row {
-                                    anchors.fill: parent
-                                    anchors.margins: 5
-                                    spacing: 10
-                                    Image {
-                                        id: logoId
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        source: "image://metadata/"  + smallLogoId
-                                        cache: false
-                                    }
-                                    Text {
-                                        id: labelId
-                                        text: display
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                        horizontalAlignment: Text.AlignLeft
-                                    }
+            contentHeight: epgItem.height
+            contentWidth: epgItem.width
+            clip: true
+            Item {
+                id: epgItem
+                height: serviceColumnId.height
+                width: parent.width
+                Column {
+                    id: serviceColumnId
+                    Repeater {
+                        id: serviceList
+                        model: slModel
+                        delegate: Rectangle {
+                            color: "transparent"
+                            border.color: "darkgray"
+                            border.width: 1
+                            height: lineHeight
+                            width: serviceListWidth
+                            Row {
+                                anchors.fill: parent
+                                anchors.margins: 5
+                                spacing: 10
+                                Image {
+                                    id: logoId
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    source: "image://metadata/"  + smallLogoId
+                                    cache: false
+                                }
+                                Text {
+                                    id: labelId
+                                    text: display
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    horizontalAlignment: Text.AlignLeft
                                 }
                             }
                         }
-                        //Component.onCompleted: console.log(slModel.count, slModel.rowCount)
                     }
+                    //Component.onCompleted: console.log(slModel.count, slModel.rowCount)
+                }
 
-                    StackLayout {
-                        id: stackLayoutId
-                        anchors.left: serviceColumnId.right
-                        height: serviceColumnId.height
-                        width: viewItem.width - serviceColumnId.width
-                        currentIndex: dayTabBar.currentIndex
-                        clip: true
+                StackLayout {
+                    id: stackLayoutId
+                    anchors.left: serviceColumnId.right
+                    height: serviceColumnId.height
+                    width: mainView.width - serviceColumnId.width
+                    currentIndex: dayTabBar.currentIndex
+                    clip: true
 
-                        Repeater {
-                            id: dateRepeater
-                            model: metadataManager.epgDatesList
-                            Loader {
-                                id: dayLoader
-                                active: dayTabBar.currentIndex == index
-                                sourceComponent: Flickable {
-                                    id: epgTable
-                                    property int dateIndex: index
-                                    //anchors.fill: parent
-                                    contentWidth: colId.width
-                                    contentHeight: colId.height
-                                    boundsBehavior: Flickable.StopAtBounds
-                                    flickableDirection: Flickable.HorizontalFlick
-                                    contentX: timelinebox.contentX
-                                    clip: true
-                                    Column {
-                                        id: colId
-                                        Repeater {
-                                            model: slModel
-                                            Rectangle {
-                                                color: "transparent"
-                                                border.color: "darkgray"
-                                                border.width: 1
-                                                height: lineHeight
-                                                anchors.left: parent.left
-                                                //anchors.right: parent.right
-                                                width: 24*3600/secPerPoint
-                                                clip: true
+                    Repeater {
+                        id: dateRepeater
+                        model: metadataManager.epgDatesList
+                        Loader {
+                            id: dayLoader
+                            active: dayTabBar.currentIndex == index
+                            sourceComponent: Flickable {
+                                id: epgTable
+                                property int dateIndex: index
+                                //anchors.fill: parent
+                                contentWidth: colId.width
+                                contentHeight: colId.height
+                                boundsBehavior: Flickable.StopAtBounds
+                                flickableDirection: Flickable.HorizontalFlick
+                                contentX: timelinebox.contentX
+                                clip: true
+                                Column {
+                                    id: colId
+                                    Repeater {
+                                        model: slModel
+                                        Rectangle {
+                                            color: "transparent"
+                                            border.color: "darkgray"
+                                            border.width: 1
+                                            height: lineHeight
+                                            anchors.left: parent.left
+                                            //anchors.right: parent.right
+                                            width: 24*3600/secPerPoint
+                                            clip: true
 
-                                                EPGProxyModel {
-                                                    id: proxyModel
-                                                    sourceModel: epgModelRole
-                                                    //dayFilter: bar.currentIndex
-                                                    dateFilter: metadataManager.epgDate(epgTable.dateIndex)
-                                                }
+                                            EPGProxyModel {
+                                                id: proxyModel
+                                                sourceModel: epgModelRole
+                                                //dayFilter: bar.currentIndex
+                                                dateFilter: metadataManager.epgDate(epgTable.dateIndex)
+                                            }
 
-                                                Repeater {
-                                                    model: proxyModel
-                                                    //delegate: epgDelegate
-                                                    delegate: EPGItem {}
-                                                }
+                                            Repeater {
+                                                model: proxyModel
+                                                //delegate: epgDelegate
+                                                delegate: EPGItem {}
                                             }
                                         }
                                     }
-                                    onContentXChanged: {
-                                        if (timelinebox.contentX != contentX) {
-                                            timelinebox.contentX = contentX;
-                                        }
+                                }
+                                onContentXChanged: {
+                                    if (timelinebox.contentX != contentX) {
+                                        timelinebox.contentX = contentX;
                                     }
                                 }
                             }
