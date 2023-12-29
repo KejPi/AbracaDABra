@@ -36,27 +36,14 @@
 #include <QLoggingCategory>
 
 #include "metadatamanager.h"
+#include "spiapp.h"
 
 
 Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtInfoMsg)
 
 MetadataManager::MetadataManager(QObject *parent) : QObject(parent)
 {
-    // load all files in cache
-#if 0
-    QDir directory("/Users/kejpi/Devel/AbracaDABra/_cache/");
-    QStringList xmlFiles = directory.entryList(QStringList() << "*.xml",QDir::Files);
-    for (const QString & filename : xmlFiles)
-    {
-        QFile xmlfile("/Users/kejpi/Devel/AbracaDABra/_cache/" + filename);
-        if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
-        {
-            QTextStream in(&xmlfile);
-            processXML(qPrintable(in.readAll()), "dab:de0.d06c.d220.0");
-            xmlfile.close();
-        }
-    }
-#endif
+    //loadEpg();
 }
 
 void MetadataManager::processXML(const QString &xml, uint16_t decoderId)
@@ -281,9 +268,23 @@ void MetadataManager::processXML(const QString &xml, uint16_t decoderId)
 
                         // save parsed file to the cache
                         // "20140805_e1.ce15.c221.0_PI.xml" for DAB.
-
-                        QString filename = QString("%1_%2_PI.xml").arg(QDateTime::fromString(scopeStart, Qt::ISODate).toString("yyyyMMdd"), scopeId);
-                        qDebug() << filename;
+                        QString filename = QString("%1/EPG/%2_%3_PI.xml").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation),
+                                                                          QDateTime::fromString(scopeStart, Qt::ISODate).toString("yyyyMMdd"),
+                                                                          scopeId.last(scopeId.length()-4));
+                        QDir dir;
+                        dir.mkpath(QFileInfo(filename).absolutePath());
+                        QFile file(filename);
+                        if (!file.exists())
+                        {
+                            file.open(QIODevice::WriteOnly);
+                            QTextStream output(&file);
+                            output << qPrintable(xml);
+                            file.close();
+                        }
+                        else
+                        {
+                            qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!! File EXISTS";
+                        }
                     }
                 }
             }
@@ -550,6 +551,24 @@ EPGModel *MetadataManager::epgModel(const ServiceListId & id) const
 QStringList MetadataManager::epgDatesList() const
 {
     return m_epgDates.values();
+}
+
+void MetadataManager::loadEpg()
+{
+    // load all files in cache
+    QDir directory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)  + "/EPG/");
+    QStringList xmlFiles = directory.entryList({"*.xml"}, QDir::Files);
+    for (const QString & filename : xmlFiles)
+    {
+        QFile xmlfile(directory.absolutePath() + "/" + filename);
+        qDebug() << "Loading:" << xmlfile.fileName();
+        if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            QTextStream in(&xmlfile);
+            processXML(qPrintable(in.readAll()), SPI_APP_INVALID_DECODER_ID);
+            xmlfile.close();
+        }
+    }
 }
 
 void MetadataManager::addEpgDate(const QDate &date)

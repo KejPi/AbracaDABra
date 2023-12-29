@@ -322,6 +322,7 @@ void SPIApp::processObject(uint16_t decoderId, MOTObjectCache::const_iterator ob
         case 1:
             qCDebug(spiApp) << "\tProgramme Information" << objIt->getContentName();
             parseBinaryInfo(decoderId, *objIt);
+#if 0
             {
                 QString filename = QString("/Users/kejpi/Devel/AbracaDABra/_cache/%1.xml").arg(objIt->getContentName());
                 QFile file(filename);
@@ -337,6 +338,7 @@ void SPIApp::processObject(uint16_t decoderId, MOTObjectCache::const_iterator ob
                     file.close();
                 }
             }
+#endif
             break;
         case 2:
             qCDebug(spiApp) << "\tGroup Information" << objIt->getContentName();

@@ -61,6 +61,7 @@ public:
     Q_INVOKABLE QDate epgDate(int idx) const;
     QStringList epgDatesList() const;
     void setEpgDatesList(const QStringList &newEpgDatesList);
+    void loadEpg();
 
 signals:
     void getFile(uint16_t decoderId, const QString & url, const QString & requestId);
