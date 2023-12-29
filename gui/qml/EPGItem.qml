@@ -5,10 +5,13 @@ import Qt5Compat.GraphicalEffects   // required for Qt < 6.5
 
 Item {
     id: progItem
+
+    property double pointsPerSec: 0.0
+
     height: 50
     clip: true
-    width: mouseAreaId.containsMouse ? Math.max(textId.width + 10, durationSec / secPerPoint) : durationSec / secPerPoint
-    x:  startTimeSec / secPerPoint
+    width: mouseAreaId.containsMouse ? Math.max(textId.width + 10, durationSec * pointsPerSec) : durationSec * pointsPerSec
+    x:  startTimeSec * pointsPerSec
     z: mouseAreaId.containsMouse ? 1000 : index
 
     Rectangle {
@@ -21,11 +24,8 @@ Item {
         }
         border.color: "darkgray"
         border.width: 1
-        //height: parent.height
-        //width: durationSec / secPerPoint
         anchors.fill: parent
-        x:  startTimeSec / secPerPoint
-        // z: mouseAreaId.containsMouse ? 1000 : index
+        x:  startTimeSec * pointsPerSec
 
         Rectangle {
             id: remainingTime
@@ -39,7 +39,7 @@ Item {
                 bottomMargin: 1
                 leftMargin: 1
             }
-            width: (currentTimeSec - startTimeSecSinceEpoch) / secPerPoint
+            width: (currentTimeSec - startTimeSecSinceEpoch) * pointsPerSec
         }
         Text {
             id: textId

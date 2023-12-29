@@ -7,7 +7,7 @@ Item {
     id: mainItemId
     anchors.fill: parent
 
-    property int secPerPoint: 15
+    property double pointsPerSecond: 1.0/15   // 15 sec/point
     property int currentTimeSec: dabTime.secSinceEpoch
     property int lineHeight: 50
     property int serviceListWidth: 200
@@ -59,13 +59,13 @@ Item {
             Item {
                 id: timeline
                 height: 20
-                width: 24*3600/secPerPoint
+                width: 24*3600*pointsPerSecond
                 Row {
                     Repeater {
                         model: 24
                         delegate: Text {
                             text: modelData + ":00"
-                            width: 60 * 60 / secPerPoint
+                            width: 60 * 60 * pointsPerSecond
                             height: 20
                             horizontalAlignment: Text.AlignLeft
                         }
@@ -141,7 +141,6 @@ Item {
                             sourceComponent: Flickable {
                                 id: epgTable
                                 property int dateIndex: index
-                                //anchors.fill: parent
                                 contentWidth: colId.width
                                 contentHeight: colId.height
                                 boundsBehavior: Flickable.StopAtBounds
@@ -158,21 +157,20 @@ Item {
                                             border.width: 1
                                             height: lineHeight
                                             anchors.left: parent.left
-                                            //anchors.right: parent.right
-                                            width: 24*3600/secPerPoint
+                                            width: 24*3600 * pointsPerSecond
                                             clip: true
 
                                             EPGProxyModel {
                                                 id: proxyModel
                                                 sourceModel: epgModelRole
-                                                //dayFilter: bar.currentIndex
                                                 dateFilter: metadataManager.epgDate(epgTable.dateIndex)
                                             }
 
                                             Repeater {
                                                 model: proxyModel
-                                                //delegate: epgDelegate
-                                                delegate: EPGItem {}
+                                                delegate: EPGItem {
+                                                    pointsPerSec: pointsPerSecond
+                                                }
                                             }
                                         }
                                     }
