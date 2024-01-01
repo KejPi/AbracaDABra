@@ -51,7 +51,7 @@
 #include "slsview.h"
 #include "./ui_mainwindow.h"
 #include "dabtables.h"
-#include "dabtime.h"
+#include "epgtime.h"
 #include "radiocontrol.h"
 #include "bandscandialog.h"
 #include "config.h"
@@ -1045,7 +1045,7 @@ void MainWindow::onDLComplete(const QString & dl, QLabel * dlLabel)
 void MainWindow::onDabTime(const QDateTime & d)
 {
     m_timeLabel->setText(m_timeLocale.toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
-    DABTime::getInstance()->onDabTime(d);
+    EPGTime::getInstance()->onDabTime(d);
 }
 
 void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)

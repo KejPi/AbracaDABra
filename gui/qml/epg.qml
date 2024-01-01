@@ -8,7 +8,7 @@ Item {
     anchors.fill: parent
 
     property double pointsPerSecond: 1.0/15   // 15 sec/point
-    property int currentTimeSec: dabTime.secSinceEpoch
+    property int currentTimeSec: epgTime.secSinceEpoch
     property int lineHeight: 50
     property int serviceListWidth: 200
 
@@ -176,8 +176,8 @@ Item {
                                     }
                                 }
                                 Component.onCompleted: {
-                                    if (dabTime.isCurrentDate(metadataManager.epgDate(epgTable.dateIndex))) {
-                                        timelinebox.contentX = (Math.floor(dabTime.secSinceMidnight() / 3600) - 1) * 3600 * pointsPerSecond;
+                                    if (epgTime.isCurrentDate(metadataManager.epgDate(epgTable.dateIndex))) {
+                                        timelinebox.contentX = (Math.floor(epgTime.secSinceMidnight() / 3600) - 1) * 3600 * pointsPerSecond;
                                     }
                                     else {
                                         timelinebox.contentX = 0;
