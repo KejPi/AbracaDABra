@@ -12,8 +12,6 @@ Item {
     property int lineHeight: 50
     property int serviceListWidth: 200
 
-    Component.onCompleted: console.log("EPG completed", mainItemId.visible)
-
     TabBar {
         id: dayTabBar
         anchors {
@@ -86,10 +84,13 @@ Item {
             contentHeight: epgItem.height
             contentWidth: epgItem.width
             clip: true
-            Item {
+            Rectangle {
+                color: "transparent"
+                border.color: "darkgray"
+                border.width: 2
                 id: epgItem
                 height: serviceColumnId.height
-                width: parent.width
+                width: epgViewItem.width
                 Column {
                     id: serviceColumnId
                     Repeater {
@@ -121,7 +122,6 @@ Item {
                             }
                         }
                     }
-                    //Component.onCompleted: console.log(slModel.count, slModel.rowCount)
                 }
 
                 StackLayout {
@@ -173,6 +173,14 @@ Item {
                                                 }
                                             }
                                         }
+                                    }
+                                }
+                                Component.onCompleted: {
+                                    if (dabTime.isCurrentDate(metadataManager.epgDate(epgTable.dateIndex))) {
+                                        timelinebox.contentX = (Math.floor(dabTime.secSinceMidnight() / 3600) - 1) * 3600 * pointsPerSecond;
+                                    }
+                                    else {
+                                        timelinebox.contentX = 0;
                                     }
                                 }
                                 onContentXChanged: {

@@ -41,7 +41,7 @@
 
 Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtInfoMsg)
 
-MetadataManager::MetadataManager(QObject *parent) : QObject(parent)
+MetadataManager::MetadataManager(QObject *parent) : QObject(parent), m_isLoadingFromCache(false)
 {
     loadEpg();
 }
@@ -266,24 +266,26 @@ void MetadataManager::processXML(const QString &xml, uint16_t decoderId)
                             child = child.nextSiblingElement("programme");
                         }
 
-                        // save parsed file to the cache
-                        // "20140805_e1.ce15.c221.0_PI.xml" for DAB.
-                        QString filename = QString("%1/EPG/%2_%3_PI.xml").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation),
-                                                                          QDateTime::fromString(scopeStart, Qt::ISODate).toString("yyyyMMdd"),
-                                                                          scopeId.last(scopeId.length()-4));
-                        QDir dir;
-                        dir.mkpath(QFileInfo(filename).absolutePath());
-                        QFile file(filename);
-                        if (!file.exists())
-                        {
-                            file.open(QIODevice::WriteOnly);
-                            QTextStream output(&file);
-                            output << qPrintable(xml);
-                            file.close();
-                        }
-                        else
-                        {
-                            qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!! File EXISTS";
+                        if (!m_isLoadingFromCache)
+                        {   // save parsed file to the cache
+                            // "20140805_e1.ce15.c221.0_PI.xml" for DAB.
+                            QString filename = QString("%1/EPG/%2_%3_PI.xml").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation),
+                                                                              QDateTime::fromString(scopeStart, Qt::ISODate).toString("yyyyMMdd"),
+                                                                              scopeId.last(scopeId.length()-4));
+                            QDir dir;
+                            dir.mkpath(QFileInfo(filename).absolutePath());
+                            QFile file(filename);
+                            if (!file.exists())
+                            {
+                                file.open(QIODevice::WriteOnly);
+                                QTextStream output(&file);
+                                output << qPrintable(xml);
+                                file.close();
+                            }
+                            else
+                            {
+                                qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!! File EXISTS";
+                            }
                         }
                     }
                 }
@@ -555,15 +557,13 @@ QStringList MetadataManager::epgDatesList() const
 
 void MetadataManager::loadEpg()
 {
+    m_isLoadingFromCache = true;
     // load all files in cache
     QDir directory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)  + "/EPG/");
     QStringList xmlFiles = directory.entryList({"*.xml"}, QDir::Files);
     int cntr = 0;
     for (const QString & filename : xmlFiles)
     {
-        // if (cntr++ > 10) {
-        //     break;
-        // }
         QFile xmlfile(directory.absolutePath() + "/" + filename);
         qDebug() << "Loading:" << xmlfile.fileName();
         if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -573,13 +573,14 @@ void MetadataManager::loadEpg()
             xmlfile.close();
         }
     }
+    m_isLoadingFromCache = false;
 }
 
 void MetadataManager::addEpgDate(const QDate &date)
 {
     if (date.isValid() && !m_epgDates.contains(date))
     {
-        m_epgDates[date] = date.toString("dd. MM. yyyy");
+        m_epgDates[date] = date.toString("dd.MM.yyyy");
         emit epgDatesListChanged();
     }    
 }

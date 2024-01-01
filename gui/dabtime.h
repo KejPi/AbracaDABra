@@ -15,14 +15,15 @@ public:
     ~DABTime();
     static DABTime *getInstance();
     QDateTime currentTime() const { return m_dabTime; }
-    QDate currentDate() const { return m_dabTime.date(); }
-
-    void onDabTime(const QDateTime & d);
+    Q_INVOKABLE QDate currentDate() const { return m_dabTime.date(); }
+    Q_INVOKABLE bool isCurrentDate(const QDate & date) const { return date == currentDate(); }
 
     qint64 secSinceEpoch() const;
     void setSecSinceEpoch(qint64 newSecSinceEpoch);
 
+    Q_INVOKABLE int secSinceMidnight() const { return m_dabTime.date().startOfDay().secsTo(m_dabTime); }
 
+    void onDabTime(const QDateTime & d);
 signals:
     void secSinceEpochChanged();
 

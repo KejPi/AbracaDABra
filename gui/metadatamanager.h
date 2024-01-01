@@ -71,6 +71,7 @@ signals:
     void epgDatesListChanged();
 
 private:
+    bool m_isLoadingFromCache;
     QMap<QDate, QString> m_epgDates;
     QHash<QString, serviceInfo_t> m_info;
     QHash<ServiceListId, EPGModel *> m_epgList;
