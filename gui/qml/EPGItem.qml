@@ -7,6 +7,7 @@ Item {
     id: progItem
 
     property double pointsPerSec: 0.0
+    //property bool isCurrentService: false
 
     height: 50
     clip: true
@@ -22,7 +23,7 @@ Item {
             if (startTimeSecSinceEpoch >= currentTimeSec) return "white";
             return "lemonchiffon";
         }
-        border.color: "darkgray"
+        border.color: "darkgray" // isCurrentService ? "black" : "darkgray"
         border.width: 1
         anchors.fill: parent
         x:  startTimeSec * pointsPerSec

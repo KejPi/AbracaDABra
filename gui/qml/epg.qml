@@ -11,6 +11,9 @@ Item {
     property int currentTimeSec: epgTime.secSinceEpoch
     property int lineHeight: 50
     property int serviceListWidth: 200
+    property int selectedServiceIndex: slSelectionModel.currentIndex.row
+
+    //SystemPalette { id: sysPaletteActive; colorGroup: SystemPalette.Active }
 
     TabBar {
         id: dayTabBar
@@ -97,9 +100,10 @@ Item {
                         id: serviceList
                         model: slModel
                         delegate: Rectangle {
-                            color: "transparent"
-                            border.color: "darkgray"
-                            border.width: 1
+                            //property bool isSelected: false
+                            color: selectedServiceIndex == index ? "white" : "transparent"
+                            border.color: selectedServiceIndex == index ? "black" : "darkgray"
+                            border.width: selectedServiceIndex == index ? 3 : 1
                             height: lineHeight
                             width: serviceListWidth
                             Row {
@@ -118,6 +122,13 @@ Item {
                                     anchors.verticalCenter: parent.verticalCenter
                                     verticalAlignment: Text.AlignVCenter
                                     horizontalAlignment: Text.AlignLeft
+                                }
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    slSelectionModel.select(slModel.index(index, 0), ItemSelectionModel.Select | ItemSelectionModel.Current)
+                                    slSelectionModel.setCurrentIndex(slModel.index(index, 0), ItemSelectionModel.Select | ItemSelectionModel.Current)
                                 }
                             }
                         }
@@ -151,13 +162,24 @@ Item {
                                     id: colId
                                     Repeater {
                                         model: slModel
-                                        Rectangle {
-                                            color: "transparent"
-                                            border.color: "darkgray"
-                                            border.width: 1
+                                        Item {
                                             height: lineHeight
                                             anchors.left: parent.left
                                             width: 24*3600 * pointsPerSecond
+
+                                        Rectangle {
+                                            id: epgForService
+                                            property int isSelected: selectedServiceIndex == index
+
+                                            color: "transparent"
+                                            //border.color: "darkgray"
+                                            //color: selectedServiceIndex == index ? "white" : "transparent"
+                                            border.color: selectedServiceIndex == index ? "black" : "darkgray"
+                                            border.width: 1
+                                            //height: lineHeight
+                                            //anchors.left: parent.left
+                                            //width: 24*3600 * pointsPerSecond
+                                            anchors.fill: parent
                                             clip: true
 
                                             EPGProxyModel {
@@ -170,8 +192,26 @@ Item {
                                                 model: proxyModel
                                                 delegate: EPGItem {
                                                     pointsPerSec: pointsPerSecond
+                                                    //isCurrentService: epgForService.isSelected
                                                 }
                                             }
+                                        }
+                                        Rectangle {
+                                            visible: selectedServiceIndex == index
+                                            anchors.top: epgForService.top
+                                            anchors.left: epgForService.left
+                                            height: 3
+                                            width: epgForService.width
+                                            color: "black"
+                                        }
+                                        Rectangle {
+                                            visible: selectedServiceIndex == index
+                                            anchors.bottom: epgForService.bottom
+                                            anchors.left: epgForService.left
+                                            height: 3
+                                            width: epgForService.width
+                                            color: "black"
+                                        }
                                         }
                                     }
                                 }

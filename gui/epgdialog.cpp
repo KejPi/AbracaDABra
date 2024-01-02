@@ -34,7 +34,7 @@
 #include "epgtime.h"
 #include "ui_epgdialog.h"
 
-EPGDialog::EPGDialog(SLModel * serviceListModel, MetadataManager * metadataManager, QWidget *parent)
+EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager * metadataManager, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::EPGDialog)
     , m_serviceListModel(serviceListModel)
@@ -52,7 +52,7 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, MetadataManager * metadataManag
     context->setContextProperty("slModel", m_serviceListModel);
     context->setContextProperty("metadataManager", m_metadataManager);
     context->setContextProperty("epgTime", EPGTime::getInstance());
-    //context->setContextProperty("epgDialog", this);
+    context->setContextProperty("slSelectionModel", slSelectionModel);
 
     QQmlEngine *engine = qmlView->engine();
     engine->addImageProvider(QLatin1String("metadata"), new LogoProvider(m_metadataManager));

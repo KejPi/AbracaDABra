@@ -41,7 +41,7 @@ class EPGDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit EPGDialog(SLModel *serviceListModel, MetadataManager *metadataManager, QWidget *parent = nullptr);
+    explicit EPGDialog(SLModel *serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager *metadataManager, QWidget *parent = nullptr);
     ~EPGDialog();
 
 private:

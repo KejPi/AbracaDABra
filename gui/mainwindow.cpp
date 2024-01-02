@@ -2829,7 +2829,7 @@ void MainWindow::showEnsembleInfo()
 
 void MainWindow::showEPG()
 {
-    EPGDialog * epgDialog = new EPGDialog(m_slModel, m_metadataManager, this);
+    EPGDialog * epgDialog = new EPGDialog(m_slModel, ui->serviceListView->selectionModel(), m_metadataManager, this);
     connect(epgDialog, &QDialog::finished, epgDialog, &QDialog::deleteLater);
     epgDialog->show();
     epgDialog->raise();
