@@ -45,6 +45,7 @@ EPGTime::EPGTime() : QObject(nullptr)
 {
     m_minuteTimer = new QTimer();
     m_minuteTimer->setInterval(1000*60); // 1 minute
+    m_isLiveBroadcasting = true;
 }
 
 EPGTime::~EPGTime()
@@ -65,6 +66,11 @@ void EPGTime::onTimerTimeout()
     {
         setTime(m_dabTime.addSecs(60));
     }
+}
+
+void EPGTime::setIsLiveBroadcasting(bool newIsLiveBroadcasting)
+{
+    m_isLiveBroadcasting = newIsLiveBroadcasting;
 }
 
 

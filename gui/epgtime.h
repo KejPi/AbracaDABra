@@ -50,6 +50,8 @@ public:
     Q_INVOKABLE int secSinceMidnight() const { return m_dabTime.date().startOfDay().secsTo(m_dabTime); }
 
     void onDabTime(const QDateTime & d);
+    void setIsLiveBroadcasting(bool newIsLiveBroadcasting);
+
 signals:
     void secSinceEpochChanged();
 
@@ -62,6 +64,7 @@ private:
     QDateTime m_dabTime;
     QTimer * m_minuteTimer;
     qint64 m_secSinceEpoch;
+    bool m_isLiveBroadcasting;
 };
 
 #endif // EPGTIME_H
