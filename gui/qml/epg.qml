@@ -28,7 +28,7 @@ Item {
         Repeater {
             model: metadataManager.epgDatesList
             TabButton {
-                text: modelData
+                text: epgTime.currentDateString === modelData ? qsTr("Today") : modelData
                 //width: Math.max(100, bar.width / metadataManager.epgDatesList.length)
             }
         }
@@ -167,51 +167,48 @@ Item {
                                             anchors.left: parent.left
                                             width: 24*3600 * pointsPerSecond
 
-                                        Rectangle {
-                                            id: epgForService
-                                            property int isSelected: selectedServiceIndex == index
+                                            Rectangle {
+                                                id: epgForService
+                                                property int isSelected: selectedServiceIndex == index
 
-                                            color: "transparent"
-                                            //border.color: "darkgray"
-                                            //color: selectedServiceIndex == index ? "white" : "transparent"
-                                            border.color: selectedServiceIndex == index ? "black" : "darkgray"
-                                            border.width: 1
-                                            //height: lineHeight
-                                            //anchors.left: parent.left
-                                            //width: 24*3600 * pointsPerSecond
-                                            anchors.fill: parent
-                                            clip: true
+                                                color: "transparent"
+                                                //border.color: "darkgray"
+                                                //color: selectedServiceIndex == index ? "white" : "transparent"
+                                                border.color: selectedServiceIndex == index ? "black" : "darkgray"
+                                                border.width: 1
+                                                anchors.fill: parent
+                                                clip: true
 
-                                            EPGProxyModel {
-                                                id: proxyModel
-                                                sourceModel: epgModelRole
-                                                dateFilter: metadataManager.epgDate(epgTable.dateIndex)
-                                            }
+                                                EPGProxyModel {
+                                                    id: proxyModel
+                                                    sourceModel: epgModelRole
+                                                    dateFilter: metadataManager.epgDate(epgTable.dateIndex)
+                                                }
 
-                                            Repeater {
-                                                model: proxyModel
-                                                delegate: EPGItem {
-                                                    pointsPerSec: pointsPerSecond
-                                                    //isCurrentService: epgForService.isSelected
+                                                Repeater {
+                                                    model: proxyModel
+                                                    delegate: EPGItem {
+                                                        pointsPerSec: pointsPerSecond
+                                                        //isCurrentService: epgForService.isSelected
+                                                    }
                                                 }
                                             }
-                                        }
-                                        Rectangle {
-                                            visible: selectedServiceIndex == index
-                                            anchors.top: epgForService.top
-                                            anchors.left: epgForService.left
-                                            height: 3
-                                            width: epgForService.width
-                                            color: "black"
-                                        }
-                                        Rectangle {
-                                            visible: selectedServiceIndex == index
-                                            anchors.bottom: epgForService.bottom
-                                            anchors.left: epgForService.left
-                                            height: 3
-                                            width: epgForService.width
-                                            color: "black"
-                                        }
+                                            Rectangle {
+                                                visible: selectedServiceIndex == index
+                                                anchors.top: epgForService.top
+                                                anchors.left: epgForService.left
+                                                height: 3
+                                                width: epgForService.width
+                                                color: "black"
+                                            }
+                                            Rectangle {
+                                                visible: selectedServiceIndex == index
+                                                anchors.bottom: epgForService.bottom
+                                                anchors.left: epgForService.left
+                                                height: 3
+                                                width: epgForService.width
+                                                color: "black"
+                                            }
                                         }
                                     }
                                 }

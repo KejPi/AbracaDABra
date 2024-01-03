@@ -60,7 +60,6 @@ public:
 
     Q_INVOKABLE QDate epgDate(int idx) const;
     QStringList epgDatesList() const;
-    void setEpgDatesList(const QStringList &newEpgDatesList);
     void loadEpg();
 
 signals:

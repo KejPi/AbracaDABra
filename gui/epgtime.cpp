@@ -58,6 +58,7 @@ void EPGTime::setTime(const QDateTime & time)
 {
     m_dabTime = time;
     setSecSinceEpoch(m_dabTime.toSecsSinceEpoch());
+    setCurrentDateString(m_dabTime.date().toString("dd.MM.yyyy"));
 }
 
 void EPGTime::onTimerTimeout()
@@ -91,4 +92,17 @@ void EPGTime::setSecSinceEpoch(qint64 newSecSinceEpoch)
         return;
     m_secSinceEpoch = newSecSinceEpoch;
     emit secSinceEpochChanged();
+}
+
+QString EPGTime::currentDateString() const
+{
+    return m_currentDateString;
+}
+
+void EPGTime::setCurrentDateString(const QString &newCurrentDateString)
+{
+    if (m_currentDateString == newCurrentDateString)
+        return;
+    m_currentDateString = newCurrentDateString;
+    emit currentDateStringChanged();
 }

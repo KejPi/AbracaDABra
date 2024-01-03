@@ -36,6 +36,7 @@ class EPGTime : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(qint64 secSinceEpoch READ secSinceEpoch WRITE setSecSinceEpoch NOTIFY secSinceEpochChanged FINAL)
+    Q_PROPERTY(QString currentDateString READ currentDateString WRITE setCurrentDateString NOTIFY currentDateStringChanged FINAL)
 public:
     EPGTime(const EPGTime& obj) = delete;   // deleting copy constructor
     ~EPGTime();
@@ -52,8 +53,13 @@ public:
     void onDabTime(const QDateTime & d);
     void setIsLiveBroadcasting(bool newIsLiveBroadcasting);
 
+    QString currentDateString() const;
+    void setCurrentDateString(const QString &newCurrentDateString);
+
 signals:
     void secSinceEpochChanged();
+
+    void currentDateStringChanged();
 
 private:
     EPGTime();
@@ -65,6 +71,7 @@ private:
     QTimer * m_minuteTimer;
     qint64 m_secSinceEpoch;
     bool m_isLiveBroadcasting;
+    QString m_currentDateString;
 };
 
 #endif // EPGTIME_H
