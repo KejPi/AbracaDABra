@@ -13,6 +13,10 @@ Item {
     property int serviceListWidth: 200
     property int selectedServiceIndex: slSelectionModel.currentIndex.row
 
+    property string serviceName: ""
+    property string serviceStartTime: ""
+    property string serviceDetail: ""
+
     //SystemPalette { id: sysPaletteActive; colorGroup: SystemPalette.Active }
 
     TabBar {
@@ -39,8 +43,9 @@ Item {
             top: dayTabBar.bottom
             left: parent.left
             right: parent.right
-            bottom: parent.bottom
+            bottom: progDetails.top
             topMargin: 10
+            bottomMargin: 20
         }
         Flickable {
             id: timelinebox
@@ -190,6 +195,12 @@ Item {
                                                     delegate: EPGItem {
                                                         pointsPerSec: pointsPerSecond
                                                         //isCurrentService: epgForService.isSelected
+                                                        onClicked: (idx)=> {
+                                                            console.log("Item clicked: ", idx);
+                                                            serviceDetail = (longDescription !== "") ? longDescription : shortDescription;
+                                                            serviceName = (longName !== "") ? longName : mediumName;
+                                                            serviceStartTime = startTimeString;
+                                                        }
                                                     }
                                                 }
                                             }
@@ -229,6 +240,38 @@ Item {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    Rectangle {
+        id: progDetails
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
+        color: "transparent"
+        height: 100
+        ColumnLayout {
+            anchors.fill: parent
+            Text {
+                Layout.fillWidth: true
+                text: serviceName
+                font.bold: true
+                font.pointSize: 20
+            }
+            Text {
+                visible: serviceStartTime
+                Layout.fillWidth: true
+                text: qsTr("Starts at ") + serviceStartTime
+            }
+            Text {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                text: serviceDetail
+                wrapMode: Text.WordWrap
+                clip: true
             }
         }
     }

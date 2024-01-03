@@ -69,6 +69,16 @@ void EPGTime::onTimerTimeout()
     }
 }
 
+QLocale EPGTime::timeLocale() const
+{
+    return m_timeLocale;
+}
+
+void EPGTime::setTimeLocale(const QLocale &newTimeLocale)
+{
+    m_timeLocale = newTimeLocale;
+}
+
 void EPGTime::setIsLiveBroadcasting(bool newIsLiveBroadcasting)
 {
     m_isLiveBroadcasting = newIsLiveBroadcasting;

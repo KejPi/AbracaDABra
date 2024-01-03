@@ -56,6 +56,9 @@ public:
     QString currentDateString() const;
     void setCurrentDateString(const QString &newCurrentDateString);
 
+    QLocale timeLocale() const;
+    void setTimeLocale(const QLocale &newTimeLocale);
+
 signals:
     void secSinceEpochChanged();
 
@@ -72,6 +75,7 @@ private:
     qint64 m_secSinceEpoch;
     bool m_isLiveBroadcasting;
     QString m_currentDateString;
+    QLocale m_timeLocale;
 };
 
 #endif // EPGTIME_H

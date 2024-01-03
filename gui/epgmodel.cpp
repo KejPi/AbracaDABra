@@ -25,6 +25,7 @@
  */
 
 #include "epgmodel.h"
+#include "epgtime.h"
 
 EPGModel::EPGModel(QObject *parent)
     : QAbstractListModel{parent}
@@ -82,6 +83,8 @@ QVariant EPGModel::data(const QModelIndex &index, int role) const
         return QVariant(item->shortName());
     case StartTimeRole:
         return QVariant(item->startTime());
+    case StartTimeStringRole:
+        return QVariant(EPGTime::getInstance()->timeLocale().toString(item->startTime(), QString("dddd, dd.MM.yyyy, hh:mm")));
     case StartTimeSecRole:
         return QVariant(item->startTimeSec());
     case EndTimeSecRole:
@@ -111,13 +114,14 @@ QHash<int, QByteArray> EPGModel::roleNames() const
     roles[EPGModelRoles::MediumNameRole] = "mediumName";
     roles[EPGModelRoles::ShortNameRole] = "shortName";
     roles[EPGModelRoles::StartTimeRole] = "startTime";
-    roles[EPGModelRoles::StartTimeSecRole] = "startTimeSec";
+    roles[EPGModelRoles::StartTimeStringRole] = "startTimeString";
+    roles[EPGModelRoles::StartTimeSecRole] = "startTimeSec";    
     roles[EPGModelRoles::StartTimeSecSinceEpochRole] = "startTimeSecSinceEpoch";
     roles[EPGModelRoles::EndTimeSecRole] = "endTimeSec";
     roles[EPGModelRoles::EndTimeSecSinceEpochRole] = "endTimeSecSinceEpoch";
     roles[EPGModelRoles::DurationSecRole] = "durationSec";
     roles[EPGModelRoles::LongDescriptionRole] = "longDescription";
-    roles[EPGModelRoles::ShortDescriptionRole] = "shortDescription";
+    roles[EPGModelRoles::ShortDescriptionRole] = "shortDescription";    
 
     return roles;
 }

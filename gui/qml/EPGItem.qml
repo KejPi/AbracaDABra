@@ -9,6 +9,8 @@ Item {
     property double pointsPerSec: 0.0
     //property bool isCurrentService: false
 
+    signal clicked(int index)
+
     height: 50
     clip: true
     width: mouseAreaId.containsMouse ? Math.max(textId.width + 10, durationSec * pointsPerSec) : durationSec * pointsPerSec
@@ -98,5 +100,8 @@ Item {
         id: mouseAreaId
         anchors.fill: parent
         hoverEnabled: true
+        onClicked: {
+            progItem.clicked(index)
+        }
     }
 }

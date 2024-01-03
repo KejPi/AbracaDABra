@@ -2493,6 +2493,7 @@ void MainWindow::loadSettings()
 
     // set DAB time locale
     m_timeLocale = QLocale(m_setupDialog->applicationLanguage());
+    EPGTime::getInstance()->setTimeLocale(m_timeLocale);
 
     // need to run here because it expects that settings is up-to-date
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && !defined(Q_OS_WIN) && !defined(Q_OS_LINUX)
