@@ -1,6 +1,7 @@
 #ifndef EPGPROXYMODEL_H
 #define EPGPROXYMODEL_H
 
+#include <QDate>
 #include <QQmlEngine>
 #include <QSortFilterProxyModel>
 

@@ -193,6 +193,7 @@ Item {
                                                     model: proxyModel
                                                     //property var modelIndex: proxyModel.mapToSource(proxyModel.index(index, 0))
                                                     delegate: EPGItem {
+                                                        itemHeight: lineHeight
                                                         pointsPerSec: pointsPerSecond
                                                         isSelected: selectedEpgItemIndex.valid
                                                                     && (selectedEpgItemIndex.model === proxyModel.mapToSource(proxyModel.index(index, 0)).model)

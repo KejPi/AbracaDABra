@@ -7,11 +7,11 @@ Item {
     id: progItem
 
     property double pointsPerSec: 0.0
-    //property bool isCurrentService: false
     signal clicked
     property bool isSelected: false
+    property int itemHeight: 50
 
-    height: 50
+    height: itemHeight
     clip: true
     width: mouseAreaId.containsMouse ? Math.max(textId.width + 10, durationSec * pointsPerSec) : durationSec * pointsPerSec
     x:  startTimeSec * pointsPerSec
@@ -25,7 +25,6 @@ Item {
             if (startTimeSecSinceEpoch >= currentTimeSec) return "white";
             return "lemonchiffon";
         }
-        //border.color: "darkgray" // isCurrentService ? "black" : "darkgray"
         border.color: isSelected ? "black" : "darkgray"
         border.width: 1
         anchors.fill: parent
