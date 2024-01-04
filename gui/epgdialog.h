@@ -29,6 +29,7 @@
 
 #include <QDialog>
 #include <QQuickImageProvider>
+#include <QQuickView>
 #include "metadatamanager.h"
 #include "slmodel.h"
 
@@ -39,16 +40,25 @@ class EPGDialog;
 class EPGDialog : public QDialog
 {
     Q_OBJECT
+    Q_PROPERTY(QPersistentModelIndex selectedEpgItem READ selectedEpgItem WRITE setSelectedEpgItem NOTIFY selectedEpgItemChanged FINAL)
 
 public:
     explicit EPGDialog(SLModel *serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager *metadataManager, QWidget *parent = nullptr);
     ~EPGDialog();
 
+    QPersistentModelIndex selectedEpgItem() const;
+    void setSelectedEpgItem(const QPersistentModelIndex &newSelectedEpgItem);
+
+signals:
+    void selectedEpgItemChanged();
+
 private:
     Ui::EPGDialog *ui;
+    QQuickView *m_qmlView ;
 
     MetadataManager * m_metadataManager;
     SLModel * m_serviceListModel;
+    QPersistentModelIndex m_selectedEpgItem;
 };
 
 

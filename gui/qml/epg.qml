@@ -12,6 +12,7 @@ Item {
     property int lineHeight: 50
     property int serviceListWidth: 200
     property int selectedServiceIndex: slSelectionModel.currentIndex.row
+    property var selectedEpgItemIndex: epgDialog.selectedEpgItem
 
     property string serviceName: ""
     property string serviceStartTime: ""
@@ -174,12 +175,10 @@ Item {
 
                                             Rectangle {
                                                 id: epgForService
-                                                property int isSelected: selectedServiceIndex == index
+                                                property bool isCurrentService: selectedServiceIndex == index
 
                                                 color: "transparent"
-                                                //border.color: "darkgray"
-                                                //color: selectedServiceIndex == index ? "white" : "transparent"
-                                                border.color: selectedServiceIndex == index ? "black" : "darkgray"
+                                                border.color: isCurrentService ? "black" : "darkgray"
                                                 border.width: 1
                                                 anchors.fill: parent
                                                 clip: true
@@ -192,14 +191,41 @@ Item {
 
                                                 Repeater {
                                                     model: proxyModel
+                                                    //property var modelIndex: proxyModel.mapToSource(proxyModel.index(index, 0))
                                                     delegate: EPGItem {
                                                         pointsPerSec: pointsPerSecond
-                                                        //isCurrentService: epgForService.isSelected
-                                                        onClicked: (idx)=> {
-                                                            console.log("Item clicked: ", idx);
+                                                        isSelected: selectedEpgItemIndex.valid
+                                                                    && (selectedEpgItemIndex.model === proxyModel.mapToSource(proxyModel.index(index, 0)).model)
+                                                                    && (selectedEpgItemIndex.row === proxyModel.mapToSource(proxyModel.index(index, 0)).row)
+                                                        onClicked: {
+                                                            //console.log("clicked")
                                                             serviceDetail = (longDescription !== "") ? longDescription : shortDescription;
                                                             serviceName = (longName !== "") ? longName : mediumName;
                                                             serviceStartTime = startTimeString;
+
+                                                            epgDialog.selectedEpgItem = proxyModel.mapToSource(proxyModel.index(index, 0));
+                                                        }
+                                                        Component.onCompleted: {
+                                                            if (selectedEpgItemIndex.valid) {
+                                                                if ((selectedEpgItemIndex.model === proxyModel.mapToSource(proxyModel.index(index, 0)).model)
+                                                                        && (selectedEpgItemIndex.row === proxyModel.mapToSource(proxyModel.index(index, 0)).row))
+                                                                {
+                                                                    serviceDetail = (longDescription !== "") ? longDescription : shortDescription;
+                                                                    serviceName = (longName !== "") ? longName : mediumName;
+                                                                    serviceStartTime = startTimeString;
+                                                                }
+                                                            }
+                                                            else {
+                                                                if (epgForService.isCurrentService) {
+                                                                    if ((startTimeSecSinceEpoch <= currentTimeSec) && (endTimeSecSinceEpoch > currentTimeSec))
+                                                                    {   // if it is ongoing programme select it
+                                                                        epgDialog.selectedEpgItem = proxyModel.mapToSource(proxyModel.index(index, 0));
+                                                                        serviceDetail = (longDescription !== "") ? longDescription : shortDescription;
+                                                                        serviceName = (longName !== "") ? longName : mediumName;
+                                                                        serviceStartTime = startTimeString;
+                                                                    }
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }

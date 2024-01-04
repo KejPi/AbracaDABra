@@ -24,7 +24,6 @@
  * SOFTWARE.
  */
 
-#include <QQuickView>
 #include <QQmlContext>
 #include <QHBoxLayout>
 #include <QPushButton>
@@ -46,30 +45,45 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectio
     qmlRegisterType<EPGModel>("ProgrammeGuide", 1, 0, "EPGModel");
     qmlRegisterType<EPGProxyModel>("ProgrammeGuide", 1, 0, "EPGProxyModel");
 
-    QQuickView *qmlView = new QQuickView();
+    m_qmlView = new QQuickView();
 
-    QQmlContext * context = qmlView->rootContext();
+    QQmlContext * context = m_qmlView->rootContext();
     context->setContextProperty("slModel", m_serviceListModel);
     context->setContextProperty("metadataManager", m_metadataManager);
     context->setContextProperty("epgTime", EPGTime::getInstance());
     context->setContextProperty("slSelectionModel", slSelectionModel);
+    context->setContextProperty("epgDialog", this);
 
-    QQmlEngine *engine = qmlView->engine();
+    QQmlEngine *engine = m_qmlView->engine();
     engine->addImageProvider(QLatin1String("metadata"), new LogoProvider(m_metadataManager));
 
-    qmlView->setColor(Qt::transparent);
-    qmlView->setSource(QUrl("qrc:/qml/epg.qml"));
+    m_qmlView->setColor(Qt::transparent);
+    m_qmlView->setSource(QUrl("qrc:/qml/epg.qml"));
 
-    QWidget *container = QWidget::createWindowContainer(qmlView, this);
+    QWidget *container = QWidget::createWindowContainer(m_qmlView, this);
 
     QVBoxLayout * layout = new QVBoxLayout(this);
     layout->addWidget(container);
 
-    QPushButton * button = new QPushButton("Test", this);
-    layout->addWidget(button);
+    //QPushButton * button = new QPushButton("Test", this);
+    //layout->addWidget(button);
 }
 
 EPGDialog::~EPGDialog()
 {
+    delete m_qmlView;
     delete ui;
+}
+
+QPersistentModelIndex EPGDialog::selectedEpgItem() const
+{
+    return m_selectedEpgItem;
+}
+
+void EPGDialog::setSelectedEpgItem(const QPersistentModelIndex &newSelectedEpgItem)
+{
+    if (m_selectedEpgItem == newSelectedEpgItem)
+        return;
+    m_selectedEpgItem = newSelectedEpgItem;
+    emit selectedEpgItemChanged();
 }

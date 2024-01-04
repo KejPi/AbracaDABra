@@ -8,8 +8,8 @@ Item {
 
     property double pointsPerSec: 0.0
     //property bool isCurrentService: false
-
-    signal clicked(int index)
+    signal clicked
+    property bool isSelected: false
 
     height: 50
     clip: true
@@ -25,7 +25,8 @@ Item {
             if (startTimeSecSinceEpoch >= currentTimeSec) return "white";
             return "lemonchiffon";
         }
-        border.color: "darkgray" // isCurrentService ? "black" : "darkgray"
+        //border.color: "darkgray" // isCurrentService ? "black" : "darkgray"
+        border.color: isSelected ? "black" : "darkgray"
         border.width: 1
         anchors.fill: parent
         x:  startTimeSec * pointsPerSec
@@ -33,7 +34,7 @@ Item {
         Rectangle {
             id: remainingTime
             visible: (startTimeSecSinceEpoch < currentTimeSec) && (endTimeSecSinceEpoch > currentTimeSec)
-            color: "gold"
+            color: "gold"            
             anchors {
                 left: parent.left
                 top: parent.top
@@ -42,7 +43,7 @@ Item {
                 bottomMargin: 1
                 leftMargin: 1
             }
-            width: (currentTimeSec - startTimeSecSinceEpoch) * pointsPerSec
+            width: (currentTimeSec - startTimeSecSinceEpoch) * pointsPerSec - 1
         }
         Text {
             id: textId
@@ -53,6 +54,7 @@ Item {
                 bottom: parent.bottom
             }
             text: name
+            font.bold: isSelected
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignLeft
         }
@@ -101,7 +103,7 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         onClicked: {
-            progItem.clicked(index)
+            progItem.clicked()
         }
     }
 }
