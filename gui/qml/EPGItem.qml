@@ -43,7 +43,9 @@ Item {
                 bottomMargin: 1
                 leftMargin: 1
             }
-            width: (currentTimeSec - startTimeSecSinceEpoch) * pointsPerSec - 1
+            width: mouseAreaId.containsMouse
+                   ? ((currentTimeSec - startTimeSecSinceEpoch) / durationSec) * parent.width
+                   : ((currentTimeSec - startTimeSecSinceEpoch) * pointsPerSec - 1)
         }
         Text {
             id: textId
