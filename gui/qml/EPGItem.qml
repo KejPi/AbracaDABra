@@ -10,16 +10,17 @@ Item {
     signal clicked
     property bool isSelected: false
     property int itemHeight: 50
+    property int viewX: 0
 
     height: itemHeight
     clip: true
-    width: mouseAreaId.containsMouse ? Math.max(textId.width + 10, durationSec * pointsPerSec) : durationSec * pointsPerSec
+    width: mouseAreaId.containsMouse ? Math.max(textId.x + textId.width + 5, durationSec * pointsPerSec) : durationSec * pointsPerSec
     x:  startTimeSec * pointsPerSec
     z: mouseAreaId.containsMouse ? 1000 : index
 
     Rectangle {
         id: rect
-        property bool textFits: (textId.width + 10) <= width
+        property bool textFits: (textId.x + textId.width + 5) <= width
         color: {
             if (endTimeSecSinceEpoch <= currentTimeSec) return "lightgrey";
             if (startTimeSecSinceEpoch >= currentTimeSec) return "white";
@@ -43,17 +44,19 @@ Item {
                 leftMargin: 1
             }
             width: mouseAreaId.containsMouse
-                   ? ((currentTimeSec - startTimeSecSinceEpoch) / durationSec) * parent.width
+                   ? ((currentTimeSec - startTimeSecSinceEpoch) / durationSec) * parent.width - 1
                    : ((currentTimeSec - startTimeSecSinceEpoch) * pointsPerSec - 1)
         }
         Text {
             id: textId
             anchors {
-                left: parent.left
-                leftMargin: 5
+                //left: parent.left
+                //leftMargin: 5
                 top: parent.top
                 bottom: parent.bottom
             }
+            x: (viewX > startTimeSec * pointsPerSec) && (viewX < (endTimeSec * pointsPerSec + 20))
+                ? (viewX - startTimeSec * pointsPerSec + 5) : (parent.x + 5)
             text: name
             font.bold: isSelected
             verticalAlignment: Text.AlignVCenter
@@ -94,7 +97,7 @@ Item {
         samples: 21
         color: "black"
         enabled: true
-        opacity: 0.5
+        opacity: 0.4
         horizontalOffset: -2
         verticalOffset: 0
         visible: !rect.textFits

@@ -87,8 +87,9 @@ Item {
                 right: parent.right
                 bottom: parent.bottom
             }
+            color: "transparent"
             border.color: "lightgray"
-            border.width: 1
+            border.width: 1            
             Flickable {
                 id: mainView
                 flickableDirection: Flickable.VerticalFlick
@@ -200,12 +201,24 @@ Item {
                                                         dateFilter: metadataManager.epgDate(epgTable.dateIndex)
                                                     }
 
+                                                    Text {
+                                                        anchors {
+                                                            top: parent.top
+                                                            bottom: parent.bottom
+                                                        }
+                                                        verticalAlignment: Text.AlignVCenter
+                                                        x: epgTable.contentX + 5
+                                                        text: qsTr("No data available")
+                                                        visible: proxyModel.rowCount === 0
+                                                    }
+
                                                     Repeater {
                                                         model: proxyModel
                                                         //property var modelIndex: proxyModel.mapToSource(proxyModel.index(index, 0))
                                                         delegate: EPGItem {
                                                             itemHeight: lineHeight
                                                             pointsPerSec: pointsPerSecond
+                                                            viewX: epgTable.contentX
                                                             isSelected: selectedEpgItemIndex.valid
                                                                         && (selectedEpgItemIndex.model === proxyModel.mapToSource(proxyModel.index(index, 0)).model)
                                                                         && (selectedEpgItemIndex.row === proxyModel.mapToSource(proxyModel.index(index, 0)).row)
