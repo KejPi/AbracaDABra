@@ -2,12 +2,13 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import ProgrammeGuide
+import Qt5Compat.GraphicalEffects   // required for Qt < 6.5
 
 Item {
     id: mainItemId
     anchors.fill: parent
 
-    property double pointsPerSecond: 1.0/15   // 15 sec/point
+    property double pointsPerSecond: 1.0/10   // 10 sec/point
     property int currentTimeSec: epgTime.secSinceEpoch
     property int lineHeight: 50
     property int serviceListWidth: 200
@@ -61,8 +62,9 @@ Item {
             contentWidth: timeline.width
             //contentX: epgTable.contentX
             boundsBehavior: Flickable.StopAtBounds
-            flickableDirection: Flickable.HorizontalFlick
-            clip: true
+            //boundsBehavior: Flickable.DragAndOvershootBounds
+            flickableDirection: Flickable.HorizontalFlick            
+            //clip: true
             Item {
                 id: timeline
                 height: 20
@@ -70,11 +72,22 @@ Item {
                 Row {
                     Repeater {
                         model: 24
-                        delegate: Text {
-                            text: modelData + ":00"
-                            width: 60 * 60 * pointsPerSecond
-                            height: 20
-                            horizontalAlignment: Text.AlignLeft
+                        delegate: Row {
+                            Text {
+                                id: tst
+                                text: modelData + ":00"
+                                width: 60 * 30 * pointsPerSecond
+                                height: 20
+                                horizontalAlignment: Text.AlignLeft
+                                opacity: 1 - Math.min(timelinebox.contentX  - modelData*3600*pointsPerSecond, 50)/50
+                            }
+                            Text {
+                                text: modelData + ":30"
+                                width: 60 * 30 * pointsPerSecond
+                                height: 20
+                                horizontalAlignment: Text.AlignLeft
+                                opacity: 1 - Math.min(timelinebox.contentX  - (modelData+0.5)*3600*pointsPerSecond, 50)/50
+                            }
                         }
                     }
                 }
