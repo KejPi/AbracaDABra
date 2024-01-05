@@ -355,11 +355,11 @@ void MetadataManager::parseDescription(const QDomElement &element, EPGModelItem 
         }
         else if ("shortDescription" == child.tagName())
         {
-            progItem->setShortDescription(child.text());
+            progItem->setShortDescription(child.text().replace(QChar('\\'),QChar()));
         }
         else if ("longDescription" == child.tagName())
         {
-            progItem->setLongDescription(child.text());
+            progItem->setLongDescription(child.text().replace(QChar('\\'),QChar()));
         }
 
         child = child.nextSiblingElement();

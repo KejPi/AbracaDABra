@@ -45,6 +45,8 @@ SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
     m_useInternet = false;
     m_enaRadioDNS = false;    
     m_useDoH = false;
+
+    QDomImplementation::setInvalidDataPolicy(QDomImplementation::ReturnNullNode);
 }
 
 SPIApp::~SPIApp()
@@ -568,8 +570,12 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 else
                 {
                     QString str = getString(dataPtr, len, true);
-                    //parentElement.appendChild(m_xmldocument.createTextNode(str));
-                    parentElement.appendChild(m_xmldocument.createCDATASection(str));
+                    QDomText txt = m_xmldocument.createTextNode(str);
+                    if (txt.isNull())
+                    {
+                        txt = m_xmldocument.createCDATASection(str);
+                    }
+                    parentElement.appendChild(txt);
                 }
             }
             else { /* error - do nothing here */ }
