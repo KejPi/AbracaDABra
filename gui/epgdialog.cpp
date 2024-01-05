@@ -67,6 +67,8 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectio
 
     //QPushButton * button = new QPushButton("Test", this);
     //layout->addWidget(button);
+    setMinimumWidth(600);
+    setMinimumHeight(400);
 }
 
 EPGDialog::~EPGDialog()
