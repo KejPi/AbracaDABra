@@ -2091,6 +2091,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             m_ensembleInfoDialog->enableRecording(true);
 
+            // metadata & EPG
+            EPGTime::getInstance()->setIsLiveBroadcasting(true);
+
             // apply current settings
             onNewInputDeviceSettings();
         }
@@ -2163,6 +2166,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             m_ensembleInfoDialog->enableRecording(true);
 
+            // metadata & EPG
+            EPGTime::getInstance()->setIsLiveBroadcasting(true);
+
             // apply current settings
             onNewInputDeviceSettings();
         }
@@ -2230,9 +2236,11 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             m_ensembleInfoDialog->enableRecording(true);
 
+            // metadata & EPG
+            EPGTime::getInstance()->setIsLiveBroadcasting(true);
+
             // these are settings that are configures in ini file manually
             // they are only set when device is initialized
-            dynamic_cast<AirspyInput*>(m_inputDevice)->setBiasT(m_setupDialog->settings().airspy.biasT);
             dynamic_cast<AirspyInput*>(m_inputDevice)->setDataPacking(m_setupDialog->settings().airspy.dataPacking);
 
             // apply current settings
@@ -2311,6 +2319,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             m_ensembleInfoDialog->enableRecording(true);
 
+            // metadata & EPG
+            EPGTime::getInstance()->setIsLiveBroadcasting(true);
+
             // these are settings that are configures in ini file manually
             // they are only set when device is initialized
             dynamic_cast<SoapySdrInput*>(m_inputDevice)->setBW(m_setupDialog->settings().soapysdr.bandwidth);
@@ -2378,6 +2389,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // show XML header is available
             m_setupDialog->setXmlHeader(m_inputDevice->deviceDescription());
+
+            // metadata & EPG
+            EPGTime::getInstance()->setIsLiveBroadcasting(true);
 
             // apply current settings
             onNewInputDeviceSettings();

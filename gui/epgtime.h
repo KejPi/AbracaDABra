@@ -30,6 +30,7 @@
 #include <QObject>
 #include <QDateTime>
 #include <QTimer>
+#include <QTimeZone>
 
 // singleton class
 class EPGTime : public QObject
@@ -37,18 +38,19 @@ class EPGTime : public QObject
     Q_OBJECT
     Q_PROPERTY(qint64 secSinceEpoch READ secSinceEpoch WRITE setSecSinceEpoch NOTIFY secSinceEpochChanged FINAL)
     Q_PROPERTY(QString currentDateString READ currentDateString WRITE setCurrentDateString NOTIFY currentDateStringChanged FINAL)
+    Q_PROPERTY(QString currentTimeString READ currentTimeString WRITE setCurrentTimeString NOTIFY currentTimeStringChanged FINAL)
 public:
     EPGTime(const EPGTime& obj) = delete;   // deleting copy constructor
     ~EPGTime();
     static EPGTime *getInstance();
-    QDateTime currentTime() const { return m_dabTime; }
-    Q_INVOKABLE QDate currentDate() const { return m_dabTime.date(); }
+    QDateTime currentTime() const { return m_currentTime; }
+    Q_INVOKABLE QDate currentDate() const { return m_currentTime.date(); }
     Q_INVOKABLE bool isCurrentDate(const QDate & date) const { return date == currentDate(); }
 
     qint64 secSinceEpoch() const;
     void setSecSinceEpoch(qint64 newSecSinceEpoch);
 
-    Q_INVOKABLE int secSinceMidnight() const { return m_dabTime.date().startOfDay().secsTo(m_dabTime); }
+    Q_INVOKABLE int secSinceMidnight() const { return m_currentTime.date().startOfDay().secsTo(m_currentTime); }
 
     void onDabTime(const QDateTime & d);
     void setIsLiveBroadcasting(bool newIsLiveBroadcasting);
@@ -59,10 +61,17 @@ public:
     QLocale timeLocale() const;
     void setTimeLocale(const QLocale &newTimeLocale);
 
+    bool isValid() const { return m_secSinceEpoch > 0; }
+
+    QString currentTimeString() const;
+    void setCurrentTimeString(const QString &newCurrentTimeString);
+
 signals:
     void secSinceEpochChanged();
 
     void currentDateStringChanged();
+
+    void currentTimeStringChanged();
 
 private:
     EPGTime();
@@ -70,12 +79,14 @@ private:
     void onTimerTimeout();
 
     static EPGTime * m_instancePtr;
-    QDateTime m_dabTime;
+    QDateTime m_currentTime;
+    int m_ltoSec;
     QTimer * m_minuteTimer;
     qint64 m_secSinceEpoch;
     bool m_isLiveBroadcasting;
     QString m_currentDateString;
     QLocale m_timeLocale;
+    QString m_currentTimeString;
 };
 
 #endif // EPGTIME_H

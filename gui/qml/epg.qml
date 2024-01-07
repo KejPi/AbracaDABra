@@ -49,6 +49,20 @@ Item {
             topMargin: 10
             bottomMargin: 20
         }
+        Text {
+            id: currentTimeText
+            anchors {
+                top: parent.top
+                left: parent.left
+                right: parent.right
+                leftMargin: 3
+            }
+            width: implicitWidth
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            text: qsTr("Now: ") + epgTime.currentTimeString
+        }
+
         Flickable {
             id: timelinebox
             height: 20
@@ -222,10 +236,10 @@ Item {
                                                         verticalAlignment: Text.AlignVCenter
                                                         x: epgTable.contentX + 5
                                                         text: qsTr("No data available")
-                                                        visible: proxyModel.rowCount === 0
+                                                        visible: epgItemRepeater.count == 0
                                                     }
-
                                                     Repeater {
+                                                        id: epgItemRepeater
                                                         model: proxyModel
                                                         //property var modelIndex: proxyModel.mapToSource(proxyModel.index(index, 0))
                                                         delegate: EPGItem {
@@ -289,7 +303,7 @@ Item {
                                     }
                                     Component.onCompleted: {
                                         if (epgTime.isCurrentDate(metadataManager.epgDate(epgTable.dateIndex))) {
-                                            timelinebox.contentX = (Math.floor(epgTime.secSinceMidnight() / 3600) - 1) * 3600 * pointsPerSecond;
+                                            timelinebox.contentX = (Math.round(epgTime.secSinceMidnight() / 3600) - 0.5) * 3600 * pointsPerSecond;
                                         }
                                         else {
                                             timelinebox.contentX = 0;

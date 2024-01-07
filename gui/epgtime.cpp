@@ -46,6 +46,7 @@ EPGTime::EPGTime() : QObject(nullptr)
     m_minuteTimer = new QTimer();
     m_minuteTimer->setInterval(1000*60); // 1 minute
     m_isLiveBroadcasting = true;
+    m_secSinceEpoch = 0;
 }
 
 EPGTime::~EPGTime()
@@ -56,16 +57,29 @@ EPGTime::~EPGTime()
 
 void EPGTime::setTime(const QDateTime & time)
 {
-    m_dabTime = time;
-    setSecSinceEpoch(m_dabTime.toSecsSinceEpoch());
-    setCurrentDateString(m_dabTime.date().toString("dd.MM.yyyy"));
+    if (!isValid())
+    {   // evaluate timezone
+        if (m_isLiveBroadcasting)
+        {   // time zone is taken from system
+            m_ltoSec = QDateTime::currentDateTime().offsetFromUtc();
+        }
+        else
+        {   // using timezone from DAB
+            m_ltoSec = time.offsetFromUtc();
+        }
+        qDebug() << "LTO [minutes]" << m_ltoSec/60;
+    }
+    m_currentTime = time.toTimeZone(QTimeZone::fromSecondsAheadOfUtc(m_ltoSec));
+    setSecSinceEpoch(m_currentTime.toSecsSinceEpoch());
+    setCurrentDateString(m_currentTime.date().toString("dd.MM.yyyy"));
+    setCurrentTimeString(m_currentTime.time().toString("HH:mm"));
 }
 
 void EPGTime::onTimerTimeout()
 {
-    if (m_dabTime.isValid())
+    if (m_currentTime.isValid())
     {
-        setTime(m_dabTime.addSecs(60));
+        setTime(m_currentTime.addSecs(60));
     }
 }
 
@@ -81,7 +95,12 @@ void EPGTime::setTimeLocale(const QLocale &newTimeLocale)
 
 void EPGTime::setIsLiveBroadcasting(bool newIsLiveBroadcasting)
 {
-    m_isLiveBroadcasting = newIsLiveBroadcasting;
+    if (newIsLiveBroadcasting != m_isLiveBroadcasting)
+    {
+        m_isLiveBroadcasting = newIsLiveBroadcasting;
+        // reset time value
+        m_secSinceEpoch = 0;
+    }
 }
 
 
@@ -115,4 +134,17 @@ void EPGTime::setCurrentDateString(const QString &newCurrentDateString)
         return;
     m_currentDateString = newCurrentDateString;
     emit currentDateStringChanged();
+}
+
+QString EPGTime::currentTimeString() const
+{
+    return m_currentTimeString;
+}
+
+void EPGTime::setCurrentTimeString(const QString &newCurrentTimeString)
+{
+    if (m_currentTimeString == newCurrentTimeString)
+        return;
+    m_currentTimeString = newCurrentTimeString;
+    emit currentTimeStringChanged();
 }
