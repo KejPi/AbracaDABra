@@ -33,7 +33,7 @@ SLModel::SLModel(const ServiceList *sl, const MetadataManager *mm, QObject *pare
     , m_metadataMgrPtr(mm)
 {
 
-    connect(m_metadataMgrPtr, &MetadataManager::epgModelAvailable, this, &SLModel::epgModelAvailable);
+    connect(m_metadataMgrPtr, &MetadataManager::epgModelChanged, this, &SLModel::epgModelChanged);
     connect(m_metadataMgrPtr, &MetadataManager::dataUpdated, this, &SLModel::metadataUpdated);
 
     QPixmap nopic(20,20);
@@ -221,7 +221,7 @@ void SLModel::removeService(const ServiceListId & servId)
     }
 }
 
-void SLModel::epgModelAvailable(const ServiceListId &servId)
+void SLModel::epgModelChanged(const ServiceListId &servId)
 {
     // first find service in the list
     for (int row = 0; row < m_serviceItems.size(); ++row)

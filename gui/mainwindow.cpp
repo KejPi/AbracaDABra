@@ -401,12 +401,16 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     f.setBold(true);
     ui->serviceLabel->setFont(f);
 
+    // service list
+    m_serviceList = new ServiceList;
+
     // metadata
     m_metadataManager = new MetadataManager(this);
     connect(m_metadataManager, &MetadataManager::dataUpdated, this, &MainWindow::onMetadataUpdated);
-
-    // service list
-    m_serviceList = new ServiceList;
+    connect(m_serviceList, &ServiceList::serviceAdded, m_metadataManager, &MetadataManager::addServiceEpg);
+    connect(m_serviceList, &ServiceList::serviceRemoved, m_metadataManager, &MetadataManager::removeServiceEpg);
+    connect(m_serviceList, &ServiceList::empty, m_metadataManager, &MetadataManager::clearEpg);
+    connect(EPGTime::getInstance(), &EPGTime::haveValidTime, m_metadataManager, &MetadataManager::onValidEpgTime);
 
     m_slModel = new SLModel(m_serviceList, m_metadataManager, this);
     connect(m_serviceList, &ServiceList::serviceAdded, m_slModel, &SLModel::addService);
@@ -2391,7 +2395,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             m_setupDialog->setXmlHeader(m_inputDevice->deviceDescription());
 
             // metadata & EPG
-            EPGTime::getInstance()->setIsLiveBroadcasting(true);
+            EPGTime::getInstance()->setIsLiveBroadcasting(false);
 
             // apply current settings
             onNewInputDeviceSettings();

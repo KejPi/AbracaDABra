@@ -51,6 +51,7 @@ public:
     };
 
     explicit MetadataManager(QObject * parent = nullptr);
+    ~MetadataManager();
     void processXML(const QString &xmldocument, uint16_t decoderId);
     void onFileReceived(const QByteArray & data, const QString & requestId);
     QVariant data(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role) const;
@@ -60,17 +61,21 @@ public:
 
     Q_INVOKABLE QDate epgDate(int idx) const;
     QStringList epgDatesList() const;
-    void loadEpg();
+
+    void onValidEpgTime();
+    void addServiceEpg(const ServiceListId & servId);
+    void removeServiceEpg(const ServiceListId & servId);
+    void clearEpg();
 
 signals:
     void getFile(uint16_t decoderId, const QString & url, const QString & requestId);
     void dataUpdated(const ServiceListId & id, MetadataManager::MetadataRole role);
-    void epgModelAvailable(const ServiceListId & id);
-
+    void epgModelChanged(const ServiceListId & id);
     void epgDatesListChanged();
 
 private:
     bool m_isLoadingFromCache;
+    bool m_cleanEpgCache;
     QMap<QDate, QString> m_epgDates;
     QHash<QString, serviceInfo_t> m_info;
     QHash<ServiceListId, EPGModel *> m_epgList;
@@ -81,6 +86,7 @@ private:
 
     ServiceListId bearerToServiceId(const QString & bearerUri) const;
 
+    void loadEpg(const ServiceListId & id);
     void addEpgDate(const QDate &date);
 };
 

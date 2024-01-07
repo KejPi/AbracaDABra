@@ -75,7 +75,7 @@ public slots:
     void addService(const ServiceListId & servId);
     void updateService(const ServiceListId & servId);
     void removeService(const ServiceListId & servId);
-    void epgModelAvailable(const ServiceListId & servId);
+    void epgModelChanged(const ServiceListId & servId);
     void metadataUpdated(const ServiceListId &servId, MetadataManager::MetadataRole role);
     void clear();
 

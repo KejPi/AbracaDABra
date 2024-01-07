@@ -35,16 +35,42 @@
 #include <QThread>
 #include <QLoggingCategory>
 
+#include "epgtime.h"
 #include "metadatamanager.h"
 #include "spiapp.h"
 
 
 Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtInfoMsg)
 
-MetadataManager::MetadataManager(QObject *parent) : QObject(parent), m_isLoadingFromCache(false)
+MetadataManager::MetadataManager(QObject *parent) : QObject(parent), m_isLoadingFromCache(false), m_cleanEpgCache(true)
 {
-    loadEpg();
 }
+
+MetadataManager::~MetadataManager()
+{
+    if (m_cleanEpgCache && EPGTime::getInstance()->isValid())
+    {   // do chache maintenance
+        QDir directory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)  + "/EPG/");
+        QStringList xmlFiles = directory.entryList({"*_PI.xml"}, QDir::Files);
+        QString currentDateStr = EPGTime::getInstance()->currentDate().addDays(-2).toString("yyyyMMdd");
+        for (const QString & filename : xmlFiles)
+        {
+#if 0
+            QDate scopeDate = QDate::fromString(filename.first(8), "yyyyMMdd");
+            if (scopeDate < EPGTime::getInstance()->currentDate().addDays(-2))
+            {   // scope is out of range
+                qDebug() << "File" << filename << "is old ===> to be deleted";
+            }
+#else
+            if (filename.first(8) < currentDateStr)
+            {   // scope is out of range
+                qDebug() << "File" << filename << "is old ===> to be deleted";
+            }
+#endif
+        }
+    }
+}
+
 
 void MetadataManager::processXML(const QString &xml, uint16_t decoderId)
 {
@@ -268,10 +294,13 @@ void MetadataManager::processXML(const QString &xml, uint16_t decoderId)
 
                         if (!m_isLoadingFromCache)
                         {   // save parsed file to the cache
-                            // "20140805_e1.ce15.c221.0_PI.xml" for DAB.
-                            QString filename = QString("%1/EPG/%2_%3_PI.xml").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation),
-                                                                              QDateTime::fromString(scopeStart, Qt::ISODate).toString("yyyyMMdd"),
-                                                                              scopeId.last(scopeId.length()-4));
+                            // "20140805_e1c221.0_PI.xml"
+                            QString filename = QString("%1/EPG/%2_%3.%4_PI.xml").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation),
+                                                                                     QDateTime::fromString(scopeStart, Qt::ISODate).toString("yyyyMMdd"))
+                                                   .arg(id.sid(), 6, 16, QChar('0')).arg(id.scids());
+
+
+
                             QDir dir;
                             dir.mkpath(QFileInfo(filename).absolutePath());
                             QFile file(filename);
@@ -333,10 +362,10 @@ void MetadataManager::parseProgramme(const QDomElement &element, const ServiceLi
         child = child.nextSiblingElement();
     }
 
-    if (!m_epgList.contains(id))
+    if (m_epgList.value(id, nullptr) == nullptr)
     {
         m_epgList[id] = new EPGModel(this);
-        emit epgModelAvailable(id);
+        emit epgModelChanged(id);
     }
     //qDebug() << "Adding item" << progItem->shortId();
     addEpgDate(progItem->startTime().date());
@@ -555,25 +584,128 @@ QStringList MetadataManager::epgDatesList() const
     return m_epgDates.values();
 }
 
-void MetadataManager::loadEpg()
+void MetadataManager::loadEpg(const ServiceListId &id)
 {
-    m_isLoadingFromCache = true;
-    // load all files in cache
-    QDir directory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)  + "/EPG/");
-    QStringList xmlFiles = directory.entryList({"*.xml"}, QDir::Files);
-    int cntr = 0;
-    for (const QString & filename : xmlFiles)
+    if (EPGTime::getInstance()->isValid())
     {
-        QFile xmlfile(directory.absolutePath() + "/" + filename);
-        qDebug() << "Loading:" << xmlfile.fileName();
-        if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
-        {
-            QTextStream in(&xmlfile);
-            processXML(qPrintable(in.readAll()), SPI_APP_INVALID_DECODER_ID);
-            xmlfile.close();
+        m_isLoadingFromCache = true;
+
+        QDir directory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)  + "/EPG/");
+
+        if (id.isValid())
+        {   // load specified service
+            QString fileFilter = QString("*_%1.*_PI.xml").arg(id.sid(), 6, 16, QChar('0'));
+            QStringList xmlFiles = directory.entryList({fileFilter}, QDir::Files);
+            for (const QString & filename : xmlFiles)
+            {
+                QDate scopeDate = QDate::fromString(filename.first(8), "yyyyMMdd");
+                if (scopeDate >= EPGTime::getInstance()->currentDate().addDays(-2))
+                {   // scope is in range
+                    QFile xmlfile(directory.absolutePath() + "/" + filename);
+                    qDebug() << "Loading:" << xmlfile.fileName();
+                    if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
+                    {
+                        QTextStream in(&xmlfile);
+                        processXML(qPrintable(in.readAll()), SPI_APP_INVALID_DECODER_ID);
+                        xmlfile.close();
+                    }
+                }
+                else
+                {   // old file -> delete it
+                    // qDebug() << "File" << filename << "is old ===> to be deleted" << scopeDate << EPGTime::getInstance()->currentDate();
+                }
+            }
         }
+        else
+        {   // load all available services
+            QStringList xmlFiles = directory.entryList({"*_PI.xml"}, QDir::Files);
+            for (const QString & filename : xmlFiles)
+            {
+                QDate scopeDate = QDate::fromString(filename.first(8), "yyyyMMdd");
+                if (scopeDate >= EPGTime::getInstance()->currentDate().addDays(-2))
+                {   // scope is in range
+
+                    // check if service is available
+                    static const QRegularExpression re("[0-9]{6}_([0-9a-f]{6})\\.[0-9]_PI\\.xml", QRegularExpression::CaseInsensitiveOption);
+                    QRegularExpressionMatch match = re.match(filename);
+                    if (match.hasMatch())
+                    {
+                        ServiceListId id(match.captured(1).toInt(nullptr, 16));
+                        if (m_epgList.contains(id))
+                        {
+                            QFile xmlfile(directory.absolutePath() + "/" + filename);
+                            qDebug() << "Loading:" << xmlfile.fileName();
+                            if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
+                            {
+                                QTextStream in(&xmlfile);
+                                processXML(qPrintable(in.readAll()), SPI_APP_INVALID_DECODER_ID);
+                                xmlfile.close();
+                            }
+                        }
+                        else
+                        {
+                            qDebug() << "Service not found:" << filename;
+                        }
+                    }
+                }
+                else
+                {   // old file -> delete it
+                    // qDebug() << "File" << filename << "is old ===> to be deleted";
+                }
+            }
+        }
+        m_isLoadingFromCache = false;
     }
-    m_isLoadingFromCache = false;
+    else
+    { /* invalid EPG time => cannot load anything */ }
+}
+
+void MetadataManager::onValidEpgTime()
+{
+    qDebug() << Q_FUNC_INFO;
+    loadEpg(ServiceListId());
+}
+
+void MetadataManager::addServiceEpg(const ServiceListId &servId)
+{
+    qDebug() << Q_FUNC_INFO << QString("%1").arg(servId.sid(), 6, 16, QChar('0')) << EPGTime::getInstance()->isValid();
+    if (!m_epgList.contains(servId))
+    {   // if service is not in EPG list ==> create record
+        m_epgList[servId] = nullptr;
+    }
+
+    if (EPGTime::getInstance()->isValid())
+    {   // we can read data from cache
+        loadEpg(servId);
+    }
+}
+
+void MetadataManager::removeServiceEpg(const ServiceListId &servId)
+{
+    qDebug() << Q_FUNC_INFO << QString("%1").arg(servId.sid(), 6, 16, QChar('0'));
+    if (m_epgList.value(servId, nullptr) != nullptr)
+    {
+        delete m_epgList[servId];
+        m_epgList.remove(servId);
+        emit epgModelChanged(servId);
+    }
+    else
+    {
+        m_epgList.remove(servId);
+    }
+}
+
+void MetadataManager::clearEpg()
+{
+    qDebug() << Q_FUNC_INFO;
+
+    // remove all EPG models
+    for (const ServiceListId id : m_epgList.keys())
+    {
+        removeServiceEpg(id);
+    }
+    m_epgDates.clear();
+    emit epgDatesListChanged();
 }
 
 void MetadataManager::addEpgDate(const QDate &date)

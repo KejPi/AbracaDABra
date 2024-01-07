@@ -68,6 +68,8 @@ void EPGTime::setTime(const QDateTime & time)
             m_ltoSec = time.offsetFromUtc();
         }
         qDebug() << "LTO [minutes]" << m_ltoSec/60;
+
+        emit haveValidTime();
     }
     m_currentTime = time.toTimeZone(QTimeZone::fromSecondsAheadOfUtc(m_ltoSec));
     setSecSinceEpoch(m_currentTime.toSecsSinceEpoch());
@@ -95,8 +97,9 @@ void EPGTime::setTimeLocale(const QLocale &newTimeLocale)
 
 void EPGTime::setIsLiveBroadcasting(bool newIsLiveBroadcasting)
 {
-    if (newIsLiveBroadcasting != m_isLiveBroadcasting)
-    {
+    if ((newIsLiveBroadcasting == false) || (newIsLiveBroadcasting != m_isLiveBroadcasting))
+    {   // switching raw file
+        // or switching between live and file
         m_isLiveBroadcasting = newIsLiveBroadcasting;
         // reset time value
         m_secSinceEpoch = 0;

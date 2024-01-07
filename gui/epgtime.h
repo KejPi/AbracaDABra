@@ -73,6 +73,8 @@ signals:
 
     void currentTimeStringChanged();
 
+    void haveValidTime();
+
 private:
     EPGTime();
     void setTime(const QDateTime &time);
