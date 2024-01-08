@@ -89,3 +89,30 @@ void EPGDialog::setSelectedEpgItem(const QPersistentModelIndex &newSelectedEpgIt
     m_selectedEpgItem = newSelectedEpgItem;
     emit selectedEpgItemChanged();
 }
+
+bool EPGDialog::isVisible() const
+{
+    return m_isVisible;
+}
+
+void EPGDialog::setIsVisible(bool newIsVisible)
+{
+    if (m_isVisible == newIsVisible)
+        return;
+    m_isVisible = newIsVisible;
+    emit isVisibleChanged();
+}
+
+void EPGDialog::showEvent(QShowEvent *event)
+{
+    qDebug() << Q_FUNC_INFO;
+    setIsVisible(true);
+    QDialog::showEvent(event);
+}
+
+void EPGDialog::closeEvent(QCloseEvent *event)
+{
+    qDebug() << Q_FUNC_INFO;
+    setIsVisible(false);
+    QDialog::closeEvent(event);
+}

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -366,6 +366,7 @@ void MetadataManager::parseProgramme(const QDomElement &element, const ServiceLi
     {
         m_epgList[id] = new EPGModel(this);
         emit epgModelChanged(id);
+        emit epgAvailable();
     }
     //qDebug() << "Adding item" << progItem->shortId();
     addEpgDate(progItem->startTime().date());
@@ -698,6 +699,8 @@ void MetadataManager::removeServiceEpg(const ServiceListId &servId)
 void MetadataManager::clearEpg()
 {
     qDebug() << Q_FUNC_INFO;
+
+    emit epgEmpty();
 
     // remove all EPG models
     for (const ServiceListId id : m_epgList.keys())

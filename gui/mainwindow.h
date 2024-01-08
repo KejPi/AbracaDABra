@@ -77,7 +77,6 @@ public:
     ~MainWindow();
     bool eventFilter(QObject * o, QEvent * e);
 
-
 signals:
     void serviceRequest(uint32_t freq, uint32_t SId, uint8_t SCIdS);
     void stopUserApps();
@@ -112,6 +111,7 @@ private:
     // UI and dialogs
     Ui::MainWindow *ui;
     SetupDialog * m_setupDialog;
+    EPGDialog * m_epgDialog;
     EnsembleInfoDialog * m_ensembleInfoDialog;
     CatSLSDialog * m_catSlsDialog;
     LogDialog * m_logDialog;
@@ -287,6 +287,7 @@ private:
     void onAudioRecordingStopped();
     void onAudioRecordingProgress(size_t bytes, size_t timeSec);
     void onMetadataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role);
+    void onEpgEmpty();
 };
 
 class DLPlusObjectUI

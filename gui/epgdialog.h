@@ -41,6 +41,7 @@ class EPGDialog : public QDialog
 {
     Q_OBJECT
     Q_PROPERTY(QPersistentModelIndex selectedEpgItem READ selectedEpgItem WRITE setSelectedEpgItem NOTIFY selectedEpgItemChanged FINAL)
+    Q_PROPERTY(bool isVisible READ isVisible WRITE setIsVisible NOTIFY isVisibleChanged FINAL)
 
 public:
     explicit EPGDialog(SLModel *serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager *metadataManager, QWidget *parent = nullptr);
@@ -49,8 +50,17 @@ public:
     QPersistentModelIndex selectedEpgItem() const;
     void setSelectedEpgItem(const QPersistentModelIndex &newSelectedEpgItem);
 
+    bool isVisible() const;
+    void setIsVisible(bool newIsVisible);
+
 signals:
     void selectedEpgItemChanged();
+
+    void isVisibleChanged();
+
+protected:
+    void showEvent(QShowEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::EPGDialog *ui;
@@ -59,6 +69,7 @@ private:
     MetadataManager * m_metadataManager;
     SLModel * m_serviceListModel;
     QPersistentModelIndex m_selectedEpgItem;
+    bool m_isVisible;
 };
 
 

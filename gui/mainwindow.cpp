@@ -318,7 +318,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_audioRecordingAction, &QAction::triggered, this, &MainWindow::audioRecordingToggle);
 
     m_epgAction = new QAction(tr("Programme guide..."), this);
-    connect(m_epgAction, &QAction::triggered, this, &MainWindow::showEPG);
+    m_epgAction->setEnabled(false);
+    connect(m_epgAction, &QAction::triggered, this, &MainWindow::showEPG);    
 
     m_logAction = new QAction(tr("Application log"), this);
     connect(m_logAction, &QAction::triggered, this, &MainWindow::showLog);
@@ -436,6 +437,11 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->serviceTreeView->installEventFilter(this);
     connect(ui->serviceTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::onServiceListTreeSelection);
     connect(m_serviceList, &ServiceList::empty, m_slTreeModel, &SLTreeModel::clear);
+
+    // EPG dialog
+    m_epgDialog = new EPGDialog(m_slModel, ui->serviceListView->selectionModel(), m_metadataManager, this);
+    connect(m_metadataManager, &MetadataManager::epgAvailable, this, [this](){ m_epgAction->setEnabled(true); } );
+    connect(m_metadataManager, &MetadataManager::epgEmpty, this, &MainWindow::onEpgEmpty);
 
     // fill channel list
     int freqLabelMaxWidth = 0;
@@ -1896,6 +1902,12 @@ void MainWindow::onMetadataUpdated(const ServiceListId & id, MetadataManager::Me
     }
 }
 
+void MainWindow::onEpgEmpty()
+{
+    m_epgDialog->close();
+    m_epgAction->setEnabled(false);
+}
+
 void MainWindow::clearEnsembleInformationLabels()
 {
     m_timeLabel->setText("");
@@ -2848,11 +2860,9 @@ void MainWindow::showEnsembleInfo()
 
 void MainWindow::showEPG()
 {
-    EPGDialog * epgDialog = new EPGDialog(m_slModel, ui->serviceListView->selectionModel(), m_metadataManager, this);
-    connect(epgDialog, &QDialog::finished, epgDialog, &QDialog::deleteLater);
-    epgDialog->show();
-    epgDialog->raise();
-    epgDialog->activateWindow();
+    m_epgDialog->show();
+    m_epgDialog->raise();
+    m_epgDialog->activateWindow();
 }
 
 void MainWindow::showAboutDialog()
