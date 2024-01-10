@@ -135,8 +135,11 @@ void EPGModel::addItem(EPGModelItem *item)
 {
     if (item->isValid())
     {
-        if (m_shortIdList.contains(item->shortId()))
+        if (m_startTimeList.contains(item->startTime()))
         {   // already in list
+            if (item->shortId() != m_startTimeList[item->startTime()]) {
+                qDebug() << "Unexpected EPG item ID" << item->shortId() << "start time:" << item->startTime();
+            }
             delete item;
             return;
         }
@@ -145,7 +148,7 @@ void EPGModel::addItem(EPGModelItem *item)
         //qDebug() << "Adding item #" << item->shortId() <<item->shortName() << item->mediumName() << item->longName()
         //                            << item->startTime().toString() << item->durationSec();
         beginInsertRows(QModelIndex(), m_itemList.size(), m_itemList.size());
-        m_shortIdList.insert(item->shortId());
+        m_startTimeList[item->startTime()] = item->shortId();
         m_itemList.append(item);
         endInsertRows();
     }

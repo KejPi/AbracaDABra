@@ -62,7 +62,7 @@ public:
     void addItem(EPGModelItem *item);
     void populateWithList(const QList<EPGModelItem *> & list);
 private:
-    QSet<int> m_shortIdList;
+    QHash<QDateTime, int> m_startTimeList;
     QList<EPGModelItem *> m_itemList;
 };
 

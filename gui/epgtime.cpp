@@ -65,7 +65,7 @@ void EPGTime::setTime(const QDateTime & time)
         }
         else
         {   // using timezone from DAB
-            m_ltoSec = time.offsetFromUtc();
+            m_ltoSec = time.toLocalTime().offsetFromUtc();
         }
         qDebug() << "LTO [minutes]" << m_ltoSec/60;
 

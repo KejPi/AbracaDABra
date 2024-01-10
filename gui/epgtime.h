@@ -66,6 +66,8 @@ public:
     QString currentTimeString() const;
     void setCurrentTimeString(const QString &newCurrentTimeString);
 
+    int ltoSec() const { return m_ltoSec; }
+
 signals:
     void secSinceEpochChanged();
 

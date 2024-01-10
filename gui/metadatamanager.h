@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -82,9 +82,8 @@ private:
     QHash<QString, serviceInfo_t> m_info;
     QHash<ServiceListId, EPGModel *> m_epgList;
 
-    void parseProgramme(const QDomElement &element, const ServiceListId &id);
+    void parseProgramme(const QDomElement &element, const ServiceListId &id);    
     void parseDescription(const QDomElement &element, EPGModelItem *progItem);
-    void parseLocation(const QDomElement &element, EPGModelItem *progItem);
 
     ServiceListId bearerToServiceId(const QString & bearerUri) const;
 

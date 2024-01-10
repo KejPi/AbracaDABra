@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,21 +52,14 @@ MetadataManager::~MetadataManager()
     {   // do chache maintenance
         QDir directory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)  + "/EPG/");
         QStringList xmlFiles = directory.entryList({"*_PI.xml"}, QDir::Files);
-        QString currentDateStr = EPGTime::getInstance()->currentDate().addDays(-2).toString("yyyyMMdd");
+        QString currentDateStr2 = EPGTime::getInstance()->currentDate().addDays(-2).toString("yyyyMMdd");
         for (const QString & filename : xmlFiles)
         {
-#if 0
-            QDate scopeDate = QDate::fromString(filename.first(8), "yyyyMMdd");
-            if (scopeDate < EPGTime::getInstance()->currentDate().addDays(-2))
+            if (filename.first(8) < currentDateStr2)
             {   // scope is out of range
-                qDebug() << "File" << filename << "is old ===> to be deleted";
+                qDebug() << "File" << filename << "is old ===> deleting";
+                directory.remove(filename);
             }
-#else
-            if (filename.first(8) < currentDateStr)
-            {   // scope is out of range
-                qDebug() << "File" << filename << "is old ===> to be deleted";
-            }
-#endif
         }
     }
 }
@@ -296,7 +289,7 @@ void MetadataManager::processXML(const QString &xml, uint16_t decoderId)
                         {   // save parsed file to the cache
                             // "20140805_e1c221.0_PI.xml"
                             QString filename = QString("%1/EPG/%2_%3.%4_PI.xml").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation),
-                                                                                     QDateTime::fromString(scopeStart, Qt::ISODate).toString("yyyyMMdd"))
+                                                                                     QDateTime::fromString(scopeStart, Qt::ISODate).toUTC().toOffsetFromUtc(EPGTime::getInstance()->ltoSec()).toString("yyyyMMdd"))
                                                    .arg(id.sid(), 6, 16, QChar('0')).arg(id.scids());
 
 
@@ -331,7 +324,8 @@ void MetadataManager::processXML(const QString &xml, uint16_t decoderId)
 }
 
 void MetadataManager::parseProgramme(const QDomElement &element, const ServiceListId & id)
-{        
+{
+#if 0
     QDomElement child = element.firstChildElement();
     EPGModelItem * progItem = new EPGModelItem;
     progItem->setShortId(element.attribute("shortId").toInt());
@@ -369,48 +363,35 @@ void MetadataManager::parseProgramme(const QDomElement &element, const ServiceLi
         emit epgAvailable();
     }
     //qDebug() << "Adding item" << progItem->shortId();
-    addEpgDate(progItem->startTime().date());
-    m_epgList[id]->addItem(progItem);
-}
-
-void MetadataManager::parseDescription(const QDomElement &element, EPGModelItem *progItem)
-{
-    QDomElement child = element.firstChildElement();
-    while (!child.isNull())
+    if (progItem->startTime().date() < EPGTime::getInstance()->currentDate().addDays(7))
     {
-        //qDebug() << "---" << child.tagName();
-        if ("location" == child.tagName())
-        {
-            parseLocation(child, progItem);
-        }
-        else if ("shortDescription" == child.tagName())
-        {
-            progItem->setShortDescription(child.text().replace(QChar('\\'),QChar()));
-        }
-        else if ("longDescription" == child.tagName())
-        {
-            progItem->setLongDescription(child.text().replace(QChar('\\'),QChar()));
-        }
-
-        child = child.nextSiblingElement();
+        addEpgDate(progItem->startTime().date());
+        m_epgList[id]->addItem(progItem);
     }
-}
-void MetadataManager::parseLocation(const QDomElement &element, EPGModelItem * progItem)
-{
-    QDomElement child = element.firstChildElement();
-    while (!child.isNull())
+#endif
+    // multiple times for single record
+
+
+    // ETSI TS 102 818 V3.3.1 (2020-08) [7.8]
+    // The location element may appear zero or more times within a programme or programmeEvent element.
+    QList<EPGModelItem *> itemList;
+    int ltoSec = EPGTime::getInstance()->ltoSec();
+    QDomElement locationElement = element.firstChildElement("location");
+    while (!locationElement.isNull())
     {
-        //qDebug() << "---" << child.tagName();
-        if ("time" == child.tagName())
+        QDomElement timeElement = locationElement.firstChildElement("time");
+        while (!timeElement.isNull())
         {
-            // qDebug() << child.attribute("time") << QDateTime::fromString(child.attribute("time"), Qt::ISODate);
-            progItem->setStartTime(QDateTime::fromString(child.attribute("time"), Qt::ISODate));
+            EPGModelItem * progItem = new EPGModelItem;
+
+            QDateTime startTime = QDateTime::fromString(timeElement.attribute("time"), Qt::ISODate);
+            progItem->setStartTime(startTime.toUTC().toOffsetFromUtc(ltoSec));
 
             // ETSI TS 102 818 V3.3.1 (2020-08) [5.2.5 duration type]
             // Duration is based on the ISO 8601 [2] format: PTnHnMnS, where "T" represents the date/time separator,
             // "nH" the number of hours, "nM" the number of minutes and "nS" the number of seconds.
             static const QRegularExpression durationRe("^PT((\\d+)H)?((\\d+)M)?((\\d+)S)?");
-            QRegularExpressionMatch match = durationRe.match(child.attribute("duration"));
+            QRegularExpressionMatch match = durationRe.match(timeElement.attribute("duration"));
             int duration = 0;
             if (match.hasMatch())
             {
@@ -420,13 +401,90 @@ void MetadataManager::parseLocation(const QDomElement &element, EPGModelItem * p
                 duration += 60 * (match.captured(4).isEmpty() ? 0 : match.captured(4).toInt());
                 // seconds
                 duration += (match.captured(6).isEmpty() ? 0 : match.captured(6).toInt());
+
+                progItem->setDurationSec(duration);
+                progItem->setShortId(element.attribute("shortId").toInt());
+
+                itemList.append(progItem);
             }
-            // qDebug() << child.attribute("duration") << "===>" << duration;
-            progItem->setDurationSec(duration);
+            else
+            {   // duration not valid
+                delete progItem;
+            }
+
+            timeElement = timeElement.nextSiblingElement("time");
         }
-        else if ("bearer" == child.tagName())
+        locationElement = locationElement.nextSiblingElement("location");
+    }
+
+    QDomElement child = element.firstChildElement();
+    while (!child.isNull())
+    {
+        if ("longName" == child.tagName())
         {
-            qDebug() << child.text();
+            for (auto & progItem : itemList)
+            {
+                progItem->setLongName(child.text());
+            }
+        }
+        else if ("mediumName" == child.tagName())
+        {
+            for (auto & progItem : itemList)
+            {
+                progItem->setMediumName(child.text());
+            }
+        }
+        else if ("shortName" == child.tagName())
+        {
+            for (auto & progItem : itemList)
+            {
+                progItem->setShortName(child.text());
+            }
+        }
+        else if ("mediaDescription" == child.tagName())
+        {
+            for (auto & progItem : itemList)
+            {
+                parseDescription(child, progItem);
+            }
+        }
+
+        child = child.nextSiblingElement();
+    }
+
+    if (m_epgList.value(id, nullptr) == nullptr)
+    {
+        m_epgList[id] = new EPGModel(this);
+        emit epgModelChanged(id);
+        emit epgAvailable();
+    }
+
+    for (auto & progItem : itemList)
+    {
+        if (progItem->startTime().date() < EPGTime::getInstance()->currentDate().addDays(7))
+        {
+            addEpgDate(progItem->startTime().date());
+            m_epgList[id]->addItem(progItem);
+        }
+        else
+        {
+            delete progItem;
+        }
+    }
+}
+
+void MetadataManager::parseDescription(const QDomElement &element, EPGModelItem *progItem)
+{
+    QDomElement child = element.firstChildElement();
+    while (!child.isNull())
+    {
+        if ("shortDescription" == child.tagName())
+        {
+            progItem->setShortDescription(child.text().replace(QChar('\\'),QChar()));
+        }
+        else if ("longDescription" == child.tagName())
+        {
+            progItem->setLongDescription(child.text().replace(QChar('\\'),QChar()));
         }
 
         child = child.nextSiblingElement();
@@ -601,14 +659,18 @@ void MetadataManager::loadEpg(const ServiceListId &id)
             {
                 QDate scopeDate = QDate::fromString(filename.first(8), "yyyyMMdd");
                 if (scopeDate >= EPGTime::getInstance()->currentDate().addDays(-2))
-                {   // scope is in range
-                    QFile xmlfile(directory.absolutePath() + "/" + filename);
-                    qDebug() << "Loading:" << xmlfile.fileName();
-                    if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
-                    {
-                        QTextStream in(&xmlfile);
-                        processXML(qPrintable(in.readAll()), SPI_APP_INVALID_DECODER_ID);
-                        xmlfile.close();
+                {
+                    if (scopeDate < EPGTime::getInstance()->currentDate().addDays(7))
+                    {   // scope is in range
+
+                        QFile xmlfile(directory.absolutePath() + "/" + filename);
+                        qDebug() << "Loading:" << xmlfile.fileName();
+                        if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
+                        {
+                            QTextStream in(&xmlfile);
+                            processXML(qPrintable(in.readAll()), SPI_APP_INVALID_DECODER_ID);
+                            xmlfile.close();
+                        }
                     }
                 }
                 else
@@ -624,28 +686,30 @@ void MetadataManager::loadEpg(const ServiceListId &id)
             {
                 QDate scopeDate = QDate::fromString(filename.first(8), "yyyyMMdd");
                 if (scopeDate >= EPGTime::getInstance()->currentDate().addDays(-2))
-                {   // scope is in range
-
-                    // check if service is available
-                    static const QRegularExpression re("[0-9]{6}_([0-9a-f]{6})\\.[0-9]_PI\\.xml", QRegularExpression::CaseInsensitiveOption);
-                    QRegularExpressionMatch match = re.match(filename);
-                    if (match.hasMatch())
-                    {
-                        ServiceListId id(match.captured(1).toInt(nullptr, 16));
-                        if (m_epgList.contains(id))
+                {
+                    if (scopeDate < EPGTime::getInstance()->currentDate().addDays(7))
+                    {   // scope is in range
+                        // check if service is available
+                        static const QRegularExpression re("[0-9]{6}_([0-9a-f]{6})\\.[0-9]_PI\\.xml", QRegularExpression::CaseInsensitiveOption);
+                        QRegularExpressionMatch match = re.match(filename);
+                        if (match.hasMatch())
                         {
-                            QFile xmlfile(directory.absolutePath() + "/" + filename);
-                            qDebug() << "Loading:" << xmlfile.fileName();
-                            if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
+                            ServiceListId id(match.captured(1).toInt(nullptr, 16));
+                            if (m_epgList.contains(id))
                             {
-                                QTextStream in(&xmlfile);
-                                processXML(qPrintable(in.readAll()), SPI_APP_INVALID_DECODER_ID);
-                                xmlfile.close();
+                                QFile xmlfile(directory.absolutePath() + "/" + filename);
+                                qDebug() << "Loading:" << xmlfile.fileName();
+                                if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
+                                {
+                                    QTextStream in(&xmlfile);
+                                    processXML(qPrintable(in.readAll()), SPI_APP_INVALID_DECODER_ID);
+                                    xmlfile.close();
+                                }
                             }
-                        }
-                        else
-                        {
-                            qDebug() << "Service not found:" << filename;
+                            else
+                            {
+                                qDebug() << "Service not found:" << filename;
+                            }
                         }
                     }
                 }
@@ -669,7 +733,7 @@ void MetadataManager::onValidEpgTime()
 
 void MetadataManager::addServiceEpg(const ServiceListId &servId)
 {
-    qDebug() << Q_FUNC_INFO << QString("%1").arg(servId.sid(), 6, 16, QChar('0')) << EPGTime::getInstance()->isValid();
+    //qDebug() << Q_FUNC_INFO << QString("%1").arg(servId.sid(), 6, 16, QChar('0')) << EPGTime::getInstance()->isValid();
     if (!m_epgList.contains(servId))
     {   // if service is not in EPG list ==> create record
         m_epgList[servId] = nullptr;
@@ -683,7 +747,7 @@ void MetadataManager::addServiceEpg(const ServiceListId &servId)
 
 void MetadataManager::removeServiceEpg(const ServiceListId &servId)
 {
-    qDebug() << Q_FUNC_INFO << QString("%1").arg(servId.sid(), 6, 16, QChar('0'));
+    //qDebug() << Q_FUNC_INFO << QString("%1").arg(servId.sid(), 6, 16, QChar('0'));
     if (m_epgList.value(servId, nullptr) != nullptr)
     {
         delete m_epgList[servId];
@@ -698,7 +762,7 @@ void MetadataManager::removeServiceEpg(const ServiceListId &servId)
 
 void MetadataManager::clearEpg()
 {
-    qDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
 
     emit epgEmpty();
 
