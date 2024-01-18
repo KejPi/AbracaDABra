@@ -67,7 +67,7 @@ SPIApp::~SPIApp()
 
 void SPIApp::start()
 {   // does nothing if application is already running
-    qDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
     if (m_isRunning)
     {   // do nothing, application is running
         return;
@@ -105,15 +105,13 @@ void SPIApp::start()
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
-    m_downloadReqQueue.clear();
-    m_radioDnsDownloadQueue.clear();
-    m_motObjRequestList.clear();
-
     m_isRunning = true;
 }
 
 void SPIApp::stop()
 {
+    //qDebug() << Q_FUNC_INFO;
+
     // get XPAD application decoder (SCID == 0xFFFF)
     MOTDecoder * decoderPtr = m_decoderMap.value(0xFFFF, nullptr);
     if (nullptr != decoderPtr)
@@ -122,22 +120,32 @@ void SPIApp::stop()
         delete decoderPtr;
         m_decoderMap.remove(0xFFFF);
     }
+
+    m_motObjRequestList.clear();
+
     m_isRunning = false;
 }
 
 void SPIApp::restart()
 {
+    qDebug() << Q_FUNC_INFO;
+
     stop();
     start();
 }
 
 void SPIApp::reset()
 {
+    //qDebug() << Q_FUNC_INFO;
+
     // delete all decoders
     for (const auto & decoder : m_decoderMap)
     {
         delete decoder;
     }
+    m_downloadReqQueue.clear();
+    m_radioDnsDownloadQueue.clear();
+    m_motObjRequestList.clear();
     m_decoderMap.clear();
     m_parsedDirectoryIds.clear();
     m_isRunning = false;
@@ -148,6 +156,8 @@ void SPIApp::reset()
 
 void SPIApp::enable(bool ena)
 {
+    //qDebug() << Q_FUNC_INFO;
+
     reset();
     if (ena)
     {
@@ -1577,6 +1587,12 @@ void SPIApp::downloadFile(const QString &url, const QString &requestId, bool use
 
 void SPIApp::onFileDownloaded(QNetworkReply *reply)
 {
+    if (m_downloadReqQueue.isEmpty())
+    {   // do nothing, it can happen on reset
+        reply->deleteLater();
+        return;
+    }
+
     if (reply->error() == QNetworkReply::NoError)
     {
         QString requestId = m_downloadReqQueue.head().second;
@@ -1651,9 +1667,7 @@ void SPIApp::onFileDownloaded(QNetworkReply *reply)
 
     }
 
-    if (!m_downloadReqQueue.isEmpty()) {
-        m_downloadReqQueue.dequeue();
-    }
+    m_downloadReqQueue.dequeue();
 
     if (!m_downloadReqQueue.isEmpty()) {
         QNetworkRequest request;

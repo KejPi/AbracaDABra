@@ -319,14 +319,17 @@ Item {
                                             }
                                             Component.onCompleted: {
                                                 if (epgTime.isCurrentDate(metadataManager.epgDate(epgTable.dateIndex))) {                                                    
-                                                    var cX = (Math.round(epgTime.secSinceMidnight() / 3600) - 0.5) * 3600 * pointsPerSecond;
-                                                    timelinebox.contentX = Math.min(cX, (3600*24 + 4) * pointsPerSecond-timelinebox.width);
+                                                    //var cX = (Math.round(epgTime.secSinceMidnight() / 3600) - 0.5) * 3600 * pointsPerSecond;
+                                                    var cX = Math.max(epgTime.secSinceMidnight() * pointsPerSecond - timelinebox.width/3, 0);
+                                                    timelinebox.contentX = Math.min(cX, (3600*24) * pointsPerSecond-timelinebox.width);
+                                                    //console.log(cX, (3600*24) * pointsPerSecond-timelinebox.width, timelinebox.width)
                                                 }
                                                 else {
                                                     timelinebox.contentX = 0;
                                                 }
                                             }
                                             onContentXChanged: {
+                                                //console.log(timelinebox.contentX)
                                                 if (timelinebox.contentX != contentX) {
                                                     timelinebox.contentX = contentX;
                                                 }

@@ -81,7 +81,7 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
     QDomElement docElem = xmldocument.documentElement();
     if ("serviceInformation" ==  docElem.tagName())
     {
-        qDebug() <<  qPrintable(xmldocument.toString());
+        //qDebug() <<  qPrintable(xmldocument.toString());
 
         QDomNode node = docElem.firstChild();
         while (!node.isNull())        
@@ -799,8 +799,11 @@ void MetadataManager::loadEpg(const ServiceListId &servId, const QList<uint32_t>
             else
             {
                 //qDebug() << "File" << xmlFileName << "does not exist ==> asking SPI app";
-                QDate date = currentDate.addDays(day);
-                emit getPI(servId, ueidList, date);
+                if (currentDate >= QDateTime::currentDateTime().date().addDays(-5))
+                {   // this is to avoid downloading PI for recordings
+                    QDate date = currentDate.addDays(day);
+                    emit getPI(servId, ueidList, date);
+                }
             }
         }
 
