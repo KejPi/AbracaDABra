@@ -43,18 +43,12 @@ SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
     m_dnsLookup = nullptr;
     m_netAccessManager = nullptr;
     m_useInternet = false;
-    m_enaRadioDNS = false;    
+    m_enaRadioDNS = false;
     m_useDoH = false;
-
-    QDomImplementation::setInvalidDataPolicy(QDomImplementation::ReturnNullNode);
 }
 
 SPIApp::~SPIApp()
 {
-//    if (nullptr != m_decoder)
-//    {
-//        delete m_decoder;
-//    }
     // delete all decoders
     for (const auto & decoder : m_decoderMap)
     {
@@ -73,17 +67,13 @@ SPIApp::~SPIApp()
 
 void SPIApp::start()
 {   // does nothing if application is already running
+    qDebug() << Q_FUNC_INFO;
     if (m_isRunning)
     {   // do nothing, application is running
         return;
     }
     else
     { /* not running */ }
-
-//    // create new decoder
-//    m_decoder = new MOTDecoder();
-//    connect(m_decoder, &MOTDecoder::newMOTObject, this, &SPIApp::onNewMOTObject);
-//    connect(m_decoder, &MOTDecoder::newMOTDirectory, this, &SPIApp::onNewMOTDirectory);
 
     if (nullptr == m_dnsLookup)
     {
@@ -116,6 +106,7 @@ void SPIApp::start()
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
     m_downloadReqQueue.clear();
+    m_radioDnsDownloadQueue.clear();
     m_motObjRequestList.clear();
 
     m_isRunning = true;
@@ -130,16 +121,6 @@ void SPIApp::stop()
         m_parsedDirectoryIds.remove(decoderPtr->getDirectoryId());
         delete decoderPtr;
         m_decoderMap.remove(0xFFFF);
-    }
-    if (nullptr != m_dnsLookup)
-    {
-        delete m_dnsLookup;
-        m_dnsLookup = nullptr;
-    }
-    if (nullptr != m_netAccessManager)
-    {
-        delete m_netAccessManager;
-        m_netAccessManager = nullptr;
     }
     m_isRunning = false;
 }
@@ -175,23 +156,6 @@ void SPIApp::enable(bool ena)
     else
     {
         stop();
-    }
-}
-
-void SPIApp::onEnsembleInformation(const RadioControlEnsemble &ens)
-{
-    m_ueid = QString("%1").arg(ens.ueid, 6, 16, QChar('0'));
-}
-
-void SPIApp::onAudioServiceSelection(const RadioControlServiceComponent &s)
-{
-    m_sid = QString("%1").arg(s.SId.progSId(), 4, 16, QChar('0'));
-    m_scids = QString("%1").arg(s.SCIdS);
-    m_gcc = getGCC(s.SId);
-
-    if (m_useInternet && m_enaRadioDNS)
-    {   // query RadioDNS
-        radioDNSLookup();
     }
 }
 
@@ -290,6 +254,10 @@ void SPIApp::onNewMOTObjectInDirectory(const QString &contentName)
             m_parsedDirectoryIds[decoderId] = decoderPtr->getDirectoryId();
             m_motObjRequestList[decoderId].clear();
             qCInfo(spiApp, "%d: MOT directory complete", decoderId);
+
+            for (auto objIt = decoderPtr->directoryBegin(); objIt != decoderPtr->directoryEnd(); ++objIt) {
+                qDebug() << "   " << objIt->getContentName();
+            }
         }
         else
         {
@@ -312,7 +280,7 @@ void SPIApp::processObject(uint16_t decoderId, MOTObjectCache::const_iterator ob
             m_motObjRequestList[decoderId].remove(objIt->getContentName());
         }
     }
-        break;
+    break;
     case 7:
     {   // SPI content type/subtype values
         switch (objIt->getContentSubType())
@@ -445,7 +413,7 @@ void SPIApp::parseBinaryInfo(uint16_t decoderId, const MOTObject &motObj)
                 }
                 else
                 {   // unexpected length
-                   qCWarning(spiApp) << "\t\tScopeID: error";
+                    qCWarning(spiApp) << "\t\tScopeID: error";
                 }
 
                 break;
@@ -498,7 +466,7 @@ void SPIApp::parseBinaryInfo(uint16_t decoderId, const MOTObject &motObj)
         }
     }
 
-    emit xmlDocument(m_xmldocument.toString(), decoderId);
+    emit xmlDocument(m_xmldocument.toString(), scopeId, decoderId);
 }
 
 
@@ -570,19 +538,20 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 else
                 {
                     QString str = getString(dataPtr, len, true);
-                    QDomText txt = m_xmldocument.createTextNode(str);
-                    if (txt.isNull())
-                    {
-                        txt = m_xmldocument.createCDATASection(str);
-                    }
-                    parentElement.appendChild(txt);
+                    parentElement.appendChild(m_xmldocument.createCDATASection(str));
+                    // QDomText txt = m_xmldocument.createTextNode(str);
+                    // if (txt.isNull())
+                    // {
+                    //     txt = m_xmldocument.createCDATASection(str);
+                    // }
+                    // parentElement.appendChild(txt);
                 }
             }
             else { /* error - do nothing here */ }
 
             bytesRead += len;
         }
-            break;
+        break;
         case SPIElement::Tag::epg:
             element = m_xmldocument.createElement("epg");
             break;
@@ -613,7 +582,7 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
             parentElement.setAttribute("xml:lang", defaultLang);
             bytesRead += len;
         }
-            break;
+        break;
         case SPIElement::Tag::shortName:
             element = m_xmldocument.createElement("shortName");
             break;
@@ -743,8 +712,8 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
     {   // attributes
         switch (SPIElement::Tag(parentTag))
         {
-//        case SPIElement::Tag::epg:
-//            break;
+            //        case SPIElement::Tag::epg:
+            //            break;
         case SPIElement::Tag::serviceInformation:
             switch (SPIElement::serviceInformation::attribute(tag))
             {
@@ -764,10 +733,10 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 break;
             }
             break;
-//        case SPIElement::Tag::tokenTable:
-//            break;
-//        case SPIElement::Tag::defaultLanguage:
-//            break;
+            //        case SPIElement::Tag::tokenTable:
+            //            break;
+            //        case SPIElement::Tag::defaultLanguage:
+            //            break;
         case SPIElement::Tag::shortName:
             switch (SPIElement::shortName::attribute(tag))
             {
@@ -808,8 +777,8 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 break;
             }
             break;
-//        case SPIElement::Tag::mediaDescription:
-//            break;
+            //        case SPIElement::Tag::mediaDescription:
+            //            break;
         case SPIElement::Tag::genre:
             switch (SPIElement::genre::attribute(tag))
             {
@@ -857,7 +826,7 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
 
                 parentElement.setAttribute("href", href);
             }
-                break;
+            break;
             case SPIElement::genre::attribute::type:
                 switch (*dataPtr)
                 {
@@ -918,8 +887,8 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 break;
             }
             break;
-//        case SPIElement::Tag::location:
-//            break;
+            //        case SPIElement::Tag::location:
+            //            break;
         case SPIElement::Tag::programme:
         case SPIElement::Tag::programmeEvent:
             // optional attributes default values
@@ -1100,7 +1069,7 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
             }
 
         }
-            break;
+        break;
         case SPIElement::Tag::multimedia:
             switch (SPIElement::multimedia::attribute(tag))
             {
@@ -1176,14 +1145,14 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 break;
             }
             break;
-//        case SPIElement::Tag::country:
-//            break;
-//        case SPIElement::Tag::point:
-//            break;
-//        case SPIElement::Tag::polygon:
-//            break;
-//        case SPIElement::Tag::onDemand:
-//            break;
+            //        case SPIElement::Tag::country:
+            //            break;
+            //        case SPIElement::Tag::point:
+            //            break;
+            //        case SPIElement::Tag::polygon:
+            //            break;
+            //        case SPIElement::Tag::onDemand:
+            //            break;
         case SPIElement::Tag::presentationTime:
             switch (SPIElement::presentationTime::attribute(tag))
             {
@@ -1425,11 +1394,11 @@ QString SPIApp::getBearerURI(const uint8_t *dataPtr, int len)
                 sid = (sid << 8) | *dataPtr++;
                 sid = (sid << 8) | *dataPtr;
                 return QString("dab:%1%2.%3.%4.%5")
-                                   .arg((sid >> 20) & 0x0F, 1, 16)
-                                   .arg(ecc, 2, 16, QChar('0'))
-                                   .arg(eid, 4, 16, QChar('0'))
-                                   .arg(sid, 8, 16, QChar('0'))
-                                   .arg(scids);
+                    .arg((sid >> 20) & 0x0F, 1, 16)
+                    .arg(ecc, 2, 16, QChar('0'))
+                    .arg(eid, 4, 16, QChar('0'))
+                    .arg(sid, 8, 16, QChar('0'))
+                    .arg(scids);
             }
             else { /* not enough data */ }
         }
@@ -1438,11 +1407,11 @@ QString SPIApp::getBearerURI(const uint8_t *dataPtr, int len)
             uint32_t sid = *dataPtr++;
             sid = (sid << 8) | *dataPtr;
             return QString("dab:%1%2.%3.%4.%5")
-                                   .arg((sid >> 12) & 0x0F, 1, 16)
-                                   .arg(ecc, 2, 16, QChar('0'))
-                                   .arg(eid, 4, 16, QChar('0'))
-                                   .arg(sid, 4, 16, QChar('0'))
-                                   .arg(scids);
+                .arg((sid >> 12) & 0x0F, 1, 16)
+                .arg(ecc, 2, 16, QChar('0'))
+                .arg(eid, 4, 16, QChar('0'))
+                .arg(sid, 4, 16, QChar('0'))
+                .arg(scids);
         }
     }
     return QString();
@@ -1459,42 +1428,95 @@ void SPIApp::setAttribute_dabBearerURI(QDomElement &element, const QString &name
 
 }
 
-void SPIApp::radioDNSLookup()
+void SPIApp::radioDNSLookup(const QString &fqdn)
 {
     if (m_useDoH)
     {   // DNS over http
-        QString cnameUrl = QString("https://dns.google/resolve?name=%1&type=CNAME").arg(getRadioDNSFQDN());
+        QString cnameUrl = QString("https://dns.google/resolve?name=%1&type=CNAME").arg(fqdn);
         qDebug() << "DNS CNAME query:" << cnameUrl;
         downloadFile(cnameUrl, "DOH_CNAME", false);
     }
     else {
         m_dnsLookup->setType(QDnsLookup::CNAME);
-        m_dnsLookup->setName(getRadioDNSFQDN());
+        m_dnsLookup->setName(fqdn);
         m_dnsLookup->lookup();
     }
 }
 
-QString SPIApp::getRadioDNSFQDN() const
+void SPIApp::getSI(const ServiceListId &servId, const uint32_t & ueid)
 {
-    return QString("%1.%2.%3.%4.dab.radiodns.org")
-        .arg(m_scids)
-        .arg(m_sid)
-        .arg(m_ueid.last(4))
-        .arg(m_gcc);
+    if (m_useInternet && m_enaRadioDNS)
+    {   // query RadioDNS
+        if (m_radioDnsDownloadQueue.isEmpty())
+        {
+            m_radioDnsDownloadQueue.enqueue({radioDNSFQDN(servId, ueid), "SI.xml"});
+            radioDNSLookup(radioDNSFQDN(servId, ueid));
+        }
+        else
+        {
+            m_radioDnsDownloadQueue.enqueue({radioDNSFQDN(servId, ueid), "SI.xml"});
+        }
+    }
 }
 
-QString SPIApp::getGCC(const DabSId & sid) const
+void SPIApp::getPI(const ServiceListId &servId, const QList<uint32_t> &ueidList, const QDate & date)
 {
-    return QString("%1%2").arg(QString("%1").arg(sid.progSId(), 4, 16, QChar('0')).at(0))
-        .arg(sid.ecc(), 2, 16, QChar('0'));
+    if (m_useInternet && m_enaRadioDNS)
+    {   // query RadioDNS
+        for (const auto & ueid : ueidList) {
+            //qDebug() << radioDNSFQDN(servId, ueid) << QString("%1_PI.xml").arg(date.toString("yyyyMMdd"));
+            if (m_radioDnsDownloadQueue.isEmpty())
+            {
+                m_radioDnsDownloadQueue.enqueue({radioDNSFQDN(servId, ueid), QString("%1/%2_PI.xml").arg(radioDNSServiceIdentifier(servId, ueid), date.toString("yyyyMMdd"))});
+                radioDNSLookup(radioDNSFQDN(servId, ueid));
+            }
+            else
+            {
+                m_radioDnsDownloadQueue.enqueue({radioDNSFQDN(servId, ueid), QString("%1/%2_PI.xml").arg(radioDNSServiceIdentifier(servId, ueid), date.toString("yyyyMMdd"))});
+            }
+        }
+    }
+}
+
+QString SPIApp::radioDNSFQDN(const ServiceListId &servId, const uint32_t & ueid) const
+{
+    DabSId sid(servId.sid());
+
+    return QString("%1.%2.%3.%4.dab.radiodns.org")
+        .arg(servId.scids())
+        .arg(sid.progSId(), 4, 16, QChar('0'))
+        .arg(uint16_t(ueid), 4, 16, QChar('0'))
+        .arg(sid.gcc(), 3, 16, QChar('0'));
+}
+
+QString SPIApp::radioDNSServiceIdentifier(const ServiceListId &servId, const uint32_t & ueid) const
+{
+    DabSId sid(servId.sid());
+
+    return QString("dab/%4/%3/%2/%1")
+        .arg(servId.scids())
+        .arg(sid.progSId(), 4, 16, QChar('0'))
+        .arg(uint16_t(ueid), 4, 16, QChar('0'))
+        .arg(sid.gcc(), 3, 16, QChar('0'));
 }
 
 void SPIApp::handleRadioDNSLookup()
 {
     // Check the lookup succeeded.
     if (m_dnsLookup->error() != QDnsLookup::NoError)
-    {
+    {        
         qCWarning(spiApp) << "DNS lookup failed:" << m_dnsLookup->name();
+        if (m_dnsLookup->name().startsWith("_radioepg._tcp."))
+        {   // try non TLS lookup
+            QString name = m_dnsLookup->name().replace("_radioepg._tcp.", "_radiospi._tcp.");
+            m_dnsLookup->setName(name);
+            m_dnsLookup->lookup();
+            return;
+        }
+        m_radioDnsDownloadQueue.dequeue();
+        if (!m_radioDnsDownloadQueue.isEmpty()) {
+            radioDNSLookup(m_radioDnsDownloadQueue.head().first);
+        }
         return;
     }
 
@@ -1502,7 +1524,6 @@ void SPIApp::handleRadioDNSLookup()
     if (m_dnsLookup->canonicalNameRecords().count() > 0)
     {
         const auto & record = m_dnsLookup->canonicalNameRecords().at(0);
-
         qCDebug(spiApp) << "canonicalNameRecord:" << record.name() << record.value();
         m_dnsLookup->setType(QDnsLookup::SRV);
         m_dnsLookup->setName("_radioepg._tcp." + record.value());
@@ -1511,10 +1532,21 @@ void SPIApp::handleRadioDNSLookup()
     }
     else if (m_dnsLookup->serviceRecords().count() > 0)
     {
-        const auto & record = m_dnsLookup->serviceRecords().at(0);
+        const auto & record = m_dnsLookup->serviceRecords().at(0);        
         qCDebug(spiApp) << "serviceRecord:" << record.name() << record.target() << record.port();
+        QString file = m_radioDnsDownloadQueue.dequeue().second;
+        if (record.name().startsWith("_radiospi._tcp."))
+        {
+            downloadFile(QString("https://%1:%2/radiodns/spi/3.1/%3").arg(record.target()).arg(record.port()).arg(file), "XML|"+file);
+        }
+        else
+        {
+            downloadFile(QString("http://%1:%2/radiodns/spi/3.1/%3").arg(record.target()).arg(record.port()).arg(file), "XML|"+file);
+        }
 
-        downloadFile(QString("http://%1:%2/radiodns/spi/3.1/SI.xml").arg(record.target()).arg(record.port()), "XML");
+        if (!m_radioDnsDownloadQueue.isEmpty()) {
+            radioDNSLookup(m_radioDnsDownloadQueue.head().first);
+        }
     }
 }
 
@@ -1544,67 +1576,84 @@ void SPIApp::downloadFile(const QString &url, const QString &requestId, bool use
 }
 
 void SPIApp::onFileDownloaded(QNetworkReply *reply)
-{    
-    QString requestId = m_downloadReqQueue.head().second;
-    if (requestId == "XML") {
-        QByteArray data = reply->readAll();
-        emit xmlDocument(QString(data), SPI_APP_INVALID_DECODER_ID);
-    }
-    else if (requestId == "DOH_CNAME")
+{
+    if (reply->error() == QNetworkReply::NoError)
     {
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
-        qDebug() << qPrintable(jsonDoc.toJson());
-
-        QVariantMap map = jsonDoc.toVariant().toMap();
-        if (map.contains("Answer"))
-        {
-            QVariantList answer = map["Answer"].toList();
-            if (answer.length() > 0)
+        QString requestId = m_downloadReqQueue.head().second;
+        if (requestId.startsWith("XML|")) {
+            QByteArray data = reply->readAll();
+            QString scopeId;
+            if (requestId.length() > 4)
             {
-                QString data = answer.at(0).toMap().value("data", QVariant("")).toString();
-                if (!data.isEmpty())
-                {
-                    if (data.endsWith('.'))
-                    {
-                        data = data.first(data.length()-1);
-                    }
-                    QString srvUrl = QString("https://dns.google/resolve?name=_radioepg._tcp.%1&type=SRV").arg(data);
-                    qDebug() << srvUrl;
-                    downloadFile(srvUrl, "DOH_SRV", false);
+                QStringList scopeList = requestId.last(requestId.length() - 4).split("/");
+                if (scopeList.size() >= 5) {
+                    scopeId = QString("%1:%2.%3.%4.%5").arg(scopeList.at(0), scopeList.at(1), scopeList.at(2), scopeList.at(3), scopeList.at(4));
                 }
             }
+            emit xmlDocument(QString(data), scopeId, SPI_APP_INVALID_DECODER_ID);
         }
-    }
-    else if (requestId == "DOH_SRV")
-    {
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
-        qDebug() << qPrintable(jsonDoc.toJson());
-
-        QVariantMap map = jsonDoc.toVariant().toMap();
-        if (map.contains("Answer"))
+        else if (requestId == "DOH_CNAME")
         {
-            QVariantList answer = map["Answer"].toList();
-            if (answer.length() > 0)
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+            qDebug() << qPrintable(jsonDoc.toJson());
+
+            QVariantMap map = jsonDoc.toVariant().toMap();
+            if (map.contains("Answer"))
             {
-                QString data = answer.at(0).toMap().value("data", QVariant("")).toString();
-                if (!data.isEmpty())
+                QVariantList answer = map["Answer"].toList();
+                if (answer.length() > 0)
                 {
-                    static const QRegularExpression re("[\\d\\s]+\\s+(.*\\w)\\.?");
-                    QRegularExpressionMatch match = re.match(data);
-                    if (match.hasMatch())
+                    QString data = answer.at(0).toMap().value("data", QVariant("")).toString();
+                    if (!data.isEmpty())
                     {
-                        downloadFile(QString("http://%1/radiodns/spi/3.1/SI.xml").arg(match.captured(1)), "XML");
+                        if (data.endsWith('.'))
+                        {
+                            data = data.first(data.length()-1);
+                        }
+                        QString srvUrl = QString("https://dns.google/resolve?name=_radioepg._tcp.%1&type=SRV").arg(data);
+                        qDebug() << srvUrl;
+                        downloadFile(srvUrl, "DOH_SRV", false);
                     }
                 }
             }
         }
+        else if (requestId == "DOH_SRV")
+        {
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+            qDebug() << qPrintable(jsonDoc.toJson());
+
+            QVariantMap map = jsonDoc.toVariant().toMap();
+            if (map.contains("Answer"))
+            {
+                QVariantList answer = map["Answer"].toList();
+                if (answer.length() > 0)
+                {
+                    QString data = answer.at(0).toMap().value("data", QVariant("")).toString();
+                    if (!data.isEmpty())
+                    {
+                        static const QRegularExpression re("[\\d\\s]+\\s+(.*\\w)\\.?");
+                        QRegularExpressionMatch match = re.match(data);
+                        if (match.hasMatch())
+                        {
+                            downloadFile(QString("http://%1/radiodns/spi/3.1/SI.xml").arg(match.captured(1)), "XML|");
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {   // logo
+            emit requestedFile(reply->readAll(), requestId);
+        }
     }
-    else
-    {   // logo
-        emit requestedFile(reply->readAll(), requestId);
+    else {
+        qCWarning(spiApp) << "Failed to download: " << reply->request().url().toString() << "|" << reply->error();
+
     }
 
-    m_downloadReqQueue.dequeue();
+    if (!m_downloadReqQueue.isEmpty()) {
+        m_downloadReqQueue.dequeue();
+    }
 
     if (!m_downloadReqQueue.isEmpty()) {
         QNetworkRequest request;

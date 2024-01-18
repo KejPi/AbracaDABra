@@ -47,6 +47,11 @@ Item {
                     TabButton {
                         text: epgTime.currentDateString === modelData ? qsTr("Today") : modelData
                         //width: Math.max(100, bar.width / metadataManager.epgDatesList.length)
+                        Component.onCompleted: {
+                            if (epgTime.currentDateString === modelData) {
+                                dayTabBar.currentIndex = index;
+                            }
+                        }
                     }
                 }
             }
@@ -313,8 +318,9 @@ Item {
                                                 }
                                             }
                                             Component.onCompleted: {
-                                                if (epgTime.isCurrentDate(metadataManager.epgDate(epgTable.dateIndex))) {
-                                                    timelinebox.contentX = (Math.round(epgTime.secSinceMidnight() / 3600) - 0.5) * 3600 * pointsPerSecond;
+                                                if (epgTime.isCurrentDate(metadataManager.epgDate(epgTable.dateIndex))) {                                                    
+                                                    var cX = (Math.round(epgTime.secSinceMidnight() / 3600) - 0.5) * 3600 * pointsPerSecond;
+                                                    timelinebox.contentX = Math.min(cX, (3600*24 + 4) * pointsPerSecond-timelinebox.width);
                                                 }
                                                 else {
                                                     timelinebox.contentX = 0;

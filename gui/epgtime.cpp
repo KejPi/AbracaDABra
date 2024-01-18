@@ -69,7 +69,14 @@ void EPGTime::setTime(const QDateTime & time)
         }
         qDebug() << "LTO [minutes]" << m_ltoSec/60;
 
+        m_currentTime = time.toTimeZone(QTimeZone::fromSecondsAheadOfUtc(m_ltoSec));
+        setSecSinceEpoch(m_currentTime.toSecsSinceEpoch());
+        setCurrentDateString(m_currentTime.date().toString("dd.MM.yyyy"));
+        setCurrentTimeString(m_currentTime.time().toString("HH:mm"));
+
         emit haveValidTime();
+
+        return;
     }
     m_currentTime = time.toTimeZone(QTimeZone::fromSecondsAheadOfUtc(m_ltoSec));
     setSecSinceEpoch(m_currentTime.toSecsSinceEpoch());
@@ -110,6 +117,7 @@ void EPGTime::setIsLiveBroadcasting(bool newIsLiveBroadcasting)
 void EPGTime::onDabTime(const QDateTime &d)
 {
     setTime(d);
+    //setTime(QDateTime::currentDateTime());
     m_minuteTimer->start();
 }
 

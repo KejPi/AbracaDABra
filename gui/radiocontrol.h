@@ -70,6 +70,9 @@ public:
     uint32_t value() const { return m_eccsid; }
     uint16_t progSId() const { return uint16_t(m_eccsid); }
     uint8_t ecc() const { return uint8_t(m_eccsid >> 16);}
+    uint16_t gcc() const { return isProgServiceId()
+                                      ? ((m_eccsid & 0x00FF0000) >> 16) | ((m_eccsid & 0x0000F000) >> 4)
+                                      : ((m_eccsid & 0xFF000000) >> 24) | ((m_eccsid & 0x00F00000) >> 12); }
     void set(uint32_t sid, uint8_t ensEcc = 0)
     {
         if (0 == (sid & 0xFF000000))

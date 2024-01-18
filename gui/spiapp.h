@@ -34,7 +34,7 @@
 #include <QQueue>
 #include <QPair>
 
-#include "radiocontrol.h"
+#include "servicelistid.h"
 #include "motdecoder.h"
 #include "userapplication.h"
 
@@ -72,11 +72,11 @@ public:
     // RadioDNS
     void useInternet(bool ena) { m_useInternet = ena; }
     void enableRadioDNS(bool ena) { m_enaRadioDNS = ena; }
-    void onEnsembleInformation(const RadioControlEnsemble & ens);
-    void onAudioServiceSelection(const RadioControlServiceComponent & s);
+    void getSI(const ServiceListId &servId, const uint32_t & ueid);
+    void getPI(const ServiceListId &servId, const QList<uint32_t> &ueidList, const QDate & date);
 
 signals:
-    void xmlDocument(const QString &xmldocument, uint16_t decoderId);
+    void xmlDocument(const QString &xmldocument, const QString &scopeId, uint16_t decoderId);
     void requestedFile(const QByteArray &data, const QString &requestId);
 private:
     QHash<uint16_t, MOTDecoder *> m_decoderMap;
@@ -106,18 +106,15 @@ private:
     bool m_useInternet;
     bool m_enaRadioDNS;
     bool m_useDoH;
-    QString m_gcc;
-    QString m_ueid;
-    QString m_sid;
-    QString m_scids;
 
     QDnsLookup * m_dnsLookup;
     QNetworkAccessManager *m_netAccessManager;
     QQueue<QPair<QString, QString>> m_downloadReqQueue;
+    QQueue<QPair<QString, QString>> m_radioDnsDownloadQueue;
     QHash<uint16_t, QHash<QString, QString>> m_motObjRequestList;
-    void radioDNSLookup();
-    QString getRadioDNSFQDN() const;
-    QString getGCC(const DabSId & sid) const;
+    void radioDNSLookup(const QString & fqdn);
+    QString radioDNSFQDN(const ServiceListId &servId, const uint32_t &ueid) const;
+    QString radioDNSServiceIdentifier(const ServiceListId &servId, const uint32_t & ueid) const;
     void handleRadioDNSLookup();
     void downloadFile(const QString &url, const QString &requestId, bool useCache = true);
     void onFileDownloaded(QNetworkReply *reply);

@@ -42,7 +42,7 @@
 
 Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtInfoMsg)
 
-MetadataManager::MetadataManager(QObject *parent) : QObject(parent), m_isLoadingFromCache(false), m_cleanEpgCache(true)
+MetadataManager::MetadataManager(const ServiceList *serviceList, QObject *parent) : QObject(parent), m_serviceList(serviceList), m_isLoadingFromCache(false), m_cleanEpgCache(true)
 {
 }
 
@@ -65,13 +65,14 @@ MetadataManager::~MetadataManager()
 }
 
 
-void MetadataManager::processXML(const QString &xml, uint16_t decoderId)
+void MetadataManager::processXML(const QString &xml, const QString &scopeId, uint16_t decoderId)
 {
     QDomDocument xmldocument;
     if (!xmldocument.setContent(xml))
     {
         qCWarning(metadataManager) << "Failed to parse SPI document";
         qCDebug(metadataManager) << xml;
+        qDebug() << xml;
         return;
     }
 
@@ -80,6 +81,8 @@ void MetadataManager::processXML(const QString &xml, uint16_t decoderId)
     QDomElement docElem = xmldocument.documentElement();
     if ("serviceInformation" ==  docElem.tagName())
     {
+        qDebug() <<  qPrintable(xmldocument.toString());
+
         QDomNode node = docElem.firstChild();
         while (!node.isNull())        
         {   // ETSI TS 102 818 V3.4.1 [6.2]
@@ -250,32 +253,38 @@ void MetadataManager::processXML(const QString &xml, uint16_t decoderId)
     }
     else if ("epg" ==  docElem.tagName())
     {
-        // qCInfo(metadataManager) << "======================= EPG =========================>";
-        // qCInfo(metadataManager) << qPrintable(xmldocument.toString());
-        // qCInfo(metadataManager) << "<=====================================================";
+        //qCInfo(metadataManager) << "======================= EPG =========================>";
+        //qCInfo(metadataManager) << qPrintable(xmldocument.toString());
+        //qCInfo(metadataManager) << "<=====================================================";
         QDomNode node = docElem.firstChild();
         while (!node.isNull())
         {
             QDomElement element = node.toElement(); // try to convert the node to an element.
             if(!element.isNull() && ("schedule" == element.tagName()))
             {
-                QString scopeId, scopeStart;
+                QString scStart;
+                QString scId = scopeId;
                 if (!element.firstChildElement("scope").isNull())
                 {   // found scope element
-                    QDomElement serviceScope = element.firstChildElement("scope").firstChildElement("serviceScope");
-                    if (!serviceScope.isNull())
-                    {   // found serviceScope
-                        scopeId = serviceScope.attribute("id");
-                        qDebug() << "Found scopeId:" << scopeId;
+                    QDomElement scope = element.firstChildElement("scope");
+                    scStart = scope.attribute("startTime");
+                    QDomElement serviceScope = scope.firstChildElement("serviceScope");
+                    while (!serviceScope.isNull()) {
+                        ServiceListId id = bearerToServiceId(serviceScope.attribute("id"));
+                        if (id.isValid())
+                        {   // found valid DAB service scope
+                            scId = serviceScope.attribute("id");
+                            break;
+                        }
+                        serviceScope = serviceScope.nextSiblingElement("serviceScope");
                     }
-                    scopeStart = element.firstChildElement("scope").attribute("startTime");
-                    //qDebug() << "Found scope start:" << scopeStart;
-                    //qDebug() << "Found scope stop:" << element.firstChildElement("scope").attribute("stopTime");
+
                 }
 
-                if (!scopeId.isEmpty() && !scopeStart.isEmpty())
+                qDebug() << "Service scope ID:" << scId;
+                if (!scId.isEmpty() && !scStart.isEmpty())
                 {
-                    ServiceListId id = bearerToServiceId(scopeId);
+                    ServiceListId id = bearerToServiceId(scId);
                     if (id.isValid()) {
                         QDomElement child = element.firstChildElement("programme");
                         while (!child.isNull())
@@ -289,7 +298,7 @@ void MetadataManager::processXML(const QString &xml, uint16_t decoderId)
                         {   // save parsed file to the cache
                             // "20140805_e1c221.0_PI.xml"
                             QString filename = QString("%1/EPG/%2_%3.%4_PI.xml").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation),
-                                                                                     QDateTime::fromString(scopeStart, Qt::ISODate).toUTC().toOffsetFromUtc(EPGTime::getInstance()->ltoSec()).toString("yyyyMMdd"))
+                                                                                     QDateTime::fromString(scStart, Qt::ISODate).toUTC().toOffsetFromUtc(EPGTime::getInstance()->ltoSec()).toString("yyyyMMdd"))
                                                    .arg(id.sid(), 6, 16, QChar('0')).arg(id.scids());
 
 
@@ -306,7 +315,7 @@ void MetadataManager::processXML(const QString &xml, uint16_t decoderId)
                             }
                             else
                             {
-                                qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!! File EXISTS";
+                                // qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!! File EXISTS";
                             }
                         }
                     }
@@ -643,8 +652,9 @@ QStringList MetadataManager::epgDatesList() const
     return m_epgDates.values();
 }
 
-void MetadataManager::loadEpg(const ServiceListId &id)
+void MetadataManager::loadEpg(const ServiceListId &servId, const QList<uint32_t> & ueidList)
 {
+#if 0
     if (EPGTime::getInstance()->isValid())
     {
         m_isLoadingFromCache = true;
@@ -653,6 +663,7 @@ void MetadataManager::loadEpg(const ServiceListId &id)
 
         if (id.isValid())
         {   // load specified service
+#if 0
             QString fileFilter = QString("*_%1.*_PI.xml").arg(id.sid(), 6, 16, QChar('0'));
             QStringList xmlFiles = directory.entryList({fileFilter}, QDir::Files);
             for (const QString & filename : xmlFiles)
@@ -678,9 +689,32 @@ void MetadataManager::loadEpg(const ServiceListId &id)
                     // qDebug() << "File" << filename << "is old ===> to be deleted" << scopeDate << EPGTime::getInstance()->currentDate();
                 }
             }
+#else
+            QDate currentDate = EPGTime::getInstance()->currentDate();
+            for (int day = -2; day < +7; ++day) {
+                QDate date = currentDate.addDays(day);
+                QString xmlFileName = QString("%1_%2.%3_PI.xml").arg(date.toString("yyyyMMdd")).arg(id.sid(), 6, 16, QChar('0')).arg(id.scids());
+                if (directory.exists(xmlFileName)) {
+                    QFile xmlfile(directory.absolutePath() + "/" + xmlFileName);
+                    qDebug() << "Loading:" << xmlfile.fileName();
+                    if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
+                    {
+                        QTextStream in(&xmlfile);
+                        processXML(qPrintable(in.readAll()), SPI_APP_INVALID_DECODER_ID);
+                        xmlfile.close();
+                    }
+                }
+                else
+                {
+                    qDebug() << "File" << xmlFileName << "does not exist ==> asking SPI app";
+                    //emit getPI()
+                }
+            }
+#endif
         }
         else
         {   // load all available services
+#if 0
             QStringList xmlFiles = directory.entryList({"*_PI.xml"}, QDir::Files);
             for (const QString & filename : xmlFiles)
             {
@@ -718,31 +752,104 @@ void MetadataManager::loadEpg(const ServiceListId &id)
                     // qDebug() << "File" << filename << "is old ===> to be deleted";
                 }
             }
+#else
+            for (const ServiceListId & sId : m_epgList.keys())
+            {
+                QDate currentDate = EPGTime::getInstance()->currentDate();
+                for (int day = -2; day < +7; ++day) {
+                    QDate date = currentDate.addDays(day);
+                    QString xmlFileName = QString("%1_%2.%3_PI.xml").arg(date.toString("yyyyMMdd")).arg(sId.sid(), 6, 16, QChar('0')).arg(sId.scids());
+                    if (directory.exists(xmlFileName)) {
+                        qDebug() << "Found:"  << xmlFileName;
+                    }
+                    else
+                    {
+                        qDebug() << "File" << xmlFileName << "does not exist ==> asking SPI app";
+                    }
+                }
+            }
+#endif
         }
         m_isLoadingFromCache = false;
     }
     else
     { /* invalid EPG time => cannot load anything */ }
+#endif
+    if (EPGTime::getInstance()->isValid() && servId.isValid())
+    {
+        m_isLoadingFromCache = true;
+
+        QDir directory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)  + "/EPG/");
+        QDate currentDate = EPGTime::getInstance()->currentDate();
+        for (int day = -2; day < +7; ++day) {
+            QDate date = currentDate.addDays(day);
+            QString xmlFileName = QString("%1_%2.%3_PI.xml").arg(date.toString("yyyyMMdd")).arg(servId.sid(), 6, 16, QChar('0')).arg(servId.scids());
+            if (directory.exists(xmlFileName)) {
+                QFile xmlfile(directory.absolutePath() + "/" + xmlFileName);
+                qDebug() << "Loading:" << xmlfile.fileName();
+                if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
+                {
+                    DabSId dabSid(servId.sid());
+                    QString scopeId = QString("dab:%1.%2.%3.0").arg(dabSid.gcc(), 3, 16, QChar('0')).arg(uint16_t(ueidList.at(0)), 4, 16, QChar('0')).arg(dabSid.progSId(), 4,16, QChar('0'));
+                    QTextStream in(&xmlfile);
+                    processXML(qPrintable(in.readAll()), scopeId, SPI_APP_INVALID_DECODER_ID);
+                    xmlfile.close();
+                }
+            }
+            else
+            {
+                //qDebug() << "File" << xmlFileName << "does not exist ==> asking SPI app";
+                QDate date = currentDate.addDays(day);
+                emit getPI(servId, ueidList, date);
+            }
+        }
+
+        m_isLoadingFromCache = false;
+
+    }
+    else { /* do nothing */ }
+
 }
 
 void MetadataManager::onValidEpgTime()
 {
     qDebug() << Q_FUNC_INFO;
-    loadEpg(ServiceListId());
+    for (ServiceListConstIterator sIt = m_serviceList->serviceListBegin(); sIt != m_serviceList->serviceListEnd(); ++sIt) {
+        QList<uint32_t> ueidList;
+        for (int e = 0; e < (*sIt)->numEnsembles(); ++e) {
+            uint32_t ueid = (*sIt)->getEnsemble(e)->id().ueid();
+            if (!ueidList.contains(ueid))
+            {
+                ueidList.append(ueid);
+            }
+        }
+        loadEpg((*sIt)->id(), ueidList);
+    }
 }
 
-void MetadataManager::addServiceEpg(const ServiceListId &servId)
+void MetadataManager::onEnsembleInformation(const RadioControlEnsemble &ens)
 {
-    //qDebug() << Q_FUNC_INFO << QString("%1").arg(servId.sid(), 6, 16, QChar('0')) << EPGTime::getInstance()->isValid();
-    if (!m_epgList.contains(servId))
-    {   // if service is not in EPG list ==> create record
-        m_epgList[servId] = nullptr;
-    }
+    m_currentEnsemble = ServiceListId(ens.frequency, ens.ueid);
+}
 
-    if (EPGTime::getInstance()->isValid())
-    {   // we can read data from cache
-        loadEpg(servId);
+void MetadataManager::onAudioServiceSelection(const RadioControlServiceComponent &s)
+{
+/*
+    m_sid = QString("%1").arg(s.SId.progSId(), 4, 16, QChar('0'));
+    m_scids = QString("%1").arg(s.SCIdS);
+    m_gcc = getGCC(s.SId);
+
+    if (m_useInternet && m_enaRadioDNS)
+    {   // query RadioDNS
+        radioDNSLookup();
     }
+*/
+    emit getSI(ServiceListId(s), m_currentEnsemble.ueid());
+}
+
+void MetadataManager::addServiceEpg(const ServiceListId & ensId, const ServiceListId &servId)
+{
+    loadEpg(servId, QList<uint32_t>{ensId.ueid()});
 }
 
 void MetadataManager::removeServiceEpg(const ServiceListId &servId)

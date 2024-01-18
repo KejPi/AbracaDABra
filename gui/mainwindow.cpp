@@ -406,9 +406,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_serviceList = new ServiceList;
 
     // metadata
-    m_metadataManager = new MetadataManager(this);
+    m_metadataManager = new MetadataManager(m_serviceList, this);
     connect(m_metadataManager, &MetadataManager::dataUpdated, this, &MainWindow::onMetadataUpdated);
-    connect(m_serviceList, &ServiceList::serviceAdded, m_metadataManager, &MetadataManager::addServiceEpg);
+    connect(m_serviceList, &ServiceList::serviceAddedToEnsemble, m_metadataManager, &MetadataManager::addServiceEpg);
     connect(m_serviceList, &ServiceList::serviceRemoved, m_metadataManager, &MetadataManager::removeServiceEpg);
     connect(m_serviceList, &ServiceList::empty, m_metadataManager, &MetadataManager::clearEpg);
     connect(EPGTime::getInstance(), &EPGTime::haveValidTime, m_metadataManager, &MetadataManager::onValidEpgTime);
@@ -708,19 +708,21 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_spiApp = new SPIApp();
     m_spiApp->moveToThread(m_radioControlThread);
     connect(m_radioControlThread, &QThread::finished, m_spiApp, &QObject::deleteLater);
-    connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &SPIApp::start);
     connect(m_radioControl, &RadioControl::userAppData_Service, m_spiApp, &SPIApp::onUserAppData);
-    connect(m_radioControl, &RadioControl::ensembleInformation, m_spiApp, &SPIApp::onEnsembleInformation);
-    connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &SPIApp::onAudioServiceSelection);
+    connect(m_radioControl, &RadioControl::audioServiceSelection,  m_spiApp, &SPIApp::start);
     connect(this, &MainWindow::stopUserApps, m_spiApp, &SPIApp::stop, Qt::QueuedConnection);
     connect(this, &MainWindow::resetUserApps, m_spiApp, &SPIApp::reset, Qt::QueuedConnection);
 
     connect(m_spiApp, &SPIApp::xmlDocument, m_metadataManager, &MetadataManager::processXML, Qt::QueuedConnection);
+    connect(m_metadataManager, &MetadataManager::getSI, m_spiApp, &SPIApp::getSI, Qt::QueuedConnection);
+    connect(m_metadataManager, &MetadataManager::getPI, m_spiApp, &SPIApp::getPI, Qt::QueuedConnection);
     connect(m_metadataManager, &MetadataManager::getFile, m_spiApp, &SPIApp::onFileRequest, Qt::QueuedConnection);
     connect(m_spiApp, &SPIApp::requestedFile, m_metadataManager, &MetadataManager::onFileReceived, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::spiApplicationEnabled, m_radioControl, &RadioControl::onSpiApplicationEnabled, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::spiApplicationEnabled, m_spiApp, &SPIApp::enable, Qt::QueuedConnection);
-    connect(m_setupDialog, &SetupDialog::spiApplicationSettingsChanged, m_spiApp, &SPIApp::onSettingsChanged, Qt::QueuedConnection);   
+    connect(m_setupDialog, &SetupDialog::spiApplicationSettingsChanged, m_spiApp, &SPIApp::onSettingsChanged, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::ensembleInformation, m_metadataManager, &MetadataManager::onEnsembleInformation);
+    connect(m_radioControl, &RadioControl::audioServiceSelection, m_metadataManager, &MetadataManager::onAudioServiceSelection);
 
     // input device connections
     initInputDevice(InputDeviceId::UNDEFINED);
