@@ -290,8 +290,8 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
                         QDomElement child = element.firstChildElement("programme");
                         while (!child.isNull())
                         {
-                            // qDebug() << scopeStart;
-                            valid = valid || parseProgramme(child, id);
+                            // qDebug() << scopeStart;                            
+                            valid = parseProgramme(child, id) || valid;
                             child = child.nextSiblingElement("programme");
                         }
 
@@ -429,7 +429,7 @@ bool MetadataManager::parseProgramme(const QDomElement &element, const ServiceLi
         if (progItem->startTime().date() < EPGTime::getInstance()->currentDate().addDays(7))
         {
             addEpgDate(progItem->startTime().date());
-            ret = ret || m_epgList[id]->addItem(progItem);
+            ret = m_epgList[id]->addItem(progItem) || ret;
         }
         else
         {
@@ -612,127 +612,6 @@ QStringList MetadataManager::epgDatesList() const
 
 void MetadataManager::loadEpg(const ServiceListId &servId, const QList<uint32_t> & ueidList)
 {
-#if 0
-    if (EPGTime::getInstance()->isValid())
-    {
-        m_isLoadingFromCache = true;
-
-        QDir directory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)  + "/EPG/");
-
-        if (id.isValid())
-        {   // load specified service
-#if 0
-            QString fileFilter = QString("*_%1.*_PI.xml").arg(id.sid(), 6, 16, QChar('0'));
-            QStringList xmlFiles = directory.entryList({fileFilter}, QDir::Files);
-            for (const QString & filename : xmlFiles)
-            {
-                QDate scopeDate = QDate::fromString(filename.first(8), "yyyyMMdd");
-                if (scopeDate >= EPGTime::getInstance()->currentDate().addDays(-2))
-                {
-                    if (scopeDate < EPGTime::getInstance()->currentDate().addDays(7))
-                    {   // scope is in range
-
-                        QFile xmlfile(directory.absolutePath() + "/" + filename);
-                        qDebug() << "Loading:" << xmlfile.fileName();
-                        if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
-                        {
-                            QTextStream in(&xmlfile);
-                            processXML(qPrintable(in.readAll()), SPI_APP_INVALID_DECODER_ID);
-                            xmlfile.close();
-                        }
-                    }
-                }
-                else
-                {   // old file -> delete it
-                    // qDebug() << "File" << filename << "is old ===> to be deleted" << scopeDate << EPGTime::getInstance()->currentDate();
-                }
-            }
-#else
-            QDate currentDate = EPGTime::getInstance()->currentDate();
-            for (int day = -2; day < +7; ++day) {
-                QDate date = currentDate.addDays(day);
-                QString xmlFileName = QString("%1_%2.%3_PI.xml").arg(date.toString("yyyyMMdd")).arg(id.sid(), 6, 16, QChar('0')).arg(id.scids());
-                if (directory.exists(xmlFileName)) {
-                    QFile xmlfile(directory.absolutePath() + "/" + xmlFileName);
-                    qDebug() << "Loading:" << xmlfile.fileName();
-                    if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
-                    {
-                        QTextStream in(&xmlfile);
-                        processXML(qPrintable(in.readAll()), SPI_APP_INVALID_DECODER_ID);
-                        xmlfile.close();
-                    }
-                }
-                else
-                {
-                    qDebug() << "File" << xmlFileName << "does not exist ==> asking SPI app";
-                    //emit getPI()
-                }
-            }
-#endif
-        }
-        else
-        {   // load all available services
-#if 0
-            QStringList xmlFiles = directory.entryList({"*_PI.xml"}, QDir::Files);
-            for (const QString & filename : xmlFiles)
-            {
-                QDate scopeDate = QDate::fromString(filename.first(8), "yyyyMMdd");
-                if (scopeDate >= EPGTime::getInstance()->currentDate().addDays(-2))
-                {
-                    if (scopeDate < EPGTime::getInstance()->currentDate().addDays(7))
-                    {   // scope is in range
-                        // check if service is available
-                        static const QRegularExpression re("[0-9]{6}_([0-9a-f]{6})\\.[0-9]_PI\\.xml", QRegularExpression::CaseInsensitiveOption);
-                        QRegularExpressionMatch match = re.match(filename);
-                        if (match.hasMatch())
-                        {
-                            ServiceListId id(match.captured(1).toInt(nullptr, 16));
-                            if (m_epgList.contains(id))
-                            {
-                                QFile xmlfile(directory.absolutePath() + "/" + filename);
-                                qDebug() << "Loading:" << xmlfile.fileName();
-                                if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
-                                {
-                                    QTextStream in(&xmlfile);
-                                    processXML(qPrintable(in.readAll()), SPI_APP_INVALID_DECODER_ID);
-                                    xmlfile.close();
-                                }
-                            }
-                            else
-                            {
-                                qDebug() << "Service not found:" << filename;
-                            }
-                        }
-                    }
-                }
-                else
-                {   // old file -> delete it
-                    // qDebug() << "File" << filename << "is old ===> to be deleted";
-                }
-            }
-#else
-            for (const ServiceListId & sId : m_epgList.keys())
-            {
-                QDate currentDate = EPGTime::getInstance()->currentDate();
-                for (int day = -2; day < +7; ++day) {
-                    QDate date = currentDate.addDays(day);
-                    QString xmlFileName = QString("%1_%2.%3_PI.xml").arg(date.toString("yyyyMMdd")).arg(sId.sid(), 6, 16, QChar('0')).arg(sId.scids());
-                    if (directory.exists(xmlFileName)) {
-                        qDebug() << "Found:"  << xmlFileName;
-                    }
-                    else
-                    {
-                        qDebug() << "File" << xmlFileName << "does not exist ==> asking SPI app";
-                    }
-                }
-            }
-#endif
-        }
-        m_isLoadingFromCache = false;
-    }
-    else
-    { /* invalid EPG time => cannot load anything */ }
-#endif
     if (EPGTime::getInstance()->isValid() && servId.isValid())
     {
         m_isLoadingFromCache = true;
