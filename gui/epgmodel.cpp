@@ -131,7 +131,7 @@ void EPGModel::populateWithList(const QList<EPGModelItem *> &list)
 
 }
 
-void EPGModel::addItem(EPGModelItem *item)
+bool EPGModel::addItem(EPGModelItem *item)
 {
     if (item->isValid())
     {
@@ -141,7 +141,7 @@ void EPGModel::addItem(EPGModelItem *item)
                 qDebug() << "Unexpected EPG item ID" << item->shortId() << "start time:" << item->startTime();
             }
             delete item;
-            return;
+            return false;
         }
 
         // we are here if item was not in list
@@ -151,9 +151,12 @@ void EPGModel::addItem(EPGModelItem *item)
         m_startTimeList[item->startTime()] = item->shortId();
         m_itemList.append(item);
         endInsertRows();
+
+        return true;
     }
     else
     {
         qDebug() << "Invalid item:" << item->shortId();
     }
+    return false;
 }

@@ -1447,9 +1447,35 @@ void SPIApp::radioDNSLookup(const QString &fqdn)
         downloadFile(cnameUrl, "DOH_CNAME", false);
     }
     else {
-        m_dnsLookup->setType(QDnsLookup::CNAME);
-        m_dnsLookup->setName(fqdn);
-        m_dnsLookup->lookup();
+        if (m_dnsCache.contains(fqdn))
+        {   // we have record in cache
+            if (!m_radioDnsDownloadQueue.isEmpty())
+            {   // take record from the queue
+                QString file = m_radioDnsDownloadQueue.dequeue().second;
+
+                if (!m_dnsCache[fqdn].isEmpty())
+                {   // valid address
+                    downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(m_dnsCache[fqdn]).arg(file), "XML|"+file);
+                }
+                else
+                {
+                    qDebug() << "Invalid DNS record for" << fqdn << file;
+                }
+
+                // next dns lookup
+                if (!m_radioDnsDownloadQueue.isEmpty()) {
+                    QString fqdn = m_radioDnsDownloadQueue.head().first;
+                    radioDNSLookup(fqdn);
+                }
+
+            }
+        }
+        else
+        {
+            m_dnsLookup->setType(QDnsLookup::CNAME);
+            m_dnsLookup->setName(fqdn);
+            m_dnsLookup->lookup();
+        }
     }
 }
 
@@ -1523,9 +1549,14 @@ void SPIApp::handleRadioDNSLookup()
             m_dnsLookup->lookup();
             return;
         }
-        m_radioDnsDownloadQueue.dequeue();
-        if (!m_radioDnsDownloadQueue.isEmpty()) {
-            radioDNSLookup(m_radioDnsDownloadQueue.head().first);
+        if (!m_radioDnsDownloadQueue.isEmpty())
+        {
+            QString fqdn = m_radioDnsDownloadQueue.dequeue().first;
+            m_dnsCache[fqdn] = "";   // invalid record in cache
+            if (!m_radioDnsDownloadQueue.isEmpty()) {
+                QString fqdn = m_radioDnsDownloadQueue.head().first;
+                radioDNSLookup(fqdn);
+            }
         }
         return;
     }
@@ -1536,6 +1567,7 @@ void SPIApp::handleRadioDNSLookup()
         const auto & record = m_dnsLookup->canonicalNameRecords().at(0);
         qCDebug(spiApp) << "canonicalNameRecord:" << record.name() << record.value();
         m_dnsLookup->setType(QDnsLookup::SRV);
+        // giving priority to non TLS (against standard)
         m_dnsLookup->setName("_radioepg._tcp." + record.value());
         //m_dnsLookup->setName("_radiospi._tcp." + record.value());
         m_dnsLookup->lookup();
@@ -1544,18 +1576,26 @@ void SPIApp::handleRadioDNSLookup()
     {
         const auto & record = m_dnsLookup->serviceRecords().at(0);        
         qCDebug(spiApp) << "serviceRecord:" << record.name() << record.target() << record.port();
-        QString file = m_radioDnsDownloadQueue.dequeue().second;
-        if (record.name().startsWith("_radiospi._tcp."))
+        if (!m_radioDnsDownloadQueue.isEmpty())
         {
-            downloadFile(QString("https://%1:%2/radiodns/spi/3.1/%3").arg(record.target()).arg(record.port()).arg(file), "XML|"+file);
-        }
-        else
-        {
-            downloadFile(QString("http://%1:%2/radiodns/spi/3.1/%3").arg(record.target()).arg(record.port()).arg(file), "XML|"+file);
-        }
-
-        if (!m_radioDnsDownloadQueue.isEmpty()) {
-            radioDNSLookup(m_radioDnsDownloadQueue.head().first);
+            QPair<QString, QString> request = m_radioDnsDownloadQueue.dequeue();
+            QString fqdn = request.first;
+            QString address;
+            if (record.name().startsWith("_radiospi._tcp."))
+            {
+                address = QString("https://%1:%2").arg(record.target()).arg(record.port());
+            }
+            else
+            {
+                address = QString("http://%1:%2").arg(record.target()).arg(record.port());
+            }
+            m_dnsCache[fqdn] = address;
+            QString file = request.second;
+            downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(address).arg(file), "XML|"+file);
+            if (!m_radioDnsDownloadQueue.isEmpty()) {
+                QString fqdn = m_radioDnsDownloadQueue.head().first;
+                radioDNSLookup(fqdn);
+            }
         }
     }
 }

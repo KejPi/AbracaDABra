@@ -108,6 +108,7 @@ private:
     bool m_useDoH;
 
     QDnsLookup * m_dnsLookup;
+    QHash<QString, QString> m_dnsCache;
     QNetworkAccessManager *m_netAccessManager;
     QQueue<QPair<QString, QString>> m_downloadReqQueue;
     QQueue<QPair<QString, QString>> m_radioDnsDownloadQueue;

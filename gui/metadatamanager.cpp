@@ -286,15 +286,16 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
                 {
                     ServiceListId id = bearerToServiceId(scId);
                     if (id.isValid()) {
+                        bool valid = false;
                         QDomElement child = element.firstChildElement("programme");
                         while (!child.isNull())
                         {
                             // qDebug() << scopeStart;
-                            parseProgramme(child, id);
+                            valid = valid || parseProgramme(child, id);
                             child = child.nextSiblingElement("programme");
                         }
 
-                        if (!m_isLoadingFromCache)
+                        if (!m_isLoadingFromCache && valid)
                         {   // save parsed file to the cache
                             // "20140805_e1c221.0_PI.xml"
                             QString filename = QString("%1/EPG/%2_%3.%4_PI.xml").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation),
@@ -332,54 +333,9 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
     }
 }
 
-void MetadataManager::parseProgramme(const QDomElement &element, const ServiceListId & id)
+bool MetadataManager::parseProgramme(const QDomElement &element, const ServiceListId & id)
 {
-#if 0
-    QDomElement child = element.firstChildElement();
-    EPGModelItem * progItem = new EPGModelItem;
-    progItem->setShortId(element.attribute("shortId").toInt());
-    while (!child.isNull())
-    {
-        //qDebug() << "---" << child.tagName();
-        if ("location" == child.tagName())
-        {
-            parseLocation(child, progItem);
-        }
-        else if ("longName" == child.tagName())
-        {
-            progItem->setLongName(child.text());
-        }
-        else if ("mediumName" == child.tagName())
-        {
-            progItem->setMediumName(child.text());
-        }
-        else if ("shortName" == child.tagName())
-        {
-            progItem->setShortName(child.text());
-        }
-        else if ("mediaDescription" == child.tagName())
-        {
-            parseDescription(child, progItem);
-        }
-
-        child = child.nextSiblingElement();
-    }
-
-    if (m_epgList.value(id, nullptr) == nullptr)
-    {
-        m_epgList[id] = new EPGModel(this);
-        emit epgModelChanged(id);
-        emit epgAvailable();
-    }
-    //qDebug() << "Adding item" << progItem->shortId();
-    if (progItem->startTime().date() < EPGTime::getInstance()->currentDate().addDays(7))
-    {
-        addEpgDate(progItem->startTime().date());
-        m_epgList[id]->addItem(progItem);
-    }
-#endif
-    // multiple times for single record
-
+    bool ret = false;
 
     // ETSI TS 102 818 V3.3.1 (2020-08) [7.8]
     // The location element may appear zero or more times within a programme or programmeEvent element.
@@ -473,13 +429,15 @@ void MetadataManager::parseProgramme(const QDomElement &element, const ServiceLi
         if (progItem->startTime().date() < EPGTime::getInstance()->currentDate().addDays(7))
         {
             addEpgDate(progItem->startTime().date());
-            m_epgList[id]->addItem(progItem);
+            ret = ret || m_epgList[id]->addItem(progItem);
         }
         else
         {
             delete progItem;
         }
     }
+
+    return ret;
 }
 
 void MetadataManager::parseDescription(const QDomElement &element, EPGModelItem *progItem)

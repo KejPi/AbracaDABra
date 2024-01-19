@@ -59,7 +59,7 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const { return m_itemList.count(); }
     QHash<int, QByteArray> roleNames() const;
-    void addItem(EPGModelItem *item);
+    bool addItem(EPGModelItem *item);
     void populateWithList(const QList<EPGModelItem *> & list);
 private:
     QHash<QDateTime, int> m_startTimeList;

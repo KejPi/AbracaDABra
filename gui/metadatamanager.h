@@ -89,7 +89,7 @@ private:
     QHash<ServiceListId, EPGModel *> m_epgList;
     ServiceListId m_currentEnsemble;
 
-    void parseProgramme(const QDomElement &element, const ServiceListId &id);    
+    bool parseProgramme(const QDomElement &element, const ServiceListId &id);
     void parseDescription(const QDomElement &element, EPGModelItem *progItem);
 
     ServiceListId bearerToServiceId(const QString & bearerUri) const;
