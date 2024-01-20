@@ -154,6 +154,7 @@ add_executable(${TARGET}
     epgdialog.h epgdialog.cpp epgdialog.ui
     epgproxymodel.h epgproxymodel.cpp
     epgtime.h epgtime.cpp
+    slproxymodel.h slproxymodel.cpp
   )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

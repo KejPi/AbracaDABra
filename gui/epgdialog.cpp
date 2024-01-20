@@ -36,19 +36,21 @@
 EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager * metadataManager, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::EPGDialog)
-    , m_serviceListModel(serviceListModel)
     , m_metadataManager(metadataManager)
 {
     ui->setupUi(this);
 
-    qmlRegisterType<SLModel>("ProgrammeGuide", 1, 0, "SLModel");
+    m_slProxyModel = new SLProxyModel(this);
+    m_slProxyModel->setSourceModel(serviceListModel);
+
+    qmlRegisterType<SLProxyModel>("ProgrammeGuide", 1, 0, "SLProxyModel");
     qmlRegisterType<EPGModel>("ProgrammeGuide", 1, 0, "EPGModel");
     qmlRegisterType<EPGProxyModel>("ProgrammeGuide", 1, 0, "EPGProxyModel");
 
     m_qmlView = new QQuickView();
 
     QQmlContext * context = m_qmlView->rootContext();
-    context->setContextProperty("slModel", m_serviceListModel);
+    context->setContextProperty("slProxyModel", m_slProxyModel);
     context->setContextProperty("metadataManager", m_metadataManager);
     context->setContextProperty("epgTime", EPGTime::getInstance());
     context->setContextProperty("slSelectionModel", slSelectionModel);

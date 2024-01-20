@@ -185,7 +185,7 @@ Item {
                                 id: serviceColumnId
                                 Repeater {
                                     id: serviceList
-                                    model: slModel
+                                    model: slProxyModel
                                     delegate: Rectangle {
                                         //property bool isSelected: false
                                         color: selectedServiceIndex == index ? "white" : "transparent"
@@ -214,8 +214,8 @@ Item {
                                         MouseArea {
                                             anchors.fill: parent
                                             onClicked: {
-                                                slSelectionModel.select(slModel.index(index, 0), ItemSelectionModel.Select | ItemSelectionModel.Current)
-                                                slSelectionModel.setCurrentIndex(slModel.index(index, 0), ItemSelectionModel.Select | ItemSelectionModel.Current)
+                                                slSelectionModel.select(slProxyModel.index(index, 0), ItemSelectionModel.Select | ItemSelectionModel.Current)
+                                                slSelectionModel.setCurrentIndex(slProxyModel.index(index, 0), ItemSelectionModel.Select | ItemSelectionModel.Current)
                                             }
                                         }
                                     }
@@ -248,7 +248,7 @@ Item {
                                             Column {
                                                 id: colId
                                                 Repeater {
-                                                    model: slModel
+                                                    model: slProxyModel
                                                     Item {
                                                         height: lineHeight
                                                         anchors.left: parent.left

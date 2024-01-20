@@ -32,6 +32,7 @@
 #include <QQuickView>
 #include "metadatamanager.h"
 #include "slmodel.h"
+#include "slproxymodel.h"
 
 namespace Ui {
 class EPGDialog;
@@ -67,9 +68,9 @@ private:
     QQuickView *m_qmlView ;
 
     MetadataManager * m_metadataManager;
-    SLModel * m_serviceListModel;
     QPersistentModelIndex m_selectedEpgItem;
     bool m_isVisible;
+    SLProxyModel * m_slProxyModel;
 };
 
 
