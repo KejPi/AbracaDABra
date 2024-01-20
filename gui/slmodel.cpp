@@ -95,6 +95,7 @@ QVariant SLModel::data(const QModelIndex &index, int role) const
         case SLModelRole::SmallLogoRole:
         case SLModelRole::SmallLogoIdRole:
         case SLModelRole::EpgModelRole:
+        case SLModelRole::EnsembleListRole:
               return item->data(index.column(), role);
         case Qt::DecorationRole:
         {
@@ -306,6 +307,7 @@ QHash<int, QByteArray> SLModel::roleNames() const
     roles[SLModelRole::SmallLogoRole] = "smallLogo";
     roles[SLModelRole::SmallLogoIdRole] = "smallLogoId";
     roles[SLModelRole::EpgModelRole] = "epgModelRole";
+    roles[SLModelRole::EnsembleListRole] = "ueidList";
 
     return roles;
 }

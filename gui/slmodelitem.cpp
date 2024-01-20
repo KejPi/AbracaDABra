@@ -130,7 +130,20 @@ QVariant SLModelItem::data(int column, int role) const
         }
         case SLModelRole::EpgModelRole:
             return QVariant::fromValue(m_metadataMgrPtr->epgModel(m_id));
-        }        
+        case SLModelRole::EnsembleListRole:
+        {
+            ServiceListConstIterator it = m_slPtr->findService(m_id);
+            if (m_slPtr->serviceListEnd() != it)
+            {   // found
+                auto service = it.value();
+                QList<int> ensList;
+                for (int e = 0; e < service->numEnsembles(); ++e) {
+                    ensList.append(service->getEnsemble(e)->ueid());
+                }
+                return QVariant::fromValue(ensList);
+            }
+        }
+        }
     }
     return QVariant();
 }

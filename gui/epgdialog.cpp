@@ -27,6 +27,7 @@
 #include <QQmlContext>
 #include <QHBoxLayout>
 #include <QPushButton>
+//#include <QQuickStyle>
 
 #include "epgproxymodel.h"
 #include "epgdialog.h"
@@ -37,11 +38,16 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectio
     : QDialog(parent)
     , ui(new Ui::EPGDialog)
     , m_metadataManager(metadataManager)
+    , m_currentUEID(0)
 {
     ui->setupUi(this);
 
     m_slProxyModel = new SLProxyModel(this);
     m_slProxyModel->setSourceModel(serviceListModel);
+    connect(this, &EPGDialog::filterEmptyEpgChanged, [this](){ m_slProxyModel->setEmptyEpgFilter(m_filterEmptyEpg); });
+    connect(this, &EPGDialog::filterEnsembleChanged, [this](){ m_slProxyModel->setUeidFilter(m_filterEnsemble ? m_currentUEID : 0); });
+    setFilterEmptyEpg(false);
+    setFilterEnsemble(false);
 
     qmlRegisterType<SLProxyModel>("ProgrammeGuide", 1, 0, "SLProxyModel");
     qmlRegisterType<EPGModel>("ProgrammeGuide", 1, 0, "EPGModel");
@@ -55,6 +61,8 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectio
     context->setContextProperty("epgTime", EPGTime::getInstance());
     context->setContextProperty("slSelectionModel", slSelectionModel);
     context->setContextProperty("epgDialog", this);
+
+    //QQuickStyle::setStyle("macOS");
 
     QQmlEngine *engine = m_qmlView->engine();
     engine->addImageProvider(QLatin1String("metadata"), new LogoProvider(m_metadataManager));
@@ -117,4 +125,40 @@ void EPGDialog::closeEvent(QCloseEvent *event)
     qDebug() << Q_FUNC_INFO;
     setIsVisible(false);
     QDialog::closeEvent(event);
+}
+
+
+bool EPGDialog::filterEmptyEpg() const
+{
+    return m_filterEmptyEpg;
+}
+
+void EPGDialog::setFilterEmptyEpg(bool newFilterEmptyEpg)
+{
+    if (m_filterEmptyEpg == newFilterEmptyEpg)
+        return;
+    m_filterEmptyEpg = newFilterEmptyEpg;
+    emit filterEmptyEpgChanged();
+}
+
+void EPGDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
+{
+    m_currentUEID = ens.ueid;
+    if (m_filterEnsemble)
+    {
+        m_slProxyModel->setUeidFilter(m_currentUEID);
+    }
+}
+
+bool EPGDialog::filterEnsemble() const
+{
+    return m_filterEnsemble;
+}
+
+void EPGDialog::setFilterEnsemble(bool newFilterEnsemble)
+{
+    if (m_filterEnsemble == newFilterEnsemble)
+        return;
+    m_filterEnsemble = newFilterEnsemble;
+    emit filterEnsembleChanged();
 }

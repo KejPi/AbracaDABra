@@ -49,5 +49,6 @@ void EPGProxyModel::setDateFilter(const QDate &newDateFilter)
     if (m_dateFilter == newDateFilter)
         return;
     m_dateFilter = newDateFilter;
+    invalidateFilter();
     emit dateFilterChanged();
 }

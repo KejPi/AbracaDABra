@@ -37,15 +37,12 @@
 #include "servicelist.h"
 #include "metadatamanager.h"
 
-// enum SLModelRoles {
-//     ShortIdRole = Qt::UserRole,
-// };
-
 enum SLModelRole{
     IdRole = Qt::UserRole,
     SmallLogoRole,
     SmallLogoIdRole,   // this role is used to trick QML for loading the logo when available
     EpgModelRole,
+    EnsembleListRole,
 };
 
 

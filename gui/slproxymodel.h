@@ -35,11 +35,25 @@ class SLProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
     QML_ELEMENT
+    Q_PROPERTY(bool emptyEpgFilter READ emptyEpgFilter WRITE setEmptyEpgFilter NOTIFY emptyEpgFilterChanged FINAL)
+    Q_PROPERTY(int ueidFilter READ ueidFilter WRITE setUeidFilter NOTIFY ueidFilterChanged FINAL)
 public:
     explicit SLProxyModel(QObject *parent = nullptr);
 
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 
+    bool emptyEpgFilter() const;
+    void setEmptyEpgFilter(bool newEmptyEpgFilter);
+    int ueidFilter() const;
+    void setUeidFilter(int newUeidFilter);
+
+signals:
+    void emptyEpgFilterChanged();
+    void ueidFilterChanged();
+
+private:
+    bool m_emptyEpgFilter;
+    int m_ueidFilter;
 };
 
 #endif // SLPROXYMODEL_H

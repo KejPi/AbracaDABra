@@ -28,12 +28,51 @@
 #include "slmodel.h"
 
 SLProxyModel::SLProxyModel(QObject *parent)
-    : QSortFilterProxyModel{parent}
+    : QSortFilterProxyModel{parent},
+    m_emptyEpgFilter(false),
+    m_ueidFilter(0)
 {}
 
 bool SLProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
-    return sourceModel()->data(index, SLModelRole::EpgModelRole).value<EPGModel*>() != nullptr;
-    //return true;
+    bool ret = true;
+    if (m_emptyEpgFilter)
+    {
+        ret = ret && (sourceModel()->data(index, SLModelRole::EpgModelRole).value<EPGModel*>() != nullptr);
+    }
+    if (m_ueidFilter > 0) {
+        QList<int> ensList = sourceModel()->data(index, SLModelRole::EnsembleListRole).value<QList<int>>();
+        ret = ret && ensList.contains(m_ueidFilter);
+    }
+
+    return ret;
+}
+
+bool SLProxyModel::emptyEpgFilter() const
+{
+    return m_emptyEpgFilter;
+}
+
+void SLProxyModel::setEmptyEpgFilter(bool newEmptyEpgFilter)
+{
+    if (m_emptyEpgFilter == newEmptyEpgFilter)
+        return;
+    m_emptyEpgFilter = newEmptyEpgFilter;
+    invalidateFilter();
+    emit emptyEpgFilterChanged();
+}
+
+int SLProxyModel::ueidFilter() const
+{
+    return m_ueidFilter;
+}
+
+void SLProxyModel::setUeidFilter(int newUeidFilter)
+{
+    if (m_ueidFilter == newUeidFilter)
+        return;
+    m_ueidFilter = newUeidFilter;
+    invalidateFilter();
+    emit ueidFilterChanged();
 }

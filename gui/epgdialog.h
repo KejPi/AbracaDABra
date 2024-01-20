@@ -43,6 +43,8 @@ class EPGDialog : public QDialog
     Q_OBJECT
     Q_PROPERTY(QPersistentModelIndex selectedEpgItem READ selectedEpgItem WRITE setSelectedEpgItem NOTIFY selectedEpgItemChanged FINAL)
     Q_PROPERTY(bool isVisible READ isVisible WRITE setIsVisible NOTIFY isVisibleChanged FINAL)
+    Q_PROPERTY(bool filterEmptyEpg READ filterEmptyEpg WRITE setFilterEmptyEpg NOTIFY filterEmptyEpgChanged FINAL)
+    Q_PROPERTY(bool filterEnsemble READ filterEnsemble WRITE setFilterEnsemble NOTIFY filterEnsembleChanged FINAL)
 
 public:
     explicit EPGDialog(SLModel *serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager *metadataManager, QWidget *parent = nullptr);
@@ -54,10 +56,21 @@ public:
     bool isVisible() const;
     void setIsVisible(bool newIsVisible);
 
+    bool filterEmptyEpg() const;
+    void setFilterEmptyEpg(bool newFilterEmptyEpg);
+
+    void onEnsembleInformation(const RadioControlEnsemble & ens);
+    bool filterEnsemble() const;
+    void setFilterEnsemble(bool newFilterEnsemble);
+
 signals:
     void selectedEpgItemChanged();
 
     void isVisibleChanged();
+
+    void filterEmptyEpgChanged();
+
+    void filterEnsembleChanged();
 
 protected:
     void showEvent(QShowEvent *event);
@@ -71,6 +84,9 @@ private:
     QPersistentModelIndex m_selectedEpgItem;
     bool m_isVisible;
     SLProxyModel * m_slProxyModel;
+    bool m_filterEmptyEpg;
+    bool m_filterEnsemble;
+    int m_currentUEID;
 };
 
 

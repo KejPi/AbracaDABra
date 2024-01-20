@@ -58,13 +58,38 @@ Item {
 
             //SystemPalette { id: sysPaletteActive; colorGroup: SystemPalette.Active }
 
+            Item {
+                id: controlsItem
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                height: emptyFilterSwitch.implicitHeight
+                RowLayout {
+                    spacing: 20
+                    Switch {
+                        id: emptyFilterSwitch
+                        text: qsTr("Hide services without programme")
+                        checked: epgDialog.filterEmptyEpg
+                        onToggled: {
+                            epgDialog.filterEmptyEpg = checked;
+                        }
+                    }
+                    Switch {
+                        id: ensembleFilterSwitch
+                        text: qsTr("Hide services from other ensembles")
+                        checked: epgDialog.filterEnsemble
+                        onToggled: {
+                            epgDialog.filterEnsemble = checked;
+                        }
+                    }
+                }
+            }
             TabBar {
                 id: dayTabBar
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    top: parent.top
-                }
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: controlsItem.bottom
+                anchors.topMargin: 10
                 visible: metadataManager.epgDatesList.length > 0
                 height: metadataManager.epgDatesList.length > 0 ? implicitHeight : 0
                 currentIndex: stackLayoutId.currentIndex
@@ -83,22 +108,18 @@ Item {
             }
             Item {
                 id: epgViewItem
-                anchors {
-                    top: dayTabBar.bottom
-                    left: parent.left
-                    right: parent.right
-                    bottom: progDetails.top
-                    topMargin: 10
-                    bottomMargin: 20
-                }
+                anchors.top: dayTabBar.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: progDetails.top
+                anchors.topMargin: 10
+                anchors.bottomMargin: 20
                 Text {
                     id: currentTimeText
-                    anchors {
-                        top: parent.top
-                        left: parent.left
-                        right: parent.right
-                        leftMargin: 3
-                    }
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.leftMargin: 3
                     width: implicitWidth
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
@@ -108,12 +129,10 @@ Item {
                 Flickable {
                     id: timelinebox
                     height: 20
-                    anchors {
-                        top: parent.top
-                        left: parent.left
-                        right: parent.right
-                        leftMargin: serviceListWidth
-                    }
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.leftMargin: serviceListWidth
                     contentHeight: timeline.height
                     contentWidth: timeline.width
                     //contentX: epgTable.contentX
@@ -150,12 +169,10 @@ Item {
                     }
                 }
                 Rectangle {
-                    anchors {
-                        top: timelinebox.bottom
-                        left: parent.left
-                        right: parent.right
-                        bottom: parent.bottom
-                    }
+                    anchors.top: timelinebox.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
                     color: "transparent"
                     border.color: "lightgray"
                     border.width: 1
@@ -163,12 +180,6 @@ Item {
                         id: mainView
                         flickableDirection: Flickable.VerticalFlick
                         boundsBehavior: Flickable.StopAtBounds
-                        // anchors {
-                        //     top: timelinebox.bottom
-                        //     left: parent.left
-                        //     right: parent.right
-                        //     bottom: parent.bottom
-                        // }
                         anchors.fill: parent
                         anchors.margins: 2
                         contentHeight: epgItem.height
@@ -271,10 +282,8 @@ Item {
                                                             }
 
                                                             Text {
-                                                                anchors {
-                                                                    top: parent.top
-                                                                    bottom: parent.bottom
-                                                                }
+                                                                anchors.top: parent.top
+                                                                anchors.bottom: parent.bottom
                                                                 verticalAlignment: Text.AlignVCenter
                                                                 x: epgTable.contentX + 5
                                                                 text: qsTr("No data available")
@@ -344,7 +353,7 @@ Item {
                                                 }
                                             }
                                             Component.onCompleted: {
-                                                if (epgTime.isCurrentDate(metadataManager.epgDate(epgTable.dateIndex))) {                                                    
+                                                if (epgTime.isCurrentDate(metadataManager.epgDate(epgTable.dateIndex))) {
                                                     //var cX = (Math.round(epgTime.secSinceMidnight() / 3600) - 0.5) * 3600 * pointsPerSecond;
                                                     const w = mainItemId.width - serviceListWidth;
                                                     const cX = Math.max(epgTime.secSinceMidnight() * pointsPerSecond - w/3, 0);
@@ -369,14 +378,11 @@ Item {
                     }
                 }
             }
-
             Rectangle {
                 id: progDetails
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    bottom: parent.bottom
-                }
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
                 color: "transparent"
                 height: 100
                 ColumnLayout {
