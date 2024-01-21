@@ -455,7 +455,7 @@ bool MOTDirectory::parse(const QByteArray &dirData)
     int dirSize = ((dataPtr[0] & 0x3F) << 24) | (dataPtr[1] << 16) | (dataPtr[2] << 8) | dataPtr[3];
 
     // check is dirSize matches
-    if (dirSize < dirData.size())
+    if (dirSize > dirData.size())
     {   // header size is not correct -> probably not received yet, but it should not happen
         return false;
     }
