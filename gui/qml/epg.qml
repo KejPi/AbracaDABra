@@ -31,6 +31,7 @@ import ProgrammeGuide
 import Qt5Compat.GraphicalEffects   // required for Qt < 6.5
 
 Item {
+    id: rootItem
     anchors.fill: parent
     Loader {
         anchors.fill: parent
@@ -52,9 +53,9 @@ Item {
             property int selectedServiceIndex: slSelectionModel.currentIndex.row
             property var selectedEpgItemIndex: epgDialog.selectedEpgItem
 
-            property string serviceName: ""
-            property string serviceStartTime: ""
-            property string serviceDetail: ""
+            property string programmeName: ""
+            property string programmeStartTime: ""
+            property string programmeDetail: ""
 
             //SystemPalette { id: sysPaletteActive; colorGroup: SystemPalette.Active }
 
@@ -302,9 +303,9 @@ Item {
                                                                                 && (selectedEpgItemIndex.row === proxyModel.mapToSource(proxyModel.index(index, 0)).row)
                                                                     onClicked: {
                                                                         //console.log("clicked")
-                                                                        serviceDetail = (longDescription !== "") ? longDescription : shortDescription;
-                                                                        serviceName = (longName !== "") ? longName : mediumName;
-                                                                        serviceStartTime = startTimeString;
+                                                                        programmeDetail = (longDescription !== "") ? longDescription : shortDescription;
+                                                                        programmeName = (longName !== "") ? longName : mediumName;
+                                                                        programmeStartTime = startTimeString;
 
                                                                         epgDialog.selectedEpgItem = proxyModel.mapToSource(proxyModel.index(index, 0));
                                                                     }
@@ -313,9 +314,9 @@ Item {
                                                                             if ((selectedEpgItemIndex.model === proxyModel.mapToSource(proxyModel.index(index, 0)).model)
                                                                                     && (selectedEpgItemIndex.row === proxyModel.mapToSource(proxyModel.index(index, 0)).row))
                                                                             {
-                                                                                serviceDetail = (longDescription !== "") ? longDescription : shortDescription;
-                                                                                serviceName = (longName !== "") ? longName : mediumName;
-                                                                                serviceStartTime = startTimeString;
+                                                                                programmeDetail = (longDescription !== "") ? longDescription : shortDescription;
+                                                                                programmeName = (longName !== "") ? longName : mediumName;
+                                                                                programmeStartTime = startTimeString;
                                                                             }
                                                                         }
                                                                         else {
@@ -323,9 +324,9 @@ Item {
                                                                                 if ((startTimeSecSinceEpoch <= currentTimeSec) && (endTimeSecSinceEpoch > currentTimeSec))
                                                                                 {   // if it is ongoing programme select it
                                                                                     epgDialog.selectedEpgItem = proxyModel.mapToSource(proxyModel.index(index, 0));
-                                                                                    serviceDetail = (longDescription !== "") ? longDescription : shortDescription;
-                                                                                    serviceName = (longName !== "") ? longName : mediumName;
-                                                                                    serviceStartTime = startTimeString;
+                                                                                    programmeDetail = (longDescription !== "") ? longDescription : shortDescription;
+                                                                                    programmeName = (longName !== "") ? longName : mediumName;
+                                                                                    programmeStartTime = startTimeString;
                                                                                 }
                                                                             }
                                                                         }
@@ -384,26 +385,35 @@ Item {
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 color: "transparent"
-                height: 100
+                height: 150
                 ColumnLayout {
+                    id: progDetailsLayout
                     anchors.fill: parent
                     Text {
                         Layout.fillWidth: true
-                        text: serviceName
+                        text: programmeName
                         font.bold: true
                         font.pointSize: 20
                     }
                     Text {
-                        visible: serviceStartTime
+                        visible: programmeStartTime
                         Layout.fillWidth: true
-                        text: qsTr("Starts at ") + serviceStartTime
+                        text: qsTr("Starts at ") + programmeStartTime
                     }
-                    Text {
+                    ScrollView {
+                        id: serviceScrollViewId
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        text: serviceDetail
-                        wrapMode: Text.WordWrap
-                        clip: true
+                        //contentWidth: parent.width
+                        contentHeight: detailText.height
+                        Text {
+                            id: detailText
+                            text: programmeDetail
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            clip: true
+                            wrapMode: Text.WordWrap
+                        }
                     }
                 }
             }
