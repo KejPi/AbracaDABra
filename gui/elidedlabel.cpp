@@ -1,50 +1,56 @@
-// this sourcecode is from: https://wiki.qt.io/Elided_Label
+/*
+ * This file is part of the AbracaDABra project
+ *
+ * MIT License
+ *
+  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 #include "elidedlabel.h"
 
-#include <QPaintEvent>
-#include <QResizeEvent>
+
+ElidedLabel::ElidedLabel(QWidget *parent)
+    : QLabel(parent)
+{
+}
 
 void ElidedLabel::setElideMode(Qt::TextElideMode elideMode)
 {
     m_elideMode = elideMode;
-    m_cachedText.clear();
     update();
 }
 
-void ElidedLabel::resizeEvent(QResizeEvent *e)
+void ElidedLabel::setText(const QString &newText)
 {
-    QLabel::resizeEvent(e);
-    m_cachedText.clear();
+    content = newText;
+    update();
 }
 
-void ElidedLabel::paintEvent(QPaintEvent *e)
+void ElidedLabel::paintEvent(QPaintEvent *event)
 {
-    if (m_elideMode == Qt::ElideNone)
-        return QLabel::paintEvent(e);
+    QLabel::paintEvent(event);
 
-    updateCachedTexts();
-    QLabel::setText(m_cachedElidedText);
-    QLabel::paintEvent(e);
-    QLabel::setText(m_cachedText);
-}
+    QPainter painter(this);
+    QFontMetrics fontMetrics = painter.fontMetrics();
 
-void ElidedLabel::updateCachedTexts()
-{
-    // setText() is not virtual ... :/
-    const auto txt = text();
-    if (m_cachedText == txt)
-        return;
-    m_cachedText = txt;
-    const QFontMetrics fm(fontMetrics());
-    m_cachedElidedText = fm.elidedText(text(),
-                                       m_elideMode,
-                                       width(),
-                                       Qt::TextShowMnemonic);
-    // make sure to show at least the first character
-    if (!m_cachedText.isEmpty())
-    {
-        const QString showFirstCharacter = m_cachedText.at(0) + QStringLiteral("...");
-        setMinimumWidth(fm.horizontalAdvance(showFirstCharacter) + 1);
-    }
+    QString elidedLine = fontMetrics.elidedText(content, m_elideMode, width());
+    painter.drawText(QPoint(0, fontMetrics.ascent()), elidedLine);
 }
