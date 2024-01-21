@@ -154,7 +154,7 @@ private:
 
     RtlTcpWorker * m_worker;
     QTimer m_watchdogTimer;
-    RtlGainMode m_gainMode = RtlGainMode::Hardware;
+    RtlGainMode m_gainMode = RtlGainMode::Undefined;
     int m_gainIdx;
     QList<int> * m_gainList;
     float m_agcLevelMax;

@@ -63,7 +63,8 @@ enum class InputDeviceId { UNDEFINED = 0, RTLSDR, RTLTCP, RAWFILE, AIRSPY, SOAPY
 
 enum class RtlGainMode
 {
-    Hardware,
+    Undefined = -1,
+    Hardware = 0,
     Software,
     Manual
 };
