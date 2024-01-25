@@ -43,6 +43,8 @@ enum EPGModelRoles {
     StartTimeSecSinceEpochRole,
     EndTimeSecRole,
     EndTimeSecSinceEpochRole,
+    EndTimeStringRole,
+    StartToEndTimeStringRole,
     DurationSecRole,
     LongDescriptionRole,
     ShortDescriptionRole,

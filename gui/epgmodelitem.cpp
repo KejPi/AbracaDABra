@@ -80,6 +80,12 @@ int EPGModelItem::endTimeSec() const
     // return ret;
 }
 
+QDateTime EPGModelItem::endTime() const
+{
+    return m_startTime.addSecs(m_durationSec);
+}
+
+
 void EPGModelItem::setStartTime(const QDateTime &newStartTime)
 {
     m_startTime = newStartTime;

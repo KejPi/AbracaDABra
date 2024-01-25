@@ -60,14 +60,12 @@ public:
     bool isValid() const;
     int startTimeSec() const;
     int endTimeSec() const;
-    qint64 startTimeSecSinceEpoch() const;
+    QDateTime endTime() const;
+        qint64 startTimeSecSinceEpoch() const;
     qint64 endTimeSecSinceEpoch() const;
 
     int shortId() const;
     void setShortId(int newShortId);
-
-
-signals:
 
 private:
     QString m_longName;

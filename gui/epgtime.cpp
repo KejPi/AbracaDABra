@@ -67,7 +67,7 @@ void EPGTime::setTime(const QDateTime & time)
         {   // using timezone from DAB
             m_ltoSec = time.toLocalTime().offsetFromUtc();
         }
-        qDebug() << "LTO [minutes]" << m_ltoSec/60;
+        //qDebug() << "LTO [minutes]" << m_ltoSec/60;
 
         m_currentTime = time.toTimeZone(QTimeZone::fromSecondsAheadOfUtc(m_ltoSec));
         setSecSinceEpoch(m_currentTime.toSecsSinceEpoch());
@@ -80,7 +80,7 @@ void EPGTime::setTime(const QDateTime & time)
     }
     m_currentTime = time.toTimeZone(QTimeZone::fromSecondsAheadOfUtc(m_ltoSec));
     setSecSinceEpoch(m_currentTime.toSecsSinceEpoch());
-    setCurrentDateString(m_currentTime.date().toString("dd.MM.yyyy"));
+    setCurrentDateString(m_currentTime.date().toString("d. M."));
     setCurrentTimeString(m_currentTime.time().toString("HH:mm"));
 }
 

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,10 +29,18 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import ProgrammeGuide
 import Qt5Compat.GraphicalEffects   // required for Qt < 6.5
+// import QtQuick.Effects              // not available in Qt < 6.5
 
 Item {
     id: rootItem
     anchors.fill: parent
+
+    //macOS.theme: macOS.Dark
+    //Fusion.theme: Fusion.darkShade
+
+    //Material.accent: "#3e82fc" // Material.Blue
+    //Material.background: "transparent"
+
     Loader {
         anchors.fill: parent
         active: epgDialog.isVisible
@@ -53,55 +61,68 @@ Item {
             property int selectedServiceIndex: slSelectionModel.currentIndex.row
             property var selectedEpgItemIndex: epgDialog.selectedEpgItem
 
-            property string programmeName: ""
-            property string programmeStartTime: ""
-            property string programmeDetail: ""
+            property string programName: ""
+            property string programStartToEndTime: ""
+            property string programDetail: ""
 
             //SystemPalette { id: sysPaletteActive; colorGroup: SystemPalette.Active }
 
-            Item {
-                id: controlsItem
+            RowLayout {
+                id: controlLayout
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
-                height: emptyFilterSwitch.implicitHeight
-                RowLayout {
-                    spacing: 20
-                    Switch {
-                        id: emptyFilterSwitch
-                        text: qsTr("Hide services without programme")
-                        checked: epgDialog.filterEmptyEpg
-                        onToggled: {
-                            epgDialog.filterEmptyEpg = checked;
-                        }
-                    }
-                    Switch {
-                        id: ensembleFilterSwitch
-                        text: qsTr("Hide services from other ensembles")
-                        checked: epgDialog.filterEnsemble
-                        onToggled: {
-                            epgDialog.filterEnsemble = checked;
+                anchors.rightMargin: 10
+                spacing: 5
+                EPGTabBar {
+                    id: dayTabBar
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignVCenter
+                    visible: metadataManager.epgDatesList.length > 0
+                    currentIndex: stackLayoutId.currentIndex
+                    clip: true
+                    Repeater {
+                        model: metadataManager.epgDatesList
+                        EPGTabButton {
+                            text: epgTime.currentDateString === modelData ? qsTr("Today") : modelData
+                            implicitHeight: 30
+                            width: Math.max(50, (controlLayout.width - controlsItem.width - 25) / metadataManager.epgDatesList.length)
+                            Component.onCompleted: {
+                                if (epgTime.currentDateString === modelData) {
+                                    dayTabBar.currentIndex = index;
+                                }
+                            }
                         }
                     }
                 }
-            }
-            TabBar {
-                id: dayTabBar
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: controlsItem.bottom
-                anchors.topMargin: 10
-                visible: metadataManager.epgDatesList.length > 0
-                height: metadataManager.epgDatesList.length > 0 ? implicitHeight : 0
-                currentIndex: stackLayoutId.currentIndex
-                Repeater {
-                    model: metadataManager.epgDatesList
-                    TabButton {
-                        text: epgTime.currentDateString === modelData ? qsTr("Today") : modelData
-                        //width: Math.max(100, bar.width / metadataManager.epgDatesList.length)
-                        Component.onCompleted: {
-                            if (epgTime.currentDateString === modelData) {
-                                dayTabBar.currentIndex = index;
+                Rectangle {
+                    Layout.fillHeight: true
+                    Layout.leftMargin: 5
+                    width: 1
+                    color: EPGColors.gridColor
+                }
+                Item {
+                    id: controlsItem
+                    Layout.alignment: Qt.AlignVCenter
+                    width: switchRow.width
+                    height: switchRow.height
+                    RowLayout {
+                        id: switchRow
+                        spacing: 10
+                        EPGSwitch {
+                            id: emptyFilterSwitch
+                            text: qsTr("Hide services without info")
+                            checked: epgDialog.filterEmptyEpg
+                            onToggled: {
+                                epgDialog.filterEmptyEpg = checked;
+                            }
+                        }
+                        EPGSwitch {
+                            id: ensembleFilterSwitch
+                            text: qsTr("Show only current ensemble")
+                            checked: epgDialog.filterEnsemble
+                            onToggled: {
+                                epgDialog.filterEnsemble = checked;
                             }
                         }
                     }
@@ -109,22 +130,22 @@ Item {
             }
             Item {
                 id: epgViewItem
-                anchors.top: dayTabBar.bottom
+                anchors.top: controlLayout.bottom
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: progDetails.top
                 anchors.topMargin: 10
                 anchors.bottomMargin: 20
-                Text {
+                Label {
                     id: currentTimeText
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.leftMargin: 3
+                    anchors.leftMargin: 14
                     width: implicitWidth
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    text: qsTr("Now: ") + epgTime.currentTimeString
+                    text: qsTr("Current time: ") + epgTime.currentTimeString
                 }
 
                 Flickable {
@@ -149,20 +170,22 @@ Item {
                             Repeater {
                                 model: 24
                                 delegate: Row {
-                                    Text {
+                                    Label {
                                         id: tst
                                         text: modelData + ":00"
                                         width: 60 * 30 * pointsPerSecond
                                         height: 20
                                         horizontalAlignment: Text.AlignLeft
                                         opacity: 1 - Math.min(timelinebox.contentX  - modelData*3600*pointsPerSecond, 50)/50
+                                        color: EPGColors.fadeTextColor
                                     }
-                                    Text {
+                                    Label {
                                         text: modelData + ":30"
                                         width: 60 * 30 * pointsPerSecond
                                         height: 20
                                         horizontalAlignment: Text.AlignLeft
                                         opacity: 1 - Math.min(timelinebox.contentX  - (modelData+0.5)*3600*pointsPerSecond, 50)/50
+                                        color: EPGColors.fadeTextColor
                                     }
                                 }
                             }
@@ -175,21 +198,21 @@ Item {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
                     color: "transparent"
-                    border.color: "lightgray"
+                    border.color: EPGColors.gridColor
                     border.width: 1
                     Flickable {
                         id: mainView
                         flickableDirection: Flickable.VerticalFlick
                         boundsBehavior: Flickable.StopAtBounds
                         anchors.fill: parent
-                        anchors.margins: 2
+                        //anchors.margins: 2
                         contentHeight: epgItem.height
                         contentWidth: epgItem.width
                         clip: true
                         Rectangle {
                             color: "transparent"
-                            border.color: "darkgray"
-                            border.width: 2
+                            //border.color: EPGColors.gridColor
+                            //border.width: 2
                             id: epgItem
                             height: serviceColumnId.height
                             width: epgViewItem.width
@@ -200,24 +223,33 @@ Item {
                                     model: slProxyModel
                                     delegate: Rectangle {
                                         //property bool isSelected: false
-                                        color: selectedServiceIndex == index ? "white" : "transparent"
-                                        border.color: selectedServiceIndex == index ? "black" : "darkgray"
-                                        border.width: selectedServiceIndex == index ? 3 : 1
+                                        color: "transparent" // selectedServiceIndex == index ? palette.highlight : "transparent"
+                                        border.color: EPGColors.gridColor // selectedServiceIndex == index ? palette.text : "darkgray"
+                                        border.width: 1 // selectedServiceIndex == index ? 3 : 1
                                         height: lineHeight
                                         width: serviceListWidth
                                         Row {
                                             anchors.fill: parent
-                                            anchors.margins: 5
+                                            anchors.margins: 10
                                             spacing: 10
-                                            Image {
-                                                id: logoId
+                                            Rectangle {
+                                                color: "transparent"
+                                                border.width: 2
+                                                border.color: selectedServiceIndex == index ? EPGColors.highlightColor : "transparent"
+                                                width: logoId.width + 8
+                                                height: logoId.height + 8
                                                 anchors.verticalCenter: parent.verticalCenter
-                                                source: "image://metadata/"  + smallLogoId
-                                                cache: false
+                                                Image {
+                                                    id: logoId
+                                                    anchors.centerIn: parent
+                                                    source: "image://metadata/"  + smallLogoId
+                                                    cache: false
+                                                }
                                             }
-                                            Text {
+                                            Label {
                                                 id: labelId
                                                 text: display
+                                                font.bold: selectedServiceIndex == index
                                                 anchors.verticalCenter: parent.verticalCenter
                                                 verticalAlignment: Text.AlignVCenter
                                                 horizontalAlignment: Text.AlignLeft
@@ -271,7 +303,7 @@ Item {
                                                             property bool isCurrentService: selectedServiceIndex == index
 
                                                             color: "transparent"
-                                                            border.color: isCurrentService ? "black" : "darkgray"
+                                                            border.color: EPGColors.gridColor
                                                             border.width: 1
                                                             anchors.fill: parent
                                                             clip: true
@@ -282,12 +314,13 @@ Item {
                                                                 dateFilter: metadataManager.epgDate(epgTable.dateIndex)
                                                             }
 
-                                                            Text {
+                                                            Label {
                                                                 anchors.top: parent.top
                                                                 anchors.bottom: parent.bottom
                                                                 verticalAlignment: Text.AlignVCenter
                                                                 x: epgTable.contentX + 5
-                                                                text: qsTr("No data available")
+                                                                text: qsTr("No infomation available")
+                                                                color: EPGColors.fadeTextColor
                                                                 visible: epgItemRepeater.count == 0
                                                             }
                                                             Repeater {
@@ -303,9 +336,9 @@ Item {
                                                                                 && (selectedEpgItemIndex.row === proxyModel.mapToSource(proxyModel.index(index, 0)).row)
                                                                     onClicked: {
                                                                         //console.log("clicked")
-                                                                        programmeDetail = (longDescription !== "") ? longDescription : shortDescription;
-                                                                        programmeName = (longName !== "") ? longName : mediumName;
-                                                                        programmeStartTime = startTimeString;
+                                                                        programDetail = (longDescription !== "") ? longDescription : shortDescription;
+                                                                        programName = (longName !== "") ? longName : mediumName;
+                                                                        programStartToEndTime = startToEndTimeString;
 
                                                                         epgDialog.selectedEpgItem = proxyModel.mapToSource(proxyModel.index(index, 0));
                                                                     }
@@ -314,9 +347,9 @@ Item {
                                                                             if ((selectedEpgItemIndex.model === proxyModel.mapToSource(proxyModel.index(index, 0)).model)
                                                                                     && (selectedEpgItemIndex.row === proxyModel.mapToSource(proxyModel.index(index, 0)).row))
                                                                             {
-                                                                                programmeDetail = (longDescription !== "") ? longDescription : shortDescription;
-                                                                                programmeName = (longName !== "") ? longName : mediumName;
-                                                                                programmeStartTime = startTimeString;
+                                                                                programDetail = (longDescription !== "") ? longDescription : shortDescription;
+                                                                                programName = (longName !== "") ? longName : mediumName;
+                                                                                programStartToEndTime = startToEndTimeString;
                                                                             }
                                                                         }
                                                                         else {
@@ -324,31 +357,15 @@ Item {
                                                                                 if ((startTimeSecSinceEpoch <= currentTimeSec) && (endTimeSecSinceEpoch > currentTimeSec))
                                                                                 {   // if it is ongoing programme select it
                                                                                     epgDialog.selectedEpgItem = proxyModel.mapToSource(proxyModel.index(index, 0));
-                                                                                    programmeDetail = (longDescription !== "") ? longDescription : shortDescription;
-                                                                                    programmeName = (longName !== "") ? longName : mediumName;
-                                                                                    programmeStartTime = startTimeString;
+                                                                                    programDetail = (longDescription !== "") ? longDescription : shortDescription;
+                                                                                    programName = (longName !== "") ? longName : mediumName;
+                                                                                    programStartToEndTime = startToEndTimeString;
                                                                                 }
                                                                             }
                                                                         }
                                                                     }
                                                                 }
                                                             }
-                                                        }
-                                                        Rectangle {
-                                                            visible: selectedServiceIndex == index
-                                                            anchors.top: epgForService.top
-                                                            anchors.left: epgForService.left
-                                                            height: 3
-                                                            width: epgForService.width
-                                                            color: "black"
-                                                        }
-                                                        Rectangle {
-                                                            visible: selectedServiceIndex == index
-                                                            anchors.bottom: epgForService.bottom
-                                                            anchors.left: epgForService.left
-                                                            height: 3
-                                                            width: epgForService.width
-                                                            color: "black"
                                                         }
                                                     }
                                                 }
@@ -377,6 +394,20 @@ Item {
                             }
                         }
                     }
+                    EPGHorizontalShadow {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        width: parent.width
+                        topDownDirection: true
+                        visible: mainView.contentY > 0
+                    }
+                    EPGHorizontalShadow {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        topDownDirection: false
+                        visible: mainView.contentY < (mainView.contentHeight - mainView.height)
+                    }
                 }
             }
             Rectangle {
@@ -384,35 +415,55 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
+                anchors.leftMargin: 14
+                anchors.rightMargin: 14
+                anchors.bottomMargin: 14
                 color: "transparent"
                 height: 150
+                //z: 100
                 ColumnLayout {
                     id: progDetailsLayout
                     anchors.fill: parent
-                    Text {
+                    spacing: 5
+                    Label {
                         Layout.fillWidth: true
-                        text: programmeName
+                        text: programName
                         font.bold: true
-                        font.pointSize: 20
+                        font.pointSize: 16
                     }
-                    Text {
-                        visible: programmeStartTime
+                    Label {
+                        visible: programStartToEndTime
                         Layout.fillWidth: true
-                        text: qsTr("Starts at ") + programmeStartTime
+                        text: programStartToEndTime
+                        color: EPGColors.fadeTextColor
                     }
-                    ScrollView {
-                        id: serviceScrollViewId
+                    Item {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        //contentWidth: parent.width
-                        contentHeight: detailText.height
-                        Text {
-                            id: detailText
-                            text: programmeDetail
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            clip: true
-                            wrapMode: Text.WordWrap
+/*
+                        ScrollView {
+                            id: serviceScrollViewId
+                            anchors.fill: parent
+                            contentHeight: detailText.height
+                            contentWidth: width - ScrollBar.vertical.width
+                            ScrollBar.vertical.policy: contentHeight > height ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+                            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                            Label {
+                                id: detailText
+                                text: programDetail
+                                // anchors.left: parent.left
+                                // anchors.right: parent.right
+                                // anchors.rightMargin: serviceScrollViewId.ScrollBar.vertical.width
+                                width: serviceScrollViewId.width - serviceScrollViewId.ScrollBar.vertical.width
+                                clip: true
+                                wrapMode: Text.WordWrap
+                            }
+                        }
+*/
+                        EPGScrollableText {
+                            id: serviceScrollViewId
+                            anchors.fill: parent
+                            text: programDetail
                         }
                     }
                 }

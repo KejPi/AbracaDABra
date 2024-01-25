@@ -447,11 +447,11 @@ void MetadataManager::parseDescription(const QDomElement &element, EPGModelItem 
     {
         if ("shortDescription" == child.tagName())
         {
-            progItem->setShortDescription(child.text().replace(QChar('\\'),QChar()));
+            progItem->setShortDescription(child.text().replace(QChar('\\'),QChar()).trimmed());
         }
         else if ("longDescription" == child.tagName())
         {
-            progItem->setLongDescription(child.text().replace(QChar('\\'),QChar()));
+            progItem->setLongDescription(child.text().replace(QChar('\\') ,QChar()).trimmed());
         }
 
         child = child.nextSiblingElement();
@@ -726,7 +726,7 @@ void MetadataManager::addEpgDate(const QDate &date)
 {
     if (date.isValid() && !m_epgDates.contains(date))
     {
-        m_epgDates[date] = date.toString("dd.MM.yyyy");
+        m_epgDates[date] = date.toString("d. M.");
         emit epgDatesListChanged();
     }    
 }

@@ -27,7 +27,7 @@
 #include <QQmlContext>
 #include <QHBoxLayout>
 #include <QPushButton>
-//#include <QQuickStyle>
+#include <QQuickStyle>
 
 #include "epgproxymodel.h"
 #include "epgdialog.h"
@@ -62,17 +62,18 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectio
     context->setContextProperty("slSelectionModel", slSelectionModel);
     context->setContextProperty("epgDialog", this);
 
-    //QQuickStyle::setStyle("macOS");
+    QQuickStyle::setStyle("Fusion");
 
     QQmlEngine *engine = m_qmlView->engine();
     engine->addImageProvider(QLatin1String("metadata"), new LogoProvider(m_metadataManager));
 
     m_qmlView->setColor(Qt::transparent);
-    m_qmlView->setSource(QUrl("qrc:/qml/epg.qml"));
+    m_qmlView->setSource(QUrl("qrc:/ProgrammeGuide/epg.qml"));
 
     QWidget *container = QWidget::createWindowContainer(m_qmlView, this);
 
     QVBoxLayout * layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0,10,0,0);
     layout->addWidget(container);
 
     //QPushButton * button = new QPushButton("Test", this);
@@ -115,14 +116,12 @@ void EPGDialog::setIsVisible(bool newIsVisible)
 
 void EPGDialog::showEvent(QShowEvent *event)
 {
-    qDebug() << Q_FUNC_INFO;
     setIsVisible(true);
     QDialog::showEvent(event);
 }
 
 void EPGDialog::closeEvent(QCloseEvent *event)
 {
-    qDebug() << Q_FUNC_INFO;
     setIsVisible(false);
     QDialog::closeEvent(event);
 }

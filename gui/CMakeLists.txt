@@ -154,24 +154,36 @@ add_executable(${TARGET}
     epgdialog.h epgdialog.cpp epgdialog.ui
     epgproxymodel.h epgproxymodel.cpp
     epgtime.h epgtime.cpp
-    slproxymodel.h slproxymodel.cpp
+    slproxymodel.h slproxymodel.cpp    
   )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # QML
+set_source_files_properties(qml/EPGColors.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+set_source_files_properties(qml/epg.qml PROPERTIES QT_RESOURCE_ALIAS epg.qml)
+set_source_files_properties(qml/EPGItem.qml PROPERTIES QT_RESOURCE_ALIAS EPGItem.qml)
+set_source_files_properties(qml/EPGSwitch.qml PROPERTIES QT_RESOURCE_ALIAS EPGSwitch.qml)
+set_source_files_properties(qml/EPGTabBar.qml PROPERTIES QT_RESOURCE_ALIAS EPGTabBar.qml)
+set_source_files_properties(qml/EPGTabButton.qml PROPERTIES QT_RESOURCE_ALIAS EPGTabButton.qml)
+set_source_files_properties(qml/EPGColors.qml PROPERTIES QT_RESOURCE_ALIAS EPGColors.qml)
+set_source_files_properties(qml/EPGScrollableText.qml PROPERTIES QT_RESOURCE_ALIAS EPGScrollableText.qml)
+
 qt6_add_qml_module(${TARGET}
     URI ProgrammeGuide
     QML_FILES
         qml/epg.qml
         qml/EPGItem.qml
+        qml/EPGSwitch.qml
+        qml/EPGTabBar.qml
+        qml/EPGTabButton.qml
+        qml/EPGColors.qml
+        qml/EPGHorizontalShadow.qml
+        qml/EPGScrollableText.qml
     RESOURCES
         #img/world.png
-    NO_RESOURCE_TARGET_PATH
-    # SOURCES epgproxymodel.h epgproxymodel.cpp
     VERSION 1.0
 )
-
 
 #add_definitions(-fsanitize=undefined)
 #target_link_options(${TARGET} PUBLIC -fsanitize=undefined)

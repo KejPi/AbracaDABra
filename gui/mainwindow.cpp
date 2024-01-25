@@ -317,7 +317,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_audioRecordingAction = new QAction(tr("Start audio recording"), this);
     connect(m_audioRecordingAction, &QAction::triggered, this, &MainWindow::audioRecordingToggle);
 
-    m_epgAction = new QAction(tr("Programme guide..."), this);
+    m_epgAction = new QAction(tr("Program guide..."), this);
     m_epgAction->setEnabled(false);
     connect(m_epgAction, &QAction::triggered, this, &MainWindow::showEPG);    
 

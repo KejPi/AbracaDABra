@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ import QtQuick
 import Qt5Compat.GraphicalEffects   // required for Qt < 6.5
 // import QtQuick.Effects              // not available in Qt < 6.5
 
-
 Item {
     id: progItem
 
@@ -37,6 +36,14 @@ Item {
     property bool isSelected: false
     property int itemHeight: 50
     property int viewX: 0
+
+    //property color pastProgColor: "#e4e4e4"
+    property color pastProgColor: EPGColors.pastProgColor
+    property color nextProgColor: EPGColors.nextProgColor
+    property color currentProgColor: EPGColors.currentProgColor
+    property color progressColor: EPGColors.progressColor
+    property color borderColor: EPGColors.gridColor
+    property color selectedBorderColor: EPGColors.selectedBorderColor
 
     height: itemHeight
     clip: true
@@ -48,29 +55,29 @@ Item {
         id: rect
         property bool textFits: (textId.x + textId.width + 5) <= width
         color: {
-            if (endTimeSecSinceEpoch <= currentTimeSec) return "lightgrey";
-            if (startTimeSecSinceEpoch >= currentTimeSec) return "white";
-            return "lemonchiffon";
+            if (endTimeSecSinceEpoch <= currentTimeSec) return pastProgColor;
+            if (startTimeSecSinceEpoch >= currentTimeSec) return nextProgColor;
+            return currentProgColor;
         }
-        border.color: isSelected ? "black" : "darkgray"
-        border.width: 1
+        border.color: isSelected ? selectedBorderColor : borderColor
+        border.width: isSelected ? 2 : 1
         anchors.fill: parent
         x:  startTimeSec * pointsPerSec
 
         Rectangle {
             id: remainingTime
             visible: (startTimeSecSinceEpoch < currentTimeSec) && (endTimeSecSinceEpoch > currentTimeSec)
-            color: "gold"            
+            color: progressColor
             anchors {
                 left: parent.left
                 top: parent.top
                 bottom: parent.bottom
-                topMargin: 1
-                bottomMargin: 1
-                leftMargin: 1
+                topMargin: isSelected ? 2 : 1
+                bottomMargin: isSelected ? 2 : 1
+                leftMargin: isSelected ? 2 : 1
             }
             width: mouseAreaId.containsMouse
-                   ? ((currentTimeSec - startTimeSecSinceEpoch) / durationSec) * parent.width - 1
+                   ? ((currentTimeSec - startTimeSecSinceEpoch) / durationSec) * parent.width - (isSelected ? 2 : 1)
                    : ((currentTimeSec - startTimeSecSinceEpoch) * pointsPerSec - 1)
         }
         Text {
@@ -84,7 +91,7 @@ Item {
             x: (viewX > startTimeSec * pointsPerSec) && (viewX < (endTimeSec * pointsPerSec + 20))
                 ? (viewX - startTimeSec * pointsPerSec + 5) : (parent.x + 5)
             text: name
-            font.bold: isSelected
+            //font.bold: isSelected
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignLeft
         }
@@ -121,10 +128,10 @@ Item {
         anchors.fill: shadowItem
         source: shadowItem
         samples: 21
-        color: "black"
+        color: "darkgray"
         enabled: true
         opacity: 0.4
-        horizontalOffset: -2
+        horizontalOffset: -6
         verticalOffset: 0
         visible: !rect.textFits
     }
