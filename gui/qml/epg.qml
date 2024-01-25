@@ -58,7 +58,7 @@ Item {
             property int currentTimeSec: epgTime.secSinceEpoch
             property int lineHeight: 50
             property int serviceListWidth: 200
-            property int selectedServiceIndex: slSelectionModel.currentIndex.row
+            property int selectedServiceIndex: slProxyModel.mapFromSource(slSelectionModel.currentIndex).row
             property var selectedEpgItemIndex: epgDialog.selectedEpgItem
 
             property string programName: ""
@@ -258,8 +258,8 @@ Item {
                                         MouseArea {
                                             anchors.fill: parent
                                             onClicked: {
-                                                slSelectionModel.select(slProxyModel.index(index, 0), ItemSelectionModel.Select | ItemSelectionModel.Current)
-                                                slSelectionModel.setCurrentIndex(slProxyModel.index(index, 0), ItemSelectionModel.Select | ItemSelectionModel.Current)
+                                                slSelectionModel.select(slProxyModel.mapToSource(slProxyModel.index(index, 0)), ItemSelectionModel.Select | ItemSelectionModel.Current)
+                                                slSelectionModel.setCurrentIndex(slProxyModel.mapToSource(slProxyModel.index(index, 0)), ItemSelectionModel.Select | ItemSelectionModel.Current)
                                             }
                                         }
                                     }
