@@ -311,7 +311,7 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
                             {
                                 file.open(QIODevice::WriteOnly);
                                 QTextStream output(&file);
-                                output << qPrintable(xml);
+                                output << xml;
                                 file.close();
                             }
                             else

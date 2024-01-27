@@ -35,12 +35,6 @@ Item {
     id: rootItem
     anchors.fill: parent
 
-    //macOS.theme: macOS.Dark
-    //Fusion.theme: Fusion.darkShade
-
-    //Material.accent: "#3e82fc" // Material.Blue
-    //Material.background: "transparent"
-
     Loader {
         anchors.fill: parent        
         active: epgDialog.isVisible
