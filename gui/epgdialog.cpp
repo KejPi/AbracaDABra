@@ -163,7 +163,7 @@ void EPGDialog::setFilterEnsemble(bool newFilterEnsemble)
     emit filterEnsembleChanged();
 }
 
-bool EPGDialog::setupDarkMode(bool darkModeEna)
+void EPGDialog::setupDarkMode(bool darkModeEna)
 {
     m_isDarkMode = darkModeEna;
     QList<QColor> colors;
