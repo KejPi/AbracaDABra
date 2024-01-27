@@ -45,6 +45,7 @@ class EPGDialog : public QDialog
     Q_PROPERTY(bool isVisible READ isVisible WRITE setIsVisible NOTIFY isVisibleChanged FINAL)
     Q_PROPERTY(bool filterEmptyEpg READ filterEmptyEpg WRITE setFilterEmptyEpg NOTIFY filterEmptyEpgChanged FINAL)
     Q_PROPERTY(bool filterEnsemble READ filterEnsemble WRITE setFilterEnsemble NOTIFY filterEnsembleChanged FINAL)
+    Q_PROPERTY(QList<QColor> colors READ colors NOTIFY colorsChanged FINAL)
 
 public:
     explicit EPGDialog(SLModel *serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager *metadataManager, QWidget *parent = nullptr);
@@ -63,6 +64,10 @@ public:
     bool filterEnsemble() const;
     void setFilterEnsemble(bool newFilterEnsemble);
 
+    bool setupDarkMode(bool darkModeEna);
+    QList<QColor> colors() const;
+    void setColors(const QList<QColor> &newColors);
+
 signals:
     void selectedEpgItemChanged();
 
@@ -71,6 +76,8 @@ signals:
     void filterEmptyEpgChanged();
 
     void filterEnsembleChanged();
+
+    void colorsChanged();
 
 protected:
     void showEvent(QShowEvent *event);
@@ -87,6 +94,8 @@ private:
     bool m_filterEmptyEpg;
     bool m_filterEnsemble;
     int m_currentUEID;
+    bool m_isDarkMode;
+    QList<QColor> m_colors;
 };
 
 
@@ -105,7 +114,7 @@ public:
         {
             logo = QPixmap(requestedSize.width() > 0 ? requestedSize.width() : 32,
                            requestedSize.height() > 0 ? requestedSize.height() : 32);
-            logo.fill(QColor(Qt::white).rgba());
+            logo.fill(QColor(0,0,0,0));
         }
 
         if (size)

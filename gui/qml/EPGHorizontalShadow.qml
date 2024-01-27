@@ -64,7 +64,7 @@ Item {
         anchors.fill: shadowItem
         source: shadowItem
         samples: 40
-        color: "darkgray"
+        color: EPGColors.shadowColor
         enabled: true
         opacity: 0.5
         horizontalOffset: 0

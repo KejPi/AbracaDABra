@@ -31,29 +31,31 @@ Switch {
     id: control
     text: "Text"
     checked: false
+    //property int spacing: 5
 
     indicator: Rectangle {
-        implicitWidth: 38
-        implicitHeight: 20
+        implicitWidth: 28
+        implicitHeight: 16
         x: control.leftPadding
         y: parent.height / 2 - height / 2
-        radius: 10
-        color: control.checked ? EPGColors.highlightColor : "silver" //"#ffffff"
-        border.color: control.checked ? EPGColors.highlightColor : "#cccccc"
+        radius: 8
+        color: control.checked ? EPGColors.highlightColor : EPGColors.switchBgColor
+        border.color: control.checked ? EPGColors.highlightColor : EPGColors.switchBorderColor
 
         Rectangle {
             x: control.checked ? parent.width - width : 0
-            width: 20
-            height: 20
-            radius: 10
-            color: control.down ? "#cccccc" : "#ffffff"
-            border.color: control.checked ? (control.down ? EPGColors.currentProgColor : EPGColors.highlightColor) : "#999999"
+            width: 16
+            height: 16
+            radius: 8
+            color: control.down ? EPGColors.switchHandleDownColor : EPGColors.switchHandleColor
+            border.color: control.checked ? (control.down ? EPGColors.currentProgColor : EPGColors.highlightColor) : EPGColors.switchHandleBorderColor
         }
     }
 
     contentItem: Text {
         text: control.text
         //font: control.font
+        color: EPGColors.textColor
         opacity: enabled ? 1.0 : 0.3
         verticalAlignment: Text.AlignVCenter
         leftPadding: control.indicator.width + control.spacing

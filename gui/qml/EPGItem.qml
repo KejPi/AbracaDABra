@@ -91,7 +91,7 @@ Item {
             x: (viewX > startTimeSec * pointsPerSec) && (viewX < (endTimeSec * pointsPerSec + 20))
                 ? (viewX - startTimeSec * pointsPerSec + 5) : (parent.x + 5)
             text: name
-            //font.bold: isSelected
+            color: EPGColors.textColor
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignLeft
         }
@@ -128,7 +128,7 @@ Item {
         anchors.fill: shadowItem
         source: shadowItem
         samples: 21
-        color: "darkgray"
+        color: EPGColors.shadowColor
         enabled: true
         opacity: 0.4
         horizontalOffset: -6

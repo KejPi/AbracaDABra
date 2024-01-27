@@ -44,8 +44,9 @@ Item {
         boundsBehavior: Flickable.StopAtBounds
         visible: false
         clip: true
-        Label {
+        Text {
             id: label
+            color: EPGColors.textColor
             width: flickable.width
             clip: true
             wrapMode: Text.WordWrap

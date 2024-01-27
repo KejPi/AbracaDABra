@@ -167,6 +167,7 @@ set_source_files_properties(qml/EPGSwitch.qml PROPERTIES QT_RESOURCE_ALIAS EPGSw
 set_source_files_properties(qml/EPGTabBar.qml PROPERTIES QT_RESOURCE_ALIAS EPGTabBar.qml)
 set_source_files_properties(qml/EPGTabButton.qml PROPERTIES QT_RESOURCE_ALIAS EPGTabButton.qml)
 set_source_files_properties(qml/EPGColors.qml PROPERTIES QT_RESOURCE_ALIAS EPGColors.qml)
+set_source_files_properties(qml/EPGHorizontalShadow.qml PROPERTIES QT_RESOURCE_ALIAS EPGHorizontalShadow.qml)
 set_source_files_properties(qml/EPGScrollableText.qml PROPERTIES QT_RESOURCE_ALIAS EPGScrollableText.qml)
 
 qt6_add_qml_module(${TARGET}

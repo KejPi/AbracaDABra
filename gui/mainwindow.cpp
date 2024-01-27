@@ -3254,6 +3254,7 @@ void MainWindow::setupDarkMode()
         ui->slsView_Service->setupDarkMode(true);
         ui->slsView_Announcement->setupDarkMode(true);
         m_logDialog->setupDarkMode(true);
+        m_epgDialog->setupDarkMode(true);
     }
     else
     {
@@ -3280,6 +3281,7 @@ void MainWindow::setupDarkMode()
         ui->slsView_Service->setupDarkMode(false);
         ui->slsView_Announcement->setupDarkMode(false);
         m_logDialog->setupDarkMode(false);
+        m_epgDialog->setupDarkMode(false);
     }
 }
 

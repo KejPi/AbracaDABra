@@ -63,6 +63,7 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectio
     context->setContextProperty("epgDialog", this);
 
     QQuickStyle::setStyle("Fusion");
+    setupDarkMode(false);
 
     QQmlEngine *engine = m_qmlView->engine();
     engine->addImageProvider(QLatin1String("metadata"), new LogoProvider(m_metadataManager));
@@ -160,4 +161,82 @@ void EPGDialog::setFilterEnsemble(bool newFilterEnsemble)
         return;
     m_filterEnsemble = newFilterEnsemble;
     emit filterEnsembleChanged();
+}
+
+bool EPGDialog::setupDarkMode(bool darkModeEna)
+{
+    m_isDarkMode = darkModeEna;
+    QList<QColor> colors;
+
+    /*
+        0 readonly property color textColor: "black"
+        1 readonly property color fadeTextColor: "#606060"
+        2 readonly property color gridColor:  "lightgray"
+        3 readonly property color highlightColor: "#3e9bfc"
+        4 readonly property color selectedBorderColor: highlightColor
+        5 readonly property color pastProgColor: "#e4e4e4"
+        6 readonly property color nextProgColor: "#f9f9f9"
+        7 readonly property color currentProgColor: "#E2F4FF"
+        8 readonly property color progressColor: "#A4DEFF"
+        9 readonly property color emptyLogoColor: "white"
+       10 readonly property color shadowColor: "darkgray"
+       11 readonly property color switchColor: "white"
+       12 readonly property color switchBgColor:
+       13 readonly property color switchBorderColor
+        */
+    if (darkModeEna)
+    {
+        colors.append(QColor(0xec,0xec,0xec));   // textColor
+        colors.append(QColor(0xb3,0xb3,0xb3));   // fadeTextColor
+        colors.append(QColor(0x68,0x68,0x68));   // gridColor
+        colors.append(QColor(0x00,0xcb,0xff));   // highlightColor
+        colors.append(QColor(0x00,0xcb,0xff));   // selectedBorderColor
+        colors.append(QColor(0x33,0x33,0x33));   // pastProgColor
+        colors.append(QColor(0x51,0x51,0x51));   // nextProgColor
+        colors.append(QColor(0x33,0x61,0x7d));   // currentProgColor
+        colors.append(QColor(0x17,0x84,0xb9));   // progressColor
+        colors.append(QColor(Qt::black));        // emptyLogoColor
+        colors.append(QColor(Qt::black));        // shadowColor
+
+        colors.append(QColor(0xa0,0xa0,0xa0));   // switchBgColor
+        colors.append(QColor(0xc0,0xc0,0xc0));   // switchBorderColor
+        colors.append(QColor(0x51,0x51,0x51));   // switchHandleColor
+        colors.append(QColor(0xb0,0xb0,0xb0));   // switchHandleBorderColor
+        colors.append(QColor(0xd0,0xd0,0xd0));   // switchHandleDownColor
+    }
+    else
+    {
+        colors.append(QColor(Qt::black));        // textColor
+        colors.append(QColor(0x60,0x60,0x60));   // fadeTextColor
+        colors.append(QColor(0xc0,0xc0,0xc0));   // gridColor
+        colors.append(QColor(0x3e,0x9b,0xfc));   // highlightColor
+        colors.append(QColor(0x3e,0x9b,0xfc));   // selectedBorderColor
+        colors.append(QColor(0xe4,0xe4,0xe4));   // pastProgColor
+        colors.append(QColor(0xf9,0xf9,0xf9));   // nextProgColor
+        colors.append(QColor(0xe2,0xf4,0xff));   // currentProgColor
+        colors.append(QColor(0xa4,0xde,0xff));   // progressColor
+        colors.append(QColor(Qt::white));        // emptyLogoColor
+        colors.append(QColor(Qt::darkGray));     // shadowColor
+        colors.append(QColor(0xd9,0xd9,0xd9));   // switchBgColor
+        colors.append(QColor(0xcc,0xcc,0xcc));   // switchBorderColor
+        colors.append(QColor(Qt::white));        // switchHandleColor
+        colors.append(QColor(0x99,0x99,0x99));   // switchHandleBorderColor
+        colors.append(QColor(0xcc,0xcc,0xcc));   // switchHandleDownColor
+
+        // "c9cacb"
+    }
+    setColors(colors);
+}
+
+QList<QColor> EPGDialog::colors() const
+{
+    return m_colors;
+}
+
+void EPGDialog::setColors(const QList<QColor> &newColors)
+{
+    if (m_colors == newColors)
+        return;
+    m_colors = newColors;
+    emit colorsChanged();
 }

@@ -57,7 +57,7 @@ Item {
             property double pointsPerSecond: 1.0/10   // 10 sec/point
             property int currentTimeSec: epgTime.secSinceEpoch
             property int lineHeight: 50
-            property int serviceListWidth: 200
+            property int serviceListWidth: 220
             property int selectedServiceIndex: slProxyModel.mapFromSource(slSelectionModel.currentIndex).row
             property var selectedEpgItemIndex: epgDialog.selectedEpgItem
 
@@ -136,7 +136,7 @@ Item {
                 anchors.bottom: progDetails.top
                 anchors.topMargin: 10
                 anchors.bottomMargin: 20
-                Label {
+                Text {
                     id: currentTimeText
                     anchors.top: parent.top
                     anchors.left: parent.left
@@ -145,6 +145,7 @@ Item {
                     width: implicitWidth
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
+                    color: EPGColors.textColor
                     text: qsTr("Current time: ") + epgTime.currentTimeString
                 }
 
@@ -170,16 +171,16 @@ Item {
                             Repeater {
                                 model: 24
                                 delegate: Row {
-                                    Label {
+                                    Text {
                                         id: tst
                                         text: modelData + ":00"
                                         width: 60 * 30 * pointsPerSecond
                                         height: 20
-                                        horizontalAlignment: Text.AlignLeft
+                                        horizontalAlignment: Text.AlignLeft                                        
                                         opacity: 1 - Math.min(timelinebox.contentX  - modelData*3600*pointsPerSecond, 50)/50
                                         color: EPGColors.fadeTextColor
                                     }
-                                    Label {
+                                    Text {
                                         text: modelData + ":30"
                                         width: 60 * 30 * pointsPerSecond
                                         height: 20
@@ -222,10 +223,9 @@ Item {
                                     id: serviceList
                                     model: slProxyModel
                                     delegate: Rectangle {
-                                        //property bool isSelected: false
-                                        color: "transparent" // selectedServiceIndex == index ? palette.highlight : "transparent"
-                                        border.color: EPGColors.gridColor // selectedServiceIndex == index ? palette.text : "darkgray"
-                                        border.width: 1 // selectedServiceIndex == index ? 3 : 1
+                                        color: "transparent"
+                                        border.color: EPGColors.gridColor
+                                        border.width: 1
                                         height: lineHeight
                                         width: serviceListWidth
                                         Row {
@@ -236,19 +236,35 @@ Item {
                                                 color: "transparent"
                                                 border.width: 2
                                                 border.color: selectedServiceIndex == index ? EPGColors.highlightColor : "transparent"
-                                                width: logoId.width + 8
-                                                height: logoId.height + 8
+                                                width: logoLoader.width + 8
+                                                height: logoLoader.height + 8
                                                 anchors.verticalCenter: parent.verticalCenter
-                                                Image {
-                                                    id: logoId
+                                                Loader {
+                                                    id: logoLoader
                                                     anchors.centerIn: parent
-                                                    source: "image://metadata/"  + smallLogoId
-                                                    cache: false
+                                                    sourceComponent: smallLogoId == 0 ? placeholderComponent : logoComponent
+                                                }
+                                                Component {
+                                                    id: logoComponent
+                                                    Image {
+                                                        id: logoId
+                                                        source: "image://metadata/"  + smallLogoId
+                                                        cache: false
+                                                    }
+                                                }
+                                                Component {
+                                                    id: placeholderComponent
+                                                    Rectangle {
+                                                        color: EPGColors.emptyLogoColor
+                                                        width: 32
+                                                        height: 32
+                                                    }
                                                 }
                                             }
-                                            Label {
+                                            Text {
                                                 id: labelId
                                                 text: display
+                                                color: EPGColors.textColor
                                                 font.bold: selectedServiceIndex == index
                                                 anchors.verticalCenter: parent.verticalCenter
                                                 verticalAlignment: Text.AlignVCenter
@@ -314,7 +330,7 @@ Item {
                                                                 dateFilter: metadataManager.epgDate(epgTable.dateIndex)
                                                             }
 
-                                                            Label {
+                                                            Text {
                                                                 anchors.top: parent.top
                                                                 anchors.bottom: parent.bottom
                                                                 verticalAlignment: Text.AlignVCenter
@@ -420,51 +436,28 @@ Item {
                 anchors.bottomMargin: 14
                 color: "transparent"
                 height: 150
-                //z: 100
                 ColumnLayout {
                     id: progDetailsLayout
                     anchors.fill: parent
                     spacing: 5
-                    Label {
+                    Text {
                         Layout.fillWidth: true
                         text: programName
                         font.bold: true
                         font.pointSize: 16
+                        color: EPGColors.textColor
                     }
-                    Label {
+                    Text {
                         visible: programStartToEndTime
                         Layout.fillWidth: true
                         text: programStartToEndTime
                         color: EPGColors.fadeTextColor
                     }
-                    Item {
+                    EPGScrollableText {
+                        id: serviceScrollViewId
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-/*
-                        ScrollView {
-                            id: serviceScrollViewId
-                            anchors.fill: parent
-                            contentHeight: detailText.height
-                            contentWidth: width - ScrollBar.vertical.width
-                            ScrollBar.vertical.policy: contentHeight > height ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
-                            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-                            Label {
-                                id: detailText
-                                text: programDetail
-                                // anchors.left: parent.left
-                                // anchors.right: parent.right
-                                // anchors.rightMargin: serviceScrollViewId.ScrollBar.vertical.width
-                                width: serviceScrollViewId.width - serviceScrollViewId.ScrollBar.vertical.width
-                                clip: true
-                                wrapMode: Text.WordWrap
-                            }
-                        }
-*/
-                        EPGScrollableText {
-                            id: serviceScrollViewId
-                            anchors.fill: parent
-                            text: programDetail
-                        }
+                        text: programDetail
                     }
                 }
             }

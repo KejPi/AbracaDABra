@@ -29,14 +29,25 @@ import QtQuick
 
 QtObject {
     id: epgColors
-    readonly property color pastProgColor: "#e4e4e4"
-    readonly property color nextProgColor: "#f9f9f9"
-    readonly property color currentProgColor: "#E2F4FF"
-    readonly property color progressColor: "#A4DEFF"
-    readonly property color highlightColor: "#3e9bfc"
-    readonly property color selectedBorderColor: highlightColor
-    readonly property color textColor: "black"
-    readonly property color fadeTextColor: "#606060"
-    readonly property color gridColor:  "lightgray"
+    readonly property color textColor: epgDialog.colors[0] // "black"
+    readonly property color fadeTextColor: epgDialog.colors[1] // "#606060"
+    readonly property color gridColor:  epgDialog.colors[2] // "lightgray"
+
+    readonly property color highlightColor: epgDialog.colors[3] //"#3e9bfc"
+    readonly property color selectedBorderColor: epgDialog.colors[4]
+
+    readonly property color pastProgColor: epgDialog.colors[5] // "#e4e4e4"
+    readonly property color nextProgColor: epgDialog.colors[6] // "#f9f9f9"
+    readonly property color currentProgColor: epgDialog.colors[7] // "#E2F4FF"
+    readonly property color progressColor: epgDialog.colors[8] // "#A4DEFF"
+
+    readonly property color emptyLogoColor: epgDialog.colors[9] // "white"
+    readonly property color shadowColor: epgDialog.colors[10] // "darkgray"
+
+    readonly property color switchBgColor: epgDialog.colors[11]
+    readonly property color switchBorderColor: epgDialog.colors[12]
+    readonly property color switchHandleColor: epgDialog.colors[13]
+    readonly property color switchHandleBorderColor: epgDialog.colors[14]
+    readonly property color switchHandleDownColor: epgDialog.colors[15]
 }
 

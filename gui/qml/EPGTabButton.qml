@@ -38,7 +38,7 @@ TabButton {
         font.family: control.font.family
         font.bold: control.checked
         opacity: enabled ? 1.0 : 0.3
-        color: control.checked ? palette.text : EPGColors.fadeTextColor
+        color: control.checked ? EPGColors.textColor : EPGColors.fadeTextColor
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
