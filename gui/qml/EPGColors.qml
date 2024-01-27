@@ -27,27 +27,29 @@
 pragma Singleton
 import QtQuick
 
-QtObject {
+QtObject {    
     id: epgColors
-    readonly property color textColor: epgDialog.colors[0] // "black"
-    readonly property color fadeTextColor: epgDialog.colors[1] // "#606060"
-    readonly property color gridColor:  epgDialog.colors[2] // "lightgray"
+    readonly property color bgColor:                    epgDialog.colors[0] // "black"
 
-    readonly property color highlightColor: epgDialog.colors[3] //"#3e9bfc"
-    readonly property color selectedBorderColor: epgDialog.colors[4]
+    readonly property color textColor:                  epgDialog.colors[1] // "black"
+    readonly property color fadeTextColor:              epgDialog.colors[2] // "#606060"
+    readonly property color gridColor:                  epgDialog.colors[3] // "lightgray"
 
-    readonly property color pastProgColor: epgDialog.colors[5] // "#e4e4e4"
-    readonly property color nextProgColor: epgDialog.colors[6] // "#f9f9f9"
-    readonly property color currentProgColor: epgDialog.colors[7] // "#E2F4FF"
-    readonly property color progressColor: epgDialog.colors[8] // "#A4DEFF"
+    readonly property color highlightColor:             epgDialog.colors[4] //"#3e9bfc"
+    readonly property color selectedBorderColor:        epgDialog.colors[5]
 
-    readonly property color emptyLogoColor: epgDialog.colors[9] // "white"
-    readonly property color shadowColor: epgDialog.colors[10] // "darkgray"
+    readonly property color pastProgColor:              epgDialog.colors[6] // "#e4e4e4"
+    readonly property color nextProgColor:              epgDialog.colors[7] // "#f9f9f9"
+    readonly property color currentProgColor:           epgDialog.colors[8] // "#E2F4FF"
+    readonly property color progressColor:              epgDialog.colors[9] // "#A4DEFF"
 
-    readonly property color switchBgColor: epgDialog.colors[11]
-    readonly property color switchBorderColor: epgDialog.colors[12]
-    readonly property color switchHandleColor: epgDialog.colors[13]
-    readonly property color switchHandleBorderColor: epgDialog.colors[14]
-    readonly property color switchHandleDownColor: epgDialog.colors[15]
+    readonly property color emptyLogoColor:             epgDialog.colors[10] // "white"
+    readonly property color shadowColor:                epgDialog.colors[11] // "darkgray"
+
+    readonly property color switchBgColor:              epgDialog.colors[12]
+    readonly property color switchBorderColor:          epgDialog.colors[13]
+    readonly property color switchHandleColor:          epgDialog.colors[14]
+    readonly property color switchHandleBorderColor:    epgDialog.colors[15]
+    readonly property color switchHandleDownColor:      epgDialog.colors[16]
 }
 

@@ -42,7 +42,7 @@ Item {
     //Material.background: "transparent"
 
     Loader {
-        anchors.fill: parent
+        anchors.fill: parent        
         active: epgDialog.isVisible
         visible: active
         sourceComponent: mainComponent
@@ -50,8 +50,9 @@ Item {
 
     Component {
         id: mainComponent
-        Item {
-            id: mainItemId
+        Rectangle {
+            id: mainItemId            
+            color: EPGColors.bgColor
             anchors.fill: parent
 
             property double pointsPerSecond: 1.0/10   // 10 sec/point
@@ -73,6 +74,7 @@ Item {
                 anchors.right: parent.right
                 anchors.top: parent.top
                 anchors.rightMargin: 10
+                anchors.topMargin: 10
                 spacing: 5
                 EPGTabBar {
                     id: dayTabBar

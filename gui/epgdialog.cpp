@@ -68,13 +68,13 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectio
     QQmlEngine *engine = m_qmlView->engine();
     engine->addImageProvider(QLatin1String("metadata"), new LogoProvider(m_metadataManager));
 
-    m_qmlView->setColor(Qt::transparent);
+    //m_qmlView->setColor(Qt::transparent);
     m_qmlView->setSource(QUrl("qrc:/ProgrammeGuide/epg.qml"));
 
     QWidget *container = QWidget::createWindowContainer(m_qmlView, this);
 
     QVBoxLayout * layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0,10,0,0);
+    layout->setContentsMargins(0,0,0,0);
     layout->addWidget(container);
 
     //QPushButton * button = new QPushButton("Test", this);
@@ -169,7 +169,9 @@ void EPGDialog::setupDarkMode(bool darkModeEna)
     QList<QColor> colors;
 
     if (darkModeEna)
-    {
+    {        
+        //colors.append(QColor(30, 30, 30));        // bgColor
+        colors.append(qApp->palette().color(QPalette::Window));
         colors.append(QColor(0xec,0xec,0xec));   // textColor
         colors.append(QColor(0xb3,0xb3,0xb3));   // fadeTextColor
         colors.append(QColor(0x68,0x68,0x68));   // gridColor
@@ -190,6 +192,8 @@ void EPGDialog::setupDarkMode(bool darkModeEna)
     }
     else
     {
+        //colors.append(QColor(240, 240, 240));       // bgColor
+        colors.append(qApp->palette().color(QPalette::Window));
         colors.append(QColor(Qt::black));        // textColor
         colors.append(QColor(0x60,0x60,0x60));   // fadeTextColor
         colors.append(QColor(0xc0,0xc0,0xc0));   // gridColor
