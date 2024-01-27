@@ -64,7 +64,7 @@ public:
     bool filterEnsemble() const;
     void setFilterEnsemble(bool newFilterEnsemble);
 
-    bool setupDarkMode(bool darkModeEna);
+    void setupDarkMode(bool darkModeEna);
     QList<QColor> colors() const;
     void setColors(const QList<QColor> &newColors);
 

@@ -168,22 +168,6 @@ bool EPGDialog::setupDarkMode(bool darkModeEna)
     m_isDarkMode = darkModeEna;
     QList<QColor> colors;
 
-    /*
-        0 readonly property color textColor: "black"
-        1 readonly property color fadeTextColor: "#606060"
-        2 readonly property color gridColor:  "lightgray"
-        3 readonly property color highlightColor: "#3e9bfc"
-        4 readonly property color selectedBorderColor: highlightColor
-        5 readonly property color pastProgColor: "#e4e4e4"
-        6 readonly property color nextProgColor: "#f9f9f9"
-        7 readonly property color currentProgColor: "#E2F4FF"
-        8 readonly property color progressColor: "#A4DEFF"
-        9 readonly property color emptyLogoColor: "white"
-       10 readonly property color shadowColor: "darkgray"
-       11 readonly property color switchColor: "white"
-       12 readonly property color switchBgColor:
-       13 readonly property color switchBorderColor
-        */
     if (darkModeEna)
     {
         colors.append(QColor(0xec,0xec,0xec));   // textColor
@@ -217,13 +201,12 @@ bool EPGDialog::setupDarkMode(bool darkModeEna)
         colors.append(QColor(0xa4,0xde,0xff));   // progressColor
         colors.append(QColor(Qt::white));        // emptyLogoColor
         colors.append(QColor(Qt::darkGray));     // shadowColor
+
         colors.append(QColor(0xd9,0xd9,0xd9));   // switchBgColor
         colors.append(QColor(0xcc,0xcc,0xcc));   // switchBorderColor
         colors.append(QColor(Qt::white));        // switchHandleColor
         colors.append(QColor(0x99,0x99,0x99));   // switchHandleBorderColor
         colors.append(QColor(0xcc,0xcc,0xcc));   // switchHandleDownColor
-
-        // "c9cacb"
     }
     setColors(colors);
 }
