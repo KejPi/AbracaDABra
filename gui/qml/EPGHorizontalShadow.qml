@@ -70,6 +70,7 @@ Item {
         opacity: 0.5
         horizontalOffset: 0
         verticalOffset: 0
+        transparentBorder: true
         visible: true
     }
 }

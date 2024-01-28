@@ -134,6 +134,7 @@ Item {
         opacity: 0.8
         horizontalOffset: 0
         verticalOffset: 0
+        transparentBorder: true
         visible: !rect.textFits
     }
     MouseArea {
