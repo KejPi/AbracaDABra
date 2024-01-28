@@ -28,7 +28,11 @@
 #define EPGMODEL_H
 
 #include <QAbstractListModel>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
 #include <QtQmlIntegration>
+#else
+#include <qqml.h>
+#endif
 #include "epgmodelitem.h"
 
 enum EPGModelRoles {

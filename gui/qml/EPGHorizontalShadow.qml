@@ -63,7 +63,8 @@ Item {
         id: shadowId
         anchors.fill: shadowItem
         source: shadowItem
-        samples: 40
+        //samples: 40
+        radius: 10
         color: EPGColors.shadowColor
         enabled: true
         opacity: 0.5

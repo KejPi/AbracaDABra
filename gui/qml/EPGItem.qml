@@ -127,11 +127,12 @@ Item {
         id: shadowId
         anchors.fill: shadowItem
         source: shadowItem
-        samples: 21
+        //samples: 21  // not available in Qt<6.5
+        radius: 10
         color: EPGColors.shadowColor
         enabled: true
-        opacity: 0.4
-        horizontalOffset: -6
+        opacity: 0.8
+        horizontalOffset: 0
         verticalOffset: 0
         visible: !rect.textFits
     }

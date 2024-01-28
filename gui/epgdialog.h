@@ -30,6 +30,7 @@
 #include <QDialog>
 #include <QQuickImageProvider>
 #include <QQuickView>
+#include <QItemSelectionModel>
 #include "metadatamanager.h"
 #include "slmodel.h"
 #include "slproxymodel.h"
