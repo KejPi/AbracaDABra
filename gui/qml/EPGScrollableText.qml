@@ -42,7 +42,7 @@ Item {
         contentWidth: width
         flickableDirection: Flickable.VerticalFlick
         boundsBehavior: Flickable.StopAtBounds
-        visible: false
+        visible: true
         clip: true
         Text {
             id: label
@@ -68,30 +68,21 @@ Item {
         gradient: Gradient {
             GradientStop {
                 position: -0.05
-                color: "transparent"
+                color: EPGColors.bgColor
             }
             GradientStop {
                 position: (flickable.contentY > 0) ? 0.15 : 0.0
-                color: "black"
+                color: "transparent"
             }
             GradientStop {
                 position: (flickable.contentY < (flickable.contentHeight - flickable.height - 2)) ? 0.85 : 1.0
-                color: "black"
+                color: "transparent"
             }
             GradientStop {
                 position: 1.05
-                color: "transparent"
+                color: EPGColors.bgColor
             }
         }
-        visible: false
-    }
-    OpacityMask {
-        anchors.fill: flickable
-        source: flickable
-        maskSource: mask
-    }
-    WheelHandler {
-        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-        onWheel: (event)=>{flickable.flick(0, event.angleDelta.y * event.y * 0.2)}
+        visible: true
     }
 }
