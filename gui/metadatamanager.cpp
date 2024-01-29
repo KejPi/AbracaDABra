@@ -417,23 +417,26 @@ bool MetadataManager::parseProgramme(const QDomElement &element, const ServiceLi
         child = child.nextSiblingElement();
     }
 
-    if (m_epgList.value(id, nullptr) == nullptr)
+    if (!itemList.isEmpty())
     {
-        m_epgList[id] = new EPGModel(this);
-        emit epgModelChanged(id);
-        emit epgAvailable();
-    }
-
-    for (auto & progItem : itemList)
-    {
-        if (progItem->startTime().date() < EPGTime::getInstance()->currentDate().addDays(7))
+        if (m_epgList.value(id, nullptr) == nullptr)
         {
-            addEpgDate(progItem->startTime().date());
-            ret = m_epgList[id]->addItem(progItem) || ret;
+            m_epgList[id] = new EPGModel(this);
+            emit epgModelChanged(id);
+            emit epgAvailable();
         }
-        else
+
+        for (auto & progItem : itemList)
         {
-            delete progItem;
+            if (progItem->startTime().date() < EPGTime::getInstance()->currentDate().addDays(7))
+            {
+                addEpgDate(progItem->startTime().date());
+                ret = m_epgList[id]->addItem(progItem) || ret;
+            }
+            else
+            {
+                delete progItem;
+            }
         }
     }
 
