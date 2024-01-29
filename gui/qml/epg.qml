@@ -437,6 +437,7 @@ Item {
                     anchors.fill: parent
                     spacing: 5
                     Text {
+                        id: programNameLabel
                         Layout.fillWidth: true
                         text: programName
                         font.bold: true
@@ -446,7 +447,9 @@ Item {
                     Text {
                         visible: programStartToEndTime
                         Layout.fillWidth: true
+                        Layout.bottomMargin: 3
                         text: programStartToEndTime
+                        verticalAlignment: Text.AlignVCenter
                         color: EPGColors.fadeTextColor
                     }
                     EPGScrollableText {
