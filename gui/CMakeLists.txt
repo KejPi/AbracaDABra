@@ -184,6 +184,7 @@ qt6_add_qml_module(${TARGET}
     RESOURCES
         #img/world.png
     VERSION 1.0
+    RESOURCE_PREFIX "/"
 )
 
 #add_definitions(-fsanitize=undefined)

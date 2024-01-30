@@ -632,7 +632,7 @@ void MetadataManager::loadEpg(const ServiceListId &servId, const QList<uint32_t>
                     DabSId dabSid(servId.sid());
                     QString scopeId = QString("dab:%1.%2.%3.0").arg(dabSid.gcc(), 3, 16, QChar('0')).arg(uint16_t(ueidList.at(0)), 4, 16, QChar('0')).arg(dabSid.progSId(), 4,16, QChar('0'));
                     QTextStream in(&xmlfile);
-                    processXML(qPrintable(in.readAll()), scopeId, SPI_APP_INVALID_DECODER_ID);
+                    processXML(in.readAll(), scopeId, SPI_APP_INVALID_DECODER_ID);
                     xmlfile.close();
                 }
             }
