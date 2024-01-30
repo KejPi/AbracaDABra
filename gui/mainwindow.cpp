@@ -3048,53 +3048,137 @@ void MainWindow::initStyle()
 #endif
     QPalette * palette = &m_palette;
 
-    //  Qt::ColorScheme::Light
-    palette->setColor(QPalette::WindowText, QColor(0, 0, 0, 255));
-    palette->setColor(QPalette::Button, QColor(240, 240, 240, 255));
-    palette->setColor(QPalette::Light, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::Midlight, QColor(227, 227, 227, 255));
-    palette->setColor(QPalette::Dark, QColor(160, 160, 160, 255));
-    palette->setColor(QPalette::Mid, QColor(160, 160, 160, 255));
-    palette->setColor(QPalette::Text, QColor(0, 0, 0, 255));
-    palette->setColor(QPalette::BrightText, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::ButtonText, QColor(0, 0, 0, 255));
-    palette->setColor(QPalette::Base, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::Window, QColor(240, 240, 240, 255));
-    palette->setColor(QPalette::Shadow, QColor(105, 105, 105, 255));
-    palette->setColor(QPalette::Highlight, QColor(0, 120, 215, 255));
-    palette->setColor(QPalette::HighlightedText, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::Link, QColor(0, 0, 255, 255));
-    palette->setColor(QPalette::LinkVisited, QColor(255, 0, 255, 255));
-    palette->setColor(QPalette::AlternateBase, QColor(233, 231, 227, 255));
-    palette->setColor(QPalette::NoRole, QColor(0, 0, 0, 255));
-    palette->setColor(QPalette::ToolTipBase, QColor(255, 255, 220, 255));
-    palette->setColor(QPalette::ToolTipText, QColor(0, 0, 0, 255));
-    palette->setColor(QPalette::PlaceholderText, QColor(0, 0, 0, 128));
+    // standardPalette Qt::ColorScheme::Light
+    palette->setColor(QPalette::Active, QPalette::WindowText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Active, QPalette::Button, QColor(239, 239, 239, 255));
+    palette->setColor(QPalette::Active, QPalette::Light, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Active, QPalette::Midlight, QColor(202, 202, 202, 255));
+    palette->setColor(QPalette::Active, QPalette::Dark, QColor(159, 159, 159, 255));
+    palette->setColor(QPalette::Active, QPalette::Mid, QColor(184, 184, 184, 255));
+    palette->setColor(QPalette::Active, QPalette::Text, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Active, QPalette::BrightText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Active, QPalette::ButtonText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Active, QPalette::Base, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Active, QPalette::Window, QColor(239, 239, 239, 255));
+    palette->setColor(QPalette::Active, QPalette::Shadow, QColor(118, 118, 118, 255));
+    palette->setColor(QPalette::Active, QPalette::Highlight, QColor(48, 140, 198, 255));
+    palette->setColor(QPalette::Active, QPalette::HighlightedText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Active, QPalette::Link, QColor(0, 0, 255, 255));
+    palette->setColor(QPalette::Active, QPalette::LinkVisited, QColor(255, 0, 255, 255));
+    palette->setColor(QPalette::Active, QPalette::AlternateBase, QColor(247, 247, 247, 255));
+    palette->setColor(QPalette::Active, QPalette::NoRole, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Active, QPalette::ToolTipBase, QColor(255, 255, 220, 255));
+    palette->setColor(QPalette::Active, QPalette::ToolTipText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Active, QPalette::PlaceholderText, QColor(0, 0, 0, 128));
+    palette->setColor(QPalette::Disabled, QPalette::WindowText, QColor(190, 190, 190, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Button, QColor(239, 239, 239, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Light, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Midlight, QColor(202, 202, 202, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Dark, QColor(190, 190, 190, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Mid, QColor(184, 184, 184, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Text, QColor(190, 190, 190, 255));
+    palette->setColor(QPalette::Disabled, QPalette::BrightText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Disabled, QPalette::ButtonText, QColor(190, 190, 190, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Base, QColor(239, 239, 239, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Window, QColor(239, 239, 239, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Shadow, QColor(177, 177, 177, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Highlight, QColor(145, 145, 145, 255));
+    palette->setColor(QPalette::Disabled, QPalette::HighlightedText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Link, QColor(0, 0, 255, 255));
+    palette->setColor(QPalette::Disabled, QPalette::LinkVisited, QColor(255, 0, 255, 255));
+    palette->setColor(QPalette::Disabled, QPalette::AlternateBase, QColor(247, 247, 247, 255));
+    palette->setColor(QPalette::Disabled, QPalette::NoRole, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Disabled, QPalette::ToolTipBase, QColor(255, 255, 220, 255));
+    palette->setColor(QPalette::Disabled, QPalette::ToolTipText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Disabled, QPalette::PlaceholderText, QColor(0, 0, 0, 128));
+    palette->setColor(QPalette::Inactive, QPalette::WindowText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Button, QColor(239, 239, 239, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Light, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Midlight, QColor(202, 202, 202, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Dark, QColor(159, 159, 159, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Mid, QColor(184, 184, 184, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Text, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Inactive, QPalette::BrightText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Inactive, QPalette::ButtonText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Base, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Window, QColor(239, 239, 239, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Shadow, QColor(118, 118, 118, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Highlight, QColor(48, 140, 198, 255));
+    palette->setColor(QPalette::Inactive, QPalette::HighlightedText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Link, QColor(0, 0, 255, 255));
+    palette->setColor(QPalette::Inactive, QPalette::LinkVisited, QColor(255, 0, 255, 255));
+    palette->setColor(QPalette::Inactive, QPalette::AlternateBase, QColor(247, 247, 247, 255));
+    palette->setColor(QPalette::Inactive, QPalette::NoRole, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Inactive, QPalette::ToolTipBase, QColor(255, 255, 220, 255));
+    palette->setColor(QPalette::Inactive, QPalette::ToolTipText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Inactive, QPalette::PlaceholderText, QColor(0, 0, 0, 128));
 
     palette = &m_darkPalette;
 
-    //  Qt::ColorScheme::Dark
-    palette->setColor(QPalette::WindowText, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::Button, QColor(60, 60, 60, 255));
-    palette->setColor(QPalette::Light, QColor(120, 120, 120, 255));
-    palette->setColor(QPalette::Midlight, QColor(90, 90, 90, 255));
-    palette->setColor(QPalette::Dark, QColor(30, 30, 30, 255));
-    palette->setColor(QPalette::Mid, QColor(40, 40, 40, 255));
-    palette->setColor(QPalette::Text, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::BrightText, QColor(153, 187, 255, 255));
-    palette->setColor(QPalette::ButtonText, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::Base, QColor(45, 45, 45, 255));
-    palette->setColor(QPalette::Window, QColor(30, 30, 30, 255));
-    palette->setColor(QPalette::Shadow, QColor(0, 0, 0, 255));
-    palette->setColor(QPalette::Highlight, QColor(0, 85, 255, 255));
-    palette->setColor(QPalette::HighlightedText, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::Link, QColor(0, 0, 255, 255));
-    palette->setColor(QPalette::LinkVisited, QColor(0, 49, 148, 255));
-    palette->setColor(QPalette::AlternateBase, QColor(0, 49, 148, 255));
-    palette->setColor(QPalette::NoRole, QColor(0, 0, 0, 255));
-    palette->setColor(QPalette::ToolTipBase, QColor(60, 60, 60, 255));
-    palette->setColor(QPalette::ToolTipText, QColor(212, 212, 212, 255));
-    palette->setColor(QPalette::PlaceholderText, QColor(255, 255, 255, 128));
+    // standardPalette Qt::ColorScheme::Dark
+    palette->setColor(QPalette::Active, QPalette::WindowText, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Active, QPalette::Button, QColor(50, 50, 50, 255));
+    palette->setColor(QPalette::Active, QPalette::Light, QColor(75, 75, 75, 255));
+    palette->setColor(QPalette::Active, QPalette::Midlight, QColor(42, 42, 42, 255));
+    palette->setColor(QPalette::Active, QPalette::Dark, QColor(33, 33, 33, 255));
+    palette->setColor(QPalette::Active, QPalette::Mid, QColor(38, 38, 38, 255));
+    palette->setColor(QPalette::Active, QPalette::Text, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Active, QPalette::BrightText, QColor(75, 75, 75, 255));
+    palette->setColor(QPalette::Active, QPalette::ButtonText, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Active, QPalette::Base, QColor(36, 36, 36, 255));
+    palette->setColor(QPalette::Active, QPalette::Window, QColor(50, 50, 50, 255));
+    palette->setColor(QPalette::Active, QPalette::Shadow, QColor(25, 25, 25, 255));
+    palette->setColor(QPalette::Active, QPalette::Highlight, QColor(48, 140, 198, 255));
+    palette->setColor(QPalette::Active, QPalette::HighlightedText, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Active, QPalette::Link, QColor(48, 140, 198, 255));
+    palette->setColor(QPalette::Active, QPalette::LinkVisited, QColor(255, 0, 255, 255));
+    palette->setColor(QPalette::Active, QPalette::AlternateBase, QColor(43, 43, 43, 255));
+    palette->setColor(QPalette::Active, QPalette::NoRole, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Active, QPalette::ToolTipBase, QColor(255, 255, 220, 255));
+    palette->setColor(QPalette::Active, QPalette::ToolTipText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Active, QPalette::PlaceholderText, QColor(240, 240, 240, 128));
+    palette->setColor(QPalette::Disabled, QPalette::WindowText, QColor(130, 130, 130, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Button, QColor(50, 50, 50, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Light, QColor(75, 75, 75, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Midlight, QColor(42, 42, 42, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Dark, QColor(190, 190, 190, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Mid, QColor(38, 38, 38, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Text, QColor(130, 130, 130, 255));
+    palette->setColor(QPalette::Disabled, QPalette::BrightText, QColor(75, 75, 75, 255));
+    palette->setColor(QPalette::Disabled, QPalette::ButtonText, QColor(130, 130, 130, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Base, QColor(50, 50, 50, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Window, QColor(50, 50, 50, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Shadow, QColor(37, 37, 37, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Highlight, QColor(145, 145, 145, 255));
+    palette->setColor(QPalette::Disabled, QPalette::HighlightedText, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Link, QColor(48, 140, 198, 255));
+    palette->setColor(QPalette::Disabled, QPalette::LinkVisited, QColor(255, 0, 255, 255));
+    palette->setColor(QPalette::Disabled, QPalette::AlternateBase, QColor(43, 43, 43, 255));
+    palette->setColor(QPalette::Disabled, QPalette::NoRole, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Disabled, QPalette::ToolTipBase, QColor(255, 255, 220, 255));
+    palette->setColor(QPalette::Disabled, QPalette::ToolTipText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Disabled, QPalette::PlaceholderText, QColor(240, 240, 240, 128));
+    palette->setColor(QPalette::Inactive, QPalette::WindowText, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Button, QColor(50, 50, 50, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Light, QColor(75, 75, 75, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Midlight, QColor(42, 42, 42, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Dark, QColor(33, 33, 33, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Mid, QColor(38, 38, 38, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Text, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Inactive, QPalette::BrightText, QColor(75, 75, 75, 255));
+    palette->setColor(QPalette::Inactive, QPalette::ButtonText, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Base, QColor(36, 36, 36, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Window, QColor(50, 50, 50, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Shadow, QColor(25, 25, 25, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Highlight, QColor(48, 140, 198, 255));
+    palette->setColor(QPalette::Inactive, QPalette::HighlightedText, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Link, QColor(48, 140, 198, 255));
+    palette->setColor(QPalette::Inactive, QPalette::LinkVisited, QColor(255, 0, 255, 255));
+    palette->setColor(QPalette::Inactive, QPalette::AlternateBase, QColor(43, 43, 43, 255));
+    palette->setColor(QPalette::Inactive, QPalette::NoRole, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Inactive, QPalette::ToolTipBase, QColor(255, 255, 220, 255));
+    palette->setColor(QPalette::Inactive, QPalette::ToolTipText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Inactive, QPalette::PlaceholderText, QColor(240, 240, 240, 128));
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     connect(qApp->styleHints(), &QStyleHints::colorSchemeChanged, this, &MainWindow::onColorSchemeChanged);
@@ -3136,37 +3220,24 @@ void MainWindow::onColorSchemeChanged(Qt::ColorScheme colorScheme)
     //QPalette palette = qApp->palette();
     QPalette palette = qApp->style()->standardPalette();
 
-    qCDebug(application) << "// standardPalette" << qApp->styleHints()->colorScheme();
+    qDebug() << "// standardPalette" << qApp->styleHints()->colorScheme();
 
-    for (int r = QPalette::WindowText; r <= QPalette::PlaceholderText; ++r)
-    {
-        const QPalette::ColorRole role = static_cast<const QPalette::ColorRole>(r);
+    for (int g = QPalette::Active; g <= QPalette::Inactive; ++g) {
+        for (int r = QPalette::WindowText; r <= QPalette::PlaceholderText; ++r)
+        {
+            const QPalette::ColorRole role = static_cast<const QPalette::ColorRole>(r);
+            const QPalette::ColorGroup group = static_cast<const QPalette::ColorGroup>(g);
 
-        QString line = QString("palette->setColor(QPalette::%1, QColor(%2, %3, %4, %5));")
-                           .arg(QVariant::fromValue(role).toString())
-                           .arg(palette.color(role).red())
-                           .arg(palette.color(role).green())
-                           .arg(palette.color(role).blue())
-                           .arg(palette.color(role).alpha());
+            QString line = QString("palette->setColor(QPalette::%1, QPalette::%2, QColor(%3, %4, %5, %6));")
+                               .arg(QVariant::fromValue(group).toString())
+                               .arg(QVariant::fromValue(role).toString())
+                               .arg(palette.color(group, role).red())
+                               .arg(palette.color(group, role).green())
+                               .arg(palette.color(group, role).blue())
+                               .arg(palette.color(group, role).alpha());
 
-        qCDebug(application, "%s", line.toLatin1().data());
-    }
-
-    qCDebug(application) << "// palette" << qApp->styleHints()->colorScheme();
-    palette = qApp->palette();
-
-    for (int r = QPalette::WindowText; r <= QPalette::PlaceholderText; ++r)
-    {
-        const QPalette::ColorRole role = static_cast<const QPalette::ColorRole>(r);
-
-        QString line = QString("palette->setColor(QPalette::%1, QColor(%2, %3, %4, %5));")
-                           .arg(QVariant::fromValue(role).toString())
-                           .arg(palette.color(role).red())
-                           .arg(palette.color(role).green())
-                           .arg(palette.color(role).blue())
-                           .arg(palette.color(role).alpha());
-
-        qCDebug(application, "%s", line.toLatin1().data());
+            qDebug("%s", line.toLatin1().data());
+        }
     }
 
 #endif
