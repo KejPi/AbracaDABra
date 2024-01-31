@@ -27,6 +27,8 @@
 #include "epgmodel.h"
 #include "epgtime.h"
 
+Q_DECLARE_LOGGING_CATEGORY(metadataManager)
+
 EPGModel::EPGModel(QObject *parent)
     : QAbstractListModel{parent}
 {}
@@ -155,15 +157,13 @@ bool EPGModel::addItem(EPGModelItem *item)
         if (m_startTimeList.contains(item->startTime()))
         {   // already in list
             if (item->shortId() != m_startTimeList[item->startTime()]) {
-                qDebug() << "Unexpected EPG item ID" << item->shortId() << "start time:" << item->startTime();
+                qCDebug(metadataManager) << "Unexpected EPG item ID" << item->shortId() << "start time:" << item->startTime();
             }
             delete item;
             return false;
         }
 
         // we are here if item was not in list
-        //qDebug() << "Adding item #" << item->shortId() <<item->shortName() << item->mediumName() << item->longName()
-        //                            << item->startTime().toString() << item->durationSec();
         beginInsertRows(QModelIndex(), m_itemList.size(), m_itemList.size());
         m_startTimeList[item->startTime()] = item->shortId();
         m_itemList.append(item);
@@ -173,7 +173,7 @@ bool EPGModel::addItem(EPGModelItem *item)
     }
     else
     {
-        qDebug() << "Invalid item:" << item->shortId();
+        qCDebug(metadataManager) << "Invalid item:" << item->shortId();
     }
     return false;
 }

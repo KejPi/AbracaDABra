@@ -35,7 +35,7 @@
 #include <QJsonDocument>
 #include <QFile>
 
-Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtDebugMsg)
+Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtInfoMsg)
 
 SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
 {
@@ -67,7 +67,6 @@ SPIApp::~SPIApp()
 
 void SPIApp::start()
 {   // does nothing if application is already running
-    //qDebug() << Q_FUNC_INFO;
     if (m_isRunning)
     {   // do nothing, application is running
         return;
@@ -110,8 +109,6 @@ void SPIApp::start()
 
 void SPIApp::stop()
 {
-    //qDebug() << Q_FUNC_INFO;
-
     // get XPAD application decoder (SCID == 0xFFFF)
     MOTDecoder * decoderPtr = m_decoderMap.value(0xFFFF, nullptr);
     if (nullptr != decoderPtr)
@@ -128,16 +125,12 @@ void SPIApp::stop()
 
 void SPIApp::restart()
 {
-    qDebug() << Q_FUNC_INFO;
-
     stop();
     start();
 }
 
 void SPIApp::reset()
 {
-    //qDebug() << Q_FUNC_INFO;
-
     // delete all decoders
     for (const auto & decoder : m_decoderMap)
     {
@@ -156,8 +149,6 @@ void SPIApp::reset()
 
 void SPIApp::enable(bool ena)
 {
-    //qDebug() << Q_FUNC_INFO;
-
     reset();
     if (ena)
     {
@@ -266,7 +257,7 @@ void SPIApp::onNewMOTObjectInDirectory(const QString &contentName)
             qCInfo(spiApp, "%d: MOT directory complete", decoderId);
 
             for (auto objIt = decoderPtr->directoryBegin(); objIt != decoderPtr->directoryEnd(); ++objIt) {
-                qDebug() << "   " << objIt->getContentName();
+                qCDebug(spiApp) << "   " << objIt->getContentName();
             }
         }
         else
@@ -278,14 +269,14 @@ void SPIApp::onNewMOTObjectInDirectory(const QString &contentName)
 
 void SPIApp::processObject(uint16_t decoderId, MOTObjectCache::const_iterator objIt)
 {
-    qDebug() << "Processing object:" << objIt->getContentName();
+    qCDebug(spiApp) << "Processing object:" << objIt->getContentName();
     switch (objIt->getContentType())
     {
     case 2:
     {   // logos
         if (m_motObjRequestList[decoderId].contains(objIt->getContentName()))
         {
-            qDebug() << "Found requested file" << objIt->getContentName();
+            qCDebug(spiApp) << "Found requested file" << objIt->getContentName();
             emit requestedFile(objIt->getBody(), m_motObjRequestList[decoderId][objIt->getContentName()]);
             m_motObjRequestList[decoderId].remove(objIt->getContentName());
         }
@@ -302,23 +293,6 @@ void SPIApp::processObject(uint16_t decoderId, MOTObjectCache::const_iterator ob
         case 1:
             qCDebug(spiApp) << "\tProgramme Information" << objIt->getContentName();
             parseBinaryInfo(decoderId, *objIt);
-#if 0
-            {
-                QString filename = QString("/Users/kejpi/Devel/AbracaDABra/_cache/%1.xml").arg(objIt->getContentName());
-                QFile file(filename);
-                if (file.exists())
-                {
-                    qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!! File EXISTS";
-                }
-                else
-                {
-                    file.open(QIODevice::WriteOnly);
-                    QTextStream output(&file);
-                    output << qPrintable(m_xmldocument.toString());
-                    file.close();
-                }
-            }
-#endif
             break;
         case 2:
             qCDebug(spiApp) << "\tGroup Information" << objIt->getContentName();
@@ -457,13 +431,11 @@ void SPIApp::parseBinaryInfo(uint16_t decoderId, const MOTObject &motObj)
                 QDomElement scope = schedule.firstChildElement("scope");
                 if (scope.isNull())
                 {   // scope not found creating using MOT objects params
-                    //qDebug() << motObj.getContentName() << "does not define scope";
                     scope = m_xmldocument.createElement("scope");
                     scope.setAttribute("startTime", scopeStart);
                     if (scopeEnd.isEmpty())
                     {
                         scopeEnd = QDateTime::fromString(scopeStart, Qt::ISODate).addDays(1).toString(Qt::ISODate);
-                        // qDebug() << "ScopeEnd not defined ==> using scopeStart:" << scopeStart << "===>" << scopeEnd;
                     }
                     scope.setAttribute("stopTime", scopeEnd);
 
@@ -1282,8 +1254,6 @@ QString SPIApp::getTime(const uint8_t *dataPtr, int len)
     // construct time
     QDateTime dateAndTime = DabTables::dabTimeToUTC(dateHoursMinutes, secMsec).toOffsetFromUtc(60*(lto * 30));
 
-    //qDebug() << dbg << DabTables::dabTimeToUTC(dateHoursMinutes, secMsec) << lto << dateAndTime;
-
     // convert to string
     return dateAndTime.toString(Qt::ISODateWithMs);
 }
@@ -1443,7 +1413,7 @@ void SPIApp::radioDNSLookup(const QString &fqdn)
     if (m_useDoH)
     {   // DNS over http
         QString cnameUrl = QString("https://dns.google/resolve?name=%1&type=CNAME").arg(fqdn);
-        qDebug() << "DNS CNAME query:" << cnameUrl;
+        qCDebug(spiApp) << "DNS CNAME query:" << cnameUrl;
         downloadFile(cnameUrl, "DOH_CNAME", false);
     }
     else {
@@ -1459,7 +1429,7 @@ void SPIApp::radioDNSLookup(const QString &fqdn)
                 }
                 else
                 {
-                    qDebug() << "Invalid DNS record for" << fqdn << file;
+                    qCDebug(spiApp) << "Invalid DNS record for" << fqdn << file;
                 }
 
                 // next dns lookup
@@ -1500,7 +1470,6 @@ void SPIApp::getPI(const ServiceListId &servId, const QList<uint32_t> &ueidList,
     if (m_useInternet && m_enaRadioDNS)
     {   // query RadioDNS
         for (const auto & ueid : ueidList) {
-            //qDebug() << radioDNSFQDN(servId, ueid) << QString("%1_PI.xml").arg(date.toString("yyyyMMdd"));
             if (m_radioDnsDownloadQueue.isEmpty())
             {
                 m_radioDnsDownloadQueue.enqueue({radioDNSFQDN(servId, ueid), QString("%1/%2_PI.xml").arg(radioDNSServiceIdentifier(servId, ueid), date.toString("yyyyMMdd"))});
@@ -1651,7 +1620,6 @@ void SPIApp::onFileDownloaded(QNetworkReply *reply)
         else if (requestId == "DOH_CNAME")
         {
             QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
-            qDebug() << qPrintable(jsonDoc.toJson());
 
             QVariantMap map = jsonDoc.toVariant().toMap();
             if (map.contains("Answer"))
@@ -1667,7 +1635,6 @@ void SPIApp::onFileDownloaded(QNetworkReply *reply)
                             data = data.first(data.length()-1);
                         }
                         QString srvUrl = QString("https://dns.google/resolve?name=_radioepg._tcp.%1&type=SRV").arg(data);
-                        qDebug() << srvUrl;
                         downloadFile(srvUrl, "DOH_SRV", false);
                     }
                 }
@@ -1676,7 +1643,6 @@ void SPIApp::onFileDownloaded(QNetworkReply *reply)
         else if (requestId == "DOH_SRV")
         {
             QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
-            qDebug() << qPrintable(jsonDoc.toJson());
 
             QVariantMap map = jsonDoc.toVariant().toMap();
             if (map.contains("Answer"))
@@ -1703,7 +1669,7 @@ void SPIApp::onFileDownloaded(QNetworkReply *reply)
         }
     }
     else {
-        qCWarning(spiApp) << "Failed to download: " << reply->request().url().toString() << "|" << reply->error();
+        qCDebug(spiApp) << "Failed to download: " << reply->request().url().toString() << "|" << reply->error();
 
     }
 
