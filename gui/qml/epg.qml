@@ -295,6 +295,7 @@ Item {
                                         sourceComponent: Flickable {
                                             id: epgTable
                                             property int dateIndex: index
+                                            property bool needsToSetContentX: true
                                             contentWidth: colId.width
                                             contentHeight: colId.height
                                             boundsBehavior: Flickable.StopAtBounds
@@ -333,12 +334,11 @@ Item {
                                                                 x: epgTable.contentX + 5
                                                                 text: qsTr("No infomation available")
                                                                 color: EPGColors.fadeTextColor
-                                                                visible: epgItemRepeater.count == 0
+                                                                visible: epgItemRepeater.count === 0
                                                             }
                                                             Repeater {
                                                                 id: epgItemRepeater
                                                                 model: proxyModel
-                                                                //property var modelIndex: proxyModel.mapToSource(proxyModel.index(index, 0))
                                                                 delegate: EPGItem {
                                                                     itemHeight: lineHeight
                                                                     pointsPerSec: pointsPerSecond
@@ -382,16 +382,17 @@ Item {
                                                     }
                                                 }
                                             }
-                                            Component.onCompleted: {
-                                                if (epgTime.isCurrentDate(metadataManager.epgDate(epgTable.dateIndex))) {
-                                                    //var cX = (Math.round(epgTime.secSinceMidnight() / 3600) - 0.5) * 3600 * pointsPerSecond;
-                                                    const w = mainItemId.width - serviceListWidth;
-                                                    const cX = Math.max(epgTime.secSinceMidnight() * pointsPerSecond - w/3, 0);
-                                                    timelinebox.contentX = Math.min(cX, (3600*24) * pointsPerSecond - w);
-                                                    //console.log(cX, (3600*24) * pointsPerSecond-timelinebox.width, timelinebox.width, mainItemId.width)
-                                                }
-                                                else {
-                                                    timelinebox.contentX = 0;
+                                            onWidthChanged: {
+                                                if (needsToSetContentX && (width !== 0)) {
+                                                    if (epgTime.isCurrentDate(metadataManager.epgDate(epgTable.dateIndex))) {
+                                                        const w = mainItemId.width - serviceListWidth;
+                                                        const cX = Math.max(epgTime.secSinceMidnight() * pointsPerSecond - w/3, 0);
+                                                        timelinebox.contentX = Math.min(cX, (3600*24) * pointsPerSecond - w);
+                                                    }
+                                                    else {
+                                                        timelinebox.contentX = 0;
+                                                    }
+                                                    needsToSetContentX = false;
                                                 }
                                             }
                                             onContentXChanged: {
