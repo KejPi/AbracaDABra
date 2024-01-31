@@ -1684,34 +1684,3 @@ void SPIApp::onFileDownloaded(QNetworkReply *reply)
 
     reply->deleteLater();
 }
-
-SPIDomElement::SPIDomElement()
-{
-    m_tag = SPIElement::Tag::_invalid;
-}
-
-SPIDomElement::SPIDomElement(const QDomElement &e, uint8_t tag)
-    : m_element(e)
-    , m_tag(SPIElement::Tag(tag))
-{
-}
-
-QDomElement SPIDomElement::element() const
-{
-    return m_element;
-}
-
-void SPIDomElement::setElement(const QDomElement &newElement)
-{
-    m_element = newElement;
-}
-
-SPIElement::Tag SPIDomElement::tag() const
-{
-    return m_tag;
-}
-
-void SPIDomElement::setTag(uint8_t newTag)
-{
-    m_tag = SPIElement::Tag(newTag);
-}

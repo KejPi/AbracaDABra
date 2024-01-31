@@ -41,8 +41,6 @@
 //#define SPI_APP_INVALID_TAG 0x7F
 #define SPI_APP_INVALID_DECODER_ID 0xF000
 
-class SPIDomElement;
-
 class SPIApp : public UserApplication
 {
     Q_OBJECT
@@ -374,20 +372,5 @@ namespace SPIElement
     }
 
 }
-
-class SPIDomElement : public QDomElement
-{
-public:
-    SPIDomElement();
-    SPIDomElement(const QDomElement & e, uint8_t tag);
-    QDomElement element() const;
-    void setElement(const QDomElement &newElement);
-    SPIElement::Tag tag() const;
-    void setTag(uint8_t newTag);
-private:
-    QDomElement m_element;
-    SPIElement::Tag m_tag;
-};
-
 
 #endif // SPIAPP_H
