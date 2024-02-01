@@ -37,7 +37,7 @@ class SLTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit SLTreeModel(const ServiceList * sl, QObject *parent = 0);
+    explicit SLTreeModel(const ServiceList * sl, const MetadataManager *mm, QObject *parent = 0);
     ~SLTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const override;
@@ -62,8 +62,9 @@ public slots:
     void clear();
 
 private:
-    SLModelItem * m_rootItem;
+    SLModelItem * m_rootItem;    
     const ServiceList * m_slPtr;
+    const MetadataManager * m_metadataMgrPtr;
 };
 
 #endif // SLTREEMODEL_H

@@ -24,25 +24,52 @@
  * SOFTWARE.
  */
 
-#ifndef ABOUTDIALOG_H
-#define ABOUTDIALOG_H
+#ifndef EPGMODEL_H
+#define EPGMODEL_H
 
-#include <QDialog>
+#include <QAbstractListModel>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+#include <QtQmlIntegration>
+#else
+#include <qqml.h>
+#endif
+#include "epgmodelitem.h"
 
-namespace Ui {
-class AboutDialog;
-}
-
-class AboutDialog : public QDialog
-{
-    Q_OBJECT
-
-public:
-    explicit AboutDialog(QWidget *parent = nullptr);
-    ~AboutDialog();
-
-private:
-    Ui::AboutDialog *ui;
+enum EPGModelRoles {
+    ShortIdRole = Qt::UserRole,
+    NameRole,
+    LongNameRole,
+    MediumNameRole,
+    ShortNameRole,
+    StartTimeRole,    
+    StartTimeSecRole,
+    StartTimeStringRole,
+    StartTimeSecSinceEpochRole,
+    EndTimeSecRole,
+    EndTimeSecSinceEpochRole,
+    EndTimeStringRole,
+    StartToEndTimeStringRole,
+    DurationSecRole,
+    LongDescriptionRole,
+    ShortDescriptionRole,
 };
 
-#endif // ABOUTDIALOG_H
+class EPGModel : public QAbstractListModel
+{
+    Q_OBJECT
+    QML_ELEMENT
+public:
+    explicit EPGModel(QObject *parent = nullptr);
+    ~EPGModel();
+
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const { return m_itemList.count(); }
+    QHash<int, QByteArray> roleNames() const;
+    bool addItem(EPGModelItem *item);
+    void populateWithList(const QList<EPGModelItem *> & list);
+private:
+    QHash<QDateTime, int> m_startTimeList;
+    QList<EPGModelItem *> m_itemList;
+};
+
+#endif // EPGMODEL_H

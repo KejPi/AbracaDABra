@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,7 @@
 #include <QNetworkProxyFactory>
 #include <QLoggingCategory>
 #include <QJsonDocument>
+#include <QFile>
 
 Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtInfoMsg)
 
@@ -42,16 +43,12 @@ SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
     m_dnsLookup = nullptr;
     m_netAccessManager = nullptr;
     m_useInternet = false;
-    m_enaRadioDNS = false;    
+    m_enaRadioDNS = false;
     m_useDoH = false;
 }
 
 SPIApp::~SPIApp()
 {
-//    if (nullptr != m_decoder)
-//    {
-//        delete m_decoder;
-//    }
     // delete all decoders
     for (const auto & decoder : m_decoderMap)
     {
@@ -76,11 +73,6 @@ void SPIApp::start()
     }
     else
     { /* not running */ }
-
-//    // create new decoder
-//    m_decoder = new MOTDecoder();
-//    connect(m_decoder, &MOTDecoder::newMOTObject, this, &SPIApp::onNewMOTObject);
-//    connect(m_decoder, &MOTDecoder::newMOTDirectory, this, &SPIApp::onNewMOTDirectory);
 
     if (nullptr == m_dnsLookup)
     {
@@ -112,8 +104,6 @@ void SPIApp::start()
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
-    m_downloadReqQueue.clear();
-
     m_isRunning = true;
 }
 
@@ -127,16 +117,9 @@ void SPIApp::stop()
         delete decoderPtr;
         m_decoderMap.remove(0xFFFF);
     }
-    if (nullptr != m_dnsLookup)
-    {
-        delete m_dnsLookup;
-        m_dnsLookup = nullptr;
-    }
-    if (nullptr != m_netAccessManager)
-    {
-        delete m_netAccessManager;
-        m_netAccessManager = nullptr;
-    }
+
+    m_motObjRequestList.clear();
+
     m_isRunning = false;
 }
 
@@ -153,6 +136,9 @@ void SPIApp::reset()
     {
         delete decoder;
     }
+    m_downloadReqQueue.clear();
+    m_radioDnsDownloadQueue.clear();
+    m_motObjRequestList.clear();
     m_decoderMap.clear();
     m_parsedDirectoryIds.clear();
     m_isRunning = false;
@@ -174,20 +160,12 @@ void SPIApp::enable(bool ena)
     }
 }
 
-void SPIApp::onEnsembleInformation(const RadioControlEnsemble &ens)
+void SPIApp::setEnableRadioDNS(bool ena)
 {
-    m_ueid = QString("%1").arg(ens.ueid, 6, 16, QChar('0'));
-}
-
-void SPIApp::onAudioServiceSelection(const RadioControlServiceComponent &s)
-{
-    m_sid = QString("%1").arg(s.SId.progSId(), 4, 16, QChar('0'));
-    m_scids = QString("%1").arg(s.SCIdS);
-    m_gcc = getGCC(s.SId);
-
-    if (m_useInternet && m_enaRadioDNS)
-    {   // query RadioDNS
-        radioDNSLookup();
+    m_enaRadioDNS = ena;
+    if (m_enaRadioDNS)
+    {
+        emit radioDNSAvailable();
     }
 }
 
@@ -202,11 +180,7 @@ void SPIApp::onUserAppData(const RadioControlUserAppData & data)
             // create new decoder
             decoderPtr = new MOTDecoder(this);            
             connect(decoderPtr, &MOTDecoder::newMOTDirectory, this, &SPIApp::onNewMOTDirectory);
-            connect(decoderPtr, &MOTDecoder::newMOTObjectInDirectory, this, [this](uint16_t id) {
-                // temporary solution
-                MOTDecoder * decoderPtr = dynamic_cast<MOTDecoder *>(QObject::sender());
-                processMOTDirectory(decoderPtr);
-            });
+            connect(decoderPtr, &MOTDecoder::newMOTObjectInDirectory, this, &SPIApp::onNewMOTObjectInDirectory);
             m_decoderMap[data.SCId] = decoderPtr;
 
             qCDebug(spiApp) << "Adding MOT decoder for SCID" << data.SCId;
@@ -222,14 +196,9 @@ void SPIApp::onUserAppData(const RadioControlUserAppData & data)
 void SPIApp::onNewMOTDirectory()
 {
     MOTDecoder * decoderPtr = dynamic_cast<MOTDecoder *>(QObject::sender());
-    processMOTDirectory(decoderPtr);
-}
-
-void SPIApp::processMOTDirectory(MOTDecoder * decoderPtr)
-{
     Q_ASSERT(decoderPtr != nullptr);
 
-    int decoderId = 0xF000;
+    int decoderId = SPI_APP_INVALID_DECODER_ID;
     for (const auto & key : m_decoderMap.keys()) {
         if (m_decoderMap.value(key) == decoderPtr) {
             decoderId = key;
@@ -244,104 +213,118 @@ void SPIApp::processMOTDirectory(MOTDecoder * decoderPtr)
     }
 
     MOTObjectCache::const_iterator objIt;
-    int incompleteObjCount = 0;
-    for (objIt = decoderPtr->directoryBegin(); objIt != decoderPtr->directoryEnd(); ++objIt)
-    {
-        if (!objIt->isComplete())
-        {   // object not complete ==> carousel not complete
-            incompleteObjCount += 1;
-            // qCDebug(spiApp, "%d: Object %d is not complete", decoderId, objIt->getId());
-        }
-        else { /* object is complete */
-            // qCDebug(spiApp, "%d: Object %d is complete: %s", decoderId, objIt->getId(), objIt->getContentName().toLocal8Bit().data());
-        }
-    }
-    if (incompleteObjCount != 0) {
-        qCInfo(spiApp, "%d: MOT directory NOT complete (decoded %d / %d)", decoderId, decoderPtr->size()-incompleteObjCount, decoderPtr->size());
-        //return;
-    }
-    else
-    {
-        qCInfo(spiApp, "%d: MOT directory complete", decoderId);
-        for (objIt = decoderPtr->directoryBegin(); objIt != decoderPtr->directoryEnd(); ++objIt)
-        {
-            qCDebug(spiApp, "%d:     Object %d -> %s", decoderId, objIt->getId(), objIt->getContentName().toLocal8Bit().data());
-        }
-    }
-
     qCDebug(spiApp, "%d: Processing MOT directory", decoderId);
 
-    for (objIt = decoderPtr->directoryBegin(); objIt != decoderPtr->directoryEnd(); ++objIt)
+    for (objIt = decoderPtr->directoryBegin(); objIt != decoderPtr->directoryEnd(); ++objIt)    
     {
         if (objIt->isComplete())
         {
-            switch (objIt->getContentType())
-            {
-#if 0  // storing of images
-            case 2:
-            {
-                // logos
-                switch (objIt->getContentSubType())
-                {
-                case 1:
-                    qCDebug(spiApp) << "Image / JFIF (JPEG)" << objIt->getContentName();
-                    break;
-                case 3:
-                {
-                    qCDebug(spiApp) << "Image / PNG" << objIt->getContentName();
-                    QSaveFile file(objIt->getContentName());
-                    file.open(QIODevice::WriteOnly);
-                    file.write(objIt->getBody());
-                    file.commit();
-                }
-                    break;
-                default:
-                    qCDebug(spiApp) << "Image /" <<objIt->getContentSubType() << "not supported by SPI application";
-                    return;
-                }
-            }
-                break;
-#endif
-            case 7:
-            {   // SPI content type/subtype values
-                switch (objIt->getContentSubType())
-                {
-                case 0:
-                    qCDebug(spiApp) << "\tService Information" << objIt->getContentName();
-                    parseBinaryInfo(*objIt);
-                    break;                    
-                case 1:
-                    qCDebug(spiApp) << "\tProgramme Information" << objIt->getContentName();
-                    //parseBinaryInfo(*objIt);
-                    break;
-                case 2:
-                    qCDebug(spiApp) << "\tGroup Information" << objIt->getContentName();
-                    //parseBinaryInfo(*objIt);
-                    break;
-                default:
-                    // not supported
-                    continue;
-                }
-            }
-            break;
-            }
+            qCDebug(spiApp, "%d:     Object %d -> %s [complete]", decoderId, objIt->getId(), objIt->getContentName().toLocal8Bit().data());
+            processObject(decoderId, objIt);
         }
     }
 
-    if (incompleteObjCount == 0)
+    if (decoderPtr->directoryIsComplete())
     {
         m_parsedDirectoryIds[decoderId] = decoderPtr->getDirectoryId();
+        m_motObjRequestList[decoderId].clear();
+        qCInfo(spiApp, "%d: MOT directory complete", decoderId);
+    }
+    else
+    {
+        qCInfo(spiApp, "%d: MOT directory NOT complete (decoded %d / %d)", decoderId, decoderPtr->directoryCountCompleted(), decoderPtr->directoryCount());
     }
 }
 
-void SPIApp::onFileRequest(const QString &url, const QString &requestId)
+void SPIApp::onNewMOTObjectInDirectory(const QString &contentName)
+{
+    MOTDecoder * decoderPtr = dynamic_cast<MOTDecoder *>(QObject::sender());
+    Q_ASSERT(decoderPtr != nullptr);
+
+    int decoderId = SPI_APP_INVALID_DECODER_ID;
+    for (const auto & key : m_decoderMap.keys()) {
+        if (m_decoderMap.value(key) == decoderPtr) {
+            decoderId = key;
+            break;
+        }
+    }
+
+    if (decoderPtr->getDirectoryId() == m_parsedDirectoryIds.value(decoderId, 0))
+    {   // directory is already processed
+        // qCDebug(spiApp) << decoderId << ": Directory" << decoderPtr->getDirectoryId() << "was processed already, skipping";
+        return;
+    }
+
+    MOTObjectCache::const_iterator objIt = decoderPtr->find(contentName);
+    if (objIt != decoderPtr->directoryEnd())
+    {
+        processObject(decoderId, objIt);
+        if (decoderPtr->directoryIsComplete())
+        {
+            m_parsedDirectoryIds[decoderId] = decoderPtr->getDirectoryId();
+            m_motObjRequestList[decoderId].clear();
+            qCInfo(spiApp, "%d: MOT directory complete", decoderId);
+
+            for (auto objIt = decoderPtr->directoryBegin(); objIt != decoderPtr->directoryEnd(); ++objIt) {
+                qCDebug(spiApp) << "   " << objIt->getContentName();
+            }
+        }
+        else
+        {
+            qCInfo(spiApp, "%d: MOT directory NOT complete (decoded %d / %d)", decoderId, decoderPtr->directoryCountCompleted(), decoderPtr->directoryCount());
+        }
+    }
+}
+
+void SPIApp::processObject(uint16_t decoderId, MOTObjectCache::const_iterator objIt)
+{
+    qCDebug(spiApp) << "Processing object:" << objIt->getContentName();
+    switch (objIt->getContentType())
+    {
+    case 2:
+    {   // logos
+        if (m_motObjRequestList[decoderId].contains(objIt->getContentName()))
+        {
+            qCDebug(spiApp) << "Found requested file" << objIt->getContentName();
+            emit requestedFile(objIt->getBody(), m_motObjRequestList[decoderId][objIt->getContentName()]);
+            m_motObjRequestList[decoderId].remove(objIt->getContentName());
+        }
+    }
+    break;
+    case 7:
+    {   // SPI content type/subtype values
+        switch (objIt->getContentSubType())
+        {
+        case 0:
+            qCDebug(spiApp) << "\tService Information" << objIt->getContentName();
+            parseBinaryInfo(decoderId, *objIt);
+            break;
+        case 1:
+            qCDebug(spiApp) << "\tProgramme Information" << objIt->getContentName();
+            parseBinaryInfo(decoderId, *objIt);
+            break;
+        case 2:
+            qCDebug(spiApp) << "\tGroup Information" << objIt->getContentName();
+            parseBinaryInfo(decoderId, *objIt);
+            break;
+        default:
+            // not supported
+            break;
+        }
+    }
+    break;
+    }
+}
+
+void SPIApp::onFileRequest(uint16_t decoderId, const QString &url, const QString &requestId)
 {
     QString filename = url;
     if (!QUrl(url).isRelative()) {
         filename = url.mid(url.lastIndexOf('/')+1, url.size());
     }
-    for (const auto & decoder : m_decoderMap)
+    if (m_decoderMap.contains(decoderId))
     {
+        MOTDecoder * decoder = m_decoderMap[decoderId];
         if (decoder->hasDirectory())
         {
             const auto it = decoder->find(filename);
@@ -352,6 +335,11 @@ void SPIApp::onFileRequest(const QString &url, const QString &requestId)
             }
         }
     }
+    // not found
+    if (decoderId != SPI_APP_INVALID_DECODER_ID)
+    {
+        m_motObjRequestList[decoderId][url] = requestId;
+    }
 
     // not found -> try to download it if not relative URL
     if (QUrl(url).isValid() && !QUrl(url).isRelative())
@@ -360,14 +348,17 @@ void SPIApp::onFileRequest(const QString &url, const QString &requestId)
     }
 }
 
-void SPIApp::onNewMOTObject(const MOTObject & obj)
+void SPIApp::onSettingsChanged(bool useInternet, bool enaRadioDNS)
 {
-    Q_UNUSED(obj)
+    setUseInternet(useInternet);
+    setEnableRadioDNS(enaRadioDNS);
 }
 
-void SPIApp::parseBinaryInfo(const MOTObject &motObj)
+void SPIApp::parseBinaryInfo(uint16_t decoderId, const MOTObject &motObj)
 {
-    QString scopeId("");
+    QString scopeId;
+    QString scopeStart;
+    QString scopeEnd;
     MOTObject::paramsIterator paramIt;
     for (paramIt = motObj.paramsBegin(); paramIt != motObj.paramsEnd(); ++paramIt)
     {
@@ -390,28 +381,38 @@ void SPIApp::parseBinaryInfo(const MOTObject &motObj)
             {
             case Parameter::ScopeStart:
                 // ETSI TS 102 371 V3.2.1 (2016-05) [6.4.6 ScopeStart] This parameter is used for Programme Information SPI objects only
-                qCDebug(spiApp) << "\tScopeStart";
+                if (motObj.getContentSubType() == 1)
+                {   // programme info
+                    scopeStart = getTime(reinterpret_cast<const uint8_t *>(paramIt.value().data()), paramIt.value().length());
+                    qCDebug(spiApp) << "\t\tScopeStart" << scopeStart;
+                }
                 break;
             case Parameter::ScopeEnd:
                 // ETSI TS 102 371 V3.2.1 (2016-05) [6.4.7 ScopeEnd] This parameter is used for Programme Information SPI objects only
-                qCDebug(spiApp) << "\tScopeEnd";
+                if (motObj.getContentSubType() == 1)
+                {   // programme info
+                    scopeEnd = getTime(reinterpret_cast<const uint8_t *>(paramIt.value().data()), paramIt.value().length());
+                    qCDebug(spiApp) << "\t\tScopeEnd" << scopeEnd;
+                }
                 break;
             case Parameter::ScopeID:
                 if (paramIt.value().size() >= 3)
                 {
-                    uint32_t ueid = (uint8_t(paramIt.value().at(0)) << 16) | (uint8_t(paramIt.value().at(1)) << 8) | uint8_t(paramIt.value().at(2));
-                    scopeId = QString("%1").arg(ueid, 6, 16, QChar('0'));
-                    qCDebug(spiApp, "\tScopeID: %6.6X", ueid);
-
-//                    if (m_radioControl->getEnsembleUEID() != ueid)
-//                    {
-//                        qDebug("ScopeID: %6.6X is not current ensemble. Service info for current ensemble is only supported!", ueid);
-//                        return;
-//                    }
+                    if (motObj.getContentSubType() == 1)
+                    {   // programme info
+                        scopeId = getBearerURI(reinterpret_cast<const uint8_t *>(paramIt.value().data()), paramIt.value().length());
+                        qCDebug(spiApp) << "\t\tScopeID:" << scopeId;
+                    }
+                    else
+                    {
+                        uint32_t ueid = (uint8_t(paramIt.value().at(0)) << 16) | (uint8_t(paramIt.value().at(1)) << 8) | uint8_t(paramIt.value().at(2));
+                        scopeId = QString("%1").arg(ueid, 6, 16, QChar('0'));
+                        qCDebug(spiApp, "\t\tScopeID: %6.6X", ueid);
+                    }
                 }
                 else
                 {   // unexpected length
-                   qCWarning(spiApp) << "\tScopeID: error";
+                    qCWarning(spiApp) << "\t\tScopeID: error";
                 }
 
                 break;
@@ -433,7 +434,36 @@ void SPIApp::parseBinaryInfo(const MOTObject &motObj)
     QDomElement empty;
     parseTag(dataPtr, empty, uint8_t(SPIElement::Tag::_invalid), data.size());
 
-    emit xmlDocument(m_xmldocument.toString(), scopeId);
+    // add service scope if not in XML
+    if (motObj.getContentSubType() == 1)
+    {
+        QDomElement root = m_xmldocument.documentElement();
+        if (root.tagName() == "epg")
+        {
+            QDomElement schedule = root.firstChildElement("schedule");
+            if (!schedule.isNull())
+            {
+                QDomElement scope = schedule.firstChildElement("scope");
+                if (scope.isNull())
+                {   // scope not found creating using MOT objects params
+                    scope = m_xmldocument.createElement("scope");
+                    scope.setAttribute("startTime", scopeStart);
+                    if (scopeEnd.isEmpty())
+                    {
+                        scopeEnd = QDateTime::fromString(scopeStart, Qt::ISODate).addDays(1).toString(Qt::ISODate);
+                    }
+                    scope.setAttribute("stopTime", scopeEnd);
+
+                    QDomElement serviceScope = m_xmldocument.createElement("serviceScope");
+                    serviceScope.setAttribute("id", scopeId);
+                    scope.appendChild(serviceScope);
+                    schedule.insertBefore(scope, QDomNode());
+                }
+            }
+        }
+    }
+
+    emit xmlDocument(m_xmldocument.toString(), scopeId, decoderId);
 }
 
 
@@ -505,15 +535,20 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 else
                 {
                     QString str = getString(dataPtr, len, true);
-                    parentElement.appendChild(m_xmldocument.createTextNode(str));
-                    //parentElement.appendChild(m_xmldocument.createCDATASection(str));
+                    parentElement.appendChild(m_xmldocument.createCDATASection(str));
+                    // QDomText txt = m_xmldocument.createTextNode(str);
+                    // if (txt.isNull())
+                    // {
+                    //     txt = m_xmldocument.createCDATASection(str);
+                    // }
+                    // parentElement.appendChild(txt);
                 }
             }
             else { /* error - do nothing here */ }
 
             bytesRead += len;
         }
-            break;
+        break;
         case SPIElement::Tag::epg:
             element = m_xmldocument.createElement("epg");
             break;
@@ -544,7 +579,7 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
             parentElement.setAttribute("xml:lang", defaultLang);
             bytesRead += len;
         }
-            break;
+        break;
         case SPIElement::Tag::shortName:
             element = m_xmldocument.createElement("shortName");
             break;
@@ -674,8 +709,8 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
     {   // attributes
         switch (SPIElement::Tag(parentTag))
         {
-//        case SPIElement::Tag::epg:
-//            break;
+            //        case SPIElement::Tag::epg:
+            //            break;
         case SPIElement::Tag::serviceInformation:
             switch (SPIElement::serviceInformation::attribute(tag))
             {
@@ -695,10 +730,10 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 break;
             }
             break;
-//        case SPIElement::Tag::tokenTable:
-//            break;
-//        case SPIElement::Tag::defaultLanguage:
-//            break;
+            //        case SPIElement::Tag::tokenTable:
+            //            break;
+            //        case SPIElement::Tag::defaultLanguage:
+            //            break;
         case SPIElement::Tag::shortName:
             switch (SPIElement::shortName::attribute(tag))
             {
@@ -739,8 +774,8 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 break;
             }
             break;
-//        case SPIElement::Tag::mediaDescription:
-//            break;
+            //        case SPIElement::Tag::mediaDescription:
+            //            break;
         case SPIElement::Tag::genre:
             switch (SPIElement::genre::attribute(tag))
             {
@@ -788,7 +823,7 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
 
                 parentElement.setAttribute("href", href);
             }
-                break;
+            break;
             case SPIElement::genre::attribute::type:
                 switch (*dataPtr)
                 {
@@ -849,10 +884,13 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 break;
             }
             break;
-//        case SPIElement::Tag::location:
-//            break;
+            //        case SPIElement::Tag::location:
+            //            break;
         case SPIElement::Tag::programme:
         case SPIElement::Tag::programmeEvent:
+            // optional attributes default values
+            parentElement.setAttribute("broadcast", "on-air");
+            parentElement.setAttribute("recommendation", "no");
             switch (SPIElement::programme_programmeEvent::attribute(tag))
             {
             case SPIElement::programme_programmeEvent::attribute::id:
@@ -1028,7 +1066,7 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
             }
 
         }
-            break;
+        break;
         case SPIElement::Tag::multimedia:
             switch (SPIElement::multimedia::attribute(tag))
             {
@@ -1104,14 +1142,14 @@ uint32_t SPIApp::parseTag(const uint8_t * dataPtr, QDomElement & parentElement, 
                 break;
             }
             break;
-//        case SPIElement::Tag::country:
-//            break;
-//        case SPIElement::Tag::point:
-//            break;
-//        case SPIElement::Tag::polygon:
-//            break;
-//        case SPIElement::Tag::onDemand:
-//            break;
+            //        case SPIElement::Tag::country:
+            //            break;
+            //        case SPIElement::Tag::point:
+            //            break;
+            //        case SPIElement::Tag::polygon:
+            //            break;
+            //        case SPIElement::Tag::onDemand:
+            //            break;
         case SPIElement::Tag::presentationTime:
             switch (SPIElement::presentationTime::attribute(tag))
             {
@@ -1196,6 +1234,12 @@ QString SPIApp::getTime(const uint8_t *dataPtr, int len)
         return QString();
     }
     else { /* enough data */}
+
+    // QString dbg;
+    // for (int n = 0; n<len; ++n)
+    // {
+    //     dbg += QString("%1").arg(static_cast<int>(dataPtr[n]), 2, 16, QChar('0'));
+    // }
 
     uint32_t dateHoursMinutes = *dataPtr++;
     dateHoursMinutes = (dateHoursMinutes << 8) + *dataPtr++;
@@ -1323,10 +1367,10 @@ void SPIApp::setAttribute_duration(QDomElement &element, const QString &name, co
     numSec = (numSec << 8) | *dataPtr++;
 
     QTime time = QTime(0, 0).addSecs(numSec);
-    element.setAttribute(name, time.toString(Qt::ISODate));
+    element.setAttribute(name, QString("PT%1H%2M%3S").arg(time.hour()).arg(time.minute()).arg(time.second()));
 }
 
-void SPIApp::setAttribute_dabBearerURI(QDomElement &element, const QString &name, const uint8_t *dataPtr, int len)
+QString SPIApp::getBearerURI(const uint8_t *dataPtr, int len)
 {
     if (len >= 6)
     {
@@ -1344,13 +1388,12 @@ void SPIApp::setAttribute_dabBearerURI(QDomElement &element, const QString &name
                 sid = (sid << 8) | *dataPtr++;
                 sid = (sid << 8) | *dataPtr++;
                 sid = (sid << 8) | *dataPtr;
-                element.setAttribute(name, QString("dab:%1%2:%3.%4.%5")
-                                                     .arg((sid >> 20) & 0x0F, 1, 16)
-                                                     .arg(ecc, 2, 16, QChar('0'))
-                                                     .arg(eid, 4, 16, QChar('0'))
-                                                     .arg(sid, 8, 16, QChar('0'))
-                                                     .arg(scids)
-                                           );
+                return QString("dab:%1%2.%3.%4.%5")
+                    .arg((sid >> 20) & 0x0F, 1, 16)
+                    .arg(ecc, 2, 16, QChar('0'))
+                    .arg(eid, 4, 16, QChar('0'))
+                    .arg(sid, 8, 16, QChar('0'))
+                    .arg(scids);
             }
             else { /* not enough data */ }
         }
@@ -1358,53 +1401,147 @@ void SPIApp::setAttribute_dabBearerURI(QDomElement &element, const QString &name
         {  // short SId
             uint32_t sid = *dataPtr++;
             sid = (sid << 8) | *dataPtr;
-            element.setAttribute(name, QString("dab:%1%2:%3.%4.%5")
-                                                 .arg((sid >> 12) & 0x0F, 1, 16)
-                                                 .arg(ecc, 2, 16, QChar('0'))
-                                                 .arg(eid, 4, 16, QChar('0'))
-                                                 .arg(sid, 4, 16, QChar('0'))
-                                                 .arg(scids)
-                                       );
+            return QString("dab:%1%2.%3.%4.%5")
+                .arg((sid >> 12) & 0x0F, 1, 16)
+                .arg(ecc, 2, 16, QChar('0'))
+                .arg(eid, 4, 16, QChar('0'))
+                .arg(sid, 4, 16, QChar('0'))
+                .arg(scids);
+        }
+    }
+    return QString();
+}
+
+void SPIApp::setAttribute_dabBearerURI(QDomElement &element, const QString &name, const uint8_t *dataPtr, int len)
+{
+    QString str = getBearerURI(dataPtr, len);
+    if (!str.isEmpty())
+    {
+        element.setAttribute(name, str);
+    }
+    else { /* string is empty => some error happened */ }
+
+}
+
+void SPIApp::radioDNSLookup(const QString &fqdn)
+{
+    if (m_useDoH)
+    {   // DNS over http
+        QString cnameUrl = QString("https://dns.google/resolve?name=%1&type=CNAME").arg(fqdn);
+        qCDebug(spiApp) << "DNS CNAME query:" << cnameUrl;
+        downloadFile(cnameUrl, "DOH_CNAME", false);
+    }
+    else {
+        if (m_dnsCache.contains(fqdn))
+        {   // we have record in cache
+            if (!m_radioDnsDownloadQueue.isEmpty())
+            {   // take record from the queue
+                QString file = m_radioDnsDownloadQueue.dequeue().second;
+
+                if (!m_dnsCache[fqdn].isEmpty())
+                {   // valid address
+                    downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(m_dnsCache[fqdn]).arg(file), "XML|"+file);
+                }
+                else
+                {
+                    qCDebug(spiApp) << "Invalid DNS record for" << fqdn << file;
+                }
+
+                // next dns lookup
+                if (!m_radioDnsDownloadQueue.isEmpty()) {
+                    QString fqdn = m_radioDnsDownloadQueue.head().first;
+                    radioDNSLookup(fqdn);
+                }
+
+            }
+        }
+        else
+        {
+            m_dnsLookup->setType(QDnsLookup::CNAME);
+            m_dnsLookup->setName(fqdn);
+            m_dnsLookup->lookup();
         }
     }
 }
 
-void SPIApp::radioDNSLookup()
+void SPIApp::getSI(const ServiceListId &servId, const uint32_t & ueid)
 {
-    if (m_useDoH)
-    {   // DNS over http
-        QString cnameUrl = QString("https://dns.google/resolve?name=%1&type=CNAME").arg(getRadioDNSFQDN());
-        qDebug() << "DNS CNAME query:" << cnameUrl;
-        downloadFile(cnameUrl, "DOH_CNAME", false);
-    }
-    else {
-        m_dnsLookup->setType(QDnsLookup::CNAME);
-        m_dnsLookup->setName(getRadioDNSFQDN());
-        m_dnsLookup->lookup();
+    if (m_useInternet && m_enaRadioDNS)
+    {   // query RadioDNS
+        if (m_radioDnsDownloadQueue.isEmpty())
+        {
+            m_radioDnsDownloadQueue.enqueue({radioDNSFQDN(servId, ueid), "SI.xml"});
+            radioDNSLookup(radioDNSFQDN(servId, ueid));
+        }
+        else
+        {
+            m_radioDnsDownloadQueue.enqueue({radioDNSFQDN(servId, ueid), "SI.xml"});
+        }
     }
 }
 
-QString SPIApp::getRadioDNSFQDN() const
+void SPIApp::getPI(const ServiceListId &servId, const QList<uint32_t> &ueidList, const QDate & date)
 {
+    if (m_useInternet && m_enaRadioDNS)
+    {   // query RadioDNS
+        for (const auto & ueid : ueidList) {
+            if (m_radioDnsDownloadQueue.isEmpty())
+            {
+                m_radioDnsDownloadQueue.enqueue({radioDNSFQDN(servId, ueid), QString("%1/%2_PI.xml").arg(radioDNSServiceIdentifier(servId, ueid), date.toString("yyyyMMdd"))});
+                radioDNSLookup(radioDNSFQDN(servId, ueid));
+            }
+            else
+            {
+                m_radioDnsDownloadQueue.enqueue({radioDNSFQDN(servId, ueid), QString("%1/%2_PI.xml").arg(radioDNSServiceIdentifier(servId, ueid), date.toString("yyyyMMdd"))});
+            }
+        }
+    }
+}
+
+QString SPIApp::radioDNSFQDN(const ServiceListId &servId, const uint32_t & ueid) const
+{
+    DabSId sid(servId.sid());
+
     return QString("%1.%2.%3.%4.dab.radiodns.org")
-        .arg(m_scids)
-        .arg(m_sid)
-        .arg(m_ueid.last(4))
-        .arg(m_gcc);
+        .arg(servId.scids())
+        .arg(sid.progSId(), 4, 16, QChar('0'))
+        .arg(uint16_t(ueid), 4, 16, QChar('0'))
+        .arg(sid.gcc(), 3, 16, QChar('0'));
 }
 
-QString SPIApp::getGCC(const DabSId & sid) const
+QString SPIApp::radioDNSServiceIdentifier(const ServiceListId &servId, const uint32_t & ueid) const
 {
-    return QString("%1%2").arg(QString("%1").arg(sid.progSId(), 4, 16, QChar('0')).at(0))
-        .arg(sid.ecc(), 2, 16, QChar('0'));
+    DabSId sid(servId.sid());
+
+    return QString("dab/%4/%3/%2/%1")
+        .arg(servId.scids())
+        .arg(sid.progSId(), 4, 16, QChar('0'))
+        .arg(uint16_t(ueid), 4, 16, QChar('0'))
+        .arg(sid.gcc(), 3, 16, QChar('0'));
 }
 
 void SPIApp::handleRadioDNSLookup()
 {
     // Check the lookup succeeded.
     if (m_dnsLookup->error() != QDnsLookup::NoError)
-    {
+    {        
         qCWarning(spiApp) << "DNS lookup failed:" << m_dnsLookup->name();
+        if (m_dnsLookup->name().startsWith("_radioepg._tcp."))
+        {   // try non TLS lookup
+            QString name = m_dnsLookup->name().replace("_radioepg._tcp.", "_radiospi._tcp.");
+            m_dnsLookup->setName(name);
+            m_dnsLookup->lookup();
+            return;
+        }
+        if (!m_radioDnsDownloadQueue.isEmpty())
+        {
+            QString fqdn = m_radioDnsDownloadQueue.dequeue().first;
+            m_dnsCache[fqdn] = "";   // invalid record in cache
+            if (!m_radioDnsDownloadQueue.isEmpty()) {
+                QString fqdn = m_radioDnsDownloadQueue.head().first;
+                radioDNSLookup(fqdn);
+            }
+        }
         return;
     }
 
@@ -1412,18 +1549,38 @@ void SPIApp::handleRadioDNSLookup()
     if (m_dnsLookup->canonicalNameRecords().count() > 0)
     {
         const auto & record = m_dnsLookup->canonicalNameRecords().at(0);
-
         qCDebug(spiApp) << "canonicalNameRecord:" << record.name() << record.value();
         m_dnsLookup->setType(QDnsLookup::SRV);
+        // giving priority to non TLS (against standard)
         m_dnsLookup->setName("_radioepg._tcp." + record.value());
+        //m_dnsLookup->setName("_radiospi._tcp." + record.value());
         m_dnsLookup->lookup();
     }
     else if (m_dnsLookup->serviceRecords().count() > 0)
     {
-        const auto & record = m_dnsLookup->serviceRecords().at(0);
-        qCDebug(spiApp) << "serviceRecord:" << record.name() << record.target();
-
-        downloadFile(QString("http://%1/radiodns/spi/3.1/SI.xml").arg(record.target()), "XML");
+        const auto & record = m_dnsLookup->serviceRecords().at(0);        
+        qCDebug(spiApp) << "serviceRecord:" << record.name() << record.target() << record.port();
+        if (!m_radioDnsDownloadQueue.isEmpty())
+        {
+            QPair<QString, QString> request = m_radioDnsDownloadQueue.dequeue();
+            QString fqdn = request.first;
+            QString address;
+            if (record.name().startsWith("_radiospi._tcp."))
+            {
+                address = QString("https://%1:%2").arg(record.target()).arg(record.port());
+            }
+            else
+            {
+                address = QString("http://%1:%2").arg(record.target()).arg(record.port());
+            }
+            m_dnsCache[fqdn] = address;
+            QString file = request.second;
+            downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(address).arg(file), "XML|"+file);
+            if (!m_radioDnsDownloadQueue.isEmpty()) {
+                QString fqdn = m_radioDnsDownloadQueue.head().first;
+                radioDNSLookup(fqdn);
+            }
+        }
     }
 }
 
@@ -1453,65 +1610,82 @@ void SPIApp::downloadFile(const QString &url, const QString &requestId, bool use
 }
 
 void SPIApp::onFileDownloaded(QNetworkReply *reply)
-{    
-    QString requestId = m_downloadReqQueue.head().second;
-    if (requestId == "XML") {
-        QByteArray data = reply->readAll();
-        emit xmlDocument(QString(data), m_ueid);
+{
+    if (m_downloadReqQueue.isEmpty())
+    {   // do nothing, it can happen on reset
+        reply->deleteLater();
+        return;
     }
-    else if (requestId == "DOH_CNAME")
-    {
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
-        qDebug() << qPrintable(jsonDoc.toJson());
 
-        QVariantMap map = jsonDoc.toVariant().toMap();
-        if (map.contains("Answer"))
-        {
-            QVariantList answer = map["Answer"].toList();
-            if (answer.length() > 0)
+    if (reply->error() == QNetworkReply::NoError)
+    {
+        QString requestId = m_downloadReqQueue.head().second;
+        if (requestId.startsWith("XML|")) {
+            QByteArray data = reply->readAll();
+            QString scopeId;
+            if (requestId.length() > 4)
             {
-                QString data = answer.at(0).toMap().value("data", QVariant("")).toString();
-                if (!data.isEmpty())
-                {
-                    if (data.endsWith('.'))
-                    {
-                        data = data.first(data.length()-1);
-                    }
-                    QString srvUrl = QString("https://dns.google/resolve?name=_radioepg._tcp.%1&type=SRV").arg(data);
-                    qDebug() << srvUrl;
-                    downloadFile(srvUrl, "DOH_SRV", false);
+                QStringList scopeList = requestId.last(requestId.length() - 4).split("/");
+                if (scopeList.size() >= 5) {
+                    scopeId = QString("%1:%2.%3.%4.%5").arg(scopeList.at(0), scopeList.at(1), scopeList.at(2), scopeList.at(3), scopeList.at(4));
                 }
             }
+            emit xmlDocument(QString(data), scopeId, SPI_APP_INVALID_DECODER_ID);
         }
-    }
-    else if (requestId == "DOH_SRV")
-    {
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
-        qDebug() << qPrintable(jsonDoc.toJson());
-
-        QVariantMap map = jsonDoc.toVariant().toMap();
-        if (map.contains("Answer"))
+        else if (requestId == "DOH_CNAME")
         {
-            QVariantList answer = map["Answer"].toList();
-            if (answer.length() > 0)
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+
+            QVariantMap map = jsonDoc.toVariant().toMap();
+            if (map.contains("Answer"))
             {
-                QString data = answer.at(0).toMap().value("data", QVariant("")).toString();
-                if (!data.isEmpty())
+                QVariantList answer = map["Answer"].toList();
+                if (answer.length() > 0)
                 {
-                    static const QRegularExpression re("[\\d\\s]+\\s+(.*\\w)\\.?");
-                    QRegularExpressionMatch match = re.match(data);
-                    if (match.hasMatch())
+                    QString data = answer.at(0).toMap().value("data", QVariant("")).toString();
+                    if (!data.isEmpty())
                     {
-                        downloadFile(QString("http://%1/radiodns/spi/3.1/SI.xml").arg(match.captured(1)), "XML");
+                        if (data.endsWith('.'))
+                        {
+                            data = data.first(data.length()-1);
+                        }
+                        QString srvUrl = QString("https://dns.google/resolve?name=_radioepg._tcp.%1&type=SRV").arg(data);
+                        downloadFile(srvUrl, "DOH_SRV", false);
                     }
                 }
             }
         }
+        else if (requestId == "DOH_SRV")
+        {
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
 
+            QVariantMap map = jsonDoc.toVariant().toMap();
+            if (map.contains("Answer"))
+            {
+                QVariantList answer = map["Answer"].toList();
+                if (answer.length() > 0)
+                {
+                    QString data = answer.at(0).toMap().value("data", QVariant("")).toString();
+                    if (!data.isEmpty())
+                    {
+                        static const QRegularExpression re("[\\d\\s]+\\s+(.*\\w)\\.?");
+                        QRegularExpressionMatch match = re.match(data);
+                        if (match.hasMatch())
+                        {
+                            downloadFile(QString("http://%1/radiodns/spi/3.1/SI.xml").arg(match.captured(1)), "XML|");
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {   // logo
+            emit requestedFile(reply->readAll(), requestId);
+        }
     }
-    else
-    {   // logo
-        emit requestedFile(reply->readAll(), requestId);
+    else {
+        qCDebug(spiApp) << "Failed to download: " << reply->request().url().toString() << "|" << reply->error();
+
     }
 
     m_downloadReqQueue.dequeue();
@@ -1524,35 +1698,4 @@ void SPIApp::onFileDownloaded(QNetworkReply *reply)
     }
 
     reply->deleteLater();
-}
-
-SPIDomElement::SPIDomElement()
-{
-    m_tag = SPIElement::Tag::_invalid;
-}
-
-SPIDomElement::SPIDomElement(const QDomElement &e, uint8_t tag)
-    : m_element(e)
-    , m_tag(SPIElement::Tag(tag))
-{
-}
-
-QDomElement SPIDomElement::element() const
-{
-    return m_element;
-}
-
-void SPIDomElement::setElement(const QDomElement &newElement)
-{
-    m_element = newElement;
-}
-
-SPIElement::Tag SPIDomElement::tag() const
-{
-    return m_tag;
-}
-
-void SPIDomElement::setTag(uint8_t newTag)
-{
-    m_tag = SPIElement::Tag(newTag);
 }

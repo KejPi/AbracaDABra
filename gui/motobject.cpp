@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,7 +50,6 @@ bool MOTEntity::isComplete() const
     // MOT entities will be split up in segments with equal size. Only the last segment may have a smaller size
     // (to carry the remaining bytes of the MOT entity). Every MOT entity (e.g. every MOT body) can use a different segmentation size.
     int lastSegmentSize = m_segments.last().size();
-    bool ret = true;
 
     if (m_numSegments != m_segments.size())
     {
@@ -61,12 +60,10 @@ bool MOTEntity::isComplete() const
     {
         if (m_segments.at(n).size() < lastSegmentSize)
         {  // some segment is smaller than last segment thus not received
-            ret = false;
-            break;
+            return false;
         }
     }
-
-    return ret;
+    return true;
 }
 
 int MOTEntity::size()
@@ -136,27 +133,27 @@ QByteArray MOTEntity::getData() const
 
 MOTObjectData::MOTObjectData(int_fast32_t transportId)
 {
-    id = transportId;
-    bodySize = -1;
-    objectIsComplete = false;
-    objectIsObsolete = false;
+    m_id = transportId;
+    m_bodySize = -1;
+    m_objectIsComplete = false;
+    m_objectIsObsolete = false;
 }
 
 MOTObjectData::MOTObjectData(const MOTObjectData &other) : QSharedData(other)
 {
-    id = other.id;
-    bodySize = other.bodySize;
-    objectIsComplete = other.objectIsComplete;
-    objectIsObsolete = other.objectIsObsolete;
+    m_id = other.m_id;
+    m_bodySize = other.m_bodySize;
+    m_objectIsComplete = other.m_objectIsComplete;
+    m_objectIsObsolete = other.m_objectIsObsolete;
 
-    contentType = other.contentType;
-    contentSubType = other.contentSubType;
-    contentName = other.contentName;
+    m_contentType = other.m_contentType;
+    m_contentSubType = other.m_contentSubType;
+    m_contentName = other.m_contentName;
 
-    header = other.header;
-    body = other.body;
+    m_header = other.m_header;
+    m_body = other.m_body;
 
-    userAppParams = other.userAppParams;
+    m_userAppParams = other.m_userAppParams;
 }
 
 
@@ -167,15 +164,15 @@ MOTObject::MOTObject(int_fast32_t transportId)
 
 void MOTObjectData::parseHeader()
 {
-    const QByteArray headerData = header.getData();
+    const QByteArray headerData = m_header.getData();
 
     // [ETSI EN 301 234, 6.1 Header core]
     // minium header size is 56 bits => 7 bytes (header core)
     if (headerData.size() < 7)
     {
         qCWarning(motObject) << "Unexpected header length";
-        objectIsComplete = false;
-        bodySize = -1;
+        m_objectIsComplete = false;
+        m_bodySize = -1;
     }
 
     // unsigned required
@@ -188,14 +185,14 @@ void MOTObjectData::parseHeader()
     // check is headerSize matches
     if (headerSize < headerData.size())
     {   // header size is not correct -> probably not received yet, but it should not happen
-        objectIsComplete = false;
-        bodySize = -1;
+        m_objectIsComplete = false;
+        m_bodySize = -1;
     }
 
     // it seems to be OK, we can parse the information
-    bodySize = (dataPtr[0] << 20) | (dataPtr[1] << 12) | (dataPtr[2] << 4) | ((dataPtr[3] >> 4) & 0x0F);
-    contentType = (dataPtr[5] >> 1) & 0x3F;
-    contentSubType = ((dataPtr[5] & 0x01) << 8) | dataPtr[6];
+    m_bodySize = (dataPtr[0] << 20) | (dataPtr[1] << 12) | (dataPtr[2] << 4) | ((dataPtr[3] >> 4) & 0x0F);
+    m_contentType = (dataPtr[5] >> 1) & 0x3F;
+    m_contentSubType = ((dataPtr[5] & 0x01) << 8) | dataPtr[6];
 
     bool isOk = true;
     int n = 7;
@@ -256,7 +253,7 @@ void MOTObjectData::parseHeader()
             {
             case DabMotExtParameter::ContentName:
                 // One MOT parameter is mandatory for both content provider and MOT decoder: ContentName.
-                contentName = DabTables::convertToQString((const char*) (dataPtr+n+1), ((dataPtr[n] >> 4) & 0x0F), dataFieldLen-1);
+                m_contentName = DabTables::convertToQString((const char*) (dataPtr+n+1), ((dataPtr[n] >> 4) & 0x0F), dataFieldLen-1);
 #if MOTOBJECT_VERBOSE
                 qCDebug(motObject) << contentName;
 #endif
@@ -270,16 +267,15 @@ void MOTObjectData::parseHeader()
             case DabMotExtParameter::CAInfo:
                 // ignoring scrembled data
                 qCWarning(motObject) << "MOT CA scrambled ignoring";
-                bodySize = -1;
+                m_bodySize = -1;
                 isOk = false;
                 break;
             case DabMotExtParameter::CompressionType:
                 // ignoring compressed data
                 qCWarning(motObject) << "MOT compressed ignoring";
-                bodySize = -1;
+                m_bodySize = -1;
                 isOk = false;
                 break;
-
             default:
                 // some user app parameter or parameter not handled by MOT decoder
 #if 0
@@ -291,7 +287,7 @@ void MOTObjectData::parseHeader()
                 else
                 { /* paramId does not exist */ }
 #endif
-                userAppParams.insert(paramId, QByteArray( (const char *)(dataPtr+n), dataFieldLen));
+                m_userAppParams.insert(paramId, QByteArray( (const char *)(dataPtr+n), dataFieldLen));
                 break;
             }
 
@@ -306,8 +302,8 @@ void MOTObjectData::parseHeader()
 
     if (!isOk)
     {
-        objectIsComplete = false;
-        bodySize = -1;
+        m_objectIsComplete = false;
+        m_bodySize = -1;
     }
 }
 
@@ -315,9 +311,9 @@ bool MOTObject::addSegment(const uint8_t * segment, uint16_t segmentNum, uint16_
 {
     if (isHeader)
     {
-        d->header.addSegment(segment, segmentNum, segmentSize, lastFlag);
+        d->m_header.addSegment(segment, segmentNum, segmentSize, lastFlag);
         // lets check is header is complete
-        if (d->header.isComplete())
+        if (d->m_header.isComplete())
         {   // header is complete -> lets set parameters for the object
             d->parseHeader();
 //            if (!parseHeader(d->header.getData()))
@@ -331,37 +327,37 @@ bool MOTObject::addSegment(const uint8_t * segment, uint16_t segmentNum, uint16_
     }
     else
     {
-        d->body.addSegment(segment, segmentNum, segmentSize, lastFlag);
+        d->m_body.addSegment(segment, segmentNum, segmentSize, lastFlag);
     }
 
-    if (d->bodySize >= 0)
+    if (d->m_bodySize >= 0)
     {   // header was already received
         // lets check if we already have complete MOT object
-        if (d->body.isComplete())
+        if (d->m_body.isComplete())
         {
-            if (d->body.size() == d->bodySize)
+            if (d->m_body.size() == d->m_bodySize)
             {   // correct, MOT object is complete
-                d->objectIsComplete = true;
+                d->m_objectIsComplete = true;
             }
             else
             {   // [ETSI EN 301 234, 6.1 Header core]
                 // BodySize: This 28-bit field, coded as an unsigned binary number, indicates the total size of the body in bytes.
                 // If the body size signalled by this parameter does not correspond to the size of the reassembled MOT body, then the
                 // MOT body shall be discarded.
-                d->body.reset();
-                d->objectIsComplete = false;
+                d->m_body.reset();
+                d->m_objectIsComplete = false;
             }
         }
     }
 
-    return d->objectIsComplete;
+    return d->m_objectIsComplete;
 }
 
 QByteArray MOTObject::getBody() const
 {
-    if (d->objectIsComplete)
+    if (d->m_objectIsComplete)
     {   // MOT object is complete
-        return d->body.getData();
+        return d->m_body.getData();
     }
 
     return QByteArray();
@@ -369,17 +365,17 @@ QByteArray MOTObject::getBody() const
 
 uint16_t MOTObject::getContentType() const
 {
-    return d->contentType;
+    return d->m_contentType;
 }
 
 uint16_t MOTObject::getContentSubType() const
 {
-    return d->contentSubType;
+    return d->m_contentSubType;
 }
 
 const QString &MOTObject::getContentName() const
 {
-    return d->contentName;
+    return d->m_contentName;
 }
 
 MOTDirectory::MOTDirectory(uint_fast32_t transportId, MOTObjectCache * cachePtr)
@@ -390,31 +386,36 @@ MOTDirectory::MOTDirectory(uint_fast32_t transportId, MOTObjectCache * cachePtr)
     // decoder is still adding segments, even segments that do not exist in directoy yet
     // crousel/cache maintenence is performed when new directory is received
     m_carousel = cachePtr;
+    m_numComplete = 0;
 }
 
+// retrurn true is directory is just completed
 bool MOTDirectory::addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
 {
-    m_dir.addSegment(segment, segmentNum, segmentSize, lastFlag);
-    if (m_dir.isComplete())
+    if (!m_dir.isComplete())
     {
-        qCDebug(motObject) << "MOT directory is complete";
-        if (parse(m_dir.getData()))
+        m_dir.addSegment(segment, segmentNum, segmentSize, lastFlag);
+        if (m_dir.isComplete())
         {
-            return true;
+            qCDebug(motObject) << "MOT directory is complete";
+            if (parse(m_dir.getData()))
+            {
+                return true;
+            }
+            // something is wrong - header could not be parsed, objects is not complete
+            qCWarning(motObject) << "MOT directory parsing failed";
         }
-        // something is wrong - header could not be parsed, objects is not complete
-        qCWarning(motObject) << "MOT directory parsing failed";
-    }
-    else
-    {
-        qCDebug(motObject) << "MOT directory segment received, not complete yet";
+        else
+        {
+            qCDebug(motObject) << "MOT directory segment received, not complete yet";
+        }
     }
     return false;
 }
 
+// returns true if object is completed
 bool MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag)
-{
-    // first find if object already exists in carousel
+{   // first find if object already exists in carousel
     MOTObjectCache::iterator it = m_carousel->findMotObj(transportId);
     if (m_carousel->end() == it)
     {  // object does not exist in carousel - this should not happen for current directory
@@ -430,6 +431,7 @@ bool MOTDirectory::addObjectSegment(uint_fast32_t transportId, const uint8_t *se
         it->addSegment(segment, segmentNum, segmentSize, lastFlag);
         if (it->isComplete())
         {
+            m_numComplete += 1;
             qCDebug(motObject) << "MOT complete: ID" << transportId;
             return true;
         }
@@ -549,6 +551,7 @@ bool MOTDirectory::parse(const QByteArray &dirData)
 
     // set all object in carousel obsolete
     m_carousel->markAllObsolete();
+    m_numComplete = 0;
 
     int numObjRead = 0;
     while (n < dirSize)
@@ -577,6 +580,11 @@ bool MOTDirectory::parse(const QByteArray &dirData)
         // number 0, last = true, size is the rest of the directory, object takes what it needs
         it->addSegment((const uint8_t *) (dataPtr + n + 2), 0, headerSize, true, true);
         n += 2 + headerSize;
+
+        if (it->isComplete())
+        {
+            m_numComplete += 1;
+        }
     }
 
     // done -> delete all remaining obsolete objects

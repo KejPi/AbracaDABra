@@ -3,6 +3,7 @@
 APPDIR=AppDir
 ICON_DIR=$APPDIR/usr/share/icons/hicolor/512x512/apps
 RESOURCES_DIR=$PWD/gui/resources
+QML_DIR=$PWD/gui/qml
 VER=`git describe`
 
 echo "Building application version: $VER"
@@ -22,6 +23,7 @@ make install DESTDIR=$APPDIR
 rm -Rf $APPDIR/usr/lib/*
 cp -f gui/AbracaDABra $APPDIR/usr/bin/
 
-QMAKE=$(which qmake6) VERSION=$VER linuxdeploy --appdir $APPDIR -d ${RESOURCES_DIR}/AbracaDABra.desktop -i $ICON_DIR/AbracaDABra.png --plugin qt --output appimage
+
+QML_SOURCES_PATHS=$QML_DIR QMAKE=$(which qmake6) VERSION=$VER linuxdeploy --appdir $APPDIR -d ${RESOURCES_DIR}/AbracaDABra.desktop -i $ICON_DIR/AbracaDABra.png --plugin qt --output appimage
 
 

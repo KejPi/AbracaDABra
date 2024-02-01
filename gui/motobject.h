@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,19 +55,19 @@ public:
     MOTObjectData(const MOTObjectData &other);
     ~MOTObjectData() { }
 
-    int_fast32_t id;
-    int32_t bodySize;
-    bool objectIsComplete;
-    bool objectIsObsolete;   // this is used to remove obosolete obcect when new MOT directory is received
+    int_fast32_t m_id;
+    int32_t m_bodySize;
+    bool m_objectIsComplete;
+    bool m_objectIsObsolete;   // this is used to remove obosolete obcect when new MOT directory is received
 
-    uint16_t contentType;
-    uint16_t contentSubType;
-    QString contentName;
+    uint16_t m_contentType;
+    uint16_t m_contentSubType;
+    QString m_contentName;
 
-    MOTEntity header;
-    MOTEntity body;
+    MOTEntity m_header;
+    MOTEntity m_body;
 
-    QHash<int, QByteArray> userAppParams;
+    QHash<int, QByteArray> m_userAppParams;
 
     void parseHeader();
 };
@@ -79,12 +79,12 @@ public:
 
     MOTObject(const MOTObject &other) : d (other.d) { }
 
-    uint16_t getId() const { return d->id; }
+    uint16_t getId() const { return d->m_id; }
     bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag, bool isHeader = false);
-    bool isComplete() const { return d->objectIsComplete; };
+    bool isComplete() const { return d->m_objectIsComplete; };
     QByteArray getBody() const;
-    bool isObsolete() const { return d->objectIsObsolete; }
-    void setObsolete(bool obsolete) { d->objectIsObsolete = obsolete; };
+    bool isObsolete() const { return d->m_objectIsObsolete; }
+    void setObsolete(bool obsolete) { d->m_objectIsObsolete = obsolete; };
 
     uint16_t getContentType() const;
     uint16_t getContentSubType() const;
@@ -93,8 +93,8 @@ public:
     // iterator access to user parameters
     typedef QHash<int, QByteArray>::const_iterator paramsIterator;
 
-    MOTObject::paramsIterator paramsBegin() const { return d->userAppParams.cbegin(); }
-    MOTObject::paramsIterator paramsEnd() const { return d->userAppParams.cend(); }
+    MOTObject::paramsIterator paramsBegin() const { return d->m_userAppParams.cbegin(); }
+    MOTObject::paramsIterator paramsEnd() const { return d->m_userAppParams.cend(); }
 private:
     QSharedDataPointer<MOTObjectData> d;
 };
@@ -137,7 +137,9 @@ public:
     bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
     bool addObjectSegment(uint_fast32_t transportId, const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
     uint_fast32_t getTransportId() const { return m_id; }
-    int size() const { return m_carousel->size(); }
+    int count() const { return m_carousel->size(); }
+    int countCompleted() const { return m_numComplete; }
+    bool isComplete() const { return m_numComplete >= count(); }
     MOTObjectCache::const_iterator begin() const { return  m_carousel->cbegin(); }
     MOTObjectCache::const_iterator end() const { return  m_carousel->cend(); }
     MOTObjectCache::const_iterator cfind(uint16_t transportId) const { return  m_carousel->cfindMotObj(transportId); }    
@@ -145,6 +147,7 @@ private:
     uint_fast32_t m_id;
     MOTEntity m_dir;
     MOTObjectCache * m_carousel;
+    int m_numComplete;
 
     bool parse(const QByteArray &dirData);
 };

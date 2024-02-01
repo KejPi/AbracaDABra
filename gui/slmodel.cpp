@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,15 @@
 #include "slmodel.h"
 #include <QFlags>
 
-SLModel::SLModel(const ServiceList *sl, QObject *parent)
+SLModel::SLModel(const ServiceList *sl, const MetadataManager *mm, QObject *parent)
     : QAbstractItemModel(parent)
     , m_slPtr(sl)
+    , m_metadataMgrPtr(mm)
 {
+
+    connect(m_metadataMgrPtr, &MetadataManager::epgModelChanged, this, &SLModel::epgModelChanged);
+    connect(m_metadataMgrPtr, &MetadataManager::dataUpdated, this, &SLModel::metadataUpdated);
+
     QPixmap nopic(20,20);
     nopic.fill(Qt::transparent);
     m_noIcon = QIcon(nopic);
@@ -86,6 +91,11 @@ QVariant SLModel::data(const QModelIndex &index, int role) const
         {
         case Qt::DisplayRole:
         case Qt::ToolTipRole:
+        case SLModelRole::IdRole:
+        case SLModelRole::SmallLogoRole:
+        case SLModelRole::SmallLogoIdRole:
+        case SLModelRole::EpgModelRole:
+        case SLModelRole::EnsembleListRole:
               return item->data(index.column(), role);
         case Qt::DecorationRole:
         {
@@ -184,7 +194,7 @@ int SLModel::rowCount(const QModelIndex &parent) const
 void SLModel::addService(const ServiceListId & servId)
 {  // new service in service list
     beginInsertRows(QModelIndex(), m_serviceItems.size(), m_serviceItems.size());
-    m_serviceItems.append(new SLModelItem(m_slPtr, servId));
+    m_serviceItems.append(new SLModelItem(m_slPtr, m_metadataMgrPtr, servId));
     endInsertRows();
 
     sort(0);
@@ -208,6 +218,35 @@ void SLModel::removeService(const ServiceListId & servId)
             delete item;
             endRemoveRows();
             return;
+        }
+    }
+}
+
+void SLModel::epgModelChanged(const ServiceListId &servId)
+{
+    // first find service in the list
+    for (int row = 0; row < m_serviceItems.size(); ++row)
+    {
+        if (m_serviceItems.at(row)->id() == servId)
+        {   // found
+            dataChanged(index(row, 0), index(row, 0), {SLModelRole::EpgModelRole});
+            return;
+        }
+    }
+}
+
+void SLModel::metadataUpdated(const ServiceListId &servId, MetadataManager::MetadataRole role)
+{
+    if (role == MetadataManager::MetadataRole::SmallLogo)
+    {
+        // first find service in the list
+        for (int row = 0; row < m_serviceItems.size(); ++row)
+        {
+            if (m_serviceItems.at(row)->id() == servId)
+            {   // found
+                dataChanged(index(row, 0), index(row, 0), {SLModelRole::SmallLogoIdRole});
+                return;
+            }
         }
     }
 }
@@ -258,5 +297,18 @@ void SLModel::sort(int column, Qt::SortOrder order)
     endResetModel();
 
     emit dataChanged(QModelIndex(), QModelIndex());
+}
+
+QHash<int, QByteArray> SLModel::roleNames() const
+{
+    QHash<int, QByteArray> roles = QAbstractItemModel::roleNames();
+
+    roles[SLModelRole::IdRole] = "serviceId";
+    roles[SLModelRole::SmallLogoRole] = "smallLogo";
+    roles[SLModelRole::SmallLogoIdRole] = "smallLogoId";
+    roles[SLModelRole::EpgModelRole] = "epgModelRole";
+    roles[SLModelRole::EnsembleListRole] = "ueidList";
+
+    return roles;
 }
 

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -81,7 +81,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
                            "<li>"+tr("Polish")+": Marek Schirmer</li>"
                            "</ul>"+
                            tr("AbracaDABra uses some artwork created by")+" <a href=\"https://www.flaticon.com/authors/basic-miscellany/lineal-color\">Smashicons - Flaticon</a>");
-    ui->disclaimer->setText("<p>Copyright © 2019-2023 Petr Kopecký</p>"
+    ui->disclaimer->setText("<p>Copyright © 2019-2024 Petr Kopecký</p>"
                             "<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software "
                             "and associated documentation files (the “Software”), to deal in the Software without restriction, "
                             "including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, "

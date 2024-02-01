@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,7 @@
 #include <QItemSelection>
 
 #include "clickablelabel.h"
+#include "epgdialog.h"
 #include "metadatamanager.h"
 #include "setupdialog.h"
 #include "ensembleinfodialog.h"
@@ -75,7 +76,6 @@ public:
     MainWindow(const QString & iniFilename = QString(), QWidget *parent = nullptr);
     ~MainWindow();
     bool eventFilter(QObject * o, QEvent * e);
-
 
 signals:
     void serviceRequest(uint32_t freq, uint32_t SId, uint8_t SCIdS);
@@ -111,6 +111,7 @@ private:
     // UI and dialogs
     Ui::MainWindow *ui;
     SetupDialog * m_setupDialog;
+    EPGDialog * m_epgDialog;
     EnsembleInfoDialog * m_ensembleInfoDialog;
     CatSLSDialog * m_catSlsDialog;
     LogDialog * m_logDialog;
@@ -140,6 +141,7 @@ private:
     QAction * m_aboutAction;
     QAction * m_logAction;
     QAction * m_audioRecordingAction;
+    QAction * m_epgAction;
     QActionGroup * m_audioDevicesGroup = nullptr;
 
     // dark mode
@@ -200,6 +202,7 @@ private:
     AudioFramework getAudioFramework();
 
     void showEnsembleInfo();
+    void showEPG();
     void showAboutDialog();
     void showSetupDialog();
     void showLog();
@@ -283,7 +286,8 @@ private:
     void onAudioRecordingStarted(const QString & filename);
     void onAudioRecordingStopped();
     void onAudioRecordingProgress(size_t bytes, size_t timeSec);
-    void onMetadataUpdated(uint32_t sid, uint8_t scids, MetadataManager::MetadataRole role);
+    void onMetadataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role);
+    void onEpgEmpty();
 };
 
 class DLPlusObjectUI

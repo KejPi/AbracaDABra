@@ -29,11 +29,12 @@
 
 Q_DECLARE_LOGGING_CATEGORY(serviceList)
 
-SLTreeModel::SLTreeModel(const ServiceList *sl, QObject *parent)
+SLTreeModel::SLTreeModel(const ServiceList *sl, const MetadataManager *mm, QObject *parent)
     : QAbstractItemModel(parent)
     , m_slPtr(sl)
+    , m_metadataMgrPtr(mm)
 {
-    m_rootItem = new SLModelItem(m_slPtr);
+    m_rootItem = new SLModelItem(m_slPtr, m_metadataMgrPtr);
 }
 
 
@@ -194,7 +195,7 @@ void SLTreeModel::addEnsembleService(const ServiceListId & ensId, const ServiceL
     SLModelItem * ensChild = m_rootItem->findChildId(ensId);
     if (nullptr == ensChild)
     {   // not found ==> new ensemble
-        ensChild = new SLModelItem(m_slPtr, ensId, m_rootItem);
+        ensChild = new SLModelItem(m_slPtr, m_metadataMgrPtr, ensId, m_rootItem);
         beginInsertRows(QModelIndex(), m_rootItem->childCount(), m_rootItem->childCount());
         m_rootItem->appendChild(ensChild);
         endInsertRows();
@@ -209,7 +210,7 @@ void SLTreeModel::addEnsembleService(const ServiceListId & ensId, const ServiceL
         if (nullptr != serviceChild)
         {   // primary service found
             beginInsertRows(index(serviceChild->row(), 0, index(ensChild->row(), 0, QModelIndex())), serviceChild->childCount(), serviceChild->childCount());
-            serviceChild->appendChild(new SLModelItem(m_slPtr, servId, serviceChild));
+            serviceChild->appendChild(new SLModelItem(m_slPtr, m_metadataMgrPtr, servId, serviceChild));
             endInsertRows();
         }
         else
@@ -219,7 +220,7 @@ void SLTreeModel::addEnsembleService(const ServiceListId & ensId, const ServiceL
             if (nullptr == serviceChild)
             {  // new service to be added
                 beginInsertRows(index(ensChild->row(), 0, QModelIndex()), ensChild->childCount(), ensChild->childCount());
-                ensChild->appendChild(new SLModelItem(m_slPtr, servId, ensChild));
+                ensChild->appendChild(new SLModelItem(m_slPtr, m_metadataMgrPtr, servId, ensChild));
                 endInsertRows();
             }
         }
@@ -230,7 +231,7 @@ void SLTreeModel::addEnsembleService(const ServiceListId & ensId, const ServiceL
         if (nullptr == serviceChild)
         {  // new service to be added
             beginInsertRows(index(ensChild->row(), 0, QModelIndex()), ensChild->childCount(), ensChild->childCount());
-            ensChild->appendChild(new SLModelItem(m_slPtr, servId, ensChild));
+            ensChild->appendChild(new SLModelItem(m_slPtr, m_metadataMgrPtr, servId, ensChild));
             endInsertRows();
         }
     }
@@ -281,7 +282,7 @@ void SLTreeModel::clear()
     // remove all items
     delete m_rootItem;
     // create new root
-    m_rootItem = new SLModelItem(m_slPtr);
+    m_rootItem = new SLModelItem(m_slPtr, m_metadataMgrPtr);
     endResetModel();
 }
 

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -131,7 +131,10 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
             if (m_directory->addObjectSegment(mscDataGroup.getTransportId(), (const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(),
                                               segmentSize, mscDataGroup.getLastFlag()))
             {   // directory updated
-                emit newMOTObjectInDirectory(mscDataGroup.getTransportId());
+                emit newMOTObjectInDirectory(m_directory->cfind(mscDataGroup.getTransportId())->getContentName());
+                if (m_directory->isComplete()) {
+                    emit directoryComplete();
+                }
             }
         }
         else
@@ -160,7 +163,7 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
     }
         break;
     case 6:
-        // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]
+    {   // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]
         // The segments of an uncompressed MOT directory shall be transported in MSC Data Group type 6.
         if (nullptr != m_directory)
         {   // some directory exists
@@ -179,10 +182,11 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
         }
 
         if (m_directory->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag()))
-        {
+        {   // directory just completed
             qCDebug(motDecoder) << "MOT Directory is complete";
             emit newMOTDirectory();
         }
+    }
         break;
     case 7:
         // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]

@@ -24,25 +24,31 @@
  * SOFTWARE.
  */
 
-#ifndef ABOUTDIALOG_H
-#define ABOUTDIALOG_H
+#include "epgproxymodel.h"
+#include "epgmodel.h"
 
-#include <QDialog>
-
-namespace Ui {
-class AboutDialog;
+EPGProxyModel::EPGProxyModel(QObject *parent)
+    : QSortFilterProxyModel{parent}
+{
 }
 
-class AboutDialog : public QDialog
+bool EPGProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    Q_OBJECT
+    QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
+    QDate date = sourceModel()->data(index, EPGModelRoles::StartTimeRole).value<QDateTime>().date();
+    return date == m_dateFilter;
+}
 
-public:
-    explicit AboutDialog(QWidget *parent = nullptr);
-    ~AboutDialog();
+QDate EPGProxyModel::dateFilter() const
+{
+    return m_dateFilter;
+}
 
-private:
-    Ui::AboutDialog *ui;
-};
-
-#endif // ABOUTDIALOG_H
+void EPGProxyModel::setDateFilter(const QDate &newDateFilter)
+{
+    if (m_dateFilter == newDateFilter)
+        return;
+    m_dateFilter = newDateFilter;
+    invalidateFilter();
+    emit dateFilterChanged();
+}

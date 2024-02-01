@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,6 +51,7 @@
 #include "slsview.h"
 #include "./ui_mainwindow.h"
 #include "dabtables.h"
+#include "epgtime.h"
 #include "radiocontrol.h"
 #include "bandscandialog.h"
 #include "config.h"
@@ -227,7 +228,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_ensembleInfoDialog = new EnsembleInfoDialog(this);
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStart, m_inputDeviceRecorder, &InputDeviceRecorder::start);
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStop, m_inputDeviceRecorder, &InputDeviceRecorder::stop);
-    connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_ensembleInfoDialog, &EnsembleInfoDialog::onRecording);
+    connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_ensembleInfoDialog, &EnsembleInfoDialog::onRecording);       
     connect(m_inputDeviceRecorder, &InputDeviceRecorder::bytesRecorded, m_ensembleInfoDialog, &EnsembleInfoDialog::updateRecordingStatus, Qt::QueuedConnection);
 
     // status bar
@@ -316,6 +317,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_audioRecordingAction = new QAction(tr("Start audio recording"), this);
     connect(m_audioRecordingAction, &QAction::triggered, this, &MainWindow::audioRecordingToggle);
 
+    m_epgAction = new QAction(tr("Program guide..."), this);
+    m_epgAction->setEnabled(false);
+    connect(m_epgAction, &QAction::triggered, this, &MainWindow::showEPG);    
+
     m_logAction = new QAction(tr("Application log"), this);
     connect(m_logAction, &QAction::triggered, this, &MainWindow::showLog);
 
@@ -340,6 +345,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_menu->addAction(m_bandScanAction);
     m_menu->addAction(m_clearServiceListAction);
     m_menu->addSeparator();
+    m_menu->addAction(m_epgAction);
     m_menu->addAction(m_ensembleInfoAction);
     m_menu->addAction(m_logAction);
     m_menu->addAction(m_aboutAction);
@@ -399,7 +405,15 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // service list
     m_serviceList = new ServiceList;
 
-    m_slModel = new SLModel(m_serviceList, this);
+    // metadata
+    m_metadataManager = new MetadataManager(m_serviceList, this);
+    connect(m_metadataManager, &MetadataManager::dataUpdated, this, &MainWindow::onMetadataUpdated);
+    connect(m_serviceList, &ServiceList::serviceAddedToEnsemble, m_metadataManager, &MetadataManager::addServiceEpg);
+    connect(m_serviceList, &ServiceList::serviceRemoved, m_metadataManager, &MetadataManager::removeServiceEpg);
+    connect(m_serviceList, &ServiceList::empty, m_metadataManager, &MetadataManager::clearEpg);
+    connect(EPGTime::getInstance(), &EPGTime::haveValidTime, m_metadataManager, &MetadataManager::getEpgData);
+
+    m_slModel = new SLModel(m_serviceList, m_metadataManager, this);
     connect(m_serviceList, &ServiceList::serviceAdded, m_slModel, &SLModel::addService);
     connect(m_serviceList, &ServiceList::serviceUpdated, m_slModel, &SLModel::updateService);
     connect(m_serviceList, &ServiceList::serviceRemoved, m_slModel, &SLModel::removeService);
@@ -411,7 +425,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->serviceListView->installEventFilter(this);
     connect(ui->serviceListView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::onServiceListSelection);
 
-    m_slTreeModel = new SLTreeModel(m_serviceList, this);
+    m_slTreeModel = new SLTreeModel(m_serviceList, m_metadataManager, this);
     connect(m_serviceList, &ServiceList::serviceAddedToEnsemble, m_slTreeModel, &SLTreeModel::addEnsembleService);
     connect(m_serviceList, &ServiceList::serviceUpdatedInEnsemble, m_slTreeModel, &SLTreeModel::updateEnsembleService);
     connect(m_serviceList, &ServiceList::serviceRemovedFromEnsemble, m_slTreeModel, &SLTreeModel::removeEnsembleService);
@@ -423,6 +437,11 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->serviceTreeView->installEventFilter(this);
     connect(ui->serviceTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::onServiceListTreeSelection);
     connect(m_serviceList, &ServiceList::empty, m_slTreeModel, &SLTreeModel::clear);
+
+    // EPG dialog
+    m_epgDialog = new EPGDialog(m_slModel, ui->serviceListView->selectionModel(), m_metadataManager, this);
+    connect(m_metadataManager, &MetadataManager::epgAvailable, this, [this](){ m_epgAction->setEnabled(true); } );
+    connect(m_metadataManager, &MetadataManager::epgEmpty, this, &MainWindow::onEpgEmpty);
 
     // fill channel list
     int freqLabelMaxWidth = 0;
@@ -649,8 +668,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(this, &MainWindow::exit, m_radioControl, &RadioControl::exit, Qt::QueuedConnection);
 
     // user applications
-    m_metadataManager = new MetadataManager(this);
-    connect(m_metadataManager, &MetadataManager::dataUpdated, this, &MainWindow::onMetadataUpdated);
 
     // slide show application is created by default
     // ETSI TS 101 499 V3.1.1  [5.1.1]
@@ -691,19 +708,23 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_spiApp = new SPIApp();
     m_spiApp->moveToThread(m_radioControlThread);
     connect(m_radioControlThread, &QThread::finished, m_spiApp, &QObject::deleteLater);
-    connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &SPIApp::start);
     connect(m_radioControl, &RadioControl::userAppData_Service, m_spiApp, &SPIApp::onUserAppData);
-    connect(m_radioControl, &RadioControl::ensembleInformation, m_spiApp, &SPIApp::onEnsembleInformation);
-    connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &SPIApp::onAudioServiceSelection);
+    connect(m_radioControl, &RadioControl::audioServiceSelection,  m_spiApp, &SPIApp::start);
     connect(this, &MainWindow::stopUserApps, m_spiApp, &SPIApp::stop, Qt::QueuedConnection);
     connect(this, &MainWindow::resetUserApps, m_spiApp, &SPIApp::reset, Qt::QueuedConnection);
 
     connect(m_spiApp, &SPIApp::xmlDocument, m_metadataManager, &MetadataManager::processXML, Qt::QueuedConnection);
+    connect(m_metadataManager, &MetadataManager::getSI, m_spiApp, &SPIApp::getSI, Qt::QueuedConnection);
+    connect(m_metadataManager, &MetadataManager::getPI, m_spiApp, &SPIApp::getPI, Qt::QueuedConnection);
     connect(m_metadataManager, &MetadataManager::getFile, m_spiApp, &SPIApp::onFileRequest, Qt::QueuedConnection);
     connect(m_spiApp, &SPIApp::requestedFile, m_metadataManager, &MetadataManager::onFileReceived, Qt::QueuedConnection);
+    connect(m_spiApp, &SPIApp::radioDNSAvailable, m_metadataManager, &MetadataManager::getEpgData);
     connect(m_setupDialog, &SetupDialog::spiApplicationEnabled, m_radioControl, &RadioControl::onSpiApplicationEnabled, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::spiApplicationEnabled, m_spiApp, &SPIApp::enable, Qt::QueuedConnection);
-    connect(m_setupDialog, &SetupDialog::spiApplicationSettingsChanged, m_spiApp, &SPIApp::onSettingsChanged, Qt::QueuedConnection);   
+    connect(m_setupDialog, &SetupDialog::spiApplicationSettingsChanged, m_spiApp, &SPIApp::onSettingsChanged, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::ensembleInformation, m_metadataManager, &MetadataManager::onEnsembleInformation, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::audioServiceSelection, m_metadataManager, &MetadataManager::onAudioServiceSelection, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::ensembleInformation, m_epgDialog, &EPGDialog::onEnsembleInformation, Qt::QueuedConnection);    
 
     // input device connections
     initInputDevice(InputDeviceId::UNDEFINED);
@@ -716,6 +737,15 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // this causes focus to be set to service list when tune is finished
     m_hasListViewFocus = true;
     m_hasTreeViewFocus = false;
+
+    // //QFile xmlfile("/Users/kejpi/Devel/AbracaDABra/20231206_PI.xml");
+    // QFile xmlfile("/Users/kejpi/Devel/AbracaDABra/_cache/w20081011dD220c0.EHB.xml");
+    // if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
+    // {
+    //     QTextStream in(&xmlfile);
+    //     m_metadataManager->processXML(qPrintable(in.readAll()), "dab:de0.d06c.d220.0");
+    //     xmlfile.close();
+    // }
 }
 
 MainWindow::~MainWindow()
@@ -745,6 +775,7 @@ MainWindow::~MainWindow()
     delete m_dlDecoder[Instance::Service];
     delete m_dlDecoder[Instance::Announcement];
     delete m_serviceList;
+    delete m_metadataManager;
     delete ui;
 }
 
@@ -1028,6 +1059,7 @@ void MainWindow::onDLComplete(const QString & dl, QLabel * dlLabel)
 void MainWindow::onDabTime(const QDateTime & d)
 {
     m_timeLabel->setText(m_timeLocale.toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
+    EPGTime::getInstance()->onDabTime(d);
 }
 
 void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)
@@ -1849,18 +1881,18 @@ void MainWindow::setAudioRecordingUI()
 }
 
 
-void MainWindow::onMetadataUpdated(uint32_t sid, uint8_t scids, MetadataManager::MetadataRole role)
+void MainWindow::onMetadataUpdated(const ServiceListId & id, MetadataManager::MetadataRole role)
 {
-    if ((sid == m_SId.value()) && (scids == m_SCIdS))
+    if ((id.sid() == m_SId.value()) && (id.scids() == m_SCIdS))
     {  // current service data
         switch (role)
         {
         case MetadataManager::MetadataRole::SLSLogo:
-            ui->slsView_Service->showServiceLogo(m_metadataManager->data(sid, scids, MetadataManager::SLSLogo).value<QPixmap>());
+            ui->slsView_Service->showServiceLogo(m_metadataManager->data(id, MetadataManager::SLSLogo).value<QPixmap>());
             break;
         case MetadataManager::SmallLogo:
         {
-            QPixmap logo = m_metadataManager->data(sid, scids, MetadataManager::SmallLogo).value<QPixmap>();
+            QPixmap logo = m_metadataManager->data(id, MetadataManager::SmallLogo).value<QPixmap>();
             if (!logo.isNull())
             {
                 ui->logoLabel->setPixmap(logo);
@@ -1872,6 +1904,12 @@ void MainWindow::onMetadataUpdated(uint32_t sid, uint8_t scids, MetadataManager:
             break;
         }
     }
+}
+
+void MainWindow::onEpgEmpty()
+{
+    m_epgDialog->close();
+    m_epgAction->setEnabled(false);
 }
 
 void MainWindow::clearEnsembleInformationLabels()
@@ -2073,6 +2111,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             m_ensembleInfoDialog->enableRecording(true);
 
+            // metadata & EPG
+            EPGTime::getInstance()->setIsLiveBroadcasting(true);
+
             // apply current settings
             onNewInputDeviceSettings();
         }
@@ -2145,6 +2186,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             m_ensembleInfoDialog->enableRecording(true);
 
+            // metadata & EPG
+            EPGTime::getInstance()->setIsLiveBroadcasting(true);
+
             // apply current settings
             onNewInputDeviceSettings();
         }
@@ -2212,9 +2256,11 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             m_ensembleInfoDialog->enableRecording(true);
 
+            // metadata & EPG
+            EPGTime::getInstance()->setIsLiveBroadcasting(true);
+
             // these are settings that are configures in ini file manually
             // they are only set when device is initialized
-            dynamic_cast<AirspyInput*>(m_inputDevice)->setBiasT(m_setupDialog->settings().airspy.biasT);
             dynamic_cast<AirspyInput*>(m_inputDevice)->setDataPacking(m_setupDialog->settings().airspy.dataPacking);
 
             // apply current settings
@@ -2293,6 +2339,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
             m_ensembleInfoDialog->enableRecording(true);
 
+            // metadata & EPG
+            EPGTime::getInstance()->setIsLiveBroadcasting(true);
+
             // these are settings that are configures in ini file manually
             // they are only set when device is initialized
             dynamic_cast<SoapySdrInput*>(m_inputDevice)->setBW(m_setupDialog->settings().soapysdr.bandwidth);
@@ -2360,6 +2409,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // show XML header is available
             m_setupDialog->setXmlHeader(m_inputDevice->deviceDescription());
+
+            // metadata & EPG
+            EPGTime::getInstance()->setIsLiveBroadcasting(false);
 
             // apply current settings
             onNewInputDeviceSettings();
@@ -2435,6 +2487,9 @@ void MainWindow::loadSettings()
     s.audioRecCaptureOutput = settings->value("audioRecCaptureOutput", false).toBool();
     s.audioRecAutoStopEna = settings->value("audioRecAutoStop", false).toBool();
 
+    m_epgDialog->setFilterEmptyEpg(settings->value("epgFilterEmpty", false).toBool());
+    m_epgDialog->setFilterEnsemble(settings->value("epgFilterOtherEnsembles", false).toBool());
+
     s.rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
     s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
     s.rtlsdr.bandwidth = settings->value("RTL-SDR/bandwidth", 0).toUInt();
@@ -2475,6 +2530,7 @@ void MainWindow::loadSettings()
 
     // set DAB time locale
     m_timeLocale = QLocale(m_setupDialog->applicationLanguage());
+    EPGTime::getInstance()->setTimeLocale(m_timeLocale);
 
     // need to run here because it expects that settings is up-to-date
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && !defined(Q_OS_WIN) && !defined(Q_OS_LINUX)
@@ -2603,6 +2659,9 @@ void MainWindow::saveSettings()
     settings->setValue("audioRecFolder", s.audioRecFolder);
     settings->setValue("audioRecCaptureOutput", s.audioRecCaptureOutput);
     settings->setValue("audioRecAutoStop", s.audioRecAutoStopEna);
+
+    settings->setValue("epgFilterEmpty", m_epgDialog->filterEmptyEpg());
+    settings->setValue("epgFilterOtherEnsembles", m_epgDialog->filterEnsemble());
 
     settings->setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
     settings->setValue("RTL-SDR/gainMode", static_cast<int>(s.rtlsdr.gainMode));
@@ -2809,6 +2868,13 @@ void MainWindow::showEnsembleInfo()
     m_ensembleInfoDialog->activateWindow();
 }
 
+void MainWindow::showEPG()
+{
+    m_epgDialog->show();
+    m_epgDialog->raise();
+    m_epgDialog->activateWindow();
+}
+
 void MainWindow::showAboutDialog()
 {
     AboutDialog aboutDialog(this);
@@ -2989,53 +3055,137 @@ void MainWindow::initStyle()
 #endif
     QPalette * palette = &m_palette;
 
-    //  Qt::ColorScheme::Light
-    palette->setColor(QPalette::WindowText, QColor(0, 0, 0, 255));
-    palette->setColor(QPalette::Button, QColor(240, 240, 240, 255));
-    palette->setColor(QPalette::Light, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::Midlight, QColor(227, 227, 227, 255));
-    palette->setColor(QPalette::Dark, QColor(160, 160, 160, 255));
-    palette->setColor(QPalette::Mid, QColor(160, 160, 160, 255));
-    palette->setColor(QPalette::Text, QColor(0, 0, 0, 255));
-    palette->setColor(QPalette::BrightText, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::ButtonText, QColor(0, 0, 0, 255));
-    palette->setColor(QPalette::Base, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::Window, QColor(240, 240, 240, 255));
-    palette->setColor(QPalette::Shadow, QColor(105, 105, 105, 255));
-    palette->setColor(QPalette::Highlight, QColor(0, 120, 215, 255));
-    palette->setColor(QPalette::HighlightedText, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::Link, QColor(0, 0, 255, 255));
-    palette->setColor(QPalette::LinkVisited, QColor(255, 0, 255, 255));
-    palette->setColor(QPalette::AlternateBase, QColor(233, 231, 227, 255));
-    palette->setColor(QPalette::NoRole, QColor(0, 0, 0, 255));
-    palette->setColor(QPalette::ToolTipBase, QColor(255, 255, 220, 255));
-    palette->setColor(QPalette::ToolTipText, QColor(0, 0, 0, 255));
-    palette->setColor(QPalette::PlaceholderText, QColor(0, 0, 0, 128));
+    // standardPalette Qt::ColorScheme::Light
+    palette->setColor(QPalette::Active, QPalette::WindowText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Active, QPalette::Button, QColor(239, 239, 239, 255));
+    palette->setColor(QPalette::Active, QPalette::Light, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Active, QPalette::Midlight, QColor(202, 202, 202, 255));
+    palette->setColor(QPalette::Active, QPalette::Dark, QColor(159, 159, 159, 255));
+    palette->setColor(QPalette::Active, QPalette::Mid, QColor(184, 184, 184, 255));
+    palette->setColor(QPalette::Active, QPalette::Text, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Active, QPalette::BrightText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Active, QPalette::ButtonText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Active, QPalette::Base, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Active, QPalette::Window, QColor(239, 239, 239, 255));
+    palette->setColor(QPalette::Active, QPalette::Shadow, QColor(118, 118, 118, 255));
+    palette->setColor(QPalette::Active, QPalette::Highlight, QColor(48, 140, 198, 255));
+    palette->setColor(QPalette::Active, QPalette::HighlightedText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Active, QPalette::Link, QColor(0, 0, 255, 255));
+    palette->setColor(QPalette::Active, QPalette::LinkVisited, QColor(255, 0, 255, 255));
+    palette->setColor(QPalette::Active, QPalette::AlternateBase, QColor(247, 247, 247, 255));
+    palette->setColor(QPalette::Active, QPalette::NoRole, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Active, QPalette::ToolTipBase, QColor(255, 255, 220, 255));
+    palette->setColor(QPalette::Active, QPalette::ToolTipText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Active, QPalette::PlaceholderText, QColor(0, 0, 0, 128));
+    palette->setColor(QPalette::Disabled, QPalette::WindowText, QColor(190, 190, 190, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Button, QColor(239, 239, 239, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Light, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Midlight, QColor(202, 202, 202, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Dark, QColor(190, 190, 190, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Mid, QColor(184, 184, 184, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Text, QColor(190, 190, 190, 255));
+    palette->setColor(QPalette::Disabled, QPalette::BrightText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Disabled, QPalette::ButtonText, QColor(190, 190, 190, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Base, QColor(239, 239, 239, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Window, QColor(239, 239, 239, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Shadow, QColor(177, 177, 177, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Highlight, QColor(145, 145, 145, 255));
+    palette->setColor(QPalette::Disabled, QPalette::HighlightedText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Link, QColor(0, 0, 255, 255));
+    palette->setColor(QPalette::Disabled, QPalette::LinkVisited, QColor(255, 0, 255, 255));
+    palette->setColor(QPalette::Disabled, QPalette::AlternateBase, QColor(247, 247, 247, 255));
+    palette->setColor(QPalette::Disabled, QPalette::NoRole, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Disabled, QPalette::ToolTipBase, QColor(255, 255, 220, 255));
+    palette->setColor(QPalette::Disabled, QPalette::ToolTipText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Disabled, QPalette::PlaceholderText, QColor(0, 0, 0, 128));
+    palette->setColor(QPalette::Inactive, QPalette::WindowText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Button, QColor(239, 239, 239, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Light, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Midlight, QColor(202, 202, 202, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Dark, QColor(159, 159, 159, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Mid, QColor(184, 184, 184, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Text, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Inactive, QPalette::BrightText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Inactive, QPalette::ButtonText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Base, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Window, QColor(239, 239, 239, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Shadow, QColor(118, 118, 118, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Highlight, QColor(48, 140, 198, 255));
+    palette->setColor(QPalette::Inactive, QPalette::HighlightedText, QColor(255, 255, 255, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Link, QColor(0, 0, 255, 255));
+    palette->setColor(QPalette::Inactive, QPalette::LinkVisited, QColor(255, 0, 255, 255));
+    palette->setColor(QPalette::Inactive, QPalette::AlternateBase, QColor(247, 247, 247, 255));
+    palette->setColor(QPalette::Inactive, QPalette::NoRole, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Inactive, QPalette::ToolTipBase, QColor(255, 255, 220, 255));
+    palette->setColor(QPalette::Inactive, QPalette::ToolTipText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Inactive, QPalette::PlaceholderText, QColor(0, 0, 0, 128));
 
     palette = &m_darkPalette;
 
-    //  Qt::ColorScheme::Dark
-    palette->setColor(QPalette::WindowText, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::Button, QColor(60, 60, 60, 255));
-    palette->setColor(QPalette::Light, QColor(120, 120, 120, 255));
-    palette->setColor(QPalette::Midlight, QColor(90, 90, 90, 255));
-    palette->setColor(QPalette::Dark, QColor(30, 30, 30, 255));
-    palette->setColor(QPalette::Mid, QColor(40, 40, 40, 255));
-    palette->setColor(QPalette::Text, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::BrightText, QColor(153, 187, 255, 255));
-    palette->setColor(QPalette::ButtonText, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::Base, QColor(45, 45, 45, 255));
-    palette->setColor(QPalette::Window, QColor(30, 30, 30, 255));
-    palette->setColor(QPalette::Shadow, QColor(0, 0, 0, 255));
-    palette->setColor(QPalette::Highlight, QColor(0, 85, 255, 255));
-    palette->setColor(QPalette::HighlightedText, QColor(255, 255, 255, 255));
-    palette->setColor(QPalette::Link, QColor(0, 0, 255, 255));
-    palette->setColor(QPalette::LinkVisited, QColor(0, 49, 148, 255));
-    palette->setColor(QPalette::AlternateBase, QColor(0, 49, 148, 255));
-    palette->setColor(QPalette::NoRole, QColor(0, 0, 0, 255));
-    palette->setColor(QPalette::ToolTipBase, QColor(60, 60, 60, 255));
-    palette->setColor(QPalette::ToolTipText, QColor(212, 212, 212, 255));
-    palette->setColor(QPalette::PlaceholderText, QColor(255, 255, 255, 128));
+    // standardPalette Qt::ColorScheme::Dark
+    palette->setColor(QPalette::Active, QPalette::WindowText, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Active, QPalette::Button, QColor(50, 50, 50, 255));
+    palette->setColor(QPalette::Active, QPalette::Light, QColor(75, 75, 75, 255));
+    palette->setColor(QPalette::Active, QPalette::Midlight, QColor(42, 42, 42, 255));
+    palette->setColor(QPalette::Active, QPalette::Dark, QColor(33, 33, 33, 255));
+    palette->setColor(QPalette::Active, QPalette::Mid, QColor(38, 38, 38, 255));
+    palette->setColor(QPalette::Active, QPalette::Text, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Active, QPalette::BrightText, QColor(75, 75, 75, 255));
+    palette->setColor(QPalette::Active, QPalette::ButtonText, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Active, QPalette::Base, QColor(36, 36, 36, 255));
+    palette->setColor(QPalette::Active, QPalette::Window, QColor(50, 50, 50, 255));
+    palette->setColor(QPalette::Active, QPalette::Shadow, QColor(25, 25, 25, 255));
+    palette->setColor(QPalette::Active, QPalette::Highlight, QColor(48, 140, 198, 255));
+    palette->setColor(QPalette::Active, QPalette::HighlightedText, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Active, QPalette::Link, QColor(48, 140, 198, 255));
+    palette->setColor(QPalette::Active, QPalette::LinkVisited, QColor(255, 0, 255, 255));
+    palette->setColor(QPalette::Active, QPalette::AlternateBase, QColor(43, 43, 43, 255));
+    palette->setColor(QPalette::Active, QPalette::NoRole, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Active, QPalette::ToolTipBase, QColor(255, 255, 220, 255));
+    palette->setColor(QPalette::Active, QPalette::ToolTipText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Active, QPalette::PlaceholderText, QColor(240, 240, 240, 128));
+    palette->setColor(QPalette::Disabled, QPalette::WindowText, QColor(130, 130, 130, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Button, QColor(50, 50, 50, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Light, QColor(75, 75, 75, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Midlight, QColor(42, 42, 42, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Dark, QColor(190, 190, 190, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Mid, QColor(38, 38, 38, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Text, QColor(130, 130, 130, 255));
+    palette->setColor(QPalette::Disabled, QPalette::BrightText, QColor(75, 75, 75, 255));
+    palette->setColor(QPalette::Disabled, QPalette::ButtonText, QColor(130, 130, 130, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Base, QColor(50, 50, 50, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Window, QColor(50, 50, 50, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Shadow, QColor(37, 37, 37, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Highlight, QColor(145, 145, 145, 255));
+    palette->setColor(QPalette::Disabled, QPalette::HighlightedText, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Disabled, QPalette::Link, QColor(48, 140, 198, 255));
+    palette->setColor(QPalette::Disabled, QPalette::LinkVisited, QColor(255, 0, 255, 255));
+    palette->setColor(QPalette::Disabled, QPalette::AlternateBase, QColor(43, 43, 43, 255));
+    palette->setColor(QPalette::Disabled, QPalette::NoRole, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Disabled, QPalette::ToolTipBase, QColor(255, 255, 220, 255));
+    palette->setColor(QPalette::Disabled, QPalette::ToolTipText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Disabled, QPalette::PlaceholderText, QColor(240, 240, 240, 128));
+    palette->setColor(QPalette::Inactive, QPalette::WindowText, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Button, QColor(50, 50, 50, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Light, QColor(75, 75, 75, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Midlight, QColor(42, 42, 42, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Dark, QColor(33, 33, 33, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Mid, QColor(38, 38, 38, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Text, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Inactive, QPalette::BrightText, QColor(75, 75, 75, 255));
+    palette->setColor(QPalette::Inactive, QPalette::ButtonText, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Base, QColor(36, 36, 36, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Window, QColor(50, 50, 50, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Shadow, QColor(25, 25, 25, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Highlight, QColor(48, 140, 198, 255));
+    palette->setColor(QPalette::Inactive, QPalette::HighlightedText, QColor(240, 240, 240, 255));
+    palette->setColor(QPalette::Inactive, QPalette::Link, QColor(48, 140, 198, 255));
+    palette->setColor(QPalette::Inactive, QPalette::LinkVisited, QColor(255, 0, 255, 255));
+    palette->setColor(QPalette::Inactive, QPalette::AlternateBase, QColor(43, 43, 43, 255));
+    palette->setColor(QPalette::Inactive, QPalette::NoRole, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Inactive, QPalette::ToolTipBase, QColor(255, 255, 220, 255));
+    palette->setColor(QPalette::Inactive, QPalette::ToolTipText, QColor(0, 0, 0, 255));
+    palette->setColor(QPalette::Inactive, QPalette::PlaceholderText, QColor(240, 240, 240, 128));
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     connect(qApp->styleHints(), &QStyleHints::colorSchemeChanged, this, &MainWindow::onColorSchemeChanged);
@@ -3077,37 +3227,24 @@ void MainWindow::onColorSchemeChanged(Qt::ColorScheme colorScheme)
     //QPalette palette = qApp->palette();
     QPalette palette = qApp->style()->standardPalette();
 
-    qCDebug(application) << "// standardPalette" << qApp->styleHints()->colorScheme();
+    qDebug() << "// standardPalette" << qApp->styleHints()->colorScheme();
 
-    for (int r = QPalette::WindowText; r <= QPalette::PlaceholderText; ++r)
-    {
-        const QPalette::ColorRole role = static_cast<const QPalette::ColorRole>(r);
+    for (int g = QPalette::Active; g <= QPalette::Inactive; ++g) {
+        for (int r = QPalette::WindowText; r <= QPalette::PlaceholderText; ++r)
+        {
+            const QPalette::ColorRole role = static_cast<const QPalette::ColorRole>(r);
+            const QPalette::ColorGroup group = static_cast<const QPalette::ColorGroup>(g);
 
-        QString line = QString("palette->setColor(QPalette::%1, QColor(%2, %3, %4, %5));")
-                           .arg(QVariant::fromValue(role).toString())
-                           .arg(palette.color(role).red())
-                           .arg(palette.color(role).green())
-                           .arg(palette.color(role).blue())
-                           .arg(palette.color(role).alpha());
+            QString line = QString("palette->setColor(QPalette::%1, QPalette::%2, QColor(%3, %4, %5, %6));")
+                               .arg(QVariant::fromValue(group).toString())
+                               .arg(QVariant::fromValue(role).toString())
+                               .arg(palette.color(group, role).red())
+                               .arg(palette.color(group, role).green())
+                               .arg(palette.color(group, role).blue())
+                               .arg(palette.color(group, role).alpha());
 
-        qCDebug(application, "%s", line.toLatin1().data());
-    }
-
-    qCDebug(application) << "// palette" << qApp->styleHints()->colorScheme();
-    palette = qApp->palette();
-
-    for (int r = QPalette::WindowText; r <= QPalette::PlaceholderText; ++r)
-    {
-        const QPalette::ColorRole role = static_cast<const QPalette::ColorRole>(r);
-
-        QString line = QString("palette->setColor(QPalette::%1, QColor(%2, %3, %4, %5));")
-                           .arg(QVariant::fromValue(role).toString())
-                           .arg(palette.color(role).red())
-                           .arg(palette.color(role).green())
-                           .arg(palette.color(role).blue())
-                           .arg(palette.color(role).alpha());
-
-        qCDebug(application, "%s", line.toLatin1().data());
+            qDebug("%s", line.toLatin1().data());
+        }
     }
 
 #endif
@@ -3195,6 +3332,7 @@ void MainWindow::setupDarkMode()
         ui->slsView_Service->setupDarkMode(true);
         ui->slsView_Announcement->setupDarkMode(true);
         m_logDialog->setupDarkMode(true);
+        m_epgDialog->setupDarkMode(true);
     }
     else
     {
@@ -3221,6 +3359,7 @@ void MainWindow::setupDarkMode()
         ui->slsView_Service->setupDarkMode(false);
         ui->slsView_Announcement->setupDarkMode(false);
         m_logDialog->setupDarkMode(false);
+        m_epgDialog->setupDarkMode(false);
     }
 }
 

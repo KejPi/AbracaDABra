@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,25 +24,36 @@
  * SOFTWARE.
  */
 
-#ifndef ABOUTDIALOG_H
-#define ABOUTDIALOG_H
+#ifndef SLPROXYMODEL_H
+#define SLPROXYMODEL_H
 
-#include <QDialog>
+#include <QObject>
+#include <QQmlEngine>
+#include <QSortFilterProxyModel>
 
-namespace Ui {
-class AboutDialog;
-}
-
-class AboutDialog : public QDialog
+class SLProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
-
+    QML_ELEMENT
+    Q_PROPERTY(bool emptyEpgFilter READ emptyEpgFilter WRITE setEmptyEpgFilter NOTIFY emptyEpgFilterChanged FINAL)
+    Q_PROPERTY(int ueidFilter READ ueidFilter WRITE setUeidFilter NOTIFY ueidFilterChanged FINAL)
 public:
-    explicit AboutDialog(QWidget *parent = nullptr);
-    ~AboutDialog();
+    explicit SLProxyModel(QObject *parent = nullptr);
+
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+
+    bool emptyEpgFilter() const;
+    void setEmptyEpgFilter(bool newEmptyEpgFilter);
+    int ueidFilter() const;
+    void setUeidFilter(int newUeidFilter);
+
+signals:
+    void emptyEpgFilterChanged();
+    void ueidFilterChanged();
 
 private:
-    Ui::AboutDialog *ui;
+    bool m_emptyEpgFilter;
+    int m_ueidFilter;
 };
 
-#endif // ABOUTDIALOG_H
+#endif // SLPROXYMODEL_H

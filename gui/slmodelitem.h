@@ -29,13 +29,14 @@
 
 #include <QList>
 #include <QVariant>
+#include "metadatamanager.h"
 #include "servicelist.h"
 
 class SLModelItem
 {
 public:
-    explicit SLModelItem(const ServiceList *  slPtr, SLModelItem *parentItem = 0);
-    explicit SLModelItem(const ServiceList *slPtr, const ServiceListId &id, SLModelItem *parentItem = 0);
+    explicit SLModelItem(const ServiceList *  slPtr, const MetadataManager *mmPtr, SLModelItem *parentItem = 0);
+    explicit SLModelItem(const ServiceList *slPtr, const MetadataManager *mmPtr, const ServiceListId &id, SLModelItem *parentItem = 0);
     ~SLModelItem();
 
     void appendChild(SLModelItem *child);    
@@ -63,6 +64,7 @@ private:
     SLModelItem *m_parentItem;
 
     const ServiceList * m_slPtr;
+    const MetadataManager * m_metadataMgrPtr;
     ServiceListId m_id;
 
 };

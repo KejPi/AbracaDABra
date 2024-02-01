@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,13 +34,12 @@
 #include <QQueue>
 #include <QPair>
 
-#include "radiocontrol.h"
+#include "servicelistid.h"
 #include "motdecoder.h"
 #include "userapplication.h"
 
 //#define SPI_APP_INVALID_TAG 0x7F
-
-class SPIDomElement;
+#define SPI_APP_INVALID_DECODER_ID 0xF000
 
 class SPIApp : public UserApplication
 {
@@ -56,11 +55,12 @@ class SPIApp : public UserApplication
 public:
     SPIApp(QObject *parent = nullptr);
     ~SPIApp();
-    void onNewMOTObject(const MOTObject & obj) override;
+    void onNewMOTObject(const MOTObject & obj) override { Q_UNUSED(obj); }
     void onUserAppData(const RadioControlUserAppData & data) override;
     void onNewMOTDirectory();
-    void onFileRequest(const QString & url, const QString & requestId);
-    void onSettingsChanged(bool useInternet, bool enaRadioDNS) { m_useInternet = useInternet; m_enaRadioDNS = enaRadioDNS; }
+    void onNewMOTObjectInDirectory(const QString & contentName);
+    void onFileRequest(uint16_t decoderId, const QString & url, const QString & requestId);
+    void onSettingsChanged(bool useInternet, bool enaRadioDNS);
     void start() override;
     void stop() override;
     void restart() override;
@@ -68,24 +68,27 @@ public:
     void enable(bool ena);
 
     // RadioDNS
-    void useInternet(bool ena) { m_useInternet = ena; }
-    void enableRadioDNS(bool ena) { m_enaRadioDNS = ena; }
-    void onEnsembleInformation(const RadioControlEnsemble & ens);
-    void onAudioServiceSelection(const RadioControlServiceComponent & s);
+    void setUseInternet(bool ena) { m_useInternet = ena; }
+    void setEnableRadioDNS(bool ena);
+    void getSI(const ServiceListId &servId, const uint32_t & ueid);
+    void getPI(const ServiceListId &servId, const QList<uint32_t> &ueidList, const QDate & date);
 
 signals:
-    void xmlDocument(const QString &xmldocument, const QString & scopeId);
+    void xmlDocument(const QString &xmldocument, const QString &scopeId, uint16_t decoderId);
     void requestedFile(const QByteArray &data, const QString &requestId);
+    void radioDNSAvailable();
 private:
     QHash<uint16_t, MOTDecoder *> m_decoderMap;
 
-    void processMOTDirectory(MOTDecoder * decoderPtr);
-    void parseBinaryInfo(const MOTObject & motObj);
+    void processObject(uint16_t decoderId, MOTObjectCache::const_iterator objIt);
+    void parseBinaryInfo(uint16_t decoderId, const MOTObject & motObj);
     uint32_t parseTag(const uint8_t * dataPtr, QDomElement & parentElement, uint8_t parentTag, int maxSize);
     const uint8_t * parseAttributes(const uint8_t * attrPtr, uint8_t tag, int maxSize);
     QString getString(const uint8_t *dataPtr, int len, bool doReplaceTokens = true);
     QString getTime(const uint8_t *dataPtr, int len);
-    QString getDoubleList(const uint8_t *dataPtr, int len);        
+    QString getDoubleList(const uint8_t *dataPtr, int len);
+    QString getBearerURI(const uint8_t *dataPtr, int len);
+
     void setAttribute_string(QDomElement & element, const QString &name, const uint8_t *dataPtr, int len, bool doReplaceTokens);
     void setAttribute_timePoint(QDomElement & element, const QString &name, const uint8_t *dataPtr, int len);
     void setAttribute_uint16(QDomElement & element, const QString & name, const uint8_t *dataPtr, int len);
@@ -95,23 +98,23 @@ private:
 
     QHash<uint8_t, QString> m_tokenTable;
     QDomDocument m_xmldocument;
+
     QHash<uint16_t, int_fast32_t> m_parsedDirectoryIds;
 
     // RadioDNS
     bool m_useInternet;
     bool m_enaRadioDNS;
     bool m_useDoH;
-    QString m_gcc;
-    QString m_ueid;
-    QString m_sid;
-    QString m_scids;
 
     QDnsLookup * m_dnsLookup;
+    QHash<QString, QString> m_dnsCache;
     QNetworkAccessManager *m_netAccessManager;
     QQueue<QPair<QString, QString>> m_downloadReqQueue;
-    void radioDNSLookup();
-    QString getRadioDNSFQDN() const;
-    QString getGCC(const DabSId & sid) const;
+    QQueue<QPair<QString, QString>> m_radioDnsDownloadQueue;
+    QHash<uint16_t, QHash<QString, QString>> m_motObjRequestList;
+    void radioDNSLookup(const QString & fqdn);
+    QString radioDNSFQDN(const ServiceListId &servId, const uint32_t &ueid) const;
+    QString radioDNSServiceIdentifier(const ServiceListId &servId, const uint32_t & ueid) const;
     void handleRadioDNSLookup();
     void downloadFile(const QString &url, const QString &requestId, bool useCache = true);
     void onFileDownloaded(QNetworkReply *reply);
@@ -370,20 +373,5 @@ namespace SPIElement
     }
 
 }
-
-class SPIDomElement : public QDomElement
-{
-public:
-    SPIDomElement();
-    SPIDomElement(const QDomElement & e, uint8_t tag);
-    QDomElement element() const;
-    void setElement(const QDomElement &newElement);
-    SPIElement::Tag tag() const;
-    void setTag(uint8_t newTag);
-private:
-    QDomElement m_element;
-    SPIElement::Tag m_tag;
-};
-
 
 #endif // SPIAPP_H

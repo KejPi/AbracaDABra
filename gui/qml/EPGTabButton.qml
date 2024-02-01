@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,25 +24,26 @@
  * SOFTWARE.
  */
 
-#ifndef ABOUTDIALOG_H
-#define ABOUTDIALOG_H
+import QtQuick
+import QtQuick.Controls
 
-#include <QDialog>
+TabButton {
+    id: control
 
-namespace Ui {
-class AboutDialog;
+    implicitHeight: 30
+    implicitWidth: 80
+
+    contentItem: Text {
+        text: control.text
+        font.family: control.font.family
+        font.bold: control.checked
+        opacity: enabled ? 1.0 : 0.3
+        color: control.checked ? EPGColors.textColor : EPGColors.fadeTextColor
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        elide: Text.ElideRight
+    }
+    background: Rectangle {
+        color: "transparent"
+    }
 }
-
-class AboutDialog : public QDialog
-{
-    Q_OBJECT
-
-public:
-    explicit AboutDialog(QWidget *parent = nullptr);
-    ~AboutDialog();
-
-private:
-    Ui::AboutDialog *ui;
-};
-
-#endif // ABOUTDIALOG_H

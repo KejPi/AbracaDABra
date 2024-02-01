@@ -32,16 +32,18 @@
 #include "slmodel.h"
 #include "dabtables.h"
 
-SLModelItem::SLModelItem(const ServiceList *slPtr, SLModelItem *parent)
+SLModelItem::SLModelItem(const ServiceList *slPtr, const MetadataManager *mmPtr, SLModelItem *parent)
 {    
     m_parentItem = parent;
     m_slPtr = slPtr;
+    m_metadataMgrPtr = mmPtr;
 }
 
-SLModelItem::SLModelItem(const ServiceList *  slPtr, const ServiceListId & id, SLModelItem *parent)
+SLModelItem::SLModelItem(const ServiceList *  slPtr, const MetadataManager *mmPtr, const ServiceListId & id, SLModelItem *parent)
 {
     m_parentItem = parent;
     m_slPtr = slPtr;
+    m_metadataMgrPtr = mmPtr;
     m_id = id;
 }
 
@@ -113,8 +115,35 @@ QVariant SLModelItem::data(int column, int role) const
                 return QVariant(f);
             }
             return QVariant();
-         break;
-        }        
+        break;
+        case SLModelRole::IdRole:
+            return QVariant::fromValue(m_id.value());
+        case SLModelRole::SmallLogoRole:
+            return m_metadataMgrPtr->data(m_id, MetadataManager::SmallLogo);
+        case SLModelRole::SmallLogoIdRole:
+        {
+            if (m_metadataMgrPtr->data(m_id, MetadataManager::SmallLogo).value<QPixmap>().isNull())
+            {
+                return QVariant(0);
+            }
+            return QVariant::fromValue(m_id.value());
+        }
+        case SLModelRole::EpgModelRole:
+            return QVariant::fromValue(m_metadataMgrPtr->epgModel(m_id));
+        case SLModelRole::EnsembleListRole:
+        {
+            ServiceListConstIterator it = m_slPtr->findService(m_id);
+            if (m_slPtr->serviceListEnd() != it)
+            {   // found
+                auto service = it.value();
+                QList<int> ensList;
+                for (int e = 0; e < service->numEnsembles(); ++e) {
+                    ensList.append(service->getEnsemble(e)->ueid());
+                }
+                return QVariant::fromValue(ensList);
+            }
+        }
+        }
     }
     return QVariant();
 }
