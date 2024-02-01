@@ -89,6 +89,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
                                                    "to a DC short circuited antenna unless you are using an LNA.")));
 
     ui->rtlsdrBandwidth->setToolTip(QString(tr("Input signal bandwidth in kHz. Value '0' means default bandwidth %1 kHz.")).arg(INPUTDEVICE_BANDWIDTH/1000));
+    ui->rtlsdrPPM->setToolTip(QString(tr("Input device XTAL frequency correction in PPM.")));
+    ui->rtltcpPPM->setToolTip(ui->rtlsdrPPM->toolTip());
     ui->airspyBiasTCombo->addItem(tr("Off"), false);
     ui->airspyBiasTCombo->addItem(tr("On"), true);
     ui->airspyBiasTCombo->setToolTip(ui->rtlsdrBiasTCombo->toolTip());
@@ -199,6 +201,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->rtlsdrSwAgcMaxLevel, &QSpinBox::valueChanged, this, &SetupDialog::onRtlSdrSwAgcMaxLevelChanged);
     connect(ui->rtlsdrSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtlsdrSwAgcMaxLevel->setValue(0); } );
     connect(ui->rtlsdrBiasTCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onRtlSdrBiasTCurrentIdxChanged);
+    connect(ui->rtlsdrPPM, &QSpinBox::valueChanged, this, &SetupDialog::onRtlSdrPPMChanged);
 
     connect(ui->rtltcpGainSlider, &QSlider::valueChanged, this, &SetupDialog::onRtlTcpGainSliderChanged);
     connect(ui->rtltcpGainModeHw, &QRadioButton::toggled, this, &SetupDialog::onTcpGainModeToggled);
@@ -208,6 +211,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->rtltcpIpPortSpinBox, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpPortValueChanged);
     connect(ui->rtltcpSwAgcMaxLevel, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpSwAgcMaxLevelChanged);
     connect(ui->rtltcpSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtltcpSwAgcMaxLevel->setValue(0); } );
+    connect(ui->rtltcpPPM, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpPPMChanged);
 
 
     connect(ui->loopCheckbox, &QCheckBox::stateChanged, this, [=](int val) { m_settings.rawfile.loopEna = (Qt::Unchecked != val); });
@@ -499,6 +503,7 @@ void SetupDialog::setUiState()
     ui->rtlsdrBiasTCombo->setCurrentIndex(m_settings.rtlsdr.biasT ? 1 : 0);
     ui->rtlsdrSwAgcMaxLevel->setValue(m_settings.rtlsdr.agcLevelMax);
     ui->rtlsdrExpertGroup->setVisible(m_settings.expertModeEna);
+    ui->rtlsdrPPM->setValue(m_settings.rtlsdr.ppm);
 
     switch (m_settings.rtltcp.gainMode) {
     case RtlGainMode::Software:
@@ -514,6 +519,7 @@ void SetupDialog::setUiState()
         break;
     }
     ui->rtltcpSwAgcMaxLevel->setValue(m_settings.rtltcp.agcLevelMax);
+    ui->rtltcpPPM->setValue(m_settings.rtltcp.ppm);
     ui->rtltcpExpertGroup->setVisible(m_settings.expertModeEna);
 
 #if HAVE_AIRSPY
@@ -709,6 +715,12 @@ void SetupDialog::onRtlSdrBandwidthChanged(int val)
     emit newInputDeviceSettings();
 }
 
+void SetupDialog::onRtlSdrPPMChanged(int val)
+{
+    m_settings.rtlsdr.ppm = val;
+    emit newInputDeviceSettings();
+}
+
 void SetupDialog::onRtlSdrSwAgcMaxLevelChanged(int val)
 {
     m_settings.rtlsdr.agcLevelMax = val;
@@ -805,6 +817,13 @@ void SetupDialog::onRtlTcpSwAgcMaxLevelChanged(int val)
     ui->rtltcpSwAgcMaxLevelDefault->setEnabled(val > 0);
     emit newInputDeviceSettings();
 }
+
+void SetupDialog::onRtlTcpPPMChanged(int val)
+{
+    m_settings.rtltcp.ppm = val;
+    emit newInputDeviceSettings();
+}
+
 
 void SetupDialog::activateRtlTcpControls(bool en)
 {

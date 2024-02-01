@@ -552,6 +552,19 @@ void RtlTcpInput::setAgcLevelMax(float agcLevelMax)
     //qDebug() << m_agcLevelMax << m_agcLevelMin;
 }
 
+void RtlTcpInput::setPPM(int ppm)
+{
+    if (ppm != m_ppm)
+    {
+        sendCommand(RtlTcpCommand::SET_FREQ_CORR, ppm);
+        qCInfo(rtlTcpInput) << "Frequency correction PPM:" << ppm;
+        m_ppm = ppm;
+        if (m_frequency != 0) {
+            tune(m_frequency);
+        }
+    }
+}
+
 void RtlTcpInput::setGain(int gainIdx)
 {
     if (!m_gainList->empty())

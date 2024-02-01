@@ -66,9 +66,10 @@ public:
         {
             RtlGainMode gainMode;
             int gainIdx;
-            uint32_t bandwidth;
+            uint32_t bandwidth;            
             bool biasT;
             int agcLevelMax;
+            int ppm;
         } rtlsdr;
         struct
         {
@@ -77,6 +78,7 @@ public:
             QString tcpAddress;
             int tcpPort;
             int agcLevelMax;
+            int ppm;
         } rtltcp;
 #if HAVE_AIRSPY
         struct
@@ -173,6 +175,7 @@ private:
     void onRtlSdrSwAgcMaxLevelChanged(int val);
     void onRtlSdrBiasTCurrentIdxChanged(int);
     void activateRtlSdrControls(bool en);
+    void onRtlSdrPPMChanged(int val);
 
     void onTcpGainModeToggled(bool checked);
     void onRtlTcpGainSliderChanged(int val);
@@ -180,6 +183,7 @@ private:
     void onRtlTcpPortValueChanged(int val);
     void onRtlTcpSwAgcMaxLevelChanged(int val);
     void activateRtlTcpControls(bool en);
+    void onRtlTcpPPMChanged(int val);
 
     void onRawFileFormatChanged(int idx);    
     void onAnnouncementClicked();

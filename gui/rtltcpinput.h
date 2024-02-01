@@ -143,6 +143,7 @@ public:
     void setTcpIp(const QString & address, int port);
     void setGainMode(RtlGainMode gainMode, int gainIdx = 0);
     void setAgcLevelMax(float agcLevelMax);
+    void setPPM(int ppm);
     void setDAGC(bool ena);
     void startStopRecording(bool start) override;
     QList<float> getGainList() const;
@@ -160,6 +161,7 @@ private:
     float m_agcLevelMax;
     float m_agcLevelMin;
     QList<float> * m_agcLevelMinFactorList;
+    int m_ppm;
 
     void resetAgc();
 

@@ -45,6 +45,7 @@ RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
     m_bandwidth = 0;
     m_frequency = 0;
     m_biasT = false;
+    m_ppm = 0;
 
     connect(&m_watchdogTimer, &QTimer::timeout, this, &RtlSdrInput::onWatchdogTimeout);
 }
@@ -456,6 +457,26 @@ void RtlSdrInput::setBiasT(bool ena)
         {
             qCInfo(rtlsdrInput) << "Bias-T" << (ena ? "on" : "off");
             m_biasT = ena;
+        }
+    }
+}
+
+void RtlSdrInput::setPPM(int ppm)
+{
+    if (ppm != m_ppm)
+    {
+        int ret = rtlsdr_set_freq_correction(m_device, ppm);
+        if (ret != 0)
+        {
+            qCWarning(rtlsdrInput) << "Failed to set frequency correction";
+        }
+        else
+        {
+            qCInfo(rtlsdrInput) << "Frequency correction PPM:" << ppm;
+            m_ppm = ppm;
+            if (m_frequency != 0) {
+                tune(m_frequency);
+            }
         }
     }
 }

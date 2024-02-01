@@ -202,67 +202,7 @@
               <string>Expert settings</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_6">
-              <item row="2" column="1">
-               <widget class="QSpinBox" name="rtlsdrBandwidth">
-                <property name="specialValueText">
-                 <string>Default</string>
-                </property>
-                <property name="suffix">
-                 <string notr="true"> kHz</string>
-                </property>
-                <property name="maximum">
-                 <number>3000</number>
-                </property>
-                <property name="singleStep">
-                 <number>100</number>
-                </property>
-               </widget>
-              </item>
               <item row="4" column="1">
-               <widget class="QComboBox" name="rtlsdrBiasTCombo"/>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="rtlsdrBandwidthLabel">
-                <property name="text">
-                 <string>Bandwidth:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="4">
-               <widget class="QPushButton" name="rtlsdrBandwidthDefault">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Set default</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="4">
-               <widget class="QPushButton" name="rtlsdrSwAgcMaxLevelDefault">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Set default</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="rtlsdrSwAgcLevelLabel">
-                <property name="text">
-                 <string>SW AGC level threshold:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="rtlsdrBiasTLabel">
-                <property name="text">
-                 <string>Bias Tee:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
                <widget class="QSpinBox" name="rtlsdrSwAgcMaxLevel">
                 <property name="toolTip">
                  <string>Maximum signal level</string>
@@ -287,6 +227,72 @@
                 </property>
                </widget>
               </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="rtlsdrPPMLabel">
+                <property name="midLineWidth">
+                 <number>-3</number>
+                </property>
+                <property name="text">
+                 <string>Frequency correction:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="rtlsdrBiasTLabel">
+                <property name="text">
+                 <string>Bias Tee:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QSpinBox" name="rtlsdrPPM">
+                <property name="suffix">
+                 <string notr="true"> PPM</string>
+                </property>
+                <property name="minimum">
+                 <number>-100</number>
+                </property>
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="singleStep">
+                 <number>1</number>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1">
+               <widget class="QComboBox" name="rtlsdrBiasTCombo"/>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="rtlsdrBandwidthLabel">
+                <property name="text">
+                 <string>Bandwidth:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QSpinBox" name="rtlsdrBandwidth">
+                <property name="specialValueText">
+                 <string>Default</string>
+                </property>
+                <property name="suffix">
+                 <string notr="true"> kHz</string>
+                </property>
+                <property name="maximum">
+                 <number>3000</number>
+                </property>
+                <property name="singleStep">
+                 <number>100</number>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="rtlsdrSwAgcLevelLabel">
+                <property name="text">
+                 <string>SW AGC level threshold:</string>
+                </property>
+               </widget>
+              </item>
               <item row="2" column="5">
                <spacer name="horizontalSpacer_4">
                 <property name="orientation">
@@ -300,6 +306,26 @@
                 </property>
                </spacer>
               </item>
+              <item row="4" column="4">
+               <widget class="QPushButton" name="rtlsdrSwAgcMaxLevelDefault">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Set default</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="4">
+               <widget class="QPushButton" name="rtlsdrBandwidthDefault">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Set default</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </widget>
            </item>
@@ -307,10 +333,32 @@
          </widget>
          <widget class="QWidget" name="rtltcpPage">
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="0" column="0">
-            <widget class="QLabel" name="rtltcpIpAddrLabel">
+           <item row="0" column="3">
+            <widget class="QSpinBox" name="rtltcpIpPortSpinBox">
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="maximum">
+              <number>99999</number>
+             </property>
+             <property name="value">
+              <number>1234</number>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="rtltcpIpAddressEdit">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="text">
-              <string>IP Address:</string>
+              <string notr="true">127.0.0.1</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -319,15 +367,15 @@
              <property name="title">
               <string>Expert settings</string>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_11">
-              <item>
-               <widget class="QLabel" name="rtltcpSwAgcLevelLabel">
+             <layout class="QGridLayout" name="gridLayout_7">
+              <item row="1" column="0">
+               <widget class="QLabel" name="rtltcpPPMLabel">
                 <property name="text">
-                 <string>SW AGC level threshold:</string>
+                 <string>Frequency correction:</string>
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="0" column="1">
                <widget class="QSpinBox" name="rtltcpSwAgcMaxLevel">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -358,7 +406,7 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="0" column="2">
                <widget class="QPushButton" name="rtltcpSwAgcMaxLevelDefault">
                 <property name="enabled">
                  <bool>false</bool>
@@ -368,8 +416,43 @@
                 </property>
                </widget>
               </item>
-              <item>
-               <spacer name="horizontalSpacer_10">
+              <item row="0" column="0">
+               <widget class="QLabel" name="rtltcpSwAgcLevelLabel">
+                <property name="text">
+                 <string>SW AGC level threshold:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QSpinBox" name="rtltcpPPM">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Maximum signal level</string>
+                </property>
+                <property name="suffix">
+                 <string notr="true"> PPM</string>
+                </property>
+                <property name="minimum">
+                 <number>-100</number>
+                </property>
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="singleStep">
+                 <number>1</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <spacer name="horizontalSpacer_9">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
@@ -380,6 +463,72 @@
                  </size>
                 </property>
                </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QLabel" name="rtltcpPortLabel">
+             <property name="text">
+              <string>Port:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="4">
+            <widget class="Line" name="line">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="4">
+            <spacer name="verticalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="2" column="0" colspan="4">
+            <widget class="QGroupBox" name="rtltcpGainModeGroup">
+             <property name="title">
+              <string>Gain control</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QRadioButton" name="rtltcpGainModeSw">
+                <property name="toolTip">
+                 <string>Gain controlled by software (SW AGC)</string>
+                </property>
+                <property name="text">
+                 <string>Software</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="rtltcpGainModeHw">
+                <property name="toolTip">
+                 <string>Gain controlled internally by device (HW AGC)</string>
+                </property>
+                <property name="text">
+                 <string>Device</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="rtltcpGainModeManual">
+                <property name="toolTip">
+                 <string>Manual gain control</string>
+                </property>
+                <property name="text">
+                 <string>Manual</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>
@@ -432,100 +581,12 @@
              </layout>
             </widget>
            </item>
-           <item row="2" column="0" colspan="4">
-            <widget class="QGroupBox" name="rtltcpGainModeGroup">
-             <property name="title">
-              <string>Gain control</string>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
-              <item>
-               <widget class="QRadioButton" name="rtltcpGainModeSw">
-                <property name="toolTip">
-                 <string>Gain controlled by software (SW AGC)</string>
-                </property>
-                <property name="text">
-                 <string>Software</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="rtltcpGainModeHw">
-                <property name="toolTip">
-                 <string>Gain controlled internally by device (HW AGC)</string>
-                </property>
-                <property name="text">
-                 <string>Device</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="rtltcpGainModeManual">
-                <property name="toolTip">
-                 <string>Manual gain control</string>
-                </property>
-                <property name="text">
-                 <string>Manual</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QSpinBox" name="rtltcpIpPortSpinBox">
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="maximum">
-              <number>99999</number>
-             </property>
-             <property name="value">
-              <number>1234</number>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="rtltcpIpAddressEdit">
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>0</height>
-              </size>
-             </property>
+           <item row="0" column="0">
+            <widget class="QLabel" name="rtltcpIpAddrLabel">
              <property name="text">
-              <string notr="true">127.0.0.1</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>IP Address:</string>
              </property>
             </widget>
-           </item>
-           <item row="1" column="0" colspan="4">
-            <widget class="Line" name="line">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QLabel" name="rtltcpPortLabel">
-             <property name="text">
-              <string>Port:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0" colspan="4">
-            <spacer name="verticalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
            </item>
           </layout>
          </widget>

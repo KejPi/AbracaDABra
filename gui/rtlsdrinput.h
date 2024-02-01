@@ -93,12 +93,14 @@ public:
     void startStopRecording(bool start) override;
     void setBW(uint32_t bw);
     void setBiasT(bool ena);
+    void setPPM(int ppm);
     void setAgcLevelMax(float agcMaxValue);
     QList<float> getGainList() const;    
 private:
     uint32_t m_frequency;
     uint32_t m_bandwidth;
     bool m_biasT;
+    int m_ppm;
     struct rtlsdr_dev * m_device;
     RtlSdrWorker * m_worker;
     QTimer m_watchdogTimer;
