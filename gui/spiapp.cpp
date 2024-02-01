@@ -160,6 +160,15 @@ void SPIApp::enable(bool ena)
     }
 }
 
+void SPIApp::setEnableRadioDNS(bool ena)
+{
+    m_enaRadioDNS = ena;
+    if (m_enaRadioDNS)
+    {
+        emit radioDNSAvailable();
+    }
+}
+
 void SPIApp::onUserAppData(const RadioControlUserAppData & data)
 {
     if ((DabUserApplicationType::SPI == data.userAppType) && (m_isRunning))
@@ -337,6 +346,12 @@ void SPIApp::onFileRequest(uint16_t decoderId, const QString &url, const QString
     {
         downloadFile(url, requestId);
     }
+}
+
+void SPIApp::onSettingsChanged(bool useInternet, bool enaRadioDNS)
+{
+    setUseInternet(useInternet);
+    setEnableRadioDNS(enaRadioDNS);
 }
 
 void SPIApp::parseBinaryInfo(uint16_t decoderId, const MOTObject &motObj)

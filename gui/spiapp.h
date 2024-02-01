@@ -60,7 +60,7 @@ public:
     void onNewMOTDirectory();
     void onNewMOTObjectInDirectory(const QString & contentName);
     void onFileRequest(uint16_t decoderId, const QString & url, const QString & requestId);
-    void onSettingsChanged(bool useInternet, bool enaRadioDNS) { m_useInternet = useInternet; m_enaRadioDNS = enaRadioDNS; }
+    void onSettingsChanged(bool useInternet, bool enaRadioDNS);
     void start() override;
     void stop() override;
     void restart() override;
@@ -68,14 +68,15 @@ public:
     void enable(bool ena);
 
     // RadioDNS
-    void useInternet(bool ena) { m_useInternet = ena; }
-    void enableRadioDNS(bool ena) { m_enaRadioDNS = ena; }
+    void setUseInternet(bool ena) { m_useInternet = ena; }
+    void setEnableRadioDNS(bool ena);
     void getSI(const ServiceListId &servId, const uint32_t & ueid);
     void getPI(const ServiceListId &servId, const QList<uint32_t> &ueidList, const QDate & date);
 
 signals:
     void xmlDocument(const QString &xmldocument, const QString &scopeId, uint16_t decoderId);
     void requestedFile(const QByteArray &data, const QString &requestId);
+    void radioDNSAvailable();
 private:
     QHash<uint16_t, MOTDecoder *> m_decoderMap;
 

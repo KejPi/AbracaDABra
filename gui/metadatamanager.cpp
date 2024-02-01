@@ -646,7 +646,7 @@ void MetadataManager::loadEpg(const ServiceListId &servId, const QList<uint32_t>
 
 }
 
-void MetadataManager::onValidEpgTime()
+void MetadataManager::getEpgData()
 {
     for (ServiceListConstIterator sIt = m_serviceList->serviceListBegin(); sIt != m_serviceList->serviceListEnd(); ++sIt) {
         QList<uint32_t> ueidList;
@@ -668,16 +668,6 @@ void MetadataManager::onEnsembleInformation(const RadioControlEnsemble &ens)
 
 void MetadataManager::onAudioServiceSelection(const RadioControlServiceComponent &s)
 {
-/*
-    m_sid = QString("%1").arg(s.SId.progSId(), 4, 16, QChar('0'));
-    m_scids = QString("%1").arg(s.SCIdS);
-    m_gcc = getGCC(s.SId);
-
-    if (m_useInternet && m_enaRadioDNS)
-    {   // query RadioDNS
-        radioDNSLookup();
-    }
-*/
     emit getSI(ServiceListId(s), m_currentEnsemble.ueid());
 }
 

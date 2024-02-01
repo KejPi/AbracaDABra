@@ -62,7 +62,7 @@ public:
     Q_INVOKABLE QDate epgDate(int idx) const;
     QStringList epgDatesList() const;
 
-    void onValidEpgTime();
+    void getEpgData();
     void onEnsembleInformation(const RadioControlEnsemble & ens);
     void onAudioServiceSelection(const RadioControlServiceComponent & s);
 

@@ -411,7 +411,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_serviceList, &ServiceList::serviceAddedToEnsemble, m_metadataManager, &MetadataManager::addServiceEpg);
     connect(m_serviceList, &ServiceList::serviceRemoved, m_metadataManager, &MetadataManager::removeServiceEpg);
     connect(m_serviceList, &ServiceList::empty, m_metadataManager, &MetadataManager::clearEpg);
-    connect(EPGTime::getInstance(), &EPGTime::haveValidTime, m_metadataManager, &MetadataManager::onValidEpgTime);
+    connect(EPGTime::getInstance(), &EPGTime::haveValidTime, m_metadataManager, &MetadataManager::getEpgData);
 
     m_slModel = new SLModel(m_serviceList, m_metadataManager, this);
     connect(m_serviceList, &ServiceList::serviceAdded, m_slModel, &SLModel::addService);
@@ -718,12 +718,13 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_metadataManager, &MetadataManager::getPI, m_spiApp, &SPIApp::getPI, Qt::QueuedConnection);
     connect(m_metadataManager, &MetadataManager::getFile, m_spiApp, &SPIApp::onFileRequest, Qt::QueuedConnection);
     connect(m_spiApp, &SPIApp::requestedFile, m_metadataManager, &MetadataManager::onFileReceived, Qt::QueuedConnection);
+    connect(m_spiApp, &SPIApp::radioDNSAvailable, m_metadataManager, &MetadataManager::getEpgData);
     connect(m_setupDialog, &SetupDialog::spiApplicationEnabled, m_radioControl, &RadioControl::onSpiApplicationEnabled, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::spiApplicationEnabled, m_spiApp, &SPIApp::enable, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::spiApplicationSettingsChanged, m_spiApp, &SPIApp::onSettingsChanged, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleInformation, m_metadataManager, &MetadataManager::onEnsembleInformation, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_metadataManager, &MetadataManager::onAudioServiceSelection, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::ensembleInformation, m_epgDialog, &EPGDialog::onEnsembleInformation, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::ensembleInformation, m_epgDialog, &EPGDialog::onEnsembleInformation, Qt::QueuedConnection);    
 
     // input device connections
     initInputDevice(InputDeviceId::UNDEFINED);
