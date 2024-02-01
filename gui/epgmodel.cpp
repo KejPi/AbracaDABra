@@ -24,6 +24,7 @@
  * SOFTWARE.
  */
 
+#include <QLoggingCategory>
 #include "epgmodel.h"
 #include "epgtime.h"
 
