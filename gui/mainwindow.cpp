@@ -2487,6 +2487,9 @@ void MainWindow::loadSettings()
     s.audioRecCaptureOutput = settings->value("audioRecCaptureOutput", false).toBool();
     s.audioRecAutoStopEna = settings->value("audioRecAutoStop", false).toBool();
 
+    m_epgDialog->setFilterEmptyEpg(settings->value("epgFilterEmpty", false).toBool());
+    m_epgDialog->setFilterEnsemble(settings->value("epgFilterOtherEnsembles", false).toBool());
+
     s.rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
     s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
     s.rtlsdr.bandwidth = settings->value("RTL-SDR/bandwidth", 0).toUInt();
@@ -2656,6 +2659,9 @@ void MainWindow::saveSettings()
     settings->setValue("audioRecFolder", s.audioRecFolder);
     settings->setValue("audioRecCaptureOutput", s.audioRecCaptureOutput);
     settings->setValue("audioRecAutoStop", s.audioRecAutoStopEna);
+
+    settings->setValue("epgFilterEmpty", m_epgDialog->filterEmptyEpg());
+    settings->setValue("epgFilterOtherEnsembles", m_epgDialog->filterEnsemble());
 
     settings->setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
     settings->setValue("RTL-SDR/gainMode", static_cast<int>(s.rtlsdr.gainMode));
