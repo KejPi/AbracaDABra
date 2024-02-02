@@ -274,7 +274,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->dlPlusCheckBox->setToolTip(tr("Show Dynamic Label Plus (DL+) tags like artist, song name, etc."));
     ui->xmlHeaderCheckBox->setToolTip(tr("Include raw file XML header in IQ recording"));
 
-    ui->audioRecordingFolderLabel->setElideMode(Qt::ElideMiddle);
+    ui->audioRecordingFolderLabel->setElideMode(Qt::ElideLeft);
 
     connect(ui->defaultStyleRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
     connect(ui->lightStyleRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
