@@ -1372,6 +1372,9 @@
            <layout class="QGridLayout" name="gridLayout_8">
             <item row="1" column="0">
              <widget class="QPushButton" name="dataDumpFolderButton">
+              <property name="toolTip">
+               <string>Change data storage folder.</string>
+              </property>
               <property name="text">
                <string>Change folder...</string>
               </property>
@@ -1424,6 +1427,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="dumpOverwriteCheckbox">
+            <property name="toolTip">
+             <string>If checked, existing files are overwritten with new files with the same name.&lt;br&gt;If not checked, new file with existing file name is not stored. </string>
+            </property>
             <property name="text">
              <string>Overwrite existing files</string>
             </property>
@@ -1439,7 +1445,7 @@
           <item>
            <widget class="QCheckBox" name="dumpSlsCheckBox">
             <property name="toolTip">
-             <string>Audio recording must be stopped when service changes.&lt;br&gt;If you select this option, application stops recording and saves the file automatically without asking.</string>
+             <string>Enables storing of all slides to selected folder. Slideshow data are stored in 'SLS' subfolder.</string>
             </property>
             <property name="text">
              <string>Slideshow data</string>
@@ -1448,6 +1454,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="dumpSpiCheckBox">
+            <property name="toolTip">
+             <string>Enables storing of all SPI data to selected folder. &lt;br&gt;SPI data are binary encoded files with services and program information, &lt;br&gt;these files decoded to XML format and service logos.&lt;br&gt;SPI data are stored in 'SPI/MOTDirectoryID' subfolder.</string>
+            </property>
             <property name="text">
              <string>SPI data</string>
             </property>
