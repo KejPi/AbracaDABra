@@ -26,13 +26,17 @@
 
 #include "dabtables.h"
 #include "slideshowapp.h"
+#include <QDir>
 #include <QLoggingCategory>
+#include <QStandardPaths>
+#include <QRegularExpression>
 
 Q_LOGGING_CATEGORY(slideShowApp, "SlideShowApp", QtInfoMsg)
 
 SlideShowApp::SlideShowApp(QObject *parent) : UserApplication(parent)
 {
     m_decoder = nullptr;
+    m_dumpEna = false;
 }
 
 SlideShowApp::~SlideShowApp()
@@ -82,6 +86,15 @@ void SlideShowApp::restart()
 {
     stop();
     start();
+}
+
+void SlideShowApp::setDataDumping(const SetupDialog::Settings::UADumpSettings &settings)
+{
+    m_dumpEna = settings.slsEna;
+    m_dumpOverwrite = settings.overwriteEna;
+    m_dumpPath = settings.folder + "/SLS/";
+
+    qCDebug(slideShowApp) << m_dumpPath;
 }
 
 void SlideShowApp::onUserAppData(const RadioControlUserAppData & data)
@@ -297,6 +310,12 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
     else
     { /* slide body is correct */ }
 
+    // dump slide if requested
+    if (m_dumpEna)
+    {
+        dumpSlide(slide);
+    }
+
     // now we have parsed params -> check for potential request to decategorize
     if (slide.isDecategorizeRequested())
     {   // decategorize
@@ -462,6 +481,31 @@ void SlideShowApp::removeSlideFromCategory(const Slide & slide)
     { /* category not found */ }
 }
 
+void SlideShowApp::dumpSlide(const Slide &slide)
+{
+    QString filename = slide.getContentName();
+
+    // remove problematic characters
+    static const QRegularExpression regexp( "[" + QRegularExpression::escape("/:*?\"<>|") + "]");
+    filename.replace(regexp, "_");
+    if (QFileInfo(filename).suffix().isEmpty())
+    {
+        filename.append(QString(".%1").arg(slide.getFormat().toLower()));
+    }
+    QFile file(m_dumpPath + filename);
+    if (!file.exists() || m_dumpOverwrite)
+    {   // file does not exist of overwriting is enabled == > store file
+        QDir dir;
+        dir.mkpath(QFileInfo(file).absolutePath());
+        if (file.open(QIODevice::WriteOnly))
+        {
+            qCInfo(slideShowApp) << "Storing slide:" << file.fileName();
+            file.write(slide.getRawData());
+            file.close();
+        }
+    }
+}
+
 void SlideShowApp::getCurrentCatSlide(int catId)
 {
     QHash<int, SlideShowApp::Category>::const_iterator catSlsIt = m_catSls.constFind(catId);
@@ -549,13 +593,8 @@ QPixmap Slide::getPixmap() const
 bool Slide::setPixmap(const QByteArray &data)
 {
     d->numBytes = data.size();
+    d->rawData = data;
     return d->pixmap.loadFromData(data);
-}
-
-bool Slide::setPixmap(const QPixmap &pixmap)
-{
-    d->pixmap = pixmap;
-    return true;
 }
 
 const QString &Slide::getContentName() const

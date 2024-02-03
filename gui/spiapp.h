@@ -65,6 +65,7 @@ public:
     void stop() override;
     void restart() override;
     void reset() override;
+    void setDataDumping(const SetupDialog::Settings::UADumpSettings & settings) override;
     void enable(bool ena);
 
     // RadioDNS
@@ -118,6 +119,8 @@ private:
     void handleRadioDNSLookup();
     void downloadFile(const QString &url, const QString &requestId, bool useCache = true);
     void onFileDownloaded(QNetworkReply *reply);
+
+    void dumpFile(uint16_t decoderId, QString filename, const QByteArray &data);
 };
 
 namespace SPIElement

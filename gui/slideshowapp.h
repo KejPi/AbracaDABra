@@ -44,6 +44,7 @@ public:
     ~SlideData() {}
 
     QPixmap pixmap;
+    QByteArray rawData;
     QString contentName;
     QString categoryTitle;
     QString clickThroughURL;
@@ -64,7 +65,6 @@ public:
 
     QPixmap getPixmap() const;
     bool setPixmap(const QByteArray &data);
-    bool setPixmap(const QPixmap &pixmap);
 
     const QString &getContentName() const;
     void setContentName(const QString &newContentName);
@@ -84,6 +84,7 @@ public:
     int getSlideID() const;
     void setSlideID(int newSlideID);
 
+    const QByteArray & getRawData() const { return d->rawData; }
     int getNumBytes() const { return d->numBytes; }
 
     const QString &getAlternativeLocationURL() const;
@@ -122,6 +123,7 @@ public:
     void start() override;
     void stop() override;
     void restart() override;
+    void setDataDumping(const SetupDialog::Settings::UADumpSettings & settings) override;
 
     void getCurrentCatSlide(int catId);
     void getNextCatSlide(int catId, bool forward = true);
@@ -141,6 +143,7 @@ private:
 
     void addSlideToCategory(const Slide & slide);
     void removeSlideFromCategory(const Slide & slide);
+    void dumpSlide(const Slide & slide);
 };
 
 class SlideShowApp::Category

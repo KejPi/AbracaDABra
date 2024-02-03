@@ -697,6 +697,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::announcement, ui->slsView_Announcement, &SLSView::showAnnouncement, Qt::QueuedConnection);
     connect(this, &MainWindow::stopUserApps, m_slideShowApp[Instance::Announcement], &SlideShowApp::stop, Qt::QueuedConnection);
 
+    connect(m_setupDialog, &SetupDialog::uaDumpSettings, m_slideShowApp[Instance::Service], &SlideShowApp::setDataDumping, Qt::QueuedConnection);
+    connect(m_setupDialog, &SetupDialog::uaDumpSettings, m_slideShowApp[Instance::Announcement], &SlideShowApp::setDataDumping, Qt::QueuedConnection);
 
     m_catSlsDialog = new CatSLSDialog(this);
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::categoryUpdate, m_catSlsDialog, &CatSLSDialog::onCategoryUpdate, Qt::QueuedConnection);
@@ -712,6 +714,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::audioServiceSelection,  m_spiApp, &SPIApp::start);
     connect(this, &MainWindow::stopUserApps, m_spiApp, &SPIApp::stop, Qt::QueuedConnection);
     connect(this, &MainWindow::resetUserApps, m_spiApp, &SPIApp::reset, Qt::QueuedConnection);
+    connect(m_setupDialog, &SetupDialog::uaDumpSettings,m_spiApp, &SPIApp::setDataDumping, Qt::QueuedConnection);
 
     connect(m_spiApp, &SPIApp::xmlDocument, m_metadataManager, &MetadataManager::processXML, Qt::QueuedConnection);
     connect(m_metadataManager, &MetadataManager::getSI, m_spiApp, &SPIApp::getSI, Qt::QueuedConnection);
@@ -2488,6 +2491,10 @@ void MainWindow::loadSettings()
     s.audioRecFolder = settings->value("audioRecFolder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
     s.audioRecCaptureOutput = settings->value("audioRecCaptureOutput", false).toBool();
     s.audioRecAutoStopEna = settings->value("audioRecAutoStop", false).toBool();
+    s.uaDump.folder = settings->value("uaDumpFolder", QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/" + appName).toString();
+    s.uaDump.overwriteEna  = settings->value("uaDumpOverwriteEna", false).toBool();
+    s.uaDump.slsEna  = settings->value("uaDumpSlsEna", false).toBool();
+    s.uaDump.spiEna  = settings->value("uaDumpSpiEna", false).toBool();
 
     m_epgDialog->setFilterEmptyEpg(settings->value("epgFilterEmpty", false).toBool());
     m_epgDialog->setFilterEnsemble(settings->value("epgFilterOtherEnsembles", false).toBool());
@@ -2663,6 +2670,10 @@ void MainWindow::saveSettings()
     settings->setValue("audioRecFolder", s.audioRecFolder);
     settings->setValue("audioRecCaptureOutput", s.audioRecCaptureOutput);
     settings->setValue("audioRecAutoStop", s.audioRecAutoStopEna);
+    settings->setValue("uaDumpFolder", s.uaDump.folder);
+    settings->setValue("uaDumpOverwriteEna", s.uaDump.overwriteEna);
+    settings->setValue("uaDumpSlsEna", s.uaDump.slsEna);
+    settings->setValue("uaDumpSpiEna", s.uaDump.spiEna);
 
     settings->setValue("epgFilterEmpty", m_epgDialog->filterEmptyEpg());
     settings->setValue("epgFilterOtherEnsembles", m_epgDialog->filterEnsemble());

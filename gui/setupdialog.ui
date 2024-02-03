@@ -35,7 +35,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -1318,6 +1318,159 @@
        <string notr="true">Announcement</string>
       </attribute>
      </widget>
+     <widget class="QWidget" name="tabUA">
+      <attribute name="title">
+       <string notr="true">User Apps</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_14">
+       <item>
+        <widget class="QGroupBox" name="spiAppGroupBox">
+         <property name="title">
+          <string>SPI Application</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <item>
+           <widget class="QCheckBox" name="spiAppCheckBox">
+            <property name="toolTip">
+             <string>Enable Service and Programme Information (SPI) application.</string>
+            </property>
+            <property name="text">
+             <string>Enable SPI application</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="internetCheckBox">
+            <property name="toolTip">
+             <string>Use internet connection to download data like station logo.</string>
+            </property>
+            <property name="text">
+             <string>Download data from internet</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="radioDNSCheckBox">
+            <property name="toolTip">
+             <string>Use RadioDNS to retrieve SPI. This option requires internet connection.</string>
+            </property>
+            <property name="text">
+             <string>RadioDNS</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="dataDumpGroupBox">
+         <property name="title">
+          <string>Data Storage</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_13">
+          <item>
+           <layout class="QGridLayout" name="gridLayout_8">
+            <item row="1" column="0">
+             <widget class="QPushButton" name="dataDumpFolderButton">
+              <property name="text">
+               <string>Change folder...</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <spacer name="horizontalSpacer_8">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="0" colspan="2">
+             <layout class="QHBoxLayout" name="horizontalLayout_16">
+              <item>
+               <widget class="QLabel" name="label_4">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Folder:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="ElidedLabel" name="dataDumpFolderLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string notr="true">/current/folder</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="dumpOverwriteCheckbox">
+            <property name="text">
+             <string>Overwrite existing files</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="Line" name="line_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="dumpSlsCheckBox">
+            <property name="toolTip">
+             <string>Audio recording must be stopped when service changes.&lt;br&gt;If you select this option, application stops recording and saves the file automatically without asking.</string>
+            </property>
+            <property name="text">
+             <string>Slideshow data</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="dumpSpiCheckBox">
+            <property name="text">
+             <string>SPI data</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_8">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>187</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="tabOthers">
       <attribute name="title">
        <string notr="true">Others</string>
@@ -1423,45 +1576,6 @@
            <widget class="QCheckBox" name="xmlHeaderCheckBox">
             <property name="text">
              <string>Include XML header</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="spiAppGroupBox">
-         <property name="title">
-          <string>SPI Application</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_10">
-          <item>
-           <widget class="QCheckBox" name="spiAppCheckBox">
-            <property name="toolTip">
-             <string>Enable Service and Programme Information (SPI) application.</string>
-            </property>
-            <property name="text">
-             <string>Enable SPI application</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="internetCheckBox">
-            <property name="toolTip">
-             <string>Use internet connection to download data like station logo.</string>
-            </property>
-            <property name="text">
-             <string>Download data from internet</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="radioDNSCheckBox">
-            <property name="toolTip">
-             <string>Use RadioDNS to retrieve SPI. This option requires internet connection.</string>
-            </property>
-            <property name="text">
-             <string>RadioDNS</string>
             </property>
            </widget>
           </item>

@@ -45,6 +45,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->tabWidget->setTabText(SetupDialogTabs::Device, tr("Device"));
     ui->tabWidget->setTabText(SetupDialogTabs::Announcement, tr("Announcements"));
     ui->tabWidget->setTabText(SetupDialogTabs::Audio, tr("Audio"));
+    ui->tabWidget->setTabText(SetupDialogTabs::UserApps, tr("User Applications"));
     ui->tabWidget->setTabText(SetupDialogTabs::Other, tr("Others"));
     ui->tabWidget->setCurrentIndex(SetupDialogTabs::Device);
 
@@ -290,6 +291,12 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->audioOutRecordingRadioButton, &QRadioButton::clicked, this, &SetupDialog::onAudioRecordingChecked);
     connect(ui->autoStopRecordingCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings.audioRecAutoStopEna = checked; });
 
+    ui->dataDumpFolderLabel->setElideMode(Qt::ElideLeft);
+    connect(ui->dataDumpFolderButton, &QPushButton::clicked, this, &SetupDialog::onDataDumpFolderButtonClicked);
+    connect(ui->dumpSlsCheckBox, &QCheckBox::toggled, this, &SetupDialog::onDataDumpCheckboxToggled);
+    connect(ui->dumpSpiCheckBox, &QCheckBox::toggled, this, &SetupDialog::onDataDumpCheckboxToggled);
+    connect(ui->dumpOverwriteCheckbox, &QCheckBox::toggled, this, &SetupDialog::onDataDumpCheckboxToggled);
+
     connect(ui->rawFileProgressBar, &QProgressBar::valueChanged, this, &SetupDialog::onRawFileProgressChanged);
     // reset UI
     onFileLength(0);
@@ -375,6 +382,7 @@ void SetupDialog::setSettings(const Settings &settings)
     emit noiseConcealmentLevelChanged(m_settings.noiseConcealmentLevel);
     emit xmlHeaderToggled(m_settings.xmlHeaderEna);
     emit audioRecordingSettings(m_settings.audioRecFolder, m_settings.audioRecCaptureOutput);
+    emit uaDumpSettings(m_settings.uaDump);
     onUseInternetChecked(m_settings.useInternet);
     onSpiAppChecked(m_settings.spiAppEna);
 }
@@ -656,6 +664,22 @@ void SetupDialog::setUiState()
         ui->audioInRecordingRadioButton->setChecked(true);
     }
     ui->autoStopRecordingCheckBox->setChecked(m_settings.audioRecAutoStopEna);
+
+    ui->dataDumpFolderLabel->setText(m_settings.uaDump.folder);
+    // blocker is required to avoid triggering unwanted signal
+    // we need to set UI state first
+    {
+        const QSignalBlocker blocker(ui->dumpSlsCheckBox);
+        // no signals here
+        ui->dumpSlsCheckBox->setChecked(m_settings.uaDump.slsEna);
+    }
+    {
+        const QSignalBlocker blocker(ui->dumpSpiCheckBox);
+        // no signals here
+        ui->dumpSpiCheckBox->setChecked(m_settings.uaDump.spiEna);
+    }
+    // this may trigger the signal (no problem if it happens)
+    ui->dumpOverwriteCheckbox->setChecked(m_settings.uaDump.overwriteEna);
 }
 
 void SetupDialog::onConnectDeviceClicked()
@@ -1303,4 +1327,35 @@ void SetupDialog::onAudioRecordingChecked(bool checked)
 {
     m_settings.audioRecCaptureOutput = ui->audioOutRecordingRadioButton->isChecked();
     emit audioRecordingSettings(m_settings.audioRecFolder, m_settings.audioRecCaptureOutput);
+}
+
+void SetupDialog::onDataDumpFolderButtonClicked()
+{
+    QString dir = QDir::homePath();
+    if (!m_settings.uaDump.folder.isEmpty())
+    {
+        dir = QFileInfo(m_settings.uaDump.folder).path();
+    }
+    dir = QFileDialog::getExistingDirectory(this, tr("Data storage folder"), dir);
+    if (!dir.isEmpty())
+    {
+        m_settings.uaDump.folder = dir;
+        ui->dataDumpFolderLabel->setText(dir);
+        emit uaDumpSettings(m_settings.uaDump);
+
+#ifdef Q_OS_MACOS // bug in Ventura
+        show(); //bring window to top on OSX
+        raise(); //bring window from minimized state on OSX
+        activateWindow(); //bring window to front/unminimize on windows
+#endif
+    }
+}
+
+void SetupDialog::onDataDumpCheckboxToggled(bool)
+{
+    m_settings.uaDump.overwriteEna = ui->dumpOverwriteCheckbox->isChecked();
+    m_settings.uaDump.slsEna = ui->dumpSlsCheckBox->isChecked();
+    m_settings.uaDump.spiEna = ui->dumpSpiCheckBox->isChecked();
+
+    emit uaDumpSettings(m_settings.uaDump);
 }

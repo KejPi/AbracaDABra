@@ -25,6 +25,7 @@
  */
 
 #include "spiapp.h"
+#include <QDir>
 #include <QStandardPaths>
 #include <QSaveFile>
 #include <QNetworkRequest>
@@ -132,7 +133,7 @@ void SPIApp::restart()
 void SPIApp::reset()
 {
     // delete all decoders
-    for (const auto & decoder : m_decoderMap)
+    for (const auto & decoder : qAsConst(m_decoderMap))
     {
         delete decoder;
     }
@@ -145,6 +146,15 @@ void SPIApp::reset()
 
     // ask HMI to clear data
     emit resetTerminal();
+}
+
+void SPIApp::setDataDumping(const SetupDialog::Settings::UADumpSettings &settings)
+{
+    m_dumpEna = settings.spiEna;
+    m_dumpOverwrite = settings.overwriteEna;
+    m_dumpPath = settings.folder + "/SPI";
+
+    qCDebug(spiApp) << m_dumpPath;
 }
 
 void SPIApp::enable(bool ena)
@@ -279,6 +289,12 @@ void SPIApp::onNewMOTObjectInDirectory(const QString &contentName)
 void SPIApp::processObject(uint16_t decoderId, MOTObjectCache::const_iterator objIt)
 {
     qCDebug(spiApp) << "Processing object:" << objIt->getContentName();
+
+    if (m_dumpEna)
+    {
+        dumpFile(decoderId, objIt->getContentName(), objIt->getBody());
+    }
+
     switch (objIt->getContentType())
     {
     case 2:
@@ -311,8 +327,30 @@ void SPIApp::processObject(uint16_t decoderId, MOTObjectCache::const_iterator ob
             // not supported
             break;
         }
+
     }
     break;
+    }
+}
+
+void SPIApp::dumpFile(uint16_t decoderId, QString filename, const QByteArray & data)
+{
+    // remove problematic characters
+    static const QRegularExpression regexp( "[" + QRegularExpression::escape("/:*?\"<>|") + "]");
+    filename.replace(regexp, "_");
+    QFile file(QString("%1/%2/%3").arg(m_dumpPath)
+                                  .arg(m_decoderMap[decoderId]->getDirectoryId())
+                                  .arg(filename));
+    if (!file.exists() || m_dumpOverwrite)
+    {   // file does not exist of overwriting is enabled == > store file
+        QDir dir;
+        dir.mkpath(QFileInfo(file).absolutePath());
+        if (file.open(QIODevice::WriteOnly))
+        {
+            qCInfo(spiApp) << "Storing file:" << file.fileName();
+            file.write(data);
+            file.close();
+        }
     }
 }
 
@@ -434,6 +472,11 @@ void SPIApp::parseBinaryInfo(uint16_t decoderId, const MOTObject &motObj)
     QDomElement empty;
     parseTag(dataPtr, empty, uint8_t(SPIElement::Tag::_invalid), data.size());
 
+    // if (m_dumpEna)
+    // {
+    //     dumpFile(decoderId, motObj.getContentName()+".xml", m_xmldocument.toByteArray());
+    // }
+
     // add service scope if not in XML
     if (motObj.getContentSubType() == 1)
     {
@@ -461,6 +504,11 @@ void SPIApp::parseBinaryInfo(uint16_t decoderId, const MOTObject &motObj)
                 }
             }
         }
+    }
+
+    if (m_dumpEna)
+    {
+        dumpFile(decoderId, motObj.getContentName()+".xml", m_xmldocument.toByteArray());
     }
 
     emit xmlDocument(m_xmldocument.toString(), scopeId, decoderId);

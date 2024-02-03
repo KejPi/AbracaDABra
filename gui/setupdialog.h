@@ -114,6 +114,15 @@ public:
         QString audioRecFolder;
         bool audioRecCaptureOutput;
         bool audioRecAutoStopEna;
+
+        // this is settings for UA data dumping (storage)
+        struct UADumpSettings
+        {
+            QString folder;
+            bool overwriteEna;
+            bool slsEna;
+            bool spiEna;
+        } uaDump;
     };
 
     SetupDialog(QWidget *parent = nullptr);
@@ -139,11 +148,12 @@ signals:
     void spiApplicationEnabled(bool enabled);
     void spiApplicationSettingsChanged(bool useInterent, bool enaRadioDNS);
     void audioRecordingSettings(const QString &folder, bool doOutputRecording);
+    void uaDumpSettings(const Settings::UADumpSettings & settings);
 protected:
     void showEvent(QShowEvent *event);
 
 private:
-    enum SetupDialogTabs { Device = 0, Audio = 1, Announcement = 2, Other = 3 };
+    enum SetupDialogTabs { Device = 0, Audio = 1, Announcement = 2, UserApps = 3, Other = 4 };
     enum SetupDialogXmlHeader { XMLDate = 0, XMLRecorder, XMLDevice,
                                 XMLSampleRate, XMLFreq, XMLLength, XMLFormat,
                                 XMLNumLabels};
@@ -201,6 +211,8 @@ private:
     void onRadioDnsChecked(bool checked);
     void onAudioRecordingFolderButtonClicked();
     void onAudioRecordingChecked(bool checked);
+    void onDataDumpFolderButtonClicked();
+    void onDataDumpCheckboxToggled(bool);
 
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);

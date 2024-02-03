@@ -28,6 +28,7 @@
 #define USERAPPLICATION_H
 
 #include <QObject>
+#include "setupdialog.h"
 #include "radiocontrol.h"
 #include "motobject.h"
 
@@ -45,11 +46,15 @@ public:
     virtual void stop() = 0;
     virtual void restart() = 0;
     virtual void reset() { stop(); }
+    virtual void setDataDumping(const SetupDialog::Settings::UADumpSettings & settings) = 0;
 signals:
     void resetTerminal();
 
 protected:
-    bool m_isRunning;
+    bool m_isRunning;    
+    bool m_dumpEna;
+    bool m_dumpOverwrite;
+    QString m_dumpPath;
 };
 
 #endif // USERAPPLICATION_H
