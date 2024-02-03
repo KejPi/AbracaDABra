@@ -27,7 +27,16 @@
 #include <QMouseEvent>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QMenu>
+#include <QFileDialog>
+#include <QLoggingCategory>
+#include <QStandardPaths>
+#include <QRegularExpression>
+#include <QApplication>
+#include <QClipboard>
 #include "slsview.h"
+
+Q_DECLARE_LOGGING_CATEGORY(application)
 
 SLSView::SLSView(QWidget *parent) : QGraphicsView(parent)
 {
@@ -253,6 +262,7 @@ void SLSView::showSlide(const Slide & slide)
         setToolTip(QString("<p style='white-space:pre'>") + toolTip);
     }
 
+    m_currentSlide = slide;
     m_isShowingSlide = true;
 }
 
@@ -302,11 +312,84 @@ void SLSView::mouseReleaseEvent(QMouseEvent *event)
         if ((event->position().x() >=0) && (event->position().y() >= 0) &&
                 (event->position().x() < width()) && (event->position().y() < height()))
         {   // release was on the slide view
-            QDesktopServices::openUrl(QUrl(m_clickThroughURL, QUrl::TolerantMode));
+            if (event->button() == Qt::LeftButton)
+            {
+                QDesktopServices::openUrl(QUrl(m_clickThroughURL, QUrl::TolerantMode));
+
+            }
         }
         else
         { /* mouse was released outside the view */ }
     }
+    if ((event->button() == Qt::RightButton) && m_isExpertMode && m_isShowingSlide && !m_currentSlide.getContentName().isEmpty())
+    {
+        QPoint globalPos = mapToGlobal(event->pos());
+        QMenu * menu = new QMenu(this);
+        QAction * saveAction = menu->addAction(tr("Save to file..."));
+        QAction * copyToClipboardAction = menu->addAction(tr("Copy to clipboard"));
+        QAction * selectedItem = menu->exec(globalPos);
+        if (nullptr == selectedItem)
+        {  // nothing was chosen
+            delete menu;
+            return;
+        }
+
+        if (selectedItem == saveAction)
+        {   // save slide to file
+            QString filename = m_currentSlide.getContentName();
+
+            // need to copy data as soon as possible before new slide comes
+            QByteArray data = m_currentSlide.getRawData();
+
+            // remove problematic characters
+            static const QRegularExpression regexp( "[" + QRegularExpression::escape("/:*?\"<>|") + "]");
+            filename.replace(regexp, "_");
+            if (QFileInfo(filename).suffix().isEmpty())
+            {
+                filename.append(QString(".%1").arg(m_currentSlide.getFormat().toLower()));
+            }
+
+            QString filter = tr("Images (*.jpg *.jpeg)");
+            if (m_currentSlide.getFormat() == "PNG")
+            {
+                filter = tr("Images (*.png)");
+            }
+            filename = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                            QDir::toNativeSeparators(QString("%1/%2").arg(m_savePath, filename)),
+                                                            filter);
+            if (!filename.isEmpty())
+            {
+                QFile file(filename);
+                if (file.open(QIODevice::WriteOnly))
+                {
+                    file.write(data);
+                    file.close();
+                    qCInfo(application) << "Slide saved to file:" << filename;
+                }
+                else
+                {
+                    qCWarning(application) << "Failed to save slide to file:" << filename;
+                }
+                // save path for next time
+                m_savePath = QFileInfo(filename).path();
+            }
+        }
+        else if (selectedItem == copyToClipboardAction)
+        {
+            QImage image;
+            if (image.loadFromData(m_currentSlide.getRawData(), m_currentSlide.getFormat().toLatin1()))
+            {
+                QApplication::clipboard()->setImage(image, QClipboard::Clipboard);
+                qCInfo(application) << "Slide copied clipboard";
+            }
+            else
+            {
+                qCWarning(application) << "Failed to copy slide to clipboard";
+            }
+        }
+        delete menu;
+    }
+
     QGraphicsView::mouseReleaseEvent(event);
 }
 
@@ -348,4 +431,14 @@ void SLSView::displayPixmap(const QPixmap &pixmap)
     sc->setSceneRect(pixmap.rect());
     sc->setBackgroundBrush(Qt::black);
     fitInViewTight(pixmap.rect(), Qt::KeepAspectRatio);
+}
+
+QString SLSView::savePath() const
+{
+    return m_savePath;
+}
+
+void SLSView::setSavePath(const QString &newSavePath)
+{
+    m_savePath = newSavePath;
 }

@@ -62,6 +62,12 @@ public:
     //! @brief This method shows station logo
     void showServiceLogo(const QPixmap & logo);
 
+    //! @brief This method returns default slide save path
+    QString savePath() const;
+
+    //! @brief This methis sets default slide save path
+    void setSavePath(const QString &newSavePath);
+
 protected:
     //! @brief Reimplemented to scale image correctly
     void resizeEvent(QResizeEvent *event);
@@ -96,6 +102,12 @@ private:
 
     //! @brief Methods displays pixmap
     void displayPixmap(const QPixmap & logo);
+
+    //! @brief This is copy of current slide
+    Slide m_currentSlide;
+
+    //! @brief This is default file path for saving slides
+    QString m_savePath;
 };
 
 #endif // SLSVIEW_H
