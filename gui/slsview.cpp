@@ -380,7 +380,7 @@ void SLSView::mouseReleaseEvent(QMouseEvent *event)
             if (image.loadFromData(m_currentSlide.getRawData(), m_currentSlide.getFormat().toLatin1()))
             {
                 QApplication::clipboard()->setImage(image, QClipboard::Clipboard);
-                qCInfo(application) << "Slide copied clipboard";
+                qCInfo(application) << "Slide copied to clipboard";
             }
             else
             {
