@@ -1536,7 +1536,11 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_17">
               <item>
-               <widget class="QLineEdit" name="dumpSpiPatternEdit"/>
+               <widget class="QLineEdit" name="dumpSpiPatternEdit">
+                <property name="toolTip">
+                 <string>Storage path template for SPI application. Following tokens are supported {serviceId, ensId, scId, contentName, directoryId, transportId}</string>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QPushButton" name="dumpSpiPatternReset">
