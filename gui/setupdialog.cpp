@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -291,12 +291,24 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->audioOutRecordingRadioButton, &QRadioButton::clicked, this, &SetupDialog::onAudioRecordingChecked);
     connect(ui->autoStopRecordingCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings.audioRecAutoStopEna = checked; });
 
+    ui->dumpSlsDocuLabel->setText(tr("<a href=\"https://github.com/KejPi/AbracaDABra\">Documentation</a>"));
+    ui->dumpSlsDocuLabel->setTextFormat(Qt::RichText);
+    ui->dumpSlsDocuLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    ui->dumpSlsDocuLabel->setOpenExternalLinks(true);
+    ui->dumpSpiDocuLabel->setText(tr("<a href=\"https://github.com/KejPi/AbracaDABra\">Documentation</a>"));
+    ui->dumpSpiDocuLabel->setTextFormat(Qt::RichText);
+    ui->dumpSpiDocuLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    ui->dumpSpiDocuLabel->setOpenExternalLinks(true);
+
     ui->dataDumpFolderLabel->setElideMode(Qt::ElideLeft);
     connect(ui->dataDumpFolderButton, &QPushButton::clicked, this, &SetupDialog::onDataDumpFolderButtonClicked);
     connect(ui->dumpSlsCheckBox, &QCheckBox::toggled, this, &SetupDialog::onDataDumpCheckboxToggled);
     connect(ui->dumpSpiCheckBox, &QCheckBox::toggled, this, &SetupDialog::onDataDumpCheckboxToggled);
     connect(ui->dumpOverwriteCheckbox, &QCheckBox::toggled, this, &SetupDialog::onDataDumpCheckboxToggled);
-
+    connect(ui->dumpSlsPatternReset, &QPushButton::clicked, this, &SetupDialog::onDataDumpResetClicked);
+    connect(ui->dumpSpiPatternReset, &QPushButton::clicked, this, &SetupDialog::onDataDumpResetClicked);
+    connect(ui->dumpSlsPatternEdit, &QLineEdit::editingFinished, this, &SetupDialog::onDataDumpPatternEditingFinished);
+    connect(ui->dumpSpiPatternEdit, &QLineEdit::editingFinished, this, &SetupDialog::onDataDumpPatternEditingFinished);
     connect(ui->rawFileProgressBar, &QProgressBar::valueChanged, this, &SetupDialog::onRawFileProgressChanged);
     // reset UI
     onFileLength(0);
@@ -318,6 +330,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 #endif
 
     adjustSize();
+    setMinimumWidth(width());
+    setMinimumHeight(height());
+
 }
 
 void SetupDialog::showEvent(QShowEvent *event)
@@ -325,6 +340,16 @@ void SetupDialog::showEvent(QShowEvent *event)
     ui->tabWidget->setFocus();
 
     QDialog::showEvent(event);
+}
+
+void SetupDialog::setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault)
+{
+    m_spiDumpPaternDefault = newSpiDumpPaternDefault;
+}
+
+void SetupDialog::setSlsDumpPaternDefault(const QString &newSlsDumpPaternDefault)
+{
+    m_slsDumpPaternDefault = newSlsDumpPaternDefault;
 }
 
 SetupDialog::Settings SetupDialog::settings() const
@@ -666,6 +691,8 @@ void SetupDialog::setUiState()
     ui->autoStopRecordingCheckBox->setChecked(m_settings.audioRecAutoStopEna);
 
     ui->dataDumpFolderLabel->setText(m_settings.uaDump.folder);
+    ui->dumpSlsPatternEdit->setText(m_settings.uaDump.slsPattern);
+    ui->dumpSpiPatternEdit->setText(m_settings.uaDump.spiPattern);
     // blocker is required to avoid triggering unwanted signal
     // we need to set UI state first
     {
@@ -1357,5 +1384,34 @@ void SetupDialog::onDataDumpCheckboxToggled(bool)
     m_settings.uaDump.slsEna = ui->dumpSlsCheckBox->isChecked();
     m_settings.uaDump.spiEna = ui->dumpSpiCheckBox->isChecked();
 
+    emit uaDumpSettings(m_settings.uaDump);
+}
+
+
+void SetupDialog::onDataDumpPatternEditingFinished()
+{
+    if (QObject::sender() == ui->dumpSlsPatternEdit)
+    {
+        m_settings.uaDump.slsPattern = ui->dumpSlsPatternEdit->text().trimmed();
+    }
+    else
+    {
+        m_settings.uaDump.spiPattern = ui->dumpSpiPatternEdit->text().trimmed();
+    }
+    emit uaDumpSettings(m_settings.uaDump);
+}
+
+void SetupDialog::onDataDumpResetClicked()
+{
+    if (QObject::sender() == ui->dumpSlsPatternReset)
+    {
+        m_settings.uaDump.slsPattern = m_slsDumpPaternDefault;
+        ui->dumpSlsPatternEdit->setText(m_slsDumpPaternDefault);
+    }
+    else
+    {
+        m_settings.uaDump.spiPattern = m_spiDumpPaternDefault;
+        ui->dumpSpiPatternEdit->setText(m_spiDumpPaternDefault);
+    }
     emit uaDumpSettings(m_settings.uaDump);
 }

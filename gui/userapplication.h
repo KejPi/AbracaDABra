@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,11 @@ public:
     virtual void stop() = 0;
     virtual void restart() = 0;
     virtual void reset() { stop(); }
+
+    // data dumping support
     virtual void setDataDumping(const SetupDialog::Settings::UADumpSettings & settings) = 0;
+    void setEnsId(const RadioControlEnsemble &ens) { m_ueid = ens.ueid; }
+    void setAudioServiceId(const RadioControlServiceComponent &s) { m_SId = s.SId; }
 signals:
     void resetTerminal();
 
@@ -55,6 +59,9 @@ protected:
     bool m_dumpEna;
     bool m_dumpOverwrite;
     QString m_dumpPath;
+    QString m_dumpPattern;
+    uint32_t m_ueid;
+    DabSId m_SId;
 };
 
 #endif // USERAPPLICATION_H

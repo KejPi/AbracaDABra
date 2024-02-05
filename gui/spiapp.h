@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -118,9 +118,8 @@ private:
     QString radioDNSServiceIdentifier(const ServiceListId &servId, const uint32_t & ueid) const;
     void handleRadioDNSLookup();
     void downloadFile(const QString &url, const QString &requestId, bool useCache = true);
-    void onFileDownloaded(QNetworkReply *reply);
-
-    void dumpFile(uint16_t decoderId, QString filename, const QByteArray &data);
+    void onFileDownloaded(QNetworkReply *reply);        
+    void dumpFile(uint16_t decoderId, int transportId, QString contentName, const QByteArray &data);
 };
 
 namespace SPIElement

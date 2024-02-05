@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,11 +50,10 @@ public:
     QString clickThroughURL;
     QString alternativeLocationURL;
     QString format;
+    int transportID;
     int categoryID;
     int slideID;
     int numBytes;
-    QString getFormat() const;
-    void setFormat(const QString &newFormat);
 };
 
 class Slide
@@ -83,6 +82,9 @@ public:
 
     int getSlideID() const;
     void setSlideID(int newSlideID);
+
+    int getTransportID() const;
+    void setTransportID(int newTransportID);
 
     const QByteArray & getRawData() const { return d->rawData; }
     int getNumBytes() const { return d->numBytes; }

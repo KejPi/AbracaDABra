@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -152,9 +152,17 @@ void SPIApp::setDataDumping(const SetupDialog::Settings::UADumpSettings &setting
 {
     m_dumpEna = settings.spiEna;
     m_dumpOverwrite = settings.overwriteEna;
-    m_dumpPath = settings.folder + "/SPI";
+    m_dumpPath = settings.folder;
+    if (settings.spiPattern.startsWith('/'))
+    {
+        m_dumpPattern = settings.spiPattern;
+    }
+    else
+    {
+        m_dumpPattern = "/" + settings.spiPattern;
+    }
 
-    qCDebug(spiApp) << m_dumpPath;
+    qCDebug(spiApp) << m_dumpPath + m_dumpPattern;
 }
 
 void SPIApp::enable(bool ena)
@@ -292,7 +300,7 @@ void SPIApp::processObject(uint16_t decoderId, MOTObjectCache::const_iterator ob
 
     if (m_dumpEna)
     {
-        dumpFile(decoderId, objIt->getContentName(), objIt->getBody());
+        dumpFile(decoderId, objIt->getId(), objIt->getContentName(), objIt->getBody());
     }
 
     switch (objIt->getContentType())
@@ -333,14 +341,21 @@ void SPIApp::processObject(uint16_t decoderId, MOTObjectCache::const_iterator ob
     }
 }
 
-void SPIApp::dumpFile(uint16_t decoderId, QString filename, const QByteArray & data)
+void SPIApp::dumpFile(uint16_t decoderId, int transportId, QString contentName, const QByteArray & data)
 {
+    QString filename = m_dumpPattern;
+    filename.replace("{ensId}", QString("%1").arg(m_ueid, 6, 16, QChar('0')));
+    filename.replace("{serviceId}", QString("%1").arg(m_SId.value(), 6, 16, QChar('0')));
+    filename.replace("{transportId}", QString().setNum(transportId));
+    filename.replace("{serviceCompId}", QString().setNum(decoderId));
+    filename.replace("{directoryId}", QString().setNum(m_decoderMap[decoderId]->getDirectoryId()));
+
     // remove problematic characters
     static const QRegularExpression regexp( "[" + QRegularExpression::escape("/:*?\"<>|") + "]");
-    filename.replace(regexp, "_");
-    QFile file(QString("%1/%2/%3").arg(m_dumpPath)
-                                  .arg(m_decoderMap[decoderId]->getDirectoryId())
-                                  .arg(filename));
+    contentName.replace(regexp, "_");
+    filename.replace("{contentName}", contentName);
+
+    QFile file(m_dumpPath + filename);
     if (!file.exists() || m_dumpOverwrite)
     {   // file does not exist of overwriting is enabled == > store file
         QDir dir;
@@ -508,7 +523,7 @@ void SPIApp::parseBinaryInfo(uint16_t decoderId, const MOTObject &motObj)
 
     if (m_dumpEna)
     {
-        dumpFile(decoderId, motObj.getContentName()+".xml", m_xmldocument.toByteArray());
+        dumpFile(decoderId, motObj.getId(), motObj.getContentName()+".xml", m_xmldocument.toByteArray());
     }
 
     emit xmlDocument(m_xmldocument.toString(), scopeId, decoderId);

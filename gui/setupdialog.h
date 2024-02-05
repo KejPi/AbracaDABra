@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -120,8 +120,10 @@ public:
         {
             QString folder;
             bool overwriteEna;
-            bool slsEna;
+            bool slsEna;            
             bool spiEna;
+            QString slsPattern;
+            QString spiPattern;
         } uaDump;
     };
 
@@ -136,6 +138,10 @@ public:
     void onFileProgress(int msec);
     void setAudioRecAutoStop(bool ena);
     QLocale::Language applicationLanguage() const;
+
+    void setSlsDumpPaternDefault(const QString &newSlsDumpPaternDefault);
+
+    void setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault);
 
 signals:
     void inputDeviceChanged(const InputDeviceId & inputDevice);
@@ -169,6 +175,8 @@ private:
     QCheckBox * m_announcementCheckBox[static_cast<int>(DabAnnouncement::Undefined)];
     QCheckBox * m_bringWindowToForegroundCheckbox;
     QLabel * m_xmlHeaderLabel[SetupDialogXmlHeader::XMLNumLabels];
+    QString m_slsDumpPaternDefault;
+    QString m_spiDumpPaternDefault;
 
     void setUiState();
     void setStatusLabel();
@@ -213,6 +221,8 @@ private:
     void onAudioRecordingChecked(bool checked);
     void onDataDumpFolderButtonClicked();
     void onDataDumpCheckboxToggled(bool);
+    void onDataDumpPatternEditingFinished();
+    void onDataDumpResetClicked();
 
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);

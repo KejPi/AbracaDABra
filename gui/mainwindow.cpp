@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -88,8 +88,10 @@ const char * MainWindow::syncLevelTooltip[] = {QT_TR_NOOP("DAB signal not detect
 const QStringList MainWindow::snrProgressStylesheet = {
     QString::fromUtf8("QProgressBar::chunk {background-color: #ff4b4b; }"),  // red
     QString::fromUtf8("QProgressBar::chunk {background-color: #ffb527; }"),  // yellow
-    QString::fromUtf8("QProgressBar::chunk {background-color: #5bc214; }")   // green
+    QString::fromUtf8("QProgressBar::chunk {background-color: #5bc214; }")   // green    
 };
+const QString MainWindow::slsDumpPatern("SLS/{serviceId}/{contentNameWithExt}");
+const QString MainWindow::spiDumpPatern("SPI/{ensId}/{serviceCompId}_{directoryId}/{contentName}");
 
 enum class SNR10Threhold
 {
@@ -217,6 +219,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_inputDeviceRecorder = new InputDeviceRecorder();
 
     m_setupDialog = new SetupDialog(this);
+    m_setupDialog->setSlsDumpPaternDefault(slsDumpPatern);
+    m_setupDialog->setSpiDumpPaternDefault(spiDumpPatern);
     connect(m_setupDialog, &SetupDialog::inputDeviceChanged, this, &MainWindow::changeInputDevice);
     connect(this, &MainWindow::expertModeChanged, m_setupDialog, &SetupDialog::onExpertMode);
     connect(m_setupDialog, &SetupDialog::newInputDeviceSettings, this, &MainWindow::onNewInputDeviceSettings);
@@ -680,6 +684,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControlThread, &QThread::finished, m_slideShowApp[Instance::Service], &QObject::deleteLater);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_slideShowApp[Instance::Service], &SlideShowApp::start);
     connect(m_radioControl, &RadioControl::userAppData_Service, m_slideShowApp[Instance::Service], &SlideShowApp::onUserAppData);
+    connect(m_radioControl, &RadioControl::ensembleInformation, m_slideShowApp[Instance::Service], &UserApplication::setEnsId);
+    connect(m_radioControl, &RadioControl::audioServiceSelection, m_slideShowApp[Instance::Service], &UserApplication::setAudioServiceId);
 
     //connect(this, &MainWindow::serviceRequest, m_metadataManager, &MetadataManager::onServiceRequest);
 
@@ -727,7 +733,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::spiApplicationSettingsChanged, m_spiApp, &SPIApp::onSettingsChanged, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleInformation, m_metadataManager, &MetadataManager::onEnsembleInformation, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_metadataManager, &MetadataManager::onAudioServiceSelection, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::ensembleInformation, m_epgDialog, &EPGDialog::onEnsembleInformation, Qt::QueuedConnection);    
+    connect(m_radioControl, &RadioControl::ensembleInformation, m_epgDialog, &EPGDialog::onEnsembleInformation, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::ensembleInformation, m_spiApp, &UserApplication::setEnsId);
+    connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &UserApplication::setAudioServiceId);
 
     // input device connections
     initInputDevice(InputDeviceId::UNDEFINED);
@@ -904,7 +912,6 @@ void MainWindow::onEnsembleInfo(const RadioControlEnsemble &ens)
                                   .arg(QString("%1").arg(ens.ecc(), 2, 16, QChar('0')).toUpper())
                                   .arg(QString("%1").arg(ens.eid(), 4, 16, QChar('0')).toUpper())
                                   .arg(DabTables::getCountryName(ens.ueid)));
-
     m_serviceList->beginEnsembleUpdate(ens);
 }
 
@@ -2491,10 +2498,13 @@ void MainWindow::loadSettings()
     s.audioRecFolder = settings->value("audioRecFolder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
     s.audioRecCaptureOutput = settings->value("audioRecCaptureOutput", false).toBool();
     s.audioRecAutoStopEna = settings->value("audioRecAutoStop", false).toBool();
-    s.uaDump.folder = settings->value("uaDumpFolder", QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/" + appName).toString();
-    s.uaDump.overwriteEna  = settings->value("uaDumpOverwriteEna", false).toBool();
-    s.uaDump.slsEna  = settings->value("uaDumpSlsEna", false).toBool();
-    s.uaDump.spiEna  = settings->value("uaDumpSpiEna", false).toBool();
+
+    s.uaDump.folder = settings->value("UA-STORAGE/folder", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + "/" + appName).toString();
+    s.uaDump.overwriteEna  = settings->value("UA-STORAGE/overwriteEna", false).toBool();
+    s.uaDump.slsEna = settings->value("UA-STORAGE/slsEna", false).toBool();
+    s.uaDump.spiEna = settings->value("UA-STORAGE/spiEna", false).toBool();
+    s.uaDump.slsPattern = settings->value("UA-STORAGE/slsPattern", slsDumpPatern).toString();
+    s.uaDump.spiPattern = settings->value("UA-STORAGE/spiPattern", spiDumpPatern).toString();
 
     m_epgDialog->setFilterEmptyEpg(settings->value("epgFilterEmpty", false).toBool());
     m_epgDialog->setFilterEnsemble(settings->value("epgFilterOtherEnsembles", false).toBool());
@@ -2673,10 +2683,13 @@ void MainWindow::saveSettings()
     settings->setValue("audioRecFolder", s.audioRecFolder);
     settings->setValue("audioRecCaptureOutput", s.audioRecCaptureOutput);
     settings->setValue("audioRecAutoStop", s.audioRecAutoStopEna);
-    settings->setValue("uaDumpFolder", s.uaDump.folder);
-    settings->setValue("uaDumpOverwriteEna", s.uaDump.overwriteEna);
-    settings->setValue("uaDumpSlsEna", s.uaDump.slsEna);
-    settings->setValue("uaDumpSpiEna", s.uaDump.spiEna);
+
+    settings->setValue("UA-STORAGE/folder", s.uaDump.folder);
+    settings->setValue("UA-STORAGE/overwriteEna", s.uaDump.overwriteEna);
+    settings->setValue("UA-STORAGE/slsEna", s.uaDump.slsEna);
+    settings->setValue("UA-STORAGE/spiEna", s.uaDump.spiEna);
+    settings->setValue("UA-STORAGE/slsPattern", s.uaDump.slsPattern);
+    settings->setValue("UA-STORAGE/spiPattern", s.uaDump.spiPattern);
 
     settings->setValue("epgFilterEmpty", m_epgDialog->filterEmptyEpg());
     settings->setValue("epgFilterOtherEnsembles", m_epgDialog->filterEnsemble());

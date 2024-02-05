@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>530</width>
-    <height>530</height>
+    <height>597</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -59,6 +59,13 @@
           </layout>
          </item>
          <item>
+          <widget class="QPushButton" name="connectButton">
+           <property name="text">
+            <string>Connect</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -70,13 +77,6 @@
             </size>
            </property>
           </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="connectButton">
-           <property name="text">
-            <string>Connect</string>
-           </property>
-          </widget>
          </item>
         </layout>
        </item>
@@ -1367,7 +1367,7 @@
          <property name="title">
           <string>Data Storage</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_13">
+         <layout class="QVBoxLayout" name="verticalLayout_15">
           <item>
            <layout class="QGridLayout" name="gridLayout_8">
             <item row="1" column="0">
@@ -1443,24 +1443,129 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="dumpSlsCheckBox">
-            <property name="toolTip">
-             <string>Enables storing of all slides to selected folder. Slideshow data are stored in 'SLS' subfolder.</string>
+           <layout class="QVBoxLayout" name="verticalLayout_13">
+            <property name="spacing">
+             <number>0</number>
             </property>
-            <property name="text">
-             <string>Slideshow data</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="dumpSpiCheckBox">
-            <property name="toolTip">
-             <string>Enables storing of all SPI data to selected folder. &lt;br&gt;SPI data are binary encoded files with services and program information, &lt;br&gt;these files decoded to XML format and service logos.&lt;br&gt;SPI data are stored in 'SPI/MOTDirectoryID' subfolder.</string>
-            </property>
-            <property name="text">
-             <string>SPI data</string>
-            </property>
-           </widget>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_18">
+              <item>
+               <widget class="QCheckBox" name="dumpSlsCheckBox">
+                <property name="toolTip">
+                 <string>Enables storing of all slides to selected folder. Slideshow data are stored in 'SLS' subfolder.</string>
+                </property>
+                <property name="text">
+                 <string>Slideshow data</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_10">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="dumpSlsDocuLabel">
+                <property name="text">
+                 <string>Documentation</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_11">
+              <item>
+               <widget class="QLineEdit" name="dumpSlsPatternEdit">
+                <property name="toolTip">
+                 <string>Storage path template for SLS application. Following tokens are supported {serviceId, ensId, contentName, contentNameWithExt, transportId}</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="dumpSlsPatternReset">
+                <property name="text">
+                 <string>Reset</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_19">
+              <item>
+               <widget class="QCheckBox" name="dumpSpiCheckBox">
+                <property name="toolTip">
+                 <string>Enables storing of all SPI data to selected folder. &lt;br&gt;SPI data are binary encoded files with services and program information, &lt;br&gt;these files decoded to XML format and service logos.&lt;br&gt;SPI data are stored in 'SPI/MOTDirectoryID' subfolder.</string>
+                </property>
+                <property name="text">
+                 <string>SPI data</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_11">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="dumpSpiDocuLabel">
+                <property name="text">
+                 <string>Documentation</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_17">
+              <item>
+               <widget class="QLineEdit" name="dumpSpiPatternEdit"/>
+              </item>
+              <item>
+               <widget class="QPushButton" name="dumpSpiPatternReset">
+                <property name="text">
+                 <string>Reset</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QLabel" name="dumpPatternHelpLabel">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
+&lt;p&gt;Data storage path pattern supports following tokens:&lt;/p&gt;
+&lt;p&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{serviceId}&lt;/b&gt; ... current audio service ID (hexadecimal number)&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{ensId}&lt;/b&gt; ... current ensemble ID (hexadecimal number)&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{transportId}&lt;/b&gt; ... transport ID&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentName}&lt;/b&gt; ... content name&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentNameWithExt}&lt;/b&gt; ... content name with extension &lt;i&gt;[only SLS]&lt;/i&gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{directoryId}&lt;/b&gt; ... directory ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;br&gt;  
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{serviceCompId}&lt;/b&gt; ... service component ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;br&gt;
+&lt;/p&gt;
+&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -1473,7 +1578,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>187</height>
+           <height>5</height>
           </size>
          </property>
         </spacer>

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -92,9 +92,17 @@ void SlideShowApp::setDataDumping(const SetupDialog::Settings::UADumpSettings &s
 {
     m_dumpEna = settings.slsEna;
     m_dumpOverwrite = settings.overwriteEna;
-    m_dumpPath = settings.folder + "/SLS/";
+    m_dumpPath = settings.folder;
+    if (settings.slsPattern.startsWith('/'))
+    {
+        m_dumpPattern = settings.slsPattern;
+    }
+    else
+    {
+        m_dumpPattern = "/" + settings.slsPattern;
+    }
 
-    qCDebug(slideShowApp) << m_dumpPath;
+    qCDebug(slideShowApp) << m_dumpPath + m_dumpPattern;
 }
 
 void SlideShowApp::onUserAppData(const RadioControlUserAppData & data)
@@ -302,6 +310,9 @@ void SlideShowApp::onNewMOTObject(const MOTObject & obj)
         ++it;
     }
 
+    // required for dumping functionality
+    slide.setTransportID(obj.getId());
+
     // we can try to load data to Slide
     if (!slide.setPixmap(obj.getBody()))
     {   // loading of data failed
@@ -483,15 +494,24 @@ void SlideShowApp::removeSlideFromCategory(const Slide & slide)
 
 void SlideShowApp::dumpSlide(const Slide &slide)
 {
-    QString filename = slide.getContentName();
+    QString filename = m_dumpPattern;
+    filename.replace("{ensId}", QString("%1").arg(m_ueid, 6, 16, QChar('0')));
+    filename.replace("{serviceId}", QString("%1").arg(m_SId.value(), 6, 16, QChar('0')));
+    filename.replace("{transportId}", QString().setNum(slide.getTransportID()));
 
+    QString contentName = slide.getContentName();
     // remove problematic characters
     static const QRegularExpression regexp( "[" + QRegularExpression::escape("/:*?\"<>|") + "]");
-    filename.replace(regexp, "_");
-    if (QFileInfo(filename).suffix().isEmpty())
+    contentName.replace(regexp, "_");
+    filename.replace("{contentName}", contentName);
+
+    if (QFileInfo(contentName).suffix().isEmpty())
     {
-        filename.append(QString(".%1").arg(slide.getFormat().toLower()));
+        contentName.append(QString(".%1").arg(slide.getFormat().toLower()));
     }
+    filename.replace("{contentNameWithExt}", contentName);
+
+    //qDebug() << filename << m_dumpPath + filename;
     QFile file(m_dumpPath + filename);
     if (!file.exists() || m_dumpOverwrite)
     {   // file does not exist of overwriting is enabled == > store file
@@ -568,16 +588,6 @@ SlideData::SlideData(const SlideData & other) :
     slideID(other.slideID),
     numBytes(other.numBytes)
 {
-}
-
-QString SlideData::getFormat() const
-{
-    return format;
-}
-
-void SlideData::setFormat(const QString &newFormat)
-{
-    format = newFormat;
 }
 
 Slide::Slide()
@@ -657,6 +667,17 @@ void Slide::setSlideID(int newSlideID)
 {
     d->slideID = newSlideID;
 }
+
+int Slide::getTransportID() const
+{
+    return d->transportID;
+}
+
+void Slide::setTransportID(int newTransportID)
+{
+    d->transportID = newTransportID;
+}
+
 
 const QString &Slide::getAlternativeLocationURL() const
 {
