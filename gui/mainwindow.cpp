@@ -222,7 +222,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_setupDialog->setSlsDumpPaternDefault(slsDumpPatern);
     m_setupDialog->setSpiDumpPaternDefault(spiDumpPatern);
     connect(m_setupDialog, &SetupDialog::inputDeviceChanged, this, &MainWindow::changeInputDevice);
-    connect(this, &MainWindow::expertModeChanged, m_setupDialog, &SetupDialog::onExpertMode);
     connect(m_setupDialog, &SetupDialog::newInputDeviceSettings, this, &MainWindow::onNewInputDeviceSettings);
     connect(m_setupDialog, &SetupDialog::applicationStyleChanged, this, &MainWindow::onApplicationStyleChanged);
     connect(m_setupDialog, &SetupDialog::expertModeToggled, this, &MainWindow::onExpertModeToggled);
@@ -2976,8 +2975,6 @@ void MainWindow::setExpertMode(bool ena)
     {
         setTabOrder(ui->serviceListView, m_audioVolumeSlider);
     }
-
-    emit expertModeChanged(ena);
 }
 
 void MainWindow::bandScan()

@@ -131,7 +131,6 @@ public:
     Settings settings() const;
     void setGainValues(const QList<float> & gainList);
     void resetInputDevice();
-    void onExpertMode(bool ena);    
     void setSettings(const Settings &settings);
     void setXmlHeader(const InputDeviceDescription & desc);
     void onFileLength(int msec);

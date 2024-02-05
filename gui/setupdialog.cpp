@@ -218,12 +218,6 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->loopCheckbox, &QCheckBox::stateChanged, this, [=](int val) { m_settings.rawfile.loopEna = (Qt::Unchecked != val); });
     connect(ui->fileFormatCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onRawFileFormatChanged);
 
-    connect(this, &SetupDialog::expertModeToggled, ui->rtlsdrExpertGroup, &QGroupBox::setVisible);
-    connect(this, &SetupDialog::expertModeToggled, ui->rtltcpExpertGroup, &QGroupBox::setVisible);
-    connect(this, &SetupDialog::expertModeToggled, ui->airspyExpertGroup, &QGroupBox::setVisible);
-    connect(this, &SetupDialog::expertModeToggled, ui->soapysdrExpertGroup, &QGroupBox::setVisible);    
-
-
 #if HAVE_AIRSPY
     connect(ui->airspySensitivityGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspySensitivityGainSliderChanged);
     connect(ui->airspyIFGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspyIFGainSliderChanged);
@@ -402,7 +396,8 @@ void SetupDialog::setSettings(const Settings &settings)
 {
     m_settings = settings;
     setUiState();
-    setStatusLabel();
+    onExpertModeChecked(m_settings.expertModeEna);
+    setStatusLabel();    
     emit newAnnouncementSettings();
     emit noiseConcealmentLevelChanged(m_settings.noiseConcealmentLevel);
     emit xmlHeaderToggled(m_settings.xmlHeaderEna);
@@ -535,7 +530,6 @@ void SetupDialog::setUiState()
     ui->rtlsdrBandwidth->setValue(m_settings.rtlsdr.bandwidth / 1000);
     ui->rtlsdrBiasTCombo->setCurrentIndex(m_settings.rtlsdr.biasT ? 1 : 0);
     ui->rtlsdrSwAgcMaxLevel->setValue(m_settings.rtlsdr.agcLevelMax);
-    ui->rtlsdrExpertGroup->setVisible(m_settings.expertModeEna);
     ui->rtlsdrPPM->setValue(m_settings.rtlsdr.ppm);
 
     switch (m_settings.rtltcp.gainMode) {
@@ -553,7 +547,6 @@ void SetupDialog::setUiState()
     }
     ui->rtltcpSwAgcMaxLevel->setValue(m_settings.rtltcp.agcLevelMax);
     ui->rtltcpPPM->setValue(m_settings.rtltcp.ppm);
-    ui->rtltcpExpertGroup->setVisible(m_settings.expertModeEna);
 
 #if HAVE_AIRSPY
     switch (m_settings.airspy.gain.mode) {
@@ -580,7 +573,6 @@ void SetupDialog::setUiState()
     ui->airspyMixerAGCCheckbox->setChecked(m_settings.airspy.gain.mixerAgcEna);
     ui->airspyLNAAGCCheckbox->setChecked(m_settings.airspy.gain.lnaAgcEna);
     ui->airspyBiasTCombo->setCurrentIndex(m_settings.airspy.biasT ? 1 : 0);
-    ui->airspyExpertGroup->setVisible(m_settings.expertModeEna);
 #endif
 
 #if HAVE_SOAPYSDR
@@ -614,7 +606,6 @@ void SetupDialog::setUiState()
     ui->soapySdrAntenna->setText(m_settings.soapysdr.antenna);
 
     ui->soapysdrBandwidth->setValue(m_settings.soapysdr.bandwidth / 1000);
-    ui->soapysdrExpertGroup->setVisible(m_settings.expertModeEna);
 #endif
 
     if (m_settings.rawfile.file.isEmpty())
@@ -1101,26 +1092,6 @@ void SetupDialog::setStatusLabel()
     }
 }
 
-void SetupDialog::onExpertMode(bool ena)
-{
-    int idx = ui->inputCombo->findData(QVariant(static_cast<int>(InputDeviceId::RAWFILE)));
-    if (idx >= 0)
-    {
-        if (!ena)
-        {   // remove it
-            ui->inputCombo->removeItem(idx);
-        }
-        return;
-
-    }
-
-    // not found
-    if (ena)
-    {   // add item
-        ui->inputCombo->addItem(tr("Raw file"), QVariant(int(InputDeviceId::RAWFILE)));
-    }
-}
-
 void SetupDialog::onInputChanged(int index)
 {
     int inputDeviceInt = ui->inputCombo->itemData(index).toInt();
@@ -1264,7 +1235,37 @@ void SetupDialog::onStyleChecked(bool checked)
 
 void SetupDialog::onExpertModeChecked(bool checked)
 {
+    ui->rtlsdrExpertGroup->setVisible(checked);
+    ui->rtltcpExpertGroup->setVisible(checked);
+    ui->airspyExpertGroup->setVisible(checked);
+    ui->soapysdrExpertGroup->setVisible(checked);
+    ui->dataDumpGroup->setVisible(checked);
+    if (!checked)
+    {
+        ui->dumpSlsCheckBox->setChecked(false);
+        ui->dumpSpiCheckBox->setChecked(false);
+    }
+    emit uaDumpSettings(m_settings.uaDump);
+
+    int idx = ui->inputCombo->findData(QVariant(static_cast<int>(InputDeviceId::RAWFILE)));
+    if (checked && (idx < 0))
+    {   // add item
+        ui->inputCombo->addItem(tr("Raw file"), QVariant(int(InputDeviceId::RAWFILE)));
+    }
+    if (!checked && (idx >= 0))
+    {   // remove it
+        if (ui->inputCombo->currentIndex() == idx) {
+            ui->inputCombo->removeItem(idx);
+            ui->inputCombo->setCurrentIndex(0);
+        }
+        else
+        {
+            ui->inputCombo->removeItem(idx);
+        }
+    }
+
     m_settings.expertModeEna = checked;
+
     emit expertModeToggled(checked);
 }
 

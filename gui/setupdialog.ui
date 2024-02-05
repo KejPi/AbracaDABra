@@ -1363,7 +1363,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="dataDumpGroupBox">
+        <widget class="QGroupBox" name="dataDumpGroup">
          <property name="title">
           <string>Data Storage</string>
          </property>

@@ -82,7 +82,6 @@ signals:
     void stopUserApps();
     void resetUserApps();
     void getAudioInfo();
-    void expertModeChanged(bool ena);
     void toggleAnnouncement();
     void audioMute(bool doMute);
     void audioVolume(int volume);
