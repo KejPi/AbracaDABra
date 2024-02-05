@@ -91,7 +91,7 @@ const QStringList MainWindow::snrProgressStylesheet = {
     QString::fromUtf8("QProgressBar::chunk {background-color: #5bc214; }")   // green    
 };
 const QString MainWindow::slsDumpPatern("SLS/{serviceId}/{contentNameWithExt}");
-const QString MainWindow::spiDumpPatern("SPI/{ensId}/{serviceCompId}_{directoryId}/{contentName}");
+const QString MainWindow::spiDumpPatern("SPI/{ensId}/{scId}_{directoryId}/{contentName}");
 
 enum class SNR10Threhold
 {

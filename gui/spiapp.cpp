@@ -347,7 +347,7 @@ void SPIApp::dumpFile(uint16_t decoderId, int transportId, QString contentName, 
     filename.replace("{ensId}", QString("%1").arg(m_ueid, 6, 16, QChar('0')));
     filename.replace("{serviceId}", QString("%1").arg(m_SId.value(), 6, 16, QChar('0')));
     filename.replace("{transportId}", QString().setNum(transportId));
-    filename.replace("{serviceCompId}", QString().setNum(decoderId));
+    filename.replace("{scId}", QString().setNum(decoderId));
     filename.replace("{directoryId}", QString().setNum(m_decoderMap[decoderId]->getDirectoryId()));
 
     // remove problematic characters

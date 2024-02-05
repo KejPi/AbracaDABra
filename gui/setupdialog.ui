@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>530</width>
-    <height>597</height>
+    <height>630</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -1445,7 +1445,7 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_13">
             <property name="spacing">
-             <number>0</number>
+             <number>5</number>
             </property>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_18">
@@ -1559,9 +1559,12 @@
 &amp;nbsp;&amp;nbsp;&lt;b&gt;{contentName}&lt;/b&gt; ... content name&lt;br&gt;
 &amp;nbsp;&amp;nbsp;&lt;b&gt;{contentNameWithExt}&lt;/b&gt; ... content name with extension &lt;i&gt;[only SLS]&lt;/i&gt;&lt;br&gt;
 &amp;nbsp;&amp;nbsp;&lt;b&gt;{directoryId}&lt;/b&gt; ... directory ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;br&gt;  
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{serviceCompId}&lt;/b&gt; ... service component ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{scId}&lt;/b&gt; ... service component ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;br&gt;
 &lt;/p&gt;
 &lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
