@@ -1472,13 +1472,6 @@
                 </property>
                </spacer>
               </item>
-              <item>
-               <widget class="QLabel" name="dumpSlsDocuLabel">
-                <property name="text">
-                 <string>Documentation</string>
-                </property>
-               </widget>
-              </item>
              </layout>
             </item>
             <item>
@@ -1523,13 +1516,6 @@
                  </size>
                 </property>
                </spacer>
-              </item>
-              <item>
-               <widget class="QLabel" name="dumpSpiDocuLabel">
-                <property name="text">
-                 <string>Documentation</string>
-                </property>
-               </widget>
               </item>
              </layout>
             </item>

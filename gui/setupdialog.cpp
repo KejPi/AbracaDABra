@@ -285,15 +285,6 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->audioOutRecordingRadioButton, &QRadioButton::clicked, this, &SetupDialog::onAudioRecordingChecked);
     connect(ui->autoStopRecordingCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings.audioRecAutoStopEna = checked; });
 
-    ui->dumpSlsDocuLabel->setText(QString("<a href=\"https://github.com/KejPi/AbracaDABra\">%1</a>").arg(tr("Documentation")));
-    ui->dumpSlsDocuLabel->setTextFormat(Qt::RichText);
-    ui->dumpSlsDocuLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
-    ui->dumpSlsDocuLabel->setOpenExternalLinks(true);
-    ui->dumpSpiDocuLabel->setText(QString("<a href=\"https://github.com/KejPi/AbracaDABra\">%1</a>").arg(tr("Documentation")));
-    ui->dumpSpiDocuLabel->setTextFormat(Qt::RichText);
-    ui->dumpSpiDocuLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
-    ui->dumpSpiDocuLabel->setOpenExternalLinks(true);
-
     ui->dataDumpFolderLabel->setElideMode(Qt::ElideLeft);
     connect(ui->dataDumpFolderButton, &QPushButton::clicked, this, &SetupDialog::onDataDumpFolderButtonClicked);
     connect(ui->dumpSlsCheckBox, &QCheckBox::toggled, this, &SetupDialog::onDataDumpCheckboxToggled);
