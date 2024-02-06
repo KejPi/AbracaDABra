@@ -285,11 +285,11 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->audioOutRecordingRadioButton, &QRadioButton::clicked, this, &SetupDialog::onAudioRecordingChecked);
     connect(ui->autoStopRecordingCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings.audioRecAutoStopEna = checked; });
 
-    ui->dumpSlsDocuLabel->setText(tr("<a href=\"https://github.com/KejPi/AbracaDABra\">Documentation</a>"));
+    ui->dumpSlsDocuLabel->setText(QString("<a href=\"https://github.com/KejPi/AbracaDABra\">%1</a>").arg(tr("Documentation")));
     ui->dumpSlsDocuLabel->setTextFormat(Qt::RichText);
     ui->dumpSlsDocuLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     ui->dumpSlsDocuLabel->setOpenExternalLinks(true);
-    ui->dumpSpiDocuLabel->setText(tr("<a href=\"https://github.com/KejPi/AbracaDABra\">Documentation</a>"));
+    ui->dumpSpiDocuLabel->setText(QString("<a href=\"https://github.com/KejPi/AbracaDABra\">%1</a>").arg(tr("Documentation")));
     ui->dumpSpiDocuLabel->setTextFormat(Qt::RichText);
     ui->dumpSpiDocuLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     ui->dumpSpiDocuLabel->setOpenExternalLinks(true);
