@@ -3947,7 +3947,7 @@ Soubor: %1</translation>
     <message>
         <location filename="../qml/epg.qml" line="118"/>
         <source>Show only current ensemble</source>
-        <translation>Zobraz jen současný multiplex</translation>
+        <translation>Zobrazit jen současný multiplex</translation>
     </message>
     <message>
         <location filename="../qml/epg.qml" line="145"/>
