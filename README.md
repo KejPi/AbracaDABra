@@ -204,6 +204,23 @@ _Note:_ `CMAKE_INSTALL_PREFIX` is `/usr/local` by default. It means that applica
 
        LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH /usr/local/bin/AbracaDABra &
 
+## USBFS buffer size
+
+USBFS buffet size limitation is typical problem under Linux. In such case RTL-SDR disconnects just after tuning. You may also see message like this in terminal:
+
+```
+Failed to submit transfer 10
+Please increase your allowed usbfs buffer size with the following command:
+echo 0 > /sys/module/usbcore/parameters/usbfs_memory_mb
+```
+
+You can set unlimited size using this command:
+```
+sudo bash -c 'echo 0 > /sys/module/usbcore/parameters/usbfs_memory_mb'
+```
+There are instruction on the internet how to make this settings persistent, for example [here](https://github.com/OpenKinect/libfreenect2/issues/807)
+
+
 
 ## Known limitations
 * Only service logos are currently supported from SPI application
