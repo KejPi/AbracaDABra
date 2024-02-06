@@ -1452,7 +1452,7 @@
               <item>
                <widget class="QCheckBox" name="dumpSlsCheckBox">
                 <property name="toolTip">
-                 <string>Enables storing of all slides to selected folder. Slideshow data are stored in 'SLS' subfolder.</string>
+                 <string>Enables storing of all slides to selected folder. Slideshow data are stored in subfolder specified by pattern below.</string>
                 </property>
                 <property name="text">
                  <string>Slideshow data</string>
@@ -1485,6 +1485,9 @@
               </item>
               <item>
                <widget class="QPushButton" name="dumpSlsPatternReset">
+                <property name="toolTip">
+                 <string>Restore default template</string>
+                </property>
                 <property name="text">
                  <string>Reset</string>
                 </property>
@@ -1497,7 +1500,7 @@
               <item>
                <widget class="QCheckBox" name="dumpSpiCheckBox">
                 <property name="toolTip">
-                 <string>Enables storing of all SPI data to selected folder. &lt;br&gt;SPI data are binary encoded files with services and program information, &lt;br&gt;these files decoded to XML format and service logos.&lt;br&gt;SPI data are stored in 'SPI/MOTDirectoryID' subfolder.</string>
+                 <string>Enables storing of all SPI data to selected folder. &lt;br&gt;SPI data are binary encoded files with services and program information, &lt;br&gt;these files decoded to XML format and service logos.&lt;br&gt;SPI data are stored in subfolder specified by pattern below.</string>
                 </property>
                 <property name="text">
                  <string>SPI data</string>
@@ -1530,6 +1533,9 @@
               </item>
               <item>
                <widget class="QPushButton" name="dumpSpiPatternReset">
+                <property name="toolTip">
+                 <string>Restore default template</string>
+                </property>
                 <property name="text">
                  <string>Reset</string>
                 </property>

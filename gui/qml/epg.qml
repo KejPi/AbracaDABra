@@ -107,7 +107,7 @@ Item {
                         spacing: 10
                         EPGSwitch {
                             id: emptyFilterSwitch
-                            text: qsTr("Hide services without info")
+                            text: qsTr("Hide services without program")
                             checked: epgDialog.filterEmptyEpg
                             onToggled: {
                                 epgDialog.filterEmptyEpg = checked;
@@ -332,7 +332,7 @@ Item {
                                                                 anchors.bottom: parent.bottom
                                                                 verticalAlignment: Text.AlignVCenter
                                                                 x: epgTable.contentX + 5
-                                                                text: qsTr("No infomation available")
+                                                                text: qsTr("No program available")
                                                                 color: EPGColors.fadeTextColor
                                                                 visible: epgItemRepeater.count === 0
                                                             }
