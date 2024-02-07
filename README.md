@@ -2,7 +2,7 @@
 Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks but also with Airspy R2 and Mini devices and with many devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
 
 Application is based on Qt6 cross-platform software development framework and can run on any platform supported by Qt6. 
-Prebuilt binaries are released for Windows, MacOS (both Intel and Apple Silicon) and Linux x86-64 and AARCH64 (AppImage). 
+Prebuilt binaries are released for Windows, macOS (both Intel and Apple Silicon) and Linux x86-64 and AARCH64 (AppImage). 
 ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
 <p align="center" width="100%">
     <img width="889" alt="AbracaDABra application window" src="https://github.com/KejPi/AbracaDABra/assets/6438380/717ed65e-314b-4307-9e32-968c5582eeda"> 
@@ -30,7 +30,7 @@ ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/
 * Audio recording
 * Only band III and DAB mode 1 is supported.
 * Simple user-friendly interface, trying to follow DAB _Rules of implementation (<a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>)_
-* Multiplatform (Windows, MacOS and Linux)
+* Multiplatform (Windows, macOS and Linux)
 * Dark theme supported on all platforms
 * Localization to German, Polish and Czech
 
@@ -55,7 +55,6 @@ This is particularly useful when antenna adjustment is done in order to receive 
 Expert mode can be enabled in Settings dialog.
 
 ## DAB Announcements support
-
 An announcement is a period of elevated interest within an audio programme. It is typically a spoken audio message, often with a lead-in and lead-out 
 audio pattern (for example, a musical jingle). It may refer to various types of information such as traffic, news, sports and others. [<a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>]
 
@@ -74,7 +73,6 @@ The alarm announcements carry emergency warning information that is of utmost im
 Announcements from other service display a thematic placeholder. <a href="https://www.flaticon.com/authors/basic-miscellany/lineal-color" title="linear color">The artwork of placeholders are created by Smashicons - Flaticon</a>
 
 ## SPI application and RadioDNS
-
 <a href="https://www.worlddab.org/dab/data-applications/service-and-programme-information">Service and programme information</a> (SPI) is supported partially. When SPI application is enabled in the settings and SPI is available for selected service and/or in the ensemble, application starts its decoding automatically.
 SPI from X-PAD, from secondary service and from dedicated data service is supported, it can be even decoded from more sources in parallel. 
 In general, SPI application is very slow and it takes several minutes to acquire all objects. AbracaDABra can use internet connection to download service logos and to retrieve service information using RadioDNS if it is supported by broadcaster of the selected service. 
@@ -89,8 +87,43 @@ Service logos and internet download cache are stored in dedicated directory on t
 * Windows: `%USERPROFILE%\AppData\Local\AbracaDABra\cache\`
 * Linux: `$HOME/.cache/AbracaDABra/`
 
-## Audio recording
+<a name="ua_data_storage"></a>
+## User application data storage
+AbracaDABra can be configured to store all incoming data from slideshow (SLS) and/or SPI application. The configuration consists of storage folder that is common for both applications 
+and subfolder template configurable for each application individually. Storage of data can be enabled for each application individually.
 
+Default storage folder is OS dependent:
+* MacOS: `$HOME/Downloads/AbracaDABra/`
+* Windows: `%USERPROFILE%\Downloads\AbracaDABra\`
+* Linux: `$HOME/Downloads/AbracaDABra/`
+
+Subfolder template for each application can be created individually. Following tokens are supported:
+
+| SLS   | SPI   | Token | Description | Example |
+| :---: | :---: | :---- | :-----------| :-------|
+| * | * | `{serviceId}` | Current audio service ID (ECC+SID) as hexadecimal number | `e01234` |
+| * | * | `{ensId}`     | Current ensemble ID (ECC+UEID) as hexadecimal number | `e0eeee` |
+|   | * | `{scId}`      | Data service component ID as 12bit decimal number | `47` |
+| * | * | `{transportId}` | MOT Object transport ID as 16bit decimal number, it shall uniquely identify "file" within single data MOT channel. [[EN 301 234 7.2.7.4](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]  | `123456` |
+|   | * | `{directoryId}` | Directory ID is transport ID of MOT directory. | 654321 |
+| * | * | `{contentName}` | MOT object content name parameter. It is used to uniquely identify an object. [[EN 301 234 6.2.2.1.1](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]  | 'stationLogo' |
+| * |   | `{contentNameWithExt}` | MOT object content name parameter with extension that is added based on MIME type if content name is without extension. | 'stationLogo.jpeg' |
+
+_Important notes:_
+* Path template uses slash `/` as directories separator, backslash `\` is forbidden character.
+* Path template can contain each token multiple times. All occurences are then replaces by respective value. On the othe hand, invalid token is left in the file path as it is.
+* MOT object content name does not have to be a valid filename for any operating system, thus application replaces potentially "dangerous" characters by underscore `_`. For example this is perfectly valid content name: `http://www.example.com:80/logo1`. 
+  Application transforms it to following string when subfolder path is created: `http___www.example.com_80_logo1`
+* SLS is transferred in so called header mode [[EN 301 234 7.1](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]. In this mode only one MOT object (slide) is available.
+* SPI application uses directory mode [[EN 301 234 7.2](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]. In this mode one directory is available but this directory contanins several MOT objects in so called carrousel. These objects ("files") have their own transport ID and content name. Directory typically contains several station logos and binary encoded XML files [[TS 102 371](https://www.etsi.org/deliver/etsi_ts/102300_102399/102371/03.03.01_60/ts_102371v030301p.pdf)]]. When SPI data is stored, application stores all data from carrousel and additionally also decoded XML file for each binary encoded file.
+* SPI application can process data from multiple sources at the same time. These sources are packet data service components within the ensemble each having unique service component ID and XPAD data of selected audio service. Application assigns "virtual" service component ID 65535 to XPAD data. User should take this into considerations when defining path template - for example service component ID shall be unique but directory ID is not unique in general.
+* SPI data retrieved using RadioDNS feature are not stored.
+
+Default template for SLS application is `SLS/{serviceId}/{contentNameWithExt}`. Using examples from the table, it would store this file under macOS and Linux: `$HOME/Downloads/AbracaDABra/SLS/e01234/stationLogo.jpeg`
+
+Default template for SPI application is `SPI/{ensId}/{scId}_{directoryId}/{contentName}`. Using examples from the table, it would store this file under macOS and Linux: `$HOME/Downloads/AbracaDABra/SPI/e0eeee/47_654321/stationLogo`
+
+## Audio recording
 AbracaDABra features audio recording. Two options are available:
 * Encoded DAB/DAB+ stream in MP2 or AAC format respectively
 * Decoded audio in WAV format
@@ -120,12 +153,14 @@ It is also possible to use other than default INI file using `--ini` or `-i` com
 
 ## How to install
 
-### MacOS
+### macOS
 Download latest DMG file from [release page](https://github.com/KejPi/AbracaDABra/releases/latest) and install it like any other application. 
 
 There are two versions of DMG, one for Intel Mac and the other from Apple Silicon Mac. Although Intel Mac application runs on both platforms, it is highly recommended to install Apple Silicon version if you have Apple Silicon Mac. Intel build requires at least MacOS Mojave (10.14) and Apple Silicon build needs at least MacOS BigSur (11).
 
 <img width="752" alt="Snímek obrazovky 2023-12-03 v 19 03 37" src="https://github.com/KejPi/AbracaDABra/assets/6438380/395a0384-ae2d-48e9-aca1-56169d631a4d">
+
+_Note:_ It seems that Apple did some changes in Sonoma and as a result Intel binaries do not run under macOS Catalina or older. Last binary that is know to run is version 2.2.4. Nevertheless the application code is still compatible with Qt6.4 thus it is possible to build AbracaDABra from source code on device running old macOS version.
 
 ### Windows
 Download latest Windows zip file from [release page](https://github.com/KejPi/AbracaDABra/releases/latest) and unpack it to any folder on your drive. 
@@ -219,9 +254,4 @@ You can set unlimited size using this command:
 sudo bash -c 'echo 0 > /sys/module/usbcore/parameters/usbfs_memory_mb'
 ```
 There are instruction on the internet how to make this settings persistent, for example [here](https://github.com/OpenKinect/libfreenect2/issues/807)
-
-
-
-## Known limitations
-* Only service logos are currently supported from SPI application
        
