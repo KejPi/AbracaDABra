@@ -49,7 +49,7 @@ Service can be easily added to favorites by clicking "star" icon.  Most of the e
     <img width="1152" alt="Ensemble details" src="https://github.com/KejPi/AbracaDABra/assets/6438380/d2d552c2-360c-4f44-b3c7-8baa214ba7f9">
 </p>
 
-In addition to basic mode, expert mode shows ensemble tree with structure of services and additional details of currenly tuned service. 
+In addition to basic mode, expert mode shows ensemble tree with structure of services and additional details of currently tuned service. 
 Furthermore it is possible to change the DAB channel manually in this mode. 
 This is particularly useful when antenna adjustment is done in order to receive ensemble that is not captured during automatic band scan.
 Expert mode can be enabled in Settings dialog.
@@ -105,18 +105,18 @@ Subfolder template for each application can be created individually. Following t
 | * | * | `{ensId}`     | Current ensemble ID (ECC+UEID) as hexadecimal number | `e0eeee` |
 |   | * | `{scId}`      | Data service component ID as 12bit decimal number | `47` |
 | * | * | `{transportId}` | MOT Object transport ID as 16bit decimal number, it shall uniquely identify "file" within single data MOT channel. [[EN 301 234 7.2.7.4](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]  | `123456` |
-|   | * | `{directoryId}` | Directory ID is transport ID of MOT directory. | 654321 |
-| * | * | `{contentName}` | MOT object content name parameter. It is used to uniquely identify an object. [[EN 301 234 6.2.2.1.1](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]  | 'stationLogo' |
-| * |   | `{contentNameWithExt}` | MOT object content name parameter with extension that is added based on MIME type if content name is without extension. | 'stationLogo.jpeg' |
+|   | * | `{directoryId}` | Directory ID is transport ID of MOT directory. | `654321` |
+| * | * | `{contentName}` | MOT object content name parameter. It is used to uniquely identify an object. [[EN 301 234 6.2.2.1.1](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]  | `stationLogo` |
+| * |   | `{contentNameWithExt}` | MOT object content name parameter with extension that is added based on MIME type if content name is without extension. | `stationLogo.jpeg` |
 
 _Important notes:_
 * Path template uses slash `/` as directories separator, backslash `\` is forbidden character.
-* Path template can contain each token multiple times. All occurences are then replaces by respective value. On the othe hand, invalid token is left in the file path as it is.
+* Path template can contain each token multiple times. All occurrences are then replaces by respective value. On the other hand, invalid token is left in the file path as it is.
 * MOT object content name does not have to be a valid filename for any operating system, thus application replaces potentially "dangerous" characters by underscore `_`. For example this is perfectly valid content name: `http://www.example.com:80/logo1`. 
   Application transforms it to following string when subfolder path is created: `http___www.example.com_80_logo1`
 * SLS is transferred in so called header mode [[EN 301 234 7.1](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]. In this mode only one MOT object (slide) is available.
-* SPI application uses directory mode [[EN 301 234 7.2](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]. In this mode one directory is available but this directory contanins several MOT objects in so called carrousel. These objects ("files") have their own transport ID and content name. Directory typically contains several station logos and binary encoded XML files [[TS 102 371](https://www.etsi.org/deliver/etsi_ts/102300_102399/102371/03.03.01_60/ts_102371v030301p.pdf)]]. When SPI data is stored, application stores all data from carrousel and additionally also decoded XML file for each binary encoded file.
-* SPI application can process data from multiple sources at the same time. These sources are packet data service components within the ensemble each having unique service component ID and XPAD data of selected audio service. Application assigns "virtual" service component ID 65535 to XPAD data. User should take this into considerations when defining path template - for example service component ID shall be unique but directory ID is not unique in general.
+* SPI application uses directory mode [[EN 301 234 7.2](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]. In this mode one directory is available but this directory contains several MOT objects in so called carrousel. These objects ("files") have their own transport ID and content name. Directory typically contains several station logos and binary encoded XML files [[TS 102 371](https://www.etsi.org/deliver/etsi_ts/102300_102399/102371/03.03.01_60/ts_102371v030301p.pdf)]]. When SPI data is stored, application stores all data from carrousel and additionally also decoded XML file for each binary encoded file.
+* SPI application can process data from multiple sources at the same time. These sources are packet data service components within the ensemble each having unique service component ID and XPAD data of selected audio service. Application assigns "virtual" service component ID 65535 to XPAD data. User should take parallel processing into considerations when defining path template - for example service component ID `{scId}` shall be unique but directory ID `{directoryId}` is generally not unique within ensemble.
 * SPI data retrieved using RadioDNS feature are not stored.
 
 Default template for SLS application is `SLS/{serviceId}/{contentNameWithExt}`. Using examples from the table, it would store this file under macOS and Linux: `$HOME/Downloads/AbracaDABra/SLS/e01234/stationLogo.jpeg`
@@ -132,10 +132,10 @@ Audio recording can be started and stopped from application menu. It can be also
 
 <img width="1326" alt="Snímek obrazovky 2023-12-03 v 16 56 59" src="https://github.com/KejPi/AbracaDABra/assets/6438380/92bddcfe-614d-45ea-bb8d-10ede37b61cb">
 
-_Note:_  Audio recording stops when enseble reconfigures or when any tuning operation is performed. 
+_Note:_  Audio recording stops when ensemble reconfigures or when any tuning operation is performed. 
 
 ## Expert settings
-Some settings can only be changed by editting of the INI file. File location is OS dependent:
+Some settings can only be changed by editing of the INI file. File location is OS dependent:
 * MacOS: `$HOME/.config/AbracaDABra/AbracaDABra.ini`
 * Windows: `%USERPROFILE%\AppData\Roaming\AbracaDABra\AbracaDABra.ini`
 * Linux: `$HOME/.config/AbracaDABra/AbracaDABra.ini`
@@ -165,7 +165,7 @@ _Note:_ It seems that Apple did some changes in Sonoma and as a result Intel bin
 ### Windows
 Download latest Windows zip file from [release page](https://github.com/KejPi/AbracaDABra/releases/latest) and unpack it to any folder on your drive. 
 
-RTL-SDR devices need WinUSB driver for correct functionality under Windows. To install it, use Zadig that can be downloaded from [zadig.akeo.ie](https://zadig.akeo.ie). Please follow installation steps described [here](https://www.rtl-sdr.com/getting-the-rtl-sdr-to-work-on-windows-10/). When the driver is installed, start `AbracaDABra.exe` and first band scan should start automatically when RTL-SDR device is recognized. 
+RTL-SDR devices need WinUSB driver for correct functionality under Windows. To install it, use Zadig that can be downloaded from [zadig.akeo.ie](https://zadig.akeo.ie). Please follow installation steps described [here](https://www.rtl-sdr.com/getting-the-rtl-sdr-to-work-on-windows-10/). When the driver is installed, start `AbracaDABra.exe` and first band scan should start automatically when RTL-SDR device is recognised. 
 
 Please note that other applications requiring Realtek driver will not work with WinUSB driver from Zadig. 
 
@@ -235,7 +235,7 @@ Then clone the project:
        sudo ldconfig
 
 
-_Note:_ `CMAKE_INSTALL_PREFIX` is `/usr/local` by default. It means that application installs to `/usr/local/bin` and library is installed to `/usr/local/lib`. Make sure that `/usr/local/lib` is in your `ldconfig` path, if it is not then use `LD_LIBRARY_PATH` evironment variable when running AbracaDABra:
+_Note:_ `CMAKE_INSTALL_PREFIX` is `/usr/local` by default. It means that application installs to `/usr/local/bin` and library is installed to `/usr/local/lib`. Make sure that `/usr/local/lib` is in your `ldconfig` path, if it is not then use `LD_LIBRARY_PATH` environment variable when running AbracaDABra:
 
        LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH /usr/local/bin/AbracaDABra &
 
