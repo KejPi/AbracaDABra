@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>530</width>
-    <height>630</height>
+    <height>636</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -1546,10 +1546,21 @@
             <item>
              <widget class="QLabel" name="dumpPatternHelpLabel">
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Data storage path pattern supports these tokens [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#094fd1;&quot;&gt;documentation&lt;/span&gt;&lt;/a&gt;]: &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;{serviceId}&lt;/span&gt; ... current audio service ID (hexadecimal number)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;{ensId}&lt;/span&gt; ... current ensemble ID (hexadecimal number)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;{transportId}&lt;/span&gt; ... transport ID&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;{contentName}&lt;/span&gt; ... content name&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;{contentNameWithExt}&lt;/span&gt; ... content name with extension &lt;span style=&quot; font-style:italic;&quot;&gt;[only SLS]&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;{directoryId}&lt;/span&gt; ... directory ID &lt;span style=&quot; font-style:italic;&quot;&gt;[only SPI]&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;{scId}&lt;/span&gt; ... service component ID &lt;span style=&quot; font-style:italic;&quot;&gt;[only SPI]&lt;/span&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
+&lt;p&gt;Data storage path pattern supports these tokens  [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;documentation&lt;/a&gt;]:&lt;/p&gt;
+&lt;p&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{serviceId}&lt;/b&gt; ... current audio service ID (hexadecimal number)&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{ensId}&lt;/b&gt; ... current ensemble ID (hexadecimal number)&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{transportId}&lt;/b&gt; ... transport ID&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentName}&lt;/b&gt; ... content name&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentNameWithExt}&lt;/b&gt; ... content name with extension &lt;i&gt;[only SLS]&lt;/i&gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{directoryId}&lt;/b&gt; ... directory ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;br&gt;  
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{scId}&lt;/b&gt; ... service component ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;br&gt;
+&lt;/p&gt;
+&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="textFormat">
-               <enum>Qt::RichText</enum>
+               <enum>Qt::AutoText</enum>
               </property>
               <property name="wordWrap">
                <bool>true</bool>
