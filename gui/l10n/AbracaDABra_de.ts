@@ -2785,11 +2785,6 @@ Datei: %1</translation>
         <translation>Kanal %1&lt;br&gt;Frequenz: %2 MHz</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="36"/>
-        <source>No file selected</source>
-        <translation>Keine Datei ausgewählt</translation>
-    </message>
-    <message>
         <location filename="../dabtables.cpp" line="335"/>
         <source>Telugu</source>
         <translation>Telugu</translation>
@@ -3167,7 +3162,7 @@ Datei: %1</translation>
         <location filename="../setupdialog.ui" line="118"/>
         <location filename="../setupdialog.ui" line="519"/>
         <location filename="../setupdialog.ui" line="1150"/>
-        <location filename="../setupdialog.cpp" line="45"/>
+        <location filename="../setupdialog.cpp" line="43"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1317"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1355"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1415"/>
@@ -3420,8 +3415,8 @@ Datei: %1</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1174"/>
-        <location filename="../setupdialog.cpp" line="73"/>
-        <location filename="../setupdialog.cpp" line="1072"/>
+        <location filename="../setupdialog.cpp" line="71"/>
+        <location filename="../setupdialog.cpp" line="1074"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1420"/>
         <source>No device connected</source>
         <translation>Kein Gerät verbunden</translation>
@@ -3477,12 +3472,6 @@ Datei: %1</translation>
         <translation>Ordner ändern...</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1431"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1452"/>
-        <source>If checked, existing files are overwritten with new files with the same name.&lt;br&gt;If not checked, new file with existing file name is not stored. </source>
-        <translation type="unfinished">Wenn ausgewählt, werden vorhandene Dateien mit neuen gleichen Namens überschrieben.&lt;br&gt;Wenn nicht ausgewählt, werden vorhandene nicht überschrieben. </translation>
-    </message>
-    <message>
         <location filename="../setupdialog.ui" line="1434"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1454"/>
         <source>Overwrite existing files</source>
@@ -3495,66 +3484,93 @@ Datei: %1</translation>
         <translation>Slideshowdaten</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1482"/>
+        <location filename="../setupdialog.ui" line="1485"/>
+        <location filename="../setupdialog.ui" line="1529"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1460"/>
-        <source>Storage path template for SLS application. Following tokens are supported {serviceId, ensId, contentName, contentNameWithExt, transportId}</source>
-        <translation>Speicherpfadvorlage für SLS Anwendungen. Folgende Kürzel werden unterstützt {serviceId, ensId, contentName, contentNameWithExt, transportId}</translation>
-    </message>
-    <message>
-        <location filename="../setupdialog.ui" line="1489"/>
-        <location filename="../setupdialog.ui" line="1537"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1463"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1474"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1468"/>
         <source>Restore default template</source>
         <translation>Standardvorlage wiederherstellen</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1492"/>
-        <location filename="../setupdialog.ui" line="1540"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1465"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1476"/>
+        <location filename="../setupdialog.ui" line="1488"/>
+        <location filename="../setupdialog.ui" line="1532"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1462"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1470"/>
         <source>Reset</source>
         <translation>Reset</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1506"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1469"/>
+        <location filename="../setupdialog.ui" line="1502"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1466"/>
         <source>SPI data</source>
         <translation>SPI-Daten</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1530"/>
+        <location filename="../setupdialog.ui" line="1541"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1471"/>
-        <source>Storage path template for SPI application. Following tokens are supported {serviceId, ensId, scId, contentName, directoryId, transportId}</source>
-        <translation>Speicherpfadvorlage für SPI Anwendungen. Folgende Kürzel werden unterstützt {serviceId, ensId, scId, contentName, directoryId, transportId}</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
+&lt;p&gt;Data storage path pattern supports these tokens  [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;documentation&lt;/a&gt;]:&lt;/p&gt;
+&lt;p&gt;
+&lt;table style=&quot;width:100%&quot; border-width=&quot;1&quot;&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{serviceId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;current audio service ID (hex number)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{ensId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;current ensemble ID (hex number)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{transportId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;transport ID&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{contentName}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;content name&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{contentNameWithExt}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;content name with extension &lt;i&gt;[only SLS]&lt;/i&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{directoryId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;directory ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{scId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;service component ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1604"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1489"/>
+        <location filename="../setupdialog.ui" line="1618"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1505"/>
         <source>Visual Style</source>
         <translation>Aussehen</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1634"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1490"/>
+        <location filename="../setupdialog.ui" line="1648"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1506"/>
         <source>User Interface</source>
         <translation>Benutzeroberfläche</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1640"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1491"/>
+        <location filename="../setupdialog.ui" line="1654"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1507"/>
         <source>Expert mode UI</source>
         <translation>Expertenmodus UI</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1647"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1492"/>
+        <location filename="../setupdialog.ui" line="1661"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1508"/>
         <source>Dynamic Label Plus (DL+)</source>
         <translation>Dynamic Label Plus (DL+)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1656"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1493"/>
+        <location filename="../setupdialog.ui" line="1670"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1509"/>
         <source>Language:</source>
         <translation>Sprache:</translation>
     </message>
@@ -3583,304 +3599,294 @@ Datei: %1</translation>
         <translation>Bei Serviceänderung nicht nachfragen, die Audioaufzeichnung zu beenden</translation>
     </message>
     <message>
+        <location filename="../setupdialog.ui" line="1431"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1452"/>
+        <source>If not checked, files with the same name will not be saved.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../setupdialog.ui" line="1455"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1456"/>
         <source>Enables storing of all slides to selected folder. Slideshow data are stored in subfolder specified by pattern below.</source>
         <translation>Ermöglicht alle Bilder im ausgewählten Ordner zu speichern. Slideshowdaten werden in Unterordnern gespeichert, wie im unten genannten Muster angegeben.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1503"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1467"/>
+        <location filename="../setupdialog.ui" line="1499"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1464"/>
         <source>Enables storing of all SPI data to selected folder. &lt;br&gt;SPI data are binary encoded files with services and program information, &lt;br&gt;these files decoded to XML format and service logos.&lt;br&gt;SPI data are stored in subfolder specified by pattern below.</source>
         <translation>Ermöglicht alle SPI-Daten im ausgewählten Ordner zu speichern.&lt;br&gt;SPI-Daten sind binärkodierte Dateien mit Services- und Programminformationen,&lt;br&gt; diese Dateien und Servicelogos werden ins XML Format übertragen.&lt;br&gt;SPI-Daten werden im Unterordner gespeichert, wie im unten genannten Muster angegeben.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1549"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1477"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
-&lt;p&gt;Data storage path pattern supports these tokens  [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;documentation&lt;/a&gt;]:&lt;/p&gt;
-&lt;p&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{serviceId}&lt;/b&gt; ... current audio service ID (hexadecimal number)&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{ensId}&lt;/b&gt; ... current ensemble ID (hexadecimal number)&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{transportId}&lt;/b&gt; ... transport ID&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentName}&lt;/b&gt; ... content name&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentNameWithExt}&lt;/b&gt; ... content name with extension &lt;i&gt;[only SLS]&lt;/i&gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{directoryId}&lt;/b&gt; ... directory ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;br&gt;  
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{scId}&lt;/b&gt; ... service component ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;br&gt;
-&lt;/p&gt;
-&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
-&lt;p&gt;Das Dateispeicherpfadmuster unterstützt diese Kürzel  [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;Dokumentation&lt;/a&gt;]:&lt;/p&gt;
-&lt;p&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{serviceId}&lt;/b&gt; ... aktuelle Audio Service ID (Hexadezimalzahl)&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{ensId}&lt;/b&gt; ... aktuelle Ensemble ID (Hexadezimalzahl)&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{transportId}&lt;/b&gt; ... Transport ID&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentName}&lt;/b&gt; ... Contentname&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentNameWithExt}&lt;/b&gt; ... Contentname mit Erweiterung &lt;i&gt;[nur SLS]&lt;/i&gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{directoryId}&lt;/b&gt; ... Ordner ID &lt;i&gt;[nur SPI]&lt;/i&gt;&lt;br&gt;  
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{scId}&lt;/b&gt; ... Service Component ID &lt;i&gt;[nur SPI]&lt;/i&gt;&lt;br&gt;
-&lt;/p&gt;
-&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../setupdialog.ui" line="1694"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1494"/>
+        <location filename="../setupdialog.ui" line="1708"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1510"/>
         <source>Raw Data Recording</source>
         <translation>Rohdatenaufzeichnung</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1700"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1495"/>
+        <location filename="../setupdialog.ui" line="1714"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1511"/>
         <source>Include XML header</source>
         <translation>Inklusive XML-Kopfzeilen</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="46"/>
+        <location filename="../setupdialog.cpp" line="44"/>
         <source>Announcements</source>
         <translation>Durchsagen</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="47"/>
+        <location filename="../setupdialog.cpp" line="45"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="48"/>
+        <location filename="../setupdialog.cpp" line="46"/>
         <source>User Applications</source>
         <translation>Benutzeranwendungen</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="49"/>
+        <location filename="../setupdialog.cpp" line="47"/>
         <source>Others</source>
         <translation>Andere</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="60"/>
-        <location filename="../setupdialog.cpp" line="1244"/>
+        <location filename="../setupdialog.cpp" line="58"/>
+        <location filename="../setupdialog.cpp" line="1246"/>
         <source>Raw file</source>
         <translation>Rohdatei</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="67"/>
+        <location filename="../setupdialog.cpp" line="65"/>
         <source>Unsigned 8 bits</source>
         <translation>Unsigned 8 Bits</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="68"/>
+        <location filename="../setupdialog.cpp" line="66"/>
         <source>Signed 16 bits</source>
         <translation>Signed 16 Bits</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="85"/>
-        <location filename="../setupdialog.cpp" line="95"/>
+        <location filename="../setupdialog.cpp" line="83"/>
+        <location filename="../setupdialog.cpp" line="93"/>
         <source>Off</source>
         <translation>aus</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="86"/>
-        <location filename="../setupdialog.cpp" line="96"/>
+        <location filename="../setupdialog.cpp" line="84"/>
+        <location filename="../setupdialog.cpp" line="94"/>
         <source>On</source>
         <translation>ein</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="87"/>
+        <location filename="../setupdialog.cpp" line="85"/>
         <source>Enable/disable bias tee.&lt;br&gt;&lt;br&gt;&lt;b&gt;WARNING:&lt;/b&gt; Before using the bias tee please ensure that you understand that you should not use this option when the dongle is connected directly to a DC short circuited antenna unless you are using an LNA.</source>
         <translation>Bias-Tee an/ausschalten.&lt;br&gt;&lt;br&gt;&lt;b&gt;WARNUNG:&lt;/b&gt; Vor der Verwendung der Bias-Tee-Funktion stellen Sie sicher, dass Sie diese Option nicht verwenden, wenn der Empfänger direkt mit einer DC kurzgeschlossenen Antenne verbunden ist, es sei denn, Sie verwenden einen LNA.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="92"/>
+        <location filename="../setupdialog.cpp" line="90"/>
         <source>Input signal bandwidth in kHz. Value &apos;0&apos; means default bandwidth %1 kHz.</source>
         <translation>Eingangssignalbandbreite in kHz. Der Wert &apos;0&apos; bedeutet die Standardbandbreite %1 kHz.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="93"/>
+        <location filename="../setupdialog.cpp" line="91"/>
         <source>Input device XTAL frequency correction in PPM.</source>
         <translation>Eingangsgerät XTAL Frequenzkorrektur in PPM.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="117"/>
+        <location filename="../setupdialog.cpp" line="115"/>
         <source>&lt;br&gt;Note: Alarm announcement cannot be disabled.</source>
         <translation>&lt;br&gt;Hinweis: Alarmdurchsagen können nicht deaktiviert werden.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="119"/>
+        <location filename="../setupdialog.cpp" line="117"/>
         <source>Alarm Announcements</source>
         <translation>Alarmdurchsagen</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="125"/>
+        <location filename="../setupdialog.cpp" line="123"/>
         <source>Bring window to foreground</source>
         <translation>Bringe Fenster in den Vordergrund</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="126"/>
+        <location filename="../setupdialog.cpp" line="124"/>
         <source>Check to bring window to foreground when (test) alarm announcement starts</source>
         <translation>Auswählen, um das Fenster in den Vordergrund zu bringen, wenn eine (Test)Alarmdurchsage startet</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="147"/>
+        <location filename="../setupdialog.cpp" line="145"/>
         <source>Regular Announcements</source>
         <translation>Reguläre Durchsagen</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="158"/>
+        <location filename="../setupdialog.cpp" line="156"/>
         <source>Recording date:</source>
         <translation>Aufnahmedatum:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="162"/>
+        <location filename="../setupdialog.cpp" line="160"/>
         <source>Recorder:</source>
         <translation>Aufnahmegerät:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="166"/>
+        <location filename="../setupdialog.cpp" line="164"/>
         <source>Device:</source>
         <translation>Gerät:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="170"/>
+        <location filename="../setupdialog.cpp" line="168"/>
         <source>Sample rate [Hz]:</source>
         <translation>Abtastrate [Hz]:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="174"/>
+        <location filename="../setupdialog.cpp" line="172"/>
         <source>Frequency [kHz]:</source>
         <translation>Frequenz [kHz]:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="178"/>
+        <location filename="../setupdialog.cpp" line="176"/>
         <source>Recording length [sec]:</source>
         <translation>Aufnahmelänge [sec]:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="182"/>
+        <location filename="../setupdialog.cpp" line="180"/>
         <source>Sample format:</source>
         <translation>Datenformat:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="247"/>
+        <location filename="../setupdialog.cpp" line="245"/>
         <source>Default style (OS dependent)</source>
         <translation>Standardstil (betriebssystemabhängig)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="248"/>
+        <location filename="../setupdialog.cpp" line="246"/>
         <source>Light style (Fusion with light colors)</source>
         <translation>Heller Stil (Fusion mit hellen Farben)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1297"/>
+        <location filename="../setupdialog.cpp" line="1299"/>
         <source>sec</source>
         <translation>sec</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1330"/>
+        <location filename="../setupdialog.cpp" line="1332"/>
         <source>Audio recording folder</source>
         <translation>Audioaufnahmeordner</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1358"/>
+        <location filename="../setupdialog.cpp" line="1360"/>
         <source>Data storage folder</source>
         <translation>Dateispeicherordner</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="249"/>
+        <location filename="../setupdialog.cpp" line="247"/>
         <source>Dark style (Fusion with dark colors)</source>
         <translation>Dunkler Stil (Fusion mit dunklen Farben)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="252"/>
+        <location filename="../setupdialog.cpp" line="250"/>
         <source>System language</source>
         <translation>Systemsprache</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="259"/>
+        <location filename="../setupdialog.cpp" line="257"/>
         <source>User interface language, the change will take effect after application restart.</source>
         <translation>Sprache der Benutzeroberfläche, die Änderung erfolgt nach einem Programmneustart.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="260"/>
+        <location filename="../setupdialog.cpp" line="258"/>
         <source>Language change will take effect after application restart.</source>
         <translation>Die Änderung der Sprache erfolgt nach Programmneustart.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="264"/>
+        <location filename="../setupdialog.cpp" line="262"/>
         <source>Set default OS style.</source>
         <translation>Betriebssystem-Standardstil verwenden.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="265"/>
+        <location filename="../setupdialog.cpp" line="263"/>
         <source>Force application light style.</source>
         <translation>Hellen Stil erzwingen.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="266"/>
+        <location filename="../setupdialog.cpp" line="264"/>
         <source>Force application dark style.</source>
         <translation>Dunklen Stil erzwingen.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="268"/>
+        <location filename="../setupdialog.cpp" line="266"/>
         <source>User interface in expert mode</source>
         <translation>Benutzeroberfläche im Expertenmodus</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="269"/>
+        <location filename="../setupdialog.cpp" line="267"/>
         <source>Show Dynamic Label Plus (DL+) tags like artist, song name, etc.</source>
         <translation>Zeige Dynamic Label Plus (DL+) Informationen wie Interpret, Titelname, usw.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="270"/>
+        <location filename="../setupdialog.cpp" line="268"/>
         <source>Include raw file XML header in IQ recording</source>
         <translation>Verwendet XML-Kopfzeilen in IQ-Rohdateien</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="308"/>
+        <location filename="../setupdialog.cpp" line="287"/>
+        <source>Storage path template for SLS application. Following tokens are supported:
+{serviceId, ensId, contentName, contentNameWithExt, transportId}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="289"/>
+        <source>Storage path template for SPI application. Following tokens are supported:
+{serviceId, ensId, scId, contentName, directoryId, transportId}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="310"/>
         <source>Disabled</source>
         <translation>Deaktiviert</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="309"/>
+        <location filename="../setupdialog.cpp" line="311"/>
         <source>Select noise level that is generated during audio interruptions.&lt;br&gt;This may help to improve listening experience and make the audio interruptions less annoying.</source>
         <translation>Wählen Sie den Geräuschpegel aus, der während Audiounterbrechungen erzeugt wird.&lt;br&gt;Dies kann dazu beitragen, das Hörerlebnis zu verbessern und die Audiounterbrechungen weniger störend zu machen.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="495"/>
-        <location filename="../setupdialog.cpp" line="505"/>
-        <location filename="../setupdialog.cpp" line="592"/>
+        <location filename="../setupdialog.cpp" line="497"/>
+        <location filename="../setupdialog.cpp" line="507"/>
+        <location filename="../setupdialog.cpp" line="594"/>
         <source>N/A</source>
         <translation>unzutreffend</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1066"/>
+        <location filename="../setupdialog.cpp" line="1068"/>
         <source>RTL SDR device connected</source>
         <translation>RTL SDR Gerät verbunden</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1069"/>
+        <location filename="../setupdialog.cpp" line="1071"/>
         <source>RTL TCP device connected</source>
         <translation>RTL TCP Gerät verbunden</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1075"/>
+        <location filename="../setupdialog.cpp" line="1077"/>
         <source>Raw file connected</source>
         <translation>Rohdatei verbunden</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1078"/>
+        <location filename="../setupdialog.cpp" line="1080"/>
         <source>Airspy device connected</source>
         <translation>Airspygerät verbunden</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1081"/>
+        <location filename="../setupdialog.cpp" line="1083"/>
         <source>Soapy SDR device connected</source>
         <translation>Soapy SDR-Gerät verbunden</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1127"/>
+        <location filename="../setupdialog.cpp" line="1129"/>
         <source>Open IQ stream</source>
         <translation>Öffne IQ-Datenstrom</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1127"/>
+        <location filename="../setupdialog.cpp" line="1129"/>
         <source>Binary files</source>
         <translation>Binärdateien</translation>
     </message>
@@ -3925,6 +3931,11 @@ Datei: %1</translation>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1444"/>
         <source>RadioDNS</source>
         <translation>RadioDNS</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.h" line="167"/>
+        <source>No file selected</source>
+        <translation type="unfinished">Keine Datei ausgewählt</translation>
     </message>
 </context>
 <context>

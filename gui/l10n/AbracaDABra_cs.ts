@@ -3026,11 +3026,6 @@ Soubor: %1</translation>
         <translation>Test alarmu</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="36"/>
-        <source>No file selected</source>
-        <translation>Není vybraný soubor</translation>
-    </message>
-    <message>
         <location filename="../slmodelitem.cpp" line="92"/>
         <source>Short label:</source>
         <translation>Krátký název:</translation>
@@ -3172,7 +3167,7 @@ Soubor: %1</translation>
         <location filename="../setupdialog.ui" line="118"/>
         <location filename="../setupdialog.ui" line="519"/>
         <location filename="../setupdialog.ui" line="1150"/>
-        <location filename="../setupdialog.cpp" line="45"/>
+        <location filename="../setupdialog.cpp" line="43"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1317"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1355"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1415"/>
@@ -3511,8 +3506,8 @@ Soubor: %1</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1174"/>
-        <location filename="../setupdialog.cpp" line="73"/>
-        <location filename="../setupdialog.cpp" line="1072"/>
+        <location filename="../setupdialog.cpp" line="71"/>
+        <location filename="../setupdialog.cpp" line="1074"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1420"/>
         <source>No device connected</source>
         <translation>Žádné zařízení není připojeno</translation>
@@ -3536,12 +3531,6 @@ Soubor: %1</translation>
         <translation>Změnit složku...</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1431"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1452"/>
-        <source>If checked, existing files are overwritten with new files with the same name.&lt;br&gt;If not checked, new file with existing file name is not stored. </source>
-        <translation>Pokud je vybráno, existující soubory budou přepsané novými soubory se stejným jménem.&lt;br&gt;Pokud není vybráno, nový soubor s existujícím jménem nebude uložen. </translation>
-    </message>
-    <message>
         <location filename="../setupdialog.ui" line="1434"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1454"/>
         <source>Overwrite existing files</source>
@@ -3554,66 +3543,126 @@ Soubor: %1</translation>
         <translation>Obrázky slideshow (SLS)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1482"/>
+        <location filename="../setupdialog.ui" line="1485"/>
+        <location filename="../setupdialog.ui" line="1529"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1460"/>
-        <source>Storage path template for SLS application. Following tokens are supported {serviceId, ensId, contentName, contentNameWithExt, transportId}</source>
-        <translation>Šablona cesty pro ukládání SLS obrázků. Dostupné proměnné jsou {serviceId, ensId, contentName, contentNameWithExt, transportId}</translation>
-    </message>
-    <message>
-        <location filename="../setupdialog.ui" line="1489"/>
-        <location filename="../setupdialog.ui" line="1537"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1463"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1474"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1468"/>
         <source>Restore default template</source>
         <translation>Obnovit výchozí šablonu</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1492"/>
-        <location filename="../setupdialog.ui" line="1540"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1465"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1476"/>
+        <location filename="../setupdialog.ui" line="1488"/>
+        <location filename="../setupdialog.ui" line="1532"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1462"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1470"/>
         <source>Reset</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1506"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1469"/>
+        <location filename="../setupdialog.ui" line="1502"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1466"/>
         <source>SPI data</source>
         <translation>Data SPI</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1530"/>
+        <location filename="../setupdialog.ui" line="1541"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1471"/>
-        <source>Storage path template for SPI application. Following tokens are supported {serviceId, ensId, scId, contentName, directoryId, transportId}</source>
-        <translation>Šablona cesty pro ukládání dat SPI aplikace. Dostupné proměnné jsou {serviceId, ensId, scId, contentName, directoryId, transportId}</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
+&lt;p&gt;Data storage path pattern supports these tokens  [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;documentation&lt;/a&gt;]:&lt;/p&gt;
+&lt;p&gt;
+&lt;table style=&quot;width:100%&quot; border-width=&quot;1&quot;&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{serviceId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;current audio service ID (hex number)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{ensId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;current ensemble ID (hex number)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{transportId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;transport ID&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{contentName}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;content name&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{contentNameWithExt}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;content name with extension &lt;i&gt;[only SLS]&lt;/i&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{directoryId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;directory ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{scId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;service component ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
+&lt;p&gt;Šablona cesty podporuje tyto proměnné  [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;documentation&lt;/a&gt;]:&lt;/p&gt;
+&lt;p&gt;
+&lt;table style=&quot;width:100%&quot; border-width=&quot;1&quot;&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{serviceId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;ID současné stanice (hexadecimální číslo)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{ensId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;ID současného multiplexu (hexadecimální číslo)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{transportId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;transport ID&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{contentName}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;jméno MOT objektu&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{contentNameWithExt}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;jméno MOT objektu s příponou &lt;i&gt;[jen SLS]&lt;/i&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{directoryId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;directory ID &lt;i&gt;[jen SPI]&lt;/i&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{scId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;service component ID &lt;i&gt;[jen SPI]&lt;/i&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1604"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1489"/>
+        <location filename="../setupdialog.ui" line="1618"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1505"/>
         <source>Visual Style</source>
         <translation>Styl aplikace</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1634"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1490"/>
+        <location filename="../setupdialog.ui" line="1648"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1506"/>
         <source>User Interface</source>
         <translation>Uživatelské rozhraní</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1640"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1491"/>
+        <location filename="../setupdialog.ui" line="1654"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1507"/>
         <source>Expert mode UI</source>
         <translation>Pokročilé uživatelské rozhraní</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1647"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1492"/>
+        <location filename="../setupdialog.ui" line="1661"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1508"/>
         <source>Dynamic Label Plus (DL+)</source>
         <translation>Dynamic Label Plus (DL+)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1656"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1493"/>
+        <location filename="../setupdialog.ui" line="1670"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1509"/>
         <source>Language:</source>
         <translation>Jazyk:</translation>
     </message>
@@ -3630,306 +3679,303 @@ Soubor: %1</translation>
         <translation>Úroveň šumu při výpadku zvuku:</translation>
     </message>
     <message>
+        <location filename="../setupdialog.ui" line="1431"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1452"/>
+        <source>If not checked, files with the same name will not be saved.</source>
+        <translation>Pokud není zaškrtnuto, soubory se stejným jménem nebudou uloženy.</translation>
+    </message>
+    <message>
         <location filename="../setupdialog.ui" line="1455"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1456"/>
         <source>Enables storing of all slides to selected folder. Slideshow data are stored in subfolder specified by pattern below.</source>
         <translation>Povolí ukládání všech obrázků slideshow do vybrané složky. Obrázky se ukládají do podsložky definované šablonou dole.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1503"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1467"/>
+        <location filename="../setupdialog.ui" line="1499"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1464"/>
         <source>Enables storing of all SPI data to selected folder. &lt;br&gt;SPI data are binary encoded files with services and program information, &lt;br&gt;these files decoded to XML format and service logos.&lt;br&gt;SPI data are stored in subfolder specified by pattern below.</source>
         <translation>Povolí ukládání všech SPI dat do vybrané složky. &lt;br&gt;SPI data jsou binárně zakódované soubory s informacemi o stanicích a o programu, &lt;br&gt;tyto soubory dekódované do XML formátu a loga stanic.&lt;br&gt;Data SPI se ukládají do podsložky definované šablonou dole.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1549"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1477"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
-&lt;p&gt;Data storage path pattern supports these tokens  [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;documentation&lt;/a&gt;]:&lt;/p&gt;
-&lt;p&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{serviceId}&lt;/b&gt; ... current audio service ID (hexadecimal number)&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{ensId}&lt;/b&gt; ... current ensemble ID (hexadecimal number)&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{transportId}&lt;/b&gt; ... transport ID&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentName}&lt;/b&gt; ... content name&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentNameWithExt}&lt;/b&gt; ... content name with extension &lt;i&gt;[only SLS]&lt;/i&gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{directoryId}&lt;/b&gt; ... directory ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;br&gt;  
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{scId}&lt;/b&gt; ... service component ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;br&gt;
-&lt;/p&gt;
-&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
-&lt;p&gt;Šablona cesty podporuje tyto proměnné [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;dokumentace&lt;/a&gt;]:&lt;/p&gt;
-&lt;p&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{serviceId}&lt;/b&gt; ... ID současné stanice (hexadecimální číslo)&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{ensId}&lt;/b&gt; ... ID současného multiplexu (hexadecimální číslo)&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{transportId}&lt;/b&gt; ... transport ID&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentName}&lt;/b&gt; ... content name (jméno MOT objektu)&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentNameWithExt}&lt;/b&gt; ... content name s příponou &lt;i&gt;[jen SLS]&lt;/i&gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{directoryId}&lt;/b&gt; ... directory ID &lt;i&gt;[jen SPI]&lt;/i&gt;&lt;br&gt;  
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{scId}&lt;/b&gt; ... service component ID &lt;i&gt;[jen SPI]&lt;/i&gt;&lt;br&gt;
-&lt;/p&gt;
-&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../setupdialog.ui" line="1694"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1494"/>
+        <location filename="../setupdialog.ui" line="1708"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1510"/>
         <source>Raw Data Recording</source>
         <translation>Záznam vstupního signálu</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1700"/>
-        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1495"/>
+        <location filename="../setupdialog.ui" line="1714"/>
+        <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1511"/>
         <source>Include XML header</source>
         <translation>Vkládat XML záhlaví</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="46"/>
+        <location filename="../setupdialog.cpp" line="44"/>
         <source>Announcements</source>
         <translation>Hlášení</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="47"/>
+        <location filename="../setupdialog.cpp" line="45"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="48"/>
+        <location filename="../setupdialog.cpp" line="46"/>
         <source>User Applications</source>
         <translation>Aplikace</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="49"/>
+        <location filename="../setupdialog.cpp" line="47"/>
         <source>Others</source>
         <translation>Ostatní</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="60"/>
-        <location filename="../setupdialog.cpp" line="1244"/>
+        <location filename="../setupdialog.cpp" line="58"/>
+        <location filename="../setupdialog.cpp" line="1246"/>
         <source>Raw file</source>
         <translation>Raw soubor</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="67"/>
+        <location filename="../setupdialog.cpp" line="65"/>
         <source>Unsigned 8 bits</source>
         <translation>8 bitů bez znaménka</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="68"/>
+        <location filename="../setupdialog.cpp" line="66"/>
         <source>Signed 16 bits</source>
         <translation>16 bitů se znaménkem</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="85"/>
-        <location filename="../setupdialog.cpp" line="95"/>
+        <location filename="../setupdialog.cpp" line="83"/>
+        <location filename="../setupdialog.cpp" line="93"/>
         <source>Off</source>
         <translation>Vypnuto</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="86"/>
-        <location filename="../setupdialog.cpp" line="96"/>
+        <location filename="../setupdialog.cpp" line="84"/>
+        <location filename="../setupdialog.cpp" line="94"/>
         <source>On</source>
         <translation>Zapnuto</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="87"/>
+        <location filename="../setupdialog.cpp" line="85"/>
         <source>Enable/disable bias tee.&lt;br&gt;&lt;br&gt;&lt;b&gt;WARNING:&lt;/b&gt; Before using the bias tee please ensure that you understand that you should not use this option when the dongle is connected directly to a DC short circuited antenna unless you are using an LNA.</source>
         <translation>Povolit/zakázat fantom (bias-t).&lt;br&gt;&lt;br&gt;&lt;b&gt;VAROVÁNÍ:&lt;/b&gt; Než použijete fantom, tak se ujistěte, že přijímač není připojený přímo ke stejnosměrně zkratované anténě bez LNA.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="92"/>
+        <location filename="../setupdialog.cpp" line="90"/>
         <source>Input signal bandwidth in kHz. Value &apos;0&apos; means default bandwidth %1 kHz.</source>
         <translation>Šířka pásma vstupního signálu. Hodnota &apos;0&apos; znamená výchozí šířku pásma %1 kHz.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="93"/>
+        <location filename="../setupdialog.cpp" line="91"/>
         <source>Input device XTAL frequency correction in PPM.</source>
         <translation>Frekvenční korekce krystalu vstupního zařízení v PPM.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="117"/>
+        <location filename="../setupdialog.cpp" line="115"/>
         <source>&lt;br&gt;Note: Alarm announcement cannot be disabled.</source>
         <translation>&lt;br&gt;Poznámka: Hlášení alarmu nelze deaktivovat.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="119"/>
+        <location filename="../setupdialog.cpp" line="117"/>
         <source>Alarm Announcements</source>
         <translation>Hlášení alarmu</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="125"/>
+        <location filename="../setupdialog.cpp" line="123"/>
         <source>Bring window to foreground</source>
         <translation>Přenést okno do popředí</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="126"/>
+        <location filename="../setupdialog.cpp" line="124"/>
         <source>Check to bring window to foreground when (test) alarm announcement starts</source>
         <translation>Zaškrtněte pro přenesení okna do popředí, pokud probíhá hlášení alarmu (i testovací)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="147"/>
+        <location filename="../setupdialog.cpp" line="145"/>
         <source>Regular Announcements</source>
         <translation>Běžná hlášení</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="158"/>
+        <location filename="../setupdialog.cpp" line="156"/>
         <source>Recording date:</source>
         <translation>Datum záznamu:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="162"/>
+        <location filename="../setupdialog.cpp" line="160"/>
         <source>Recorder:</source>
         <translation>Zaznamenáno pomocí:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="166"/>
+        <location filename="../setupdialog.cpp" line="164"/>
         <source>Device:</source>
         <translation>Zařízení:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="170"/>
+        <location filename="../setupdialog.cpp" line="168"/>
         <source>Sample rate [Hz]:</source>
         <translation>Vzorkovací frekvence [Hz]:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="174"/>
+        <location filename="../setupdialog.cpp" line="172"/>
         <source>Frequency [kHz]:</source>
         <translation>Frekvence [kHz]:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="178"/>
+        <location filename="../setupdialog.cpp" line="176"/>
         <source>Recording length [sec]:</source>
         <translation>Délka záznamu [s]:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="182"/>
+        <location filename="../setupdialog.cpp" line="180"/>
         <source>Sample format:</source>
         <translation>Formát vzorků:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="247"/>
+        <location filename="../setupdialog.cpp" line="245"/>
         <source>Default style (OS dependent)</source>
         <translation>Výchozí vzhled (v zavislosti na OS)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="248"/>
+        <location filename="../setupdialog.cpp" line="246"/>
         <source>Light style (Fusion with light colors)</source>
         <translation>Světlý vzhled (Fusion se světlými barvami)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1297"/>
+        <location filename="../setupdialog.cpp" line="1299"/>
         <source>sec</source>
         <translation>s</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1330"/>
+        <location filename="../setupdialog.cpp" line="1332"/>
         <source>Audio recording folder</source>
         <translation>Složka pro ukládaní audio nahrávek</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1358"/>
+        <location filename="../setupdialog.cpp" line="1360"/>
         <source>Data storage folder</source>
         <translation>Složka pro ukládání dat</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="249"/>
+        <location filename="../setupdialog.cpp" line="247"/>
         <source>Dark style (Fusion with dark colors)</source>
         <translation>Tmavý vzhled (Fusion s tmavými barvami)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="252"/>
+        <location filename="../setupdialog.cpp" line="250"/>
         <source>System language</source>
         <translation>Jazyk systému</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="259"/>
+        <location filename="../setupdialog.cpp" line="257"/>
         <source>User interface language, the change will take effect after application restart.</source>
         <translation>Jayk uživatelského rozhraní, změna se projeví až po restartu aplikace.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="260"/>
+        <location filename="../setupdialog.cpp" line="258"/>
         <source>Language change will take effect after application restart.</source>
         <translation>Změna jazyka se projeví po restartu aplikace.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="264"/>
+        <location filename="../setupdialog.cpp" line="262"/>
         <source>Set default OS style.</source>
         <translation>Nastavit vzhled podle operačního systému.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="265"/>
+        <location filename="../setupdialog.cpp" line="263"/>
         <source>Force application light style.</source>
         <translation>Vynutit světlý vzhled aplikace.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="266"/>
+        <location filename="../setupdialog.cpp" line="264"/>
         <source>Force application dark style.</source>
         <translation>Vynutit tmavý vzhled aplikace.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="268"/>
+        <location filename="../setupdialog.cpp" line="266"/>
         <source>User interface in expert mode</source>
         <translation>Rozhraní pro pokročilé uživatele</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="269"/>
+        <location filename="../setupdialog.cpp" line="267"/>
         <source>Show Dynamic Label Plus (DL+) tags like artist, song name, etc.</source>
         <translation>Zobrazovat značky Dynamic Lable Plus (DL+) jako jsou jméno interpreta, skladby, apod.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="270"/>
+        <location filename="../setupdialog.cpp" line="268"/>
         <source>Include raw file XML header in IQ recording</source>
         <translation>Vkládat XML záhlaví na začátek souboru při záznamu vstupního signálu</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="308"/>
+        <location filename="../setupdialog.cpp" line="287"/>
+        <source>Storage path template for SLS application. Following tokens are supported:
+{serviceId, ensId, contentName, contentNameWithExt, transportId}</source>
+        <translation>Šablona cesty pro SLS aplikaci. Podporované proměnné: 
+{serviceId, ensId, contentName, contentNameWithExt, transportId}</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="289"/>
+        <source>Storage path template for SPI application. Following tokens are supported:
+{serviceId, ensId, scId, contentName, directoryId, transportId}</source>
+        <translation>Šablona cesty pro SPI aplikaci. Podporované proměnné: 
+{serviceId, ensId, scId, contentName, directoryId, transportId}</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="310"/>
         <source>Disabled</source>
         <translation>Zakázáno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="309"/>
+        <location filename="../setupdialog.cpp" line="311"/>
         <source>Select noise level that is generated during audio interruptions.&lt;br&gt;This may help to improve listening experience and make the audio interruptions less annoying.</source>
         <translation>Vyberte úroveň šumu, ktery je generovaný během výpadku zvuku.&lt;br&gt;Toto nastavení může zlepšit posluchačský zážitek a zmírnit nepříjemný vjem způsobený výpadkem zvuku.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="495"/>
-        <location filename="../setupdialog.cpp" line="505"/>
-        <location filename="../setupdialog.cpp" line="592"/>
+        <location filename="../setupdialog.cpp" line="497"/>
+        <location filename="../setupdialog.cpp" line="507"/>
+        <location filename="../setupdialog.cpp" line="594"/>
         <source>N/A</source>
         <translation>Nedostupný</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1066"/>
+        <location filename="../setupdialog.cpp" line="1068"/>
         <source>RTL SDR device connected</source>
         <translation>RTL SDR zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1069"/>
+        <location filename="../setupdialog.cpp" line="1071"/>
         <source>RTL TCP device connected</source>
         <translation>RTL TCP zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1075"/>
+        <location filename="../setupdialog.cpp" line="1077"/>
         <source>Raw file connected</source>
         <translation>Raw soubor připojen</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1078"/>
+        <location filename="../setupdialog.cpp" line="1080"/>
         <source>Airspy device connected</source>
         <translation>Airspy zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1081"/>
+        <location filename="../setupdialog.cpp" line="1083"/>
         <source>Soapy SDR device connected</source>
         <translation>Soapy SDR zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1127"/>
+        <location filename="../setupdialog.cpp" line="1129"/>
         <source>Open IQ stream</source>
         <translation>Otevřít IQ soubor</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1127"/>
+        <location filename="../setupdialog.cpp" line="1129"/>
         <source>Binary files</source>
         <translation>Binární soubory</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.h" line="167"/>
+        <source>No file selected</source>
+        <translation>Není vybraný soubor</translation>
     </message>
 </context>
 <context>
