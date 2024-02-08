@@ -284,11 +284,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->autoStopRecordingCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings.audioRecAutoStopEna = checked; });
 
     ui->dataDumpFolderLabel->setElideMode(Qt::ElideLeft);
-    ui->dumpSlsPatternEdit->setToolTip(tr("Storage path template for SLS application.\n"
-                                          "Following tokens are supported:\n"
+    ui->dumpSlsPatternEdit->setToolTip(tr("Storage path template for SLS application. Following tokens are supported:\n"
                                           "{serviceId, ensId, contentName, contentNameWithExt, transportId}"));
-    ui->dumpSpiPatternEdit->setToolTip(tr("Storage path template for SPI application.\n"
-                                          "Following tokens are supported:\n"
+    ui->dumpSpiPatternEdit->setToolTip(tr("Storage path template for SPI application. Following tokens are supported:\n"
                                           "{serviceId, ensId, scId, contentName, directoryId, transportId}"));
     connect(ui->dataDumpFolderButton, &QPushButton::clicked, this, &SetupDialog::onDataDumpFolderButtonClicked);
     connect(ui->dumpSlsCheckBox, &QCheckBox::toggled, this, &SetupDialog::onDataDumpCheckboxToggled);
