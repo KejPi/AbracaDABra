@@ -159,7 +159,7 @@
         <location filename="../epgdialog.ui" line="14"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_epgdialog.h" line="35"/>
         <source>Electronic Program Guide (EPG)</source>
-        <translation type="unfinished"></translation>
+        <translation>Elektronischer Programmführer (EPG)</translation>
     </message>
 </context>
 <context>
@@ -619,7 +619,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="323"/>
         <source>Program guide...</source>
-        <translation type="unfinished"></translation>
+        <translation>Programmführer...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="327"/>
@@ -3076,27 +3076,27 @@ Datei: %1</translation>
     <message>
         <location filename="../slsview.cpp" line="328"/>
         <source>Save to file...</source>
-        <translation type="unfinished">Speichern unter...</translation>
+        <translation>Speichern unter...</translation>
     </message>
     <message>
         <location filename="../slsview.cpp" line="329"/>
         <source>Copy to clipboard</source>
-        <translation type="unfinished">In die Zwischenablage kopieren</translation>
+        <translation>In die Zwischenablage kopieren</translation>
     </message>
     <message>
         <location filename="../slsview.cpp" line="352"/>
         <source>Images (*.jpg *.jpeg)</source>
-        <translation type="unfinished"></translation>
+        <translation>Bilddateien (*.jpg *.jpeg)</translation>
     </message>
     <message>
         <location filename="../slsview.cpp" line="355"/>
         <source>Images (*.png)</source>
-        <translation type="unfinished"></translation>
+        <translation>Bilddateien (*.png)</translation>
     </message>
     <message>
         <location filename="../slsview.cpp" line="357"/>
         <source>Save File</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei speichern</translation>
     </message>
 </context>
 <context>
@@ -3274,7 +3274,7 @@ Datei: %1</translation>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1328"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1336"/>
         <source>Frequency correction:</source>
-        <translation type="unfinished"></translation>
+        <translation>Frequenzkorrektur:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="619"/>
@@ -3462,43 +3462,43 @@ Datei: %1</translation>
         <location filename="../setupdialog.ui" line="1368"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1445"/>
         <source>Data Storage</source>
-        <translation type="unfinished"></translation>
+        <translation>Dateispeicherort</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1376"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1447"/>
         <source>Change data storage folder.</source>
-        <translation type="unfinished"></translation>
+        <translation>Speicherordner ändern.</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1379"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1449"/>
         <source>Change folder...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordner ändern...</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1431"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1452"/>
         <source>If checked, existing files are overwritten with new files with the same name.&lt;br&gt;If not checked, new file with existing file name is not stored. </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wenn ausgewählt, werden vorhandene Dateien mit neuen gleichen Namens überschrieben.&lt;br&gt;Wenn nicht ausgewählt, werden vorhandene nicht überschrieben. </translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1434"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1454"/>
         <source>Overwrite existing files</source>
-        <translation type="unfinished"></translation>
+        <translation>Vorhandene Dateien überschreiben</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1458"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1458"/>
         <source>Slideshow data</source>
-        <translation type="unfinished"></translation>
+        <translation>Slideshowdaten</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1482"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1460"/>
         <source>Storage path template for SLS application. Following tokens are supported {serviceId, ensId, contentName, contentNameWithExt, transportId}</source>
-        <translation type="unfinished"></translation>
+        <translation>Speicherpfadvorlage für SLS Anwendungen. Folgende Kürzel werden unterstützt {serviceId, ensId, contentName, contentNameWithExt, transportId}</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1489"/>
@@ -3506,7 +3506,7 @@ Datei: %1</translation>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1463"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1474"/>
         <source>Restore default template</source>
-        <translation type="unfinished"></translation>
+        <translation>Standardvorlage wiederherstellen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1492"/>
@@ -3514,19 +3514,19 @@ Datei: %1</translation>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1465"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1476"/>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Reset</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1506"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1469"/>
         <source>SPI data</source>
-        <translation type="unfinished"></translation>
+        <translation>SPI-Daten</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1530"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1471"/>
         <source>Storage path template for SPI application. Following tokens are supported {serviceId, ensId, scId, contentName, directoryId, transportId}</source>
-        <translation type="unfinished"></translation>
+        <translation>Speicherpfadvorlage für SPI Anwendungen. Folgende Kürzel werden unterstützt {serviceId, ensId, scId, contentName, directoryId, transportId}</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1604"/>
@@ -3586,13 +3586,13 @@ Datei: %1</translation>
         <location filename="../setupdialog.ui" line="1455"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1456"/>
         <source>Enables storing of all slides to selected folder. Slideshow data are stored in subfolder specified by pattern below.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ermöglicht alle Bilder im ausgewählten Ordner zu speichern. Slideshowdaten werden in Unterordnern gespeichert, wie im unten genannten Muster angegeben.</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1503"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1467"/>
         <source>Enables storing of all SPI data to selected folder. &lt;br&gt;SPI data are binary encoded files with services and program information, &lt;br&gt;these files decoded to XML format and service logos.&lt;br&gt;SPI data are stored in subfolder specified by pattern below.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ermöglicht alle SPI-Daten im ausgewählten Ordner zu speichern.&lt;br&gt;SPI-Daten sind binärkodierte Dateien mit Services- und Programminformationen,&lt;br&gt; diese Dateien und Servicelogos werden ins XML Format übertragen.&lt;br&gt;SPI-Daten werden im Unterordner gespeichert, wie im unten genannten Muster angegeben.</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1549"/>
@@ -3609,7 +3609,18 @@ Datei: %1</translation>
 &amp;nbsp;&amp;nbsp;&lt;b&gt;{scId}&lt;/b&gt; ... service component ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;br&gt;
 &lt;/p&gt;
 &lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
+&lt;p&gt;Das Dateispeicherpfadmuster unterstützt diese Kürzel  [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;Dokumentation&lt;/a&gt;]:&lt;/p&gt;
+&lt;p&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{serviceId}&lt;/b&gt; ... aktuelle Audio Service ID (Hexadezimalzahl)&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{ensId}&lt;/b&gt; ... aktuelle Ensemble ID (Hexadezimalzahl)&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{transportId}&lt;/b&gt; ... Transport ID&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentName}&lt;/b&gt; ... Contentname&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentNameWithExt}&lt;/b&gt; ... Contentname mit Erweiterung &lt;i&gt;[nur SLS]&lt;/i&gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{directoryId}&lt;/b&gt; ... Ordner ID &lt;i&gt;[nur SPI]&lt;/i&gt;&lt;br&gt;  
+&amp;nbsp;&amp;nbsp;&lt;b&gt;{scId}&lt;/b&gt; ... Service Component ID &lt;i&gt;[nur SPI]&lt;/i&gt;&lt;br&gt;
+&lt;/p&gt;
+&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1694"/>
@@ -3636,7 +3647,7 @@ Datei: %1</translation>
     <message>
         <location filename="../setupdialog.cpp" line="48"/>
         <source>User Applications</source>
-        <translation type="unfinished"></translation>
+        <translation>Benutzeranwendungen</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="49"/>
@@ -3684,7 +3695,7 @@ Datei: %1</translation>
     <message>
         <location filename="../setupdialog.cpp" line="93"/>
         <source>Input device XTAL frequency correction in PPM.</source>
-        <translation type="unfinished"></translation>
+        <translation>Eingangsgerät XTAL Frequenzkorrektur in PPM.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="117"/>
@@ -3769,7 +3780,7 @@ Datei: %1</translation>
     <message>
         <location filename="../setupdialog.cpp" line="1358"/>
         <source>Data storage folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Dateispeicherordner</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="249"/>
@@ -3877,7 +3888,7 @@ Datei: %1</translation>
         <location filename="../setupdialog.ui" line="1329"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1432"/>
         <source>SPI Application</source>
-        <translation>SPI Applikation</translation>
+        <translation>SPI-Anwendung</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1335"/>
@@ -3889,7 +3900,7 @@ Datei: %1</translation>
         <location filename="../setupdialog.ui" line="1338"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1436"/>
         <source>Enable SPI application</source>
-        <translation>SPI Applikation aktivieren</translation>
+        <translation>SPI-Anwendung aktivieren</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1345"/>
@@ -3921,27 +3932,27 @@ Datei: %1</translation>
     <message>
         <location filename="../qml/epg.qml" line="83"/>
         <source>Today</source>
-        <translation type="unfinished"></translation>
+        <translation>Heute</translation>
     </message>
     <message>
         <location filename="../qml/epg.qml" line="110"/>
         <source>Hide services without program</source>
-        <translation type="unfinished"></translation>
+        <translation>Service ohne Programm verstecken</translation>
     </message>
     <message>
         <location filename="../qml/epg.qml" line="118"/>
         <source>Show only current ensemble</source>
-        <translation type="unfinished"></translation>
+        <translation>Nur aktuelles Ensemble anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/epg.qml" line="145"/>
         <source>Current time: </source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuelle Zeit: </translation>
     </message>
     <message>
         <location filename="../qml/epg.qml" line="335"/>
         <source>No program available</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Programm verfügbar</translation>
     </message>
 </context>
 </TS>
