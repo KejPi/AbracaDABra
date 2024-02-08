@@ -1428,7 +1428,7 @@
           <item>
            <widget class="QCheckBox" name="dumpOverwriteCheckbox">
             <property name="toolTip">
-             <string>If checked, existing files are overwritten with new files with the same name.&lt;br&gt;If not checked, new file with existing file name is not stored. </string>
+             <string>If not checked, files with the same name will not be saved.</string>
             </property>
             <property name="text">
              <string>Overwrite existing files</string>
@@ -1477,11 +1477,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_11">
               <item>
-               <widget class="QLineEdit" name="dumpSlsPatternEdit">
-                <property name="toolTip">
-                 <string>Storage path template for SLS application. Following tokens are supported {serviceId, ensId, contentName, contentNameWithExt, transportId}</string>
-                </property>
-               </widget>
+               <widget class="QLineEdit" name="dumpSlsPatternEdit"/>
               </item>
               <item>
                <widget class="QPushButton" name="dumpSlsPatternReset">
@@ -1525,11 +1521,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_17">
               <item>
-               <widget class="QLineEdit" name="dumpSpiPatternEdit">
-                <property name="toolTip">
-                 <string>Storage path template for SPI application. Following tokens are supported {serviceId, ensId, scId, contentName, directoryId, transportId}</string>
-                </property>
-               </widget>
+               <widget class="QLineEdit" name="dumpSpiPatternEdit"/>
               </item>
               <item>
                <widget class="QPushButton" name="dumpSpiPatternReset">
@@ -1549,15 +1541,37 @@
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
 &lt;p&gt;Data storage path pattern supports these tokens  [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;documentation&lt;/a&gt;]:&lt;/p&gt;
 &lt;p&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{serviceId}&lt;/b&gt; ... current audio service ID (hexadecimal number)&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{ensId}&lt;/b&gt; ... current ensemble ID (hexadecimal number)&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{transportId}&lt;/b&gt; ... transport ID&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentName}&lt;/b&gt; ... content name&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{contentNameWithExt}&lt;/b&gt; ... content name with extension &lt;i&gt;[only SLS]&lt;/i&gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{directoryId}&lt;/b&gt; ... directory ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;br&gt;  
-&amp;nbsp;&amp;nbsp;&lt;b&gt;{scId}&lt;/b&gt; ... service component ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;br&gt;
-&lt;/p&gt;
-&lt;/body&gt;&lt;/html&gt;</string>
+&lt;table style=&quot;width:100%&quot; border-width=&quot;1&quot;&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{serviceId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;current audio service ID (hex number)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{ensId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;current ensemble ID (hex number)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{transportId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;transport ID&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{contentName}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;content name&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{contentNameWithExt}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;content name with extension &lt;i&gt;[only SLS]&lt;/i&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{directoryId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;directory ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{scId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;service component ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="textFormat">
                <enum>Qt::AutoText</enum>

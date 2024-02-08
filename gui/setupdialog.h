@@ -164,6 +164,7 @@ private:
                                 XMLNumLabels};
 
     const QList<QLocale::Language> m_supportedLocalization = { QLocale::Czech, QLocale::German, QLocale::Polish };
+    const QString m_noFileString = tr("No file selected");
 
     Ui::SetupDialog *ui;
     Settings m_settings;

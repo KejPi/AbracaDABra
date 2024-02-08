@@ -33,8 +33,6 @@
 #include "./ui_setupdialog.h"
 #include "audiodecoder.h"
 
-static const QString NO_FILE(QObject::tr("No file selected"));
-
 SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDialog)
 {
     ui->setupUi(this);
@@ -61,7 +59,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->inputCombo->setCurrentIndex(-1);  // undefined
 
     ui->fileNameLabel->setElideMode(Qt::ElideLeft);
-    ui->fileNameLabel->setText(NO_FILE);
+    ui->fileNameLabel->setText(m_noFileString);
     m_rawfilename = "";
 
     ui->fileFormatCombo->insertItem(int(RawFileInputFormat::SAMPLE_FORMAT_U8), tr("Unsigned 8 bits"));
@@ -286,6 +284,12 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->autoStopRecordingCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings.audioRecAutoStopEna = checked; });
 
     ui->dataDumpFolderLabel->setElideMode(Qt::ElideLeft);
+    ui->dumpSlsPatternEdit->setToolTip(tr("Storage path template for SLS application.\n"
+                                          "Following tokens are supported:\n"
+                                          "{serviceId, ensId, contentName, contentNameWithExt, transportId}"));
+    ui->dumpSpiPatternEdit->setToolTip(tr("Storage path template for SPI application.\n"
+                                          "Following tokens are supported:\n"
+                                          "{serviceId, ensId, scId, contentName, directoryId, transportId}"));
     connect(ui->dataDumpFolderButton, &QPushButton::clicked, this, &SetupDialog::onDataDumpFolderButtonClicked);
     connect(ui->dumpSlsCheckBox, &QCheckBox::toggled, this, &SetupDialog::onDataDumpCheckboxToggled);
     connect(ui->dumpSpiCheckBox, &QCheckBox::toggled, this, &SetupDialog::onDataDumpCheckboxToggled);
@@ -294,7 +298,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->dumpSpiPatternReset, &QPushButton::clicked, this, &SetupDialog::onDataDumpResetClicked);
     connect(ui->dumpSlsPatternEdit, &QLineEdit::editingFinished, this, &SetupDialog::onDataDumpPatternEditingFinished);
     connect(ui->dumpSpiPatternEdit, &QLineEdit::editingFinished, this, &SetupDialog::onDataDumpPatternEditingFinished);
-    connect(ui->rawFileProgressBar, &QProgressBar::valueChanged, this, &SetupDialog::onRawFileProgressChanged);
+    connect(ui->rawFileProgressBar, &QProgressBar::valueChanged, this, &SetupDialog::onRawFileProgressChanged);            
     // reset UI
     onFileLength(0);
 
@@ -601,7 +605,7 @@ void SetupDialog::setUiState()
 
     if (m_settings.rawfile.file.isEmpty())
     {
-        ui->fileNameLabel->setText(NO_FILE);
+        ui->fileNameLabel->setText(m_noFileString);
         m_rawfilename = "";
         ui->fileNameLabel->setToolTip("");
     }
