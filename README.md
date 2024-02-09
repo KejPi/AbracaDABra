@@ -1,5 +1,5 @@
 # AbracaDABra
-Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks but also with Airspy R2 and Mini devices and with many devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
+Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks but also with Airspy R2 and Airspy Mini devices and with many devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
 
 Application is based on Qt6 cross-platform software development framework and can run on any platform supported by Qt6. 
 Prebuilt binaries are released for Windows, macOS (both Intel and Apple Silicon) and Linux x86-64 and AARCH64 (AppImage). 
@@ -26,9 +26,9 @@ ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/
 * Audio and data services reconfiguration
 * Dynamic programme type (PTy)
 * Ensemble structure view with all technical details
-* Raw file dumping
+* Raw file dumping (optionally with XML header)
 * Audio recording
-* Only band III and DAB mode 1 is supported.
+* Only band III and DAB mode 1 are supported.
 * Simple user-friendly interface, trying to follow DAB _Rules of implementation (<a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>)_
 * Multiplatform (Windows, macOS and Linux)
 * Dark theme supported on all platforms
@@ -175,12 +175,12 @@ There are two versions of DMG, one for Intel Mac and the other from Apple Silico
 
 <img width="752" alt="Snímek obrazovky 2023-12-03 v 19 03 37" src="https://github.com/KejPi/AbracaDABra/assets/6438380/395a0384-ae2d-48e9-aca1-56169d631a4d">
 
-_Note:_ It seems that Apple did some changes in Sonoma and as a result Intel binaries do not run under macOS Catalina or older. Last binary that is know to run is version 2.2.4. Nevertheless the application code is still compatible with Qt6.4 thus it is possible to build AbracaDABra from source code on device running old macOS version.
+_Note:_ It seems that Apple did some changes in Sonoma and as a result Intel binaries do not run under macOS Catalina or older. Last binary that is known to run is version 2.2.4. Nevertheless the application code is still compatible with Qt6.4 thus it is possible to build AbracaDABra from source code on device running old macOS version.
 
 ### Windows
 Download latest Windows zip file from [release page](https://github.com/KejPi/AbracaDABra/releases/latest) and unpack it to any folder on your drive. 
 
-RTL-SDR devices need WinUSB driver for correct functionality under Windows. To install it, use Zadig that can be downloaded from [zadig.akeo.ie](https://zadig.akeo.ie). Please follow installation steps described [here](https://www.rtl-sdr.com/getting-the-rtl-sdr-to-work-on-windows-10/). When the driver is installed, start `AbracaDABra.exe` and first band scan should start automatically when RTL-SDR device is recognised. 
+RTL-SDR devices need WinUSB driver for correct functionality under Windows. To install it, use Zadig that can be downloaded from [zadig.akeo.ie](https://zadig.akeo.ie). Please follow installation steps described [here](https://www.rtl-sdr.com/getting-the-rtl-sdr-to-work-on-windows-10/). When the driver is installed, start `AbracaDABra.exe` and first band scan should start automatically when RTL-SDR device is recognized. 
 
 Please note that other applications requiring Realtek driver will not work with WinUSB driver from Zadig. 
 
@@ -256,7 +256,7 @@ _Note:_ `CMAKE_INSTALL_PREFIX` is `/usr/local` by default. It means that applica
 
 ## USBFS buffer size
 
-USBFS buffer size limitation is typical problem under Linux. In such case RTL-SDR disconnects just after tuning. You may also see message like this in terminal:
+USBFS buffer size limitation is typical problem under Linux. In such case RTL-SDR disconnects just after tuning. You may also see a message like this in terminal:
 
 ```
 Failed to submit transfer 10
@@ -268,5 +268,5 @@ You can set unlimited size using this command:
 ```
 sudo bash -c 'echo 0 > /sys/module/usbcore/parameters/usbfs_memory_mb'
 ```
-There are instruction on the internet how to make this settings persistent, for example [here](https://github.com/OpenKinect/libfreenect2/issues/807)
+There are instructions on the internet how to make this settings persistent, for example [here](https://github.com/OpenKinect/libfreenect2/issues/807)
        
