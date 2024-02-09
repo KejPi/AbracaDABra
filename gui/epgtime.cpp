@@ -124,8 +124,8 @@ void EPGTime::setIsLiveBroadcasting(bool newIsLiveBroadcasting)
 
 void EPGTime::onDabTime(const QDateTime &d)
 {
-    //setTime(d);
-    setTime(QDateTime::currentDateTime());
+    setTime(d);
+    //setTime(QDateTime::currentDateTime());
     m_minuteTimer->start();
 }
 
