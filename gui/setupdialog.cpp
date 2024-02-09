@@ -316,10 +316,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->audioDecoderGroupBox->setVisible(false);
 #endif
 
-    adjustSize();
-    setMinimumWidth(width());
-    setMinimumHeight(height());
-
+    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
 }
 
 void SetupDialog::showEvent(QShowEvent *event)
@@ -327,6 +324,8 @@ void SetupDialog::showEvent(QShowEvent *event)
     ui->tabWidget->setFocus();
 
     QDialog::showEvent(event);
+
+    QTimer::singleShot(10, this, [this](){ adjustSize(); } );
 }
 
 void SetupDialog::setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault)
