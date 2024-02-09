@@ -73,29 +73,43 @@ The alarm announcements carry emergency warning information that is of utmost im
 Announcements from other service display a thematic placeholder. <a href="https://www.flaticon.com/authors/basic-miscellany/lineal-color" title="linear color">The artwork of placeholders are created by Smashicons - Flaticon</a>
 
 ## SPI application and RadioDNS
-<a href="https://www.worlddab.org/dab/data-applications/service-and-programme-information">Service and programme information</a> (SPI) is supported partially. When SPI application is enabled in the settings and SPI is available for selected service and/or in the ensemble, application starts its decoding automatically.
+<a href="https://www.worlddab.org/dab/data-applications/service-and-programme-information">Service and programme information</a> (SPI) is supported. 
+When SPI application is enabled in the settings and SPI is available for selected service and/or in the ensemble, application starts its decoding automatically.
 SPI from X-PAD, from secondary service and from dedicated data service is supported, it can be even decoded from more sources in parallel. 
 In general, SPI application is very slow and it takes several minutes to acquire all objects. AbracaDABra can use internet connection to download service logos and to retrieve service information using RadioDNS if it is supported by broadcaster of the selected service. 
 Both internet connection and RadioDNS are optional features that are enabled by default.
 
 <p align="center" width="100%">
-    <img width="642" alt="Snímek obrazovky 2023-12-03 v 18 28 40" src="https://github.com/KejPi/AbracaDABra/assets/6438380/1b1ee56a-263f-4ade-90dd-36e1ddce52cd">
+    <img width="659" alt="uaSettings_20240209" src="https://github.com/KejPi/AbracaDABra/assets/6438380/8680dc2c-3cce-47f1-a87d-525121ab6270">
 </p>
 
-Service logos and internet download cache are stored in dedicated directory on the disk. Location of the cache is OS dependent:
+Service logos, XML files and internet download cache are stored in dedicated directory on the disk. Location of the cache is OS dependent:
 * MacOS: `$HOME/Library/Caches/AbracaDABra/`
 * Windows: `%USERPROFILE%\AppData\Local\AbracaDABra\cache\`
 * Linux: `$HOME/.cache/AbracaDABra/`
 
-<a name="ua_data_storage"></a>
+AbracaDABra visualizes Electronic Program Guide (EPG) if it is provided by broadcaster in SPI application and/or over RadioDNS. In such case "Program guide..." menu item becomes active and user can browse through services program in interactive GUI.
+
+<p align="center" width="100%">
+<img width="1112" alt="EPG_20240209" src="https://github.com/KejPi/AbracaDABra/assets/6438380/fc2712e8-2b9d-483e-b089-169a77efa98f">
+<p align="center" width="100%">
+
+EPG is interactive, it supports dragging or scrolling by mouse, specific program detail can be displayed by clicking on item. Audio service can be selected by clicking on the service name on the left side. 
+
 ## User application data storage
 AbracaDABra can be configured to store all incoming data from slideshow (SLS) and/or SPI application. The configuration consists of storage folder that is common for both applications 
 and subfolder template configurable for each application individually. Storage of data can be enabled for each application individually.
+
+<p align="center" width="100%">
+    <img width="659" alt="uaSettings_20240209" src="https://github.com/KejPi/AbracaDABra/assets/6438380/8680dc2c-3cce-47f1-a87d-525121ab6270">
+</p>
 
 Default storage folder is OS dependent:
 * MacOS: `$HOME/Downloads/AbracaDABra/`
 * Windows: `%USERPROFILE%\Downloads\AbracaDABra\`
 * Linux: `$HOME/Downloads/AbracaDABra/`
+
+Overwrite checkbox enables overwriting of the files with the same name. If it is not checked (default), the new file with existing name will be ignored.
 
 Subfolder template for each application can be created individually. Following tokens are supported:
 
@@ -116,6 +130,7 @@ _Important notes:_
   Application transforms it to following string when subfolder path is created: `http___www.example.com_80_logo1`
 * SLS is transferred in so called header mode [[EN 301 234 7.1](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]. In this mode only one MOT object (slide) is available.
 * SPI application uses directory mode [[EN 301 234 7.2](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]. In this mode one directory is available but this directory contains several MOT objects in so called carrousel. These objects ("files") have their own transport ID and content name. Directory typically contains several station logos and binary encoded XML files [[TS 102 371](https://www.etsi.org/deliver/etsi_ts/102300_102399/102371/03.03.01_60/ts_102371v030301p.pdf)]]. When SPI data is stored, application stores all data from carrousel and additionally also decoded XML file for each binary encoded file.
+* MOT directory ID is one of the objects transmitted in SPI application so it has it own transport ID that is called {directoryID} in the template.
 * SPI application can process data from multiple sources at the same time. These sources are packet data service components within the ensemble each having unique service component ID and XPAD data of selected audio service. Application assigns "virtual" service component ID 65535 to XPAD data. User should take parallel processing into considerations when defining path template - for example service component ID `{scId}` shall be unique but directory ID `{directoryId}` is generally not unique within ensemble.
 * SPI data retrieved using RadioDNS feature are not stored.
 
