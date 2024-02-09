@@ -3542,7 +3542,40 @@ Datei: %1</translation>
 &lt;/tr&gt;
 &lt;/table&gt;
 &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
+&lt;p&gt;Das Muster für den Datenspeicherpfad unterstützt diese Kürzel  [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;Dokumentation&lt;/a&gt;]:&lt;/p&gt;
+&lt;p&gt;
+&lt;table style=&quot;width:100%&quot; border-width=&quot;1&quot;&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{serviceId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;aktuelle Audio Service ID (Hex-Nummer)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{ensId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;Aktuelle Ensemble ID (Hex-Nummer)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{transportId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;Transport ID&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{contentName}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;Contentname&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{contentNameWithExt}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;Contentname mit Erweiterung &lt;i&gt;[nur SLS]&lt;/i&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{directoryId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;Ordner ID &lt;i&gt;[nur SPI]&lt;/i&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;b&gt;{scId}&lt;/b&gt; &lt;/td&gt;
+&lt;td&gt;Service Component ID &lt;i&gt;[nur SPI]&lt;/i&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1618"/>
@@ -3602,7 +3635,7 @@ Datei: %1</translation>
         <location filename="../setupdialog.ui" line="1431"/>
         <location filename="../../build/gui/AbracaDABra_autogen/include/ui_setupdialog.h" line="1452"/>
         <source>If not checked, files with the same name will not be saved.</source>
-        <translation type="unfinished"></translation>
+        <translation>Falls nicht ausgewählt, werden Dateien gleichen Namens nicht gespeichert.</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1455"/>
@@ -3830,13 +3863,15 @@ Datei: %1</translation>
         <location filename="../setupdialog.cpp" line="287"/>
         <source>Storage path template for SLS application. Following tokens are supported:
 {serviceId, ensId, contentName, contentNameWithExt, transportId}</source>
-        <translation type="unfinished"></translation>
+        <translation>Speicherpfadvorlage für SLS-Anwendung. Folgende Kürzel werden unterstützt:
+{serviceId, ensId, contentName, contentNameWithExt, transportId}</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="289"/>
         <source>Storage path template for SPI application. Following tokens are supported:
 {serviceId, ensId, scId, contentName, directoryId, transportId}</source>
-        <translation type="unfinished"></translation>
+        <translation>Speicherpfadvorlage für SPI-Anwendung. Folgende Kürzel werden unterstützt:
+{serviceId, ensId, scId, contentName, directoryId, transportId}</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="310"/>
@@ -3935,7 +3970,7 @@ Datei: %1</translation>
     <message>
         <location filename="../setupdialog.h" line="167"/>
         <source>No file selected</source>
-        <translation type="unfinished">Keine Datei ausgewählt</translation>
+        <translation>Keine Datei ausgewählt</translation>
     </message>
 </context>
 <context>
