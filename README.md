@@ -11,8 +11,8 @@ ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/
 ## Features
 * Following input devices are supported:
   * RTL-SDR (default device)
-  * Airspy (optional) - only Airspy Mini and R2 are supported, HF+ devices do not work due to limited bandwidth. If you have problems with Airspy devices, please check the firmware version. Firmware update maybe required for correct functionality.
-  * SoapySDR (optional)
+  * [Airspy](https://airspy.com) (optional) - only Airspy Mini and R2 are supported, HF+ devices do not work due to limited bandwidth. If you have problems with Airspy devices, please check the firmware version. Firmware update maybe required for correct functionality.
+  * [SoapySDR](https://github.com/pothosware/SoapySDR/wiki) (optional)
   * RTL-TCP
   * Raw file input (in expert mode only, INT16 or UINT8 format)
 * Band scan with automatic service list
@@ -32,7 +32,7 @@ ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/
 * Simple user-friendly interface, trying to follow DAB _Rules of implementation (<a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>)_
 * Multiplatform (Windows, macOS and Linux)
 * Dark theme supported on all platforms
-* Localization to German, Polish and Czech
+* Localization to German, Czech and Polish (not complete)
 
 ## Basic mode
 <p align="center" width="100%">
@@ -73,7 +73,7 @@ The alarm announcements carry emergency warning information that is of utmost im
 Announcements from other service display a thematic placeholder. <a href="https://www.flaticon.com/authors/basic-miscellany/lineal-color" title="linear color">The artwork of placeholders are created by Smashicons - Flaticon</a>
 
 ## SPI application and RadioDNS
-<a href="https://www.worlddab.org/dab/data-applications/service-and-programme-information">Service and programme information</a> (SPI) is supported. 
+<a href="https://www.worlddab.org/dab/data-applications/service-and-programme-information">Service and programme information</a> (SPI) application is supported. 
 When SPI application is enabled in the settings and SPI is available for selected service and/or in the ensemble, application starts its decoding automatically.
 SPI from X-PAD, from secondary service and from dedicated data service is supported, it can be even decoded from more sources in parallel. 
 In general, SPI application is very slow and it takes several minutes to acquire all objects. AbracaDABra can use internet connection to download service logos and to retrieve service information using RadioDNS if it is supported by broadcaster of the selected service. 
@@ -84,17 +84,17 @@ Both internet connection and RadioDNS are optional features that are enabled by 
 </p>
 
 Service logos, XML files and internet download cache are stored in dedicated directory on the disk. Location of the cache is OS dependent:
-* MacOS: `$HOME/Library/Caches/AbracaDABra/`
+* macOS: `$HOME/Library/Caches/AbracaDABra/`
 * Windows: `%USERPROFILE%\AppData\Local\AbracaDABra\cache\`
 * Linux: `$HOME/.cache/AbracaDABra/`
 
-AbracaDABra visualizes Electronic Program Guide (EPG) if it is provided by broadcaster in SPI application and/or over RadioDNS. In such case "Program guide..." menu item becomes active and user can browse through services program in interactive GUI.
+AbracaDABra visualizes Electronic Program Guide (EPG) if it is provided by broadcaster in SPI application and/or over RadioDNS. In such case "Program guide..." menu item becomes active and user can browse through services program in interactive user interface.
 
 <p align="center" width="100%">
 <img width="1112" alt="EPG_20240209" src="https://github.com/KejPi/AbracaDABra/assets/6438380/fc2712e8-2b9d-483e-b089-169a77efa98f">
 <p align="center" width="100%">
 
-EPG is interactive, it supports dragging or scrolling by mouse, specific program detail can be displayed by clicking on item. Audio service can be selected by clicking on the service name on the left side. 
+EPG dialog supports dragging or scrolling by mouse, specific program detail can be displayed by clicking on item. Audio service can be selected by clicking on the service name on the left side. 
 
 ## User application data storage
 AbracaDABra can be configured to store all incoming data from slideshow (SLS) and/or SPI application. The configuration consists of storage folder that is common for both applications 
@@ -105,11 +105,11 @@ and subfolder template configurable for each application individually. Storage o
 </p>
 
 Default storage folder is OS dependent:
-* MacOS: `$HOME/Downloads/AbracaDABra/`
+* macOS: `$HOME/Downloads/AbracaDABra/`
 * Windows: `%USERPROFILE%\Downloads\AbracaDABra\`
 * Linux: `$HOME/Downloads/AbracaDABra/`
 
-Overwrite checkbox enables overwriting of the files with the same name. If it is not checked (default), the new file with existing name will be ignored.
+Overwrite checkbox enables overwriting of the files with the same name. If it is not checked (default), new file with existing name will be ignored and not stored.
 
 Subfolder template for each application can be created individually. Following tokens are supported:
 
@@ -130,7 +130,7 @@ _Important notes:_
   Application transforms it to following string when subfolder path is created: `http___www.example.com_80_logo1`
 * SLS is transferred in so called header mode [[EN 301 234 7.1](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]. In this mode only one MOT object (slide) is available.
 * SPI application uses directory mode [[EN 301 234 7.2](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]. In this mode one directory is available but this directory contains several MOT objects in so called carrousel. These objects ("files") have their own transport ID and content name. Directory typically contains several station logos and binary encoded XML files [[TS 102 371](https://www.etsi.org/deliver/etsi_ts/102300_102399/102371/03.03.01_60/ts_102371v030301p.pdf)]]. When SPI data is stored, application stores all data from carrousel and additionally also decoded XML file for each binary encoded file.
-* MOT directory ID is one of the objects transmitted in SPI application so it has it own transport ID that is called {directoryID} in the template.
+* MOT directory ID is one of the objects transmitted in SPI application so it has its own transport ID that is called `{directoryID}` in the template.
 * SPI application can process data from multiple sources at the same time. These sources are packet data service components within the ensemble each having unique service component ID and XPAD data of selected audio service. Application assigns "virtual" service component ID 65535 to XPAD data. User should take parallel processing into considerations when defining path template - for example service component ID `{scId}` shall be unique but directory ID `{directoryId}` is generally not unique within ensemble.
 * SPI data retrieved using RadioDNS feature are not stored.
 
@@ -151,7 +151,7 @@ _Note:_  Audio recording stops when ensemble reconfigures or when any tuning ope
 
 ## Expert settings
 Some settings can only be changed by editing of the INI file. File location is OS dependent:
-* MacOS: `$HOME/.config/AbracaDABra/AbracaDABra.ini`
+* macOS: `$HOME/.config/AbracaDABra/AbracaDABra.ini`
 * Windows: `%USERPROFILE%\AppData\Roaming\AbracaDABra\AbracaDABra.ini`
 * Linux: `$HOME/.config/AbracaDABra/AbracaDABra.ini`
 
@@ -256,7 +256,7 @@ _Note:_ `CMAKE_INSTALL_PREFIX` is `/usr/local` by default. It means that applica
 
 ## USBFS buffer size
 
-USBFS buffet size limitation is typical problem under Linux. In such case RTL-SDR disconnects just after tuning. You may also see message like this in terminal:
+USBFS buffer size limitation is typical problem under Linux. In such case RTL-SDR disconnects just after tuning. You may also see message like this in terminal:
 
 ```
 Failed to submit transfer 10
