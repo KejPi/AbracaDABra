@@ -1564,7 +1564,7 @@
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td&gt;&lt;b&gt;{directoryId}&lt;/b&gt; &lt;/td&gt;
-&lt;td&gt;directory ID &lt;i&gt;[only SPI]&lt;/i&gt;&lt;/td&gt;
+&lt;td&gt;transport ID of directory &lt;i&gt;[only SPI]&lt;/i&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td&gt;&lt;b&gt;{scId}&lt;/b&gt; &lt;/td&gt;
