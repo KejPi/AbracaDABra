@@ -129,7 +129,7 @@ _Important notes:_
 * MOT object content name does not have to be a valid filename for any operating system, thus application replaces potentially "dangerous" characters by underscore `_`. For example this is perfectly valid content name: `http://www.example.com:80/logo1`. 
   Application transforms it to following string when subfolder path is created: `http___www.example.com_80_logo1`
 * SLS is transferred in so called header mode [[EN 301 234 7.1](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]. In this mode only one MOT object (slide) is available.
-* SPI application uses directory mode [[EN 301 234 7.2](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]. In this mode one directory is available but this directory contains several MOT objects in so called carrousel. These objects ("files") have their own transport ID and content name. Directory typically contains several station logos and binary encoded XML files [[TS 102 371](https://www.etsi.org/deliver/etsi_ts/102300_102399/102371/03.03.01_60/ts_102371v030301p.pdf)]]. When SPI data is stored, application stores all data from carrousel and additionally also decoded XML file for each binary encoded file.
+* SPI application uses directory mode [[EN 301 234 7.2](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]. In this mode one directory is available but this directory contains several MOT objects in so called carrousel. These objects ("files") have their own transport ID and content name. Directory typically contains several station logos and binary encoded XML files [[TS 102 371](https://www.etsi.org/deliver/etsi_ts/102300_102399/102371/03.03.01_60/ts_102371v030301p.pdf)]. When SPI data is stored, application stores all data from carrousel and additionally also decoded XML file for each binary encoded file.
 * MOT directory ID is one of the objects transmitted in SPI application so it has its own transport ID that is called `{directoryID}` in the template.
 * SPI application can process data from multiple sources at the same time. These sources are packet data service components within the ensemble each having unique service component ID and XPAD data of selected audio service. Application assigns "virtual" service component ID 65535 to XPAD data. User should take parallel processing into considerations when defining path template - for example service component ID `{scId}` shall be unique but directory ID `{directoryId}` is generally not unique within ensemble.
 * SPI data retrieved using RadioDNS feature are not stored.
@@ -209,6 +209,10 @@ For a fresh Ubuntu 22.04 installation you can use the following commands:
        sudo apt-get install libusb-dev librtlsdr-dev libfaad2 mpg123 libmpg123-dev libfaad-dev
        sudo apt-get install portaudio19-dev qt6-base-dev qt6-multimedia-dev libqt6svg6-dev rtl-sdr   
        sudo apt-get install qt6-tools-dev qt6-tools-dev-tools qt6-l10n-tools
+       
+These packages are requires since version 2.4.0:
+
+       sudo apt install qt6-declarative-dev qml6-module-qtquick-controls qml6-module-qtquick-layouts qml6-module-qt5compat-graphicaleffects qml6-module-qtqml-workerscript qml6-module-qtquick-templates qml6-module-qtquick
        
 Optional Airspy support:       
 
