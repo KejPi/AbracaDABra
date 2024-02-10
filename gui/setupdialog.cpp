@@ -315,7 +315,6 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 #else
     ui->audioDecoderGroupBox->setVisible(false);
 #endif
-
     QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
 }
 
@@ -325,7 +324,8 @@ void SetupDialog::showEvent(QShowEvent *event)
 
     QDialog::showEvent(event);
 
-    QTimer::singleShot(10, this, [this](){ adjustSize(); } );
+    //QTimer::singleShot(10, this, [this](){ adjustSize(); } );
+    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
 }
 
 void SetupDialog::setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault)
@@ -1257,8 +1257,11 @@ void SetupDialog::onExpertModeChecked(bool checked)
     }
 
     m_settings.expertModeEna = checked;
+    ui->tabWidget->adjustSize();
 
     emit expertModeToggled(checked);
+
+    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
 }
 
 void SetupDialog::onDLPlusChecked(bool checked)

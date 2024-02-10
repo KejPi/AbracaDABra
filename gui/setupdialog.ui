@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>530</width>
-    <height>644</height>
+    <width>544</width>
+    <height>634</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,7 +23,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -33,25 +33,14 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <layout class="QFormLayout" name="formLayout">
-           <item row="0" column="0">
-            <widget class="QLabel" name="inputDeviceLabel">
-             <property name="text">
-              <string>Input device:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QComboBox" name="inputCombo"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="QPushButton" name="connectButton">
+          <widget class="QLabel" name="inputDeviceLabel">
            <property name="text">
-            <string>Connect</string>
+            <string>Input device:</string>
            </property>
           </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="inputCombo"/>
          </item>
          <item>
           <spacer name="horizontalSpacer">
@@ -66,6 +55,13 @@
            </property>
           </spacer>
          </item>
+         <item>
+          <widget class="QPushButton" name="connectButton">
+           <property name="text">
+            <string>Connect</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
@@ -77,7 +73,7 @@
           <enum>QFrame::Sunken</enum>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="rtlsdrPage">
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -477,7 +473,7 @@
              <property name="sizeHint" stdset="0">
               <size>
                <width>20</width>
-               <height>40</height>
+               <height>0</height>
               </size>
              </property>
             </spacer>
@@ -1310,7 +1306,7 @@
       <attribute name="title">
        <string notr="true">User Apps</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_14">
+      <layout class="QVBoxLayout" name="verticalLayout_13">
        <item>
         <widget class="QGroupBox" name="spiAppGroupBox">
          <property name="title">
@@ -1355,7 +1351,7 @@
          <property name="title">
           <string>Data Storage</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_15">
+         <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
            <layout class="QGridLayout" name="gridLayout_8">
             <item row="1" column="0">
@@ -1431,102 +1427,63 @@
            </widget>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_13">
-            <property name="spacing">
-             <number>5</number>
+           <widget class="QCheckBox" name="dumpSlsCheckBox">
+            <property name="toolTip">
+             <string>Enables storing of all slides to selected folder. Slideshow data are stored in subfolder specified by pattern below.</string>
             </property>
+            <property name="text">
+             <string>Slideshow data</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_11">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_18">
-              <item>
-               <widget class="QCheckBox" name="dumpSlsCheckBox">
-                <property name="toolTip">
-                 <string>Enables storing of all slides to selected folder. Slideshow data are stored in subfolder specified by pattern below.</string>
-                </property>
-                <property name="text">
-                 <string>Slideshow data</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_10">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
+             <widget class="QLineEdit" name="dumpSlsPatternEdit"/>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_11">
-              <item>
-               <widget class="QLineEdit" name="dumpSlsPatternEdit"/>
-              </item>
-              <item>
-               <widget class="QPushButton" name="dumpSlsPatternReset">
-                <property name="toolTip">
-                 <string>Restore default template</string>
-                </property>
-                <property name="text">
-                 <string>Reset</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_19">
-              <item>
-               <widget class="QCheckBox" name="dumpSpiCheckBox">
-                <property name="toolTip">
-                 <string>Enables storing of all SPI data to selected folder. &lt;br&gt;SPI data are binary encoded files with services and program information, &lt;br&gt;these files decoded to XML format and service logos.&lt;br&gt;SPI data are stored in subfolder specified by pattern below.</string>
-                </property>
-                <property name="text">
-                 <string>SPI data</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_11">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_17">
-              <item>
-               <widget class="QLineEdit" name="dumpSpiPatternEdit"/>
-              </item>
-              <item>
-               <widget class="QPushButton" name="dumpSpiPatternReset">
-                <property name="toolTip">
-                 <string>Restore default template</string>
-                </property>
-                <property name="text">
-                 <string>Reset</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QLabel" name="dumpPatternHelpLabel">
+             <widget class="QPushButton" name="dumpSlsPatternReset">
+              <property name="toolTip">
+               <string>Restore default template</string>
+              </property>
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
+               <string>Reset</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="dumpSpiCheckBox">
+            <property name="toolTip">
+             <string>Enables storing of all SPI data to selected folder. &lt;br&gt;SPI data are binary encoded files with services and program information, &lt;br&gt;these files decoded to XML format and service logos.&lt;br&gt;SPI data are stored in subfolder specified by pattern below.</string>
+            </property>
+            <property name="text">
+             <string>SPI data</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_17">
+            <item>
+             <widget class="QLineEdit" name="dumpSpiPatternEdit"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="dumpSpiPatternReset">
+              <property name="toolTip">
+               <string>Restore default template</string>
+              </property>
+              <property name="text">
+               <string>Reset</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="dumpPatternHelpLabel">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
 &lt;p&gt;Data storage path pattern supports these tokens  [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;documentation&lt;/a&gt;]:&lt;/p&gt;
 &lt;p&gt;
 &lt;table style=&quot;width:100%&quot; border-width=&quot;1&quot;&gt;
@@ -1560,22 +1517,20 @@
 &lt;/tr&gt;
 &lt;/table&gt;
 &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="textFormat">
-               <enum>Qt::AutoText</enum>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-              <property name="openExternalLinks">
-               <bool>true</bool>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::TextBrowserInteraction</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
+            </property>
+            <property name="textFormat">
+             <enum>Qt::AutoText</enum>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="openExternalLinks">
+             <bool>true</bool>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextBrowserInteraction</set>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
