@@ -35,10 +35,10 @@ endif(APPLE)
 configure_file (config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 if (HAVE_AIRSPY)
-    set(AIRSPY_SOURCES airspyinput.h airspyinput.cpp)
+    set(AIRSPY_SOURCES input/airspyinput.h input/airspyinput.cpp)
 endif(HAVE_AIRSPY)
 if (HAVE_SOAPYSDR)
-    set(SOAPYSDR_SOURCES soapysdrinput.h soapysdrinput.cpp)
+    set(SOAPYSDR_SOURCES input/soapysdrinput.h input/soapysdrinput.cpp)
 endif(HAVE_SOAPYSDR)
 if (HAVE_PORTAUDIO)
     set(PORTAUDIO_SOURCES audiooutputpa.h audiooutputpa.cpp)
@@ -53,39 +53,16 @@ add_executable(${TARGET}
     ${APP_ICON_RESOURCE_WINDOWS}
     ${APP_RESOURCE_WINDOWS}
     ${CMAKE_CURRENT_BINARY_DIR}/config.h    
-    ${AIRSPY_SOURCES}
-    ${SOAPYSDR_SOURCES}
     ${PORTAUDIO_SOURCES}
+    ${APPLE_SOURCES}
     main.cpp
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-    clickablelabel.h
-    clickablelabel.cpp
     dabtables.h
     dabtables.cpp
     radiocontrol.h
     radiocontrol.cpp
-    inputdevice.h
-    inputdevice.cpp
-    inputdevicesrc.h
-    inputdevicesrc.cpp
-    inputdevicerecorder.h
-    inputdevicerecorder.cpp
-    rawfileinput.h
-    rawfileinput.cpp
-    rtlsdrinput.h
-    rtlsdrinput.cpp
-    rtltcpinput.h
-    rtltcpinput.cpp
-    mscdatagroup.h
-    mscdatagroup.cpp
-    dldecoder.h
-    dldecoder.cpp
-    motdecoder.h
-    motdecoder.cpp
-    motobject.h
-    motobject.cpp
     audiodecoder.h
     audiodecoder.cpp
     audiofifo.h
@@ -99,14 +76,16 @@ add_executable(${TARGET}
     ensemblelistitem.h
     ensemblelistitem.cpp
     servicelistitem.h
-    servicelistitem.cpp
+    servicelistitem.cpp   
 
     slmodel.h
-    slmodel.cpp
+    slmodel.cpp    
     slmodelitem.h
-    slmodelitem.cpp
+    slmodelitem.cpp   
     sltreemodel.h
     sltreemodel.cpp
+    slproxymodel.h
+    slproxymodel.cpp
     setupdialog.h
     setupdialog.cpp
     setupdialog.ui
@@ -123,15 +102,37 @@ add_executable(${TARGET}
     ensembleinfodialog.cpp
     ensembleinfodialog.ui
 
-    userapplication.h
-    userapplication.cpp
-    slideshowapp.h
-    slideshowapp.cpp
-    spiapp.h
-    spiapp.cpp
+    # Input devices
+    ${AIRSPY_SOURCES}
+    ${SOAPYSDR_SOURCES}
+    input/inputdevice.h
+    input/inputdevice.cpp
+    input/inputdevicesrc.h
+    input/inputdevicesrc.cpp
+    input/inputdevicerecorder.h
+    input/inputdevicerecorder.cpp
+    input/rawfileinput.h
+    input/rawfileinput.cpp
+    input/rtlsdrinput.h
+    input/rtlsdrinput.cpp
+    input/rtltcpinput.h
+    input/rtltcpinput.cpp
 
-    slsview.h
-    slsview.cpp
+    # User applications
+    data/mscdatagroup.h
+    data/mscdatagroup.cpp
+    data/dldecoder.h
+    data/dldecoder.cpp
+    data/motdecoder.h
+    data/motdecoder.cpp
+    data/motobject.h
+    data/motobject.cpp
+    data/userapplication.h
+    data/userapplication.cpp
+    data/slideshowapp.h
+    data/slideshowapp.cpp
+    data/spiapp.h
+    data/spiapp.cpp
 
     catslsdialog.h
     catslsdialog.cpp
@@ -144,20 +145,38 @@ add_executable(${TARGET}
     metadatamanager.h
     metadatamanager.cpp
 
-    audiorecorder.h
-    audiorecorder.cpp
+    # customized widgets
+    widgets/slsview.h
+    widgets/slsview.cpp
+    widgets/clickablelabel.h
+    widgets/clickablelabel.cpp
+    widgets/elidedlabel.h
+    widgets/elidedlabel.cpp
 
-    ${APPLE_SOURCES}
-    elidedlabel.h elidedlabel.cpp
-    epgmodel.h epgmodel.cpp
-    epgmodelitem.h epgmodelitem.cpp
-    epgdialog.h epgdialog.cpp epgdialog.ui
-    epgproxymodel.h epgproxymodel.cpp
-    epgtime.h epgtime.cpp
-    slproxymodel.h slproxymodel.cpp    
+    # EPG related classes
+    epg/epgmodel.h
+    epg/epgmodel.cpp
+    epg/epgmodelitem.h
+    epg/epgmodelitem.cpp
+    epg/epgdialog.h
+    epg/epgdialog.cpp
+    epg/epgdialog.ui
+    epg/epgproxymodel.h
+    epg/epgproxymodel.cpp
+    epg/epgtime.h
+    epg/epgtime.cpp
+
+    # audio recording features
+    audiorec/audiorecorder.h
+    audiorec/audiorecorder.cpp
   )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/audiorec)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/epg)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/data)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/input)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets)
 
 # QML
 set_source_files_properties(qml/EPGColors.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
