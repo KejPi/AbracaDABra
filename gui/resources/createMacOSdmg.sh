@@ -41,7 +41,7 @@ cmake -G Xcode -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DAIRSPY=ON -DSOAPYSDR=O
 cmake --build $BUILD_DIR --target ALL_BUILD --config Release
 
 cd $BUILD_DIR/gui/Release
-$QT_PATH/bin/macdeployqt AbracaDABra.app -codesign="-" # -dmg
+$QT_PATH/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/gui/qml -codesign="-" # -dmg
 
 cd ../..
 createDmg
@@ -59,7 +59,7 @@ cmake -G Xcode -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DAPPLE_BUILD_X86_64=ON 
 cmake --build $BUILD_DIR --target ALL_BUILD --config Release
 
 cd $BUILD_DIR/gui/Release
-$QT_PATH_6_4/bin/macdeployqt AbracaDABra.app -codesign="-" # -dmg
+$QT_PATH_6_4/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/gui/qml -codesign="-" # -dmg
 
 cd ../..
 createDmg
