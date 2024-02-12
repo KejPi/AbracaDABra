@@ -169,6 +169,14 @@ add_executable(${TARGET}
     # audio recording features
     audiorec/audiorecorder.h
     audiorec/audiorecorder.cpp
+    audiorec/audiorecscheduledialog.h
+    audiorec/audiorecscheduledialog.cpp
+    audiorec/audiorecscheduledialog.ui
+    audiorec/audiorecschedulemodel.h
+    audiorec/audiorecschedulemodel.cpp
+    audiorec/audiorecscheduleitem.h
+    audiorec/audiorecscheduleitem.cpp
+    audiorec/audiorecitemdialog.h audiorec/audiorecitemdialog.cpp audiorec/audiorecitemdialog.ui
   )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

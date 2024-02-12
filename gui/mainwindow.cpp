@@ -61,6 +61,7 @@
 #include "audiooutputpa.h"
 #endif
 #include "metadatamanager.h"
+#include "audiorecscheduledialog.h"
 
 
 // Input devices
@@ -317,7 +318,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_ensembleInfoAction = new QAction(tr("Ensemble information"), this);
     connect(m_ensembleInfoAction, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
 
-    m_audioRecordingAction = new QAction(tr("Start audio recording"), this);
+    m_audioRecordingScheduleAction = new QAction(tr("Audio recording schedule..."), this);
+    connect(m_audioRecordingScheduleAction, &QAction::triggered, this, &MainWindow::showAudioRecordingSchedule);
+
+    m_audioRecordingAction = new QAction(tr("Start"), this);
     connect(m_audioRecordingAction, &QAction::triggered, this, &MainWindow::audioRecordingToggle);
 
     m_epgAction = new QAction(tr("Program guide..."), this);
@@ -342,7 +346,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         m_audioOutputMenu = m_menu->addMenu(tr("Audio output"));
         connect(m_audioOutputMenu, &QMenu::triggered, this, &MainWindow::onAudioOutputSelected);
     }
+    m_menu->addAction(m_audioRecordingScheduleAction);
     m_menu->addAction(m_audioRecordingAction);
+
     m_menu->addSeparator();
     m_menu->addAction(m_setupAction);   
     m_menu->addAction(m_bandScanAction);
@@ -2932,6 +2938,16 @@ void MainWindow::showCatSLS()
     m_catSlsDialog->show();
     m_catSlsDialog->raise();
     m_catSlsDialog->activateWindow();
+}
+
+void MainWindow::showAudioRecordingSchedule()
+{
+    auto dialog = new AudioRecScheduleDialog(&m_audioRecSchedule, this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->show();
+    dialog->raise();
+    dialog->activateWindow();
+
 }
 
 void MainWindow::onExpertModeToggled(bool checked)

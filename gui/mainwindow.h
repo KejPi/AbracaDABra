@@ -61,6 +61,8 @@
 #include "slmodel.h"
 #include "sltreemodel.h"
 #include "logdialog.h"
+#include "audiorecschedulemodel.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -142,6 +144,7 @@ private:
     QAction * m_aboutAction;
     QAction * m_logAction;
     QAction * m_audioRecordingAction;
+    QAction * m_audioRecordingScheduleAction;
     QAction * m_epgAction;
     QActionGroup * m_audioDevicesGroup = nullptr;
 
@@ -184,6 +187,7 @@ private:
     bool m_keepServiceListOnScan;
     bool m_audioRecordingActive;
     QString m_audioRecordingFile;
+    AudioRecScheduleModel m_audioRecSchedule;
 
     // service list
     ServiceList * m_serviceList;
@@ -208,6 +212,7 @@ private:
     void showSetupDialog();
     void showLog();
     void showCatSLS();
+    void showAudioRecordingSchedule();
     void setExpertMode(bool ena);
     void stop();
     void bandScan();
