@@ -29,10 +29,11 @@
 #include "ui_audiorecscheduledialog.h"
 #include "audiorecitemdialog.h"
 
-AudioRecScheduleDialog::AudioRecScheduleDialog(AudioRecScheduleModel *model, QWidget *parent)
+AudioRecScheduleDialog::AudioRecScheduleDialog(AudioRecScheduleModel *model, SLModel *slModel, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::AudioRecScheduleDialog)
     , m_model(model)
+    , m_slModel(slModel)
 {
     ui->setupUi(this);
     m_locale = QLocale::C;
@@ -54,6 +55,9 @@ AudioRecScheduleDialog::AudioRecScheduleDialog(AudioRecScheduleModel *model, QWi
     ui->deleteButton->setEnabled(false);
 
     connect(ui->scheduleTableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &AudioRecScheduleDialog::updateActions);
+
+    ui->scheduleTableView->resizeColumnsToContents();
+    adjustSize();
 }
 
 AudioRecScheduleDialog::~AudioRecScheduleDialog()
@@ -63,13 +67,15 @@ AudioRecScheduleDialog::~AudioRecScheduleDialog()
 
 void AudioRecScheduleDialog::addItem()
 {
-    AudioRecItemDialog dialog(m_locale);
+    AudioRecItemDialog dialog(m_locale, m_slModel);
     dialog.setWindowTitle(tr("New recording schedule"));
 
     if (dialog.exec())
     {
         m_model->insertItem(dialog.itemData());
     }
+    ui->scheduleTableView->resizeColumnsToContents();
+    updateActions(ui->scheduleTableView->selectionModel()->selection());
 }
 
 void AudioRecScheduleDialog::editItem()
@@ -78,14 +84,16 @@ void AudioRecScheduleDialog::editItem()
     const QModelIndexList indexes = selectionModel->selectedRows();
     if (indexes.size() > 0) {
         QModelIndex index = indexes.at(0);
-        AudioRecItemDialog dialog(m_locale);
+        AudioRecItemDialog dialog(m_locale, m_slModel);
         dialog.setWindowTitle(tr("Edit recording schedule"));
         dialog.setItemData(m_model->itemAtIndex(index));
         if (dialog.exec())
         {
             m_model->replaceItemAtIndex(index, dialog.itemData());
+            ui->scheduleTableView->resizeColumnsToContents();
         }
     }
+    updateActions(ui->scheduleTableView->selectionModel()->selection());
 }
 
 void AudioRecScheduleDialog::removeItem()
@@ -97,11 +105,17 @@ void AudioRecScheduleDialog::removeItem()
         int row = index.row();
         m_model->removeRows(row, 1, QModelIndex());
     }
+    updateActions(ui->scheduleTableView->selectionModel()->selection());
 }
 
 void AudioRecScheduleDialog::setLocale(const QLocale &newLocale)
 {
     m_locale = newLocale;
+}
+
+void AudioRecScheduleDialog::setServiceListModel(SLModel *newSlModel)
+{
+    m_slModel = newSlModel;
 }
 
 void AudioRecScheduleDialog::updateActions(const QItemSelection &selection)

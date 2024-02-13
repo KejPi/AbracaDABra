@@ -30,6 +30,7 @@
 #include <QDialog>
 #include <QItemSelectionModel>
 #include "audiorecschedulemodel.h"
+#include "slmodel.h"
 
 namespace Ui {
 class AudioRecScheduleDialog;
@@ -40,7 +41,7 @@ class AudioRecScheduleDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit AudioRecScheduleDialog(AudioRecScheduleModel * model, QWidget *parent = nullptr);
+    explicit AudioRecScheduleDialog(AudioRecScheduleModel * model, SLModel * slModel, QWidget *parent = nullptr);
     ~AudioRecScheduleDialog();
 
     void addItem();
@@ -48,6 +49,7 @@ public:
     void removeItem();
 
     void setLocale(const QLocale &newLocale);
+    void setServiceListModel(SLModel *newSlModel);
 
 signals:
     void selectionChanged (const QItemSelection &selected);
@@ -57,6 +59,7 @@ private:
 
     QLocale m_locale;
     AudioRecScheduleModel * m_model;
+    SLModel * m_slModel;
     void updateActions(const QItemSelection &selection);
 };
 

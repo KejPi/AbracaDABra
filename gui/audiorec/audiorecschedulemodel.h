@@ -31,32 +31,35 @@
 #include <QObject>
 #include <QList>
 #include "audiorecscheduleitem.h"
+#include "slmodel.h"
 
 class AudioRecScheduleModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
     explicit AudioRecScheduleModel(QObject *parent = nullptr);
-    AudioRecScheduleModel(const QList<AudioRecScheduleItem> &schedule, QObject *parent = nullptr);
 
     int rowCount(const QModelIndex &parent) const override;
     int columnCount(const QModelIndex &parent) const override;
     QVariant data(const QModelIndex &index, int role) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
-    //bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
     const QList<AudioRecScheduleItem> &getSchedule() const;
 
     void insertItem(const AudioRecScheduleItem & item);
     void replaceItemAtIndex(const QModelIndex & index, const AudioRecScheduleItem & item);
     const AudioRecScheduleItem & itemAtIndex(const QModelIndex & index) const;
+    void setSlModel(SLModel *newSlModel);
+    void load(QSettings & settings);
+    void save(QSettings & settings);
 
 private:
-    enum { NumColumns = 4 };
+    enum { NumColumns = 6 };
     enum { ColConflict, ColLabel, ColStartTime, ColEndTime, ColDuration, ColService };
 
     QList<AudioRecScheduleItem> m_modelData;
+    SLModel * m_slModel;
 
     void sortFindConflicts();
 };

@@ -544,6 +544,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         ::exit(1);
     }
 
+    m_audioRecSchedule = new AudioRecScheduleModel;
+    m_audioRecSchedule->setSlModel(m_slModel);
+
     m_audioRecorder = new AudioRecorder();
     m_audioDecoder = new AudioDecoder(m_audioRecorder);
     m_audioDecoderThread = new QThread(this);
@@ -2458,6 +2461,9 @@ void MainWindow::loadSettings()
     // load servicelist
     m_serviceList->load(*settings);
 
+    // load recording schedule
+    m_audioRecSchedule->load(*settings);
+
     m_audioVolume = settings->value("volume", 100).toInt();
     m_audioVolumeSlider->setValue(m_audioVolume);
     bool mute = settings->value("mute", false).toBool();
@@ -2758,6 +2764,9 @@ void MainWindow::saveSettings()
     }
     else { /* RAW file does not store service and service list */ }
 
+    // save audio sechdule
+    m_audioRecSchedule->save(*settings);
+
     settings->sync();
 
     delete settings;
@@ -2942,7 +2951,9 @@ void MainWindow::showCatSLS()
 
 void MainWindow::showAudioRecordingSchedule()
 {
-    auto dialog = new AudioRecScheduleDialog(&m_audioRecSchedule, this);
+    auto dialog = new AudioRecScheduleDialog(m_audioRecSchedule, m_slModel, this);
+    dialog->setLocale(m_timeLocale);
+    dialog->setServiceListModel(m_slModel);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
     dialog->raise();

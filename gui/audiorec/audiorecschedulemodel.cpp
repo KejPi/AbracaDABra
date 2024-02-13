@@ -29,25 +29,8 @@
 #include "audiorecschedulemodel.h"
 
 AudioRecScheduleModel::AudioRecScheduleModel(QObject *parent)
-    : QAbstractTableModel{parent}
+    : QAbstractTableModel{parent}, m_slModel(nullptr)
 {
-
-#warning "Remove this test data"
-    AudioRecScheduleItem item;
-    for (int n = 0; n<3; ++n)
-    {
-        item.setName(QString("Test label #%1").arg(n+1));
-        item.setStartTime(QDateTime(QDateTime::currentDateTime().date(), QTime(13-2*n, 7, 0)));
-        item.setDurationSec(3600 - 10*60*n);
-        m_modelData.append(item);
-    }
-    sortFindConflicts();
-}
-
-AudioRecScheduleModel::AudioRecScheduleModel(const QList<AudioRecScheduleItem> &schedule, QObject *parent)
-    : QAbstractTableModel{parent}, m_modelData(schedule)
-{
-
 }
 
 int AudioRecScheduleModel::rowCount(const QModelIndex &parent) const
@@ -85,6 +68,17 @@ QVariant AudioRecScheduleModel::data(const QModelIndex &index, int role) const
             return item.endTime();
         case ColDuration:
             return item.duration();
+        case ColService: {
+            if (m_slModel == nullptr) {
+                return QString("%1").arg(item.serviceId().sid(), 6, 16, QChar('0')).toUpper();
+            }
+            const ServiceList * slPtr = m_slModel->getServiceList();
+            const auto it = slPtr->findService(item.serviceId());
+            if (it != slPtr->serviceListEnd()) {
+                return it.value()->label();
+            }
+        }
+            break;
         default:
             break;
         }
@@ -115,6 +109,8 @@ QVariant AudioRecScheduleModel::headerData(int section, Qt::Orientation orientat
             return tr("End time");
         case ColDuration:
             return tr("Duration");
+        case ColService:
+            return tr("Service");
         default:
             break;
         }
@@ -203,6 +199,43 @@ void AudioRecScheduleModel::replaceItemAtIndex(const QModelIndex & index, const 
 const AudioRecScheduleItem &AudioRecScheduleModel::itemAtIndex(const QModelIndex &index) const
 {
     return m_modelData.at(index.row());
+}
+
+void AudioRecScheduleModel::setSlModel(SLModel *newSlModel)
+{
+    m_slModel = newSlModel;
+}
+
+void AudioRecScheduleModel::load(QSettings &settings)
+{
+    int numItems = settings.beginReadArray("AudioRecordingSchedule");
+    for (int n = 0; n<numItems; ++n)
+    {
+        AudioRecScheduleItem item;
+        settings.setArrayIndex(n);
+        item.setName(settings.value("Name").toString());
+        item.setStartTime(settings.value("StartTime").value<QDateTime>());
+        item.setDurationSec(settings.value("DurationSec").toInt());
+        item.setServiceId(settings.value("ServiceId").value<uint64_t>());
+        m_modelData.append(item);
+    }
+    settings.endArray();
+    sortFindConflicts();
+}
+
+void AudioRecScheduleModel::save(QSettings &settings)
+{
+    settings.beginWriteArray("AudioRecordingSchedule", m_modelData.size());
+    int n = 0;
+    for (const auto & item : m_modelData)
+    {
+        settings.setArrayIndex(n++);
+        settings.setValue("Name", item.name());
+        settings.setValue("StartTime", item.startTime());
+        settings.setValue("DurationSec", item.durationSec());
+        settings.setValue("ServiceId", item.serviceId().value());
+    }
+    settings.endArray();
 }
 
 void AudioRecScheduleModel::sortFindConflicts()

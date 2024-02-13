@@ -187,7 +187,7 @@ private:
     bool m_keepServiceListOnScan;
     bool m_audioRecordingActive;
     QString m_audioRecordingFile;
-    AudioRecScheduleModel m_audioRecSchedule;
+    AudioRecScheduleModel * m_audioRecSchedule;
 
     // service list
     ServiceList * m_serviceList;

@@ -67,6 +67,7 @@ public:
 
     ServiceListId id(const QModelIndex &index) const;
     bool isFavoriteService(const QModelIndex &index) const;
+    const ServiceList * getServiceList() const { return m_slPtr; }
 
 public slots:
     void addService(const ServiceListId & servId);
