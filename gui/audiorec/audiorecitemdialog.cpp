@@ -1,3 +1,29 @@
+/*
+ * This file is part of the AbracaDABra project
+ *
+ * MIT License
+ *
+  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 #include <QPushButton>
 #include "audiorecitemdialog.h"
 #include "ui_audiorecitemdialog.h"
@@ -12,7 +38,7 @@ AudioRecItemDialog::AudioRecItemDialog(QLocale locale, SLModel *slModel, QWidget
     ui->setupUi(this);
 
     // initialize item using EPGTime or current time if not valid
-    QDateTime startTime = QDateTime::currentDateTime();
+    QDateTime startTime = QDateTime::currentDateTime().toOffsetFromUtc(QDateTime::currentDateTime().offsetFromUtc());
     if (EPGTime::getInstance()->isValid())
     {   // valid EPG time
         startTime = EPGTime::getInstance()->currentTime();
@@ -21,6 +47,8 @@ AudioRecItemDialog::AudioRecItemDialog(QLocale locale, SLModel *slModel, QWidget
     ui->startDateCalendar->setMinimumDate(QDate(startTime.date().year(), startTime.date().month(), startTime.date().day()));
     ui->startDateCalendar->setLocale(m_locale);
     ui->startDateCalendar->setFirstDayOfWeek(Qt::Monday);
+
+    ui->durationEdit->setCurrentSection(QDateTimeEdit::Section::MinuteSection);
 
     ui->servicelistView->setModel(slModel);
     ui->servicelistView->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -61,14 +89,20 @@ void AudioRecItemDialog::setItemData(const AudioRecScheduleItem &newItemData)
 
 void AudioRecItemDialog::alignUiState()
 {
-    // block signals while UI is set to be aligned with m_itemData
-    const QSignalBlocker blocker(this);
-
     ui->nameEdit->setText(m_itemData.name());
-    ui->startDateCalendar->setSelectedDate(m_itemData.startTime().date());
+    {
+        const QSignalBlocker blocker(ui->startDateCalendar);
+        ui->startDateCalendar->setSelectedDate(m_itemData.startTime().date());
+    }
 
-    ui->startTimeEdit->setTime(m_itemData.startTime().time());
-    ui->durationEdit->setTime(m_itemData.duration());
+    {
+        const QSignalBlocker blocker(ui->startTimeEdit);
+        ui->startTimeEdit->setTime(m_itemData.startTime().time());
+    }
+    {
+        const QSignalBlocker blocker(ui->durationEdit);
+        ui->durationEdit->setTime(m_itemData.duration());
+    }
     updateEndTime();
 
     bool found = false;
@@ -79,6 +113,7 @@ void AudioRecItemDialog::alignUiState()
         if (m_slModel->id(index) == m_itemData.serviceId())
         {   // found
             ui->servicelistView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
+            ui->servicelistView->scrollTo(index);
             found = true;
             break;
         }

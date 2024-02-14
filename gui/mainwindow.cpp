@@ -271,7 +271,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_audioRecordingWidget = new QWidget(this);
     m_audioRecordingWidget->setLayout(audioRecordingLayout);
     m_audioRecordingWidget->setVisible(false);
-    m_audioRecordingActive = false;
 
     m_syncLabel = new QLabel();
     m_syncLabel->setAlignment(Qt::AlignRight);
@@ -323,6 +322,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     m_audioRecordingAction = new QAction(tr("Start"), this);
     connect(m_audioRecordingAction, &QAction::triggered, this, &MainWindow::audioRecordingToggle);
+    m_audioRecordingAction->setEnabled(false);
 
     m_epgAction = new QAction(tr("Program guide..."), this);
     m_epgAction->setEnabled(false);
@@ -480,9 +480,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->serviceTreeView->setEnabled(false);
     ui->favoriteLabel->setEnabled(false);
 
-    m_audioRecordingAction->setEnabled(false);
-    onAudioRecordingStopped();
-
     clearEnsembleInformationLabels();
     clearServiceInformationLabels();    
     ui->dynamicLabel_Service->clear();
@@ -544,27 +541,29 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         ::exit(1);
     }
 
-    m_audioRecSchedule = new AudioRecScheduleModel;
-    m_audioRecSchedule->setSlModel(m_slModel);
-
-    m_audioRecorder = new AudioRecorder();
-    m_audioDecoder = new AudioDecoder(m_audioRecorder);
+    AudioRecorder * audioRecorder = new AudioRecorder();
+    m_audioDecoder = new AudioDecoder(audioRecorder);
     m_audioDecoderThread = new QThread(this);
     m_audioDecoderThread->setObjectName("audioDecoderThr");
     m_audioDecoder->moveToThread(m_audioDecoderThread);
-    m_audioRecorder->moveToThread(m_audioDecoderThread);
+    audioRecorder->moveToThread(m_audioDecoderThread);
     connect(m_audioDecoderThread, &QThread::finished, m_audioDecoder, &QObject::deleteLater);
-    connect(m_audioDecoderThread, &QThread::finished, m_audioRecorder, &QObject::deleteLater);
+    connect(m_audioDecoderThread, &QThread::finished, audioRecorder, &QObject::deleteLater);
     m_audioDecoderThread->start();
 
+    m_audioRecScheduleModel = new AudioRecScheduleModel(this);
+    m_audioRecScheduleModel->setSlModel(m_slModel);
+    m_audioRecManager = new AudioRecManager(m_audioRecScheduleModel, audioRecorder, this);
+
+    connect(m_audioRecManager, &AudioRecManager::audioRecordingStarted, this, &MainWindow::onAudioRecordingStarted);
+    connect(m_audioRecManager, &AudioRecManager::audioRecordingStopped, this, &MainWindow::onAudioRecordingStopped);
+    connect(m_audioRecManager, &AudioRecManager::audioRecordingProgress, this, &MainWindow::onAudioRecordingProgress);
     connect(m_setupDialog, &SetupDialog::noiseConcealmentLevelChanged, m_audioDecoder, &AudioDecoder::setNoiseConcealment, Qt::QueuedConnection);
     connect(this, &MainWindow::audioStop, m_audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
-    connect(this, &MainWindow::startAudioRecording, m_audioRecorder, &AudioRecorder::start, Qt::QueuedConnection);
-    connect(this, &MainWindow::stopAudioRecording, m_audioRecorder, &AudioRecorder::stop, Qt::QueuedConnection);
-    connect(m_audioRecorder, &AudioRecorder::recordingStarted, this, &MainWindow::onAudioRecordingStarted, Qt::QueuedConnection);
-    connect(m_audioRecorder, &AudioRecorder::recordingStopped, this, &MainWindow::onAudioRecordingStopped, Qt::QueuedConnection);
-    connect(m_audioRecorder, &AudioRecorder::recordingProgress, this, &MainWindow::onAudioRecordingProgress, Qt::QueuedConnection);
-    connect(m_setupDialog, &SetupDialog::audioRecordingSettings, m_audioRecorder, &AudioRecorder::setup, Qt::QueuedConnection);
+    connect(m_setupDialog, &SetupDialog::audioRecordingSettings, audioRecorder, &AudioRecorder::setup, Qt::QueuedConnection);
+
+    onAudioRecordingStopped();
+
 
 #if (HAVE_PORTAUDIO)
     if (AudioFramework::Pa == audioFramework)
@@ -1390,7 +1389,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
 
 bool MainWindow::stopAudioRecordingMsg(const QString & infoText)
 {
-    if (m_audioRecordingActive && !m_setupDialog->settings().audioRecAutoStopEna)
+    if (m_audioRecManager->isAudioRecordingActive() && !m_setupDialog->settings().audioRecAutoStopEna)
     //if (!m_setupDialog->settings().audioRecAutoStopEna)
     {
         QMessageBox msgBox(QMessageBox::Warning, tr("Warning"),
@@ -1851,28 +1850,18 @@ void MainWindow::onAudioDeviceChanged(const QByteArray &id)
 
 void MainWindow::audioRecordingToggle()
 {
-    if (m_audioRecordingActive)
-    {
-        emit stopAudioRecording();
-    }
-    else
-    {
-        emit startAudioRecording();
-    }
+    m_audioRecManager->audioRecording(!m_audioRecManager->isAudioRecordingActive());
 }
 
-void MainWindow::onAudioRecordingStarted(const QString &filename)
+void MainWindow::onAudioRecordingStarted()
 {
     emit announcementMask(0x0001);             // disable announcements during recording (only alarm is enabled)
-    m_audioRecordingFile = filename;
-    m_audioRecordingActive = true;
     onAudioRecordingProgress(0, 0);
     setAudioRecordingUI();
 }
 
 void MainWindow::onAudioRecordingStopped()
-{    
-    m_audioRecordingActive = false;
+{       
     setAudioRecordingUI();
     emit announcementMask(m_setupDialog->settings().announcementEna);   // restore announcement settings
 }
@@ -1882,12 +1871,12 @@ void MainWindow::onAudioRecordingProgress(size_t bytes, size_t timeSec)
     int min = timeSec / 60;
     m_audioRecordingProgressLabel->setText(QString(tr("Audio recording: %1:%2")).arg(min).arg(timeSec - min * 60, 2, 10, QChar('0')));
     m_audioRecordingProgressLabel->setToolTip(QString(tr("Audio recording ongoing (%2 kBytes recorded)\n"
-                                                         "File: %1")).arg(m_audioRecordingFile).arg(bytes >> 10));
+                                                         "File: %1")).arg(m_audioRecManager->audioRecordingFile()).arg(bytes >> 10));
 }
 
 void MainWindow::setAudioRecordingUI()
 {
-    if (m_audioRecordingActive)
+    if (m_audioRecManager->isAudioRecordingActive())
     {
         m_audioRecordingWidget->setVisible(true);
         m_audioRecordingAction->setText(tr("Stop audio recording"));
@@ -1966,7 +1955,7 @@ void MainWindow::clearServiceInformationLabels()
 
 void MainWindow::onNewAnnouncementSettings()
 {
-    if (!m_audioRecordingActive)
+    if (!m_audioRecManager->isAudioRecordingActive())
     {
         emit announcementMask(m_setupDialog->settings().announcementEna);
     }
@@ -2462,7 +2451,7 @@ void MainWindow::loadSettings()
     m_serviceList->load(*settings);
 
     // load recording schedule
-    m_audioRecSchedule->load(*settings);
+    m_audioRecScheduleModel->load(*settings);
 
     m_audioVolume = settings->value("volume", 100).toInt();
     m_audioVolumeSlider->setValue(m_audioVolume);
@@ -2765,7 +2754,7 @@ void MainWindow::saveSettings()
     else { /* RAW file does not store service and service list */ }
 
     // save audio sechdule
-    m_audioRecSchedule->save(*settings);
+    m_audioRecScheduleModel->save(*settings);
 
     settings->sync();
 
@@ -2951,7 +2940,7 @@ void MainWindow::showCatSLS()
 
 void MainWindow::showAudioRecordingSchedule()
 {
-    auto dialog = new AudioRecScheduleDialog(m_audioRecSchedule, m_slModel, this);
+    auto dialog = new AudioRecScheduleDialog(m_audioRecScheduleModel, m_slModel, this);
     dialog->setLocale(m_timeLocale);
     dialog->setServiceListModel(m_slModel);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
@@ -3054,8 +3043,7 @@ void MainWindow::stop()
 {
     if (m_isPlaying)
     { // stop
-        emit stopAudioRecording();
-        m_audioRecordingActive = false;
+        m_audioRecManager->audioRecording(false);
 
         // tune to 0
         ui->channelCombo->setCurrentIndex(-1);

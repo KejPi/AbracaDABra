@@ -128,39 +128,6 @@ Qt::ItemFlags AudioRecScheduleModel::flags(const QModelIndex &index) const
     return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
 }
 
-// bool AudioRecScheduleModel::setData(const QModelIndex &index, const QVariant &value, int role)
-// {
-//     if (index.isValid() && role == Qt::EditRole)
-//     {
-//         const int row = index.row();
-//         auto item = m_modelData.value(row);
-
-//         switch (index.column())
-//         {
-//         case ColLabel:
-//             item.setName(value.toString());
-//             break;
-//         case ColStartTime:
-//             item.setStartTime(value.toDateTime());
-//             break;
-//         case ColEndTime:
-//             //item.endTime();
-//             break;
-//         case ColDuration:
-//             //QTime().addSecs(item.durationSec()).toString("hh:mm:ss");
-//             break;
-//         default:
-//             return false;
-//         }
-
-//         emit dataChanged(index, index, {Qt::DisplayRole, Qt::EditRole});
-
-//         return true;
-//     }
-
-//     return false;
-// }
-
 bool AudioRecScheduleModel::removeRows(int position, int rows, const QModelIndex &index)
 {
     Q_UNUSED(index);
@@ -236,6 +203,32 @@ void AudioRecScheduleModel::save(QSettings &settings)
         settings.setValue("ServiceId", item.serviceId().value());
     }
     settings.endArray();
+}
+
+void AudioRecScheduleModel::cleanup(const QDateTime &currentTime)
+{
+    beginResetModel();
+    auto it = m_modelData.constBegin();
+    while (it != m_modelData.constEnd())
+    {
+        qDebug() << it->endTime();
+        if (it->endTime() <= currentTime)
+        {
+            it = m_modelData.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+    endResetModel();
+}
+
+void AudioRecScheduleModel::clear()
+{
+    beginResetModel();
+    m_modelData.clear();
+    endResetModel();
 }
 
 void AudioRecScheduleModel::sortFindConflicts()

@@ -53,6 +53,9 @@ public:
     void setSlModel(SLModel *newSlModel);
     void load(QSettings & settings);
     void save(QSettings & settings);
+    void cleanup(const QDateTime & currentTime);
+    void clear();
+    bool isEmpty() const { return m_modelData.isEmpty(); }
 
 private:
     enum { NumColumns = 6 };

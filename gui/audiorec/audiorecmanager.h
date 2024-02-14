@@ -24,40 +24,48 @@
  * SOFTWARE.
  */
 
-#ifndef AUDIORECITEMDIALOG_H
-#define AUDIORECITEMDIALOG_H
+#ifndef AUDIORECMANAGER_H
+#define AUDIORECMANAGER_H
 
-#include <QDialog>
-#include "slmodel.h"
-#include "audiorecscheduleitem.h"
+#include <QObject>
+#include "audiorecschedulemodel.h"
+#include "audiorecorder.h"
 
-namespace Ui {
-class AudioRecItemDialog;
-}
-
-class AudioRecItemDialog : public QDialog
+class AudioRecManager : public QObject
 {
     Q_OBJECT
-
 public:
-    explicit AudioRecItemDialog(QLocale locale, SLModel * slModel, QWidget *parent = nullptr);
-    ~AudioRecItemDialog();
+    explicit AudioRecManager(AudioRecScheduleModel * model, AudioRecorder * recorder, QObject *parent = nullptr);
+    void onValidTime();
+    void onTimeChanged();
 
-    const AudioRecScheduleItem & itemData() const;
-    void setItemData(const AudioRecScheduleItem &newItemData);
+    bool isAudioRecordingActive() const;
+    QString audioRecordingFile() const;
+
+    void onAudioRecordingStarted(const QString &filename);
+    void onAudioRecordingStopped();
+
+    void audioRecording(bool start);
+signals:
+    void audioRecordingStarted();
+    void audioRecordingStopped();
+    void audioRecordingProgress(size_t bytes, size_t timeSec);
+
+    // used to communicate with worker
+    void startRecording();
+    void stopRecording();
 
 private:
-    Ui::AudioRecItemDialog *ui;
-    QLocale m_locale;
-    AudioRecScheduleItem m_itemData;
-    SLModel * m_slModel;
+    AudioRecScheduleModel * m_model;
+    AudioRecorder * m_recorder;
+    //AudioRecScheduleItem m_scheduledItem;
+    bool m_isAudioRecordingActive;
+    QString m_audioRecordingFile;
+    bool m_haveTimeConnection;
 
-    void alignUiState();
-    void onStartDateChanged();
-    void onStartTimeChanged(const QTime & time);
-    void onDurationChanged(const QDateTime &duration);
-    void onServiceSelection(const QItemSelection &selection);
-    void updateEndTime();
+    void updateScheduledRecording();
+    void onModelReset();
+    void onModelRowsRemoved(const QModelIndex &, int first, int last);
 };
 
-#endif // AUDIORECITEMDIALOG_H
+#endif // AUDIORECMANAGER_H

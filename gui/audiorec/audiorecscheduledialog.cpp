@@ -54,6 +54,8 @@ AudioRecScheduleDialog::AudioRecScheduleDialog(AudioRecScheduleModel *model, SLM
     connect(ui->deleteButton, &QPushButton::clicked, this, &AudioRecScheduleDialog::removeItem);
     ui->deleteButton->setEnabled(false);
 
+    connect(ui->clearButton, &QPushButton::clicked, this, &AudioRecScheduleDialog::deleteAll);
+
     connect(ui->scheduleTableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &AudioRecScheduleDialog::updateActions);
 
     ui->scheduleTableView->resizeColumnsToContents();
@@ -108,6 +110,12 @@ void AudioRecScheduleDialog::removeItem()
     updateActions(ui->scheduleTableView->selectionModel()->selection());
 }
 
+void AudioRecScheduleDialog::deleteAll()
+{
+    m_model->clear();
+    updateActions(ui->scheduleTableView->selectionModel()->selection());
+}
+
 void AudioRecScheduleDialog::setLocale(const QLocale &newLocale)
 {
     m_locale = newLocale;
@@ -129,4 +137,5 @@ void AudioRecScheduleDialog::updateActions(const QItemSelection &selection)
         ui->deleteButton->setEnabled(false);
         ui->editButton->setEnabled(false);
     }
+    ui->clearButton->setEnabled(!m_model->isEmpty());
 }

@@ -42,6 +42,7 @@
 #include <QLoggingCategory>
 #include <QItemSelection>
 
+#include "audiorecmanager.h"
 #include "clickablelabel.h"
 #include "epgdialog.h"
 #include "metadatamanager.h"
@@ -89,8 +90,6 @@ signals:
     void audioVolume(int volume);
     void audioOutput(const QByteArray & deviceId);
     void audioStop();
-    void startAudioRecording();
-    void stopAudioRecording();
     void announcementMask(uint16_t mask);
     void exit();
 
@@ -166,7 +165,7 @@ private:
     // audio decoder
     QThread * m_audioDecoderThread;    
     AudioDecoder * m_audioDecoder;
-    AudioRecorder * m_audioRecorder;
+    //AudioRecorder * m_audioRecorder;
 
     // audio output
     QThread * m_audioOutputThread = nullptr;
@@ -185,9 +184,8 @@ private:
     bool m_hasTreeViewFocus;
     int m_audioVolume = 100;
     bool m_keepServiceListOnScan;
-    bool m_audioRecordingActive;
-    QString m_audioRecordingFile;
-    AudioRecScheduleModel * m_audioRecSchedule;
+    AudioRecManager * m_audioRecManager;
+    AudioRecScheduleModel * m_audioRecScheduleModel;
 
     // service list
     ServiceList * m_serviceList;
@@ -289,7 +287,7 @@ private:
     void onAudioOutputError();
     void onAudioOutputSelected(QAction * action);
     void onAudioDeviceChanged(const QByteArray & id);
-    void onAudioRecordingStarted(const QString & filename);
+    void onAudioRecordingStarted();
     void onAudioRecordingStopped();
     void onAudioRecordingProgress(size_t bytes, size_t timeSec);
     void onMetadataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role);

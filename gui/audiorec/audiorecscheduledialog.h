@@ -47,6 +47,7 @@ public:
     void addItem();
     void editItem();
     void removeItem();
+    void deleteAll();
 
     void setLocale(const QLocale &newLocale);
     void setServiceListModel(SLModel *newSlModel);
