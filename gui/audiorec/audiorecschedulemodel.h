@@ -46,6 +46,7 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
     const QList<AudioRecScheduleItem> &getSchedule() const;
+    bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
     void insertItem(const AudioRecScheduleItem & item);
     void replaceItemAtIndex(const QModelIndex & index, const AudioRecScheduleItem & item);
@@ -59,7 +60,7 @@ public:
 
 private:
     enum { NumColumns = 6 };
-    enum { ColConflict, ColLabel, ColStartTime, ColEndTime, ColDuration, ColService };
+    enum { ColState, ColLabel, ColStartTime, ColEndTime, ColDuration, ColService };
 
     QList<AudioRecScheduleItem> m_modelData;
     SLModel * m_slModel;

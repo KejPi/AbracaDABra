@@ -53,12 +53,16 @@ public:
     bool hasConflict() const;
     void setHasConflict(bool newHasConflict);
 
+    bool isRecorded() const;
+    void setIsRecorded(bool newIsRecorded);
+
 private:
     QString m_name;
     QDateTime m_startTime;
     int m_durationSec;
     ServiceListId m_serviceId;
     bool m_hasConflict = false;
+    bool m_isRecorded = false;
 };
 
 bool operator<(const AudioRecScheduleItem & a, const AudioRecScheduleItem & b);

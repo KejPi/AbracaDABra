@@ -38,13 +38,17 @@ AudioRecItemDialog::AudioRecItemDialog(QLocale locale, SLModel *slModel, QWidget
     ui->setupUi(this);
 
     // initialize item using EPGTime or current time if not valid
-    QDateTime startTime = QDateTime::currentDateTime().toOffsetFromUtc(QDateTime::currentDateTime().offsetFromUtc());
+    QDateTime startDateTime = QDateTime::currentDateTime().toOffsetFromUtc(QDateTime::currentDateTime().offsetFromUtc());
     if (EPGTime::getInstance()->isValid())
     {   // valid EPG time
-        startTime = EPGTime::getInstance()->currentTime();
+        startDateTime = EPGTime::getInstance()->currentTime();
     }
+    // remove seconds
+    QDate startDate = startDateTime.date();
+    QTime startTime = QTime(startDateTime.time().hour(), startDateTime.time().minute());
+    int offset = startDateTime.offsetFromUtc();
 
-    ui->startDateCalendar->setMinimumDate(QDate(startTime.date().year(), startTime.date().month(), startTime.date().day()));
+    ui->startDateCalendar->setMinimumDate(QDate(startDate.year(), startDate.month(), startDate.day()));
     ui->startDateCalendar->setLocale(m_locale);
     ui->startDateCalendar->setFirstDayOfWeek(Qt::Monday);
 
@@ -57,7 +61,7 @@ AudioRecItemDialog::AudioRecItemDialog(QLocale locale, SLModel *slModel, QWidget
 
     // init item data
     m_itemData.setName(tr("New audio recording schedule"));
-    m_itemData.setStartTime(startTime);
+    m_itemData.setStartTime(QDateTime(startDate, startTime).toOffsetFromUtc(offset));
     m_itemData.setDurationSec(0);
 
     alignUiState();
@@ -89,6 +93,12 @@ void AudioRecItemDialog::setItemData(const AudioRecScheduleItem &newItemData)
 
 void AudioRecItemDialog::alignUiState()
 {
+    if (m_itemData.isRecorded())
+    {
+        ui->startDateCalendar->setEnabled(false);
+        ui->startTimeEdit->setEnabled(false);
+        ui->servicelistView->setEnabled(false);
+    }
     ui->nameEdit->setText(m_itemData.name());
     {
         const QSignalBlocker blocker(ui->startDateCalendar);

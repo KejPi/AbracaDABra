@@ -26,6 +26,7 @@
 
 #include <QTime>
 #include <QBrush>
+#include <QPixmap>
 #include "audiorecschedulemodel.h"
 
 AudioRecScheduleModel::AudioRecScheduleModel(QObject *parent)
@@ -58,8 +59,16 @@ QVariant AudioRecScheduleModel::data(const QModelIndex &index, int role) const
     const auto &item = m_modelData.at(index.row());
     if (role == Qt::DisplayRole) {
         switch (index.column()) {
-        case ColConflict:
-            return item.hasConflict() ? "!" : "";
+        case ColState:
+            if (item.isRecorded())
+            {
+
+            }
+            else if (item.hasConflict())
+            {
+                return  "!";
+            }
+            break;
         case ColLabel:
             return item.name();
         case ColStartTime:
@@ -82,9 +91,16 @@ QVariant AudioRecScheduleModel::data(const QModelIndex &index, int role) const
         default:
             break;
         }
-    } else if (role == Qt::BackgroundRole) {
+    } else if (role == Qt::BackgroundRole)
+    {
         if (item.hasConflict()) {
             return QVariant(QBrush(Qt::red));
+        }
+    }
+    else if (role == Qt::DecorationRole)
+    {
+        if ((index.column() == ColState) && item.isRecorded()) {
+            return QPixmap(":/resources/record.png");
         }
     }
     return QVariant();
@@ -99,7 +115,7 @@ QVariant AudioRecScheduleModel::headerData(int section, Qt::Orientation orientat
 
     if (orientation == Qt::Horizontal) {
         switch (section) {
-        case ColConflict:
+        case ColState:
             return "";
         case ColLabel:
             return tr("Name");
@@ -250,4 +266,23 @@ void AudioRecScheduleModel::sortFindConflicts()
             }
         }
     }
+}
+
+bool AudioRecScheduleModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (index.isValid() && role == Qt::EditRole) {
+        const int row = index.row();
+        switch (index.column()) {
+        case ColState:
+            m_modelData[row].setIsRecorded(value.toBool());
+            break;
+        default:
+            return false;
+        }
+        emit dataChanged(index, index, {Qt::DisplayRole, Qt::EditRole});
+
+        return true;
+    }
+
+    return false;
 }

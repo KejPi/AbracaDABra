@@ -233,6 +233,7 @@ private:
     void initStyle();
     void restoreTimeQualWidget();
     bool stopAudioRecordingMsg(const QString &infoText);
+    void selectService(const ServiceListId & serviceId);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     void onColorSchemeChanged(Qt::ColorScheme colorScheme);
@@ -276,7 +277,7 @@ private:
     void onTuneChannel(uint32_t freq);
     void onTuneDone(uint32_t freq);
     void onNewInputDeviceSettings();
-    void onNewAnnouncementSettings();
+    void onNewAnnouncementSettings();    
     void onInputDeviceError(const InputDeviceErrorCode errCode);
     void onServiceListSelection(const QItemSelection &selected, const QItemSelection &deselected);
     void onServiceListTreeSelection(const QItemSelection &selected, const QItemSelection &deselected);

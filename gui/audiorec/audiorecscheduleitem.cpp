@@ -45,7 +45,8 @@ QDateTime AudioRecScheduleItem::startTime() const
 
 void AudioRecScheduleItem::setStartTime(const QDateTime &newStartTime)
 {
-    m_startTime = newStartTime;
+    int offset = newStartTime.offsetFromUtc();
+    m_startTime = newStartTime.toOffsetFromUtc(offset);
 }
 
 void AudioRecScheduleItem::setEndTime(const QDateTime &newEndTime)
@@ -98,8 +99,26 @@ void AudioRecScheduleItem::setHasConflict(bool newHasConflict)
     m_hasConflict = newHasConflict;
 }
 
+bool AudioRecScheduleItem::isRecorded() const
+{
+    return m_isRecorded;
+}
+
+void AudioRecScheduleItem::setIsRecorded(bool newIsRecorded)
+{
+    m_isRecorded = newIsRecorded;
+}
+
 bool operator<(const AudioRecScheduleItem & a, const AudioRecScheduleItem & b)
 {
+    if (a.isRecorded())
+    {
+        return true;
+    }
+    if (b.isRecorded())
+    {
+        return false;
+    }
     if (a.startTime() < b.startTime())
     {
         return true;

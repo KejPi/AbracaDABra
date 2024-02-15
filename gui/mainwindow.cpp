@@ -558,6 +558,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_audioRecManager, &AudioRecManager::audioRecordingStarted, this, &MainWindow::onAudioRecordingStarted);
     connect(m_audioRecManager, &AudioRecManager::audioRecordingStopped, this, &MainWindow::onAudioRecordingStopped);
     connect(m_audioRecManager, &AudioRecManager::audioRecordingProgress, this, &MainWindow::onAudioRecordingProgress);
+    connect(m_audioRecManager, &AudioRecManager::requestServiceSelection, this, &MainWindow::selectService);
     connect(m_setupDialog, &SetupDialog::noiseConcealmentLevelChanged, m_audioDecoder, &AudioDecoder::setNoiseConcealment, Qt::QueuedConnection);
     connect(this, &MainWindow::audioStop, m_audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::audioRecordingSettings, audioRecorder, &AudioRecorder::setup, Qt::QueuedConnection);
@@ -1421,6 +1422,22 @@ bool MainWindow::stopAudioRecordingMsg(const QString & infoText)
         return true;
     }
     return true;
+}
+
+void MainWindow::selectService(const ServiceListId &serviceId)
+{
+    // we need to find the item in model and select it
+    const SLModel * model = reinterpret_cast<const SLModel*>(ui->serviceListView->model());
+    QModelIndex index;
+    for (int r = 0; r < model->rowCount(); ++r)
+    {
+        index = model->index(r, 0);
+        if (model->id(index) == serviceId)
+        {   // found
+            ui->serviceListView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
+            return;
+        }
+    }
 }
 
 void MainWindow::onServiceListSelection(const QItemSelection &selected, const QItemSelection &deselected)
@@ -2579,21 +2596,7 @@ void MainWindow::loadSettings()
         {   // restore channel
             int sid = settings->value("SID", 0).toInt();
             uint8_t scids = settings->value("SCIdS", 0).toInt();
-            ServiceListId id(sid, scids);
-
-            // we need to find the item in model and select it
-            const SLModel * model = reinterpret_cast<const SLModel*>(ui->serviceListView->model());
-            QModelIndex index;
-            for (int r = 0; r < model->rowCount(); ++r)
-            {
-                index = model->index(r, 0);
-                if (model->id(index) == id)
-                {   // found
-                    ui->serviceListView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
-                    //onServiceListSelection(index);   // this selects service
-                    break;
-                }
-            }
+            selectService(ServiceListId(sid, scids));
         }
     }
 

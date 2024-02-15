@@ -50,7 +50,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="durationLabel">
          <property name="text">
-          <string>Duration:</string>
+          <string>Duration [hh:mm]:</string>
          </property>
         </widget>
        </item>
@@ -64,7 +64,7 @@
        <item row="1" column="1">
         <widget class="QTimeEdit" name="durationEdit">
          <property name="displayFormat">
-          <string>HH:mm:ss</string>
+          <string>HH:mm</string>
          </property>
         </widget>
        </item>

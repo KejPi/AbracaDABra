@@ -50,18 +50,24 @@ signals:
     void audioRecordingStarted();
     void audioRecordingStopped();
     void audioRecordingProgress(size_t bytes, size_t timeSec);
+    void requestServiceSelection(const ServiceListId & serviceId);
 
     // used to communicate with worker
     void startRecording();
     void stopRecording();
 
 private:
+    enum ScheduledRecordingState {StateIdle, StatePreparing, StateRecording} m_scheduledRecordingState;
     AudioRecScheduleModel * m_model;
     AudioRecorder * m_recorder;
-    //AudioRecScheduleItem m_scheduledItem;
     bool m_isAudioRecordingActive;
     QString m_audioRecordingFile;
     bool m_haveTimeConnection;
+    QPersistentModelIndex m_index;
+
+    qint64 m_scheduleTimeSecSinceEpoch;
+    int m_durationSec;
+    ServiceListId m_serviceId;
 
     void updateScheduledRecording();
     void onModelReset();
