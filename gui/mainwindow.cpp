@@ -320,7 +320,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_audioRecordingScheduleAction = new QAction(tr("Audio recording schedule..."), this);
     connect(m_audioRecordingScheduleAction, &QAction::triggered, this, &MainWindow::showAudioRecordingSchedule);
 
-    m_audioRecordingAction = new QAction(tr("Start"), this);
+    m_audioRecordingAction = new QAction("Start audio recording", this);
     connect(m_audioRecordingAction, &QAction::triggered, this, &MainWindow::audioRecordingToggle);
     m_audioRecordingAction->setEnabled(false);
 
@@ -558,6 +558,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_audioRecManager, &AudioRecManager::audioRecordingStarted, this, &MainWindow::onAudioRecordingStarted);
     connect(m_audioRecManager, &AudioRecManager::audioRecordingStopped, this, &MainWindow::onAudioRecordingStopped);
     connect(m_audioRecManager, &AudioRecManager::audioRecordingProgress, this, &MainWindow::onAudioRecordingProgress);
+    connect(m_audioRecManager, &AudioRecManager::audioRecordingCountdown, this, &MainWindow::onAudioRecordingCountdown, Qt::QueuedConnection);
     connect(m_audioRecManager, &AudioRecManager::requestServiceSelection, this, &MainWindow::selectService);
     connect(m_setupDialog, &SetupDialog::noiseConcealmentLevelChanged, m_audioDecoder, &AudioDecoder::setNoiseConcealment, Qt::QueuedConnection);
     connect(this, &MainWindow::audioStop, m_audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
@@ -1872,6 +1873,7 @@ void MainWindow::audioRecordingToggle()
 
 void MainWindow::onAudioRecordingStarted()
 {
+    m_audioRecordingAction->setEnabled(true);
     emit announcementMask(0x0001);             // disable announcements during recording (only alarm is enabled)
     onAudioRecordingProgress(0, 0);
     setAudioRecordingUI();
@@ -1891,8 +1893,68 @@ void MainWindow::onAudioRecordingProgress(size_t bytes, size_t timeSec)
                                                          "File: %1")).arg(m_audioRecManager->audioRecordingFile()).arg(bytes >> 10));
 }
 
-void MainWindow::setAudioRecordingUI()
+void MainWindow::onAudioRecordingCountdown(int numSec)
 {
+    m_audioRecordingAction->setDisabled(true);
+    if (numSec > 0) {
+        QMessageBox msg;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+        msg.setOption(QMessageBox::Option::DontUseNativeDialog); // 6.6
+#endif
+        QString text;
+        QPushButton * cancelButton;
+        if (m_audioRecManager->isAudioRecordingActive())
+        {
+            text = QString(tr("Scheduled recording should start in %1 seconds"));
+            msg.setInformativeText(tr("Ongoing recording now prevents the start of a scheduled recording. "
+                                      "The schedule will be cancelled if you do not choose otherwise. "
+                                      "If you select to keep the schedule, the service might be switched."));
+            msg.setIcon(QMessageBox::Warning);
+            msg.addButton(tr("Keep schedule"), QMessageBox::ButtonRole::RejectRole);
+            cancelButton = msg.addButton(tr("Keep current recording"), QMessageBox::ButtonRole::AcceptRole);
+            msg.setDefaultButton(cancelButton);
+            msg.setEscapeButton(cancelButton);
+        }
+        else
+        {
+            text = QString(tr("Scheduled recording starts in %1 seconds"));
+            msg.setInformativeText(tr("Recording is going to start according to the schedule. The service might be switched if it differs from the current one."));
+            msg.setIcon(QMessageBox::Information);
+            cancelButton = msg.addButton(tr("Cancel plan"), QMessageBox::ButtonRole::RejectRole);
+            QPushButton * okButton = msg.addButton(tr("Continue as planned"), QMessageBox::ButtonRole::AcceptRole);
+            msg.setDefaultButton(okButton);
+            msg.setEscapeButton(okButton);
+        }
+        msg.setText(text.arg(numSec));
+        QTimer cntDown;
+        int cnt = numSec;
+        QObject::connect(&cntDown, &QTimer::timeout, this, [&cntDown, &cnt, &msg, &text]() {
+            if(--cnt <= 0)
+            {
+                cntDown.stop();
+                //msg.close();
+                msg.defaultButton()->animateClick();
+            }
+            else
+            {
+                msg.setText(text.arg(cnt));
+            }
+        });
+        cntDown.start(1000);
+        msg.show();
+        msg.setGeometry(QStyle::alignedRect(
+            Qt::LeftToRight,
+            Qt::AlignCenter,
+            msg.size(),
+            geometry()));
+        msg.exec();
+        m_audioRecManager->requestCancelSchedule(msg.clickedButton() == cancelButton);
+        m_audioRecordingAction->setEnabled(msg.clickedButton() == cancelButton);
+    }
+}
+
+void MainWindow::setAudioRecordingUI()
+{    
     if (m_audioRecManager->isAudioRecordingActive())
     {
         m_audioRecordingWidget->setVisible(true);

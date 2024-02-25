@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,11 +42,12 @@ public:
     bool isAudioRecordingActive() const;
     QString audioRecordingFile() const;
 
-    void onAudioRecordingStarted(const QString &filename);
-    void onAudioRecordingStopped();
-
     void audioRecording(bool start);
+
+    void requestCancelSchedule(bool cancelRequest);
+
 signals:
+    void audioRecordingCountdown(int numSec);
     void audioRecordingStarted();
     void audioRecordingStopped();
     void audioRecordingProgress(size_t bytes, size_t timeSec);
@@ -57,13 +58,19 @@ signals:
     void stopRecording();
 
 private:
-    enum ScheduledRecordingState {StateIdle, StatePreparing, StateRecording} m_scheduledRecordingState;
+    enum { COUNTDOWN_SEC = 30+1,
+           SERVICESELECTION_SEC = 10,
+           STARTADVANCE_SEC = 2};
+    enum ScheduledRecordingState {StateIdle, StateCountdown, StateReady, StateRecording} m_scheduledRecordingState;
+
     AudioRecScheduleModel * m_model;
     AudioRecorder * m_recorder;
+    QTimer * m_timer;
     bool m_isAudioRecordingActive;
+    bool m_cancelScheduleRequest;
     QString m_audioRecordingFile;
-    bool m_haveTimeConnection;
-    QPersistentModelIndex m_index;
+    bool m_haveTimeConnection;    
+    int m_numSec;
 
     qint64 m_scheduleTimeSecSinceEpoch;
     int m_durationSec;
@@ -72,6 +79,10 @@ private:
     void updateScheduledRecording();
     void onModelReset();
     void onModelRowsRemoved(const QModelIndex &, int first, int last);
+    void onAudioRecordingStarted(const QString &filename);
+    void onAudioRecordingStopped();
+    void setTimeConnection(bool ena);
+    void onTimer();
 };
 
 #endif // AUDIORECMANAGER_H

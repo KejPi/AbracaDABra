@@ -41,6 +41,7 @@
 #include <QSlider>
 #include <QLoggingCategory>
 #include <QItemSelection>
+#include <QMessageBox>
 
 #include "audiorecmanager.h"
 #include "clickablelabel.h"
@@ -55,7 +56,6 @@
 #include "dldecoder.h"
 #include "slideshowapp.h"
 #include "spiapp.h"
-#include "audiorecorder.h"
 #include "audiodecoder.h"
 #include "audiooutput.h"
 #include "servicelist.h"
@@ -165,7 +165,10 @@ private:
     // audio decoder
     QThread * m_audioDecoderThread;    
     AudioDecoder * m_audioDecoder;
-    //AudioRecorder * m_audioRecorder;
+
+    // Audio recording
+    AudioRecManager * m_audioRecManager;
+    AudioRecScheduleModel * m_audioRecScheduleModel;
 
     // audio output
     QThread * m_audioOutputThread = nullptr;
@@ -184,8 +187,6 @@ private:
     bool m_hasTreeViewFocus;
     int m_audioVolume = 100;
     bool m_keepServiceListOnScan;
-    AudioRecManager * m_audioRecManager;
-    AudioRecScheduleModel * m_audioRecScheduleModel;
 
     // service list
     ServiceList * m_serviceList;
@@ -291,8 +292,10 @@ private:
     void onAudioRecordingStarted();
     void onAudioRecordingStopped();
     void onAudioRecordingProgress(size_t bytes, size_t timeSec);
+    void onAudioRecordingCountdown(int numSec);
     void onMetadataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role);
     void onEpgEmpty();
+
 };
 
 class DLPlusObjectUI
