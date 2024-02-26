@@ -1198,6 +1198,7 @@ void MainWindow::channelSelected()
 void MainWindow::serviceSelected()
 {
     emit stopUserApps();
+    m_audioRecManager->audioRecording(false);
     m_dlDecoder[Instance::Service]->reset();
     m_dlDecoder[Instance::Announcement]->reset();
     clearServiceInformationLabels();
@@ -1391,7 +1392,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
 
 bool MainWindow::stopAudioRecordingMsg(const QString & infoText)
 {
-    if (m_audioRecManager->isAudioRecordingActive() && !m_setupDialog->settings().audioRecAutoStopEna)
+    if ((m_audioRecManager->isAudioRecordingActive() || m_audioRecManager->isAudioScheduleActive()) && !m_setupDialog->settings().audioRecAutoStopEna)
     //if (!m_setupDialog->settings().audioRecAutoStopEna)
     {
         QMessageBox msgBox(QMessageBox::Warning, tr("Warning"),
