@@ -238,6 +238,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // status bar
     QWidget * widget = new QWidget();
     m_timeLabel = new QLabel("");
+    m_timeLabel->setMinimumWidth(150);
     m_timeLabel->setToolTip(tr("DAB time"));
 
     m_basicSignalQualityLabel = new QLabel("");
@@ -560,6 +561,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_audioRecManager, &AudioRecManager::audioRecordingProgress, this, &MainWindow::onAudioRecordingProgress);
     connect(m_audioRecManager, &AudioRecManager::audioRecordingCountdown, this, &MainWindow::onAudioRecordingCountdown, Qt::QueuedConnection);
     connect(m_audioRecManager, &AudioRecManager::requestServiceSelection, this, &MainWindow::selectService);
+    connect(m_radioControl, &RadioControl::audioServiceSelection, m_audioRecManager, &AudioRecManager::onAudioServiceSelection, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::noiseConcealmentLevelChanged, m_audioDecoder, &AudioDecoder::setNoiseConcealment, Qt::QueuedConnection);
     connect(this, &MainWindow::audioStop, m_audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::audioRecordingSettings, audioRecorder, &AudioRecorder::setup, Qt::QueuedConnection);
@@ -1140,6 +1142,7 @@ void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)
         }
     }
     m_audioRecordingAction->setEnabled(true);
+    m_audioRecManager->setHaveAudio(true);
 }
 
 void MainWindow::onProgrammeTypeChanged(const DabSId &sid, const DabPTy &pty)
@@ -1886,12 +1889,21 @@ void MainWindow::onAudioRecordingStopped()
     emit announcementMask(m_setupDialog->settings().announcementEna);   // restore announcement settings
 }
 
-void MainWindow::onAudioRecordingProgress(size_t bytes, size_t timeSec)
+void MainWindow::onAudioRecordingProgress(size_t bytes, qint64 timeSec)
 {
-    int min = timeSec / 60;
-    m_audioRecordingProgressLabel->setText(QString(tr("Audio recording: %1:%2")).arg(min).arg(timeSec - min * 60, 2, 10, QChar('0')));
-    m_audioRecordingProgressLabel->setToolTip(QString(tr("Audio recording ongoing (%2 kBytes recorded)\n"
-                                                         "File: %1")).arg(m_audioRecManager->audioRecordingFile()).arg(bytes >> 10));
+    if (timeSec >= 0)
+    {
+        int min = timeSec / 60;
+        m_audioRecordingProgressLabel->setText(QString(tr("Audio recording: %1:%2")).arg(min).arg(timeSec - min * 60, 2, 10, QChar('0')));
+        m_audioRecordingProgressLabel->setToolTip(QString(tr("Audio recording ongoing (%2 kBytes recorded)\n"
+                                                             "File: %1")).arg(m_audioRecManager->audioRecordingFile()).arg(bytes >> 10));
+    }
+    else
+    {   // schedued recording will start
+        m_audioRecordingWidget->setVisible(true);
+        m_audioRecordingProgressLabel->setText(QString(tr("Audio recording: 0:00")));
+        m_audioRecordingProgressLabel->setToolTip(QString(tr("Scheduled audio recording is getting ready")));
+    }
 }
 
 void MainWindow::onAudioRecordingCountdown(int numSec)
@@ -1949,8 +1961,11 @@ void MainWindow::onAudioRecordingCountdown(int numSec)
             msg.size(),
             geometry()));
         msg.exec();
-        m_audioRecManager->requestCancelSchedule(msg.clickedButton() == cancelButton);
-        m_audioRecordingAction->setEnabled(msg.clickedButton() == cancelButton);
+        if (msg.clickedButton() == cancelButton)
+        {
+            m_audioRecManager->requestCancelSchedule();
+            m_audioRecordingAction->setEnabled(true);
+        }
     }
 }
 

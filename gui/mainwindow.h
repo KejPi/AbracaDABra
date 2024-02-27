@@ -291,7 +291,7 @@ private:
     void onAudioDeviceChanged(const QByteArray & id);
     void onAudioRecordingStarted();
     void onAudioRecordingStopped();
-    void onAudioRecordingProgress(size_t bytes, size_t timeSec);
+    void onAudioRecordingProgress(size_t bytes, qint64 timeSec);
     void onAudioRecordingCountdown(int numSec);
     void onMetadataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role);
     void onEpgEmpty();

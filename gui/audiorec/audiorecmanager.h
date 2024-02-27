@@ -36,9 +36,9 @@ class AudioRecManager : public QObject
     Q_OBJECT
 public:
     explicit AudioRecManager(AudioRecScheduleModel * model, AudioRecorder * recorder, QObject *parent = nullptr);
-    ~AudioRecManager();
     void onValidTime();
     void onTimeChanged();
+    void onAudioServiceSelection(const RadioControlServiceComponent &s);
 
     bool isAudioRecordingActive() const;
     QString audioRecordingFile() const;
@@ -46,13 +46,15 @@ public:
     void audioRecording(bool start);
 
     bool isAudioScheduleActive() const;
-    void requestCancelSchedule(bool cancelRequest);
+    void requestCancelSchedule();
+
+    void setHaveAudio(bool newHaveAudio);
 
 signals:
     void audioRecordingCountdown(int numSec);
     void audioRecordingStarted();
     void audioRecordingStopped();
-    void audioRecordingProgress(size_t bytes, size_t timeSec);
+    void audioRecordingProgress(size_t bytes, qint64 timeSec);
     void requestServiceSelection(const ServiceListId & serviceId);
 
     // used to communicate with worker
@@ -60,22 +62,23 @@ signals:
     void stopRecording();
 
 private:
-    enum { COUNTDOWN_SEC = 30+1,
+    enum { COUNTDOWN_SEC = 30,
            SERVICESELECTION_SEC = 10,
-           STARTADVANCE_SEC = 2};
-    enum ScheduledRecordingState {StateIdle, StateStarted, StateCountdown, StateReady, StateRecording} m_scheduledRecordingState;
+           STARTADVANCE_SEC = 1};
+    enum ScheduledRecordingState {StateIdle, StateCountdown, StateServiceSelection, StateReady, StateRecording} m_scheduledRecordingState;
 
     AudioRecScheduleModel * m_model;
     AudioRecorder * m_recorder;
-    QTimer * m_timer;
     bool m_isAudioRecordingActive;
     QString m_audioRecordingFile;
     bool m_haveTimeConnection;    
-    int m_numSec;
 
     qint64 m_scheduleTimeSecSinceEpoch;
-    int m_durationSec;
+    AudioRecScheduleItem m_currentItem;
+
+    // this information is required to start scheduled recoding
     ServiceListId m_serviceId;
+    bool m_haveAudio;
 
     void updateScheduledRecording();
     void onModelReset();
