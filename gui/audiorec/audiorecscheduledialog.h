@@ -62,6 +62,7 @@ private:
     AudioRecScheduleModel * m_model;
     SLModel * m_slModel;
     void updateActions(const QItemSelection &selection);
+    void resizeTableColumns();
 };
 
 #endif // AUDIORECSCHEDULEDIALOG_H

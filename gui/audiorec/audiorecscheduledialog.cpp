@@ -45,6 +45,7 @@ AudioRecScheduleDialog::AudioRecScheduleDialog(AudioRecScheduleModel *model, SLM
     ui->scheduleTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->scheduleTableView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->scheduleTableView->setSortingEnabled(false);
+    ui->scheduleTableView->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch);
 
     connect(ui->addButton, &QPushButton::clicked, this, &AudioRecScheduleDialog::addItem);
 
@@ -56,12 +57,12 @@ AudioRecScheduleDialog::AudioRecScheduleDialog(AudioRecScheduleModel *model, SLM
 
     connect(ui->clearButton, &QPushButton::clicked, this, &AudioRecScheduleDialog::deleteAll);
     connect(ui->scheduleTableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &AudioRecScheduleDialog::updateActions);
-    connect(m_model, &QAbstractItemModel::dataChanged, ui->scheduleTableView, &QTableView::resizeColumnsToContents);
-    connect(m_model, &QAbstractItemModel::modelReset, ui->scheduleTableView, &QTableView::resizeColumnsToContents);
-    connect(m_model, &QAbstractItemModel::rowsRemoved, ui->scheduleTableView, &QTableView::resizeColumnsToContents);
-    connect(m_model, &QAbstractItemModel::rowsInserted, ui->scheduleTableView, &QTableView::resizeColumnsToContents);
+    connect(m_model, &QAbstractItemModel::dataChanged, this, &AudioRecScheduleDialog::resizeTableColumns);
+    connect(m_model, &QAbstractItemModel::modelReset, this, &AudioRecScheduleDialog::resizeTableColumns);
+    connect(m_model, &QAbstractItemModel::rowsRemoved, this, &AudioRecScheduleDialog::resizeTableColumns);
+    connect(m_model, &QAbstractItemModel::rowsInserted, this, &AudioRecScheduleDialog::resizeTableColumns);
 
-    ui->scheduleTableView->resizeColumnsToContents();
+    resizeTableColumns();
     adjustSize();
 }
 
@@ -79,7 +80,7 @@ void AudioRecScheduleDialog::addItem()
     {
         m_model->insertItem(dialog.itemData());
     }
-    ui->scheduleTableView->resizeColumnsToContents();
+    resizeTableColumns();
     updateActions(ui->scheduleTableView->selectionModel()->selection());
 }
 
@@ -95,7 +96,7 @@ void AudioRecScheduleDialog::editItem()
         if (dialog.exec())
         {
             m_model->replaceItemAtIndex(index, dialog.itemData());
-            ui->scheduleTableView->resizeColumnsToContents();
+            resizeTableColumns();
         }
     }
     updateActions(ui->scheduleTableView->selectionModel()->selection());
@@ -141,4 +142,15 @@ void AudioRecScheduleDialog::updateActions(const QItemSelection &selection)
         ui->editButton->setEnabled(false);
     }
     ui->clearButton->setEnabled(!m_model->isEmpty());
+}
+
+void AudioRecScheduleDialog::resizeTableColumns()
+{
+    QAbstractItemModel* tableModel = ui->scheduleTableView->model();
+
+    // Fit to size all but last item
+    ui->scheduleTableView->horizontalHeader()->setStretchLastSection(true);
+    for (int i = 0; i < tableModel->columnCount() - 1; ++i) {
+        ui->scheduleTableView->resizeColumnToContents(i);
+    }
 }
