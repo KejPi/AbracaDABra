@@ -222,7 +222,7 @@ void AudioRecScheduleModel::save(QSettings &settings)
         settings.setValue("Name", item.name());
         settings.setValue("StartTime", item.startTime());
         settings.setValue("DurationSec", item.durationSec());
-        settings.setValue("ServiceId", item.serviceId().value());
+        settings.setValue("ServiceId", QVariant::fromValue(item.serviceId().value()));
     }
     settings.endArray();
 }
