@@ -28,6 +28,7 @@
 #define AUDIORECITEMDIALOG_H
 
 #include <QDialog>
+#include <QItemSelectionModel>
 #include "slmodel.h"
 #include "audiorecscheduleitem.h"
 
