@@ -60,14 +60,14 @@ QVariant AudioRecScheduleModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole) {
         switch (index.column()) {
         case ColState:
-            if (item.isRecorded())
-            {
+            // if (item.isRecorded())
+            // {
 
-            }
-            else if (item.hasConflict())
-            {
-                return  "!";
-            }
+            // }
+            // else if (item.hasConflict())
+            // {
+            //     return  "!";
+            // }
             break;
         case ColLabel:
             return item.name();
@@ -91,16 +91,20 @@ QVariant AudioRecScheduleModel::data(const QModelIndex &index, int role) const
         default:
             break;
         }
-    } else if (role == Qt::BackgroundRole)
-    {
-        if (item.hasConflict()) {
-            return QVariant(QBrush(Qt::red));
-        }
     }
+    // else if (role == Qt::BackgroundRole)
+    // {
+    //     if (item.hasConflict()) {
+    //         return QVariant(QBrush(Qt::red));
+    //     }
+    // }
     else if (role == Qt::DecorationRole)
     {
         if ((index.column() == ColState) && item.isRecorded()) {
             return QPixmap(":/resources/record.png");
+        }
+        if ((index.column() == ColState) && item.hasConflict()) {
+            return QPixmap(":/resources/conflict.png");
         }
     }
     return QVariant();
@@ -147,14 +151,15 @@ Qt::ItemFlags AudioRecScheduleModel::flags(const QModelIndex &index) const
 bool AudioRecScheduleModel::removeRows(int position, int rows, const QModelIndex &index)
 {
     Q_UNUSED(index);
-    beginRemoveRows(QModelIndex(), position, position + rows - 1);
-
+    //beginRemoveRows(QModelIndex(), position, position + rows - 1);
+    beginResetModel();
     for (int row = 0; row < rows; ++row)
     {
         m_modelData.removeAt(position);
     }
-
-    endRemoveRows();
+    sortFindConflicts();
+    endResetModel();
+    //endRemoveRows();
     return true;
 }
 

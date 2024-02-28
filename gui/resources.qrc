@@ -53,5 +53,6 @@
         <file>resources/chevron-left_dark.png</file>
         <file>resources/chevron-right_dark.png</file>
         <file>resources/record.png</file>
+        <file>resources/conflict.png</file>
     </qresource>
 </RCC>
