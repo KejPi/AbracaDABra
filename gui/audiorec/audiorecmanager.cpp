@@ -27,14 +27,17 @@
 #include "audiorecmanager.h"
 #include "epgtime.h"
 
-AudioRecManager::AudioRecManager(AudioRecScheduleModel *model, AudioRecorder *recorder, QObject *parent)
-    : QObject{parent}, m_model(model), m_recorder(recorder)
-{
+AudioRecManager::AudioRecManager(AudioRecScheduleModel *model, SLModel *slModel, AudioRecorder *recorder, QObject *parent)
+    : QObject{parent}, m_model(model), m_slModel(slModel), m_recorder(recorder)
+{   
     m_isAudioRecordingActive = false;
     m_haveTimeConnection = false;
     m_haveAudio = false;
     m_scheduleTimeSecSinceEpoch = 0;
     m_scheduledRecordingState = ScheduledRecordingState::StateIdle;
+
+    // pass service list mode to schedule model
+    m_model->setSlModel(m_slModel);
 
     connect(EPGTime::getInstance(), &EPGTime::haveValidTime, this, &AudioRecManager::onValidTime);
 
@@ -64,13 +67,32 @@ void AudioRecManager::onTimeChanged()
         qDebug() << EPGTime::getInstance()->currentTime() << numSec;
         switch (m_scheduledRecordingState) {
         case StateIdle:
+        {
             if (numSec > COUNTDOWN_SEC)
             {
-                break;
+                return;
             }
-            qDebug() << "Countdown" << EPGTime::getInstance()->currentTime() << numSec;
-            emit audioRecordingCountdown(numSec-SERVICESELECTION_SEC);
-            m_scheduledRecordingState = ScheduledRecordingState::StateCountdown;
+
+            // check that service is available
+            const ServiceList * slPtr = m_slModel->getServiceList();
+            const auto it = slPtr->findService(m_currentItem.serviceId());
+            if (it == slPtr->serviceListEnd())
+            {   // service not found => cancelling the schedule
+                m_scheduledRecordingState = ScheduledRecordingState::StateIdle;
+                m_scheduleTimeSecSinceEpoch = 0;
+                if (!m_model->isEmpty())
+                {
+                    m_model->removeRows(0,1);
+                }
+                return;
+            }
+            else
+            {
+                qDebug() << "Countdown" << EPGTime::getInstance()->currentTime() << numSec;
+                emit audioRecordingCountdown(numSec-SERVICESELECTION_SEC);
+                m_scheduledRecordingState = ScheduledRecordingState::StateCountdown;
+            }
+        }
         case StateCountdown:
             if (numSec <= SERVICESELECTION_SEC)
             {
@@ -79,10 +101,27 @@ void AudioRecManager::onTimeChanged()
             }
             break;
         case StateServiceSelection:
+        {
             qDebug() << "Service selection" << EPGTime::getInstance()->currentTime() << numSec;
-            emit requestServiceSelection(m_currentItem.serviceId());
-            m_scheduledRecordingState = ScheduledRecordingState::StateReady;
-            emit audioRecordingProgress(0, -1);
+
+            const ServiceList * slPtr = m_slModel->getServiceList();
+            const auto it = slPtr->findService(m_currentItem.serviceId());
+            if (it == slPtr->serviceListEnd())
+            {   // service not found => cancelling the schedule
+                m_scheduledRecordingState = ScheduledRecordingState::StateIdle;
+                m_scheduleTimeSecSinceEpoch = 0;
+                if (!m_model->isEmpty())
+                {
+                    m_model->removeRows(0,1);
+                }
+            }
+            else
+            {
+                emit requestServiceSelection(m_currentItem.serviceId());
+                m_scheduledRecordingState = ScheduledRecordingState::StateReady;
+                emit audioRecordingProgress(0, -1);
+            }
+        }
             break;
         case StateReady:
             if ((numSec <= STARTADVANCE_SEC) && (m_serviceId == m_currentItem.serviceId()) && m_haveAudio)
@@ -91,7 +130,7 @@ void AudioRecManager::onTimeChanged()
                 m_model->setData(m_model->index(0,0), true, Qt::EditRole);
                 m_scheduleTimeSecSinceEpoch = m_currentItem.endTime().toSecsSinceEpoch();
                 m_scheduledRecordingState = ScheduledRecordingState::StateRecording;
-                break;
+                return;
             }
             else if (EPGTime::getInstance()->secSinceEpoch() >= m_currentItem.endTime().toSecsSinceEpoch())
             {   // stop

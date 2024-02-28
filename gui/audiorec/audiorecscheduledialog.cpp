@@ -57,6 +57,9 @@ AudioRecScheduleDialog::AudioRecScheduleDialog(AudioRecScheduleModel *model, SLM
     connect(ui->clearButton, &QPushButton::clicked, this, &AudioRecScheduleDialog::deleteAll);
     connect(ui->scheduleTableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &AudioRecScheduleDialog::updateActions);
     connect(m_model, &QAbstractItemModel::dataChanged, ui->scheduleTableView, &QTableView::resizeColumnsToContents);
+    connect(m_model, &QAbstractItemModel::modelReset, ui->scheduleTableView, &QTableView::resizeColumnsToContents);
+    connect(m_model, &QAbstractItemModel::rowsRemoved, ui->scheduleTableView, &QTableView::resizeColumnsToContents);
+    connect(m_model, &QAbstractItemModel::rowsInserted, ui->scheduleTableView, &QTableView::resizeColumnsToContents);
 
     ui->scheduleTableView->resizeColumnsToContents();
     adjustSize();

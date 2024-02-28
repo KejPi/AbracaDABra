@@ -553,8 +553,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_audioDecoderThread->start();
 
     m_audioRecScheduleModel = new AudioRecScheduleModel(this);
-    m_audioRecScheduleModel->setSlModel(m_slModel);
-    m_audioRecManager = new AudioRecManager(m_audioRecScheduleModel, audioRecorder, this);
+    m_audioRecManager = new AudioRecManager(m_audioRecScheduleModel, m_slModel, audioRecorder, this);
 
     connect(m_audioRecManager, &AudioRecManager::audioRecordingStarted, this, &MainWindow::onAudioRecordingStarted);
     connect(m_audioRecManager, &AudioRecManager::audioRecordingStopped, this, &MainWindow::onAudioRecordingStopped);

@@ -86,6 +86,9 @@ QVariant AudioRecScheduleModel::data(const QModelIndex &index, int role) const
             if (it != slPtr->serviceListEnd()) {
                 return it.value()->label();
             }
+            else {
+                return QString("%1").arg(item.serviceId().sid(), 6, 16, QChar('0')).toUpper();
+            }
         }
             break;
         default:

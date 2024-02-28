@@ -35,7 +35,7 @@ class AudioRecManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit AudioRecManager(AudioRecScheduleModel * model, AudioRecorder * recorder, QObject *parent = nullptr);
+    explicit AudioRecManager(AudioRecScheduleModel * model, SLModel *slModel, AudioRecorder * recorder, QObject *parent = nullptr);
     void onValidTime();
     void onTimeChanged();
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
@@ -67,7 +67,8 @@ private:
            STARTADVANCE_SEC = 1};
     enum ScheduledRecordingState {StateIdle, StateCountdown, StateServiceSelection, StateReady, StateRecording} m_scheduledRecordingState;
 
-    AudioRecScheduleModel * m_model;
+    SLModel * m_slModel;
+    AudioRecScheduleModel * m_model;    
     AudioRecorder * m_recorder;
     bool m_isAudioRecordingActive;
     QString m_audioRecordingFile;
