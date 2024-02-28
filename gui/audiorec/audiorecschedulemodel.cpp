@@ -92,10 +92,11 @@ QVariant AudioRecScheduleModel::data(const QModelIndex &index, int role) const
             break;
         }
     }
-    // else if (role == Qt::BackgroundRole)
+    // else if (role == Qt::ForegroundRole)
     // {
-    //     if (item.hasConflict()) {
-    //         return QVariant(QBrush(Qt::red));
+    //     if (item.hasConflict() && ((index.column() == ColStartTime) || (index.column() == ColEndTime))) {
+
+    //         return QVariant(QBrush(QColor(0xff,0x3a,0x3a)));
     //     }
     // }
     else if (role == Qt::DecorationRole)
