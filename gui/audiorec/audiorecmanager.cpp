@@ -209,7 +209,7 @@ void AudioRecManager::onAudioRecordingStopped()
     emit audioRecordingStopped();
 }
 
-void AudioRecManager::audioRecording(bool start)
+void AudioRecManager::doAudioRecording(bool start)
 {
     if (start) {
         emit startRecording();

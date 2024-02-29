@@ -1200,7 +1200,7 @@ void MainWindow::channelSelected()
 void MainWindow::serviceSelected()
 {
     emit stopUserApps();
-    m_audioRecManager->audioRecording(false);
+    m_audioRecManager->doAudioRecording(false);
     m_dlDecoder[Instance::Service]->reset();
     m_dlDecoder[Instance::Announcement]->reset();
     clearServiceInformationLabels();
@@ -1871,7 +1871,7 @@ void MainWindow::onAudioDeviceChanged(const QByteArray &id)
 
 void MainWindow::audioRecordingToggle()
 {
-    m_audioRecManager->audioRecording(!m_audioRecManager->isAudioRecordingActive());
+    m_audioRecManager->doAudioRecording(!m_audioRecManager->isAudioRecordingActive());
 }
 
 void MainWindow::onAudioRecordingStarted()
@@ -3123,7 +3123,7 @@ void MainWindow::stop()
 {
     if (m_isPlaying)
     { // stop
-        m_audioRecManager->audioRecording(false);
+        m_audioRecManager->doAudioRecording(false);
 
         // tune to 0
         ui->channelCombo->setCurrentIndex(-1);

@@ -41,7 +41,7 @@ public:
     bool isAudioRecordingActive() const;
     QString audioRecordingFile() const;
 
-    void audioRecording(bool start);
+    void doAudioRecording(bool start);
 
     bool isAudioScheduleActive() const;
     void requestCancelSchedule();
