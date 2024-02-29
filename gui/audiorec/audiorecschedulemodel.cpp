@@ -197,6 +197,7 @@ void AudioRecScheduleModel::load(QSettings &settings)
         m_modelData.append(item);
     }
     settings.endArray();
+    cleanup(QDateTime::currentDateTime());
     sortFindConflicts();
     endResetModel();
 }
