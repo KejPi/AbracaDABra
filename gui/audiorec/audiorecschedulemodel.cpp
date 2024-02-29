@@ -183,6 +183,8 @@ void AudioRecScheduleModel::setSlModel(SLModel *newSlModel)
 
 void AudioRecScheduleModel::load(QSettings &settings)
 {
+    beginResetModel();
+    m_modelData.clear();
     int numItems = settings.beginReadArray("AudioRecordingSchedule");
     for (int n = 0; n<numItems; ++n)
     {
@@ -196,6 +198,7 @@ void AudioRecScheduleModel::load(QSettings &settings)
     }
     settings.endArray();
     sortFindConflicts();
+    endResetModel();
 }
 
 void AudioRecScheduleModel::save(QSettings &settings)

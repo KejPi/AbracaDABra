@@ -36,8 +36,6 @@ class AudioRecManager : public QObject
     Q_OBJECT
 public:
     explicit AudioRecManager(AudioRecScheduleModel * model, SLModel *slModel, AudioRecorder * recorder, QObject *parent = nullptr);
-    void onValidTime();
-    void onTimeChanged();
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
 
     bool isAudioRecordingActive() const;
@@ -61,11 +59,16 @@ signals:
     void startRecording();
     void stopRecording();
 
+protected:
+    void timerEvent(QTimerEvent *);
+
 private:
     enum { COUNTDOWN_SEC = 30,
            SERVICESELECTION_SEC = 10,
-           STARTADVANCE_SEC = 1};
+           STARTADVANCE_SEC = 0};
     enum ScheduledRecordingState {StateIdle, StateCountdown, StateServiceSelection, StateReady, StateRecording} m_scheduledRecordingState;
+
+    QBasicTimer m_timer;
 
     SLModel * m_slModel;
     AudioRecScheduleModel * m_model;    
@@ -86,8 +89,6 @@ private:
     void onModelRowsRemoved(const QModelIndex &, int first, int last);
     void onAudioRecordingStarted(const QString &filename);
     void onAudioRecordingStopped();
-    void setTimeConnection(bool ena);
-    void onTimer();
     void stopCurrentSchedule();
 };
 
