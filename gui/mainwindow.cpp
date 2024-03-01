@@ -2128,7 +2128,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     case InputDeviceId::UNDEFINED:
         // store service list if previous was not RAWFILE or UNDEFINED
         if ((InputDeviceId::RAWFILE != m_inputDeviceId) && (InputDeviceId::UNDEFINED != m_inputDeviceId))
-        {   // if switching from live source save current service list
+        {   // if switching from live source save current service list & schedule
             QSettings * settings;
             if (m_iniFilename.isEmpty())
             {
@@ -2139,6 +2139,10 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
                 settings = new QSettings(m_iniFilename, QSettings::IniFormat);
             }
             m_serviceList->save(*settings);
+
+            // save audio schedule
+            m_audioRecScheduleModel->save(*settings);
+
             settings->sync();
 
             delete settings;
@@ -2173,10 +2177,13 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         if (m_inputDevice->openDevice())
         {   // rtl sdr is available
             if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
-            {   // if switching from RAW or UNDEFINED load service list
+            {   // if switching from RAW or UNDEFINED load service list & rec schedule
 
                 // clear service list
                 m_serviceList->clear();
+
+                // clear schedule
+                m_audioRecScheduleModel->clear();
 
                 QSettings * settings;
                 if (m_iniFilename.isEmpty())
@@ -2188,6 +2195,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
                     settings = new QSettings(m_iniFilename, QSettings::IniFormat);
                 }
                 m_serviceList->load(*settings);
+                m_audioRecScheduleModel->load(*settings);
                 delete settings;
             }
             else { /* keep service list as it is */}
@@ -2248,10 +2256,13 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         if (m_inputDevice->openDevice())
         {  // rtl tcp is available
             if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
-            {   // if switching from RAW or UNDEFINED load service list
+            {   // if switching from RAW or UNDEFINED load service list & rec schedule
 
                 // clear service list
                 m_serviceList->clear();
+
+                // clear rec scheduile
+                m_audioRecScheduleModel->clear();
 
                 QSettings * settings;
                 if (m_iniFilename.isEmpty())
@@ -2263,6 +2274,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
                     settings = new QSettings(m_iniFilename, QSettings::IniFormat);
                 }
                 m_serviceList->load(*settings);
+                m_audioRecScheduleModel->load(*settings);
                 delete settings;
             }
             else { /* keep service list as it is */}
@@ -2320,10 +2332,13 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         if (m_inputDevice->openDevice())
         {  // airspy is available
             if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
-            {   // if switching from RAW or UNDEFINED load service list
+            {   // if switching from RAW or UNDEFINED load service list & rec schedule
 
                 // clear service list
                 m_serviceList->clear();
+
+                // clear rec schedule
+                m_audioRecScheduleModel->clear();
 
                 QSettings * settings;
                 if (m_iniFilename.isEmpty())
@@ -2335,6 +2350,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
                     settings = new QSettings(m_iniFilename, QSettings::IniFormat);
                 }
                 m_serviceList->load(*settings);
+                m_audioRecScheduleModel->load(*settings);
                 delete settings;
             }
             else { /* keep service list as it is */}
@@ -2400,10 +2416,13 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         if (m_inputDevice->openDevice())
         {  // SoapySDR is available
             if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
-            {   // if switching from RAW or UNDEFINED load service list
+            {   // if switching from RAW or UNDEFINED load service list & rec schedule
 
                 // clear service list
                 m_serviceList->clear();
+
+                // clear rec schedule
+                m_audioRecScheduleModel->clear();
 
                 QSettings * settings;
                 if (m_iniFilename.isEmpty())
@@ -2415,6 +2434,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
                     settings = new QSettings(m_iniFilename, QSettings::IniFormat);
                 }
                 m_serviceList->load(*settings);
+                m_audioRecScheduleModel->load(*settings);
                 delete settings;
             }
             else { /* keep service list as it is */}
@@ -2483,7 +2503,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         if (m_inputDevice->openDevice())
         {   // raw file is available
             if (InputDeviceId::RAWFILE != m_inputDeviceId)
-            {   // if switching from live source save current service list
+            {   // if switching from live source save current service list & rec schedule
                 QSettings * settings;
                 if (m_iniFilename.isEmpty())
                 {
@@ -2494,6 +2514,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
                     settings = new QSettings(m_iniFilename, QSettings::IniFormat);
                 }
                 m_serviceList->save(*settings);
+                m_audioRecScheduleModel->save(*settings);
                 settings->sync();
 
                 delete settings;
@@ -2502,6 +2523,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // clear service list
             m_serviceList->clear();
+
+            // clear rec schedule
+            m_audioRecScheduleModel->clear();
 
             m_inputDeviceId = InputDeviceId::RAWFILE;
 
@@ -2830,11 +2854,11 @@ void MainWindow::saveSettings()
             settings->setValue("Frequency", m_frequency);
         }
         m_serviceList->save(*settings);
-    }
-    else { /* RAW file does not store service and service list */ }
 
-    // save audio sechdule
-    m_audioRecScheduleModel->save(*settings);
+        // save audio schedule
+        m_audioRecScheduleModel->save(*settings);
+    }
+    else { /* RAW file does not store service, service list and schedule */ }
 
     settings->sync();
 

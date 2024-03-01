@@ -142,7 +142,7 @@ void AudioRecManager::timerEvent(QTimerEvent *event)
         {
             int numSec = m_scheduleTimeSecSinceEpoch - QDateTime::currentDateTime().toSecsSinceEpoch();
             if (numSec <= 0) {
-                qDebug() << "End" << EPGTime::getInstance()->currentTime();                
+                qDebug() << "End" << QDateTime::currentDateTime();
                 emit stopRecording();
                 m_timer.stop();
                 m_scheduledRecordingState = ScheduledRecordingState::StateIdle;
@@ -228,7 +228,7 @@ void AudioRecManager::requestCancelSchedule()
 {
     if (m_scheduledRecordingState != ScheduledRecordingState::StateIdle)
     {
-        qDebug() << "Scheduled recording cancelled" << EPGTime::getInstance()->currentTime();
+        qDebug() << "Scheduled recording cancelled" << QDateTime::currentDateTime();
         m_scheduledRecordingState = ScheduledRecordingState::StateIdle;
         m_scheduleTimeSecSinceEpoch = 0;
         m_model->removeRows(0,1);
@@ -271,10 +271,9 @@ void AudioRecManager::updateScheduledRecording()
         {   // run timer
             m_timer.start(secToSchedule*1000, Qt::VeryCoarseTimer, this);
         }
-        else
+        else if (secToSchedule <= 0)
         {   // run callback immediately
             timerEvent(nullptr);
-
         }
     }
 }

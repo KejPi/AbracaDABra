@@ -27,7 +27,6 @@
 #include <QPushButton>
 #include "audiorecitemdialog.h"
 #include "ui_audiorecitemdialog.h"
-#include "epgtime.h"
 
 AudioRecItemDialog::AudioRecItemDialog(QLocale locale, SLModel *slModel, QWidget *parent)
     : QDialog(parent)
@@ -37,12 +36,9 @@ AudioRecItemDialog::AudioRecItemDialog(QLocale locale, SLModel *slModel, QWidget
 {
     ui->setupUi(this);
 
-    // initialize item using EPGTime or current time if not valid
+    // initialize item using current time if not valid
     QDateTime startDateTime = QDateTime::currentDateTime().toOffsetFromUtc(QDateTime::currentDateTime().offsetFromUtc());
-    if (EPGTime::getInstance()->isValid())
-    {   // valid EPG time
-        startDateTime = EPGTime::getInstance()->currentTime();
-    }
+
     // remove seconds
     QDate startDate = startDateTime.date();
     QTime startTime = QTime(startDateTime.time().hour(), startDateTime.time().minute());
