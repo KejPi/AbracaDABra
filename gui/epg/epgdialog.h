@@ -31,6 +31,7 @@
 #include <QQuickImageProvider>
 #include <QQuickView>
 #include <QItemSelectionModel>
+#include "audiorecscheduleitem.h"
 #include "metadatamanager.h"
 #include "slmodel.h"
 #include "slproxymodel.h"
@@ -69,6 +70,8 @@ public:
     QList<QColor> colors() const;
     void setColors(const QList<QColor> &newColors);
 
+    Q_INVOKABLE void scheduleRecording();
+
 signals:
     void selectedEpgItemChanged();
 
@@ -79,6 +82,8 @@ signals:
     void filterEnsembleChanged();
 
     void colorsChanged();
+
+    void scheduleAudioRecording(const AudioRecScheduleItem & item);
 
 protected:
     void showEvent(QShowEvent *event);

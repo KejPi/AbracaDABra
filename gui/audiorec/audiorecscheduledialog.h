@@ -45,6 +45,7 @@ public:
     ~AudioRecScheduleDialog();
 
     void addItem();
+    void addItem(const AudioRecScheduleItem & item);
     void editItem();
     void removeItem();
     void deleteAll();

@@ -27,6 +27,7 @@
 #ifndef EPGMODEL_H
 #define EPGMODEL_H
 
+#include "servicelistid.h"
 #include <QAbstractListModel>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
 #include <QtQmlIntegration>
@@ -66,10 +67,13 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const { return m_itemList.count(); }
     QHash<int, QByteArray> roleNames() const;
     bool addItem(EPGModelItem *item);
-    void populateWithList(const QList<EPGModelItem *> & list);
+    ServiceListId serviceId() const;
+    void setServiceId(const ServiceListId &newServiceId);
+
 private:
     QHash<QDateTime, int> m_startTimeList;
     QList<EPGModelItem *> m_itemList;
+    ServiceListId m_serviceId;
 };
 
 #endif // EPGMODEL_H

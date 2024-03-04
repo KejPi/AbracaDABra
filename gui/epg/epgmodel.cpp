@@ -146,9 +146,14 @@ QHash<int, QByteArray> EPGModel::roleNames() const
     return roles;
 }
 
-void EPGModel::populateWithList(const QList<EPGModelItem *> &list)
+ServiceListId EPGModel::serviceId() const
 {
+    return m_serviceId;
+}
 
+void EPGModel::setServiceId(const ServiceListId &newServiceId)
+{
+    m_serviceId = newServiceId;
 }
 
 bool EPGModel::addItem(EPGModelItem *item)

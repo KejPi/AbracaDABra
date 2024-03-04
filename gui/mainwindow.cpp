@@ -184,6 +184,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 {
     initStyle(); // init style as soon as possible
 
+    m_audioRecScheduleDialog = nullptr;
+
     m_dlDecoder[Instance::Service] = new DLDecoder();
     m_dlDecoder[Instance::Announcement] = new DLDecoder();
 
@@ -452,6 +454,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_epgDialog = new EPGDialog(m_slModel, ui->serviceListView->selectionModel(), m_metadataManager, this);
     connect(m_metadataManager, &MetadataManager::epgAvailable, this, [this](){ m_epgAction->setEnabled(true); } );
     connect(m_metadataManager, &MetadataManager::epgEmpty, this, &MainWindow::onEpgEmpty);
+    connect(m_epgDialog, &EPGDialog::scheduleAudioRecording, this, [this](const AudioRecScheduleItem & item) {
+        showAudioRecordingSchedule();
+        m_audioRecScheduleDialog->addItem(item);
+    });
 
     // fill channel list
     int freqLabelMaxWidth = 0;
@@ -3044,13 +3050,19 @@ void MainWindow::showCatSLS()
 
 void MainWindow::showAudioRecordingSchedule()
 {
-    auto dialog = new AudioRecScheduleDialog(m_audioRecScheduleModel, m_slModel, this);
-    dialog->setLocale(m_timeLocale);
-    dialog->setServiceListModel(m_slModel);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->show();
-    dialog->raise();
-    dialog->activateWindow();
+    if (m_audioRecScheduleDialog == nullptr)
+    {
+        m_audioRecScheduleDialog = new AudioRecScheduleDialog(m_audioRecScheduleModel, m_slModel, this);
+        connect(m_audioRecScheduleDialog, &QDialog::finished, m_audioRecScheduleDialog, &QObject::deleteLater);
+        connect(m_audioRecScheduleDialog, &QDialog::destroyed, this, [this]() { m_audioRecScheduleDialog = nullptr; } );
+        m_audioRecScheduleDialog->setLocale(m_timeLocale);
+        m_audioRecScheduleDialog->setServiceListModel(m_slModel);
+        m_audioRecScheduleDialog->setAttribute(Qt::WA_DeleteOnClose);
+    }
+
+    m_audioRecScheduleDialog->show();
+    m_audioRecScheduleDialog->raise();
+    m_audioRecScheduleDialog->activateWindow();
 
 }
 

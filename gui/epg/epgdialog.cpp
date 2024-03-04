@@ -227,3 +227,18 @@ void EPGDialog::setColors(const QList<QColor> &newColors)
     m_colors = newColors;
     emit colorsChanged();
 }
+
+void EPGDialog::scheduleRecording()
+{
+    if (m_selectedEpgItem.isValid())
+    {
+        const EPGModel * model = dynamic_cast<const EPGModel *>(m_selectedEpgItem.model());
+        AudioRecScheduleItem item;
+        item.setName(model->data(m_selectedEpgItem, EPGModelRoles::NameRole).toString());
+        item.setStartTime(model->data(m_selectedEpgItem, EPGModelRoles::StartTimeRole).value<QDateTime>());
+        item.setDurationSec(model->data(m_selectedEpgItem, EPGModelRoles::DurationSecRole).toInt());
+        item.setServiceId(model->serviceId());
+
+        emit scheduleAudioRecording(item);
+    }
+}

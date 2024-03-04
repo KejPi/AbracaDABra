@@ -417,7 +417,9 @@ bool MetadataManager::parseProgramme(const QDomElement &element, const ServiceLi
     {
         if (m_epgList.value(id, nullptr) == nullptr)
         {
-            m_epgList[id] = new EPGModel(this);
+            EPGModel * model = new EPGModel(this);
+            model->setServiceId(id);
+            m_epgList[id] = model;
             emit epgModelChanged(id);
             emit epgAvailable();
         }

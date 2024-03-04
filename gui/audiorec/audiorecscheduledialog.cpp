@@ -47,7 +47,7 @@ AudioRecScheduleDialog::AudioRecScheduleDialog(AudioRecScheduleModel *model, SLM
     ui->scheduleTableView->setSortingEnabled(false);
     ui->scheduleTableView->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch);
 
-    connect(ui->addButton, &QPushButton::clicked, this, &AudioRecScheduleDialog::addItem);
+    connect(ui->addButton, &QPushButton::clicked, this, QOverload<>().of(&AudioRecScheduleDialog::addItem));
 
     connect(ui->editButton, &QPushButton::clicked, this, &AudioRecScheduleDialog::editItem);
     ui->editButton->setEnabled(false);
@@ -76,6 +76,19 @@ void AudioRecScheduleDialog::addItem()
     AudioRecItemDialog dialog(m_locale, m_slModel);
     dialog.setWindowTitle(tr("New recording schedule"));
 
+    if (dialog.exec())
+    {
+        m_model->insertItem(dialog.itemData());
+    }
+    resizeTableColumns();
+    updateActions(ui->scheduleTableView->selectionModel()->selection());
+}
+
+void AudioRecScheduleDialog::addItem(const AudioRecScheduleItem &item)
+{
+    AudioRecItemDialog dialog(m_locale, m_slModel);
+    dialog.setWindowTitle(tr("New recording schedule"));
+    dialog.setItemData(item);
     if (dialog.exec())
     {
         m_model->insertItem(dialog.itemData());

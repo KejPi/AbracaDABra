@@ -44,6 +44,7 @@
 #include <QMessageBox>
 
 #include "audiorecmanager.h"
+#include "audiorecscheduledialog.h"
 #include "clickablelabel.h"
 #include "epgdialog.h"
 #include "metadatamanager.h"
@@ -117,6 +118,7 @@ private:
     EnsembleInfoDialog * m_ensembleInfoDialog;
     CatSLSDialog * m_catSlsDialog;
     LogDialog * m_logDialog;
+    AudioRecScheduleDialog * m_audioRecScheduleDialog;
     QProgressBar * m_snrProgressbar;    
     ClickableLabel * m_menuLabel;
     ClickableLabel * m_muteLabel;   

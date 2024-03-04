@@ -59,6 +59,7 @@ Item {
             property string programName: ""
             property string programStartToEndTime: ""
             property string programDetail: ""
+            property bool scheduleRecEnable: false
 
             //SystemPalette { id: sysPaletteActive; colorGroup: SystemPalette.Active }
 
@@ -351,6 +352,7 @@ Item {
                                                                         programDetail = (longDescription !== "") ? longDescription : shortDescription;
                                                                         programName = (longName !== "") ? longName : mediumName;
                                                                         programStartToEndTime = startToEndTimeString;
+                                                                        scheduleRecEnable = (startTimeSecSinceEpoch > currentTimeSec);
 
                                                                         epgDialog.selectedEpgItem = proxyModel.mapToSource(proxyModel.index(index, 0));
                                                                     }
@@ -362,6 +364,8 @@ Item {
                                                                                 programDetail = (longDescription !== "") ? longDescription : shortDescription;
                                                                                 programName = (longName !== "") ? longName : mediumName;
                                                                                 programStartToEndTime = startToEndTimeString;
+                                                                                scheduleRecEnable = (startTimeSecSinceEpoch > currentTimeSec);
+                                                                                console.log(startTimeSecSinceEpoch, currentTimeSec, scheduleRecEnable)
                                                                             }
                                                                         }
                                                                         else {
@@ -372,6 +376,7 @@ Item {
                                                                                     programDetail = (longDescription !== "") ? longDescription : shortDescription;
                                                                                     programName = (longName !== "") ? longName : mediumName;
                                                                                     programStartToEndTime = startToEndTimeString;
+                                                                                    scheduleRecEnable = (startTimeSecSinceEpoch > currentTimeSec);
                                                                                 }
                                                                             }
                                                                         }
@@ -436,22 +441,36 @@ Item {
                 ColumnLayout {
                     id: progDetailsLayout
                     anchors.fill: parent
-                    spacing: 5
-                    Text {
-                        id: programNameLabel
+                    spacing: 5                    
+                    RowLayout {
                         Layout.fillWidth: true
-                        text: programName
-                        font.bold: true
-                        font.pointSize: 16
-                        color: EPGColors.textColor
-                    }
-                    Text {
-                        visible: programStartToEndTime
-                        Layout.fillWidth: true
-                        Layout.bottomMargin: 3
-                        text: programStartToEndTime
-                        verticalAlignment: Text.AlignVCenter
-                        color: EPGColors.fadeTextColor
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            Text {
+                                id: programNameLabel
+                                Layout.fillWidth: true
+                                text: programName
+                                font.bold: true
+                                font.pointSize: 16
+                                color: EPGColors.textColor
+                            }
+                            Text {
+                                visible: programStartToEndTime
+                                Layout.fillWidth: true
+                                Layout.bottomMargin: 3
+                                text: programStartToEndTime
+                                verticalAlignment: Text.AlignVCenter
+                                color: EPGColors.fadeTextColor
+                            }
+                        }
+                        Button {
+                            id: scheduleRecButton
+                            Layout.alignment: Qt.AlignTop
+                            text: qsTr("Schedule audio recording")
+                            visible: programStartToEndTime !== "" && scheduleRecEnable
+                            //enabled: scheduleRecEnable
+                            onClicked: epgDialog.scheduleRecording()
+                        }
                     }
                     EPGScrollableText {
                         id: serviceScrollViewId
