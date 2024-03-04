@@ -170,7 +170,6 @@ void EPGDialog::setupDarkMode(bool darkModeEna)
 
     if (darkModeEna)
     {        
-        //colors.append(QColor(30, 30, 30));        // bgColor
         colors.append(qApp->palette().color(QPalette::Window));
         colors.append(QColor(0xec,0xec,0xec));   // textColor
         colors.append(QColor(0xb3,0xb3,0xb3));   // fadeTextColor
@@ -189,10 +188,13 @@ void EPGDialog::setupDarkMode(bool darkModeEna)
         colors.append(QColor(0x51,0x51,0x51));   // switchHandleColor
         colors.append(QColor(0xb0,0xb0,0xb0));   // switchHandleBorderColor
         colors.append(QColor(0xd0,0xd0,0xd0));   // switchHandleDownColor
+
+        colors.append(QColor(0x65,0x65,0x65));   // buttonColor
+        colors.append(QColor(0x7c,0x7c,0x7c));   // buttonDownColor
+        colors.append(QColor(0x28,0x28,0x28));   // buttonBorderColor
     }
     else
     {
-        //colors.append(QColor(240, 240, 240));       // bgColor
         colors.append(qApp->palette().color(QPalette::Window));
         colors.append(QColor(Qt::black));        // textColor
         colors.append(QColor(0x60,0x60,0x60));   // fadeTextColor
@@ -211,6 +213,10 @@ void EPGDialog::setupDarkMode(bool darkModeEna)
         colors.append(QColor(Qt::white));        // switchHandleColor
         colors.append(QColor(0x99,0x99,0x99));   // switchHandleBorderColor
         colors.append(QColor(0xcc,0xcc,0xcc));   // switchHandleDownColor
+
+        colors.append(QColor(Qt::white));        // buttonColor
+        colors.append(QColor(0xf0,0xf0,0xf0));   // buttonDownColor
+        colors.append(QColor(0xb4,0xb4,0xb4));   // buttonBorderColor
     }
     setColors(colors);
 }

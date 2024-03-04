@@ -463,14 +463,14 @@ Item {
                                 color: EPGColors.fadeTextColor
                             }
                         }
-                        Button {
+                        EPGButton {
                             id: scheduleRecButton
                             Layout.alignment: Qt.AlignTop
                             text: qsTr("Schedule audio recording")
                             visible: programStartToEndTime !== "" && scheduleRecEnable
-                            //enabled: scheduleRecEnable
                             onClicked: epgDialog.scheduleRecording()
                         }
+
                     }
                     EPGScrollableText {
                         id: serviceScrollViewId

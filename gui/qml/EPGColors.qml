@@ -51,5 +51,9 @@ QtObject {
     readonly property color switchHandleColor:          epgDialog.colors[14]
     readonly property color switchHandleBorderColor:    epgDialog.colors[15]
     readonly property color switchHandleDownColor:      epgDialog.colors[16]
+
+    readonly property color buttonColor:                epgDialog.colors[17]
+    readonly property color buttonDownColor:            epgDialog.colors[18]
+    readonly property color buttonBorderColor:          epgDialog.colors[19]
 }
 
