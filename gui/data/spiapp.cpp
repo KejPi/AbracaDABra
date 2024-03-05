@@ -133,7 +133,7 @@ void SPIApp::restart()
 void SPIApp::reset()
 {
     // delete all decoders
-    for (const auto & decoder : qAsConst(m_decoderMap))
+    for (const auto & decoder : std::as_const(m_decoderMap))
     {
         delete decoder;
     }
