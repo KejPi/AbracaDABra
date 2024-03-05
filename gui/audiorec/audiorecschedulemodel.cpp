@@ -222,8 +222,7 @@ void AudioRecScheduleModel::cleanup(const QDateTime &currentTime)
     beginResetModel();
     auto it = m_modelData.constBegin();
     while (it != m_modelData.constEnd())
-    {
-        qDebug() << it->endTime();
+    {        
         if (it->endTime() <= currentTime)
         {
             it = m_modelData.erase(it);

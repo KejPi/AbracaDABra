@@ -30,7 +30,7 @@
 #include <QRegularExpression>
 #include "audiorecorder.h"
 
-Q_LOGGING_CATEGORY(audioRecorder, "AudioRecorder", QtDebugMsg)
+Q_LOGGING_CATEGORY(audioRecorder, "AudioRecorder", QtInfoMsg)
 
 AudioRecorder::AudioRecorder(QObject *parent) : QObject{parent},
     m_sid(0),
@@ -109,7 +109,7 @@ void AudioRecorder::writeWav(const int16_t *data, size_t numSamples)
     qint64 bytesWritten = m_file->write(reinterpret_cast<const char *>(data), sizeof(int16_t) * numSamples);
     if (bytesWritten != sizeof(uint16_t) * numSamples)
     {
-        qCDebug(audioRecorder) << "Error while recoding WAV data";
+        qCWarning(audioRecorder) << "Error while recoding WAV data";
         stop();
         return;
     }
@@ -126,7 +126,7 @@ void AudioRecorder::writeMP2(const std::vector<uint8_t> &data)
     qint64 bytesWritten = m_file->write(reinterpret_cast<const char *>(data.data()), sizeof(uint8_t) * data.size());
     if (bytesWritten != sizeof(uint8_t) * data.size())
     {
-        qCDebug(audioRecorder) << "Error while recoding MP2 data";
+        qCWarning(audioRecorder) << "Error while recoding MP2 data";
         stop();
         return;
     }
@@ -269,7 +269,7 @@ void AudioRecorder::writeAAC(const std::vector<uint8_t> &data, const dabsdrAudio
 
     if (bytesWritten != sizeof(uint8_t) * (9 + aacHeader.bits.sbr_flag + au_size_255 + au_size + 1))
     {
-        qCDebug(audioRecorder) << "Error while recoding AAC data";
+        qCWarning(audioRecorder) << "Error while recoding AAC data";
         stop();
         return;
     }
