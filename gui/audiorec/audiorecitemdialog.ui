@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string notr="true">Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,1000">
    <item row="3" column="1">
@@ -64,14 +64,14 @@
        <item row="1" column="1">
         <widget class="QTimeEdit" name="durationEdit">
          <property name="displayFormat">
-          <string>HH:mm</string>
+          <string notr="true">HH:mm</string>
          </property>
         </widget>
        </item>
        <item row="0" column="1">
         <widget class="QTimeEdit" name="startTimeEdit">
          <property name="displayFormat">
-          <string>HH:mm</string>
+          <string notr="true">HH:mm</string>
          </property>
          <property name="timeSpec">
           <enum>Qt::UTC</enum>
@@ -111,6 +111,12 @@
    </item>
    <item row="2" column="1">
     <widget class="QListView" name="servicelistView">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="minimumSize">
       <size>
        <width>180</width>
