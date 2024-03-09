@@ -96,37 +96,37 @@
     <message>
         <location filename="../audiorec/audiorecitemdialog.ui" line="53"/>
         <source>Duration [hh:mm]:</source>
-        <translation type="unfinished"></translation>
+        <translation>Dauer [hh:mm]:</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecitemdialog.ui" line="60"/>
         <source>End time:</source>
-        <translation type="unfinished"></translation>
+        <translation>Endzeit:</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecitemdialog.ui" line="84"/>
         <source>Start time:</source>
-        <translation type="unfinished"></translation>
+        <translation>Startzeit:</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecitemdialog.ui" line="133"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Name:</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecitemdialog.ui" line="145"/>
         <source>Start date:</source>
-        <translation type="unfinished"></translation>
+        <translation>Startdatum:</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecitemdialog.ui" line="155"/>
         <source>Service:</source>
-        <translation type="unfinished">Service:</translation>
+        <translation>Service:</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecitemdialog.cpp" line="59"/>
         <source>New audio recording schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>Neue Audioaufnahme</translation>
     </message>
 </context>
 <context>
@@ -134,38 +134,38 @@
     <message>
         <location filename="../audiorec/audiorecscheduledialog.ui" line="14"/>
         <source>Audio Recording Schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>Audioaufnahmeplaner</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecscheduledialog.ui" line="20"/>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Löschen</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecscheduledialog.ui" line="43"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Ändern</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecscheduledialog.ui" line="53"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Hinzufügen</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecscheduledialog.ui" line="66"/>
         <source>Delete all</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle löschen</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecscheduledialog.cpp" line="77"/>
         <location filename="../audiorec/audiorecscheduledialog.cpp" line="90"/>
         <source>New recording schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>Neuer Aufnahmeplan</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecscheduledialog.cpp" line="107"/>
         <source>Edit recording schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>Aufnahmeplan ändern</translation>
     </message>
 </context>
 <context>
@@ -173,27 +173,27 @@
     <message>
         <location filename="../audiorec/audiorecschedulemodel.cpp" line="114"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Name</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecschedulemodel.cpp" line="116"/>
         <source>Start time</source>
-        <translation type="unfinished"></translation>
+        <translation>Startzeit</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecschedulemodel.cpp" line="118"/>
         <source>End time</source>
-        <translation type="unfinished"></translation>
+        <translation>Endzeit</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecschedulemodel.cpp" line="120"/>
         <source>Duration</source>
-        <translation type="unfinished"></translation>
+        <translation>Dauer</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecschedulemodel.cpp" line="122"/>
         <source>Service</source>
-        <translation type="unfinished"></translation>
+        <translation>Service</translation>
     </message>
 </context>
 <context>
@@ -727,7 +727,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="323"/>
         <source>Audio recording schedule...</source>
-        <translation type="unfinished"></translation>
+        <translation>Aufnahmeplaner...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="334"/>
@@ -1031,52 +1031,52 @@ Datei: %1</translation>
     <message>
         <location filename="../mainwindow.cpp" line="1909"/>
         <source>Audio recording: 0:00</source>
-        <translation type="unfinished"></translation>
+        <translation>Aufnahme läuft: 0:00</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1910"/>
         <source>Scheduled audio recording is getting ready</source>
-        <translation type="unfinished"></translation>
+        <translation>Audioaufnahmeplan ist fertig</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1926"/>
         <source>Scheduled recording should start in %1 seconds</source>
-        <translation type="unfinished"></translation>
+        <translation>Geplante Aufnahme sollte in %1 Sekunden starten</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1927"/>
         <source>Ongoing recording now prevents the start of a scheduled recording. The schedule will be cancelled if you do not choose otherwise. If you select to keep the schedule, the service might be switched.</source>
-        <translation type="unfinished"></translation>
+        <translation>Laufende Aufnahme unterbindet jetzt den Start einer geplanten Aufnahme. Der Plan wird abgebrochen, wenn Sie sich nicht anderswertig entscheiden. Wenn Sie den Plan behalten, könnte der Service umgeschaltet werden.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1931"/>
         <source>Keep schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>Behalte Plan</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1932"/>
         <source>Keep current recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Behalte aktuelle Aufnahme</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1938"/>
         <source>Scheduled recording starts in %1 seconds</source>
-        <translation type="unfinished"></translation>
+        <translation>Geplante Aufnahme startet in %1 Sekunden</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1939"/>
         <source>Recording is going to start according to the schedule. The service might be switched if it differs from the current one.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aufnahme wird anhand des Plans beginnen. Der Service könnte umgeschaltet werden, wenn er vom aktuellen abweicht.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1941"/>
         <source>Cancel plan</source>
-        <translation type="unfinished"></translation>
+        <translation>Plan abbrechen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1942"/>
         <source>Continue as planned</source>
-        <translation type="unfinished"></translation>
+        <translation>Fortsetzen wie geplant</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2025"/>
@@ -4161,7 +4161,7 @@ Datei: %1</translation>
     <message>
         <location filename="../qml/epg.qml" line="469"/>
         <source>Schedule audio recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Audioaufnahme planen</translation>
     </message>
 </context>
 </TS>
