@@ -149,6 +149,27 @@ Audio recording can be started and stopped from application menu. It can be also
 
 _Note:_  Audio recording stops when ensemble reconfigures or when any tuning operation is performed. 
 
+### Audio recording schedule
+Audio recording can be also planned in advance. Plan is defined by:
+* Name
+* Start time
+* Duration (End time is calculated from duration)
+* Service to be recorded
+
+New audio recording schedule can be added from Audio recording schedule dialog (see screenshot below) accessible from application menu or from EPG (Schedule audio recording button). 
+
+_Notes:_
+* Scheduled audio recording uses the same settings as immediate audio recording.
+* Audio recording start time is taken from system time not from DAB time.
+* When scheduled recording is about to start, the dialog with warning to user pops up (30 seconds before scheduled time) and then service to be recorded is selected about 10 seconds before scheduled time.
+* Application must run in order to make scheduled recoding happen. In other words, application does not automatically start when audio recording is scheduled.
+* Any ongoing recording is blocking scheduled item to start.
+* Application does not block user to define overlapping recording schedules. If user adds shedule items that are overlaping, conflict is indicated by red triangle icon in audio recording schedule table ("Schedule #3" in the screenshot below). In case of conflicting schedules, the first scheduled item is completed as defined ("Schedule #2" in screenshot) and then the conflicting item starts. Recording is always performed in the order shown in the table.
+* Ongoing scheduled audio recording can be stopped anytime from application menu or from status bar like any other audio recording.
+* If service to be recorded is available from more ensembles, the last used ensemble is used for recording (like when user selects services from the service list).
+
+<img width="738" alt="audioRecordingSchedule" src="https://github.com/KejPi/AbracaDABra/assets/6438380/7aa07e1f-ee41-44b2-bdb6-41e65d46261e">
+
 ## Expert settings
 Some settings can only be changed by editing of the INI file. File location is OS dependent:
 * macOS: `$HOME/.config/AbracaDABra/AbracaDABra.ini`
