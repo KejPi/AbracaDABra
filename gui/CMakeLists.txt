@@ -43,6 +43,12 @@ endif(HAVE_SOAPYSDR)
 if (HAVE_PORTAUDIO)
     set(PORTAUDIO_SOURCES audiooutputpa.h audiooutputpa.cpp)
 endif(HAVE_PORTAUDIO)
+if (HAVE_QCUSTOMPLOT)
+    set(QCUSTOMPLOT_SOURCES
+        snrplotdialog.h snrplotdialog.cpp snrplotdialog.ui
+    )
+endif(HAVE_QCUSTOMPLOT)
+
 
 #########################################################
 ## SOURCES & HEADERS
@@ -55,6 +61,7 @@ add_executable(${TARGET}
     ${CMAKE_CURRENT_BINARY_DIR}/config.h    
     ${PORTAUDIO_SOURCES}
     ${APPLE_SOURCES}
+    ${QCUSTOMPLOT_SOURCES}
     main.cpp
     mainwindow.cpp
     mainwindow.h
@@ -271,6 +278,15 @@ if (HAVE_SOAPYSDR)
     include_directories ( ${SOAPYSDR_INCLUDE_DIRS} )
     target_link_libraries(${TARGET} PRIVATE "${SOAPYSDR_LINK_LIBRARIES}" )
 endif(HAVE_SOAPYSDR)
+
+# QCUSTOMPLOT
+if (HAVE_QCUSTOMPLOT)
+    # QCUSTOMPLOT
+    #add_compile_definitions(QCUSTOMPLOT_USE_LIBRARY)
+    include_directories ( ${QCUSTOMPLOT_INCLUDE_DIRS} )
+    target_link_libraries(${TARGET} PRIVATE "${QCUSTOMPLOT_LINK_LIBRARIES}" )
+endif(HAVE_QCUSTOMPLOT)
+
 
 # Set some Win32 Specific Settings
 if(WIN32)

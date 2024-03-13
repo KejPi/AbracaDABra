@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,25 +24,32 @@
  * SOFTWARE.
  */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef SNRPLOTDIALOG_H
+#define SNRPLOTDIALOG_H
 
-#define PROJECT_VER  "@PROJECT_GIT_VERSION@"
-#define PROJECT_VER_MAJOR  @VER_MAJOR@
-#define PROJECT_VER_MINOR  @VER_MINOR@
-#define PROJECT_VER_PATCH  @VER_PATCH@
-#define PROJECT_VER_GIT    @VER_GIT@
+#include "QtCore/qdatetime.h"
+#include <QDialog>
 
-#cmakedefine01 HAVE_FDKAAC
-#cmakedefine01 HAVE_PORTAUDIO
-#cmakedefine01 HAVE_QCUSTOMPLOT
+namespace Ui {
+class SNRPlotDialog;
+}
 
-/* Optional devices */
-#cmakedefine01 HAVE_AIRSPY
-#cmakedefine01 HAVE_SOAPYSDR
+class SNRPlotDialog : public QDialog
+{
+    Q_OBJECT
 
-#endif // CONFIG_H
+public:
+    explicit SNRPlotDialog(QWidget *parent = nullptr);
+    ~SNRPlotDialog();
+    void setCurrentSNR(float snr);
+    void setupDarkMode(bool darkModeEna);
 
+private:
+    enum { xPlotRange = 2*60 };
+    Ui::SNRPlotDialog *ui;
+    QTime m_startTime;
 
+    void addToPlot(float snr);
+};
 
-
+#endif // SNRPLOTDIALOG_H

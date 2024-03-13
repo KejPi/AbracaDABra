@@ -43,6 +43,7 @@
 #include <QItemSelection>
 #include <QMessageBox>
 
+#include "config.h"
 #include "audiorecmanager.h"
 #include "audiorecscheduledialog.h"
 #include "clickablelabel.h"
@@ -64,6 +65,9 @@
 #include "sltreemodel.h"
 #include "logdialog.h"
 #include "audiorecschedulemodel.h"
+#if HAVE_QCUSTOMPLOT
+#include "snrplotdialog.h"
+#endif
 
 
 QT_BEGIN_NAMESPACE
@@ -119,6 +123,12 @@ private:
     CatSLSDialog * m_catSlsDialog;
     LogDialog * m_logDialog;
     AudioRecScheduleDialog * m_audioRecScheduleDialog;
+#if HAVE_QCUSTOMPLOT
+    SNRPlotDialog * m_snrPlotDialog;
+    ClickableLabel * m_snrLabel;
+#else
+    QLabel * m_snrLabel;
+#endif
     QProgressBar * m_snrProgressbar;    
     ClickableLabel * m_menuLabel;
     ClickableLabel * m_muteLabel;   
@@ -132,7 +142,6 @@ private:
     QLabel * m_audioRecordingProgressLabel;
     QWidget * m_audioRecordingWidget;
     QLabel * m_syncLabel;
-    QLabel * m_snrLabel;
 
     // application menu
     QMenu * m_menu;
@@ -214,6 +223,7 @@ private:
     void showLog();
     void showCatSLS();
     void showAudioRecordingSchedule();
+    void showSnrPlotDialog();
     void setExpertMode(bool ena);
     void stop();
     void bandScan();
@@ -297,7 +307,6 @@ private:
     void onAudioRecordingCountdown(int numSec);
     void onMetadataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role);
     void onEpgEmpty();
-
 };
 
 class DLPlusObjectUI

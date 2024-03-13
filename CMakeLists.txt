@@ -16,14 +16,15 @@ option (USE_PORTAUDIO         "Compile with PortAudio library instead of Qt6 mul
 
 
 # Options to force using libs build manually and installed in ${CMAKE_SOURCE_DIR}/../../dab-libs
-option (USE_SYSTEM_RTLSDR     "Use system provided rtl-sdr"      ON)
-option (USE_SYSTEM_LIBUSB     "Use system provided libusb"       ON)
-option (USE_SYSTEM_FAAD       "Use system provided libfaad"      ON)
-option (USE_SYSTEM_FDKAAC     "Use system provided libfdk-aac"   ON)
-option (USE_SYSTEM_MPG123     "Use system provided libmpg123"    ON)
-option (USE_SYSTEM_PORTAUDIO  "Use system provided portaudio"    ON)
-option (USE_SYSTEM_AIRSPY     "Use system provided airspy lib"   ON)
-option (USE_SYSTEM_SOAPYSDR   "Use system provided SoapySDR lib" ON)
+option (USE_SYSTEM_RTLSDR       "Use system provided rtl-sdr"         ON)
+option (USE_SYSTEM_LIBUSB       "Use system provided libusb"          ON)
+option (USE_SYSTEM_FAAD         "Use system provided libfaad"         ON)
+option (USE_SYSTEM_FDKAAC       "Use system provided libfdk-aac"      ON)
+option (USE_SYSTEM_MPG123       "Use system provided libmpg123"       ON)
+option (USE_SYSTEM_PORTAUDIO    "Use system provided portaudio"       ON)
+option (USE_SYSTEM_AIRSPY       "Use system provided airspy lib"      ON)
+option (USE_SYSTEM_SOAPYSDR     "Use system provided SoapySDR lib"    ON)
+option (USE_SYSTEM_QCUSTOMPLOT  "Use system provided QCustomPlot lib" ON)
 
 # MacOS
 option (APPLE_APP_BUNDLE      "Enable app bundle on macOS"       ON)
@@ -32,6 +33,9 @@ option (APPLE_BUILD_X86_64    "Build x86_64 binary for Apple"   OFF)
 # Devices
 option (AIRSPY                "Enable AirSpy devices"           OFF)
 option (SOAPYSDR              "Enable Soapy SDR devices"        OFF)
+
+# Plots
+option (QCUSTOMPLOT           "Enable QCustomPlot (GPL3 license)"   ON)
 
 if(APPLE AND APPLE_APP_BUNDLE)
     if(APPLE_BUILD_X86_64)
@@ -91,14 +95,15 @@ if(WIN32 OR (APPLE AND APPLE_APP_BUNDLE))
     # Apple and Win does not use system libs
     # - M1 seems to have problems with that https://forum.qt.io/topic/135220/random-application-crash-on-apple-silicon-m1-qt-6-2-3/24
     # - Windows has always some problems
-    set(USE_SYSTEM_RTLSDR    OFF)
-    set(USE_SYSTEM_LIBUSB    OFF)
-    set(USE_SYSTEM_FAAD      OFF)
-    set(USE_SYSTEM_FDKAAC    OFF)
-    set(USE_SYSTEM_MPG123    OFF)
-    set(USE_SYSTEM_PORTAUDIO OFF)
-    set(USE_SYSTEM_AIRSPY    OFF)
-    set(USE_SYSTEM_SOAPYSDR  OFF)
+    set(USE_SYSTEM_RTLSDR       OFF)
+    set(USE_SYSTEM_LIBUSB       OFF)
+    set(USE_SYSTEM_FAAD         OFF)
+    set(USE_SYSTEM_FDKAAC       OFF)
+    set(USE_SYSTEM_MPG123       OFF)
+    set(USE_SYSTEM_PORTAUDIO    OFF)
+    set(USE_SYSTEM_AIRSPY       OFF)
+    set(USE_SYSTEM_SOAPYSDR     OFF)
+    set(USE_SYSTEM_QCUSTOMPLOT  OFF)
 endif()
 
 if (APPLE_BUILD_X86_64)
@@ -440,6 +445,48 @@ if (SOAPYSDR)
 else(SOAPYSDR)
     set(HAVE_SOAPYSDR OFF)
 endif(SOAPYSDR)
+
+#########################################################
+## QCUSTOMPLOT
+if (QCUSTOMPLOT)
+    if (USE_SYSTEM_QCUSTOMPLOT)
+        find_library (QCUSTOMPLOT_LINK_LIBRARIES NAMES qcustomplot-qt6 qcustomplot)
+        find_path(QCUSTOMPLOT_INCLUDE_DIRS qcustomplot.h)
+        if (NOT WIN32)
+            pkg_search_module(QCUSTOMPLOT qcustomplot)
+        endif()
+        if (NOT QCUSTOMPLOT_LINK_LIBRARIES)
+            # not found is system -> trying ${EXTERNAL_LIBS_DIR}
+            message (WARNING "QCustomPlot not found in system, searching in ${EXTERNAL_LIBS_DIR}")
+
+            find_library(QCUSTOMPLOT_LINK_LIBRARIES qcustomplot PATHS ${EXTERNAL_LIBS_DIR}/lib)
+            #find_path(QCUSTOMPLOT_INCLUDE_DIRS libairspy/airspy.h PATHS ${EXTERNAL_LIBS_DIR}/include)
+
+            if (QCUSTOMPLOT_LINK_LIBRARIES)
+                message (STATUS "libqcustomplot found: ${QCUSTOMPLOT_LINK_LIBRARIES}")
+                set(HAVE_QCUSTOMPLOT ON)
+            else(QCUSTOMPLOT_LINK_LIBRARIES)
+                message (STATUS "libqcustomplot not found. Build from source and install to: ${EXTERNAL_LIBS_DIR}.")
+                set(HAVE_QCUSTOMPLOT OFF)
+            endif()
+        else()
+            # found in system
+            set(HAVE_QCUSTOMPLOT ON)
+        endif()
+    else(USE_SYSTEM_QCUSTOMPLOT)
+        find_library(QCUSTOMPLOT_LINK_LIBRARIES NAMES qcustomplot-qt6 qcustomplot PATHS ${EXTERNAL_LIBS_DIR}/lib NO_DEFAULT_PATH)
+        find_path(QCUSTOMPLOT_INCLUDE_DIRS qcustomplot.h PATHS ${EXTERNAL_LIBS_DIR}/include NO_DEFAULT_PATH)
+        if (QCUSTOMPLOT_LINK_LIBRARIES)
+            message (STATUS "libqcustomplot found: ${QCUSTOMPLOT_LINK_LIBRARIES}")
+            set(HAVE_QCUSTOMPLOT ON)
+        else()
+            message (STATUS "libqcustomplot not found. Build from source and install to: ${EXTERNAL_LIBS_DIR}.")
+            set(HAVE_QCUSTOMPLOT OFF)
+        endif()
+    endif (USE_SYSTEM_QCUSTOMPLOT)
+else(QCUSTOMPLOT)
+    set(HAVE_QCUSTOMPLOT OFF)
+endif(QCUSTOMPLOT)
 
 #########################################################
 ## QT creator CMAKEFILE

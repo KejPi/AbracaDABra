@@ -54,7 +54,6 @@
 #include "epgtime.h"
 #include "radiocontrol.h"
 #include "bandscandialog.h"
-#include "config.h"
 #include "aboutdialog.h"
 #include "audiooutputqt.h"
 #if HAVE_PORTAUDIO
@@ -185,6 +184,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     initStyle(); // init style as soon as possible
 
     m_audioRecScheduleDialog = nullptr;
+#if HAVE_QCUSTOMPLOT
+    m_snrPlotDialog = nullptr;
+#endif
 
     m_dlDecoder[Instance::Service] = new DLDecoder();
     m_dlDecoder[Instance::Announcement] = new DLDecoder();
@@ -286,11 +288,17 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_snrProgressbar->setTextVisible(false);
     m_snrProgressbar->setToolTip(QString(tr("DAB signal SNR")));
 
+#if HAVE_QCUSTOMPLOT
+    m_snrLabel = new ClickableLabel();
+    m_snrLabel->setToolTip(QString(tr("Display SNR plot")));
+    connect(m_snrLabel, &ClickableLabel::clicked, this, &MainWindow::showSnrPlotDialog);
+#else
     m_snrLabel = new QLabel();
+    m_snrLabel->setToolTip(QString(tr("DAB signal SNR")));
+#endif
     int width = m_snrLabel->fontMetrics().boundingRect("100.0 dB").width();
     m_snrLabel->setFixedWidth(width);
     m_snrLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    m_snrLabel->setToolTip(QString(tr("DAB signal SNR")));
 
     QHBoxLayout * signalQualityLayout = new QHBoxLayout();
     signalQualityLayout->addWidget(m_syncLabel);
@@ -764,15 +772,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // this causes focus to be set to service list when tune is finished
     m_hasListViewFocus = true;
     m_hasTreeViewFocus = false;
-
-    // //QFile xmlfile("/Users/kejpi/Devel/AbracaDABra/20231206_PI.xml");
-    // QFile xmlfile("/Users/kejpi/Devel/AbracaDABra/_cache/w20081011dD220c0.EHB.xml");
-    // if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
-    // {
-    //     QTextStream in(&xmlfile);
-    //     m_metadataManager->processXML(qPrintable(in.readAll()), "dab:de0.d06c.d220.0");
-    //     xmlfile.close();
-    // }
 }
 
 MainWindow::~MainWindow()
@@ -991,6 +990,14 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
     m_snrProgressbar->setValue(snr10);
 
     m_snrLabel->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
+
+#if HAVE_QCUSTOMPLOT
+    if (m_snrPlotDialog != nullptr)
+    {
+        m_snrPlotDialog->setCurrentSNR(snr);
+    }
+#endif
+
     // progressbar styling -> it does not look good on Apple
     if (static_cast<int>(SNR10Threhold::SNR_BAD) > snr10)
     {   // bad SNR
@@ -3066,6 +3073,23 @@ void MainWindow::showAudioRecordingSchedule()
 
 }
 
+void MainWindow::showSnrPlotDialog()
+{
+#if HAVE_QCUSTOMPLOT
+    if (m_snrPlotDialog == nullptr)
+    {
+        m_snrPlotDialog = new SNRPlotDialog(this);
+        m_snrPlotDialog->setupDarkMode(isDarkMode());
+        connect(m_snrPlotDialog, &QDialog::finished, m_snrPlotDialog, &QObject::deleteLater);
+        connect(m_snrPlotDialog, &QDialog::destroyed, this, [this]() { m_snrPlotDialog = nullptr; } );        
+    }
+
+    m_snrPlotDialog->show();
+    m_snrPlotDialog->raise();
+    m_snrPlotDialog->activateWindow();
+#endif // HAVE_QCUSTOMPLOT
+}
+
 void MainWindow::onExpertModeToggled(bool checked)
 {
     setExpertMode(checked);
@@ -3494,6 +3518,12 @@ void MainWindow::setupDarkMode()
         ui->slsView_Announcement->setupDarkMode(true);
         m_logDialog->setupDarkMode(true);
         m_epgDialog->setupDarkMode(true);
+#if HAVE_QCUSTOMPLOT
+        if (m_snrPlotDialog != nullptr)
+        {
+            m_snrPlotDialog->setupDarkMode(true);
+        }
+#endif
     }
     else
     {
@@ -3521,6 +3551,12 @@ void MainWindow::setupDarkMode()
         ui->slsView_Announcement->setupDarkMode(false);
         m_logDialog->setupDarkMode(false);
         m_epgDialog->setupDarkMode(false);
+#if HAVE_QCUSTOMPLOT
+        if (m_snrPlotDialog != nullptr)
+        {
+            m_snrPlotDialog->setupDarkMode(false);
+        }
+#endif
     }
 }
 
