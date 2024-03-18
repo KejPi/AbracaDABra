@@ -282,7 +282,7 @@ endif(HAVE_SOAPYSDR)
 # QCUSTOMPLOT
 if (HAVE_QCUSTOMPLOT)
     # QCUSTOMPLOT
-    #add_compile_definitions(QCUSTOMPLOT_USE_LIBRARY)
+    add_compile_definitions(QCUSTOMPLOT_USE_LIBRARY)
     include_directories ( ${QCUSTOMPLOT_INCLUDE_DIRS} )
     target_link_libraries(${TARGET} PRIVATE "${QCUSTOMPLOT_LINK_LIBRARIES}" )
 endif(HAVE_QCUSTOMPLOT)

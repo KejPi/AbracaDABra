@@ -27,15 +27,15 @@ option (USE_SYSTEM_SOAPYSDR     "Use system provided SoapySDR lib"    ON)
 option (USE_SYSTEM_QCUSTOMPLOT  "Use system provided QCustomPlot lib" ON)
 
 # MacOS
-option (APPLE_APP_BUNDLE      "Enable app bundle on macOS"       ON)
-option (APPLE_BUILD_X86_64    "Build x86_64 binary for Apple"   OFF)
+option (APPLE_APP_BUNDLE      "Enable app bundle on macOS"            ON)
+option (APPLE_BUILD_X86_64    "Build x86_64 binary for Apple"        OFF)
 
 # Devices
-option (AIRSPY                "Enable AirSpy devices"           OFF)
-option (SOAPYSDR              "Enable Soapy SDR devices"        OFF)
+option (AIRSPY                "Enable AirSpy devices"                OFF)
+option (SOAPYSDR              "Enable Soapy SDR devices"             OFF)
 
 # Plots
-option (QCUSTOMPLOT           "Enable QCustomPlot (GPL3 license)"   ON)
+option (QCUSTOMPLOT           "Enable QCustomPlot (GPL3 license)"    ON)
 
 if(APPLE AND APPLE_APP_BUNDLE)
     if(APPLE_BUILD_X86_64)
