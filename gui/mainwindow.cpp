@@ -415,6 +415,15 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     layout->setSpacing(20);
     ui->statusbar->addWidget(widget,1);
 
+#ifdef Q_OS_MAC
+    DockMenuHandler * dockMenuPtr = DockMenuHandler::getInstance();
+    dockMenuPtr->setMuteItemLabel(tr("Mute"));
+    connect(m_muteLabel, &ClickableLabel::toggled, [this](bool checked) {
+        DockMenuHandler::getInstance()->setMuteItemLabel(checked ? tr("Unmute") : tr("Mute"));
+    });
+    connect(dockMenuPtr, &DockMenuHandler::muteItemClicked, m_muteLabel, &ClickableLabel::toggle);
+#endif
+
     // set fonts
     QFont f;
     f.setPointSize(qRound(1.5 * ui->programTypeLabel->fontInfo().pointSize()));
