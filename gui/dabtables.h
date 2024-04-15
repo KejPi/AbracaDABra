@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -138,6 +138,9 @@ public:
     static const dabChannelList_t channelList;
     static const uint16_t ebuLatin2UCS2[];
     static const QList<uint16_t> ASwValues;
+    //static const QList<uint8_t> TIIPattern;
+    static const uint8_t TIIPattern[][4];
+
     static QString convertToQString(const char *c, uint8_t charset, uint8_t len = 16);
     static QDateTime dabTimeToUTC(uint32_t dateHoursMinutes, uint16_t secMsec);
     static QString getPtyName(const uint8_t pty);
@@ -149,6 +152,7 @@ public:
     static QString getAnnouncementName(DabAnnouncement announcement);
     static QString getAnnouncementNameEnglish(DabAnnouncement announcement);
     static QString getUserApplicationName(DabUserApplicationType type);
+    static QList<int> getTiiSubcarriers(int mainId, int subId);
 };
 
 #endif // DABTABLES_H

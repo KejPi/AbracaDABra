@@ -253,6 +253,13 @@ struct RadioControlAudioData
     std::vector<uint8_t> data;
 };
 
+struct RadioControlTIIData
+{
+    RadioControlTIIData() : spectrum(2048) {}
+    QList<dabsdrTii_t> idList;
+    QList<float> spectrum;
+    float thr;
+};
 
 enum class RadioControlEventType
 {
@@ -275,6 +282,7 @@ enum class RadioControlEventType
     RESET,
     ANNOUNCEMENT_SWITCHING,
     PROGRAMME_TYPE,
+    TII,
 };
 
 enum class RadioControlAnnouncementState
@@ -324,7 +332,8 @@ struct RadioControlEvent
         dabsdrDecoderId_t decoderId;
         // programme type change
         dabsdrNtfPTy_t * pPty;
-
+        // TII data
+        RadioControlTIIData * pTII;
     };
 };
 
@@ -346,6 +355,7 @@ public:
     void setupAnnouncements(uint16_t enaFlags);
     void suspendResumeAnnouncement();
     void onSpiApplicationEnabled(bool enabled);
+    void setTii(bool enabled, float thr);
 
 signals:
     void dabEvent(RadioControlEvent * pEvent);
@@ -373,6 +383,7 @@ signals:
     void announcement(DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent & s);
     void announcementAudioAvailable();
     void programmeTypeChanged(const DabSId & sid, const struct DabPTy & pty);
+    void tiiData(const RadioControlTIIData & data);
 private:
     enum class AnnouncementSwitchState { NoAnnouncement, WaitForAnnouncement, OngoingAnnouncement };
 
@@ -469,6 +480,7 @@ private:
     void dabServiceSelection(uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t decoderId) { dabsdrRequest_ServiceSelection(m_dabsdrHandle, SId, SCIdS, decoderId); }
     void dabServiceStop(uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t decoderId) { dabsdrRequest_ServiceStop(m_dabsdrHandle, SId, SCIdS, decoderId); }
     void dabXPadAppStart(uint8_t appType, bool start, dabsdrDecoderId_t decoderId) { dabsdrRequest_XPadAppStart(m_dabsdrHandle, appType, start, decoderId); }
+    void dabSetTii(bool ena, int16_t thr1000) { dabsdrRequest_SetTII(m_dabsdrHandle, ena, thr1000); }
 
     // wrappers used in callback functions (emit requires class instance)
     void emit_dabEvent(RadioControlEvent * pEvent) { emit dabEvent(pEvent); }

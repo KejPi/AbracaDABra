@@ -186,6 +186,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_audioRecScheduleDialog = nullptr;
 #if HAVE_QCUSTOMPLOT
     m_snrPlotDialog = nullptr;
+    m_tiiDialog = nullptr;
 #endif
 
     m_dlDecoder[Instance::Service] = new DLDecoder();
@@ -328,6 +329,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_ensembleInfoAction = new QAction(tr("Ensemble information"), this);
     connect(m_ensembleInfoAction, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
 
+    m_tiiAction = new QAction(tr("TII decoder"), this);
+    connect(m_tiiAction, &QAction::triggered, this, &MainWindow::showTiiDialog);
+
     m_audioRecordingScheduleAction = new QAction(tr("Audio recording schedule..."), this);
     connect(m_audioRecordingScheduleAction, &QAction::triggered, this, &MainWindow::showAudioRecordingSchedule);
 
@@ -367,6 +371,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_menu->addSeparator();
     m_menu->addAction(m_epgAction);
     m_menu->addAction(m_ensembleInfoAction);
+    m_menu->addAction(m_tiiAction);
     m_menu->addAction(m_logAction);
     m_menu->addAction(m_aboutAction);
 
@@ -3099,6 +3104,25 @@ void MainWindow::showSnrPlotDialog()
 #endif // HAVE_QCUSTOMPLOT
 }
 
+void MainWindow::showTiiDialog()
+{
+#if HAVE_QCUSTOMPLOT
+    if (m_tiiDialog == nullptr)
+    {
+        m_tiiDialog = new TIIDialog(this);
+        m_tiiDialog->setupDarkMode(isDarkMode());
+        connect(m_tiiDialog, &QDialog::finished, m_tiiDialog, &QObject::deleteLater);
+        connect(m_tiiDialog, &QDialog::destroyed, this, [this]() { m_tiiDialog = nullptr; } );
+        connect(m_tiiDialog, &TIIDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::tiiData, m_tiiDialog, &TIIDialog::onTiiData, Qt::QueuedConnection);
+    }
+
+    m_tiiDialog->show();
+    m_tiiDialog->raise();
+    m_tiiDialog->activateWindow();
+#endif // HAVE_QCUSTOMPLOT
+}
+
 void MainWindow::onExpertModeToggled(bool checked)
 {
     setExpertMode(checked);
@@ -3128,6 +3152,8 @@ void MainWindow::setExpertMode(bool ena)
     ui->slsView_Service->setExpertMode(ena);
     ui->slsView_Announcement->setExpertMode(ena);
     m_catSlsDialog->setExpertMode(ena);
+
+    m_tiiAction->setVisible(ena);
 
     // set tab order
     if (ena)

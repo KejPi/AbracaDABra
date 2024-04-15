@@ -386,7 +386,18 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         delete pEvent->pUserAppData;
     }
         break;
-
+    case RadioControlEventType::TII:
+    {
+        qDebug() << "Number of TII codes =" << pEvent->pTII->idList.size();
+        qDebug() << "Threshold =" << pEvent->pTII->thr;
+        for (int n = 0; n < pEvent->pTII->idList.size(); ++n)
+        {
+            qDebug() << "MainID" << pEvent->pTII->idList.at(n).main << "| SubID" << pEvent->pTII->idList.at(n).sub;
+        }
+        emit tiiData(*(pEvent->pTII));
+        delete pEvent->pTII;
+    }
+        break;
     default:
         qCWarning(radioControl) << "ERROR: Unsupported event" << int(pEvent->type);
     }
@@ -682,6 +693,12 @@ void RadioControl::onSpiApplicationEnabled(bool enabled)
     {   // stop SPI application
         startUserApplication(DabUserApplicationType::SPI, false, false);
     }
+}
+
+void RadioControl::setTii(bool enabled, float thr)
+{
+    Q_UNUSED(thr);
+    dabSetTii(enabled, 0);
 }
 
 QString RadioControl::ensembleConfigurationString() const
@@ -2037,6 +2054,28 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         pEvent->status = p->status;
         pEvent->SId = pPty->SId;
         pEvent->pPty = pPty;
+        radioCtrl->emit_dabEvent(pEvent);
+    }
+    break;
+    case DABSDR_NID_TII:
+    {
+        const dabsdrNtfTii_t * pInfo = static_cast<const dabsdrNtfTii_t *>(p->pData);
+        RadioControlTIIData * pData = new RadioControlTIIData;
+        pData->thr = pInfo->threshold;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 6, 0))
+        pData->idList.assign(pInfo->id, pInfo->id + pInfo->numIds);
+#else
+        for (int n = 0; n < pInfo->numIds; ++n)
+        {
+            pData->idList.append(pInfo->id[n]);
+        }
+#endif
+        pInfo->getSpectrumTii(radioCtrl->m_dabsdrHandle, pData->spectrum.data());
+
+        RadioControlEvent * pEvent = new RadioControlEvent;
+        pEvent->type = RadioControlEventType::TII;
+        pEvent->status = p->status;
+        pEvent->pTII = pData;
         radioCtrl->emit_dabEvent(pEvent);
     }
     break;

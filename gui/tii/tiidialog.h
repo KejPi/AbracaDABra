@@ -24,32 +24,39 @@
  * SOFTWARE.
  */
 
-#ifndef SNRPLOTDIALOG_H
-#define SNRPLOTDIALOG_H
+#ifndef TIIDIALOG_H
+#define TIIDIALOG_H
 
-#include <QDateTime.h>
 #include <QDialog>
+#include "radiocontrol.h"
+#include "tiitablemodel.h"
 
 namespace Ui {
-class SNRPlotDialog;
+class TIIDialog;
 }
 
-class SNRPlotDialog : public QDialog
+class TIIDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit SNRPlotDialog(QWidget *parent = nullptr);
-    ~SNRPlotDialog();
-    void setCurrentSNR(float snr);
+    explicit TIIDialog(QWidget *parent = nullptr);
+    ~TIIDialog();
+    void reset();
+    void onTiiData(const RadioControlTIIData & data);
     void setupDarkMode(bool darkModeEna);
 
-private:
-    enum { xPlotRange = 2*60 };
-    Ui::SNRPlotDialog *ui;
-    QTime m_startTime;
+signals:
+    void setTii(bool ena, float thr);
 
-    void addToPlot(float snr);
+protected:
+    void showEvent(QShowEvent *event) override;
+
+private:
+    enum GraphId {Spect, TII, Thr};
+    Ui::TIIDialog *ui;
+    TiiTableModel * m_model;
+    void addToPlot(const RadioControlTIIData &data);
 };
 
-#endif // SNRPLOTDIALOG_H
+#endif // TIIDIALOG_H

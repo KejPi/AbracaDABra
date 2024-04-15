@@ -67,6 +67,7 @@
 #include "audiorecschedulemodel.h"
 #if HAVE_QCUSTOMPLOT
 #include "snrplotdialog.h"
+#include "tiidialog.h"
 #endif
 
 
@@ -124,8 +125,9 @@ private:
     LogDialog * m_logDialog;
     AudioRecScheduleDialog * m_audioRecScheduleDialog;
 #if HAVE_QCUSTOMPLOT
-    SNRPlotDialog * m_snrPlotDialog;
-    ClickableLabel * m_snrLabel;
+    TIIDialog * m_tiiDialog;
+    SNRPlotDialog * m_snrPlotDialog;    
+    ClickableLabel * m_snrLabel;    
 #else
     QLabel * m_snrLabel;
 #endif
@@ -151,6 +153,7 @@ private:
     QAction * m_clearServiceListAction;
     QAction * m_bandScanAction;
     QAction * m_ensembleInfoAction;
+    QAction * m_tiiAction;
     QAction * m_aboutAction;
     QAction * m_logAction;
     QAction * m_audioRecordingAction;
@@ -224,6 +227,7 @@ private:
     void showCatSLS();
     void showAudioRecordingSchedule();
     void showSnrPlotDialog();
+    void showTiiDialog();
     void setExpertMode(bool ena);
     void stop();
     void bandScan();
