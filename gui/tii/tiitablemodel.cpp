@@ -99,8 +99,24 @@ void TiiTableModel::clear()
 
 void TiiTableModel::populateModel(const QList<dabsdrTii_t> &data)
 {
+#if 1
     beginResetModel();
     m_modelData.clear();
     m_modelData = data;
     endResetModel();
+#else
+    if (m_modelData.isEmpty())
+    {
+        beginResetModel();
+        m_modelData.clear();
+        m_modelData = data;
+        endResetModel();
+    }
+    else
+    {
+        beginRemoveRows(QModelIndex(), qMax(m_modelData.count() - 3, 0), qMax(m_modelData.count() - 3, 0));
+        m_modelData.removeAt(qMax(m_modelData.count() - 3, 0));
+        endRemoveRows();
+    }
+#endif
 }

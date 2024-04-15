@@ -1219,6 +1219,11 @@ void MainWindow::channelSelected()
 
     onSignalState(uint8_t(DabSyncLevel::NoSync), 0.0);
 
+    if (m_tiiDialog != nullptr)
+    {
+        m_tiiDialog->reset();
+    }
+
     // hide switch to avoid conflict with tuning -> will be enabled when tune is finished
     ui->switchSourceLabel->setHidden(true);
     serviceSelected();
@@ -3558,6 +3563,10 @@ void MainWindow::setupDarkMode()
         {
             m_snrPlotDialog->setupDarkMode(true);
         }
+        if (m_tiiDialog != nullptr)
+        {
+            m_tiiDialog->setupDarkMode(true);
+        }
 #endif
     }
     else
@@ -3591,6 +3600,11 @@ void MainWindow::setupDarkMode()
         {
             m_snrPlotDialog->setupDarkMode(false);
         }
+        if (m_tiiDialog != nullptr)
+        {
+            m_tiiDialog->setupDarkMode(false);
+        }
+
 #endif
     }
 }

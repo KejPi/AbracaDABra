@@ -24,6 +24,8 @@
  * SOFTWARE.
  */
 
+#include <QMenu>
+
 #include "tiidialog.h"
 #include "ui_tiidialog.h"
 
@@ -42,10 +44,10 @@ TIIDialog::TIIDialog(QWidget *parent)
     ui->tiiTable->horizontalHeader()->setStretchLastSection(true);
     ui->tiiTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tiiTable->setSelectionMode(QAbstractItemView::SingleSelection);
-    //ui->tiiTable->horizontalHeader()->setMaximumSectionSize(70);
-    // ui->tiiTable->setSortingEnabled(false);
     ui->tiiTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    //ui->tiiTable->setSortingEnabled(true);
 
+    ui->tiiSpectrumPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes);
     ui->tiiSpectrumPlot->addGraph();
     ui->tiiSpectrumPlot->addGraph();
     ui->tiiSpectrumPlot->addGraph();
@@ -74,13 +76,40 @@ TIIDialog::TIIDialog(QWidget *parent)
 
     ui->tiiSpectrumPlot->xAxis->setTicker(freqTicker);
     ui->tiiSpectrumPlot->axisRect()->setupFullAxesBox();
-    ui->tiiSpectrumPlot->xAxis->setRange(-1024, 1023);
-    ui->tiiSpectrumPlot->yAxis->setRange(0, 1);
-    ui->tiiSpectrumPlot->xAxis2->setRange(-1024, 1023);
-    ui->tiiSpectrumPlot->yAxis2->setRange(0, 1);
+    ui->tiiSpectrumPlot->xAxis->setRange(GraphRange::MinX, GraphRange::MaxX);
+    ui->tiiSpectrumPlot->yAxis->setRange(GraphRange::MinY, GraphRange::MaxY);
+    ui->tiiSpectrumPlot->xAxis2->setRange(GraphRange::MinX, GraphRange::MaxX);
+    ui->tiiSpectrumPlot->yAxis2->setRange(GraphRange::MinY, GraphRange::MaxY);
+
+    // connect slot that ties some axis selections together (especially opposite axes):
+    connect(ui->tiiSpectrumPlot, &QCustomPlot::selectionChangedByUser, this, &TIIDialog::onPlotSelectionChanged);
+    // connect slots that takes care that when an axis is selected, only that direction can be dragged and zoomed:
+    connect(ui->tiiSpectrumPlot, &QCustomPlot::mousePress, this, &TIIDialog::onPlotMousePress);
+    connect(ui->tiiSpectrumPlot, &QCustomPlot::mouseWheel, this, &TIIDialog::onPlotMouseWheel);
+
+    // make bottom and left axes transfer their ranges to top and right axes:
+    connect(ui->tiiSpectrumPlot->xAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), ui->tiiSpectrumPlot->xAxis2, QOverload<const QCPRange &>::of(&QCPAxis::setRange));
+    connect(ui->tiiSpectrumPlot->yAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), ui->tiiSpectrumPlot->yAxis2, QOverload<const QCPRange &>::of(&QCPAxis::setRange));
+    connect(ui->tiiSpectrumPlot->xAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), this, &TIIDialog::onXRangeChanged);
+    connect(ui->tiiSpectrumPlot->yAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), this, &TIIDialog::onYRangeChanged);
+
+    // setup policy and connect slot for context menu popup:
+    ui->tiiSpectrumPlot->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->tiiSpectrumPlot, &QCustomPlot::customContextMenuRequested, this, &TIIDialog::onContextMenuRequest);
+
+    connect(ui->tiiSpectrumPlot, &QCustomPlot::mouseMove, this,  &TIIDialog::showPointToolTip);
 
     reset();
-    setupDarkMode(false);
+}
+
+void TIIDialog::showPointToolTip(QMouseEvent *event)
+{
+    int x = qRound(ui->tiiSpectrumPlot->xAxis->pixelToCoord(event->pos().x()));
+    x = qMin(static_cast<int>(GraphRange::MaxX), x);
+    x = qMax(static_cast<int>(GraphRange::MinX), x);
+    double y = ui->tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(x + 1024)->value;
+
+    setToolTip(QString("%1 , %2").arg(x).arg(y));
 }
 
 TIIDialog::~TIIDialog()
@@ -101,6 +130,11 @@ void TIIDialog::reset()
     }
     ui->tiiSpectrumPlot->graph(GraphId::Spect)->setData(f, none, true);
     ui->tiiSpectrumPlot->graph(GraphId::Thr)->setData({-1024.0, 1023.0}, {-1.0, -1.0}, true);
+    ui->tiiSpectrumPlot->graph(GraphId::TII)->setData({0.0}, {-1.0});
+    ui->tiiSpectrumPlot->rescaleAxes();
+    ui->tiiSpectrumPlot->deselectAll();
+    ui->tiiSpectrumPlot->replot();
+    m_isZoomed = false;
 
     m_model->clear();
 }
@@ -217,4 +251,136 @@ void TIIDialog::addToPlot(const RadioControlTIIData &data)
     }
     ui->tiiSpectrumPlot->graph(GraphId::Thr)->setData({-1024.0, 1023.0}, {data.thr, data.thr}, true);
     ui->tiiSpectrumPlot->replot();
+}
+
+void TIIDialog::onPlotSelectionChanged()
+{
+    // normally, axis base line, axis tick labels and axis labels are selectable separately, but we want
+    // the user only to be able to select the axis as a whole, so we tie the selected states of the tick labels
+    // and the axis base line together.
+
+    // The selection state of the left and right axes shall be synchronized as well as the state of the
+    // bottom and top axes.
+
+
+    // make top and bottom axes be selected synchronously, and handle axis and tick labels as one selectable object:
+    if (ui->tiiSpectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis) || ui->tiiSpectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spTickLabels) ||
+        ui->tiiSpectrumPlot->xAxis2->selectedParts().testFlag(QCPAxis::spAxis) || ui->tiiSpectrumPlot->xAxis2->selectedParts().testFlag(QCPAxis::spTickLabels))
+    {
+        ui->tiiSpectrumPlot->xAxis2->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
+        ui->tiiSpectrumPlot->xAxis->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
+    }
+    // make left and right axes be selected synchronously, and handle axis and tick labels as one selectable object:
+    if (ui->tiiSpectrumPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis) || ui->tiiSpectrumPlot->yAxis->selectedParts().testFlag(QCPAxis::spTickLabels) ||
+        ui->tiiSpectrumPlot->yAxis2->selectedParts().testFlag(QCPAxis::spAxis) || ui->tiiSpectrumPlot->yAxis2->selectedParts().testFlag(QCPAxis::spTickLabels))
+    {
+        ui->tiiSpectrumPlot->yAxis2->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
+        ui->tiiSpectrumPlot->yAxis->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
+    }
+}
+
+void TIIDialog::onPlotMousePress(QMouseEvent *event)
+{
+    // if an axis is selected, only allow the direction of that axis to be dragged
+    // if no axis is selected, both directions may be dragged
+
+    if (ui->tiiSpectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    {
+        ui->tiiSpectrumPlot->axisRect()->setRangeDrag(ui->tiiSpectrumPlot->xAxis->orientation());
+    }
+    else if (ui->tiiSpectrumPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    {
+        ui->tiiSpectrumPlot->axisRect()->setRangeDrag(ui->tiiSpectrumPlot->yAxis->orientation());
+    }
+    else
+    {
+        ui->tiiSpectrumPlot->axisRect()->setRangeDrag(Qt::Horizontal|Qt::Vertical);
+    }
+}
+
+void TIIDialog::onPlotMouseWheel(QWheelEvent *event)
+{
+    // if an axis is selected, only allow the direction of that axis to be zoomed
+    // if no axis is selected, both directions may be zoomed
+    if (ui->tiiSpectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    {
+        ui->tiiSpectrumPlot->axisRect()->setRangeZoom(ui->tiiSpectrumPlot->xAxis->orientation());
+    }
+    else if (ui->tiiSpectrumPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    {
+        ui->tiiSpectrumPlot->axisRect()->setRangeZoom(ui->tiiSpectrumPlot->yAxis->orientation());
+    }
+    else
+    {
+        ui->tiiSpectrumPlot->axisRect()->setRangeZoom(Qt::Horizontal|Qt::Vertical);
+    }
+    m_isZoomed = true;
+}
+
+void TIIDialog::onContextMenuRequest(QPoint pos)
+{
+    if (m_isZoomed)
+    {
+        QMenu *menu = new QMenu(this);
+        menu->setAttribute(Qt::WA_DeleteOnClose);
+        menu->addAction("Restore default zoom", this, [this]() {
+            ui->tiiSpectrumPlot->rescaleAxes();
+            ui->tiiSpectrumPlot->deselectAll();
+            ui->tiiSpectrumPlot->replot();
+            m_isZoomed = false;
+        });
+        menu->popup(ui->tiiSpectrumPlot->mapToGlobal(pos));
+    }
+}
+
+void TIIDialog::onXRangeChanged(const QCPRange &newRange)
+{
+    double lowerBound = GraphRange::MinX;
+    double upperBound = GraphRange::MaxX;
+    QCPRange fixedRange(newRange);
+    if (fixedRange.lower < lowerBound)
+    {
+        fixedRange.lower = lowerBound;
+        fixedRange.upper = lowerBound + newRange.size();
+        if (fixedRange.upper > upperBound || qFuzzyCompare(newRange.size(), upperBound-lowerBound))
+        {
+            fixedRange.upper = upperBound;
+        }
+        ui->tiiSpectrumPlot->xAxis->setRange(fixedRange);
+    } else if (fixedRange.upper > upperBound)
+    {
+        fixedRange.upper = upperBound;
+        fixedRange.lower = upperBound - newRange.size();
+        if (fixedRange.lower < lowerBound || qFuzzyCompare(newRange.size(), upperBound-lowerBound))
+        {
+            fixedRange.lower = lowerBound;
+        }
+        ui->tiiSpectrumPlot->xAxis->setRange(fixedRange);
+    }
+}
+
+void TIIDialog::onYRangeChanged(const QCPRange &newRange)
+{
+    double lowerBound = GraphRange::MinY;
+    double upperBound = GraphRange::MaxY;
+    QCPRange fixedRange(newRange);
+    if (fixedRange.lower < lowerBound)
+    {
+        fixedRange.lower = lowerBound;
+        fixedRange.upper = lowerBound + newRange.size();
+        if (fixedRange.upper > upperBound || qFuzzyCompare(newRange.size(), upperBound-lowerBound))
+        {
+            fixedRange.upper = upperBound;
+        }
+        ui->tiiSpectrumPlot->yAxis->setRange(fixedRange);
+    } else if (fixedRange.upper > upperBound)
+    {
+        fixedRange.upper = upperBound;
+        fixedRange.lower = upperBound - newRange.size();
+        if (fixedRange.lower < lowerBound || qFuzzyCompare(newRange.size(), upperBound-lowerBound))
+        {
+            fixedRange.lower = lowerBound;
+        }
+        ui->tiiSpectrumPlot->yAxis->setRange(fixedRange);
+    }
 }
