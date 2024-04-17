@@ -49,9 +49,9 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectio
     setFilterEmptyEpg(false);
     setFilterEnsemble(false);
 
-    qmlRegisterType<SLProxyModel>("ProgrammeGuide", 1, 0, "SLProxyModel");
-    qmlRegisterType<EPGModel>("ProgrammeGuide", 1, 0, "EPGModel");
-    qmlRegisterType<EPGProxyModel>("ProgrammeGuide", 1, 0, "EPGProxyModel");
+    qmlRegisterType<SLProxyModel>("app.qmlcomponents", 1, 0, "SLProxyModel");
+    qmlRegisterType<EPGModel>("app.qmlcomponents", 1, 0, "EPGModel");
+    qmlRegisterType<EPGProxyModel>("app.qmlcomponents", 1, 0, "EPGProxyModel");
 
     m_qmlView = new QQuickView();
 
@@ -69,7 +69,7 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectio
     engine->addImageProvider(QLatin1String("metadata"), new LogoProvider(m_metadataManager));
 
     //m_qmlView->setColor(Qt::transparent);
-    m_qmlView->setSource(QUrl("qrc:/ProgrammeGuide/epg.qml"));
+    m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/epg.qml"));
 
     QWidget *container = QWidget::createWindowContainer(m_qmlView, this);
 

@@ -212,8 +212,10 @@ set_source_files_properties(qml/EPGColors.qml PROPERTIES QT_RESOURCE_ALIAS EPGCo
 set_source_files_properties(qml/EPGHorizontalShadow.qml PROPERTIES QT_RESOURCE_ALIAS EPGHorizontalShadow.qml)
 set_source_files_properties(qml/EPGScrollableText.qml PROPERTIES QT_RESOURCE_ALIAS EPGScrollableText.qml)
 
+set_source_files_properties(qml/map.qml PROPERTIES QT_RESOURCE_ALIAS map.qml)
+
 qt6_add_qml_module(${TARGET}
-    URI ProgrammeGuide
+    URI app.qmlcomponents
     QML_FILES
         qml/epg.qml
         qml/EPGItem.qml
@@ -224,6 +226,8 @@ qt6_add_qml_module(${TARGET}
         qml/EPGColors.qml
         qml/EPGHorizontalShadow.qml
         qml/EPGScrollableText.qml
+
+        qml/map.qml
     RESOURCES
         #img/world.png
     VERSION 1.0

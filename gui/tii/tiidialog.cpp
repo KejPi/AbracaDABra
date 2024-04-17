@@ -25,6 +25,7 @@
  */
 
 #include <QMenu>
+#include <QQuickStyle>
 
 #include "tiidialog.h"
 #include "ui_tiidialog.h"
@@ -35,8 +36,52 @@ TIIDialog::TIIDialog(QWidget *parent)
 {
     ui->setupUi(this);
 
-    m_model = new TiiTableModel(this);
+    m_qmlView = new QQuickView();
+    QQmlContext * context = m_qmlView->rootContext();
 
+    QQuickStyle::setStyle("Fusion");
+
+    QQmlEngine *engine = m_qmlView->engine();
+
+    //m_qmlView->setColor(Qt::transparent);
+    m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map.qml"));
+
+    QWidget *container = QWidget::createWindowContainer(m_qmlView, this);
+
+    QSizePolicy sizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+    //sizePolicy.setHorizontalStretch(0);
+    sizePolicy.setVerticalStretch(255);
+    container->setSizePolicy(sizePolicy);
+
+    ui->tiiViewWidget->setMinimumHeight(200);
+
+    QSplitter * splitter = new QSplitter(this);
+    splitter->setOrientation(Qt::Vertical);
+    splitter->addWidget(container);
+    splitter->addWidget(ui->tiiViewWidget);
+
+    QVBoxLayout * layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0,0,0,0);
+    layout->addWidget(splitter);
+
+/*
+         verticalLayout = new QVBoxLayout(TIIDialog);
+        verticalLayout->setObjectName("verticalLayout");
+        splitter = new QSplitter(TIIDialog);
+        splitter->setObjectName("splitter");
+        splitter->setOrientation(Qt::Vertical);
+        mapContainer = new QWidget(splitter);
+        mapContainer->setObjectName("mapContainer");
+        splitter->addWidget(mapContainer);
+        widget = new QWidget(splitter);
+        widget->setObjectName("widget");
+        horizontalLayout = new QHBoxLayout(widget);
+        horizontalLayout->setObjectName("horizontalLayout");
+        tiiTable = new QTableView(widget);
+*/
+
+
+    m_model = new TiiTableModel(this);
     ui->tiiTable->setModel(m_model);
     ui->tiiTable->verticalHeader()->hide();
     ui->tiiTable->setEditTriggers(QAbstractItemView::NoEditTriggers);

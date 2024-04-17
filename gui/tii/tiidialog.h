@@ -29,6 +29,7 @@
 
 #include <QDialog>
 #include <qcustomplot.h>
+#include "QQuickView"
 #include "radiocontrol.h"
 #include "tiitablemodel.h"
 
@@ -57,8 +58,9 @@ private:
     enum GraphId {Spect, TII, Thr};
     enum GraphRange { MinX = -1024, MaxX = 1023, MinY = 0, MaxY = 1 };
     Ui::TIIDialog *ui;
+    QQuickView *m_qmlView ;
     TiiTableModel * m_model;
-    bool m_isZoomed;
+    bool m_isZoomed;        
     void addToPlot(const RadioControlTIIData &data);
     void onPlotSelectionChanged();
     void onPlotMousePress(QMouseEvent * event);

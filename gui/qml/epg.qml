@@ -27,7 +27,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import ProgrammeGuide
+import app.qmlcomponents 1.0
 import Qt5Compat.GraphicalEffects   // required for Qt < 6.5
 // import QtQuick.Effects              // not available in Qt < 6.5
 
