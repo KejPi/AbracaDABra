@@ -105,6 +105,7 @@ void SNRPlotDialog::setupDarkMode(bool darkModeEna)
 
         ui->snrPlot->graph(0)->setPen(QPen(Qt::cyan, 2));
         ui->snrPlot->graph(0)->setBrush(QBrush(QColor(0, 255, 255, 100)));
+        ui->snrPlot->replot();
     }
     else
     {
@@ -134,6 +135,7 @@ void SNRPlotDialog::setupDarkMode(bool darkModeEna)
 
         ui->snrPlot->graph(0)->setPen(QPen(Qt::blue, 2));
         ui->snrPlot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 100)));
+        ui->snrPlot->replot();
     }
 }
 

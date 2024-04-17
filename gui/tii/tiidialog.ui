@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>SNR Plot</string>
+   <string>TII Decoder</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>

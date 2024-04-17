@@ -109,7 +109,7 @@ void TIIDialog::showPointToolTip(QMouseEvent *event)
     x = qMax(static_cast<int>(GraphRange::MinX), x);
     double y = ui->tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(x + 1024)->value;
 
-    setToolTip(QString("%1 , %2").arg(x).arg(y));
+    setToolTip(QString("%1, %2").arg(x).arg(y));
 }
 
 TIIDialog::~TIIDialog()
@@ -141,11 +141,6 @@ void TIIDialog::reset()
 
 void TIIDialog::onTiiData(const RadioControlTIIData &data)
 {
-    qDebug() << "TII:" << data.idList.size();
-    for (const auto tii : data.idList)
-    {
-        qDebug() << tii.main << tii.sub << tii.level;
-    }
     m_model->populateModel(data.idList);
     addToPlot(data);
 }
@@ -183,6 +178,8 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
 
         ui->tiiSpectrumPlot->graph(GraphId::Thr)->setPen(QPen(QColor(Qt::red), 1, Qt::DashLine));
         ui->tiiSpectrumPlot->graph(GraphId::Thr)->setBrush(QBrush(QColor(255, 0, 0, 100)));
+
+        ui->tiiSpectrumPlot->replot();
     }
     else
     {
@@ -216,7 +213,9 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
         //ui->tiiSpectrumPlot->graph(GraphId::TII)->setBrush(QBrush(QColor(0, 0, 255, 100)));
         ui->tiiSpectrumPlot->graph(GraphId::Thr)->setPen(QPen(QColor(Qt::gray), 0, Qt::SolidLine));
         ui->tiiSpectrumPlot->graph(GraphId::Thr)->setBrush(QBrush(QColor(128, 128, 128, 100)));
-    }
+
+        ui->tiiSpectrumPlot->replot();
+    }    
 }
 
 void TIIDialog::showEvent(QShowEvent *event)
