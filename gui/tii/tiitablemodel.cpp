@@ -24,11 +24,16 @@
  * SOFTWARE.
  */
 
+#include <QColor>
 #include "tiitablemodel.h"
+#include "txdataloader.h"
 
 TiiTableModel::TiiTableModel(QObject *parent)
     : QAbstractTableModel{parent}
-{}
+{
+
+    TxDataLoader::loadTable(m_txList);
+}
 
 int TiiTableModel::rowCount(const QModelIndex &parent) const
 {
@@ -53,18 +58,54 @@ QVariant TiiTableModel::data(const QModelIndex &index, int role) const
     }
 
     const auto &item = m_modelData.at(index.row());
-    if (role == Qt::DisplayRole)
+    switch (role)
     {
+    case Qt::DisplayRole: {
         switch (index.column())
         {
         case ColMainId:
-            return m_modelData.at(index.row()).main;
+            return item.mainId();
         case ColSubId:
-            return m_modelData.at(index.row()).sub;
+            return item.subId();
         case ColLevel:
-            return QString::number(static_cast<double>(m_modelData.at(index.row()).level), 'f', 4);
+            return QString::number(static_cast<double>(item.level()), 'f', 3);
+        case ColDist:
+            if (item.haveTxData())
+            {
+                return QString::number(static_cast<double>(item.distance()), 'f', 1);
+            }
+            return QVariant();
+        case ColAzimuth:
+            if (item.haveTxData())
+            {
+                return QString::number(static_cast<double>(item.azimuth()), 'f', 1);
+            }
+            return QVariant();
         }
     }
+        break;
+    case TiiTableModelRoles::CoordinatesRole:
+        return QVariant().fromValue(item.transmitterData().coordinates());
+    case TiiTableModelRoles::MainIdRole:
+        return item.mainId();
+    case TiiTableModelRoles::SubIdRole:
+        return item.subId();
+    case TiiTableModelRoles::TiiRole:
+        return QVariant(QString("%1-%2").arg(item.mainId()).arg(item.subId()));
+    case TiiTableModelRoles::LevelColorRole:
+        if (item.level() > 0.6)
+        {
+            //return QVariant(QColor(0x5b, 0xc2, 0x14));
+            return QVariant(QColor(Qt::green));
+        }
+        if (item.level() > 0.2) {
+            return QVariant(QColor(0xff, 0xb5, 0x27));
+        }
+        return QVariant(QColor(0xff, 0x4b, 0x4b));
+    default:
+        break;
+    }
+
     return QVariant();
 }
 
@@ -78,16 +119,33 @@ QVariant TiiTableModel::headerData(int section, Qt::Orientation orientation, int
     if (orientation == Qt::Horizontal) {
         switch (section) {
         case ColMainId:
-            return tr("Main ID");
+            return tr("Main");
         case ColSubId:
-            return tr("Sub ID");
+            return tr("Sub");
         case ColLevel:
             return tr("Level");
+        case ColDist:
+            return tr("Distance");
+        case ColAzimuth:
+            return tr("Azimuth");
         default:
             break;
         }
     }
     return QVariant();
+}
+
+QHash<int, QByteArray> TiiTableModel::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+
+    roles[TiiTableModelRoles::CoordinatesRole] = "coordinates";
+    roles[TiiTableModelRoles::TiiRole] = "tiiString";
+    roles[TiiTableModelRoles::MainIdRole] = "mainId";
+    roles[TiiTableModelRoles::SubIdRole] = "subId";
+    roles[TiiTableModelRoles::LevelColorRole] = "levelColor";
+
+    return roles;
 }
 
 void TiiTableModel::clear()
@@ -97,12 +155,44 @@ void TiiTableModel::clear()
     endResetModel();
 }
 
-void TiiTableModel::populateModel(const QList<dabsdrTii_t> &data)
+void TiiTableModel::populateModel(const QList<dabsdrTii_t> &data, const ServiceListId & ensId)
 {
 #if 1
     beginResetModel();
     m_modelData.clear();
-    m_modelData = data;
+
+    for (const auto & tii : data)
+    {
+        TiiTableModelItem item;
+        item.setMainId(tii.main);
+        item.setSubId(tii.sub);
+        item.setLevel(tii.level);
+
+        QList<TxDataItem *> txItemList = m_txList.values(ensId);
+        TxDataItem * tx = nullptr;
+        for (const auto & txItem : txItemList)
+        {
+            if ((txItem->subId() == tii.sub) && (txItem->mainId() == tii.main))
+            {
+                tx = txItem;
+                break;
+            }
+        }
+        if (tx != nullptr)
+        {   // found transmitter record
+            item.setTransmitterData(*tx);
+            qDebug() << item.mainId() << item.subId() << item.transmitterData().location();
+
+            if (m_coordinates.isValid())
+            {   // we can calculate distance and azimuth
+                item.setDistance(m_coordinates.distanceTo(item.transmitterData().coordinates()) * 0.001);
+                item.setAzimuth(m_coordinates.azimuthTo(item.transmitterData().coordinates()));
+            }
+        }
+
+        m_modelData.append(item);
+    }
+
     endResetModel();
 #else
     if (m_modelData.isEmpty())
@@ -120,3 +210,13 @@ void TiiTableModel::populateModel(const QList<dabsdrTii_t> &data)
     }
 #endif
 }
+
+void TiiTableModel::setCoordinates(const QGeoCoordinate &newCoordinates)
+{
+    if (newCoordinates != m_coordinates)
+    {
+        m_coordinates = newCoordinates;
+    }
+}
+
+

@@ -26,6 +26,7 @@
 
 #include <QMenu>
 #include <QQuickStyle>
+#include <QQmlContext>
 
 #include "tiidialog.h"
 #include "ui_tiidialog.h"
@@ -36,14 +37,15 @@ TIIDialog::TIIDialog(QWidget *parent)
 {
     ui->setupUi(this);
 
+    m_model = new TiiTableModel(this);
+
     m_qmlView = new QQuickView();
     QQmlContext * context = m_qmlView->rootContext();
+    context->setContextProperty("tii", this);
+    context->setContextProperty("tiiTable", m_model);
 
-    QQuickStyle::setStyle("Fusion");
+    //context->setContextProperty("epgTime", EPGTime::getInstance());
 
-    QQmlEngine *engine = m_qmlView->engine();
-
-    //m_qmlView->setColor(Qt::transparent);
     m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map.qml"));
 
     QWidget *container = QWidget::createWindowContainer(m_qmlView, this);
@@ -80,16 +82,20 @@ TIIDialog::TIIDialog(QWidget *parent)
         tiiTable = new QTableView(widget);
 */
 
-
-    m_model = new TiiTableModel(this);
     ui->tiiTable->setModel(m_model);
     ui->tiiTable->verticalHeader()->hide();
     ui->tiiTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->tiiTable->horizontalHeader()->setSectionResizeMode(static_cast<int>(TiiTableModel::NumCols)-1, QHeaderView::Stretch);
-    ui->tiiTable->horizontalHeader()->setStretchLastSection(true);
+    //ui->tiiTable->horizontalHeader()->setSectionResizeMode(static_cast<int>(TiiTableModel::NumCols), QHeaderView::Stretch);
+    //ui->tiiTable->horizontalHeader()->setStretchLastSection(true);
+    //ui->tiiTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    //ui->tiiTable->horizontalHeader()->setStretchLastSection(true);
+    //ui->tiiTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    ui->tiiTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->tiiTable->horizontalHeader()->setSectionResizeMode(static_cast<int>(TiiTableModel::NumCols-1), QHeaderView::Stretch);
+
     ui->tiiTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tiiTable->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->tiiTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     //ui->tiiTable->setSortingEnabled(true);
 
     ui->tiiSpectrumPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes);
@@ -144,7 +150,7 @@ TIIDialog::TIIDialog(QWidget *parent)
 
     connect(ui->tiiSpectrumPlot, &QCustomPlot::mouseMove, this,  &TIIDialog::showPointToolTip);
 
-    reset();
+    //loadTiiTable();
 }
 
 void TIIDialog::showPointToolTip(QMouseEvent *event)
@@ -157,11 +163,18 @@ void TIIDialog::showPointToolTip(QMouseEvent *event)
     setToolTip(QString("%1, %2").arg(x).arg(y));
 }
 
-TIIDialog::~TIIDialog()
+void TIIDialog::positionUpdated(const QGeoPositionInfo &position)
 {
-    emit setTii(false, 0.0);
+    qDebug() << Q_FUNC_INFO << position.coordinate();
+    setCurrentPosition(position.coordinate());
+    m_model->setCoordinates(m_currentPosition);
+    setPositionValid(true);
+}
 
-    delete ui;
+TIIDialog::~TIIDialog()
+{    
+    delete m_qmlView;
+    delete ui;    
 }
 
 void TIIDialog::reset()
@@ -186,7 +199,8 @@ void TIIDialog::reset()
 
 void TIIDialog::onTiiData(const RadioControlTIIData &data)
 {
-    m_model->populateModel(data.idList);
+    ServiceListId ensId = ServiceListId(m_currentEnsemble.frequency, m_currentEnsemble.ueid);
+    m_model->populateModel(data.idList, ensId);
     addToPlot(data);
 }
 
@@ -263,11 +277,69 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
     }    
 }
 
+void TIIDialog::startLocationUpdate()
+{
+    // ask for permission
+#if QT_CONFIG(permissions)
+    QLocationPermission locationsPermission;
+    locationsPermission.setAccuracy(QLocationPermission::Precise);
+    locationsPermission.setAvailability(QLocationPermission::Always);
+    switch (qApp->checkPermission(locationsPermission)) {
+    case Qt::PermissionStatus::Undetermined:
+        qApp->requestPermission(locationsPermission, this, [this]() { startLocationUpdate(); } );
+        qDebug() << "LocationPermission Undetermined";
+        return;
+    case Qt::PermissionStatus::Denied:
+    {
+        qDebug() << "LocationPermission Denied";
+        QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), tr("Device location access is denied."), {}, this);
+        msgBox.setInformativeText(tr("If you want to display current position on map, grant the location permission in Settings then open the app again."));
+        msgBox.exec();
+    }
+        return;
+    case Qt::PermissionStatus::Granted:
+        qDebug() << "LocationPermission Granted";
+        break; // Proceed
+    }
+#endif
+    // start location update
+    QGeoPositionInfoSource *source = QGeoPositionInfoSource::createDefaultSource(this);
+    if (source != nullptr)
+    {
+        qDebug() << "Start upadate";
+        connect(source, &QGeoPositionInfoSource::positionUpdated, this, &TIIDialog::positionUpdated);
+        source->startUpdates();
+    }
+}
+
+void TIIDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
+{
+    m_currentEnsemble = ens;
+    setWindowTitle(QString(tr("TII Decoder: Ensemble %1 @ %2 (%3 kHz)"))
+                        .arg(QString("%1").arg(ens.ueid, 6, 16, QChar('0')).toUpper())
+                        .arg(DabTables::channelList.value(ens.frequency, 0))
+                        .arg(ens.frequency)
+                   );
+
+    emit ensembleInfoChanged();
+}
+
 void TIIDialog::showEvent(QShowEvent *event)
 {
+    reset();
     emit setTii(true, 0.0);
+    startLocationUpdate();
+    setIsVisible(true);
     QDialog::showEvent(event);
 }
+
+void TIIDialog::closeEvent(QCloseEvent *event)
+{
+    emit setTii(false, 0.0);
+    setIsVisible(false);
+    QDialog::closeEvent(event);
+}
+
 
 void TIIDialog::addToPlot(const RadioControlTIIData &data)
 {
@@ -427,4 +499,59 @@ void TIIDialog::onYRangeChanged(const QCPRange &newRange)
         }
         ui->tiiSpectrumPlot->yAxis->setRange(fixedRange);
     }
+}
+
+QGeoCoordinate TIIDialog::currentPosition() const
+{
+    return m_currentPosition;
+}
+
+void TIIDialog::setCurrentPosition(const QGeoCoordinate &newCurrentPosition)
+{
+    if (m_currentPosition == newCurrentPosition)
+        return;
+    m_currentPosition = newCurrentPosition;
+    emit currentPositionChanged();
+}
+
+bool TIIDialog::positionValid() const
+{
+    return m_positionValid;
+}
+
+void TIIDialog::setPositionValid(bool newPositionValid)
+{
+    if (m_positionValid == newPositionValid)
+        return;
+    m_positionValid = newPositionValid;
+    emit positionValidChanged();
+}
+
+bool TIIDialog::isVisible() const
+{
+    return m_isVisible;
+}
+
+void TIIDialog::setIsVisible(bool newIsVisible)
+{
+    if (m_isVisible == newIsVisible)
+        return;
+    m_isVisible = newIsVisible;
+    emit isVisibleChanged();
+}
+
+QStringList TIIDialog::ensembleInfo() const
+{
+    if (!m_currentEnsemble.isValid())
+    {
+        return QStringList{"","",""};
+    }
+
+    QStringList info;
+    info.append(tr("Ensemble: <b>%1</b>").arg(m_currentEnsemble.label));
+    info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b>").arg(m_currentEnsemble.ecc(), 2, 16, QChar('0'))
+                                      .arg(m_currentEnsemble.eid(), 4, 16, QChar('0'))
+                            .toUpper());
+    info.append(QString(tr("Channel: <b>%1 (%2 kHz)</b>")).arg(DabTables::channelList[m_currentEnsemble.frequency]).arg(m_currentEnsemble.frequency));
+    return info;
 }

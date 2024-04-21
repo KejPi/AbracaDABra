@@ -30,16 +30,24 @@
 #include <QDialog>
 #include <qcustomplot.h>
 #include "QQuickView"
+#include <QGeoPositionInfoSource>
 #include "radiocontrol.h"
+#include "servicelistid.h"
 #include "tiitablemodel.h"
 
 namespace Ui {
 class TIIDialog;
 }
 
+class TxDataItem;
+
 class TIIDialog : public QDialog
 {
     Q_OBJECT
+    Q_PROPERTY(QGeoCoordinate currentPosition READ currentPosition WRITE setCurrentPosition NOTIFY currentPositionChanged FINAL)
+    Q_PROPERTY(bool positionValid READ positionValid WRITE setPositionValid NOTIFY positionValidChanged FINAL)
+    Q_PROPERTY(bool isVisible READ isVisible WRITE setIsVisible NOTIFY isVisibleChanged FINAL)
+    Q_PROPERTY(QStringList ensembleInfo READ ensembleInfo NOTIFY ensembleInfoChanged FINAL)
 
 public:
     explicit TIIDialog(QWidget *parent = nullptr);
@@ -47,12 +55,33 @@ public:
     void reset();
     void onTiiData(const RadioControlTIIData & data);
     void setupDarkMode(bool darkModeEna);
+    void startLocationUpdate();
+    void onEnsembleInformation(const RadioControlEnsemble &ens);
+
+    QGeoCoordinate currentPosition() const;
+    void setCurrentPosition(const QGeoCoordinate &newCurrentPosition);
+
+    bool positionValid() const;
+    void setPositionValid(bool newPositionValid);
+
+    bool isVisible() const;
+    void setIsVisible(bool newIsVisible);
+
+    QStringList ensembleInfo() const;
 
 signals:
     void setTii(bool ena, float thr);
 
+    void currentPositionChanged();
+    void positionValidChanged();
+
+    void isVisibleChanged();
+
+    void ensembleInfoChanged();
+
 protected:
     void showEvent(QShowEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     enum GraphId {Spect, TII, Thr};
@@ -60,7 +89,14 @@ private:
     Ui::TIIDialog *ui;
     QQuickView *m_qmlView ;
     TiiTableModel * m_model;
-    bool m_isZoomed;        
+    bool m_isZoomed;
+    QGeoCoordinate m_currentPosition;
+    bool m_positionValid = false;
+    bool m_isVisible = false;
+    //QList<TxDataItem *> m_txList;
+    //QMultiHash<ServiceListId, TxDataItem*> m_txList;
+    RadioControlEnsemble m_currentEnsemble;
+
     void addToPlot(const RadioControlTIIData &data);
     void onPlotSelectionChanged();
     void onPlotMousePress(QMouseEvent * event);
@@ -69,6 +105,8 @@ private:
     void onXRangeChanged(const QCPRange &newRange);
     void onYRangeChanged(const QCPRange &newRange);
     void showPointToolTip(QMouseEvent *event);
+    void positionUpdated(const QGeoPositionInfo & position);
+    //void loadTiiTable();
 };
 
 #endif // TIIDIALOG_H

@@ -48,6 +48,9 @@ if (HAVE_QCUSTOMPLOT)
         snrplotdialog.h snrplotdialog.cpp snrplotdialog.ui
         tii/tiidialog.h tii/tiidialog.cpp tii/tiidialog.ui
         tii/tiitablemodel.h tii/tiitablemodel.cpp
+        tii/tiitablemodelitem.h tii/tiitablemodelitem.cpp
+        tii/txdataitem.h tii/txdataitem.cpp
+        tii/txdataloader.h tii/txdataloader.cpp
     )
 endif(HAVE_QCUSTOMPLOT)
 
@@ -213,6 +216,7 @@ set_source_files_properties(qml/EPGHorizontalShadow.qml PROPERTIES QT_RESOURCE_A
 set_source_files_properties(qml/EPGScrollableText.qml PROPERTIES QT_RESOURCE_ALIAS EPGScrollableText.qml)
 
 set_source_files_properties(qml/map.qml PROPERTIES QT_RESOURCE_ALIAS map.qml)
+set_source_files_properties(qml/TransmitterMarker.qml PROPERTIES QT_RESOURCE_ALIAS TransmitterMarker.qml)
 
 qt6_add_qml_module(${TARGET}
     URI app.qmlcomponents
@@ -228,8 +232,12 @@ qt6_add_qml_module(${TARGET}
         qml/EPGScrollableText.qml
 
         qml/map.qml
+        qml/TransmitterMarker.qml
     RESOURCES
-        #img/world.png
+        resources/map_marker.png
+        resources/map_marker_3.png
+        resources/map_marker_4.png
+        resources/map_marker_5.png
     VERSION 1.0
     RESOURCE_PREFIX "/"
 )
@@ -310,6 +318,8 @@ target_link_libraries(${TARGET} PRIVATE
     Qt${QT_VERSION_MAJOR}::Network
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::QuickControls2
+    Qt${QT_VERSION_MAJOR}::Location
+    Qt${QT_VERSION_MAJOR}::Positioning
 )
 
 set(TSFILES
@@ -323,10 +333,16 @@ qt_add_translations(${TARGET} TS_FILES ${TSFILES}
 
 
 # Set a custom plist file for the app bundle
-if(APPLE AND APPLE_APP_BUNDLE)
+#if(APPLE AND APPLE_APP_BUNDLE)
     set_target_properties(${TARGET} PROPERTIES
+        ${BUNDLE_ID_OPTION}
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/Info.plist.in
         MACOSX_BUNDLE_BUNDLE_VERSION       "${PROJECT_VERSION}_${PROJECT_GIT_REV}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+        MACOSX_BUNDLE TRUE
     )
-endif(APPLE AND APPLE_APP_BUNDLE)
+    if (NOT CMAKE_GENERATOR STREQUAL "Xcode")
+        # Need to sign application for location permissions to work
+        add_custom_command(TARGET ${TARGET} POST_BUILD COMMAND codesign -s - ${TARGET}.app)
+    endif()
+#endif(APPLE AND APPLE_APP_BUNDLE)

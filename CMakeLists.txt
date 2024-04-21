@@ -497,13 +497,18 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 COMPONENTS Widgets Multimedia Svg Xml Network Quick Qml QuickControls2 REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia Svg Xml Network Quick Qml QuickControls2 QmlWorkerScript REQUIRED)
+find_package(QT NAMES Qt6 COMPONENTS Widgets Multimedia Svg Xml Network Quick Qml QuickControls2 Positioning Location REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia Svg Xml Network Quick Qml QuickControls2 QmlWorkerScript Positioning Location REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS LinguistTools)
 
 #########################################################
 ## AbracaDABra GUI
 add_subdirectory(gui)
+
+## This is required for localization permissions to work
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_finalize_executable(${TARGET})
+endif()
 
 #########################################################
 ## Install

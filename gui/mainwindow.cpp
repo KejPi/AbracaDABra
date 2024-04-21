@@ -775,6 +775,17 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::ensembleInformation, m_spiApp, &UserApplication::setEnsId);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &UserApplication::setAudioServiceId);
 
+    // TII dialog
+#if HAVE_QCUSTOMPLOT
+    m_tiiDialog = new TIIDialog(this);
+    m_tiiDialog->setupDarkMode(isDarkMode());
+    // connect(m_tiiDialog, &QDialog::finished, m_tiiDialog, &QObject::deleteLater);
+    // connect(m_tiiDialog, &QDialog::destroyed, this, [this]() { m_tiiDialog = nullptr; } );
+    connect(m_tiiDialog, &TIIDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::tiiData, m_tiiDialog, &TIIDialog::onTiiData, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::ensembleInformation, m_tiiDialog, &TIIDialog::onEnsembleInformation, Qt::QueuedConnection);
+#endif
+
     // input device connections
     initInputDevice(InputDeviceId::UNDEFINED);
 
@@ -3112,15 +3123,15 @@ void MainWindow::showSnrPlotDialog()
 void MainWindow::showTiiDialog()
 {
 #if HAVE_QCUSTOMPLOT
-    if (m_tiiDialog == nullptr)
-    {
-        m_tiiDialog = new TIIDialog(this);
-        m_tiiDialog->setupDarkMode(isDarkMode());
-        connect(m_tiiDialog, &QDialog::finished, m_tiiDialog, &QObject::deleteLater);
-        connect(m_tiiDialog, &QDialog::destroyed, this, [this]() { m_tiiDialog = nullptr; } );
-        connect(m_tiiDialog, &TIIDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
-        connect(m_radioControl, &RadioControl::tiiData, m_tiiDialog, &TIIDialog::onTiiData, Qt::QueuedConnection);
-    }
+    // if (m_tiiDialog == nullptr)
+    // {
+    //     m_tiiDialog = new TIIDialog(this);
+    //     m_tiiDialog->setupDarkMode(isDarkMode());
+    //     connect(m_tiiDialog, &QDialog::finished, m_tiiDialog, &QObject::deleteLater);
+    //     connect(m_tiiDialog, &QDialog::destroyed, this, [this]() { m_tiiDialog = nullptr; } );
+    //     connect(m_tiiDialog, &TIIDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
+    //     connect(m_radioControl, &RadioControl::tiiData, m_tiiDialog, &TIIDialog::onTiiData, Qt::QueuedConnection);
+    // }
 
     m_tiiDialog->show();
     m_tiiDialog->raise();

@@ -28,113 +28,183 @@ import QtCore
 import QtQuick
 import QtLocation
 import QtPositioning
+import QtQuick.Layouts
+import app.qmlcomponents 1.0
 
 Item {
     anchors.fill: parent
 
-    // title: map.center + " zoom " + map.zoomLevel.toFixed(3)
-    //        + " min " + map.minimumZoomLevel + " max " + map.maximumZoomLevel
-
-    // LocationPermission {
-    //     id: permission
-    //     accuracy: LocationPermission.Precise
-    //     availability: LocationPermission.Always
-    // }
-
-    Plugin {
-        id: mapPlugin
-        name: "osm"
-        PluginParameter { name: "osm.mapping.copyright"; value: "&nbsp;&nbsp;© <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors" }
-        PluginParameter { name: "osm.mapping.custom.host"; value: "https://tile.openstreetmap.org/"}
+    Loader {
+        anchors.fill: parent
+        active: tii.isVisible
+        visible: active
+        sourceComponent: mainComponent
     }
 
-    Map {
-        id: map
-        anchors.fill: parent
-        plugin: mapPlugin
-        center: QtPositioning.coordinate(50.08804, 14.42076) // Prague
-        zoomLevel: 9
-        property geoCoordinate startCentroid
+    Component {
+        id: mainComponent
+        Item {
+            property variant markers
 
-        activeMapType: map.supportedMapTypes[map.supportedMapTypes.length-1]
-
-        onCopyrightLinkActivated: link => Qt.openUrlExternally(link)
-
-        PinchHandler {
-            id: pinch
-            target: null
-            onActiveChanged: if (active) {
-                map.startCentroid = map.toCoordinate(pinch.centroid.position, false)
+            Plugin {
+                id: mapPlugin
+                name: "osm"
+                PluginParameter { name: "osm.mapping.copyright"; value: "&nbsp;&nbsp;© <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors" }
+                PluginParameter { name: "osm.mapping.custom.host"; value: "https://tile.openstreetmap.org/"}
             }
-            onScaleChanged: (delta) => {
-                map.zoomLevel += Math.log2(delta)
-                map.alignCoordinateToPoint(map.startCentroid, pinch.centroid.position)
-            }
-            onRotationChanged: (delta) => {
-                map.bearing -= delta
-                map.alignCoordinateToPoint(map.startCentroid, pinch.centroid.position)
-            }
-            grabPermissions: PointerHandler.TakeOverForbidden
-        }
-        WheelHandler {
-            id: wheel
-            // workaround for QTBUG-87646 / QTBUG-112394 / QTBUG-112432:
-            // Magic Mouse pretends to be a trackpad but doesn't work with PinchHandler
-            // and we don't yet distinguish mice and trackpads on Wayland either
-            acceptedDevices: Qt.platform.pluginName === "cocoa" || Qt.platform.pluginName === "wayland"
-                             ? PointerDevice.Mouse | PointerDevice.TouchPad
-                             : PointerDevice.Mouse
-            rotationScale: 1/120
-            property: "zoomLevel"
-        }
-        DragHandler {
-            id: drag
-            target: null
-            onTranslationChanged: (delta) => map.pan(-delta.x, -delta.y)
-        }
-        Shortcut {
-            enabled: map.zoomLevel < map.maximumZoomLevel
-            sequence: StandardKey.ZoomIn
-            onActivated: map.zoomLevel = Math.round(map.zoomLevel + 1)
-        }
-        Shortcut {
-            enabled: map.zoomLevel > map.minimumZoomLevel
-            sequence: StandardKey.ZoomOut
-            onActivated: map.zoomLevel = Math.round(map.zoomLevel - 1)
-        }
 
-        // //----------------------
-        // PositionSource{
-        //     id: positionSource
-        //     active: true // followme
-        //     onPositionChanged: {
-        //         console.log("onPositionChanged")
-        //         map.center = positionSource.position.coordinate
-        //     }
-        // }
-        // MapQuickItem {
-        //     id: mePoisition
-        //     parent: map
-        //     sourceItem: Rectangle { width: 14; height: 14; color: "#251ee4"; border.width: 2; border.color: "white"; smooth: true; radius: 7 }
-        //     coordinate: positionSource.position.coordinate
-        //     opacity: 1.0
-        //     anchorPoint: Qt.point(sourceItem.width/2, sourceItem.height/2)
-        //     visible: true//followme
-        // }
-        // MapQuickItem {
-        //     parent: map
-        //     sourceItem: Text{
-        //         text: qsTr("You're here!")
-        //         color:"#242424"
-        //         font.bold: true
-        //         styleColor: "#ECECEC"
-        //         style: Text.Outline
-        //     }
-        //     coordinate: positionSource.position.coordinate
-        //     anchorPoint: Qt.point(-mePoisition.sourceItem.width * 0.5, mePoisition.sourceItem.height * 1.5)
-        //     visible: true // followme
-        // }
+            Map {
+                id: map
+                anchors.fill: parent
+                plugin: mapPlugin
+                center: tii.positionValid ? tii.currentPosition : QtPositioning.coordinate(50.08804, 14.42076) // Prague
+                zoomLevel: 10
+                property geoCoordinate startCentroid
 
-        // Component.onCompleted: permission.request();
+                activeMapType: map.supportedMapTypes[map.supportedMapTypes.length-1]
+
+                onCopyrightLinkActivated: link => Qt.openUrlExternally(link)
+
+                PinchHandler {
+                    id: pinch
+                    target: null
+                    onActiveChanged: if (active) {
+                                         map.startCentroid = map.toCoordinate(pinch.centroid.position, false)
+                                     }
+                    onScaleChanged: (delta) => {
+                                        map.zoomLevel += Math.log2(delta)
+                                        map.alignCoordinateToPoint(map.startCentroid, pinch.centroid.position)
+                                    }
+                    onRotationChanged: (delta) => {
+                                           map.bearing -= delta
+                                           map.alignCoordinateToPoint(map.startCentroid, pinch.centroid.position)
+                                       }
+                    grabPermissions: PointerHandler.TakeOverForbidden
+                }
+                WheelHandler {
+                    id: wheel
+                    // workaround for QTBUG-87646 / QTBUG-112394 / QTBUG-112432:
+                    // Magic Mouse pretends to be a trackpad but doesn't work with PinchHandler
+                    // and we don't yet distinguish mice and trackpads on Wayland either
+                    acceptedDevices: Qt.platform.pluginName === "cocoa" || Qt.platform.pluginName === "wayland"
+                                     ? PointerDevice.Mouse | PointerDevice.TouchPad
+                                     : PointerDevice.Mouse
+                    rotationScale: 1/120
+                    property: "zoomLevel"
+                }
+                DragHandler {
+                    id: drag
+                    target: null
+                    onTranslationChanged: (delta) => map.pan(-delta.x, -delta.y)
+                }
+                Shortcut {
+                    enabled: map.zoomLevel < map.maximumZoomLevel
+                    sequence: StandardKey.ZoomIn
+                    onActivated: map.zoomLevel = Math.round(map.zoomLevel + 1)
+                }
+                Shortcut {
+                    enabled: map.zoomLevel > map.minimumZoomLevel
+                    sequence: StandardKey.ZoomOut
+                    onActivated: map.zoomLevel = Math.round(map.zoomLevel - 1)
+                }
+
+                // //----------------------
+                // PositionSource{
+                //     id: positionSource
+                //     active: true // followme
+                //     onPositionChanged: {
+                //         console.log("onPositionChanged")
+                //         map.center = positionSource.position.coordinate
+                //     }
+                // }
+                MapQuickItem {
+                    id: currentPosition
+                    parent: map
+                    sourceItem: Rectangle { width: 14; height: 14; color: "#251ee4"; border.width: 2; border.color: "white"; smooth: true; radius: 7; opacity: 0.8 }
+                    coordinate: tii.currentPosition
+                    opacity: 1.0
+                    anchorPoint: Qt.point(sourceItem.width/2, sourceItem.height/2)
+                    visible: tii.positionValid
+                }
+
+                // MapQuickItem {
+                //     id: txPosition
+                //     parent: map
+                //     sourceItem: Rectangle { width: 14; height: 14; color: "red"; border.width: 2; border.color: "white"; smooth: true; radius: 7; opacity: 0.8 }
+                //     coordinate: QtPositioning.coordinate(50.0811111, 14.450833333333332)
+                //     opacity: 1.0
+                //     anchorPoint: Qt.point(sourceItem.width/2, sourceItem.height/2)
+                //     visible: tii.positionValid
+                // }
+
+                /*
+                TransmitterMarker {
+                    id: m1
+                    parent: map
+                    coordinate: QtPositioning.coordinate(50.0811111, 14.450833333333332)
+                    tiiCode: "68-23"
+                }
+                TransmitterMarker {
+                    id: m2
+                    parent: map
+                    coordinate: QtPositioning.coordinate(49.5, 15)
+                    tiiCode: "68-8"
+                }
+                TransmitterMarker {
+                    id: m3
+                    parent: map
+                    coordinate: QtPositioning.coordinate(50.5, 15)
+                    tiiCode: "8-8"
+                }
+                */
+
+                MapItemView {
+                    model: tiiTable
+                    delegate: TransmitterMarker {
+                        id: marker
+                        parent: map
+                        coordinate:  coordinates
+                        tiiCode: tiiString
+                        markerColor: levelColor
+                    }
+                }
+
+                Rectangle {
+                    id: infoBox
+
+                    HoverHandler {
+                        id: infoHoverHandler
+                    }
+
+                    color: "white"
+                    opacity: infoHoverHandler.hovered ? 1.0 : 0.6
+                    width: infoLayout.width + 10
+                    height: infoLayout.height + 10
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.rightMargin: 10
+                    anchors.topMargin: 10
+                    visible: tii.ensembleInfo[0] !== ""
+                    z: 3
+
+                    ColumnLayout {
+                        id: infoLayout
+                        anchors.centerIn: parent
+                        Text {
+                            Layout.fillWidth: true
+                            text: tii.ensembleInfo[0]
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            text: tii.ensembleInfo[1]
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            text: tii.ensembleInfo[2]
+                        }
+                    }
+                }
+            }
+        }
     }
 }

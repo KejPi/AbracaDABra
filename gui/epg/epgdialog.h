@@ -86,8 +86,8 @@ signals:
     void scheduleAudioRecording(const AudioRecScheduleItem & item);
 
 protected:
-    void showEvent(QShowEvent *event);
-    void closeEvent(QCloseEvent *event);
+    void showEvent(QShowEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     Ui::EPGDialog *ui;
@@ -95,7 +95,7 @@ private:
 
     MetadataManager * m_metadataManager;
     QPersistentModelIndex m_selectedEpgItem;
-    bool m_isVisible;
+    bool m_isVisible = false;
     SLProxyModel * m_slProxyModel;
     bool m_filterEmptyEpg;
     bool m_filterEnsemble;

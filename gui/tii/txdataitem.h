@@ -24,50 +24,52 @@
  * SOFTWARE.
  */
 
-#ifndef TIITABLEMODEL_H
-#define TIITABLEMODEL_H
+#ifndef TXDATAITEM_H
+#define TXDATAITEM_H
 
-#include <QObject>
-#include <QAbstractTableModel>
-#include <QGeoPositionInfo>
-
-#include "dabsdr.h"
+#include <QString>
 #include "servicelistid.h"
-#include "tiitablemodelitem.h"
+#include <QGeoCoordinate>
 
-class TxDataItem;
-
-enum TiiTableModelRoles {
-    CoordinatesRole = Qt::UserRole,
-    TiiRole,
-    MainIdRole,
-    SubIdRole,
-    LevelColorRole,
-};
-
-class TiiTableModel : public QAbstractTableModel
-{
-    Q_OBJECT
+class TxDataItem {
 public:
-    enum { ColMainId, ColSubId, ColLevel, ColDist, ColAzimuth, NumCols};
+    TxDataItem();
 
-    explicit TiiTableModel(QObject *parent = nullptr);
-    int rowCount(const QModelIndex &parent) const override;
-    int columnCount(const QModelIndex &parent) const override;
-    //Qt::ItemFlags flags(const QModelIndex &index) const override;
-    QVariant data(const QModelIndex &index, int role) const override;
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
-    QHash<int, QByteArray> roleNames() const override;
-    void clear();
+    bool isValid() const { return m_ensId.isValid(); }
 
-    void populateModel(const QList<dabsdrTii_t> & data, const ServiceListId & ensId);
+    QString ensLabel() const;
+    void setEnsLabel(const QString &newEnsLabel);
 
+    QString location() const;
+    void setLocation(const QString &newLocation);
+
+    ServiceListId ensId() const;
+    void setEnsId(const ServiceListId &newEnsId);
+
+    uint8_t mainId() const;
+    void setMainId(uint8_t newMainId);
+
+    uint8_t subId() const;
+    void setSubId(uint8_t newSubId);
+
+    QGeoCoordinate coordinates() const;
     void setCoordinates(const QGeoCoordinate &newCoordinates);
 
+    float power() const;
+    void setPower(float newPower);
+
 private:
-    QList<TiiTableModelItem> m_modelData;
-    QMultiHash<ServiceListId, TxDataItem*> m_txList;
+    // enum Polarization { Unknown = -1, Vertical, Horizontal };
+    QString m_ensLabel;
+    QString m_location;
+    ServiceListId m_ensId;
+    uint8_t m_mainId;
+    uint8_t m_subId;
     QGeoCoordinate m_coordinates;
+    float m_power;
+    // int m_antenna;
+    // Polarization m_polarization;
 };
 
-#endif // TIITABLEMODEL_H
+
+#endif // TXDATAITEM_H
