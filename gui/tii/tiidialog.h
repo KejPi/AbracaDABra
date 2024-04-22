@@ -89,6 +89,7 @@ private:
     Ui::TIIDialog *ui;
     QQuickView *m_qmlView ;
     TiiTableModel * m_model;
+    TiiTableSortModel * m_sortModel;
     bool m_isZoomed;
     QGeoCoordinate m_currentPosition;
     bool m_positionValid = false;

@@ -30,6 +30,7 @@
 #include <QObject>
 #include <QAbstractTableModel>
 #include <QGeoPositionInfo>
+#include <QSortFilterProxyModel>
 
 #include "dabsdr.h"
 #include "servicelistid.h"
@@ -37,19 +38,23 @@
 
 class TxDataItem;
 
-enum TiiTableModelRoles {
-    CoordinatesRole = Qt::UserRole,
-    TiiRole,
-    MainIdRole,
-    SubIdRole,
-    LevelColorRole,
-};
-
 class TiiTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    enum { ColMainId, ColSubId, ColLevel, ColDist, ColAzimuth, NumCols};
+    enum TiiTableModelRoles {
+        CoordinatesRole = Qt::UserRole,
+        TiiRole,
+        MainIdRole,
+        SubIdRole,
+        LevelColorRole,
+        ItemRole,
+        IdRole,
+    };
+
+    enum { ColMainId, ColSubId,
+           ColLevel, ColDist, ColAzimuth, // keep order of these
+           NumCols};
 
     explicit TiiTableModel(QObject *parent = nullptr);
     int rowCount(const QModelIndex &parent) const override;
@@ -60,7 +65,7 @@ public:
     QHash<int, QByteArray> roleNames() const override;
     void clear();
 
-    void populateModel(const QList<dabsdrTii_t> & data, const ServiceListId & ensId);
+    void updateData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId);
 
     void setCoordinates(const QGeoCoordinate &newCoordinates);
 
@@ -69,5 +74,17 @@ private:
     QMultiHash<ServiceListId, TxDataItem*> m_txList;
     QGeoCoordinate m_coordinates;
 };
+
+class TiiTableSortModel : public QSortFilterProxyModel
+{
+    Q_OBJECT
+public:
+    TiiTableSortModel(QObject *parent = nullptr);
+
+protected:
+    bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
+
+};
+
 
 #endif // TIITABLEMODEL_H

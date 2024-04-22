@@ -34,8 +34,9 @@ class TiiTableModelItem
 {
 public:
     TiiTableModelItem();
+    TiiTableModelItem(uint8_t mainId, uint8_t subId, float level, const QGeoCoordinate & coordinates, const QList<TxDataItem *> txItemList);
 
-    bool haveTxData() const { return m_transmitterData.isValid(); }
+    bool hasTxData() const { return m_transmitterData.isValid(); }
 
     float level() const;
     void setLevel(float newLevel);
@@ -43,11 +44,9 @@ public:
     const TxDataItem &transmitterData() const;
     void setTransmitterData(const TxDataItem &newTransmitterData);
 
-    uint8_t mainId() const;
-    void setMainId(uint8_t newMainId);
-
-    uint8_t subId() const;
-    void setSubId(uint8_t newSubId);
+    void setTII(uint8_t newMainId, int8_t newSubId);
+    uint8_t mainId() const;    
+    uint8_t subId() const;    
 
     float distance() const;
     void setDistance(float newDistance);
@@ -55,7 +54,11 @@ public:
     float azimuth() const;
     void setAzimuth(float newAzimuth);
 
+    int id() const;
+    void updateGeo(const QGeoCoordinate & coordinates);
+
 private:
+    int m_id;           // subId << 8 | mainId (this is unique)
     uint8_t m_mainId;   // main ID
     uint8_t m_subId;    // sub ID
     float m_level;      // signal level

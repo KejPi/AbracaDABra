@@ -26,6 +26,7 @@
 
 #include <QColor>
 #include "tiitablemodel.h"
+#include "QtCore/qassert.h"
 #include "txdataloader.h"
 
 TiiTableModel::TiiTableModel(QObject *parent)
@@ -70,13 +71,13 @@ QVariant TiiTableModel::data(const QModelIndex &index, int role) const
         case ColLevel:
             return QString::number(static_cast<double>(item.level()), 'f', 3);
         case ColDist:
-            if (item.haveTxData())
+            if (item.hasTxData())
             {
                 return QString::number(static_cast<double>(item.distance()), 'f', 1);
             }
             return QVariant();
         case ColAzimuth:
-            if (item.haveTxData())
+            if (item.hasTxData())
             {
                 return QString::number(static_cast<double>(item.azimuth()), 'f', 1);
             }
@@ -102,6 +103,10 @@ QVariant TiiTableModel::data(const QModelIndex &index, int role) const
             return QVariant(QColor(0xff, 0xb5, 0x27));
         }
         return QVariant(QColor(0xff, 0x4b, 0x4b));
+    case TiiTableModelRoles::ItemRole:
+        return QVariant().fromValue(item);
+    case TiiTableModelRoles::IdRole:
+        return QVariant(item.id());
     default:
         break;
     }
@@ -155,59 +160,91 @@ void TiiTableModel::clear()
     endResetModel();
 }
 
-void TiiTableModel::populateModel(const QList<dabsdrTii_t> &data, const ServiceListId & ensId)
+void TiiTableModel::updateData(const QList<dabsdrTii_t> &data, const ServiceListId & ensId)
 {
-#if 1
+#if 0
     beginResetModel();
     m_modelData.clear();
-
     for (const auto & tii : data)
     {
-        TiiTableModelItem item;
-        item.setMainId(tii.main);
-        item.setSubId(tii.sub);
-        item.setLevel(tii.level);
-
-        QList<TxDataItem *> txItemList = m_txList.values(ensId);
-        TxDataItem * tx = nullptr;
-        for (const auto & txItem : txItemList)
-        {
-            if ((txItem->subId() == tii.sub) && (txItem->mainId() == tii.main))
-            {
-                tx = txItem;
-                break;
-            }
-        }
-        if (tx != nullptr)
-        {   // found transmitter record
-            item.setTransmitterData(*tx);
-            qDebug() << item.mainId() << item.subId() << item.transmitterData().location();
-
-            if (m_coordinates.isValid())
-            {   // we can calculate distance and azimuth
-                item.setDistance(m_coordinates.distanceTo(item.transmitterData().coordinates()) * 0.001);
-                item.setAzimuth(m_coordinates.azimuthTo(item.transmitterData().coordinates()));
-            }
-        }
-
-        m_modelData.append(item);
+        m_modelData.append(TiiTableModelItem(tii.main, tii.sub, tii.level, m_coordinates, m_txList.values(ensId)));
     }
-
     endResetModel();
 #else
-    if (m_modelData.isEmpty())
+    // add new items and remove old
+    int row = 0;
+    QList<TiiTableModelItem> appendList;
+    for (int dataIdx = 0; dataIdx < data.count(); ++dataIdx)
     {
-        beginResetModel();
-        m_modelData.clear();
-        m_modelData = data;
-        endResetModel();
+        // create new item
+        TiiTableModelItem item(data.at(dataIdx).main, data.at(dataIdx).sub, data.at(dataIdx).level, m_coordinates, m_txList.values(ensId));
+
+        if (row < m_modelData.size())
+        {
+            int startIdx = row;
+            int numToRemove = 0;
+            while ((row < m_modelData.size()) && (m_modelData.at(row).id() < item.id()))
+            {
+                row += 1;
+                numToRemove += 1;
+            }
+            if (numToRemove > 0)
+            {
+                beginRemoveRows(QModelIndex(), startIdx, startIdx + numToRemove - 1);
+                m_modelData.remove(startIdx, numToRemove);
+                endRemoveRows();
+                row = startIdx;
+            }
+
+            if (row < m_modelData.size())
+            {   // we are still not at the end
+                // all id < new id were removed
+                if (m_modelData.at(row).id() == item.id())
+                {   // equal ID ==> update item
+                    m_modelData[row] = item;
+                    // inform views
+                    emit dataChanged(index(row, ColLevel), index(row, ColAzimuth));
+                }
+                else
+                {   // insert item
+                    beginInsertRows(QModelIndex(), row, row);
+                    m_modelData.insert(row, item);
+                    endInsertRows();
+                }
+                row += 1;
+            }
+        }
+        else
+        {   // we are at the end of m_model data -> insert remaining items
+            appendList.append(item);
+        }
+    }
+
+    // final clean up
+    if (appendList.isEmpty())
+    {   // nothing to append
+        if (row < m_modelData.size())
+        {   // some rows to remove
+            beginRemoveRows(QModelIndex(), row, m_modelData.size() - row - 1);
+            m_modelData.remove(row, m_modelData.size() - row);
+            endRemoveRows();
+        }
     }
     else
-    {
-        beginRemoveRows(QModelIndex(), qMax(m_modelData.count() - 3, 0), qMax(m_modelData.count() - 3, 0));
-        m_modelData.removeAt(qMax(m_modelData.count() - 3, 0));
-        endRemoveRows();
+    {   // rows to append
+        beginInsertRows(QModelIndex(), m_modelData.size(), m_modelData.size() + appendList.count() - 1);
+        m_modelData.append(appendList);
+        endInsertRows();
     }
+
+#warning "Remove this check"
+    Q_ASSERT(m_modelData.size() == data.size());
+    for (int n = 0; n < m_modelData.size(); ++n) {
+        Q_ASSERT(m_modelData.at(n).mainId() == data.at(n).main);
+        Q_ASSERT(m_modelData.at(n).subId() == data.at(n).sub);
+        Q_ASSERT(m_modelData.at(n).level() == data.at(n).level);
+    }
+
 #endif
 }
 
@@ -216,7 +253,48 @@ void TiiTableModel::setCoordinates(const QGeoCoordinate &newCoordinates)
     if (newCoordinates != m_coordinates)
     {
         m_coordinates = newCoordinates;
+
+        int row = 0;
+        for (auto & item : m_modelData)
+        {
+            if (item.hasTxData())
+            {
+                item.updateGeo(m_coordinates);
+                emit dataChanged(index(row, ColDist), index(row, ColAzimuth));
+            }
+            row += 1;
+        }
     }
+}
+
+
+
+TiiTableSortModel::TiiTableSortModel(QObject *parent) : QSortFilterProxyModel(parent) {}
+
+bool TiiTableSortModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
+{
+    TiiTableModelItem itemL = sourceModel()->data(left, TiiTableModel::TiiTableModelRoles::ItemRole).value<TiiTableModelItem>();
+    TiiTableModelItem itemR = sourceModel()->data(right, TiiTableModel::TiiTableModelRoles::ItemRole).value<TiiTableModelItem>();
+
+    switch (left.column())
+    {
+    case TiiTableModel::ColMainId:
+        if (itemL.mainId() == itemR.mainId())
+        {
+            return itemL.subId() < itemR.subId();
+        }
+        return itemL.mainId() < itemR.mainId();
+    case TiiTableModel::ColSubId:
+        return itemL.subId() < itemR.subId();
+    case TiiTableModel::ColLevel:
+        return itemL.level() < itemR.level();
+    case TiiTableModel::ColDist:
+        return itemL.distance() < itemR.distance();
+    case TiiTableModel::ColAzimuth:
+        return itemL.azimuth() < itemR.azimuth();
+    }
+
+    return true;
 }
 
 

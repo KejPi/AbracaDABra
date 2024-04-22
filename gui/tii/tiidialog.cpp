@@ -38,6 +38,8 @@ TIIDialog::TIIDialog(QWidget *parent)
     ui->setupUi(this);
 
     m_model = new TiiTableModel(this);
+    m_sortModel = new TiiTableSortModel(this);
+    m_sortModel->setSourceModel(m_model);
 
     m_qmlView = new QQuickView();
     QQmlContext * context = m_qmlView->rootContext();
@@ -80,9 +82,8 @@ TIIDialog::TIIDialog(QWidget *parent)
         horizontalLayout = new QHBoxLayout(widget);
         horizontalLayout->setObjectName("horizontalLayout");
         tiiTable = new QTableView(widget);
-*/
-
-    ui->tiiTable->setModel(m_model);
+*/        
+    ui->tiiTable->setModel(m_sortModel);
     ui->tiiTable->verticalHeader()->hide();
     ui->tiiTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     //ui->tiiTable->horizontalHeader()->setSectionResizeMode(static_cast<int>(TiiTableModel::NumCols), QHeaderView::Stretch);
@@ -90,13 +91,13 @@ TIIDialog::TIIDialog(QWidget *parent)
     //ui->tiiTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     //ui->tiiTable->horizontalHeader()->setStretchLastSection(true);
     //ui->tiiTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
     ui->tiiTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    ui->tiiTable->horizontalHeader()->setSectionResizeMode(static_cast<int>(TiiTableModel::NumCols-1), QHeaderView::Stretch);
+
 
     ui->tiiTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tiiTable->setSelectionMode(QAbstractItemView::SingleSelection);
-    //ui->tiiTable->setSortingEnabled(true);
+    ui->tiiTable->setSortingEnabled(true);
+    ui->tiiTable->sortByColumn(-1, Qt::SortOrder::AscendingOrder);
 
     ui->tiiSpectrumPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes);
     ui->tiiSpectrumPlot->addGraph();
@@ -148,7 +149,8 @@ TIIDialog::TIIDialog(QWidget *parent)
     ui->tiiSpectrumPlot->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->tiiSpectrumPlot, &QCustomPlot::customContextMenuRequested, this, &TIIDialog::onContextMenuRequest);
 
-    connect(ui->tiiSpectrumPlot, &QCustomPlot::mouseMove, this,  &TIIDialog::showPointToolTip);
+    // TODO: it shows tooltip outside the plot - why?
+    //connect(ui->tiiSpectrumPlot, &QCustomPlot::mouseMove, this,  &TIIDialog::showPointToolTip);
 
     //loadTiiTable();
 }
@@ -200,7 +202,27 @@ void TIIDialog::reset()
 void TIIDialog::onTiiData(const RadioControlTIIData &data)
 {
     ServiceListId ensId = ServiceListId(m_currentEnsemble.frequency, m_currentEnsemble.ueid);
-    m_model->populateModel(data.idList, ensId);
+    // handle selection
+
+    int id = -1;
+    if (ui->tiiTable->selectionModel()->hasSelection())
+    {
+        QModelIndexList	selectedList = ui->tiiTable->selectionModel()->selectedRows();
+        QModelIndex currentIndex = selectedList.at(0);
+        id = ui->tiiTable->model()->data(currentIndex, TiiTableModel::TiiTableModelRoles::IdRole).toInt();
+    }
+    m_model->updateData(data.idList, ensId);
+
+    if (id >= 0)
+    {   // update selection
+        QModelIndexList	selectedList = ui->tiiTable->selectionModel()->selectedRows();
+        QModelIndex currentIndex = selectedList.at(0);
+        if (id != ui->tiiTable->model()->data(currentIndex, TiiTableModel::TiiTableModelRoles::IdRole).toInt())
+        {  // selection was updated
+            ui->tiiTable->selectionModel()->clear();
+        }
+    }
+
     addToPlot(data);
 }
 
@@ -330,6 +352,15 @@ void TIIDialog::showEvent(QShowEvent *event)
     emit setTii(true, 0.0);
     startLocationUpdate();
     setIsVisible(true);
+
+    // calculate size of the table
+    int hSize = 0;
+    for (int n = 0; n < ui->tiiTable->horizontalHeader()->count(); ++n) {
+        hSize += ui->tiiTable->horizontalHeader()->sectionSize(n);
+    }
+    ui->tiiTable->setMinimumWidth(hSize + ui->tiiTable->verticalScrollBar()->sizeHint().width() + TiiTableModel::NumCols);
+    ui->tiiTable->horizontalHeader()->setStretchLastSection(true);
+
     QDialog::showEvent(event);
 }
 

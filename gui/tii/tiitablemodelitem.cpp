@@ -28,6 +28,32 @@
 
 TiiTableModelItem::TiiTableModelItem() {}
 
+TiiTableModelItem::TiiTableModelItem(uint8_t mainId, uint8_t subId, float level, const QGeoCoordinate &coordinates, const QList<TxDataItem *> txItemList)
+{
+    setTII(mainId, subId);
+    setLevel(level);
+
+    TxDataItem * tx = nullptr;
+    for (const auto & txItem : txItemList)
+    {
+        if ((txItem->subId() == subId) && (txItem->mainId() == mainId))
+        {
+            tx = txItem;
+            break;
+        }
+    }
+    if (tx != nullptr)
+    {   // found transmitter record
+        setTransmitterData(*tx);
+
+        if (coordinates.isValid())
+        {   // we can calculate distance and azimuth
+            setDistance(coordinates.distanceTo(tx->coordinates()) * 0.001);
+            setAzimuth(coordinates.azimuthTo(tx->coordinates()));
+        }
+    }
+}
+
 float TiiTableModelItem::level() const
 {
     return m_level;
@@ -38,19 +64,16 @@ uint8_t TiiTableModelItem::mainId() const
     return m_mainId;
 }
 
-void TiiTableModelItem::setMainId(uint8_t newMainId)
+void TiiTableModelItem::setTII(uint8_t newMainId, int8_t newSubId)
 {
     m_mainId = newMainId;
+    m_subId = newSubId;
+    m_id = (newSubId << 8) | newMainId;
 }
 
 uint8_t TiiTableModelItem::subId() const
 {
     return m_subId;
-}
-
-void TiiTableModelItem::setSubId(uint8_t newSubId)
-{
-    m_subId = newSubId;
 }
 
 float TiiTableModelItem::distance() const
@@ -71,6 +94,20 @@ float TiiTableModelItem::azimuth() const
 void TiiTableModelItem::setAzimuth(float newAzimuth)
 {
     m_azimuth = newAzimuth;
+}
+
+int TiiTableModelItem::id() const
+{
+    return m_id;
+}
+
+void TiiTableModelItem::updateGeo(const QGeoCoordinate &coordinates)
+{
+    if (m_transmitterData.isValid() && coordinates.isValid())
+    {
+        setDistance(coordinates.distanceTo(m_transmitterData.coordinates()) * 0.001);
+        setAzimuth(coordinates.azimuthTo(m_transmitterData.coordinates()));
+    }
 }
 
 void TiiTableModelItem::setLevel(float newLevel)
