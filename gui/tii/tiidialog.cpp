@@ -145,7 +145,7 @@ void TIIDialog::showPointToolTip(QMouseEvent *event)
 
 void TIIDialog::positionUpdated(const QGeoPositionInfo &position)
 {
-    qDebug() << Q_FUNC_INFO << position.coordinate();
+    //qDebug() << Q_FUNC_INFO << position.coordinate();
     setCurrentPosition(position.coordinate());
     m_model->setCoordinates(m_currentPosition);
     setPositionValid(true);
@@ -185,9 +185,9 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
     // handle selection
 
     int id = -1;
-    if (ui->tiiTable->selectionModel()->hasSelection())
+    QModelIndexList	selectedList = ui->tiiTable->selectionModel()->selectedRows();
+    if (!selectedList.isEmpty())
     {
-        QModelIndexList	selectedList = ui->tiiTable->selectionModel()->selectedRows();
         QModelIndex currentIndex = selectedList.at(0);
         id = ui->tiiTable->model()->data(currentIndex, TiiTableModel::TiiTableModelRoles::IdRole).toInt();
     }
@@ -343,7 +343,7 @@ void TIIDialog::startLocationUpdate()
     QGeoPositionInfoSource *source = QGeoPositionInfoSource::createDefaultSource(this);
     if (source != nullptr)
     {
-        qDebug() << "Start upadate";
+        qDebug() << "Start position update";
         connect(source, &QGeoPositionInfoSource::positionUpdated, this, &TIIDialog::positionUpdated);
         source->startUpdates();
     }

@@ -38,13 +38,21 @@ Item {
         anchors.fill: parent
         active: tii.isVisible
         visible: active
-        sourceComponent: mainComponent
+        sourceComponent: mainComponent        
     }
 
     Component {
         id: mainComponent
         Item {
-            property variant markers
+            property bool centerToCurrentPosition: true
+            Connections {
+                target: tii
+                function onCurrentPositionChanged() {
+                    if (tii.positionValid && centerToCurrentPosition) {
+                        map.center = tii.currentPosition;
+                    }
+                }
+            }
 
             Plugin {
                 id: mapPlugin
@@ -95,7 +103,10 @@ Item {
                 DragHandler {
                     id: drag
                     target: null
-                    onTranslationChanged: (delta) => map.pan(-delta.x, -delta.y)
+                    onTranslationChanged: (delta) => {
+                                              map.pan(-delta.x, -delta.y);
+                                              centerToCurrentPosition = false;
+                                          }
                 }
                 TapHandler {
                     id: tapHandler
