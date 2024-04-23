@@ -32,6 +32,7 @@ import QtQuick.Effects
 MapQuickItem {
     property string tiiCode: ""
     property color markerColor: "gray"
+    property bool isSelected: false
 
     HoverHandler {
         id: hoverHandler
@@ -49,52 +50,21 @@ MapQuickItem {
         MultiEffect {
             source: img
             anchors.fill: img
-            opacity: hoverHandler.hovered ? 1.0 : 0.6
+            opacity: (hoverHandler.hovered || isSelected) ? 1.0 : 0.6
             colorizationColor: markerColor
             colorization: 0.5
+            shadowEnabled: isSelected
         }
         Text{
             id: txtTII
             y: (19-height)/2
             anchors.horizontalCenter: parent.horizontalCenter
             text: tiiCode
-            // color:"#242424"
-            //font.bold: true
-            // styleColor: "#ECECEC"
-            // style: Text.Outline
-            opacity: hoverHandler.hovered ? 1.0 : 0.6
-            //font.pointSize: 11
+            opacity: (hoverHandler.hovered || isSelected) ? 1.0 : 0.6
             horizontalAlignment: Text.AlignHCenter
         }
-        // Text{
-        //     id: txtChannel
-        //     y: 4
-        //     anchors.horizontalCenter: parent.horizontalCenter
-        //     text: "12C"
-        //     color:"#242424"
-        //     font.bold: true
-        //     styleColor: "#ECECEC"
-        //     style: Text.Outline
-        //     opacity: hoverHandler.hovered ? 1.0 : 0.6
-        //     font.pointSize: 10
-        //     horizontalAlignment: Text.AlignHCenter
-        // }
-        // Text{
-        //     id: txtTII
-        //     anchors.horizontalCenter: parent.horizontalCenter
-        //     anchors.top: txtChannel.bottom
-        //     anchors.topMargin: -2
-        //     text: "68-23"
-        //     color:"#242424"
-        //     font.bold: true
-        //     styleColor: "#ECECEC"
-        //     style: Text.Outline
-        //     opacity: hoverHandler.hovered ? 1.0 : 0.6
-        //     font.pointSize: 10
-        //     horizontalAlignment: Text.AlignHCenter
-        // }
     }
     anchorPoint: Qt.point(sourceItem.width/2, sourceItem.height)
-    visible: true // followme
+    visible: true
 }
 

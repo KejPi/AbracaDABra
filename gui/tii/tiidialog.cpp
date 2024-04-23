@@ -39,7 +39,7 @@ TIIDialog::TIIDialog(QWidget *parent)
 
     m_model = new TiiTableModel(this);
     m_sortModel = new TiiTableSortModel(this);
-    m_sortModel->setSourceModel(m_model);
+    m_sortModel->setSourceModel(m_model);    
 
     m_qmlView = new QQuickView();
     QQmlContext * context = m_qmlView->rootContext();
@@ -53,7 +53,6 @@ TIIDialog::TIIDialog(QWidget *parent)
     QWidget *container = QWidget::createWindowContainer(m_qmlView, this);
 
     QSizePolicy sizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
-    //sizePolicy.setHorizontalStretch(0);
     sizePolicy.setVerticalStretch(255);
     container->setSizePolicy(sizePolicy);
 
@@ -68,36 +67,17 @@ TIIDialog::TIIDialog(QWidget *parent)
     layout->setContentsMargins(0,0,0,0);
     layout->addWidget(splitter);
 
-/*
-         verticalLayout = new QVBoxLayout(TIIDialog);
-        verticalLayout->setObjectName("verticalLayout");
-        splitter = new QSplitter(TIIDialog);
-        splitter->setObjectName("splitter");
-        splitter->setOrientation(Qt::Vertical);
-        mapContainer = new QWidget(splitter);
-        mapContainer->setObjectName("mapContainer");
-        splitter->addWidget(mapContainer);
-        widget = new QWidget(splitter);
-        widget->setObjectName("widget");
-        horizontalLayout = new QHBoxLayout(widget);
-        horizontalLayout->setObjectName("horizontalLayout");
-        tiiTable = new QTableView(widget);
-*/        
     ui->tiiTable->setModel(m_sortModel);
     ui->tiiTable->verticalHeader()->hide();
     ui->tiiTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    //ui->tiiTable->horizontalHeader()->setSectionResizeMode(static_cast<int>(TiiTableModel::NumCols), QHeaderView::Stretch);
-    //ui->tiiTable->horizontalHeader()->setStretchLastSection(true);
-    //ui->tiiTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    //ui->tiiTable->horizontalHeader()->setStretchLastSection(true);
-    //ui->tiiTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tiiTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-
 
     ui->tiiTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tiiTable->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tiiTable->setSortingEnabled(true);
-    ui->tiiTable->sortByColumn(-1, Qt::SortOrder::AscendingOrder);
+    ui->tiiTable->sortByColumn(TiiTableModel::ColLevel, Qt::SortOrder::DescendingOrder);
+    connect(ui->tiiTable->selectionModel(), &QItemSelectionModel::selectionChanged, this, &TIIDialog::onSelectionChanged);
+    connect(this, &TIIDialog::selectedRowChanged, this, &TIIDialog::onSelectedRowChanged);
 
     ui->tiiSpectrumPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes);
     ui->tiiSpectrumPlot->addGraph();
@@ -151,8 +131,6 @@ TIIDialog::TIIDialog(QWidget *parent)
 
     // TODO: it shows tooltip outside the plot - why?
     //connect(ui->tiiSpectrumPlot, &QCustomPlot::mouseMove, this,  &TIIDialog::showPointToolTip);
-
-    //loadTiiTable();
 }
 
 void TIIDialog::showPointToolTip(QMouseEvent *event)
@@ -196,7 +174,9 @@ void TIIDialog::reset()
     ui->tiiSpectrumPlot->replot();
     m_isZoomed = false;
 
+    //m_currentEnsemble.frequency = 0;
     m_model->clear();
+    setSelectedRow(-1);
 }
 
 void TIIDialog::onTiiData(const RadioControlTIIData &data)
@@ -216,14 +196,49 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
     if (id >= 0)
     {   // update selection
         QModelIndexList	selectedList = ui->tiiTable->selectionModel()->selectedRows();
-        QModelIndex currentIndex = selectedList.at(0);
-        if (id != ui->tiiTable->model()->data(currentIndex, TiiTableModel::TiiTableModelRoles::IdRole).toInt())
-        {  // selection was updated
-            ui->tiiTable->selectionModel()->clear();
+        if (!selectedList.isEmpty())
+        {
+            QModelIndex currentIndex = selectedList.at(0);
+            if (id != ui->tiiTable->model()->data(currentIndex, TiiTableModel::TiiTableModelRoles::IdRole).toInt())
+            {  // selection was updated
+                ui->tiiTable->selectionModel()->clear();
+            }
         }
     }
 
     addToPlot(data);
+}
+
+void TIIDialog::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+{
+    QModelIndexList	selectedList = selected.indexes();
+    //qDebug() << Q_FUNC_INFO << m_selectedRow << selectedList;
+    if (selectedList.isEmpty()) {
+        // no selection => return
+        setSelectedRow(-1);
+        return;
+    }
+
+    QModelIndex currentIndex = selectedList.at(0);
+    currentIndex = m_sortModel->mapToSource(currentIndex);
+    setSelectedRow(currentIndex.row());
+}
+
+void TIIDialog::onSelectedRowChanged()
+{
+    if (m_selectedRow == -1)
+    {
+        ui->tiiTable->selectionModel()->clear();
+        return;
+    }
+
+    // m_selectedRow is in source model while selection uses indexes of sort model!!!
+    QModelIndexList selection = ui->tiiTable->selectionModel()->selectedRows();
+    QModelIndex idx = m_sortModel->mapFromSource(m_model->index(m_selectedRow, 0));
+    if (idx.isValid() && (selection.isEmpty() || selection.at(0) != idx))
+    {
+        ui->tiiTable->selectionModel()->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current | QItemSelectionModel::Rows);
+    }
 }
 
 void TIIDialog::setupDarkMode(bool darkModeEna)
@@ -334,15 +349,15 @@ void TIIDialog::startLocationUpdate()
     }
 }
 
+void TIIDialog::onChannelSelection()
+{
+    onEnsembleInformation(RadioControlEnsemble());
+    reset();
+}
+
 void TIIDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
 {
     m_currentEnsemble = ens;
-    setWindowTitle(QString(tr("TII Decoder: Ensemble %1 @ %2 (%3 kHz)"))
-                        .arg(QString("%1").arg(ens.ueid, 6, 16, QChar('0')).toUpper())
-                        .arg(DabTables::channelList.value(ens.frequency, 0))
-                        .arg(ens.frequency)
-                   );
-
     emit ensembleInfoChanged();
 }
 
@@ -585,4 +600,46 @@ QStringList TIIDialog::ensembleInfo() const
                             .toUpper());
     info.append(QString(tr("Channel: <b>%1 (%2 kHz)</b>")).arg(DabTables::channelList[m_currentEnsemble.frequency]).arg(m_currentEnsemble.frequency));
     return info;
+}
+
+QStringList TIIDialog::txInfo() const
+{
+    return m_txInfo;
+}
+
+int TIIDialog::selectedRow() const
+{
+    return m_selectedRow;
+}
+
+void TIIDialog::setSelectedRow(int modelRow)
+{
+    if (m_selectedRow == modelRow)
+    {
+        return;
+    }
+    m_selectedRow = modelRow;
+    emit selectedRowChanged();
+
+    m_txInfo.clear();
+    if (modelRow < 0)
+    {   // reste info
+        emit txInfoChanged();
+        return;
+    }
+
+    TiiTableModelItem item = m_model->data(m_model->index(modelRow, 0), TiiTableModel::TiiTableModelRoles::ItemRole).value<TiiTableModelItem>();
+    if (item.hasTxData())
+    {
+        m_txInfo.append(QString("<b>%1</b>").arg(item.transmitterData().location()));
+        QGeoCoordinate coord = QGeoCoordinate(item.transmitterData().coordinates().latitude(), item.transmitterData().coordinates().longitude());
+        m_txInfo.append(QString("GPS: <b>%1</b>").arg(coord.toString(QGeoCoordinate::DegreesWithHemisphere)));
+        float alt = item.transmitterData().coordinates().altitude();
+        if (alt)
+        {
+            m_txInfo.append(QString(tr("Altitude: <b>%1 m</b>")).arg(static_cast<int>(alt)));
+        }
+        m_txInfo.append(QString(tr("ERP: <b>%1 kW</b>")).arg(static_cast<double>(item.transmitterData().power()), 3, 'f', 1));
+    }
+    emit txInfoChanged();
 }

@@ -388,12 +388,12 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         break;
     case RadioControlEventType::TII:
     {
-        qDebug() << "Number of TII codes =" << pEvent->pTII->idList.size();
-        qDebug() << "Threshold =" << pEvent->pTII->thr;
-        for (int n = 0; n < pEvent->pTII->idList.size(); ++n)
-        {
-            qDebug() << "MainID" << pEvent->pTII->idList.at(n).main << "| SubID" << pEvent->pTII->idList.at(n).sub;
-        }
+        // qDebug() << "Number of TII codes =" << pEvent->pTII->idList.size();
+        // qDebug() << "Threshold =" << pEvent->pTII->thr;
+        // for (int n = 0; n < pEvent->pTII->idList.size(); ++n)
+        // {
+        //     qDebug() << "MainID" << pEvent->pTII->idList.at(n).main << "| SubID" << pEvent->pTII->idList.at(n).sub;
+        // }
         emit tiiData(*(pEvent->pTII));
         delete pEvent->pTII;
     }

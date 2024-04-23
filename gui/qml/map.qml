@@ -97,6 +97,15 @@ Item {
                     target: null
                     onTranslationChanged: (delta) => map.pan(-delta.x, -delta.y)
                 }
+                TapHandler {
+                    id: tapHandler
+                    acceptedButtons: Qt.LeftButton
+                    gesturePolicy: TapHandler.WithinBounds
+                    onTapped: {
+                        // deselection of transmitter
+                        tii.selectedRow = -1;
+                    }
+                }
                 Shortcut {
                     enabled: map.zoomLevel < map.maximumZoomLevel
                     sequence: StandardKey.ZoomIn
@@ -166,6 +175,17 @@ Item {
                         coordinate:  coordinates
                         tiiCode: tiiString
                         markerColor: levelColor
+                        isSelected: index === tii.selectedRow
+                        z: (index === tii.selectedRow) ? 2 : 1
+
+                        TapHandler {
+                            id: txTapHandler
+                            acceptedButtons: Qt.LeftButton
+                            gesturePolicy: TapHandler.WithinBounds
+                            onTapped: {
+                                tii.selectedRow = index;
+                            }
+                        }
                     }
                 }
 
@@ -190,17 +210,43 @@ Item {
                     ColumnLayout {
                         id: infoLayout
                         anchors.centerIn: parent
-                        Text {
-                            Layout.fillWidth: true
-                            text: tii.ensembleInfo[0]
+                        Repeater {
+                            model: tii.ensembleInfo
+                            delegate: Text {
+                                Layout.fillWidth: true
+                                text: modelData
+                            }
                         }
-                        Text {
-                            Layout.fillWidth: true
-                            text: tii.ensembleInfo[1]
-                        }
-                        Text {
-                            Layout.fillWidth: true
-                            text: tii.ensembleInfo[2]
+                    }
+                }
+
+                Rectangle {
+                    id: txInfoBox
+
+                    HoverHandler {
+                        id: txInfoHoverHandler
+                    }
+
+                    color: "white"
+                    opacity: txInfoHoverHandler.hovered ? 1.0 : 0.6
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.rightMargin: 10
+                    anchors.bottomMargin: 10
+                    width: txInfoLayout.width + 10
+                    height: txInfoLayout.height + 10
+
+                    visible: tii.txInfo.length > 0
+                    z: 3                        
+                    ColumnLayout {
+                        id: txInfoLayout
+                        anchors.centerIn: parent
+                        Repeater {
+                            model: tii.txInfo
+                            delegate: Text {
+                                Layout.fillWidth: true
+                                text: modelData
+                            }
                         }
                     }
                 }

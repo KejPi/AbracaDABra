@@ -1232,7 +1232,7 @@ void MainWindow::channelSelected()
 
     if (m_tiiDialog != nullptr)
     {
-        m_tiiDialog->reset();
+        m_tiiDialog->onChannelSelection();
     }
 
     // hide switch to avoid conflict with tuning -> will be enabled when tune is finished

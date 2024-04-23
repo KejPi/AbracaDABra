@@ -32,7 +32,6 @@
 #include "QQuickView"
 #include <QGeoPositionInfoSource>
 #include "radiocontrol.h"
-#include "servicelistid.h"
 #include "tiitablemodel.h"
 
 namespace Ui {
@@ -48,14 +47,16 @@ class TIIDialog : public QDialog
     Q_PROPERTY(bool positionValid READ positionValid WRITE setPositionValid NOTIFY positionValidChanged FINAL)
     Q_PROPERTY(bool isVisible READ isVisible WRITE setIsVisible NOTIFY isVisibleChanged FINAL)
     Q_PROPERTY(QStringList ensembleInfo READ ensembleInfo NOTIFY ensembleInfoChanged FINAL)
+    Q_PROPERTY(QStringList txInfo READ txInfo NOTIFY txInfoChanged FINAL)
+    Q_PROPERTY(int selectedRow READ selectedRow WRITE setSelectedRow NOTIFY selectedRowChanged FINAL)
 
 public:
     explicit TIIDialog(QWidget *parent = nullptr);
     ~TIIDialog();
-    void reset();
     void onTiiData(const RadioControlTIIData & data);
     void setupDarkMode(bool darkModeEna);
     void startLocationUpdate();
+    void onChannelSelection();
     void onEnsembleInformation(const RadioControlEnsemble &ens);
 
     QGeoCoordinate currentPosition() const;
@@ -68,16 +69,19 @@ public:
     void setIsVisible(bool newIsVisible);
 
     QStringList ensembleInfo() const;
+    QStringList txInfo() const;
+
+    int selectedRow() const;
+    void setSelectedRow(int modelRow);
 
 signals:
     void setTii(bool ena, float thr);
-
     void currentPositionChanged();
     void positionValidChanged();
-
     void isVisibleChanged();
-
     void ensembleInfoChanged();
+    void txInfoChanged();
+    void selectedRowChanged();
 
 protected:
     void showEvent(QShowEvent *event) override;
@@ -94,10 +98,11 @@ private:
     QGeoCoordinate m_currentPosition;
     bool m_positionValid = false;
     bool m_isVisible = false;
-    //QList<TxDataItem *> m_txList;
-    //QMultiHash<ServiceListId, TxDataItem*> m_txList;
     RadioControlEnsemble m_currentEnsemble;
+    QStringList m_txInfo;
+    int m_selectedRow;  // this is row in source model !!!
 
+    void reset();
     void addToPlot(const RadioControlTIIData &data);
     void onPlotSelectionChanged();
     void onPlotMousePress(QMouseEvent * event);
@@ -107,7 +112,8 @@ private:
     void onYRangeChanged(const QCPRange &newRange);
     void showPointToolTip(QMouseEvent *event);
     void positionUpdated(const QGeoPositionInfo & position);
-    //void loadTiiTable();
+    void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    void onSelectedRowChanged();
 };
 
 #endif // TIIDIALOG_H
