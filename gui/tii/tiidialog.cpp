@@ -211,15 +211,17 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
 
 void TIIDialog::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
-    QModelIndexList	selectedList = selected.indexes();
-    //qDebug() << Q_FUNC_INFO << m_selectedRow << selectedList;
-    if (selectedList.isEmpty()) {
-        // no selection => return
+    Q_UNUSED(selected)
+    Q_UNUSED(deselected)
+
+    QModelIndexList selectedRows = ui->tiiTable->selectionModel()->selectedRows();
+    if (selectedRows.isEmpty())
+    {   // no selection => return
         setSelectedRow(-1);
         return;
     }
 
-    QModelIndex currentIndex = selectedList.at(0);
+    QModelIndex currentIndex = selectedRows.at(0);
     currentIndex = m_sortModel->mapToSource(currentIndex);
     setSelectedRow(currentIndex.row());
 }
