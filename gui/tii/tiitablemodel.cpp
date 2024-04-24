@@ -213,6 +213,10 @@ void TiiTableModel::updateData(const QList<dabsdrTii_t> &data, const ServiceList
                 }
                 row += 1;
             }
+            else
+            {   // we are at the end of m_model data -> insert remaining items
+                appendList.append(item);
+            }
         }
         else
         {   // we are at the end of m_model data -> insert remaining items
@@ -225,7 +229,7 @@ void TiiTableModel::updateData(const QList<dabsdrTii_t> &data, const ServiceList
     {   // nothing to append
         if (row < m_modelData.size())
         {   // some rows to remove
-            beginRemoveRows(QModelIndex(), row, m_modelData.size() - row - 1);
+            beginRemoveRows(QModelIndex(), row, m_modelData.size() - 1);
             m_modelData.remove(row, m_modelData.size() - row);
             endRemoveRows();
         }
