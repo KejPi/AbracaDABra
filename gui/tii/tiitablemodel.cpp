@@ -73,13 +73,13 @@ QVariant TiiTableModel::data(const QModelIndex &index, int role) const
         case ColDist:
             if (item.hasTxData())
             {
-                return QString::number(static_cast<double>(item.distance()), 'f', 1);
+                return QString("%1 km").arg(static_cast<double>(item.distance()), 0, 'f', 1);
             }
             return QVariant();
         case ColAzimuth:
             if (item.hasTxData())
             {
-                return QString::number(static_cast<double>(item.azimuth()), 'f', 1);
+                return QString("%1°").arg(static_cast<double>(item.azimuth()), 0, 'f', 1);
             }
             return QVariant();
         }
