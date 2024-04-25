@@ -28,7 +28,6 @@ import QtQuick
 import QtLocation
 import QtPositioning
 import QtQuick.Effects
-import Qt5Compat.GraphicalEffects
 
 MapQuickItem {
     property string tiiCode: ""
@@ -48,7 +47,6 @@ MapQuickItem {
             source: "resources/map_marker_"+ tiiCode.length + ".png"
             visible: false
         }
-        // this is crashing
         MultiEffect {
             id: colorizationEffect
             source: img
@@ -56,16 +54,8 @@ MapQuickItem {
             opacity: (hoverHandler.hovered || isSelected) ? 1.0 : 0.6
             colorizationColor: markerColor
             colorization: 0.5
-            //shadowEnabled: isSelected  // this is causing application to crash
-        }
-        DropShadow {
-            anchors.fill: colorizationEffect
-            horizontalOffset: 0
-            verticalOffset: 3
-            radius: 8.0
-            color: "#A0000000"
-            source: colorizationEffect
-            visible: isSelected
+            shadowEnabled: true          // QTBUG-124730
+            shadowOpacity: isSelected    // QTBUG-124730
         }
         Text{
             id: txtTII
