@@ -695,10 +695,9 @@ void RadioControl::onSpiApplicationEnabled(bool enabled)
     }
 }
 
-void RadioControl::setTii(bool enabled, float thr)
+void RadioControl::setTii(bool ena)
 {
-    Q_UNUSED(thr);
-    dabSetTii(enabled, 0);
+    dabSetTii(ena);
 }
 
 QString RadioControl::ensembleConfigurationString() const
@@ -2061,7 +2060,6 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
     {
         const dabsdrNtfTii_t * pInfo = static_cast<const dabsdrNtfTii_t *>(p->pData);
         RadioControlTIIData * pData = new RadioControlTIIData;
-        pData->thr = pInfo->threshold;
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 6, 0))
         pData->idList.assign(pInfo->id, pInfo->id + pInfo->numIds);
 #else

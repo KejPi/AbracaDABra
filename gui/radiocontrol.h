@@ -258,7 +258,6 @@ struct RadioControlTIIData
     RadioControlTIIData() : spectrum(2048) {}
     QList<dabsdrTii_t> idList;
     QList<float> spectrum;
-    float thr;
 };
 
 enum class RadioControlEventType
@@ -355,7 +354,7 @@ public:
     void setupAnnouncements(uint16_t enaFlags);
     void suspendResumeAnnouncement();
     void onSpiApplicationEnabled(bool enabled);
-    void setTii(bool enabled, float thr);
+    void setTii(bool ena);
 
 signals:
     void dabEvent(RadioControlEvent * pEvent);
@@ -480,7 +479,7 @@ private:
     void dabServiceSelection(uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t decoderId) { dabsdrRequest_ServiceSelection(m_dabsdrHandle, SId, SCIdS, decoderId); }
     void dabServiceStop(uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t decoderId) { dabsdrRequest_ServiceStop(m_dabsdrHandle, SId, SCIdS, decoderId); }
     void dabXPadAppStart(uint8_t appType, bool start, dabsdrDecoderId_t decoderId) { dabsdrRequest_XPadAppStart(m_dabsdrHandle, appType, start, decoderId); }
-    void dabSetTii(bool ena, int16_t thr1000) { dabsdrRequest_SetTII(m_dabsdrHandle, ena, thr1000); }
+    void dabSetTii(bool ena) { dabsdrRequest_SetTII(m_dabsdrHandle, ena); }
 
     // wrappers used in callback functions (emit requires class instance)
     void emit_dabEvent(RadioControlEvent * pEvent) { emit dabEvent(pEvent); }
