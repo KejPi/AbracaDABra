@@ -283,8 +283,28 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
         ui->tiiSpectrumPlot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
         ui->tiiSpectrumPlot->setBackground(QBrush(Qt::black));
 
-        ui->tiiSpectrumPlot->graph(GraphId::Spect)->setPen(QPen(Qt::cyan, 1));
-        ui->tiiSpectrumPlot->graph(GraphId::Spect)->setBrush(QBrush(QColor(0, 255, 255, 100)));
+        ui->tiiSpectrumPlot->graph(GraphId::Spect)->setPen(QPen(Qt::lightGray, 1));
+        ui->tiiSpectrumPlot->graph(GraphId::Spect)->setBrush(QBrush(QColor(120, 120, 120, 100)));
+        ui->tiiSpectrumPlot->graph(GraphId::TII)->setPen(QPen(Qt::cyan, 1));
+
+        QColor axisSelectionColor(Qt::red);
+        axisSelectionColor = qApp->style()->standardPalette().color(QPalette::Active, QPalette::Link);
+        ui->tiiSpectrumPlot->xAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->xAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->xAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->xAxis->setSelectedTickLabelColor(axisSelectionColor);
+        ui->tiiSpectrumPlot->xAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->xAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->xAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->xAxis2->setSelectedTickLabelColor(axisSelectionColor);
+        ui->tiiSpectrumPlot->yAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->yAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->yAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->yAxis->setSelectedTickLabelColor(axisSelectionColor);
+        ui->tiiSpectrumPlot->yAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->yAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->yAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->yAxis2->setSelectedTickLabelColor(axisSelectionColor);
 
         ui->tiiSpectrumPlot->replot();
     }
@@ -317,7 +337,25 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
         ui->tiiSpectrumPlot->graph(GraphId::Spect)->setPen(QPen(Qt::gray, 1));
         ui->tiiSpectrumPlot->graph(GraphId::Spect)->setBrush(QBrush(QColor(80, 80, 80, 100)));
         ui->tiiSpectrumPlot->graph(GraphId::TII)->setPen(QPen(Qt::blue, 1));
-        //ui->tiiSpectrumPlot->graph(GraphId::TII)->setBrush(QBrush(QColor(0, 0, 255, 100)));
+
+        QColor axisSelectionColor(48, 140, 198);
+        axisSelectionColor = qApp->style()->standardPalette().color(QPalette::Active, QPalette::Link);
+        ui->tiiSpectrumPlot->xAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->xAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->xAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->xAxis->setSelectedTickLabelColor(axisSelectionColor);
+        ui->tiiSpectrumPlot->xAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->xAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->xAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->xAxis2->setSelectedTickLabelColor(axisSelectionColor);
+        ui->tiiSpectrumPlot->yAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->yAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->yAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->yAxis->setSelectedTickLabelColor(axisSelectionColor);
+        ui->tiiSpectrumPlot->yAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->yAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->yAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        ui->tiiSpectrumPlot->yAxis2->setSelectedTickLabelColor(axisSelectionColor);
 
         ui->tiiSpectrumPlot->replot();
     }    
