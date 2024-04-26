@@ -88,7 +88,7 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
-    enum GraphId {Spect, TII, Thr};
+    enum GraphId {Spect, TII};
     enum GraphRange { MinX = -1024, MaxX = 1023, MinY = 0, MaxY = 1 };
     Ui::TIIDialog *ui;
     QQuickView *m_qmlView ;
@@ -104,6 +104,7 @@ private:
 
     void reset();
     void addToPlot(const RadioControlTIIData &data);
+    void updateTiiPlot();
     void onPlotSelectionChanged();
     void onPlotMousePress(QMouseEvent * event);
     void onPlotMouseWheel(QWheelEvent * event);

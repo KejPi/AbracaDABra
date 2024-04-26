@@ -89,7 +89,6 @@ TIIDialog::TIIDialog(QWidget *parent)
 
     ui->tiiSpectrumPlot->graph(GraphId::Spect)->setLineStyle(QCPGraph::lsLine);
     ui->tiiSpectrumPlot->graph(GraphId::TII)->setLineStyle(QCPGraph::lsImpulse);
-    ui->tiiSpectrumPlot->graph(GraphId::Thr)->setLineStyle(QCPGraph::lsLine);
 
     QCPItemStraightLine *verticalLine;
     for (int n = -2; n <= 2; ++n)
@@ -129,8 +128,7 @@ TIIDialog::TIIDialog(QWidget *parent)
     ui->tiiSpectrumPlot->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->tiiSpectrumPlot, &QCustomPlot::customContextMenuRequested, this, &TIIDialog::onContextMenuRequest);
 
-    // TODO: it shows tooltip outside the plot - why?
-    //connect(ui->tiiSpectrumPlot, &QCustomPlot::mouseMove, this,  &TIIDialog::showPointToolTip);
+    connect(ui->tiiSpectrumPlot, &QCustomPlot::mouseMove, this,  &TIIDialog::showPointToolTip);
 }
 
 void TIIDialog::showPointToolTip(QMouseEvent *event)
@@ -140,7 +138,22 @@ void TIIDialog::showPointToolTip(QMouseEvent *event)
     x = qMax(static_cast<int>(GraphRange::MinX), x);
     double y = ui->tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(x + 1024)->value;
 
-    setToolTip(QString("%1, %2").arg(x).arg(y));
+    if (x > 0 && x <= 2*384)
+    {
+        //qDebug() << x << (((x-1) % 384) / 2) % 24;
+        int subId = (((x-1) % 384) / 2) % 24;
+        ui->tiiSpectrumPlot->setToolTip(QString(tr("Carrier: %1<br>SubId: %3<br>Level: %2")).arg(x).arg(y).arg(subId, 2, 10, QChar('0')));
+
+    }
+    else if (x < 0 && x >= -2*384)
+    {
+        int subId = (((x+2*384) % 384) / 2) % 24;
+        ui->tiiSpectrumPlot->setToolTip(QString(tr("Carrier: %1<br>SubId: %3<br>Level: %2")).arg(x).arg(y).arg(subId, 2, 10, QChar('0')));
+    }
+    else
+    {
+        ui->tiiSpectrumPlot->setToolTip(QString(tr("Carrier: %1<br>Level: %2")).arg(x).arg(y));
+    }
 }
 
 void TIIDialog::positionUpdated(const QGeoPositionInfo &position)
@@ -164,10 +177,9 @@ void TIIDialog::reset()
     for (int n = -1024; n<1024; ++n)
     {
         f.append(n);
-        none.append(-1.0);
+        none.append(0.0);
     }
     ui->tiiSpectrumPlot->graph(GraphId::Spect)->setData(f, none, true);
-    ui->tiiSpectrumPlot->graph(GraphId::Thr)->setData({-1024.0, 1023.0}, {-1.0, -1.0}, true);
     ui->tiiSpectrumPlot->graph(GraphId::TII)->setData({0.0}, {-1.0});
     ui->tiiSpectrumPlot->rescaleAxes();
     ui->tiiSpectrumPlot->deselectAll();
@@ -274,9 +286,6 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
         ui->tiiSpectrumPlot->graph(GraphId::Spect)->setPen(QPen(Qt::cyan, 1));
         ui->tiiSpectrumPlot->graph(GraphId::Spect)->setBrush(QBrush(QColor(0, 255, 255, 100)));
 
-        ui->tiiSpectrumPlot->graph(GraphId::Thr)->setPen(QPen(QColor(Qt::red), 1, Qt::DashLine));
-        ui->tiiSpectrumPlot->graph(GraphId::Thr)->setBrush(QBrush(QColor(255, 0, 0, 100)));
-
         ui->tiiSpectrumPlot->replot();
     }
     else
@@ -309,8 +318,6 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
         ui->tiiSpectrumPlot->graph(GraphId::Spect)->setBrush(QBrush(QColor(80, 80, 80, 100)));
         ui->tiiSpectrumPlot->graph(GraphId::TII)->setPen(QPen(Qt::blue, 1));
         //ui->tiiSpectrumPlot->graph(GraphId::TII)->setBrush(QBrush(QColor(0, 0, 255, 100)));
-        ui->tiiSpectrumPlot->graph(GraphId::Thr)->setPen(QPen(QColor(Qt::gray), 0, Qt::SolidLine));
-        ui->tiiSpectrumPlot->graph(GraphId::Thr)->setBrush(QBrush(QColor(128, 128, 128, 100)));
 
         ui->tiiSpectrumPlot->replot();
     }    
@@ -403,17 +410,39 @@ void TIIDialog::addToPlot(const RadioControlTIIData &data)
     {
         (*it++).value = data.spectrum.at(n)*norm;
     }
+    updateTiiPlot();
+}
+
+void TIIDialog::updateTiiPlot()
+{
     ui->tiiSpectrumPlot->graph(GraphId::TII)->data()->clear();
-    for (const auto & tii : data.idList)
-    {
-        QList<int> subcar = DabTables::getTiiSubcarriers(tii.main, tii.sub);
-        for (const auto & c : subcar)
+    if (m_selectedRow < 0)
+    {  // draw all
+        for (int row = 0; row < m_model->rowCount(); ++row)
         {
-            float val = ui->tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(c + 1024)->value;
-            ui->tiiSpectrumPlot->graph(GraphId::TII)->addData(c, val);
+            const auto & item = m_model->itemAt(row);
+            QList<int> subcar = DabTables::getTiiSubcarriers(item.mainId(), item.subId());
+            for (const auto & c : subcar)
+            {
+                float val = ui->tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(c + 1024)->value;
+                ui->tiiSpectrumPlot->graph(GraphId::TII)->addData(c, val);
+            }
         }
     }
-    ui->tiiSpectrumPlot->graph(GraphId::Thr)->setData({-1024.0, 1023.0}, {data.thr, data.thr}, true);
+    else
+    {   // draw only selected TII item
+        if (m_selectedRow < m_model->rowCount())
+        {
+            const auto & item = m_model->itemAt(m_selectedRow);
+            QList<int> subcar = DabTables::getTiiSubcarriers(item.mainId(), item.subId());
+            for (const auto & c : subcar)
+            {
+                float val = ui->tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(c + 1024)->value;
+                ui->tiiSpectrumPlot->graph(GraphId::TII)->addData(c, val);
+            }
+        }
+    }
+
     ui->tiiSpectrumPlot->replot();
 }
 
@@ -625,8 +654,10 @@ void TIIDialog::setSelectedRow(int modelRow)
 
     m_txInfo.clear();
     if (modelRow < 0)
-    {   // reste info
+    {   // reset info
         emit txInfoChanged();
+
+        updateTiiPlot();
         return;
     }
 
@@ -644,4 +675,6 @@ void TIIDialog::setSelectedRow(int modelRow)
         m_txInfo.append(QString(tr("ERP: <b>%1 kW</b>")).arg(static_cast<double>(item.transmitterData().power()), 3, 'f', 1));
     }
     emit txInfoChanged();
+
+    updateTiiPlot();
 }
