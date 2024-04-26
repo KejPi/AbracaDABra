@@ -153,6 +153,13 @@ QHash<int, QByteArray> TiiTableModel::roleNames() const
     return roles;
 }
 
+const TiiTableModelItem &TiiTableModel::itemAt(int row) const
+{
+    Q_ASSERT(row >= 0 && row < m_modelData.size());
+
+    return m_modelData.at(row);
+}
+
 void TiiTableModel::clear()
 {
     beginResetModel();

@@ -57,12 +57,13 @@ public:
            NumCols};
 
     explicit TiiTableModel(QObject *parent = nullptr);
-    int rowCount(const QModelIndex &parent) const override;
-    int columnCount(const QModelIndex &parent) const override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     //Qt::ItemFlags flags(const QModelIndex &index) const override;
     QVariant data(const QModelIndex &index, int role) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
+    const TiiTableModelItem & itemAt(int row) const;
     void clear();
 
     void updateData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId);
