@@ -82,6 +82,8 @@ add_executable(${TARGET}
     audiooutput.h
     audiooutputqt.h
     audiooutputqt.cpp
+    dabchannellistmodel.h
+    dabchannellistmodel.cpp
     servicelistid.h
     servicelist.h
     servicelist.cpp

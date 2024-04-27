@@ -47,6 +47,7 @@
 #include "audiorecmanager.h"
 #include "audiorecscheduledialog.h"
 #include "clickablelabel.h"
+#include "dabchannellistmodel.h"
 #include "epgdialog.h"
 #include "metadatamanager.h"
 #include "setupdialog.h"
@@ -203,6 +204,9 @@ private:
     bool m_hasTreeViewFocus;
     int m_audioVolume = 100;
     bool m_keepServiceListOnScan;
+
+    // channel list combo
+    DABChannelListFilteredModel * m_channelListModel;
 
     // service list
     ServiceList * m_serviceList;

@@ -488,7 +488,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
     while (it != DabTables::channelList.constEnd()) {
         // insert to combo
-        ui->channelCombo->addItem(it.value(), it.key());
+        //ui->channelCombo->addItem(it.value(), it.key());
 
         // calculate label size
         QString freqStr = QString("%1 MHz").arg(it.key()/1000.0, 3, 'f', 3, QChar('0'));
@@ -498,6 +498,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         }
         ++it;
     }
+    m_channelListModel = new DABChannelListFilteredModel(this);
+    m_channelListModel->setSourceModel(new DABChannelListModel(this));
+    ui->channelCombo->setModel(m_channelListModel);
     connect(ui->channelCombo, &QComboBox::currentIndexChanged, this, &MainWindow::onChannelChange);
     ui->channelCombo->setCurrentIndex(-1);
     ui->channelCombo->setDisabled(true);
@@ -2169,6 +2172,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     // disable file recording
     m_ensembleInfoDialog->enableRecording(false);
 
+    // restore all channels
+    m_channelListModel->setChannelFilter(0);
+
     switch (d)
     {
     case InputDeviceId::UNDEFINED:
@@ -2582,6 +2588,10 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // show XML header is available
             m_setupDialog->setXmlHeader(m_inputDevice->deviceDescription());
+            if (m_inputDevice->deviceDescription().rawFile.hasXmlHeader)
+            {
+                m_channelListModel->setChannelFilter(m_inputDevice->deviceDescription().rawFile.frequency_kHz);
+            }
 
             // metadata & EPG
             EPGTime::getInstance()->setIsLiveBroadcasting(false);
