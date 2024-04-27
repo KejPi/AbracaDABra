@@ -238,10 +238,10 @@ qt6_add_qml_module(${TARGET}
         qml/map_blank.qml
         qml/TransmitterMarker.qml
     RESOURCES
-        resources/map_marker.png
         resources/map_marker_3.png
         resources/map_marker_4.png
         resources/map_marker_5.png
+        resources/Europe_blank_laea_location_map.svg
     VERSION 1.0
     RESOURCE_PREFIX "/"
 )

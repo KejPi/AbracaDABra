@@ -54,6 +54,5 @@
         <file>resources/chevron-right_dark.png</file>
         <file>resources/record.png</file>
         <file>resources/conflict.png</file>
-        <file>resources/Europe_blank_laea_location_map.svg</file>
     </qresource>
 </RCC>
