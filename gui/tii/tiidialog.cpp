@@ -28,6 +28,7 @@
 #include <QQuickStyle>
 #include <QQmlContext>
 
+#include "config.h"
 #include "tiidialog.h"
 #include "ui_tiidialog.h"
 
@@ -44,11 +45,12 @@ TIIDialog::TIIDialog(QWidget *parent)
     m_qmlView = new QQuickView();
     QQmlContext * context = m_qmlView->rootContext();
     context->setContextProperty("tii", this);
+#if HAVE_QTLOCATION
     context->setContextProperty("tiiTable", m_model);
-
-    //context->setContextProperty("epgTime", EPGTime::getInstance());
-
     m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map.qml"));
+#else
+    m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map_blank.qml"));
+#endif
 
     QWidget *container = QWidget::createWindowContainer(m_qmlView, this);
 
@@ -393,6 +395,7 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
 
 void TIIDialog::startLocationUpdate()
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
     // ask for permission
 #if QT_CONFIG(permissions)
     QLocationPermission locationsPermission;
@@ -415,6 +418,7 @@ void TIIDialog::startLocationUpdate()
         qDebug() << "LocationPermission Granted";
         break; // Proceed
     }
+#endif
 #endif
     // start location update
     QGeoPositionInfoSource *source = QGeoPositionInfoSource::createDefaultSource(this);

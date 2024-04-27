@@ -26,7 +26,6 @@
 
 #include <QColor>
 #include "tiitablemodel.h"
-#include "QtCore/qassert.h"
 #include "txdataloader.h"
 
 TiiTableModel::TiiTableModel(QObject *parent)

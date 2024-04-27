@@ -216,6 +216,7 @@ set_source_files_properties(qml/EPGHorizontalShadow.qml PROPERTIES QT_RESOURCE_A
 set_source_files_properties(qml/EPGScrollableText.qml PROPERTIES QT_RESOURCE_ALIAS EPGScrollableText.qml)
 
 set_source_files_properties(qml/map.qml PROPERTIES QT_RESOURCE_ALIAS map.qml)
+set_source_files_properties(qml/map_blank.qml PROPERTIES QT_RESOURCE_ALIAS map_blank.qml)
 set_source_files_properties(qml/TransmitterMarker.qml PROPERTIES QT_RESOURCE_ALIAS TransmitterMarker.qml)
 
 qt6_add_qml_module(${TARGET}
@@ -232,6 +233,7 @@ qt6_add_qml_module(${TARGET}
         qml/EPGScrollableText.qml
 
         qml/map.qml
+        qml/map_blank.qml
         qml/TransmitterMarker.qml
     RESOURCES
         resources/map_marker.png
@@ -318,9 +320,13 @@ target_link_libraries(${TARGET} PRIVATE
     Qt${QT_VERSION_MAJOR}::Network
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::QuickControls2
-    Qt${QT_VERSION_MAJOR}::Location
     Qt${QT_VERSION_MAJOR}::Positioning
 )
+if(HAVE_QTLOCATION)
+    target_link_libraries(${TARGET} PRIVATE
+        Qt${QT_VERSION_MAJOR}::Location
+    )
+endif(HAVE_QTLOCATION)
 
 set(TSFILES
     l10n/${TARGET}_cs.ts

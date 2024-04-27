@@ -328,10 +328,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     m_ensembleInfoAction = new QAction(tr("Ensemble information"), this);
     connect(m_ensembleInfoAction, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
-
+#if HAVE_QCUSTOMPLOT
     m_tiiAction = new QAction(tr("TII decoder"), this);
     connect(m_tiiAction, &QAction::triggered, this, &MainWindow::showTiiDialog);
-
+#endif
     m_audioRecordingScheduleAction = new QAction(tr("Audio recording schedule..."), this);
     connect(m_audioRecordingScheduleAction, &QAction::triggered, this, &MainWindow::showAudioRecordingSchedule);
 
@@ -371,7 +371,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_menu->addSeparator();
     m_menu->addAction(m_epgAction);
     m_menu->addAction(m_ensembleInfoAction);
+#if HAVE_QCUSTOMPLOT
     m_menu->addAction(m_tiiAction);
+#endif
     m_menu->addAction(m_logAction);
     m_menu->addAction(m_aboutAction);
 
@@ -1229,11 +1231,12 @@ void MainWindow::channelSelected()
     ui->frequencyLabel->setText(tr("Tuning...  "));
 
     onSignalState(uint8_t(DabSyncLevel::NoSync), 0.0);
-
+#if HAVE_QCUSTOMPLOT
     if (m_tiiDialog != nullptr)
     {
         m_tiiDialog->onChannelSelection();
     }
+#endif
 
     // hide switch to avoid conflict with tuning -> will be enabled when tune is finished
     ui->switchSourceLabel->setHidden(true);
@@ -3168,9 +3171,9 @@ void MainWindow::setExpertMode(bool ena)
     ui->slsView_Service->setExpertMode(ena);
     ui->slsView_Announcement->setExpertMode(ena);
     m_catSlsDialog->setExpertMode(ena);
-
+#if HAVE_QCUSTOMPLOT
     m_tiiAction->setVisible(ena);
-
+#endif
     // set tab order
     if (ena)
     {

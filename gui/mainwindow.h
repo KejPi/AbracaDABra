@@ -153,7 +153,9 @@ private:
     QAction * m_clearServiceListAction;
     QAction * m_bandScanAction;
     QAction * m_ensembleInfoAction;
+#if HAVE_QCUSTOMPLOT
     QAction * m_tiiAction;
+#endif
     QAction * m_aboutAction;
     QAction * m_logAction;
     QAction * m_audioRecordingAction;

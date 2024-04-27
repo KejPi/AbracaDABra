@@ -497,9 +497,19 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 COMPONENTS Widgets Multimedia Svg Xml Network Quick Qml QuickControls2 Positioning Location REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia Svg Xml Network Quick Qml QuickControls2 QmlWorkerScript Positioning Location REQUIRED)
+find_package(QT NAMES Qt6 COMPONENTS Widgets Multimedia Svg Xml Network Quick Qml QuickControls2 Positioning REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia Svg Xml Network Quick Qml QuickControls2 QmlWorkerScript Positioning REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS LinguistTools)
+
+# Qt Location is used to display detected transmitters on map in TII dialog
+if(QT_VERSION LESS 6.5.0)
+    message(WARNING "Qt version < 6.5.0, transmitter map will not be available in TII dialog")
+    set(HAVE_QTLOCATION OFF)
+else()
+    find_package(QT NAMES Qt6 COMPONENTS Location REQUIRED)
+    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Location REQUIRED)
+    set(HAVE_QTLOCATION ON)
+endif()
 
 #########################################################
 ## AbracaDABra GUI
