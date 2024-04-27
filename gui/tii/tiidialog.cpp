@@ -495,11 +495,14 @@ void TIIDialog::onPlotSelectionChanged()
 
 
     // make top and bottom axes be selected synchronously, and handle axis and tick labels as one selectable object:
-    if (ui->tiiSpectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis) || ui->tiiSpectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spTickLabels) ||
-        ui->tiiSpectrumPlot->xAxis2->selectedParts().testFlag(QCPAxis::spAxis) || ui->tiiSpectrumPlot->xAxis2->selectedParts().testFlag(QCPAxis::spTickLabels))
+    if (ui->tiiSpectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis)
+        || ui->tiiSpectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spTickLabels)
+        || ui->tiiSpectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxisLabel)
+        || ui->tiiSpectrumPlot->xAxis2->selectedParts().testFlag(QCPAxis::spAxis)
+        || ui->tiiSpectrumPlot->xAxis2->selectedParts().testFlag(QCPAxis::spTickLabels))
     {
         ui->tiiSpectrumPlot->xAxis2->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
-        ui->tiiSpectrumPlot->xAxis->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
+        ui->tiiSpectrumPlot->xAxis->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels|QCPAxis::spAxisLabel);
     }
     // make left and right axes be selected synchronously, and handle axis and tick labels as one selectable object:
     if (ui->tiiSpectrumPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis) || ui->tiiSpectrumPlot->yAxis->selectedParts().testFlag(QCPAxis::spTickLabels) ||
