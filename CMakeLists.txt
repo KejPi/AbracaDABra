@@ -497,24 +497,9 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 COMPONENTS Widgets Multimedia Svg Xml Network Quick Qml QuickControls2 REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia Svg Xml Network Quick Qml QuickControls2 QmlWorkerScript REQUIRED)
+find_package(QT NAMES Qt6 COMPONENTS Widgets Multimedia Svg Xml Network Quick Qml QuickControls2 Positioning Location REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia Svg Xml Network Quick Qml QuickControls2 QmlWorkerScript Positioning Location REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS LinguistTools)
-
-# TII requires Qt>=6.5.0
-set (HAVE_TII OFF)
-if(QT_VERSION_MINOR GREATER_EQUAL 5)
-    find_package(QT NAMES Qt6 COMPONENTS Positioning Location REQUIRED)
-    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Positioning Location)
-    if (HAVE_QCUSTOMPLOT)
-        set(HAVE_TII ON)
-    else()
-        message(WARNING "TII will be disabled (QCustomPlot now found)")
-    endif()
-else()
-    message(WARNING "TII will be disabled (minimum Qt version is 6.5.0, found ${QT_VERSION_MAJOR}.${QT_VERSION_MINOR}.${QT_VERSION_PATCH})")
-endif()
-
 
 #########################################################
 ## AbracaDABra GUI
