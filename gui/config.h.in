@@ -36,6 +36,7 @@
 #cmakedefine01 HAVE_FDKAAC
 #cmakedefine01 HAVE_PORTAUDIO
 #cmakedefine01 HAVE_QCUSTOMPLOT
+#cmakedefine01 HAVE_TII
 
 /* Optional devices */
 #cmakedefine01 HAVE_AIRSPY

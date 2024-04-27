@@ -37,22 +37,30 @@ configure_file (config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 if (HAVE_AIRSPY)
     set(AIRSPY_SOURCES input/airspyinput.h input/airspyinput.cpp)
 endif(HAVE_AIRSPY)
+
 if (HAVE_SOAPYSDR)
     set(SOAPYSDR_SOURCES input/soapysdrinput.h input/soapysdrinput.cpp)
 endif(HAVE_SOAPYSDR)
+
 if (HAVE_PORTAUDIO)
     set(PORTAUDIO_SOURCES audiooutputpa.h audiooutputpa.cpp)
 endif(HAVE_PORTAUDIO)
+
 if (HAVE_QCUSTOMPLOT)
     set(QCUSTOMPLOT_SOURCES
         snrplotdialog.h snrplotdialog.cpp snrplotdialog.ui
+    )
+endif(HAVE_QCUSTOMPLOT)
+
+if(HAVE_TII)
+    set(TII_SOURCES
         tii/tiidialog.h tii/tiidialog.cpp tii/tiidialog.ui
         tii/tiitablemodel.h tii/tiitablemodel.cpp
         tii/tiitablemodelitem.h tii/tiitablemodelitem.cpp
         tii/txdataitem.h tii/txdataitem.cpp
         tii/txdataloader.h tii/txdataloader.cpp
     )
-endif(HAVE_QCUSTOMPLOT)
+endif(HAVE_TII)
 
 
 #########################################################
@@ -67,6 +75,7 @@ add_executable(${TARGET}
     ${PORTAUDIO_SOURCES}
     ${APPLE_SOURCES}
     ${QCUSTOMPLOT_SOURCES}
+    ${TII_SOURCES}
     main.cpp
     mainwindow.cpp
     mainwindow.h
@@ -215,8 +224,14 @@ set_source_files_properties(qml/EPGColors.qml PROPERTIES QT_RESOURCE_ALIAS EPGCo
 set_source_files_properties(qml/EPGHorizontalShadow.qml PROPERTIES QT_RESOURCE_ALIAS EPGHorizontalShadow.qml)
 set_source_files_properties(qml/EPGScrollableText.qml PROPERTIES QT_RESOURCE_ALIAS EPGScrollableText.qml)
 
+if(HAVE_TII)
+set(TII_QML_SOURCES
+    qml/map.qml
+    qml/TransmitterMarker.qml
+)
 set_source_files_properties(qml/map.qml PROPERTIES QT_RESOURCE_ALIAS map.qml)
 set_source_files_properties(qml/TransmitterMarker.qml PROPERTIES QT_RESOURCE_ALIAS TransmitterMarker.qml)
+endif(HAVE_TII)
 
 qt6_add_qml_module(${TARGET}
     URI app.qmlcomponents
@@ -229,10 +244,8 @@ qt6_add_qml_module(${TARGET}
         qml/EPGButton.qml
         qml/EPGColors.qml
         qml/EPGHorizontalShadow.qml
-        qml/EPGScrollableText.qml
-
-        qml/map.qml
-        qml/TransmitterMarker.qml
+        qml/EPGScrollableText.qml        
+        ${TII_QML_SOURCES}
     RESOURCES
         resources/map_marker.png
         resources/map_marker_3.png
@@ -310,6 +323,7 @@ if(WIN32)
 endif(WIN32)
 
 include_directories ( ${CMAKE_SOURCE_DIR} )
+
 target_link_libraries(${TARGET} PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Multimedia
@@ -318,9 +332,13 @@ target_link_libraries(${TARGET} PRIVATE
     Qt${QT_VERSION_MAJOR}::Network
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::QuickControls2
-    Qt${QT_VERSION_MAJOR}::Location
-    Qt${QT_VERSION_MAJOR}::Positioning
 )
+if(HAVE_TII)
+    target_link_libraries(${TARGET} PRIVATE
+        Qt${QT_VERSION_MAJOR}::Location
+        Qt${QT_VERSION_MAJOR}::Positioning
+    )
+endif(HAVE_TII)
 
 set(TSFILES
     l10n/${TARGET}_cs.ts

@@ -186,6 +186,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_audioRecScheduleDialog = nullptr;
 #if HAVE_QCUSTOMPLOT
     m_snrPlotDialog = nullptr;
+#endif
+#if HAVE_TII
     m_tiiDialog = nullptr;
 #endif
 
@@ -329,8 +331,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_ensembleInfoAction = new QAction(tr("Ensemble information"), this);
     connect(m_ensembleInfoAction, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
 
+#if HAVE_TII
     m_tiiAction = new QAction(tr("TII decoder"), this);
     connect(m_tiiAction, &QAction::triggered, this, &MainWindow::showTiiDialog);
+#endif
 
     m_audioRecordingScheduleAction = new QAction(tr("Audio recording schedule..."), this);
     connect(m_audioRecordingScheduleAction, &QAction::triggered, this, &MainWindow::showAudioRecordingSchedule);
@@ -371,7 +375,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_menu->addSeparator();
     m_menu->addAction(m_epgAction);
     m_menu->addAction(m_ensembleInfoAction);
+#if HAVE_TII
     m_menu->addAction(m_tiiAction);
+#endif
     m_menu->addAction(m_logAction);
     m_menu->addAction(m_aboutAction);
 
@@ -776,7 +782,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &UserApplication::setAudioServiceId);
 
     // TII dialog
-#if HAVE_QCUSTOMPLOT
+#if HAVE_TII
     m_tiiDialog = new TIIDialog(this);
     m_tiiDialog->setupDarkMode(isDarkMode());
     // connect(m_tiiDialog, &QDialog::finished, m_tiiDialog, &QObject::deleteLater);
@@ -1229,12 +1235,12 @@ void MainWindow::channelSelected()
     ui->frequencyLabel->setText(tr("Tuning...  "));
 
     onSignalState(uint8_t(DabSyncLevel::NoSync), 0.0);
-
+#if HAVE_TII
     if (m_tiiDialog != nullptr)
     {
         m_tiiDialog->onChannelSelection();
     }
-
+#endif
     // hide switch to avoid conflict with tuning -> will be enabled when tune is finished
     ui->switchSourceLabel->setHidden(true);
     serviceSelected();
@@ -3122,21 +3128,11 @@ void MainWindow::showSnrPlotDialog()
 
 void MainWindow::showTiiDialog()
 {
-#if HAVE_QCUSTOMPLOT
-    // if (m_tiiDialog == nullptr)
-    // {
-    //     m_tiiDialog = new TIIDialog(this);
-    //     m_tiiDialog->setupDarkMode(isDarkMode());
-    //     connect(m_tiiDialog, &QDialog::finished, m_tiiDialog, &QObject::deleteLater);
-    //     connect(m_tiiDialog, &QDialog::destroyed, this, [this]() { m_tiiDialog = nullptr; } );
-    //     connect(m_tiiDialog, &TIIDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
-    //     connect(m_radioControl, &RadioControl::tiiData, m_tiiDialog, &TIIDialog::onTiiData, Qt::QueuedConnection);
-    // }
-
+#if HAVE_TII
     m_tiiDialog->show();
     m_tiiDialog->raise();
     m_tiiDialog->activateWindow();
-#endif // HAVE_QCUSTOMPLOT
+#endif // HAVE_TII
 }
 
 void MainWindow::onExpertModeToggled(bool checked)
@@ -3168,9 +3164,9 @@ void MainWindow::setExpertMode(bool ena)
     ui->slsView_Service->setExpertMode(ena);
     ui->slsView_Announcement->setExpertMode(ena);
     m_catSlsDialog->setExpertMode(ena);
-
+#if HAVE_TII
     m_tiiAction->setVisible(ena);
-
+#endif
     // set tab order
     if (ena)
     {
@@ -3574,6 +3570,8 @@ void MainWindow::setupDarkMode()
         {
             m_snrPlotDialog->setupDarkMode(true);
         }
+#endif
+#if HAVE_TII
         if (m_tiiDialog != nullptr)
         {
             m_tiiDialog->setupDarkMode(true);
@@ -3611,6 +3609,8 @@ void MainWindow::setupDarkMode()
         {
             m_snrPlotDialog->setupDarkMode(false);
         }
+#endif
+#if HAVE_TII
         if (m_tiiDialog != nullptr)
         {
             m_tiiDialog->setupDarkMode(false);

@@ -67,9 +67,10 @@
 #include "audiorecschedulemodel.h"
 #if HAVE_QCUSTOMPLOT
 #include "snrplotdialog.h"
+#endif
+#if HAVE_TII
 #include "tiidialog.h"
 #endif
-
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -125,11 +126,13 @@ private:
     LogDialog * m_logDialog;
     AudioRecScheduleDialog * m_audioRecScheduleDialog;
 #if HAVE_QCUSTOMPLOT
-    TIIDialog * m_tiiDialog;
     SNRPlotDialog * m_snrPlotDialog;    
     ClickableLabel * m_snrLabel;    
 #else
     QLabel * m_snrLabel;
+#endif
+#if HAVE_TII
+    TIIDialog * m_tiiDialog;
 #endif
     QProgressBar * m_snrProgressbar;    
     ClickableLabel * m_menuLabel;
@@ -153,7 +156,9 @@ private:
     QAction * m_clearServiceListAction;
     QAction * m_bandScanAction;
     QAction * m_ensembleInfoAction;
+#if HAVE_TII
     QAction * m_tiiAction;
+#endif
     QAction * m_aboutAction;
     QAction * m_logAction;
     QAction * m_audioRecordingAction;
