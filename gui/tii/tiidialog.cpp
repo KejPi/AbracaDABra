@@ -170,6 +170,31 @@ TIIDialog::~TIIDialog()
     delete ui;    
 }
 
+void TIIDialog::showEvent(QShowEvent *event)
+{
+    reset();
+    emit setTii(true, 0.0);
+    startLocationUpdate();
+    setIsVisible(true);
+
+    // calculate size of the table
+    int hSize = 0;
+    for (int n = 0; n < ui->tiiTable->horizontalHeader()->count(); ++n) {
+        hSize += ui->tiiTable->horizontalHeader()->sectionSize(n);
+    }
+    ui->tiiTable->setMinimumWidth(hSize + ui->tiiTable->verticalScrollBar()->sizeHint().width() + TiiTableModel::NumCols);
+    ui->tiiTable->horizontalHeader()->setStretchLastSection(true);
+
+    QDialog::showEvent(event);
+}
+
+void TIIDialog::closeEvent(QCloseEvent *event)
+{
+    emit setTii(false, 0.0);
+    setIsVisible(false);
+    QDialog::closeEvent(event);
+}
+
 void TIIDialog::reset()
 {
     QList<double> f;
@@ -194,8 +219,13 @@ void TIIDialog::reset()
 void TIIDialog::onTiiData(const RadioControlTIIData &data)
 {
     ServiceListId ensId = ServiceListId(m_currentEnsemble.frequency, m_currentEnsemble.ueid);
-    // handle selection
+    if (!ensId.isValid())
+    {   // when we receive data without valid ensemble
+        reset();
+        return;
+    }
 
+    // handle selection
     int id = -1;
     QModelIndexList	selectedList = ui->tiiTable->selectionModel()->selectedRows();
     if (!selectedList.isEmpty())
@@ -407,32 +437,6 @@ void TIIDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
     m_currentEnsemble = ens;
     emit ensembleInfoChanged();
 }
-
-void TIIDialog::showEvent(QShowEvent *event)
-{
-    reset();
-    emit setTii(true, 0.0);
-    startLocationUpdate();
-    setIsVisible(true);
-
-    // calculate size of the table
-    int hSize = 0;
-    for (int n = 0; n < ui->tiiTable->horizontalHeader()->count(); ++n) {
-        hSize += ui->tiiTable->horizontalHeader()->sectionSize(n);
-    }
-    ui->tiiTable->setMinimumWidth(hSize + ui->tiiTable->verticalScrollBar()->sizeHint().width() + TiiTableModel::NumCols);
-    ui->tiiTable->horizontalHeader()->setStretchLastSection(true);
-
-    QDialog::showEvent(event);
-}
-
-void TIIDialog::closeEvent(QCloseEvent *event)
-{
-    emit setTii(false, 0.0);
-    setIsVisible(false);
-    QDialog::closeEvent(event);
-}
-
 
 void TIIDialog::addToPlot(const RadioControlTIIData &data)
 {
