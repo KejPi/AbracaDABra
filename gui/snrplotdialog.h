@@ -27,7 +27,7 @@
 #ifndef SNRPLOTDIALOG_H
 #define SNRPLOTDIALOG_H
 
-#include <QDateTime.h>
+#include <QDateTime>
 #include <QDialog>
 
 namespace Ui {
