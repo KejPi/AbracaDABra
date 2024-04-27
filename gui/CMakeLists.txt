@@ -341,7 +341,7 @@ qt_add_translations(${TARGET} TS_FILES ${TSFILES}
 
 
 # Set a custom plist file for the app bundle
-#if(APPLE AND APPLE_APP_BUNDLE)
+if(APPLE AND APPLE_APP_BUNDLE)
     set_target_properties(${TARGET} PROPERTIES
         ${BUNDLE_ID_OPTION}
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/Info.plist.in
@@ -353,4 +353,4 @@ qt_add_translations(${TARGET} TS_FILES ${TSFILES}
         # Need to sign application for location permissions to work
         add_custom_command(TARGET ${TARGET} POST_BUILD COMMAND codesign -s - ${TARGET}.app)
     endif()
-#endif(APPLE AND APPLE_APP_BUNDLE)
+endif(APPLE AND APPLE_APP_BUNDLE)
