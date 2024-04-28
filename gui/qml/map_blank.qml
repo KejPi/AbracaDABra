@@ -43,7 +43,7 @@ Item {
         id: mainComponent
         Item {
             Image {
-                source: "qrc:/resources/Europe_blank_laea_location_map.svg"
+                source: "resources/Europe_blank_laea_location_map.svg"
                 anchors.fill: parent
                 fillMode: Image.PreserveAspectCrop
             }
