@@ -27,6 +27,7 @@
 import QtCore
 import QtQuick
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import app.qmlcomponents 1.0
 
 Item {
@@ -43,9 +44,17 @@ Item {
         id: mainComponent
         Item {
             Image {
+                id: blankMap
                 source: "resources/Europe_blank_laea_location_map.svg"
                 anchors.fill: parent
                 fillMode: Image.PreserveAspectCrop
+                visible: false
+            }
+            Desaturate {
+                anchors.fill: blankMap
+                source: blankMap
+                desaturation: 0.8
+                opacity: 0.40
             }
             Rectangle {
                 color: "white"
@@ -55,9 +64,9 @@ Item {
                 Text {
                     id: warningText
                     anchors.centerIn: parent
-                    font.bold: true
+                    //font.bold: true
                     font.pointSize: 20
-                    text: qsTr("Map requires application to be built with Qt version 6.5.0 or newer.")
+                    text: qsTr("Displaying transmitters' locations requires Qt version 6.5.0 or newer.")
                 }
             }
         }
