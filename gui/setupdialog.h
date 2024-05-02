@@ -32,8 +32,9 @@
 #include <QList>
 #include <QAbstractButton>
 #include <QLocale>
-#include "QtWidgets/qcheckbox.h"
-#include "QtWidgets/qlabel.h"
+#include <QGeoCoordinate>
+#include <QCheckBox>
+#include <QLabel>
 #include "config.h"
 #include "inputdevice.h"
 #if HAVE_AIRSPY
@@ -47,6 +48,7 @@ namespace Ui { class SetupDialog; }
 QT_END_NAMESPACE
 
 enum class ApplicationStyle { Default = 0, Light, Dark};
+enum class GeolocationSource { System = 0, Manual, SerialPort };
 
 class SetupDialog : public QDialog
 {
@@ -125,10 +127,16 @@ public:
             QString slsPattern;
             QString spiPattern;
         } uaDump;
+
+        struct TIISettings {
+            GeolocationSource locationSource;
+            QGeoCoordinate coordinates;
+            QString serialPort;
+        } tii;
     };
 
     SetupDialog(QWidget *parent = nullptr);
-    Settings settings() const;
+    const Settings & settings() const;
     void setGainValues(const QList<float> & gainList);
     void resetInputDevice();
     void setSettings(const Settings &settings);
@@ -154,6 +162,7 @@ signals:
     void spiApplicationSettingsChanged(bool useInterent, bool enaRadioDNS);
     void audioRecordingSettings(const QString &folder, bool doOutputRecording);
     void uaDumpSettings(const Settings::UADumpSettings & settings);
+    void tiiSettingsChanged();
 protected:
     void showEvent(QShowEvent *event);
 
@@ -223,6 +232,10 @@ private:
     void onDataDumpCheckboxToggled(bool);
     void onDataDumpPatternEditingFinished();
     void onDataDumpResetClicked();
+
+    void onGeolocationSourceChanged(int index);
+    void onCoordinateEditFinished();
+    void onSerialPortEditFinished();
 
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);

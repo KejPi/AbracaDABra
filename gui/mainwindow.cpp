@@ -782,10 +782,11 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     // TII dialog
 #if HAVE_QCUSTOMPLOT
-    m_tiiDialog = new TIIDialog(this);
+    m_tiiDialog = new TIIDialog(m_setupDialog->settings(), this);
     m_tiiDialog->setupDarkMode(isDarkMode());
     // connect(m_tiiDialog, &QDialog::finished, m_tiiDialog, &QObject::deleteLater);
     // connect(m_tiiDialog, &QDialog::destroyed, this, [this]() { m_tiiDialog = nullptr; } );
+    connect(m_setupDialog, &SetupDialog::tiiSettingsChanged, m_tiiDialog, &TIIDialog::onSettingsChanged);
     connect(m_tiiDialog, &TIIDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::tiiData, m_tiiDialog, &TIIDialog::onTiiData, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleInformation, m_tiiDialog, &TIIDialog::onEnsembleInformation, Qt::QueuedConnection);
@@ -2680,6 +2681,10 @@ void MainWindow::loadSettings()
     s.uaDump.slsPattern = settings->value("UA-STORAGE/slsPattern", slsDumpPatern).toString();
     s.uaDump.spiPattern = settings->value("UA-STORAGE/spiPattern", spiDumpPatern).toString();
 
+    s.tii.locationSource = static_cast<GeolocationSource>(settings->value("TII/locationSource", static_cast<int>(GeolocationSource::System)).toInt());
+    s.tii.coordinates = QGeoCoordinate(settings->value("TII/latitude", 0.0).toDouble(), settings->value("TII/longitude", 0.0).toDouble());
+    s.tii.serialPort = settings->value("TII/serialPort", "").toString();
+
     m_epgDialog->setFilterEmptyEpg(settings->value("epgFilterEmpty", false).toBool());
     m_epgDialog->setFilterEnsemble(settings->value("epgFilterOtherEnsembles", false).toBool());
 
@@ -2843,6 +2848,11 @@ void MainWindow::saveSettings()
     settings->setValue("audioRecFolder", s.audioRecFolder);
     settings->setValue("audioRecCaptureOutput", s.audioRecCaptureOutput);
     settings->setValue("audioRecAutoStop", s.audioRecAutoStopEna);
+
+    settings->setValue("TII/locationSource", static_cast<int>(s.tii.locationSource));
+    settings->setValue("TII/latitude", s.tii.coordinates.latitude());
+    settings->setValue("TII/longitude", s.tii.coordinates.longitude());
+    settings->setValue("TII/serialPort", s.tii.serialPort);
 
     settings->setValue("UA-STORAGE/folder", s.uaDump.folder);
     settings->setValue("UA-STORAGE/overwriteEna", s.uaDump.overwriteEna);

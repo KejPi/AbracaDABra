@@ -32,8 +32,9 @@
 #include "tiidialog.h"
 #include "ui_tiidialog.h"
 
-TIIDialog::TIIDialog(QWidget *parent)
+TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
     : QDialog(parent)
+    , m_settings(settings)
     , ui(new Ui::TIIDialog)
 {
     ui->setupUi(this);
@@ -160,7 +161,6 @@ void TIIDialog::showPointToolTip(QMouseEvent *event)
 
 void TIIDialog::positionUpdated(const QGeoPositionInfo &position)
 {
-    //qDebug() << Q_FUNC_INFO << position.coordinate();
     setCurrentPosition(position.coordinate());
     m_model->setCoordinates(m_currentPosition);
     setPositionValid(true);
@@ -194,6 +194,7 @@ void TIIDialog::closeEvent(QCloseEvent *event)
 {
     emit setTii(false, 0.0);
     setIsVisible(false);
+    stopLocationUpdate();
     QDialog::closeEvent(event);
 }
 
@@ -395,38 +396,78 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
 
 void TIIDialog::startLocationUpdate()
 {
+    switch (m_settings.tii.locationSource)
+    {
+    case GeolocationSource::System:
+    {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
-    // ask for permission
+        // ask for permission
 #if QT_CONFIG(permissions)
-    QLocationPermission locationsPermission;
-    locationsPermission.setAccuracy(QLocationPermission::Precise);
-    locationsPermission.setAvailability(QLocationPermission::Always);
-    switch (qApp->checkPermission(locationsPermission)) {
-    case Qt::PermissionStatus::Undetermined:
-        qApp->requestPermission(locationsPermission, this, [this]() { startLocationUpdate(); } );
-        qDebug() << "LocationPermission Undetermined";
-        return;
-    case Qt::PermissionStatus::Denied:
-    {
-        qDebug() << "LocationPermission Denied";
-        QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), tr("Device location access is denied."), {}, this);
-        msgBox.setInformativeText(tr("If you want to display current position on map, grant the location permission in Settings then open the app again."));
-        msgBox.exec();
-    }
-        return;
-    case Qt::PermissionStatus::Granted:
-        qDebug() << "LocationPermission Granted";
-        break; // Proceed
-    }
+        QLocationPermission locationsPermission;
+        locationsPermission.setAccuracy(QLocationPermission::Precise);
+        locationsPermission.setAvailability(QLocationPermission::WhenInUse);
+        switch (qApp->checkPermission(locationsPermission)) {
+        case Qt::PermissionStatus::Undetermined:
+            qApp->requestPermission(locationsPermission, this, [this]() { startLocationUpdate(); } );
+            qDebug() << "LocationPermission Undetermined";
+            return;
+        case Qt::PermissionStatus::Denied:
+        {
+            qDebug() << "LocationPermission Denied";
+            QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), tr("Device location access is denied."), {}, this);
+            msgBox.setInformativeText(tr("If you want to display current position on map, grant the location permission in Settings then open the app again."));
+            msgBox.exec();
+        }
+            return;
+        case Qt::PermissionStatus::Granted:
+            qDebug() << "LocationPermission Granted";
+            break; // Proceed
+        }
 #endif
 #endif
-    // start location update
-    QGeoPositionInfoSource *source = QGeoPositionInfoSource::createDefaultSource(this);
-    if (source != nullptr)
+        // start location update
+        if (m_geopositionSource == nullptr)
+        {
+            m_geopositionSource = QGeoPositionInfoSource::createDefaultSource(this);
+        }
+        if (m_geopositionSource != nullptr)
+        {
+            qDebug() << "Start position update";
+            connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &TIIDialog::positionUpdated);
+            m_geopositionSource->startUpdates();
+        }
+    }
+    break;
+    case GeolocationSource::Manual:
+        if (m_geopositionSource != nullptr)
+        {
+            delete m_geopositionSource;
+            m_geopositionSource = nullptr;
+        }
+        positionUpdated(QGeoPositionInfo(m_settings.tii.coordinates, QDateTime::currentDateTime()));
+        break;
+    case GeolocationSource::SerialPort:
     {
-        qDebug() << "Start position update";
-        connect(source, &QGeoPositionInfoSource::positionUpdated, this, &TIIDialog::positionUpdated);
-        source->startUpdates();
+        // serial port
+        QVariantMap params;
+        params["nmea.source"] = "serial:"+m_settings.tii.serialPort;
+        m_geopositionSource = QGeoPositionInfoSource::createSource("nmea", params, this);
+        if (m_geopositionSource != nullptr)
+        {
+            qDebug() << "Start position update";
+            connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &TIIDialog::positionUpdated);
+            m_geopositionSource->startUpdates();
+        }
+    }
+        break;
+    }
+}
+
+void TIIDialog::stopLocationUpdate()
+{
+    if (m_geopositionSource != nullptr)
+    {
+        m_geopositionSource->stopUpdates();
     }
 }
 
@@ -440,6 +481,20 @@ void TIIDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
 {
     m_currentEnsemble = ens;
     emit ensembleInfoChanged();
+}
+
+void TIIDialog::onSettingsChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+    if (m_geopositionSource != nullptr)
+    {
+        delete m_geopositionSource;
+        m_geopositionSource = nullptr;
+    }
+    if (m_isVisible)
+    {
+        startLocationUpdate();
+    }
 }
 
 void TIIDialog::addToPlot(const RadioControlTIIData &data)
@@ -676,8 +731,8 @@ QStringList TIIDialog::ensembleInfo() const
     QStringList info;
     info.append(tr("Ensemble: <b>%1</b>").arg(m_currentEnsemble.label));
     info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b>").arg(m_currentEnsemble.ecc(), 2, 16, QChar('0'))
-                                      .arg(m_currentEnsemble.eid(), 4, 16, QChar('0'))
-                            .toUpper());
+                    .arg(m_currentEnsemble.eid(), 4, 16, QChar('0'))
+                    .toUpper());
     info.append(QString(tr("Channel: <b>%1 (%2 kHz)</b>")).arg(DabTables::channelList[m_currentEnsemble.frequency]).arg(m_currentEnsemble.frequency));
     return info;
 }

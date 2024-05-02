@@ -33,6 +33,7 @@
 #include <QGeoPositionInfoSource>
 #include "radiocontrol.h"
 #include "tiitablemodel.h"
+#include "setupdialog.h"
 
 namespace Ui {
 class TIIDialog;
@@ -51,13 +52,15 @@ class TIIDialog : public QDialog
     Q_PROPERTY(int selectedRow READ selectedRow WRITE setSelectedRow NOTIFY selectedRowChanged FINAL)
 
 public:
-    explicit TIIDialog(QWidget *parent = nullptr);
+    explicit TIIDialog(const SetupDialog::Settings & settings, QWidget *parent = nullptr);
     ~TIIDialog();
     void onTiiData(const RadioControlTIIData & data);
     void setupDarkMode(bool darkModeEna);
     void startLocationUpdate();
+    void stopLocationUpdate();
     void onChannelSelection();
     void onEnsembleInformation(const RadioControlEnsemble &ens);
+    void onSettingsChanged();
 
     QGeoCoordinate currentPosition() const;
     void setCurrentPosition(const QGeoCoordinate &newCurrentPosition);
@@ -91,10 +94,12 @@ private:
     enum GraphId {Spect, TII};
     enum GraphRange { MinX = -1024, MaxX = 1023, MinY = 0, MaxY = 1 };
     Ui::TIIDialog *ui;
+    const SetupDialog::Settings & m_settings;
     QQuickView *m_qmlView ;
     TiiTableModel * m_model;
     TiiTableSortModel * m_sortModel;
     bool m_isZoomed;
+    QGeoPositionInfoSource * m_geopositionSource = nullptr;
     QGeoCoordinate m_currentPosition;
     bool m_positionValid = false;
     bool m_isVisible = false;

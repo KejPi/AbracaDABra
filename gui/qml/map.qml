@@ -53,7 +53,6 @@ Item {
                     }
                 }
             }
-
             Plugin {
                 id: mapPlugin
                 name: "osm"
@@ -66,7 +65,7 @@ Item {
                 anchors.fill: parent
                 plugin: mapPlugin
                 center: tii.positionValid ? tii.currentPosition : QtPositioning.coordinate(50.08804, 14.42076) // Prague
-                zoomLevel: 10
+                zoomLevel: 9
                 property geoCoordinate startCentroid
 
                 activeMapType: map.supportedMapTypes[map.supportedMapTypes.length-1]

@@ -28,6 +28,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QStandardItemModel>
+#include <QGeoCoordinate>
 
 #include "setupdialog.h"
 #include "./ui_setupdialog.h"
@@ -315,6 +316,20 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 #else
     ui->audioDecoderGroupBox->setVisible(false);
 #endif
+
+    ui->locationSourceCombo->addItem(tr("System"), QVariant::fromValue(GeolocationSource::System));
+    ui->locationSourceCombo->addItem(tr("Manual"), QVariant::fromValue(GeolocationSource::Manual));
+    ui->locationSourceCombo->addItem(tr("NMEA Serial Port"), QVariant::fromValue(GeolocationSource::SerialPort));
+    connect(ui->locationSourceCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onGeolocationSourceChanged);
+    ui->locationSrcWidget->setEnabled(false);
+    ui->coordinatesEdit->setText("0.0, 0.0");
+
+    static const QRegularExpression coordRe("[+-]?[0-9]+(\\.[0-9]+)?\\s*,\\s*[+-]?[0-9]+(\\.[0-9]+)?");
+    QRegularExpressionValidator *coordValidator = new QRegularExpressionValidator(coordRe, this);
+    ui->coordinatesEdit->setValidator(coordValidator);
+    connect(ui->coordinatesEdit, &QLineEdit::editingFinished, this, &SetupDialog::onCoordinateEditFinished);
+    connect(ui->serialPortEdit, &QLineEdit::editingFinished, this, &SetupDialog::onSerialPortEditFinished);
+
     QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
 }
 
@@ -338,7 +353,7 @@ void SetupDialog::setSlsDumpPaternDefault(const QString &newSlsDumpPaternDefault
     m_slsDumpPaternDefault = newSlsDumpPaternDefault;
 }
 
-SetupDialog::Settings SetupDialog::settings() const
+const SetupDialog::Settings & SetupDialog::settings() const
 {
     return m_settings;
 }
@@ -395,8 +410,9 @@ void SetupDialog::setSettings(const Settings &settings)
     emit xmlHeaderToggled(m_settings.xmlHeaderEna);
     emit audioRecordingSettings(m_settings.audioRecFolder, m_settings.audioRecCaptureOutput);
     emit uaDumpSettings(m_settings.uaDump);
-    onUseInternetChecked(m_settings.useInternet);
-    onSpiAppChecked(m_settings.spiAppEna);
+    emit tiiSettingsChanged();
+    onUseInternetChecked(m_settings.useInternet);    
+    onSpiAppChecked(m_settings.spiAppEna);    
 }
 
 void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
@@ -690,6 +706,11 @@ void SetupDialog::setUiState()
     }
     // this may trigger the signal (no problem if it happens)
     ui->dumpOverwriteCheckbox->setChecked(m_settings.uaDump.overwriteEna);
+    ui->coordinatesEdit->setText(QString("%1, %2")
+                                     .arg(m_settings.tii.coordinates.latitude(), 0, 'g', QLocale::FloatingPointShortest)
+                                     .arg(m_settings.tii.coordinates.longitude(), 0, 'g', QLocale::FloatingPointShortest));
+    ui->serialPortEdit->setText(m_settings.tii.serialPort);
+    ui->locationSourceCombo->setCurrentIndex(static_cast<int>(m_settings.tii.locationSource));
 }
 
 void SetupDialog::onConnectDeviceClicked()
@@ -1232,6 +1253,7 @@ void SetupDialog::onExpertModeChecked(bool checked)
     ui->airspyExpertGroup->setVisible(checked);
     ui->soapysdrExpertGroup->setVisible(checked);
     ui->dataDumpGroup->setVisible(checked);
+    ui->tiiGroup->setVisible(checked);
     if (!checked)
     {
         ui->dumpSlsCheckBox->setChecked(false);
@@ -1410,4 +1432,64 @@ void SetupDialog::onDataDumpResetClicked()
         ui->dumpSpiPatternEdit->setText(m_spiDumpPaternDefault);
     }
     emit uaDumpSettings(m_settings.uaDump);
+}
+
+void SetupDialog::onGeolocationSourceChanged(int index)
+{
+    int srcInt = ui->locationSourceCombo->itemData(index).toInt();
+    if (srcInt > 0)
+    {
+        ui->locationSrcWidget->setCurrentIndex(srcInt-1);
+    }
+
+    ui->locationSrcWidget->setEnabled(srcInt > 0);
+    m_settings.tii.locationSource = static_cast<GeolocationSource>(srcInt);
+
+    emit tiiSettingsChanged();
+}
+
+void SetupDialog::onCoordinateEditFinished()
+{
+    static const QRegularExpression splitRegex("\\s*,\\s*");
+    QStringList coord = ui->coordinatesEdit->text().split(splitRegex);
+    if (coord.size() != 2)
+    {
+        ui->coordinatesEdit->setText("0.0, 0.0");
+        m_settings.tii.coordinates = QGeoCoordinate(0.0,0.0);
+        emit tiiSettingsChanged();
+        return;
+    }
+
+    bool ok;
+    double longitude;
+    double latitude = coord.at(0).toDouble(&ok);
+    if (ok)
+    {
+        longitude = coord.at(1).toDouble(&ok);
+    }
+    if (!ok)
+    {
+        ui->coordinatesEdit->setText("0.0, 0.0");
+        m_settings.tii.coordinates = QGeoCoordinate(0.0,0.0);
+        emit tiiSettingsChanged();
+        return;
+    }
+
+    QGeoCoordinate coordinate(latitude, longitude);
+    if (!coordinate.isValid())
+    {
+        ui->coordinatesEdit->setText("0.0, 0.0");
+        m_settings.tii.coordinates = QGeoCoordinate(0.0,0.0);
+        emit tiiSettingsChanged();
+        return;
+    }
+
+    m_settings.tii.coordinates = QGeoCoordinate(latitude, longitude);
+    emit tiiSettingsChanged();
+}
+
+void SetupDialog::onSerialPortEditFinished()
+{
+    m_settings.tii.serialPort = ui->serialPortEdit->text().trimmed();
+    emit tiiSettingsChanged();
 }
