@@ -1710,7 +1710,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="manualLocationPage">
              <layout class="QVBoxLayout" name="verticalLayout_16">
@@ -1746,7 +1746,7 @@
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
 &lt;p&gt;
 Enter coordinates in &quot;latitude, longitude&quot; format, for example: 1.234,-5.678&lt;/p&gt;
-&lt;p&gt;Tip: &lt;i&gt;Go to &lt;a href=&quot;https://www.google.com/maps\&quot;&gt;Google maps&lt;/a&gt;,
+&lt;p&gt;Tip: &lt;i&gt;Go to &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;,
 right click on your location, click on coordinates in popup menu to copy them
 and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
 &lt;/p&gt;
