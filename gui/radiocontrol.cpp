@@ -263,7 +263,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
     }
         break;
 
-    case RadioControlEventType::SERVICE_STOP:
+    case RadioControlEventType::STOP_SERVICE:
     {
         if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
@@ -1958,7 +1958,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         const dabsdrNtfServiceStop_t * pInfo = (const dabsdrNtfServiceStop_t * ) p->pData;
 
         RadioControlEvent * pEvent = new RadioControlEvent;
-        pEvent->type = RadioControlEventType::SERVICE_STOP;
+        pEvent->type = RadioControlEventType::STOP_SERVICE;
 
         pEvent->status = p->status;
         pEvent->SId = pInfo->SId;

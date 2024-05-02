@@ -271,7 +271,7 @@ enum class RadioControlEventType
     USER_APP_LIST,
     ANNOUNCEMENT_SUPPORT,
     SERVICE_SELECTION,
-    SERVICE_STOP,
+    STOP_SERVICE,
     XPAD_APP_START_STOP,
     AUTO_NOTIFICATION,
     DATAGROUP_DL,
@@ -281,7 +281,7 @@ enum class RadioControlEventType
     RESET,
     ANNOUNCEMENT_SWITCHING,
     PROGRAMME_TYPE,
-    TII,
+    TII
 };
 
 enum class RadioControlAnnouncementState
