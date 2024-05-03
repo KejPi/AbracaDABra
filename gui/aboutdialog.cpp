@@ -73,6 +73,9 @@ AboutDialog::AboutDialog(QWidget *parent) :
 #if HAVE_PORTAUDIO
                            "<li><a href=\"http://www.portaudio.com\">PortAudio</a> Copyright © 1999-2011 Ross Bencina and Phil Burk</li>"
 #endif
+#if HAVE_QCUSTOMPLOT
+                           "<li><a href=\"https://www.qcustomplot.com\">QCustomPlot</a> by Emanuel Eichhammer</li>"
+#endif
                            "</ul>"+
                            tr("Contributors to the translation:")+
                            "<ul>"
