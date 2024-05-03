@@ -459,9 +459,8 @@ if (QCUSTOMPLOT)
             # not found is system -> trying ${EXTERNAL_LIBS_DIR}
             message (WARNING "QCustomPlot not found in system, searching in ${EXTERNAL_LIBS_DIR}")
 
-            find_library(QCUSTOMPLOT_LINK_LIBRARIES qcustomplot PATHS ${EXTERNAL_LIBS_DIR}/lib)
-            #find_path(QCUSTOMPLOT_INCLUDE_DIRS libairspy/airspy.h PATHS ${EXTERNAL_LIBS_DIR}/include)
-
+            find_library(QCUSTOMPLOT_LINK_LIBRARIES NAMES qcustomplot-qt6 qcustomplot qcustomplot2 PATHS ${EXTERNAL_LIBS_DIR}/lib NO_DEFAULT_PATH)
+            find_path(QCUSTOMPLOT_INCLUDE_DIRS qcustomplot.h PATHS ${EXTERNAL_LIBS_DIR}/include NO_DEFAULT_PATH)
             if (QCUSTOMPLOT_LINK_LIBRARIES)
                 message (STATUS "libqcustomplot found: ${QCUSTOMPLOT_LINK_LIBRARIES}")
                 set(HAVE_QCUSTOMPLOT ON)
