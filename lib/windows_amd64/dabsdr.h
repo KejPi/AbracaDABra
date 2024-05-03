@@ -114,6 +114,7 @@ typedef enum dabsdrNotificationId_e
     DABSDR_NID_ANNOUNCEMENT_SUPPORT,
     DABSDR_NID_ANNOUNCEMENT_SWITCHING,
     DABSDR_NID_PTY,
+    DABSDR_NID_TII,
 } dabsdrNotificationId_t;
 
 typedef enum dabsdrNotificationStatus_e
@@ -350,6 +351,20 @@ typedef  struct {
     uint8_t d;  // dynamic
 } dabsdrNtfPTy_t;
 
+typedef struct {
+    uint8_t main;   // main ID
+    uint8_t sub;    // sub ID
+    float level;
+} dabsdrTii_t;
+
+
+typedef struct
+{
+    uint8_t numIds;     // number of detected TII ID's
+    dabsdrTii_t id[24];
+    int (*getSpectrumTii)(dabsdrHandle_t handle, float buffer[2048]);
+} dabsdrNtfTii_t;
+
 
 // input functions
 typedef void (*dabsdrInputFunc_t)(float [], uint16_t);
@@ -390,6 +405,7 @@ DABSDR_API void dabsdrRequest_ServiceSelection(dabsdrHandle_t handle, uint32_t S
 DABSDR_API void dabsdrRequest_ServiceStop(dabsdrHandle_t handle, uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t id);
 DABSDR_API void dabsdrRequest_XPadAppStart(dabsdrHandle_t handle, uint8_t appType, int8_t startRequest, dabsdrDecoderId_t id);
 DABSDR_API void dabsdrRequest_SetPeriodicNotify(dabsdrHandle_t handle, uint8_t period, uint32_t cfg);
+DABSDR_API void dabsdrRequest_SetTII(dabsdrHandle_t handle, uint8_t ena);
 DABSDR_API void dabsdrRequest_Exit(dabsdrHandle_t handle);
 
 
