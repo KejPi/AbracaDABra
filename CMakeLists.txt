@@ -14,7 +14,6 @@ option (USE_FDKAAC            "Compile with fdk-aac library from Franhofer inste
 # Audio output
 option (USE_PORTAUDIO         "Compile with PortAudio library instead of Qt6 multimedia framework (better performance)" ON)
 
-
 # Options to force using libs build manually and installed in ${CMAKE_SOURCE_DIR}/../../dab-libs
 option (USE_SYSTEM_RTLSDR       "Use system provided rtl-sdr"         ON)
 option (USE_SYSTEM_LIBUSB       "Use system provided libusb"          ON)
@@ -35,7 +34,10 @@ option (AIRSPY                "Enable AirSpy devices"                OFF)
 option (SOAPYSDR              "Enable Soapy SDR devices"             OFF)
 
 # Plots
-option (QCUSTOMPLOT           "Enable QCustomPlot (GPL3 license)"    ON)
+option (QCUSTOMPLOT           "Enable QCustomPlot (GPLv3 license)"    ON)
+
+# Git submodule
+option(GIT_SUBMODULE          "Check submodules during build"         ON)
 
 if(APPLE AND APPLE_APP_BUNDLE)
     if(APPLE_BUILD_X86_64)
@@ -450,38 +452,48 @@ endif(SOAPYSDR)
 ## QCUSTOMPLOT
 if (QCUSTOMPLOT)
     if (USE_SYSTEM_QCUSTOMPLOT)
-        find_library (QCUSTOMPLOT_LINK_LIBRARIES NAMES qcustomplot-qt6 qcustomplot)
+        find_library (QCUSTOMPLOT_LINK_LIBRARIES NAMES qcustomplot-qt6 qcustomplot2 qcustomplot)
         find_path(QCUSTOMPLOT_INCLUDE_DIRS qcustomplot.h)
         if (NOT WIN32)
             pkg_search_module(QCUSTOMPLOT qcustomplot)
         endif()
         if (NOT QCUSTOMPLOT_LINK_LIBRARIES)
             # not found is system -> trying ${EXTERNAL_LIBS_DIR}
-            message (WARNING "QCustomPlot not found in system, searching in ${EXTERNAL_LIBS_DIR}")
-
-            find_library(QCUSTOMPLOT_LINK_LIBRARIES NAMES qcustomplot-qt6 qcustomplot qcustomplot2 PATHS ${EXTERNAL_LIBS_DIR}/lib NO_DEFAULT_PATH)
-            find_path(QCUSTOMPLOT_INCLUDE_DIRS qcustomplot.h PATHS ${EXTERNAL_LIBS_DIR}/include NO_DEFAULT_PATH)
-            if (QCUSTOMPLOT_LINK_LIBRARIES)
-                message (STATUS "libqcustomplot found: ${QCUSTOMPLOT_LINK_LIBRARIES}")
-                set(HAVE_QCUSTOMPLOT ON)
-            else(QCUSTOMPLOT_LINK_LIBRARIES)
-                message (STATUS "libqcustomplot not found. Build from source and install to: ${EXTERNAL_LIBS_DIR}.")
-                set(HAVE_QCUSTOMPLOT OFF)
-            endif()
+            message(FATAL_ERROR "QCustomPlot not found. Use bundled source code by setting USE_SYSTEM_QCUSTOMPLOT=OFF")
         else()
             # found in system
+            # check version
+            file(READ "${QCUSTOMPLOT_INCLUDE_DIRS}/qcustomplot.h" QCP_HFILE)
+            string(REGEX MATCH "#define +QCUSTOMPLOT_VERSION_STR +\"(.*)\"" _ ${QCP_HFILE})
+            set(QCP_VER ${CMAKE_MATCH_1})
+            if(QCP_VER VERSION_LESS 2.1.0)
+                message(FATAL_ERROR "QCustomPlot version >=2.1.0 not found. Use bundled source code by setting USE_SYSTEM_QCUSTOMPLOT=OFF or disable QCustomPlot by setting QCUSTOMPLOT=OFF")
+            endif()
             set(HAVE_QCUSTOMPLOT ON)
         endif()
     else(USE_SYSTEM_QCUSTOMPLOT)
-        find_library(QCUSTOMPLOT_LINK_LIBRARIES NAMES qcustomplot-qt6 qcustomplot qcustomplot2 PATHS ${EXTERNAL_LIBS_DIR}/lib NO_DEFAULT_PATH)
-        find_path(QCUSTOMPLOT_INCLUDE_DIRS qcustomplot.h PATHS ${EXTERNAL_LIBS_DIR}/include NO_DEFAULT_PATH)
-        if (QCUSTOMPLOT_LINK_LIBRARIES)
-            message (STATUS "libqcustomplot found: ${QCUSTOMPLOT_LINK_LIBRARIES}")
-            set(HAVE_QCUSTOMPLOT ON)
-        else()
-            message (STATUS "libqcustomplot not found. Build from source and install to: ${EXTERNAL_LIBS_DIR}.")
-            set(HAVE_QCUSTOMPLOT OFF)
+        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
+            # Update submodules as needed
+            if(GIT_SUBMODULE)
+                message(STATUS "QCustomPlot-library submodule update")
+                execute_process(COMMAND git submodule update --init --recursive
+                                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                                RESULT_VARIABLE GIT_SUBMOD_RESULT)
+                if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+                    message(FATAL_ERROR "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+                endif()
+            endif()
         endif()
+
+        if(NOT EXISTS "${PROJECT_SOURCE_DIR}/extern/qcustomplot-lib/CMakeLists.txt")
+            message(FATAL_ERROR "QCustomPlot-library submodule was not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
+        endif()
+
+        set(PROJECT_BUILD_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/qcustomplot)
+        add_subdirectory(extern/qcustomplot-lib ${CMAKE_CURRENT_BINARY_DIR}/qcustomplot)
+        set(QCUSTOMPLOT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/qcustomplot-lib/lib)
+        set(QCUSTOMPLOT_LINK_LIBRARIES qcustomplot)
+        set(HAVE_QCUSTOMPLOT ON)
     endif (USE_SYSTEM_QCUSTOMPLOT)
 else(QCUSTOMPLOT)
     set(HAVE_QCUSTOMPLOT OFF)
@@ -531,7 +543,11 @@ else ()
         include(GNUInstallDirs)
         INSTALL (FILES ${PROJECT_SOURCE_DIR}/gui/resources/AbracaDABra.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications/ RENAME ${TARGET}.desktop)
         INSTALL (FILES ${PROJECT_SOURCE_DIR}/gui/resources/appIcon-linux-512x512.png DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/512x512/apps/ RENAME ${TARGET}.png)
-     endif()
+    endif()
+    if (NOT USE_SYSTEM_QCUSTOMPLOT)
+        install(IMPORTED_RUNTIME_ARTIFACTS qcustomplot LIBRARY)
+        INSTALL (FILES ${CMAKE_CURRENT_BINARY_DIR}/qcustomplot/lib/libqcustomplot.so.2.1.1.1 DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    endif()
 endif()
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/dabsdr/CMakeLists.txt" OR PROJECT_VERSION_RELEASE)
     install(IMPORTED_RUNTIME_ARTIFACTS dabsdr::dabsdr)

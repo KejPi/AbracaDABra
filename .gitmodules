@@ -1,0 +1,3 @@
+[submodule "extern/qcustomplot-lib"]
+	path = extern/qcustomplot-lib
+	url = ../../legerch/QCustomPlot-library.git
