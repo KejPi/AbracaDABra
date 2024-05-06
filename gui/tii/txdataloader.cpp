@@ -102,7 +102,7 @@ void TxDataLoader::loadTable(QMultiHash<ServiceListId, TxDataItem *> &txList)
         {"ZA", 0xD0 },
     };
 
-    const QString filename = "tii.csv";
+    const QString filename = "dab-tx-list.csv";
     static const QRegularExpression sepRegex("\\s*\\;\\s*");
     QDir directory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)  + "/TII/");
     if (directory.exists(filename)) {

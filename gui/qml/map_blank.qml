@@ -69,6 +69,67 @@ Item {
                     text: qsTr("Displaying transmitters' locations requires Qt version 6.5.0 or newer.")
                 }
             }
+            Rectangle {
+                id: infoBox
+
+                HoverHandler {
+                    id: infoHoverHandler
+                }
+
+                color: "white"
+                opacity: infoHoverHandler.hovered ? 1.0 : 0.6
+                width: infoLayout.width + 10
+                height: infoLayout.height + 10
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.rightMargin: 10
+                anchors.topMargin: 10
+                visible: tii.ensembleInfo[0] !== ""
+                z: 3
+
+                ColumnLayout {
+                    id: infoLayout
+                    anchors.centerIn: parent
+                    Repeater {
+                        model: tii.ensembleInfo
+                        delegate: Text {
+                            Layout.fillWidth: true
+                            text: modelData
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                id: txInfoBox
+
+                HoverHandler {
+                    id: txInfoHoverHandler
+                }
+
+                color: "white"
+                opacity: txInfoHoverHandler.hovered ? 1.0 : 0.6
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.rightMargin: 10
+                anchors.bottomMargin: 10
+                width: txInfoLayout.width + 10
+                height: txInfoLayout.height + 10
+
+                visible: tii.txInfo.length > 0
+                z: 3
+                ColumnLayout {
+                    id: txInfoLayout
+                    anchors.centerIn: parent
+                    Repeater {
+                        model: tii.txInfo
+                        delegate: Text {
+                            Layout.fillWidth: true
+                            text: modelData
+                        }
+                    }
+                }
+            }
         }
     }
 }
