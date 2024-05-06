@@ -48,10 +48,8 @@ TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
     context->setContextProperty("tii", this);
 #if HAVE_QTLOCATION
     context->setContextProperty("tiiTable", m_model);
-    m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map.qml"));
-#else
-    m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map_blank.qml"));
 #endif
+    m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map.qml"));
 
     QWidget *container = QWidget::createWindowContainer(m_qmlView, this);
 

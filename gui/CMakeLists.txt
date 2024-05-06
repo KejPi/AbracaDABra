@@ -217,9 +217,14 @@ set_source_files_properties(qml/EPGColors.qml PROPERTIES QT_RESOURCE_ALIAS EPGCo
 set_source_files_properties(qml/EPGHorizontalShadow.qml PROPERTIES QT_RESOURCE_ALIAS EPGHorizontalShadow.qml)
 set_source_files_properties(qml/EPGScrollableText.qml PROPERTIES QT_RESOURCE_ALIAS EPGScrollableText.qml)
 
-set_source_files_properties(qml/map.qml PROPERTIES QT_RESOURCE_ALIAS map.qml)
-set_source_files_properties(qml/map_blank.qml PROPERTIES QT_RESOURCE_ALIAS map_blank.qml)
+if(HAVE_QTLOCATION)
+    set(MAP_QML_FILE qml/map.qml)
+else()
+    set(MAP_QML_FILE qml/map_blank.qml)
+endif()
+set_source_files_properties(${MAP_QML_FILE} PROPERTIES QT_RESOURCE_ALIAS map.qml)
 set_source_files_properties(qml/TransmitterMarker.qml PROPERTIES QT_RESOURCE_ALIAS TransmitterMarker.qml)
+
 
 qt6_add_qml_module(${TARGET}
     URI app.qmlcomponents
@@ -234,8 +239,7 @@ qt6_add_qml_module(${TARGET}
         qml/EPGHorizontalShadow.qml
         qml/EPGScrollableText.qml
 
-        qml/map.qml
-        qml/map_blank.qml
+        ${MAP_QML_FILE}
         qml/TransmitterMarker.qml
     RESOURCES
         resources/map_marker_3.png
