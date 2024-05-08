@@ -33,6 +33,10 @@ TiiTableModel::TiiTableModel(QObject *parent)
 {
 
     TxDataLoader::loadTable(m_txList);
+
+    connect(this, &QAbstractListModel::rowsInserted, this, &TiiTableModel::rowCountChanged);
+    connect(this, &QAbstractListModel::rowsRemoved, this, &TiiTableModel::rowCountChanged);
+    connect(this, &QAbstractListModel::modelReset, this, &TiiTableModel::rowCountChanged);
 }
 
 int TiiTableModel::rowCount(const QModelIndex &parent) const
@@ -143,6 +147,7 @@ QHash<int, QByteArray> TiiTableModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
 
+    roles[Qt::DisplayRole] = "display";
     roles[TiiTableModelRoles::CoordinatesRole] = "coordinates";
     roles[TiiTableModelRoles::TiiRole] = "tiiString";
     roles[TiiTableModelRoles::MainIdRole] = "mainId";
@@ -279,7 +284,13 @@ void TiiTableModel::setCoordinates(const QGeoCoordinate &newCoordinates)
 
 
 
-TiiTableSortModel::TiiTableSortModel(QObject *parent) : QSortFilterProxyModel(parent) {}
+TiiTableSortModel::TiiTableSortModel(QObject *parent) : QSortFilterProxyModel(parent)
+{
+    connect(this, &QSortFilterProxyModel::rowsInserted, this, &TiiTableSortModel::rowCountChanged);
+    connect(this, &QSortFilterProxyModel::rowsRemoved, this, &TiiTableSortModel::rowCountChanged);
+    connect(this, &QSortFilterProxyModel::modelReset, this, &TiiTableSortModel::rowCountChanged);
+
+}
 
 bool TiiTableSortModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {

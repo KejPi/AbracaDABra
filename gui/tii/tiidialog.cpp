@@ -49,6 +49,7 @@ TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
 #if HAVE_QTLOCATION
     context->setContextProperty("tiiTable", m_model);
 #endif
+    context->setContextProperty("tiiTableSorted", m_sortModel);
     m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map.qml"));
 
     QWidget *container = QWidget::createWindowContainer(m_qmlView, this);
@@ -68,7 +69,11 @@ TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
     layout->setContentsMargins(0,0,0,0);
     layout->addWidget(splitter);
 
+    m_tiiTableSelectionModel = new QItemSelectionModel(m_sortModel, this);
+    context->setContextProperty("tiiTableSelectionModel", m_tiiTableSelectionModel);
+
     ui->tiiTable->setModel(m_sortModel);
+    //ui->tiiTable->setSelectionModel(m_tiiTableSelectionModel);
     ui->tiiTable->verticalHeader()->hide();
     ui->tiiTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tiiTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -77,8 +82,9 @@ TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
     ui->tiiTable->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tiiTable->setSortingEnabled(true);
     ui->tiiTable->sortByColumn(TiiTableModel::ColLevel, Qt::SortOrder::DescendingOrder);
-    connect(ui->tiiTable->selectionModel(), &QItemSelectionModel::selectionChanged, this, &TIIDialog::onSelectionChanged);
+    connect(m_tiiTableSelectionModel, &QItemSelectionModel::selectionChanged, this, &TIIDialog::onSelectionChanged);
     connect(this, &TIIDialog::selectedRowChanged, this, &TIIDialog::onSelectedRowChanged);
+
 
     ui->tiiSpectrumPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes);
     ui->tiiSpectrumPlot->addGraph();
@@ -228,7 +234,7 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
 
     // handle selection
     int id = -1;
-    QModelIndexList	selectedList = ui->tiiTable->selectionModel()->selectedRows();
+    QModelIndexList	selectedList = m_tiiTableSelectionModel->selectedRows();
     if (!selectedList.isEmpty())
     {
         QModelIndex currentIndex = selectedList.at(0);
@@ -238,13 +244,13 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
 
     if (id >= 0)
     {   // update selection
-        QModelIndexList	selectedList = ui->tiiTable->selectionModel()->selectedRows();
+        QModelIndexList	selectedList = m_tiiTableSelectionModel->selectedRows();
         if (!selectedList.isEmpty())
         {
             QModelIndex currentIndex = selectedList.at(0);
             if (id != ui->tiiTable->model()->data(currentIndex, TiiTableModel::TiiTableModelRoles::IdRole).toInt())
             {  // selection was updated
-                ui->tiiTable->selectionModel()->clear();
+                m_tiiTableSelectionModel->clear();
             }
         }
     }
@@ -257,7 +263,7 @@ void TIIDialog::onSelectionChanged(const QItemSelection &selected, const QItemSe
     Q_UNUSED(selected)
     Q_UNUSED(deselected)
 
-    QModelIndexList selectedRows = ui->tiiTable->selectionModel()->selectedRows();
+    QModelIndexList selectedRows = m_tiiTableSelectionModel->selectedRows();
     if (selectedRows.isEmpty())
     {   // no selection => return
         setSelectedRow(-1);
@@ -273,16 +279,16 @@ void TIIDialog::onSelectedRowChanged()
 {
     if (m_selectedRow == -1)
     {
-        ui->tiiTable->selectionModel()->clear();
+        m_tiiTableSelectionModel->clear();
         return;
     }
 
     // m_selectedRow is in source model while selection uses indexes of sort model!!!
-    QModelIndexList selection = ui->tiiTable->selectionModel()->selectedRows();
+    QModelIndexList selection = m_tiiTableSelectionModel->selectedRows();
     QModelIndex idx = m_sortModel->mapFromSource(m_model->index(m_selectedRow, 0));
     if (idx.isValid() && (selection.isEmpty() || selection.at(0) != idx))
     {
-        ui->tiiTable->selectionModel()->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current | QItemSelectionModel::Rows);
+        m_tiiTableSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current | QItemSelectionModel::Rows);
     }
 }
 

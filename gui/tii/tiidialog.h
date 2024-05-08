@@ -105,6 +105,7 @@ private:
     bool m_isVisible = false;
     RadioControlEnsemble m_currentEnsemble;
     QStringList m_txInfo;
+    QItemSelectionModel * m_tiiTableSelectionModel;
     int m_selectedRow;  // this is row in source model !!!
 
     void reset();

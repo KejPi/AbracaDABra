@@ -343,7 +343,6 @@ qt_add_translations(${TARGET} TS_FILES ${TSFILES}
     LUPDATE_OPTIONS "-noobsolete"
 )
 
-
 # Set a custom plist file for the app bundle
 if(APPLE AND APPLE_APP_BUNDLE)
     set_target_properties(${TARGET} PROPERTIES

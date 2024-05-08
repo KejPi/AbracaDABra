@@ -28,6 +28,7 @@ import QtCore
 import QtQuick
 import QtLocation
 import QtPositioning
+import QtQuick.Controls
 import QtQuick.Layouts
 import app.qmlcomponents 1.0
 
@@ -38,7 +39,7 @@ Item {
         anchors.fill: parent
         active: tii.isVisible
         visible: active
-        sourceComponent: mainComponent        
+        sourceComponent: mainComponent
     }
 
     Component {
@@ -127,15 +128,6 @@ Item {
                     onActivated: map.zoomLevel = Math.round(map.zoomLevel - 1)
                 }
 
-                // //----------------------
-                // PositionSource{
-                //     id: positionSource
-                //     active: true // followme
-                //     onPositionChanged: {
-                //         console.log("onPositionChanged")
-                //         map.center = positionSource.position.coordinate
-                //     }
-                // }
                 MapQuickItem {
                     id: currentPosition
                     parent: map
@@ -145,37 +137,6 @@ Item {
                     anchorPoint: Qt.point(sourceItem.width/2, sourceItem.height/2)
                     visible: tii.positionValid
                 }
-
-                // MapQuickItem {
-                //     id: txPosition
-                //     parent: map
-                //     sourceItem: Rectangle { width: 14; height: 14; color: "red"; border.width: 2; border.color: "white"; smooth: true; radius: 7; opacity: 0.8 }
-                //     coordinate: QtPositioning.coordinate(50.0811111, 14.450833333333332)
-                //     opacity: 1.0
-                //     anchorPoint: Qt.point(sourceItem.width/2, sourceItem.height/2)
-                //     visible: tii.positionValid
-                // }
-
-                /*
-                TransmitterMarker {
-                    id: m1
-                    parent: map
-                    coordinate: QtPositioning.coordinate(50.0811111, 14.450833333333332)
-                    tiiCode: "68-23"
-                }
-                TransmitterMarker {
-                    id: m2
-                    parent: map
-                    coordinate: QtPositioning.coordinate(49.5, 15)
-                    tiiCode: "68-8"
-                }
-                TransmitterMarker {
-                    id: m3
-                    parent: map
-                    coordinate: QtPositioning.coordinate(50.5, 15)
-                    tiiCode: "8-8"
-                }
-                */
 
                 MapItemView {
                     model: tiiTable
@@ -247,7 +208,7 @@ Item {
                     height: txInfoLayout.height + 10
 
                     visible: tii.txInfo.length > 0
-                    z: 3                        
+                    z: 3
                     ColumnLayout {
                         id: txInfoLayout
                         anchors.centerIn: parent
@@ -258,6 +219,113 @@ Item {
                                 text: modelData
                             }
                         }
+                    }
+                }
+
+                Item {
+                    id: tiiTableItem
+                    FontMetrics {
+                        id: fontMetrics
+                    }
+                    HoverHandler {
+                        id: tiiTableItemHoverHandler
+                    }
+                    opacity: tiiTableItemHoverHandler.hovered ? 1.0 : 0.75
+
+                    readonly property int rowHeight: fontMetrics.font.pointSize + 10
+
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.leftMargin: 10
+                    anchors.topMargin: 10
+                    width: 5*100
+                    height: (tiiTableItem.rowHeight * tiiTableView.model.rowCount) + horizontalHeader.height
+                    visible: tiiTableView.model.rowCount > 0
+                    z: 3
+
+                    property var columnWidths: []
+                    Component.onCompleted: {
+                        for (var n = 0; n < tiiTableView.model.columnCount(); ++n) {
+                            columnWidths[n] = Math.ceil(fontMetrics.boundingRect(tiiTableView.model.headerData(n, Qt.Horizontal, Qt.DisplayRole)).width + (n < 2 ? 15 : 25));
+                        }
+                        columnWidths[0] = Math.max(columnWidths[0], columnWidths[1]);
+                        columnWidths[1] = columnWidths[0];
+                        tiiTableView.forceLayout();
+                    }
+
+                    HorizontalHeaderView {
+                        id: horizontalHeader
+                        anchors.left: tiiTableView.left
+                        anchors.top: parent.top
+                        syncView: tiiTableView
+                        clip: true                        
+                        property int sortIndicatorColumn: 2
+                        property int sortIndicatorOrder: Qt.DescendingOrder
+                        Component.onCompleted: {
+                            tiiTableView.model.sort(sortIndicatorColumn, sortIndicatorOrder);
+                        }
+                        delegate: Rectangle {
+                            color: "gainsboro"
+                            implicitWidth: 10
+                            implicitHeight: tiiTableItem.rowHeight
+                            Text {
+                                property string indicator: (index === horizontalHeader.sortIndicatorColumn)
+                                                           ? " " + (horizontalHeader.sortIndicatorOrder === Qt.AscendingOrder ? String.fromCodePoint(0x23F6) : String.fromCodePoint(0x23F7))
+                                                           : "";
+                                anchors.centerIn: parent
+                                text: display
+                                        ? display + indicator
+                                        : ""
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked:{
+                                    console.log("onClicked", index, horizontalHeader.sortIndicatorColumn, horizontalHeader.sortIndicatorOrder);
+                                    if (index === horizontalHeader.sortIndicatorColumn) {
+                                        // change order
+                                        horizontalHeader.sortIndicatorOrder = (horizontalHeader.sortIndicatorOrder === Qt.AscendingOrder ? Qt.DescendingOrder : Qt.AscendingOrder);
+                                    }
+                                    else {
+                                        horizontalHeader.sortIndicatorOrder = Qt.AscendingOrder;
+                                        horizontalHeader.sortIndicatorColumn = index;
+                                    }
+                                    console.log("===> onClicked", index, horizontalHeader.sortIndicatorColumn, horizontalHeader.sortIndicatorOrder);
+                                    tiiTableView.model.sort(index, horizontalHeader.sortIndicatorOrder);
+                                }
+                            }
+                        }
+                    }
+                    TableView {
+                        id: tiiTableView
+                        anchors.left: parent.left
+                        anchors.top: horizontalHeader.bottom
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        clip: true
+                        boundsBehavior: Flickable.StopAtBounds
+                        model: tiiTableSorted
+                        selectionModel: tiiTableSelectionModel                        
+                        delegate: Rectangle {
+                            implicitWidth: 10
+                            implicitHeight: tiiTableItem.rowHeight
+                            required property bool current
+                            required property bool selected
+                            color: selected ? palette.highlight : palette.base
+                            Text {
+                                anchors.centerIn: parent
+                                text: display ? display : ""
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    tiiTableView.selectionModel.select(tiiTableView.model.index(row, 0), ItemSelectionModel.ClearAndSelect | ItemSelectionModel.Current | ItemSelectionModel.Rows);
+
+                                }
+                            }
+                        }
+
+                        columnWidthProvider: function (column) { return tiiTableItem.columnWidths[column] }
                     }
                 }
             }
