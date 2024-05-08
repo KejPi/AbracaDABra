@@ -46,7 +46,7 @@ endif(HAVE_PORTAUDIO)
 if (HAVE_QCUSTOMPLOT)
     set(QCUSTOMPLOT_SOURCES
         snrplotdialog.h snrplotdialog.cpp snrplotdialog.ui
-        tii/tiidialog.h tii/tiidialog.cpp tii/tiidialog.ui
+        tii/tiidialog.h tii/tiidialog.cpp
         tii/tiitablemodel.h tii/tiitablemodel.cpp
         tii/tiitablemodelitem.h tii/tiitablemodelitem.cpp
         tii/txdataitem.h tii/txdataitem.cpp
@@ -224,6 +224,7 @@ else()
 endif()
 set_source_files_properties(${MAP_QML_FILE} PROPERTIES QT_RESOURCE_ALIAS map.qml)
 set_source_files_properties(qml/TransmitterMarker.qml PROPERTIES QT_RESOURCE_ALIAS TransmitterMarker.qml)
+set_source_files_properties(qml/TIITableView.qml PROPERTIES QT_RESOURCE_ALIAS TIITableView.qml)
 
 
 qt6_add_qml_module(${TARGET}
@@ -241,6 +242,7 @@ qt6_add_qml_module(${TARGET}
 
         ${MAP_QML_FILE}
         qml/TransmitterMarker.qml
+        qml/TIITableView.qml
     RESOURCES
         resources/map_marker_3.png
         resources/map_marker_4.png

@@ -93,9 +93,12 @@ protected:
 private:
     enum GraphId {Spect, TII};
     enum GraphRange { MinX = -1024, MaxX = 1023, MinY = 0, MaxY = 1 };
-    Ui::TIIDialog *ui;
     const SetupDialog::Settings & m_settings;
+
+    // UI
+    QCustomPlot *m_tiiSpectrumPlot;
     QQuickView *m_qmlView ;
+
     TiiTableModel * m_model;
     TiiTableSortModel * m_sortModel;
     bool m_isZoomed;

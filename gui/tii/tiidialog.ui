@@ -19,37 +19,21 @@
   <property name="windowTitle">
    <string>TII Decoder</string>
   </property>
-  <widget class="QWidget" name="tiiViewWidget" native="true">
+  <widget class="QCustomPlot" name="tiiSpectrumPlot" native="true">
    <property name="geometry">
     <rect>
-     <x>100</x>
-     <y>100</y>
-     <width>1081</width>
-     <height>216</height>
+     <x>120</x>
+     <y>430</y>
+     <width>1057</width>
+     <height>192</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QTableView" name="tiiTable">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCustomPlot" name="tiiSpectrumPlot" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
-    </item>
-   </layout>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
   </widget>
  </widget>
  <customwidgets>
