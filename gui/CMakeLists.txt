@@ -46,11 +46,6 @@ endif(HAVE_PORTAUDIO)
 if (HAVE_QCUSTOMPLOT)
     set(QCUSTOMPLOT_SOURCES
         snrplotdialog.h snrplotdialog.cpp snrplotdialog.ui
-        tii/tiidialog.h tii/tiidialog.cpp
-        tii/tiitablemodel.h tii/tiitablemodel.cpp
-        tii/tiitablemodelitem.h tii/tiitablemodelitem.cpp
-        tii/txdataitem.h tii/txdataitem.cpp
-        tii/txdataloader.h tii/txdataloader.cpp
     )
 endif(HAVE_QCUSTOMPLOT)
 
@@ -195,6 +190,13 @@ add_executable(${TARGET}
     audiorec/audiorecitemdialog.ui
     audiorec/audiorecmanager.h
     audiorec/audiorecmanager.cpp
+
+    # TII decoder
+    tii/tiidialog.h tii/tiidialog.cpp
+    tii/tiitablemodel.h tii/tiitablemodel.cpp
+    tii/tiitablemodelitem.h tii/tiitablemodelitem.cpp
+    tii/txdataitem.h tii/txdataitem.cpp
+    tii/txdataloader.h tii/txdataloader.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

@@ -28,16 +28,16 @@
 #define TIIDIALOG_H
 
 #include <QDialog>
-#include <qcustomplot.h>
 #include "QQuickView"
 #include <QGeoPositionInfoSource>
+#include <QItemSelectionModel>
 #include "radiocontrol.h"
 #include "tiitablemodel.h"
 #include "setupdialog.h"
-
-namespace Ui {
-class TIIDialog;
-}
+#include "config.h"
+#if HAVE_QCUSTOMPLOT
+#include <qcustomplot.h>
+#endif
 
 class TxDataItem;
 
@@ -96,12 +96,14 @@ private:
     const SetupDialog::Settings & m_settings;
 
     // UI
+#if HAVE_QCUSTOMPLOT
     QCustomPlot *m_tiiSpectrumPlot;
+    bool m_isZoomed;
+#endif
     QQuickView *m_qmlView ;
 
     TiiTableModel * m_model;
     TiiTableSortModel * m_sortModel;
-    bool m_isZoomed;
     QGeoPositionInfoSource * m_geopositionSource = nullptr;
     QGeoCoordinate m_currentPosition;
     bool m_positionValid = false;
@@ -112,18 +114,21 @@ private:
     int m_selectedRow;  // this is row in source model !!!
 
     void reset();
+
+    void positionUpdated(const QGeoPositionInfo & position);
+    void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    void onSelectedRowChanged();
+#if HAVE_QCUSTOMPLOT
+    void showPointToolTip(QMouseEvent *event);
+    void onXRangeChanged(const QCPRange &newRange);
+    void onYRangeChanged(const QCPRange &newRange);
     void addToPlot(const RadioControlTIIData &data);
     void updateTiiPlot();
     void onPlotSelectionChanged();
     void onPlotMousePress(QMouseEvent * event);
     void onPlotMouseWheel(QWheelEvent * event);
     void onContextMenuRequest(QPoint pos);
-    void onXRangeChanged(const QCPRange &newRange);
-    void onYRangeChanged(const QCPRange &newRange);
-    void showPointToolTip(QMouseEvent *event);
-    void positionUpdated(const QGeoPositionInfo & position);
-    void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-    void onSelectedRowChanged();
+#endif
 };
 
 #endif // TIIDIALOG_H

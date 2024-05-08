@@ -27,8 +27,10 @@
 #include <QMenu>
 #include <QQuickStyle>
 #include <QQmlContext>
-
-#include "config.h"
+#include <QBoxLayout>
+#include <QPermissions>
+#include <QCoreApplication>
+#include <QMessageBox>
 #include "tiidialog.h"
 
 TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
@@ -44,6 +46,7 @@ TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
     resize(1250, 700);
     setMinimumSize(QSize(780, 520));
 
+#if HAVE_QCUSTOMPLOT
     // TII plot
     m_tiiSpectrumPlot = new QCustomPlot(this);
     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -52,6 +55,7 @@ TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
     sizePolicy.setHeightForWidth(m_tiiSpectrumPlot->sizePolicy().hasHeightForWidth());
     m_tiiSpectrumPlot->setSizePolicy(sizePolicy);
     m_tiiSpectrumPlot->setMinimumHeight(200);
+#endif
 
     // QML View
     m_qmlView = new QQuickView();
@@ -64,10 +68,11 @@ TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
 
     QWidget *container = QWidget::createWindowContainer(m_qmlView, this);
 
-    sizePolicy = QSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
-    sizePolicy.setVerticalStretch(255);
-    container->setSizePolicy(sizePolicy);
+    QSizePolicy sizePolicyContainer(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+    sizePolicyContainer.setVerticalStretch(255);
+    container->setSizePolicy(sizePolicyContainer);
 
+#if HAVE_QCUSTOMPLOT
     QSplitter * splitter = new QSplitter(this);
     splitter->setOrientation(Qt::Vertical);
     splitter->addWidget(container);
@@ -76,10 +81,16 @@ TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
     QVBoxLayout * layout = new QVBoxLayout(this);
     layout->setContentsMargins(0,0,0,0);
     layout->addWidget(splitter);
+#else
+    QVBoxLayout * layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0,0,0,0);
+    layout->addWidget(container);
+#endif
 
     connect(m_tiiTableSelectionModel, &QItemSelectionModel::selectionChanged, this, &TIIDialog::onSelectionChanged);
     connect(this, &TIIDialog::selectedRowChanged, this, &TIIDialog::onSelectedRowChanged);
 
+#if HAVE_QCUSTOMPLOT
     m_tiiSpectrumPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes);
     m_tiiSpectrumPlot->addGraph();
     m_tiiSpectrumPlot->addGraph();
@@ -130,31 +141,7 @@ TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
     connect(m_tiiSpectrumPlot, &QCustomPlot::customContextMenuRequested, this, &TIIDialog::onContextMenuRequest);
 
     connect(m_tiiSpectrumPlot, &QCustomPlot::mouseMove, this,  &TIIDialog::showPointToolTip);
-}
-
-void TIIDialog::showPointToolTip(QMouseEvent *event)
-{
-    int x = qRound(m_tiiSpectrumPlot->xAxis->pixelToCoord(event->pos().x()));
-    x = qMin(static_cast<int>(GraphRange::MaxX), x);
-    x = qMax(static_cast<int>(GraphRange::MinX), x);
-    double y = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(x + 1024)->value;
-
-    if (x > 0 && x <= 2*384)
-    {
-        //qDebug() << x << (((x-1) % 384) / 2) % 24;
-        int subId = (((x-1) % 384) / 2) % 24;
-        m_tiiSpectrumPlot->setToolTip(QString(tr("Carrier: %1<br>SubId: %3<br>Level: %2")).arg(x).arg(y).arg(subId, 2, 10, QChar('0')));
-
-    }
-    else if (x < 0 && x >= -2*384)
-    {
-        int subId = (((x+2*384) % 384) / 2) % 24;
-        m_tiiSpectrumPlot->setToolTip(QString(tr("Carrier: %1<br>SubId: %3<br>Level: %2")).arg(x).arg(y).arg(subId, 2, 10, QChar('0')));
-    }
-    else
-    {
-        m_tiiSpectrumPlot->setToolTip(QString(tr("Carrier: %1<br>Level: %2")).arg(x).arg(y));
-    }
+#endif
 }
 
 void TIIDialog::positionUpdated(const QGeoPositionInfo &position)
@@ -189,19 +176,21 @@ void TIIDialog::closeEvent(QCloseEvent *event)
 
 void TIIDialog::reset()
 {
+#if HAVE_QCUSTOMPLOT
     QList<double> f;
     QList<double> none;
     for (int n = -1024; n<1024; ++n)
     {
         f.append(n);
         none.append(0.0);
-    }
+    }    
     m_tiiSpectrumPlot->graph(GraphId::Spect)->setData(f, none, true);
     m_tiiSpectrumPlot->graph(GraphId::TII)->setData({0.0}, {-1.0});
     m_tiiSpectrumPlot->rescaleAxes();
     m_tiiSpectrumPlot->deselectAll();
     m_tiiSpectrumPlot->replot();
     m_isZoomed = false;
+#endif
 
     //m_currentEnsemble.frequency = 0;
     m_model->clear();
@@ -239,8 +228,9 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
             }
         }
     }
-
+#if HAVE_QCUSTOMPLOT
     addToPlot(data);
+#endif
 }
 
 void TIIDialog::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
@@ -281,6 +271,7 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
 {
     if (darkModeEna)
     {
+#if HAVE_QCUSTOMPLOT
         m_tiiSpectrumPlot->xAxis->setBasePen(QPen(Qt::white, 0));
         m_tiiSpectrumPlot->yAxis->setBasePen(QPen(Qt::white, 0));
         m_tiiSpectrumPlot->xAxis2->setBasePen(QPen(Qt::white, 0));
@@ -329,9 +320,11 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
         m_tiiSpectrumPlot->yAxis2->setSelectedTickLabelColor(axisSelectionColor);
 
         m_tiiSpectrumPlot->replot();
+#endif // HAVE_QCUSTOMPLOT
     }
     else
     {
+#if HAVE_QCUSTOMPLOT
         m_tiiSpectrumPlot->xAxis->setBasePen(QPen(Qt::black, 0));
         m_tiiSpectrumPlot->yAxis->setBasePen(QPen(Qt::black, 0));
         m_tiiSpectrumPlot->xAxis2->setBasePen(QPen(Qt::black, 0));
@@ -380,6 +373,7 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
         m_tiiSpectrumPlot->yAxis2->setSelectedTickLabelColor(axisSelectionColor);
 
         m_tiiSpectrumPlot->replot();
+#endif // HAVE_QCUSTOMPLOT
     }    
 }
 
@@ -483,6 +477,136 @@ void TIIDialog::onSettingsChanged()
     if (m_isVisible)
     {
         startLocationUpdate();
+    }
+}
+
+
+QGeoCoordinate TIIDialog::currentPosition() const
+{
+    return m_currentPosition;
+}
+
+void TIIDialog::setCurrentPosition(const QGeoCoordinate &newCurrentPosition)
+{
+    if (m_currentPosition == newCurrentPosition)
+        return;
+    m_currentPosition = newCurrentPosition;
+    emit currentPositionChanged();
+}
+
+bool TIIDialog::positionValid() const
+{
+    return m_positionValid;
+}
+
+void TIIDialog::setPositionValid(bool newPositionValid)
+{
+    if (m_positionValid == newPositionValid)
+        return;
+    m_positionValid = newPositionValid;
+    emit positionValidChanged();
+}
+
+bool TIIDialog::isVisible() const
+{
+    return m_isVisible;
+}
+
+void TIIDialog::setIsVisible(bool newIsVisible)
+{
+    if (m_isVisible == newIsVisible)
+        return;
+    m_isVisible = newIsVisible;
+    emit isVisibleChanged();
+}
+
+QStringList TIIDialog::ensembleInfo() const
+{
+    if (!m_currentEnsemble.isValid())
+    {
+        return QStringList{"","",""};
+    }
+
+    QStringList info;
+    info.append(tr("Ensemble: <b>%1</b>").arg(m_currentEnsemble.label));
+    info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b>").arg(m_currentEnsemble.ecc(), 2, 16, QChar('0'))
+                    .arg(m_currentEnsemble.eid(), 4, 16, QChar('0'))
+                    .toUpper());
+    info.append(QString(tr("Channel: <b>%1 (%2 kHz)</b>")).arg(DabTables::channelList[m_currentEnsemble.frequency]).arg(m_currentEnsemble.frequency));
+    return info;
+}
+
+QStringList TIIDialog::txInfo() const
+{
+    return m_txInfo;
+}
+
+int TIIDialog::selectedRow() const
+{
+    return m_selectedRow;
+}
+
+void TIIDialog::setSelectedRow(int modelRow)
+{
+    if (m_selectedRow == modelRow)
+    {
+        return;
+    }
+    m_selectedRow = modelRow;
+    emit selectedRowChanged();
+
+    m_txInfo.clear();
+    if (modelRow < 0)
+    {   // reset info
+        emit txInfoChanged();
+#if HAVE_QCUSTOMPLOT
+        updateTiiPlot();
+#endif
+        return;
+    }
+
+    TiiTableModelItem item = m_model->data(m_model->index(modelRow, 0), TiiTableModel::TiiTableModelRoles::ItemRole).value<TiiTableModelItem>();
+    if (item.hasTxData())
+    {
+        m_txInfo.append(QString("<b>%1</b>").arg(item.transmitterData().location()));
+        QGeoCoordinate coord = QGeoCoordinate(item.transmitterData().coordinates().latitude(), item.transmitterData().coordinates().longitude());
+        m_txInfo.append(QString("GPS: <b>%1</b>").arg(coord.toString(QGeoCoordinate::DegreesWithHemisphere)));
+        float alt = item.transmitterData().coordinates().altitude();
+        if (alt)
+        {
+            m_txInfo.append(QString(tr("Altitude: <b>%1 m</b>")).arg(static_cast<int>(alt)));
+        }
+        m_txInfo.append(QString(tr("ERP: <b>%1 kW</b>")).arg(static_cast<double>(item.transmitterData().power()), 3, 'f', 1));
+    }
+    emit txInfoChanged();
+#if HAVE_QCUSTOMPLOT
+    updateTiiPlot();
+#endif
+}
+
+#if HAVE_QCUSTOMPLOT
+void TIIDialog::showPointToolTip(QMouseEvent *event)
+{
+    int x = qRound(m_tiiSpectrumPlot->xAxis->pixelToCoord(event->pos().x()));
+    x = qMin(static_cast<int>(GraphRange::MaxX), x);
+    x = qMax(static_cast<int>(GraphRange::MinX), x);
+    double y = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(x + 1024)->value;
+
+    if (x > 0 && x <= 2*384)
+    {
+        //qDebug() << x << (((x-1) % 384) / 2) % 24;
+        int subId = (((x-1) % 384) / 2) % 24;
+        m_tiiSpectrumPlot->setToolTip(QString(tr("Carrier: %1<br>SubId: %3<br>Level: %2")).arg(x).arg(y).arg(subId, 2, 10, QChar('0')));
+
+    }
+    else if (x < 0 && x >= -2*384)
+    {
+        int subId = (((x+2*384) % 384) / 2) % 24;
+        m_tiiSpectrumPlot->setToolTip(QString(tr("Carrier: %1<br>SubId: %3<br>Level: %2")).arg(x).arg(y).arg(subId, 2, 10, QChar('0')));
+    }
+    else
+    {
+        m_tiiSpectrumPlot->setToolTip(QString(tr("Carrier: %1<br>Level: %2")).arg(x).arg(y));
     }
 }
 
@@ -670,104 +794,4 @@ void TIIDialog::onYRangeChanged(const QCPRange &newRange)
         m_tiiSpectrumPlot->yAxis->setRange(fixedRange);
     }
 }
-
-QGeoCoordinate TIIDialog::currentPosition() const
-{
-    return m_currentPosition;
-}
-
-void TIIDialog::setCurrentPosition(const QGeoCoordinate &newCurrentPosition)
-{
-    if (m_currentPosition == newCurrentPosition)
-        return;
-    m_currentPosition = newCurrentPosition;
-    emit currentPositionChanged();
-}
-
-bool TIIDialog::positionValid() const
-{
-    return m_positionValid;
-}
-
-void TIIDialog::setPositionValid(bool newPositionValid)
-{
-    if (m_positionValid == newPositionValid)
-        return;
-    m_positionValid = newPositionValid;
-    emit positionValidChanged();
-}
-
-bool TIIDialog::isVisible() const
-{
-    return m_isVisible;
-}
-
-void TIIDialog::setIsVisible(bool newIsVisible)
-{
-    if (m_isVisible == newIsVisible)
-        return;
-    m_isVisible = newIsVisible;
-    emit isVisibleChanged();
-}
-
-QStringList TIIDialog::ensembleInfo() const
-{
-    if (!m_currentEnsemble.isValid())
-    {
-        return QStringList{"","",""};
-    }
-
-    QStringList info;
-    info.append(tr("Ensemble: <b>%1</b>").arg(m_currentEnsemble.label));
-    info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b>").arg(m_currentEnsemble.ecc(), 2, 16, QChar('0'))
-                    .arg(m_currentEnsemble.eid(), 4, 16, QChar('0'))
-                    .toUpper());
-    info.append(QString(tr("Channel: <b>%1 (%2 kHz)</b>")).arg(DabTables::channelList[m_currentEnsemble.frequency]).arg(m_currentEnsemble.frequency));
-    return info;
-}
-
-QStringList TIIDialog::txInfo() const
-{
-    return m_txInfo;
-}
-
-int TIIDialog::selectedRow() const
-{
-    return m_selectedRow;
-}
-
-void TIIDialog::setSelectedRow(int modelRow)
-{
-    if (m_selectedRow == modelRow)
-    {
-        return;
-    }
-    m_selectedRow = modelRow;
-    emit selectedRowChanged();
-
-    m_txInfo.clear();
-    if (modelRow < 0)
-    {   // reset info
-        emit txInfoChanged();
-
-        updateTiiPlot();
-        return;
-    }
-
-    TiiTableModelItem item = m_model->data(m_model->index(modelRow, 0), TiiTableModel::TiiTableModelRoles::ItemRole).value<TiiTableModelItem>();
-    if (item.hasTxData())
-    {
-        m_txInfo.append(QString("<b>%1</b>").arg(item.transmitterData().location()));
-        QGeoCoordinate coord = QGeoCoordinate(item.transmitterData().coordinates().latitude(), item.transmitterData().coordinates().longitude());
-        m_txInfo.append(QString("GPS: <b>%1</b>").arg(coord.toString(QGeoCoordinate::DegreesWithHemisphere)));
-        float alt = item.transmitterData().coordinates().altitude();
-        if (alt)
-        {
-            m_txInfo.append(QString(tr("Altitude: <b>%1 m</b>")).arg(static_cast<int>(alt)));
-        }
-        m_txInfo.append(QString(tr("ERP: <b>%1 kW</b>")).arg(static_cast<double>(item.transmitterData().power()), 3, 'f', 1));
-    }
-    emit txInfoChanged();
-
-    updateTiiPlot();
-}
+#endif // HAVE_QCUSTOMPLOT

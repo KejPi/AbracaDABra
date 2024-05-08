@@ -66,9 +66,9 @@
 #include "sltreemodel.h"
 #include "logdialog.h"
 #include "audiorecschedulemodel.h"
+#include "tiidialog.h"
 #if HAVE_QCUSTOMPLOT
 #include "snrplotdialog.h"
-#include "tiidialog.h"
 #endif
 
 
@@ -125,8 +125,8 @@ private:
     CatSLSDialog * m_catSlsDialog;
     LogDialog * m_logDialog;
     AudioRecScheduleDialog * m_audioRecScheduleDialog;
-#if HAVE_QCUSTOMPLOT
     TIIDialog * m_tiiDialog;
+#if HAVE_QCUSTOMPLOT
     SNRPlotDialog * m_snrPlotDialog;    
     ClickableLabel * m_snrLabel;    
 #else
@@ -154,9 +154,7 @@ private:
     QAction * m_clearServiceListAction;
     QAction * m_bandScanAction;
     QAction * m_ensembleInfoAction;
-#if HAVE_QCUSTOMPLOT
     QAction * m_tiiAction;
-#endif
     QAction * m_aboutAction;
     QAction * m_logAction;
     QAction * m_audioRecordingAction;
