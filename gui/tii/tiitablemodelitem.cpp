@@ -108,6 +108,11 @@ void TiiTableModelItem::updateGeo(const QGeoCoordinate &coordinates)
         setDistance(coordinates.distanceTo(m_transmitterData.coordinates()) * 0.001);
         setAzimuth(coordinates.azimuthTo(m_transmitterData.coordinates()));
     }
+    else
+    {
+        setDistance(0.0);
+        setAzimuth(0.0);
+    }
 }
 
 void TiiTableModelItem::setLevel(float newLevel)
