@@ -75,7 +75,28 @@ int main(int argc, char *argv[])
 
     delete settings;
 
+    // QString filename = QLatin1String(":/i18n") + "/"  + QString("AbracaDABra_%1").arg(QLocale::languageToCode(lang))+".qm";
+    // QDirIterator it(":", QDirIterator::Subdirectories);
+    // while (it.hasNext()) {
+    //     qDebug() << it.next();
+    // }
     QTranslator translator;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    if (QLocale::AnyLanguage == lang)
+    {   // system default
+        if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n/gui")))
+        {
+            a.installTranslator(&translator);
+        }
+    }
+    else if (QLocale::English != lang)
+    {   // user selected translation
+        if (translator.load(QString("AbracaDABra_%1").arg(QLocale::languageToCode(lang)), QLatin1String(":/i18n/gui")))
+        {
+            a.installTranslator(&translator);
+        }
+    }
+#else
     if (QLocale::AnyLanguage == lang)
     {   // system default
         if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n")))
@@ -90,7 +111,7 @@ int main(int argc, char *argv[])
             a.installTranslator(&translator);
         }
     }
-
+#endif
     MainWindow w(iniFile);
     w.show();        
     return a.exec();
