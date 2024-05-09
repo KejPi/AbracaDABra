@@ -40,7 +40,7 @@ void TxDataLoader::loadTable(QMultiHash<ServiceListId, TxDataItem *> &txList)
     enum TiiTable
     {
         ColCountry = 1,
-        ColChannel = 3,
+        ColChannel = 2,
         ColLabel = 3,
         ColEID = 4,
         ColTII = 5,

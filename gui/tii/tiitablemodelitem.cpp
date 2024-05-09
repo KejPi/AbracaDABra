@@ -110,8 +110,8 @@ void TiiTableModelItem::updateGeo(const QGeoCoordinate &coordinates)
     }
     else
     {
-        setDistance(0.0);
-        setAzimuth(0.0);
+        setDistance(-1.0);
+        setAzimuth(-1.0);
     }
 }
 
