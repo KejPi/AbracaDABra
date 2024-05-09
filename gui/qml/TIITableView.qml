@@ -45,7 +45,7 @@ Item {
     property var columnWidths: []
     Component.onCompleted: {
         for (var n = 0; n < tiiTableView.model.columnCount(); ++n) {
-            columnWidths[n] = Math.ceil(fontMetrics.boundingRect(tiiTableView.model.headerData(n, Qt.Horizontal, Qt.DisplayRole)).width + (n < 2 ? 15 : 25));
+            columnWidths[n] = Math.ceil(fontMetrics.boundingRect(tiiTableView.model.headerData(n, Qt.Horizontal, Qt.DisplayRole)).width + (n < 2 ? 20 : 30));
         }
         columnWidths[0] = Math.max(columnWidths[0], columnWidths[1]);
         columnWidths[1] = columnWidths[0];
@@ -72,14 +72,24 @@ Item {
             color: "gainsboro"
             implicitWidth: 10
             implicitHeight: tiiTableItem.rowHeight
-            Text {
-                property string indicator: (index === horizontalHeader.sortIndicatorColumn)
-                                           ? " " + (horizontalHeader.sortIndicatorOrder === Qt.AscendingOrder ? String.fromCodePoint(0x23F6) : String.fromCodePoint(0x23F7))
-                                           : "";
-                anchors.centerIn: parent
-                text: display
-                        ? display + indicator
-                        : ""
+            Item {
+                anchors.fill: parent
+                Row {
+                    spacing: 2
+                    anchors.centerIn: parent
+                    Text {
+                        id: colLabel
+                        text: display
+                    }
+                    Image {
+                        id: blankMap
+                        anchors.verticalCenter: colLabel.verticalCenter
+                        source: (horizontalHeader.sortIndicatorOrder === Qt.AscendingOrder ? "resources/sort-up.svg" : "resources/sort-down.svg")
+                        width: colLabel.height * 0.5
+                        fillMode: Image.PreserveAspectFit
+                        visible: (index === horizontalHeader.sortIndicatorColumn)
+                    }
+                }
             }
             MouseArea {
                 anchors.fill: parent
