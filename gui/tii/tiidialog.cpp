@@ -28,7 +28,9 @@
 #include <QQuickStyle>
 #include <QQmlContext>
 #include <QBoxLayout>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && QT_CONFIG(permissions)
 #include <QPermissions>
+#endif
 #include <QCoreApplication>
 #include <QMessageBox>
 #include "tiidialog.h"
