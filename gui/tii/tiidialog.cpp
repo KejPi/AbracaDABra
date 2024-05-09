@@ -45,6 +45,7 @@ TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
     m_tiiTableSelectionModel = new QItemSelectionModel(m_sortModel, this);
 
     // UI
+    setWindowTitle(tr("TII Decoder"));
     resize(1250, 700);
     setMinimumSize(QSize(780, 520));
 
