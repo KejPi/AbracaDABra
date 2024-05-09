@@ -117,6 +117,7 @@ Item {
             Text {
                 anchors.centerIn: parent
                 text: display ? display : ""
+                color: selected ? palette.highlightedText : palette.text
             }
 
             MouseArea {
