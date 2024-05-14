@@ -72,19 +72,19 @@ QVariant TiiTableModel::data(const QModelIndex &index, int role) const
         case ColSubId:
             return item.subId();
         case ColLevel:
-            return QString::number(static_cast<double>(item.level()), 'f', 3);
+            return QString("%1 dB").arg(static_cast<double>(item.level()), 5, 'f', 1); // QString::number(static_cast<double>(item.level()), 'f', 3);
         case ColDist:
             if (item.hasTxData() && item.distance() >= 0.0)
             {
                 return QString("%1 km").arg(static_cast<double>(item.distance()), 0, 'f', 1);
             }
-            return QVariant();
+            return QVariant("");
         case ColAzimuth:
             if (item.hasTxData() && item.azimuth() >= 0.0)
             {
                 return QString("%1°").arg(static_cast<double>(item.azimuth()), 0, 'f', 1);
             }
-            return QVariant();
+            return QVariant("");
         }
     }
         break;
@@ -97,12 +97,12 @@ QVariant TiiTableModel::data(const QModelIndex &index, int role) const
     case TiiTableModelRoles::TiiRole:
         return QVariant(QString("%1-%2").arg(item.mainId()).arg(item.subId()));
     case TiiTableModelRoles::LevelColorRole:
-        if (item.level() > 0.6)
+        if (item.level() > -6)
         {
             //return QVariant(QColor(0x5b, 0xc2, 0x14));
             return QVariant(QColor(Qt::green));
         }
-        if (item.level() > 0.2) {
+        if (item.level() > -12) {
             return QVariant(QColor(0xff, 0xb5, 0x27));
         }
         return QVariant(QColor(0xff, 0x4b, 0x4b));
