@@ -51,6 +51,10 @@ TiiTableModelItem::TiiTableModelItem(uint8_t mainId, uint8_t subId, float level,
             setDistance(coordinates.distanceTo(tx->coordinates()) * 0.001);
             setAzimuth(coordinates.azimuthTo(tx->coordinates()));
         }
+        else {
+            setDistance(-1.0);
+            setAzimuth(-1.0);
+        }
     }
 }
 
