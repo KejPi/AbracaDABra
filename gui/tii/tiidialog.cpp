@@ -49,7 +49,7 @@ TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
     resize(1250, 700);
     setMinimumSize(QSize(780, 520));
 
-#if HAVE_QCUSTOMPLOT
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT_ENA
     // TII plot
     m_tiiSpectrumPlot = new QCustomPlot(this);
     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -75,7 +75,7 @@ TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
     sizePolicyContainer.setVerticalStretch(255);
     container->setSizePolicy(sizePolicyContainer);
 
-#if HAVE_QCUSTOMPLOT
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT_ENA
     QSplitter * splitter = new QSplitter(this);
     splitter->setOrientation(Qt::Vertical);
     splitter->addWidget(container);
@@ -93,7 +93,7 @@ TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
     connect(m_tiiTableSelectionModel, &QItemSelectionModel::selectionChanged, this, &TIIDialog::onSelectionChanged);
     connect(this, &TIIDialog::selectedRowChanged, this, &TIIDialog::onSelectedRowChanged);
 
-#if HAVE_QCUSTOMPLOT
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT_ENA
     m_tiiSpectrumPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes);
     m_tiiSpectrumPlot->addGraph();
     m_tiiSpectrumPlot->addGraph();
@@ -179,7 +179,7 @@ void TIIDialog::closeEvent(QCloseEvent *event)
 
 void TIIDialog::reset()
 {
-#if HAVE_QCUSTOMPLOT
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT_ENA
     QList<double> f;
     QList<double> none;
     for (int n = -1024; n<1024; ++n)
@@ -235,7 +235,7 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
     // forcing update of UI
     onSelectionChanged(QItemSelection(),QItemSelection());
 
-#if HAVE_QCUSTOMPLOT
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT_ENA
     addToPlot(data);
 #endif
 }
@@ -278,7 +278,7 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
 {
     if (darkModeEna)
     {
-#if HAVE_QCUSTOMPLOT
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT_ENA
         m_tiiSpectrumPlot->xAxis->setBasePen(QPen(Qt::white, 0));
         m_tiiSpectrumPlot->yAxis->setBasePen(QPen(Qt::white, 0));
         m_tiiSpectrumPlot->xAxis2->setBasePen(QPen(Qt::white, 0));
@@ -327,11 +327,11 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
         m_tiiSpectrumPlot->yAxis2->setSelectedTickLabelColor(axisSelectionColor);
 
         m_tiiSpectrumPlot->replot();
-#endif // HAVE_QCUSTOMPLOT
+#endif // HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT_ENA
     }
     else
     {
-#if HAVE_QCUSTOMPLOT
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT_ENA
         m_tiiSpectrumPlot->xAxis->setBasePen(QPen(Qt::black, 0));
         m_tiiSpectrumPlot->yAxis->setBasePen(QPen(Qt::black, 0));
         m_tiiSpectrumPlot->xAxis2->setBasePen(QPen(Qt::black, 0));
@@ -380,7 +380,7 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
         m_tiiSpectrumPlot->yAxis2->setSelectedTickLabelColor(axisSelectionColor);
 
         m_tiiSpectrumPlot->replot();
-#endif // HAVE_QCUSTOMPLOT
+#endif // HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT_ENA
     }    
 }
 
@@ -566,7 +566,7 @@ void TIIDialog::setSelectedRow(int modelRow)
     if (modelRow < 0)
     {   // reset info
         emit txInfoChanged();
-#if HAVE_QCUSTOMPLOT
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT_ENA
         updateTiiPlot();
 #endif
         return;
@@ -586,12 +586,12 @@ void TIIDialog::setSelectedRow(int modelRow)
         m_txInfo.append(QString(tr("ERP: <b>%1 kW</b>")).arg(static_cast<double>(item.transmitterData().power()), 3, 'f', 1));
     }
     emit txInfoChanged();
-#if HAVE_QCUSTOMPLOT
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT_ENA
     updateTiiPlot();
 #endif
 }
 
-#if HAVE_QCUSTOMPLOT
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT_ENA
 void TIIDialog::showPointToolTip(QMouseEvent *event)
 {
     int x = qRound(m_tiiSpectrumPlot->xAxis->pixelToCoord(event->pos().x()));
@@ -801,4 +801,4 @@ void TIIDialog::onYRangeChanged(const QCPRange &newRange)
         m_tiiSpectrumPlot->yAxis->setRange(fixedRange);
     }
 }
-#endif // HAVE_QCUSTOMPLOT
+#endif // HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT_ENA
