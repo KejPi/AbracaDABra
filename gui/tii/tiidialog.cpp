@@ -231,6 +231,10 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
             }
         }
     }
+
+    // forcing update of UI
+    onSelectionChanged(QItemSelection(),QItemSelection());
+
 #if HAVE_QCUSTOMPLOT
     addToPlot(data);
 #endif

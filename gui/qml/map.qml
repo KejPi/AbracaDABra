@@ -140,13 +140,13 @@ Item {
                 MapItemView {
                     model: tiiTable
                     delegate: TransmitterMarker {
-                        id: marker
+                        id: marker                        
                         parent: map
                         coordinate:  coordinates
                         tiiCode: tiiString
                         markerColor: levelColor
                         isSelected: index === tii.selectedRow
-                        z: (index === tii.selectedRow) ? 2 : 1
+                        z: isSelected ? 2 : 1
 
                         TapHandler {
                             id: txTapHandler

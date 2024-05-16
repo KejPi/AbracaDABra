@@ -125,7 +125,7 @@ Item {
             color: selected ? palette.highlight : palette.base
             Text {
                 anchors.centerIn: parent
-                text: display
+                text: display !== undefined ? display : ""
                 color: selected ? palette.highlightedText : palette.text
             }
 
