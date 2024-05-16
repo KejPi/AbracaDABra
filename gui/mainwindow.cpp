@@ -3134,7 +3134,7 @@ void MainWindow::showSnrPlotDialog()
 #if HAVE_QCUSTOMPLOT
     if (m_snrPlotDialog == nullptr)
     {
-        m_snrPlotDialog = new SNRPlotDialog(this);
+        m_snrPlotDialog = new SNRPlotDialog();
         m_snrPlotDialog->setupDarkMode(isDarkMode());
         connect(this, &MainWindow::exit, m_snrPlotDialog, &SNRPlotDialog::close);  // QTBUG-117779 ==> using parentless dialogs as workaround
         connect(m_snrPlotDialog, &QDialog::finished, m_snrPlotDialog, &QObject::deleteLater);
