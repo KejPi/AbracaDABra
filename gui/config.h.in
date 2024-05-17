@@ -42,6 +42,9 @@
 #cmakedefine01 HAVE_AIRSPY
 #cmakedefine01 HAVE_SOAPYSDR
 
+/* Debug */
+#cmakedefine01 TII_SPECTRUM_PLOT
+
 #endif // CONFIG_H
 
 

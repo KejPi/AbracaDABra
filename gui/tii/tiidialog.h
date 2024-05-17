@@ -39,8 +39,6 @@
 #include <qcustomplot.h>
 #endif
 
-#define TII_SPECTRUM_PLOT_ENA 0
-
 class TxDataItem;
 
 class TIIDialog : public QDialog
@@ -98,7 +96,7 @@ private:
     const SetupDialog::Settings & m_settings;
 
     // UI
-#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT_ENA
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     QCustomPlot *m_tiiSpectrumPlot;
     bool m_isZoomed;
 #endif
@@ -120,7 +118,7 @@ private:
     void positionUpdated(const QGeoPositionInfo & position);
     void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void onSelectedRowChanged();
-#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT_ENA
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     void showPointToolTip(QMouseEvent *event);
     void onXRangeChanged(const QCPRange &newRange);
     void onYRangeChanged(const QCPRange &newRange);
