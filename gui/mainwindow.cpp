@@ -198,6 +198,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_logDialog = new LogDialog();
     setLogToModel(m_logDialog->getModel());
     connect(this, &MainWindow::exit, [this]() {m_logDialog->close(); m_logDialog->deleteLater(); });  // QTBUG-117779 ==> using parentless dialogs as workaround
+    connect(m_logDialog, &QObject::destroyed, this, [](){ logModel = nullptr; });
 
     ui->serviceListView->setIconSize(QSize(16,16));
 
