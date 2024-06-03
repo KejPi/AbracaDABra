@@ -33,6 +33,7 @@
 #include <QItemSelectionModel>
 #include "audiorecscheduleitem.h"
 #include "metadatamanager.h"
+#include "settings.h"
 #include "slmodel.h"
 #include "slproxymodel.h"
 
@@ -50,7 +51,7 @@ class EPGDialog : public QDialog
     Q_PROPERTY(QList<QColor> colors READ colors NOTIFY colorsChanged FINAL)
 
 public:
-    explicit EPGDialog(SLModel *serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager *metadataManager, QWidget *parent = nullptr);
+    explicit EPGDialog(SLModel *serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager *metadataManager, Settings *settings, QWidget *parent = nullptr);
     ~EPGDialog();
 
     QPersistentModelIndex selectedEpgItem() const;
@@ -91,14 +92,13 @@ protected:
 
 private:
     Ui::EPGDialog *ui;
-    QQuickView *m_qmlView ;
+    QQuickView *m_qmlView;
+    Settings * m_settings;
 
     MetadataManager * m_metadataManager;
     QPersistentModelIndex m_selectedEpgItem;
     bool m_isVisible = false;
     SLProxyModel * m_slProxyModel;
-    bool m_filterEmptyEpg;
-    bool m_filterEnsemble;
     int m_currentUEID;
     bool m_isDarkMode;
     QList<QColor> m_colors;

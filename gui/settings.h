@@ -120,6 +120,10 @@ public:
         QGeoCoordinate coordinates;
         QString serialPort;
     } tii;
+    struct EPGSettings {
+        bool filterEmptyEpg;
+        bool filterEnsemble;
+    } epg;
 };
 
 #endif // SETTINGS_H

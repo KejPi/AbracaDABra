@@ -33,20 +33,19 @@
 #include "epgtime.h"
 #include "ui_epgdialog.h"
 
-EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager * metadataManager, QWidget *parent)
+EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager * metadataManager, Settings * settings, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::EPGDialog)
     , m_metadataManager(metadataManager)
+    , m_settings(settings)
     , m_currentUEID(0)
 {
     ui->setupUi(this);
 
     m_slProxyModel = new SLProxyModel(this);
     m_slProxyModel->setSourceModel(serviceListModel);
-    connect(this, &EPGDialog::filterEmptyEpgChanged, [this](){ m_slProxyModel->setEmptyEpgFilter(m_filterEmptyEpg); });
-    connect(this, &EPGDialog::filterEnsembleChanged, [this](){ m_slProxyModel->setUeidFilter(m_filterEnsemble ? m_currentUEID : 0); });
-    setFilterEmptyEpg(false);
-    setFilterEnsemble(false);
+    connect(this, &EPGDialog::filterEmptyEpgChanged, [this](){ m_slProxyModel->setEmptyEpgFilter(m_settings->epg.filterEmptyEpg); });
+    connect(this, &EPGDialog::filterEnsembleChanged, [this](){ m_slProxyModel->setUeidFilter(m_settings->epg.filterEnsemble ? m_currentUEID : 0); });
 
     qmlRegisterType<SLProxyModel>("app.qmlcomponents", 1, 0, "SLProxyModel");
     qmlRegisterType<EPGModel>("app.qmlcomponents", 1, 0, "EPGModel");
@@ -128,21 +127,21 @@ void EPGDialog::closeEvent(QCloseEvent *event)
 
 bool EPGDialog::filterEmptyEpg() const
 {
-    return m_filterEmptyEpg;
+    return m_settings->epg.filterEmptyEpg;
 }
 
 void EPGDialog::setFilterEmptyEpg(bool newFilterEmptyEpg)
 {
-    if (m_filterEmptyEpg == newFilterEmptyEpg)
+    if (m_settings->epg.filterEmptyEpg == newFilterEmptyEpg)
         return;
-    m_filterEmptyEpg = newFilterEmptyEpg;
+    m_settings->epg.filterEmptyEpg = newFilterEmptyEpg;
     emit filterEmptyEpgChanged();
 }
 
 void EPGDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
 {
     m_currentUEID = ens.ueid;
-    if (m_filterEnsemble)
+    if (m_settings->epg.filterEnsemble)
     {
         m_slProxyModel->setUeidFilter(m_currentUEID);
     }
@@ -150,14 +149,14 @@ void EPGDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
 
 bool EPGDialog::filterEnsemble() const
 {
-    return m_filterEnsemble;
+    return m_settings->epg.filterEnsemble;
 }
 
 void EPGDialog::setFilterEnsemble(bool newFilterEnsemble)
 {
-    if (m_filterEnsemble == newFilterEnsemble)
+    if (m_settings->epg.filterEnsemble == newFilterEnsemble)
         return;
-    m_filterEnsemble = newFilterEnsemble;
+    m_settings->epg.filterEnsemble = newFilterEnsemble;
     emit filterEnsembleChanged();
 }
 

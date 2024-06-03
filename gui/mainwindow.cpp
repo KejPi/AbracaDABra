@@ -480,7 +480,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_serviceList, &ServiceList::empty, m_slTreeModel, &SLTreeModel::clear);
 
     // EPG dialog
-    m_epgDialog = new EPGDialog(m_slModel, ui->serviceListView->selectionModel(), m_metadataManager);
+    m_epgDialog = new EPGDialog(m_slModel, ui->serviceListView->selectionModel(), m_metadataManager, m_settings);
     connect(this, &MainWindow::exit, [this]() {m_epgDialog->close(); m_epgDialog->deleteLater(); });  // QTBUG-117779 ==> using parentless dialogs as workaround
     connect(m_epgDialog, &QObject::destroyed, this, [this]() { m_epgDialog = nullptr; } );
     connect(m_metadataManager, &MetadataManager::epgAvailable, this, [this](){ m_epgAction->setEnabled(true); } );
@@ -2689,8 +2689,8 @@ void MainWindow::loadSettings()
     m_settings->tii.coordinates = QGeoCoordinate(settings->value("TII/latitude", 0.0).toDouble(), settings->value("TII/longitude", 0.0).toDouble());
     m_settings->tii.serialPort = settings->value("TII/serialPort", "").toString();
 
-    m_epgDialog->setFilterEmptyEpg(settings->value("epgFilterEmpty", false).toBool());
-    m_epgDialog->setFilterEnsemble(settings->value("epgFilterOtherEnsembles", false).toBool());
+    m_settings->epg.filterEmptyEpg = settings->value("epgFilterEmpty", false).toBool();
+    m_settings->epg.filterEnsemble = settings->value("epgFilterOtherEnsembles", false).toBool();
 
     m_settings->rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
     m_settings->rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
@@ -2851,6 +2851,8 @@ void MainWindow::saveSettings()
     settings->setValue("audioRecFolder", m_settings->audioRecFolder);
     settings->setValue("audioRecCaptureOutput", m_settings->audioRecCaptureOutput);
     settings->setValue("audioRecAutoStop", m_settings->audioRecAutoStopEna);
+    settings->setValue("epgFilterEmpty", m_settings->epg.filterEmptyEpg);
+    settings->setValue("epgFilterOtherEnsembles", m_settings->epg.filterEnsemble);
 
     settings->setValue("TII/locationSource", static_cast<int>(m_settings->tii.locationSource));
     settings->setValue("TII/latitude", m_settings->tii.coordinates.latitude());
@@ -2863,9 +2865,6 @@ void MainWindow::saveSettings()
     settings->setValue("UA-STORAGE/spiEna", m_settings->uaDump.spiEna);
     settings->setValue("UA-STORAGE/slsPattern", m_settings->uaDump.slsPattern);
     settings->setValue("UA-STORAGE/spiPattern", m_settings->uaDump.spiPattern);
-
-    settings->setValue("epgFilterEmpty", m_epgDialog->filterEmptyEpg());
-    settings->setValue("epgFilterOtherEnsembles", m_epgDialog->filterEnsemble());
 
     settings->setValue("RTL-SDR/gainIndex", m_settings->rtlsdr.gainIdx);
     settings->setValue("RTL-SDR/gainMode", static_cast<int>(m_settings->rtlsdr.gainMode));
