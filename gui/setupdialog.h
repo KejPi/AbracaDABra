@@ -36,110 +36,21 @@
 #include <QCheckBox>
 #include <QLabel>
 #include "config.h"
-#include "inputdevice.h"
-#if HAVE_AIRSPY
-#include "airspyinput.h"
-#endif
-#include "rawfileinput.h"
+#include "settings.h"
 #include "dabtables.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class SetupDialog; }
 QT_END_NAMESPACE
 
-enum class ApplicationStyle { Default = 0, Light, Dark};
-enum class GeolocationSource { System = 0, Manual, SerialPort };
-
 class SetupDialog : public QDialog
 {
     Q_OBJECT
 public:
-    // this is to store active state
-    struct Settings
-    {
-        InputDeviceId inputDevice;
-        struct
-        {
-            QString file;
-            RawFileInputFormat format;
-            bool loopEna;
-        } rawfile;
-        struct
-        {
-            RtlGainMode gainMode;
-            int gainIdx;
-            uint32_t bandwidth;            
-            bool biasT;
-            int agcLevelMax;
-            int ppm;
-        } rtlsdr;
-        struct
-        {
-            RtlGainMode gainMode;
-            int gainIdx;
-            QString tcpAddress;
-            int tcpPort;
-            int agcLevelMax;
-            int ppm;
-        } rtltcp;
-#if HAVE_AIRSPY
-        struct
-        {
-            AirspyGainStr gain;
-            bool biasT;
-            bool dataPacking;
-            bool prefer4096kHz;
-        } airspy;
-#endif
-#if HAVE_SOAPYSDR
-        struct
-        {
-            SoapyGainMode gainMode;
-            int gainIdx;
-            QString devArgs;
-            QString antenna;
-            int channel;
-            uint32_t bandwidth;
-        } soapysdr;
-#endif
-        uint16_t announcementEna;
-        bool bringWindowToForeground;
-        ApplicationStyle applicationStyle;
-        QLocale::Language lang;
-        bool expertModeEna;
-        bool dlPlusEna;
-        int noiseConcealmentLevel;
-        bool xmlHeaderEna;
-        bool spiAppEna;
-        bool useInternet;
-        bool radioDnsEna;
-        QString audioRecFolder;
-        bool audioRecCaptureOutput;
-        bool audioRecAutoStopEna;
-
-        // this is settings for UA data dumping (storage)
-        struct UADumpSettings
-        {
-            QString folder;
-            bool overwriteEna;
-            bool slsEna;            
-            bool spiEna;
-            QString slsPattern;
-            QString spiPattern;
-        } uaDump;
-
-        struct TIISettings {
-            GeolocationSource locationSource;
-            QGeoCoordinate coordinates;
-            QString serialPort;
-        } tii;
-    };
-
     SetupDialog(QWidget *parent = nullptr);
-    const Settings & settings() const;
     void setGainValues(const QList<float> & gainList);
     void resetInputDevice();
-    void setSettings(const Settings &settings);
+    void setSettings(Settings  * settings);
     void setXmlHeader(const InputDeviceDescription & desc);
     void onFileLength(int msec);
     void onFileProgress(int msec);
@@ -155,7 +66,7 @@ signals:
     void newInputDeviceSettings();
     void newAnnouncementSettings();
     void expertModeToggled(bool enabled);
-    void applicationStyleChanged(ApplicationStyle style);
+    void applicationStyleChanged(Settings::ApplicationStyle style);
     void noiseConcealmentLevelChanged(int level);
     void xmlHeaderToggled(bool enabled);
     void spiApplicationEnabled(bool enabled);
@@ -176,7 +87,7 @@ private:
     const QString m_noFileString = tr("No file selected");
 
     Ui::SetupDialog *ui;
-    Settings m_settings;
+    Settings * m_settings;
     QString m_rawfilename;
     QList<float> m_rtlsdrGainList;
     QList<float> m_rtltcpGainList;

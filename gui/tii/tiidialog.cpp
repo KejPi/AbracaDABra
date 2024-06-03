@@ -25,7 +25,6 @@
  */
 
 #include <QMenu>
-#include <QQuickStyle>
 #include <QQmlContext>
 #include <QBoxLayout>
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && QT_CONFIG(permissions)
@@ -35,7 +34,7 @@
 #include <QMessageBox>
 #include "tiidialog.h"
 
-TIIDialog::TIIDialog(const SetupDialog::Settings &settings, QWidget *parent)
+TIIDialog::TIIDialog(const Settings *settings, QWidget *parent)
     : QDialog(parent)
     , m_settings(settings)
 {        
@@ -386,9 +385,9 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
 
 void TIIDialog::startLocationUpdate()
 {
-    switch (m_settings.tii.locationSource)
+    switch (m_settings->tii.locationSource)
     {
-    case GeolocationSource::System:
+    case Settings::GeolocationSource::System:
     {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
         // ask for permission
@@ -428,19 +427,19 @@ void TIIDialog::startLocationUpdate()
         }
     }
     break;
-    case GeolocationSource::Manual:
+    case Settings::GeolocationSource::Manual:
         if (m_geopositionSource != nullptr)
         {
             delete m_geopositionSource;
             m_geopositionSource = nullptr;
         }
-        positionUpdated(QGeoPositionInfo(m_settings.tii.coordinates, QDateTime::currentDateTime()));
+        positionUpdated(QGeoPositionInfo(m_settings->tii.coordinates, QDateTime::currentDateTime()));
         break;
-    case GeolocationSource::SerialPort:
+    case Settings::GeolocationSource::SerialPort:
     {
         // serial port
         QVariantMap params;
-        params["nmea.source"] = "serial:"+m_settings.tii.serialPort;
+        params["nmea.source"] = "serial:"+m_settings->tii.serialPort;
         m_geopositionSource = QGeoPositionInfoSource::createSource("nmea", params, this);
         if (m_geopositionSource != nullptr)
         {

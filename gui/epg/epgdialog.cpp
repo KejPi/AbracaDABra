@@ -27,7 +27,6 @@
 #include <QQmlContext>
 #include <QHBoxLayout>
 #include <QPushButton>
-#include <QQuickStyle>
 
 #include "epgproxymodel.h"
 #include "epgdialog.h"
@@ -62,7 +61,6 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectio
     context->setContextProperty("slSelectionModel", slSelectionModel);
     context->setContextProperty("epgDialog", this);
 
-    QQuickStyle::setStyle("Fusion");
     setupDarkMode(false);
 
     QQmlEngine *engine = m_qmlView->engine();

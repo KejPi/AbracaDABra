@@ -190,8 +190,9 @@ private:
     QSlider * m_audioVolumeSlider;
     AudioOutput * m_audioOutput;
 
-    // state variables
+    // state variables    
     QString m_iniFilename;
+    Settings * m_settings;
     bool m_isPlaying = false;
     bool m_deviceChangeRequested = false;
     bool m_exitRequested = false;
@@ -274,7 +275,7 @@ private:
     void onMuteLabelToggled(bool doMute);
     void onSwitchSourceClicked();
     void onAnnouncementClicked();
-    void onApplicationStyleChanged(ApplicationStyle style);
+    void onApplicationStyleChanged(Settings::ApplicationStyle style);
     void onExpertModeToggled(bool checked);
     void onSignalState(uint8_t sync, float snr);
     void onServiceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);

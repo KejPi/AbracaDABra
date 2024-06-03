@@ -52,7 +52,7 @@ class TIIDialog : public QDialog
     Q_PROPERTY(int selectedRow READ selectedRow WRITE setSelectedRow NOTIFY selectedRowChanged FINAL)
 
 public:
-    explicit TIIDialog(const SetupDialog::Settings & settings, QWidget *parent = nullptr);
+    explicit TIIDialog(const Settings * settings, QWidget *parent = nullptr);
     ~TIIDialog();
     void onTiiData(const RadioControlTIIData & data);
     void setupDarkMode(bool darkModeEna);
@@ -93,7 +93,7 @@ protected:
 private:
     enum GraphId {Spect, TII};
     enum GraphRange { MinX = -1024, MaxX = 1023, MinY = 0, MaxY = 1 };
-    const SetupDialog::Settings & m_settings;
+    const Settings * m_settings;
 
     // UI
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT

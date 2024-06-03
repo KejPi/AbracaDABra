@@ -148,7 +148,7 @@ void SPIApp::reset()
     emit resetTerminal();
 }
 
-void SPIApp::setDataDumping(const SetupDialog::Settings::UADumpSettings &settings)
+void SPIApp::setDataDumping(const Settings::UADumpSettings &settings)
 {
     m_dumpEna = settings.spiEna;
     m_dumpOverwrite = settings.overwriteEna;

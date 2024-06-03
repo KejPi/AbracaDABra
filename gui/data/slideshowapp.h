@@ -125,7 +125,7 @@ public:
     void start() override;
     void stop() override;
     void restart() override;
-    void setDataDumping(const SetupDialog::Settings::UADumpSettings & settings) override;
+    void setDataDumping(const Settings::UADumpSettings & settings) override;
 
     void getCurrentCatSlide(int catId);
     void getNextCatSlide(int catId, bool forward = true);

@@ -88,7 +88,7 @@ void SlideShowApp::restart()
     start();
 }
 
-void SlideShowApp::setDataDumping(const SetupDialog::Settings::UADumpSettings &settings)
+void SlideShowApp::setDataDumping(const Settings::UADumpSettings &settings)
 {
     m_dumpEna = settings.slsEna;
     m_dumpOverwrite = settings.overwriteEna;

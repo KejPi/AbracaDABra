@@ -98,6 +98,7 @@ add_executable(${TARGET}
     sltreemodel.cpp
     slproxymodel.h
     slproxymodel.cpp
+    settings.h
     setupdialog.h
     setupdialog.cpp
     setupdialog.ui

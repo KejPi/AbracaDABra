@@ -213,8 +213,6 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->rtltcpSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtltcpSwAgcMaxLevel->setValue(0); } );
     connect(ui->rtltcpPPM, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpPPMChanged);
 
-
-    connect(ui->loopCheckbox, &QCheckBox::stateChanged, this, [=](int val) { m_settings.rawfile.loopEna = (Qt::Unchecked != val); });
     connect(ui->fileFormatCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onRawFileFormatChanged);
 
 #if HAVE_AIRSPY
@@ -282,7 +280,6 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->audioRecordingFolderButton, &QPushButton::clicked, this, &SetupDialog::onAudioRecordingFolderButtonClicked);
     connect(ui->audioInRecordingRadioButton, &QRadioButton::clicked, this, &SetupDialog::onAudioRecordingChecked);
     connect(ui->audioOutRecordingRadioButton, &QRadioButton::clicked, this, &SetupDialog::onAudioRecordingChecked);
-    connect(ui->autoStopRecordingCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings.audioRecAutoStopEna = checked; });
 
     ui->dataDumpFolderLabel->setElideMode(Qt::ElideLeft);
     ui->dumpSlsPatternEdit->setToolTip(tr("Storage path template for SLS application. Following tokens are supported:\n"
@@ -317,9 +314,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->audioDecoderGroupBox->setVisible(false);
 #endif
 
-    ui->locationSourceCombo->addItem(tr("System"), QVariant::fromValue(GeolocationSource::System));
-    ui->locationSourceCombo->addItem(tr("Manual"), QVariant::fromValue(GeolocationSource::Manual));
-    ui->locationSourceCombo->addItem(tr("NMEA Serial Port"), QVariant::fromValue(GeolocationSource::SerialPort));
+    ui->locationSourceCombo->addItem(tr("System"), QVariant::fromValue(Settings::GeolocationSource::System));
+    ui->locationSourceCombo->addItem(tr("Manual"), QVariant::fromValue(Settings::GeolocationSource::Manual));
+    ui->locationSourceCombo->addItem(tr("NMEA Serial Port"), QVariant::fromValue(Settings::GeolocationSource::SerialPort));
     connect(ui->locationSourceCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onGeolocationSourceChanged);
     ui->locationSrcWidget->setEnabled(false);
     ui->coordinatesEdit->setText("0.0, 0.0");
@@ -353,22 +350,17 @@ void SetupDialog::setSlsDumpPaternDefault(const QString &newSlsDumpPaternDefault
     m_slsDumpPaternDefault = newSlsDumpPaternDefault;
 }
 
-const SetupDialog::Settings & SetupDialog::settings() const
-{
-    return m_settings;
-}
-
 void SetupDialog::setGainValues(const QList<float> &gainList)
 {
 
-    switch (m_settings.inputDevice)
+    switch (m_settings->inputDevice)
     {
     case InputDeviceId::RTLSDR:
         m_rtlsdrGainList.clear();
         m_rtlsdrGainList = gainList;
         ui->rtlsdrGainSlider->setMinimum(0);
         ui->rtlsdrGainSlider->setMaximum(m_rtlsdrGainList.size()-1);
-        ui->rtlsdrGainSlider->setValue((m_settings.rtlsdr.gainIdx >= 0) ? m_settings.rtlsdr.gainIdx : 0);
+        ui->rtlsdrGainSlider->setValue((m_settings->rtlsdr.gainIdx >= 0) ? m_settings->rtlsdr.gainIdx : 0);
         ui->rtlsdrGainSlider->setDisabled(m_rtlsdrGainList.empty());
         ui->rtlsdrGainModeManual->setDisabled(m_rtlsdrGainList.empty());
         break;
@@ -377,7 +369,7 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
         m_rtltcpGainList = gainList;
         ui->rtltcpGainSlider->setMinimum(0);
         ui->rtltcpGainSlider->setMaximum(m_rtltcpGainList.size()-1);
-        ui->rtltcpGainSlider->setValue((m_settings.rtltcp.gainIdx >= 0) ? m_settings.rtltcp.gainIdx : 0);
+        ui->rtltcpGainSlider->setValue((m_settings->rtltcp.gainIdx >= 0) ? m_settings->rtltcp.gainIdx : 0);
         ui->rtltcpGainSlider->setDisabled(m_rtltcpGainList.empty());
         ui->rtltcpGainModeManual->setDisabled(m_rtltcpGainList.empty());
         break;
@@ -387,7 +379,7 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
         m_soapysdrGainList = gainList;
         ui->soapysdrGainSlider->setMinimum(0);
         ui->soapysdrGainSlider->setMaximum(m_soapysdrGainList.size()-1);
-        ui->soapysdrGainSlider->setValue((m_settings.soapysdr.gainIdx >= 0) ? m_settings.soapysdr.gainIdx : 0);
+        ui->soapysdrGainSlider->setValue((m_settings->soapysdr.gainIdx >= 0) ? m_settings->soapysdr.gainIdx : 0);
         ui->soapysdrGainSlider->setDisabled(m_soapysdrGainList.empty());
         ui->soapysdrGainModeManual->setDisabled(m_soapysdrGainList.empty());
 #endif // HAVE_SOAPYSDR
@@ -399,20 +391,24 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
     }
 }
 
-void SetupDialog::setSettings(const Settings &settings)
+void SetupDialog::setSettings(Settings * settings)
 {
     m_settings = settings;
+
+    connect(ui->loopCheckbox, &QCheckBox::stateChanged, this, [=](int val) { m_settings->rawfile.loopEna = (Qt::Unchecked != val); });
+    connect(ui->autoStopRecordingCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings->audioRecAutoStopEna = checked; });
+
     setUiState();
-    onExpertModeChecked(m_settings.expertModeEna);
+    onExpertModeChecked(m_settings->expertModeEna);
     setStatusLabel();    
     emit newAnnouncementSettings();
-    emit noiseConcealmentLevelChanged(m_settings.noiseConcealmentLevel);
-    emit xmlHeaderToggled(m_settings.xmlHeaderEna);
-    emit audioRecordingSettings(m_settings.audioRecFolder, m_settings.audioRecCaptureOutput);
-    emit uaDumpSettings(m_settings.uaDump);
+    emit noiseConcealmentLevelChanged(m_settings->noiseConcealmentLevel);
+    emit xmlHeaderToggled(m_settings->xmlHeaderEna);
+    emit audioRecordingSettings(m_settings->audioRecFolder, m_settings->audioRecCaptureOutput);
+    emit uaDumpSettings(m_settings->uaDump);
     emit tiiSettingsChanged();
-    onUseInternetChecked(m_settings.useInternet);    
-    onSpiAppChecked(m_settings.spiAppEna);    
+    onUseInternetChecked(m_settings->useInternet);
+    onSpiAppChecked(m_settings->spiAppEna);
 }
 
 void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
@@ -430,13 +426,13 @@ void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
         switch (desc.sample.containerBits)
         {
         case 8:
-            m_settings.rawfile.format = RawFileInputFormat::SAMPLE_FORMAT_U8;
+            m_settings->rawfile.format = RawFileInputFormat::SAMPLE_FORMAT_U8;
             break;
         case 16:
-            m_settings.rawfile.format = RawFileInputFormat::SAMPLE_FORMAT_S16;
+            m_settings->rawfile.format = RawFileInputFormat::SAMPLE_FORMAT_S16;
             break;
         }
-        ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings.rawfile.format));
+        ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings->rawfile.format));
         ui->fileFormatCombo->setEnabled(false);
         ui->xmlHeaderWidget->setVisible(true);
     }
@@ -465,15 +461,15 @@ void SetupDialog::onFileProgress(int msec)
 
 void SetupDialog::setAudioRecAutoStop(bool ena)
 {
-    m_settings.audioRecAutoStopEna = ena;
+    m_settings->audioRecAutoStopEna = ena;
     ui->autoStopRecordingCheckBox->setChecked(ena);
 }
 
 QLocale::Language SetupDialog::applicationLanguage() const
 {
-    if (m_supportedLocalization.contains(m_settings.lang) || (QLocale::English == m_settings.lang))
+    if (m_supportedLocalization.contains(m_settings->lang) || (QLocale::English == m_settings->lang))
     {   // selected specific localization
-        return m_settings.lang;
+        return m_settings->lang;
     }
     else
     {   // system default or not supported
@@ -494,7 +490,7 @@ void SetupDialog::setUiState()
     // block signals while UI is set to be aligned with m_settings
     const QSignalBlocker blocker(this);
 
-    int index = ui->inputCombo->findData(QVariant(static_cast<int>(m_settings.inputDevice)));
+    int index = ui->inputCombo->findData(QVariant(static_cast<int>(m_settings->inputDevice)));
     if (index < 0)
     {  // not found -> show rtlsdr as default
         index = ui->inputCombo->findData(QVariant(static_cast<int>(InputDeviceId::RTLSDR)));
@@ -503,8 +499,8 @@ void SetupDialog::setUiState()
 
     if (!m_rtlsdrGainList.isEmpty())
     {
-        ui->rtlsdrGainSlider->setValue(m_settings.rtlsdr.gainIdx);
-        onRtlSdrGainSliderChanged(m_settings.rtlsdr.gainIdx);
+        ui->rtlsdrGainSlider->setValue(m_settings->rtlsdr.gainIdx);
+        onRtlSdrGainSliderChanged(m_settings->rtlsdr.gainIdx);
     }
     else
     {
@@ -513,8 +509,8 @@ void SetupDialog::setUiState()
     }
     if (!m_rtltcpGainList.isEmpty())
     {
-        ui->rtltcpGainSlider->setValue(m_settings.rtltcp.gainIdx);
-        onRtlTcpGainSliderChanged(m_settings.rtltcp.gainIdx);
+        ui->rtltcpGainSlider->setValue(m_settings->rtltcp.gainIdx);
+        onRtlTcpGainSliderChanged(m_settings->rtltcp.gainIdx);
     }
     else
     {
@@ -522,7 +518,7 @@ void SetupDialog::setUiState()
         ui->rtltcpGainValueLabel->setText(tr("N/A"));
     }
 
-    switch (m_settings.rtlsdr.gainMode) {
+    switch (m_settings->rtlsdr.gainMode) {
     case RtlGainMode::Software:
         ui->rtlsdrGainModeSw->setChecked(true);
         break;
@@ -535,12 +531,12 @@ void SetupDialog::setUiState()
     default:
         break;
     }   
-    ui->rtlsdrBandwidth->setValue(m_settings.rtlsdr.bandwidth / 1000);
-    ui->rtlsdrBiasTCombo->setCurrentIndex(m_settings.rtlsdr.biasT ? 1 : 0);
-    ui->rtlsdrSwAgcMaxLevel->setValue(m_settings.rtlsdr.agcLevelMax);
-    ui->rtlsdrPPM->setValue(m_settings.rtlsdr.ppm);
+    ui->rtlsdrBandwidth->setValue(m_settings->rtlsdr.bandwidth / 1000);
+    ui->rtlsdrBiasTCombo->setCurrentIndex(m_settings->rtlsdr.biasT ? 1 : 0);
+    ui->rtlsdrSwAgcMaxLevel->setValue(m_settings->rtlsdr.agcLevelMax);
+    ui->rtlsdrPPM->setValue(m_settings->rtlsdr.ppm);
 
-    switch (m_settings.rtltcp.gainMode) {
+    switch (m_settings->rtltcp.gainMode) {
     case RtlGainMode::Software:
         ui->rtltcpGainModeSw->setChecked(true);
         break;
@@ -553,11 +549,11 @@ void SetupDialog::setUiState()
     default:
         break;
     }
-    ui->rtltcpSwAgcMaxLevel->setValue(m_settings.rtltcp.agcLevelMax);
-    ui->rtltcpPPM->setValue(m_settings.rtltcp.ppm);
+    ui->rtltcpSwAgcMaxLevel->setValue(m_settings->rtltcp.agcLevelMax);
+    ui->rtltcpPPM->setValue(m_settings->rtltcp.ppm);
 
 #if HAVE_AIRSPY
-    switch (m_settings.airspy.gain.mode) {
+    switch (m_settings->airspy.gain.mode) {
     case AirpyGainMode::Software:
         ui->airspyGainModeSw->setChecked(true);
         break;
@@ -574,17 +570,17 @@ void SetupDialog::setUiState()
         break;
     }
 
-    ui->airspySensitivityGainSlider->setValue(m_settings.airspy.gain.sensitivityGainIdx);
-    ui->airspyIFGainSlider->setValue(m_settings.airspy.gain.ifGainIdx);
-    ui->airspyLNAGainSlider->setValue(m_settings.airspy.gain.lnaGainIdx);
-    ui->airspyMixerGainSlider->setValue(m_settings.airspy.gain.mixerGainIdx);
-    ui->airspyMixerAGCCheckbox->setChecked(m_settings.airspy.gain.mixerAgcEna);
-    ui->airspyLNAAGCCheckbox->setChecked(m_settings.airspy.gain.lnaAgcEna);
-    ui->airspyBiasTCombo->setCurrentIndex(m_settings.airspy.biasT ? 1 : 0);
+    ui->airspySensitivityGainSlider->setValue(m_settings->airspy.gain.sensitivityGainIdx);
+    ui->airspyIFGainSlider->setValue(m_settings->airspy.gain.ifGainIdx);
+    ui->airspyLNAGainSlider->setValue(m_settings->airspy.gain.lnaGainIdx);
+    ui->airspyMixerGainSlider->setValue(m_settings->airspy.gain.mixerGainIdx);
+    ui->airspyMixerAGCCheckbox->setChecked(m_settings->airspy.gain.mixerAgcEna);
+    ui->airspyLNAAGCCheckbox->setChecked(m_settings->airspy.gain.lnaAgcEna);
+    ui->airspyBiasTCombo->setCurrentIndex(m_settings->airspy.biasT ? 1 : 0);
 #endif
 
 #if HAVE_SOAPYSDR
-    switch (m_settings.soapysdr.gainMode) {
+    switch (m_settings->soapysdr.gainMode) {
     case SoapyGainMode::Software:
         ui->soapysdrGainModeSw->setChecked(true);
         break;
@@ -600,8 +596,8 @@ void SetupDialog::setUiState()
 
     if (!m_soapysdrGainList.isEmpty())
     {
-        ui->soapysdrGainSlider->setValue(m_settings.soapysdr.gainIdx);
-        onSoapySdrGainSliderChanged(m_settings.soapysdr.gainIdx);
+        ui->soapysdrGainSlider->setValue(m_settings->soapysdr.gainIdx);
+        onSoapySdrGainSliderChanged(m_settings->soapysdr.gainIdx);
     }
     else
     {
@@ -609,14 +605,14 @@ void SetupDialog::setUiState()
         ui->soapysdrGainValueLabel->setText(tr("N/A"));
     }
 
-    ui->soapysdrDevArgs->setText(m_settings.soapysdr.devArgs);
-    ui->soapysdrChannelNum->setValue(m_settings.soapysdr.channel);
-    ui->soapySdrAntenna->setText(m_settings.soapysdr.antenna);
+    ui->soapysdrDevArgs->setText(m_settings->soapysdr.devArgs);
+    ui->soapysdrChannelNum->setValue(m_settings->soapysdr.channel);
+    ui->soapySdrAntenna->setText(m_settings->soapysdr.antenna);
 
-    ui->soapysdrBandwidth->setValue(m_settings.soapysdr.bandwidth / 1000);
+    ui->soapysdrBandwidth->setValue(m_settings->soapysdr.bandwidth / 1000);
 #endif
 
-    if (m_settings.rawfile.file.isEmpty())
+    if (m_settings->rawfile.file.isEmpty())
     {
         ui->fileNameLabel->setText(m_noFileString);
         m_rawfilename = "";
@@ -624,62 +620,62 @@ void SetupDialog::setUiState()
     }
     else
     {
-        ui->fileNameLabel->setText(m_settings.rawfile.file);
-        m_rawfilename = m_settings.rawfile.file;
-        ui->fileNameLabel->setToolTip(m_settings.rawfile.file);
+        ui->fileNameLabel->setText(m_settings->rawfile.file);
+        m_rawfilename = m_settings->rawfile.file;
+        ui->fileNameLabel->setToolTip(m_settings->rawfile.file);
     }
-    ui->loopCheckbox->setChecked(m_settings.rawfile.loopEna);
-    ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings.rawfile.format));
-    ui->rtltcpIpAddressEdit->setText(m_settings.rtltcp.tcpAddress);
-    ui->rtltcpIpPortSpinBox->setValue(m_settings.rtltcp.tcpPort);
+    ui->loopCheckbox->setChecked(m_settings->rawfile.loopEna);
+    ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings->rawfile.format));
+    ui->rtltcpIpAddressEdit->setText(m_settings->rtltcp.tcpAddress);
+    ui->rtltcpIpPortSpinBox->setValue(m_settings->rtltcp.tcpPort);
 
     setStatusLabel();
 
     // announcements
-    uint16_t announcementEna = m_settings.announcementEna | (1 << static_cast<int>(DabAnnouncement::Alarm));  // enable alarm
+    uint16_t announcementEna = m_settings->announcementEna | (1 << static_cast<int>(DabAnnouncement::Alarm));  // enable alarm
     for (int a = 0; a < static_cast<int>(DabAnnouncement::Undefined); ++a)
     {
         m_announcementCheckBox[a]->setChecked(announcementEna & 0x1);
         announcementEna >>= 1;
     }
-    m_bringWindowToForegroundCheckbox->setChecked(m_settings.bringWindowToForeground);
+    m_bringWindowToForegroundCheckbox->setChecked(m_settings->bringWindowToForeground);
 
     // other settings
-    switch (m_settings.applicationStyle)
+    switch (m_settings->applicationStyle)
     {
-    case ApplicationStyle::Default:
+    case Settings::ApplicationStyle::Default:
         ui->defaultStyleRadioButton->setChecked(true);
         break;
-    case ApplicationStyle::Light:
+    case Settings::ApplicationStyle::Light:
         ui->lightStyleRadioButton->setChecked(true);
         break;
-    case ApplicationStyle::Dark:
+    case Settings::ApplicationStyle::Dark:
         ui->darkStyleRadioButton->setChecked(true);
         break;
     }
-    ui->expertCheckBox->setChecked(m_settings.expertModeEna);
-    ui->dlPlusCheckBox->setChecked(m_settings.dlPlusEna);
+    ui->expertCheckBox->setChecked(m_settings->expertModeEna);
+    ui->dlPlusCheckBox->setChecked(m_settings->dlPlusEna);
 
-    index = ui->noiseConcealmentCombo->findData(QVariant(m_settings.noiseConcealmentLevel));
+    index = ui->noiseConcealmentCombo->findData(QVariant(m_settings->noiseConcealmentLevel));
     if (index < 0)
     {   // not found
         index = 0;
     }
     ui->noiseConcealmentCombo->setCurrentIndex(index);
-    ui->xmlHeaderCheckBox->setChecked(m_settings.xmlHeaderEna);
-    ui->spiAppCheckBox->setChecked(m_settings.spiAppEna);
-    ui->internetCheckBox->setChecked(m_settings.useInternet);
-    ui->radioDNSCheckBox->setChecked(m_settings.radioDnsEna);
+    ui->xmlHeaderCheckBox->setChecked(m_settings->xmlHeaderEna);
+    ui->spiAppCheckBox->setChecked(m_settings->spiAppEna);
+    ui->internetCheckBox->setChecked(m_settings->useInternet);
+    ui->radioDNSCheckBox->setChecked(m_settings->radioDnsEna);
 
-    index = ui->langComboBox->findData(QVariant(m_settings.lang));
+    index = ui->langComboBox->findData(QVariant(m_settings->lang));
     if (index < 0)
     {   // not found
         index = 0;
     }
     ui->langComboBox->setCurrentIndex(index);
 
-    ui->audioRecordingFolderLabel->setText(m_settings.audioRecFolder);
-    if (m_settings.audioRecCaptureOutput)
+    ui->audioRecordingFolderLabel->setText(m_settings->audioRecFolder);
+    if (m_settings->audioRecCaptureOutput)
     {
         ui->audioOutRecordingRadioButton->setChecked(true);
     }
@@ -687,53 +683,53 @@ void SetupDialog::setUiState()
     {
         ui->audioInRecordingRadioButton->setChecked(true);
     }
-    ui->autoStopRecordingCheckBox->setChecked(m_settings.audioRecAutoStopEna);
+    ui->autoStopRecordingCheckBox->setChecked(m_settings->audioRecAutoStopEna);
 
-    ui->dataDumpFolderLabel->setText(m_settings.uaDump.folder);
-    ui->dumpSlsPatternEdit->setText(m_settings.uaDump.slsPattern);
-    ui->dumpSpiPatternEdit->setText(m_settings.uaDump.spiPattern);
+    ui->dataDumpFolderLabel->setText(m_settings->uaDump.folder);
+    ui->dumpSlsPatternEdit->setText(m_settings->uaDump.slsPattern);
+    ui->dumpSpiPatternEdit->setText(m_settings->uaDump.spiPattern);
     // blocker is required to avoid triggering unwanted signal
     // we need to set UI state first
     {
         const QSignalBlocker blocker(ui->dumpSlsCheckBox);
         // no signals here
-        ui->dumpSlsCheckBox->setChecked(m_settings.uaDump.slsEna);
+        ui->dumpSlsCheckBox->setChecked(m_settings->uaDump.slsEna);
     }
     {
         const QSignalBlocker blocker(ui->dumpSpiCheckBox);
         // no signals here
-        ui->dumpSpiCheckBox->setChecked(m_settings.uaDump.spiEna);
+        ui->dumpSpiCheckBox->setChecked(m_settings->uaDump.spiEna);
     }
     // this may trigger the signal (no problem if it happens)
-    ui->dumpOverwriteCheckbox->setChecked(m_settings.uaDump.overwriteEna);
+    ui->dumpOverwriteCheckbox->setChecked(m_settings->uaDump.overwriteEna);
     ui->coordinatesEdit->setText(QString("%1, %2")
-                                     .arg(m_settings.tii.coordinates.latitude(), 0, 'g', QLocale::FloatingPointShortest)
-                                     .arg(m_settings.tii.coordinates.longitude(), 0, 'g', QLocale::FloatingPointShortest));
-    ui->serialPortEdit->setText(m_settings.tii.serialPort);
-    ui->locationSourceCombo->setCurrentIndex(static_cast<int>(m_settings.tii.locationSource));
+                                     .arg(m_settings->tii.coordinates.latitude(), 0, 'g', QLocale::FloatingPointShortest)
+                                     .arg(m_settings->tii.coordinates.longitude(), 0, 'g', QLocale::FloatingPointShortest));
+    ui->serialPortEdit->setText(m_settings->tii.serialPort);
+    ui->locationSourceCombo->setCurrentIndex(static_cast<int>(m_settings->tii.locationSource));
 }
 
 void SetupDialog::onConnectDeviceClicked()
 {
     ui->connectButton->setHidden(true);
-    m_settings.inputDevice = static_cast<InputDeviceId>(ui->inputCombo->itemData(ui->inputCombo->currentIndex()).toInt());
+    m_settings->inputDevice = static_cast<InputDeviceId>(ui->inputCombo->itemData(ui->inputCombo->currentIndex()).toInt());
     setStatusLabel();
-    switch (m_settings.inputDevice)
+    switch (m_settings->inputDevice)
     {
     case InputDeviceId::RTLSDR:
         activateRtlSdrControls(true);
         break;
     case InputDeviceId::RTLTCP:
-        m_settings.rtltcp.tcpAddress = ui->rtltcpIpAddressEdit->text();
-        m_settings.rtltcp.tcpPort = ui->rtltcpIpPortSpinBox->value();
+        m_settings->rtltcp.tcpAddress = ui->rtltcpIpAddressEdit->text();
+        m_settings->rtltcp.tcpPort = ui->rtltcpIpPortSpinBox->value();
         activateRtlTcpControls(true);
         break;
     case InputDeviceId::UNDEFINED:
         break;
     case InputDeviceId::RAWFILE:
-        m_settings.rawfile.file = m_rawfilename;
-        m_settings.rawfile.loopEna = ui->loopCheckbox->isChecked();
-        m_settings.rawfile.format = static_cast<RawFileInputFormat>(ui->fileFormatCombo->currentIndex());
+        m_settings->rawfile.file = m_rawfilename;
+        m_settings->rawfile.loopEna = ui->loopCheckbox->isChecked();
+        m_settings->rawfile.format = static_cast<RawFileInputFormat>(ui->fileFormatCombo->currentIndex());
         break;
     case InputDeviceId::AIRSPY:
 #if HAVE_AIRSPY
@@ -742,14 +738,14 @@ void SetupDialog::onConnectDeviceClicked()
         break;
     case InputDeviceId::SOAPYSDR:
 #if HAVE_SOAPYSDR
-        m_settings.soapysdr.devArgs = ui->soapysdrDevArgs->text();
-        m_settings.soapysdr.channel = ui->soapysdrChannelNum->text().toInt();
-        m_settings.soapysdr.antenna = ui->soapySdrAntenna->text();
+        m_settings->soapysdr.devArgs = ui->soapysdrDevArgs->text();
+        m_settings->soapysdr.channel = ui->soapysdrChannelNum->text().toInt();
+        m_settings->soapysdr.antenna = ui->soapySdrAntenna->text();
         activateSoapySdrControls(true);
 #endif
         break;
     }
-    emit inputDeviceChanged(m_settings.inputDevice);
+    emit inputDeviceChanged(m_settings->inputDevice);
 }
 
 void SetupDialog::onRtlSdrGainSliderChanged(int val)
@@ -757,7 +753,7 @@ void SetupDialog::onRtlSdrGainSliderChanged(int val)
     if (!m_rtlsdrGainList.empty())
     {
         ui->rtlsdrGainValueLabel->setText(QString("%1 dB").arg(m_rtlsdrGainList.at(val)));
-        m_settings.rtlsdr.gainIdx = val;
+        m_settings->rtlsdr.gainIdx = val;
         emit newInputDeviceSettings();
     }
     else { /* empy gain list => do nothing */}
@@ -765,27 +761,27 @@ void SetupDialog::onRtlSdrGainSliderChanged(int val)
 
 void SetupDialog::onRtlSdrBandwidthChanged(int val)
 {
-    m_settings.rtlsdr.bandwidth = val * 1000;
+    m_settings->rtlsdr.bandwidth = val * 1000;
     ui->rtlsdrBandwidthDefault->setEnabled(val > 0);
     emit newInputDeviceSettings();
 }
 
 void SetupDialog::onRtlSdrPPMChanged(int val)
 {
-    m_settings.rtlsdr.ppm = val;
+    m_settings->rtlsdr.ppm = val;
     emit newInputDeviceSettings();
 }
 
 void SetupDialog::onRtlSdrSwAgcMaxLevelChanged(int val)
 {
-    m_settings.rtlsdr.agcLevelMax = val;
+    m_settings->rtlsdr.agcLevelMax = val;
     ui->rtlsdrSwAgcMaxLevelDefault->setEnabled(val > 0);
     emit newInputDeviceSettings();    
 }
 
 void SetupDialog::onRtlSdrBiasTCurrentIdxChanged(int)
 {
-    m_settings.rtlsdr.biasT = ui->rtlsdrBiasTCombo->currentData().toBool();
+    m_settings->rtlsdr.biasT = ui->rtlsdrBiasTCombo->currentData().toBool();
     emit newInputDeviceSettings();
 }
 
@@ -795,15 +791,15 @@ void SetupDialog::onRtlSdrGainModeToggled(bool checked)
     {
         if (ui->rtlsdrGainModeHw->isChecked())
         {
-            m_settings.rtlsdr.gainMode = RtlGainMode::Hardware;
+            m_settings->rtlsdr.gainMode = RtlGainMode::Hardware;
         }
         else if (ui->rtlsdrGainModeSw->isChecked())
         {
-            m_settings.rtlsdr.gainMode = RtlGainMode::Software;
+            m_settings->rtlsdr.gainMode = RtlGainMode::Software;
         }
         else if (ui->rtlsdrGainModeManual->isChecked())
         {
-            m_settings.rtlsdr.gainMode = RtlGainMode::Manual;
+            m_settings->rtlsdr.gainMode = RtlGainMode::Manual;
         }
         activateRtlSdrControls(true);
         emit newInputDeviceSettings();
@@ -813,7 +809,7 @@ void SetupDialog::onRtlSdrGainModeToggled(bool checked)
 void SetupDialog::activateRtlSdrControls(bool en)
 {
     ui->rtlsdrGainModeGroup->setEnabled(en);
-    ui->rtlsdrGainWidget->setEnabled(en && (RtlGainMode::Manual == m_settings.rtlsdr.gainMode));
+    ui->rtlsdrGainWidget->setEnabled(en && (RtlGainMode::Manual == m_settings->rtlsdr.gainMode));
     ui->rtlsdrExpertGroup->setEnabled(en);
 }
 
@@ -822,7 +818,7 @@ void SetupDialog::onRtlTcpGainSliderChanged(int val)
     if (!m_rtltcpGainList.empty())
     {
         ui->rtltcpGainValueLabel->setText(QString("%1 dB").arg(m_rtltcpGainList.at(val)));
-        m_settings.rtltcp.gainIdx = val;
+        m_settings->rtltcp.gainIdx = val;
         emit newInputDeviceSettings();
     }
     else { /* empy gain list => do nothing */}
@@ -830,7 +826,7 @@ void SetupDialog::onRtlTcpGainSliderChanged(int val)
 
 void SetupDialog::onRtlTcpIpAddrEditFinished()
 {
-    if (ui->rtltcpIpAddressEdit->text() != m_settings.rtltcp.tcpAddress)
+    if (ui->rtltcpIpAddressEdit->text() != m_settings->rtltcp.tcpAddress)
     {
         ui->connectButton->setVisible(true);
     }
@@ -838,7 +834,7 @@ void SetupDialog::onRtlTcpIpAddrEditFinished()
 
 void SetupDialog::onRtlTcpPortValueChanged(int val)
 {
-    if (val != m_settings.rtltcp.tcpPort)
+    if (val != m_settings->rtltcp.tcpPort)
     {
         ui->connectButton->setVisible(true);
     }
@@ -851,15 +847,15 @@ void SetupDialog::onTcpGainModeToggled(bool checked)
     {
         if (ui->rtltcpGainModeHw->isChecked())
         {
-            m_settings.rtltcp.gainMode = RtlGainMode::Hardware;
+            m_settings->rtltcp.gainMode = RtlGainMode::Hardware;
         }
         else if (ui->rtltcpGainModeSw->isChecked())
         {
-            m_settings.rtltcp.gainMode = RtlGainMode::Software;
+            m_settings->rtltcp.gainMode = RtlGainMode::Software;
         }
         else if (ui->rtltcpGainModeManual->isChecked())
         {
-            m_settings.rtltcp.gainMode = RtlGainMode::Manual;
+            m_settings->rtltcp.gainMode = RtlGainMode::Manual;
         }
         activateRtlTcpControls(true);
         emit newInputDeviceSettings();
@@ -868,14 +864,14 @@ void SetupDialog::onTcpGainModeToggled(bool checked)
 
 void SetupDialog::onRtlTcpSwAgcMaxLevelChanged(int val)
 {
-    m_settings.rtltcp.agcLevelMax = val;
+    m_settings->rtltcp.agcLevelMax = val;
     ui->rtltcpSwAgcMaxLevelDefault->setEnabled(val > 0);
     emit newInputDeviceSettings();
 }
 
 void SetupDialog::onRtlTcpPPMChanged(int val)
 {
-    m_settings.rtltcp.ppm = val;
+    m_settings->rtltcp.ppm = val;
     emit newInputDeviceSettings();
 }
 
@@ -883,13 +879,13 @@ void SetupDialog::onRtlTcpPPMChanged(int val)
 void SetupDialog::activateRtlTcpControls(bool en)
 {
     ui->rtltcpGainModeGroup->setEnabled(en);
-    ui->rtltcpGainWidget->setEnabled(en && (RtlGainMode::Manual == m_settings.rtltcp.gainMode));
+    ui->rtltcpGainWidget->setEnabled(en && (RtlGainMode::Manual == m_settings->rtltcp.gainMode));
     ui->rtltcpExpertGroup->setEnabled(en);
 }
 
 void SetupDialog::onRawFileFormatChanged(int idx)
 {
-    if (static_cast<RawFileInputFormat>(idx) != m_settings.rawfile.format)
+    if (static_cast<RawFileInputFormat>(idx) != m_settings->rawfile.format)
     {
         ui->connectButton->setVisible(true);               
     }
@@ -899,8 +895,8 @@ void SetupDialog::onRawFileFormatChanged(int idx)
 void SetupDialog::activateAirspyControls(bool en)
 {
     ui->airspyGainModeGroup->setEnabled(en);
-    bool sensEna = en && (AirpyGainMode::Sensitivity == m_settings.airspy.gain.mode);
-    bool manualEna = en && (AirpyGainMode::Manual == m_settings.airspy.gain.mode);
+    bool sensEna = en && (AirpyGainMode::Sensitivity == m_settings->airspy.gain.mode);
+    bool manualEna = en && (AirpyGainMode::Manual == m_settings->airspy.gain.mode);
 
     // sensitivity controls
     ui->airspySensitivityGain->setEnabled(sensEna);
@@ -913,14 +909,14 @@ void SetupDialog::activateAirspyControls(bool en)
     ui->airspyIFGainSlider->setEnabled(manualEna);
 
     ui->airspyLNAAGCCheckbox->setEnabled(manualEna);
-    ui->airspyLNAGain->setEnabled(manualEna && !m_settings.airspy.gain.lnaAgcEna);
-    ui->airspyLNAGainLabel->setEnabled(manualEna && !m_settings.airspy.gain.lnaAgcEna);
-    ui->airspyLNAGainSlider->setEnabled(manualEna && !m_settings.airspy.gain.lnaAgcEna);
+    ui->airspyLNAGain->setEnabled(manualEna && !m_settings->airspy.gain.lnaAgcEna);
+    ui->airspyLNAGainLabel->setEnabled(manualEna && !m_settings->airspy.gain.lnaAgcEna);
+    ui->airspyLNAGainSlider->setEnabled(manualEna && !m_settings->airspy.gain.lnaAgcEna);
 
     ui->airspyMixerAGCCheckbox->setEnabled(manualEna);
-    ui->airspyMixerGain->setEnabled(manualEna && !m_settings.airspy.gain.mixerAgcEna);
-    ui->airspyMixerGainLabel->setEnabled(manualEna && !m_settings.airspy.gain.mixerAgcEna);
-    ui->airspyMixerGainSlider->setEnabled(manualEna && !m_settings.airspy.gain.mixerAgcEna);
+    ui->airspyMixerGain->setEnabled(manualEna && !m_settings->airspy.gain.mixerAgcEna);
+    ui->airspyMixerGainLabel->setEnabled(manualEna && !m_settings->airspy.gain.mixerAgcEna);
+    ui->airspyMixerGainSlider->setEnabled(manualEna && !m_settings->airspy.gain.mixerAgcEna);
 
     ui->airspyExpertGroup->setEnabled(en);
 }
@@ -931,19 +927,19 @@ void SetupDialog::onAirspyModeToggled(bool checked)
     {
         if (ui->airspyGainModeHybrid->isChecked())
         {
-            m_settings.airspy.gain.mode = AirpyGainMode::Hybrid;
+            m_settings->airspy.gain.mode = AirpyGainMode::Hybrid;
         }
         else if (ui->airspyGainModeSw->isChecked())
         {
-            m_settings.airspy.gain.mode = AirpyGainMode::Software;
+            m_settings->airspy.gain.mode = AirpyGainMode::Software;
         }
         else if (ui->airspyGainModeManual->isChecked())
         {
-            m_settings.airspy.gain.mode = AirpyGainMode::Manual;
+            m_settings->airspy.gain.mode = AirpyGainMode::Manual;
         }
         else if (ui->airspyGainModeSensitivity->isChecked())
         {
-            m_settings.airspy.gain.mode = AirpyGainMode::Sensitivity;
+            m_settings->airspy.gain.mode = AirpyGainMode::Sensitivity;
         }
         activateAirspyControls(true);
         emit newInputDeviceSettings();
@@ -953,28 +949,28 @@ void SetupDialog::onAirspyModeToggled(bool checked)
 void SetupDialog::onAirspySensitivityGainSliderChanged(int val)
 {
     ui->airspySensitivityGainLabel->setText(QString::number(val));
-    m_settings.airspy.gain.sensitivityGainIdx = val;
+    m_settings->airspy.gain.sensitivityGainIdx = val;
     emit newInputDeviceSettings();
 }
 
 void SetupDialog::onAirspyIFGainSliderChanged(int val)
 {
     ui->airspyIFGainLabel->setText(QString::number(val));
-    m_settings.airspy.gain.ifGainIdx = val;
+    m_settings->airspy.gain.ifGainIdx = val;
     emit newInputDeviceSettings();
 }
 
 void SetupDialog::onAirspyLNAGainSliderChanged(int val)
 {
     ui->airspyLNAGainLabel->setText(QString::number(val));
-    m_settings.airspy.gain.lnaGainIdx = val;
+    m_settings->airspy.gain.lnaGainIdx = val;
     emit newInputDeviceSettings();
 }
 
 void SetupDialog::onAirspyMixerGainSliderChanged(int val)
 {
     ui->airspyMixerGainLabel->setText(QString::number(val));
-    m_settings.airspy.gain.mixerGainIdx = val;
+    m_settings->airspy.gain.mixerGainIdx = val;
     emit newInputDeviceSettings();
 }
 
@@ -985,7 +981,7 @@ void SetupDialog::onAirspyLNAAGCstateChanged(int state)
     ui->airspyLNAGainLabel->setEnabled(ena);
     ui->airspyLNAGainSlider->setEnabled(ena);
 
-    m_settings.airspy.gain.lnaAgcEna = !ena;
+    m_settings->airspy.gain.lnaAgcEna = !ena;
     emit newInputDeviceSettings();
 }
 
@@ -996,13 +992,13 @@ void SetupDialog::onAirspyMixerAGCstateChanged(int state)
     ui->airspyMixerGainLabel->setEnabled(ena);
     ui->airspyMixerGainSlider->setEnabled(ena);
 
-    m_settings.airspy.gain.mixerAgcEna = !ena;
+    m_settings->airspy.gain.mixerAgcEna = !ena;
     emit newInputDeviceSettings();
 }
 
 void SetupDialog::onAirspyBiasTCurrentIdxChanged(int)
 {
-    m_settings.airspy.biasT = ui->airspyBiasTCombo->currentData().toBool();
+    m_settings->airspy.biasT = ui->airspyBiasTCombo->currentData().toBool();
     emit newInputDeviceSettings();
 }
 #endif // HAVE_AIRSPY
@@ -1013,7 +1009,7 @@ void SetupDialog::onSoapySdrGainSliderChanged(int val)
     if (!m_soapysdrGainList.empty())
     {
         ui->soapysdrGainValueLabel->setText(QString("%1 dB").arg(m_soapysdrGainList.at(val)));
-        m_settings.soapysdr.gainIdx = val;
+        m_settings->soapysdr.gainIdx = val;
         emit newInputDeviceSettings();
     }
     else { /* empy gain list => do nothing */}
@@ -1022,13 +1018,13 @@ void SetupDialog::onSoapySdrGainSliderChanged(int val)
 void SetupDialog::activateSoapySdrControls(bool en)
 {
     ui->soapysdrGainModeGroup->setEnabled(en);
-    ui->soapysdrGainWidget->setEnabled(en && (SoapyGainMode::Manual == m_settings.soapysdr.gainMode));
+    ui->soapysdrGainWidget->setEnabled(en && (SoapyGainMode::Manual == m_settings->soapysdr.gainMode));
     ui->soapysdrExpertGroup->setEnabled(en);
 }
 
 void SetupDialog::onSoapySdrDevArgsEditFinished()
 {
-    if (ui->soapysdrDevArgs->text().trimmed() != m_settings.soapysdr.devArgs.trimmed())
+    if (ui->soapysdrDevArgs->text().trimmed() != m_settings->soapysdr.devArgs.trimmed())
     {
         ui->connectButton->setVisible(true);
     }
@@ -1036,7 +1032,7 @@ void SetupDialog::onSoapySdrDevArgsEditFinished()
 
 void SetupDialog::onSoapySdrAntennaEditFinished()
 {
-    if (ui->soapySdrAntenna->text().trimmed() != m_settings.soapysdr.antenna.trimmed())
+    if (ui->soapySdrAntenna->text().trimmed() != m_settings->soapysdr.antenna.trimmed())
     {
         ui->connectButton->setVisible(true);
     }
@@ -1044,7 +1040,7 @@ void SetupDialog::onSoapySdrAntennaEditFinished()
 
 void SetupDialog::onSoapySdrChannelEditFinished()
 {
-    if (ui->soapysdrChannelNum->value() != m_settings.soapysdr.channel)
+    if (ui->soapysdrChannelNum->value() != m_settings->soapysdr.channel)
     {
         ui->connectButton->setVisible(true);
     }
@@ -1056,15 +1052,15 @@ void SetupDialog::onSoapySdrGainModeToggled(bool checked)
     {
         if (ui->soapysdrGainModeHw->isChecked())
         {
-            m_settings.soapysdr.gainMode = SoapyGainMode::Hardware;
+            m_settings->soapysdr.gainMode = SoapyGainMode::Hardware;
         }
         else if (ui->soapysdrGainModeSw->isChecked())
         {
-            m_settings.soapysdr.gainMode = SoapyGainMode::Software;
+            m_settings->soapysdr.gainMode = SoapyGainMode::Software;
         }
         else if (ui->soapysdrGainModeManual->isChecked())
         {
-            m_settings.soapysdr.gainMode = SoapyGainMode::Manual;
+            m_settings->soapysdr.gainMode = SoapyGainMode::Manual;
         }
         activateSoapySdrControls(true);
         emit newInputDeviceSettings();
@@ -1073,7 +1069,7 @@ void SetupDialog::onSoapySdrGainModeToggled(bool checked)
 
 void SetupDialog::onSoapySdrBandwidthChanged(int val)
 {
-    m_settings.soapysdr.bandwidth = val * 1000;
+    m_settings->soapysdr.bandwidth = val * 1000;
     ui->soapysdrBandwidthDefault->setEnabled(val > 0);
     emit newInputDeviceSettings();
 }
@@ -1082,7 +1078,7 @@ void SetupDialog::onSoapySdrBandwidthChanged(int val)
 
 void SetupDialog::setStatusLabel()
 {
-    switch (m_settings.inputDevice)
+    switch (m_settings->inputDevice)
     {
     case InputDeviceId::RTLSDR:
         ui->statusLabel->setText(tr("RTL SDR device connected"));
@@ -1110,8 +1106,8 @@ void SetupDialog::onInputChanged(int index)
     int inputDeviceInt = ui->inputCombo->itemData(index).toInt();
     ui->deviceOptionsWidget->setCurrentIndex(inputDeviceInt-1);
 
-    ui->connectButton->setHidden(m_settings.inputDevice == static_cast<InputDeviceId>(inputDeviceInt));
-    if (m_settings.inputDevice != static_cast<InputDeviceId>(inputDeviceInt))
+    ui->connectButton->setHidden(m_settings->inputDevice == static_cast<InputDeviceId>(inputDeviceInt));
+    if (m_settings->inputDevice != static_cast<InputDeviceId>(inputDeviceInt))
     {   // selected input device does not match current input device
         switch (static_cast<InputDeviceId>(inputDeviceInt))
         {
@@ -1179,7 +1175,7 @@ void SetupDialog::onOpenFileButtonClicked()
 
 void SetupDialog::resetInputDevice()
 {
-    switch (m_settings.inputDevice)
+    switch (m_settings->inputDevice)
     {
     case InputDeviceId::RTLSDR:
         activateRtlSdrControls(false);
@@ -1202,7 +1198,7 @@ void SetupDialog::resetInputDevice()
         break;
     }
 
-    m_settings.inputDevice = InputDeviceId::UNDEFINED;
+    m_settings->inputDevice = InputDeviceId::UNDEFINED;
     setStatusLabel();
     ui->connectButton->setVisible(true);
 }
@@ -1214,16 +1210,16 @@ void SetupDialog::onAnnouncementClicked()
     {
         announcementEna |= (m_announcementCheckBox[a]->isChecked() << a);
     }
-    if (m_settings.announcementEna != announcementEna)
+    if (m_settings->announcementEna != announcementEna)
     {
-        m_settings.announcementEna = announcementEna;
+        m_settings->announcementEna = announcementEna;
         emit newAnnouncementSettings();
     }
 }
 
 void SetupDialog::onBringWindowToForegroundClicked(bool checked)
 {
-    m_settings.bringWindowToForeground = checked;
+    m_settings->bringWindowToForeground = checked;
 }
 
 void SetupDialog::onStyleChecked(bool checked)
@@ -1232,17 +1228,17 @@ void SetupDialog::onStyleChecked(bool checked)
     {
         if (ui->defaultStyleRadioButton->isChecked())
         {
-            m_settings.applicationStyle = ApplicationStyle::Default;
+            m_settings->applicationStyle = Settings::ApplicationStyle::Default;
         }
         else if (ui->lightStyleRadioButton->isChecked())
         {
-            m_settings.applicationStyle = ApplicationStyle::Light;
+            m_settings->applicationStyle = Settings::ApplicationStyle::Light;
         }
         else if (ui->darkStyleRadioButton->isChecked())
         {
-            m_settings.applicationStyle = ApplicationStyle::Dark;
+            m_settings->applicationStyle = Settings::ApplicationStyle::Dark;
         }
-        emit applicationStyleChanged(m_settings.applicationStyle);
+        emit applicationStyleChanged(m_settings->applicationStyle);
     }
 }
 
@@ -1259,7 +1255,7 @@ void SetupDialog::onExpertModeChecked(bool checked)
         ui->dumpSlsCheckBox->setChecked(false);
         ui->dumpSpiCheckBox->setChecked(false);
     }
-    emit uaDumpSettings(m_settings.uaDump);
+    emit uaDumpSettings(m_settings->uaDump);
 
     int idx = ui->inputCombo->findData(QVariant(static_cast<int>(InputDeviceId::RAWFILE)));
     if (checked && (idx < 0))
@@ -1278,7 +1274,7 @@ void SetupDialog::onExpertModeChecked(bool checked)
         }
     }
 
-    m_settings.expertModeEna = checked;
+    m_settings->expertModeEna = checked;
     ui->tabWidget->adjustSize();
 
     emit expertModeToggled(checked);
@@ -1288,15 +1284,15 @@ void SetupDialog::onExpertModeChecked(bool checked)
 
 void SetupDialog::onDLPlusChecked(bool checked)
 {
-    m_settings.dlPlusEna = checked;
+    m_settings->dlPlusEna = checked;
 }
 
 void SetupDialog::onLanguageChanged(int index)
 {
     QLocale::Language lang = static_cast<QLocale::Language>(ui->langComboBox->itemData(index).toInt());
-    if (lang != m_settings.lang)
+    if (lang != m_settings->lang)
     {
-        m_settings.lang = lang;
+        m_settings->lang = lang;
         ui->langWarningLabel->setVisible(true);
     }
 }
@@ -1305,16 +1301,16 @@ void SetupDialog::onLanguageChanged(int index)
 void SetupDialog::onNoiseLevelChanged(int index)
 {
     int noiseLevel = ui->noiseConcealmentCombo->itemData(index).toInt();
-    if (noiseLevel != m_settings.noiseConcealmentLevel)
+    if (noiseLevel != m_settings->noiseConcealmentLevel)
     {
-        m_settings.noiseConcealmentLevel = noiseLevel;
+        m_settings->noiseConcealmentLevel = noiseLevel;
         emit noiseConcealmentLevelChanged(noiseLevel);
     }
 }
 
 void SetupDialog::onXmlHeaderChecked(bool checked)
 {
-    m_settings.xmlHeaderEna = checked;
+    m_settings->xmlHeaderEna = checked;
     emit xmlHeaderToggled(checked);
 }
 
@@ -1325,40 +1321,40 @@ void SetupDialog::onRawFileProgressChanged(int val)
 
 void SetupDialog::onSpiAppChecked(bool checked)
 {
-    m_settings.spiAppEna = checked;
+    m_settings->spiAppEna = checked;
     ui->internetCheckBox->setEnabled(checked);
-    ui->radioDNSCheckBox->setEnabled(checked && m_settings.useInternet);
-    emit spiApplicationEnabled(m_settings.spiAppEna);
-    emit spiApplicationSettingsChanged(m_settings.useInternet && m_settings.spiAppEna, m_settings.radioDnsEna && m_settings.spiAppEna);
+    ui->radioDNSCheckBox->setEnabled(checked && m_settings->useInternet);
+    emit spiApplicationEnabled(m_settings->spiAppEna);
+    emit spiApplicationSettingsChanged(m_settings->useInternet && m_settings->spiAppEna, m_settings->radioDnsEna && m_settings->spiAppEna);
 }
 
 void SetupDialog::onUseInternetChecked(bool checked)
 {
-    m_settings.useInternet = checked;
+    m_settings->useInternet = checked;
     ui->radioDNSCheckBox->setEnabled(checked);
-    emit spiApplicationSettingsChanged(m_settings.useInternet, m_settings.radioDnsEna);
+    emit spiApplicationSettingsChanged(m_settings->useInternet, m_settings->radioDnsEna);
 }
 
 
 void SetupDialog::onRadioDnsChecked(bool checked)
 {
-    m_settings.radioDnsEna = checked;
-    emit spiApplicationSettingsChanged(m_settings.useInternet, m_settings.radioDnsEna);
+    m_settings->radioDnsEna = checked;
+    emit spiApplicationSettingsChanged(m_settings->useInternet, m_settings->radioDnsEna);
 }
 
 void SetupDialog::onAudioRecordingFolderButtonClicked()
 {
     QString dir = QDir::homePath();
-    if (!m_settings.audioRecFolder.isEmpty())
+    if (!m_settings->audioRecFolder.isEmpty())
     {
-        dir = QFileInfo(m_settings.audioRecFolder).path();
+        dir = QFileInfo(m_settings->audioRecFolder).path();
     }
     dir = QFileDialog::getExistingDirectory(this, tr("Audio recording folder"), dir);
     if (!dir.isEmpty())
     {
-        m_settings.audioRecFolder = dir;
+        m_settings->audioRecFolder = dir;
         ui->audioRecordingFolderLabel->setText(dir);
-        emit audioRecordingSettings(m_settings.audioRecFolder, m_settings.audioRecCaptureOutput);
+        emit audioRecordingSettings(m_settings->audioRecFolder, m_settings->audioRecCaptureOutput);
 
 #ifdef Q_OS_MACOS // bug in Ventura
         show(); //bring window to top on OSX
@@ -1370,23 +1366,23 @@ void SetupDialog::onAudioRecordingFolderButtonClicked()
 
 void SetupDialog::onAudioRecordingChecked(bool checked)
 {
-    m_settings.audioRecCaptureOutput = ui->audioOutRecordingRadioButton->isChecked();
-    emit audioRecordingSettings(m_settings.audioRecFolder, m_settings.audioRecCaptureOutput);
+    m_settings->audioRecCaptureOutput = ui->audioOutRecordingRadioButton->isChecked();
+    emit audioRecordingSettings(m_settings->audioRecFolder, m_settings->audioRecCaptureOutput);
 }
 
 void SetupDialog::onDataDumpFolderButtonClicked()
 {
     QString dir = QDir::homePath();
-    if (!m_settings.uaDump.folder.isEmpty())
+    if (!m_settings->uaDump.folder.isEmpty())
     {
-        dir = QFileInfo(m_settings.uaDump.folder).path();
+        dir = QFileInfo(m_settings->uaDump.folder).path();
     }
     dir = QFileDialog::getExistingDirectory(this, tr("Data storage folder"), dir);
     if (!dir.isEmpty())
     {
-        m_settings.uaDump.folder = dir;
+        m_settings->uaDump.folder = dir;
         ui->dataDumpFolderLabel->setText(dir);
-        emit uaDumpSettings(m_settings.uaDump);
+        emit uaDumpSettings(m_settings->uaDump);
 
 #ifdef Q_OS_MACOS // bug in Ventura
         show(); //bring window to top on OSX
@@ -1398,11 +1394,11 @@ void SetupDialog::onDataDumpFolderButtonClicked()
 
 void SetupDialog::onDataDumpCheckboxToggled(bool)
 {
-    m_settings.uaDump.overwriteEna = ui->dumpOverwriteCheckbox->isChecked();
-    m_settings.uaDump.slsEna = ui->dumpSlsCheckBox->isChecked();
-    m_settings.uaDump.spiEna = ui->dumpSpiCheckBox->isChecked();
+    m_settings->uaDump.overwriteEna = ui->dumpOverwriteCheckbox->isChecked();
+    m_settings->uaDump.slsEna = ui->dumpSlsCheckBox->isChecked();
+    m_settings->uaDump.spiEna = ui->dumpSpiCheckBox->isChecked();
 
-    emit uaDumpSettings(m_settings.uaDump);
+    emit uaDumpSettings(m_settings->uaDump);
 }
 
 
@@ -1410,28 +1406,28 @@ void SetupDialog::onDataDumpPatternEditingFinished()
 {
     if (QObject::sender() == ui->dumpSlsPatternEdit)
     {
-        m_settings.uaDump.slsPattern = ui->dumpSlsPatternEdit->text().trimmed();
+        m_settings->uaDump.slsPattern = ui->dumpSlsPatternEdit->text().trimmed();
     }
     else
     {
-        m_settings.uaDump.spiPattern = ui->dumpSpiPatternEdit->text().trimmed();
+        m_settings->uaDump.spiPattern = ui->dumpSpiPatternEdit->text().trimmed();
     }
-    emit uaDumpSettings(m_settings.uaDump);
+    emit uaDumpSettings(m_settings->uaDump);
 }
 
 void SetupDialog::onDataDumpResetClicked()
 {
     if (QObject::sender() == ui->dumpSlsPatternReset)
     {
-        m_settings.uaDump.slsPattern = m_slsDumpPaternDefault;
+        m_settings->uaDump.slsPattern = m_slsDumpPaternDefault;
         ui->dumpSlsPatternEdit->setText(m_slsDumpPaternDefault);
     }
     else
     {
-        m_settings.uaDump.spiPattern = m_spiDumpPaternDefault;
+        m_settings->uaDump.spiPattern = m_spiDumpPaternDefault;
         ui->dumpSpiPatternEdit->setText(m_spiDumpPaternDefault);
     }
-    emit uaDumpSettings(m_settings.uaDump);
+    emit uaDumpSettings(m_settings->uaDump);
 }
 
 void SetupDialog::onGeolocationSourceChanged(int index)
@@ -1443,7 +1439,7 @@ void SetupDialog::onGeolocationSourceChanged(int index)
     }
 
     ui->locationSrcWidget->setEnabled(srcInt > 0);
-    m_settings.tii.locationSource = static_cast<GeolocationSource>(srcInt);
+    m_settings->tii.locationSource = static_cast<Settings::GeolocationSource>(srcInt);
 
     emit tiiSettingsChanged();
 }
@@ -1455,7 +1451,7 @@ void SetupDialog::onCoordinateEditFinished()
     if (coord.size() != 2)
     {
         ui->coordinatesEdit->setText("0.0, 0.0");
-        m_settings.tii.coordinates = QGeoCoordinate(0.0,0.0);
+        m_settings->tii.coordinates = QGeoCoordinate(0.0,0.0);
         emit tiiSettingsChanged();
         return;
     }
@@ -1470,7 +1466,7 @@ void SetupDialog::onCoordinateEditFinished()
     if (!ok)
     {
         ui->coordinatesEdit->setText("0.0, 0.0");
-        m_settings.tii.coordinates = QGeoCoordinate(0.0,0.0);
+        m_settings->tii.coordinates = QGeoCoordinate(0.0,0.0);
         emit tiiSettingsChanged();
         return;
     }
@@ -1479,17 +1475,17 @@ void SetupDialog::onCoordinateEditFinished()
     if (!coordinate.isValid())
     {
         ui->coordinatesEdit->setText("0.0, 0.0");
-        m_settings.tii.coordinates = QGeoCoordinate(0.0,0.0);
+        m_settings->tii.coordinates = QGeoCoordinate(0.0,0.0);
         emit tiiSettingsChanged();
         return;
     }
 
-    m_settings.tii.coordinates = QGeoCoordinate(latitude, longitude);
+    m_settings->tii.coordinates = QGeoCoordinate(latitude, longitude);
     emit tiiSettingsChanged();
 }
 
 void SetupDialog::onSerialPortEditFinished()
 {
-    m_settings.tii.serialPort = ui->serialPortEdit->text().trimmed();
+    m_settings->tii.serialPort = ui->serialPortEdit->text().trimmed();
     emit tiiSettingsChanged();
 }
