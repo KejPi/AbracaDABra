@@ -781,15 +781,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::ensembleInformation, m_spiApp, &UserApplication::setEnsId);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &UserApplication::setAudioServiceId);
 
-    // TII dialog
-    m_tiiDialog = new TIIDialog(m_settings);
-    m_tiiDialog->setupDarkMode(isDarkMode());
-    connect(this, &MainWindow::exit, [this]() {m_tiiDialog->close(); m_tiiDialog->deleteLater(); });  // QTBUG-117779 ==> using parentless dialogs as workaround
-    connect(m_setupDialog, &SetupDialog::tiiSettingsChanged, m_tiiDialog, &TIIDialog::onSettingsChanged);
-    connect(m_tiiDialog, &TIIDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::tiiData, m_tiiDialog, &TIIDialog::onTiiData, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::ensembleInformation, m_tiiDialog, &TIIDialog::onEnsembleInformation, Qt::QueuedConnection);
-
     // input device connections
     initInputDevice(InputDeviceId::UNDEFINED);
 
@@ -3158,6 +3149,20 @@ void MainWindow::showSnrPlotDialog()
 
 void MainWindow::showTiiDialog()
 {
+    if (m_tiiDialog == nullptr)
+    {
+        m_tiiDialog = new TIIDialog(m_settings);
+        m_tiiDialog->setupDarkMode(isDarkMode());
+        connect(m_setupDialog, &SetupDialog::tiiSettingsChanged, m_tiiDialog, &TIIDialog::onSettingsChanged);
+        connect(m_tiiDialog, &TIIDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::tiiData, m_tiiDialog, &TIIDialog::onTiiData, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::ensembleInformation, m_tiiDialog, &TIIDialog::onEnsembleInformation, Qt::QueuedConnection);
+        emit getEnsembleInfo();  // this triggers ensemble infomation used to configure EPG dialog
+        connect(this, &MainWindow::exit, m_tiiDialog, &TIIDialog::close);  // QTBUG-117779 ==> using parentless dialogs as workaround
+        connect(m_tiiDialog, &QDialog::finished, m_tiiDialog, &QObject::deleteLater);
+        connect(m_tiiDialog, &QDialog::destroyed, this, [this]() { m_tiiDialog = nullptr; } );
+    }
+
     m_tiiDialog->show();
     m_tiiDialog->raise();
     m_tiiDialog->activateWindow();

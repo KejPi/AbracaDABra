@@ -31,9 +31,9 @@
 #include "QQuickView"
 #include <QGeoPositionInfoSource>
 #include <QItemSelectionModel>
+#include "settings.h"
 #include "radiocontrol.h"
 #include "tiitablemodel.h"
-#include "setupdialog.h"
 #include "config.h"
 #if HAVE_QCUSTOMPLOT
 #include <qcustomplot.h>

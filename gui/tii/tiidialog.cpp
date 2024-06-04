@@ -154,8 +154,11 @@ void TIIDialog::positionUpdated(const QGeoPositionInfo &position)
 }
 
 TIIDialog::~TIIDialog()
-{    
+{
     delete m_qmlView;
+    delete m_tiiTableSelectionModel;
+    delete m_sortModel;
+    delete m_model;
 }
 
 void TIIDialog::showEvent(QShowEvent *event)
