@@ -46,6 +46,9 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectio
     m_slProxyModel->setSourceModel(serviceListModel);
     connect(this, &EPGDialog::filterEmptyEpgChanged, [this](){ m_slProxyModel->setEmptyEpgFilter(m_settings->epg.filterEmptyEpg); });
     connect(this, &EPGDialog::filterEnsembleChanged, [this](){ m_slProxyModel->setUeidFilter(m_settings->epg.filterEnsemble ? m_currentUEID : 0); });
+    // set initial state
+    m_slProxyModel->setEmptyEpgFilter(m_settings->epg.filterEmptyEpg);
+    m_slProxyModel->setUeidFilter(m_settings->epg.filterEnsemble ? m_currentUEID : 0);
 
     qmlRegisterType<SLProxyModel>("app.qmlcomponents", 1, 0, "SLProxyModel");
     qmlRegisterType<EPGModel>("app.qmlcomponents", 1, 0, "EPGModel");
@@ -88,14 +91,14 @@ EPGDialog::~EPGDialog()
 
 QPersistentModelIndex EPGDialog::selectedEpgItem() const
 {
-    return m_selectedEpgItem;
+    return m_settings->epg.selectedItem;
 }
 
 void EPGDialog::setSelectedEpgItem(const QPersistentModelIndex &newSelectedEpgItem)
 {
-    if (m_selectedEpgItem == newSelectedEpgItem)
+    if (m_settings->epg.selectedItem == newSelectedEpgItem)
         return;
-    m_selectedEpgItem = newSelectedEpgItem;
+    m_settings->epg.selectedItem = newSelectedEpgItem;
     emit selectedEpgItemChanged();
 }
 
@@ -233,13 +236,13 @@ void EPGDialog::setColors(const QList<QColor> &newColors)
 
 void EPGDialog::scheduleRecording()
 {
-    if (m_selectedEpgItem.isValid())
+    if (m_settings->epg.selectedItem.isValid())
     {
-        const EPGModel * model = dynamic_cast<const EPGModel *>(m_selectedEpgItem.model());
+        const EPGModel * model = dynamic_cast<const EPGModel *>(m_settings->epg.selectedItem.model());
         AudioRecScheduleItem item;
-        item.setName(model->data(m_selectedEpgItem, EPGModelRoles::NameRole).toString());
-        item.setStartTime(model->data(m_selectedEpgItem, EPGModelRoles::StartTimeRole).value<QDateTime>());
-        item.setDurationSec(model->data(m_selectedEpgItem, EPGModelRoles::DurationSecRole).toInt());
+        item.setName(model->data(m_settings->epg.selectedItem, EPGModelRoles::NameRole).toString());
+        item.setStartTime(model->data(m_settings->epg.selectedItem, EPGModelRoles::StartTimeRole).value<QDateTime>());
+        item.setDurationSec(model->data(m_settings->epg.selectedItem, EPGModelRoles::DurationSecRole).toInt());
         item.setServiceId(model->serviceId());
 
         emit scheduleAudioRecording(item);

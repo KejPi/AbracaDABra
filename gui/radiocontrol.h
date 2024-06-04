@@ -348,13 +348,14 @@ public:
     void exit();
     void tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS);
     void getEnsembleConfiguration();
+    void getEnsembleInformation();
     void startUserApplication(DabUserApplicationType uaType, bool start, bool singleChannel = true);
     uint32_t getEnsembleUEID() const { return m_ensemble.ueid; }
     void onAudioOutputRestart();
     void setupAnnouncements(uint16_t enaFlags);
     void suspendResumeAnnouncement();
     void onSpiApplicationEnabled(bool enabled);
-    void setTii(bool ena);
+    void setTii(bool ena);    
 
 signals:
     void dabEvent(RadioControlEvent * pEvent);

@@ -190,6 +190,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 #if HAVE_QCUSTOMPLOT
     m_snrPlotDialog = nullptr;
 #endif
+    m_epgDialog = nullptr;
     m_tiiDialog = nullptr;
 
     m_dlDecoder[Instance::Service] = new DLDecoder();
@@ -479,16 +480,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(ui->serviceTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::onServiceListTreeSelection);
     connect(m_serviceList, &ServiceList::empty, m_slTreeModel, &SLTreeModel::clear);
 
-    // EPG dialog
-    m_epgDialog = new EPGDialog(m_slModel, ui->serviceListView->selectionModel(), m_metadataManager, m_settings);
-    connect(this, &MainWindow::exit, [this]() {m_epgDialog->close(); m_epgDialog->deleteLater(); });  // QTBUG-117779 ==> using parentless dialogs as workaround
-    connect(m_epgDialog, &QObject::destroyed, this, [this]() { m_epgDialog = nullptr; } );
+    // EPG
     connect(m_metadataManager, &MetadataManager::epgAvailable, this, [this](){ m_epgAction->setEnabled(true); } );
     connect(m_metadataManager, &MetadataManager::epgEmpty, this, &MainWindow::onEpgEmpty);
-    connect(m_epgDialog, &EPGDialog::scheduleAudioRecording, this, [this](const AudioRecScheduleItem & item) {
-        showAudioRecordingSchedule();
-        m_audioRecScheduleDialog->addItem(item);
-    });
 
     // fill channel list
     int freqLabelMaxWidth = 0;
@@ -659,8 +653,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(this, &MainWindow::announcementMask, m_radioControl, &RadioControl::setupAnnouncements, Qt::QueuedConnection);
     connect(m_audioOutput, &AudioOutput::audioOutputRestart, m_radioControl, &RadioControl::onAudioOutputRestart, Qt::QueuedConnection);
     connect(this, &MainWindow::toggleAnnouncement, m_radioControl, &RadioControl::suspendResumeAnnouncement, Qt::QueuedConnection);
-
-    connect(m_ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfiguration, Qt::QueuedConnection);
+    connect(this, &MainWindow::getEnsembleInfo, m_radioControl, &RadioControl::getEnsembleInformation, Qt::QueuedConnection);
+    connect(m_ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfiguration, Qt::QueuedConnection);    
     connect(m_radioControl, &RadioControl::signalState, m_ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::freqOffset, m_ensembleInfoDialog, &EnsembleInfoDialog::updateFreqOffset, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleConfiguration, m_ensembleInfoDialog, &EnsembleInfoDialog::refreshEnsembleConfiguration, Qt::QueuedConnection);
@@ -784,7 +778,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::spiApplicationSettingsChanged, m_spiApp, &SPIApp::onSettingsChanged, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleInformation, m_metadataManager, &MetadataManager::onEnsembleInformation, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_metadataManager, &MetadataManager::onAudioServiceSelection, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::ensembleInformation, m_epgDialog, &EPGDialog::onEnsembleInformation, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleInformation, m_spiApp, &UserApplication::setEnsId);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &UserApplication::setAudioServiceId);
 
@@ -3078,6 +3071,22 @@ void MainWindow::showEnsembleInfo()
 
 void MainWindow::showEPG()
 {
+    if (m_epgDialog == nullptr)
+    {
+        m_epgDialog = new EPGDialog(m_slModel, ui->serviceListView->selectionModel(), m_metadataManager, m_settings);
+        m_epgDialog->setupDarkMode(isDarkMode());
+        connect(m_epgDialog, &EPGDialog::scheduleAudioRecording, this, [this](const AudioRecScheduleItem & item) {
+            showAudioRecordingSchedule();
+            m_audioRecScheduleDialog->addItem(item);
+        });
+
+        connect(m_radioControl, &RadioControl::ensembleInformation, m_epgDialog, &EPGDialog::onEnsembleInformation, Qt::QueuedConnection);
+        emit getEnsembleInfo();  // this triggers ensemble infomation used to configure EPG dialog
+
+        connect(this, &MainWindow::exit, m_epgDialog, &EPGDialog::close);  // QTBUG-117779 ==> using parentless dialogs as workaround
+        connect(m_epgDialog, &QDialog::finished, m_epgDialog, &QObject::deleteLater);
+        connect(m_epgDialog, &QDialog::destroyed, this, [this]() { m_epgDialog = nullptr; } );
+    }
     m_epgDialog->show();
     m_epgDialog->raise();
     m_epgDialog->activateWindow();
@@ -3584,7 +3593,10 @@ void MainWindow::setupDarkMode()
         ui->slsView_Service->setupDarkMode(true);
         ui->slsView_Announcement->setupDarkMode(true);
         m_logDialog->setupDarkMode(true);
-        m_epgDialog->setupDarkMode(true);
+        if (m_epgDialog != nullptr)
+        {
+            m_epgDialog->setupDarkMode(true);
+        }
 #if HAVE_QCUSTOMPLOT
         if (m_snrPlotDialog != nullptr)
         {
@@ -3621,7 +3633,10 @@ void MainWindow::setupDarkMode()
         ui->slsView_Service->setupDarkMode(false);
         ui->slsView_Announcement->setupDarkMode(false);
         m_logDialog->setupDarkMode(false);
-        m_epgDialog->setupDarkMode(false);
+        if (m_epgDialog != nullptr)
+        {
+            m_epgDialog->setupDarkMode(false);
+        }
 #if HAVE_QCUSTOMPLOT
         if (m_snrPlotDialog != nullptr)
         {

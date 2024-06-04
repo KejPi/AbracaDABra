@@ -565,6 +565,11 @@ void RadioControl::getEnsembleConfiguration()
     emit ensembleConfiguration(ensembleConfigurationString());
 }
 
+void RadioControl::getEnsembleInformation()
+{
+    emit ensembleInformation(m_ensemble);
+}
+
 void RadioControl::startUserApplication(DabUserApplicationType uaType, bool start, bool singleChannel)
 {
     serviceComponentConstIterator scIt;

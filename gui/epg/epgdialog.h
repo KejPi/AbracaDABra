@@ -96,7 +96,6 @@ private:
     Settings * m_settings;
 
     MetadataManager * m_metadataManager;
-    QPersistentModelIndex m_selectedEpgItem;
     bool m_isVisible = false;
     SLProxyModel * m_slProxyModel;
     int m_currentUEID;

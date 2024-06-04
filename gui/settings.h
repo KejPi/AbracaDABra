@@ -29,6 +29,7 @@
 
 #include <QLocale>
 #include <QGeoCoordinate>
+#include <QAbstractItemModel>
 #include "config.h"
 #include "inputdevice.h"
 #if HAVE_AIRSPY
@@ -123,6 +124,7 @@ public:
     struct EPGSettings {
         bool filterEmptyEpg;
         bool filterEnsemble;
+        QPersistentModelIndex selectedItem;
     } epg;
 };
 

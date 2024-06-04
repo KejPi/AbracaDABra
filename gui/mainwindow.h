@@ -92,6 +92,7 @@ signals:
     void stopUserApps();
     void resetUserApps();
     void getAudioInfo();
+    void getEnsembleInfo();
     void toggleAnnouncement();
     void audioMute(bool doMute);
     void audioVolume(int volume);
