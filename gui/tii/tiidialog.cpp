@@ -330,6 +330,7 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
 
         m_tiiSpectrumPlot->replot();
 #endif // HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
+        m_qmlView->setColor(Qt::black);
     }
     else
     {
@@ -383,6 +384,7 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
 
         m_tiiSpectrumPlot->replot();
 #endif // HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
+        m_qmlView->setColor(Qt::white);
     }    
 }
 

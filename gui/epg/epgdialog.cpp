@@ -192,6 +192,8 @@ void EPGDialog::setupDarkMode(bool darkModeEna)
         colors.append(QColor(0x65,0x65,0x65));   // buttonColor
         colors.append(QColor(0x7c,0x7c,0x7c));   // buttonDownColor
         colors.append(QColor(0x28,0x28,0x28));   // buttonBorderColor
+
+        m_qmlView->setColor(Qt::black);
     }
     else
     {
@@ -217,6 +219,8 @@ void EPGDialog::setupDarkMode(bool darkModeEna)
         colors.append(QColor(Qt::white));        // buttonColor
         colors.append(QColor(0xf0,0xf0,0xf0));   // buttonDownColor
         colors.append(QColor(0xb4,0xb4,0xb4));   // buttonBorderColor
+
+        m_qmlView->setColor(Qt::white);
     }
     setColors(colors);
 }
