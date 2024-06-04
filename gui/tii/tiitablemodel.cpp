@@ -39,6 +39,11 @@ TiiTableModel::TiiTableModel(QObject *parent)
     connect(this, &QAbstractListModel::modelReset, this, &TiiTableModel::rowCountChanged);
 }
 
+TiiTableModel::~TiiTableModel()
+{
+    qDeleteAll(m_txList);
+}
+
 int TiiTableModel::rowCount(const QModelIndex &parent) const
 {
     return m_modelData.count();

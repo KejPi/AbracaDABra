@@ -3476,13 +3476,13 @@ void MainWindow::onColorSchemeChanged(Qt::ColorScheme colorScheme)
         // this hack forces correct change for the colors on Windows
         if (colorScheme == Qt::ColorScheme::Dark)
         {
-            onApplicationStyleChanged(ApplicationStyle::Dark);
+            onApplicationStyleChanged(Settings::ApplicationStyle::Dark);
         }
         else
         {
-            onApplicationStyleChanged(ApplicationStyle::Light);
+            onApplicationStyleChanged(Settings::ApplicationStyle::Light);
         }
-        onApplicationStyleChanged(ApplicationStyle::Default);
+        onApplicationStyleChanged(Settings::ApplicationStyle::Default);
 #endif
     }
     setupDarkMode();
