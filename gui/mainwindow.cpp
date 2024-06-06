@@ -1415,6 +1415,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
         // force no device
         m_setupDialog->resetInputDevice();
         changeInputDevice(InputDeviceId::UNDEFINED);
+        showSetupDialog();
         break;
     case InputDeviceErrorCode::NoDataAvailable:
         m_infoLabel->setText(tr("Input device error: No data"));
@@ -1424,6 +1425,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
         // force no device
         m_setupDialog->resetInputDevice();
         changeInputDevice(InputDeviceId::UNDEFINED);
+        showSetupDialog();
         break;
     default:
         qCWarning(application) << "InputDevice error" << int(errCode);

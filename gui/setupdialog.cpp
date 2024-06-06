@@ -1201,6 +1201,7 @@ void SetupDialog::resetInputDevice()
     m_settings->inputDevice = InputDeviceId::UNDEFINED;
     setStatusLabel();
     ui->connectButton->setVisible(true);
+    ui->tabWidget->setCurrentIndex(SetupDialogTabs::Device);
 }
 
 void SetupDialog::onAnnouncementClicked()
