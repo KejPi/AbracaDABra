@@ -99,24 +99,23 @@ TIIDialog::TIIDialog(const Settings *settings, QWidget *parent)
     m_tiiSpectrumPlot->addGraph();
     m_tiiSpectrumPlot->xAxis->grid()->setSubGridVisible(true);
     m_tiiSpectrumPlot->yAxis->grid()->setSubGridVisible(true);
-    m_tiiSpectrumPlot->xAxis->setLabel(tr("TII Subcarrier [kHz]"));
 
     m_tiiSpectrumPlot->graph(GraphId::Spect)->setLineStyle(QCPGraph::lsLine);
-    m_tiiSpectrumPlot->graph(GraphId::TII)->setLineStyle(QCPGraph::lsImpulse);
 
     QCPItemStraightLine *verticalLine;
-    for (int n = -2; n <= 2; ++n)
+    for (int n = 1; n < 8; ++n)
     {
         verticalLine = new QCPItemStraightLine(m_tiiSpectrumPlot);
-        verticalLine->point1->setCoords(n*384, 0);  // location of point 1 in plot coordinate
-        verticalLine->point2->setCoords(n*384, 1);  // location of point 2 in plot coordinate
-        verticalLine->setPen(QPen(Qt::red, 1, Qt::DashLine));
+        verticalLine->point1->setCoords(n*24, 0);  // location of point 1 in plot coordinate
+        verticalLine->point2->setCoords(n*24, 1);  // location of point 2 in plot coordinate
+        verticalLine->setPen(QPen(Qt::red, 1, Qt::DotLine));
     }
+    m_tiiSpectrumPlot->graph(GraphId::TII)->setLineStyle(QCPGraph::lsImpulse);
 
     QSharedPointer<QCPAxisTickerFixed> freqTicker(new QCPAxisTickerFixed);
     m_tiiSpectrumPlot->xAxis->setTicker(freqTicker);
 
-    freqTicker->setTickStep(100.0); // tick step shall be 100.0
+    freqTicker->setTickStep(8.0); // tick step shall be 8.0
     freqTicker->setScaleStrategy(QCPAxisTickerFixed::ssNone); // and no scaling of the tickstep (like multiples or powers) is allowed
 
     m_tiiSpectrumPlot->xAxis->setTicker(freqTicker);
@@ -184,7 +183,7 @@ void TIIDialog::reset()
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     QList<double> f;
     QList<double> none;
-    for (int n = -1024; n<1024; ++n)
+    for (int n = 0; n<192; ++n)
     {
         f.append(n);
         none.append(0.0);
@@ -601,24 +600,10 @@ void TIIDialog::showPointToolTip(QMouseEvent *event)
     int x = qRound(m_tiiSpectrumPlot->xAxis->pixelToCoord(event->pos().x()));
     x = qMin(static_cast<int>(GraphRange::MaxX), x);
     x = qMax(static_cast<int>(GraphRange::MinX), x);
-    double y = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(x + 1024)->value;
+    double y = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(x)->value;
 
-    if (x > 0 && x <= 2*384)
-    {
-        //qDebug() << x << (((x-1) % 384) / 2) % 24;
-        int subId = (((x-1) % 384) / 2) % 24;
-        m_tiiSpectrumPlot->setToolTip(QString(tr("Carrier: %1<br>SubId: %3<br>Level: %2")).arg(x).arg(y).arg(subId, 2, 10, QChar('0')));
-
-    }
-    else if (x < 0 && x >= -2*384)
-    {
-        int subId = (((x+2*384) % 384) / 2) % 24;
-        m_tiiSpectrumPlot->setToolTip(QString(tr("Carrier: %1<br>SubId: %3<br>Level: %2")).arg(x).arg(y).arg(subId, 2, 10, QChar('0')));
-    }
-    else
-    {
-        m_tiiSpectrumPlot->setToolTip(QString(tr("Carrier: %1<br>Level: %2")).arg(x).arg(y));
-    }
+    int subId = x % 24;
+    m_tiiSpectrumPlot->setToolTip(QString(tr("Level: %1<br>SubId: %3<br>Level: %2")).arg(x).arg(y).arg(subId, 2, 10, QChar('0')));
 }
 
 void TIIDialog::addToPlot(const RadioControlTIIData &data)
@@ -627,11 +612,7 @@ void TIIDialog::addToPlot(const RadioControlTIIData &data)
 
     QSharedPointer<QCPGraphDataContainer> container = m_tiiSpectrumPlot->graph(GraphId::Spect)->data();
     QCPGraphDataContainer::iterator it = container->begin();
-    for (int n = 1024; n < 2048; ++n)
-    {
-        (*it++).value = data.spectrum.at(n)*norm;
-    }
-    for (int n = 0; n < 1024; ++n)
+    for (int n = 0; n < 192; ++n)
     {
         (*it++).value = data.spectrum.at(n)*norm;
     }
@@ -649,7 +630,7 @@ void TIIDialog::updateTiiPlot()
             QList<int> subcar = DabTables::getTiiSubcarriers(item.mainId(), item.subId());
             for (const auto & c : subcar)
             {
-                float val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(c + 1024)->value;
+                float val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(c)->value;
                 m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c, val);
             }
         }
@@ -662,7 +643,7 @@ void TIIDialog::updateTiiPlot()
             QList<int> subcar = DabTables::getTiiSubcarriers(item.mainId(), item.subId());
             for (const auto & c : subcar)
             {
-                float val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(c + 1024)->value;
+                float val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(c)->value;
                 m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c, val);
             }
         }

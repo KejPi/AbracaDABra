@@ -92,7 +92,7 @@ protected:
 
 private:
     enum GraphId {Spect, TII};
-    enum GraphRange { MinX = -1024, MaxX = 1023, MinY = 0, MaxY = 1 };
+    enum GraphRange { MinX = 0, MaxX = 191, MinY = 0, MaxY = 1 };
     const Settings * m_settings;
 
     // UI

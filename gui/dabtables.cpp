@@ -1255,36 +1255,12 @@ QString DabTables::getUserApplicationName(DabUserApplicationType type)
 
 QList<int> DabTables::getTiiSubcarriers(int mainId, int subId)
 {
-/*
-    QList<int> subCarriers;
-    uint8_t pattern = TIIPattern.at(mainId);
-    uint8_t mask = 0x01;
-    const int offset[] = {-2*384, -384, 1, 384+1};
-    for (int n = 0; n < 8; ++n )
-    {
-        if (mask & pattern)
-        {   // active carrier pair
-            for (const auto & o : offset)
-            {
-                subCarriers.append(o + n*48 + 2*subId);
-                subCarriers.append(o + n*48 + 2*subId + 1);
-            }
-        }
-        mask = mask << 1;
-    }
-    return subCarriers;
-*/
     const uint8_t * pattern = &TIIPattern[mainId][0];
     QList<int> subCarriers;
 
-    const int offset[] = {-2*384, -384, 1, 384+1};
-    for (const auto & o : offset)
+    for (int comb = 0; comb < 4; ++comb)
     {
-        for (int comb = 0; comb < 4; ++comb)
-        {
-            subCarriers.append(o + pattern[comb]*48 + 2*subId);
-            subCarriers.append(o + pattern[comb]*48 + 2*subId + 1);
-        }
+        subCarriers.append(pattern[comb]*24 + subId);
     }
     return subCarriers;
 }
