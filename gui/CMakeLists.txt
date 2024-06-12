@@ -1,5 +1,5 @@
 # Debug options
-option (TII_SPECTRUM_PLOT "Enable spectrum plot for TII"  OFF)
+option (TII_SPECTRUM_PLOT "Enable spectrum plot for TII"  ON)
 
 
 #########################################################

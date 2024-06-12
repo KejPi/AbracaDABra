@@ -93,23 +93,22 @@ TIIDialog::TIIDialog(const Settings *settings, QWidget *parent)
     connect(this, &TIIDialog::selectedRowChanged, this, &TIIDialog::onSelectedRowChanged);
 
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
-    m_tiiSpectrumPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes);
-    m_tiiSpectrumPlot->addGraph();
-    m_tiiSpectrumPlot->addGraph();
-    m_tiiSpectrumPlot->addGraph();
-    m_tiiSpectrumPlot->xAxis->grid()->setSubGridVisible(true);
-    m_tiiSpectrumPlot->yAxis->grid()->setSubGridVisible(true);
-
-    m_tiiSpectrumPlot->graph(GraphId::Spect)->setLineStyle(QCPGraph::lsLine);
-
     QCPItemStraightLine *verticalLine;
     for (int n = 1; n < 8; ++n)
     {
         verticalLine = new QCPItemStraightLine(m_tiiSpectrumPlot);
         verticalLine->point1->setCoords(n*24, 0);  // location of point 1 in plot coordinate
         verticalLine->point2->setCoords(n*24, 1);  // location of point 2 in plot coordinate
-        verticalLine->setPen(QPen(Qt::red, 1, Qt::DotLine));
+        verticalLine->setPen(QPen(Qt::red, 1, Qt::SolidLine));
     }
+
+    m_tiiSpectrumPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes);
+    m_tiiSpectrumPlot->addGraph();
+    m_tiiSpectrumPlot->addGraph();
+    m_tiiSpectrumPlot->xAxis->grid()->setSubGridVisible(true);
+    m_tiiSpectrumPlot->yAxis->grid()->setSubGridVisible(true);
+
+    m_tiiSpectrumPlot->graph(GraphId::Spect)->setLineStyle(QCPGraph::lsLine);
     m_tiiSpectrumPlot->graph(GraphId::TII)->setLineStyle(QCPGraph::lsImpulse);
 
     QSharedPointer<QCPAxisTickerFixed> freqTicker(new QCPAxisTickerFixed);
@@ -118,7 +117,6 @@ TIIDialog::TIIDialog(const Settings *settings, QWidget *parent)
     freqTicker->setTickStep(8.0); // tick step shall be 8.0
     freqTicker->setScaleStrategy(QCPAxisTickerFixed::ssNone); // and no scaling of the tickstep (like multiples or powers) is allowed
 
-    m_tiiSpectrumPlot->xAxis->setTicker(freqTicker);
     m_tiiSpectrumPlot->axisRect()->setupFullAxesBox();
     m_tiiSpectrumPlot->xAxis->setRange(GraphRange::MinX, GraphRange::MaxX);
     m_tiiSpectrumPlot->yAxis->setRange(GraphRange::MinY, GraphRange::MaxY);
@@ -306,7 +304,7 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
 
         m_tiiSpectrumPlot->graph(GraphId::Spect)->setPen(QPen(Qt::lightGray, 1));
         m_tiiSpectrumPlot->graph(GraphId::Spect)->setBrush(QBrush(QColor(120, 120, 120, 100)));
-        m_tiiSpectrumPlot->graph(GraphId::TII)->setPen(QPen(Qt::cyan, 1));
+        m_tiiSpectrumPlot->graph(GraphId::TII)->setPen(QPen(Qt::cyan, 3));
 
         QColor axisSelectionColor(Qt::red);
         axisSelectionColor = qApp->style()->standardPalette().color(QPalette::Active, QPalette::Link);
@@ -360,7 +358,7 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
 
         m_tiiSpectrumPlot->graph(GraphId::Spect)->setPen(QPen(Qt::gray, 1));
         m_tiiSpectrumPlot->graph(GraphId::Spect)->setBrush(QBrush(QColor(80, 80, 80, 100)));
-        m_tiiSpectrumPlot->graph(GraphId::TII)->setPen(QPen(Qt::blue, 1));
+        m_tiiSpectrumPlot->graph(GraphId::TII)->setPen(QPen(Qt::blue, 3));
 
         QColor axisSelectionColor(48, 140, 198);
         axisSelectionColor = qApp->style()->standardPalette().color(QPalette::Active, QPalette::Link);
