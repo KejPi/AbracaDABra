@@ -73,6 +73,7 @@ void SLSView::reset()
 
     setToolTip("");
     setCursor(Qt::ArrowCursor);
+    m_currentSlide.setContentName("");  // this blocks slide saving (Issue #131)
     m_isShowingSlide = false;
     m_clickThroughURL.clear();
 }
