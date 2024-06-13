@@ -99,7 +99,7 @@ void AudioRecorder::writeWavHeader()
 
     // Data chunk
     out.writeRawData("data", 4);
-    out << quint32(0);                                     // Placeholder for the data chunk size (filled by close())
+    out << quint32(m_bytesWritten);                        // Data chunk size
 
     Q_ASSERT(m_file->pos() == 44);                         // Must be 44 for WAV PCM
 }
@@ -325,7 +325,6 @@ void AudioRecorder::start()
             if (m_doOutputRecording)
             {   // reserving WAV header space
                 m_file->write(QByteArray(44, '\x55'));
-                m_bytesWritten = 44;
             }
             emit recordingStarted(fileName);
         }
