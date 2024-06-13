@@ -42,7 +42,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     dabsdrVersion_t dabsdrVer = {0};
     dabsdrGetVersion(&dabsdrVer);
 
-    ui->version->setText(QString("Version %1 (%2)").arg(PROJECT_VER,"<a href=\"https://github.com/KejPi/AbracaDABra\">GitHub</a>"));
+    ui->version->setText(QString("Version %1 (%2, %3)").arg(PROJECT_VER,"<a href=\"https://github.com/KejPi/AbracaDABra\">GitHub</a>", "<a href=\"https://www.rundfunkforum.de/viewtopic.php?p=1657726\">forum</a>"));
     ui->qtVersion->setText(QString(tr("Based on Qt %1")).arg(QT_VERSION_STR));
     ui->dabsdrVersion->setText(QString(tr("DAB SDR version %1.%2.%3")).arg(dabsdrVer.major).arg(dabsdrVer.minor).arg(dabsdrVer.patch));
 
