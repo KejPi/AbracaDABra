@@ -199,10 +199,14 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->setupUi(this);
 
     // creating log windows as soon as possible
+#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 1)) && !defined(Q_OS_MAC)
     m_logDialog = new LogDialog();
-    setLogToModel(m_logDialog->getModel());
     connect(this, &MainWindow::exit, [this]() {m_logDialog->close(); m_logDialog->deleteLater(); });  // QTBUG-117779 ==> using parentless dialogs as workaround
     connect(m_logDialog, &QObject::destroyed, this, [](){ logModel = nullptr; });
+#else
+    m_logDialog = new LogDialog(this);
+#endif
+    setLogToModel(m_logDialog->getModel());
 
     ui->serviceListView->setIconSize(QSize(16,16));
 
@@ -230,10 +234,15 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     m_inputDeviceRecorder = new InputDeviceRecorder();
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 1)) && !defined(Q_OS_MAC)
     m_setupDialog = new SetupDialog();
+    connect(this, &MainWindow::exit, [this]() {m_setupDialog->close(); m_setupDialog->deleteLater(); });  // QTBUG-117779 ==> using parentless dialogs as workaround
+#else
+    m_setupDialog = new SetupDialog(this);
+#endif
     m_setupDialog->setSlsDumpPaternDefault(slsDumpPatern);
     m_setupDialog->setSpiDumpPaternDefault(spiDumpPatern);
-    connect(this, &MainWindow::exit, [this]() {m_setupDialog->close(); m_setupDialog->deleteLater(); });  // QTBUG-117779 ==> using parentless dialogs as workaround
+
     connect(m_setupDialog, &SetupDialog::inputDeviceChanged, this, &MainWindow::changeInputDevice);
     connect(m_setupDialog, &SetupDialog::newInputDeviceSettings, this, &MainWindow::onNewInputDeviceSettings);
     connect(m_setupDialog, &SetupDialog::applicationStyleChanged, this, &MainWindow::onApplicationStyleChanged);
@@ -241,8 +250,12 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, this, &MainWindow::onNewAnnouncementSettings);
     connect(m_setupDialog, &SetupDialog::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 1)) && !defined(Q_OS_MAC)
     m_ensembleInfoDialog = new EnsembleInfoDialog();
     connect(this, &MainWindow::exit, [this]() {m_ensembleInfoDialog->close(); m_ensembleInfoDialog->deleteLater(); });  // QTBUG-117779 ==> using parentless dialogs as workaround
+#else
+    m_ensembleInfoDialog = new EnsembleInfoDialog(this);
+#endif
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStart, m_inputDeviceRecorder, &InputDeviceRecorder::start);
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStop, m_inputDeviceRecorder, &InputDeviceRecorder::stop);
     connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_ensembleInfoDialog, &EnsembleInfoDialog::onRecording);       
@@ -750,8 +763,12 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::uaDumpSettings, m_slideShowApp[Instance::Service], &SlideShowApp::setDataDumping, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::uaDumpSettings, m_slideShowApp[Instance::Announcement], &SlideShowApp::setDataDumping, Qt::QueuedConnection);
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 1)) && !defined(Q_OS_MAC)
     m_catSlsDialog = new CatSLSDialog();
     connect(this, &MainWindow::exit, [this]() {m_catSlsDialog->close(); m_catSlsDialog->deleteLater(); });  // QTBUG-117779 ==> using parentless dialogs as workaround
+#else
+    m_catSlsDialog = new CatSLSDialog(this);
+#endif
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::categoryUpdate, m_catSlsDialog, &CatSLSDialog::onCategoryUpdate, Qt::QueuedConnection);
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::catSlide, m_catSlsDialog, &CatSLSDialog::onCatSlide, Qt::QueuedConnection);
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::resetTerminal, m_catSlsDialog, &CatSLSDialog::reset, Qt::QueuedConnection);
@@ -3066,7 +3083,12 @@ void MainWindow::showEPG()
 {
     if (m_epgDialog == nullptr)
     {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 1)) && !defined(Q_OS_MAC)
         m_epgDialog = new EPGDialog(m_slModel, ui->serviceListView->selectionModel(), m_metadataManager, m_settings);
+        connect(this, &MainWindow::exit, m_epgDialog, &EPGDialog::close);  // QTBUG-117779 ==> using parentless dialogs as workaround
+#else
+        m_epgDialog = new EPGDialog(m_slModel, ui->serviceListView->selectionModel(), m_metadataManager, m_settings, this);
+#endif
         m_epgDialog->setupDarkMode(isDarkMode());
         connect(m_epgDialog, &EPGDialog::scheduleAudioRecording, this, [this](const AudioRecScheduleItem & item) {
             showAudioRecordingSchedule();
@@ -3075,8 +3097,6 @@ void MainWindow::showEPG()
 
         connect(m_radioControl, &RadioControl::ensembleInformation, m_epgDialog, &EPGDialog::onEnsembleInformation, Qt::QueuedConnection);
         emit getEnsembleInfo();  // this triggers ensemble infomation used to configure EPG dialog
-
-        connect(this, &MainWindow::exit, m_epgDialog, &EPGDialog::close);  // QTBUG-117779 ==> using parentless dialogs as workaround
         connect(m_epgDialog, &QDialog::finished, m_epgDialog, &QObject::deleteLater);
         connect(m_epgDialog, &QDialog::destroyed, this, [this]() { m_epgDialog = nullptr; } );
     }
@@ -3116,8 +3136,12 @@ void MainWindow::showAudioRecordingSchedule()
 {
     if (m_audioRecScheduleDialog == nullptr)
     {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 1)) && !defined(Q_OS_MAC)
         m_audioRecScheduleDialog = new AudioRecScheduleDialog(m_audioRecScheduleModel, m_slModel);
         connect(this, &MainWindow::exit, m_audioRecScheduleDialog, &AudioRecScheduleDialog::close);  // QTBUG-117779 ==> using parentless dialogs as workaround
+#else
+        m_audioRecScheduleDialog = new AudioRecScheduleDialog(m_audioRecScheduleModel, m_slModel, this);
+#endif
         connect(m_audioRecScheduleDialog, &QDialog::finished, m_audioRecScheduleDialog, &QObject::deleteLater);
         connect(m_audioRecScheduleDialog, &QDialog::destroyed, this, [this]() { m_audioRecScheduleDialog = nullptr; } );
         m_audioRecScheduleDialog->setLocale(m_timeLocale);
@@ -3136,9 +3160,13 @@ void MainWindow::showSnrPlotDialog()
 #if HAVE_QCUSTOMPLOT
     if (m_snrPlotDialog == nullptr)
     {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 1)) && !defined(Q_OS_MAC)
         m_snrPlotDialog = new SNRPlotDialog();
-        m_snrPlotDialog->setupDarkMode(isDarkMode());
         connect(this, &MainWindow::exit, m_snrPlotDialog, &SNRPlotDialog::close);  // QTBUG-117779 ==> using parentless dialogs as workaround
+#else
+        m_snrPlotDialog = new SNRPlotDialog(this);
+#endif
+        m_snrPlotDialog->setupDarkMode(isDarkMode());
         connect(m_snrPlotDialog, &QDialog::finished, m_snrPlotDialog, &QObject::deleteLater);
         connect(m_snrPlotDialog, &QDialog::destroyed, this, [this]() { m_snrPlotDialog = nullptr; } );        
     }
@@ -3153,14 +3181,18 @@ void MainWindow::showTiiDialog()
 {
     if (m_tiiDialog == nullptr)
     {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 1)) && !defined(Q_OS_MAC)
         m_tiiDialog = new TIIDialog(m_settings);
+        connect(this, &MainWindow::exit, m_tiiDialog, &TIIDialog::close);  // QTBUG-117779 ==> using parentless dialogs as workaround
+#else
+        m_tiiDialog = new TIIDialog(m_settings, this);
+#endif
         m_tiiDialog->setupDarkMode(isDarkMode());
         connect(m_setupDialog, &SetupDialog::tiiSettingsChanged, m_tiiDialog, &TIIDialog::onSettingsChanged);
         connect(m_tiiDialog, &TIIDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tiiData, m_tiiDialog, &TIIDialog::onTiiData, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::ensembleInformation, m_tiiDialog, &TIIDialog::onEnsembleInformation, Qt::QueuedConnection);
         emit getEnsembleInfo();  // this triggers ensemble infomation used to configure EPG dialog
-        connect(this, &MainWindow::exit, m_tiiDialog, &TIIDialog::close);  // QTBUG-117779 ==> using parentless dialogs as workaround
         connect(m_tiiDialog, &QDialog::finished, m_tiiDialog, &QObject::deleteLater);
         connect(m_tiiDialog, &QDialog::destroyed, this, [this]() { m_tiiDialog = nullptr; } );
     }
