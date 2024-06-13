@@ -53,6 +53,7 @@
 #include "./ui_mainwindow.h"
 #include "dabtables.h"
 #include "epgtime.h"
+#include "epgproxymodel.h"
 #include "radiocontrol.h"
 #include "bandscandialog.h"
 #include "aboutdialog.h"
@@ -192,6 +193,13 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 #endif
     m_epgDialog = nullptr;
     m_tiiDialog = nullptr;
+
+    // this is to avoid warning from QML
+    // SLModel is neither a default constructible QObject, nor a default- and copy-constructible Q_GADGET, nor marked as uncreatable.
+    // https://forum.qt.io/topic/153175/warning-when-creating-instantiable-object-type/4
+    qmlRegisterType<SLProxyModel>("app.qmlcomponents", 1, 0, "SLProxyModel");
+    qmlRegisterType<EPGModel>("app.qmlcomponents", 1, 0, "EPGModel");
+    qmlRegisterType<EPGProxyModel>("app.qmlcomponents", 1, 0, "EPGProxyModel");
 
     m_dlDecoder[Instance::Service] = new DLDecoder();
     m_dlDecoder[Instance::Announcement] = new DLDecoder();

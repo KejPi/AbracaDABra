@@ -50,10 +50,6 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectio
     m_slProxyModel->setEmptyEpgFilter(m_settings->epg.filterEmptyEpg);
     m_slProxyModel->setUeidFilter(m_settings->epg.filterEnsemble ? m_currentUEID : 0);
 
-    qmlRegisterType<SLProxyModel>("app.qmlcomponents", 1, 0, "SLProxyModel");
-    qmlRegisterType<EPGModel>("app.qmlcomponents", 1, 0, "EPGModel");
-    qmlRegisterType<EPGProxyModel>("app.qmlcomponents", 1, 0, "EPGProxyModel");
-
     m_qmlView = new QQuickView();
 
     QQmlContext * context = m_qmlView->rootContext();
