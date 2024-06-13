@@ -82,26 +82,27 @@ void AudioRecorder::writeWavHeader()
     QDataStream out(m_file);
     out.setByteOrder(QDataStream::LittleEndian);
 
+    // Details: http://soundfile.sapp.org/doc/WaveFormat/
+
     // RIFF chunk
     out.writeRawData("RIFF", 4);
-    out << quint32(0);                // Placeholder for the RIFF chunk size (filled by close())
+    out << quint32(36 + m_bytesWritten); // RIFF chunk size (total size - 8)
     out.writeRawData("WAVE", 4);
 
     // Format description chunk
     out.writeRawData("fmt ", 4);
-    out << quint32(16);               // "fmt " chunk size (always 16 for PCM)
-    out << quint16(1);                // data format (1 => PCM)
-    out << quint16(2);                // num channels
+    out << quint32(16);                         // "fmt " chunk size (always 16 for PCM)
+    out << quint16(1);                          // data format (1 => PCM)
+    out << quint16(2);                          // num channels
     out << quint32(m_sampleRateKHz * 1000);
     out << quint32(m_sampleRateKHz * 1000 * 2 * sizeof(int16_t));   // bytes per second
-    out << quint16(2 * sizeof(int16_t));                                       // Block align
-    out << quint16(sizeof(int16_t) * 8);                                       // Significant Bits Per Sample
+    out << quint16(2 * sizeof(int16_t));                            // Block align
+    out << quint16(sizeof(int16_t) * 8);                            // Significant Bits Per Sample
 
     // Data chunk
     out.writeRawData("data", 4);
-    out << quint32(m_bytesWritten);                        // Data chunk size
-
-    Q_ASSERT(m_file->pos() == 44);                         // Must be 44 for WAV PCM
+    out << quint32(m_bytesWritten);             // Data chunk size
+    Q_ASSERT(m_file->pos() == 44);              // Must be 44 for WAV PCM
 }
 
 void AudioRecorder::writeWav(const int16_t *data, size_t numSamples)
