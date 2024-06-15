@@ -267,14 +267,14 @@ void SLSView::showSlide(const Slide & slide)
     m_isShowingSlide = true;
 }
 
-void SLSView::showServiceLogo(const QPixmap & logo)
+void SLSView::showServiceLogo(const QPixmap & logo, bool force)
 {
     if (logo.isNull())
     {
         return;
     }
 
-    if (!m_isShowingSlide)
+    if (!m_isShowingSlide || force)
     {
         displayPixmap(logo);
 

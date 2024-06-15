@@ -1640,6 +1640,8 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
         {   // this can happen when service is selected while still acquiring ensemble infomation
             m_SId = s.SId;
             m_SCIdS = s.SCIdS;
+            selectService(ServiceListId(s.SId.value(), s.SCIdS));
+            serviceTreeViewUpdateSelection();
         }
 
         if (s.label.isEmpty())
@@ -1696,10 +1698,10 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
             ui->logoLabel->setVisible(true);
         }
 
-        ui->slsView_Service->showServiceLogo(m_metadataManager->data(s.SId.value(), s.SCIdS, MetadataManager::SLSLogo).value<QPixmap>());
+        ui->slsView_Service->showServiceLogo(m_metadataManager->data(s.SId.value(), s.SCIdS, MetadataManager::SLSLogo).value<QPixmap>(), true);
     }
     else
-    {   // sid it not equal to selected sid -> this should not happen
+    {   // not audio service
         m_SId.set(0);
 
         ui->serviceListView->clearSelection();
