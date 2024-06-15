@@ -1807,6 +1807,20 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
             </widget>
            </widget>
           </item>
+          <item>
+           <widget class="Line" name="tiiHline">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="tiiSpectPlotCheckBox">
+            <property name="text">
+             <string>Show spectrum plot</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>

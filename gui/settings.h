@@ -120,6 +120,7 @@ public:
         GeolocationSource locationSource;
         QGeoCoordinate coordinates;
         QString serialPort;
+        bool showSpectumPlot;
     } tii;
     struct EPGSettings {
         bool filterEmptyEpg;

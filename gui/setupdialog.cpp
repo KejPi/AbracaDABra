@@ -320,6 +320,13 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->locationSourceCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onGeolocationSourceChanged);
     ui->locationSrcWidget->setEnabled(false);
     ui->coordinatesEdit->setText("0.0, 0.0");
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
+    connect(ui->tiiSpectPlotCheckBox, &QCheckBox::clicked, this, &SetupDialog::onTiiSpectPlotClicked);
+#else
+    ui->tiiHline->setVisible(false);
+    ui->tiiSpectPlotCheckBox->setVisible(false);
+#endif
+
 
     static const QRegularExpression coordRe("[+-]?[0-9]+(\\.[0-9]+)?\\s*,\\s*[+-]?[0-9]+(\\.[0-9]+)?");
     QRegularExpressionValidator *coordValidator = new QRegularExpressionValidator(coordRe, this);
@@ -707,6 +714,7 @@ void SetupDialog::setUiState()
                                      .arg(m_settings->tii.coordinates.longitude(), 0, 'g', QLocale::FloatingPointShortest));
     ui->serialPortEdit->setText(m_settings->tii.serialPort);
     ui->locationSourceCombo->setCurrentIndex(static_cast<int>(m_settings->tii.locationSource));
+    ui->tiiSpectPlotCheckBox->setChecked(m_settings->tii.showSpectumPlot);
 }
 
 void SetupDialog::onConnectDeviceClicked()
@@ -1438,6 +1446,10 @@ void SetupDialog::onGeolocationSourceChanged(int index)
     {
         ui->locationSrcWidget->setCurrentIndex(srcInt-1);
     }
+    else
+    {
+        ui->locationSrcWidget->setCurrentIndex(0);
+    }
 
     ui->locationSrcWidget->setEnabled(srcInt > 0);
     m_settings->tii.locationSource = static_cast<Settings::GeolocationSource>(srcInt);
@@ -1488,5 +1500,11 @@ void SetupDialog::onCoordinateEditFinished()
 void SetupDialog::onSerialPortEditFinished()
 {
     m_settings->tii.serialPort = ui->serialPortEdit->text().trimmed();
+    emit tiiSettingsChanged();
+}
+
+void SetupDialog::onTiiSpectPlotClicked(bool checked)
+{
+    m_settings->tii.showSpectumPlot = checked;
     emit tiiSettingsChanged();
 }

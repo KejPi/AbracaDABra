@@ -147,6 +147,7 @@ private:
     void onGeolocationSourceChanged(int index);
     void onCoordinateEditFinished();
     void onSerialPortEditFinished();
+    void onTiiSpectPlotClicked(bool checked);
 
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);

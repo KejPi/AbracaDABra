@@ -140,6 +140,8 @@ TIIDialog::TIIDialog(const Settings *settings, QWidget *parent)
     connect(m_tiiSpectrumPlot, &QCustomPlot::customContextMenuRequested, this, &TIIDialog::onContextMenuRequest);
 
     connect(m_tiiSpectrumPlot, &QCustomPlot::mouseMove, this,  &TIIDialog::showPointToolTip);
+
+    m_tiiSpectrumPlot->setVisible(m_settings->tii.showSpectumPlot);
 #endif
 }
 
@@ -476,7 +478,6 @@ void TIIDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
 
 void TIIDialog::onSettingsChanged()
 {
-    qDebug() << Q_FUNC_INFO;
     if (m_geopositionSource != nullptr)
     {
         delete m_geopositionSource;
@@ -486,6 +487,9 @@ void TIIDialog::onSettingsChanged()
     {
         startLocationUpdate();
     }
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
+    m_tiiSpectrumPlot->setVisible(m_settings->tii.showSpectumPlot);
+#endif
 }
 
 
