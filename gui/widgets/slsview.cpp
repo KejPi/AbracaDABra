@@ -271,6 +271,10 @@ void SLSView::showServiceLogo(const QPixmap & logo, bool force)
 {
     if (logo.isNull())
     {
+        if (force)
+        {
+            reset();
+        }
         return;
     }
 

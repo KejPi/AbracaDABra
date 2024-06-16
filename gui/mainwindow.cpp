@@ -1697,6 +1697,10 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
             ui->logoLabel->setPixmap(logo);
             ui->logoLabel->setVisible(true);
         }
+        else
+        {
+            ui->logoLabel->setVisible(false);
+        }
 
         ui->slsView_Service->showServiceLogo(m_metadataManager->data(s.SId.value(), s.SCIdS, MetadataManager::SLSLogo).value<QPixmap>(), true);
     }
