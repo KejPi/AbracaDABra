@@ -220,7 +220,13 @@ void EnsembleInfoDialog::updateFIBstatus(int fibCntr, int fibErrCount)
     m_fibErrorCounter &= 0x7FFFFFFF;  // wrapping
     ui->fibCount->setText(QString::number(m_fibCounter));
     ui->fibErrCount->setText(QString::number(m_fibErrorCounter));
-    ui->fibErrRate->setText(QString::number(double(m_fibErrorCounter)/m_fibCounter,'e', 4));
+    if (m_fibCounter > 0)
+    {
+        ui->fibErrRate->setText(QString::number(double(m_fibErrorCounter)/m_fibCounter,'e', 4));
+        return;
+    }
+    // else
+    ui->fibErrRate->setText(tr("N/A"));
 }
 
 void EnsembleInfoDialog::updateMSCstatus(int crcOkCount, int crcErrCount)
@@ -231,7 +237,13 @@ void EnsembleInfoDialog::updateMSCstatus(int crcOkCount, int crcErrCount)
     m_crcErrorCounter &= 0x7FFFFFFF;  // wrapping
     ui->crcCount->setText(QString::number(m_crcCounter));
     ui->crcErrCount->setText(QString::number(m_crcErrorCounter));
-    ui->crcErrRate->setText(QString::number(double(m_crcErrorCounter)/m_crcCounter,'e', 4));
+    if (m_crcCounter > 0)
+    {
+        ui->crcErrRate->setText(QString::number(double(m_crcErrorCounter)/m_crcCounter,'e', 4));
+        return;
+    }
+    // else
+    ui->crcErrRate->setText(tr("N/A"));
 }
 
 void EnsembleInfoDialog::resetFibStat()

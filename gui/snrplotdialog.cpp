@@ -38,7 +38,7 @@ SNRPlotDialog::SNRPlotDialog(QWidget *parent)
     boldBigFont.setPointSize(26);
     ui->snrLabel->setFont(boldBigFont);
     ui->snrValue->setFont(boldBigFont);
-    int width = ui->snrValue->fontMetrics().boundingRect("36.0 dB").width();
+    int width = ui->snrValue->fontMetrics().boundingRect(" 36.0 dB").width();
     ui->snrValue->setFixedWidth(width);
     ui->snrValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     ui->snrValue->setToolTip(QString(tr("DAB signal SNR")));
