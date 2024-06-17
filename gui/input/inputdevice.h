@@ -33,7 +33,7 @@
 #include <pthread.h>
 
 // this is chunk that is received from input device to be stored in input FIFO
-#define INPUT_CHUNK_MS            (400)
+#define INPUT_CHUNK_MS            (200)
 #define INPUT_CHUNK_IQ_SAMPLES    (2048 * INPUT_CHUNK_MS)
 
 // Input FIFO size in bytes - FIFO contains float _Complex samples => [float float]
