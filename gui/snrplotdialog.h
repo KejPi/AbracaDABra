@@ -29,6 +29,7 @@
 
 #include <QDateTime>
 #include <QDialog>
+#include <QTimer>
 
 namespace Ui {
 class SNRPlotDialog;
@@ -41,13 +42,16 @@ class SNRPlotDialog : public QDialog
 public:
     explicit SNRPlotDialog(QWidget *parent = nullptr);
     ~SNRPlotDialog();
-    void setCurrentSNR(float snr);
+    void setSignalState(uint8_t sync, float snr);
     void setupDarkMode(bool darkModeEna);
 
 private:
     enum { xPlotRange = 2*60 };
+    static const char * syncLevelLabels[];
+    static const QStringList snrProgressStylesheet;
     Ui::SNRPlotDialog *ui;
     QTime m_startTime;
+    QTimer * m_timer = nullptr;
 
     void addToPlot(float snr);
 };

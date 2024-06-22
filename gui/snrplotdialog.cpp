@@ -27,6 +27,14 @@
 #include "snrplotdialog.h"
 #include "ui_snrplotdialog.h"
 
+const char * SNRPlotDialog::syncLevelLabels[] = {QT_TR_NOOP("No signal"), QT_TR_NOOP("Signal found"), QT_TR_NOOP("Sync")};
+const QStringList SNRPlotDialog::snrProgressStylesheet = {
+    QString::fromUtf8("QProgressBar { border: 1px solid grey;} QProgressBar::chunk {background-color: #ff4b4b; }"),  // red
+    QString::fromUtf8("QProgressBar { border: 1px solid grey;} QProgressBar::chunk {background-color: #ffb527; }"),  // yellow
+    QString::fromUtf8("QProgressBar { border: 1px solid grey;} QProgressBar::chunk {background-color: #5bc214; }")   // green
+};
+
+
 SNRPlotDialog::SNRPlotDialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::SNRPlotDialog)
@@ -35,14 +43,18 @@ SNRPlotDialog::SNRPlotDialog(QWidget *parent)
 
     QFont boldBigFont;
     boldBigFont.setBold(true);
-    boldBigFont.setPointSize(26);
-    ui->snrLabel->setFont(boldBigFont);
+    boldBigFont.setPointSize(20);
+    ui->syncLabel->setFont(boldBigFont);
+    int syncLabelWidth = ui->syncLabel->fontMetrics().boundingRect(tr(syncLevelLabels[1])).width()+10;
+    ui->syncLabel->setFixedWidth(syncLabelWidth);
     ui->snrValue->setFont(boldBigFont);
-    int width = ui->snrValue->fontMetrics().boundingRect(" 36.0 dB").width();
-    ui->snrValue->setFixedWidth(width);
-    ui->snrValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    int snrValueWidth = ui->snrValue->fontMetrics().boundingRect(" 36.0 dB").width();
+    ui->snrValue->setFixedWidth(snrValueWidth);
+    ui->snrValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);    
     ui->snrValue->setToolTip(QString(tr("DAB signal SNR")));
     ui->snrValue->setText("");
+    ui->fixedSpacer->setGeometry(QRect(0,0, syncLabelWidth-snrValueWidth, 5));
+    ui->progressBar->setFixedHeight(ui->snrValue->fontMetrics().boundingRect(" 36.0 dB").height()/2);
 
     ui->snrPlot->addGraph();
     ui->snrPlot->graph(0)->setLineStyle(QCPGraph::lsStepCenter);
@@ -62,17 +74,42 @@ SNRPlotDialog::SNRPlotDialog(QWidget *parent)
     // make left and bottom axes transfer their ranges to right and top axes:
     connect(ui->snrPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->snrPlot->xAxis2, SLOT(setRange(QCPRange)));
     connect(ui->snrPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->snrPlot->yAxis2, SLOT(setRange(QCPRange)));
+
+    m_timer = new QTimer;
+    m_timer->setInterval(1500);
+    connect(m_timer, &QTimer::timeout, this, [this]() { setSignalState(0, 0.0); } );
+    setSignalState(0, 0.0);
 }
 
 SNRPlotDialog::~SNRPlotDialog()
 {
+    m_timer->stop();
+    delete m_timer;
+
     delete ui;
 }
 
-void SNRPlotDialog::setCurrentSNR(float snr)
+void SNRPlotDialog::setSignalState(uint8_t sync, float snr)
 {
+    ui->syncLabel->setText(tr(syncLevelLabels[sync]));
     ui->snrValue->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
+    ui->progressBar->setValue(snr);
+    if (snr < 7.0)
+    {
+        ui->progressBar->setStyleSheet(snrProgressStylesheet[0]);
+    }
+    else if (snr < 10.0)
+    {
+        ui->progressBar->setStyleSheet(snrProgressStylesheet[1]);
+    }
+    else
+    {
+        ui->progressBar->setStyleSheet(snrProgressStylesheet[2]);
+    }
+
     addToPlot(snr);
+
+    m_timer->start();
 }
 
 void SNRPlotDialog::setupDarkMode(bool darkModeEna)

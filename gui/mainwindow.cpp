@@ -1040,7 +1040,7 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
 #if HAVE_QCUSTOMPLOT
     if (m_snrPlotDialog != nullptr)
     {
-        m_snrPlotDialog->setCurrentSNR(snr);
+        m_snrPlotDialog->setSignalState(sync, snr);
     }
 #endif
 
