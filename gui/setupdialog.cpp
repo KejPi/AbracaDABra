@@ -294,7 +294,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->dumpSpiPatternReset, &QPushButton::clicked, this, &SetupDialog::onDataDumpResetClicked);
     connect(ui->dumpSlsPatternEdit, &QLineEdit::editingFinished, this, &SetupDialog::onDataDumpPatternEditingFinished);
     connect(ui->dumpSpiPatternEdit, &QLineEdit::editingFinished, this, &SetupDialog::onDataDumpPatternEditingFinished);
-    connect(ui->rawFileProgressBar, &QProgressBar::valueChanged, this, &SetupDialog::onRawFileProgressChanged);            
+    connect(ui->rawFileSlider, &QSlider::valueChanged, this, &SetupDialog::onRawFileProgressChanged);
+    connect(ui->rawFileSlider, &QSlider::sliderReleased, this, [this]() { emit rawFileSeek(ui->rawFileSlider->value());} );
+
     // reset UI
     onFileLength(0);
 
@@ -452,18 +454,26 @@ void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
 
 void SetupDialog::onFileLength(int msec)
 {    
-    ui->rawFileProgressBar->setMinimum(0);
-    ui->rawFileProgressBar->setMaximum(msec);
-    ui->rawFileProgressBar->setValue(0);
+    ui->rawFileSlider->setMinimum(0);
+    ui->rawFileSlider->setMaximum(msec);
+    ui->rawFileSlider->setValue(0);
     onRawFileProgressChanged(0);
 
-    ui->rawFileProgressBar->setVisible(0 != msec);
+    ui->rawFileSlider->setVisible(0 != msec);
+    ui->rawFileSlider->setEnabled(false);
+
+    onRawFileProgressChanged(0);
+
     ui->rawFileTime->setVisible(0 != msec);
 }
 
 void SetupDialog::onFileProgress(int msec)
 {
-    ui->rawFileProgressBar->setValue(msec);
+    if (!ui->rawFileSlider->isSliderDown())
+    {
+        ui->rawFileSlider->setValue(msec);
+    }
+    ui->rawFileSlider->setEnabled(msec != 0);
 }
 
 void SetupDialog::setAudioRecAutoStop(bool ena)
@@ -1325,7 +1335,7 @@ void SetupDialog::onXmlHeaderChecked(bool checked)
 
 void SetupDialog::onRawFileProgressChanged(int val)
 {
-    ui->rawFileTime->setText(QString("%1 / %2 "+tr("sec")).arg(val/1000.0, 0, 'f', 1).arg(ui->rawFileProgressBar->maximum()/1000.0, 0, 'f', 1));
+    ui->rawFileTime->setText(QString("%1 / %2 "+tr("sec")).arg(val/1000.0, 0, 'f', 1).arg(ui->rawFileSlider->maximum()/1000.0, 0, 'f', 1));
 }
 
 void SetupDialog::onSpiAppChecked(bool checked)

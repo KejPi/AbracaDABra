@@ -48,7 +48,7 @@ class RawFileWorker : public QThread
 {
     Q_OBJECT
 public:
-    explicit RawFileWorker(QFile * inputFile, RawFileInputFormat sampleFormat, QObject *parent = nullptr);
+    explicit RawFileWorker(QFile * inputFile, RawFileInputFormat sampleFormat, int bytesRead, QObject *parent = nullptr);
     void trigger();
     void stop();
 protected:
@@ -78,6 +78,8 @@ public:
     void setFile(const QString & fileName, const RawFileInputFormat & sampleFormat = RawFileInputFormat::SAMPLE_FORMAT_U8);
     void setFileFormat(const RawFileInputFormat & sampleFormat);
     void startStopRecording(bool start) override { /* do nothing */ }
+    void seek(int msec);
+
 signals:
     void fileLength(int msec);
     void fileProgress(int msec);

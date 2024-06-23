@@ -2572,8 +2572,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         RawFileInputFormat format = m_settings->rawfile.format;
         dynamic_cast<RawFileInput*>(m_inputDevice)->setFile(m_settings->rawfile.file, format);
 
-        connect(dynamic_cast<RawFileInput*>(m_inputDevice), &RawFileInput::fileLength, m_setupDialog, &SetupDialog::onFileLength, Qt::QueuedConnection);
-        connect(dynamic_cast<RawFileInput*>(m_inputDevice), &RawFileInput::fileProgress, m_setupDialog, &SetupDialog::onFileProgress, Qt::QueuedConnection);
+        connect(dynamic_cast<RawFileInput*>(m_inputDevice), &RawFileInput::fileLength, m_setupDialog, &SetupDialog::onFileLength);
+        connect(dynamic_cast<RawFileInput*>(m_inputDevice), &RawFileInput::fileProgress, m_setupDialog, &SetupDialog::onFileProgress);
+        connect(m_setupDialog, &SetupDialog::rawFileSeek, dynamic_cast<RawFileInput*>(m_inputDevice), &RawFileInput::seek);
 
         // we can open device now
         if (m_inputDevice->openDevice())

@@ -56,9 +56,7 @@ public:
     void onFileProgress(int msec);
     void setAudioRecAutoStop(bool ena);
     QLocale::Language applicationLanguage() const;
-
     void setSlsDumpPaternDefault(const QString &newSlsDumpPaternDefault);
-
     void setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault);
 
 signals:
@@ -74,6 +72,7 @@ signals:
     void audioRecordingSettings(const QString &folder, bool doOutputRecording);
     void uaDumpSettings(const Settings::UADumpSettings & settings);
     void tiiSettingsChanged();
+    void rawFileSeek(int msec);
 protected:
     void showEvent(QShowEvent *event);
 

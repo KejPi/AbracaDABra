@@ -169,7 +169,7 @@ void RawFileInput::tune(uint32_t freq)
 
     if (0 != freq)
     {
-        m_worker = new RawFileWorker(m_inputFile, m_sampleFormat, this);
+        m_worker = new RawFileWorker(m_inputFile, m_sampleFormat, 0, this);
         connect(m_worker, &RawFileWorker::bytesRead, this, &RawFileInput::onBytesRead, Qt::QueuedConnection);
         connect(m_worker, &RawFileWorker::endOfFile, this, &RawFileInput::onEndOfFile, Qt::QueuedConnection);        
         connect(m_worker, &RawFileWorker::finished, m_worker, &QObject::deleteLater);
@@ -208,6 +208,49 @@ void RawFileInput::onBytesRead(quint64 bytesRead)
     default:
         break;
     }
+}
+
+void RawFileInput::seek(int msec)
+{
+    if (nullptr == m_inputFile)
+    {
+        return;
+    }
+
+    stop();
+
+    int numBytes = 0;
+
+    switch (m_sampleFormat) {
+    case RawFileInputFormat::SAMPLE_FORMAT_U8:
+        numBytes = msec * 2 * 2048;
+        break;
+    case RawFileInputFormat::SAMPLE_FORMAT_S16:
+        numBytes = msec * 4 * 2048;
+        break;
+    default:
+        break;
+    }
+
+    if (m_deviceDescription.rawFile.hasXmlHeader)
+    {
+        numBytes += RAWFILEINPUT_XML_PADDING;
+    }
+    m_inputFile->seek(numBytes);
+
+    // Reset buffer here - worker thread it not running, DAB waits for new data
+    inputBuffer.reset();
+
+    m_worker = new RawFileWorker(m_inputFile, m_sampleFormat, numBytes, this);
+    connect(m_worker, &RawFileWorker::bytesRead, this, &RawFileInput::onBytesRead, Qt::QueuedConnection);
+    connect(m_worker, &RawFileWorker::endOfFile, this, &RawFileInput::onEndOfFile, Qt::QueuedConnection);
+    connect(m_worker, &RawFileWorker::finished, m_worker, &QObject::deleteLater);
+    connect(m_worker, &RawFileWorker::destroyed, this, [=]() { m_worker = nullptr; } );
+    m_worker->start();
+
+    m_inputTimer = new QTimer(this);
+    connect(m_inputTimer, &QTimer::timeout, m_worker, &RawFileWorker::trigger);
+    m_inputTimer->start(INPUT_CHUNK_MS);
 }
 
 void RawFileInput::parseXmlHeader(const QByteArray &xml)
@@ -416,6 +459,8 @@ void RawFileInput::stop()
     if (nullptr != m_inputTimer)
     {
         m_inputTimer->stop();
+        delete m_inputTimer;
+        m_inputTimer = nullptr;
     }
     if (nullptr != m_worker)
     {
@@ -436,12 +481,12 @@ void RawFileInput::stop()
 }
 
 
-RawFileWorker::RawFileWorker(QFile *inputFile, RawFileInputFormat sampleFormat, QObject *parent)
+RawFileWorker::RawFileWorker(QFile *inputFile, RawFileInputFormat sampleFormat, int bytesRead, QObject *parent)
     : QThread(parent)
     , m_sampleFormat(sampleFormat)
     , m_inputFile(inputFile)
+    , m_bytesRead(bytesRead)
 {
-    m_bytesRead = 0;
     m_stopRequest = false;
     m_elapsedTimer.start();
 }
