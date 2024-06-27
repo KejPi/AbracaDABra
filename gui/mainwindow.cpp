@@ -75,6 +75,9 @@
 #if HAVE_SOAPYSDR
 #include "soapysdrinput.h"
 #endif
+#if HAVE_RARTTCP
+#include "rarttcpinput.h"
+#endif
 
 #ifdef Q_OS_MACOS
 #include "mac.h"
@@ -2158,7 +2161,7 @@ void MainWindow::onNewInputDeviceSettings()
 #endif
         break;
     case InputDeviceId::RAWFILE:
-        break;
+    case InputDeviceId::RARTTCP:
     case InputDeviceId::UNDEFINED:
         break;
     }
@@ -2388,6 +2391,84 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             m_setupDialog->resetInputDevice();
             initInputDevice(InputDeviceId::UNDEFINED);
         }
+    }
+    break;
+    case InputDeviceId::RARTTCP:
+    {
+#if HAVE_RARTTCP
+        m_inputDevice = new RartTcpInput();
+
+        // signals have to be connected before calling isAvailable
+        // RTL_TCP is opened immediately and starts receiving data
+
+        // HMI
+        connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
+        connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
+
+        // tuning procedure
+        connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+        connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+        // set IP address and port
+        dynamic_cast<RartTcpInput*>(m_inputDevice)->setTcpIp(m_settings->rarttcp.tcpAddress, m_settings->rarttcp.tcpPort);
+
+        if (m_inputDevice->openDevice())
+        {  // RaRT tcp is available
+            if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
+            {   // if switching from RAW or UNDEFINED load service list & rec schedule
+
+                // clear service list
+                m_serviceList->clear();
+
+                // clear rec scheduile
+                m_audioRecScheduleModel->clear();
+
+                QSettings * settings;
+                if (m_iniFilename.isEmpty())
+                {
+                    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+                }
+                else
+                {
+                    settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+                }
+                m_serviceList->load(*settings);
+                m_audioRecScheduleModel->load(*settings);
+                delete settings;
+            }
+            else { /* keep service list as it is */}
+
+            m_inputDeviceId = InputDeviceId::RARTTCP;
+
+            // enable band scan
+            m_bandScanAction->setEnabled(true);
+
+            // enable service list
+            ui->serviceListView->setEnabled(true);
+            ui->serviceTreeView->setEnabled(true);
+            ui->favoriteLabel->setEnabled(true);
+
+            // recorder
+            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
+            connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
+            connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
+
+            // ensemble info dialog
+            connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
+            m_ensembleInfoDialog->enableRecording(true);
+
+            // metadata & EPG
+            EPGTime::getInstance()->setIsLiveBroadcasting(true);
+
+            // apply current settings
+            onNewInputDeviceSettings();
+        }
+        else
+        {
+            m_setupDialog->resetInputDevice();
+            initInputDevice(InputDeviceId::UNDEFINED);
+        }
+#endif
     }
     break;
     case InputDeviceId::AIRSPY:
@@ -2725,6 +2806,11 @@ void MainWindow::loadSettings()
     m_settings->rtltcp.agcLevelMax = settings->value("RTL-TCP/agcLevelMax", 0).toInt();
     m_settings->rtltcp.ppm = settings->value("RTL-TCP/ppm", 0).toInt();
 
+#if HAVE_RARTTCP
+    m_settings->rarttcp.tcpAddress = settings->value("RART-TCP/address", QString("127.0.0.1")).toString();
+    m_settings->rarttcp.tcpPort = settings->value("RART-TCP/port", 1235).toInt();
+#endif
+
 #if HAVE_AIRSPY
     m_settings->airspy.gain.sensitivityGainIdx = settings->value("AIRSPY/sensitivityGainIdx", 9).toInt();
     m_settings->airspy.gain.lnaGainIdx = settings->value("AIRSPY/lnaGainIdx", 0).toInt();
@@ -2777,7 +2863,8 @@ void MainWindow::loadSettings()
                 && (    (InputDeviceId::RTLSDR == m_inputDeviceId)
                      || (InputDeviceId::AIRSPY == m_inputDeviceId)
                      || (InputDeviceId::SOAPYSDR == m_inputDeviceId)
-                     || (InputDeviceId::RTLTCP == m_inputDeviceId)))
+                     || (InputDeviceId::RTLTCP == m_inputDeviceId)
+                     || (InputDeviceId::RARTTCP == m_inputDeviceId)))
         {   // restore channel
             int sid = settings->value("SID", 0).toInt();
             uint8_t scids = settings->value("SCIdS", 0).toInt();
@@ -2921,6 +3008,11 @@ void MainWindow::saveSettings()
     settings->setValue("RTL-TCP/port", m_settings->rtltcp.tcpPort);
     settings->setValue("RTL-TCP/agcLevelMax", m_settings->rtltcp.agcLevelMax);
     settings->setValue("RTL-TCP/ppm", m_settings->rtltcp.ppm);
+
+#if HAVE_RARTTCP
+    settings->setValue("RART-TCP/address", m_settings->rarttcp.tcpAddress);
+    settings->setValue("RART-TCP/port", m_settings->rarttcp.tcpPort);
+#endif
 
     settings->setValue("RAW-FILE/filename", m_settings->rawfile.file);
     settings->setValue("RAW-FILE/format", int(m_settings->rawfile.format));

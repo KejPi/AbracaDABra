@@ -130,6 +130,9 @@ add_executable(${TARGET}
     input/rtlsdrinput.cpp
     input/rtltcpinput.h
     input/rtltcpinput.cpp
+    input/rarttcpinput.h
+    input/rarttcpinput.cpp
+
 
     # User applications
     data/mscdatagroup.h

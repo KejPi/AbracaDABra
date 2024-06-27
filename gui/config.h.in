@@ -41,6 +41,7 @@
 /* Optional devices */
 #cmakedefine01 HAVE_AIRSPY
 #cmakedefine01 HAVE_SOAPYSDR
+#cmakedefine01 HAVE_RARTTCP
 
 /* Debug */
 #cmakedefine01 TII_SPECTRUM_PLOT

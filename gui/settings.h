@@ -90,6 +90,13 @@ public:
         uint32_t bandwidth;
     } soapysdr;
 #endif
+#if HAVE_RARTTCP
+    struct
+    {
+        QString tcpAddress;
+        int tcpPort;
+    } rarttcp;
+#endif
     uint16_t announcementEna;
     bool bringWindowToForeground;
     ApplicationStyle applicationStyle;

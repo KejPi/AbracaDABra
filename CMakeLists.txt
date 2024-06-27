@@ -32,6 +32,7 @@ option (APPLE_BUILD_X86_64    "Build x86_64 binary for Apple"        OFF)
 # Devices
 option (AIRSPY                "Enable AirSpy devices"                OFF)
 option (SOAPYSDR              "Enable Soapy SDR devices"             OFF)
+option (RARTTCP               "Enable RaRT TCP device"               OFF)
 
 # Plots
 option (QCUSTOMPLOT           "Enable QCustomPlot (GPLv3 license)"    ON)
@@ -448,6 +449,15 @@ if (SOAPYSDR)
 else(SOAPYSDR)
     set(HAVE_SOAPYSDR OFF)
 endif(SOAPYSDR)
+
+#########################################################
+## RARTTCP
+if (RARTTCP)
+    # no specific check here
+    set(HAVE_RARTTCP ON)
+else(RARTTCP)
+    set(HAVE_RARTTCP OFF)
+endif(RARTTCP)
 
 #########################################################
 ## QCUSTOMPLOT

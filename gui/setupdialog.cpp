@@ -56,6 +56,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->inputCombo->addItem("Soapy SDR", QVariant(int(InputDeviceId::SOAPYSDR)));
 #endif
     ui->inputCombo->addItem("RTL TCP", QVariant(int(InputDeviceId::RTLTCP)));
+#if HAVE_RARTTCP
+    ui->inputCombo->addItem("RaRT TCP", QVariant(int(InputDeviceId::RARTTCP)));
+#endif
     ui->inputCombo->addItem(tr("Raw file"), QVariant(int(InputDeviceId::RAWFILE)));
     ui->inputCombo->setCurrentIndex(-1);  // undefined
 
@@ -77,7 +80,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
                                +                                + "(\\." + ipRange + ")"
                                +                                + "(\\." + ipRange + ")$");
     QRegularExpressionValidator *ipValidator = new QRegularExpressionValidator(ipRegex, this);
-    ui->rtltcpIpAddressEdit->setValidator(ipValidator);
+    ui->rtltcpIpAddressEdit->setValidator(ipValidator);    
+    ui->rarttcpIpAddressEdit->setValidator(ipValidator);
     ui->rtltcpSwAgcMaxLevel->setToolTip(ui->rtlsdrSwAgcMaxLevel->toolTip());
     ui->rtltcpSwAgcMaxLevel->setMinimumWidth(ui->rtlsdrSwAgcMaxLevel->width());
 
@@ -396,6 +400,7 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
     case InputDeviceId::UNDEFINED:
     case InputDeviceId::RAWFILE:
     case InputDeviceId::AIRSPY:
+    case InputDeviceId::RARTTCP:
         return;
     }
 }
@@ -645,6 +650,10 @@ void SetupDialog::setUiState()
     ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings->rawfile.format));
     ui->rtltcpIpAddressEdit->setText(m_settings->rtltcp.tcpAddress);
     ui->rtltcpIpPortSpinBox->setValue(m_settings->rtltcp.tcpPort);
+#if HAVE_RARTTCP
+    ui->rarttcpIpAddressEdit->setText(m_settings->rarttcp.tcpAddress);
+    ui->rarttcpIpPortSpinBox->setValue(m_settings->rarttcp.tcpPort);
+#endif
 
     setStatusLabel();
 
@@ -741,6 +750,8 @@ void SetupDialog::onConnectDeviceClicked()
         m_settings->rtltcp.tcpAddress = ui->rtltcpIpAddressEdit->text();
         m_settings->rtltcp.tcpPort = ui->rtltcpIpPortSpinBox->value();
         activateRtlTcpControls(true);
+        break;
+    case InputDeviceId::RARTTCP:
         break;
     case InputDeviceId::UNDEFINED:
         break;
@@ -1116,6 +1127,9 @@ void SetupDialog::setStatusLabel()
     case InputDeviceId::SOAPYSDR:
         ui->statusLabel->setText(tr("Soapy SDR device connected"));
         break;
+    case InputDeviceId::RARTTCP:
+        ui->statusLabel->setText("RART TCP device connected");
+        break;
     }
 }
 
@@ -1149,6 +1163,8 @@ void SetupDialog::onInputChanged(int index)
             activateSoapySdrControls(false);
 #endif
             return;
+        case InputDeviceId::RARTTCP:
+            break;
         }
     }
 }
@@ -1202,8 +1218,10 @@ void SetupDialog::resetInputDevice()
         activateRtlTcpControls(false);
         break;
     case InputDeviceId::RAWFILE:
+    case InputDeviceId::RARTTCP:
         break;
     case InputDeviceId::UNDEFINED:
+        break;
     case InputDeviceId::AIRSPY:
 #if HAVE_AIRSPY
         activateAirspyControls(false);
