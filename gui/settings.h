@@ -130,6 +130,9 @@ public:
         bool showSpectumPlot;
         QByteArray geometry;
     } tii;
+    struct SNRSettings {
+        QByteArray geometry;
+    } snr;
     struct EPGSettings {
         bool filterEmptyEpg;
         bool filterEnsemble;

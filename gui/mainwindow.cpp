@@ -930,6 +930,15 @@ void MainWindow::closeEvent(QCloseEvent *event)
         emit resetUserApps();
         emit serviceRequest(0,0,0);
         event->ignore();
+
+        if (m_snrPlotDialog)
+        {
+            m_snrPlotDialog->close();
+        }
+        if (m_tiiDialog)
+        {
+            m_tiiDialog->close();
+        }
     }
 }
 
@@ -2790,6 +2799,8 @@ void MainWindow::loadSettings()
     m_settings->tii.showSpectumPlot = settings->value("TII/showSpectrumPlot", false).toBool();
     m_settings->tii.geometry = settings->value("TII/windowGeometry").toByteArray();
 
+    m_settings->snr.geometry = settings->value("SNR/windowGeometry").toByteArray();
+
     m_settings->epg.filterEmptyEpg = settings->value("epgFilterEmpty", false).toBool();
     m_settings->epg.filterEnsemble = settings->value("epgFilterOtherEnsembles", false).toBool();
 
@@ -2967,6 +2978,8 @@ void MainWindow::saveSettings()
     settings->setValue("TII/serialPort", m_settings->tii.serialPort);
     settings->setValue("TII/showSpectrumPlot", m_settings->tii.showSpectumPlot);
     settings->setValue("TII/windowGeometry", m_settings->tii.geometry);
+
+    settings->setValue("SNR/windowGeometry", m_settings->snr.geometry);
 
     settings->setValue("UA-STORAGE/folder", m_settings->uaDump.folder);
     settings->setValue("UA-STORAGE/overwriteEna", m_settings->uaDump.overwriteEna);
@@ -3275,7 +3288,7 @@ void MainWindow::showSnrPlotDialog()
         m_snrPlotDialog = new SNRPlotDialog();
         connect(this, &MainWindow::exit, m_snrPlotDialog, &SNRPlotDialog::close);  // QTBUG-117779 ==> using parentless dialogs as workaround
 #else
-        m_snrPlotDialog = new SNRPlotDialog(this);
+        m_snrPlotDialog = new SNRPlotDialog(m_settings, this);
 #endif
         m_snrPlotDialog->setupDarkMode(isDarkMode());
         connect(m_snrPlotDialog, &QDialog::finished, m_snrPlotDialog, &QObject::deleteLater);

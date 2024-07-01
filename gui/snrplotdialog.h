@@ -30,6 +30,7 @@
 #include <QDateTime>
 #include <QDialog>
 #include <QTimer>
+#include "settings.h"
 
 namespace Ui {
 class SNRPlotDialog;
@@ -40,16 +41,20 @@ class SNRPlotDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SNRPlotDialog(QWidget *parent = nullptr);
+    explicit SNRPlotDialog(Settings *settings, QWidget *parent = nullptr);
     ~SNRPlotDialog();
     void setSignalState(uint8_t sync, float snr);
     void setupDarkMode(bool darkModeEna);
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     enum { xPlotRange = 2*60 };
     static const char * syncLevelLabels[];
     static const QStringList snrProgressStylesheet;
     Ui::SNRPlotDialog *ui;
+    Settings * m_settings = nullptr;
     QTime m_startTime;
     QTimer * m_timer = nullptr;
 

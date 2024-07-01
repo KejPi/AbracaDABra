@@ -35,11 +35,20 @@ const QStringList SNRPlotDialog::snrProgressStylesheet = {
 };
 
 
-SNRPlotDialog::SNRPlotDialog(QWidget *parent)
+SNRPlotDialog::SNRPlotDialog(Settings *settings, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::SNRPlotDialog)
+    , m_settings(settings)
 {
     ui->setupUi(this);
+
+    QSize sz = QSize(780, 300);
+    if (!m_settings->snr.geometry.isEmpty())
+    {
+        restoreGeometry(m_settings->snr.geometry);
+        sz = size();
+    }
+    QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
 
     QFont boldBigFont;
     boldBigFont.setBold(true);
@@ -174,6 +183,13 @@ void SNRPlotDialog::setupDarkMode(bool darkModeEna)
         ui->snrPlot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 100)));
         ui->snrPlot->replot();
     }
+}
+
+void SNRPlotDialog::closeEvent(QCloseEvent *event)
+{
+    m_settings->snr.geometry = saveGeometry();
+
+    QDialog::closeEvent(event);
 }
 
 void SNRPlotDialog::addToPlot(float snr)
