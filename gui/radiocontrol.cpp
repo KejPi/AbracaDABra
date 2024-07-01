@@ -567,7 +567,10 @@ void RadioControl::getEnsembleConfiguration()
 
 void RadioControl::getEnsembleInformation()
 {
-    emit ensembleInformation(m_ensemble);
+    if (m_ensemble.isValid())
+    {
+        emit ensembleInformation(m_ensemble);
+    }
 }
 
 void RadioControl::startUserApplication(DabUserApplicationType uaType, bool start, bool singleChannel)
