@@ -128,6 +128,7 @@ public:
         QGeoCoordinate coordinates;
         QString serialPort;
         bool showSpectumPlot;
+        QByteArray geometry;
     } tii;
     struct EPGSettings {
         bool filterEmptyEpg;

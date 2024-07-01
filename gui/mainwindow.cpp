@@ -2788,6 +2788,7 @@ void MainWindow::loadSettings()
     m_settings->tii.coordinates = QGeoCoordinate(settings->value("TII/latitude", 0.0).toDouble(), settings->value("TII/longitude", 0.0).toDouble());
     m_settings->tii.serialPort = settings->value("TII/serialPort", "").toString();
     m_settings->tii.showSpectumPlot = settings->value("TII/showSpectrumPlot", false).toBool();
+    m_settings->tii.geometry = settings->value("TII/windowGeometry").toByteArray();
 
     m_settings->epg.filterEmptyEpg = settings->value("epgFilterEmpty", false).toBool();
     m_settings->epg.filterEnsemble = settings->value("epgFilterOtherEnsembles", false).toBool();
@@ -2965,6 +2966,7 @@ void MainWindow::saveSettings()
     settings->setValue("TII/longitude", m_settings->tii.coordinates.longitude());
     settings->setValue("TII/serialPort", m_settings->tii.serialPort);
     settings->setValue("TII/showSpectrumPlot", m_settings->tii.showSpectumPlot);
+    settings->setValue("TII/windowGeometry", m_settings->tii.geometry);
 
     settings->setValue("UA-STORAGE/folder", m_settings->uaDump.folder);
     settings->setValue("UA-STORAGE/overwriteEna", m_settings->uaDump.overwriteEna);

@@ -34,7 +34,7 @@
 #include <QMessageBox>
 #include "tiidialog.h"
 
-TIIDialog::TIIDialog(const Settings *settings, QWidget *parent)
+TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     : QDialog(parent)
     , m_settings(settings)
 {        
@@ -45,8 +45,18 @@ TIIDialog::TIIDialog(const Settings *settings, QWidget *parent)
 
     // UI
     setWindowTitle(tr("TII Decoder"));
-    resize(1250, 700);
-    setMinimumSize(QSize(780, 520));
+    QSize sz = QSize(780, 520);
+    setMinimumSize(sz);
+    if (!m_settings->tii.geometry.isEmpty())
+    {
+        restoreGeometry(m_settings->tii.geometry);
+        sz = size();
+    }
+    else
+    {   // this should happen only when ini is deleted ot on the first run
+        sz = minimumSizeHint();
+    }
+    QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
 
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     // TII plot
@@ -175,6 +185,9 @@ void TIIDialog::closeEvent(QCloseEvent *event)
     emit setTii(false, 0.0);
     setIsVisible(false);
     stopLocationUpdate();
+
+    m_settings->tii.geometry = saveGeometry();
+
     QDialog::closeEvent(event);
 }
 
