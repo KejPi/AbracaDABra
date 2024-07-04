@@ -71,12 +71,12 @@
 #include "snrplotdialog.h"
 #endif
 
-
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class DLPlusObjectUI;
+class FMListInterface;
 
 class MainWindow : public QMainWindow
 {
@@ -132,6 +132,9 @@ private:
     ClickableLabel * m_snrLabel;    
 #else
     QLabel * m_snrLabel;
+#endif
+#if HAVE_FMLIST_INTERFACE
+    FMListInterface * m_fmlistInterface;
 #endif
     QProgressBar * m_snrProgressbar;    
     ClickableLabel * m_menuLabel;

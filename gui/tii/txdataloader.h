@@ -34,9 +34,12 @@ class TxDataLoader
 {
 public:
     TxDataLoader() = default;
-
+    static QString dbfile();
+    static QDateTime lastUpdateTime();
     static void loadTable(QMultiHash<ServiceListId, TxDataItem*> & txList);
 
+private:
+    static const QString s_filename;
 };
 
 #endif // TXDATALOADER_H

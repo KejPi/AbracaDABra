@@ -83,7 +83,8 @@ AboutDialog::AboutDialog(QWidget *parent) :
                            "<li>"+tr("German")+": Andreas Mikula</li>"
                            "<li>"+tr("Polish")+": Marek Schirmer</li>"
                            "</ul>"+
-                           tr("AbracaDABra uses some artwork created by")+" <a href=\"https://www.flaticon.com/authors/basic-miscellany/lineal-color\">Smashicons - Flaticon</a>");
+                           tr("AbracaDABra uses some artwork created by")+" <a href=\"https://www.flaticon.com/authors/basic-miscellany/lineal-color\">Smashicons - Flaticon</a> "+
+                           tr("and DAB transmitter database provided by")+" <a href=\"https://www.fmlist.org\">FMLIST</a>");
     ui->disclaimer->setText("<p>Copyright © 2019-2024 Petr Kopecký</p>"
                             "<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software "
                             "and associated documentation files (the “Software”), to deal in the Software without restriction, "

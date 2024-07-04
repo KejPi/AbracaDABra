@@ -63,7 +63,10 @@
 #endif
 #include "metadatamanager.h"
 #include "audiorecscheduledialog.h"
-
+#if HAVE_FMLIST_INTERFACE
+#include "fmlistinterface.h"
+#include "txdataloader.h"
+#endif
 
 // Input devices
 #include "rawfileinput.h"
@@ -196,7 +199,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 #endif
     m_epgDialog = nullptr;
     m_tiiDialog = nullptr;
-
+#if HAVE_FMLIST_INTERFACE
+    m_fmlistInterface = nullptr;
+#endif
     // this is to avoid warning from QML
     // SLModel is neither a default constructible QObject, nor a default- and copy-constructible Q_GADGET, nor marked as uncreatable.
     // https://forum.qt.io/topic/153175/warning-when-creating-instantiable-object-type/4
@@ -260,6 +265,15 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::expertModeToggled, this, &MainWindow::onExpertModeToggled);
     connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, this, &MainWindow::onNewAnnouncementSettings);
     connect(m_setupDialog, &SetupDialog::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
+#if HAVE_FMLIST_INTERFACE
+    connect(m_setupDialog, &SetupDialog::updateTxDb, this, [this]() {
+        if (m_fmlistInterface == nullptr)
+        {
+            m_fmlistInterface = new FMListInterface(TxDataLoader::dbfile());
+        }
+        m_fmlistInterface->updateTiiData();
+    });
+#endif
 
 #if (QT_VERSION < QT_VERSION_CHECK(6, 7, 1)) && !defined(Q_OS_MAC)
     m_ensembleInfoDialog = new EnsembleInfoDialog();
@@ -824,6 +838,12 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+#if HAVE_FMLIST_INTERFACE
+    if (nullptr != m_fmlistInterface)
+    {
+        delete m_fmlistInterface;
+    }
+#endif
     delete m_inputDevice;
     delete m_inputDeviceRecorder;
 

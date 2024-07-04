@@ -34,6 +34,22 @@
 
 #include "txdataloader.h"
 
+const QString TxDataLoader::s_filename = "dab-tx-list.csv";
+QString TxDataLoader::dbfile()
+{
+    return QStandardPaths::writableLocation(QStandardPaths::CacheLocation)  + "/TII/" + s_filename;
+}
+
+QDateTime TxDataLoader::lastUpdateTime()
+{
+    QDir directory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)  + "/TII/");
+    if (directory.exists(s_filename))
+    {
+        QFileInfo fi(directory, s_filename);
+        return fi.lastModified();
+    }
+    return QDateTime();
+}
 
 void TxDataLoader::loadTable(QMultiHash<ServiceListId, TxDataItem *> &txList)
 {
@@ -102,11 +118,12 @@ void TxDataLoader::loadTable(QMultiHash<ServiceListId, TxDataItem *> &txList)
         {"ZA", 0xD0 },
     };
 
-    const QString filename = "dab-tx-list.csv";
+
     static const QRegularExpression sepRegex("\\s*\\;\\s*");
     QDir directory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)  + "/TII/");
-    if (directory.exists(filename)) {
-        QFile file(directory.absolutePath() + "/" + filename);
+    if (directory.exists(s_filename))
+    {
+        QFile file(directory.absolutePath() + "/" + s_filename);
         if (file.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             qDeleteAll(txList);
@@ -176,7 +193,7 @@ void TxDataLoader::loadTable(QMultiHash<ServiceListId, TxDataItem *> &txList)
                 }
             }
         }
-        qDebug() << "TII items loaded:" << txList.size();
+        qDebug() << "TII TX database items loaded:" << txList.size();
         file.close();
     }
 }

@@ -33,6 +33,7 @@
 #include "setupdialog.h"
 #include "./ui_setupdialog.h"
 #include "audiodecoder.h"
+#include "txdataloader.h"
 
 SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDialog)
 {
@@ -45,6 +46,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->tabWidget->setTabText(SetupDialogTabs::Announcement, tr("Announcements"));
     ui->tabWidget->setTabText(SetupDialogTabs::Audio, tr("Audio"));
     ui->tabWidget->setTabText(SetupDialogTabs::UserApps, tr("User Applications"));
+    ui->tabWidget->setTabText(SetupDialogTabs::Tii, tr("TII"));
     ui->tabWidget->setTabText(SetupDialogTabs::Other, tr("Others"));
     ui->tabWidget->setCurrentIndex(SetupDialogTabs::Device);
 
@@ -333,20 +335,36 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->tiiSpectPlotCheckBox->setVisible(false);
 #endif
 
-
     static const QRegularExpression coordRe("[+-]?[0-9]+(\\.[0-9]+)?\\s*,\\s*[+-]?[0-9]+(\\.[0-9]+)?");
     QRegularExpressionValidator *coordValidator = new QRegularExpressionValidator(coordRe, this);
     ui->coordinatesEdit->setValidator(coordValidator);
     connect(ui->coordinatesEdit, &QLineEdit::editingFinished, this, &SetupDialog::onCoordinateEditFinished);
     connect(ui->serialPortEdit, &QLineEdit::editingFinished, this, &SetupDialog::onSerialPortEditFinished);
 
+#if HAVE_FMLIST_INTERFACE
+    connect(ui->updateDbButton, &QPushButton::clicked, this, &SetupDialog::onTiiUpdateDbClicked);
+#else
+    ui->updateDbButton->setEnabled(false);
+#endif
+
     QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
 }
 
 void SetupDialog::showEvent(QShowEvent *event)
 {
+    QDateTime lastModified = TxDataLoader::lastUpdateTime();
+    if (lastModified.isValid())
+    {
+        ui->tiiDbLabel->setText(tr("Last update: ") + lastModified.toString("dd.MM.yyyy"));
+    }
+    else
+    {
+        ui->tiiDbLabel->setText(tr("Data not available"));
+    }
+#if HAVE_FMLIST_INTERFACE
+    ui->updateDbButton->setEnabled(!lastModified.isValid() || lastModified.daysTo(QDateTime::currentDateTime()) > 1);
+#endif
     ui->tabWidget->setFocus();
-
     QDialog::showEvent(event);
 
     //QTimer::singleShot(10, this, [this](){ adjustSize(); } );
@@ -1287,6 +1305,7 @@ void SetupDialog::onExpertModeChecked(bool checked)
     ui->soapysdrExpertGroup->setVisible(checked);
     ui->dataDumpGroup->setVisible(checked);
     ui->tiiGroup->setVisible(checked);
+    ui->tabWidget->setTabVisible(SetupDialogTabs::Tii, checked);
     if (!checked)
     {
         ui->dumpSlsCheckBox->setChecked(false);
@@ -1535,4 +1554,10 @@ void SetupDialog::onTiiSpectPlotClicked(bool checked)
 {
     m_settings->tii.showSpectumPlot = checked;
     emit tiiSettingsChanged();
+}
+
+void SetupDialog::onTiiUpdateDbClicked()
+{
+    ui->updateDbButton->setEnabled(false);
+    emit updateTxDb();
 }

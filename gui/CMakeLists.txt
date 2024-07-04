@@ -323,6 +323,11 @@ if (HAVE_QCUSTOMPLOT)
     target_link_libraries(${TARGET} PRIVATE "${QCUSTOMPLOT_LINK_LIBRARIES}" )
 endif(HAVE_QCUSTOMPLOT)
 
+# FMLIST
+if (HAVE_FMLIST_INTERFACE)
+    include_directories ( ${FMLIST_INCLUDE_DIRS} )
+    target_link_libraries(${TARGET} PRIVATE ${FMLIST_LINK_LIBRARIES})
+endif(HAVE_FMLIST_INTERFACE)
 
 # Set some Win32 Specific Settings
 if(WIN32)

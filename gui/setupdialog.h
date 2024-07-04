@@ -73,11 +73,12 @@ signals:
     void uaDumpSettings(const Settings::UADumpSettings & settings);
     void tiiSettingsChanged();
     void rawFileSeek(int msec);
+    void updateTxDb();
 protected:
     void showEvent(QShowEvent *event);
 
 private:
-    enum SetupDialogTabs { Device = 0, Audio = 1, Announcement = 2, UserApps = 3, Other = 4 };
+    enum SetupDialogTabs { Device = 0, Audio, Announcement, UserApps, Tii, Other };
     enum SetupDialogXmlHeader { XMLDate = 0, XMLRecorder, XMLDevice,
                                 XMLSampleRate, XMLFreq, XMLLength, XMLFormat,
                                 XMLNumLabels};
@@ -147,6 +148,7 @@ private:
     void onCoordinateEditFinished();
     void onSerialPortEditFinished();
     void onTiiSpectPlotClicked(bool checked);
+    void onTiiUpdateDbClicked();
 
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);
