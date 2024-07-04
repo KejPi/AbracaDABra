@@ -105,7 +105,14 @@ void InputDeviceRecorder::start(QWidget * callerWidget)
             m_file = fopen(QDir::toNativeSeparators(fileName).toUtf8().data(), "wb");
             if (nullptr != m_file)
             {
-                startXmlHeader();
+                if (m_xmlHeaderEna)
+                {
+                    startXmlHeader();
+                    char * padding = new char[INPUTDEVICERECORDER_XML_PADDING];
+                    memset(padding, 0, INPUTDEVICERECORDER_XML_PADDING);
+                    fwrite(padding, 1, INPUTDEVICERECORDER_XML_PADDING, m_file);
+                    delete [] padding;
+                }
                 emit recording(true);
             }
             else
@@ -137,13 +144,6 @@ void InputDeviceRecorder::stop()
             QByteArray bytearray = m_xmlHeader.toByteArray();
             fseek(m_file, 0, SEEK_SET);
             fwrite(bytearray.data(), 1, bytearray.size(), m_file);
-
-            // add padding
-            int paddingBytes = INPUTDEVICERECORDER_XML_PADDING - bytearray.size();
-            char * padding = new char[paddingBytes];
-            memset(padding, 0, paddingBytes);
-            fwrite(padding, 1, paddingBytes, m_file);
-            delete [] padding;
         }
         else { /* XML header is not enabled */ }
         fflush(m_file);
