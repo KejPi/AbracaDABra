@@ -3306,7 +3306,7 @@ void MainWindow::showSnrPlotDialog()
     if (m_snrPlotDialog == nullptr)
     {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 7, 1)) && !defined(Q_OS_MAC)
-        m_snrPlotDialog = new SNRPlotDialog();
+        m_snrPlotDialog = new SNRPlotDialog(m_settings);
         connect(this, &MainWindow::exit, m_snrPlotDialog, &SNRPlotDialog::close);  // QTBUG-117779 ==> using parentless dialogs as workaround
 #else
         m_snrPlotDialog = new SNRPlotDialog(m_settings, this);
