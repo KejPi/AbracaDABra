@@ -618,6 +618,9 @@ endif()
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/dabsdr/CMakeLists.txt" OR PROJECT_VERSION_RELEASE)
     install(IMPORTED_RUNTIME_ARTIFACTS dabsdr::dabsdr)
 endif()
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/fmlist/CMakeLists.txt" OR PROJECT_VERSION_RELEASE)
+    install(IMPORTED_RUNTIME_ARTIFACTS fmlistInterface::fmlistInterface)
+endif()
 
 #########################################################
 # Uninstall target
