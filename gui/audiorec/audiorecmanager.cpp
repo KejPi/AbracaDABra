@@ -268,7 +268,7 @@ void AudioRecManager::updateScheduledRecording()
         m_scheduleTimeSecSinceEpoch = m_currentItem.startTime().toSecsSinceEpoch();
         qint64 now = QDateTime::currentDateTime().toSecsSinceEpoch();
         qint64 secToSchedule = m_scheduleTimeSecSinceEpoch - now - COUNTDOWN_SEC;
-        if ((secToSchedule > 0) && (secToSchedule < 24*60*60))  // less than 1 day
+        if (secToSchedule > 0)
         {   // run timer
             m_timer.start(secToSchedule*1000, Qt::VeryCoarseTimer, this);
         }
