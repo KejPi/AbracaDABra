@@ -1151,7 +1151,7 @@
           </layout>
          </widget>
          <widget class="QWidget" name="rarttcpPage">
-          <layout class="QGridLayout" name="gridLayout_2">
+          <layout class="QGridLayout" name="gridLayout_21">
            <item row="0" column="1">
             <widget class="QLineEdit" name="rarttcpIpAddressEdit">
              <property name="minimumSize">
@@ -1169,7 +1169,7 @@
             </widget>
            </item>
            <item row="2" column="0" colspan="4">
-            <spacer name="verticalSpacer_4">
+            <spacer name="verticalSpacer_41">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
@@ -1210,7 +1210,7 @@
            </item>
            <item row="1" column="0" colspan="4">
             <widget class="QWidget" name="rarttcpGainWidget" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <layout class="QHBoxLayout" name="horizontalLayout_51">
               <property name="leftMargin">
                <number>0</number>
               </property>
