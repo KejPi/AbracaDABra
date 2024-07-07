@@ -271,6 +271,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         {
             m_fmlistInterface = new FMListInterface(TxDataLoader::dbfile());
         }
+        qCInfo(application, "Updating TX database (library version %s)", m_fmlistInterface->version().toUtf8().data());
         m_fmlistInterface->updateTiiData();
     });
 #endif
