@@ -104,7 +104,7 @@ RtlTcpInput::~RtlTcpInput()
 
         m_worker->wait(2000);
 
-        while  (!m_worker->isFinished())
+        while (!m_worker->isFinished())
         {
             qCWarning(rtlTcpInput) << "Worker thread not finished after timeout - this should not happen :-(";
 
@@ -484,6 +484,7 @@ void RtlTcpInput::tune(uint32_t frequency)
 {
     m_frequency = frequency;
 
+    qDebug() << Q_FUNC_INFO << frequency;
     if ((m_frequency > 0) && (nullptr != m_worker))
     {   // Tune to new frequency
         sendCommand(RtlTcpCommand::SET_FREQ, m_frequency*1000);
@@ -741,6 +742,7 @@ void RtlTcpWorker::run()
                 else
                 {
                     qCWarning(rtlTcpInput) << "RTL-TCP: socket read error:" << strerror(WSAGetLastError());
+                    goto worker_exit;
                 }
 #else
                 if ((EAGAIN == errno) || (EINTR == errno))
@@ -755,6 +757,7 @@ void RtlTcpWorker::run()
                 else
                 {
                     qCWarning(rtlTcpInput) << "socket read error:" << strerror(errno);
+                    goto worker_exit;
                 }
 #endif
             }
@@ -807,6 +810,7 @@ worker_exit:
 
 void RtlTcpWorker::captureIQ(bool ena)
 {
+    qDebug() << Q_FUNC_INFO << ena;
     if (ena)
     {
         m_captureStartCntr = RTLTCP_START_COUNTER_INIT;

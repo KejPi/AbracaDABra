@@ -951,11 +951,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
         emit resetUserApps();
         emit serviceRequest(0,0,0);
         event->ignore();
-
+#if HAVE_QCUSTOMPLOT
         if (m_snrPlotDialog)
         {
             m_snrPlotDialog->close();
         }
+#endif
         if (m_tiiDialog)
         {
             m_tiiDialog->close();
