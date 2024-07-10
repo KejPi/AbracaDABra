@@ -458,6 +458,7 @@ bool RtlTcpInput::openDevice()
 
         // set automatic gain
         //setGainMode(RtlGainMode::Software);
+        m_gainIdx = -1;
 
         // need to create worker, server is pushing samples
         m_worker = new RtlTcpWorker(m_sock, this);
@@ -484,7 +485,6 @@ void RtlTcpInput::tune(uint32_t frequency)
 {
     m_frequency = frequency;
 
-    qDebug() << Q_FUNC_INFO << frequency;
     if ((m_frequency > 0) && (nullptr != m_worker))
     {   // Tune to new frequency
         sendCommand(RtlTcpCommand::SET_FREQ, m_frequency*1000);
@@ -548,7 +548,14 @@ void RtlTcpInput::setAgcLevelMax(float agcLevelMax)
         agcLevelMax = RTLTCP_AGC_LEVEL_MAX_DEFAULT;
     }
     m_agcLevelMax = agcLevelMax;
-    m_agcLevelMin = m_agcLevelMinFactorList->at(m_gainIdx) * m_agcLevelMax;
+    if (m_gainIdx >= 0)
+    {
+        m_agcLevelMin = m_agcLevelMinFactorList->at(m_gainIdx) * m_agcLevelMax;
+    }
+    else
+    {
+        m_agcLevelMin = 0.6 * agcLevelMax;
+    }
 
     //qDebug() << m_agcLevelMax << m_agcLevelMin;
 }
@@ -741,7 +748,7 @@ void RtlTcpWorker::run()
                 }
                 else
                 {
-                    qCWarning(rtlTcpInput) << "RTL-TCP: socket read error:" << strerror(WSAGetLastError());
+                    qCCritical(rtlTcpInput) << "RTL-TCP: socket read error:" << strerror(WSAGetLastError());
                     goto worker_exit;
                 }
 #else
@@ -756,7 +763,7 @@ void RtlTcpWorker::run()
                 }
                 else
                 {
-                    qCWarning(rtlTcpInput) << "socket read error:" << strerror(errno);
+                    qCCritical(rtlTcpInput) << "socket read error:" << strerror(errno);
                     goto worker_exit;
                 }
 #endif
@@ -810,7 +817,6 @@ worker_exit:
 
 void RtlTcpWorker::captureIQ(bool ena)
 {
-    qDebug() << Q_FUNC_INFO << ena;
     if (ena)
     {
         m_captureStartCntr = RTLTCP_START_COUNTER_INIT;

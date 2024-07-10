@@ -40,7 +40,7 @@
 // total capacity is 8 input chunks
 #define INPUT_FIFO_SIZE           (INPUT_CHUNK_IQ_SAMPLES * (2*sizeof(float)) * 8)
 
-#define INPUTDEVICE_WDOG_TIMEOUT_SEC 2     // watchdog timeout in seconds (if implemented and enabled)
+#define INPUTDEVICE_WDOG_TIMEOUT_SEC 3     // watchdog timeout in seconds (if implemented and enabled)
 
 #define INPUTDEVICE_BANDWIDTH  (1530*1000)
 
