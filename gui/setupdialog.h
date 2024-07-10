@@ -74,6 +74,8 @@ signals:
     void tiiSettingsChanged();
     void rawFileSeek(int msec);
     void updateTxDb();
+    void proxySettingsChanged();
+
 protected:
     void showEvent(QShowEvent *event);
 
@@ -149,6 +151,10 @@ private:
     void onSerialPortEditFinished();
     void onTiiSpectPlotClicked(bool checked);
     void onTiiUpdateDbClicked();
+
+    void onProxyConfigChanged(int index);
+    void onProxyApplyButtonClicked();
+    void onProxyConfigEdit();
 
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);

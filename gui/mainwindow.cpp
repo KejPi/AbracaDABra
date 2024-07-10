@@ -47,6 +47,7 @@
 #include <QtGlobal>
 #include <QQuickStyle>
 #include <iostream>
+#include <QNetworkProxy>
 
 #include "mainwindow.h"
 #include "slsview.h"
@@ -265,6 +266,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::expertModeToggled, this, &MainWindow::onExpertModeToggled);
     connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, this, &MainWindow::onNewAnnouncementSettings);
     connect(m_setupDialog, &SetupDialog::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
+    connect(m_setupDialog, &SetupDialog::proxySettingsChanged, this, &MainWindow::setProxy);
 #if HAVE_FMLIST_INTERFACE
     connect(m_setupDialog, &SetupDialog::updateTxDb, this, [this]() {
         if (m_fmlistInterface == nullptr)
@@ -2121,6 +2123,48 @@ void MainWindow::onEpgEmpty()
     m_epgAction->setEnabled(false);
 }
 
+void MainWindow::setProxy()
+{
+    QNetworkProxy proxy;
+    switch (m_settings->proxy.config)
+    {
+    case Settings::ProxyConfig::NoProxy:
+        qCInfo(application) << "Proxy config: No proxy";
+        proxy.setType(QNetworkProxy::NoProxy);
+        break;
+    case Settings::ProxyConfig::System:
+        qCInfo(application) << "Proxy config: System";
+        QNetworkProxyFactory::setUseSystemConfiguration(true);
+        return;
+    case Settings::ProxyConfig::Manual:
+        qCInfo(application) << "Proxy config: Manual";
+        proxy.setType(QNetworkProxy::HttpProxy);
+        proxy.setHostName(m_settings->proxy.server);
+        proxy.setPort(m_settings->proxy.port);
+        if (!m_settings->proxy.user.isEmpty())
+        {
+            proxy.setUser(m_settings->proxy.user);
+            int key = 0;
+            for (int n = 0; n < 4; ++n) {
+                key += m_settings->proxy.pass.at(n);
+            }
+            key = key & 0x00FF;
+            if (key == 0) {
+                key = 0x5C;
+            }
+            QByteArray ba;
+            for (int n = 4; n < m_settings->proxy.pass.length(); ++n)
+            {
+                ba.append(m_settings->proxy.pass.at(n) ^ key);
+            }
+            QString pass = QString::fromUtf8(ba);
+            proxy.setPassword(pass);
+        }
+        break;
+    }
+    QNetworkProxy::setApplicationProxy(proxy);
+}
+
 void MainWindow::clearEnsembleInformationLabels()
 {
     m_timeLabel->setText("");
@@ -2821,6 +2865,12 @@ void MainWindow::loadSettings()
     m_settings->tii.showSpectumPlot = settings->value("TII/showSpectrumPlot", false).toBool();
     m_settings->tii.geometry = settings->value("TII/windowGeometry").toByteArray();
 
+    m_settings->proxy.config = static_cast<Settings::ProxyConfig>(settings->value("Proxy/config", static_cast<int>(Settings::ProxyConfig::System)).toInt());
+    m_settings->proxy.server = settings->value("Proxy/server", "").toString();
+    m_settings->proxy.port = settings->value("Proxy/port", "").toUInt();
+    m_settings->proxy.user = settings->value("Proxy/user", "").toString();
+    m_settings->proxy.pass = QByteArray::fromBase64(settings->value("Proxy/pass", "").toByteArray());
+
     m_settings->snr.geometry = settings->value("SNR/windowGeometry").toByteArray();
 
     m_settings->epg.filterEmptyEpg = settings->value("epgFilterEmpty", false).toBool();
@@ -3000,6 +3050,12 @@ void MainWindow::saveSettings()
     settings->setValue("TII/serialPort", m_settings->tii.serialPort);
     settings->setValue("TII/showSpectrumPlot", m_settings->tii.showSpectumPlot);
     settings->setValue("TII/windowGeometry", m_settings->tii.geometry);
+
+    settings->setValue("Proxy/config", static_cast<int>(m_settings->proxy.config));
+    settings->setValue("Proxy/server", m_settings->proxy.server);
+    settings->setValue("Proxy/port", m_settings->proxy.port);
+    settings->setValue("Proxy/user", m_settings->proxy.user);
+    settings->setValue("Proxy/pass", m_settings->proxy.pass.toBase64());
 
     settings->setValue("SNR/windowGeometry", m_settings->snr.geometry);
 

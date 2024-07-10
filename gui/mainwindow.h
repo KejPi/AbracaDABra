@@ -320,6 +320,7 @@ private:
     void onAudioRecordingCountdown(int numSec);
     void onMetadataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role);
     void onEpgEmpty();
+    void setProxy();
 };
 
 class DLPlusObjectUI

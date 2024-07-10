@@ -42,6 +42,7 @@ class Settings
 public:
     enum class ApplicationStyle { Default = 0, Light, Dark};
     enum class GeolocationSource { System = 0, Manual, SerialPort };
+    enum class ProxyConfig { NoProxy = 0, System, Manual };
 
     Settings() {};
 
@@ -138,6 +139,13 @@ public:
         bool filterEnsemble;
         QPersistentModelIndex selectedItem;
     } epg;
+    struct {
+        ProxyConfig config;
+        QString server;
+        uint32_t port;
+        QString user;
+        QByteArray pass;
+    } proxy;
 };
 
 #endif // SETTINGS_H

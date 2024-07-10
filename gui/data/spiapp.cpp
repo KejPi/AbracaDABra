@@ -31,7 +31,6 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QNetworkDiskCache>
-#include <QNetworkProxyFactory>
 #include <QLoggingCategory>
 #include <QJsonDocument>
 #include <QFile>
@@ -84,7 +83,6 @@ void SPIApp::start()
     if (nullptr == m_netAccessManager)
     {
         m_netAccessManager = new QNetworkAccessManager();
-        QNetworkProxyFactory::setUseSystemConfiguration(true);
         connect(m_netAccessManager, &QNetworkAccessManager::finished, this, &SPIApp::onFileDownloaded);
 
         QNetworkDiskCache *diskCache = new QNetworkDiskCache(this);
@@ -96,14 +94,6 @@ void SPIApp::start()
         diskCache->setCacheDirectory(directory);
         m_netAccessManager->setCache(diskCache);
     }
-
-    QNetworkProxyQuery npq(QUrl(QLatin1String("https://dns.google")));
-    QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
-    foreach (QNetworkProxy p, listOfProxies) {
-        qCDebug(spiApp) << "Proxy hostname:" << p.hostName() << p.type();
-    }
-
-    QNetworkProxyFactory::setUseSystemConfiguration(true);
 
     m_isRunning = true;
 }

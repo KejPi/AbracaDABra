@@ -29,6 +29,7 @@
 #include <QDebug>
 #include <QStandardItemModel>
 #include <QGeoCoordinate>
+#include <QRandomGenerator>
 
 #include "setupdialog.h"
 #include "./ui_setupdialog.h"
@@ -347,6 +348,19 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->updateDbButton->setEnabled(false);
 #endif
 
+    ui->proxyConfigCombo->addItem(tr("No proxy"), QVariant::fromValue(Settings::ProxyConfig::NoProxy));
+    ui->proxyConfigCombo->addItem(tr("System"), QVariant::fromValue(Settings::ProxyConfig::System));
+    ui->proxyConfigCombo->addItem(tr("Manual"), QVariant::fromValue(Settings::ProxyConfig::Manual));
+    ui->proxyApplyButton->setEnabled(false);
+    ui->proxyPortEdit->setMaximumWidth(ui->proxyPortEdit->fontMetrics().boundingRect("00000000").width());
+    ui->proxyPortEdit->setAlignment(Qt::AlignHCenter);
+    connect(ui->proxyServerEdit, &QLineEdit::textEdited, this, &SetupDialog::onProxyConfigEdit);
+    connect(ui->proxyPortEdit, &QLineEdit::textEdited, this, &SetupDialog::onProxyConfigEdit);
+    connect(ui->proxyUserEdit, &QLineEdit::textEdited, this, &SetupDialog::onProxyConfigEdit);
+    connect(ui->proxyPassEdit, &QLineEdit::textEdited, this, &SetupDialog::onProxyConfigEdit);
+    connect(ui->proxyConfigCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onProxyConfigChanged);
+    connect(ui->proxyApplyButton, &QPushButton::clicked, this, &SetupDialog::onProxyApplyButtonClicked);
+
     QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
 }
 
@@ -441,6 +455,7 @@ void SetupDialog::setSettings(Settings * settings)
     emit tiiSettingsChanged();
     onUseInternetChecked(m_settings->useInternet);
     onSpiAppChecked(m_settings->spiAppEna);
+    emit proxySettingsChanged();
 }
 
 void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
@@ -752,6 +767,13 @@ void SetupDialog::setUiState()
     ui->serialPortEdit->setText(m_settings->tii.serialPort);
     ui->locationSourceCombo->setCurrentIndex(static_cast<int>(m_settings->tii.locationSource));
     ui->tiiSpectPlotCheckBox->setChecked(m_settings->tii.showSpectumPlot);
+
+    ui->proxyConfigCombo->setCurrentIndex(static_cast<int>(m_settings->proxy.config));
+    ui->proxyServerEdit->setText(m_settings->proxy.server);
+    ui->proxyPortEdit->setText(QString::number(m_settings->proxy.port));
+    ui->proxyUserEdit->setText(m_settings->proxy.user);
+    ui->proxyPassEdit->setText(m_settings->proxy.pass);
+    onProxyConfigChanged(static_cast<int>(m_settings->proxy.config));
 }
 
 void SetupDialog::onConnectDeviceClicked()
@@ -1560,4 +1582,57 @@ void SetupDialog::onTiiUpdateDbClicked()
 {
     ui->updateDbButton->setEnabled(false);
     emit updateTxDb();
+}
+
+void SetupDialog::onProxyConfigChanged(int index)
+{
+    bool enaManual = static_cast<Settings::ProxyConfig>(ui->proxyConfigCombo->itemData(index).toInt()) == Settings::ProxyConfig::Manual;
+    ui->proxyServerLabel->setEnabled(enaManual);
+    ui->proxyServerEdit->setEnabled(enaManual);
+    ui->proxyPortLabel->setEnabled(enaManual);
+    ui->proxyPortEdit->setEnabled(enaManual);
+    ui->proxyUserLabel->setEnabled(enaManual);
+    ui->proxyUserEdit->setEnabled(enaManual);
+    ui->proxyPassLabel->setEnabled(enaManual);
+    ui->proxyPassEdit->setEnabled(enaManual);
+
+    ui->proxyApplyButton->setEnabled(static_cast<Settings::ProxyConfig>(ui->proxyConfigCombo->itemData(index).toInt())  != m_settings->proxy.config);
+}
+
+void SetupDialog::onProxyConfigEdit()
+{
+    ui->proxyApplyButton->setEnabled(true);
+}
+
+void SetupDialog::onProxyApplyButtonClicked()
+{
+    m_settings->proxy.config = static_cast<Settings::ProxyConfig>(ui->proxyConfigCombo->itemData(ui->proxyConfigCombo->currentIndex()).toInt());
+    if (m_settings->proxy.config == Settings::ProxyConfig::Manual)
+    {
+        m_settings->proxy.server = ui->proxyServerEdit->text().trimmed();
+        m_settings->proxy.port = ui->proxyPortEdit->text().trimmed().toUInt();
+        m_settings->proxy.user = ui->proxyUserEdit->text().trimmed();
+
+        // this is very very weak protection of pass used only to avoid storing pass in plain text
+        QByteArray ba;
+        int key = 0;
+        for (int n = 0; n < 4; ++n) {
+            int val = QRandomGenerator::global()->generate() & 0xFF;
+            ba.append(static_cast<char>(val));
+            key += val;
+        }
+        key = key & 0x00FF;
+        if (key == 0) {
+            key = 0x5C;
+        }
+        ba.append(ui->proxyPassEdit->text().toUtf8());
+        for (int n = 4; n < ba.length(); ++n) {
+            ba[n] = ba[n] ^ key;
+
+        }
+        m_settings->proxy.pass = ba;
+    }
+    ui->proxyApplyButton->setEnabled(false);
+
+    emit proxySettingsChanged();
 }
