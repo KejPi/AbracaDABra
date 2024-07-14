@@ -3773,7 +3773,7 @@ Datei: %1</translation>
 &lt;/table&gt;
 &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
-&lt;p&gt;Das Muster für den Datenspeicherpfad unterstützt diese Kürzel  [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;Dokumentation&lt;/a&gt;]:&lt;/p&gt;
+&lt;p&gt;Unterstützte Kürzel für die Syntax im Datenspeicherpfad [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;Dokumentation&lt;/a&gt;]:&lt;/p&gt;
 &lt;p&gt;
 &lt;table style=&quot;width:100%&quot; border-width=&quot;1&quot;&gt;
 &lt;tr&gt;
