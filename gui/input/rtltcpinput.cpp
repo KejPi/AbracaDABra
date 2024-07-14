@@ -104,7 +104,7 @@ RtlTcpInput::~RtlTcpInput()
 
         m_worker->wait(2000);
 
-        while  (!m_worker->isFinished())
+        while (!m_worker->isFinished())
         {
             qCWarning(rtlTcpInput) << "Worker thread not finished after timeout - this should not happen :-(";
 
@@ -458,6 +458,7 @@ bool RtlTcpInput::openDevice()
 
         // set automatic gain
         //setGainMode(RtlGainMode::Software);
+        m_gainIdx = -1;
 
         // need to create worker, server is pushing samples
         m_worker = new RtlTcpWorker(m_sock, this);
@@ -547,7 +548,14 @@ void RtlTcpInput::setAgcLevelMax(float agcLevelMax)
         agcLevelMax = RTLTCP_AGC_LEVEL_MAX_DEFAULT;
     }
     m_agcLevelMax = agcLevelMax;
-    m_agcLevelMin = m_agcLevelMinFactorList->at(m_gainIdx) * m_agcLevelMax;
+    if (m_gainIdx >= 0)
+    {
+        m_agcLevelMin = m_agcLevelMinFactorList->at(m_gainIdx) * m_agcLevelMax;
+    }
+    else
+    {
+        m_agcLevelMin = 0.6 * agcLevelMax;
+    }
 
     //qDebug() << m_agcLevelMax << m_agcLevelMin;
 }
@@ -740,7 +748,8 @@ void RtlTcpWorker::run()
                 }
                 else
                 {
-                    qCWarning(rtlTcpInput) << "RTL-TCP: socket read error:" << strerror(WSAGetLastError());
+                    qCCritical(rtlTcpInput) << "RTL-TCP: socket read error:" << strerror(WSAGetLastError());
+                    goto worker_exit;
                 }
 #else
                 if ((EAGAIN == errno) || (EINTR == errno))
@@ -754,7 +763,8 @@ void RtlTcpWorker::run()
                 }
                 else
                 {
-                    qCWarning(rtlTcpInput) << "socket read error:" << strerror(errno);
+                    qCCritical(rtlTcpInput) << "socket read error:" << strerror(errno);
+                    goto worker_exit;
                 }
 #endif
             }
