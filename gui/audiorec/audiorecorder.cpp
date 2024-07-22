@@ -35,7 +35,8 @@ Q_LOGGING_CATEGORY(audioRecorder, "AudioRecorder", QtInfoMsg)
 AudioRecorder::AudioRecorder(QObject *parent) : QObject{parent},
     m_sid(0),
     m_doOutputRecording(false),
-    m_file(nullptr)
+    m_file(nullptr),
+    m_recordingState(RecordingState::Stopped)
 {    
     m_recordingPath = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
 }
