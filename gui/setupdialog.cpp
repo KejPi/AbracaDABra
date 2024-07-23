@@ -30,6 +30,7 @@
 #include <QStandardItemModel>
 #include <QGeoCoordinate>
 #include <QRandomGenerator>
+#include <QMovie>
 
 #include "setupdialog.h"
 #include "./ui_setupdialog.h"
@@ -343,6 +344,11 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->serialPortEdit, &QLineEdit::editingFinished, this, &SetupDialog::onSerialPortEditFinished);
 
 #if HAVE_FMLIST_INTERFACE
+    ui->spinnerLabel->setVisible(false);
+    m_spinner = new QMovie(this);
+    m_spinner->setScaledSize(QSize(20,20));
+    ui->spinnerLabel->setMovie(m_spinner);
+    ui->spinnerLabel->setFixedSize(QSize(20,20));
     connect(ui->updateDbButton, &QPushButton::clicked, this, &SetupDialog::onTiiUpdateDbClicked);
 #else
     ui->updateDbButton->setEnabled(false);
@@ -774,6 +780,27 @@ void SetupDialog::setUiState()
     ui->proxyUserEdit->setText(m_settings->proxy.user);
     ui->proxyPassEdit->setText(m_settings->proxy.pass);
     onProxyConfigChanged(static_cast<int>(m_settings->proxy.config));
+}
+
+void SetupDialog::setupDarkMode(bool darkModeEna)
+{
+#if HAVE_FMLIST_INTERFACE
+    bool isRunning = m_spinner->state() == QMovie::Running;
+    m_spinner->stop();
+    if (darkModeEna)
+    {
+        m_spinner->setFileName(":/resources/spinner_dark.gif");
+    }
+    else
+    {
+        m_spinner->setFileName(":/resources/spinner.gif");
+    }
+    ui->spinnerLabel->setMovie(m_spinner);
+    if (isRunning)
+    {
+        m_spinner->start();
+    }
+#endif
 }
 
 void SetupDialog::onConnectDeviceClicked()
@@ -1581,7 +1608,24 @@ void SetupDialog::onTiiSpectPlotClicked(bool checked)
 void SetupDialog::onTiiUpdateDbClicked()
 {
     ui->updateDbButton->setEnabled(false);
-    emit updateTxDb();
+    ui->spinnerLabel->setVisible(true);
+    m_spinner->start();
+    //emit updateTxDb();
+
+    QTimer::singleShot(10*1000, this, [this]() {
+        ui->spinnerLabel->setVisible(false);
+        m_spinner->stop();
+
+        QDateTime lastModified = TxDataLoader::lastUpdateTime();
+        if (lastModified.isValid())
+        {
+            ui->tiiDbLabel->setText(tr("Last update: ") + lastModified.toString("dd.MM.yyyy"));
+        }
+        else
+        {
+            ui->tiiDbLabel->setText(tr("Data not available"));
+        }
+    });
 }
 
 void SetupDialog::onProxyConfigChanged(int index)

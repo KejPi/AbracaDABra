@@ -3809,7 +3809,27 @@ void MainWindow::forceDarkStyle(bool ena)
 
 void MainWindow::setupDarkMode()
 {
-    if (isDarkMode())
+    bool darkMode = isDarkMode();
+    ui->slsView_Service->setupDarkMode(darkMode);
+    ui->slsView_Announcement->setupDarkMode(darkMode);
+    m_setupDialog->setupDarkMode(darkMode);
+    m_logDialog->setupDarkMode(darkMode);
+    if (m_epgDialog != nullptr)
+    {
+        m_epgDialog->setupDarkMode(darkMode);
+    }
+#if HAVE_QCUSTOMPLOT
+    if (m_snrPlotDialog != nullptr)
+    {
+        m_snrPlotDialog->setupDarkMode(darkMode);
+    }
+#endif
+    if (m_tiiDialog != nullptr)
+    {
+        m_tiiDialog->setupDarkMode(darkMode);
+    }
+
+    if (darkMode)
     {
         m_menuLabel->setIcon(":/resources/menu_dark.png");
 
@@ -3830,24 +3850,6 @@ void MainWindow::setupDarkMode()
         ui->channelUp->setIcon(":/resources/chevron-right_dark.png");
 
         m_audioRecordingLabel->setIcon(":/resources/record.png");
-
-        ui->slsView_Service->setupDarkMode(true);
-        ui->slsView_Announcement->setupDarkMode(true);
-        m_logDialog->setupDarkMode(true);
-        if (m_epgDialog != nullptr)
-        {
-            m_epgDialog->setupDarkMode(true);
-        }
-#if HAVE_QCUSTOMPLOT
-        if (m_snrPlotDialog != nullptr)
-        {
-            m_snrPlotDialog->setupDarkMode(true);
-        }
-#endif
-        if (m_tiiDialog != nullptr)
-        {
-            m_tiiDialog->setupDarkMode(true);
-        }
     }
     else
     {
@@ -3870,24 +3872,6 @@ void MainWindow::setupDarkMode()
         ui->channelUp->setIcon(":/resources/chevron-right.png");
 
         m_audioRecordingLabel->setIcon(":/resources/record.png");
-
-        ui->slsView_Service->setupDarkMode(false);
-        ui->slsView_Announcement->setupDarkMode(false);
-        m_logDialog->setupDarkMode(false);
-        if (m_epgDialog != nullptr)
-        {
-            m_epgDialog->setupDarkMode(false);
-        }
-#if HAVE_QCUSTOMPLOT
-        if (m_snrPlotDialog != nullptr)
-        {
-            m_snrPlotDialog->setupDarkMode(false);
-        }
-#endif
-        if (m_tiiDialog != nullptr)
-        {
-            m_tiiDialog->setupDarkMode(false);
-        }
     }
 }
 

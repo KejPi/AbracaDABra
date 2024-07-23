@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -1674,6 +1674,13 @@
                </size>
               </property>
              </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="spinnerLabel">
+              <property name="text">
+               <string notr="true">Spinner</string>
+              </property>
+             </widget>
             </item>
             <item>
              <widget class="QPushButton" name="updateDbButton">

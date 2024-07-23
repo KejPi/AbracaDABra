@@ -54,5 +54,7 @@
         <file>resources/chevron-right_dark.png</file>
         <file>resources/record.png</file>
         <file>resources/conflict.png</file>
+        <file>resources/spinner.gif</file>
+        <file>resources/spinner_dark.gif</file>
     </qresource>
 </RCC>

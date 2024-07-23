@@ -48,6 +48,7 @@ class SetupDialog : public QDialog
     Q_OBJECT
 public:
     SetupDialog(QWidget *parent = nullptr);
+    void setupDarkMode(bool darkModeEna);
     void setGainValues(const QList<float> & gainList);
     void resetInputDevice();
     void setSettings(Settings  * settings);
@@ -99,6 +100,7 @@ private:
     QLabel * m_xmlHeaderLabel[SetupDialogXmlHeader::XMLNumLabels];
     QString m_slsDumpPaternDefault;
     QString m_spiDumpPaternDefault;
+    QMovie * m_spinner;
 
     void setUiState();
     void setStatusLabel();
