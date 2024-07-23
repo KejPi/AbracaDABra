@@ -1610,7 +1610,7 @@ void SetupDialog::onTiiUpdateDbClicked()
     ui->updateDbButton->setEnabled(false);
     ui->spinnerLabel->setVisible(true);
     m_spinner->start();
-    //emit updateTxDb();
+    emit updateTxDb();
 
     QTimer::singleShot(10*1000, this, [this]() {
         ui->spinnerLabel->setVisible(false);
