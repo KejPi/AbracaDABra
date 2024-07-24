@@ -346,9 +346,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 #if HAVE_FMLIST_INTERFACE
     ui->spinnerLabel->setVisible(false);
     m_spinner = new QMovie(this);
-    m_spinner->setScaledSize(QSize(20,20));
+    m_spinner->setScaledSize(QSize(18,18));
     ui->spinnerLabel->setMovie(m_spinner);
-    ui->spinnerLabel->setFixedSize(QSize(20,20));
+    ui->spinnerLabel->setFixedSize(QSize(18,18));
     connect(ui->updateDbButton, &QPushButton::clicked, this, &SetupDialog::onTiiUpdateDbClicked);
 #else
     ui->updateDbButton->setEnabled(false);
