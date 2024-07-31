@@ -1611,11 +1611,15 @@ void SetupDialog::onTiiUpdateDbClicked()
     ui->spinnerLabel->setVisible(true);
     m_spinner->start();
     emit updateTxDb();
+}
 
-    QTimer::singleShot(10*1000, this, [this]() {
-        ui->spinnerLabel->setVisible(false);
-        m_spinner->stop();
+void SetupDialog::onTiiUpdateFinished(QNetworkReply::NetworkError err)
+{
+    ui->spinnerLabel->setVisible(false);
+    m_spinner->stop();
 
+    if (err == QNetworkReply::NoError)
+    {
         QDateTime lastModified = TxDataLoader::lastUpdateTime();
         if (lastModified.isValid())
         {
@@ -1625,7 +1629,11 @@ void SetupDialog::onTiiUpdateDbClicked()
         {
             ui->tiiDbLabel->setText(tr("Data not available"));
         }
-    });
+    }
+    else
+    {
+        ui->tiiDbLabel->setText(tr("TII update failed"));
+    }
 }
 
 void SetupDialog::onProxyConfigChanged(int index)

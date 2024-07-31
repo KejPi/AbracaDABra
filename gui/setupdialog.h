@@ -35,6 +35,7 @@
 #include <QGeoCoordinate>
 #include <QCheckBox>
 #include <QLabel>
+#include <QNetworkReply>
 #include "config.h"
 #include "settings.h"
 #include "dabtables.h"
@@ -59,6 +60,7 @@ public:
     QLocale::Language applicationLanguage() const;
     void setSlsDumpPaternDefault(const QString &newSlsDumpPaternDefault);
     void setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault);
+    void onTiiUpdateFinished(QNetworkReply::NetworkError err);
 
 signals:
     void inputDeviceChanged(const InputDeviceId & inputDevice);
