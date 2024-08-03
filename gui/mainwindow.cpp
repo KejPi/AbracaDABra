@@ -523,7 +523,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_serviceList, &ServiceList::empty, m_slTreeModel, &SLTreeModel::clear);
 
     // EPG
-    connect(m_metadataManager, &MetadataManager::epgAvailable, this, [this](){ m_epgAction->setEnabled(true); } );
+    connect(m_metadataManager, &MetadataManager::epgAvailable, this, [this](){
+        m_epgAction->setEnabled(true);
+        ui->epgLabel->setVisible(true);
+    } );
     connect(m_metadataManager, &MetadataManager::epgEmpty, this, &MainWindow::onEpgEmpty);
 
     // fill channel list
@@ -585,6 +588,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     ui->catSlsLabel->setToolTip(tr("Browse categorized slides"));
     ui->catSlsLabel->setHidden(true);
+
+    ui->epgLabel->setToolTip(tr("Show program guide (EPG)"));
+    ui->epgLabel->setHidden(true);
 
     ui->switchSourceLabel->setToolTip(tr("Change service source (ensemble)"));
     ui->switchSourceLabel->setHidden(true);
@@ -683,6 +689,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(ui->switchSourceLabel, &ClickableLabel::clicked, this, &MainWindow::onSwitchSourceClicked);
     connect(ui->catSlsLabel, &ClickableLabel::clicked, this, &MainWindow::showCatSLS);
     connect(ui->announcementLabel, &ClickableLabel::toggled, this, &MainWindow::onAnnouncementClicked);
+    connect(ui->epgLabel, &ClickableLabel::clicked, this, &MainWindow::showEPG);
 
     connect(m_radioControl, &RadioControl::ensembleInformation, this, &MainWindow::onEnsembleInfo, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleReconfiguration, this, &MainWindow::onEnsembleReconfiguration, Qt::QueuedConnection);
@@ -2122,6 +2129,7 @@ void MainWindow::onEpgEmpty()
         m_epgDialog->close();
     }
     m_epgAction->setEnabled(false);
+    ui->epgLabel->setVisible(false);
 }
 
 void MainWindow::setProxy()
@@ -3841,6 +3849,7 @@ void MainWindow::setupDarkMode()
         m_muteLabel->setIcon(":/resources/volume_off_dark.png", true);
 
         ui->catSlsLabel->setIcon(":/resources/catSls_dark.png");
+        ui->epgLabel->setIcon(":/resources/epg_dark.png");
 
         ui->announcementLabel->setIcon(":/resources/announcement_active_dark.png", true);
         ui->announcementLabel->setIcon(":/resources/announcement_suspended_dark.png", false);
@@ -3863,6 +3872,7 @@ void MainWindow::setupDarkMode()
         m_muteLabel->setIcon(":/resources/volume_off.png", true);
 
         ui->catSlsLabel->setIcon(":/resources/catSls.png");
+        ui->epgLabel->setIcon(":/resources/epg.png");
 
         ui->announcementLabel->setIcon(":/resources/announcement_active.png", true);
         ui->announcementLabel->setIcon(":/resources/announcement_suspended.png", false);
