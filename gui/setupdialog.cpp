@@ -343,8 +343,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->coordinatesEdit, &QLineEdit::editingFinished, this, &SetupDialog::onCoordinateEditFinished);
     connect(ui->serialPortEdit, &QLineEdit::editingFinished, this, &SetupDialog::onSerialPortEditFinished);
 
-#if HAVE_FMLIST_INTERFACE
     ui->spinnerLabel->setVisible(false);
+#if HAVE_FMLIST_INTERFACE
     m_spinner = new QMovie(this);
     m_spinner->setScaledSize(QSize(18,18));
     ui->spinnerLabel->setMovie(m_spinner);
