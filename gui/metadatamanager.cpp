@@ -71,7 +71,7 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
     if (!xmldocument.setContent(xml, true))
     {
         qCWarning(metadataManager) << "Failed to parse SPI document for:" << scopeId;
-        qCWarning(metadataManager) << xml;
+        qCDebug(metadataManager) << xml;
         return;
     }
 
