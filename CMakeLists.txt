@@ -577,6 +577,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 COMPONENTS Widgets Multimedia Svg Xml Network Quick Qml QuickControls2 Positioning REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia Svg Xml Network Quick Qml QuickControls2 QmlWorkerScript Positioning REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS LinguistTools)
+if (QCUSTOMPLOT_SUBMODULE)
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS PrintSupport)
+endif()
 
 # Qt Location is used to display detected transmitters on map in TII dialog
 if(QT_VERSION LESS 6.5.0)
