@@ -37,6 +37,8 @@ AudioRecManager::AudioRecManager(AudioRecScheduleModel *model, SLModel *slModel,
     m_haveAudio = false;
     m_scheduleTimeSecSinceEpoch = 0;
     m_scheduledRecordingState = ScheduledRecordingState::StateIdle;
+    m_recTimeSec = 0;
+    m_dlLogFile = nullptr;
 
     // pass service list mode to schedule model
     m_model->setSlModel(m_slModel);
@@ -45,7 +47,7 @@ AudioRecManager::AudioRecManager(AudioRecScheduleModel *model, SLModel *slModel,
     connect(this, &AudioRecManager::stopRecording, m_recorder, &AudioRecorder::stop, Qt::QueuedConnection);
     connect(m_recorder, &AudioRecorder::recordingStarted, this, &AudioRecManager::onAudioRecordingStarted, Qt::QueuedConnection);
     connect(m_recorder, &AudioRecorder::recordingStopped, this, &AudioRecManager::onAudioRecordingStopped, Qt::QueuedConnection);
-    connect(m_recorder, &AudioRecorder::recordingProgress, this, &AudioRecManager::audioRecordingProgress, Qt::QueuedConnection);
+    connect(m_recorder, &AudioRecorder::recordingProgress, this, &AudioRecManager::onAudioRecordingProgress, Qt::QueuedConnection);
 
     connect(m_model, &QAbstractItemModel::modelReset, this,  &AudioRecManager::onModelReset);
     connect(m_model, &QAbstractItemModel::rowsRemoved, this,  &AudioRecManager::onModelRowsRemoved);           
@@ -202,18 +204,48 @@ void AudioRecManager::onAudioRecordingStarted(const QString &filename)
 {
     m_audioRecordingFile = filename;
     m_isAudioRecordingActive = true;
+    if (nullptr == m_dlLogFile)
+    {
+        QFileInfo fi(filename);
+        QString dlLogFilename  = fi.path() + "/" + fi.completeBaseName() + ".txt";
+        m_dlLogFile = new QFile(dlLogFilename);
+        if (m_dlLogFile->open(QIODevice::WriteOnly))
+        {
+            QTextStream out(m_dlLogFile);
+            out << "00:00\t" << m_dlText << Qt::endl;
+        }
+        else
+        {
+            qCCritical(audioRecMgr) << "Unable to open file:" << dlLogFilename;
+            delete m_dlLogFile;
+            m_dlLogFile = nullptr;
+        }
+    }
     emit audioRecordingStarted();
+}
+
+void AudioRecManager::onAudioRecordingProgress(size_t bytes, size_t timeSec)
+{
+    m_recTimeSec = timeSec;
+    emit audioRecordingProgress(bytes, timeSec);
 }
 
 void AudioRecManager::onAudioRecordingStopped()
 {
     m_isAudioRecordingActive = false;
+    if (m_dlLogFile)
+    {
+        m_dlLogFile->close();
+        delete m_dlLogFile;
+        m_dlLogFile = nullptr;
+    }
     emit audioRecordingStopped();
 }
 
 void AudioRecManager::doAudioRecording(bool start)
 {
     if (start) {
+        m_recTimeSec = 0;
         emit startRecording();
     }
     else
@@ -241,6 +273,21 @@ void AudioRecManager::requestCancelSchedule()
 void AudioRecManager::setHaveAudio(bool newHaveAudio)
 {
     m_haveAudio = newHaveAudio;
+}
+
+void AudioRecManager::onDLComplete(const QString &dl)
+{
+    if (m_dlText != dl)
+    {
+        m_dlText = dl;
+        if (m_isAudioRecordingActive && m_dlLogFile)
+        {
+            QTextStream out(m_dlLogFile);
+
+            int min = m_recTimeSec/60;
+            out << QString("%1:%2\t%3\n").arg(min, 2, 10, QChar('0')).arg(m_recTimeSec - min * 60, 2, 10, QChar('0')).arg(dl);
+        }
+    }
 }
 
 void AudioRecManager::updateScheduledRecording()

@@ -730,6 +730,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // DL(+)
     // normal service
     connect(m_dlDecoder[Instance::Service], &DLDecoder::dlComplete, this, &MainWindow::onDLComplete_Service);
+    connect(m_dlDecoder[Instance::Service], &DLDecoder::dlComplete, m_audioRecManager, &AudioRecManager::onDLComplete);
     connect(m_dlDecoder[Instance::Service], &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived_Service);
     connect(m_dlDecoder[Instance::Service], &DLDecoder::dlItemToggle, this, &MainWindow::onDLPlusItemToggle_Service);
     connect(m_dlDecoder[Instance::Service], &DLDecoder::dlItemRunning, this, &MainWindow::onDLPlusItemRunning_Service);
