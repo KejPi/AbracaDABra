@@ -48,6 +48,7 @@ public:
 
     void setHaveAudio(bool newHaveAudio);
     void onDLComplete(const QString & dl);
+    void onDLReset() { m_dlText.clear(); }
 
 signals:
     void audioRecordingCountdown(int numSec);

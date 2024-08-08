@@ -212,7 +212,9 @@ void AudioRecManager::onAudioRecordingStarted(const QString &filename)
         if (m_dlLogFile->open(QIODevice::WriteOnly))
         {
             QTextStream out(m_dlLogFile);
-            out << "00:00\t" << m_dlText << Qt::endl;
+            if (!m_dlText.isEmpty()) {
+                out << "00:00:00\t" << m_dlText << Qt::endl;
+            }
         }
         else
         {
@@ -284,8 +286,10 @@ void AudioRecManager::onDLComplete(const QString &dl)
         {
             QTextStream out(m_dlLogFile);
 
-            int min = m_recTimeSec/60;
-            out << QString("%1:%2\t%3\n").arg(min, 2, 10, QChar('0')).arg(m_recTimeSec - min * 60, 2, 10, QChar('0')).arg(dl);
+            int hours = m_recTimeSec / 3600;
+            int min = (m_recTimeSec - hours*3600)/60;
+            int sec = (m_recTimeSec - hours*3600 - min*60);
+            out << QString("%1:%2:%3\t%4\n").arg(hours, 2, 10, QChar('0')).arg(min, 2, 10, QChar('0')).arg(sec, 2, 10, QChar('0')).arg(dl);
         }
     }
 }
