@@ -1665,24 +1665,26 @@ void SetupDialog::onProxyApplyButtonClicked()
         m_settings->proxy.port = ui->proxyPortEdit->text().trimmed().toUInt();
         m_settings->proxy.user = ui->proxyUserEdit->text().trimmed();
 
-        // this is very very weak protection of pass used only to avoid storing pass in plain text
-        QByteArray ba;
-        int key = 0;
-        for (int n = 0; n < 4; ++n) {
-            int val = QRandomGenerator::global()->generate() & 0xFF;
-            ba.append(static_cast<char>(val));
-            key += val;
-        }
-        key = key & 0x00FF;
-        if (key == 0) {
-            key = 0x5C;
-        }
-        ba.append(ui->proxyPassEdit->text().toUtf8());
-        for (int n = 4; n < ba.length(); ++n) {
-            ba[n] = ba[n] ^ key;
+        if (m_settings->proxy.pass != ui->proxyPassEdit->text())
+        {   // this is very very weak protection of pass used only to avoid storing pass in plain text
+            QByteArray ba;
+            int key = 0;
+            for (int n = 0; n < 4; ++n) {
+                int val = QRandomGenerator::global()->generate() & 0xFF;
+                ba.append(static_cast<char>(val));
+                key += val;
+            }
+            key = key & 0x00FF;
+            if (key == 0) {
+                key = 0x5C;
+            }
+            ba.append(ui->proxyPassEdit->text().toUtf8());
+            for (int n = 4; n < ba.length(); ++n) {
+                ba[n] = ba[n] ^ key;
 
+            }
+            m_settings->proxy.pass = ba;
         }
-        m_settings->proxy.pass = ba;
     }
     ui->proxyApplyButton->setEnabled(false);
 
