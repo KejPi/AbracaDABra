@@ -43,7 +43,7 @@ option(GIT_SUBMODULE          "Check submodules during build"         ON)
 if(APPLE AND APPLE_APP_BUNDLE)
     if(APPLE_BUILD_X86_64)
         # Intel build
-        set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OS X deployment version")
+        set(CMAKE_OSX_DEPLOYMENT_TARGET "11" CACHE STRING "Minimum OS X deployment version")
     else()
         # AARCH64 build
         set(CMAKE_OSX_DEPLOYMENT_TARGET "11" CACHE STRING "Minimum OS X deployment version")
