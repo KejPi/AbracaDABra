@@ -73,7 +73,7 @@ public:
     void onEnsembleFound(const RadioControlEnsemble &ens);
     void onServiceFound(const ServiceListId &);
     void onServiceListComplete(const RadioControlEnsemble &);
-
+    void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &);
 signals:
     void scanStarts();
     void tuneChannel(uint32_t freq);
