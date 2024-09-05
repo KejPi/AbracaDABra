@@ -1620,11 +1620,13 @@ void SPIApp::handleRadioDNSLookup()
             QString address;
             if (record.name().startsWith("_radiospi._tcp."))
             {
-                address = QString("https://%1:%2").arg(record.target()).arg(record.port());
+                //address = QString("https://%1:%2").arg(record.target()).arg(record.port());
+                address = QString("https://%1").arg(record.target());
             }
             else
             {
-                address = QString("http://%1:%2").arg(record.target()).arg(record.port());
+                //address = QString("http://%1:%2").arg(record.target()).arg(record.port());
+                address = QString("http://%1").arg(record.target());
             }
             m_dnsCache[fqdn] = address;
             QString file = request.second;
