@@ -1618,9 +1618,9 @@ void SetupDialog::onTiiUpdateFinished(QNetworkReply::NetworkError err)
     ui->spinnerLabel->setVisible(false);
     m_spinner->stop();
 
+    QDateTime lastModified = TxDataLoader::lastUpdateTime();
     if (err == QNetworkReply::NoError)
     {
-        QDateTime lastModified = TxDataLoader::lastUpdateTime();
         if (lastModified.isValid())
         {
             ui->tiiDbLabel->setText(tr("Last update: ") + lastModified.toString("dd.MM.yyyy"));
@@ -1632,8 +1632,9 @@ void SetupDialog::onTiiUpdateFinished(QNetworkReply::NetworkError err)
     }
     else
     {
-        ui->tiiDbLabel->setText(tr("TII update failed"));
+        ui->tiiDbLabel->setText(tr("TII update failed"));        
     }
+    ui->updateDbButton->setEnabled(!lastModified.isValid() || lastModified.daysTo(QDateTime::currentDateTime()) > 1);
 }
 
 void SetupDialog::onProxyConfigChanged(int index)
