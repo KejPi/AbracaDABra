@@ -31,8 +31,11 @@
 #include <QGeoCoordinate>
 #include <QRegularExpression>
 #include <QStandardPaths>
+#include <QLoggingCategory>
 
 #include "txdataloader.h"
+
+Q_DECLARE_LOGGING_CATEGORY(tii)
 
 const QString TxDataLoader::s_filename = "dab-tx-list.csv";
 QString TxDataLoader::dbfile()
@@ -193,7 +196,7 @@ void TxDataLoader::loadTable(QMultiHash<ServiceListId, TxDataItem *> &txList)
                 }
             }
         }
-        qDebug() << "TII TX database items loaded:" << txList.size();
+        qCInfo(tii) << "TX database items loaded:" << txList.size();
         file.close();
     }
 }

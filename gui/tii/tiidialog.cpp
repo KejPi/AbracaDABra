@@ -34,6 +34,9 @@
 #include <QMessageBox>
 #include "tiidialog.h"
 
+
+Q_LOGGING_CATEGORY(tii, "TII", QtInfoMsg)
+
 TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     : QDialog(parent)
     , m_settings(settings)
@@ -415,18 +418,18 @@ void TIIDialog::startLocationUpdate()
         switch (qApp->checkPermission(locationsPermission)) {
         case Qt::PermissionStatus::Undetermined:
             qApp->requestPermission(locationsPermission, this, [this]() { startLocationUpdate(); } );
-            qDebug() << "LocationPermission Undetermined";
+            qCDebug(tii) << "LocationPermission Undetermined";
             return;
         case Qt::PermissionStatus::Denied:
         {
-            qDebug() << "LocationPermission Denied";
+            qCInfo(tii) << "LocationPermission Denied";
             QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), tr("Device location access is denied."), {}, this);
             msgBox.setInformativeText(tr("If you want to display current position on map, grant the location permission in Settings then open the app again."));
             msgBox.exec();
         }
             return;
         case Qt::PermissionStatus::Granted:
-            qDebug() << "LocationPermission Granted";
+            qCInfo(tii) << "LocationPermission Granted";
             break; // Proceed
         }
 #endif
@@ -438,7 +441,7 @@ void TIIDialog::startLocationUpdate()
         }
         if (m_geopositionSource != nullptr)
         {
-            qDebug() << "Start position update";
+            qCDebug(tii) << "Start position update";
             connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &TIIDialog::positionUpdated);
             m_geopositionSource->startUpdates();
         }
@@ -460,7 +463,7 @@ void TIIDialog::startLocationUpdate()
         m_geopositionSource = QGeoPositionInfoSource::createSource("nmea", params, this);
         if (m_geopositionSource != nullptr)
         {
-            qDebug() << "Start position update";
+            qCDebug(tii) << "Start position update";
             connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &TIIDialog::positionUpdated);
             m_geopositionSource->startUpdates();
         }

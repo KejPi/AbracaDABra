@@ -235,7 +235,6 @@ void SNRPlotDialog::addToPlot(float snr)
     }
     if (ui->snrPlot->graph(0)->data()->size() > 500)
     {   // remove first points
-        qDebug() << "Removing items";
         ui->snrPlot->graph(0)->data()->removeBefore(key - xPlotRange);
     }
 
