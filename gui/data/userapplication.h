@@ -28,7 +28,7 @@
 #define USERAPPLICATION_H
 
 #include <QObject>
-#include "setupdialog.h"
+#include "settings.h"
 #include "radiocontrol.h"
 #include "motobject.h"
 
@@ -48,7 +48,7 @@ public:
     virtual void reset() { stop(); }
 
     // data dumping support
-    virtual void setDataDumping(const SetupDialog::Settings::UADumpSettings & settings) = 0;
+    virtual void setDataDumping(const Settings::UADumpSettings & settings) = 0;
     void setEnsId(const RadioControlEnsemble &ens) { m_ueid = ens.ueid; }
     void setAudioServiceId(const RadioControlServiceComponent &s) { m_SId = s.SId; }
 signals:

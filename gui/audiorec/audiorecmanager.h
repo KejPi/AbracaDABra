@@ -47,6 +47,8 @@ public:
     void requestCancelSchedule();
 
     void setHaveAudio(bool newHaveAudio);
+    void onDLComplete(const QString & dl);
+    void onDLReset() { m_dlText.clear(); }
 
 signals:
     void audioRecordingCountdown(int numSec);
@@ -80,6 +82,10 @@ private:
     qint64 m_scheduleTimeSecSinceEpoch;
     AudioRecScheduleItem m_currentItem;
 
+    qint64 m_recTimeSec;
+    QString m_dlText;
+    QFile * m_dlLogFile;
+
     // this information is required to start scheduled recoding
     ServiceListId m_serviceId;
     bool m_haveAudio;
@@ -88,6 +94,7 @@ private:
     void onModelReset();
     void onModelRowsRemoved(const QModelIndex &, int first, int last);
     void onAudioRecordingStarted(const QString &filename);
+    void onAudioRecordingProgress(size_t bytes, size_t timeSec);
     void onAudioRecordingStopped();
     void stopCurrentSchedule();
 };

@@ -60,7 +60,7 @@ public:
     void setExpertMode(bool expertModeEna);
 
     //! @brief This method shows station logo
-    void showServiceLogo(const QPixmap & logo);
+    void showServiceLogo(const QPixmap & logo, bool force = false);
 
     //! @brief This method returns default slide save path
     QString savePath() const;

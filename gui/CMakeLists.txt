@@ -1,3 +1,6 @@
+# Debug options
+option (TII_SPECTRUM_PLOT "Enable spectrum plot for TII"  ON)
+
 
 #########################################################
 ## Pictures
@@ -43,6 +46,12 @@ endif(HAVE_SOAPYSDR)
 if (HAVE_PORTAUDIO)
     set(PORTAUDIO_SOURCES audiooutputpa.h audiooutputpa.cpp)
 endif(HAVE_PORTAUDIO)
+if (HAVE_QCUSTOMPLOT)
+    set(QCUSTOMPLOT_SOURCES
+        snrplotdialog.h snrplotdialog.cpp snrplotdialog.ui
+    )
+endif(HAVE_QCUSTOMPLOT)
+
 
 #########################################################
 ## SOURCES & HEADERS
@@ -55,6 +64,7 @@ add_executable(${TARGET}
     ${CMAKE_CURRENT_BINARY_DIR}/config.h    
     ${PORTAUDIO_SOURCES}
     ${APPLE_SOURCES}
+    ${QCUSTOMPLOT_SOURCES}
     main.cpp
     mainwindow.cpp
     mainwindow.h
@@ -70,6 +80,8 @@ add_executable(${TARGET}
     audiooutput.h
     audiooutputqt.h
     audiooutputqt.cpp
+    dabchannellistmodel.h
+    dabchannellistmodel.cpp
     servicelistid.h
     servicelist.h
     servicelist.cpp
@@ -86,6 +98,7 @@ add_executable(${TARGET}
     sltreemodel.cpp
     slproxymodel.h
     slproxymodel.cpp
+    settings.h
     setupdialog.h
     setupdialog.cpp
     setupdialog.ui
@@ -117,6 +130,9 @@ add_executable(${TARGET}
     input/rtlsdrinput.cpp
     input/rtltcpinput.h
     input/rtltcpinput.cpp
+    input/rarttcpinput.h
+    input/rarttcpinput.cpp
+
 
     # User applications
     data/mscdatagroup.h
@@ -181,13 +197,21 @@ add_executable(${TARGET}
     audiorec/audiorecitemdialog.ui
     audiorec/audiorecmanager.h
     audiorec/audiorecmanager.cpp
-  )
+
+    # TII decoder
+    tii/tiidialog.h tii/tiidialog.cpp
+    tii/tiitablemodel.h tii/tiitablemodel.cpp
+    tii/tiitablemodelitem.h tii/tiitablemodelitem.cpp
+    tii/txdataitem.h tii/txdataitem.cpp
+    tii/txdataloader.h tii/txdataloader.cpp
+)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/audiorec)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/epg)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/data)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/input)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/tii)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets)
 
 # QML
@@ -202,8 +226,18 @@ set_source_files_properties(qml/EPGColors.qml PROPERTIES QT_RESOURCE_ALIAS EPGCo
 set_source_files_properties(qml/EPGHorizontalShadow.qml PROPERTIES QT_RESOURCE_ALIAS EPGHorizontalShadow.qml)
 set_source_files_properties(qml/EPGScrollableText.qml PROPERTIES QT_RESOURCE_ALIAS EPGScrollableText.qml)
 
+if(HAVE_QTLOCATION)
+    set(MAP_QML_FILE qml/map.qml)
+else()
+    set(MAP_QML_FILE qml/map_blank.qml)
+endif()
+set_source_files_properties(${MAP_QML_FILE} PROPERTIES QT_RESOURCE_ALIAS map.qml)
+set_source_files_properties(qml/TransmitterMarker.qml PROPERTIES QT_RESOURCE_ALIAS TransmitterMarker.qml)
+set_source_files_properties(qml/TIITableView.qml PROPERTIES QT_RESOURCE_ALIAS TIITableView.qml)
+
+
 qt6_add_qml_module(${TARGET}
-    URI ProgrammeGuide
+    URI app.qmlcomponents
     QML_FILES
         qml/epg.qml
         qml/EPGItem.qml
@@ -214,8 +248,17 @@ qt6_add_qml_module(${TARGET}
         qml/EPGColors.qml
         qml/EPGHorizontalShadow.qml
         qml/EPGScrollableText.qml
+
+        ${MAP_QML_FILE}
+        qml/TransmitterMarker.qml
+        qml/TIITableView.qml
     RESOURCES
-        #img/world.png
+        resources/map_marker_3.png
+        resources/map_marker_4.png
+        resources/map_marker_5.png
+        resources/Europe_blank_laea_location_map.svg
+        resources/sort-up.svg
+        resources/sort-down.svg
     VERSION 1.0
     RESOURCE_PREFIX "/"
 )
@@ -272,6 +315,20 @@ if (HAVE_SOAPYSDR)
     target_link_libraries(${TARGET} PRIVATE "${SOAPYSDR_LINK_LIBRARIES}" )
 endif(HAVE_SOAPYSDR)
 
+# QCUSTOMPLOT
+if (HAVE_QCUSTOMPLOT)
+    # QCUSTOMPLOT
+    add_compile_definitions(QCUSTOMPLOT_USE_LIBRARY)
+    include_directories ( ${QCUSTOMPLOT_INCLUDE_DIRS} )
+    target_link_libraries(${TARGET} PRIVATE "${QCUSTOMPLOT_LINK_LIBRARIES}" )
+endif(HAVE_QCUSTOMPLOT)
+
+# FMLIST
+if (HAVE_FMLIST_INTERFACE)
+    include_directories ( ${FMLIST_INCLUDE_DIRS} )
+    target_link_libraries(${TARGET} PRIVATE ${FMLIST_LINK_LIBRARIES})
+endif(HAVE_FMLIST_INTERFACE)
+
 # Set some Win32 Specific Settings
 if(WIN32)
     # required fro sockets
@@ -287,7 +344,13 @@ target_link_libraries(${TARGET} PRIVATE
     Qt${QT_VERSION_MAJOR}::Network
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::QuickControls2
+    Qt${QT_VERSION_MAJOR}::Positioning
 )
+if(HAVE_QTLOCATION)
+    target_link_libraries(${TARGET} PRIVATE
+        Qt${QT_VERSION_MAJOR}::Location
+    )
+endif(HAVE_QTLOCATION)
 
 set(TSFILES
     l10n/${TARGET}_cs.ts
@@ -298,12 +361,17 @@ qt_add_translations(${TARGET} TS_FILES ${TSFILES}
     LUPDATE_OPTIONS "-noobsolete"
 )
 
-
 # Set a custom plist file for the app bundle
 if(APPLE AND APPLE_APP_BUNDLE)
     set_target_properties(${TARGET} PROPERTIES
+        ${BUNDLE_ID_OPTION}
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/Info.plist.in
         MACOSX_BUNDLE_BUNDLE_VERSION       "${PROJECT_VERSION}_${PROJECT_GIT_REV}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+        MACOSX_BUNDLE TRUE
     )
+    if (NOT CMAKE_GENERATOR STREQUAL "Xcode")
+        # Need to sign application for location permissions to work
+        add_custom_command(TARGET ${TARGET} POST_BUILD COMMAND codesign -s - ${TARGET}.app)
+    endif()
 endif(APPLE AND APPLE_APP_BUNDLE)

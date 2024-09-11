@@ -263,7 +263,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
     }
         break;
 
-    case RadioControlEventType::SERVICE_STOP:
+    case RadioControlEventType::STOP_SERVICE:
     {
         if (DABSDR_NSTAT_SUCCESS == pEvent->status)
         {
@@ -386,7 +386,22 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         delete pEvent->pUserAppData;
     }
         break;
+    case RadioControlEventType::TII:
+    {
+        float maxLevel = 0.0;
+        for (const auto & item : pEvent->pTII->idList)
+        {
+            maxLevel = std::fmaxf(maxLevel, item.level);
+        }
+        for (auto & item : pEvent->pTII->idList)
+        {
+            item.level = 20 * std::log10(item.level / maxLevel);
+        }
 
+        emit tiiData(*(pEvent->pTII));
+        delete pEvent->pTII;
+    }
+        break;
     default:
         qCWarning(radioControl) << "ERROR: Unsupported event" << int(pEvent->type);
     }
@@ -550,6 +565,14 @@ void RadioControl::getEnsembleConfiguration()
     emit ensembleConfiguration(ensembleConfigurationString());
 }
 
+void RadioControl::getEnsembleInformation()
+{
+    if (m_ensemble.isValid())
+    {
+        emit ensembleInformation(m_ensemble);
+    }
+}
+
 void RadioControl::startUserApplication(DabUserApplicationType uaType, bool start, bool singleChannel)
 {
     serviceComponentConstIterator scIt;
@@ -682,6 +705,11 @@ void RadioControl::onSpiApplicationEnabled(bool enabled)
     {   // stop SPI application
         startUserApplication(DabUserApplicationType::SPI, false, false);
     }
+}
+
+void RadioControl::setTii(bool ena)
+{
+    dabSetTii(ena);
 }
 
 QString RadioControl::ensembleConfigurationString() const
@@ -1942,7 +1970,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         const dabsdrNtfServiceStop_t * pInfo = (const dabsdrNtfServiceStop_t * ) p->pData;
 
         RadioControlEvent * pEvent = new RadioControlEvent;
-        pEvent->type = RadioControlEventType::SERVICE_STOP;
+        pEvent->type = RadioControlEventType::STOP_SERVICE;
 
         pEvent->status = p->status;
         pEvent->SId = pInfo->SId;
@@ -2037,6 +2065,27 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         pEvent->status = p->status;
         pEvent->SId = pPty->SId;
         pEvent->pPty = pPty;
+        radioCtrl->emit_dabEvent(pEvent);
+    }
+    break;
+    case DABSDR_NID_TII:
+    {
+        const dabsdrNtfTii_t * pInfo = static_cast<const dabsdrNtfTii_t *>(p->pData);
+        RadioControlTIIData * pData = new RadioControlTIIData;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 6, 0))
+        pData->idList.assign(pInfo->id, pInfo->id + pInfo->numIds);
+#else
+        for (int n = 0; n < pInfo->numIds; ++n)
+        {
+            pData->idList.append(pInfo->id[n]);
+        }
+#endif
+        pInfo->getSpectrumTii(radioCtrl->m_dabsdrHandle, pData->spectrum.data());
+
+        RadioControlEvent * pEvent = new RadioControlEvent;
+        pEvent->type = RadioControlEventType::TII;
+        pEvent->status = p->status;
+        pEvent->pTII = pData;
         radioCtrl->emit_dabEvent(pEvent);
     }
     break;

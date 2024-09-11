@@ -8,10 +8,13 @@ function createDmg () {
 	APP_NAME="AbracaDABra"
 	DMG_FILE_NAME="${APP_NAME}.dmg"
 	VOLUME_NAME="${APP_NAME} Installer"
-	SOURCE_FOLDER_PATH="gui/Release/"
+	SOURCE_FOLDER_PATH="app/"
 
 	# Since create-dmg does not clobber, be sure to delete previous DMG
 	[[ -f "${DMG_FILE_NAME}" ]] && rm "${DMG_FILE_NAME}"
+
+	mkdir app
+	mv gui/${APP_NAME}.app app/
 
 	# Create the DMG
     # --background "installer_background.png" \
@@ -19,7 +22,7 @@ function createDmg () {
 	  --volname "${VOLUME_NAME}" \
 	  --window-pos 200 120 \
 	  --window-size 640 440 \
-      --background ../gui/resources/macos_dmg_bg.png \
+      --background ${DIR}/gui/resources/macos_dmg_bg.png \
 	  --icon-size 100 \
 	  --icon "${APP_NAME}.app" 140 250 \
 	  --hide-extension "${APP_NAME}.app" \
@@ -37,13 +40,17 @@ if [ -d $BUILD_DIR ]; then
 fi
 mkdir $BUILD_DIR
 
-cmake -G Xcode -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DEXTERNAL_LIBS_DIR=../AbracaDABra-libs-aarch64
-cmake --build $BUILD_DIR --target ALL_BUILD --config Release
+# cmake -G Xcode -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DEXTERNAL_LIBS_DIR=../AbracaDABra-libs-aarch64
+# cmake --build $BUILD_DIR --target ALL_BUILD --config Release
 
-cd $BUILD_DIR/gui/Release
-$QT_PATH/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/gui/qml -codesign="-" # -dmg
+cmake -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DEXTERNAL_LIBS_DIR=../AbracaDABra-libs-aarch64
+cmake --build $BUILD_DIR --config Release
 
-cd ../..
+
+cd $BUILD_DIR/gui
+$QT_PATH/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/gui/qml -libpath=$DIR/../AbracaDABra-libs-aarch64/lib/ -codesign="-" # -dmg
+
+cd ..
 createDmg
 cd $DIR
 
@@ -55,13 +62,17 @@ if [ -d $BUILD_DIR ]; then
 fi
 mkdir $BUILD_DIR
 
-cmake -G Xcode -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DAPPLE_BUILD_X86_64=ON -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON -DCMAKE_PREFIX_PATH=$QT_PATH_6_4/lib/cmake -DEXTERNAL_LIBS_DIR=../AbracaDABra-libs-x86
-cmake --build $BUILD_DIR --target ALL_BUILD --config Release
+# cmake -G Xcode -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DAPPLE_BUILD_X86_64=ON -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DEXTERNAL_LIBS_DIR=../AbracaDABra-libs-x86
+# cmake --build $BUILD_DIR --target ALL_BUILD --config Release
 
-cd $BUILD_DIR/gui/Release
-$QT_PATH_6_4/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/gui/qml -codesign="-" # -dmg
+cmake -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DAPPLE_BUILD_X86_64=ON -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DEXTERNAL_LIBS_DIR=../AbracaDABra-libs-x86
+cmake --build $BUILD_DIR --config Release
 
-cd ../..
+
+cd $BUILD_DIR/gui
+$QT_PATH/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/gui/qml  -libpath=$DIR/../AbracaDABra-libs-x86/lib/ -codesign="-" # -dmg
+
+cd ..
 createDmg
 cd $DIR
 

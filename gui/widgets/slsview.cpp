@@ -73,6 +73,7 @@ void SLSView::reset()
 
     setToolTip("");
     setCursor(Qt::ArrowCursor);
+    m_currentSlide.setContentName("");  // this blocks slide saving (Issue #131)
     m_isShowingSlide = false;
     m_clickThroughURL.clear();
 }
@@ -266,14 +267,18 @@ void SLSView::showSlide(const Slide & slide)
     m_isShowingSlide = true;
 }
 
-void SLSView::showServiceLogo(const QPixmap & logo)
+void SLSView::showServiceLogo(const QPixmap & logo, bool force)
 {
     if (logo.isNull())
     {
+        if (force)
+        {
+            reset();
+        }
         return;
     }
 
-    if (!m_isShowingSlide)
+    if (!m_isShowingSlide || force)
     {
         displayPixmap(logo);
 

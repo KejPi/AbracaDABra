@@ -45,16 +45,18 @@
 #include <QActionGroup>
 #include <QStandardPaths>
 #include <QtGlobal>
+#include <QQuickStyle>
 #include <iostream>
+#include <QNetworkProxy>
 
 #include "mainwindow.h"
 #include "slsview.h"
 #include "./ui_mainwindow.h"
 #include "dabtables.h"
 #include "epgtime.h"
+#include "epgproxymodel.h"
 #include "radiocontrol.h"
 #include "bandscandialog.h"
-#include "config.h"
 #include "aboutdialog.h"
 #include "audiooutputqt.h"
 #if HAVE_PORTAUDIO
@@ -62,7 +64,10 @@
 #endif
 #include "metadatamanager.h"
 #include "audiorecscheduledialog.h"
-
+#if HAVE_FMLIST_INTERFACE
+#include "fmlistinterface.h"
+#include "txdataloader.h"
+#endif
 
 // Input devices
 #include "rawfileinput.h"
@@ -73,6 +78,9 @@
 #endif
 #if HAVE_SOAPYSDR
 #include "soapysdrinput.h"
+#endif
+#if HAVE_RARTTCP
+#include "rarttcpinput.h"
 #endif
 
 #ifdef Q_OS_MACOS
@@ -184,7 +192,23 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 {
     initStyle(); // init style as soon as possible
 
+    m_settings = new Settings();
+
     m_audioRecScheduleDialog = nullptr;
+#if HAVE_QCUSTOMPLOT
+    m_snrPlotDialog = nullptr;
+#endif
+    m_epgDialog = nullptr;
+    m_tiiDialog = nullptr;
+#if HAVE_FMLIST_INTERFACE
+    m_fmlistInterface = nullptr;
+#endif
+    // this is to avoid warning from QML
+    // SLModel is neither a default constructible QObject, nor a default- and copy-constructible Q_GADGET, nor marked as uncreatable.
+    // https://forum.qt.io/topic/153175/warning-when-creating-instantiable-object-type/4
+    qmlRegisterType<SLProxyModel>("app.qmlcomponents", 1, 0, "SLProxyModel");
+    qmlRegisterType<EPGModel>("app.qmlcomponents", 1, 0, "EPGModel");
+    qmlRegisterType<EPGProxyModel>("app.qmlcomponents", 1, 0, "EPGProxyModel");
 
     m_dlDecoder[Instance::Service] = new DLDecoder();
     m_dlDecoder[Instance::Announcement] = new DLDecoder();
@@ -192,7 +216,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->setupUi(this);
 
     // creating log windows as soon as possible
-    m_logDialog = new LogDialog(this);
+    m_logDialog = new LogDialog();
+    connect(this, &MainWindow::exit, [this]() {m_logDialog->close(); m_logDialog->deleteLater(); });
+    connect(m_logDialog, &QObject::destroyed, this, [](){ logModel = nullptr; });
+
     setLogToModel(m_logDialog->getModel());
 
     ui->serviceListView->setIconSize(QSize(16,16));
@@ -221,17 +248,32 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     m_inputDeviceRecorder = new InputDeviceRecorder();
 
-    m_setupDialog = new SetupDialog(this);
+    m_setupDialog = new SetupDialog();
+    connect(this, &MainWindow::exit, [this]() {m_setupDialog->close(); m_setupDialog->deleteLater(); });  // QTBUG-117779 ==> using parentless dialogs as workaround
     m_setupDialog->setSlsDumpPaternDefault(slsDumpPatern);
     m_setupDialog->setSpiDumpPaternDefault(spiDumpPatern);
+
     connect(m_setupDialog, &SetupDialog::inputDeviceChanged, this, &MainWindow::changeInputDevice);
     connect(m_setupDialog, &SetupDialog::newInputDeviceSettings, this, &MainWindow::onNewInputDeviceSettings);
     connect(m_setupDialog, &SetupDialog::applicationStyleChanged, this, &MainWindow::onApplicationStyleChanged);
     connect(m_setupDialog, &SetupDialog::expertModeToggled, this, &MainWindow::onExpertModeToggled);
     connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, this, &MainWindow::onNewAnnouncementSettings);
     connect(m_setupDialog, &SetupDialog::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
+    connect(m_setupDialog, &SetupDialog::proxySettingsChanged, this, &MainWindow::setProxy);
+#if HAVE_FMLIST_INTERFACE
+    connect(m_setupDialog, &SetupDialog::updateTxDb, this, [this]() {
+        if (m_fmlistInterface == nullptr)
+        {
+            m_fmlistInterface = new FMListInterface(TxDataLoader::dbfile());
+        }
+        connect(m_fmlistInterface, &FMListInterface::updateTiiDataFinished, m_setupDialog, &SetupDialog::onTiiUpdateFinished);
+        qCInfo(application, "Updating TX database (library version %s)", m_fmlistInterface->version().toUtf8().data());
+        m_fmlistInterface->updateTiiData();
+    });
+#endif
 
-    m_ensembleInfoDialog = new EnsembleInfoDialog(this);
+    m_ensembleInfoDialog = new EnsembleInfoDialog();
+    connect(this, &MainWindow::exit, [this]() {m_ensembleInfoDialog->close(); m_ensembleInfoDialog->deleteLater(); });
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStart, m_inputDeviceRecorder, &InputDeviceRecorder::start);
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStop, m_inputDeviceRecorder, &InputDeviceRecorder::stop);
     connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_ensembleInfoDialog, &EnsembleInfoDialog::onRecording);       
@@ -286,11 +328,17 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_snrProgressbar->setTextVisible(false);
     m_snrProgressbar->setToolTip(QString(tr("DAB signal SNR")));
 
+#if HAVE_QCUSTOMPLOT
+    m_snrLabel = new ClickableLabel();
+    m_snrLabel->setToolTip(QString(tr("Display SNR plot")));
+    connect(m_snrLabel, &ClickableLabel::clicked, this, &MainWindow::showSnrPlotDialog);
+#else
     m_snrLabel = new QLabel();
+    m_snrLabel->setToolTip(QString(tr("DAB signal SNR")));
+#endif
     int width = m_snrLabel->fontMetrics().boundingRect("100.0 dB").width();
     m_snrLabel->setFixedWidth(width);
     m_snrLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    m_snrLabel->setToolTip(QString(tr("DAB signal SNR")));
 
     QHBoxLayout * signalQualityLayout = new QHBoxLayout();
     signalQualityLayout->addWidget(m_syncLabel);
@@ -319,6 +367,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     m_ensembleInfoAction = new QAction(tr("Ensemble information"), this);
     connect(m_ensembleInfoAction, &QAction::triggered, this, &MainWindow::showEnsembleInfo);
+
+    m_tiiAction = new QAction(tr("TII decoder"), this);
+    connect(m_tiiAction, &QAction::triggered, this, &MainWindow::showTiiDialog);
 
     m_audioRecordingScheduleAction = new QAction(tr("Audio recording schedule..."), this);
     connect(m_audioRecordingScheduleAction, &QAction::triggered, this, &MainWindow::showAudioRecordingSchedule);
@@ -359,6 +410,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_menu->addSeparator();
     m_menu->addAction(m_epgAction);
     m_menu->addAction(m_ensembleInfoAction);
+    m_menu->addAction(m_tiiAction);
     m_menu->addAction(m_logAction);
     m_menu->addAction(m_aboutAction);
 
@@ -407,6 +459,15 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     layout->setSpacing(20);
     ui->statusbar->addWidget(widget,1);
 
+#ifdef Q_OS_MAC
+    DockMenuHandler * dockMenuPtr = DockMenuHandler::getInstance();
+    dockMenuPtr->setMuteItemLabel(tr("Mute"));
+    connect(m_muteLabel, &ClickableLabel::toggled, [this](bool checked) {
+        DockMenuHandler::getInstance()->setMuteItemLabel(checked ? tr("Unmute") : tr("Mute"));
+    });
+    connect(dockMenuPtr, &DockMenuHandler::muteItemClicked, m_muteLabel, &ClickableLabel::toggle);
+#endif
+
     // set fonts
     QFont f;
     f.setPointSize(qRound(1.5 * ui->programTypeLabel->fontInfo().pointSize()));
@@ -450,21 +511,19 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(ui->serviceTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::onServiceListTreeSelection);
     connect(m_serviceList, &ServiceList::empty, m_slTreeModel, &SLTreeModel::clear);
 
-    // EPG dialog
-    m_epgDialog = new EPGDialog(m_slModel, ui->serviceListView->selectionModel(), m_metadataManager, this);
-    connect(m_metadataManager, &MetadataManager::epgAvailable, this, [this](){ m_epgAction->setEnabled(true); } );
+    // EPG
+    connect(m_metadataManager, &MetadataManager::epgAvailable, this, [this](){
+        m_epgAction->setEnabled(true);
+        ui->epgLabel->setVisible(true);
+    } );
     connect(m_metadataManager, &MetadataManager::epgEmpty, this, &MainWindow::onEpgEmpty);
-    connect(m_epgDialog, &EPGDialog::scheduleAudioRecording, this, [this](const AudioRecScheduleItem & item) {
-        showAudioRecordingSchedule();
-        m_audioRecScheduleDialog->addItem(item);
-    });
 
     // fill channel list
     int freqLabelMaxWidth = 0;
     dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
     while (it != DabTables::channelList.constEnd()) {
         // insert to combo
-        ui->channelCombo->addItem(it.value(), it.key());
+        //ui->channelCombo->addItem(it.value(), it.key());
 
         // calculate label size
         QString freqStr = QString("%1 MHz").arg(it.key()/1000.0, 3, 'f', 3, QChar('0'));
@@ -474,6 +533,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         }
         ++it;
     }
+    m_channelListModel = new DABChannelListFilteredModel(this);
+    m_channelListModel->setSourceModel(new DABChannelListModel(this));
+    ui->channelCombo->setModel(m_channelListModel);
     connect(ui->channelCombo, &QComboBox::currentIndexChanged, this, &MainWindow::onChannelChange);
     ui->channelCombo->setCurrentIndex(-1);
     ui->channelCombo->setDisabled(true);
@@ -515,6 +577,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     ui->catSlsLabel->setToolTip(tr("Browse categorized slides"));
     ui->catSlsLabel->setHidden(true);
+
+    ui->epgLabel->setToolTip(tr("Show program guide (EPG)"));
+    ui->epgLabel->setHidden(true);
 
     ui->switchSourceLabel->setToolTip(tr("Change service source (ensemble)"));
     ui->switchSourceLabel->setHidden(true);
@@ -613,6 +678,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(ui->switchSourceLabel, &ClickableLabel::clicked, this, &MainWindow::onSwitchSourceClicked);
     connect(ui->catSlsLabel, &ClickableLabel::clicked, this, &MainWindow::showCatSLS);
     connect(ui->announcementLabel, &ClickableLabel::toggled, this, &MainWindow::onAnnouncementClicked);
+    connect(ui->epgLabel, &ClickableLabel::clicked, this, &MainWindow::showEPG);
 
     connect(m_radioControl, &RadioControl::ensembleInformation, this, &MainWindow::onEnsembleInfo, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleReconfiguration, this, &MainWindow::onEnsembleReconfiguration, Qt::QueuedConnection);
@@ -625,8 +691,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(this, &MainWindow::announcementMask, m_radioControl, &RadioControl::setupAnnouncements, Qt::QueuedConnection);
     connect(m_audioOutput, &AudioOutput::audioOutputRestart, m_radioControl, &RadioControl::onAudioOutputRestart, Qt::QueuedConnection);
     connect(this, &MainWindow::toggleAnnouncement, m_radioControl, &RadioControl::suspendResumeAnnouncement, Qt::QueuedConnection);
-
-    connect(m_ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfiguration, Qt::QueuedConnection);
+    connect(this, &MainWindow::getEnsembleInfo, m_radioControl, &RadioControl::getEnsembleInformation, Qt::QueuedConnection);
+    connect(m_ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfiguration, Qt::QueuedConnection);    
     connect(m_radioControl, &RadioControl::signalState, m_ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::freqOffset, m_ensembleInfoDialog, &EnsembleInfoDialog::updateFreqOffset, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleConfiguration, m_ensembleInfoDialog, &EnsembleInfoDialog::refreshEnsembleConfiguration, Qt::QueuedConnection);
@@ -653,10 +719,12 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // DL(+)
     // normal service
     connect(m_dlDecoder[Instance::Service], &DLDecoder::dlComplete, this, &MainWindow::onDLComplete_Service);
+    connect(m_dlDecoder[Instance::Service], &DLDecoder::dlComplete, m_audioRecManager, &AudioRecManager::onDLComplete);
     connect(m_dlDecoder[Instance::Service], &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived_Service);
     connect(m_dlDecoder[Instance::Service], &DLDecoder::dlItemToggle, this, &MainWindow::onDLPlusItemToggle_Service);
     connect(m_dlDecoder[Instance::Service], &DLDecoder::dlItemRunning, this, &MainWindow::onDLPlusItemRunning_Service);
     connect(m_dlDecoder[Instance::Service], &DLDecoder::resetTerminal, this, &MainWindow::onDLReset_Service);
+    connect(m_dlDecoder[Instance::Service], &DLDecoder::resetTerminal, m_audioRecManager, &AudioRecManager::onDLReset);
     // announcement
     connect(m_dlDecoder[Instance::Announcement], &DLDecoder::dlComplete, this, &MainWindow::onDLComplete_Announcement);
     connect(m_dlDecoder[Instance::Announcement], &DLDecoder::dlPlusObject, this, &MainWindow::onDLPlusObjReceived_Announcement);
@@ -722,7 +790,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::uaDumpSettings, m_slideShowApp[Instance::Service], &SlideShowApp::setDataDumping, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::uaDumpSettings, m_slideShowApp[Instance::Announcement], &SlideShowApp::setDataDumping, Qt::QueuedConnection);
 
-    m_catSlsDialog = new CatSLSDialog(this);
+    m_catSlsDialog = new CatSLSDialog();
+    connect(this, &MainWindow::exit, [this]() {m_catSlsDialog->close(); m_catSlsDialog->deleteLater(); });
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::categoryUpdate, m_catSlsDialog, &CatSLSDialog::onCategoryUpdate, Qt::QueuedConnection);
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::catSlide, m_catSlsDialog, &CatSLSDialog::onCatSlide, Qt::QueuedConnection);
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::resetTerminal, m_catSlsDialog, &CatSLSDialog::reset, Qt::QueuedConnection);
@@ -749,7 +818,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::spiApplicationSettingsChanged, m_spiApp, &SPIApp::onSettingsChanged, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleInformation, m_metadataManager, &MetadataManager::onEnsembleInformation, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_metadataManager, &MetadataManager::onAudioServiceSelection, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::ensembleInformation, m_epgDialog, &EPGDialog::onEnsembleInformation, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleInformation, m_spiApp, &UserApplication::setEnsId);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &UserApplication::setAudioServiceId);
 
@@ -764,19 +832,16 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // this causes focus to be set to service list when tune is finished
     m_hasListViewFocus = true;
     m_hasTreeViewFocus = false;
-
-    // //QFile xmlfile("/Users/kejpi/Devel/AbracaDABra/20231206_PI.xml");
-    // QFile xmlfile("/Users/kejpi/Devel/AbracaDABra/_cache/w20081011dD220c0.EHB.xml");
-    // if (xmlfile.open(QIODevice::ReadOnly | QIODevice::Text))
-    // {
-    //     QTextStream in(&xmlfile);
-    //     m_metadataManager->processXML(qPrintable(in.readAll()), "dab:de0.d06c.d220.0");
-    //     xmlfile.close();
-    // }
 }
 
 MainWindow::~MainWindow()
 {
+#if HAVE_FMLIST_INTERFACE
+    if (nullptr != m_fmlistInterface)
+    {
+        delete m_fmlistInterface;
+    }
+#endif
     delete m_inputDevice;
     delete m_inputDeviceRecorder;
 
@@ -804,6 +869,7 @@ MainWindow::~MainWindow()
     delete m_serviceList;
     delete m_metadataManager;
     delete ui;
+    delete m_settings;
 }
 
 bool MainWindow::eventFilter(QObject *o, QEvent *e)
@@ -882,6 +948,16 @@ void MainWindow::closeEvent(QCloseEvent *event)
         emit resetUserApps();
         emit serviceRequest(0,0,0);
         event->ignore();
+#if HAVE_QCUSTOMPLOT
+        if (m_snrPlotDialog)
+        {
+            m_snrPlotDialog->close();
+        }
+#endif
+        if (m_tiiDialog)
+        {
+            m_tiiDialog->close();
+        }
     }
 }
 
@@ -991,6 +1067,14 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
     m_snrProgressbar->setValue(snr10);
 
     m_snrLabel->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
+
+#if HAVE_QCUSTOMPLOT
+    if (m_snrPlotDialog != nullptr)
+    {
+        m_snrPlotDialog->setSignalState(sync, snr);
+    }
+#endif
+
     // progressbar styling -> it does not look good on Apple
     if (static_cast<int>(SNR10Threhold::SNR_BAD) > snr10)
     {   // bad SNR
@@ -1197,6 +1281,10 @@ void MainWindow::channelSelected()
     ui->frequencyLabel->setText(tr("Tuning...  "));
 
     onSignalState(uint8_t(DabSyncLevel::NoSync), 0.0);
+    if (m_tiiDialog != nullptr)
+    {
+        m_tiiDialog->onChannelSelection();
+    }
 
     // hide switch to avoid conflict with tuning -> will be enabled when tune is finished
     ui->switchSourceLabel->setHidden(true);
@@ -1364,7 +1452,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
         // tune to 0
         m_infoLabel->setText(tr("End of file"));
         m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
-        if (!m_setupDialog->settings().rawfile.loopEna)
+        if (!m_settings->rawfile.loopEna)
         {
             m_infoLabel->setToolTip(tr("Select any service to restart"));
             ui->channelCombo->setCurrentIndex(-1);
@@ -1383,6 +1471,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
         // force no device
         m_setupDialog->resetInputDevice();
         changeInputDevice(InputDeviceId::UNDEFINED);
+        showSetupDialog();
         break;
     case InputDeviceErrorCode::NoDataAvailable:
         m_infoLabel->setText(tr("Input device error: No data"));
@@ -1392,6 +1481,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
         // force no device
         m_setupDialog->resetInputDevice();
         changeInputDevice(InputDeviceId::UNDEFINED);
+        showSetupDialog();
         break;
     default:
         qCWarning(application) << "InputDevice error" << int(errCode);
@@ -1400,8 +1490,8 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
 
 bool MainWindow::stopAudioRecordingMsg(const QString & infoText)
 {
-    if ((m_audioRecManager->isAudioRecordingActive() || m_audioRecManager->isAudioScheduleActive()) && !m_setupDialog->settings().audioRecAutoStopEna)
-    //if (!m_setupDialog->settings().audioRecAutoStopEna)
+    if ((m_audioRecManager->isAudioRecordingActive() || m_audioRecManager->isAudioScheduleActive()) && !m_settings->audioRecAutoStopEna)
+    //if (!m_settings->audioRecAutoStopEna)
     {
         QMessageBox msgBox(QMessageBox::Warning, tr("Warning"),
                            tr("Do you want to stop audio recording?"), {}, this);
@@ -1581,6 +1671,8 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
         {   // this can happen when service is selected while still acquiring ensemble infomation
             m_SId = s.SId;
             m_SCIdS = s.SCIdS;
+            selectService(ServiceListId(s.SId.value(), s.SCIdS));
+            serviceTreeViewUpdateSelection();
         }
 
         if (s.label.isEmpty())
@@ -1636,11 +1728,15 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
             ui->logoLabel->setPixmap(logo);
             ui->logoLabel->setVisible(true);
         }
+        else
+        {
+            ui->logoLabel->setVisible(false);
+        }
 
-        ui->slsView_Service->showServiceLogo(m_metadataManager->data(s.SId.value(), s.SCIdS, MetadataManager::SLSLogo).value<QPixmap>());
+        ui->slsView_Service->showServiceLogo(m_metadataManager->data(s.SId.value(), s.SCIdS, MetadataManager::SLSLogo).value<QPixmap>(), true);
     }
     else
-    {   // sid it not equal to selected sid -> this should not happen
+    {   // not audio service
         m_SId.set(0);
 
         ui->serviceListView->clearSelection();
@@ -1815,7 +1911,7 @@ void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnno
 
     displaySubchParams(s);
 
-    if ((DabAnnouncement::Alarm == id) && (m_setupDialog->settings().bringWindowToForeground))
+    if ((DabAnnouncement::Alarm == id) && (m_settings->bringWindowToForeground))
     {
         show(); //bring window to top on OSX
         raise(); //bring window from minimized state on OSX
@@ -1891,7 +1987,7 @@ void MainWindow::onAudioRecordingStarted()
 void MainWindow::onAudioRecordingStopped()
 {       
     setAudioRecordingUI();
-    emit announcementMask(m_setupDialog->settings().announcementEna);   // restore announcement settings
+    emit announcementMask(m_settings->announcementEna);   // restore announcement settings
 }
 
 void MainWindow::onAudioRecordingProgress(size_t bytes, qint64 timeSec)
@@ -2015,8 +2111,54 @@ void MainWindow::onMetadataUpdated(const ServiceListId & id, MetadataManager::Me
 
 void MainWindow::onEpgEmpty()
 {
-    m_epgDialog->close();
+    if (m_epgDialog)
+    {
+        m_epgDialog->close();
+    }
     m_epgAction->setEnabled(false);
+    ui->epgLabel->setVisible(false);
+}
+
+void MainWindow::setProxy()
+{
+    QNetworkProxy proxy;
+    switch (m_settings->proxy.config)
+    {
+    case Settings::ProxyConfig::NoProxy:
+        qCInfo(application) << "Proxy config: No proxy";
+        proxy.setType(QNetworkProxy::NoProxy);
+        break;
+    case Settings::ProxyConfig::System:
+        qCInfo(application) << "Proxy config: System";
+        QNetworkProxyFactory::setUseSystemConfiguration(true);
+        return;
+    case Settings::ProxyConfig::Manual:
+        qCInfo(application) << "Proxy config: Manual";
+        proxy.setType(QNetworkProxy::HttpProxy);
+        proxy.setHostName(m_settings->proxy.server);
+        proxy.setPort(m_settings->proxy.port);
+        if (!m_settings->proxy.user.isEmpty())
+        {
+            proxy.setUser(m_settings->proxy.user);
+            int key = 0;
+            for (int n = 0; n < 4; ++n) {
+                key += m_settings->proxy.pass.at(n);
+            }
+            key = key & 0x00FF;
+            if (key == 0) {
+                key = 0x5C;
+            }
+            QByteArray ba;
+            for (int n = 4; n < m_settings->proxy.pass.length(); ++n)
+            {
+                ba.append(m_settings->proxy.pass.at(n) ^ key);
+            }
+            QString pass = QString::fromUtf8(ba);
+            proxy.setPassword(pass);
+        }
+        break;
+    }
+    QNetworkProxy::setApplicationProxy(proxy);
 }
 
 void MainWindow::clearEnsembleInformationLabels()
@@ -2057,41 +2199,40 @@ void MainWindow::onNewAnnouncementSettings()
 {
     if (!m_audioRecManager->isAudioRecordingActive())
     {
-        emit announcementMask(m_setupDialog->settings().announcementEna);
+        emit announcementMask(m_settings->announcementEna);
     }
 }
 
 void MainWindow::onNewInputDeviceSettings()
 {
-    SetupDialog::Settings s = m_setupDialog->settings();
     switch (m_inputDeviceId)
     {
     case InputDeviceId::RTLSDR:
-        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setGainMode(s.rtlsdr.gainMode, s.rtlsdr.gainIdx);
-        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setBW(s.rtlsdr.bandwidth);
-        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setBiasT(s.rtlsdr.biasT);
-        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setAgcLevelMax(s.rtlsdr.agcLevelMax);
-        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setPPM(s.rtlsdr.ppm);
+        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);
+        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setBW(m_settings->rtlsdr.bandwidth);
+        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setBiasT(m_settings->rtlsdr.biasT);
+        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setAgcLevelMax(m_settings->rtlsdr.agcLevelMax);
+        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setPPM(m_settings->rtlsdr.ppm);
         break;
     case InputDeviceId::RTLTCP:
-        dynamic_cast<RtlTcpInput*>(m_inputDevice)->setGainMode(s.rtltcp.gainMode, s.rtltcp.gainIdx);
-        dynamic_cast<RtlTcpInput*>(m_inputDevice)->setAgcLevelMax(s.rtltcp.agcLevelMax);
-        dynamic_cast<RtlTcpInput*>(m_inputDevice)->setPPM(s.rtltcp.ppm);
+        dynamic_cast<RtlTcpInput*>(m_inputDevice)->setGainMode(m_settings->rtltcp.gainMode, m_settings->rtltcp.gainIdx);
+        dynamic_cast<RtlTcpInput*>(m_inputDevice)->setAgcLevelMax(m_settings->rtltcp.agcLevelMax);
+        dynamic_cast<RtlTcpInput*>(m_inputDevice)->setPPM(m_settings->rtltcp.ppm);
         break;
     case InputDeviceId::AIRSPY:
 #if HAVE_AIRSPY
-        dynamic_cast<AirspyInput*>(m_inputDevice)->setGainMode(s.airspy.gain);
-        dynamic_cast<AirspyInput*>(m_inputDevice)->setBiasT(s.airspy.biasT);
+        dynamic_cast<AirspyInput*>(m_inputDevice)->setGainMode(m_settings->airspy.gain);
+        dynamic_cast<AirspyInput*>(m_inputDevice)->setBiasT(m_settings->airspy.biasT);
 #endif
         break;
     case InputDeviceId::SOAPYSDR:
 #if HAVE_SOAPYSDR
-        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setGainMode(s.soapysdr.gainMode, s.soapysdr.gainIdx);
-        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setBW(s.soapysdr.bandwidth);
+        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setGainMode(m_settings->soapysdr.gainMode, m_settings->soapysdr.gainIdx);
+        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setBW(m_settings->soapysdr.bandwidth);
 #endif
         break;
     case InputDeviceId::RAWFILE:
-        break;
+    case InputDeviceId::RARTTCP:
     case InputDeviceId::UNDEFINED:
         break;
     }
@@ -2128,6 +2269,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
     // disable file recording
     m_ensembleInfoDialog->enableRecording(false);
+
+    // restore all channels
+    m_channelListModel->setChannelFilter(0);
 
     switch (d)
     {
@@ -2257,7 +2401,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
 
         // set IP address and port
-        dynamic_cast<RtlTcpInput*>(m_inputDevice)->setTcpIp(m_setupDialog->settings().rtltcp.tcpAddress, m_setupDialog->settings().rtltcp.tcpPort);
+        dynamic_cast<RtlTcpInput*>(m_inputDevice)->setTcpIp(m_settings->rtltcp.tcpAddress, m_settings->rtltcp.tcpPort);
 
         if (m_inputDevice->openDevice())
         {  // rtl tcp is available
@@ -2320,10 +2464,88 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         }
     }
     break;
+    case InputDeviceId::RARTTCP:
+    {
+#if HAVE_RARTTCP
+        m_inputDevice = new RartTcpInput();
+
+        // signals have to be connected before calling isAvailable
+        // RTL_TCP is opened immediately and starts receiving data
+
+        // HMI
+        connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
+        connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
+
+        // tuning procedure
+        connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+        connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+        // set IP address and port
+        dynamic_cast<RartTcpInput*>(m_inputDevice)->setTcpIp(m_settings->rarttcp.tcpAddress, m_settings->rarttcp.tcpPort);
+
+        if (m_inputDevice->openDevice())
+        {  // RaRT tcp is available
+            if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
+            {   // if switching from RAW or UNDEFINED load service list & rec schedule
+
+                // clear service list
+                m_serviceList->clear();
+
+                // clear rec scheduile
+                m_audioRecScheduleModel->clear();
+
+                QSettings * settings;
+                if (m_iniFilename.isEmpty())
+                {
+                    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+                }
+                else
+                {
+                    settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+                }
+                m_serviceList->load(*settings);
+                m_audioRecScheduleModel->load(*settings);
+                delete settings;
+            }
+            else { /* keep service list as it is */}
+
+            m_inputDeviceId = InputDeviceId::RARTTCP;
+
+            // enable band scan
+            m_bandScanAction->setEnabled(true);
+
+            // enable service list
+            ui->serviceListView->setEnabled(true);
+            ui->serviceTreeView->setEnabled(true);
+            ui->favoriteLabel->setEnabled(true);
+
+            // recorder
+            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
+            connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
+            connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
+
+            // ensemble info dialog
+            connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
+            m_ensembleInfoDialog->enableRecording(true);
+
+            // metadata & EPG
+            EPGTime::getInstance()->setIsLiveBroadcasting(true);
+
+            // apply current settings
+            onNewInputDeviceSettings();
+        }
+        else
+        {
+            m_setupDialog->resetInputDevice();
+            initInputDevice(InputDeviceId::UNDEFINED);
+        }
+#endif
+    }
+    break;
     case InputDeviceId::AIRSPY:
     {
 #if HAVE_AIRSPY
-        m_inputDevice = new AirspyInput(m_setupDialog->settings().airspy.prefer4096kHz);
+        m_inputDevice = new AirspyInput(m_settings->airspy.prefer4096kHz);
 
         // signals have to be connected before calling isAvailable
 
@@ -2386,7 +2608,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // these are settings that are configures in ini file manually
             // they are only set when device is initialized
-            dynamic_cast<AirspyInput*>(m_inputDevice)->setDataPacking(m_setupDialog->settings().airspy.dataPacking);
+            dynamic_cast<AirspyInput*>(m_inputDevice)->setDataPacking(m_settings->airspy.dataPacking);
 
             // apply current settings
             onNewInputDeviceSettings();
@@ -2415,9 +2637,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
         // set connection paramaters
-        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setDevArgs(m_setupDialog->settings().soapysdr.devArgs);
-        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setRxChannel(m_setupDialog->settings().soapysdr.channel);
-        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setAntenna(m_setupDialog->settings().soapysdr.antenna);
+        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setDevArgs(m_settings->soapysdr.devArgs);
+        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setRxChannel(m_settings->soapysdr.channel);
+        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setAntenna(m_settings->soapysdr.antenna);
 
         if (m_inputDevice->openDevice())
         {  // SoapySDR is available
@@ -2473,7 +2695,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // these are settings that are configures in ini file manually
             // they are only set when device is initialized
-            dynamic_cast<SoapySdrInput*>(m_inputDevice)->setBW(m_setupDialog->settings().soapysdr.bandwidth);
+            dynamic_cast<SoapySdrInput*>(m_inputDevice)->setBW(m_settings->soapysdr.bandwidth);
 
             // apply current settings
             onNewInputDeviceSettings();
@@ -2499,11 +2721,12 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
         connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
-        RawFileInputFormat format = m_setupDialog->settings().rawfile.format;
-        dynamic_cast<RawFileInput*>(m_inputDevice)->setFile(m_setupDialog->settings().rawfile.file, format);
+        RawFileInputFormat format = m_settings->rawfile.format;
+        dynamic_cast<RawFileInput*>(m_inputDevice)->setFile(m_settings->rawfile.file, format);
 
-        connect(dynamic_cast<RawFileInput*>(m_inputDevice), &RawFileInput::fileLength, m_setupDialog, &SetupDialog::onFileLength, Qt::QueuedConnection);
-        connect(dynamic_cast<RawFileInput*>(m_inputDevice), &RawFileInput::fileProgress, m_setupDialog, &SetupDialog::onFileProgress, Qt::QueuedConnection);
+        connect(dynamic_cast<RawFileInput*>(m_inputDevice), &RawFileInput::fileLength, m_setupDialog, &SetupDialog::onFileLength);
+        connect(dynamic_cast<RawFileInput*>(m_inputDevice), &RawFileInput::fileProgress, m_setupDialog, &SetupDialog::onFileProgress);
+        connect(m_setupDialog, &SetupDialog::rawFileSeek, dynamic_cast<RawFileInput*>(m_inputDevice), &RawFileInput::seek);
 
         // we can open device now
         if (m_inputDevice->openDevice())
@@ -2542,6 +2765,10 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // show XML header is available
             m_setupDialog->setXmlHeader(m_inputDevice->deviceDescription());
+            if (m_inputDevice->deviceDescription().rawFile.hasXmlHeader)
+            {
+                m_channelListModel->setChannelFilter(m_inputDevice->deviceDescription().rawFile.frequency_kHz);
+            }
 
             // metadata & EPG
             EPGTime::getInstance()->setIsLiveBroadcasting(false);
@@ -2589,10 +2816,8 @@ void MainWindow::loadSettings()
 
     int inDevice = settings->value("inputDeviceId", int(InputDeviceId::RTLSDR)).toInt();
 
-    SetupDialog::Settings s;
-
-    s.expertModeEna = settings->value("expertMode", false).toBool();
-    setExpertMode(s.expertModeEna);
+    m_settings->expertModeEna = settings->value("expertMode", false).toBool();
+    setExpertMode(m_settings->expertModeEna);
 
     QSize sz = size();
     QByteArray geometry = settings->value("windowGeometry").toByteArray();
@@ -2608,70 +2833,89 @@ void MainWindow::loadSettings()
     // this is workaround to force size when window appears (not clear why it is necessary)
     QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
 
-    s.applicationStyle = static_cast<ApplicationStyle>(settings->value("style", static_cast<int>(ApplicationStyle::Default)).toInt());
-    s.dlPlusEna = settings->value("dlPlus", true).toBool();
-    s.lang = QLocale::codeToLanguage(settings->value("language", QString("")).toString());
-    s.inputDevice = static_cast<InputDeviceId>(inDevice);
-    s.announcementEna = settings->value("announcementEna", 0x07FF).toUInt();
-    s.bringWindowToForeground = settings->value("bringWindowToForegroundOnAlarm", true).toBool();
-    s.noiseConcealmentLevel = settings->value("noiseConcealment", 0).toInt();
-    s.xmlHeaderEna = settings->value("rawFileXmlHeader", true).toBool();
-    s.spiAppEna = settings->value("spiAppEna", true).toBool();
-    s.useInternet = settings->value("useInternet", true).toBool();
-    s.radioDnsEna = settings->value("radioDNS", true).toBool();
-    s.audioRecFolder = settings->value("audioRecFolder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
-    s.audioRecCaptureOutput = settings->value("audioRecCaptureOutput", false).toBool();
-    s.audioRecAutoStopEna = settings->value("audioRecAutoStop", false).toBool();
+    m_settings->applicationStyle = static_cast<Settings::ApplicationStyle>(settings->value("style", static_cast<int>(Settings::ApplicationStyle::Default)).toInt());
+    m_settings->dlPlusEna = settings->value("dlPlus", true).toBool();
+    m_settings->lang = QLocale::codeToLanguage(settings->value("language", QString("")).toString());
+    m_settings->inputDevice = static_cast<InputDeviceId>(inDevice);
+    m_settings->announcementEna = settings->value("announcementEna", 0x07FF).toUInt();
+    m_settings->bringWindowToForeground = settings->value("bringWindowToForegroundOnAlarm", true).toBool();
+    m_settings->noiseConcealmentLevel = settings->value("noiseConcealment", 0).toInt();
+    m_settings->xmlHeaderEna = settings->value("rawFileXmlHeader", true).toBool();
+    m_settings->spiAppEna = settings->value("spiAppEna", true).toBool();
+    m_settings->useInternet = settings->value("useInternet", true).toBool();
+    m_settings->radioDnsEna = settings->value("radioDNS", true).toBool();
+    m_settings->audioRecFolder = settings->value("audioRecFolder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
+    m_settings->audioRecCaptureOutput = settings->value("audioRecCaptureOutput", false).toBool();
+    m_settings->audioRecAutoStopEna = settings->value("audioRecAutoStop", false).toBool();
 
-    s.uaDump.folder = settings->value("UA-STORAGE/folder", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + "/" + appName).toString();
-    s.uaDump.overwriteEna  = settings->value("UA-STORAGE/overwriteEna", false).toBool();
-    s.uaDump.slsEna = settings->value("UA-STORAGE/slsEna", false).toBool();
-    s.uaDump.spiEna = settings->value("UA-STORAGE/spiEna", false).toBool();
-    s.uaDump.slsPattern = settings->value("UA-STORAGE/slsPattern", slsDumpPatern).toString();
-    s.uaDump.spiPattern = settings->value("UA-STORAGE/spiPattern", spiDumpPatern).toString();
+    m_settings->uaDump.folder = settings->value("UA-STORAGE/folder", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + "/" + appName).toString();
+    m_settings->uaDump.overwriteEna  = settings->value("UA-STORAGE/overwriteEna", false).toBool();
+    m_settings->uaDump.slsEna = settings->value("UA-STORAGE/slsEna", false).toBool();
+    m_settings->uaDump.spiEna = settings->value("UA-STORAGE/spiEna", false).toBool();
+    m_settings->uaDump.slsPattern = settings->value("UA-STORAGE/slsPattern", slsDumpPatern).toString();
+    m_settings->uaDump.spiPattern = settings->value("UA-STORAGE/spiPattern", spiDumpPatern).toString();
 
-    m_epgDialog->setFilterEmptyEpg(settings->value("epgFilterEmpty", false).toBool());
-    m_epgDialog->setFilterEnsemble(settings->value("epgFilterOtherEnsembles", false).toBool());
+    m_settings->tii.locationSource = static_cast<Settings::GeolocationSource>(settings->value("TII/locationSource", static_cast<int>(Settings::GeolocationSource::System)).toInt());
+    m_settings->tii.coordinates = QGeoCoordinate(settings->value("TII/latitude", 0.0).toDouble(), settings->value("TII/longitude", 0.0).toDouble());
+    m_settings->tii.serialPort = settings->value("TII/serialPort", "").toString();
+    m_settings->tii.showSpectumPlot = settings->value("TII/showSpectrumPlot", false).toBool();
+    m_settings->tii.geometry = settings->value("TII/windowGeometry").toByteArray();
 
-    s.rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
-    s.rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
-    s.rtlsdr.bandwidth = settings->value("RTL-SDR/bandwidth", 0).toUInt();
-    s.rtlsdr.biasT = settings->value("RTL-SDR/bias-T", false).toBool();
-    s.rtlsdr.agcLevelMax = settings->value("RTL-SDR/agcLevelMax", 0).toInt();
-    s.rtlsdr.ppm = settings->value("RTL-SDR/ppm", 0).toInt();
+    m_settings->proxy.config = static_cast<Settings::ProxyConfig>(settings->value("Proxy/config", static_cast<int>(Settings::ProxyConfig::System)).toInt());
+    m_settings->proxy.server = settings->value("Proxy/server", "").toString();
+    m_settings->proxy.port = settings->value("Proxy/port", "").toUInt();
+    m_settings->proxy.user = settings->value("Proxy/user", "").toString();
+    m_settings->proxy.pass = QByteArray::fromBase64(settings->value("Proxy/pass", "").toByteArray());
 
-    s.rtltcp.gainIdx = settings->value("RTL-TCP/gainIndex", 0).toInt();
-    s.rtltcp.gainMode = static_cast<RtlGainMode>(settings->value("RTL-TCP/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
-    s.rtltcp.tcpAddress = settings->value("RTL-TCP/address", QString("127.0.0.1")).toString();
-    s.rtltcp.tcpPort = settings->value("RTL-TCP/port", 1234).toInt();
-    s.rtltcp.agcLevelMax = settings->value("RTL-TCP/agcLevelMax", 0).toInt();
-    s.rtltcp.ppm = settings->value("RTL-TCP/ppm", 0).toInt();
+    m_settings->snr.geometry = settings->value("SNR/windowGeometry").toByteArray();
+
+    m_settings->epg.filterEmptyEpg = settings->value("epgFilterEmpty", false).toBool();
+    m_settings->epg.filterEnsemble = settings->value("epgFilterOtherEnsembles", false).toBool();
+
+    m_settings->rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
+    m_settings->rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
+    m_settings->rtlsdr.bandwidth = settings->value("RTL-SDR/bandwidth", 0).toUInt();
+    m_settings->rtlsdr.biasT = settings->value("RTL-SDR/bias-T", false).toBool();
+    m_settings->rtlsdr.agcLevelMax = settings->value("RTL-SDR/agcLevelMax", 0).toInt();
+    m_settings->rtlsdr.ppm = settings->value("RTL-SDR/ppm", 0).toInt();
+
+    m_settings->rtltcp.gainIdx = settings->value("RTL-TCP/gainIndex", 0).toInt();
+    m_settings->rtltcp.gainMode = static_cast<RtlGainMode>(settings->value("RTL-TCP/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
+    m_settings->rtltcp.tcpAddress = settings->value("RTL-TCP/address", QString("127.0.0.1")).toString();
+    m_settings->rtltcp.tcpPort = settings->value("RTL-TCP/port", 1234).toInt();
+    m_settings->rtltcp.agcLevelMax = settings->value("RTL-TCP/agcLevelMax", 0).toInt();
+    m_settings->rtltcp.ppm = settings->value("RTL-TCP/ppm", 0).toInt();
+
+#if HAVE_RARTTCP
+    m_settings->rarttcp.tcpAddress = settings->value("RART-TCP/address", QString("127.0.0.1")).toString();
+    m_settings->rarttcp.tcpPort = settings->value("RART-TCP/port", 1235).toInt();
+#endif
 
 #if HAVE_AIRSPY
-    s.airspy.gain.sensitivityGainIdx = settings->value("AIRSPY/sensitivityGainIdx", 9).toInt();
-    s.airspy.gain.lnaGainIdx = settings->value("AIRSPY/lnaGainIdx", 0).toInt();
-    s.airspy.gain.mixerGainIdx = settings->value("AIRSPY/mixerGainIdx", 0).toInt();
-    s.airspy.gain.ifGainIdx = settings->value("AIRSPY/ifGainIdx", 5).toInt();
-    s.airspy.gain.lnaAgcEna = settings->value("AIRSPY/lnaAgcEna", true).toBool();
-    s.airspy.gain.mixerAgcEna = settings->value("AIRSPY/mixerAgcEna", true).toBool();
-    s.airspy.gain.mode = static_cast<AirpyGainMode>(settings->value("AIRSPY/gainMode", static_cast<int>(AirpyGainMode::Hybrid)).toInt());
-    s.airspy.biasT = settings->value("AIRSPY/bias-T", false).toBool();
-    s.airspy.dataPacking = settings->value("AIRSPY/dataPacking", true).toBool();
-    s.airspy.prefer4096kHz = settings->value("AIRSPY/preferSampleRate4096kHz", true).toBool();
+    m_settings->airspy.gain.sensitivityGainIdx = settings->value("AIRSPY/sensitivityGainIdx", 9).toInt();
+    m_settings->airspy.gain.lnaGainIdx = settings->value("AIRSPY/lnaGainIdx", 0).toInt();
+    m_settings->airspy.gain.mixerGainIdx = settings->value("AIRSPY/mixerGainIdx", 0).toInt();
+    m_settings->airspy.gain.ifGainIdx = settings->value("AIRSPY/ifGainIdx", 5).toInt();
+    m_settings->airspy.gain.lnaAgcEna = settings->value("AIRSPY/lnaAgcEna", true).toBool();
+    m_settings->airspy.gain.mixerAgcEna = settings->value("AIRSPY/mixerAgcEna", true).toBool();
+    m_settings->airspy.gain.mode = static_cast<AirpyGainMode>(settings->value("AIRSPY/gainMode", static_cast<int>(AirpyGainMode::Hybrid)).toInt());
+    m_settings->airspy.biasT = settings->value("AIRSPY/bias-T", false).toBool();
+    m_settings->airspy.dataPacking = settings->value("AIRSPY/dataPacking", true).toBool();
+    m_settings->airspy.prefer4096kHz = settings->value("AIRSPY/preferSampleRate4096kHz", true).toBool();
 #endif
 #if HAVE_SOAPYSDR
-    s.soapysdr.gainIdx = settings->value("SOAPYSDR/gainIndex", 0).toInt();
-    s.soapysdr.gainMode = static_cast<SoapyGainMode>(settings->value("SOAPYSDR/gainMode", static_cast<int>(SoapyGainMode::Hardware)).toInt());
-    s.soapysdr.devArgs = settings->value("SOAPYSDR/devArgs", QString("driver=rtlsdr")).toString();
-    s.soapysdr.antenna = settings->value("SOAPYSDR/antenna", QString("RX")).toString();
-    s.soapysdr.channel = settings->value("SOAPYSDR/rxChannel", 0).toInt();
-    s.soapysdr.bandwidth = settings->value("SOAPYSDR/bandwidth", 0).toUInt();
+    m_settings->soapysdr.gainIdx = settings->value("SOAPYSDR/gainIndex", 0).toInt();
+    m_settings->soapysdr.gainMode = static_cast<SoapyGainMode>(settings->value("SOAPYSDR/gainMode", static_cast<int>(SoapyGainMode::Hardware)).toInt());
+    m_settings->soapysdr.devArgs = settings->value("SOAPYSDR/devArgs", QString("driver=rtlsdr")).toString();
+    m_settings->soapysdr.antenna = settings->value("SOAPYSDR/antenna", QString("RX")).toString();
+    m_settings->soapysdr.channel = settings->value("SOAPYSDR/rxChannel", 0).toInt();
+    m_settings->soapysdr.bandwidth = settings->value("SOAPYSDR/bandwidth", 0).toUInt();
 #endif
-    s.rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
-    s.rawfile.format = RawFileInputFormat(settings->value("RAW-FILE/format", 0).toInt());
-    s.rawfile.loopEna = settings->value("RAW-FILE/loop", false).toBool();
+    m_settings->rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
+    m_settings->rawfile.format = RawFileInputFormat(settings->value("RAW-FILE/format", 0).toInt());
+    m_settings->rawfile.loopEna = settings->value("RAW-FILE/loop", false).toBool();
 
-    m_setupDialog->setSettings(s);
+    m_setupDialog->setSettings(m_settings);
 
     // set DAB time locale
     m_timeLocale = QLocale(m_setupDialog->applicationLanguage());
@@ -2680,10 +2924,10 @@ void MainWindow::loadSettings()
     // need to run here because it expects that settings is up-to-date
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && !defined(Q_OS_WIN) && !defined(Q_OS_LINUX)
     // theme color looks horible on Linux -> always force color theme
-    if (ApplicationStyle::Default != s.applicationStyle)
+    if (Settings::ApplicationStyle::Default != m_settings->applicationStyle)
 #endif
     {
-        onApplicationStyleChanged(s.applicationStyle);
+        onApplicationStyleChanged(m_settings->applicationStyle);
     }
 
     m_inputDeviceRecorder->setRecordingPath(settings->value("recordingPath", QVariant(QDir::homePath())).toString());
@@ -2692,14 +2936,15 @@ void MainWindow::loadSettings()
 
     if (InputDeviceId::UNDEFINED != static_cast<InputDeviceId>(inDevice))
     {
-        initInputDevice(s.inputDevice);
+        initInputDevice(m_settings->inputDevice);
 
         // if input device has switched to what was stored and it is RTLSDR or RTLTCP or Airspy
-        if ((s.inputDevice == m_inputDeviceId)
+        if ((m_settings->inputDevice == m_inputDeviceId)
                 && (    (InputDeviceId::RTLSDR == m_inputDeviceId)
                      || (InputDeviceId::AIRSPY == m_inputDeviceId)
                      || (InputDeviceId::SOAPYSDR == m_inputDeviceId)
-                     || (InputDeviceId::RTLTCP == m_inputDeviceId)))
+                     || (InputDeviceId::RTLTCP == m_inputDeviceId)
+                     || (InputDeviceId::RARTTCP == m_inputDeviceId)))
         {   // restore channel
             int sid = settings->value("SID", 0).toInt();
             uint8_t scids = settings->value("SCIdS", 0).toInt();
@@ -2717,7 +2962,7 @@ void MainWindow::loadSettings()
         QTimer::singleShot(1, this, [this](){ bandScan(); } );
     }
     if ((InputDeviceId::UNDEFINED == m_inputDeviceId)
-        || ((InputDeviceId::RAWFILE == m_inputDeviceId) && (s.rawfile.file.isEmpty())))
+        || ((InputDeviceId::RAWFILE == m_inputDeviceId) && (m_settings->rawfile.file.isEmpty())))
     {
         QTimer::singleShot(1, this, [this](){ showSetupDialog(); } );
     }
@@ -2757,8 +3002,7 @@ void MainWindow::saveSettings()
         settings = new QSettings(m_iniFilename, QSettings::IniFormat);
     }
 
-    const SetupDialog::Settings s = m_setupDialog->settings();
-    settings->setValue("inputDeviceId", int(s.inputDevice));
+    settings->setValue("inputDeviceId", int(m_settings->inputDevice));
     settings->setValue("recordingPath", m_inputDeviceRecorder->recordingPath());
     settings->setValue("slideSavePath", ui->slsView_Service->savePath());
     if (nullptr != m_audioDevicesGroup)
@@ -2779,70 +3023,89 @@ void MainWindow::saveSettings()
     settings->setValue("mute", m_muteLabel->isChecked());
     settings->setValue("keepServiceListOnScan", m_keepServiceListOnScan);
     settings->setValue("windowGeometry", saveGeometry());
-    settings->setValue("style", static_cast<int>(s.applicationStyle));
-    settings->setValue("announcementEna", s.announcementEna);
-    settings->setValue("bringWindowToForegroundOnAlarm", s.bringWindowToForeground);
-    settings->setValue("expertMode", s.expertModeEna);
-    settings->setValue("dlPlus", s.dlPlusEna);
-    settings->setValue("language", QLocale::languageToCode(s.lang));
-    settings->setValue("noiseConcealment", s.noiseConcealmentLevel);
-    settings->setValue("rawFileXmlHeader", s.xmlHeaderEna);
-    settings->setValue("spiAppEna", s.spiAppEna);
-    settings->setValue("useInternet", s.useInternet);
-    settings->setValue("radioDNS", s.radioDnsEna);
-    settings->setValue("audioRecFolder", s.audioRecFolder);
-    settings->setValue("audioRecCaptureOutput", s.audioRecCaptureOutput);
-    settings->setValue("audioRecAutoStop", s.audioRecAutoStopEna);
+    settings->setValue("style", static_cast<int>(m_settings->applicationStyle));
+    settings->setValue("announcementEna", m_settings->announcementEna);
+    settings->setValue("bringWindowToForegroundOnAlarm", m_settings->bringWindowToForeground);
+    settings->setValue("expertMode", m_settings->expertModeEna);
+    settings->setValue("dlPlus", m_settings->dlPlusEna);
+    settings->setValue("language", QLocale::languageToCode(m_settings->lang));
+    settings->setValue("noiseConcealment", m_settings->noiseConcealmentLevel);
+    settings->setValue("rawFileXmlHeader", m_settings->xmlHeaderEna);
+    settings->setValue("spiAppEna", m_settings->spiAppEna);
+    settings->setValue("useInternet", m_settings->useInternet);
+    settings->setValue("radioDNS", m_settings->radioDnsEna);
+    settings->setValue("audioRecFolder", m_settings->audioRecFolder);
+    settings->setValue("audioRecCaptureOutput", m_settings->audioRecCaptureOutput);
+    settings->setValue("audioRecAutoStop", m_settings->audioRecAutoStopEna);
+    settings->setValue("epgFilterEmpty", m_settings->epg.filterEmptyEpg);
+    settings->setValue("epgFilterOtherEnsembles", m_settings->epg.filterEnsemble);
 
-    settings->setValue("UA-STORAGE/folder", s.uaDump.folder);
-    settings->setValue("UA-STORAGE/overwriteEna", s.uaDump.overwriteEna);
-    settings->setValue("UA-STORAGE/slsEna", s.uaDump.slsEna);
-    settings->setValue("UA-STORAGE/spiEna", s.uaDump.spiEna);
-    settings->setValue("UA-STORAGE/slsPattern", s.uaDump.slsPattern);
-    settings->setValue("UA-STORAGE/spiPattern", s.uaDump.spiPattern);
+    settings->setValue("TII/locationSource", static_cast<int>(m_settings->tii.locationSource));
+    settings->setValue("TII/latitude", m_settings->tii.coordinates.latitude());
+    settings->setValue("TII/longitude", m_settings->tii.coordinates.longitude());
+    settings->setValue("TII/serialPort", m_settings->tii.serialPort);
+    settings->setValue("TII/showSpectrumPlot", m_settings->tii.showSpectumPlot);
+    settings->setValue("TII/windowGeometry", m_settings->tii.geometry);
 
-    settings->setValue("epgFilterEmpty", m_epgDialog->filterEmptyEpg());
-    settings->setValue("epgFilterOtherEnsembles", m_epgDialog->filterEnsemble());
+    settings->setValue("Proxy/config", static_cast<int>(m_settings->proxy.config));
+    settings->setValue("Proxy/server", m_settings->proxy.server);
+    settings->setValue("Proxy/port", m_settings->proxy.port);
+    settings->setValue("Proxy/user", m_settings->proxy.user);
+    settings->setValue("Proxy/pass", m_settings->proxy.pass.toBase64());
 
-    settings->setValue("RTL-SDR/gainIndex", s.rtlsdr.gainIdx);
-    settings->setValue("RTL-SDR/gainMode", static_cast<int>(s.rtlsdr.gainMode));
-    settings->setValue("RTL-SDR/bandwidth", s.rtlsdr.bandwidth);
-    settings->setValue("RTL-SDR/bias-T", s.rtlsdr.biasT);
-    settings->setValue("RTL-SDR/agcLevelMax", s.rtlsdr.agcLevelMax);
-    settings->setValue("RTL-SDR/ppm", s.rtlsdr.ppm);
+    settings->setValue("SNR/windowGeometry", m_settings->snr.geometry);
+
+    settings->setValue("UA-STORAGE/folder", m_settings->uaDump.folder);
+    settings->setValue("UA-STORAGE/overwriteEna", m_settings->uaDump.overwriteEna);
+    settings->setValue("UA-STORAGE/slsEna", m_settings->uaDump.slsEna);
+    settings->setValue("UA-STORAGE/spiEna", m_settings->uaDump.spiEna);
+    settings->setValue("UA-STORAGE/slsPattern", m_settings->uaDump.slsPattern);
+    settings->setValue("UA-STORAGE/spiPattern", m_settings->uaDump.spiPattern);
+
+    settings->setValue("RTL-SDR/gainIndex", m_settings->rtlsdr.gainIdx);
+    settings->setValue("RTL-SDR/gainMode", static_cast<int>(m_settings->rtlsdr.gainMode));
+    settings->setValue("RTL-SDR/bandwidth", m_settings->rtlsdr.bandwidth);
+    settings->setValue("RTL-SDR/bias-T", m_settings->rtlsdr.biasT);
+    settings->setValue("RTL-SDR/agcLevelMax", m_settings->rtlsdr.agcLevelMax);
+    settings->setValue("RTL-SDR/ppm", m_settings->rtlsdr.ppm);
 
 #if HAVE_AIRSPY
-    settings->setValue("AIRSPY/sensitivityGainIdx", s.airspy.gain.sensitivityGainIdx);
-    settings->setValue("AIRSPY/lnaGainIdx", s.airspy.gain.lnaGainIdx);
-    settings->setValue("AIRSPY/mixerGainIdx", s.airspy.gain.mixerGainIdx);
-    settings->setValue("AIRSPY/ifGainIdx", s.airspy.gain.ifGainIdx);
-    settings->setValue("AIRSPY/lnaAgcEna", s.airspy.gain.lnaAgcEna);
-    settings->setValue("AIRSPY/mixerAgcEna", s.airspy.gain.mixerAgcEna);
-    settings->setValue("AIRSPY/gainMode", static_cast<int>(s.airspy.gain.mode));
-    settings->setValue("AIRSPY/bias-T", s.airspy.biasT);
-    settings->setValue("AIRSPY/dataPacking", s.airspy.dataPacking);
-    settings->setValue("AIRSPY/preferSampleRate4096kHz", s.airspy.prefer4096kHz);
+    settings->setValue("AIRSPY/sensitivityGainIdx", m_settings->airspy.gain.sensitivityGainIdx);
+    settings->setValue("AIRSPY/lnaGainIdx", m_settings->airspy.gain.lnaGainIdx);
+    settings->setValue("AIRSPY/mixerGainIdx", m_settings->airspy.gain.mixerGainIdx);
+    settings->setValue("AIRSPY/ifGainIdx", m_settings->airspy.gain.ifGainIdx);
+    settings->setValue("AIRSPY/lnaAgcEna", m_settings->airspy.gain.lnaAgcEna);
+    settings->setValue("AIRSPY/mixerAgcEna", m_settings->airspy.gain.mixerAgcEna);
+    settings->setValue("AIRSPY/gainMode", static_cast<int>(m_settings->airspy.gain.mode));
+    settings->setValue("AIRSPY/bias-T", m_settings->airspy.biasT);
+    settings->setValue("AIRSPY/dataPacking", m_settings->airspy.dataPacking);
+    settings->setValue("AIRSPY/preferSampleRate4096kHz", m_settings->airspy.prefer4096kHz);
 #endif
 
 #if HAVE_SOAPYSDR
-    settings->setValue("SOAPYSDR/gainIndex", s.soapysdr.gainIdx);
-    settings->setValue("SOAPYSDR/gainMode", static_cast<int>(s.soapysdr.gainMode));
-    settings->setValue("SOAPYSDR/devArgs", s.soapysdr.devArgs);
-    settings->setValue("SOAPYSDR/rxChannel", s.soapysdr.channel);
-    settings->setValue("SOAPYSDR/antenna", s.soapysdr.antenna);
-    settings->setValue("SOAPYSDR/bandwidth", s.soapysdr.bandwidth);
+    settings->setValue("SOAPYSDR/gainIndex", m_settings->soapysdr.gainIdx);
+    settings->setValue("SOAPYSDR/gainMode", static_cast<int>(m_settings->soapysdr.gainMode));
+    settings->setValue("SOAPYSDR/devArgs", m_settings->soapysdr.devArgs);
+    settings->setValue("SOAPYSDR/rxChannel", m_settings->soapysdr.channel);
+    settings->setValue("SOAPYSDR/antenna", m_settings->soapysdr.antenna);
+    settings->setValue("SOAPYSDR/bandwidth", m_settings->soapysdr.bandwidth);
 #endif
 
-    settings->setValue("RTL-TCP/gainIndex", s.rtltcp.gainIdx);
-    settings->setValue("RTL-TCP/gainMode", static_cast<int>(s.rtltcp.gainMode));
-    settings->setValue("RTL-TCP/address", s.rtltcp.tcpAddress);
-    settings->setValue("RTL-TCP/port", s.rtltcp.tcpPort);
-    settings->setValue("RTL-TCP/agcLevelMax", s.rtltcp.agcLevelMax);
-    settings->setValue("RTL-TCP/ppm", s.rtltcp.ppm);
+    settings->setValue("RTL-TCP/gainIndex", m_settings->rtltcp.gainIdx);
+    settings->setValue("RTL-TCP/gainMode", static_cast<int>(m_settings->rtltcp.gainMode));
+    settings->setValue("RTL-TCP/address", m_settings->rtltcp.tcpAddress);
+    settings->setValue("RTL-TCP/port", m_settings->rtltcp.tcpPort);
+    settings->setValue("RTL-TCP/agcLevelMax", m_settings->rtltcp.agcLevelMax);
+    settings->setValue("RTL-TCP/ppm", m_settings->rtltcp.ppm);
 
-    settings->setValue("RAW-FILE/filename", s.rawfile.file);
-    settings->setValue("RAW-FILE/format", int(s.rawfile.format));
-    settings->setValue("RAW-FILE/loop", s.rawfile.loopEna);
+#if HAVE_RARTTCP
+    settings->setValue("RART-TCP/address", m_settings->rarttcp.tcpAddress);
+    settings->setValue("RART-TCP/port", m_settings->rarttcp.tcpPort);
+#endif
+
+    settings->setValue("RAW-FILE/filename", m_settings->rawfile.file);
+    settings->setValue("RAW-FILE/format", int(m_settings->rawfile.format));
+    settings->setValue("RAW-FILE/loop", m_settings->rawfile.loopEna);
 
     if ((InputDeviceId::RAWFILE != m_inputDeviceId) && (InputDeviceId::UNDEFINED != m_inputDeviceId))
     {   // save current service and service list
@@ -3004,7 +3267,7 @@ void MainWindow::serviceListViewUpdateSelection()
 
 void MainWindow::toggleDLPlus(bool toggle)
 {
-    ui->dlPlusWidget->setVisible(toggle && m_setupDialog->settings().dlPlusEna);
+    ui->dlPlusWidget->setVisible(toggle && m_settings->dlPlusEna);
 }
 
 void MainWindow::showEnsembleInfo()
@@ -3016,6 +3279,21 @@ void MainWindow::showEnsembleInfo()
 
 void MainWindow::showEPG()
 {
+    if (m_epgDialog == nullptr)
+    {
+        m_epgDialog = new EPGDialog(m_slModel, ui->serviceListView->selectionModel(), m_metadataManager, m_settings);
+        connect(this, &MainWindow::exit, m_epgDialog, &EPGDialog::close);
+        m_epgDialog->setupDarkMode(isDarkMode());
+        connect(m_epgDialog, &EPGDialog::scheduleAudioRecording, this, [this](const AudioRecScheduleItem & item) {
+            showAudioRecordingSchedule();
+            m_audioRecScheduleDialog->addItem(item);
+        });
+
+        connect(m_radioControl, &RadioControl::ensembleInformation, m_epgDialog, &EPGDialog::onEnsembleInformation, Qt::QueuedConnection);
+        emit getEnsembleInfo();  // this triggers ensemble infomation used to configure EPG dialog
+        connect(m_epgDialog, &QDialog::finished, m_epgDialog, &QObject::deleteLater);
+        connect(m_epgDialog, &QDialog::destroyed, this, [this]() { m_epgDialog = nullptr; } );
+    }
     m_epgDialog->show();
     m_epgDialog->raise();
     m_epgDialog->activateWindow();
@@ -3052,7 +3330,8 @@ void MainWindow::showAudioRecordingSchedule()
 {
     if (m_audioRecScheduleDialog == nullptr)
     {
-        m_audioRecScheduleDialog = new AudioRecScheduleDialog(m_audioRecScheduleModel, m_slModel, this);
+        m_audioRecScheduleDialog = new AudioRecScheduleDialog(m_audioRecScheduleModel, m_slModel);
+        connect(this, &MainWindow::exit, m_audioRecScheduleDialog, &AudioRecScheduleDialog::close);
         connect(m_audioRecScheduleDialog, &QDialog::finished, m_audioRecScheduleDialog, &QObject::deleteLater);
         connect(m_audioRecScheduleDialog, &QDialog::destroyed, this, [this]() { m_audioRecScheduleDialog = nullptr; } );
         m_audioRecScheduleDialog->setLocale(m_timeLocale);
@@ -3064,6 +3343,45 @@ void MainWindow::showAudioRecordingSchedule()
     m_audioRecScheduleDialog->raise();
     m_audioRecScheduleDialog->activateWindow();
 
+}
+
+void MainWindow::showSnrPlotDialog()
+{
+#if HAVE_QCUSTOMPLOT
+    if (m_snrPlotDialog == nullptr)
+    {
+        m_snrPlotDialog = new SNRPlotDialog(m_settings);
+        connect(this, &MainWindow::exit, m_snrPlotDialog, &SNRPlotDialog::close);
+        m_snrPlotDialog->setupDarkMode(isDarkMode());
+        connect(m_snrPlotDialog, &QDialog::finished, m_snrPlotDialog, &QObject::deleteLater);
+        connect(m_snrPlotDialog, &QDialog::destroyed, this, [this]() { m_snrPlotDialog = nullptr; } );        
+    }
+
+    m_snrPlotDialog->show();
+    m_snrPlotDialog->raise();
+    m_snrPlotDialog->activateWindow();
+#endif // HAVE_QCUSTOMPLOT
+}
+
+void MainWindow::showTiiDialog()
+{
+    if (m_tiiDialog == nullptr)
+    {
+        m_tiiDialog = new TIIDialog(m_settings);
+        connect(this, &MainWindow::exit, m_tiiDialog, &TIIDialog::close);
+        m_tiiDialog->setupDarkMode(isDarkMode());
+        connect(m_setupDialog, &SetupDialog::tiiSettingsChanged, m_tiiDialog, &TIIDialog::onSettingsChanged);
+        connect(m_tiiDialog, &TIIDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::tiiData, m_tiiDialog, &TIIDialog::onTiiData, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::ensembleInformation, m_tiiDialog, &TIIDialog::onEnsembleInformation, Qt::QueuedConnection);
+        emit getEnsembleInfo();  // this triggers ensemble infomation used to configure EPG dialog
+        connect(m_tiiDialog, &QDialog::finished, m_tiiDialog, &QObject::deleteLater);
+        connect(m_tiiDialog, &QDialog::destroyed, this, [this]() { m_tiiDialog = nullptr; } );
+    }
+
+    m_tiiDialog->show();
+    m_tiiDialog->raise();
+    m_tiiDialog->activateWindow();
 }
 
 void MainWindow::onExpertModeToggled(bool checked)
@@ -3095,6 +3413,7 @@ void MainWindow::setExpertMode(bool ena)
     ui->slsView_Service->setExpertMode(ena);
     ui->slsView_Announcement->setExpertMode(ena);
     m_catSlsDialog->setExpertMode(ena);
+    m_tiiAction->setVisible(ena);
 
     // set tab order
     if (ena)
@@ -3118,7 +3437,14 @@ void MainWindow::bandScan()
     connect(m_radioControl, &RadioControl::ensembleInformation, dialog, &BandScanDialog::onEnsembleFound, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::tuneDone, dialog, &BandScanDialog::onTuneDone, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListComplete, dialog, &BandScanDialog::onServiceListComplete, Qt::QueuedConnection);
-    connect(m_serviceList, &ServiceList::serviceAdded, dialog, &BandScanDialog::onServiceFound);
+    if (m_keepServiceListOnScan)
+    {
+        connect(m_radioControl, &RadioControl::serviceListEntry, dialog, &BandScanDialog::onServiceListEntry, Qt::QueuedConnection);
+    }
+    else
+    {
+        connect(m_serviceList, &ServiceList::serviceAdded, dialog, &BandScanDialog::onServiceFound);
+    }
     connect(dialog, &BandScanDialog::scanStarts, this, &MainWindow::onBandScanStart);
     connect(dialog, &BandScanDialog::finished, this, &MainWindow::onBandScanFinished);
 
@@ -3172,11 +3498,11 @@ void MainWindow::clearServiceList()
     m_serviceList->clear();
 }
 
-void MainWindow::onApplicationStyleChanged(ApplicationStyle style)
+void MainWindow::onApplicationStyleChanged(Settings::ApplicationStyle style)
 {
     switch(style)
     {
-    case ApplicationStyle::Default:
+    case Settings::ApplicationStyle::Default:
 #ifndef Q_OS_LINUX
         qApp->setStyle(QStyleFactory::create(m_defaultStyleName));
         qApp->setPalette(qApp->style()->standardPalette());
@@ -3184,8 +3510,8 @@ void MainWindow::onApplicationStyleChanged(ApplicationStyle style)
         setupDarkMode();
         break;
 #endif
-    case ApplicationStyle::Light:
-    case ApplicationStyle::Dark:
+    case Settings::ApplicationStyle::Light:
+    case Settings::ApplicationStyle::Dark:
         qApp->setStyle(QStyleFactory::create("Fusion"));
 
         QSizePolicy sizePolicy = ui->scrollArea->sizePolicy();
@@ -3196,7 +3522,7 @@ void MainWindow::onApplicationStyleChanged(ApplicationStyle style)
         sizePolicy.setVerticalStretch(1);
         ui->slsWidget->setSizePolicy(sizePolicy);
 
-        forceDarkStyle(ApplicationStyle::Dark == style);
+        forceDarkStyle(Settings::ApplicationStyle::Dark == style);
 
         break;
     }
@@ -3204,6 +3530,8 @@ void MainWindow::onApplicationStyleChanged(ApplicationStyle style)
 
 void MainWindow::initStyle()
 {
+    QQuickStyle::setStyle("Fusion");
+
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
 #if defined(Q_OS_WIN)
     // this forces Fusion on Windows
@@ -3355,7 +3683,7 @@ void MainWindow::initStyle()
 
 void MainWindow::restoreTimeQualWidget()
 {
-    m_timeBasicQualInfoWidget->setCurrentIndex(m_setupDialog->settings().expertModeEna ? 1 : 0);
+    m_timeBasicQualInfoWidget->setCurrentIndex(m_settings->expertModeEna ? 1 : 0);
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
@@ -3364,20 +3692,20 @@ void MainWindow::onColorSchemeChanged(Qt::ColorScheme colorScheme)
 {
     // this is required here to keep consistency when forced styles have been used before
     // palette should not be touched in case that only automatic dark mode switching is supported
-    if (ApplicationStyle::Default == m_setupDialog->settings().applicationStyle)
+    if (Settings::ApplicationStyle::Default == m_settings->applicationStyle)
     {
         qApp->setPalette(qApp->style()->standardPalette());
 #ifdef Q_OS_WIN
         // this hack forces correct change for the colors on Windows
         if (colorScheme == Qt::ColorScheme::Dark)
         {
-            onApplicationStyleChanged(ApplicationStyle::Dark);
+            onApplicationStyleChanged(Settings::ApplicationStyle::Dark);
         }
         else
         {
-            onApplicationStyleChanged(ApplicationStyle::Light);
+            onApplicationStyleChanged(Settings::ApplicationStyle::Light);
         }
-        onApplicationStyleChanged(ApplicationStyle::Default);
+        onApplicationStyleChanged(Settings::ApplicationStyle::Default);
 #endif
     }
     setupDarkMode();
@@ -3427,12 +3755,12 @@ void MainWindow::changeEvent( QEvent* e )
 
 bool MainWindow::isDarkMode()
 {
-    if (ApplicationStyle::Dark == m_setupDialog->settings().applicationStyle)
+    if (Settings::ApplicationStyle::Dark == m_settings->applicationStyle)
     {
         return true;
     }
     // else
-    if (ApplicationStyle::Light == m_setupDialog->settings().applicationStyle)
+    if (Settings::ApplicationStyle::Light == m_settings->applicationStyle)
     {
         return false;
     }
@@ -3468,7 +3796,27 @@ void MainWindow::forceDarkStyle(bool ena)
 
 void MainWindow::setupDarkMode()
 {
-    if (isDarkMode())
+    bool darkMode = isDarkMode();
+    ui->slsView_Service->setupDarkMode(darkMode);
+    ui->slsView_Announcement->setupDarkMode(darkMode);
+    m_setupDialog->setupDarkMode(darkMode);
+    m_logDialog->setupDarkMode(darkMode);
+    if (m_epgDialog != nullptr)
+    {
+        m_epgDialog->setupDarkMode(darkMode);
+    }
+#if HAVE_QCUSTOMPLOT
+    if (m_snrPlotDialog != nullptr)
+    {
+        m_snrPlotDialog->setupDarkMode(darkMode);
+    }
+#endif
+    if (m_tiiDialog != nullptr)
+    {
+        m_tiiDialog->setupDarkMode(darkMode);
+    }
+
+    if (darkMode)
     {
         m_menuLabel->setIcon(":/resources/menu_dark.png");
 
@@ -3479,6 +3827,7 @@ void MainWindow::setupDarkMode()
         m_muteLabel->setIcon(":/resources/volume_off_dark.png", true);
 
         ui->catSlsLabel->setIcon(":/resources/catSls_dark.png");
+        ui->epgLabel->setIcon(":/resources/epg_dark.png");
 
         ui->announcementLabel->setIcon(":/resources/announcement_active_dark.png", true);
         ui->announcementLabel->setIcon(":/resources/announcement_suspended_dark.png", false);
@@ -3489,11 +3838,6 @@ void MainWindow::setupDarkMode()
         ui->channelUp->setIcon(":/resources/chevron-right_dark.png");
 
         m_audioRecordingLabel->setIcon(":/resources/record.png");
-
-        ui->slsView_Service->setupDarkMode(true);
-        ui->slsView_Announcement->setupDarkMode(true);
-        m_logDialog->setupDarkMode(true);
-        m_epgDialog->setupDarkMode(true);
     }
     else
     {
@@ -3506,6 +3850,7 @@ void MainWindow::setupDarkMode()
         m_muteLabel->setIcon(":/resources/volume_off.png", true);
 
         ui->catSlsLabel->setIcon(":/resources/catSls.png");
+        ui->epgLabel->setIcon(":/resources/epg.png");
 
         ui->announcementLabel->setIcon(":/resources/announcement_active.png", true);
         ui->announcementLabel->setIcon(":/resources/announcement_suspended.png", false);
@@ -3516,11 +3861,6 @@ void MainWindow::setupDarkMode()
         ui->channelUp->setIcon(":/resources/chevron-right.png");
 
         m_audioRecordingLabel->setIcon(":/resources/record.png");
-
-        ui->slsView_Service->setupDarkMode(false);
-        ui->slsView_Announcement->setupDarkMode(false);
-        m_logDialog->setupDarkMode(false);
-        m_epgDialog->setupDarkMode(false);
     }
 }
 

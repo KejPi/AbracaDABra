@@ -42,7 +42,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     dabsdrVersion_t dabsdrVer = {0};
     dabsdrGetVersion(&dabsdrVer);
 
-    ui->version->setText(QString("Version %1 (%2)").arg(PROJECT_VER,"<a href=\"https://github.com/KejPi/AbracaDABra\">GitHub</a>"));
+    ui->version->setText(QString("Version %1 (%2, %3)").arg(PROJECT_VER,"<a href=\"https://github.com/KejPi/AbracaDABra\">GitHub</a>", "<a href=\"https://www.rundfunkforum.de/viewtopic.php?p=1657726\">forum</a>"));
     ui->qtVersion->setText(QString(tr("Based on Qt %1")).arg(QT_VERSION_STR));
     ui->dabsdrVersion->setText(QString(tr("DAB SDR version %1.%2.%3")).arg(dabsdrVer.major).arg(dabsdrVer.minor).arg(dabsdrVer.patch));
 
@@ -73,6 +73,9 @@ AboutDialog::AboutDialog(QWidget *parent) :
 #if HAVE_PORTAUDIO
                            "<li><a href=\"http://www.portaudio.com\">PortAudio</a> Copyright © 1999-2011 Ross Bencina and Phil Burk</li>"
 #endif
+#if HAVE_QCUSTOMPLOT
+                           "<li><a href=\"https://www.qcustomplot.com\">QCustomPlot</a> by Emanuel Eichhammer</li>"
+#endif
                            "</ul>"+
                            tr("Contributors to the translation:")+
                            "<ul>"
@@ -80,7 +83,8 @@ AboutDialog::AboutDialog(QWidget *parent) :
                            "<li>"+tr("German")+": Andreas Mikula</li>"
                            "<li>"+tr("Polish")+": Marek Schirmer</li>"
                            "</ul>"+
-                           tr("AbracaDABra uses some artwork created by")+" <a href=\"https://www.flaticon.com/authors/basic-miscellany/lineal-color\">Smashicons - Flaticon</a>");
+                           tr("AbracaDABra uses some artwork created by")+" <a href=\"https://www.flaticon.com/authors/basic-miscellany/lineal-color\">Smashicons - Flaticon</a> "+
+                           tr("and DAB transmitter database provided by")+" <a href=\"https://www.fmlist.org\">FMLIST</a>");
     ui->disclaimer->setText("<p>Copyright © 2019-2024 Petr Kopecký</p>"
                             "<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software "
                             "and associated documentation files (the “Software”), to deal in the Software without restriction, "
@@ -94,6 +98,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
                             "IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, "
                             "WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH "
                             "THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.");
+    ui->disclaimer->setReadOnly(true);
 
     QObject::connect(
         ui->version, &QLabel::linkActivated,

@@ -33,14 +33,14 @@
 #include <pthread.h>
 
 // this is chunk that is received from input device to be stored in input FIFO
-#define INPUT_CHUNK_MS            (400)
+#define INPUT_CHUNK_MS            (200)
 #define INPUT_CHUNK_IQ_SAMPLES    (2048 * INPUT_CHUNK_MS)
 
 // Input FIFO size in bytes - FIFO contains float _Complex samples => [float float]
 // total capacity is 8 input chunks
 #define INPUT_FIFO_SIZE           (INPUT_CHUNK_IQ_SAMPLES * (2*sizeof(float)) * 8)
 
-#define INPUTDEVICE_WDOG_TIMEOUT_SEC 2     // watchdog timeout in seconds (if implemented and enabled)
+#define INPUTDEVICE_WDOG_TIMEOUT_SEC 3     // watchdog timeout in seconds (if implemented and enabled)
 
 #define INPUTDEVICE_BANDWIDTH  (1530*1000)
 
@@ -59,7 +59,7 @@ struct ComplexFifo
 };
 typedef struct ComplexFifo fifo_t;
 
-enum class InputDeviceId { UNDEFINED = 0, RTLSDR, RTLTCP, RAWFILE, AIRSPY, SOAPYSDR};
+enum class InputDeviceId { UNDEFINED = 0, RTLSDR, RTLTCP, RAWFILE, AIRSPY, SOAPYSDR, RARTTCP};
 
 enum class RtlGainMode
 {

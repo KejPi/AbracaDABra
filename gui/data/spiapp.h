@@ -65,7 +65,7 @@ public:
     void stop() override;
     void restart() override;
     void reset() override;
-    void setDataDumping(const SetupDialog::Settings::UADumpSettings & settings) override;
+    void setDataDumping(const Settings::UADumpSettings & settings) override;
     void enable(bool ena);
 
     // RadioDNS

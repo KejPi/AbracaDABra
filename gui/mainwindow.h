@@ -43,9 +43,11 @@
 #include <QItemSelection>
 #include <QMessageBox>
 
+#include "config.h"
 #include "audiorecmanager.h"
 #include "audiorecscheduledialog.h"
 #include "clickablelabel.h"
+#include "dabchannellistmodel.h"
 #include "epgdialog.h"
 #include "metadatamanager.h"
 #include "setupdialog.h"
@@ -64,13 +66,17 @@
 #include "sltreemodel.h"
 #include "logdialog.h"
 #include "audiorecschedulemodel.h"
-
+#include "tiidialog.h"
+#if HAVE_QCUSTOMPLOT
+#include "snrplotdialog.h"
+#endif
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class DLPlusObjectUI;
+class FMListInterface;
 
 class MainWindow : public QMainWindow
 {
@@ -86,6 +92,7 @@ signals:
     void stopUserApps();
     void resetUserApps();
     void getAudioInfo();
+    void getEnsembleInfo();
     void toggleAnnouncement();
     void audioMute(bool doMute);
     void audioVolume(int volume);
@@ -119,6 +126,16 @@ private:
     CatSLSDialog * m_catSlsDialog;
     LogDialog * m_logDialog;
     AudioRecScheduleDialog * m_audioRecScheduleDialog;
+    TIIDialog * m_tiiDialog;
+#if HAVE_QCUSTOMPLOT
+    SNRPlotDialog * m_snrPlotDialog;    
+    ClickableLabel * m_snrLabel;    
+#else
+    QLabel * m_snrLabel;
+#endif
+#if HAVE_FMLIST_INTERFACE
+    FMListInterface * m_fmlistInterface;
+#endif
     QProgressBar * m_snrProgressbar;    
     ClickableLabel * m_menuLabel;
     ClickableLabel * m_muteLabel;   
@@ -132,7 +149,6 @@ private:
     QLabel * m_audioRecordingProgressLabel;
     QWidget * m_audioRecordingWidget;
     QLabel * m_syncLabel;
-    QLabel * m_snrLabel;
 
     // application menu
     QMenu * m_menu;
@@ -142,6 +158,7 @@ private:
     QAction * m_clearServiceListAction;
     QAction * m_bandScanAction;
     QAction * m_ensembleInfoAction;
+    QAction * m_tiiAction;
     QAction * m_aboutAction;
     QAction * m_logAction;
     QAction * m_audioRecordingAction;
@@ -177,8 +194,9 @@ private:
     QSlider * m_audioVolumeSlider;
     AudioOutput * m_audioOutput;
 
-    // state variables
+    // state variables    
     QString m_iniFilename;
+    Settings * m_settings;
     bool m_isPlaying = false;
     bool m_deviceChangeRequested = false;
     bool m_exitRequested = false;
@@ -189,6 +207,9 @@ private:
     bool m_hasTreeViewFocus;
     int m_audioVolume = 100;
     bool m_keepServiceListOnScan;
+
+    // channel list combo
+    DABChannelListFilteredModel * m_channelListModel;
 
     // service list
     ServiceList * m_serviceList;
@@ -214,6 +235,8 @@ private:
     void showLog();
     void showCatSLS();
     void showAudioRecordingSchedule();
+    void showSnrPlotDialog();
+    void showTiiDialog();
     void setExpertMode(bool ena);
     void stop();
     void bandScan();
@@ -256,7 +279,7 @@ private:
     void onMuteLabelToggled(bool doMute);
     void onSwitchSourceClicked();
     void onAnnouncementClicked();
-    void onApplicationStyleChanged(ApplicationStyle style);
+    void onApplicationStyleChanged(Settings::ApplicationStyle style);
     void onExpertModeToggled(bool checked);
     void onSignalState(uint8_t sync, float snr);
     void onServiceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
@@ -297,7 +320,7 @@ private:
     void onAudioRecordingCountdown(int numSec);
     void onMetadataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role);
     void onEpgEmpty();
-
+    void setProxy();
 };
 
 class DLPlusObjectUI

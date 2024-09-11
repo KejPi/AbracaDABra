@@ -253,6 +253,12 @@ struct RadioControlAudioData
     std::vector<uint8_t> data;
 };
 
+struct RadioControlTIIData
+{
+    RadioControlTIIData() : spectrum(2048) {}
+    QList<dabsdrTii_t> idList;
+    QList<float> spectrum;
+};
 
 enum class RadioControlEventType
 {
@@ -265,7 +271,7 @@ enum class RadioControlEventType
     USER_APP_LIST,
     ANNOUNCEMENT_SUPPORT,
     SERVICE_SELECTION,
-    SERVICE_STOP,
+    STOP_SERVICE,
     XPAD_APP_START_STOP,
     AUTO_NOTIFICATION,
     DATAGROUP_DL,
@@ -275,6 +281,7 @@ enum class RadioControlEventType
     RESET,
     ANNOUNCEMENT_SWITCHING,
     PROGRAMME_TYPE,
+    TII
 };
 
 enum class RadioControlAnnouncementState
@@ -324,7 +331,8 @@ struct RadioControlEvent
         dabsdrDecoderId_t decoderId;
         // programme type change
         dabsdrNtfPTy_t * pPty;
-
+        // TII data
+        RadioControlTIIData * pTII;
     };
 };
 
@@ -340,12 +348,14 @@ public:
     void exit();
     void tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS);
     void getEnsembleConfiguration();
+    void getEnsembleInformation();
     void startUserApplication(DabUserApplicationType uaType, bool start, bool singleChannel = true);
     uint32_t getEnsembleUEID() const { return m_ensemble.ueid; }
     void onAudioOutputRestart();
     void setupAnnouncements(uint16_t enaFlags);
     void suspendResumeAnnouncement();
     void onSpiApplicationEnabled(bool enabled);
+    void setTii(bool ena);    
 
 signals:
     void dabEvent(RadioControlEvent * pEvent);
@@ -373,6 +383,7 @@ signals:
     void announcement(DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent & s);
     void announcementAudioAvailable();
     void programmeTypeChanged(const DabSId & sid, const struct DabPTy & pty);
+    void tiiData(const RadioControlTIIData & data);
 private:
     enum class AnnouncementSwitchState { NoAnnouncement, WaitForAnnouncement, OngoingAnnouncement };
 
@@ -469,6 +480,7 @@ private:
     void dabServiceSelection(uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t decoderId) { dabsdrRequest_ServiceSelection(m_dabsdrHandle, SId, SCIdS, decoderId); }
     void dabServiceStop(uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t decoderId) { dabsdrRequest_ServiceStop(m_dabsdrHandle, SId, SCIdS, decoderId); }
     void dabXPadAppStart(uint8_t appType, bool start, dabsdrDecoderId_t decoderId) { dabsdrRequest_XPadAppStart(m_dabsdrHandle, appType, start, decoderId); }
+    void dabSetTii(bool ena) { dabsdrRequest_SetTII(m_dabsdrHandle, ena); }
 
     // wrappers used in callback functions (emit requires class instance)
     void emit_dabEvent(RadioControlEvent * pEvent) { emit dabEvent(pEvent); }

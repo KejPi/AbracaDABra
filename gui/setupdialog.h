@@ -32,133 +32,58 @@
 #include <QList>
 #include <QAbstractButton>
 #include <QLocale>
-#include "QtWidgets/qcheckbox.h"
-#include "QtWidgets/qlabel.h"
+#include <QGeoCoordinate>
+#include <QCheckBox>
+#include <QLabel>
+#include <QNetworkReply>
 #include "config.h"
-#include "inputdevice.h"
-#if HAVE_AIRSPY
-#include "airspyinput.h"
-#endif
-#include "rawfileinput.h"
+#include "settings.h"
 #include "dabtables.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class SetupDialog; }
 QT_END_NAMESPACE
 
-enum class ApplicationStyle { Default = 0, Light, Dark};
-
 class SetupDialog : public QDialog
 {
     Q_OBJECT
 public:
-    // this is to store active state
-    struct Settings
-    {
-        InputDeviceId inputDevice;
-        struct
-        {
-            QString file;
-            RawFileInputFormat format;
-            bool loopEna;
-        } rawfile;
-        struct
-        {
-            RtlGainMode gainMode;
-            int gainIdx;
-            uint32_t bandwidth;            
-            bool biasT;
-            int agcLevelMax;
-            int ppm;
-        } rtlsdr;
-        struct
-        {
-            RtlGainMode gainMode;
-            int gainIdx;
-            QString tcpAddress;
-            int tcpPort;
-            int agcLevelMax;
-            int ppm;
-        } rtltcp;
-#if HAVE_AIRSPY
-        struct
-        {
-            AirspyGainStr gain;
-            bool biasT;
-            bool dataPacking;
-            bool prefer4096kHz;
-        } airspy;
-#endif
-#if HAVE_SOAPYSDR
-        struct
-        {
-            SoapyGainMode gainMode;
-            int gainIdx;
-            QString devArgs;
-            QString antenna;
-            int channel;
-            uint32_t bandwidth;
-        } soapysdr;
-#endif
-        uint16_t announcementEna;
-        bool bringWindowToForeground;
-        ApplicationStyle applicationStyle;
-        QLocale::Language lang;
-        bool expertModeEna;
-        bool dlPlusEna;
-        int noiseConcealmentLevel;
-        bool xmlHeaderEna;
-        bool spiAppEna;
-        bool useInternet;
-        bool radioDnsEna;
-        QString audioRecFolder;
-        bool audioRecCaptureOutput;
-        bool audioRecAutoStopEna;
-
-        // this is settings for UA data dumping (storage)
-        struct UADumpSettings
-        {
-            QString folder;
-            bool overwriteEna;
-            bool slsEna;            
-            bool spiEna;
-            QString slsPattern;
-            QString spiPattern;
-        } uaDump;
-    };
-
     SetupDialog(QWidget *parent = nullptr);
-    Settings settings() const;
+    void setupDarkMode(bool darkModeEna);
     void setGainValues(const QList<float> & gainList);
     void resetInputDevice();
-    void setSettings(const Settings &settings);
+    void setSettings(Settings  * settings);
     void setXmlHeader(const InputDeviceDescription & desc);
     void onFileLength(int msec);
     void onFileProgress(int msec);
     void setAudioRecAutoStop(bool ena);
     QLocale::Language applicationLanguage() const;
-
     void setSlsDumpPaternDefault(const QString &newSlsDumpPaternDefault);
-
     void setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault);
+    void onTiiUpdateFinished(QNetworkReply::NetworkError err);
 
 signals:
     void inputDeviceChanged(const InputDeviceId & inputDevice);
     void newInputDeviceSettings();
     void newAnnouncementSettings();
     void expertModeToggled(bool enabled);
-    void applicationStyleChanged(ApplicationStyle style);
+    void applicationStyleChanged(Settings::ApplicationStyle style);
     void noiseConcealmentLevelChanged(int level);
     void xmlHeaderToggled(bool enabled);
     void spiApplicationEnabled(bool enabled);
     void spiApplicationSettingsChanged(bool useInterent, bool enaRadioDNS);
     void audioRecordingSettings(const QString &folder, bool doOutputRecording);
     void uaDumpSettings(const Settings::UADumpSettings & settings);
+    void tiiSettingsChanged();
+    void rawFileSeek(int msec);
+    void updateTxDb();
+    void proxySettingsChanged();
+
 protected:
     void showEvent(QShowEvent *event);
 
 private:
-    enum SetupDialogTabs { Device = 0, Audio = 1, Announcement = 2, UserApps = 3, Other = 4 };
+    enum SetupDialogTabs { Device = 0, Audio, Announcement, UserApps, Tii, Other };
     enum SetupDialogXmlHeader { XMLDate = 0, XMLRecorder, XMLDevice,
                                 XMLSampleRate, XMLFreq, XMLLength, XMLFormat,
                                 XMLNumLabels};
@@ -167,7 +92,7 @@ private:
     const QString m_noFileString = tr("No file selected");
 
     Ui::SetupDialog *ui;
-    Settings m_settings;
+    Settings * m_settings;
     QString m_rawfilename;
     QList<float> m_rtlsdrGainList;
     QList<float> m_rtltcpGainList;
@@ -177,6 +102,7 @@ private:
     QLabel * m_xmlHeaderLabel[SetupDialogXmlHeader::XMLNumLabels];
     QString m_slsDumpPaternDefault;
     QString m_spiDumpPaternDefault;
+    QMovie * m_spinner;
 
     void setUiState();
     void setStatusLabel();
@@ -223,6 +149,16 @@ private:
     void onDataDumpCheckboxToggled(bool);
     void onDataDumpPatternEditingFinished();
     void onDataDumpResetClicked();
+
+    void onGeolocationSourceChanged(int index);
+    void onCoordinateEditFinished();
+    void onSerialPortEditFinished();
+    void onTiiSpectPlotClicked(bool checked);
+    void onTiiUpdateDbClicked();
+
+    void onProxyConfigChanged(int index);
+    void onProxyApplyButtonClicked();
+    void onProxyConfigEdit();
 
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);

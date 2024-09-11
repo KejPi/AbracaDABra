@@ -35,10 +35,18 @@
 
 #cmakedefine01 HAVE_FDKAAC
 #cmakedefine01 HAVE_PORTAUDIO
+#cmakedefine01 HAVE_QCUSTOMPLOT
+#cmakedefine01 HAVE_QTLOCATION
+#cmakedefine01 HAVE_FMLIST_INTERFACE
+
 
 /* Optional devices */
 #cmakedefine01 HAVE_AIRSPY
 #cmakedefine01 HAVE_SOAPYSDR
+#cmakedefine01 HAVE_RARTTCP
+
+/* Debug */
+#cmakedefine01 TII_SPECTRUM_PLOT
 
 #endif // CONFIG_H
 

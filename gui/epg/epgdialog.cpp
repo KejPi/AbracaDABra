@@ -27,31 +27,28 @@
 #include <QQmlContext>
 #include <QHBoxLayout>
 #include <QPushButton>
-#include <QQuickStyle>
 
 #include "epgproxymodel.h"
 #include "epgdialog.h"
 #include "epgtime.h"
 #include "ui_epgdialog.h"
 
-EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager * metadataManager, QWidget *parent)
+EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager * metadataManager, Settings * settings, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::EPGDialog)
     , m_metadataManager(metadataManager)
+    , m_settings(settings)
     , m_currentUEID(0)
 {
     ui->setupUi(this);
 
     m_slProxyModel = new SLProxyModel(this);
     m_slProxyModel->setSourceModel(serviceListModel);
-    connect(this, &EPGDialog::filterEmptyEpgChanged, [this](){ m_slProxyModel->setEmptyEpgFilter(m_filterEmptyEpg); });
-    connect(this, &EPGDialog::filterEnsembleChanged, [this](){ m_slProxyModel->setUeidFilter(m_filterEnsemble ? m_currentUEID : 0); });
-    setFilterEmptyEpg(false);
-    setFilterEnsemble(false);
-
-    qmlRegisterType<SLProxyModel>("ProgrammeGuide", 1, 0, "SLProxyModel");
-    qmlRegisterType<EPGModel>("ProgrammeGuide", 1, 0, "EPGModel");
-    qmlRegisterType<EPGProxyModel>("ProgrammeGuide", 1, 0, "EPGProxyModel");
+    connect(this, &EPGDialog::filterEmptyEpgChanged, [this](){ m_slProxyModel->setEmptyEpgFilter(m_settings->epg.filterEmptyEpg); });
+    connect(this, &EPGDialog::filterEnsembleChanged, [this](){ m_slProxyModel->setUeidFilter(m_settings->epg.filterEnsemble ? m_currentUEID : 0); });
+    // set initial state
+    m_slProxyModel->setEmptyEpgFilter(m_settings->epg.filterEmptyEpg);
+    m_slProxyModel->setUeidFilter(m_settings->epg.filterEnsemble ? m_currentUEID : 0);
 
     m_qmlView = new QQuickView();
 
@@ -62,14 +59,13 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectio
     context->setContextProperty("slSelectionModel", slSelectionModel);
     context->setContextProperty("epgDialog", this);
 
-    QQuickStyle::setStyle("Fusion");
     setupDarkMode(false);
 
     QQmlEngine *engine = m_qmlView->engine();
     engine->addImageProvider(QLatin1String("metadata"), new LogoProvider(m_metadataManager));
 
     //m_qmlView->setColor(Qt::transparent);
-    m_qmlView->setSource(QUrl("qrc:/ProgrammeGuide/epg.qml"));
+    m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/epg.qml"));
 
     QWidget *container = QWidget::createWindowContainer(m_qmlView, this);
 
@@ -91,14 +87,14 @@ EPGDialog::~EPGDialog()
 
 QPersistentModelIndex EPGDialog::selectedEpgItem() const
 {
-    return m_selectedEpgItem;
+    return m_settings->epg.selectedItem;
 }
 
 void EPGDialog::setSelectedEpgItem(const QPersistentModelIndex &newSelectedEpgItem)
 {
-    if (m_selectedEpgItem == newSelectedEpgItem)
+    if (m_settings->epg.selectedItem == newSelectedEpgItem)
         return;
-    m_selectedEpgItem = newSelectedEpgItem;
+    m_settings->epg.selectedItem = newSelectedEpgItem;
     emit selectedEpgItemChanged();
 }
 
@@ -130,21 +126,21 @@ void EPGDialog::closeEvent(QCloseEvent *event)
 
 bool EPGDialog::filterEmptyEpg() const
 {
-    return m_filterEmptyEpg;
+    return m_settings->epg.filterEmptyEpg;
 }
 
 void EPGDialog::setFilterEmptyEpg(bool newFilterEmptyEpg)
 {
-    if (m_filterEmptyEpg == newFilterEmptyEpg)
+    if (m_settings->epg.filterEmptyEpg == newFilterEmptyEpg)
         return;
-    m_filterEmptyEpg = newFilterEmptyEpg;
+    m_settings->epg.filterEmptyEpg = newFilterEmptyEpg;
     emit filterEmptyEpgChanged();
 }
 
 void EPGDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
 {
     m_currentUEID = ens.ueid;
-    if (m_filterEnsemble)
+    if (m_settings->epg.filterEnsemble)
     {
         m_slProxyModel->setUeidFilter(m_currentUEID);
     }
@@ -152,14 +148,14 @@ void EPGDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
 
 bool EPGDialog::filterEnsemble() const
 {
-    return m_filterEnsemble;
+    return m_settings->epg.filterEnsemble;
 }
 
 void EPGDialog::setFilterEnsemble(bool newFilterEnsemble)
 {
-    if (m_filterEnsemble == newFilterEnsemble)
+    if (m_settings->epg.filterEnsemble == newFilterEnsemble)
         return;
-    m_filterEnsemble = newFilterEnsemble;
+    m_settings->epg.filterEnsemble = newFilterEnsemble;
     emit filterEnsembleChanged();
 }
 
@@ -192,6 +188,8 @@ void EPGDialog::setupDarkMode(bool darkModeEna)
         colors.append(QColor(0x65,0x65,0x65));   // buttonColor
         colors.append(QColor(0x7c,0x7c,0x7c));   // buttonDownColor
         colors.append(QColor(0x28,0x28,0x28));   // buttonBorderColor
+
+        m_qmlView->setColor(Qt::black);
     }
     else
     {
@@ -217,6 +215,8 @@ void EPGDialog::setupDarkMode(bool darkModeEna)
         colors.append(QColor(Qt::white));        // buttonColor
         colors.append(QColor(0xf0,0xf0,0xf0));   // buttonDownColor
         colors.append(QColor(0xb4,0xb4,0xb4));   // buttonBorderColor
+
+        m_qmlView->setColor(Qt::white);
     }
     setColors(colors);
 }
@@ -236,13 +236,13 @@ void EPGDialog::setColors(const QList<QColor> &newColors)
 
 void EPGDialog::scheduleRecording()
 {
-    if (m_selectedEpgItem.isValid())
+    if (m_settings->epg.selectedItem.isValid())
     {
-        const EPGModel * model = dynamic_cast<const EPGModel *>(m_selectedEpgItem.model());
+        const EPGModel * model = dynamic_cast<const EPGModel *>(m_settings->epg.selectedItem.model());
         AudioRecScheduleItem item;
-        item.setName(model->data(m_selectedEpgItem, EPGModelRoles::NameRole).toString());
-        item.setStartTime(model->data(m_selectedEpgItem, EPGModelRoles::StartTimeRole).value<QDateTime>());
-        item.setDurationSec(model->data(m_selectedEpgItem, EPGModelRoles::DurationSecRole).toInt());
+        item.setName(model->data(m_settings->epg.selectedItem, EPGModelRoles::NameRole).toString());
+        item.setStartTime(model->data(m_settings->epg.selectedItem, EPGModelRoles::StartTimeRole).value<QDateTime>());
+        item.setDurationSec(model->data(m_settings->epg.selectedItem, EPGModelRoles::DurationSecRole).toInt());
         item.setServiceId(model->serviceId());
 
         emit scheduleAudioRecording(item);

@@ -31,7 +31,6 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QNetworkDiskCache>
-#include <QNetworkProxyFactory>
 #include <QLoggingCategory>
 #include <QJsonDocument>
 #include <QFile>
@@ -84,7 +83,6 @@ void SPIApp::start()
     if (nullptr == m_netAccessManager)
     {
         m_netAccessManager = new QNetworkAccessManager();
-        QNetworkProxyFactory::setUseSystemConfiguration(true);
         connect(m_netAccessManager, &QNetworkAccessManager::finished, this, &SPIApp::onFileDownloaded);
 
         QNetworkDiskCache *diskCache = new QNetworkDiskCache(this);
@@ -96,14 +94,6 @@ void SPIApp::start()
         diskCache->setCacheDirectory(directory);
         m_netAccessManager->setCache(diskCache);
     }
-
-    QNetworkProxyQuery npq(QUrl(QLatin1String("https://dns.google")));
-    QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
-    foreach (QNetworkProxy p, listOfProxies) {
-        qCDebug(spiApp) << "Proxy hostname:" << p.hostName() << p.type();
-    }
-
-    QNetworkProxyFactory::setUseSystemConfiguration(true);
 
     m_isRunning = true;
 }
@@ -148,7 +138,7 @@ void SPIApp::reset()
     emit resetTerminal();
 }
 
-void SPIApp::setDataDumping(const SetupDialog::Settings::UADumpSettings &settings)
+void SPIApp::setDataDumping(const Settings::UADumpSettings &settings)
 {
     m_dumpEna = settings.spiEna;
     m_dumpOverwrite = settings.overwriteEna;
@@ -1630,11 +1620,13 @@ void SPIApp::handleRadioDNSLookup()
             QString address;
             if (record.name().startsWith("_radiospi._tcp."))
             {
-                address = QString("https://%1:%2").arg(record.target()).arg(record.port());
+                //address = QString("https://%1:%2").arg(record.target()).arg(record.port());
+                address = QString("https://%1").arg(record.target());
             }
             else
             {
-                address = QString("http://%1:%2").arg(record.target()).arg(record.port());
+                //address = QString("http://%1:%2").arg(record.target()).arg(record.port());
+                address = QString("http://%1").arg(record.target());
             }
             m_dnsCache[fqdn] = address;
             QString file = request.second;

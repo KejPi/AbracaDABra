@@ -210,6 +210,11 @@ void BandScanDialog::onServiceFound(const ServiceListId &)
     ui->numServicesFoundLabel->setText(QString("%1").arg(++m_numServicesFound));
 }
 
+void BandScanDialog::onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &)
+{
+    ui->numServicesFoundLabel->setText(QString("%1").arg(++m_numServicesFound));
+}
+
 void BandScanDialog::onServiceListComplete(const RadioControlEnsemble &)
 {   // this means that ensemble information is complete => stop timer and do next set
     if ((nullptr != m_timer) && (m_timer->isActive()))
