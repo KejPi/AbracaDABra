@@ -362,7 +362,7 @@ typedef struct
 {
     uint8_t numIds;     // number of detected TII ID's
     dabsdrTii_t id[24];
-    int (*getSpectrumTii)(dabsdrHandle_t handle, float buffer[2048]);
+    int (*getSpectrumTii)(dabsdrHandle_t handle, float buffer[192]);
 } dabsdrNtfTii_t;
 
 

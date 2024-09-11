@@ -19,7 +19,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_cmake_targets_defined "")
 set(_cmake_targets_not_defined "")
 set(_cmake_expected_targets "")
-foreach(_cmake_expected_target IN ITEMS dabsdr::dabsdr)
+foreach(_cmake_expected_target IN ITEMS fmlistInterface::fmlistInterface)
   list(APPEND _cmake_expected_targets "${_cmake_expected_target}")
   if(TARGET "${_cmake_expected_target}")
     list(APPEND _cmake_targets_defined "${_cmake_expected_target}")
@@ -54,15 +54,15 @@ if(_IMPORT_PREFIX STREQUAL "/")
   set(_IMPORT_PREFIX "")
 endif()
 
-# Create imported target dabsdr::dabsdr
-add_library(dabsdr::dabsdr SHARED IMPORTED)
+# Create imported target fmlistInterface::fmlistInterface
+add_library(fmlistInterface::fmlistInterface SHARED IMPORTED)
 
-set_target_properties(dabsdr::dabsdr PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/darwin_x86_64"
+set_target_properties(fmlistInterface::fmlistInterface PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/darwin_arm64"
 )
 
 # Load information for each installed configuration.
-file(GLOB _cmake_config_files "${CMAKE_CURRENT_LIST_DIR}/dabsdr-*.cmake")
+file(GLOB _cmake_config_files "${CMAKE_CURRENT_LIST_DIR}/fmlistInterface-*.cmake")
 foreach(_cmake_config_file IN LISTS _cmake_config_files)
   include("${_cmake_config_file}")
 endforeach()
