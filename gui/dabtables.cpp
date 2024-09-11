@@ -126,7 +126,7 @@ QString DabTables::convertToQString(const char *c, uint8_t charset, uint8_t len)
     switch (static_cast<DabCharset>(charset))
     {
     case DabCharset::UTF8:
-        out = out.fromUtf8(c);
+        out = out.fromUtf8(c, len);
         break;
     case DabCharset::UCS2:
     {
