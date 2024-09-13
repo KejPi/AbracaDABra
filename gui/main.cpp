@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     //     qDebug() << it.next();
     // }
     QTranslator translator;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0) && QT_VERSION < QT_VERSION_CHECK(6, 7, 2)
     if (QLocale::AnyLanguage == lang)
     {   // system default
         if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n/gui")))
