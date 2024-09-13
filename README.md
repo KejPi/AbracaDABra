@@ -228,7 +228,7 @@ Ubuntu 24.04 or lower does not support Qt>=6.5.0 that is required for full appli
 
 <img width="264" alt="Snímek obrazovky 2024-09-13 v 21 40 15" src="https://github.com/user-attachments/assets/b2e938db-843b-431f-903f-0abb0e178cb0">
 
-_Note: Currently you can still compile the application with obsolete Qt version but it is unsupported configuration with limited functionality._
+_Note: Currently you can still compile the application with obsolete Qt version delivered with Ubuntu 24.04 but it is an unsupported configuration with limited functionality._
        
 Optional Airspy support:       
 
