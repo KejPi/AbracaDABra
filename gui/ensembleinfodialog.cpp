@@ -301,13 +301,8 @@ void EnsembleInfoDialog::serviceChanged(const RadioControlServiceComponent &s)
 
 void EnsembleInfoDialog::showEvent(QShowEvent *event)
 {
-    // calculate width
-
     emit requestEnsembleConfiguration();
-    event->accept();
-
-    // set to minimum size
-    QTimer::singleShot(1, this, [this](){ resize(minimumSizeHint()); } );
+    QDialog::showEvent(event);
 }
 
 void EnsembleInfoDialog::closeEvent(QCloseEvent *event)
@@ -316,7 +311,7 @@ void EnsembleInfoDialog::closeEvent(QCloseEvent *event)
     {
         emit recordingStop();
     }
-    event->accept();
+    QDialog::closeEvent(event);
 }
 
 void EnsembleInfoDialog::fibFrameContextMenu(const QPoint& pos)
