@@ -276,7 +276,7 @@ Then clone the project:
 
 _Note:_ `CMAKE_INSTALL_PREFIX` is `/usr/local` by default. It means that application installs to `/usr/local/bin` and library is installed to `/usr/local/lib`. Make sure that `/usr/local/lib` is in your `ldconfig` path, if it is not then use `LD_LIBRARY_PATH` environment variable when running AbracaDABra:
 
-       LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH /usr/local/bin/AbracaDABra &    
+       LD_LIBRARY_PATH=/usr/local/lib:$QT_PATH/lib:$LD_LIBRARY_PATH /usr/local/bin/AbracaDABra &    
 
 ## USBFS buffer size
 
