@@ -122,11 +122,11 @@ Item {
             implicitHeight: tiiTableItem.rowHeight
             required property bool current
             required property bool selected
-            color: selected ? palette.highlight : palette.base
+            color: selected ? "#a5cdff" : "#ffffff" // palette.highlight : palette.base
             Text {
                 anchors.centerIn: parent
                 text: display !== undefined ? display : ""
-                color: selected ? palette.highlightedText : palette.text
+                color: "#d8000000" // selected ? palette.highlightedText : palette.text
             }
 
             MouseArea {
