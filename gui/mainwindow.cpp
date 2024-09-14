@@ -462,12 +462,15 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->statusbar->addWidget(widget,1);
 
 #ifdef Q_OS_MAC
-    DockMenuHandler * dockMenuPtr = DockMenuHandler::getInstance();
-    dockMenuPtr->setMuteItemLabel(tr("Mute"));
-    connect(m_muteLabel, &ClickableLabel::toggled, [this](bool checked) {
-        DockMenuHandler::getInstance()->setMuteItemLabel(checked ? tr("Unmute") : tr("Mute"));
+    QMenu * dockMenu = new QMenu(this);
+    m_muteAction = new QAction(tr("Mute"), this);
+    dockMenu->addAction(m_muteAction);
+    connect(m_muteLabel, &ClickableLabel::toggled, this, [this](bool checked) {
+        m_muteAction->setText(checked ? tr("Unmute") : tr("Mute"));
     });
-    connect(dockMenuPtr, &DockMenuHandler::muteItemClicked, m_muteLabel, &ClickableLabel::toggle);
+    connect(m_muteAction, &QAction::triggered, m_muteLabel, &ClickableLabel::toggle);
+
+    dockMenu->setAsDockMenu();
 #endif
 
     // set fonts
@@ -933,8 +936,7 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
-{
-    if (0 == m_frequency)
+{    if (0 == m_frequency)
     {   // in idle
         emit exit();
 
