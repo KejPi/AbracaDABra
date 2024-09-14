@@ -117,8 +117,8 @@ struct DabPTy
 
 struct RadioControlEnsemble
 {
-    uint32_t frequency;
-    uint32_t ueid;
+    uint32_t frequency = 0;
+    uint32_t ueid = RADIO_CONTROL_UEID_INVALID;
     int8_t LTO;       // Ensemble LTO (Local Time Offset): Local Time Offset (LTO) for the ensemble.
                       // It is expressed in multiples of half hours in the range -15,5 hours to +15,5 hours
     uint8_t intTable;  // Inter. (International) Table Id: this 8-bit field shall be used to select an international table
