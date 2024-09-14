@@ -215,7 +215,7 @@ ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/
 
 ## How to build
 Following libraries are required:
-* Qt6
+* Qt >= 6.5.0
 * libusb
 * rtldsdr
 * faad2 (default) or fdk-aac (optional)
@@ -224,16 +224,11 @@ Following libraries are required:
 * airspy (optional)
 * SoapySDR (optional)
 
-For a fresh Ubuntu 22.04 installation you can use the following commands:
+Ubuntu 24.04 or lower does not support Qt>=6.5.0 that is required for full applications features. If you want to compile the application you shall [install](https://doc.qt.io/qt-6/qt-online-installation.html) Qt using online installer. Following modules are sufficcient to compile AbracaDABra:
 
-       sudo apt-get install git cmake build-essential mesa-common-dev
-       sudo apt-get install libusb-dev librtlsdr-dev libfaad2 mpg123 libmpg123-dev libfaad-dev
-       sudo apt-get install portaudio19-dev qt6-base-dev qt6-multimedia-dev libqt6svg6-dev rtl-sdr   
-       sudo apt-get install qt6-tools-dev qt6-tools-dev-tools qt6-l10n-tools
-       
-These packages are requires since version 2.4.0:
+<img width="264" alt="Snímek obrazovky 2024-09-13 v 21 40 15" src="https://github.com/user-attachments/assets/b2e938db-843b-431f-903f-0abb0e178cb0">
 
-       sudo apt install qt6-declarative-dev qml6-module-qtquick-controls qml6-module-qtquick-layouts qml6-module-qt5compat-graphicaleffects qml6-module-qtqml-workerscript qml6-module-qtquick-templates qml6-module-qtquick
+_Note: Currently you can still compile the application with obsolete Qt version delivered with Ubuntu 24.04 but it is an unsupported configuration with limited functionality._
        
 Optional Airspy support:       
 
@@ -252,24 +247,28 @@ Then clone the project:
 
        mkdir build
        cd build
+   
+3. Export QT path
 
-2. Run cmake
+         export QT_PATH=$HOME/Qt/6.7.2/gcc_64
 
-       cmake ..
+3. Run cmake
+
+       cmake .. -DUSE_SYSTEM_QCUSTOMPLOT=OFF -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake
        
     Optional Airspy support:          
        
-       cmake .. -DAIRSPY=ON
+       cmake .. -DUSE_SYSTEM_QCUSTOMPLOT=OFF -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DAIRSPY=ON
 
     Optional SoapySDR support:          
        
-       cmake .. -DSOAPYSDR=ON
+       cmake .. -DUSE_SYSTEM_QCUSTOMPLOT=OFF -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DSOAPYSDR=ON
 
-3. Run make
+4. Run make
 
        make             
 
-4. Install application for all users (optional)
+5. Install application for all users (optional)
 
        sudo make install
        sudo ldconfig
@@ -277,7 +276,7 @@ Then clone the project:
 
 _Note:_ `CMAKE_INSTALL_PREFIX` is `/usr/local` by default. It means that application installs to `/usr/local/bin` and library is installed to `/usr/local/lib`. Make sure that `/usr/local/lib` is in your `ldconfig` path, if it is not then use `LD_LIBRARY_PATH` environment variable when running AbracaDABra:
 
-       LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH /usr/local/bin/AbracaDABra &
+       LD_LIBRARY_PATH=/usr/local/lib:$QT_PATH/lib:$LD_LIBRARY_PATH /usr/local/bin/AbracaDABra &    
 
 ## USBFS buffer size
 

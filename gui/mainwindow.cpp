@@ -219,6 +219,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_logDialog = new LogDialog();
     connect(this, &MainWindow::exit, [this]() {m_logDialog->close(); m_logDialog->deleteLater(); });
     connect(m_logDialog, &QObject::destroyed, this, [](){ logModel = nullptr; });
+    connect(m_logDialog, &QDialog::finished, this, [this]() { m_settings->log.geometry = m_logDialog->saveGeometry(); });
 
     setLogToModel(m_logDialog->getModel());
 
@@ -278,6 +279,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStop, m_inputDeviceRecorder, &InputDeviceRecorder::stop);
     connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_ensembleInfoDialog, &EnsembleInfoDialog::onRecording);       
     connect(m_inputDeviceRecorder, &InputDeviceRecorder::bytesRecorded, m_ensembleInfoDialog, &EnsembleInfoDialog::updateRecordingStatus, Qt::QueuedConnection);
+    connect(m_ensembleInfoDialog, &QDialog::finished, this, [this]() { m_settings->ensembleInfo.geometry = m_ensembleInfoDialog->saveGeometry(); });
 
     // status bar
     QWidget * widget = new QWidget();
@@ -797,6 +799,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::resetTerminal, m_catSlsDialog, &CatSLSDialog::reset, Qt::QueuedConnection);
     connect(m_catSlsDialog, &CatSLSDialog::getCurrentCatSlide, m_slideShowApp[Instance::Service], &SlideShowApp::getCurrentCatSlide, Qt::QueuedConnection);
     connect(m_catSlsDialog, &CatSLSDialog::getNextCatSlide, m_slideShowApp[Instance::Service], &SlideShowApp::getNextCatSlide, Qt::QueuedConnection);
+    connect(m_catSlsDialog, &QDialog::finished, this, [this]() { m_settings->catSls.geometry = m_catSlsDialog->saveGeometry(); });
 
     m_spiApp = new SPIApp();
     m_spiApp->moveToThread(m_radioControlThread);
@@ -933,9 +936,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (0 == m_frequency)
     {   // in idle
+        emit exit();
+
         saveSettings();
 
-        emit exit();
         event->accept();
     }
     else
@@ -2786,6 +2790,29 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     }
 }
 
+
+MainWindow::AudioFramework MainWindow::getAudioFramework()
+{
+#if (HAVE_PORTAUDIO)
+    QSettings * settings;
+    if (m_iniFilename.isEmpty())
+    {
+        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+    }
+    else
+    {
+        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+    }
+
+    int val = settings->value("audioFramework", AudioFramework::Pa).toInt();
+    delete settings;
+
+    return static_cast<AudioFramework>(val);
+#else
+    return AudioFramework::Qt;
+#endif
+}
+
 void MainWindow::loadSettings()
 {
     QSettings * settings;
@@ -2868,9 +2895,13 @@ void MainWindow::loadSettings()
     m_settings->proxy.pass = QByteArray::fromBase64(settings->value("Proxy/pass", "").toByteArray());
 
     m_settings->snr.geometry = settings->value("SNR/windowGeometry").toByteArray();
+    m_settings->ensembleInfo.geometry = settings->value("EnsembleInfo/windowGeometry").toByteArray();
+    m_settings->log.geometry = settings->value("Log/windowGeometry").toByteArray();
+    m_settings->catSls.geometry = settings->value("CatSLS/windowGeometry").toByteArray();
 
-    m_settings->epg.filterEmptyEpg = settings->value("epgFilterEmpty", false).toBool();
-    m_settings->epg.filterEnsemble = settings->value("epgFilterOtherEnsembles", false).toBool();
+    m_settings->epg.filterEmptyEpg = settings->value("EPG/filterEmpty", false).toBool();
+    m_settings->epg.filterEnsemble = settings->value("EPG/filterOtherEnsembles", false).toBool();
+    m_settings->epg.geometry = settings->value("EPG/windowGeometry").toByteArray();
 
     m_settings->rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
     m_settings->rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
@@ -2921,7 +2952,7 @@ void MainWindow::loadSettings()
     m_timeLocale = QLocale(m_setupDialog->applicationLanguage());
     EPGTime::getInstance()->setTimeLocale(m_timeLocale);
 
-    // need to run here because it expects that settings is up-to-date
+// need to run here because it expects that settings is up-to-date
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && !defined(Q_OS_WIN) && !defined(Q_OS_LINUX)
     // theme color looks horible on Linux -> always force color theme
     if (Settings::ApplicationStyle::Default != m_settings->applicationStyle)
@@ -2940,11 +2971,11 @@ void MainWindow::loadSettings()
 
         // if input device has switched to what was stored and it is RTLSDR or RTLTCP or Airspy
         if ((m_settings->inputDevice == m_inputDeviceId)
-                && (    (InputDeviceId::RTLSDR == m_inputDeviceId)
-                     || (InputDeviceId::AIRSPY == m_inputDeviceId)
-                     || (InputDeviceId::SOAPYSDR == m_inputDeviceId)
-                     || (InputDeviceId::RTLTCP == m_inputDeviceId)
-                     || (InputDeviceId::RARTTCP == m_inputDeviceId)))
+            && (    (InputDeviceId::RTLSDR == m_inputDeviceId)
+                || (InputDeviceId::AIRSPY == m_inputDeviceId)
+                || (InputDeviceId::SOAPYSDR == m_inputDeviceId)
+                || (InputDeviceId::RTLTCP == m_inputDeviceId)
+                || (InputDeviceId::RARTTCP == m_inputDeviceId)))
         {   // restore channel
             int sid = settings->value("SID", 0).toInt();
             uint8_t scids = settings->value("SCIdS", 0).toInt();
@@ -2957,7 +2988,7 @@ void MainWindow::loadSettings()
     if (((InputDeviceId::RTLSDR == m_inputDeviceId)
          || (InputDeviceId::AIRSPY == m_inputDeviceId)
          || (InputDeviceId::SOAPYSDR == m_inputDeviceId))
-       && (m_serviceList->numServices() == 0))
+        && (m_serviceList->numServices() == 0))
     {
         QTimer::singleShot(1, this, [this](){ bandScan(); } );
     }
@@ -2966,28 +2997,6 @@ void MainWindow::loadSettings()
     {
         QTimer::singleShot(1, this, [this](){ showSetupDialog(); } );
     }
-}
-
-MainWindow::AudioFramework MainWindow::getAudioFramework()
-{
-#if (HAVE_PORTAUDIO)
-    QSettings * settings;
-    if (m_iniFilename.isEmpty())
-    {
-        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-    }
-    else
-    {
-        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
-    }
-
-    int val = settings->value("audioFramework", AudioFramework::Pa).toInt();
-    delete settings;
-
-    return static_cast<AudioFramework>(val);
-#else
-    return AudioFramework::Qt;
-#endif
 }
 
 void MainWindow::saveSettings()
@@ -3037,8 +3046,10 @@ void MainWindow::saveSettings()
     settings->setValue("audioRecFolder", m_settings->audioRecFolder);
     settings->setValue("audioRecCaptureOutput", m_settings->audioRecCaptureOutput);
     settings->setValue("audioRecAutoStop", m_settings->audioRecAutoStopEna);
-    settings->setValue("epgFilterEmpty", m_settings->epg.filterEmptyEpg);
-    settings->setValue("epgFilterOtherEnsembles", m_settings->epg.filterEnsemble);
+
+    settings->setValue("EPG/filterEmpty", m_settings->epg.filterEmptyEpg);
+    settings->setValue("EPG/filterOtherEnsembles", m_settings->epg.filterEnsemble);
+    settings->setValue("EPG/windowGeometry", m_settings->epg.geometry);
 
     settings->setValue("TII/locationSource", static_cast<int>(m_settings->tii.locationSource));
     settings->setValue("TII/latitude", m_settings->tii.coordinates.latitude());
@@ -3046,6 +3057,10 @@ void MainWindow::saveSettings()
     settings->setValue("TII/serialPort", m_settings->tii.serialPort);
     settings->setValue("TII/showSpectrumPlot", m_settings->tii.showSpectumPlot);
     settings->setValue("TII/windowGeometry", m_settings->tii.geometry);
+
+    settings->setValue("EnsembleInfo/windowGeometry", m_settings->ensembleInfo.geometry);
+    settings->setValue("Log/windowGeometry", m_settings->log.geometry);
+    settings->setValue("CatSLS/windowGeometry", m_settings->catSls.geometry);
 
     settings->setValue("Proxy/config", static_cast<int>(m_settings->proxy.config));
     settings->setValue("Proxy/server", m_settings->proxy.server);
@@ -3272,7 +3287,11 @@ void MainWindow::toggleDLPlus(bool toggle)
 
 void MainWindow::showEnsembleInfo()
 {
-    m_ensembleInfoDialog->show();
+    if (!m_settings->ensembleInfo.geometry.isEmpty())
+    {
+        m_ensembleInfoDialog->restoreGeometry(m_settings->ensembleInfo.geometry);
+    }
+    m_ensembleInfoDialog->show();    
     m_ensembleInfoDialog->raise();
     m_ensembleInfoDialog->activateWindow();
 }
@@ -3314,6 +3333,10 @@ void MainWindow::showSetupDialog()
 
 void MainWindow::showLog()
 {
+    if (!m_settings->log.geometry.isEmpty())
+    {
+        m_logDialog->restoreGeometry(m_settings->log.geometry);
+    }
     m_logDialog->show();
     m_logDialog->raise();
     m_logDialog->activateWindow();
@@ -3321,6 +3344,10 @@ void MainWindow::showLog()
 
 void MainWindow::showCatSLS()
 {
+    if (!m_settings->catSls.geometry.isEmpty())
+    {
+        m_catSlsDialog->restoreGeometry(m_settings->catSls.geometry);
+    }
     m_catSlsDialog->show();
     m_catSlsDialog->raise();
     m_catSlsDialog->activateWindow();

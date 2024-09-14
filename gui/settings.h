@@ -129,7 +129,7 @@ public:
         QGeoCoordinate coordinates;
         QString serialPort;
         bool showSpectumPlot;
-        QByteArray geometry;
+        QByteArray geometry;        
     } tii;
     struct SNRSettings {
         QByteArray geometry;
@@ -138,14 +138,24 @@ public:
         bool filterEmptyEpg;
         bool filterEnsemble;
         QPersistentModelIndex selectedItem;
+        QByteArray geometry;
     } epg;
-    struct {
+    struct Proxy {
         ProxyConfig config;
         QString server;
         uint32_t port;
         QString user;
         QByteArray pass;
     } proxy;
+    struct EnsembleInfo {
+        QByteArray geometry;
+    } ensembleInfo;
+    struct Log {
+        QByteArray geometry;
+    } log;
+    struct CatSLS {
+        QByteArray geometry;
+    } catSls;
 };
 
 #endif // SETTINGS_H

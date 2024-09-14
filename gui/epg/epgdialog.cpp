@@ -42,6 +42,13 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectio
 {
     ui->setupUi(this);
 
+    if (!m_settings->epg.geometry.isEmpty())
+    {
+        restoreGeometry(m_settings->epg.geometry);
+        QSize sz = size();
+        QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
+    }
+
     m_slProxyModel = new SLProxyModel(this);
     m_slProxyModel->setSourceModel(serviceListModel);
     connect(this, &EPGDialog::filterEmptyEpgChanged, [this](){ m_slProxyModel->setEmptyEpgFilter(m_settings->epg.filterEmptyEpg); });
@@ -119,6 +126,7 @@ void EPGDialog::showEvent(QShowEvent *event)
 
 void EPGDialog::closeEvent(QCloseEvent *event)
 {
+    m_settings->epg.geometry = saveGeometry();
     setIsVisible(false);
     QDialog::closeEvent(event);
 }
