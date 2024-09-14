@@ -32,6 +32,7 @@
 #endif
 #include <QCoreApplication>
 #include <QMessageBox>
+#include <QLoggingCategory>
 #include "tiidialog.h"
 
 
