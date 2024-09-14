@@ -516,7 +516,8 @@ if (QCUSTOMPLOT)
         endif()
         if (NOT QCUSTOMPLOT_LINK_LIBRARIES)
             # not found is system -> trying ${EXTERNAL_LIBS_DIR}
-            message(FATAL_ERROR "QCustomPlot not found. Use bundled source code by setting USE_SYSTEM_QCUSTOMPLOT=OFF")
+            message(WARNING "QCustomPlot not found. Use bundled source code by setting USE_SYSTEM_QCUSTOMPLOT=OFF or install QCustomPlot >=2.1.0 Qt6 build if you want to have ploting features.")
+            set(HAVE_QCUSTOMPLOT OFF)
         else()
             # found in system
             # check version
@@ -524,9 +525,11 @@ if (QCUSTOMPLOT)
             string(REGEX MATCH "#define +QCUSTOMPLOT_VERSION_STR +\"(.*)\"" _ ${QCP_HFILE})
             set(QCP_VER ${CMAKE_MATCH_1})
             if(QCP_VER VERSION_LESS 2.1.0)
-                message(FATAL_ERROR "QCustomPlot version >=2.1.0 not found. Use bundled source code by setting USE_SYSTEM_QCUSTOMPLOT=OFF or disable QCustomPlot by setting QCUSTOMPLOT=OFF")
+                message(WARNING "QCustomPlot version >=2.1.0 not found. Feature will be disabled. Use bundled source code by setting USE_SYSTEM_QCUSTOMPLOT=OFF or install compatible version if you want to have ploting features.")
+                set(HAVE_QCUSTOMPLOT OFF)
+            else()
+                set(HAVE_QCUSTOMPLOT ON)
             endif()
-            set(HAVE_QCUSTOMPLOT ON)
         endif()
     else(USE_SYSTEM_QCUSTOMPLOT)
 
