@@ -165,10 +165,6 @@ private:
     QAction * m_audioRecordingScheduleAction;
     QAction * m_epgAction;
     QActionGroup * m_audioDevicesGroup = nullptr;
-#ifdef Q_OS_MAC
-    // dock menu
-    QAction * m_muteAction;
-#endif
 
     // dark mode
     QString m_defaultStyleName;

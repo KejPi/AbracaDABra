@@ -463,12 +463,12 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
 #ifdef Q_OS_MAC
     QMenu * dockMenu = new QMenu(this);
-    m_muteAction = new QAction(tr("Mute"), this);
-    dockMenu->addAction(m_muteAction);
-    connect(m_muteLabel, &ClickableLabel::toggled, this, [this](bool checked) {
-        m_muteAction->setText(checked ? tr("Unmute") : tr("Mute"));
+    QAction * muteAction = new QAction(tr("Mute"), this);
+    dockMenu->addAction(muteAction);
+    connect(m_muteLabel, &ClickableLabel::toggled, this, [muteAction](bool checked) {
+        muteAction->setText(checked ? tr("Unmute") : tr("Mute"));
     });
-    connect(m_muteAction, &QAction::triggered, m_muteLabel, &ClickableLabel::toggle);
+    connect(muteAction, &QAction::triggered, m_muteLabel, &ClickableLabel::toggle);
 
     dockMenu->setAsDockMenu();
 #endif
