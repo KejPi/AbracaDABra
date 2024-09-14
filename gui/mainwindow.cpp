@@ -2889,6 +2889,10 @@ void MainWindow::loadSettings()
     m_settings->tii.serialPort = settings->value("TII/serialPort", "").toString();
     m_settings->tii.showSpectumPlot = settings->value("TII/showSpectrumPlot", false).toBool();
     m_settings->tii.geometry = settings->value("TII/windowGeometry").toByteArray();
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
+    m_settings->tii.splitterState = settings->value("TII/layout").toByteArray();
+#endif
+
 
     m_settings->proxy.config = static_cast<Settings::ProxyConfig>(settings->value("Proxy/config", static_cast<int>(Settings::ProxyConfig::System)).toInt());
     m_settings->proxy.server = settings->value("Proxy/server", "").toString();
@@ -3059,6 +3063,9 @@ void MainWindow::saveSettings()
     settings->setValue("TII/serialPort", m_settings->tii.serialPort);
     settings->setValue("TII/showSpectrumPlot", m_settings->tii.showSpectumPlot);
     settings->setValue("TII/windowGeometry", m_settings->tii.geometry);
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
+    settings->setValue("TII/layout", m_settings->tii.splitterState);
+#endif
 
     settings->setValue("EnsembleInfo/windowGeometry", m_settings->ensembleInfo.geometry);
     settings->setValue("Log/windowGeometry", m_settings->log.geometry);

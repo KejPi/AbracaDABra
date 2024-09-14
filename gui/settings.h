@@ -129,7 +129,8 @@ public:
         QGeoCoordinate coordinates;
         QString serialPort;
         bool showSpectumPlot;
-        QByteArray geometry;        
+        QByteArray geometry;
+        QByteArray splitterState;
     } tii;
     struct SNRSettings {
         QByteArray geometry;

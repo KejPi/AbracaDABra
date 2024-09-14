@@ -49,7 +49,7 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
 
     // UI
     setWindowTitle(tr("TII Decoder"));
-    QSize sz = QSize(780, 520);
+    QSize sz = QSize(600, 400);
     setMinimumSize(sz);
     if (!m_settings->tii.geometry.isEmpty())
     {
@@ -89,14 +89,18 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     container->setSizePolicy(sizePolicyContainer);
 
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
-    QSplitter * splitter = new QSplitter(this);
-    splitter->setOrientation(Qt::Vertical);
-    splitter->addWidget(container);
-    splitter->addWidget(m_tiiSpectrumPlot);
+    /*QSplitter * */m_splitter = new QSplitter(this);
+    m_splitter->setOrientation(Qt::Vertical);
+    m_splitter->addWidget(container);
+    m_splitter->addWidget(m_tiiSpectrumPlot);
 
     QVBoxLayout * layout = new QVBoxLayout(this);
     layout->setContentsMargins(0,0,0,0);
-    layout->addWidget(splitter);
+    layout->addWidget(m_splitter);
+
+    if (!m_settings->tii.splitterState.isEmpty()) {
+        m_splitter->restoreState(m_settings->tii.splitterState);
+    }
 #else
     QVBoxLayout * layout = new QVBoxLayout(this);
     layout->setContentsMargins(0,0,0,0);
@@ -189,7 +193,9 @@ void TIIDialog::closeEvent(QCloseEvent *event)
     emit setTii(false, 0.0);
     setIsVisible(false);
     stopLocationUpdate();
-
+#if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
+    m_settings->tii.splitterState = m_splitter->saveState();
+#endif
     m_settings->tii.geometry = saveGeometry();
 
     QDialog::closeEvent(event);
