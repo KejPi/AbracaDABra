@@ -49,18 +49,8 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
 
     // UI
     setWindowTitle(tr("TII Decoder"));
-    QSize sz = QSize(600, 400);
-    setMinimumSize(sz);
-    if (!m_settings->tii.geometry.isEmpty())
-    {
-        restoreGeometry(m_settings->tii.geometry);
-        sz = size();
-    }
-    else
-    {   // this should happen only when ini is deleted ot on the first run
-        sz = minimumSizeHint();
-    }
-    QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
+    setMinimumSize(QSize(600, 400));
+    resize(QSize(780, 520));
 
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     // TII plot
@@ -161,6 +151,14 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
 
     m_tiiSpectrumPlot->setVisible(m_settings->tii.showSpectumPlot);
 #endif
+
+    QSize sz = size();
+    if (!m_settings->tii.geometry.isEmpty())
+    {
+        restoreGeometry(m_settings->tii.geometry);
+        sz = size();
+    }
+    QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
 }
 
 void TIIDialog::positionUpdated(const QGeoPositionInfo &position)
