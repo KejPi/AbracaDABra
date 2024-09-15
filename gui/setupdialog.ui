@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -45,7 +45,7 @@
          <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -67,10 +67,10 @@
        <item>
         <widget class="QStackedWidget" name="deviceOptionsWidget">
          <property name="frameShape">
-          <enum>QFrame::Box</enum>
+          <enum>QFrame::Shape::Box</enum>
          </property>
          <property name="frameShadow">
-          <enum>QFrame::Sunken</enum>
+          <enum>QFrame::Shadow::Sunken</enum>
          </property>
          <property name="currentIndex">
           <number>5</number>
@@ -141,7 +141,7 @@
               <item>
                <widget class="QSlider" name="rtlsdrGainSlider">
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                </widget>
               </item>
@@ -157,7 +157,7 @@
                  <string notr="true">18 dB</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                </widget>
               </item>
@@ -167,10 +167,10 @@
            <item>
             <spacer name="verticalSpacer">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeType">
-              <enum>QSizePolicy::MinimumExpanding</enum>
+              <enum>QSizePolicy::Policy::MinimumExpanding</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -280,7 +280,7 @@
               <item row="2" column="5">
                <spacer name="horizontalSpacer_4">
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -320,7 +320,7 @@
            <item row="0" column="3">
             <widget class="QSpinBox" name="rtltcpIpPortSpinBox">
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
              <property name="maximum">
               <number>99999</number>
@@ -342,7 +342,7 @@
               <string notr="true">127.0.0.1</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -438,7 +438,7 @@
               <item row="0" column="3">
                <spacer name="horizontalSpacer_9">
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -461,14 +461,14 @@
            <item row="1" column="0" colspan="4">
             <widget class="Line" name="line">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
             </widget>
            </item>
            <item row="4" column="0" colspan="4">
             <spacer name="verticalSpacer_4">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -542,7 +542,7 @@
               <item>
                <widget class="QSlider" name="rtltcpGainSlider">
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                </widget>
               </item>
@@ -558,7 +558,7 @@
                  <string notr="true">18 dB</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                </widget>
               </item>
@@ -641,7 +641,7 @@
              <item>
               <widget class="QSlider" name="rawFileSlider">
                <property name="orientation">
-                <enum>Qt::Horizontal</enum>
+                <enum>Qt::Orientation::Horizontal</enum>
                </property>
               </widget>
              </item>
@@ -657,7 +657,7 @@
                 <string notr="true">88.8 / 100.3 sec</string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -669,10 +669,10 @@
            <item>
             <spacer name="verticalSpacer_5">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeType">
-              <enum>QSizePolicy::MinimumExpanding</enum>
+              <enum>QSizePolicy::Policy::MinimumExpanding</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -750,7 +750,7 @@
                  <string notr="true">0</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                </widget>
               </item>
@@ -791,7 +791,7 @@
                  <string notr="true">0</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                </widget>
               </item>
@@ -801,7 +801,7 @@
                  <number>21</number>
                 </property>
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                </widget>
               </item>
@@ -811,7 +811,7 @@
                  <number>21</number>
                 </property>
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                </widget>
               </item>
@@ -821,7 +821,7 @@
                  <string notr="true">0</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                </widget>
               </item>
@@ -831,7 +831,7 @@
                  <number>21</number>
                 </property>
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                </widget>
               </item>
@@ -858,7 +858,7 @@
                  <number>21</number>
                 </property>
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                </widget>
               </item>
@@ -868,7 +868,7 @@
                  <string notr="true">0</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                </widget>
               </item>
@@ -878,10 +878,10 @@
            <item>
             <spacer name="verticalSpacer_3">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeType">
-              <enum>QSizePolicy::MinimumExpanding</enum>
+              <enum>QSizePolicy::Policy::MinimumExpanding</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -910,7 +910,7 @@
               <item>
                <spacer name="horizontalSpacer_5">
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -930,7 +930,7 @@
            <item row="1" column="2">
             <spacer name="horizontalSpacer_2">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -957,7 +957,7 @@
            <item row="2" column="0" colspan="5">
             <widget class="Line" name="line_2">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
             </widget>
            </item>
@@ -1010,7 +1010,7 @@
               <item>
                <spacer name="horizontalSpacer_6">
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -1032,10 +1032,10 @@
            <item row="5" column="0" colspan="5">
             <spacer name="verticalSpacer_6">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeType">
-              <enum>QSizePolicy::MinimumExpanding</enum>
+              <enum>QSizePolicy::Policy::MinimumExpanding</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -1086,7 +1086,7 @@
               <item>
                <widget class="QSlider" name="soapysdrGainSlider">
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                </widget>
               </item>
@@ -1102,7 +1102,7 @@
                  <string notr="true">18 dB</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                </widget>
               </item>
@@ -1164,14 +1164,14 @@
               <string notr="true">127.0.0.1</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
            <item row="2" column="0" colspan="4">
             <spacer name="verticalSpacer_41">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -1184,7 +1184,7 @@
            <item row="0" column="3">
             <widget class="QSpinBox" name="rarttcpIpPortSpinBox">
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
              <property name="maximum">
               <number>99999</number>
@@ -1236,7 +1236,7 @@
           <string>No device connected</string>
          </property>
          <property name="textFormat">
-          <enum>Qt::RichText</enum>
+          <enum>Qt::TextFormat::RichText</enum>
          </property>
         </widget>
        </item>
@@ -1284,7 +1284,7 @@
             <item row="1" column="1">
              <spacer name="horizontalSpacer_7">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -1339,7 +1339,7 @@
           <item>
            <widget class="Line" name="line_3">
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
            </widget>
           </item>
@@ -1363,7 +1363,7 @@
        <item>
         <spacer name="verticalSpacer_7">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -1445,7 +1445,7 @@
             <item row="1" column="1">
              <spacer name="horizontalSpacer_8">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -1500,7 +1500,7 @@
           <item>
            <widget class="Line" name="line_4">
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
            </widget>
           </item>
@@ -1597,7 +1597,7 @@
 &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="textFormat">
-             <enum>Qt::AutoText</enum>
+             <enum>Qt::TextFormat::AutoText</enum>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -1606,7 +1606,7 @@
              <bool>true</bool>
             </property>
             <property name="textInteractionFlags">
-             <set>Qt::TextBrowserInteraction</set>
+             <set>Qt::TextInteractionFlag::TextBrowserInteraction</set>
             </property>
            </widget>
           </item>
@@ -1616,7 +1616,7 @@
        <item>
         <spacer name="verticalSpacer_8">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -1642,8 +1642,7 @@
           <item>
            <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>Application uses DAB transmiter database provided by &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;By pressing &lt;i&gt;Update&lt;/i&gt; button you agree with data usage &lt;a href='https://www.fmlist.org/fmlist_copyright_disclaimer_legal_notice.php'&gt;terms and conditions&lt;/a&gt;.
-</string>
+             <string>Application uses DAB transmiter database provided by &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;By pressing &lt;i&gt;Update&lt;/i&gt; button you agree with data usage &lt;a href='https://www.fmlist.org/fmlist_copyright_disclaimer_legal_notice.php'&gt;terms and conditions&lt;/a&gt;.</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -1665,7 +1664,7 @@
             <item>
              <spacer name="horizontalSpacer_11">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -1722,7 +1721,7 @@
             <item>
              <spacer name="horizontalSpacer_10">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -1771,7 +1770,7 @@
                 <item>
                  <widget class="QLineEdit" name="coordinatesEdit">
                   <property name="alignment">
-                   <set>Qt::AlignCenter</set>
+                   <set>Qt::AlignmentFlag::AlignCenter</set>
                   </property>
                  </widget>
                 </item>
@@ -1830,7 +1829,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
               <item>
                <spacer name="verticalSpacer_9">
                 <property name="orientation">
-                 <enum>Qt::Vertical</enum>
+                 <enum>Qt::Orientation::Vertical</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -1847,7 +1846,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
           <item>
            <widget class="Line" name="tiiHline">
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
            </widget>
           </item>
@@ -1864,7 +1863,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
        <item>
         <spacer name="verticalSpacer_10">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -1946,7 +1945,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
             <item>
              <spacer name="horizontalSpacer_3">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -1996,17 +1995,17 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
           <item row="2" column="3" colspan="4">
            <widget class="QLineEdit" name="proxyPassEdit">
             <property name="echoMode">
-             <enum>QLineEdit::Password</enum>
+             <enum>QLineEdit::EchoMode::Password</enum>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
            </widget>
           </item>
           <item row="1" column="1" colspan="3">
            <widget class="QLineEdit" name="proxyServerEdit">
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -2020,7 +2019,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
           <item row="2" column="1">
            <widget class="QLineEdit" name="proxyUserEdit">
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -2041,7 +2040,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
           <item row="1" column="6">
            <widget class="QLineEdit" name="proxyPortEdit">
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -2060,7 +2059,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
             <item>
              <spacer name="horizontalSpacer_12">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -2092,7 +2091,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
        <item>
         <spacer name="verticalSpacer_2">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>

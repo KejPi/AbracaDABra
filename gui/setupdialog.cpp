@@ -1632,7 +1632,7 @@ void SetupDialog::onTiiUpdateFinished(QNetworkReply::NetworkError err)
     }
     else
     {
-        ui->tiiDbLabel->setText(tr("TII update failed"));        
+        ui->tiiDbLabel->setText(tr("Update failed"));
     }
     ui->updateDbButton->setEnabled(!lastModified.isValid() || lastModified.daysTo(QDateTime::currentDateTime()) > 1);
 }

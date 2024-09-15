@@ -626,7 +626,7 @@ void TIIDialog::showPointToolTip(QMouseEvent *event)
     double y = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(x)->value;
 
     int subId = x % 24;
-    m_tiiSpectrumPlot->setToolTip(QString(tr("Level: %1<br>SubId: %3<br>Level: %2")).arg(x).arg(y).arg(subId, 2, 10, QChar('0')));
+    m_tiiSpectrumPlot->setToolTip(QString(tr("Carrier Pair: %1<br>SubId: %3<br>Level: %2")).arg(x).arg(y).arg(subId, 2, 10, QChar('0')));
 }
 
 void TIIDialog::addToPlot(const RadioControlTIIData &data)
