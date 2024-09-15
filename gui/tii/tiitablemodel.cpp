@@ -257,8 +257,8 @@ void TiiTableModel::updateData(const QList<dabsdrTii_t> &data, const ServiceList
         endInsertRows();
     }
 
-#warning "Remove this check"
-    Q_ASSERT(m_modelData.size() == data.size());
+    // #warning "Remove this check"
+    // Q_ASSERT(m_modelData.size() == data.size());
     for (int n = 0; n < m_modelData.size(); ++n) {
         Q_ASSERT(m_modelData.at(n).mainId() == data.at(n).main);
         Q_ASSERT(m_modelData.at(n).subId() == data.at(n).sub);
