@@ -52,7 +52,7 @@ SNRPlotDialog::SNRPlotDialog(Settings *settings, QWidget *parent)
 
     QFont boldBigFont;
     boldBigFont.setBold(true);
-    boldBigFont.setPointSize(20);
+    boldBigFont.setPointSize(ui->syncLabel->font().pointSize() + 2);
     ui->syncLabel->setFont(boldBigFont);
     int syncLabelWidth = ui->syncLabel->fontMetrics().boundingRect(tr(syncLevelLabels[1])).width()+10;
     ui->syncLabel->setFixedWidth(syncLabelWidth);
@@ -63,7 +63,10 @@ SNRPlotDialog::SNRPlotDialog(Settings *settings, QWidget *parent)
     ui->snrValue->setToolTip(QString(tr("DAB signal SNR")));
     ui->snrValue->setText("");
     ui->fixedSpacer->setGeometry(QRect(0,0, syncLabelWidth-snrValueWidth, 5));
-    ui->progressBar->setFixedHeight(ui->snrValue->fontMetrics().boundingRect(" 36.0 dB").height()/2);
+    ui->progressBar->setFixedHeight(ui->snrValue->fontMetrics().boundingRect(" 36.0 dB").height() * 0.6);
+    // ui->progressBar->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
+    ui->progressBar->setMinimum(0);
+    ui->progressBar->setMaximum(360);  // 36dB * 10
 
     ui->snrPlot->addGraph();
     ui->snrPlot->graph(0)->setLineStyle(QCPGraph::lsStepCenter);
@@ -102,7 +105,7 @@ void SNRPlotDialog::setSignalState(uint8_t sync, float snr)
 {
     ui->syncLabel->setText(tr(syncLevelLabels[sync]));
     ui->snrValue->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
-    ui->progressBar->setValue(snr);
+    ui->progressBar->setValue(snr*10);
     if (snr < 7.0)
     {
         ui->progressBar->setStyleSheet(snrProgressStylesheet[0]);
