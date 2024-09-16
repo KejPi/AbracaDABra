@@ -166,6 +166,9 @@ private:
     QAction * m_epgAction;
     QActionGroup * m_audioDevicesGroup = nullptr;
 
+    // tray icon
+    QSystemTrayIcon * m_trayIcon = nullptr;
+
     // dark mode
     QString m_defaultStyleName;
     QPalette m_palette;

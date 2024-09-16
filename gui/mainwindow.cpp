@@ -48,6 +48,7 @@
 #include <QQuickStyle>
 #include <iostream>
 #include <QNetworkProxy>
+#include <QSystemTrayIcon>
 
 #include "mainwindow.h"
 #include "slsview.h"
@@ -258,6 +259,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::newInputDeviceSettings, this, &MainWindow::onNewInputDeviceSettings);
     connect(m_setupDialog, &SetupDialog::applicationStyleChanged, this, &MainWindow::onApplicationStyleChanged);
     connect(m_setupDialog, &SetupDialog::expertModeToggled, this, &MainWindow::onExpertModeToggled);
+    connect(m_setupDialog, &SetupDialog::trayIconToggled, this, [this](bool ena) {
+        if (m_trayIcon != nullptr) { ena ? m_trayIcon->show() : m_trayIcon->hide(); }
+    });
     connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, this, &MainWindow::onNewAnnouncementSettings);
     connect(m_setupDialog, &SetupDialog::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
     connect(m_setupDialog, &SetupDialog::proxySettingsChanged, this, &MainWindow::setProxy);
@@ -471,6 +475,37 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(muteAction, &QAction::triggered, m_muteLabel, &ClickableLabel::toggle);
 
     dockMenu->setAsDockMenu();
+#endif
+#ifndef QT_NO_SYSTEMTRAYICON
+    if (QSystemTrayIcon::isSystemTrayAvailable())
+    {
+        qDebug() << "Tray icon is available";
+
+        QAction * muteAction = new QAction(tr("Mute"), this);
+        connect(m_muteLabel, &ClickableLabel::toggled, this, [muteAction](bool checked) {
+            muteAction->setText(checked ? tr("Unmute") : tr("Mute"));
+        });
+        connect(muteAction, &QAction::triggered, m_muteLabel, &ClickableLabel::toggle);
+
+        QAction * quitAction = new QAction(tr("&Quit"), this);
+        connect(quitAction, &QAction::triggered, this, &QApplication::quit);
+
+        QMenu * trayIconMenu = new QMenu(this);
+        trayIconMenu->addAction(muteAction);
+        trayIconMenu->addSeparator();
+        trayIconMenu->addAction(quitAction);
+
+        m_trayIcon = new QSystemTrayIcon(this);
+        m_trayIcon->setContextMenu(trayIconMenu);
+        QIcon icon(":/resources/trayIcon.svg");
+        icon.setIsMask(true);
+        m_trayIcon->setIcon(icon);
+    }
+    else
+    {
+        qDebug() << "Tray icon is NOT available";
+        m_trayIcon = nullptr;
+    }
 #endif
 
     // set fonts
@@ -936,7 +971,8 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
-{    if (0 == m_frequency)
+{
+    if (0 == m_frequency)
     {   // in idle
         emit exit();
 
@@ -2876,7 +2912,11 @@ void MainWindow::loadSettings()
     m_settings->audioRecFolder = settings->value("audioRecFolder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
     m_settings->audioRecCaptureOutput = settings->value("audioRecCaptureOutput", false).toBool();
     m_settings->audioRecAutoStopEna = settings->value("audioRecAutoStop", false).toBool();
-
+#ifdef Q_OS_MAC
+    m_settings->trayIconEna = settings->value("showTrayIcon", false).toBool();
+#else
+    m_settings->trayIconEna = settings->value("showTrayIcon", true).toBool();
+#endif
     m_settings->uaDump.folder = settings->value("UA-STORAGE/folder", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + "/" + appName).toString();
     m_settings->uaDump.overwriteEna  = settings->value("UA-STORAGE/overwriteEna", false).toBool();
     m_settings->uaDump.slsEna = settings->value("UA-STORAGE/slsEna", false).toBool();
@@ -3052,6 +3092,7 @@ void MainWindow::saveSettings()
     settings->setValue("audioRecFolder", m_settings->audioRecFolder);
     settings->setValue("audioRecCaptureOutput", m_settings->audioRecCaptureOutput);
     settings->setValue("audioRecAutoStop", m_settings->audioRecAutoStopEna);
+    settings->setValue("showTrayIcon", m_settings->trayIconEna);
 
     settings->setValue("EPG/filterEmpty", m_settings->epg.filterEmptyEpg);
     settings->setValue("EPG/filterOtherEnsembles", m_settings->epg.filterEnsemble);

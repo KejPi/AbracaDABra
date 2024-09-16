@@ -58,5 +58,6 @@
         <file>resources/spinner_dark.gif</file>
         <file>resources/epg.png</file>
         <file>resources/epg_dark.png</file>
+        <file>resources/trayIcon.svg</file>
     </qresource>
 </RCC>

@@ -280,6 +280,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->lightStyleRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
     connect(ui->darkStyleRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
     connect(ui->expertCheckBox, &QCheckBox::clicked, this, &SetupDialog::onExpertModeChecked);
+    connect(ui->trayIconCheckBox, &QCheckBox::clicked, this, &SetupDialog::onTrayIconChecked);
     connect(ui->dlPlusCheckBox, &QCheckBox::clicked, this, &SetupDialog::onDLPlusChecked);
     connect(ui->xmlHeaderCheckBox, &QCheckBox::clicked, this, &SetupDialog::onXmlHeaderChecked);
     connect(ui->spiAppCheckBox, &QCheckBox::clicked, this, &SetupDialog::onSpiAppChecked);
@@ -462,6 +463,7 @@ void SetupDialog::setSettings(Settings * settings)
     onUseInternetChecked(m_settings->useInternet);
     onSpiAppChecked(m_settings->spiAppEna);
     emit proxySettingsChanged();
+    emit trayIconToggled(m_settings->trayIconEna);
 }
 
 void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
@@ -719,6 +721,7 @@ void SetupDialog::setUiState()
         break;
     }
     ui->expertCheckBox->setChecked(m_settings->expertModeEna);
+    ui->trayIconCheckBox->setChecked(m_settings->trayIconEna);
     ui->dlPlusCheckBox->setChecked(m_settings->dlPlusEna);
 
     index = ui->noiseConcealmentCombo->findData(QVariant(m_settings->noiseConcealmentLevel));
@@ -1385,6 +1388,12 @@ void SetupDialog::onExpertModeChecked(bool checked)
     emit expertModeToggled(checked);
 
     QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
+}
+
+void SetupDialog::onTrayIconChecked(bool checked)
+{
+    m_settings->trayIconEna = checked;
+    emit trayIconToggled(checked);
 }
 
 void SetupDialog::onDLPlusChecked(bool checked)

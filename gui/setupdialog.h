@@ -67,6 +67,7 @@ signals:
     void newInputDeviceSettings();
     void newAnnouncementSettings();
     void expertModeToggled(bool enabled);
+    void trayIconToggled(bool enabled);
     void applicationStyleChanged(Settings::ApplicationStyle style);
     void noiseConcealmentLevelChanged(int level);
     void xmlHeaderToggled(bool enabled);
@@ -135,6 +136,7 @@ private:
 
     void onStyleChecked(bool checked);
     void onExpertModeChecked(bool checked);
+    void onTrayIconChecked(bool checked);
     void onDLPlusChecked(bool checked);
     void onLanguageChanged(int index);
     void onNoiseLevelChanged(int index);    
@@ -179,7 +181,7 @@ private:
     void onSoapySdrGainModeToggled(bool checked);
     void onSoapySdrBandwidthChanged(int val);
     void activateSoapySdrControls(bool en);
-#endif        
+#endif
 };
 
 #endif // SETUPDIALOG_H

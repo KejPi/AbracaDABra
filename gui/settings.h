@@ -112,6 +112,7 @@ public:
     QString audioRecFolder;
     bool audioRecCaptureOutput;
     bool audioRecAutoStopEna;
+    bool trayIconEna;
 
     // this is settings for UA data dumping (storage)
     struct UADumpSettings

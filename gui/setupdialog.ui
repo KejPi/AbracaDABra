@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -1927,6 +1927,13 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
            <widget class="QCheckBox" name="dlPlusCheckBox">
             <property name="text">
              <string>Dynamic Label Plus (DL+)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="trayIconCheckBox">
+            <property name="text">
+             <string>Show tray icon</string>
             </property>
            </widget>
           </item>
