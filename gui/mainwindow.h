@@ -42,6 +42,7 @@
 #include <QLoggingCategory>
 #include <QItemSelection>
 #include <QMessageBox>
+#include <QSystemTrayIcon>
 
 #include "config.h"
 #include "audiorecmanager.h"

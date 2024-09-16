@@ -48,7 +48,6 @@
 #include <QQuickStyle>
 #include <iostream>
 #include <QNetworkProxy>
-#include <QSystemTrayIcon>
 
 #include "mainwindow.h"
 #include "slsview.h"
@@ -497,8 +496,12 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
         m_trayIcon = new QSystemTrayIcon(this);
         m_trayIcon->setContextMenu(trayIconMenu);
+#ifdef Q_OS_WIN
+        QIcon icon(":/resources/appIcon.png");
+#else
         QIcon icon(":/resources/trayIcon.svg");
         icon.setIsMask(true);
+#endif
         m_trayIcon->setIcon(icon);
     }
     else
