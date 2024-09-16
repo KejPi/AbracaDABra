@@ -478,8 +478,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 #ifndef QT_NO_SYSTEMTRAYICON
     if (QSystemTrayIcon::isSystemTrayAvailable())
     {
-        qDebug() << "Tray icon is available";
-
         QAction * muteAction = new QAction(tr("Mute"), this);
         connect(m_muteLabel, &ClickableLabel::toggled, this, [muteAction](bool checked) {
             muteAction->setText(checked ? tr("Unmute") : tr("Mute"));
@@ -506,7 +504,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     }
     else
     {
-        qDebug() << "Tray icon is NOT available";
+        qCWarning(application) << "Tray icon is not available";
         m_trayIcon = nullptr;
     }
 #endif
