@@ -486,7 +486,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         });
         connect(muteAction, &QAction::triggered, m_muteLabel, &ClickableLabel::toggle);
 
-        QAction * quitAction = new QAction(tr("&Quit"), this);
+        QAction * quitAction = new QAction(tr("Quit"), this);
         connect(quitAction, &QAction::triggered, this, &QApplication::quit);
 
         QMenu * trayIconMenu = new QMenu(this);
