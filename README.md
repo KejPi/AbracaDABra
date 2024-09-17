@@ -170,6 +170,29 @@ _Notes:_
 
 <img width="738" alt="audioRecordingSchedule" src="https://github.com/KejPi/AbracaDABra/assets/6438380/7aa07e1f-ee41-44b2-bdb6-41e65d46261e">
 
+## TII decoding
+
+TII decoder is considered to be advanced feature thus it is only available when application is in [Expert mode](#expert-mode). Before using it, the feature needs to be configured from application settings:
+
+<img width="642" alt="TII_settings" src="https://github.com/user-attachments/assets/3bf9cfd5-9489-478f-ba35-4ad0adad5061">
+
+First update the DAB transmitter database kindly provided by [FMLIST](https://www.fmlist.org). _Note:_ you might need to configure network proxy in Others tab. 
+
+Then set your location, 3 options are available:
+* System - location provided by system. This option works well under macOS and requires granting Location permission for the application.
+* Manual - manual configuration of the location using latitude, longitude format. Using [Google Maps](https://www.google.com/maps/) as suggested by "Tip" in the dialog is probably the easiest way to get your coordinated in expected format.
+* NMEA Serial Port - using serial port GPS receiver compatible with NMEA standard. In this case you need to specify serial port device. _Note:_ Some users reported it is working but it was not tested by developer.
+
+_Note:_ Map is centered in Prague when location is not valid.
+
+Last TII related option is a possibility to enable spectrum plot. This option is mostly for debug purposes. If enabled it displays spectrum-like plot in the TII Decoder dialog that shows sum of carrier pairs calculated from NULL symbol of DAB signal. 
+
+<img width="915" alt="TII_1" src="https://github.com/user-attachments/assets/e842a718-258a-4f30-8b23-daae828d7966">
+
+TII Decoder dialog shows an interactive map provided by [OpenStreetMap](https://www.openstreetmap.org/copyright), table of detected transmitter codes and ensemble information. Blue dot shows location configured in Settings.
+Table shows TII code (Main & Sub), relative transmitter level, distance and azimuth if position of the transmitter is known. Table can be sorted by any column by clicking on its header, by default it is sorted by Level so that the strongest transmitter is on top.
+To see details of particular transmitter, you can either select it by clicking on the row in table or you can click on position bubble in the map. Transmitter details are shown above the map in bottom right corner like in the screenshot above. 
+
 ## Expert settings
 Some settings can only be changed by editing of the INI file. File location is OS dependent:
 * macOS: `$HOME/.config/AbracaDABra/AbracaDABra.ini`
