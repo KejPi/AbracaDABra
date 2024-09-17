@@ -1,8 +1,8 @@
 # AbracaDABra
 Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks but also with Airspy R2 and Airspy Mini devices and with many devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
 
-Application is based on Qt6 cross-platform software development framework and can run on any platform supported by Qt6. 
-Prebuilt binaries are released for Windows, macOS (both Intel and Apple Silicon) and Linux x86-64 and AARCH64 (AppImage). 
+Application is based on Qt6 cross-platform software development framework and can run on any platform supported by Qt6 _(Qt version 6.5 or higher is required for full functionality since application version 2.5.90)_. 
+Prebuilt binaries are released for Windows, macOS (both Intel and Apple Silicon) and Linux x86-64 (AppImage). 
 ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
 <p align="center" width="100%">
     <img width="889" alt="AbracaDABra application window" src="https://github.com/KejPi/AbracaDABra/assets/6438380/717ed65e-314b-4307-9e32-968c5582eeda"> 
@@ -21,8 +21,9 @@ ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/
 * Announcements (all types including alarm test)
 * Dynamic label (DL) and Dynamic label plus (DL+)
 * MOT slideshow (SLS) and categorized slideshow (CatSLS) from PAD or from secondary data service
-* RadioDNS
 * SPI (Service and Programme information)
+* RadioDNS
+* TII decoding
 * Audio and data services reconfiguration
 * Dynamic programme type (PTy)
 * Ensemble structure view with all technical details
@@ -171,7 +172,6 @@ _Notes:_
 <img width="738" alt="audioRecordingSchedule" src="https://github.com/KejPi/AbracaDABra/assets/6438380/7aa07e1f-ee41-44b2-bdb6-41e65d46261e">
 
 ## TII decoding
-
 TII decoder is considered to be advanced feature thus it is only available when application is in [Expert mode](#expert-mode). Before using it, the feature needs to be configured from application settings:
 
 <img width="642" alt="TII_settings" src="https://github.com/user-attachments/assets/3bf9cfd5-9489-478f-ba35-4ad0adad5061">
@@ -191,7 +191,13 @@ Last TII related option is a possibility to enable spectrum plot. This option is
 
 TII Decoder dialog shows an interactive map provided by [OpenStreetMap](https://www.openstreetmap.org/copyright), table of detected transmitter codes and ensemble information. Blue dot shows location configured in Settings.
 Table shows TII code (Main & Sub), relative transmitter level, distance and azimuth if position of the transmitter is known. Table can be sorted by any column by clicking on its header, by default it is sorted by Level so that the strongest transmitter is on top.
-To see details of particular transmitter, you can either select it by clicking on the row in table or you can click on position bubble in the map. Transmitter details are shown above the map in bottom right corner like in the screenshot above. 
+To see details of particular transmitter, you can either select it by clicking on the row in table or you can click on position bubble in the map. Transmitter details are shown above the map in bottom right corner like in the screenshot above. Plot can be zoomed in both axes by mouse wheel ot in one axis by clicking on the axis a zooming by mouse wheel. When zoomed plot can be dragged by mouse, zoom is reset do default by right click on plot area. Note: Optional [QCustomPlot library](https://www.qcustomplot.com) is needed for this functionality.
+
+## SNR Plot
+SNR Plot is considered to be advanced feature thus it is only available when application is in [Expert mode](#expert-mode). The feature needs optional [QCustomPlot library](https://www.qcustomplot.com).
+This feature can be accessed by clicking on SNR value in status bar. It displays time plot of SNR that might be particularly useful for antenna alignment. No user interractions with this plot are supported.
+
+<img width="728" alt="SNR" src="https://github.com/user-attachments/assets/2e995e35-c199-4370-b811-0e0d22da0ea6">
 
 ## Expert settings
 Some settings can only be changed by editing of the INI file. File location is OS dependent:
@@ -215,11 +221,9 @@ It is also possible to use other than default INI file using `--ini` or `-i` com
 ### macOS
 Download latest DMG file from [release page](https://github.com/KejPi/AbracaDABra/releases/latest) and install it like any other application. 
 
-There are two versions of DMG, one for Intel Mac and the other from Apple Silicon Mac. Although Intel Mac application runs on both platforms, it is highly recommended to install Apple Silicon version if you have Apple Silicon Mac. Intel build requires at least MacOS Mojave (10.14) and Apple Silicon build needs at least MacOS BigSur (11).
+There are two versions of DMG, one for Intel Mac and the other from Apple Silicon Mac. Although Intel Mac application runs on both platforms, it is highly recommended to install Apple Silicon version if you have Apple Silicon Mac. Both Apple Silicon and Intel builds require at least MacOS BigSur (11).
 
 <img width="752" alt="Snímek obrazovky 2023-12-03 v 19 03 37" src="https://github.com/KejPi/AbracaDABra/assets/6438380/395a0384-ae2d-48e9-aca1-56169d631a4d">
-
-_Note:_ It seems that Apple did some changes in Sonoma and as a result Intel binaries do not run under macOS Catalina or older. Last binary that is known to run is version 2.2.4. Nevertheless the application code is still compatible with Qt6.4 thus it is possible to build AbracaDABra from source code on device running old macOS version.
 
 ### Windows
 Download latest Windows zip file from [release page](https://github.com/KejPi/AbracaDABra/releases/latest) and unpack it to any folder on your drive. 
