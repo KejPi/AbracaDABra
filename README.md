@@ -144,9 +144,11 @@ AbracaDABra features audio recording. Two options are available:
 * Encoded DAB/DAB+ stream in MP2 or AAC format respectively
 * Decoded audio in WAV format
 
-Audio recording can be started and stopped from application menu. It can be also stopped from status bar. The recording files are stored automatically in predefined folder. 
+Audio recording can be started and stopped from application menu. It can be also stopped from status bar. The recording files are stored automatically in predefined folder. Application stores also plain text file containg Dynamic label messages (DL) with timestamp. 
 
+<p align="center" width="100%">
 <img width="1326" alt="Snímek obrazovky 2023-12-03 v 16 56 59" src="https://github.com/KejPi/AbracaDABra/assets/6438380/92bddcfe-614d-45ea-bb8d-10ede37b61cb">
+</p>
 
 _Note:_  Audio recording stops when ensemble reconfigures or when any tuning operation is performed. 
 
@@ -169,35 +171,44 @@ _Notes:_
 * Ongoing scheduled audio recording can be stopped anytime from application menu or from status bar like any other audio recording.
 * If service to be recorded is available from more ensembles, the last used ensemble is used for recording (like when user selects services from the service list).
 
+<p align="center" width="100%">
 <img width="738" alt="audioRecordingSchedule" src="https://github.com/KejPi/AbracaDABra/assets/6438380/7aa07e1f-ee41-44b2-bdb6-41e65d46261e">
+</p>
 
 ## TII decoding
 TII decoder is considered to be advanced feature thus it is only available when application is in [Expert mode](#expert-mode). Before using it, the feature needs to be configured from application settings:
 
+<p align="center" width="100%">
 <img width="642" alt="TII_settings" src="https://github.com/user-attachments/assets/3bf9cfd5-9489-478f-ba35-4ad0adad5061">
+</p>
 
 First update the DAB transmitter database kindly provided by [FMLIST](https://www.fmlist.org). _Note:_ you might need to configure network proxy in Others tab. 
 
 Then set your location, 3 options are available:
-* System - location provided by system. This option works well under macOS and requires granting Location permission for the application.
-* Manual - manual configuration of the location using latitude, longitude format. Using [Google Maps](https://www.google.com/maps/) as suggested by "Tip" in the dialog is probably the easiest way to get your coordinated in expected format.
+* System - location provided by system. Application will ask for Location permission on macOS.
+* Manual - manual configuration of the location using "latitude, longitude" format. Using [Google Maps](https://www.google.com/maps/) as suggested by "Tip" in the dialog is probably the easiest way to get your coordinates in expected format.
 * NMEA Serial Port - using serial port GPS receiver compatible with NMEA standard. In this case you need to specify serial port device. _Note:_ Some users reported it is working but it was not tested by developer.
 
 _Note:_ Map is centered in Prague when location is not valid.
 
 Last TII related option is a possibility to enable spectrum plot. This option is mostly for debug purposes. If enabled it displays spectrum-like plot in the TII Decoder dialog that shows sum of carrier pairs calculated from NULL symbol of DAB signal. 
+Plot can be zoomed in both axes by mouse wheel or in one axis by clicking on the axis a zooming by mouse wheel. When zoomed plot can be dragged by mouse, zoom is reset do default by right click on plot area. Note: Optional [QCustomPlot library](https://www.qcustomplot.com) is needed for this functionality.
 
+<p align="center" width="100%">
 <img width="915" alt="TII_1" src="https://github.com/user-attachments/assets/e842a718-258a-4f30-8b23-daae828d7966">
+</p>
 
 TII Decoder dialog shows an interactive map provided by [OpenStreetMap](https://www.openstreetmap.org/copyright), table of detected transmitter codes and ensemble information. Blue dot shows location configured in Settings.
 Table shows TII code (Main & Sub), relative transmitter level, distance and azimuth if position of the transmitter is known. Table can be sorted by any column by clicking on its header, by default it is sorted by Level so that the strongest transmitter is on top.
-To see details of particular transmitter, you can either select it by clicking on the row in table or you can click on position bubble in the map. Transmitter details are shown above the map in bottom right corner like in the screenshot above. Plot can be zoomed in both axes by mouse wheel ot in one axis by clicking on the axis a zooming by mouse wheel. When zoomed plot can be dragged by mouse, zoom is reset do default by right click on plot area. Note: Optional [QCustomPlot library](https://www.qcustomplot.com) is needed for this functionality.
+To see details of particular transmitter, you can either select it by clicking on the row in table or you can click on position bubble in the map. Transmitter details are shown above the map in bottom right corner like in the screenshot above. 
 
 ## SNR Plot
-SNR Plot is considered to be advanced feature thus it is only available when application is in [Expert mode](#expert-mode). The feature needs optional [QCustomPlot library](https://www.qcustomplot.com).
+SNR Plot is considered to be advanced feature thus it is only available when application is in [Expert mode](#expert-mode). It needs optional [QCustomPlot library](https://www.qcustomplot.com).
 This feature can be accessed by clicking on SNR value in status bar. It displays time plot of SNR that might be particularly useful for antenna alignment. No user interractions with this plot are supported.
 
+<p align="center" width="100%">
 <img width="728" alt="SNR" src="https://github.com/user-attachments/assets/2e995e35-c199-4370-b811-0e0d22da0ea6">
+</p>
 
 ## Expert settings
 Some settings can only be changed by editing of the INI file. File location is OS dependent:
@@ -250,6 +261,7 @@ Following libraries are required:
 * portaudio (optional but recommended)
 * airspy (optional)
 * SoapySDR (optional)
+* QCustomPlot (optional) - it is automatically cloned from [GitHub](https://github.com/legerch/QCustomPlot-library) during CMake execution. Use QCUSTOMPLOT=OFF option to disable QCustomPlot usage in the application.
 
 Ubuntu 24.04 or lower does not support Qt>=6.5.0 that is required for full applications features. If you want to compile the application you shall [install](https://doc.qt.io/qt-6/qt-online-installation.html) Qt using online installer. Following modules are sufficcient to compile AbracaDABra:
 
@@ -291,11 +303,15 @@ Then clone the project:
        
        cmake .. -DUSE_SYSTEM_QCUSTOMPLOT=OFF -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DSOAPYSDR=ON
 
-4. Run make
+   Optional disable QCustomPlot:
+
+       cmake .. -DQCUSTOMPLOT=OFF -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake
+
+5. Run make
 
        make             
 
-5. Install application for all users (optional)
+6. Install application for all users (optional)
 
        sudo make install
        sudo ldconfig
