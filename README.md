@@ -46,10 +46,9 @@ Service can be easily added to favorites by clicking "star" icon.  Most of the e
 
 ## Expert mode
 <p align="center" width="100%">
-    <img width="889" alt="Application in expert mode" src="https://github.com/KejPi/AbracaDABra/assets/6438380/a1fae228-4148-477a-8c95-96fcc3080297">
-    <img width="1152" alt="Ensemble details" src="https://github.com/KejPi/AbracaDABra/assets/6438380/d2d552c2-360c-4f44-b3c7-8baa214ba7f9">
+    <img width="889" alt="Snímek obrazovky 2024-09-19 v 21 56 20" src="https://github.com/user-attachments/assets/2d304694-5993-4c5b-acb3-416c1b1106b1">
+    <img width="968" alt="Snímek obrazovky 2024-09-19 v 21 46 44" src="https://github.com/user-attachments/assets/11a30a85-1cfe-4bba-b834-11171c6a8aba">
 </p>
-
 In addition to basic mode, expert mode shows ensemble tree with structure of services and additional details of currently tuned service. 
 Furthermore it is possible to change the DAB channel manually in this mode. 
 This is particularly useful when antenna adjustment is done in order to receive ensemble that is not captured during automatic band scan.
