@@ -58,12 +58,16 @@ public:
     void resetMscStat();
     void newFrequency(quint32 f);
     void serviceChanged(const RadioControlServiceComponent &s);
+    void onEnsembleInformation(const RadioControlEnsemble &ens) { m_ensembleName = ens.label; }
+    void onEnsembleCSV(const QString & csvString);
+    QString exportPath() const;
+    void setExportPath(const QString &newExportPath);
 
 signals:
-    //void recordingStart(const QString & filename);
     void recordingStart(QWidget * widgetParent);
     void recordingStop();
     void requestEnsembleConfiguration();
+    void requestEnsembleCSV();
 
 protected:
     void showEvent(QShowEvent *event) override;
@@ -73,6 +77,8 @@ private:
 
     bool m_isRecordingActive = false;
     quint32 m_frequency;
+    QString m_exportPath;
+    QString m_ensembleName;
 
     quint32 m_fibCounter;
     quint32 m_fibErrorCounter;

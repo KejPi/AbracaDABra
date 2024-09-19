@@ -29,6 +29,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QMenu>
+#include <QRegularExpression>
 
 #include "ensembleinfodialog.h"
 #include "ui_ensembleinfodialog.h"
@@ -42,7 +43,10 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
     // remove question mark from titlebar
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
+    m_exportPath = QDir::homePath();
+
     connect(ui->recordButton, &QPushButton::clicked, this, &EnsembleInfoDialog::onRecordingButtonClicked);
+    connect(ui->csvExportButton, &QPushButton::clicked, this, &EnsembleInfoDialog::requestEnsembleCSV);
 
     clearFreqInfo();
     clearSignalInfo();
@@ -98,8 +102,10 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
     ui->crcErrRate->setToolTip(tr("Audio frame (AU for DAB+) error rate"));
 
     ui->recordButton->setToolTip(tr("Record raw IQ stream to file"));
-
+    ui->csvExportButton->setToolTip(tr("Export ensemble information to CSV file"));
+    ui->csvExportButton->setEnabled(false);
     enableRecording(false);
+    ui->recordButton->setDefault(true);
 }
 
 EnsembleInfoDialog::~EnsembleInfoDialog()
@@ -121,6 +127,7 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
             resetMscStat();
 
             ui->ensStructureTextEdit->setDocumentTitle("");
+            ui->csvExportButton->setEnabled(false);
         }
         else
         {
@@ -136,6 +143,36 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
                 minWidth = 1000;
             }
             ui->ensStructureTextEdit->setMinimumWidth(minWidth);
+            ui->csvExportButton->setEnabled(true);
+        }
+    }
+}
+
+void EnsembleInfoDialog::onEnsembleCSV(const QString &csvString)
+{
+    static const QRegularExpression regexp( "[" + QRegularExpression::escape("/:*?\"<>|") + "]");
+    QString ensemblename = m_ensembleName;
+    ensemblename.replace(regexp, "_");
+
+    QString f = QString("%1/%2_%3_%4.csv").arg(m_exportPath,
+                                            QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"),
+                                            DabTables::channelList.value(m_frequency),
+                                            ensemblename);
+
+    QString fileName = QFileDialog::getSaveFileName(this,
+                                            tr("Export CSV file"),
+                                            QDir::toNativeSeparators(f),
+                                            tr("CSV Files")+" (*.csv)");
+
+    if (!fileName.isEmpty())
+    {
+        m_exportPath = QFileInfo(fileName).path(); // store path for next time
+        QFile file(fileName);
+        if (file.open(QIODevice::WriteOnly))
+        {
+            QTextStream out(&file);
+            out << csvString;
+            file.close();
         }
     }
 }
@@ -278,6 +315,7 @@ void EnsembleInfoDialog::newFrequency(quint32 f)
         clearServiceInfo();
         resetMscStat();
         resetFibStat();
+        m_ensembleName.clear();
     }
 }
 
@@ -312,6 +350,16 @@ void EnsembleInfoDialog::closeEvent(QCloseEvent *event)
         emit recordingStop();
     }
     QDialog::closeEvent(event);
+}
+
+QString EnsembleInfoDialog::exportPath() const
+{
+    return m_exportPath;
+}
+
+void EnsembleInfoDialog::setExportPath(const QString &newExportPath)
+{
+    m_exportPath = newExportPath;
 }
 
 void EnsembleInfoDialog::fibFrameContextMenu(const QPoint& pos)

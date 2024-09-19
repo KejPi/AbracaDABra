@@ -86,6 +86,7 @@ public:
             m_eccsid = sid;
         }
     }
+    uint16_t eccc() const { return ((isProgServiceId() ? (m_eccsid >> 12) : (m_eccsid >> 20)) & 0x0FFF ); }
     uint32_t countryServiceRef() const { return (isProgServiceId() ? (m_eccsid & 0x0000FFFF) : (m_eccsid & 0x00FFFFFF));  }
     bool isValid() const { return m_eccsid != 0; }
     inline bool operator==(const DabSId & other) const { return m_eccsid == other.m_eccsid; }
@@ -348,6 +349,7 @@ public:
     void exit();
     void tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS);
     void getEnsembleConfiguration();
+    void getEnsembleCSV();
     void getEnsembleInformation();
     void startUserApplication(DabUserApplicationType uaType, bool start, bool singleChannel = true);
     uint32_t getEnsembleUEID() const { return m_ensemble.ueid; }
@@ -378,6 +380,7 @@ signals:
     void dabTime(const QDateTime & dateAndTime);   
     void ensembleInformation(const RadioControlEnsemble & ens);
     void ensembleConfiguration(const QString &);
+    void ensembleCSV(const QString &);
     void ensembleReconfiguration(const RadioControlEnsemble & ens);
     void ensembleRemoved(const RadioControlEnsemble & ens);
     void announcement(DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent & s);
@@ -445,6 +448,7 @@ private:
 
     void clearEnsemble();
     QString ensembleConfigurationString() const;
+    QString ensembleConfigurationCSV() const;
     void ensembleConfigurationUpdate();
     void ensembleConfigurationDispatch();
     bool isCurrentService(uint32_t sid, uint8_t scids) { return ((sid == m_currentService.SId) && (scids == m_currentService.SCIdS)); }

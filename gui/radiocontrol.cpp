@@ -40,9 +40,9 @@ Q_LOGGING_CATEGORY(radioControl, "RadioControl", QtInfoMsg)
 //Q_LOGGING_CATEGORY(radioControl, "RadioControl", QtDebugMsg)
 
 const uint8_t RadioControl::EEPCoderate[] =
-{ // ETSI EN 300 401 V2.1.1 [6.2.1 Basic sub-channel organization] table 9 & 10
-    0x14, 0x38, 0x12, 0x34,   // EEP 1-A..4-A : 1/4 3/8 1/2 3/4
-    0x49, 0x47, 0x46, 0x45    // EEP 1-B..4-B : 4/9 4/7 4/6 4/5
+    { // ETSI EN 300 401 V2.1.1 [6.2.1 Basic sub-channel organization] table 9 & 10
+        0x14, 0x38, 0x12, 0x34,   // EEP 1-A..4-A : 1/4 3/8 1/2 3/4
+        0x49, 0x47, 0x46, 0x45    // EEP 1-B..4-B : 4/9 4/7 4/6 4/5
 };
 
 RadioControl::RadioControl(QObject *parent) : QObject(parent)
@@ -128,7 +128,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
             break;
         }
     }
-        break;
+    break;
     case RadioControlEventType::SYNC_STATUS:
     {
         qCDebug(radioControl, "Sync = %d", pEvent->syncStatus.syncLevel);
@@ -139,7 +139,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         }
         updateSignalState(pEvent->syncStatus.syncLevel, pEvent->syncStatus.snr10);
     }
-        break;
+    break;
     case RadioControlEventType::TUNE:
     {
         if (DABSDR_NSTAT_SUCCESS == pEvent->status)
@@ -168,7 +168,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
             qCCritical(radioControl) << "Tune error" << pEvent->status;
         }
     }
-        break;
+    break;
     case RadioControlEventType::ENSEMBLE_INFO:
     {
         eventHandler_ensembleInfo(pEvent);
@@ -176,7 +176,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         delete pEvent->pEnsembleInfo;
 
     }
-        break;
+    break;
     case RadioControlEventType::RECONFIGURATION:
     {
         qCInfo(radioControl) << "Ensemble reconfiguration";
@@ -191,7 +191,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         // ETSI EN 300 401 V2.1.1 (2017-01) [6.1]
         QTimer::singleShot(10, this, &RadioControl::dabGetServiceList);
     }
-        break;
+    break;
 
     case RadioControlEventType::SERVICE_LIST:
     {
@@ -202,7 +202,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         }
         delete pEvent->pServiceList;
     }
-        break;
+    break;
     case RadioControlEventType::SERVICE_COMPONENT_LIST:
     {
         qCDebug(radioControl) << "RadioControlEvent::SERVICE_COMPONENT_LIST";
@@ -212,7 +212,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         }
         delete pEvent->pServiceCompList;
     }
-        break;
+    break;
     case RadioControlEventType::USER_APP_UPDATE:
     {
         qCDebug(radioControl, "RadioControlEvent::USER_APP_UPDATE SID %8.8X SCIdS %d", pEvent->SId, pEvent->SCIdS);
@@ -229,7 +229,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         eventHandler_userAppList(pEvent);
         delete pEvent->pUserAppList;
     }
-        break;
+    break;
     case RadioControlEventType::SERVICE_SELECTION:
     {
         if (DABSDR_NSTAT_SUCCESS == pEvent->status)
@@ -261,7 +261,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
             }
         }
     }
-        break;
+    break;
 
     case RadioControlEventType::STOP_SERVICE:
     {
@@ -276,7 +276,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
             qCDebug(radioControl) << "RadioControlEvent::SERVICE_STOP error" << pEvent->status;
         }
     }
-        break;
+    break;
     case RadioControlEventType::XPAD_APP_START_STOP:
     {
         //dabsdrXpadAppStartStop_t * pData = pEvent->pXpadAppStartStopInfo;
@@ -289,8 +289,8 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
             qCWarning(radioControl) << "RadioControlEvent::XPAD_APP_START_STOP error" << pEvent->status;
         }
         delete pEvent->pXpadAppStartStopInfo;
-     }
-        break;
+    }
+    break;
     case RadioControlEventType::AUTO_NOTIFICATION:
     {
         dabsdrNtfPeriodic_t * pData = pEvent->pNotifyData;
@@ -308,7 +308,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         emit mscCounter(pData->mscCrcOkCntr, pData->mscCrcErrorCntr);
 
         qCDebug(radioControl, "AutoNotify: sync %d, freq offset = %.1f Hz, SNR = %.1f dB",
-               pData->syncLevel, pData->freqOffset*0.1, pData->snr10/10.0);
+                pData->syncLevel, pData->freqOffset*0.1, pData->snr10/10.0);
 
         delete pEvent->pNotifyData;
     }
@@ -337,7 +337,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 
         delete pEvent->pAnnouncement;                
     }
-        break;
+    break;
     case RadioControlEventType::PROGRAMME_TYPE:
     {
         qCDebug(radioControl) << "RadioControlEventType::PROGRAMME_TYPE";
@@ -364,7 +364,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 
         delete pEvent->pDynamicLabelData;
     }
-        break;
+    break;
     case RadioControlEventType::USERAPP_DATA:
     {
         qCDebug(radioControl) << "RadioControlEvent::DATAGROUP_MSC" << pEvent->pUserAppData->SCId;
@@ -385,7 +385,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
 
         delete pEvent->pUserAppData;
     }
-        break;
+    break;
     case RadioControlEventType::TII:
     {
         float maxLevel = 0.0;
@@ -401,7 +401,7 @@ void RadioControl::onDabEvent(RadioControlEvent * pEvent)
         emit tiiData(*(pEvent->pTII));
         delete pEvent->pTII;
     }
-        break;
+    break;
     default:
         qCWarning(radioControl) << "ERROR: Unsupported event" << int(pEvent->type);
     }
@@ -507,7 +507,7 @@ void RadioControl::tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS)
 
         // request audio stop
         emit stopAudio();
-     }
+    }
 }
 
 void RadioControl::updateSignalState(dabsdrSyncLevel_t s, int16_t snr10)
@@ -563,6 +563,11 @@ bool RadioControl::cgetCurrentAudioServiceComponent(serviceComponentConstIterato
 void RadioControl::getEnsembleConfiguration()
 {
     emit ensembleConfiguration(ensembleConfigurationString());
+}
+
+void RadioControl::getEnsembleCSV()
+{
+    emit ensembleCSV(ensembleConfigurationCSV());
 }
 
 void RadioControl::getEnsembleInformation()
@@ -725,13 +730,13 @@ QString RadioControl::ensembleConfigurationString() const
     strOut << "<dl>";
     strOut << "<dt>Ensemble:</dt>";
     strOut << QString("<dd>0x%1 <b>%2</b> [ <i>%3</i> ]  ECC: 0x%4, UTC %5 min, INT: %6, alarm announcements: %7</dd>")
-              .arg(QString("%1").arg(m_ensemble.eid(), 4, 16, QChar('0')).toUpper())
-              .arg(m_ensemble.label)
-              .arg(m_ensemble.labelShort)
-              .arg(QString("%1").arg(m_ensemble.ecc(), 2, 16, QChar('0')).toUpper())
-              .arg(m_ensemble.LTO*30)
-              .arg(m_ensemble.intTable)
-              .arg(m_ensemble.alarm);
+                  .arg(QString("%1").arg(m_ensemble.eid(), 4, 16, QChar('0')).toUpper())
+                  .arg(m_ensemble.label)
+                  .arg(m_ensemble.labelShort)
+                  .arg(QString("%1").arg(m_ensemble.ecc(), 2, 16, QChar('0')).toUpper())
+                  .arg(m_ensemble.LTO*30)
+                  .arg(m_ensemble.intTable)
+                  .arg(m_ensemble.alarm);
     strOut << "</dl>";
 
     strOut << "<dl>";
@@ -748,11 +753,11 @@ QString RadioControl::ensembleConfigurationString() const
         if (s.SId.isProgServiceId())
         {   // programme service
             strOut << QString("0x%1 <b>%2</b> [ <i>%3</i> ] ECC: 0x%4, Country: %5,")
-                              .arg(QString("%1").arg(s.SId.progSId(), 4, 16, QChar('0')).toUpper())
-                              .arg(s.label)
-                              .arg(s.labelShort)
-                              .arg(QString("%1").arg(s.SId.ecc(), 2, 16, QChar('0')).toUpper())
-                              .arg(DabTables::getCountryNameEnglish(s.SId.value()));
+                          .arg(QString("%1").arg(s.SId.progSId(), 4, 16, QChar('0')).toUpper())
+                          .arg(s.label)
+                          .arg(s.labelShort)
+                          .arg(QString("%1").arg(s.SId.ecc(), 2, 16, QChar('0')).toUpper())
+                          .arg(DabTables::getCountryNameEnglish(s.SId.value()));
 
             // ETSI EN 300 401 V2.1.1 [8.1.5]
             // At any one time, the PTy shall be either Static or Dynamic;
@@ -791,9 +796,9 @@ QString RadioControl::ensembleConfigurationString() const
         else
         {   // data service
             strOut << QString("0x%1 <b>%2</b> [ <i>%3</i> ]")
-                   .arg(QString("%1").arg(s.SId.value(), 8, 16, QChar('0')).toUpper())
-                   .arg(s.label)
-                   .arg(s.labelShort);
+                          .arg(QString("%1").arg(s.SId.value(), 8, 16, QChar('0')).toUpper())
+                          .arg(s.label)
+                          .arg(s.labelShort);
         }
         if (s.CAId)
         {
@@ -861,8 +866,8 @@ QString RadioControl::ensembleConfigurationString() const
             if (sc.isDataPacketService())
             {
                 strOut << QString(", DG: %1, PacketAddr: %2")
-                          .arg(sc.packetData.DGflag)
-                          .arg(sc.packetData.packetAddress);
+                .arg(sc.packetData.DGflag)
+                    .arg(sc.packetData.packetAddress);
             }
             else
             {  /* do nothing */ }
@@ -870,10 +875,10 @@ QString RadioControl::ensembleConfigurationString() const
 
             strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             strOut << QString("SubChId: %1, Language: %2, StartCU: %3, NumCU: %4,")
-                      .arg(sc.SubChId)
-                      .arg(DabTables::getLangNameEnglish(sc.lang))
-                      .arg(sc.SubChAddr)
-                      .arg(sc.SubChSize);
+                          .arg(sc.SubChId)
+                          .arg(DabTables::getLangNameEnglish(sc.lang))
+                          .arg(sc.SubChAddr)
+                          .arg(sc.SubChSize);
             if (sc.protection.isEEP())
             {   // EEP
                 if (sc.protection.level < DabProtectionLevel::EEP_1B)
@@ -908,9 +913,9 @@ QString RadioControl::ensembleConfigurationString() const
                 strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                 strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                 strOut << QString("UserApp %1/%2: Label: '%3' [ '%4' ], ")
-                          .arg(uaCntr++).arg(sc.userApps.size())
-                          .arg(ua.label)
-                          .arg(ua.labelShort);
+                              .arg(uaCntr++).arg(sc.userApps.size())
+                              .arg(ua.label)
+                              .arg(ua.labelShort);
 
 
                 strOut << QString("UAType: 0x%1 (%2)").arg(QString::number(int(ua.uaType), 16).toUpper(), DabTables::getUserApplicationName(ua.uaType));
@@ -954,6 +959,129 @@ QString RadioControl::ensembleConfigurationString() const
 
     strOut.flush();
 
+    return output;
+}
+
+// returns CVS with ensemble information
+QString RadioControl::ensembleConfigurationCSV() const
+{   // Ensemble Name;Ensemble ID;Channel;Frequency;Service Name;Service ID;Service Component ID;Service Language;Service Country;PTY;Short Label;ECC;Component Label;Component Language;Type;Sub channel ID;Codec;Bitrate;CU;Protection level;User application
+    if (0 == m_serviceList.size())
+    {
+        return QString("");
+    }
+
+    QString output = "Ensemble Name;Ensemble ID;Channel;Frequency;Service Name;Service ID;Service Component ID;Service Language;Service Country;PTY;Short Label;ECC;Component Label;Component Language;Type;Sub channel ID;Codec;Bitrate;CU;Protection level;User application\n";
+    for (auto const & s : m_serviceList)
+    {
+        for (auto const & sc : s.serviceComponents)
+        {
+            QStringList strOut;
+
+            strOut << m_ensemble.label;
+            strOut << QString("%1").arg(m_ensemble.eid(), 4, 16, QChar('0')).toUpper();
+            strOut << DabTables::channelList[m_ensemble.frequency];
+            strOut << QString::number(m_ensemble.frequency);
+            if (sc.isAudioService())
+            {   // audio service
+                strOut << sc.label << QString("%1").arg(sc.SId.progSId(), 4, 16, QChar('0')).toUpper();
+            }
+            else
+            {   // data service
+                strOut << sc.label << QString("%1").arg(sc.SId.value(), 8, 16, QChar('0')).toUpper();
+            }
+            strOut << QString::number(sc.SCIdS) << DabTables::getLangNameEnglish(sc.lang) << DabTables::getCountryNameEnglish(sc.SId.value());
+            if (sc.isAudioService())
+            {   // audio service
+                strOut << DabTables::getPtyNameEnglish(s.pty.s);
+            }
+            else {
+                strOut << "none";
+            }
+            strOut << sc.labelShort;
+            strOut << QString("%1").arg(sc.SId.eccc(), 3, 16, QChar('0')).toUpper();
+            strOut << sc.label << DabTables::getLangNameEnglish(sc.lang);
+
+            if (sc.isAudioService())
+            {
+                strOut << (sc.streamAudioData.scType == DabAudioDataSCty::DABPLUS_AUDIO ? "Audio Stream DAB+" : "Audio Stream DAB");
+            }
+            else {
+                strOut << (sc.isDataPacketService() ? "Packet Data" : "Stream Data");
+            }
+            strOut << QString::number(sc.SubChId, 16).toUpper();
+            if (sc.isAudioService())
+            {
+                strOut << (sc.streamAudioData.scType == DabAudioDataSCty::DABPLUS_AUDIO ? "AAC+" : "MP2");
+            }
+            else {
+                strOut << "Data";
+            }
+
+            if (sc.isDataPacketService())
+            {
+                switch (sc.protection.level) {
+                case DabProtectionLevel::EEP_1A:
+                    strOut << QString::number(sc.SubChSize / 12 * 8);
+                    break;
+                case DabProtectionLevel::EEP_2A:
+                    strOut << QString::number(sc.SubChSize / 8 * 8);
+                    break;
+                case DabProtectionLevel::EEP_3A:
+                    strOut << QString::number(sc.SubChSize / 6 * 8);
+                    break;
+                case DabProtectionLevel::EEP_4A:
+                    strOut << QString::number(sc.SubChSize / 4 * 8);
+                    break;
+                case DabProtectionLevel::EEP_1B:
+                    strOut << QString::number(sc.SubChSize / 27 * 32);
+                    break;
+                case DabProtectionLevel::EEP_2B:
+                    strOut << QString::number(sc.SubChSize / 21 * 32);
+                    break;
+                case DabProtectionLevel::EEP_3B:
+                    strOut << QString::number(sc.SubChSize / 18 * 32);
+                    break;
+                case DabProtectionLevel::EEP_4B:
+                    strOut << QString::number(sc.SubChSize / 15 * 32);
+                    break;
+                default:
+                    strOut << "Unknown";
+                    break;
+                }
+            }
+            else
+            {
+                strOut << QString::number(sc.streamAudioData.bitRate);
+            }
+
+            strOut << QString::number(sc.SubChSize);
+            if (sc.protection.isEEP())
+            {   // EEP
+                if (sc.protection.level < DabProtectionLevel::EEP_1B)
+                {  // EEP x-A
+                    strOut << QString("EEP %1-%2").arg(int(sc.protection.level) - int(DabProtectionLevel::EEP_1A) + 1).arg("A");
+                }
+                else
+                {  // EEP x+B
+                    strOut << QString("EEP %1-%2").arg(int(sc.protection.level) - int(DabProtectionLevel::EEP_1B) + 1).arg("B");
+                }
+            }
+            else
+            {  // UEP
+                strOut << QString("UEP #%1").arg(sc.protection.uepIndex);
+            }
+            QStringList userApps;
+            for (const auto & ua : sc.userApps)
+            {
+                userApps <<  DabTables::getUserApplicationName(ua.uaType);
+            }
+            strOut << userApps.join(',');
+
+            // add line to output
+            output.append(strOut.join(';'));
+            output.append('\n');
+        }
+    }
     return output;
 }
 
@@ -1326,7 +1454,7 @@ void RadioControl::eventHandler_serviceSelection(RadioControlEvent *pEvent)
                 if (!scIt->autoEnabled)
                 {   // if not data service that is automatically enabled
                     qCInfo(radioControl, "Playing: [%6.6X @ %6d kHz | %3s] %-18s %6.6X : %d", m_ensemble.ueid, m_ensemble.frequency, DabTables::channelList.value(m_ensemble.frequency).toUtf8().data(),
-                            scIt->label.toUtf8().data(), pEvent->SId, pEvent->SCIdS);
+                           scIt->label.toUtf8().data(), pEvent->SId, pEvent->SCIdS);
                     // store current service
                     m_currentService.SId = pEvent->SId;
                     m_currentService.SCIdS = pEvent->SCIdS;
@@ -1628,9 +1756,9 @@ void RadioControl::announcementHandler(dabsdrAsw_t *pAnnouncement)
         if ((announcementId >= 0) && (pAnnouncement->ASwFlags & m_currentService.announcement.enaFlags))
         {   // valid ASw
             qCInfo(radioControl)
-                     << DabTables::getAnnouncementNameEnglish(static_cast<DabAnnouncement>(announcementId))
-                     << "announcement in subchannel" <<  pAnnouncement->subChId
-                     << "cluster ID" << pAnnouncement->clusterId;
+                << DabTables::getAnnouncementNameEnglish(static_cast<DabAnnouncement>(announcementId))
+                << "announcement in subchannel" <<  pAnnouncement->subChId
+                << "cluster ID" << pAnnouncement->clusterId;
 
             m_currentService.announcement.suspendRequest = false;
             if (startAnnouncement(pAnnouncement->subChId))
@@ -1692,7 +1820,7 @@ void RadioControl::announcementHandler(dabsdrAsw_t *pAnnouncement)
                         });
                     }
                 }
-                    break;
+                break;
                 case RadioControlAnnouncementState::Suspended:
                 {
                     serviceConstIterator sIt = m_serviceList.constFind(m_currentService.announcement.SId);
@@ -1705,7 +1833,7 @@ void RadioControl::announcementHandler(dabsdrAsw_t *pAnnouncement)
                         }
                     }
                 }
-                    break;
+                break;
                 default:
                     // OnOtherService, None is not possible here
 
@@ -1841,7 +1969,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         memcpy(&pEvent->syncStatus, p->pData, sizeof(dabsdrNtfSyncStatus_t));
         radioCtrl->emit_dabEvent(pEvent);
     }
-        break;
+    break;
     case DABSDR_NID_TUNE:
     {
         qCDebug(radioControl, "DABSDR_NID_TUNE: status %d", p->status);
@@ -1852,7 +1980,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         pEvent->frequency = static_cast<uint32_t>(*((uint32_t*) p->pData));
         radioCtrl->emit_dabEvent(pEvent);
     }
-        break;
+    break;
     case DABSDR_NID_ENSEMBLE_INFO:
     {
         qCDebug(radioControl, "DABSDR_NID_ENSEMBLE_INFO: status %d", p->status);
@@ -1864,7 +1992,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         memcpy(pEvent->pEnsembleInfo, p->pData, sizeof(dabsdrNtfEnsemble_t));
         radioCtrl->emit_dabEvent(pEvent);
     }
-        break;                
+    break;
     case DABSDR_NID_SERVICE_LIST:
     {
         const dabsdrNtfServiceList_t * pInfo = (const dabsdrNtfServiceList_t *) p->pData;
@@ -1884,7 +2012,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         pEvent->pServiceList = pServiceList;
         radioCtrl->emit_dabEvent(pEvent);
     }
-        break;
+    break;
     case DABSDR_NID_SERVICE_COMPONENT_LIST:
     {
         const dabsdrNtfServiceComponentList_t * pInfo = (const dabsdrNtfServiceComponentList_t * ) p->pData;
@@ -1964,7 +2092,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         pEvent->decoderId = pInfo->id;
         radioCtrl->emit_dabEvent(pEvent);
     }
-        break;
+    break;
     case DABSDR_NID_SERVICE_STOP:
     {
         const dabsdrNtfServiceStop_t * pInfo = (const dabsdrNtfServiceStop_t * ) p->pData;
@@ -1978,7 +2106,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         pEvent->decoderId = pInfo->id;
         radioCtrl->emit_dabEvent(pEvent);
     }
-        break;
+    break;
     case DABSDR_NID_XPAD_APP_START_STOP:
     {
         dabsdrNtfXpadAppStartStop_t * pServStopInfo = new dabsdrNtfXpadAppStartStop_t;
@@ -1991,7 +2119,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         pEvent->pXpadAppStartStopInfo = pServStopInfo;
         radioCtrl->emit_dabEvent(pEvent);
     }
-        break;
+    break;
     case DABSDR_NID_PERIODIC:
     {
         if (p->pData)
@@ -2008,7 +2136,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
             radioCtrl->emit_dabEvent(pEvent);
         }
     }
-        break;
+    break;
     case DABSDR_NID_RECONFIGURATION:
     {
         qCDebug(radioControl, "DABSDR_NID_RECONFIGURATION: status %d", p->status);
@@ -2019,7 +2147,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         pEvent->status = p->status;
         radioCtrl->emit_dabEvent(pEvent);
     }
-        break;
+    break;
     case DABSDR_NID_RESET:
     {
         RadioControlEvent * pEvent = new RadioControlEvent;
@@ -2029,7 +2157,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         pEvent->resetFlag = static_cast<dabsdrNtfResetFlags_t>(*((dabsdrNtfResetFlags_t*) p->pData));
         radioCtrl->emit_dabEvent(pEvent);
     }
-        break;
+    break;
     case DABSDR_NID_ANNOUNCEMENT_SUPPORT:
     {
         dabsdrNtfAnnouncementSupport_t * pAnnouncementSupport = new dabsdrNtfAnnouncementSupport_t;
@@ -2042,7 +2170,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         pEvent->pAnnouncementSupport = pAnnouncementSupport;
         radioCtrl->emit_dabEvent(pEvent);
     }
-        break;
+    break;
     case DABSDR_NID_ANNOUNCEMENT_SWITCHING:
     {
         dabsdrNtfAnnouncementSwitching_t * pAnnouncement = new dabsdrNtfAnnouncementSwitching_t;
@@ -2054,7 +2182,7 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx)
         pEvent->pAnnouncement = pAnnouncement;
         radioCtrl->emit_dabEvent(pEvent);
     }
-        break;
+    break;
     case DABSDR_NID_PTY:
     {
         dabsdrNtfPTy_t * pPty = new dabsdrNtfPTy_t;
@@ -2160,7 +2288,7 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
             //qCDebug(radioControl) << "Ignoring announcement audio data";
         }
     }
-        break;
+    break;
     case AnnouncementSwitchState::WaitForAnnouncement:
     {   // announcement expected
         RadioControlAudioData * pAudioData = new RadioControlAudioData;
@@ -2176,7 +2304,7 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
         }
         else { /* normal service data */ }
     }
-        break;
+    break;
     default:
     {   //
         if (DABSDR_ID_AUDIO_SECONDARY == p->id)
