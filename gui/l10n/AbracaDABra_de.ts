@@ -86,7 +86,7 @@
     <message>
         <location filename="../aboutdialog.cpp" line="87"/>
         <source>and DAB transmitter database provided by</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -349,7 +349,7 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="523"/>
         <source>Export as CSV</source>
-        <translation type="unfinished"></translation>
+        <translation>Als CSV exportieren</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="550"/>
@@ -478,7 +478,7 @@
     <message>
         <location filename="../ensembleinfodialog.cpp" line="105"/>
         <source>Export ensemble information to CSV file</source>
-        <translation type="unfinished"></translation>
+        <translation>Ensembleinformation in CSV Datei exportieren</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="134"/>
@@ -488,12 +488,12 @@
     <message>
         <location filename="../ensembleinfodialog.cpp" line="163"/>
         <source>Export CSV file</source>
-        <translation type="unfinished"></translation>
+        <translation>CSV Datei exportieren</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="165"/>
         <source>CSV Files</source>
-        <translation type="unfinished"></translation>
+        <translation>CSV Dateien</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="221"/>
@@ -712,12 +712,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="338"/>
         <source>Display SNR plot</source>
-        <translation type="unfinished"></translation>
+        <translation>SNR Plot anzeigen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="376"/>
         <source>TII decoder</source>
-        <translation type="unfinished"></translation>
+        <translation>TII-Dekoder</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="379"/>
@@ -765,13 +765,13 @@
         <location filename="../mainwindow.cpp" line="481"/>
         <location filename="../mainwindow.cpp" line="483"/>
         <source>Mute</source>
-        <translation type="unfinished"></translation>
+        <translation>Stummschalten</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="472"/>
         <location filename="../mainwindow.cpp" line="483"/>
         <source>Unmute</source>
-        <translation type="unfinished"></translation>
+        <translation>Stummschaltung aufheben</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="607"/>
@@ -791,7 +791,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="622"/>
         <source>Show program guide (EPG)</source>
-        <translation type="unfinished"></translation>
+        <translation>Programmführer (EPG) anzeigen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="625"/>
@@ -932,7 +932,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="487"/>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Beenden</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1523"/>
@@ -3276,27 +3276,27 @@ Datei: %1</translation>
     <message>
         <location filename="../snrplotdialog.ui" line="20"/>
         <source>SNR Plot</source>
-        <translation type="unfinished"></translation>
+        <translation>SNR Plot</translation>
     </message>
     <message>
         <location filename="../snrplotdialog.cpp" line="30"/>
         <source>No signal</source>
-        <translation type="unfinished">Kein Signal</translation>
+        <translation>Kein Signal</translation>
     </message>
     <message>
         <location filename="../snrplotdialog.cpp" line="30"/>
         <source>Signal found</source>
-        <translation type="unfinished">Signal gefunden</translation>
+        <translation>Signal gefunden</translation>
     </message>
     <message>
         <location filename="../snrplotdialog.cpp" line="30"/>
         <source>Sync</source>
-        <translation type="unfinished">Sync</translation>
+        <translation>Sync</translation>
     </message>
     <message>
         <location filename="../snrplotdialog.cpp" line="63"/>
         <source>DAB signal SNR</source>
-        <translation type="unfinished">DAB-Signal-SNR</translation>
+        <translation>DAB-Signal-SNR</translation>
     </message>
 </context>
 <context>
@@ -3626,32 +3626,32 @@ Datei: %1</translation>
         <location filename="../setupdialog.ui" line="1633"/>
         <location filename="../setupdialog.cpp" line="51"/>
         <source>TII</source>
-        <translation type="unfinished"></translation>
+        <translation>TII</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1639"/>
         <source>Transmitter Database</source>
-        <translation type="unfinished"></translation>
+        <translation>Sendeanlagendatenbank</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1687"/>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktualisieren</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1699"/>
         <source>Receiver Location</source>
-        <translation type="unfinished"></translation>
+        <translation>Empfängerstandort</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1707"/>
         <source>Geolocation source:</source>
-        <translation type="unfinished"></translation>
+        <translation>Geolocation Quelle:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1766"/>
         <source>GPS coordinates:</source>
-        <translation type="unfinished"></translation>
+        <translation>GPS-Koordinaten:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1782"/>
@@ -3663,17 +3663,23 @@ right click on your location, click on coordinates in popup menu to copy them
 and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
 &lt;/p&gt;
 &lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
+&lt;p&gt;
+Koordinaten im Format &quot;Breitengrad, Längengrad&quot; eingeben, zB: 1.234,-5.678&lt;/p&gt;
+&lt;p&gt;Tipp: &lt;i&gt;Auf &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google Maps&lt;/a&gt; gehen,
+Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um sie zu kopieren  und dann diese Werte hier einfügen.&lt;/i&gt;&lt;/p&gt;
+&lt;/p&gt;
+&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1820"/>
         <source>Serial port:</source>
-        <translation type="unfinished"></translation>
+        <translation>Serielle Schnittstelle:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1859"/>
         <source>Show spectrum plot</source>
-        <translation type="unfinished"></translation>
+        <translation>Spektrumplot zeigen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1886"/>
@@ -3698,7 +3704,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
     <message>
         <location filename="../setupdialog.ui" line="1936"/>
         <source>Show tray icon</source>
-        <translation type="unfinished"></translation>
+        <translation>Traysymbol zeigen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1945"/>
@@ -3708,32 +3714,32 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
     <message>
         <location filename="../setupdialog.ui" line="1999"/>
         <source>Network proxy configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Netzwerkproxy Konfiguration</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2022"/>
         <source>Server:</source>
-        <translation type="unfinished"></translation>
+        <translation>Server:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2036"/>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Passwort:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2059"/>
         <source>Configuration:</source>
-        <translation type="unfinished"></translation>
+        <translation>Konfiguration:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2082"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Anwenden</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2091"/>
         <source>Username:</source>
-        <translation type="unfinished"></translation>
+        <translation>Benutzername:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1253"/>
@@ -3844,7 +3850,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
     <message>
         <location filename="../setupdialog.ui" line="1645"/>
         <source>Application uses DAB transmiter database provided by &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;By pressing &lt;i&gt;Update&lt;/i&gt; button you agree with data usage &lt;a href=&apos;https://www.fmlist.org/fmlist_copyright_disclaimer_legal_notice.php&apos;&gt;terms and conditions&lt;/a&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Das Programm verwendet die von &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; zur Verfügung gestellte DAB Sendeanlagendatabank .&lt;br&gt;Beim Klick auf &lt;i&gt;Aktualisieren&lt;/i&gt; stimmen Sie den &lt;a href=&apos;https://www.fmlist.org/fmlist_copyright_disclaimer_legal_notice.php&apos;&gt;Nutzungbedingungen&lt;/a&gt; der Daten zu.</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1983"/>
@@ -3993,29 +3999,29 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
         <location filename="../setupdialog.cpp" line="328"/>
         <location filename="../setupdialog.cpp" line="359"/>
         <source>System</source>
-        <translation type="unfinished"></translation>
+        <translation>System</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="330"/>
         <source>NMEA Serial Port</source>
-        <translation type="unfinished"></translation>
+        <translation>NMEA Serielle Schnittstelle</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="358"/>
         <source>No proxy</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Proxy</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="379"/>
         <location filename="../setupdialog.cpp" line="1635"/>
         <source>Last update: </source>
-        <translation type="unfinished"></translation>
+        <translation>Letze Aktualisierung: </translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="383"/>
         <location filename="../setupdialog.cpp" line="1639"/>
         <source>Data not available</source>
-        <translation type="unfinished"></translation>
+        <translation>Daten nicht verfügbar</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1433"/>
@@ -4035,7 +4041,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
     <message>
         <location filename="../setupdialog.cpp" line="1644"/>
         <source>Update failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktualisierung fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="254"/>
@@ -4199,52 +4205,52 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
     <message>
         <location filename="../tii/tiidialog.cpp" line="51"/>
         <source>TII Decoder</source>
-        <translation type="unfinished"></translation>
+        <translation>TII Dekoder</translation>
     </message>
     <message>
         <location filename="../tii/tiidialog.cpp" line="431"/>
         <source>Warning</source>
-        <translation type="unfinished">Warnung</translation>
+        <translation>Warnung</translation>
     </message>
     <message>
         <location filename="../tii/tiidialog.cpp" line="431"/>
         <source>Device location access is denied.</source>
-        <translation type="unfinished"></translation>
+        <translation>Standortzugriff wurde abgelehnt.</translation>
     </message>
     <message>
         <location filename="../tii/tiidialog.cpp" line="432"/>
         <source>If you want to display current position on map, grant the location permission in Settings then open the app again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Um die aktuell Position in der Karte anzuzeigen, legen Sie den Standort in den Einstellungen fest und starten das Programm neu.</translation>
     </message>
     <message>
         <location filename="../tii/tiidialog.cpp" line="564"/>
         <source>Ensemble: &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Ensemble: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/tiidialog.cpp" line="565"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/tiidialog.cpp" line="568"/>
         <source>Channel: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Kanal: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/tiidialog.cpp" line="610"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Seehöhe: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/tiidialog.cpp" line="612"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/tiidialog.cpp" line="629"/>
         <source>Carrier Pair: %1&lt;br&gt;SubId: %3&lt;br&gt;Level: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Trägerpaar: %1&lt;br&gt;SubId: %3&lt;br&gt;Stärke: %2</translation>
     </message>
 </context>
 <context>
@@ -4252,27 +4258,27 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
     <message>
         <location filename="../tii/tiitablemodel.cpp" line="135"/>
         <source>Main</source>
-        <translation type="unfinished"></translation>
+        <translation>Main</translation>
     </message>
     <message>
         <location filename="../tii/tiitablemodel.cpp" line="137"/>
         <source>Sub</source>
-        <translation type="unfinished"></translation>
+        <translation>Sub</translation>
     </message>
     <message>
         <location filename="../tii/tiitablemodel.cpp" line="139"/>
         <source>Level</source>
-        <translation type="unfinished"></translation>
+        <translation>Stärke</translation>
     </message>
     <message>
         <location filename="../tii/tiitablemodel.cpp" line="141"/>
         <source>Distance</source>
-        <translation type="unfinished"></translation>
+        <translation>Entfernung</translation>
     </message>
     <message>
         <location filename="../tii/tiitablemodel.cpp" line="143"/>
         <source>Azimuth</source>
-        <translation type="unfinished"></translation>
+        <translation>Azimut</translation>
     </message>
 </context>
 <context>
