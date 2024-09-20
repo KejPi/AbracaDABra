@@ -303,19 +303,19 @@ void EnsembleInfoDialog::resetMscStat()
 
 void EnsembleInfoDialog::newFrequency(quint32 f)
 {
-    m_frequency = f;
-    if (m_frequency)
-    {
-        ui->freq->setText(QString::number(m_frequency) + " kHz");
-        ui->channel->setText(DabTables::channelList.value(m_frequency));
-    }
-    else
-    {
+    if (f != m_frequency) {
+        m_frequency = f;
+
         clearFreqInfo();
         clearServiceInfo();
         resetMscStat();
         resetFibStat();
         m_ensembleName.clear();
+        if (m_frequency)
+        {
+            ui->freq->setText(QString::number(m_frequency) + " kHz");
+            ui->channel->setText(DabTables::channelList.value(m_frequency));
+        }
     }
 }
 
