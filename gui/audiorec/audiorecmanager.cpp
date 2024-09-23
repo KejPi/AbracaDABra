@@ -26,11 +26,12 @@
 
 #include <QLoggingCategory>
 #include "audiorecmanager.h"
+#include "epgtime.h"
 
 Q_LOGGING_CATEGORY(audioRecMgr, "AudioRecSchedule", QtInfoMsg)
 
-AudioRecManager::AudioRecManager(AudioRecScheduleModel *model, SLModel *slModel, AudioRecorder *recorder, QObject *parent)
-    : QObject{parent}, m_model(model), m_slModel(slModel), m_recorder(recorder)
+AudioRecManager::AudioRecManager(AudioRecScheduleModel *model, SLModel *slModel, AudioRecorder *recorder, Settings * settings, QObject *parent)
+    : QObject{parent}, m_model(model), m_slModel(slModel), m_recorder(recorder), m_settings(settings)
 {   
     m_isAudioRecordingActive = false;
     m_haveTimeConnection = false;
@@ -204,7 +205,7 @@ void AudioRecManager::onAudioRecordingStarted(const QString &filename)
 {
     m_audioRecordingFile = filename;
     m_isAudioRecordingActive = true;
-    if (nullptr == m_dlLogFile)
+    if (m_settings->audioRecDl && (nullptr == m_dlLogFile))
     {
         QFileInfo fi(filename);
         QString dlLogFilename  = fi.path() + "/" + fi.completeBaseName() + ".txt";
@@ -213,7 +214,14 @@ void AudioRecManager::onAudioRecordingStarted(const QString &filename)
         {
             QTextStream out(m_dlLogFile);
             if (!m_dlText.isEmpty()) {
-                out << "00:00:00\t" << m_dlText << Qt::endl;
+                if (m_settings->audioRecDlAbsTime)
+                {
+                    out << "00:00:00\t" << EPGTime::getInstance()->dabTime().toString("yyyy-MM-dd-hhmmss\t") << m_dlText << Qt::endl;
+                }
+                else
+                {
+                    out << "00:00:00\t" << m_dlText << Qt::endl;
+                }
             }
         }
         else
@@ -222,6 +230,9 @@ void AudioRecManager::onAudioRecordingStarted(const QString &filename)
             delete m_dlLogFile;
             m_dlLogFile = nullptr;
         }
+    }
+    else {
+        m_dlLogFile = nullptr;
     }
     emit audioRecordingStarted();
 }
@@ -289,7 +300,16 @@ void AudioRecManager::onDLComplete(const QString &dl)
             int hours = m_recTimeSec / 3600;
             int min = (m_recTimeSec - hours*3600)/60;
             int sec = (m_recTimeSec - hours*3600 - min*60);
-            out << QString("%1:%2:%3\t%4\n").arg(hours, 2, 10, QChar('0')).arg(min, 2, 10, QChar('0')).arg(sec, 2, 10, QChar('0')).arg(dl);
+            if (m_settings->audioRecDlAbsTime)
+            {
+                out << QString("%1:%2:%3\t%4\t%5\n").arg(hours, 2, 10, QChar('0')).arg(min, 2, 10, QChar('0')).arg(sec, 2, 10, QChar('0'))
+                           .arg(EPGTime::getInstance()->dabTime().toString("yyyy-MM-dd-hhmmss"), dl);
+            }
+            else
+            {
+                out << QString("%1:%2:%3\t%4\n").arg(hours, 2, 10, QChar('0')).arg(min, 2, 10, QChar('0')).arg(sec, 2, 10, QChar('0'))
+                .arg(dl);
+            }
         }
     }
 }

@@ -68,6 +68,8 @@ public:
 
     int ltoSec() const { return m_ltoSec; }
 
+    QDateTime dabTime() const;
+
 signals:
     void secSinceEpochChanged();
 
@@ -84,6 +86,7 @@ private:
 
     static EPGTime * m_instancePtr;
     QDateTime m_currentTime;
+    QDateTime m_dabTime;
     int m_ltoSec;
     QTimer * m_minuteTimer;
     qint64 m_secSinceEpoch;

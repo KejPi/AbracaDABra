@@ -289,6 +289,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->audioRecordingFolderButton, &QPushButton::clicked, this, &SetupDialog::onAudioRecordingFolderButtonClicked);
     connect(ui->audioInRecordingRadioButton, &QRadioButton::clicked, this, &SetupDialog::onAudioRecordingChecked);
     connect(ui->audioOutRecordingRadioButton, &QRadioButton::clicked, this, &SetupDialog::onAudioRecordingChecked);
+    connect(ui->dlRecordCheckBox, &QCheckBox::clicked, this, &SetupDialog::onDlRecordingChecked);
+    connect(ui->dlAbsTimeCheckBox, &QCheckBox::clicked, this, &SetupDialog::onDlAbsTimeChecked);
 
     ui->dataDumpFolderLabel->setElideMode(Qt::ElideLeft);
     ui->dumpSlsPatternEdit->setToolTip(tr("Storage path template for SLS application. Following tokens are supported:\n"
@@ -383,7 +385,7 @@ void SetupDialog::showEvent(QShowEvent *event)
         ui->tiiDbLabel->setText(tr("Data not available"));
     }
 #if HAVE_FMLIST_INTERFACE
-    ui->updateDbButton->setEnabled(!lastModified.isValid() || lastModified.daysTo(QDateTime::currentDateTime()) > 1);
+    ui->updateDbButton->setEnabled(!lastModified.isValid() || lastModified.msecsTo(QDateTime::currentDateTime()) > 10*60*1000);
 #endif
     ui->tabWidget->setFocus();
     QDialog::showEvent(event);
@@ -462,6 +464,7 @@ void SetupDialog::setSettings(Settings * settings)
     emit tiiSettingsChanged();
     onUseInternetChecked(m_settings->useInternet);
     onSpiAppChecked(m_settings->spiAppEna);
+    onDlRecordingChecked(m_settings->audioRecDl);
     emit proxySettingsChanged();
     emit trayIconToggled(m_settings->trayIconEna);
 }
@@ -752,6 +755,8 @@ void SetupDialog::setUiState()
         ui->audioInRecordingRadioButton->setChecked(true);
     }
     ui->autoStopRecordingCheckBox->setChecked(m_settings->audioRecAutoStopEna);
+    ui->dlAbsTimeCheckBox->setChecked(m_settings->audioRecDlAbsTime);
+    ui->dlRecordCheckBox->setChecked(m_settings->audioRecDl);
 
     ui->dataDumpFolderLabel->setText(m_settings->uaDump.folder);
     ui->dumpSlsPatternEdit->setText(m_settings->uaDump.slsPattern);
@@ -1544,6 +1549,17 @@ void SetupDialog::onDataDumpResetClicked()
     emit uaDumpSettings(m_settings->uaDump);
 }
 
+void SetupDialog::onDlRecordingChecked(bool checked)
+{
+    m_settings->audioRecDl = checked;
+    ui->dlAbsTimeCheckBox->setEnabled(checked);
+}
+
+void SetupDialog::onDlAbsTimeChecked(bool checked)
+{
+    m_settings->audioRecDlAbsTime = checked;
+}
+
 void SetupDialog::onGeolocationSourceChanged(int index)
 {
     int srcInt = ui->locationSourceCombo->itemData(index).toInt();
@@ -1643,7 +1659,7 @@ void SetupDialog::onTiiUpdateFinished(QNetworkReply::NetworkError err)
     {
         ui->tiiDbLabel->setText(tr("Update failed"));
     }
-    ui->updateDbButton->setEnabled(!lastModified.isValid() || lastModified.daysTo(QDateTime::currentDateTime()) > 1);
+    ui->updateDbButton->setEnabled(!lastModified.isValid() || lastModified.msecsTo(QDateTime::currentDateTime()) > 10*60*1000);
 }
 
 void SetupDialog::onProxyConfigChanged(int index)

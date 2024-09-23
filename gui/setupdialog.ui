@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -1327,12 +1327,16 @@
            </layout>
           </item>
           <item>
-           <widget class="QCheckBox" name="autoStopRecordingCheckBox">
-            <property name="toolTip">
-             <string>Audio recording must be stopped when service changes.&lt;br&gt;If you select this option, application stops recording and saves the file automatically without asking.</string>
-            </property>
+           <widget class="QRadioButton" name="audioInRecordingRadioButton">
             <property name="text">
-             <string>Do not ask to stop audio recording when service changes</string>
+             <string>Record encoded DAB/DAB+ stream (MP2 or AAC format)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="audioOutRecordingRadioButton">
+            <property name="text">
+             <string>Record decoded audio (WAV format)</string>
             </property>
            </widget>
           </item>
@@ -1344,16 +1348,32 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="audioInRecordingRadioButton">
+           <widget class="QCheckBox" name="autoStopRecordingCheckBox">
+            <property name="toolTip">
+             <string>Audio recording must be stopped when service changes.&lt;br&gt;If you select this option, application stops recording and saves the file automatically without asking.</string>
+            </property>
             <property name="text">
-             <string>Record encoded DAB/DAB+ stream (MP2 or AAC format)</string>
+             <string>Do not ask to stop audio recording when service changes</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="audioOutRecordingRadioButton">
+           <widget class="QCheckBox" name="dlRecordCheckBox">
+            <property name="toolTip">
+             <string>Dynamic label (DL) messages are recorded in TXT file during audio recording when this option is enabled.</string>
+            </property>
             <property name="text">
-             <string>Record decoded audio (WAV format)</string>
+             <string>Record DL messages</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="dlAbsTimeCheckBox">
+            <property name="toolTip">
+             <string>By default DL messages are recorded with timestamp relative to recording time. DAB time (absolute time) will be also recorded by enabling this option.</string>
+            </property>
+            <property name="text">
+             <string>Record DAB time for DL messages</string>
             </property>
            </widget>
           </item>

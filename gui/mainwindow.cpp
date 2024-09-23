@@ -665,7 +665,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_audioDecoderThread->start();
 
     m_audioRecScheduleModel = new AudioRecScheduleModel(this);
-    m_audioRecManager = new AudioRecManager(m_audioRecScheduleModel, m_slModel, audioRecorder, this);
+    m_audioRecManager = new AudioRecManager(m_audioRecScheduleModel, m_slModel, audioRecorder, m_settings, this);
 
     connect(m_audioRecManager, &AudioRecManager::audioRecordingStarted, this, &MainWindow::onAudioRecordingStarted);
     connect(m_audioRecManager, &AudioRecManager::audioRecordingStopped, this, &MainWindow::onAudioRecordingStopped);
@@ -2913,9 +2913,14 @@ void MainWindow::loadSettings()
     m_settings->spiAppEna = settings->value("spiAppEna", true).toBool();
     m_settings->useInternet = settings->value("useInternet", true).toBool();
     m_settings->radioDnsEna = settings->value("radioDNS", true).toBool();
-    m_settings->audioRecFolder = settings->value("audioRecFolder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
-    m_settings->audioRecCaptureOutput = settings->value("audioRecCaptureOutput", false).toBool();
-    m_settings->audioRecAutoStopEna = settings->value("audioRecAutoStop", false).toBool();
+
+
+    m_settings->audioRecFolder = settings->value("AudioRecording/folder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
+    m_settings->audioRecCaptureOutput = settings->value("AudioRecording/captureOutput", false).toBool();
+    m_settings->audioRecAutoStopEna = settings->value("AudioRecording/autoStop", false).toBool();
+    m_settings->audioRecDl = settings->value("AudioRecording/DL", false).toBool();
+    m_settings->audioRecDlAbsTime = settings->value("AudioRecording/DLAbsTime", false).toBool();
+
 #ifdef Q_OS_MAC
     m_settings->trayIconEna = settings->value("showTrayIcon", false).toBool();
 #else
@@ -3095,9 +3100,13 @@ void MainWindow::saveSettings()
     settings->setValue("spiAppEna", m_settings->spiAppEna);
     settings->setValue("useInternet", m_settings->useInternet);
     settings->setValue("radioDNS", m_settings->radioDnsEna);
-    settings->setValue("audioRecFolder", m_settings->audioRecFolder);
-    settings->setValue("audioRecCaptureOutput", m_settings->audioRecCaptureOutput);
-    settings->setValue("audioRecAutoStop", m_settings->audioRecAutoStopEna);
+
+    settings->setValue("AudioRecording/folder", m_settings->audioRecFolder);
+    settings->setValue("AudioRecording/captureOutput", m_settings->audioRecCaptureOutput);
+    settings->setValue("AudioRecording/autoStop", m_settings->audioRecAutoStopEna);
+    settings->setValue("AudioRecording/DL", m_settings->audioRecDl);
+    settings->setValue("AudioRecording/DLAbsTime", m_settings->audioRecDlAbsTime);
+
     settings->setValue("showTrayIcon", m_settings->trayIconEna);
 
     settings->setValue("EPG/filterEmpty", m_settings->epg.filterEmptyEpg);

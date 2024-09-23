@@ -112,6 +112,8 @@ public:
     QString audioRecFolder;
     bool audioRecCaptureOutput;
     bool audioRecAutoStopEna;
+    bool audioRecDl;
+    bool audioRecDlAbsTime;
     bool trayIconEna;
 
     // this is settings for UA data dumping (storage)

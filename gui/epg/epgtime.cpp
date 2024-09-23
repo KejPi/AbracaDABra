@@ -82,6 +82,7 @@ void EPGTime::setTime(const QDateTime & time)
 
         return;
     }
+    m_dabTime = time;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     m_currentTime = time.toTimeZone(QTimeZone::fromSecondsAheadOfUtc(m_ltoSec));
 #else
@@ -98,6 +99,11 @@ void EPGTime::onTimerTimeout()
     {
         setTime(m_currentTime.addSecs(60));
     }
+}
+
+QDateTime EPGTime::dabTime() const
+{
+    return m_dabTime;
 }
 
 QLocale EPGTime::timeLocale() const

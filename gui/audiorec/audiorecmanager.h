@@ -30,12 +30,13 @@
 #include <QObject>
 #include "audiorecschedulemodel.h"
 #include "audiorecorder.h"
+#include "settings.h"
 
 class AudioRecManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit AudioRecManager(AudioRecScheduleModel * model, SLModel *slModel, AudioRecorder * recorder, QObject *parent = nullptr);
+    explicit AudioRecManager(AudioRecScheduleModel * model, SLModel *slModel, AudioRecorder * recorder, Settings * settings, QObject *parent = nullptr);
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
 
     bool isAudioRecordingActive() const;
@@ -72,6 +73,7 @@ private:
 
     QBasicTimer m_timer;
 
+    Settings * m_settings;
     SLModel * m_slModel;
     AudioRecScheduleModel * m_model;    
     AudioRecorder * m_recorder;

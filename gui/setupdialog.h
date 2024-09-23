@@ -151,6 +151,8 @@ private:
     void onDataDumpCheckboxToggled(bool);
     void onDataDumpPatternEditingFinished();
     void onDataDumpResetClicked();
+    void onDlRecordingChecked(bool checked);
+    void onDlAbsTimeChecked(bool checked);
 
     void onGeolocationSourceChanged(int index);
     void onCoordinateEditFinished();
