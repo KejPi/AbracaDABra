@@ -3583,22 +3583,22 @@ Datei: %1</translation>
     <message>
         <location filename="../setupdialog.ui" line="1363"/>
         <source>Dynamic label (DL) messages are recorded in TXT file during audio recording when this option is enabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dynamic-label-(DL)-Meldungen werden während der Audioaufnahme in der TXT Datei gespeichert wenn diese Option aktiviert ist.</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1366"/>
         <source>Record DL messages</source>
-        <translation type="unfinished"></translation>
+        <translation>DL Meldungen aufnehmen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1373"/>
         <source>By default DL messages are recorded with timestamp relative to recording time. DAB time (absolute time) will be also recorded by enabling this option.</source>
-        <translation type="unfinished"></translation>
+        <translation>Standardmäßig werden DL Melduingen mit einem Zeitstempel relativ zur Aufnahmezeit aufgenommen. Die DAB-Zeit (absolute Zeit) wird auch aufgenommen, sobald diese Option gewählt wird.</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1376"/>
         <source>Record DAB time for DL messages</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB Zeit für DL Meldungen aufnehmen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1450"/>
