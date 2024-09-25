@@ -3583,7 +3583,7 @@ Datei: %1</translation>
     <message>
         <location filename="../setupdialog.ui" line="1363"/>
         <source>Dynamic label (DL) messages are recorded in TXT file during audio recording when this option is enabled.</source>
-        <translation>Dynamic-label-(DL)-Meldungen werden während der Audioaufnahme in der TXT Datei gespeichert wenn diese Option aktiviert ist.</translation>
+        <translation>Dynamic-label-(DL)-Meldungen werden während der Audioaufnahme in der TXT Datei gespeichert, wenn diese Option aktiviert ist.</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1366"/>
