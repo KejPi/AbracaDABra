@@ -2888,20 +2888,6 @@ void MainWindow::loadSettings()
     m_settings->expertModeEna = settings->value("expertMode", false).toBool();
     setExpertMode(m_settings->expertModeEna);
 
-    QSize sz = size();
-    QByteArray geometry = settings->value("windowGeometry").toByteArray();
-    if (!geometry.isEmpty())
-    {
-        restoreGeometry(geometry);
-        sz = size();
-    }
-    else
-    {   // this should happen only when ini is deleted ot on the first run
-        sz = minimumSizeHint();
-    }
-    // this is workaround to force size when window appears (not clear why it is necessary)
-    QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
-
     m_settings->applicationStyle = static_cast<Settings::ApplicationStyle>(settings->value("style", static_cast<int>(Settings::ApplicationStyle::Default)).toInt());
     m_settings->dlPlusEna = settings->value("dlPlus", true).toBool();
     m_settings->lang = QLocale::codeToLanguage(settings->value("language", QString("")).toString());
@@ -3002,6 +2988,22 @@ void MainWindow::loadSettings()
     m_settings->rawfile.loopEna = settings->value("RAW-FILE/loop", false).toBool();
 
     m_setupDialog->setSettings(m_settings);
+
+    // restore window gemometry -> this must be after m_setupDialog->setSettings(m_settings);
+    QSize sz = size();
+    QByteArray geometry = settings->value("windowGeometry").toByteArray();
+    if (!geometry.isEmpty())
+    {
+        restoreGeometry(geometry);
+        sz = size();
+    }
+    else
+    {   // this should happen only when ini is deleted ot on the first run
+        sz = minimumSizeHint();
+    }
+
+    // this is workaround to force size when window appears (not clear why it is necessary)
+    QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
 
     // set DAB time locale
     m_timeLocale = QLocale(m_setupDialog->applicationLanguage());
