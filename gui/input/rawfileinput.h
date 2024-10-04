@@ -55,7 +55,7 @@ protected:
     void run() override;
 signals:
     void bytesRead(qint64 numBytes);
-    void endOfFile();
+    void endOfFile(bool status);
 private:
     QAtomicInt m_stopRequest = false;
     QSemaphore m_semaphore;
@@ -93,7 +93,7 @@ private:
     void stop();
     void rewind();
     void onBytesRead(quint64 bytesRead);
-    void onEndOfFile() { emit error(InputDeviceErrorCode::EndOfFile); }
+    void onEndOfFile(bool status) { emit error(status ? InputDeviceErrorCode::EndOfFile : InputDeviceErrorCode::NoDataAvailable); }
     void parseXmlHeader(const QByteArray & xml);
 };
 

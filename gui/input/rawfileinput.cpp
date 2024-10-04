@@ -28,7 +28,6 @@
 #include <QLoggingCategory>
 #include <QFile>
 #include <QDomDocument>
-#include <complex>
 #include "rawfileinput.h"
 
 Q_LOGGING_CATEGORY(rawFileInput, "RawFileInput", QtInfoMsg)
@@ -66,6 +65,7 @@ bool RawFileInput::openDevice()
         m_inputFile->close();
         delete m_inputFile;
     }
+
     m_inputFile = new QFile(m_fileName);
     if (!m_inputFile->open(QIODevice::ReadOnly))
     {
@@ -83,7 +83,14 @@ bool RawFileInput::openDevice()
     do
     {   // read no more than RAWFILEINPUT_XML_PADDING bytes
         char ch;
-        in.readRawData(&ch, 1);
+        if (in.readRawData(&ch, 1) < 0)
+        {   // error
+            qCCritical(rawFileInput) << "RAW-FILE: Unable read from file: " << m_fileName;
+            m_inputFile->close();
+            delete m_inputFile;
+            m_inputFile = nullptr;
+            return false;
+        }
         if (0 == ch)
         {   // zero indicates header padding bytes
             break;
@@ -621,10 +628,13 @@ void RawFileWorker::run()
         if (samplesRead < input_chunk_iq_samples*2)
         {
             qCInfo(rawFileInput) << "RAW-FILE: End of file";
-            m_inputFile->seek(0);
             m_bytesRead = 0;
-            emit endOfFile();
+            bool status = m_inputFile->seek(0);
+            emit endOfFile(status);
             emit bytesRead(m_bytesRead);
+            if (!status) {
+                inputBuffer.fillDummy();
+            }
         }
     }
 }
