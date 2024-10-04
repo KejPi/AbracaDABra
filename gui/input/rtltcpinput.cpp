@@ -351,6 +351,7 @@ bool RtlTcpInput::openDevice()
 #endif
 
     // Convert the byte order
+    const int * gains = unknown_gains;
     dongleInfo.tunerType = ntohl(dongleInfo.tunerType);
     dongleInfo.tunerGainCount = ntohl(dongleInfo.tunerGainCount);
     if(dongleInfo.magic[0] == 'R' &&
@@ -365,7 +366,6 @@ bool RtlTcpInput::openDevice()
         m_deviceDescription.sample.containerBits = 8;
         m_deviceDescription.sample.channelContainer = "uint8";
 
-        const int * gains = unknown_gains;
         int numGains = 0;
         switch(dongleInfo.tunerType)
         {
@@ -432,51 +432,58 @@ bool RtlTcpInput::openDevice()
             {
                 dongleInfo.tunerGainCount = numGains;
             }
-        }
-
-
-        if (nullptr != m_gainList)
-        {
-            delete m_gainList;
-        }
-        m_gainList = new QList<int>();
-        for (int i = 0; i < dongleInfo.tunerGainCount; i++)
-        {
-            m_gainList->append(gains[i]);
-        }
-
-        m_agcLevelMinFactorList = new QList<float>();
-        for (int i = 1; i < m_gainList->count(); i++) {
-            // up step + 0.5dB
-            m_agcLevelMinFactorList->append(qPow(10.0, (m_gainList->at(i-1) - m_gainList->at(i) - 5)/200.0));
-        }
-        // last factor does not matter
-        m_agcLevelMinFactorList->append(qPow(10.0, -5.0 / 20.0));
-
-        // set sample rate
-        sendCommand(RtlTcpCommand::SET_SAMPLE_RATE, 2048000);
-
-        // set automatic gain
-        //setGainMode(RtlGainMode::Software);
-        m_gainIdx = -1;
-
-        // need to create worker, server is pushing samples
-        m_worker = new RtlTcpWorker(m_sock, this);
-        connect(m_worker, &RtlTcpWorker::agcLevel, this, &RtlTcpInput::onAgcLevel, Qt::QueuedConnection);
-        connect(m_worker, &RtlTcpWorker::dataReady, this, [=](){ emit tuned(m_frequency); }, Qt::QueuedConnection);
-        connect(m_worker, &RtlTcpWorker::recordBuffer, this, &InputDevice::recordBuffer, Qt::DirectConnection);
-        connect(m_worker, &RtlTcpWorker::finished, this, &RtlTcpInput::onReadThreadStopped, Qt::QueuedConnection);
-        connect(m_worker, &RtlTcpWorker::finished, m_worker, &QObject::deleteLater);
-        connect(m_worker, &RtlTcpWorker::destroyed, this, [=]() { m_worker = nullptr; } );
-        m_worker->start();
-        m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
-        emit deviceReady();
+        }        
     }
     else
-    {
-        qCCritical(rtlTcpInput) << "RTL-TCP: \"RTL0\" magic key not found. Server not supported";
-        return false;
+    {   // this is connection to unknown server => lets try and cross the fingers
+        qCWarning(rtlTcpInput) << "RTL-TCP: \"RTL0\" magic key not found. Unknown server.";
+
+        m_deviceDescription.device.name = "TCP server";
+        m_deviceDescription.device.model = "Unknown";
+        m_deviceDescription.sample.sampleRate = 2048000;
+        m_deviceDescription.sample.channelBits = 8;
+        m_deviceDescription.sample.containerBits = 8;
+        m_deviceDescription.sample.channelContainer = "uint8";
+
+        dongleInfo.tunerGainCount = 0;
     }
+
+    if (nullptr != m_gainList)
+    {
+        delete m_gainList;
+    }
+    m_gainList = new QList<int>();
+    for (int i = 0; i < dongleInfo.tunerGainCount; i++)
+    {
+        m_gainList->append(gains[i]);
+    }
+
+    m_agcLevelMinFactorList = new QList<float>();
+    for (int i = 1; i < m_gainList->count(); i++) {
+        // up step + 0.5dB
+        m_agcLevelMinFactorList->append(qPow(10.0, (m_gainList->at(i-1) - m_gainList->at(i) - 5)/200.0));
+    }
+    // last factor does not matter
+    m_agcLevelMinFactorList->append(qPow(10.0, -5.0 / 20.0));
+
+    // set sample rate
+    sendCommand(RtlTcpCommand::SET_SAMPLE_RATE, 2048000);
+
+    // set automatic gain
+    //setGainMode(RtlGainMode::Software);
+    m_gainIdx = -1;
+
+    // need to create worker, server is pushing samples
+    m_worker = new RtlTcpWorker(m_sock, this);
+    connect(m_worker, &RtlTcpWorker::agcLevel, this, &RtlTcpInput::onAgcLevel, Qt::QueuedConnection);
+    connect(m_worker, &RtlTcpWorker::dataReady, this, [=](){ emit tuned(m_frequency); }, Qt::QueuedConnection);
+    connect(m_worker, &RtlTcpWorker::recordBuffer, this, &InputDevice::recordBuffer, Qt::DirectConnection);
+    connect(m_worker, &RtlTcpWorker::finished, this, &RtlTcpInput::onReadThreadStopped, Qt::QueuedConnection);
+    connect(m_worker, &RtlTcpWorker::finished, m_worker, &QObject::deleteLater);
+    connect(m_worker, &RtlTcpWorker::destroyed, this, [=]() { m_worker = nullptr; } );
+    m_worker->start();
+    m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
+    emit deviceReady();
 
     return true;
 }
