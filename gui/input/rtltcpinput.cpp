@@ -341,11 +341,15 @@ bool RtlTcpInput::openDevice()
     fd.events = POLLIN;
     if (poll(&fd, 1, 2000) > 0)
     {
-        ::recv(m_sock, (char *) &dongleInfo, sizeof(dongleInfo), 0);
+        if (::recv(m_sock, (char *) &dongleInfo, sizeof(dongleInfo), 0) <= 0)
+        {
+            qCCritical(rtlTcpInput) << "RTL-TCP: Server not responding.";
+            return false;
+        }
     }
     else
     {   // -1 is error, 0 is timeout
-        qCCritical(rtlTcpInput) << "Unable to get RTL dongle infomation";
+        qCCritical(rtlTcpInput) << "RTL-TCP: Unable to get RTL dongle infomation";
         return false;
     }
 #endif
