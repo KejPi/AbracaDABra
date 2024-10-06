@@ -2322,6 +2322,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
     switch (d)
     {
     case InputDeviceId::UNDEFINED:
+        qDebug() << "InputDeviceId::UNDEFINED";
         // store service list if previous was not RAWFILE or UNDEFINED
         if ((InputDeviceId::RAWFILE != m_inputDeviceId) && (InputDeviceId::UNDEFINED != m_inputDeviceId))
         {   // if switching from live source save current service list & schedule
@@ -2777,7 +2778,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         // we can open device now
         if (m_inputDevice->openDevice())
         {   // raw file is available
-            if (InputDeviceId::RAWFILE != m_inputDeviceId)
+            if ((InputDeviceId::RAWFILE != m_inputDeviceId) && (InputDeviceId::UNDEFINED != m_inputDeviceId))
             {   // if switching from live source save current service list & rec schedule
                 QSettings * settings;
                 if (m_iniFilename.isEmpty())

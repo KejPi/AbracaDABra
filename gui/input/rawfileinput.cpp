@@ -39,7 +39,9 @@ RawFileInput::RawFileInput(QObject *parent) : InputDevice(parent)
     m_worker = nullptr;
     m_inputTimer = nullptr;
     m_inputFile = nullptr;
-    m_sampleFormat = RawFileInputFormat::SAMPLE_FORMAT_U8;    
+    m_sampleFormat = RawFileInputFormat::SAMPLE_FORMAT_U8;
+
+    connect(&m_watchdogTimer, &QTimer::timeout, this, &RawFileInput::onWatchdogTimeout);
 }
 
 RawFileInput::~RawFileInput()
@@ -67,57 +69,74 @@ bool RawFileInput::openDevice()
     }
 
     m_inputFile = new QFile(m_fileName);
-    if (!m_inputFile->open(QIODevice::ReadOnly))
-    {
-        qCCritical(rawFileInput) << "RAW-FILE: Unable to open file: " << m_fileName;
-        delete m_inputFile;
-        m_inputFile = nullptr;
 
-        return false;
-    }
-
-    // check XML header
-    QDataStream in(m_inputFile);
-    QByteArray xml;
-    int idx = 0;
-    do
-    {   // read no more than RAWFILEINPUT_XML_PADDING bytes
-        char ch;
-        if (in.readRawData(&ch, 1) < 0)
-        {   // error
-            qCCritical(rawFileInput) << "RAW-FILE: Unable read from file: " << m_fileName;
-            m_inputFile->close();
+    if (m_inputFile->size() > 0) {
+        if (!m_inputFile->open(QIODevice::ReadOnly))
+        {
+            qCCritical(rawFileInput) << "RAW-FILE: Unable to open file: " << m_fileName;
             delete m_inputFile;
             m_inputFile = nullptr;
+
             return false;
         }
-        if (0 == ch)
-        {   // zero indicates header padding bytes
-            break;
-        }
-        xml.append(ch);
-    } while (++idx < RAWFILEINPUT_XML_PADDING);
 
-    if (idx < RAWFILEINPUT_XML_PADDING)
-    {   // try to parse header
-        parseXmlHeader(xml);
+        // check XML header
+        QDataStream in(m_inputFile);
+        QByteArray xml;
+        int idx = 0;
+        do
+        {   // read no more than RAWFILEINPUT_XML_PADDING bytes
+            char ch;
+            if (in.readRawData(&ch, 1) < 0)
+            {   // error
+                qCCritical(rawFileInput) << "RAW-FILE: Unable read from file: " << m_fileName;
+                m_inputFile->close();
+                delete m_inputFile;
+                m_inputFile = nullptr;
+                return false;
+            }
+            if (0 == ch)
+            {   // zero indicates header padding bytes
+                break;
+            }
+            xml.append(ch);
+        } while (++idx < RAWFILEINPUT_XML_PADDING);
+
+        if (idx < RAWFILEINPUT_XML_PADDING)
+        {   // try to parse header
+            parseXmlHeader(xml);
+        }
+        else
+        {   // not found
+            m_deviceDescription.rawFile.hasXmlHeader = false;
+        }
+
+        if (!m_deviceDescription.rawFile.hasXmlHeader)
+        {   // header was not correctly parsed or not found
+            if (!m_inputFile->seek(0))
+            {   // seek to start failed -> align to IQ samples
+                while (idx++ & 0x07)
+                {   // until multiple of 8 bytes
+                    char ch;
+                    in.readRawData(&ch, 1);
+                }
+            }
+            else { /* seek to start OK */ }
+        }
     }
     else
-    {   // not found
-        m_deviceDescription.rawFile.hasXmlHeader = false;
-    }
+    {   // this looks like named pipe (FIFO) - using ReadWrite since is it non-blocking
+        // https://forum.qt.io/topic/159028/accessing-named-pipe-fifo-on-linux-as-regular-file
+        if (!m_inputFile->open(QIODevice::ReadWrite))
+        {
+            qCCritical(rawFileInput) << "RAW-FILE: Unable to open file: " << m_fileName;
+            delete m_inputFile;
+            m_inputFile = nullptr;
 
-    if (!m_deviceDescription.rawFile.hasXmlHeader)
-    {   // header was not correctly parsed or not found
-        if (!m_inputFile->seek(0))
-        {   // seek to start failed (FIFO ???) -> align to IQ samples
-            while (idx++ & 0x07)
-            {   // until multiple of 8 bytes
-                char ch;
-                in.readRawData(&ch, 1);
-            }
+            return false;
         }
-        else { /* seek to start OK */ }
+
+        m_deviceDescription.rawFile.hasXmlHeader = false;
     }
 
     switch (m_sampleFormat) {
@@ -182,6 +201,7 @@ void RawFileInput::tune(uint32_t freq)
         connect(m_worker, &RawFileWorker::finished, m_worker, &QObject::deleteLater);
         connect(m_worker, &RawFileWorker::destroyed, this, [=]() { m_worker = nullptr; } );
         m_worker->start();
+        m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
 
         m_inputTimer = new QTimer(this);
         connect(m_inputTimer, &QTimer::timeout, m_worker, &RawFileWorker::trigger);
@@ -217,6 +237,32 @@ void RawFileInput::onBytesRead(quint64 bytesRead)
     }
 }
 
+void RawFileInput::onWatchdogTimeout()
+{
+    if (nullptr != m_worker)
+    {
+        if (!m_worker->isRunning())
+        {   // kill worker
+            m_worker->terminate();
+            m_worker->wait(2000);
+            while (!m_worker->isFinished())
+            {
+                qCWarning(rawFileInput) << "Worker thread not finished after timeout";
+
+                // reset buffer - and tell the thread it is empty - buffer will be reset in any case
+                m_worker->wait(2000);
+            }
+            inputBuffer.fillDummy();
+            emit error(InputDeviceErrorCode::NoDataAvailable);
+        }
+    }
+    else
+    {
+        m_watchdogTimer.stop();
+    }
+}
+
+
 void RawFileInput::seek(int msec)
 {
     if (nullptr == m_inputFile)
@@ -251,6 +297,7 @@ void RawFileInput::seek(int msec)
     m_worker = new RawFileWorker(m_inputFile, m_sampleFormat, numBytes, this);
     connect(m_worker, &RawFileWorker::bytesRead, this, &RawFileInput::onBytesRead, Qt::QueuedConnection);
     connect(m_worker, &RawFileWorker::endOfFile, this, &RawFileInput::onEndOfFile, Qt::QueuedConnection);
+    connect(m_worker, &RawFileWorker::finished, this, [this]() { m_watchdogTimer.stop(); } , Qt::QueuedConnection);
     connect(m_worker, &RawFileWorker::finished, m_worker, &QObject::deleteLater);
     connect(m_worker, &RawFileWorker::destroyed, this, [=]() { m_worker = nullptr; } );
     m_worker->start();
@@ -503,14 +550,23 @@ void RawFileWorker::trigger()
     m_semaphore.release();
 }
 
+bool RawFileWorker::isRunning()
+{
+    bool flag = m_watchdogFlag;
+    m_watchdogFlag = false;
+    return flag;
+}
+
 void RawFileWorker::stop()
 {
     m_stopRequest = true;
-    m_semaphore.release();
+    m_semaphore.release();    
 }
 
 void RawFileWorker::run()
 {
+    m_watchdogFlag = false;
+
     while(1)
     {
         m_semaphore.acquire();
@@ -534,7 +590,6 @@ void RawFileWorker::run()
 
         while ((INPUT_FIFO_SIZE - count) < input_chunk_iq_samples*sizeof(float)*2)
         {
-
             pthread_cond_wait(&inputBuffer.countCondition, &inputBuffer.countMutex);
             count = inputBuffer.count;
         }
@@ -616,6 +671,9 @@ void RawFileWorker::run()
         }
         break;
         }
+
+        // reset watchDog flag, timer sets it to false
+        m_watchdogFlag = true;
 
         inputBuffer.head = (inputBuffer.head + samplesRead*sizeof(float)) % INPUT_FIFO_SIZE;
         pthread_mutex_lock(&inputBuffer.countMutex);

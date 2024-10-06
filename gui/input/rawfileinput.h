@@ -51,6 +51,7 @@ public:
     explicit RawFileWorker(QFile * inputFile, RawFileInputFormat sampleFormat, int bytesRead, QObject *parent = nullptr);
     void trigger();
     void stop();
+    bool isRunning();
 protected:
     void run() override;
 signals:
@@ -58,6 +59,7 @@ signals:
     void endOfFile(bool status);
 private:
     QAtomicInt m_stopRequest = false;
+    std::atomic<bool> m_watchdogFlag;
     QSemaphore m_semaphore;
     QFile * m_inputFile = nullptr;
     QElapsedTimer m_elapsedTimer;
@@ -90,9 +92,11 @@ private:
     QFile * m_inputFile = nullptr;
     RawFileWorker * m_worker = nullptr;
     QTimer * m_inputTimer = nullptr;
+    QTimer m_watchdogTimer;
     void stop();
     void rewind();
     void onBytesRead(quint64 bytesRead);
+    void onWatchdogTimeout();
     void onEndOfFile(bool status) { emit error(status ? InputDeviceErrorCode::EndOfFile : InputDeviceErrorCode::NoDataAvailable); }
     void parseXmlHeader(const QByteArray & xml);
 };
