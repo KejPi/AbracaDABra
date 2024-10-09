@@ -584,7 +584,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="dlPage_Service">
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -618,7 +618,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
                </size>
               </property>
               <property name="toolTip">
-               <string>Click to copy Dynamic Label</string>
+               <string>Right click to copy Dynamic Label</string>
               </property>
               <property name="text">
                <string notr="true">DL</string>
@@ -665,7 +665,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
                </size>
               </property>
               <property name="toolTip">
-               <string>Click to copy Dynamic Label</string>
+               <string>Right click to copy Dynamic Label</string>
               </property>
               <property name="text">
                <string notr="true">DL Announcement</string>
@@ -716,7 +716,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
           </property>
           <widget class="QWidget" name="dlPlusFrame_Service">
            <property name="toolTip">
-            <string>Click to copy Dynamic Label +</string>
+            <string>Right click to copy Dynamic Label +</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
             <property name="spacing">
@@ -754,7 +754,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
           </widget>
           <widget class="QWidget" name="dlPlusFrame_Announcement">
            <property name="toolTip">
-            <string>Click to copy Dynamic Label +</string>
+            <string>Right click to copy Dynamic Label +</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <property name="spacing">

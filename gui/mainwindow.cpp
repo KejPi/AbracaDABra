@@ -604,6 +604,16 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->dynamicLabel_Announcement->installEventFilter(this);
     ui->dlPlusFrame_Announcement->installEventFilter(this);
 
+    // URL
+    QObject::connect(
+        ui->dynamicLabel_Service, &QLabel::linkActivated,
+        [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
+        );
+    QObject::connect(
+        ui->dynamicLabel_Announcement, &QLabel::linkActivated,
+        [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
+        );
+
     ui->audioEncodingLabel->setToolTip(tr("Audio coding"));
 
     ui->slsView_Service->setMinimumSize(QSize(322, 242));
@@ -937,10 +947,19 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
         if (e->type() == QEvent::MouseButtonRelease)
         {
             QMouseEvent * event = static_cast<QMouseEvent *>(e);
-            if (Qt::LeftButton == event->button())
+            if (Qt::RightButton == event->button())
             {
                 QLabel * label = static_cast<QLabel *>(o);
-                QGuiApplication::clipboard()->setText(label->text());
+
+                // Retrieve the rich text from the QLabel
+                QString richText = label->text();
+
+                // Use QTextDocument to convert rich text to plain text
+                QTextDocument textDoc;
+                textDoc.setHtml(richText);
+                QString plainText = textDoc.toPlainText();
+
+                QGuiApplication::clipboard()->setText(plainText);
                 QToolTip::showText(label->mapToGlobal(event->pos()), tr("<i>DL text copied to clipboard</i>"));
                 return true;
             }
@@ -952,7 +971,7 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
         if (e->type() == QEvent::MouseButtonRelease)
         {
             QMouseEvent * event = static_cast<QMouseEvent *>(e);
-            if (Qt::LeftButton == event->button())
+            if (Qt::RightButton == event->button())
             {   // create text representation
                 QMap<DLPlusContentType, DLPlusObjectUI*> * dlObjCachePtr = &m_dlObjCache[Instance::Service];
                 if (o == ui->dlPlusFrame_Announcement)
@@ -1009,7 +1028,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    if (ui->dynamicLabel_Service->width() < ui->dynamicLabel_Service->fontMetrics().boundingRect(ui->dynamicLabel_Service->text()).width())
+    QLabel tmpLabel;
+    tmpLabel.setText(ui->dynamicLabel_Service->text());
+    if (ui->dynamicLabel_Service->width() < tmpLabel.sizeHint().width())
     {
         ui->dynamicLabel_Service->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     }
@@ -1017,7 +1038,8 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     {
         ui->dynamicLabel_Service->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     }
-    if (ui->dynamicLabel_Announcement->width() < ui->dynamicLabel_Announcement->fontMetrics().boundingRect(ui->dynamicLabel_Announcement->text()).width())
+    tmpLabel.setText(ui->dynamicLabel_Announcement->text());
+    if (ui->dynamicLabel_Announcement->width() < tmpLabel.sizeHint().width())
     {
         ui->dynamicLabel_Announcement->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     }
@@ -1190,18 +1212,28 @@ void MainWindow::onDLComplete_Announcement(const QString & dl)
 
 void MainWindow::onDLComplete(const QString & dl, QLabel * dlLabel)
 {
-    QString label = dl;
+    QString dlText = dl;
 
-    label.replace(QRegularExpression(QString(QChar(0x0A))), "<br/>");
-    if (label.indexOf(QChar(0x0B)) >= 0)
+    // Regular expression to match URLs while excluding email addresses
+    // NOTE: \b matches @
+    static const QRegularExpression urlRegex(R"((^|\s)((?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\/\S*)?\b))");
+
+    // Replacing URLs with HTML links
+    dlText.replace(urlRegex, "\\1<a href=\"\\2\">\\2</a>");
+
+    dlText.replace(QRegularExpression(QString(QChar(0x0A))), "<br/>");
+    if (dlText.indexOf(QChar(0x0B)) >= 0)
     {
-        label.prepend("<b>");
-        label.replace(label.indexOf(QChar(0x0B)), 1, "</b>");
+        dlText.prepend("<b>");
+        dlText.replace(dlText.indexOf(QChar(0x0B)), 1, "</b>");
     }
-    label.remove(QChar(0x1F));
+    dlText.remove(QChar(0x1F));
 
-    dlLabel->setText(label);
-    if (dlLabel->width() < dlLabel->fontMetrics().boundingRect(label).width())
+    QLabel tmpLabel;
+    tmpLabel.setText(dlText);
+
+    dlLabel->setText(dlText);
+    if (dlLabel->width() < tmpLabel.sizeHint().width())
     {
         dlLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     }
@@ -1210,7 +1242,6 @@ void MainWindow::onDLComplete(const QString & dl, QLabel * dlLabel)
         dlLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     }
 }
-
 
 void MainWindow::onDabTime(const QDateTime & d)
 {
@@ -4008,8 +4039,8 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object, Instance inst)
     {
         auto it = dlObjCachePtr->find(object.getType());
         if (it != dlObjCachePtr->end())
-        {   // object type found in cahe
-            (*it)->update(object);
+        {   // object type found in cahe            
+            (*it)->update(object);            
         }
         else
         {   // not in cache yet -> insert
@@ -4184,7 +4215,26 @@ void DLPlusObjectUI::update(const DLPlusObject &obj)
     if (obj != m_dlPlusObject)
     {
         m_dlPlusObject = obj;
-        m_tagText->setText(obj.getTag());
+        switch (obj.getType())
+        {
+        case DLPlusContentType::PROGRAMME_HOMEPAGE:
+        case DLPlusContentType::INFO_URL:
+        {
+            QString text = QString("<a href=\"%1\">%1</a>").arg(obj.getTag());
+            m_tagText->setText(text);
+        }
+            break;
+        case DLPlusContentType::EMAIL_HOTLINE:
+        case DLPlusContentType::EMAIL_STUDIO:
+        case DLPlusContentType::EMAIL_OTHER:
+        {
+            QString  text = QString("<a href=\"mailto:%1\">%1</a>").arg(obj.getTag());
+            m_tagText->setText(text);
+        }
+            break;
+        default:
+            m_tagText->setText(obj.getTag());
+        }
     }
 }
 
