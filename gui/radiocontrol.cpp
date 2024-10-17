@@ -1137,11 +1137,16 @@ void RadioControl::resetCurrentService()
 }
 
 void RadioControl::eventHandler_ensembleInfo(RadioControlEvent *pEvent)
-{
+{   
     // process ensemble info
     dabsdrNtfEnsemble_t * pInfo = pEvent->pEnsembleInfo;
 
     qCDebug(radioControl, "RadioControlEvent::ENSEMBLE_INFO 0x%8.8X '%s'", pInfo->ueid, pInfo->label.str);
+
+    if (pInfo->frequency != m_frequency)
+    {   // invalid: new frequency was already requested
+        return;
+    }
 
 #if (RADIO_CONTROL_TEST_MODE)
     if (pInfo->label.str[0] != '\0')  // allow ECC == 0 in test mode
@@ -1171,7 +1176,7 @@ void RadioControl::eventHandler_ensembleInfo(RadioControlEvent *pEvent)
     }
 
     if ((RADIO_CONTROL_UEID_INVALID == m_ensemble.ueid) && (DABSDR_SYNC_LEVEL_FIC == m_syncLevel))
-    {   // valid ensemble sill not received
+    {   // valid ensemble still not received
         // wait some time and send new request
         QTimer::singleShot(200, this, &RadioControl::dabGetEnsembleInfo);
     }
