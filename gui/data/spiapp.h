@@ -100,6 +100,10 @@ private:
     QHash<uint8_t, QString> m_tokenTable;
     QDomDocument m_xmldocument;
 
+    // compatibility with encoding according to ETSI TS 102 371 V1.3.1 (2008-07)
+    QString m_contentId;
+    QDateTime m_scopeStart;
+
     QHash<uint16_t, int_fast32_t> m_parsedDirectoryIds;
 
     // RadioDNS
@@ -130,6 +134,7 @@ namespace SPIElement
         epg = 0x02,
         serviceInformation = 0x03,
         tokenTable = 0x04,
+        defaultContentId = 0x05,
         defaultLanguage = 0x06,
         shortName = 0x10,
         mediumName= 0x11,
