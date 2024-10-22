@@ -217,5 +217,59 @@ Item {
             anchors.topMargin: 10
             z: 3
         }
+
+        ColumnLayout {
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: 10
+            anchors.bottomMargin: 25
+            z: 3
+            Rectangle {
+                id: plus
+                width: 30
+                height: width
+                color: "white"
+                opacity: plusMouseArea.containsMouse ? 1.0 : 0.75
+                Text {
+                    text: "+"
+                    font.pointSize: 24
+                    font.bold: true
+                    opacity: plusMouseArea.containsMouse ? 1.0 : 0.75
+                    anchors.centerIn: parent
+                    verticalAlignment: Text.AlignTop
+                }
+                MouseArea {
+                    id: plusMouseArea
+                    hoverEnabled: true
+                    anchors.fill: parent
+                    onClicked: {
+                        map.zoomLevel = (map.zoomLevel < map.maximumZoomLevel) ? (map.zoomLevel+0.1) : map.maximumZoomLevel;
+                    }
+                }
+            }
+            Rectangle {
+                id: minus
+                width: 30
+                height: width
+                color: "white"
+                opacity: minusMouseArea.containsMouse ? 1.0 : 0.75
+                Text {
+                    text: String.fromCodePoint(0x2013)
+                    font.pointSize: 24
+                    font.bold: true
+                    opacity: minusMouseArea.containsMouse ? 1.0 : 0.75
+                    verticalAlignment: Text.AlignTop
+                    anchors.centerIn: parent
+                }
+                MouseArea {
+                    id: minusMouseArea
+                    hoverEnabled: true
+                    anchors.fill: parent
+                    onClicked: {
+                        map.zoomLevel -= 0.1;
+                    }
+                }
+            }
+        }
     }
 }
