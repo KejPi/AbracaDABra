@@ -79,6 +79,7 @@ signals:
     void rawFileSeek(int msec);
     void updateTxDb();
     void proxySettingsChanged();
+    void slsBgChanged(const QColor & color);
 
 protected:
     void showEvent(QShowEvent *event);
@@ -163,6 +164,8 @@ private:
     void onProxyConfigChanged(int index);
     void onProxyApplyButtonClicked();
     void onProxyConfigEdit();
+
+    void onSlsBgButtonClicked();
 
 #if HAVE_AIRSPY
     void onAirspyModeToggled(bool checked);

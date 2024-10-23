@@ -876,6 +876,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::ensembleInformation, m_spiApp, &UserApplication::setEnsId);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &UserApplication::setAudioServiceId);
 
+    connect(m_setupDialog, &SetupDialog::slsBgChanged, ui->slsView_Service, &SLSView::setBgColor);
+    connect(m_setupDialog, &SetupDialog::slsBgChanged, ui->slsView_Announcement, &SLSView::setBgColor);
+    connect(m_setupDialog, &SetupDialog::slsBgChanged, m_catSlsDialog, &CatSLSDialog::setSlsBgColor);
+
     // input device connections
     initInputDevice(InputDeviceId::UNDEFINED);
 
@@ -2931,6 +2935,7 @@ void MainWindow::loadSettings()
     m_settings->spiAppEna = settings->value("spiAppEna", true).toBool();
     m_settings->useInternet = settings->value("useInternet", true).toBool();
     m_settings->radioDnsEna = settings->value("radioDNS", true).toBool();
+    m_settings->slsBackground = QColor::fromString(settings->value("slsBg", QString("#000000")).toString());
 
 
     m_settings->audioRecFolder = settings->value("AudioRecording/folder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
@@ -3134,6 +3139,7 @@ void MainWindow::saveSettings()
     settings->setValue("spiAppEna", m_settings->spiAppEna);
     settings->setValue("useInternet", m_settings->useInternet);
     settings->setValue("radioDNS", m_settings->radioDnsEna);
+    settings->setValue("slsBg", m_settings->slsBackground.name(QColor::HexArgb));
 
     settings->setValue("AudioRecording/folder", m_settings->audioRecFolder);
     settings->setValue("AudioRecording/captureOutput", m_settings->audioRecCaptureOutput);

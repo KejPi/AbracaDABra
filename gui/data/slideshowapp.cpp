@@ -607,6 +607,12 @@ bool Slide::setPixmap(const QByteArray &data)
     return d->pixmap.loadFromData(data);
 }
 
+bool Slide::setPixmap(const QPixmap &pixmap)
+{
+    d->pixmap = pixmap;
+    return true;
+}
+
 const QString &Slide::getContentName() const
 {
     return d->contentName;

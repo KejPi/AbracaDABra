@@ -41,6 +41,7 @@ Q_DECLARE_LOGGING_CATEGORY(application)
 SLSView::SLSView(QWidget *parent) : QGraphicsView(parent)
 {
     m_announcementText = nullptr;
+    setStyleSheet("background: transparent");
     reset();
 }
 
@@ -283,6 +284,7 @@ void SLSView::showServiceLogo(const QPixmap & logo, bool force)
         displayPixmap(logo);
 
         setToolTip(tr("Service logo"));
+        m_currentSlide.setPixmap(logo);
         m_isShowingSlide = true;
     }
 }
@@ -434,7 +436,7 @@ void SLSView::displayPixmap(const QPixmap &pixmap)
     }
 
     sc->setSceneRect(pixmap.rect());
-    sc->setBackgroundBrush(Qt::black);
+    sc->setBackgroundBrush(m_bgColor);
     fitInViewTight(pixmap.rect(), Qt::KeepAspectRatio);
 }
 
@@ -446,4 +448,16 @@ QString SLSView::savePath() const
 void SLSView::setSavePath(const QString &newSavePath)
 {
     m_savePath = newSavePath;
+}
+
+void SLSView::setBgColor(const QColor &color)
+{
+    if (color != m_bgColor)
+    {
+        m_bgColor = color;
+        if (m_isShowingSlide)
+        {
+            displayPixmap(m_currentSlide.getPixmap());
+        }
+    }
 }

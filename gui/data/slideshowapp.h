@@ -64,6 +64,7 @@ public:
 
     QPixmap getPixmap() const;
     bool setPixmap(const QByteArray &data);
+    bool setPixmap(const QPixmap &pixmap);
 
     const QString &getContentName() const;
     void setContentName(const QString &newContentName);

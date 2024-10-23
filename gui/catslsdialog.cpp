@@ -137,6 +137,11 @@ void CatSLSDialog::setExpertMode(bool expertModeEna)
     ui->slsView->setExpertMode(expertModeEna);
 }
 
+void CatSLSDialog::setSlsBgColor(const QColor &color)
+{
+    ui->slsView->setBgColor(color);
+}
+
 void CatSLSDialog::onBackButtonClicked()
 {
     emit getNextCatSlide(ui->categoryView->currentIndex().data(Qt::UserRole).toUInt(), false);

@@ -61,6 +61,9 @@ public:
     //! @brief This method enables expert mode features
     void setExpertMode(bool expertModeEna);
 
+    //! @brief This method sets slide background color
+    void setSlsBgColor(const QColor & color);
+
 signals:
     //! @brief Signal to get current slide in category (when user changes category or when category is updated)
     void getCurrentCatSlide(int catId);
@@ -72,7 +75,6 @@ private:
     //! @brief User interface
     Ui::CatSLSDialog *ui;
 
-private slots:
     //! @brief Slot when slide back button is clicked
     void onBackButtonClicked();
 

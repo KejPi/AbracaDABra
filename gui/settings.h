@@ -30,6 +30,7 @@
 #include <QLocale>
 #include <QGeoCoordinate>
 #include <QAbstractItemModel>
+#include <QColor>
 #include "config.h"
 #include "inputdevice.h"
 #if HAVE_AIRSPY
@@ -115,6 +116,7 @@ public:
     bool audioRecDl;
     bool audioRecDlAbsTime;
     bool trayIconEna;
+    QColor slsBackground = Qt::red;
 
     // this is settings for UA data dumping (storage)
     struct UADumpSettings

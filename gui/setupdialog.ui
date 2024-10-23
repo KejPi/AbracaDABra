@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -1958,19 +1958,33 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <item>
+           <layout class="QGridLayout" name="gridLayout_10">
+            <item row="1" column="1">
+             <widget class="QComboBox" name="langComboBox"/>
+            </item>
+            <item row="0" column="1">
+             <widget class="QPushButton" name="slsBgButton">
+              <property name="text">
+               <string notr="true"/>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="slsBgLabel">
+              <property name="text">
+               <string>Slideshow background:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
              <widget class="QLabel" name="langLabel">
               <property name="text">
                <string>Language:</string>
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="QComboBox" name="langComboBox"/>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_3">
+            <item row="1" column="2">
+             <spacer name="horizontalSpacer_13">
               <property name="orientation">
                <enum>Qt::Orientation::Horizontal</enum>
               </property>

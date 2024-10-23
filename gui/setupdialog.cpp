@@ -31,6 +31,7 @@
 #include <QGeoCoordinate>
 #include <QRandomGenerator>
 #include <QMovie>
+#include <QColorDialog>
 
 #include "setupdialog.h"
 #include "./ui_setupdialog.h"
@@ -370,6 +371,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->proxyConfigCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onProxyConfigChanged);
     connect(ui->proxyApplyButton, &QPushButton::clicked, this, &SetupDialog::onProxyApplyButtonClicked);
 
+    connect(ui->slsBgButton, &QPushButton::clicked, this, &SetupDialog::onSlsBgButtonClicked);
+    ui->slsBgButton->setToolTip(tr("Select slideshow background color"));
+
     QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
 }
 
@@ -467,6 +471,7 @@ void SetupDialog::setSettings(Settings * settings)
     onDlRecordingChecked(m_settings->audioRecDl);
     emit proxySettingsChanged();
     emit trayIconToggled(m_settings->trayIconEna);
+    emit slsBgChanged(m_settings->slsBackground);
 }
 
 void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
@@ -788,6 +793,11 @@ void SetupDialog::setUiState()
     ui->proxyUserEdit->setText(m_settings->proxy.user);
     ui->proxyPassEdit->setText(m_settings->proxy.pass);
     onProxyConfigChanged(static_cast<int>(m_settings->proxy.config));
+
+
+    QString qss = QString("QPushButton {background-color: %1; border: 1px solid black; border-radius: 3px}").arg(m_settings->slsBackground.name(QColor::HexArgb));
+    ui->slsBgButton->setStyleSheet(qss);
+    ui->slsBgButton->setMaximumWidth(ui->slsBgButton->height()*2);
 }
 
 void SetupDialog::setupDarkMode(bool darkModeEna)
@@ -1715,4 +1725,19 @@ void SetupDialog::onProxyApplyButtonClicked()
     ui->proxyApplyButton->setEnabled(false);
 
     emit proxySettingsChanged();
+}
+
+void SetupDialog::onSlsBgButtonClicked()
+{
+    const QColor color = QColorDialog::getColor(m_settings->slsBackground, this, tr("Select SLS Background Color"), QColorDialog::ShowAlphaChannel);
+
+    if (color.isValid() && color != m_settings->slsBackground)
+    {
+        m_settings->slsBackground = color;
+
+        QString qss = QString("QPushButton {background-color: %1; border: 1px solid black; border-radius: 3px}").arg(color.name(QColor::HexArgb));
+        ui->slsBgButton->setStyleSheet(qss);
+
+        emit slsBgChanged(color);
+    }
 }

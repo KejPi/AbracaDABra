@@ -65,8 +65,11 @@ public:
     //! @brief This method returns default slide save path
     QString savePath() const;
 
-    //! @brief This methis sets default slide save path
+    //! @brief This method sets default slide save path
     void setSavePath(const QString &newSavePath);
+
+    //! @brief This method sets slide background color
+    void setBgColor(const QColor & color);
 
 protected:
     //! @brief Reimplemented to scale image correctly
@@ -97,17 +100,20 @@ private:
     //! @brief expert mode
     bool m_isExpertMode = false;
 
-    //! @brief returns logo to show when no slide is available
-    QPixmap getLogo() const;
-
-    //! @brief Methods displays pixmap
-    void displayPixmap(const QPixmap & logo);
-
     //! @brief This is copy of current slide
     Slide m_currentSlide;
 
     //! @brief This is default file path for saving slides
     QString m_savePath;
+
+    //! @brief This is slide background color
+    QColor m_bgColor = Qt::black;
+
+    //! @brief returns logo to show when no slide is available
+    QPixmap getLogo() const;
+
+    //! @brief Methods displays pixmap
+    void displayPixmap(const QPixmap & logo);
 };
 
 #endif // SLSVIEW_H
