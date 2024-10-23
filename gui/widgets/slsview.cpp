@@ -41,7 +41,7 @@ Q_DECLARE_LOGGING_CATEGORY(application)
 SLSView::SLSView(QWidget *parent) : QGraphicsView(parent)
 {
     m_announcementText = nullptr;
-    setStyleSheet("background: transparent");
+    setStyleSheet("QGraphicsView {background: transparent}");
     reset();
 }
 
