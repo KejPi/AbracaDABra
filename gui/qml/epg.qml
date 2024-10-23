@@ -95,7 +95,7 @@ Rectangle {
                 spacing: 10
                 EPGSwitch {
                     id: emptyFilterSwitch
-                    text: qsTr("Hide services without program")
+                    text: qsTr("Hide services without schedule")
                     checked: epgDialog.filterEmptyEpg
                     onToggled: {
                         epgDialog.filterEmptyEpg = checked;
