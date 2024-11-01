@@ -224,19 +224,29 @@ Item {
             anchors.leftMargin: 10
             anchors.bottomMargin: 25
             z: 3
-            Rectangle {
+            FontMetrics {
+                id: fMetrics
+            }
+            Item {
                 id: plus
-                width: 30
-                height: width
-                color: "white"
-                opacity: plusMouseArea.containsMouse ? 1.0 : 0.75
-                Text {
-                    text: "+"
-                    font.pointSize: 24
-                    font.bold: true
-                    opacity: plusMouseArea.containsMouse ? 1.0 : 0.75
+                Layout.preferredWidth: 28
+                Layout.preferredHeight: 28
+                Rectangle {
+                    anchors.fill: parent
+                    color: "white"
+                    opacity: plusMouseArea.containsMouse ? 1.0 : 0.5
+                }
+                Rectangle {
+                    width: 14
+                    height: 4
+                    color: plusMouseArea.containsMouse ? "black" : "#707070"
                     anchors.centerIn: parent
-                    verticalAlignment: Text.AlignTop
+                }
+                Rectangle {
+                    width: 4
+                    height: 14
+                    color: plusMouseArea.containsMouse ? "black" : "#707070"
+                    anchors.centerIn: parent
                 }
                 MouseArea {
                     id: plusMouseArea
@@ -247,18 +257,19 @@ Item {
                     }
                 }
             }
-            Rectangle {
+            Item {
                 id: minus
-                width: 30
-                height: width
-                color: "white"
-                opacity: minusMouseArea.containsMouse ? 1.0 : 0.75
-                Text {
-                    text: String.fromCodePoint(0x2013)
-                    font.pointSize: 24
-                    font.bold: true
-                    opacity: minusMouseArea.containsMouse ? 1.0 : 0.75
-                    verticalAlignment: Text.AlignTop
+                Layout.preferredWidth: 28
+                Layout.preferredHeight: 28
+                Rectangle {
+                    anchors.fill: parent
+                    color: "white"
+                    opacity: minusMouseArea.containsMouse ? 1.0 : 0.5
+                }
+                Rectangle {
+                    width: 14
+                    height: 4
+                    color: minusMouseArea.containsMouse ? "black" : "#707070"
                     anchors.centerIn: parent
                 }
                 MouseArea {
