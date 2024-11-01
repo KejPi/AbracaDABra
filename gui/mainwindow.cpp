@@ -376,6 +376,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_tiiAction = new QAction(tr("TII decoder"), this);
     connect(m_tiiAction, &QAction::triggered, this, &MainWindow::showTiiDialog);
 
+    m_scanningToolAction = new QAction(tr("Scanning tool..."), this);
+    connect(m_scanningToolAction, &QAction::triggered, this, &MainWindow::showScanningToolDialog);
+
     m_audioRecordingScheduleAction = new QAction(tr("Audio recording schedule..."), this);
     connect(m_audioRecordingScheduleAction, &QAction::triggered, this, &MainWindow::showAudioRecordingSchedule);
 
@@ -416,6 +419,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_menu->addAction(m_epgAction);
     m_menu->addAction(m_ensembleInfoAction);
     m_menu->addAction(m_tiiAction);
+    m_menu->addAction(m_scanningToolAction);
     m_menu->addAction(m_logAction);
     m_menu->addAction(m_aboutAction);
 
@@ -1076,7 +1080,10 @@ void MainWindow::onEnsembleInfo(const RadioControlEnsemble &ens)
                                   .arg(QString("%1").arg(ens.ecc(), 2, 16, QChar('0')).toUpper())
                                   .arg(QString("%1").arg(ens.eid(), 4, 16, QChar('0')).toUpper())
                                   .arg(DabTables::getCountryName(ens.ueid)));
-    m_serviceList->beginEnsembleUpdate(ens);
+    if (!m_isScanningToolRunning)
+    {
+        m_serviceList->beginEnsembleUpdate(ens);
+    }
 }
 
 void MainWindow::onEnsembleReconfiguration(const RadioControlEnsemble &ens) const
@@ -1086,12 +1093,15 @@ void MainWindow::onEnsembleReconfiguration(const RadioControlEnsemble &ens) cons
 
 void MainWindow::onServiceListComplete(const RadioControlEnsemble &ens)
 {
+    if (m_isScanningToolRunning)
+    {
+        return;
+    }
+
     m_serviceList->endEnsembleUpdate(ens);
 
     serviceListViewUpdateSelection();
     serviceTreeViewUpdateSelection();
-
-
 }
 
 void MainWindow::onEnsembleRemoved(const RadioControlEnsemble &ens)
@@ -1194,8 +1204,8 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
 
 void MainWindow::onServiceListEntry(const RadioControlEnsemble &ens, const RadioControlServiceComponent &slEntry)
 {
-    if (slEntry.TMId != DabTMId::StreamAudio)
-    {  // do nothing - data services not supported
+    if ((slEntry.TMId != DabTMId::StreamAudio) || m_isScanningToolRunning)
+    {  // do nothing - data services not supported or scanning tool is running
         return;
     }
 
@@ -1440,7 +1450,7 @@ void MainWindow::onChannelChange(int index)
 void MainWindow::onBandScanStart()
 {
     stop();
-    if (!m_keepServiceListOnScan)
+    if (!m_keepServiceListOnScan && !m_isScanningToolRunning)
     {
         m_serviceList->clear(false);  // do not clear favorites
     }
@@ -3515,6 +3525,33 @@ void MainWindow::showTiiDialog()
     m_tiiDialog->raise();
     m_tiiDialog->activateWindow();
 }
+void MainWindow::showScanningToolDialog()
+{
+    ScanningToolDialog * dialog = new ScanningToolDialog(this);
+
+    connect(dialog, &ScanningToolDialog::tuneChannel, this, &MainWindow::onTuneChannel);
+    connect(m_radioControl, &RadioControl::signalState, dialog, &ScanningToolDialog::onSyncStatus, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::ensembleInformation, dialog, &ScanningToolDialog::onEnsembleFound, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::tuneDone, dialog, &ScanningToolDialog::onTuneDone, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::serviceListComplete, dialog, &ScanningToolDialog::onServiceListComplete, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::serviceListEntry, dialog, &ScanningToolDialog::onServiceListEntry, Qt::QueuedConnection);
+    connect(dialog, &ScanningToolDialog::scanStarts, this, &MainWindow::onBandScanStart);
+
+    connect(dialog, &QDialog::finished, this, [this](int result) {
+        m_isScanningToolRunning = false;
+        onBandScanFinished(result);
+    } );
+    //connect(dialog, &ScanningToolDialog::finished, this, &MainWindow::onBandScanFinished);
+    connect(dialog, &QDialog::finished, dialog, &QObject::deleteLater);
+
+
+    m_isScanningToolRunning = true;
+
+    // dialog->open();
+    dialog->show();
+    dialog->raise();
+    dialog->activateWindow();
+}
 
 void MainWindow::onExpertModeToggled(bool checked)
 {
@@ -3546,6 +3583,7 @@ void MainWindow::setExpertMode(bool ena)
     ui->slsView_Announcement->setExpertMode(ena);
     m_catSlsDialog->setExpertMode(ena);
     m_tiiAction->setVisible(ena);
+    m_scanningToolAction->setVisible(ena);
 
     // set tab order
     if (ena)

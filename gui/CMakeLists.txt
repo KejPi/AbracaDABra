@@ -204,6 +204,11 @@ add_executable(${TARGET}
     tii/tiitablemodelitem.h tii/tiitablemodelitem.cpp
     tii/txdataitem.h tii/txdataitem.cpp
     tii/txdataloader.h tii/txdataloader.cpp
+
+    # Scanner tool
+    scanningtooldialog.h
+    scanningtooldialog.cpp
+    scanningtooldialog.ui
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
