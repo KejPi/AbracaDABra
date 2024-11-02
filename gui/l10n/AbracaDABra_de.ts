@@ -609,13 +609,13 @@
         <location filename="../mainwindow.ui" line="621"/>
         <location filename="../mainwindow.ui" line="668"/>
         <source>Right click to copy Dynamic Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Rechtsklick, um Dynamic Label zu kopieren</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="719"/>
         <location filename="../mainwindow.ui" line="757"/>
         <source>Right click to copy Dynamic Label +</source>
-        <translation type="unfinished"></translation>
+        <translation>Rechtsklick, um Dynamic Label + zu kopieren</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="93"/>
@@ -3729,7 +3729,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="1975"/>
         <source>Slideshow background:</source>
-        <translation type="unfinished"></translation>
+        <translation>Slideshow Hintergrund:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1982"/>
@@ -4039,7 +4039,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="380"/>
         <source>Select slideshow background color</source>
-        <translation type="unfinished"></translation>
+        <translation>Slideshow-Hintergrundfarbe auswählen</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="390"/>
@@ -4076,7 +4076,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="1740"/>
         <source>Select SLS Background Color</source>
-        <translation type="unfinished"></translation>
+        <translation>SLS Hintergrundfarbe auswählen</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="260"/>
@@ -4326,7 +4326,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../qml/epg.qml" line="98"/>
         <source>Hide services without schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>Verstecke Services ohne Vorschau</translation>
     </message>
     <message>
         <location filename="../qml/epg.qml" line="106"/>
