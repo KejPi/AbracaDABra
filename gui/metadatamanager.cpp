@@ -68,7 +68,11 @@ MetadataManager::~MetadataManager()
 void MetadataManager::processXML(const QString &xml, const QString &scopeId, uint16_t decoderId)
 {
     QDomDocument xmldocument;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
+    if (!xmldocument.setContent(xml, QDomDocument::ParseOption::UseNamespaceProcessing))
+#else
     if (!xmldocument.setContent(xml, true))
+#endif
     {
         qCWarning(metadataManager) << "Failed to parse SPI document for:" << scopeId;
         qCDebug(metadataManager) << xml;

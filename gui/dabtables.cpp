@@ -24,6 +24,7 @@
  * SOFTWARE.
  */
 
+#include <QTimeZone>
 #include <QDebug>
 #include "dabtables.h"
 
@@ -194,8 +195,11 @@ QDateTime DabTables::dabTimeToUTC(uint32_t dateHoursMinutes, uint16_t secMsec)
 
     int32_t sec = secMsec >> 10;
     int32_t msec = secMsec & 0x3FF;
-
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
+    return QDateTime(QDate(Y, M, D), QTime(h, minute, sec, msec), QTimeZone::fromSecondsAheadOfUtc(0));
+#else
     return QDateTime(QDate(Y, M, D), QTime(h, minute, sec, msec), Qt::UTC);
+#endif
 }
 
 

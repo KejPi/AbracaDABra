@@ -55,7 +55,7 @@ endif(HAVE_QCUSTOMPLOT)
 
 #########################################################
 ## SOURCES & HEADERS
-add_executable(${TARGET}
+qt_add_executable(${TARGET} MANUAL_FINALIZATION
     ${GUI_TYPE}
     ${RCC_SOURCES}
     ${APP_ICON_MACOSX}

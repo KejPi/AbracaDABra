@@ -229,8 +229,13 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->airspyIFGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspyIFGainSliderChanged);
     connect(ui->airspyLNAGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspyLNAGainSliderChanged);
     connect(ui->airspyMixerGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspyMixerGainSliderChanged);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
+    connect(ui->airspyLNAAGCCheckbox, &QCheckBox::checkStateChanged, this, &SetupDialog::onAirspyLNAAGCstateChanged);
+    connect(ui->airspyMixerAGCCheckbox, &QCheckBox::checkStateChanged, this, &SetupDialog::onAirspyMixerAGCstateChanged);
+#else
     connect(ui->airspyLNAAGCCheckbox, &QCheckBox::stateChanged, this, &SetupDialog::onAirspyLNAAGCstateChanged);
     connect(ui->airspyMixerAGCCheckbox, &QCheckBox::stateChanged, this, &SetupDialog::onAirspyMixerAGCstateChanged);
+#endif
     connect(ui->airspyGainModeHybrid, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
     connect(ui->airspyGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
     connect(ui->airspyGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
@@ -453,8 +458,11 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
 void SetupDialog::setSettings(Settings * settings)
 {
     m_settings = settings;
-
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
+    connect(ui->loopCheckbox, &QCheckBox::checkStateChanged, this, [=](int val) { m_settings->rawfile.loopEna = (Qt::Unchecked != val); });
+#else
     connect(ui->loopCheckbox, &QCheckBox::stateChanged, this, [=](int val) { m_settings->rawfile.loopEna = (Qt::Unchecked != val); });
+#endif
     connect(ui->autoStopRecordingCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings->audioRecAutoStopEna = checked; });
 
     setUiState();
