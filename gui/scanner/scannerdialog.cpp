@@ -26,27 +26,29 @@
 
 #include <QDebug>
 
-#include "scanningtooldialog.h"
-#include "ui_scanningtooldialog.h"
+#include "scannerdialog.h"
+#include "ui_scannerdialog.h"
 #include "dabtables.h"
+#include "settings.h"
 
-ScanningToolDialog::ScanningToolDialog(QWidget *parent) :
+ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ScanningToolDialog)
+    ui(new Ui::ScannerDialog),
+    m_settings(settings)
 {
     ui->setupUi(this);
     setModal(true);
 
-    setSizeGripEnabled(false);
+    //setSizeGripEnabled(false);
 
     m_buttonStart = ui->buttonBox->button(QDialogButtonBox::Ok);
     m_buttonStart->setText(tr("Start"));
-    connect(m_buttonStart, &QPushButton::clicked, this, &ScanningToolDialog::startScan);
+    connect(m_buttonStart, &QPushButton::clicked, this, &ScannerDialog::startScan);
 
     m_buttonStop = ui->buttonBox->button(QDialogButtonBox::Cancel);
     m_buttonStop->setText(tr("Cancel"));
     m_buttonStop->setDefault(true);
-    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &ScanningToolDialog::stopPressed);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &ScannerDialog::stopPressed);
 
     ui->numEnsemblesFoundLabel->setText(QString("%1").arg(m_numEnsemblesFound));
     ui->numServicesFoundLabel->setText(QString("%1").arg(m_numServicesFound));
@@ -61,8 +63,9 @@ ScanningToolDialog::ScanningToolDialog(QWidget *parent) :
 
     // if (!autoStart)
     // {
-        ui->scanningLabel->setText(tr("<span style=\"color:red\"><b>Warning:</b> Band scan deletes current service list!</span>"));
+    // ui->scanningLabel->setText(tr("<span style=\"color:red\"><b>Warning:</b> Band scan deletes current service list!</span>"));
     //}
+    ui->scanningLabel->setText("");
 
     // setFixedSize( sizeHint() );
 
@@ -72,7 +75,7 @@ ScanningToolDialog::ScanningToolDialog(QWidget *parent) :
     // }
 }
 
-ScanningToolDialog::~ScanningToolDialog()
+ScannerDialog::~ScannerDialog()
 {
     if (nullptr != m_timer)
     {
@@ -83,7 +86,7 @@ ScanningToolDialog::~ScanningToolDialog()
     delete ui;
 }
 
-void ScanningToolDialog::stopPressed()
+void ScannerDialog::stopPressed()
 {
     if (m_isScanning)
     {
@@ -95,18 +98,24 @@ void ScanningToolDialog::stopPressed()
         if (m_timer->isActive())
         {   // state 2, 3, 4
             m_timer->stop();
-            done(ScanningToolDialogResult::Interrupted);
+            stopScan(ScannerDialogResult::Interrupted);
         }
         // timer not running -> state 1
-        m_state = ScanningToolState::Interrupted;  // ==> it will be finished when tune is complete
+        m_state = ScannerState::Interrupted;  // ==> it will be finished when tune is complete
     }
     else
     {
-        done(ScanningToolDialogResult::Cancelled);
+        stopScan(ScannerDialogResult::Cancelled);
     }
 }
 
-void ScanningToolDialog::startScan()
+void ScannerDialog::stopScan(int status)
+{   // single exit point
+    emit setTii(false, 0.0);
+    done(status);
+}
+
+void ScannerDialog::startScan()
 {
     m_isScanning = true;
 
@@ -119,18 +128,19 @@ void ScanningToolDialog::startScan()
     m_buttonStop->setDefault(false);
 
     m_timer = new QTimer(this);
-    connect(m_timer, &QTimer::timeout, this, &ScanningToolDialog::scanStep);
+    connect(m_timer, &QTimer::timeout, this, &ScannerDialog::scanStep);
 
-    m_state = ScanningToolState::Init;
+    m_state = ScannerState::Init;
 
     // using timer for mainwindow to cleanup and tune to 0 potentially (no timeout in case)
     m_timer->start(2000);
     emit scanStarts();
+    emit setTii(true, 0.0);
 }
 
-void ScanningToolDialog::scanStep()
+void ScannerDialog::scanStep()
 {
-    if (ScanningToolState::Init == m_state)
+    if (ScannerState::Init == m_state)
     {  // first step
        m_channelIt = DabTables::channelList.constBegin();
     }
@@ -142,7 +152,7 @@ void ScanningToolDialog::scanStep()
     if (DabTables::channelList.constEnd() == m_channelIt)
     {
         // scan finished
-        done(ScanningToolDialogResult::Done);
+        stopScan(ScannerDialogResult::Done);
         return;
     }
 
@@ -151,13 +161,13 @@ void ScanningToolDialog::scanStep()
                                .arg(ui->progressBar->value())
                                .arg(DabTables::channelList.size()));
     ui->progressChannel->setText(m_channelIt.value());
-    m_state = ScanningToolState::WaitForTune;
+    m_state = ScannerState::WaitForTune;
     emit tuneChannel(m_channelIt.key());
 }
 
-void ScanningToolDialog::onTuneDone(uint32_t freq)
+void ScannerDialog::onTuneDone(uint32_t freq)
 {
-    if (ScanningToolState::Init == m_state)
+    if (ScannerState::Init == m_state)
     {
         if (m_timer->isActive())
         {
@@ -165,33 +175,33 @@ void ScanningToolDialog::onTuneDone(uint32_t freq)
         }
         scanStep();
     }
-    else if (ScanningToolState::Interrupted == m_state)
+    else if (ScannerState::Interrupted == m_state)
     {   // exit
-        done(ScanningToolDialogResult::Interrupted);
+        stopScan(ScannerDialogResult::Interrupted);
     }
     else
     {   // tuned to some frequency -> wait for sync
-        m_state = ScanningToolState::WaitForSync;
+        m_state = ScannerState::WaitForSync;
         m_timer->start(3000);
     }
 }
 
-void ScanningToolDialog::onSyncStatus(uint8_t sync, float)
+void ScannerDialog::onSyncStatus(uint8_t sync, float)
 {
     if (DabSyncLevel::NullSync <= DabSyncLevel(sync))
     {
-        if (ScanningToolState::WaitForSync == m_state)
+        if (ScannerState::WaitForSync == m_state)
         {   // if we are waiting for sync (move to next step)
             m_timer->stop();
-            m_state = ScanningToolState::WaitForEnsemble;
+            m_state = ScannerState::WaitForEnsemble;
             m_timer->start(6000);
         }
     }
 }
 
-void ScanningToolDialog::onEnsembleFound(const RadioControlEnsemble & ens)
+void ScannerDialog::onEnsembleFound(const RadioControlEnsemble & ens)
 {
-    if (ScanningToolState::Idle == m_state)
+    if (ScannerState::Idle == m_state)
     {   // do nothing
         return;
     }
@@ -200,31 +210,44 @@ void ScanningToolDialog::onEnsembleFound(const RadioControlEnsemble & ens)
 
     ui->numEnsemblesFoundLabel->setText(QString("%1").arg(++m_numEnsemblesFound));
 
-    m_state = ScanningToolState::WaitForServices;
+    m_state = ScannerState::WaitForServices;
 
-    // this can be interrupted by ensemble complete signal (ensembleConfiguration)
-    m_timer->start(8000);
+    // thiw will not be interrupted -> collecting data from now
+    m_timer->start(10000);
 
     //qDebug() << m_channelIt.value() << ens.eid() << ens.label;
     qDebug() << QString("---------------------------------------------------------------- %1   %2   '%3'").arg(m_channelIt.value()).arg(ens.ueid, 6, 16, QChar('0')).arg(ens.label);
 }
 
-void ScanningToolDialog::onServiceFound(const ServiceListId &)
+void ScannerDialog::onServiceFound(const ServiceListId &)
 {
     ui->numServicesFoundLabel->setText(QString("%1").arg(++m_numServicesFound));
 }
 
-void ScanningToolDialog::onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &)
+void ScannerDialog::onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &)
 {
     ui->numServicesFoundLabel->setText(QString("%1").arg(++m_numServicesFound));
 }
 
-void ScanningToolDialog::onServiceListComplete(const RadioControlEnsemble &)
-{   // this means that ensemble information is complete => stop timer and do next set
-    if ((nullptr != m_timer) && (m_timer->isActive()))
+void ScannerDialog::onTiiData(const RadioControlTIIData &data)
+{
+    //if (!data.idList.empty())
     {
-        m_timer->stop();
-        scanStep();
+        qDebug() << "TII data ------>";
+        for (const auto & id : data.idList)
+        {
+            qDebug() << "                                                              " << id.main << id.sub;
+        }
+        qDebug() << "------ TII data";
     }
+}
+
+void ScannerDialog::onServiceListComplete(const RadioControlEnsemble &)
+{   // this means that ensemble information is complete => stop timer and do next set
+    // if ((nullptr != m_timer) && (m_timer->isActive()))
+    // {
+    //     m_timer->stop();
+    //     scanStep();
+    // }
 }
 

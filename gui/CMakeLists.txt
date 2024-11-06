@@ -206,9 +206,9 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     tii/txdataloader.h tii/txdataloader.cpp
 
     # Scanner tool
-    scanningtooldialog.h
-    scanningtooldialog.cpp
-    scanningtooldialog.ui
+    scanner/scannerdialog.h
+    scanner/scannerdialog.cpp
+    scanner/scannerdialog.ui
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -217,6 +217,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/epg)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/data)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/input)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/tii)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/scanner)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets)
 
 # QML

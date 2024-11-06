@@ -36,11 +36,12 @@
 #include "radiocontrol.h"
 #include "servicelistid.h"
 
+
 namespace Ui {
-class ScanningToolDialog;
+class ScannerDialog;
 }
 
-namespace ScanningToolDialogResult {
+namespace ScannerDialogResult {
 enum
 {
     Cancelled = 0,
@@ -49,13 +50,14 @@ enum
 };
 }
 
-class ScanningToolDialog : public QDialog
+class Settings;
+class ScannerDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit ScanningToolDialog(QWidget *parent = nullptr);
-    ~ScanningToolDialog();
+    explicit ScannerDialog(Settings *settings, QWidget *parent = nullptr);
+    ~ScannerDialog();
 
     void onTuneDone(uint32_t freq);
     void onSyncStatus(uint8_t sync, float);
@@ -63,12 +65,14 @@ public:
     void onServiceFound(const ServiceListId &);
     void onServiceListComplete(const RadioControlEnsemble &);
     void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &);
+    void onTiiData(const RadioControlTIIData & data);
 signals:
+    void setTii(bool ena, float thr);
     void scanStarts();
     void tuneChannel(uint32_t freq);
 
 private:
-    enum class ScanningToolState
+    enum class ScannerState
     {
         Idle = 0,
         Init,
@@ -79,13 +83,15 @@ private:
         Interrupted
     };
 
-    Ui::ScanningToolDialog *ui;
+    Ui::ScannerDialog *ui;
     QPushButton * m_buttonStart;
     QPushButton * m_buttonStop;
     QTimer * m_timer = nullptr;
 
+    Settings * m_settings;
+
     bool m_isScanning = false;
-    ScanningToolState m_state = ScanningToolState::Idle;
+    ScannerState m_state = ScannerState::Idle;
 
     int m_numEnsemblesFound = 0;
     int m_numServicesFound = 0;
@@ -94,6 +100,7 @@ private:
     void startScan();
     void scanStep();
     void stopPressed();
+    void stopScan(int status);
 };
 
 #endif // SCANNINGTOOLDIALOG_H

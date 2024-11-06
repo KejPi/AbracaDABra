@@ -377,7 +377,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_tiiAction, &QAction::triggered, this, &MainWindow::showTiiDialog);
 
     m_scanningToolAction = new QAction(tr("Scanning tool..."), this);
-    connect(m_scanningToolAction, &QAction::triggered, this, &MainWindow::showScanningToolDialog);
+    connect(m_scanningToolAction, &QAction::triggered, this, &MainWindow::showScannerDialog);
 
     m_audioRecordingScheduleAction = new QAction(tr("Audio recording schedule..."), this);
     connect(m_audioRecordingScheduleAction, &QAction::triggered, this, &MainWindow::showAudioRecordingSchedule);
@@ -1080,7 +1080,7 @@ void MainWindow::onEnsembleInfo(const RadioControlEnsemble &ens)
                                   .arg(QString("%1").arg(ens.ecc(), 2, 16, QChar('0')).toUpper())
                                   .arg(QString("%1").arg(ens.eid(), 4, 16, QChar('0')).toUpper())
                                   .arg(DabTables::getCountryName(ens.ueid)));
-    if (!m_isScanningToolRunning)
+    if (!m_isScannerRunning)
     {
         m_serviceList->beginEnsembleUpdate(ens);
     }
@@ -1093,7 +1093,7 @@ void MainWindow::onEnsembleReconfiguration(const RadioControlEnsemble &ens) cons
 
 void MainWindow::onServiceListComplete(const RadioControlEnsemble &ens)
 {
-    if (m_isScanningToolRunning)
+    if (m_isScannerRunning)
     {
         return;
     }
@@ -1204,7 +1204,7 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
 
 void MainWindow::onServiceListEntry(const RadioControlEnsemble &ens, const RadioControlServiceComponent &slEntry)
 {
-    if ((slEntry.TMId != DabTMId::StreamAudio) || m_isScanningToolRunning)
+    if ((slEntry.TMId != DabTMId::StreamAudio) || m_isScannerRunning)
     {  // do nothing - data services not supported or scanning tool is running
         return;
     }
@@ -1450,7 +1450,7 @@ void MainWindow::onChannelChange(int index)
 void MainWindow::onBandScanStart()
 {
     stop();
-    if (!m_keepServiceListOnScan && !m_isScanningToolRunning)
+    if (!m_keepServiceListOnScan && !m_isScannerRunning)
     {
         m_serviceList->clear(false);  // do not clear favorites
     }
@@ -3525,27 +3525,33 @@ void MainWindow::showTiiDialog()
     m_tiiDialog->raise();
     m_tiiDialog->activateWindow();
 }
-void MainWindow::showScanningToolDialog()
+void MainWindow::showScannerDialog()
 {
-    ScanningToolDialog * dialog = new ScanningToolDialog(this);
+    ScannerDialog * dialog = new ScannerDialog(m_settings, this);
 
-    connect(dialog, &ScanningToolDialog::tuneChannel, this, &MainWindow::onTuneChannel);
-    connect(m_radioControl, &RadioControl::signalState, dialog, &ScanningToolDialog::onSyncStatus, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::ensembleInformation, dialog, &ScanningToolDialog::onEnsembleFound, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::tuneDone, dialog, &ScanningToolDialog::onTuneDone, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::serviceListComplete, dialog, &ScanningToolDialog::onServiceListComplete, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::serviceListEntry, dialog, &ScanningToolDialog::onServiceListEntry, Qt::QueuedConnection);
-    connect(dialog, &ScanningToolDialog::scanStarts, this, &MainWindow::onBandScanStart);
+    connect(dialog, &ScannerDialog::tuneChannel, this, &MainWindow::onTuneChannel);
+    connect(m_radioControl, &RadioControl::signalState, dialog, &ScannerDialog::onSyncStatus, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::ensembleInformation, dialog, &ScannerDialog::onEnsembleFound, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::tuneDone, dialog, &ScannerDialog::onTuneDone, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::serviceListComplete, dialog, &ScannerDialog::onServiceListComplete, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::serviceListEntry, dialog, &ScannerDialog::onServiceListEntry, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::tiiData, dialog, &ScannerDialog::onTiiData, Qt::QueuedConnection);
+    connect(dialog, &ScannerDialog::scanStarts, this, &MainWindow::onBandScanStart);
+
+    if (m_tiiDialog == nullptr)
+    {   // TII is not running
+        connect(dialog, &ScannerDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
+    }
 
     connect(dialog, &QDialog::finished, this, [this](int result) {
-        m_isScanningToolRunning = false;
+        m_isScannerRunning = false;
         onBandScanFinished(result);
     } );
-    //connect(dialog, &ScanningToolDialog::finished, this, &MainWindow::onBandScanFinished);
+    //connect(dialog, &ScannerDialog::finished, this, &MainWindow::onBandScanFinished);
     connect(dialog, &QDialog::finished, dialog, &QObject::deleteLater);
 
 
-    m_isScanningToolRunning = true;
+    m_isScannerRunning = true;
 
     // dialog->open();
     dialog->show();

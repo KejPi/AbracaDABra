@@ -51,7 +51,7 @@
 #include "dabchannellistmodel.h"
 #include "epgdialog.h"
 #include "metadatamanager.h"
-#include "scanningtooldialog.h"
+#include "scannerdialog.h"
 #include "setupdialog.h"
 #include "ensembleinfodialog.h"
 #include "catslsdialog.h"
@@ -213,7 +213,7 @@ private:
     bool m_hasTreeViewFocus;
     int m_audioVolume = 100;
     bool m_keepServiceListOnScan;
-    bool m_isScanningToolRunning = false;
+    bool m_isScannerRunning = false;
 
     // channel list combo
     DABChannelListFilteredModel * m_channelListModel;
@@ -244,7 +244,7 @@ private:
     void showAudioRecordingSchedule();
     void showSnrPlotDialog();
     void showTiiDialog();
-    void showScanningToolDialog();
+    void showScannerDialog();
     void setExpertMode(bool ena);
     void stop();
     void bandScan();

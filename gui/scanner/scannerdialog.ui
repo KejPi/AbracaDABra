@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ScanningToolDialog</class>
- <widget class="QDialog" name="ScanningToolDialog">
+ <class>ScannerDialog</class>
+ <widget class="QDialog" name="ScannerDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
