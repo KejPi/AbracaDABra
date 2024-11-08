@@ -40,8 +40,10 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // remove question mark from titlebar
-    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+#ifndef Q_OS_MAC
+    // Set window flags to add minimize buttons
+    setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+#endif
 
     m_exportPath = QDir::homePath();
 

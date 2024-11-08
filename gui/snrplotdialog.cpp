@@ -42,6 +42,11 @@ SNRPlotDialog::SNRPlotDialog(Settings *settings, QWidget *parent)
 {
     ui->setupUi(this);
 
+#ifndef Q_OS_MAC
+    // Set window flags to add minimize buttons
+    setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+#endif
+
     QSize sz = QSize(780, 300);
     if (!m_settings->snr.geometry.isEmpty())
     {
