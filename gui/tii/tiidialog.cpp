@@ -41,7 +41,7 @@ Q_LOGGING_CATEGORY(tii, "TII", QtInfoMsg)
 TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     : QDialog(parent)
     , m_settings(settings)
-{        
+{
     m_model = new TiiTableModel(this);
     m_sortModel = new TiiTableSortModel(this);
     m_sortModel->setSourceModel(m_model);
@@ -51,6 +51,9 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     setWindowTitle(tr("TII Decoder"));
     setMinimumSize(QSize(600, 400));
     resize(QSize(780, 520));
+
+    // Set window flags to add maximize and minimize buttons
+    setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
 
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     // TII plot

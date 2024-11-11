@@ -42,6 +42,11 @@ EPGDialog::EPGDialog(SLModel * serviceListModel, QItemSelectionModel *slSelectio
 {
     ui->setupUi(this);
 
+#ifndef Q_OS_MAC
+    // Set window flags to add minimize buttons
+    setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+#endif
+
     if (!m_settings->epg.geometry.isEmpty())
     {
         restoreGeometry(m_settings->epg.geometry);

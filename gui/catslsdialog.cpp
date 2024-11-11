@@ -35,6 +35,11 @@ CatSLSDialog::CatSLSDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+#ifndef Q_OS_MAC
+    // Set window flags to add minimize buttons
+    setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+#endif
+
     connect(ui->fwdButton, &QPushButton::clicked, this, &CatSLSDialog::onFwdButtonClicked);
     connect(ui->backButton, &QPushButton::clicked, this, &CatSLSDialog::onBackButtonClicked);
     connect(ui->categoryView, &QListView::clicked, this, &CatSLSDialog::onCategoryViewClicked);

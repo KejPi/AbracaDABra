@@ -2,7 +2,7 @@
 Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks but also with Airspy R2 and Airspy Mini devices and with many devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
 
 Application is based on Qt6 cross-platform software development framework and can run on any platform supported by Qt6 _(Qt version 6.5 or higher is required for full functionality since application version 2.5.90)_. 
-Prebuilt binaries are released for Windows, macOS (both Intel and Apple Silicon) and Linux x86-64 (AppImage). 
+Prebuilt binaries are released for Windows, macOS (both Intel and Apple Silicon) and Linux x86-64 and AARCH64 (AppImage). 
 ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
 <p align="center" width="100%">
     <img width="889" alt="AbracaDABra application window" src="https://github.com/KejPi/AbracaDABra/assets/6438380/717ed65e-314b-4307-9e32-968c5582eeda"> 
@@ -262,9 +262,9 @@ Following libraries are required:
 * SoapySDR (optional)
 * QCustomPlot (optional) - it is automatically cloned from [GitHub](https://github.com/legerch/QCustomPlot-library) during CMake execution. Use QCUSTOMPLOT=OFF option to disable QCustomPlot usage in the application.
 
-Ubuntu 24.04 or lower does not support Qt>=6.5.0 that is required for full applications features. If you want to compile the application you shall [install](https://doc.qt.io/qt-6/qt-online-installation.html) Qt using online installer. Following modules are sufficcient to compile AbracaDABra:
+Ubuntu 24.04 or lower does not support Qt>=6.5.0 that is required for full applications features. If you want to compile the application you shall [install](https://doc.qt.io/qt-6/qt-online-installation.html) Qt using [online installer](https://www.qt.io/download-qt-installer-oss). Following modules are sufficcient to compile AbracaDABra:
 
-<img width="264" alt="Snímek obrazovky 2024-09-13 v 21 40 15" src="https://github.com/user-attachments/assets/b2e938db-843b-431f-903f-0abb0e178cb0">
+![Screenshot from 2024-11-08 19-51-02](https://github.com/user-attachments/assets/56c32368-9472-4f8a-8d18-4cc65120b88b)
 
 _Note: Currently you can still compile the application with obsolete Qt version delivered with Ubuntu 24.04 but it is an unsupported configuration with limited functionality._
        
