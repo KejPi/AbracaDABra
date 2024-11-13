@@ -3543,9 +3543,9 @@ void MainWindow::showScannerDialog()
         connect(dialog, &ScannerDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
     }
 
-    connect(dialog, &QDialog::finished, this, [this](int result) {
+    connect(dialog, &QDialog::finished, this, [this]() {
         m_isScannerRunning = false;
-        onBandScanFinished(result);
+        onBandScanFinished(BandScanDialogResult::Done);
     } );
     //connect(dialog, &ScannerDialog::finished, this, &MainWindow::onBandScanFinished);
     connect(dialog, &QDialog::finished, dialog, &QObject::deleteLater);

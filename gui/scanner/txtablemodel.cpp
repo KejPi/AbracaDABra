@@ -25,36 +25,36 @@
  */
 
 #include <QColor>
-#include "tiitablemodel.h"
+#include "txtablemodel.h"
 #include "txdataloader.h"
 
-TiiTableModel::TiiTableModel(QObject *parent)
+TxTableModel::TxTableModel(QObject *parent)
     : QAbstractTableModel{parent}
 {
 
     TxDataLoader::loadTable(m_txList);
 
-    connect(this, &QAbstractListModel::rowsInserted, this, &TiiTableModel::rowCountChanged);
-    connect(this, &QAbstractListModel::rowsRemoved, this, &TiiTableModel::rowCountChanged);
-    connect(this, &QAbstractListModel::modelReset, this, &TiiTableModel::rowCountChanged);
+    connect(this, &QAbstractListModel::rowsInserted, this, &TxTableModel::rowCountChanged);
+    connect(this, &QAbstractListModel::rowsRemoved, this, &TxTableModel::rowCountChanged);
+    connect(this, &QAbstractListModel::modelReset, this, &TxTableModel::rowCountChanged);
 }
 
-TiiTableModel::~TiiTableModel()
+TxTableModel::~TxTableModel()
 {
     qDeleteAll(m_txList);
 }
 
-int TiiTableModel::rowCount(const QModelIndex &parent) const
+int TxTableModel::rowCount(const QModelIndex &parent) const
 {
     return m_modelData.count();
 }
 
-int TiiTableModel::columnCount(const QModelIndex &parent) const
+int TxTableModel::columnCount(const QModelIndex &parent) const
 {
     return NumCols;
 }
 
-QVariant TiiTableModel::data(const QModelIndex &index, int role) const
+QVariant TxTableModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
     {
@@ -72,12 +72,26 @@ QVariant TiiTableModel::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole: {
         switch (index.column())
         {
+        case ColTime:
+            return item.rxTime().toString("yy-MM-dd hh:mm:ss");
+        case ColChannel:
+            return DabTables::channelList.value(item.ensId().freq(), 0);
+        case ColFreq:
+            return item.ensId().freq();
+        case ColEnsId:
+            return QString("%1").arg(item.ensId().ueid(), 6, 16, QChar(' ')).toUpper();
+        case ColEnsLabel:
+            return item.ensLabel();
+        case ColNumServices:
+            return item.numServices();
         case ColMainId:
-            return item.mainId();
+            return (item.mainId() != 255) ? QString::number(item.mainId()) : "";
         case ColSubId:
-            return item.subId();
+            return (item.subId() != 255) ? QString::number(item.subId()) : "";
         case ColLevel:
             return QString("%1 dB").arg(static_cast<double>(item.level()), 5, 'f', 1); // QString::number(static_cast<double>(item.level()), 'f', 3);
+        case ColName:
+            return item.transmitterData().location();
         case ColDist:
             if (item.hasTxData() && item.distance() >= 0.0)
             {
@@ -93,15 +107,25 @@ QVariant TiiTableModel::data(const QModelIndex &index, int role) const
         }
     }
         break;
-    case TiiTableModelRoles::CoordinatesRole:
+    // case Qt::TextAlignmentRole:
+    //     switch (index.column())
+    //     {
+    //     case ColName:
+    //     case ColEnsLabel:
+    //         return Qt::AlignLeft;
+    //     default:
+    //         return Qt::AlignCenter;
+    //     }
+    //     break;
+    case TxTableModelRoles::CoordinatesRole:
         return QVariant().fromValue(item.transmitterData().coordinates());
-    case TiiTableModelRoles::MainIdRole:
+    case TxTableModelRoles::MainIdRole:
         return item.mainId();
-    case TiiTableModelRoles::SubIdRole:
+    case TxTableModelRoles::SubIdRole:
         return item.subId();
-    case TiiTableModelRoles::TiiRole:
+    case TxTableModelRoles::TiiRole:
         return QVariant(QString("%1-%2").arg(item.mainId()).arg(item.subId()));
-    case TiiTableModelRoles::LevelColorRole:
+    case TxTableModelRoles::LevelColorRole:
         if (item.level() > -6)
         {
             //return QVariant(QColor(0x5b, 0xc2, 0x14));
@@ -111,10 +135,10 @@ QVariant TiiTableModel::data(const QModelIndex &index, int role) const
             return QVariant(QColor(0xff, 0xb5, 0x27));
         }
         return QVariant(QColor(0xff, 0x4b, 0x4b));
-    case TiiTableModelRoles::ItemRole:
+    case TxTableModelRoles::ItemRole:
         return QVariant().fromValue(item);
-    case TiiTableModelRoles::IdRole:
-        return QVariant(item.id());
+    case TxTableModelRoles::IdRole:
+        return QVariant(item.id());        
     default:
         break;
     }
@@ -122,7 +146,7 @@ QVariant TiiTableModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-QVariant TiiTableModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole)
     {
@@ -131,12 +155,26 @@ QVariant TiiTableModel::headerData(int section, Qt::Orientation orientation, int
 
     if (orientation == Qt::Horizontal) {
         switch (section) {
+        case ColTime:
+            return tr("RX Time");
+        case ColChannel:
+            return tr("Channel");
+        case ColFreq:
+            return tr("Frequency");
+        case ColEnsId:
+            return tr("UEID");
+        case ColEnsLabel:
+            return tr("Label");
+        case ColNumServices:
+            return tr("Services");
         case ColMainId:
             return tr("Main");
         case ColSubId:
             return tr("Sub");
         case ColLevel:
             return tr("Level");
+        case ColName:
+            return tr("Name");
         case ColDist:
             return tr("Distance");
         case ColAzimuth:
@@ -148,52 +186,53 @@ QVariant TiiTableModel::headerData(int section, Qt::Orientation orientation, int
     return QVariant();
 }
 
-QHash<int, QByteArray> TiiTableModel::roleNames() const
+QHash<int, QByteArray> TxTableModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
 
     roles[Qt::DisplayRole] = "display";
-    roles[TiiTableModelRoles::CoordinatesRole] = "coordinates";
-    roles[TiiTableModelRoles::TiiRole] = "tiiString";
-    roles[TiiTableModelRoles::MainIdRole] = "mainId";
-    roles[TiiTableModelRoles::SubIdRole] = "subId";
-    roles[TiiTableModelRoles::LevelColorRole] = "levelColor";
+    roles[TxTableModelRoles::CoordinatesRole] = "coordinates";
+    roles[TxTableModelRoles::TiiRole] = "tiiString";
+    roles[TxTableModelRoles::MainIdRole] = "mainId";
+    roles[TxTableModelRoles::SubIdRole] = "subId";
+    roles[TxTableModelRoles::LevelColorRole] = "levelColor";
 
     return roles;
 }
 
-const TiiTableModelItem &TiiTableModel::itemAt(int row) const
+const TxTableModelItem &TxTableModel::itemAt(int row) const
 {
     Q_ASSERT(row >= 0 && row < m_modelData.size());
 
     return m_modelData.at(row);
 }
 
-void TiiTableModel::clear()
+void TxTableModel::clear()
 {
     beginResetModel();
     m_modelData.clear();
     endResetModel();
 }
 
-void TiiTableModel::updateData(const QList<dabsdrTii_t> &data, const ServiceListId & ensId)
+void TxTableModel::updateData(const QList<dabsdrTii_t> &data, const ServiceListId & ensId)
 {
+#warning "This is not needed fro scanner tool"
 #if 0
     beginResetModel();
     m_modelData.clear();
     for (const auto & tii : data)
     {
-        m_modelData.append(TiiTableModelItem(tii.main, tii.sub, tii.level, m_coordinates, m_txList.values(ensId)));
+        m_modelData.append(TxTableModelItem(tii.main, tii.sub, tii.level, m_coordinates, m_txList.values(ensId)));
     }
     endResetModel();
 #else
     // add new items and remove old
     int row = 0;
-    QList<TiiTableModelItem> appendList;
+    QList<TxTableModelItem> appendList;
     for (int dataIdx = 0; dataIdx < data.count(); ++dataIdx)
     {
         // create new item
-        TiiTableModelItem item(data.at(dataIdx).main, data.at(dataIdx).sub, data.at(dataIdx).level, m_coordinates, m_txList.values(ensId));
+        TxTableModelItem item(data.at(dataIdx).main, data.at(dataIdx).sub, data.at(dataIdx).level, m_coordinates, m_txList.values(ensId));
 
         if (row < m_modelData.size())
         {
@@ -268,7 +307,33 @@ void TiiTableModel::updateData(const QList<dabsdrTii_t> &data, const ServiceList
 #endif
 }
 
-void TiiTableModel::setCoordinates(const QGeoCoordinate &newCoordinates)
+void TxTableModel::appendData(const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel, int numServices)
+{
+    QDateTime time = QDateTime::currentDateTime();
+    if (!data.empty()) {
+        for (auto it = data.cbegin(); it != data.cend(); ++it)
+        {
+            // create new item
+            TxTableModelItem item(it->main, it->sub, it->level, m_coordinates, m_txList.values(ensId));
+            item.setEnsData(ensId, ensLabel, numServices);
+            item.setRxTime(time);
+            beginInsertRows(QModelIndex(), m_modelData.size(), m_modelData.size());
+            m_modelData.append(item);
+            endInsertRows();
+        }
+    }
+    else {
+        // create new item
+        TxTableModelItem item(-1, -1, 0, m_coordinates, m_txList.values(ensId));
+        item.setEnsData(ensId, ensLabel, numServices);
+        item.setRxTime(time);
+        beginInsertRows(QModelIndex(), m_modelData.size(), m_modelData.size());
+        m_modelData.append(item);
+        endInsertRows();
+    }
+}
+
+void TxTableModel::setCoordinates(const QGeoCoordinate &newCoordinates)
 {
     if (newCoordinates != m_coordinates)
     {
@@ -287,6 +352,8 @@ void TiiTableModel::setCoordinates(const QGeoCoordinate &newCoordinates)
     }
 }
 
+#if 0
+
 TiiTableSortModel::TiiTableSortModel(QObject *parent) : QSortFilterProxyModel(parent)
 {
     connect(this, &QSortFilterProxyModel::rowsInserted, this, &TiiTableSortModel::rowCountChanged);
@@ -297,27 +364,28 @@ TiiTableSortModel::TiiTableSortModel(QObject *parent) : QSortFilterProxyModel(pa
 
 bool TiiTableSortModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
-    TiiTableModelItem itemL = sourceModel()->data(left, TiiTableModel::TiiTableModelRoles::ItemRole).value<TiiTableModelItem>();
-    TiiTableModelItem itemR = sourceModel()->data(right, TiiTableModel::TiiTableModelRoles::ItemRole).value<TiiTableModelItem>();
+    TxTableModelItem itemL = sourceModel()->data(left, TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
+    TxTableModelItem itemR = sourceModel()->data(right, TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
 
     switch (left.column())
     {
-    case TiiTableModel::ColMainId:
+    case TxTableModel::ColMainId:
         if (itemL.mainId() == itemR.mainId())
         {
             return itemL.subId() < itemR.subId();
         }
         return itemL.mainId() < itemR.mainId();
-    case TiiTableModel::ColSubId:
+    case TxTableModel::ColSubId:
         return itemL.subId() < itemR.subId();
-    case TiiTableModel::ColLevel:
+    case TxTableModel::ColLevel:
         return itemL.level() < itemR.level();
-    case TiiTableModel::ColDist:
+    case TxTableModel::ColDist:
         return itemL.distance() < itemR.distance();
-    case TiiTableModel::ColAzimuth:
+    case TxTableModel::ColAzimuth:
         return itemL.azimuth() < itemR.azimuth();
     }
 
     return true;
 }
+#endif
 

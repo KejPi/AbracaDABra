@@ -209,6 +209,8 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     scanner/scannerdialog.h
     scanner/scannerdialog.cpp
     scanner/scannerdialog.ui
+    scanner/txtablemodel.cpp scanner/txtablemodel.h
+    scanner/txtablemodelitem.cpp scanner/txtablemodelitem.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

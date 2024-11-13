@@ -25,11 +25,19 @@
  */
 
 #include <QDebug>
-
+#include <QtWidgets/qscrollbar.h>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && QT_CONFIG(permissions)
+#include <QPermissions>
+#endif
+#include <QCoreApplication>
+#include <QMessageBox>
+#include <QLoggingCategory>
 #include "scannerdialog.h"
 #include "ui_scannerdialog.h"
 #include "dabtables.h"
 #include "settings.h"
+
+Q_LOGGING_CATEGORY(scanner, "Scanner", QtInfoMsg)
 
 ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     QDialog(parent),
@@ -39,40 +47,37 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     ui->setupUi(this);
     setModal(true);
 
+    m_model = new TxTableModel(this);
+
     //setSizeGripEnabled(false);
 
-    m_buttonStart = ui->buttonBox->button(QDialogButtonBox::Ok);
-    m_buttonStart->setText(tr("Start"));
-    connect(m_buttonStart, &QPushButton::clicked, this, &ScannerDialog::startScan);
+    ui->txTableView->setModel(m_model);
+    //ui->tiiTable->setSelectionModel(m_tiiTableSelectionModel);
+    ui->txTableView->verticalHeader()->hide();
+    ui->txTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    //ui->txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    m_buttonStop = ui->buttonBox->button(QDialogButtonBox::Cancel);
-    m_buttonStop->setText(tr("Cancel"));
-    m_buttonStop->setDefault(true);
-    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &ScannerDialog::stopPressed);
+    ui->txTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->txTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->txTableView->setSortingEnabled(false);
 
-    ui->numEnsemblesFoundLabel->setText(QString("%1").arg(m_numEnsemblesFound));
-    ui->numServicesFoundLabel->setText(QString("%1").arg(m_numServicesFound));
+    //ui->txTableView->sortByColumn(TiiTableModel::ColLevel, Qt::SortOrder::DescendingOrder);
+
+
+    ui->startStopButton->setText(tr("Start"));
+    connect(ui->startStopButton, &QPushButton::clicked, this, &ScannerDialog::startStopPressed);
+
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(DabTables::channelList.size());
     ui->progressBar->setValue(0);
-    ui->progressLabel->setText(QString("0 / %1").arg(DabTables::channelList.size()));
     ui->progressChannel->setText(tr("None"));
 
-    ui->progressLabel->setVisible(false);
     ui->progressChannel->setVisible(false);
 
-    // if (!autoStart)
-    // {
-    // ui->scanningLabel->setText(tr("<span style=\"color:red\"><b>Warning:</b> Band scan deletes current service list!</span>"));
-    //}
+    m_ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
+
     ui->scanningLabel->setText("");
-
-    // setFixedSize( sizeHint() );
-
-    // if (autoStart)
-    // {
-    //     QTimer::singleShot(1, this, [this](){ startScan(); } );
-    // }
 }
 
 ScannerDialog::~ScannerDialog()
@@ -86,10 +91,12 @@ ScannerDialog::~ScannerDialog()
     delete ui;
 }
 
-void ScannerDialog::stopPressed()
-{
+void ScannerDialog::startStopPressed()
+{       
     if (m_isScanning)
-    {
+    {   // stop pressed
+        ui->startStopButton->setEnabled(false);
+
         // the state machine has 4 possible states
         // 1. wait for tune (event)
         // 2. wait for sync (timer or event)
@@ -98,21 +105,43 @@ void ScannerDialog::stopPressed()
         if (m_timer->isActive())
         {   // state 2, 3, 4
             m_timer->stop();
-            stopScan(ScannerDialogResult::Interrupted);
+            stopScan();
         }
-        // timer not running -> state 1
-        m_state = ScannerState::Interrupted;  // ==> it will be finished when tune is complete
+        else {
+            // timer not running -> state 1
+            m_state = ScannerState::Interrupted;  // ==> it will be finished when tune is complete
+        }
     }
     else
-    {
-        stopScan(ScannerDialogResult::Cancelled);
+    {   // start pressed
+        ui->startStopButton->setText(tr("Stop"));
+        startScan();
     }
 }
 
-void ScannerDialog::stopScan(int status)
-{   // single exit point
-    emit setTii(false, 0.0);
-    done(status);
+void ScannerDialog::stopScan()
+{
+    if (m_isTiiActive)
+    {
+        emit setTii(false, 0.0);
+        m_isTiiActive = false;
+    }
+
+    if (m_exitRequested)
+    {
+        done(QDialog::Accepted);
+    }
+
+    // restore UI
+    ui->progressChannel->setVisible(false);
+    ui->scanningLabel->setText(tr("Scanning finished"));
+    ui->progressBar->setValue(0);
+    ui->progressChannel->setText(tr("None"));
+    ui->startStopButton->setText(tr("Start"));
+    ui->startStopButton->setEnabled(true);
+
+    m_isScanning = false;
+    m_state = ScannerState::Init;
 }
 
 void ScannerDialog::startScan()
@@ -120,47 +149,46 @@ void ScannerDialog::startScan()
     m_isScanning = true;
 
     ui->scanningLabel->setText(tr("Scanning channel:"));
-    ui->progressLabel->setVisible(true);
     ui->progressChannel->setVisible(true);
 
-    m_buttonStart->setVisible(false);
-    m_buttonStop->setText(tr("Stop"));
-    m_buttonStop->setDefault(false);
+    m_model->clear();
 
-    m_timer = new QTimer(this);
-    connect(m_timer, &QTimer::timeout, this, &ScannerDialog::scanStep);
+    if (m_timer == nullptr)
+    {
+        m_timer = new QTimer(this);
+        m_timer->setSingleShot(true);
+        connect(m_timer, &QTimer::timeout, this, &ScannerDialog::scanStep);
+    }
 
     m_state = ScannerState::Init;
 
     // using timer for mainwindow to cleanup and tune to 0 potentially (no timeout in case)
     m_timer->start(2000);
     emit scanStarts();
-    emit setTii(true, 0.0);
 }
 
 void ScannerDialog::scanStep()
 {
     if (ScannerState::Init == m_state)
-    {  // first step
-       m_channelIt = DabTables::channelList.constBegin();
+    {   // first step
+        m_channelIt = DabTables::channelList.constBegin();
     }
     else
-    {  // next step
-       ++m_channelIt;
-    }
+    {   // next step
+        ++m_channelIt;
+    }    
 
     if (DabTables::channelList.constEnd() == m_channelIt)
     {
         // scan finished
-        stopScan(ScannerDialogResult::Done);
+        stopScan();
         return;
     }
 
     ui->progressBar->setValue(ui->progressBar->value()+1);
-    ui->progressLabel->setText(QString("%1 / %2")
-                               .arg(ui->progressBar->value())
-                               .arg(DabTables::channelList.size()));
+    //ui->progressChannel->setText(QString("%1 [ %2 MHz ]").arg(m_channelIt.value()).arg(m_channelIt.key()/1000.0, 3, 'f', 3, QChar('0')));
     ui->progressChannel->setText(m_channelIt.value());
+    m_numServicesFound = 0;
     m_state = ScannerState::WaitForTune;
     emit tuneChannel(m_channelIt.key());
 }
@@ -177,7 +205,7 @@ void ScannerDialog::onTuneDone(uint32_t freq)
     }
     else if (ScannerState::Interrupted == m_state)
     {   // exit
-        stopScan(ScannerDialogResult::Interrupted);
+        stopScan();
     }
     else
     {   // tuned to some frequency -> wait for sync
@@ -208,46 +236,205 @@ void ScannerDialog::onEnsembleFound(const RadioControlEnsemble & ens)
 
     m_timer->stop();
 
-    ui->numEnsemblesFoundLabel->setText(QString("%1").arg(++m_numEnsemblesFound));
-
     m_state = ScannerState::WaitForServices;
 
     // thiw will not be interrupted -> collecting data from now
     m_timer->start(10000);
 
     //qDebug() << m_channelIt.value() << ens.eid() << ens.label;
-    qDebug() << QString("---------------------------------------------------------------- %1   %2   '%3'").arg(m_channelIt.value()).arg(ens.ueid, 6, 16, QChar('0')).arg(ens.label);
+    //qDebug() << Q_FUNC_INFO << QString("---------------------------------------------------------------- %1   %2   '%3'").arg(m_channelIt.value()).arg(ens.ueid, 6, 16, QChar('0')).arg(ens.label);
+    m_ensemble = ens;
+    emit setTii(true, 0.0);
+    m_isTiiActive = true;
 }
 
 void ScannerDialog::onServiceFound(const ServiceListId &)
 {
-    ui->numServicesFoundLabel->setText(QString("%1").arg(++m_numServicesFound));
+    //ui->numServicesFoundLabel->setText(QString("%1").arg(++m_numServicesFound));
+    m_numServicesFound += 1;
+    qDebug() << Q_FUNC_INFO << m_numServicesFound;
 }
 
 void ScannerDialog::onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &)
 {
-    ui->numServicesFoundLabel->setText(QString("%1").arg(++m_numServicesFound));
+    m_numServicesFound += 1;
+
+    //ui->numServicesFoundLabel->setText(QString("%1").arg(++m_numServicesFound));
 }
 
 void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 {
-    //if (!data.idList.empty())
+    m_model->appendData(data.idList, ServiceListId(m_ensemble), m_ensemble.label, m_numServicesFound);
+
+    //ui->txTableView->resizeColumnsToContents();
+    ui->txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColName, QHeaderView::Stretch);
+    //ui->txTableView->horizontalHeader()->setStretchLastSection(true);
+
+    emit setTii(false, 0.0);
+    m_isTiiActive = false;
+
+    if ((nullptr != m_timer) && (m_timer->isActive()))
     {
-        qDebug() << "TII data ------>";
-        for (const auto & id : data.idList)
-        {
-            qDebug() << "                                                              " << id.main << id.sub;
-        }
-        qDebug() << "------ TII data";
+        m_timer->stop();
+        scanStep();
     }
 }
 
+void ScannerDialog::showEvent(QShowEvent *event)
+{
+//     // calculate size of the table
+    int hSize = 0;
+    for (int n = 0; n < ui->txTableView->horizontalHeader()->count(); ++n) {
+        hSize += ui->txTableView->horizontalHeader()->sectionSize(n);
+    }
+    ui->txTableView->setMinimumWidth(hSize + ui->txTableView->verticalScrollBar()->sizeHint().width() + TxTableModel::NumCols);
+
+    //ui->txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    //ui->txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColName, QHeaderView::Stretch);
+    ui->txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    //ui->txTableView->horizontalHeader()->setStretchLastSection(true);
+
+    startLocationUpdate();
+
+    QDialog::showEvent(event);
+}
+
+void ScannerDialog::closeEvent(QCloseEvent *event)
+{
+    if (m_isScanning)
+    {   // stopping scanning first
+        m_exitRequested = true;
+        startStopPressed();
+        return;
+    }
+
+    stopLocationUpdate();
+
+    QDialog::closeEvent(event);
+}
+
+
 void ScannerDialog::onServiceListComplete(const RadioControlEnsemble &)
 {   // this means that ensemble information is complete => stop timer and do next set
+    qDebug() << Q_FUNC_INFO;
+
     // if ((nullptr != m_timer) && (m_timer->isActive()))
     // {
     //     m_timer->stop();
     //     scanStep();
     // }
 }
+
+void ScannerDialog::startLocationUpdate()
+{
+    switch (m_settings->tii.locationSource)
+    {
+    case Settings::GeolocationSource::System:
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
+        // ask for permission
+#if QT_CONFIG(permissions)
+        QLocationPermission locationsPermission;
+        locationsPermission.setAccuracy(QLocationPermission::Precise);
+        locationsPermission.setAvailability(QLocationPermission::WhenInUse);
+        switch (qApp->checkPermission(locationsPermission)) {
+        case Qt::PermissionStatus::Undetermined:
+            qApp->requestPermission(locationsPermission, this, [this]() { startLocationUpdate(); } );
+            qCDebug(scanner) << "LocationPermission Undetermined";
+            return;
+        case Qt::PermissionStatus::Denied:
+        {
+            qCInfo(scanner) << "LocationPermission Denied";
+            QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), tr("Device location access is denied."), {}, this);
+            msgBox.setInformativeText(tr("If you want to display current position on map, grant the location permission in Settings then open the app again."));
+            msgBox.exec();
+        }
+            return;
+        case Qt::PermissionStatus::Granted:
+            qCInfo(scanner) << "LocationPermission Granted";
+            break; // Proceed
+        }
+#endif
+#endif
+    // start location update
+        if (m_geopositionSource == nullptr)
+        {
+            m_geopositionSource = QGeoPositionInfoSource::createDefaultSource(this);
+        }
+        if (m_geopositionSource != nullptr)
+        {
+            qCDebug(scanner) << "Start position update";
+            connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &ScannerDialog::positionUpdated);
+            m_geopositionSource->startUpdates();
+        }
+    }
+    break;
+    case Settings::GeolocationSource::Manual:
+        if (m_geopositionSource != nullptr)
+        {
+            delete m_geopositionSource;
+            m_geopositionSource = nullptr;
+        }
+        positionUpdated(QGeoPositionInfo(m_settings->tii.coordinates, QDateTime::currentDateTime()));
+        break;
+    case Settings::GeolocationSource::SerialPort:
+    {
+        // serial port
+        QVariantMap params;
+        params["nmea.source"] = "serial:"+m_settings->tii.serialPort;
+        m_geopositionSource = QGeoPositionInfoSource::createSource("nmea", params, this);
+        if (m_geopositionSource != nullptr)
+        {
+            qCDebug(scanner) << "Start position update";
+            connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &ScannerDialog::positionUpdated);
+            m_geopositionSource->startUpdates();
+        }
+    }
+    break;
+    }
+}
+
+void ScannerDialog::stopLocationUpdate()
+{
+    if (m_geopositionSource != nullptr)
+    {
+        m_geopositionSource->stopUpdates();
+    }
+}
+
+void ScannerDialog::positionUpdated(const QGeoPositionInfo &position)
+{
+    setCurrentPosition(position.coordinate());
+    m_model->setCoordinates(m_currentPosition);
+    setPositionValid(true);
+}
+
+QGeoCoordinate ScannerDialog::currentPosition() const
+{
+    return m_currentPosition;
+}
+
+void ScannerDialog::setCurrentPosition(const QGeoCoordinate &newCurrentPosition)
+{
+    if (m_currentPosition == newCurrentPosition)
+        return;
+    m_currentPosition = newCurrentPosition;
+    emit currentPositionChanged();
+}
+
+bool ScannerDialog::positionValid() const
+{
+    return m_positionValid;
+}
+
+void ScannerDialog::setPositionValid(bool newPositionValid)
+{
+    if (m_positionValid == newPositionValid)
+        return;
+    m_positionValid = newPositionValid;
+    emit positionValidChanged();
+}
+
 

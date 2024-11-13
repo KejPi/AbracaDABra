@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>350</width>
-    <height>132</height>
+    <width>850</width>
+    <height>350</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Scanning tool</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0" colspan="3">
+   <item row="0" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -35,63 +35,21 @@
       </layout>
      </item>
      <item>
-      <widget class="QLabel" name="progressLabel">
-       <property name="text">
-        <string notr="true">8/40</string>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
        </property>
-      </widget>
+      </spacer>
      </item>
     </layout>
    </item>
-   <item row="2" column="2">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="standardButtons">
-      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="1" column="0">
-      <widget class="QLabel" name="servicesFoundLabel">
-       <property name="text">
-        <string>Services found:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLabel" name="numServicesFoundLabel">
-       <property name="text">
-        <string notr="true">23</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="ensemblesFoundLabel">
-       <property name="text">
-        <string>Ensembles found:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="numEnsemblesFoundLabel">
-       <property name="text">
-        <string notr="true">2</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="1" column="0" colspan="3">
+   <item row="1" column="0" colspan="2">
     <widget class="QProgressBar" name="progressBar">
      <property name="value">
       <number>24</number>
@@ -101,7 +59,17 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item row="2" column="0" colspan="2">
+    <widget class="QTableView" name="txTableView"/>
+   </item>
+   <item row="3" column="1">
+    <widget class="QPushButton" name="startStopButton">
+     <property name="text">
+      <string>PushButton</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
     <spacer name="horizontalSpacer_2">
      <property name="orientation">
       <enum>Qt::Orientation::Horizontal</enum>

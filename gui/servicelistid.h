@@ -33,6 +33,7 @@
 #define SERVICELISTID_SERVICE_MASK ((uint64_t(1)<<(32+8)) - 1)
 #define SERVICELISTID_SID_MASK     ((uint64_t(1)<<(32)) - 1)
 #define SERVICELISTID_UEID_MASK    ((uint64_t(1)<<(24)) - 1)
+#define SERVICELISTID_FREQ_MASK    ((uint64_t(1)<<(32)) - 1)
 
 class ServiceListId
 {
@@ -50,6 +51,7 @@ public:
     uint32_t sid() const { return static_cast<uint32_t>(m_id & SERVICELISTID_SID_MASK ); }
     uint8_t scids() const { return static_cast<uint8_t>((m_id>>32) & 0xFFu ); }
     uint32_t ueid() const { return static_cast<uint32_t>(m_id & SERVICELISTID_UEID_MASK ); }
+    uint32_t freq() const { return static_cast<uint32_t>((m_id >> 32) & SERVICELISTID_FREQ_MASK ); }
 
     bool operator==(const ServiceListId & other) const { return other.m_id == m_id; }
 

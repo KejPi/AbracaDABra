@@ -24,30 +24,23 @@
  * SOFTWARE.
  */
 
-#ifndef SCANNINGTOOLDIALOG_H
-#define SCANNINGTOOLDIALOG_H
+#ifndef SCANNERDIALOG_H
+#define SCANNERDIALOG_H
 
 #include <QDialog>
 #include <QComboBox>
 #include <QLabel>
 #include <QPushButton>
 #include <QDialogButtonBox>
+#include <QGeoPositionInfoSource>
 
 #include "radiocontrol.h"
 #include "servicelistid.h"
+#include "txtablemodel.h"
 
 
 namespace Ui {
 class ScannerDialog;
-}
-
-namespace ScannerDialogResult {
-enum
-{
-    Cancelled = 0,
-    Interrupted = 1,
-    Done = 2
-};
 }
 
 class Settings;
@@ -66,10 +59,24 @@ public:
     void onServiceListComplete(const RadioControlEnsemble &);
     void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &);
     void onTiiData(const RadioControlTIIData & data);
+    void startLocationUpdate();
+    void stopLocationUpdate();
+    QGeoCoordinate currentPosition() const;
+    void setCurrentPosition(const QGeoCoordinate &newCurrentPosition);
+    bool positionValid() const;
+    void setPositionValid(bool newPositionValid);
+
+
 signals:
     void setTii(bool ena, float thr);
     void scanStarts();
     void tuneChannel(uint32_t freq);
+    void currentPositionChanged();
+    void positionValidChanged();
+
+protected:
+    void showEvent(QShowEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     enum class ScannerState
@@ -84,23 +91,30 @@ private:
     };
 
     Ui::ScannerDialog *ui;
-    QPushButton * m_buttonStart;
-    QPushButton * m_buttonStop;
     QTimer * m_timer = nullptr;
 
     Settings * m_settings;
 
     bool m_isScanning = false;
+    bool m_isTiiActive = false;
+    bool m_exitRequested = false;
     ScannerState m_state = ScannerState::Idle;
 
-    int m_numEnsemblesFound = 0;
+    // int m_numEnsemblesFound = 0;
     int m_numServicesFound = 0;
     dabChannelList_t::ConstIterator m_channelIt;
+    RadioControlEnsemble m_ensemble;
+
+    TxTableModel * m_model;
+    QGeoPositionInfoSource * m_geopositionSource = nullptr;
+    QGeoCoordinate m_currentPosition;
+    bool m_positionValid = false;
 
     void startScan();
     void scanStep();
-    void stopPressed();
-    void stopScan(int status);
+    void startStopPressed();
+    void stopScan();
+    void positionUpdated(const QGeoPositionInfo & position);
 };
 
-#endif // SCANNINGTOOLDIALOG_H
+#endif // SCANNERDIALOG_H
