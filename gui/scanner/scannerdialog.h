@@ -53,7 +53,7 @@ public:
     ~ScannerDialog();
 
     void onTuneDone(uint32_t freq);
-    void onSyncStatus(uint8_t sync, float);
+    void onSyncStatus(uint8_t sync, float snr);
     void onEnsembleFound(const RadioControlEnsemble &ens);
     void onServiceFound(const ServiceListId &);
     void onServiceListComplete(const RadioControlEnsemble &);
@@ -65,7 +65,6 @@ public:
     void setCurrentPosition(const QGeoCoordinate &newCurrentPosition);
     bool positionValid() const;
     void setPositionValid(bool newPositionValid);
-
 
 signals:
     void setTii(bool ena, float thr);
@@ -104,16 +103,19 @@ private:
     int m_numServicesFound = 0;
     dabChannelList_t::ConstIterator m_channelIt;
     RadioControlEnsemble m_ensemble;
+    float m_snr;
 
     TxTableModel * m_model;
     QGeoPositionInfoSource * m_geopositionSource = nullptr;
     QGeoCoordinate m_currentPosition;
     bool m_positionValid = false;
+    QDateTime m_scanStartTime;
 
     void startScan();
     void scanStep();
-    void startStopPressed();
+    void startStopClicked();
     void stopScan();
+    void exportClicked();
     void positionUpdated(const QGeoPositionInfo & position);
 };
 

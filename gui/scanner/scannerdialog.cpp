@@ -30,6 +30,7 @@
 #include <QPermissions>
 #endif
 #include <QCoreApplication>
+#include <QFileDialog>
 #include <QMessageBox>
 #include <QLoggingCategory>
 #include "scannerdialog.h"
@@ -62,22 +63,18 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     ui->txTableView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->txTableView->setSortingEnabled(false);
 
-    //ui->txTableView->sortByColumn(TiiTableModel::ColLevel, Qt::SortOrder::DescendingOrder);
-
-
     ui->startStopButton->setText(tr("Start"));
-    connect(ui->startStopButton, &QPushButton::clicked, this, &ScannerDialog::startStopPressed);
-
+    connect(ui->startStopButton, &QPushButton::clicked, this, &ScannerDialog::startStopClicked);
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(DabTables::channelList.size());
     ui->progressBar->setValue(0);
     ui->progressChannel->setText(tr("None"));
-
     ui->progressChannel->setVisible(false);
+    ui->scanningLabel->setText("");
+    ui->exportButton->setEnabled(false);
+    connect(ui->exportButton, &QPushButton::clicked, this, &ScannerDialog::exportClicked);
 
     m_ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
-
-    ui->scanningLabel->setText("");
 }
 
 ScannerDialog::~ScannerDialog()
@@ -91,7 +88,7 @@ ScannerDialog::~ScannerDialog()
     delete ui;
 }
 
-void ScannerDialog::startStopPressed()
+void ScannerDialog::startStopClicked()
 {       
     if (m_isScanning)
     {   // stop pressed
@@ -144,14 +141,56 @@ void ScannerDialog::stopScan()
     m_state = ScannerState::Init;
 }
 
+void ScannerDialog::exportClicked()
+{
+    static const QRegularExpression regexp( "[" + QRegularExpression::escape("/:*?\"<>|") + "]");
+
+    QString f = QString("%1/%2.csv").arg(m_settings->scanner.exportPath, m_scanStartTime.toString("yyyy-MM-dd_hhmmss"));
+
+    QString fileName = QFileDialog::getSaveFileName(this,
+                                                    tr("Export CSV file"),
+                                                    QDir::toNativeSeparators(f),
+                                                    tr("CSV Files")+" (*.csv)");
+
+    if (!fileName.isEmpty())
+    {
+        m_settings->scanner.exportPath = QFileInfo(fileName).path(); // store path for next time
+        QFile file(fileName);
+        if (file.open(QIODevice::WriteOnly))
+        {
+            QTextStream out(&file);
+
+            // Header
+            for (int col = 0; col < TxTableModel::NumCols-1; ++col)
+            {
+                out << m_model->headerData(col, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString() << ";";
+            }
+            out << m_model->headerData(TxTableModel::NumCols - 1, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString() <<  Qt::endl;
+
+            // Body
+            for (int row = 0; row < m_model->rowCount(); ++row)
+            {
+                for (int col = 0; col < TxTableModel::NumCols-1; ++col)
+                {
+                    out << m_model->data(m_model->index(row, col), TxTableModel::TxTableModelRoles::ExportRole).toString() << ";";
+                }
+                out << m_model->data(m_model->index(row, TxTableModel::NumCols-1), TxTableModel::TxTableModelRoles::ExportRole).toString() << Qt::endl;
+            }
+            file.close();
+        }
+    }
+}
+
 void ScannerDialog::startScan()
 {
     m_isScanning = true;
 
+    m_scanStartTime = QDateTime::currentDateTime();
     ui->scanningLabel->setText(tr("Scanning channel:"));
     ui->progressChannel->setVisible(true);
 
     m_model->clear();
+    ui->exportButton->setEnabled(false);
 
     if (m_timer == nullptr)
     {
@@ -189,6 +228,7 @@ void ScannerDialog::scanStep()
     //ui->progressChannel->setText(QString("%1 [ %2 MHz ]").arg(m_channelIt.value()).arg(m_channelIt.key()/1000.0, 3, 'f', 3, QChar('0')));
     ui->progressChannel->setText(m_channelIt.value());
     m_numServicesFound = 0;
+    m_ensemble.reset();
     m_state = ScannerState::WaitForTune;
     emit tuneChannel(m_channelIt.key());
 }
@@ -214,7 +254,7 @@ void ScannerDialog::onTuneDone(uint32_t freq)
     }
 }
 
-void ScannerDialog::onSyncStatus(uint8_t sync, float)
+void ScannerDialog::onSyncStatus(uint8_t sync, float snr)
 {
     if (DabSyncLevel::NullSync <= DabSyncLevel(sync))
     {
@@ -224,6 +264,10 @@ void ScannerDialog::onSyncStatus(uint8_t sync, float)
             m_state = ScannerState::WaitForEnsemble;
             m_timer->start(6000);
         }
+    }
+    if (m_ensemble.isValid())
+    {
+        m_snr = snr;
     }
 }
 
@@ -244,6 +288,7 @@ void ScannerDialog::onEnsembleFound(const RadioControlEnsemble & ens)
     //qDebug() << m_channelIt.value() << ens.eid() << ens.label;
     //qDebug() << Q_FUNC_INFO << QString("---------------------------------------------------------------- %1   %2   '%3'").arg(m_channelIt.value()).arg(ens.ueid, 6, 16, QChar('0')).arg(ens.label);
     m_ensemble = ens;
+    m_snr = 0.0;
     emit setTii(true, 0.0);
     m_isTiiActive = true;
 }
@@ -252,7 +297,6 @@ void ScannerDialog::onServiceFound(const ServiceListId &)
 {
     //ui->numServicesFoundLabel->setText(QString("%1").arg(++m_numServicesFound));
     m_numServicesFound += 1;
-    qDebug() << Q_FUNC_INFO << m_numServicesFound;
 }
 
 void ScannerDialog::onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &)
@@ -264,7 +308,8 @@ void ScannerDialog::onServiceListEntry(const RadioControlEnsemble &, const Radio
 
 void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 {
-    m_model->appendData(data.idList, ServiceListId(m_ensemble), m_ensemble.label, m_numServicesFound);
+    m_model->appendData(data.idList, ServiceListId(m_ensemble), m_ensemble.label, m_numServicesFound, m_snr);
+    ui->exportButton->setEnabled(true);
 
     //ui->txTableView->resizeColumnsToContents();
     ui->txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -283,16 +328,18 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 
 void ScannerDialog::showEvent(QShowEvent *event)
 {
-//     // calculate size of the table
-    int hSize = 0;
-    for (int n = 0; n < ui->txTableView->horizontalHeader()->count(); ++n) {
-        hSize += ui->txTableView->horizontalHeader()->sectionSize(n);
-    }
-    ui->txTableView->setMinimumWidth(hSize + ui->txTableView->verticalScrollBar()->sizeHint().width() + TxTableModel::NumCols);
+    // calculate size of the table
+    // int hSize = 0;
+    // for (int n = 0; n < ui->txTableView->horizontalHeader()->count(); ++n) {
+    //     hSize += ui->txTableView->horizontalHeader()->sectionSize(n);
+    // }
+    //ui->txTableView->setMinimumWidth(hSize + ui->txTableView->verticalScrollBar()->sizeHint().width() + TxTableModel::NumCols);
+    ui->txTableView->setMinimumWidth(700);
 
     //ui->txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     //ui->txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColName, QHeaderView::Stretch);
     ui->txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    //ui->txTableView->setMinimumWidth(ui->txTableView->width());
 
     //ui->txTableView->horizontalHeader()->setStretchLastSection(true);
 
@@ -306,7 +353,7 @@ void ScannerDialog::closeEvent(QCloseEvent *event)
     if (m_isScanning)
     {   // stopping scanning first
         m_exitRequested = true;
-        startStopPressed();
+        startStopClicked();
         return;
     }
 
@@ -314,7 +361,6 @@ void ScannerDialog::closeEvent(QCloseEvent *event)
 
     QDialog::closeEvent(event);
 }
-
 
 void ScannerDialog::onServiceListComplete(const RadioControlEnsemble &)
 {   // this means that ensemble information is complete => stop timer and do next set

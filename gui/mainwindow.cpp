@@ -2974,7 +2974,7 @@ void MainWindow::loadSettings()
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     m_settings->tii.splitterState = settings->value("TII/layout").toByteArray();
 #endif
-
+    m_settings->scanner.exportPath = settings->value("Scanner/exportPath", QDir::homePath()).toString();
 
     m_settings->proxy.config = static_cast<Settings::ProxyConfig>(settings->value("Proxy/config", static_cast<int>(Settings::ProxyConfig::System)).toInt());
     m_settings->proxy.server = settings->value("Proxy/server", "").toString();
@@ -3066,7 +3066,7 @@ void MainWindow::loadSettings()
     }
 
     m_inputDeviceRecorder->setRecordingPath(settings->value("recordingPath", QVariant(QDir::homePath())).toString());
-    m_ensembleInfoDialog->setExportPath(settings->value("ensembleExportPath", QVariant(QDir::homePath())).toString());
+    m_ensembleInfoDialog->setExportPath(settings->value("EnsembleInfo/exportPath", QVariant(QDir::homePath())).toString());
     ui->slsView_Service->setSavePath(settings->value("slideSavePath", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)).toString());
     ui->slsView_Announcement->setSavePath(settings->value("slideSavePath", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)).toString());
 
@@ -3118,7 +3118,6 @@ void MainWindow::saveSettings()
 
     settings->setValue("inputDeviceId", int(m_settings->inputDevice));
     settings->setValue("recordingPath", m_inputDeviceRecorder->recordingPath());
-    settings->setValue("ensembleExportPath", m_ensembleInfoDialog->exportPath());
     settings->setValue("slideSavePath", ui->slsView_Service->savePath());
     if (nullptr != m_audioDevicesGroup)
     {
@@ -3173,7 +3172,11 @@ void MainWindow::saveSettings()
     settings->setValue("TII/layout", m_settings->tii.splitterState);
 #endif
 
+    settings->setValue("Scanner/exportPath", m_settings->scanner.exportPath);
+
     settings->setValue("EnsembleInfo/windowGeometry", m_settings->ensembleInfo.geometry);
+    settings->setValue("EnsembleInfo/exportPath", m_ensembleInfoDialog->exportPath());
+
     settings->setValue("Log/windowGeometry", m_settings->log.geometry);
     settings->setValue("CatSLS/windowGeometry", m_settings->catSls.geometry);
 

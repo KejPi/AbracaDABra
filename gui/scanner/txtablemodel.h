@@ -44,7 +44,8 @@ class TxTableModel : public QAbstractTableModel
     Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
 public:
     enum TxTableModelRoles {
-        CoordinatesRole = Qt::UserRole,
+        ExportRole = Qt::UserRole,
+        CoordinatesRole,
         TiiRole,
         MainIdRole,
         SubIdRole,
@@ -53,7 +54,7 @@ public:
         IdRole,
     };
 
-    enum { ColTime, ColChannel, ColFreq, ColEnsId, ColEnsLabel, ColNumServices,
+    enum { ColTime, ColChannel, ColFreq, ColEnsId, ColEnsLabel, ColNumServices, ColSnr,
            ColMainId, ColSubId,
            ColLevel, ColName, ColDist, ColAzimuth, // keep order of these
            NumCols};
@@ -69,7 +70,7 @@ public:
     void clear();
 
     void updateData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId);
-    void appendData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId, const QString & ensLabel, int numServices);
+    void appendData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId, const QString & ensLabel, int numServices, float snr);
 
     void setCoordinates(const QGeoCoordinate &newCoordinates);
 signals:

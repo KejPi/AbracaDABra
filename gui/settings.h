@@ -162,6 +162,10 @@ public:
     struct CatSLS {
         QByteArray geometry;
     } catSls;
+    struct ScannerSettings {
+        QString exportPath;
+    } scanner;
+
 };
 
 #endif // SETTINGS_H

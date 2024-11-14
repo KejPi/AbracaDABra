@@ -33,11 +33,12 @@ TxTableModelItem::TxTableModelItem(uint8_t mainId, uint8_t subId, float level, c
 {
 }
 
-void TxTableModelItem::setEnsData(const ServiceListId &ensId, const QString &ensLabel, int numServices)
+void TxTableModelItem::setEnsData(const ServiceListId &ensId, const QString &ensLabel, int numServices, float snr)
 {
     m_ensId = ensId;
     m_ensLabel = ensLabel;
     m_numServices = numServices;
+    m_snr = snr;
 }
 
 ServiceListId TxTableModelItem::ensId() const
@@ -63,5 +64,10 @@ QDateTime TxTableModelItem::rxTime() const
 void TxTableModelItem::setRxTime(const QDateTime &newRxTime)
 {
     m_rxTime = newRxTime;
+}
+
+float TxTableModelItem::snr() const
+{
+    return m_snr;
 }
 

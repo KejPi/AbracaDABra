@@ -37,19 +37,19 @@ public:
     TxTableModelItem();
     TxTableModelItem(uint8_t mainId, uint8_t subId, float level, const QGeoCoordinate & coordinates, const QList<TxDataItem *> txItemList);
 
-    void setEnsData(const ServiceListId &ensId, const QString &ensLabel, int numServices);
+    void setEnsData(const ServiceListId &ensId, const QString &ensLabel, int numServices, float snr);
     ServiceListId ensId() const;
     QString ensLabel() const;
     int numServices() const;
-
+    float snr() const;
     QDateTime rxTime() const;
     void setRxTime(const QDateTime &newRxTime);
-
 private:
     ServiceListId m_ensId;  // ensemble id
     QString m_ensLabel;     // ensemble label
     int m_numServices;      // number of services in ensemble
     QDateTime m_rxTime;     // reception time
+    float m_snr;
 };
 
 #endif // TXTABLEMODELITEM_H
