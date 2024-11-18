@@ -24,17 +24,17 @@
  * SOFTWARE.
  */
 
-#ifndef TIITABLEMODELITEM_H
-#define TIITABLEMODELITEM_H
+#ifndef TXTABLEMODELITEM_H
+#define TXTABLEMODELITEM_H
 
 #include <stdint.h>
 #include <txdataitem.h>
 
-class TiiTableModelItem
+class TxTableModelItem
 {
 public:
-    TiiTableModelItem();
-    TiiTableModelItem(uint8_t mainId, uint8_t subId, float level, const QGeoCoordinate & coordinates, const QList<TxDataItem *> txItemList);
+    TxTableModelItem();
+    TxTableModelItem(uint8_t mainId, uint8_t subId, float level, const QGeoCoordinate & coordinates, const QList<TxDataItem *> txItemList);
 
     bool hasTxData() const { return m_transmitterData.isValid(); }
 
@@ -54,8 +54,17 @@ public:
     float azimuth() const;
     void setAzimuth(float newAzimuth);
 
+    // used for scanner
     int id() const;
     void updateGeo(const QGeoCoordinate & coordinates);
+
+    void setEnsData(const ServiceListId &ensId, const QString &ensLabel, int numServices, float snr);
+    ServiceListId ensId() const;
+    QString ensLabel() const;
+    int numServices() const;
+    float snr() const;
+    QDateTime rxTime() const;
+    void setRxTime(const QDateTime &newRxTime);
 
 private:
     int m_id;           // subId << 8 | mainId (this is unique)
@@ -65,6 +74,13 @@ private:
     float m_distance;   // distance of the transmitter from current position (must be >= 0)
     float m_azimuth;    // azimuth of the transmitter from current position
     TxDataItem m_transmitterData;   // information about transmitter
+
+    // used for scanner
+    ServiceListId m_ensId;  // ensemble id
+    QString m_ensLabel;     // ensemble label
+    int m_numServices;      // number of services in ensemble
+    QDateTime m_rxTime;     // reception time
+    float m_snr;            // ensemble SNR
 };
 
-#endif // TIITABLEMODELITEM_H
+#endif // TXTABLEMODELITEM_H

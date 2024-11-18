@@ -33,6 +33,7 @@
 #include <QItemSelectionModel>
 #include "settings.h"
 #include "radiocontrol.h"
+#include "txtablemodel.h"
 #include "tiitablemodel.h"
 #include "config.h"
 #if HAVE_QCUSTOMPLOT
@@ -103,8 +104,8 @@ private:
 #endif
     QQuickView *m_qmlView ;
 
-    TiiTableModel * m_model;
-    TiiTableSortModel * m_sortModel;
+    TxTableModel * m_model;
+    TiiTableModel * m_tiiModel;
     QGeoPositionInfoSource * m_geopositionSource = nullptr;
     QGeoCoordinate m_currentPosition;
     bool m_positionValid = false;

@@ -308,7 +308,7 @@ void ScannerDialog::onServiceListEntry(const RadioControlEnsemble &, const Radio
 
 void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 {
-    m_model->appendData(data.idList, ServiceListId(m_ensemble), m_ensemble.label, m_numServicesFound, m_snr);
+    m_model->appendEnsData(data.idList, ServiceListId(m_ensemble), m_ensemble.label, m_numServicesFound, m_snr);
     ui->exportButton->setEnabled(true);
 
     //ui->txTableView->resizeColumnsToContents();

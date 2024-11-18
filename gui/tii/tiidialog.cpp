@@ -42,10 +42,10 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     : QDialog(parent)
     , m_settings(settings)
 {
-    m_model = new TiiTableModel(this);
-    m_sortModel = new TiiTableSortModel(this);
-    m_sortModel->setSourceModel(m_model);
-    m_tiiTableSelectionModel = new QItemSelectionModel(m_sortModel, this);
+    m_model = new TxTableModel(this);
+    m_tiiModel = new TiiTableModel(this);
+    m_tiiModel->setSourceModel(m_model);
+    m_tiiTableSelectionModel = new QItemSelectionModel(m_tiiModel, this);
 
     // UI
     setWindowTitle(tr("TII Decoder"));
@@ -71,7 +71,7 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     QQmlContext * context = m_qmlView->rootContext();
     context->setContextProperty("tii", this);
     context->setContextProperty("tiiTable", m_model);
-    context->setContextProperty("tiiTableSorted", m_sortModel);
+    context->setContextProperty("tiiTableSorted", m_tiiModel);
     context->setContextProperty("tiiTableSelectionModel", m_tiiTableSelectionModel);
     m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map.qml"));
 
@@ -175,7 +175,7 @@ TIIDialog::~TIIDialog()
 {
     delete m_qmlView;
     delete m_tiiTableSelectionModel;
-    delete m_sortModel;
+    delete m_tiiModel;
     delete m_model;
 }
 
@@ -240,9 +240,9 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
     if (!selectedList.isEmpty())
     {
         QModelIndex currentIndex = selectedList.at(0);
-        id = m_sortModel->data(currentIndex, TiiTableModel::TiiTableModelRoles::IdRole).toInt();
+        id = m_tiiModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt();
     }
-    m_model->updateData(data.idList, ensId);
+    m_model->updateTiiData(data.idList, ensId);
 
     if (id >= 0)
     {   // update selection
@@ -250,7 +250,7 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
         if (!selectedList.isEmpty())
         {
             QModelIndex currentIndex = selectedList.at(0);
-            if (id != m_sortModel->data(currentIndex, TiiTableModel::TiiTableModelRoles::IdRole).toInt())
+            if (id != m_tiiModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt())
             {  // selection was updated
                 m_tiiTableSelectionModel->clear();
             }
@@ -278,7 +278,7 @@ void TIIDialog::onSelectionChanged(const QItemSelection &selected, const QItemSe
     }
 
     QModelIndex currentIndex = selectedRows.at(0);
-    currentIndex = m_sortModel->mapToSource(currentIndex);
+    currentIndex = m_tiiModel->mapToSource(currentIndex);
     setSelectedRow(currentIndex.row());
 }
 
@@ -292,7 +292,7 @@ void TIIDialog::onSelectedRowChanged()
 
     // m_selectedRow is in source model while selection uses indexes of sort model!!!
     QModelIndexList selection = m_tiiTableSelectionModel->selectedRows();
-    QModelIndex idx = m_sortModel->mapFromSource(m_model->index(m_selectedRow, 0));
+    QModelIndex idx = m_tiiModel->mapFromSource(m_model->index(m_selectedRow, 0));
     if (idx.isValid() && (selection.isEmpty() || selection.at(0) != idx))
     {
         m_tiiTableSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current | QItemSelectionModel::Rows);
@@ -601,7 +601,7 @@ void TIIDialog::setSelectedRow(int modelRow)
         return;
     }
 
-    TiiTableModelItem item = m_model->data(m_model->index(modelRow, 0), TiiTableModel::TiiTableModelRoles::ItemRole).value<TiiTableModelItem>();
+    TxTableModelItem item = m_model->data(m_model->index(modelRow, 0), TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
     if (item.hasTxData())
     {
         m_txInfo.append(QString("<b>%1</b>").arg(item.transmitterData().location()));

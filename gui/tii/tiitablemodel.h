@@ -32,65 +32,19 @@
 #include <QGeoPositionInfo>
 #include <QSortFilterProxyModel>
 
-#include "dabsdr.h"
-#include "servicelistid.h"
-#include "tiitablemodelitem.h"
-
-class TxDataItem;
-
-class TiiTableModel : public QAbstractTableModel
+class TiiTableModel : public QSortFilterProxyModel
 {
     Q_OBJECT
     Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
 public:
-    enum TiiTableModelRoles {
-        CoordinatesRole = Qt::UserRole,
-        TiiRole,
-        MainIdRole,
-        SubIdRole,
-        LevelColorRole,
-        ItemRole,
-        IdRole,
-    };
-
-    enum { ColMainId, ColSubId,
-           ColLevel, ColDist, ColAzimuth, // keep order of these
-           NumCols};
-
-    explicit TiiTableModel(QObject *parent = nullptr);
-    ~TiiTableModel();
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-    QVariant data(const QModelIndex &index, int role) const override;
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
-    QHash<int, QByteArray> roleNames() const override;
-    const TiiTableModelItem & itemAt(int row) const;
-    void clear();
-
-    void updateData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId);
-
-    void setCoordinates(const QGeoCoordinate &newCoordinates);
-signals:
-    void rowCountChanged();
-
-private:
-    QList<TiiTableModelItem> m_modelData;
-    QMultiHash<ServiceListId, TxDataItem*> m_txList;
-    QGeoCoordinate m_coordinates;
-};
-
-class TiiTableSortModel : public QSortFilterProxyModel
-{
-    Q_OBJECT
-    Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
-public:
-    TiiTableSortModel(QObject *parent = nullptr);
+    TiiTableModel(QObject *parent = nullptr);
 
 signals:
     void rowCountChanged();
 
 protected:
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
+    bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const override;
 };
 
 

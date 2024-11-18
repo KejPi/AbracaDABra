@@ -24,11 +24,11 @@
  * SOFTWARE.
  */
 
-#include "tiitablemodelitem.h"
+#include "txtablemodelitem.h"
 
-TiiTableModelItem::TiiTableModelItem() {}
+TxTableModelItem::TxTableModelItem() {}
 
-TiiTableModelItem::TiiTableModelItem(uint8_t mainId, uint8_t subId, float level, const QGeoCoordinate &coordinates, const QList<TxDataItem *> txItemList)
+TxTableModelItem::TxTableModelItem(uint8_t mainId, uint8_t subId, float level, const QGeoCoordinate &coordinates, const QList<TxDataItem *> txItemList)
 {
     setTII(mainId, subId);
     setLevel(level);
@@ -58,54 +58,54 @@ TiiTableModelItem::TiiTableModelItem(uint8_t mainId, uint8_t subId, float level,
     }
 }
 
-float TiiTableModelItem::level() const
+float TxTableModelItem::level() const
 {
     return m_level;
 }
 
-uint8_t TiiTableModelItem::mainId() const
+uint8_t TxTableModelItem::mainId() const
 {
     return m_mainId;
 }
 
-void TiiTableModelItem::setTII(uint8_t newMainId, int8_t newSubId)
+void TxTableModelItem::setTII(uint8_t newMainId, int8_t newSubId)
 {
     m_mainId = newMainId;
     m_subId = newSubId;
     m_id = (newSubId << 8) | newMainId;
 }
 
-uint8_t TiiTableModelItem::subId() const
+uint8_t TxTableModelItem::subId() const
 {
     return m_subId;
 }
 
-float TiiTableModelItem::distance() const
+float TxTableModelItem::distance() const
 {
     return m_distance;
 }
 
-void TiiTableModelItem::setDistance(float newDistance)
+void TxTableModelItem::setDistance(float newDistance)
 {
     m_distance = newDistance;
 }
 
-float TiiTableModelItem::azimuth() const
+float TxTableModelItem::azimuth() const
 {
     return m_azimuth;
 }
 
-void TiiTableModelItem::setAzimuth(float newAzimuth)
+void TxTableModelItem::setAzimuth(float newAzimuth)
 {
     m_azimuth = newAzimuth;
 }
 
-int TiiTableModelItem::id() const
+int TxTableModelItem::id() const
 {
     return m_id;
 }
 
-void TiiTableModelItem::updateGeo(const QGeoCoordinate &coordinates)
+void TxTableModelItem::updateGeo(const QGeoCoordinate &coordinates)
 {
     if (m_transmitterData.isValid() && coordinates.isValid())
     {
@@ -119,17 +119,56 @@ void TiiTableModelItem::updateGeo(const QGeoCoordinate &coordinates)
     }
 }
 
-void TiiTableModelItem::setLevel(float newLevel)
+void TxTableModelItem::setLevel(float newLevel)
 {
     m_level = newLevel;
 }
 
-const TxDataItem & TiiTableModelItem::transmitterData() const
+const TxDataItem & TxTableModelItem::transmitterData() const
 {
     return m_transmitterData;
 }
 
-void TiiTableModelItem::setTransmitterData(const TxDataItem &newTransmitterData)
+void TxTableModelItem::setTransmitterData(const TxDataItem &newTransmitterData)
 {
     m_transmitterData = newTransmitterData;
 }
+
+void TxTableModelItem::setEnsData(const ServiceListId &ensId, const QString &ensLabel, int numServices, float snr)
+{
+    m_ensId = ensId;
+    m_ensLabel = ensLabel;
+    m_numServices = numServices;
+    m_snr = snr;
+}
+
+ServiceListId TxTableModelItem::ensId() const
+{
+    return m_ensId;
+}
+
+QString TxTableModelItem::ensLabel() const
+{
+    return m_ensLabel;
+}
+
+int TxTableModelItem::numServices() const
+{
+    return m_numServices;
+}
+
+QDateTime TxTableModelItem::rxTime() const
+{
+    return m_rxTime;
+}
+
+void TxTableModelItem::setRxTime(const QDateTime &newRxTime)
+{
+    m_rxTime = newRxTime;
+}
+
+float TxTableModelItem::snr() const
+{
+    return m_snr;
+}
+
