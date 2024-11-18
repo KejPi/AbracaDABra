@@ -28,7 +28,7 @@
 #define TIIDIALOG_H
 
 #include <QDialog>
-#include "QQuickView"
+#include <QQuickView>
 #include <QGeoPositionInfoSource>
 #include <QItemSelectionModel>
 #include "settings.h"

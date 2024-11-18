@@ -28,20 +28,28 @@
 #define SCANNERDIALOG_H
 
 #include <QDialog>
+#include <QQuickView>
 #include <QComboBox>
 #include <QLabel>
 #include <QPushButton>
 #include <QDialogButtonBox>
 #include <QGeoPositionInfoSource>
+#include <QItemSelectionModel>
+#include <QSplitter>
+#include <QProgressBar>
+#include <QPushButton>
+#include <QSpacerItem>
+#include <QTableView>
+
 
 #include "radiocontrol.h"
 #include "servicelistid.h"
 #include "txtablemodel.h"
 
 
-namespace Ui {
-class ScannerDialog;
-}
+// namespace Ui {
+// class ScannerDialog;
+// }
 
 class Settings;
 class ScannerDialog : public QDialog
@@ -89,7 +97,21 @@ private:
         Interrupted
     };
 
-    Ui::ScannerDialog *ui;
+    //Ui::ScannerDialog *ui;
+
+    // UI
+    QSplitter * m_splitter;
+    QQuickView * m_qmlView ;
+    QTableView * m_txTableView;
+    QProgressBar * m_progressBar;
+    QPushButton * m_startStopButton;
+    QLabel * m_scanningLabel;
+    QLabel * m_progressChannel;
+    QPushButton * m_exportButton;
+
+    QItemSelectionModel * m_tableSelectionModel;
+    int m_selectedRow;  // this is row in source model !!!
+
     QTimer * m_timer = nullptr;
 
     Settings * m_settings;

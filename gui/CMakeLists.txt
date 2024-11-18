@@ -205,13 +205,8 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     tii/txtablemodelitem.cpp tii/txtablemodelitem.h
     tii/txdataitem.h tii/txdataitem.cpp
     tii/txdataloader.h tii/txdataloader.cpp      
-
     # Scanner tool
-    tii/scannerdialog.h
-    tii/scannerdialog.cpp
-    tii/scannerdialog.ui
-    #scanner/txtablemodel.cpp scanner/txtablemodel.h
-    # scanner/txtablemodelitem.cpp scanner/txtablemodelitem.h
+    tii/scannerdialog.h tii/scannerdialog.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

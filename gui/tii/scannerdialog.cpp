@@ -25,7 +25,7 @@
  */
 
 #include <QDebug>
-#include <QtWidgets/qscrollbar.h>
+#include <QHeaderView>
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && QT_CONFIG(permissions)
 #include <QPermissions>
 #endif
@@ -33,8 +33,9 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QLoggingCategory>
+#include <QQmlContext>
+#include <QGridLayout>
 #include "scannerdialog.h"
-#include "ui_scannerdialog.h"
 #include "dabtables.h"
 #include "settings.h"
 
@@ -42,37 +43,107 @@ Q_LOGGING_CATEGORY(scanner, "Scanner", QtInfoMsg)
 
 ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ScannerDialog),
+    // ui(new Ui::ScannerDialog),
     m_settings(settings)
 {
-    ui->setupUi(this);
-    setModal(true);
-
     m_model = new TxTableModel(this);
 
-    //setSizeGripEnabled(false);
+    //ui->setupUi(this);
+    setModal(true);
 
-    ui->txTableView->setModel(m_model);
+    // UI
+    setWindowTitle(tr("Scanning Tool"));
+    setMinimumSize(QSize(600, 400));
+    resize(QSize(850, 350));
+
+    // Set window flags to add maximize and minimize buttons
+    setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
+
+    // QML View
+    m_qmlView = new QQuickView();
+    QQmlContext * context = m_qmlView->rootContext();
+    context->setContextProperty("tii", this);
+    context->setContextProperty("tiiTable", m_model);
+    context->setContextProperty("tiiTableSorted", m_model);
+    context->setContextProperty("tiiTableSelectionModel", m_tableSelectionModel);
+    m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map.qml"));
+
+    QWidget *container = QWidget::createWindowContainer(m_qmlView, this);
+
+    QSizePolicy sizePolicyContainer(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+    sizePolicyContainer.setVerticalStretch(255);
+    container->setSizePolicy(sizePolicyContainer);
+
+    // scanner widget
+    QGridLayout * gridLayout = new QGridLayout(this);
+    QHBoxLayout * horizontalLayout_1 = new QHBoxLayout();
+    m_scanningLabel = new QLabel(this);
+
+    horizontalLayout_1->addWidget(m_scanningLabel);
+
+    m_progressChannel = new QLabel(this);
+
+    horizontalLayout_1->addWidget(m_progressChannel);
+
+    QHBoxLayout * horizontalLayout_2 = new QHBoxLayout();
+    horizontalLayout_2->addLayout(horizontalLayout_1);
+
+
+    horizontalLayout_2->addItem(new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum));
+    gridLayout->addLayout(horizontalLayout_2, 0, 0, 1, 4);
+
+    m_progressBar = new QProgressBar(this);
+    m_progressBar->setValue(24);
+    m_progressBar->setTextVisible(false);
+
+    gridLayout->addWidget(m_progressBar, 1, 0, 1, 4);
+
+    m_txTableView = new QTableView(this);
+
+    gridLayout->addWidget(m_txTableView, 2, 0, 1, 4);
+
+    m_startStopButton = new QPushButton(this);
+    gridLayout->addWidget(m_startStopButton, 3, 3, 1, 1);
+
+    gridLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum), 3, 2, 1, 1);
+
+    m_exportButton = new QPushButton(this);
+    gridLayout->addWidget(m_exportButton, 3, 0, 1, 2);
+
+    QWidget * scannerWidget = new QWidget(this);
+    scannerWidget->setLayout(gridLayout);
+
+    m_splitter = new QSplitter(this);
+    m_splitter->setOrientation(Qt::Vertical);
+    m_splitter->addWidget(container);
+    m_splitter->addWidget(scannerWidget);
+
+    QVBoxLayout * layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0,0,0,0);
+    layout->addWidget(m_splitter);
+
+
+    m_txTableView->setModel(m_model);
     //ui->tiiTable->setSelectionModel(m_tiiTableSelectionModel);
-    ui->txTableView->verticalHeader()->hide();
-    ui->txTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    //ui->txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    ui->txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_txTableView->verticalHeader()->hide();
+    m_txTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    //m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    ui->txTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->txTableView->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->txTableView->setSortingEnabled(false);
+    m_txTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_txTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    m_txTableView->setSortingEnabled(false);
 
-    ui->startStopButton->setText(tr("Start"));
-    connect(ui->startStopButton, &QPushButton::clicked, this, &ScannerDialog::startStopClicked);
-    ui->progressBar->setMinimum(0);
-    ui->progressBar->setMaximum(DabTables::channelList.size());
-    ui->progressBar->setValue(0);
-    ui->progressChannel->setText(tr("None"));
-    ui->progressChannel->setVisible(false);
-    ui->scanningLabel->setText("");
-    ui->exportButton->setEnabled(false);
-    connect(ui->exportButton, &QPushButton::clicked, this, &ScannerDialog::exportClicked);
+    m_startStopButton->setText(tr("Start"));
+    connect(m_startStopButton, &QPushButton::clicked, this, &ScannerDialog::startStopClicked);
+    m_progressBar->setMinimum(0);
+    m_progressBar->setMaximum(DabTables::channelList.size());
+    m_progressBar->setValue(0);
+    m_progressChannel->setText(tr("None"));
+    m_progressChannel->setVisible(false);
+    m_scanningLabel->setText("");
+    m_exportButton->setEnabled(false);
+    connect(m_exportButton, &QPushButton::clicked, this, &ScannerDialog::exportClicked);
 
     m_ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
 }
@@ -84,15 +155,13 @@ ScannerDialog::~ScannerDialog()
         m_timer->stop();
         delete m_timer;
     }
-
-    delete ui;
 }
 
 void ScannerDialog::startStopClicked()
 {       
     if (m_isScanning)
     {   // stop pressed
-        ui->startStopButton->setEnabled(false);
+        m_startStopButton->setEnabled(false);
 
         // the state machine has 4 possible states
         // 1. wait for tune (event)
@@ -111,7 +180,7 @@ void ScannerDialog::startStopClicked()
     }
     else
     {   // start pressed
-        ui->startStopButton->setText(tr("Stop"));
+        m_startStopButton->setText(tr("Stop"));
         startScan();
     }
 }
@@ -130,12 +199,12 @@ void ScannerDialog::stopScan()
     }
 
     // restore UI
-    ui->progressChannel->setVisible(false);
-    ui->scanningLabel->setText(tr("Scanning finished"));
-    ui->progressBar->setValue(0);
-    ui->progressChannel->setText(tr("None"));
-    ui->startStopButton->setText(tr("Start"));
-    ui->startStopButton->setEnabled(true);
+    m_progressChannel->setVisible(false);
+    m_scanningLabel->setText(tr("Scanning finished"));
+    m_progressBar->setValue(0);
+    m_progressChannel->setText(tr("None"));
+    m_startStopButton->setText(tr("Start"));
+    m_startStopButton->setEnabled(true);
 
     m_isScanning = false;
     m_state = ScannerState::Init;
@@ -186,11 +255,11 @@ void ScannerDialog::startScan()
     m_isScanning = true;
 
     m_scanStartTime = QDateTime::currentDateTime();
-    ui->scanningLabel->setText(tr("Scanning channel:"));
-    ui->progressChannel->setVisible(true);
+    m_scanningLabel->setText(tr("Scanning channel:"));
+    m_progressChannel->setVisible(true);
 
     m_model->clear();
-    ui->exportButton->setEnabled(false);
+    m_exportButton->setEnabled(false);
 
     if (m_timer == nullptr)
     {
@@ -224,9 +293,9 @@ void ScannerDialog::scanStep()
         return;
     }
 
-    ui->progressBar->setValue(ui->progressBar->value()+1);
-    //ui->progressChannel->setText(QString("%1 [ %2 MHz ]").arg(m_channelIt.value()).arg(m_channelIt.key()/1000.0, 3, 'f', 3, QChar('0')));
-    ui->progressChannel->setText(m_channelIt.value());
+    m_progressBar->setValue(m_progressBar->value()+1);
+    //m_progressChannel->setText(QString("%1 [ %2 MHz ]").arg(m_channelIt.value()).arg(m_channelIt.key()/1000.0, 3, 'f', 3, QChar('0')));
+    m_progressChannel->setText(m_channelIt.value());
     m_numServicesFound = 0;
     m_ensemble.reset();
     m_state = ScannerState::WaitForTune;
@@ -309,12 +378,12 @@ void ScannerDialog::onServiceListEntry(const RadioControlEnsemble &, const Radio
 void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 {
     m_model->appendEnsData(data.idList, ServiceListId(m_ensemble), m_ensemble.label, m_numServicesFound, m_snr);
-    ui->exportButton->setEnabled(true);
+    m_exportButton->setEnabled(true);
 
-    //ui->txTableView->resizeColumnsToContents();
-    ui->txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    ui->txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColName, QHeaderView::Stretch);
-    //ui->txTableView->horizontalHeader()->setStretchLastSection(true);
+    //m_txTableView->resizeColumnsToContents();
+    m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColName, QHeaderView::Stretch);
+    //m_txTableView->horizontalHeader()->setStretchLastSection(true);
 
     emit setTii(false, 0.0);
     m_isTiiActive = false;
@@ -330,18 +399,18 @@ void ScannerDialog::showEvent(QShowEvent *event)
 {
     // calculate size of the table
     // int hSize = 0;
-    // for (int n = 0; n < ui->txTableView->horizontalHeader()->count(); ++n) {
-    //     hSize += ui->txTableView->horizontalHeader()->sectionSize(n);
+    // for (int n = 0; n < m_txTableView->horizontalHeader()->count(); ++n) {
+    //     hSize += m_txTableView->horizontalHeader()->sectionSize(n);
     // }
-    //ui->txTableView->setMinimumWidth(hSize + ui->txTableView->verticalScrollBar()->sizeHint().width() + TxTableModel::NumCols);
-    ui->txTableView->setMinimumWidth(700);
+    //m_txTableView->setMinimumWidth(hSize + m_txTableView->verticalScrollBar()->sizeHint().width() + TxTableModel::NumCols);
+    m_txTableView->setMinimumWidth(700);
 
-    //ui->txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    //ui->txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColName, QHeaderView::Stretch);
-    ui->txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    //ui->txTableView->setMinimumWidth(ui->txTableView->width());
+    //m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    //m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColName, QHeaderView::Stretch);
+    m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    //m_txTableView->setMinimumWidth(m_txTableView->width());
 
-    //ui->txTableView->horizontalHeader()->setStretchLastSection(true);
+    //m_txTableView->horizontalHeader()->setStretchLastSection(true);
 
     startLocationUpdate();
 
