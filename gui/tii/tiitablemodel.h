@@ -39,6 +39,8 @@ class TiiTableModel : public QSortFilterProxyModel
 public:
     TiiTableModel(QObject *parent = nullptr);
 
+    void setTiiFilter(bool newTiiFilter);
+
 signals:
     void rowCountChanged();
 

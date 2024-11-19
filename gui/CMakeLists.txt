@@ -199,6 +199,7 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     audiorec/audiorecmanager.cpp
 
     # TII decoder
+    tii/txmapdialog.h tii/txmapdialog.cpp
     tii/tiidialog.h tii/tiidialog.cpp
     tii/txtablemodel.cpp tii/txtablemodel.h
     tii/tiitablemodel.h tii/tiitablemodel.cpp

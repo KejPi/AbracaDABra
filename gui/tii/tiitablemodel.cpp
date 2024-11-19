@@ -75,4 +75,3 @@ bool TiiTableModel::filterAcceptsColumn(int source_column, const QModelIndex &so
     }
     return false;
 }
-

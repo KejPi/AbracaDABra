@@ -33,7 +33,7 @@
 #include <QItemSelectionModel>
 #include "settings.h"
 #include "radiocontrol.h"
-#include "txtablemodel.h"
+#include "txmapdialog.h"
 #include "tiitablemodel.h"
 #include "config.h"
 #if HAVE_QCUSTOMPLOT
@@ -42,59 +42,30 @@
 
 class TxDataItem;
 
-class TIIDialog : public QDialog
+class TIIDialog : public TxMapDialog
 {
-    Q_OBJECT
-    Q_PROPERTY(QGeoCoordinate currentPosition READ currentPosition WRITE setCurrentPosition NOTIFY currentPositionChanged FINAL)
-    Q_PROPERTY(bool positionValid READ positionValid WRITE setPositionValid NOTIFY positionValidChanged FINAL)
-    Q_PROPERTY(bool isVisible READ isVisible WRITE setIsVisible NOTIFY isVisibleChanged FINAL)
-    Q_PROPERTY(QStringList ensembleInfo READ ensembleInfo NOTIFY ensembleInfoChanged FINAL)
-    Q_PROPERTY(QStringList txInfo READ txInfo NOTIFY txInfoChanged FINAL)
-    Q_PROPERTY(int selectedRow READ selectedRow WRITE setSelectedRow NOTIFY selectedRowChanged FINAL)
 
 public:
     explicit TIIDialog(Settings * settings, QWidget *parent = nullptr);
     ~TIIDialog();
-    void onTiiData(const RadioControlTIIData & data);
-    void setupDarkMode(bool darkModeEna);
-    void startLocationUpdate();
-    void stopLocationUpdate();
+    void onTiiData(const RadioControlTIIData & data) override;
+    void setupDarkMode(bool darkModeEna) override;
     void onChannelSelection();
-    void onEnsembleInformation(const RadioControlEnsemble &ens);
-    void onSettingsChanged();
+    void onEnsembleInformation(const RadioControlEnsemble &ens) override;
+    void onSettingsChanged() override;
 
-    QGeoCoordinate currentPosition() const;
-    void setCurrentPosition(const QGeoCoordinate &newCurrentPosition);
+    QStringList ensembleInfo() const override;
+    QStringList txInfo() const override;
 
-    bool positionValid() const;
-    void setPositionValid(bool newPositionValid);
-
-    bool isVisible() const;
-    void setIsVisible(bool newIsVisible);
-
-    QStringList ensembleInfo() const;
-    QStringList txInfo() const;
-
-    int selectedRow() const;
-    void setSelectedRow(int modelRow);
-
-signals:
-    void setTii(bool ena, float thr);
-    void currentPositionChanged();
-    void positionValidChanged();
-    void isVisibleChanged();
-    void ensembleInfoChanged();
-    void txInfoChanged();
-    void selectedRowChanged();
+    void setSelectedRow(int modelRow) override;
 
 protected:
-    void showEvent(QShowEvent *event) override;
+    // void showEvent(QShowEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
 
 private:
     enum GraphId {Spect, TII};
     enum GraphRange { MinX = 0, MaxX = 191, MinY = 0, MaxY = 1 };
-    Settings * m_settings;
 
     // UI
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
@@ -102,24 +73,13 @@ private:
     bool m_isZoomed;
     QSplitter * m_splitter;
 #endif
+    TiiTableModel * m_tiiModel;
     QQuickView *m_qmlView ;
 
-    TxTableModel * m_model;
-    TiiTableModel * m_tiiModel;
-    QGeoPositionInfoSource * m_geopositionSource = nullptr;
-    QGeoCoordinate m_currentPosition;
-    bool m_positionValid = false;
-    bool m_isVisible = false;
-    RadioControlEnsemble m_currentEnsemble;
-    QStringList m_txInfo;
-    QItemSelectionModel * m_tiiTableSelectionModel;
-    int m_selectedRow;  // this is row in source model !!!
+    void reset() override;
 
-    void reset();
-
-    void positionUpdated(const QGeoPositionInfo & position);
     void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-    void onSelectedRowChanged();
+    void onSelectedRowChanged() override;
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     void showPointToolTip(QMouseEvent *event);
     void onXRangeChanged(const QCPRange &newRange);
