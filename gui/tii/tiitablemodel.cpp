@@ -35,8 +35,18 @@ TiiTableModel::TiiTableModel(QObject *parent) : QSortFilterProxyModel(parent)
 
 }
 
+void TiiTableModel::setFilter(bool newFilterCols)
+{
+    m_enaFilter = newFilterCols;
+}
+
 bool TiiTableModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
+    if (!m_enaFilter)
+    {
+        return false;
+    }
+
     TxTableModelItem itemL = sourceModel()->data(left, TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
     TxTableModelItem itemR = sourceModel()->data(right, TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
 
@@ -64,6 +74,11 @@ bool TiiTableModel::lessThan(const QModelIndex &left, const QModelIndex &right) 
 bool TiiTableModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const
 {
     Q_UNUSED(source_parent);
+
+    if (!m_enaFilter)
+    {
+        return true;
+    }
 
     switch (source_column) {
     case TxTableModel::ColMainId:

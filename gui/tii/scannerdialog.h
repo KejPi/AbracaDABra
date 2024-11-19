@@ -68,12 +68,7 @@ public:
     void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &);
     void setupDarkMode(bool darkModeEna) override {}
     void onTiiData(const RadioControlTIIData & data) override;
-
-    QStringList ensembleInfo() const override { return QStringList(); }
-    QStringList txInfo() const override { return QStringList(); }
-
-    void setSelectedRow(int modelRow) override {}
-    void onSelectedRowChanged() override {}
+    void setSelectedRow(int modelRow) override;
 signals:
     void scanStarts();
     void tuneChannel(uint32_t freq);
@@ -113,7 +108,7 @@ private:
     bool m_exitRequested = false;
     ScannerState m_state = ScannerState::Idle;
 
-    // int m_numEnsemblesFound = 0;
+    RadioControlEnsemble m_ensemble;
     int m_numServicesFound = 0;
     dabChannelList_t::ConstIterator m_channelIt;
     float m_snr;

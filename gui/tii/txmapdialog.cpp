@@ -38,13 +38,16 @@
 
 Q_LOGGING_CATEGORY(txMap, "TII", QtInfoMsg)
 
-TxMapDialog::TxMapDialog(Settings *settings, QWidget *parent)
+TxMapDialog::TxMapDialog(Settings *settings, bool isTii, QWidget *parent)
     : QDialog(parent)
     , m_settings(settings)
+    , m_isTii(isTii)
 {
     m_model = new TxTableModel(this);
-
-    //connect(m_tableSelectionModel, &QItemSelectionModel::selectionChanged, this, &TxMapDialog::onSelectionChanged);
+    m_sortedFilteredModel = new TiiTableModel(this);
+    m_sortedFilteredModel->setSourceModel(m_model);
+    m_tableSelectionModel = new QItemSelectionModel(m_sortedFilteredModel, this);
+    connect(m_tableSelectionModel, &QItemSelectionModel::selectionChanged, this, &TxMapDialog::onSelectionChanged);
     connect(this, &TxMapDialog::selectedRowChanged, this, &TxMapDialog::onSelectedRowChanged);
 }
 
@@ -202,7 +205,9 @@ QGeoCoordinate TxMapDialog::currentPosition() const
 void TxMapDialog::setCurrentPosition(const QGeoCoordinate &newCurrentPosition)
 {
     if (m_currentPosition == newCurrentPosition)
+    {
         return;
+    }
     m_currentPosition = newCurrentPosition;
     emit currentPositionChanged();
 }
@@ -215,7 +220,9 @@ bool TxMapDialog::positionValid() const
 void TxMapDialog::setPositionValid(bool newPositionValid)
 {
     if (m_positionValid == newPositionValid)
+    {
         return;
+    }
     m_positionValid = newPositionValid;
     emit positionValidChanged();
 }
@@ -228,13 +235,79 @@ bool TxMapDialog::isVisible() const
 void TxMapDialog::setIsVisible(bool newIsVisible)
 {
     if (m_isVisible == newIsVisible)
+    {
         return;
+    }
     m_isVisible = newIsVisible;
     emit isVisibleChanged();
+}
+
+QStringList TxMapDialog::txInfo() const
+{
+    return m_txInfo;
+}
+
+QStringList TxMapDialog::ensembleInfo() const
+{
+    if (!m_currentEnsemble.isValid())
+    {
+        return QStringList{"","",""};
+    }
+
+    QStringList info;
+    info.append(tr("Ensemble: <b>%1</b>").arg(m_currentEnsemble.label));
+    info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b>").arg(m_currentEnsemble.ecc(), 2, 16, QChar('0'))
+                    .arg(m_currentEnsemble.eid(), 4, 16, QChar('0'))
+                    .toUpper());
+    info.append(QString(tr("Channel: <b>%1 (%2 kHz)</b>")).arg(DabTables::channelList[m_currentEnsemble.frequency]).arg(m_currentEnsemble.frequency));
+    return info;
 }
 
 int TxMapDialog::selectedRow() const
 {
     return m_selectedRow;
+}
+
+
+bool TxMapDialog::isTii() const
+{
+    return m_isTii;
+}
+
+void TxMapDialog::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+{
+    qDebug() << Q_FUNC_INFO;
+
+    Q_UNUSED(selected)
+    Q_UNUSED(deselected)
+
+    QModelIndexList selectedRows = m_tableSelectionModel->selectedRows();
+    if (selectedRows.isEmpty())
+    {   // no selection => return
+        setSelectedRow(-1);
+        return;
+    }
+
+    QModelIndex currentIndex = selectedRows.at(0);
+    currentIndex = m_sortedFilteredModel->mapToSource(currentIndex);
+    setSelectedRow(currentIndex.row());
+}
+
+void TxMapDialog::onSelectedRowChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+    if (m_selectedRow == -1)
+    {
+        m_tableSelectionModel->clear();
+        return;
+    }
+
+    // m_selectedRow is in source model while selection uses indexes of sort model!!!
+    QModelIndexList selection = m_tableSelectionModel->selectedRows();
+    QModelIndex idx = m_sortedFilteredModel->mapFromSource(m_model->index(m_selectedRow, 0));
+    if (idx.isValid() && (selection.isEmpty() || selection.at(0) != idx))
+    {
+        m_tableSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current | QItemSelectionModel::Rows);
+    }
 }
 

@@ -211,6 +211,7 @@ Item {
             }
         }
         TIITableView {
+            isVisible: tii.isTii
             anchors.left: parent.left
             anchors.top: parent.top
             anchors.leftMargin: 10

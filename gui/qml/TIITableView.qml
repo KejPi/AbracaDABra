@@ -36,11 +36,12 @@ Item {
         id: tiiTableItemHoverHandler
     }
     readonly property int rowHeight: fontMetrics.font.pointSize + 10
+    property bool isVisible: true
 
     opacity: tiiTableItemHoverHandler.hovered ? 1.0 : 0.75
     width: 100
     height: Math.min((tiiTableItem.rowHeight * tiiTableView.model.rowCount) + horizontalHeader.height, parent.height-30)
-    visible: tiiTableView.model.rowCount > 0
+    visible: isVisible && tiiTableView.model.rowCount > 0
 
     property var columnWidths: []
     Component.onCompleted: {

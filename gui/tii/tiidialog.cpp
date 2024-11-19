@@ -39,7 +39,7 @@
 Q_LOGGING_CATEGORY(tii, "TII", QtInfoMsg)
 
 TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
-    : TxMapDialog(settings, parent)
+    : TxMapDialog(settings, true, parent)
 {
     // UI
     setWindowTitle(tr("TII Decoder"));
@@ -60,16 +60,12 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     m_tiiSpectrumPlot->setMinimumHeight(200);
 #endif
 
-    m_tiiModel = new TiiTableModel(this);
-    m_tiiModel->setSourceModel(m_model);
-    m_tableSelectionModel = new QItemSelectionModel(m_tiiModel, this);
-
     // QML View
     m_qmlView = new QQuickView();
     QQmlContext * context = m_qmlView->rootContext();
     context->setContextProperty("tii", this);
     context->setContextProperty("tiiTable", m_model);
-    context->setContextProperty("tiiTableSorted", m_tiiModel);
+    context->setContextProperty("tiiTableSorted", m_sortedFilteredModel);
     context->setContextProperty("tiiTableSelectionModel", m_tableSelectionModel);
     m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map.qml"));
 
@@ -97,8 +93,6 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     layout->setContentsMargins(0,0,0,0);
     layout->addWidget(container);
 #endif
-
-    connect(m_tableSelectionModel, &QItemSelectionModel::selectionChanged, this, &TIIDialog::onSelectionChanged);
 
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     QCPItemStraightLine *verticalLine;
@@ -164,7 +158,7 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
 TIIDialog::~TIIDialog()
 {
     delete m_qmlView;
-    delete m_tiiModel;
+    delete m_sortedFilteredModel;
 }
 
 void TIIDialog::closeEvent(QCloseEvent *event)
@@ -213,7 +207,7 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
     if (!selectedList.isEmpty())
     {
         QModelIndex currentIndex = selectedList.at(0);
-        id = m_tiiModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt();
+        id = m_sortedFilteredModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt();
     }
     m_model->updateTiiData(data.idList, ensId);
 
@@ -223,7 +217,7 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
         if (!selectedList.isEmpty())
         {
             QModelIndex currentIndex = selectedList.at(0);
-            if (id != m_tiiModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt())
+            if (id != m_sortedFilteredModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt())
             {  // selection was updated
                 m_tableSelectionModel->clear();
             }
@@ -236,40 +230,6 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     addToPlot(data);
 #endif
-}
-
-void TIIDialog::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
-{
-    Q_UNUSED(selected)
-    Q_UNUSED(deselected)
-
-    QModelIndexList selectedRows = m_tableSelectionModel->selectedRows();
-    if (selectedRows.isEmpty())
-    {   // no selection => return
-        setSelectedRow(-1);
-        return;
-    }
-
-    QModelIndex currentIndex = selectedRows.at(0);
-    currentIndex = m_tiiModel->mapToSource(currentIndex);
-    setSelectedRow(currentIndex.row());
-}
-
-void TIIDialog::onSelectedRowChanged()
-{
-    if (m_selectedRow == -1)
-    {
-        m_tableSelectionModel->clear();
-        return;
-    }
-
-    // m_selectedRow is in source model while selection uses indexes of sort model!!!
-    QModelIndexList selection = m_tableSelectionModel->selectedRows();
-    QModelIndex idx = m_tiiModel->mapFromSource(m_model->index(m_selectedRow, 0));
-    if (idx.isValid() && (selection.isEmpty() || selection.at(0) != idx))
-    {
-        m_tableSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current | QItemSelectionModel::Rows);
-    }
 }
 
 void TIIDialog::setupDarkMode(bool darkModeEna)
@@ -403,27 +363,6 @@ void TIIDialog::onSettingsChanged()
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     m_tiiSpectrumPlot->setVisible(m_settings->tii.showSpectumPlot);
 #endif
-}
-
-QStringList TIIDialog::ensembleInfo() const
-{
-    if (!m_currentEnsemble.isValid())
-    {
-        return QStringList{"","",""};
-    }
-
-    QStringList info;
-    info.append(tr("Ensemble: <b>%1</b>").arg(m_currentEnsemble.label));
-    info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b>").arg(m_currentEnsemble.ecc(), 2, 16, QChar('0'))
-                    .arg(m_currentEnsemble.eid(), 4, 16, QChar('0'))
-                    .toUpper());
-    info.append(QString(tr("Channel: <b>%1 (%2 kHz)</b>")).arg(DabTables::channelList[m_currentEnsemble.frequency]).arg(m_currentEnsemble.frequency));
-    return info;
-}
-
-QStringList TIIDialog::txInfo() const
-{
-    return m_txInfo;
 }
 
 void TIIDialog::setSelectedRow(int modelRow)

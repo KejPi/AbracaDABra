@@ -38,13 +38,13 @@ class TiiTableModel : public QSortFilterProxyModel
     Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
 public:
     TiiTableModel(QObject *parent = nullptr);
-
-    void setTiiFilter(bool newTiiFilter);
+    void setFilter(bool newFilterCols);
 
 signals:
     void rowCountChanged();
 
 protected:
+    bool m_enaFilter = true;
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
     bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const override;
 };

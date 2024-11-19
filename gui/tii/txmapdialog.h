@@ -47,9 +47,10 @@ class TxMapDialog : public QDialog
     Q_PROPERTY(QStringList ensembleInfo READ ensembleInfo NOTIFY ensembleInfoChanged FINAL)
     Q_PROPERTY(QStringList txInfo READ txInfo NOTIFY txInfoChanged FINAL)
     Q_PROPERTY(int selectedRow READ selectedRow WRITE setSelectedRow NOTIFY selectedRowChanged FINAL)
+    Q_PROPERTY(bool isTii READ isTii CONSTANT FINAL)
 
 public:
-    explicit TxMapDialog(Settings * settings, QWidget *parent = nullptr);
+    explicit TxMapDialog(Settings * settings, bool isTii, QWidget *parent = nullptr);
     ~TxMapDialog();
     virtual void onTiiData(const RadioControlTIIData & data) = 0;
     virtual void setupDarkMode(bool darkModeEna) = 0;
@@ -67,11 +68,15 @@ public:
     bool isVisible() const;
     void setIsVisible(bool newIsVisible);
 
-    virtual QStringList ensembleInfo() const = 0;
-    virtual QStringList txInfo() const = 0;
+    virtual QStringList ensembleInfo() const;
+    virtual QStringList txInfo() const;
 
     int selectedRow() const;
     virtual void setSelectedRow(int modelRow) = 0;
+
+    bool showTiiTable() const;
+
+    bool isTii() const;
 
 signals:
     void setTii(bool ena, float thr);
@@ -88,21 +93,26 @@ protected:
 
     Settings * m_settings;
     TxTableModel * m_model;
+    TiiTableModel * m_sortedFilteredModel;
+    QItemSelectionModel * m_tableSelectionModel;
 
     // UI
-    QGeoPositionInfoSource * m_geopositionSource = nullptr;
-    QGeoCoordinate m_currentPosition;
-    bool m_positionValid = false;
-    bool m_isVisible = false;
     RadioControlEnsemble m_currentEnsemble;
     QStringList m_txInfo;
-    QItemSelectionModel * m_tableSelectionModel;
     int m_selectedRow;  // this is row in source model !!!
 
     virtual void reset();
 
     void positionUpdated(const QGeoPositionInfo & position);
-    virtual void onSelectedRowChanged() = 0;
+    void onSelectedRowChanged();
+    void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+
+private:
+    QGeoPositionInfoSource * m_geopositionSource = nullptr;
+    QGeoCoordinate m_currentPosition;
+    bool m_positionValid = false;
+    bool m_isVisible = false;
+    const bool m_isTii;
 };
 
 #endif // TXMAPDIALOG_H

@@ -53,10 +53,6 @@ public:
     void onChannelSelection();
     void onEnsembleInformation(const RadioControlEnsemble &ens) override;
     void onSettingsChanged() override;
-
-    QStringList ensembleInfo() const override;
-    QStringList txInfo() const override;
-
     void setSelectedRow(int modelRow) override;
 
 protected:
@@ -73,13 +69,10 @@ private:
     bool m_isZoomed;
     QSplitter * m_splitter;
 #endif
-    TiiTableModel * m_tiiModel;
     QQuickView *m_qmlView ;
 
     void reset() override;
 
-    void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-    void onSelectedRowChanged() override;
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     void showPointToolTip(QMouseEvent *event);
     void onXRangeChanged(const QCPRange &newRange);

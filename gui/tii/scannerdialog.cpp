@@ -42,10 +42,8 @@
 Q_LOGGING_CATEGORY(scanner, "Scanner", QtInfoMsg)
 
 ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
-    TxMapDialog(settings, parent)
+    TxMapDialog(settings, false, parent)
 {
-    m_model = new TxTableModel(this);
-
     // UI
     setWindowTitle(tr("Scanning Tool"));
     setModal(true);
@@ -55,14 +53,14 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     // Set window flags to add maximize and minimize buttons
     setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
 
-    m_tableSelectionModel = new QItemSelectionModel(m_model, this);
+    m_sortedFilteredModel->setFilter(false);
 
     // QML View
     m_qmlView = new QQuickView();
     QQmlContext * context = m_qmlView->rootContext();
     context->setContextProperty("tii", this);
     context->setContextProperty("tiiTable", m_model);
-    context->setContextProperty("tiiTableSorted", m_model);
+    context->setContextProperty("tiiTableSorted", m_sortedFilteredModel);
     context->setContextProperty("tiiTableSelectionModel", m_tableSelectionModel);
     m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map.qml"));
 
@@ -121,8 +119,8 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     layout->addWidget(m_splitter);
 
 
-    m_txTableView->setModel(m_model);
-    //ui->tiiTable->setSelectionModel(m_tiiTableSelectionModel);
+    m_txTableView->setModel(m_sortedFilteredModel);
+    m_txTableView->setSelectionModel(m_tableSelectionModel);
     m_txTableView->verticalHeader()->hide();
     m_txTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     //m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -144,7 +142,7 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     m_exportButton->setEnabled(false);
     connect(m_exportButton, &QPushButton::clicked, this, &ScannerDialog::exportClicked);
 
-    m_currentEnsemble.ueid = RADIO_CONTROL_UEID_INVALID;
+    m_ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
 }
 
 ScannerDialog::~ScannerDialog()
@@ -298,7 +296,7 @@ void ScannerDialog::scanStep()
     //m_progressChannel->setText(QString("%1 [ %2 MHz ]").arg(m_channelIt.value()).arg(m_channelIt.key()/1000.0, 3, 'f', 3, QChar('0')));
     m_progressChannel->setText(m_channelIt.value());
     m_numServicesFound = 0;
-    m_currentEnsemble.reset();
+    m_ensemble.reset();
     m_state = ScannerState::WaitForTune;
     emit tuneChannel(m_channelIt.key());
 }
@@ -335,7 +333,7 @@ void ScannerDialog::onSyncStatus(uint8_t sync, float snr)
             m_timer->start(6000);
         }
     }
-    if (m_currentEnsemble.isValid())
+    if (m_ensemble.isValid())
     {
         m_snr = snr;
     }
@@ -357,7 +355,7 @@ void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble & ens)
 
     //qDebug() << m_channelIt.value() << ens.eid() << ens.label;
     //qDebug() << Q_FUNC_INFO << QString("---------------------------------------------------------------- %1   %2   '%3'").arg(m_channelIt.value()).arg(ens.ueid, 6, 16, QChar('0')).arg(ens.label);
-    m_currentEnsemble = ens;
+    m_ensemble = ens;
     m_snr = 0.0;
     emit setTii(true, 0.0);
     m_isTiiActive = true;
@@ -378,7 +376,7 @@ void ScannerDialog::onServiceListEntry(const RadioControlEnsemble &, const Radio
 
 void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 {
-    m_model->appendEnsData(data.idList, ServiceListId(m_currentEnsemble), m_currentEnsemble.label, m_numServicesFound, m_snr);
+    m_model->appendEnsData(data.idList, ServiceListId(m_ensemble), m_ensemble.label, m_numServicesFound, m_snr);
     m_exportButton->setEnabled(true);
 
     //m_txTableView->resizeColumnsToContents();
@@ -394,6 +392,44 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
         m_timer->stop();
         scanStep();
     }
+}
+
+void ScannerDialog::setSelectedRow(int modelRow)
+{
+    if (m_selectedRow == modelRow)
+    {
+        return;
+    }
+    m_selectedRow = modelRow;
+    emit selectedRowChanged();
+
+    m_txInfo.clear();
+    if (modelRow < 0)
+    {   // reset info
+        emit txInfoChanged();
+        return;
+    }
+
+    TxTableModelItem item = m_model->data(m_model->index(modelRow, 0), TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
+    if (item.hasTxData())
+    {
+        m_txInfo.append(QString("<b>%1</b>").arg(item.transmitterData().location()));
+        QGeoCoordinate coord = QGeoCoordinate(item.transmitterData().coordinates().latitude(), item.transmitterData().coordinates().longitude());
+        m_txInfo.append(QString("GPS: <b>%1</b>").arg(coord.toString(QGeoCoordinate::DegreesWithHemisphere)));
+        float alt = item.transmitterData().coordinates().altitude();
+        if (alt)
+        {
+            m_txInfo.append(QString(tr("Altitude: <b>%1 m</b>")).arg(static_cast<int>(alt)));
+        }
+        m_txInfo.append(QString(tr("ERP: <b>%1 kW</b>")).arg(static_cast<double>(item.transmitterData().power()), 3, 'f', 1));
+    }
+    emit txInfoChanged();
+
+    m_currentEnsemble.label = item.ensLabel();
+    m_currentEnsemble.ueid = item.ensId().ueid();
+    m_currentEnsemble.frequency = item.ensId().freq();
+
+    emit ensembleInfoChanged();
 }
 
 void ScannerDialog::showEvent(QShowEvent *event)
