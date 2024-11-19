@@ -44,7 +44,7 @@
 
 #include "radiocontrol.h"
 #include "servicelistid.h"
-#include "txtablemodel.h"
+#include "txmapdialog.h"
 
 
 // namespace Ui {
@@ -52,7 +52,7 @@
 // }
 
 class Settings;
-class ScannerDialog : public QDialog
+class ScannerDialog : public TxMapDialog
 {
     Q_OBJECT
 
@@ -62,24 +62,21 @@ public:
 
     void onTuneDone(uint32_t freq);
     void onSyncStatus(uint8_t sync, float snr);
-    void onEnsembleFound(const RadioControlEnsemble &ens);
+    void onEnsembleInformation(const RadioControlEnsemble &ens) override;
     void onServiceFound(const ServiceListId &);
     void onServiceListComplete(const RadioControlEnsemble &);
     void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &);
-    void onTiiData(const RadioControlTIIData & data);
-    void startLocationUpdate();
-    void stopLocationUpdate();
-    QGeoCoordinate currentPosition() const;
-    void setCurrentPosition(const QGeoCoordinate &newCurrentPosition);
-    bool positionValid() const;
-    void setPositionValid(bool newPositionValid);
+    void setupDarkMode(bool darkModeEna) override {}
+    void onTiiData(const RadioControlTIIData & data) override;
 
+    QStringList ensembleInfo() const override { return QStringList(); }
+    QStringList txInfo() const override { return QStringList(); }
+
+    void setSelectedRow(int modelRow) override {}
+    void onSelectedRowChanged() override {}
 signals:
-    void setTii(bool ena, float thr);
     void scanStarts();
     void tuneChannel(uint32_t freq);
-    void currentPositionChanged();
-    void positionValidChanged();
 
 protected:
     void showEvent(QShowEvent *event) override;
@@ -109,12 +106,7 @@ private:
     QLabel * m_progressChannel;
     QPushButton * m_exportButton;
 
-    QItemSelectionModel * m_tableSelectionModel;
-    int m_selectedRow;  // this is row in source model !!!
-
     QTimer * m_timer = nullptr;
-
-    Settings * m_settings;
 
     bool m_isScanning = false;
     bool m_isTiiActive = false;
@@ -124,13 +116,7 @@ private:
     // int m_numEnsemblesFound = 0;
     int m_numServicesFound = 0;
     dabChannelList_t::ConstIterator m_channelIt;
-    RadioControlEnsemble m_ensemble;
     float m_snr;
-
-    TxTableModel * m_model;
-    QGeoPositionInfoSource * m_geopositionSource = nullptr;
-    QGeoCoordinate m_currentPosition;
-    bool m_positionValid = false;
     QDateTime m_scanStartTime;
 
     void startScan();
@@ -138,7 +124,6 @@ private:
     void startStopClicked();
     void stopScan();
     void exportClicked();
-    void positionUpdated(const QGeoPositionInfo & position);
 };
 
 #endif // SCANNERDIALOG_H

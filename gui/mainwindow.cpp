@@ -3534,7 +3534,7 @@ void MainWindow::showScannerDialog()
 
     connect(dialog, &ScannerDialog::tuneChannel, this, &MainWindow::onTuneChannel);
     connect(m_radioControl, &RadioControl::signalState, dialog, &ScannerDialog::onSyncStatus, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::ensembleInformation, dialog, &ScannerDialog::onEnsembleFound, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::ensembleInformation, dialog, &ScannerDialog::onEnsembleInformation, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::tuneDone, dialog, &ScannerDialog::onTuneDone, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListComplete, dialog, &ScannerDialog::onServiceListComplete, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListEntry, dialog, &ScannerDialog::onServiceListEntry, Qt::QueuedConnection);

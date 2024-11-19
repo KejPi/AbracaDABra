@@ -42,22 +42,20 @@
 Q_LOGGING_CATEGORY(scanner, "Scanner", QtInfoMsg)
 
 ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
-    QDialog(parent),
-    // ui(new Ui::ScannerDialog),
-    m_settings(settings)
+    TxMapDialog(settings, parent)
 {
     m_model = new TxTableModel(this);
 
-    //ui->setupUi(this);
-    setModal(true);
-
     // UI
     setWindowTitle(tr("Scanning Tool"));
+    setModal(true);
     setMinimumSize(QSize(600, 400));
-    resize(QSize(850, 350));
+    resize(QSize(800, 800));
 
     // Set window flags to add maximize and minimize buttons
     setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
+
+    m_tableSelectionModel = new QItemSelectionModel(m_model, this);
 
     // QML View
     m_qmlView = new QQuickView();
@@ -142,14 +140,17 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     m_progressChannel->setText(tr("None"));
     m_progressChannel->setVisible(false);
     m_scanningLabel->setText("");
+    m_exportButton->setText(tr("Export as CSV"));
     m_exportButton->setEnabled(false);
     connect(m_exportButton, &QPushButton::clicked, this, &ScannerDialog::exportClicked);
 
-    m_ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
+    m_currentEnsemble.ueid = RADIO_CONTROL_UEID_INVALID;
 }
 
 ScannerDialog::~ScannerDialog()
 {
+    delete m_qmlView;
+
     if (nullptr != m_timer)
     {
         m_timer->stop();
@@ -297,7 +298,7 @@ void ScannerDialog::scanStep()
     //m_progressChannel->setText(QString("%1 [ %2 MHz ]").arg(m_channelIt.value()).arg(m_channelIt.key()/1000.0, 3, 'f', 3, QChar('0')));
     m_progressChannel->setText(m_channelIt.value());
     m_numServicesFound = 0;
-    m_ensemble.reset();
+    m_currentEnsemble.reset();
     m_state = ScannerState::WaitForTune;
     emit tuneChannel(m_channelIt.key());
 }
@@ -334,13 +335,13 @@ void ScannerDialog::onSyncStatus(uint8_t sync, float snr)
             m_timer->start(6000);
         }
     }
-    if (m_ensemble.isValid())
+    if (m_currentEnsemble.isValid())
     {
         m_snr = snr;
     }
 }
 
-void ScannerDialog::onEnsembleFound(const RadioControlEnsemble & ens)
+void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble & ens)
 {
     if (ScannerState::Idle == m_state)
     {   // do nothing
@@ -356,7 +357,7 @@ void ScannerDialog::onEnsembleFound(const RadioControlEnsemble & ens)
 
     //qDebug() << m_channelIt.value() << ens.eid() << ens.label;
     //qDebug() << Q_FUNC_INFO << QString("---------------------------------------------------------------- %1   %2   '%3'").arg(m_channelIt.value()).arg(ens.ueid, 6, 16, QChar('0')).arg(ens.label);
-    m_ensemble = ens;
+    m_currentEnsemble = ens;
     m_snr = 0.0;
     emit setTii(true, 0.0);
     m_isTiiActive = true;
@@ -377,7 +378,7 @@ void ScannerDialog::onServiceListEntry(const RadioControlEnsemble &, const Radio
 
 void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 {
-    m_model->appendEnsData(data.idList, ServiceListId(m_ensemble), m_ensemble.label, m_numServicesFound, m_snr);
+    m_model->appendEnsData(data.idList, ServiceListId(m_currentEnsemble), m_currentEnsemble.label, m_numServicesFound, m_snr);
     m_exportButton->setEnabled(true);
 
     //m_txTableView->resizeColumnsToContents();
@@ -440,116 +441,6 @@ void ScannerDialog::onServiceListComplete(const RadioControlEnsemble &)
     //     m_timer->stop();
     //     scanStep();
     // }
-}
-
-void ScannerDialog::startLocationUpdate()
-{
-    switch (m_settings->tii.locationSource)
-    {
-    case Settings::GeolocationSource::System:
-    {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
-        // ask for permission
-#if QT_CONFIG(permissions)
-        QLocationPermission locationsPermission;
-        locationsPermission.setAccuracy(QLocationPermission::Precise);
-        locationsPermission.setAvailability(QLocationPermission::WhenInUse);
-        switch (qApp->checkPermission(locationsPermission)) {
-        case Qt::PermissionStatus::Undetermined:
-            qApp->requestPermission(locationsPermission, this, [this]() { startLocationUpdate(); } );
-            qCDebug(scanner) << "LocationPermission Undetermined";
-            return;
-        case Qt::PermissionStatus::Denied:
-        {
-            qCInfo(scanner) << "LocationPermission Denied";
-            QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), tr("Device location access is denied."), {}, this);
-            msgBox.setInformativeText(tr("If you want to display current position on map, grant the location permission in Settings then open the app again."));
-            msgBox.exec();
-        }
-            return;
-        case Qt::PermissionStatus::Granted:
-            qCInfo(scanner) << "LocationPermission Granted";
-            break; // Proceed
-        }
-#endif
-#endif
-    // start location update
-        if (m_geopositionSource == nullptr)
-        {
-            m_geopositionSource = QGeoPositionInfoSource::createDefaultSource(this);
-        }
-        if (m_geopositionSource != nullptr)
-        {
-            qCDebug(scanner) << "Start position update";
-            connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &ScannerDialog::positionUpdated);
-            m_geopositionSource->startUpdates();
-        }
-    }
-    break;
-    case Settings::GeolocationSource::Manual:
-        if (m_geopositionSource != nullptr)
-        {
-            delete m_geopositionSource;
-            m_geopositionSource = nullptr;
-        }
-        positionUpdated(QGeoPositionInfo(m_settings->tii.coordinates, QDateTime::currentDateTime()));
-        break;
-    case Settings::GeolocationSource::SerialPort:
-    {
-        // serial port
-        QVariantMap params;
-        params["nmea.source"] = "serial:"+m_settings->tii.serialPort;
-        m_geopositionSource = QGeoPositionInfoSource::createSource("nmea", params, this);
-        if (m_geopositionSource != nullptr)
-        {
-            qCDebug(scanner) << "Start position update";
-            connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &ScannerDialog::positionUpdated);
-            m_geopositionSource->startUpdates();
-        }
-    }
-    break;
-    }
-}
-
-void ScannerDialog::stopLocationUpdate()
-{
-    if (m_geopositionSource != nullptr)
-    {
-        m_geopositionSource->stopUpdates();
-    }
-}
-
-void ScannerDialog::positionUpdated(const QGeoPositionInfo &position)
-{
-    setCurrentPosition(position.coordinate());
-    m_model->setCoordinates(m_currentPosition);
-    setPositionValid(true);
-}
-
-QGeoCoordinate ScannerDialog::currentPosition() const
-{
-    return m_currentPosition;
-}
-
-void ScannerDialog::setCurrentPosition(const QGeoCoordinate &newCurrentPosition)
-{
-    if (m_currentPosition == newCurrentPosition)
-        return;
-    m_currentPosition = newCurrentPosition;
-    emit currentPositionChanged();
-}
-
-bool ScannerDialog::positionValid() const
-{
-    return m_positionValid;
-}
-
-void ScannerDialog::setPositionValid(bool newPositionValid)
-{
-    if (m_positionValid == newPositionValid)
-        return;
-    m_positionValid = newPositionValid;
-    emit positionValidChanged();
 }
 
 
