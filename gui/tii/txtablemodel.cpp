@@ -287,7 +287,6 @@ void TxTableModel::clear()
 
 void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceListId & ensId)
 {
-#warning "This is not needed fro scanner tool"
 #if 0
     beginResetModel();
     m_modelData.clear();

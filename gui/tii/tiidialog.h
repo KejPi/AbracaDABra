@@ -34,7 +34,6 @@
 #include "settings.h"
 #include "radiocontrol.h"
 #include "txmapdialog.h"
-#include "tiitablemodel.h"
 #include "config.h"
 #if HAVE_QCUSTOMPLOT
 #include <qcustomplot.h>

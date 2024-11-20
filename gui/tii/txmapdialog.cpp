@@ -61,7 +61,7 @@ void TxMapDialog::positionUpdated(const QGeoPositionInfo &position)
 TxMapDialog::~TxMapDialog()
 {
     delete m_tableSelectionModel;
-    delete m_model;    
+    delete m_model;
 }
 
 void TxMapDialog::showEvent(QShowEvent *event)
@@ -295,7 +295,6 @@ void TxMapDialog::onSelectionChanged(const QItemSelection &selected, const QItem
 
 void TxMapDialog::onSelectedRowChanged()
 {
-    qDebug() << Q_FUNC_INFO;
     if (m_selectedRow == -1)
     {
         m_tableSelectionModel->clear();
@@ -304,7 +303,8 @@ void TxMapDialog::onSelectedRowChanged()
 
     // m_selectedRow is in source model while selection uses indexes of sort model!!!
     QModelIndexList selection = m_tableSelectionModel->selectedRows();
-    QModelIndex idx = m_sortedFilteredModel->mapFromSource(m_model->index(m_selectedRow, 0));
+    QModelIndex idx = m_sortedFilteredModel->mapFromSource(m_model->index(m_selectedRow, TxTableModel::ColMainId));
+    qDebug() << idx.isValid() <<  (selection.isEmpty() || selection.at(0) != idx);
     if (idx.isValid() && (selection.isEmpty() || selection.at(0) != idx))
     {
         m_tableSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current | QItemSelectionModel::Rows);
