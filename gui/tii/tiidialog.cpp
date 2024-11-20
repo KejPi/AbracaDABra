@@ -161,6 +161,12 @@ TIIDialog::~TIIDialog()
     delete m_sortedFilteredModel;
 }
 
+void TIIDialog::showEvent(QShowEvent *event)
+{
+    emit setTii(true, 0.0);
+    TxMapDialog::showEvent(event);
+}
+
 void TIIDialog::closeEvent(QCloseEvent *event)
 {
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
@@ -168,7 +174,7 @@ void TIIDialog::closeEvent(QCloseEvent *event)
 #endif
     m_settings->tii.geometry = saveGeometry();
 
-    QDialog::closeEvent(event);
+    TxMapDialog::closeEvent(event);
 }
 
 void TIIDialog::reset()

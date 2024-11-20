@@ -376,36 +376,39 @@ void ScannerDialog::onServiceListEntry(const RadioControlEnsemble &, const Radio
 
 void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 {
-    m_model->appendEnsData(data.idList, ServiceListId(m_ensemble), m_ensemble.label, m_numServicesFound, m_snr);
-    m_exportButton->setEnabled(true);
-
-    //m_txTableView->resizeColumnsToContents();
-    m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColName, QHeaderView::Stretch);
-    //m_txTableView->horizontalHeader()->setStretchLastSection(true);
-
-    emit setTii(false, 0.0);
-    m_isTiiActive = false;
-
-
-    // handle selection
-    int id = -1;
-    QModelIndexList	selectedList = m_tableSelectionModel->selectedRows();
-    if (!selectedList.isEmpty())
+    if (m_ensemble.isValid())
     {
-        QModelIndex currentIndex = selectedList.at(0);
-        id = m_sortedFilteredModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt();
+        m_model->appendEnsData(data.idList, ServiceListId(m_ensemble), m_ensemble.label, m_numServicesFound, m_snr);
+        m_exportButton->setEnabled(true);
+
+        //m_txTableView->resizeColumnsToContents();
+        m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+        m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColName, QHeaderView::Stretch);
+        //m_txTableView->horizontalHeader()->setStretchLastSection(true);
+
+        emit setTii(false, 0.0);
+        m_isTiiActive = false;
+
+
+        // handle selection
+        int id = -1;
+        QModelIndexList	selectedList = m_tableSelectionModel->selectedRows();
+        if (!selectedList.isEmpty())
+        {
+            QModelIndex currentIndex = selectedList.at(0);
+            id = m_sortedFilteredModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt();
+        }
+
+        // forcing update of UI
+        onSelectionChanged(QItemSelection(),QItemSelection());
+
+
+        if ((nullptr != m_timer) && (m_timer->isActive()))
+        {
+            m_timer->stop();
+            scanStep();
+        }
     }
-
-    // forcing update of UI
-    onSelectionChanged(QItemSelection(),QItemSelection());
-
-
-    if ((nullptr != m_timer) && (m_timer->isActive()))
-    {
-        m_timer->stop();
-        scanStep();
-    }            
 }
 
 void ScannerDialog::setSelectedRow(int modelRow)
@@ -465,9 +468,7 @@ void ScannerDialog::showEvent(QShowEvent *event)
 
     //m_txTableView->horizontalHeader()->setStretchLastSection(true);
 
-    startLocationUpdate();
-
-    QDialog::showEvent(event);
+    TxMapDialog::showEvent(event);
 }
 
 void ScannerDialog::closeEvent(QCloseEvent *event)
@@ -479,9 +480,7 @@ void ScannerDialog::closeEvent(QCloseEvent *event)
         return;
     }
 
-    stopLocationUpdate();
-
-    QDialog::closeEvent(event);
+    TxMapDialog::closeEvent(event);
 }
 
 void ScannerDialog::onServiceListComplete(const RadioControlEnsemble &)
