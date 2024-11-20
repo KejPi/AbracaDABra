@@ -387,11 +387,25 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
     emit setTii(false, 0.0);
     m_isTiiActive = false;
 
+
+    // handle selection
+    int id = -1;
+    QModelIndexList	selectedList = m_tableSelectionModel->selectedRows();
+    if (!selectedList.isEmpty())
+    {
+        QModelIndex currentIndex = selectedList.at(0);
+        id = m_sortedFilteredModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt();
+    }
+
+    // forcing update of UI
+    onSelectionChanged(QItemSelection(),QItemSelection());
+
+
     if ((nullptr != m_timer) && (m_timer->isActive()))
     {
         m_timer->stop();
         scanStep();
-    }
+    }            
 }
 
 void ScannerDialog::setSelectedRow(int modelRow)
@@ -404,9 +418,11 @@ void ScannerDialog::setSelectedRow(int modelRow)
     emit selectedRowChanged();
 
     m_txInfo.clear();
+    m_currentEnsemble.reset();
     if (modelRow < 0)
     {   // reset info
         emit txInfoChanged();
+        emit ensembleInfoChanged();
         return;
     }
 

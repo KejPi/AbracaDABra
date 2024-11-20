@@ -156,7 +156,7 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
     case TxTableModelRoles::SubIdRole:
         return item.subId();
     case TxTableModelRoles::TiiRole:
-        return QVariant(QString("%1-%2").arg(item.mainId()).arg(item.subId()));
+        return (item.mainId() != 255) ? QVariant(QString("%1-%2").arg(item.mainId()).arg(item.subId())) : "";
     case TxTableModelRoles::LevelColorRole:
         if (item.level() > -6)
         {

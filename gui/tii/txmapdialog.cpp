@@ -276,8 +276,6 @@ bool TxMapDialog::isTii() const
 
 void TxMapDialog::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
-    qDebug() << Q_FUNC_INFO;
-
     Q_UNUSED(selected)
     Q_UNUSED(deselected)
 
@@ -304,7 +302,6 @@ void TxMapDialog::onSelectedRowChanged()
     // m_selectedRow is in source model while selection uses indexes of sort model!!!
     QModelIndexList selection = m_tableSelectionModel->selectedRows();
     QModelIndex idx = m_sortedFilteredModel->mapFromSource(m_model->index(m_selectedRow, TxTableModel::ColMainId));
-    qDebug() << idx.isValid() <<  (selection.isEmpty() || selection.at(0) != idx);
     if (idx.isValid() && (selection.isEmpty() || selection.at(0) != idx))
     {
         m_tableSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current | QItemSelectionModel::Rows);

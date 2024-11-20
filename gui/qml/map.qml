@@ -136,6 +136,7 @@ Item {
                 tiiCode: tiiString
                 markerColor: levelColor
                 isSelected: index === tii.selectedRow
+                isTiiMode: tii.isTii
                 z: isSelected ? 2 : 1
 
                 TapHandler {
