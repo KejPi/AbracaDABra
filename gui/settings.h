@@ -166,6 +166,7 @@ public:
         QString exportPath;
         QByteArray geometry;
         QByteArray splitterState;
+        int numCycles;
     } scanner;
 
 };

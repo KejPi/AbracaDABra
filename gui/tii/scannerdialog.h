@@ -40,16 +40,11 @@
 #include <QPushButton>
 #include <QSpacerItem>
 #include <QTableView>
+#include <QSpinBox>
 
 
 #include "radiocontrol.h"
-#include "servicelistid.h"
 #include "txmapdialog.h"
-
-
-// namespace Ui {
-// class ScannerDialog;
-// }
 
 class Settings;
 class ScannerDialog : public TxMapDialog
@@ -63,7 +58,6 @@ public:
     void onTuneDone(uint32_t freq);
     void onSyncStatus(uint8_t sync, float snr);
     void onEnsembleInformation(const RadioControlEnsemble &ens) override;
-    void onServiceFound(const ServiceListId &);
     void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &);
     void setupDarkMode(bool darkModeEna) override {}
     void onTiiData(const RadioControlTIIData & data) override;
@@ -88,8 +82,6 @@ private:
         Interrupted
     };
 
-    //Ui::ScannerDialog *ui;
-
     // UI
     QSplitter * m_splitter;
     QQuickView * m_qmlView ;
@@ -99,12 +91,14 @@ private:
     QLabel * m_scanningLabel;
     QLabel * m_progressChannel;
     QPushButton * m_exportButton;
+    QSpinBox * m_spinBox;
 
     QTimer * m_timer = nullptr;
 
     bool m_isScanning = false;
     bool m_isTiiActive = false;
     bool m_exitRequested = false;
+    int m_scanCycleCntr;
     ScannerState m_state = ScannerState::Idle;
 
     RadioControlEnsemble m_ensemble;

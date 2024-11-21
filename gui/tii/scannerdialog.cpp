@@ -35,6 +35,8 @@
 #include <QLoggingCategory>
 #include <QQmlContext>
 #include <QGridLayout>
+#include <QSpinBox>
+#include <QFormLayout>
 #include "scannerdialog.h"
 #include "dabtables.h"
 #include "settings.h"
@@ -64,54 +66,61 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     context->setContextProperty("tiiTableSelectionModel", m_tableSelectionModel);
     m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map.qml"));
 
-    QWidget *container = QWidget::createWindowContainer(m_qmlView, this);
+    QWidget *qmlContainer = QWidget::createWindowContainer(m_qmlView, this);
 
     QSizePolicy sizePolicyContainer(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
     sizePolicyContainer.setVerticalStretch(255);
-    container->setSizePolicy(sizePolicyContainer);
+    qmlContainer->setSizePolicy(sizePolicyContainer);
 
     // scanner widget
-    QGridLayout * gridLayout = new QGridLayout(this);
-    QHBoxLayout * horizontalLayout_1 = new QHBoxLayout();
+    QVBoxLayout * mainLayout = new QVBoxLayout(this);
+    QHBoxLayout * controlsLayout = new QHBoxLayout();
+
     m_scanningLabel = new QLabel(this);
-
-    horizontalLayout_1->addWidget(m_scanningLabel);
-
     m_progressChannel = new QLabel(this);
 
-    horizontalLayout_1->addWidget(m_progressChannel);
-
-    QHBoxLayout * horizontalLayout_2 = new QHBoxLayout();
-    horizontalLayout_2->addLayout(horizontalLayout_1);
-
-
-    horizontalLayout_2->addItem(new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum));
-    gridLayout->addLayout(horizontalLayout_2, 0, 0, 1, 4);
-
     m_progressBar = new QProgressBar(this);
-    m_progressBar->setValue(24);
     m_progressBar->setTextVisible(false);
 
-    gridLayout->addWidget(m_progressBar, 1, 0, 1, 4);
+    m_exportButton = new QPushButton(this);
+    m_startStopButton = new QPushButton(this);
+    m_startStopButton->setDefault(true);
+
+    QFrame * line = new QFrame(this);
+    line->setFrameShape(QFrame::Shape::VLine);
+    line->setFrameShadow(QFrame::Shadow::Sunken);
+
+    QLabel * label = new QLabel(this);
+    m_spinBox = new QSpinBox(this);
+    m_spinBox->setSpecialValueText(tr("Inf"));
+    m_spinBox->setValue(m_settings->scanner.numCycles);
+    label->setText(tr("Number of cycles:"));
+
+    QFormLayout * formLayout = new QFormLayout();
+    formLayout->setWidget(0, QFormLayout::LabelRole, label);
+    formLayout->setWidget(0, QFormLayout::FieldRole, m_spinBox);
+
+    controlsLayout->addWidget(m_scanningLabel);
+    controlsLayout->addWidget(m_progressChannel);
+    controlsLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum));
+    controlsLayout->addWidget(m_exportButton);
+    controlsLayout->addWidget(line);
+    controlsLayout->addLayout(formLayout);
+    controlsLayout->addWidget(m_startStopButton);
+    mainLayout->addLayout(controlsLayout);
+
+
+    mainLayout->addWidget(m_progressBar);
 
     m_txTableView = new QTableView(this);
-
-    gridLayout->addWidget(m_txTableView, 2, 0, 1, 4);
-
-    m_startStopButton = new QPushButton(this);
-    gridLayout->addWidget(m_startStopButton, 3, 3, 1, 1);
-
-    gridLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum), 3, 2, 1, 1);
-
-    m_exportButton = new QPushButton(this);
-    gridLayout->addWidget(m_exportButton, 3, 0, 1, 2);
+    mainLayout->addWidget(m_txTableView);
 
     QWidget * scannerWidget = new QWidget(this);
-    scannerWidget->setLayout(gridLayout);
+    scannerWidget->setLayout(mainLayout);
 
     m_splitter = new QSplitter(this);
     m_splitter->setOrientation(Qt::Vertical);
-    m_splitter->addWidget(container);
+    m_splitter->addWidget(qmlContainer);
     m_splitter->addWidget(scannerWidget);
     m_splitter->setChildrenCollapsible(false);
 
@@ -122,7 +131,6 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     if (!m_settings->scanner.splitterState.isEmpty()) {
         m_splitter->restoreState(m_settings->scanner.splitterState);
     }
-
 
     m_txTableView->setModel(m_sortedFilteredModel);
     m_txTableView->setSelectionModel(m_tableSelectionModel);
@@ -137,7 +145,6 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     m_startStopButton->setText(tr("Start"));
     connect(m_startStopButton, &QPushButton::clicked, this, &ScannerDialog::startStopClicked);
     m_progressBar->setMinimum(0);
-    m_progressBar->setMaximum(DabTables::channelList.size());
     m_progressBar->setValue(0);
     m_progressChannel->setText(tr("None"));
     m_progressChannel->setVisible(false);
@@ -192,6 +199,14 @@ void ScannerDialog::startStopClicked()
     else
     {   // start pressed
         m_startStopButton->setText(tr("Stop"));
+        m_spinBox->setEnabled(false);
+        if (m_spinBox->value() > 0) {
+            m_progressBar->setMaximum(DabTables::channelList.size() * m_spinBox->value());
+        }
+        else
+        {
+            m_progressBar->setMaximum(DabTables::channelList.size());
+        }
         startScan();
     }
 }
@@ -216,6 +231,7 @@ void ScannerDialog::stopScan()
     m_progressChannel->setText(tr("None"));
     m_startStopButton->setText(tr("Start"));
     m_startStopButton->setEnabled(true);
+    m_spinBox->setEnabled(true);
 
     m_isScanning = false;
     m_state = ScannerState::Init;
@@ -271,6 +287,7 @@ void ScannerDialog::startScan()
 
     m_model->clear();
     m_exportButton->setEnabled(false);
+    m_scanCycleCntr = 0;
 
     if (m_timer == nullptr)
     {
@@ -299,14 +316,31 @@ void ScannerDialog::scanStep()
 
     if (DabTables::channelList.constEnd() == m_channelIt)
     {
-        // scan finished
-        stopScan();
-        return;
+        if (++m_scanCycleCntr == m_spinBox->value())
+        {   // scan finished
+            stopScan();
+            return;
+        }
+
+        // restarting
+        m_channelIt = DabTables::channelList.constBegin();
+        if (m_spinBox->value() == 0)
+        {   // endless scan
+            m_progressBar->setValue(0);
+        }
     }
 
     m_progressBar->setValue(m_progressBar->value()+1);
     //m_progressChannel->setText(QString("%1 [ %2 MHz ]").arg(m_channelIt.value()).arg(m_channelIt.key()/1000.0, 3, 'f', 3, QChar('0')));
-    m_progressChannel->setText(m_channelIt.value());
+    //m_progressChannel->setText(QString("%1 (%2 / %3)").arg(m_channelIt.value()).arg(m_progressBar->value()).arg(m_progressBar->maximum()));
+    if (m_spinBox->value() > 1)
+    {
+        m_progressChannel->setText(QString(tr("%1  (cycle %2)")).arg(m_channelIt.value()).arg(m_scanCycleCntr+1));
+    }
+    else
+    {
+        m_progressChannel->setText(m_channelIt.value());
+    }
     m_numServicesFound = 0;
     m_ensemble.reset();
     m_state = ScannerState::WaitForTune;
@@ -362,28 +396,18 @@ void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble & ens)
 
     m_state = ScannerState::WaitForServices;
 
-    // thiw will not be interrupted -> collecting data from now
+    // this will stop when TII data is received
     m_timer->start(10000);
 
-    //qDebug() << m_channelIt.value() << ens.eid() << ens.label;
-    //qDebug() << Q_FUNC_INFO << QString("---------------------------------------------------------------- %1   %2   '%3'").arg(m_channelIt.value()).arg(ens.ueid, 6, 16, QChar('0')).arg(ens.label);
     m_ensemble = ens;
     m_snr = 0.0;
     emit setTii(true, 0.0);
     m_isTiiActive = true;
 }
 
-void ScannerDialog::onServiceFound(const ServiceListId &)
-{
-    //ui->numServicesFoundLabel->setText(QString("%1").arg(++m_numServicesFound));
-    m_numServicesFound += 1;
-}
-
 void ScannerDialog::onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &)
 {
     m_numServicesFound += 1;
-
-    //ui->numServicesFoundLabel->setText(QString("%1").arg(++m_numServicesFound));
 }
 
 void ScannerDialog::onTiiData(const RadioControlTIIData &data)
@@ -482,6 +506,7 @@ void ScannerDialog::closeEvent(QCloseEvent *event)
 
     m_settings->scanner.splitterState = m_splitter->saveState();
     m_settings->scanner.geometry = saveGeometry();
+    m_settings->scanner.numCycles = m_spinBox->value();
 
     TxMapDialog::closeEvent(event);
 }

@@ -2977,6 +2977,7 @@ void MainWindow::loadSettings()
     m_settings->scanner.exportPath = settings->value("Scanner/exportPath", QDir::homePath()).toString();
     m_settings->scanner.splitterState = settings->value("Scanner/layout").toByteArray();
     m_settings->scanner.geometry = settings->value("Scanner/windowGeometry").toByteArray();
+    m_settings->scanner.numCycles = settings->value("Scanner/numCycles", 1).toInt();
 
     m_settings->proxy.config = static_cast<Settings::ProxyConfig>(settings->value("Proxy/config", static_cast<int>(Settings::ProxyConfig::System)).toInt());
     m_settings->proxy.server = settings->value("Proxy/server", "").toString();
@@ -3177,6 +3178,7 @@ void MainWindow::saveSettings()
     settings->setValue("Scanner/exportPath", m_settings->scanner.exportPath);
     settings->setValue("Scanner/windowGeometry", m_settings->scanner.geometry);
     settings->setValue("Scanner/layout", m_settings->scanner.splitterState);
+    settings->setValue("Scanner/numCycles", m_settings->scanner.numCycles);
 
     settings->setValue("EnsembleInfo/windowGeometry", m_settings->ensembleInfo.geometry);
     settings->setValue("EnsembleInfo/exportPath", m_ensembleInfoDialog->exportPath());
@@ -3553,13 +3555,10 @@ void MainWindow::showScannerDialog()
         m_isScannerRunning = false;
         onBandScanFinished(BandScanDialogResult::Done);
     } );
-    //connect(dialog, &ScannerDialog::finished, this, &MainWindow::onBandScanFinished);
     connect(dialog, &QDialog::finished, dialog, &QObject::deleteLater);
-
 
     m_isScannerRunning = true;
 
-    // dialog->open();
     dialog->show();
     dialog->raise();
     dialog->activateWindow();
