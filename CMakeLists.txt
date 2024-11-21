@@ -40,6 +40,18 @@ option (QCUSTOMPLOT           "Enable QCustomPlot (GPLv3 license)"    ON)
 # Git submodule
 option(GIT_SUBMODULE          "Check submodules during build"         ON)
 
+# Apple specific
+# if(APPLE)
+#     # Qt 6.8.0 requires at least macOS 12 so this does not work
+#     if(APPLE_BUILD_X86_64)
+#         # Intel build
+#         set(CMAKE_OSX_DEPLOYMENT_TARGET "11" CACHE STRING "Minimum OS X deployment version")
+#     else()
+#         # AARCH64 build
+#         set(CMAKE_OSX_DEPLOYMENT_TARGET "11" CACHE STRING "Minimum OS X deployment version")
+#     endif()
+# endif()
+
 ## Project
 set(TARGET AbracaDABra)
 
@@ -580,28 +592,6 @@ else()
 endif()
 
 qt_standard_project_setup()
-
-# Apple specific
-if(APPLE)
-    if(QT_VERSION LESS 6.8.0)
-        if(APPLE_BUILD_X86_64)
-            # Intel build
-            set(CMAKE_OSX_DEPLOYMENT_TARGET "11" CACHE STRING "Minimum OS X deployment version")
-        else()
-            # AARCH64 build
-            set(CMAKE_OSX_DEPLOYMENT_TARGET "11" CACHE STRING "Minimum OS X deployment version")
-        endif()
-    else()
-        # Qt 6.8.0 requires at least macOS 12
-        if(APPLE_BUILD_X86_64)
-            # Intel build
-            set(CMAKE_OSX_DEPLOYMENT_TARGET "12" CACHE STRING "Minimum OS X deployment version")
-        else()
-            # AARCH64 build
-            set(CMAKE_OSX_DEPLOYMENT_TARGET "12" CACHE STRING "Minimum OS X deployment version")
-        endif()
-    endif()
-endif()
 
 #########################################################
 ## AbracaDABra GUI
