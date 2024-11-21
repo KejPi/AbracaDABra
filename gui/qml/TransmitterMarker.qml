@@ -44,7 +44,7 @@ MapQuickItem {
         sourceComponent: (isTiiMode || isSelected) ? txBubble : txPoint
     }
 
-    anchorPoint: Qt.point(sourceItem.width/2, sourceItem.height)
+    anchorPoint: (isTiiMode || isSelected) ? Qt.point(sourceItem.width/2, sourceItem.height) : Qt.point(sourceItem.width/2, sourceItem.height/2)
     visible: true
 
     Component {

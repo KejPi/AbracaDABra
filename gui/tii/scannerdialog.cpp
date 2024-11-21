@@ -333,13 +333,13 @@ void ScannerDialog::scanStep()
     m_progressBar->setValue(m_progressBar->value()+1);
     //m_progressChannel->setText(QString("%1 [ %2 MHz ]").arg(m_channelIt.value()).arg(m_channelIt.key()/1000.0, 3, 'f', 3, QChar('0')));
     //m_progressChannel->setText(QString("%1 (%2 / %3)").arg(m_channelIt.value()).arg(m_progressBar->value()).arg(m_progressBar->maximum()));
-    if (m_spinBox->value() > 1)
+    if (m_spinBox->value() == 1)
     {
-        m_progressChannel->setText(QString(tr("%1  (cycle %2)")).arg(m_channelIt.value()).arg(m_scanCycleCntr+1));
+        m_progressChannel->setText(m_channelIt.value());
     }
     else
     {
-        m_progressChannel->setText(m_channelIt.value());
+        m_progressChannel->setText(QString(tr("%1  (cycle %2)")).arg(m_channelIt.value()).arg(m_scanCycleCntr+1));
     }
     m_numServicesFound = 0;
     m_ensemble.reset();
