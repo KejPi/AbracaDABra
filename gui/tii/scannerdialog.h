@@ -64,7 +64,6 @@ public:
     void onSyncStatus(uint8_t sync, float snr);
     void onEnsembleInformation(const RadioControlEnsemble &ens) override;
     void onServiceFound(const ServiceListId &);
-    void onServiceListComplete(const RadioControlEnsemble &);
     void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &);
     void setupDarkMode(bool darkModeEna) override {}
     void onTiiData(const RadioControlTIIData & data) override;

@@ -164,6 +164,8 @@ public:
     } catSls;
     struct ScannerSettings {
         QString exportPath;
+        QByteArray geometry;
+        QByteArray splitterState;
     } scanner;
 
 };

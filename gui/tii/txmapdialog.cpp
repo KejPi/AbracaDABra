@@ -88,23 +88,6 @@ void TxMapDialog::reset()
     setSelectedRow(-1);
 }
 
-// void TxMapDialog::onSelectedRowChanged()
-// {
-//     if (m_selectedRow == -1)
-//     {
-//         m_tableSelectionModel->clear();
-//         return;
-//     }
-
-//     // m_selectedRow is in source model while selection uses indexes of sort model!!!
-//     QModelIndexList selection = m_tableSelectionModel->selectedRows();
-//     QModelIndex idx = m_tiiModel->mapFromSource(m_model->index(m_selectedRow, 0));
-//     if (idx.isValid() && (selection.isEmpty() || selection.at(0) != idx))
-//     {
-//         m_tableSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current | QItemSelectionModel::Rows);
-//     }
-// }
-
 void TxMapDialog::startLocationUpdate()
 {
     switch (m_settings->tii.locationSource)

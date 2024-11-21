@@ -113,17 +113,21 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     m_splitter->setOrientation(Qt::Vertical);
     m_splitter->addWidget(container);
     m_splitter->addWidget(scannerWidget);
+    m_splitter->setChildrenCollapsible(false);
 
     QVBoxLayout * layout = new QVBoxLayout(this);
     layout->setContentsMargins(0,0,0,0);
     layout->addWidget(m_splitter);
+
+    if (!m_settings->scanner.splitterState.isEmpty()) {
+        m_splitter->restoreState(m_settings->scanner.splitterState);
+    }
 
 
     m_txTableView->setModel(m_sortedFilteredModel);
     m_txTableView->setSelectionModel(m_tableSelectionModel);
     m_txTableView->verticalHeader()->hide();
     m_txTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    //m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     m_txTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -143,6 +147,14 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     connect(m_exportButton, &QPushButton::clicked, this, &ScannerDialog::exportClicked);
 
     m_ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
+
+    QSize sz = size();
+    if (!m_settings->scanner.geometry.isEmpty())
+    {
+        restoreGeometry(m_settings->scanner.geometry);
+        sz = size();
+    }
+    QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
 }
 
 ScannerDialog::~ScannerDialog()
@@ -453,20 +465,8 @@ void ScannerDialog::setSelectedRow(int modelRow)
 
 void ScannerDialog::showEvent(QShowEvent *event)
 {
-    // calculate size of the table
-    // int hSize = 0;
-    // for (int n = 0; n < m_txTableView->horizontalHeader()->count(); ++n) {
-    //     hSize += m_txTableView->horizontalHeader()->sectionSize(n);
-    // }
-    //m_txTableView->setMinimumWidth(hSize + m_txTableView->verticalScrollBar()->sizeHint().width() + TxTableModel::NumCols);
     m_txTableView->setMinimumWidth(700);
-
-    //m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    //m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColName, QHeaderView::Stretch);
     m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    //m_txTableView->setMinimumWidth(m_txTableView->width());
-
-    //m_txTableView->horizontalHeader()->setStretchLastSection(true);
 
     TxMapDialog::showEvent(event);
 }
@@ -480,18 +480,10 @@ void ScannerDialog::closeEvent(QCloseEvent *event)
         return;
     }
 
+    m_settings->scanner.splitterState = m_splitter->saveState();
+    m_settings->scanner.geometry = saveGeometry();
+
     TxMapDialog::closeEvent(event);
-}
-
-void ScannerDialog::onServiceListComplete(const RadioControlEnsemble &)
-{   // this means that ensemble information is complete => stop timer and do next set
-    qDebug() << Q_FUNC_INFO;
-
-    // if ((nullptr != m_timer) && (m_timer->isActive()))
-    // {
-    //     m_timer->stop();
-    //     scanStep();
-    // }
 }
 
 
