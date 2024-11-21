@@ -434,6 +434,8 @@ private:
     bool m_isReconfigurationOngoing = false;
     bool m_spiAppEnabled = false;
 
+    int m_tiiEna = 0;
+
     RadioControlEnsemble m_ensemble;
     RadioControlServiceList m_serviceList;
 

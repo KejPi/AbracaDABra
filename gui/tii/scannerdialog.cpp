@@ -215,7 +215,7 @@ void ScannerDialog::stopScan()
 {
     if (m_isTiiActive)
     {
-        emit setTii(false, 0.0);
+        emit setTii(false);
         m_isTiiActive = false;
     }
 
@@ -401,7 +401,7 @@ void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble & ens)
 
     m_ensemble = ens;
     m_snr = 0.0;
-    emit setTii(true, 0.0);
+    emit setTii(true);
     m_isTiiActive = true;
 }
 
@@ -422,7 +422,7 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
         m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColName, QHeaderView::Stretch);
         //m_txTableView->horizontalHeader()->setStretchLastSection(true);
 
-        emit setTii(false, 0.0);
+        emit setTii(false);
         m_isTiiActive = false;
 
 

@@ -714,7 +714,20 @@ void RadioControl::onSpiApplicationEnabled(bool enabled)
 
 void RadioControl::setTii(bool ena)
 {
-    dabSetTii(ena);
+    if (ena)
+    {
+        m_tiiEna += 1;
+        dabSetTii(true);
+    }
+    else
+    {
+        m_tiiEna -= 1;
+        if (m_tiiEna <= 0)
+        {
+            m_tiiEna = 0;
+            dabSetTii(false);
+        }
+    }
 }
 
 QString RadioControl::ensembleConfigurationString() const

@@ -163,7 +163,7 @@ TIIDialog::~TIIDialog()
 
 void TIIDialog::showEvent(QShowEvent *event)
 {
-    emit setTii(true, 0.0);
+    emit setTii(true);
     TxMapDialog::showEvent(event);
 }
 
@@ -201,7 +201,7 @@ void TIIDialog::reset()
 void TIIDialog::onTiiData(const RadioControlTIIData &data)
 {
     ServiceListId ensId = ServiceListId(m_currentEnsemble.frequency, m_currentEnsemble.ueid);
-    if (!ensId.isValid())
+    if (!m_currentEnsemble.isValid())
     {   // when we receive data without valid ensemble
         reset();
         return;
@@ -359,6 +359,7 @@ void TIIDialog::onChannelSelection()
 void TIIDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
 {
     m_currentEnsemble = ens;
+
     emit ensembleInfoChanged();
 }
 

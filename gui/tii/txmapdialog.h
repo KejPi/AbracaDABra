@@ -79,7 +79,7 @@ public:
     bool isTii() const;
 
 signals:
-    void setTii(bool ena, float thr);
+    void setTii(bool ena);
     void currentPositionChanged();
     void positionValidChanged();
     void isVisibleChanged();

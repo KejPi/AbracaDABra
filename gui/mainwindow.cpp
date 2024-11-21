@@ -3545,11 +3545,7 @@ void MainWindow::showScannerDialog()
     connect(m_radioControl, &RadioControl::serviceListEntry, dialog, &ScannerDialog::onServiceListEntry, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::tiiData, dialog, &ScannerDialog::onTiiData, Qt::QueuedConnection);
     connect(dialog, &ScannerDialog::scanStarts, this, &MainWindow::onBandScanStart);
-
-    if (m_tiiDialog == nullptr)
-    {   // TII is not running
-        connect(dialog, &ScannerDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
-    }
+    connect(dialog, &ScannerDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
 
     connect(dialog, &QDialog::finished, this, [this]() {
         m_isScannerRunning = false;
