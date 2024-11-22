@@ -24,20 +24,20 @@
  * SOFTWARE.
  */
 
-#ifndef TIITABLEMODEL_H
-#define TIITABLEMODEL_H
+#ifndef TXTABLEPROXYMODEL_H
+#define TXTABLEPROXYMODEL_H
 
 #include <QObject>
 #include <QAbstractTableModel>
 #include <QGeoPositionInfo>
 #include <QSortFilterProxyModel>
 
-class TiiTableModel : public QSortFilterProxyModel
+class TxTableProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
     Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
 public:
-    TiiTableModel(QObject *parent = nullptr);
+    TxTableProxyModel(QObject *parent = nullptr);
     void setFilter(bool newFilterCols);
 
 signals:
@@ -50,4 +50,4 @@ protected:
 };
 
 
-#endif // TIITABLEMODEL_H
+#endif // TXTABLEPROXYMODEL_H

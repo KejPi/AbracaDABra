@@ -33,8 +33,8 @@
 #include <QItemSelectionModel>
 #include "settings.h"
 #include "radiocontrol.h"
-#include "tiitablemodel.h"
 #include "txtablemodel.h"
+#include "txtableproxymodel.h"
 
 class TxDataItem;
 
@@ -93,7 +93,7 @@ protected:
 
     Settings * m_settings;
     TxTableModel * m_model;
-    TiiTableModel * m_sortedFilteredModel;
+    TxTableProxyModel * m_sortedFilteredModel;
     QItemSelectionModel * m_tableSelectionModel;
 
     // UI

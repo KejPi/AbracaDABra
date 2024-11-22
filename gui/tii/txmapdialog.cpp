@@ -44,7 +44,7 @@ TxMapDialog::TxMapDialog(Settings *settings, bool isTii, QWidget *parent)
     , m_isTii(isTii)
 {
     m_model = new TxTableModel(this);
-    m_sortedFilteredModel = new TiiTableModel(this);
+    m_sortedFilteredModel = new TxTableProxyModel(this);
     m_sortedFilteredModel->setSourceModel(m_model);
     m_tableSelectionModel = new QItemSelectionModel(m_sortedFilteredModel, this);
     connect(m_tableSelectionModel, &QItemSelectionModel::selectionChanged, this, &TxMapDialog::onSelectionChanged);

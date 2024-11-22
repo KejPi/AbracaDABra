@@ -24,23 +24,23 @@
  * SOFTWARE.
  */
 
-#include "tiitablemodel.h"
+#include "txtableproxymodel.h"
 #include "txtablemodel.h"
 
-TiiTableModel::TiiTableModel(QObject *parent) : QSortFilterProxyModel(parent)
+TxTableProxyModel::TxTableProxyModel(QObject *parent) : QSortFilterProxyModel(parent)
 {
-    connect(this, &QSortFilterProxyModel::rowsInserted, this, &TiiTableModel::rowCountChanged);
-    connect(this, &QSortFilterProxyModel::rowsRemoved, this, &TiiTableModel::rowCountChanged);
-    connect(this, &QSortFilterProxyModel::modelReset, this, &TiiTableModel::rowCountChanged);
+    connect(this, &QSortFilterProxyModel::rowsInserted, this, &TxTableProxyModel::rowCountChanged);
+    connect(this, &QSortFilterProxyModel::rowsRemoved, this, &TxTableProxyModel::rowCountChanged);
+    connect(this, &QSortFilterProxyModel::modelReset, this, &TxTableProxyModel::rowCountChanged);
 
 }
 
-void TiiTableModel::setFilter(bool newFilterCols)
+void TxTableProxyModel::setFilter(bool newFilterCols)
 {
     m_enaFilter = newFilterCols;
 }
 
-bool TiiTableModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
+bool TxTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
     if (!m_enaFilter)
     {
@@ -71,7 +71,7 @@ bool TiiTableModel::lessThan(const QModelIndex &left, const QModelIndex &right) 
     return true;
 }
 
-bool TiiTableModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const
+bool TxTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const
 {
     Q_UNUSED(source_parent);
 

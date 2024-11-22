@@ -204,7 +204,7 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     tii/txmapdialog.h tii/txmapdialog.cpp
     tii/tiidialog.h tii/tiidialog.cpp
     tii/txtablemodel.cpp tii/txtablemodel.h
-    tii/tiitablemodel.h tii/tiitablemodel.cpp
+    tii/txtableproxymodel.h tii/txtableproxymodel.cpp
     tii/txtablemodelitem.cpp tii/txtablemodelitem.h
     tii/txdataitem.h tii/txdataitem.cpp
     tii/txdataloader.h tii/txdataloader.cpp      
