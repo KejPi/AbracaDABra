@@ -75,7 +75,6 @@ void TxMapDialog::showEvent(QShowEvent *event)
 
 void TxMapDialog::closeEvent(QCloseEvent *event)
 {
-    emit setTii(false);
     setIsVisible(false);
     stopLocationUpdate();
 

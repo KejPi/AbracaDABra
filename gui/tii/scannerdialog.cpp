@@ -180,6 +180,8 @@ void ScannerDialog::startStopClicked()
     if (m_isScanning)
     {   // stop pressed
         m_startStopButton->setEnabled(false);
+        m_isScanning = false;
+        m_ensemble.reset();
 
         // the state machine has 4 possible states
         // 1. wait for tune (event)
@@ -387,7 +389,7 @@ void ScannerDialog::onSyncStatus(uint8_t sync, float snr)
 
 void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble & ens)
 {
-    if (ScannerState::Idle == m_state)
+    if (ScannerState::WaitForEnsemble != m_state)
     {   // do nothing
         return;
     }
@@ -422,8 +424,12 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
         m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColName, QHeaderView::Stretch);
         //m_txTableView->horizontalHeader()->setStretchLastSection(true);
 
-        emit setTii(false);
-        m_isTiiActive = false;
+        if (m_isTiiActive)
+        {
+            emit setTii(false);
+            m_isTiiActive = false;
+        }
+        m_ensemble.reset();
 
 
         // handle selection

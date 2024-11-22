@@ -169,10 +169,11 @@ void TIIDialog::showEvent(QShowEvent *event)
 
 void TIIDialog::closeEvent(QCloseEvent *event)
 {
+    emit setTii(false);
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     m_settings->tii.splitterState = m_splitter->saveState();
 #endif
-    m_settings->tii.geometry = saveGeometry();
+    m_settings->tii.geometry = saveGeometry();    
 
     TxMapDialog::closeEvent(event);
 }
