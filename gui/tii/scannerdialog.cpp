@@ -364,7 +364,7 @@ void ScannerDialog::onTuneDone(uint32_t freq)
     else
     {   // tuned to some frequency -> wait for sync
         m_state = ScannerState::WaitForSync;
-        m_timer->start(3000);
+        m_timer->start(m_settings->scanner.waitForSync*1000);
     }
 }
 
@@ -376,7 +376,7 @@ void ScannerDialog::onSyncStatus(uint8_t sync, float snr)
         {   // if we are waiting for sync (move to next step)
             m_timer->stop();
             m_state = ScannerState::WaitForEnsemble;
-            m_timer->start(6000);
+            m_timer->start(m_settings->scanner.waitForEnsemble*1000);
         }
     }
     if (m_ensemble.isValid())

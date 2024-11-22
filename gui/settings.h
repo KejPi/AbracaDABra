@@ -167,6 +167,8 @@ public:
         QByteArray geometry;
         QByteArray splitterState;
         int numCycles;
+        int waitForSync;
+        int waitForEnsemble;
     } scanner;
 
 };

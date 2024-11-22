@@ -2978,6 +2978,8 @@ void MainWindow::loadSettings()
     m_settings->scanner.splitterState = settings->value("Scanner/layout").toByteArray();
     m_settings->scanner.geometry = settings->value("Scanner/windowGeometry").toByteArray();
     m_settings->scanner.numCycles = settings->value("Scanner/numCycles", 1).toInt();
+    m_settings->scanner.waitForSync = settings->value("Scanner/waitForSyncSec", 3).toInt();
+    m_settings->scanner.waitForEnsemble = settings->value("Scanner/waitForEnsembleSec", 6).toInt();
 
     m_settings->proxy.config = static_cast<Settings::ProxyConfig>(settings->value("Proxy/config", static_cast<int>(Settings::ProxyConfig::System)).toInt());
     m_settings->proxy.server = settings->value("Proxy/server", "").toString();
