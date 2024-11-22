@@ -59,6 +59,7 @@
 #include "bandscandialog.h"
 #include "aboutdialog.h"
 #include "audiooutputqt.h"
+#include "updatechecker.h"
 #if HAVE_PORTAUDIO
 #include "audiooutputpa.h"
 #endif
@@ -2252,6 +2253,14 @@ void MainWindow::setProxy()
     QNetworkProxy::setApplicationProxy(proxy);
 }
 
+void MainWindow::checkForUpdate()
+{
+    qDebug() << Q_FUNC_INFO;
+    UpdateChecker * updateChecker = new UpdateChecker(this);
+    connect(updateChecker, &UpdateChecker::finished, updateChecker, &QObject::deleteLater);
+    updateChecker->check();
+}
+
 void MainWindow::clearEnsembleInformationLabels()
 {
     m_timeLabel->setText("");
@@ -3446,8 +3455,10 @@ void MainWindow::showEPG()
 
 void MainWindow::showAboutDialog()
 {
-    AboutDialog aboutDialog(this);
-    aboutDialog.exec();
+    AboutDialog *aboutDialog = new AboutDialog(this);
+    connect(aboutDialog, &AboutDialog::checkForUpdate, this, &MainWindow::checkForUpdate);
+    connect(aboutDialog, &QDialog::finished, aboutDialog, &QObject::deleteLater);
+    aboutDialog->exec();
 }
 
 void MainWindow::showSetupDialog()

@@ -329,6 +329,7 @@ private:
     void onMetadataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role);
     void onEpgEmpty();
     void setProxy();
+    void checkForUpdate();
 };
 
 class DLPlusObjectUI

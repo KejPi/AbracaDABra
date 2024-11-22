@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,28 +24,34 @@
  * SOFTWARE.
  */
 
-#ifndef ABOUTDIALOG_H
-#define ABOUTDIALOG_H
+#ifndef UPDATECHECKER_H
+#define UPDATECHECKER_H
 
-#include <QDialog>
+#include <QObject>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
-namespace Ui {
-class AboutDialog;
-}
 
-class AboutDialog : public QDialog
+class UpdateChecker : public QObject
 {
     Q_OBJECT
-
 public:
-    explicit AboutDialog(QWidget *parent = nullptr);
-    ~AboutDialog();
+    explicit UpdateChecker(QObject *parent = nullptr);
+    ~UpdateChecker();
+    void check();
 
 signals:
-    void checkForUpdate();
+    void finished();
 
 private:
-    Ui::AboutDialog *ui;
+    QNetworkAccessManager *m_netAccessManager = nullptr;
+    QString m_version;
+    bool m_isPreRelease;
+    QString m_releaseNotes;
+
+    void onFileDownloaded(QNetworkReply *reply);
+    bool parseResponse(const QByteArray & data);
 };
 
-#endif // ABOUTDIALOG_H
+
+#endif // UPDATECHECKER_H

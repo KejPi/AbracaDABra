@@ -158,6 +158,8 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     aboutdialog.cpp
     aboutdialog.ui
 
+    updatechecker.h updatechecker.cpp
+
     metadatamanager.h
     metadatamanager.cpp
 
