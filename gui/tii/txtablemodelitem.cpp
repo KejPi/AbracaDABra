@@ -28,7 +28,7 @@
 
 TxTableModelItem::TxTableModelItem() {}
 
-TxTableModelItem::TxTableModelItem(uint8_t mainId, uint8_t subId, float level, const QGeoCoordinate &coordinates, const QList<TxDataItem *> txItemList)
+TxTableModelItem::TxTableModelItem(int8_t mainId, int8_t subId, float level, const QGeoCoordinate &coordinates, const QList<TxDataItem *> txItemList)
 {
     setTII(mainId, subId);
     setLevel(level);
@@ -63,19 +63,19 @@ float TxTableModelItem::level() const
     return m_level;
 }
 
-uint8_t TxTableModelItem::mainId() const
+int8_t TxTableModelItem::mainId() const
 {
     return m_mainId;
 }
 
-void TxTableModelItem::setTII(uint8_t newMainId, int8_t newSubId)
+void TxTableModelItem::setTII(int8_t newMainId, int8_t newSubId)
 {
     m_mainId = newMainId;
     m_subId = newSubId;
     m_id = (newSubId << 8) | newMainId;
 }
 
-uint8_t TxTableModelItem::subId() const
+int8_t TxTableModelItem::subId() const
 {
     return m_subId;
 }

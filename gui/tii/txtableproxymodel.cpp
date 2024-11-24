@@ -42,11 +42,6 @@ void TxTableProxyModel::setFilter(bool newFilterCols)
 
 bool TxTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
-    if (!m_enaFilter)
-    {
-        return false;
-    }
-
     TxTableModelItem itemL = sourceModel()->data(left, TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
     TxTableModelItem itemR = sourceModel()->data(right, TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
 
@@ -55,17 +50,73 @@ bool TxTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &rig
     case TxTableModel::ColMainId:
         if (itemL.mainId() == itemR.mainId())
         {
+            if (!m_enaFilter && (itemL.subId() == itemR.subId()))
+            {
+                return itemL.rxTime() < itemR.rxTime();
+            }
             return itemL.subId() < itemR.subId();
         }
         return itemL.mainId() < itemR.mainId();
     case TxTableModel::ColSubId:
+        if (!m_enaFilter && (itemL.subId() == itemR.subId()))
+        {
+            return itemL.rxTime() < itemR.rxTime();
+        }
         return itemL.subId() < itemR.subId();
     case TxTableModel::ColLevel:
+        if (!m_enaFilter && (itemL.level() == itemR.level()))
+        {
+            return itemL.rxTime() < itemR.rxTime();
+        }
         return itemL.level() < itemR.level();
-    case TxTableModel::ColDist:
-        return itemL.distance() < itemR.distance();
+    case TxTableModel::ColDist:        
+        if (!m_enaFilter && (itemL.distance() == itemR.distance()))
+        {
+            return itemL.rxTime() < itemR.rxTime();
+        }
+        return itemL.distance() < itemR.distance();        
     case TxTableModel::ColAzimuth:
+        if (!m_enaFilter && (itemL.azimuth() == itemR.azimuth()))
+        {
+            return itemL.rxTime() < itemR.rxTime();
+        }
         return itemL.azimuth() < itemR.azimuth();
+    // scanner cols
+    case TxTableModel::ColFreq:
+    case TxTableModel::ColChannel:
+        if (itemL.ensId().freq() == itemR.ensId().freq())
+        {
+            return itemL.rxTime() < itemR.rxTime();
+        }
+        return itemL.ensId().freq() < itemR.ensId().freq();
+    case TxTableModel::ColLocation:
+        return itemL.transmitterData().location() < itemR.transmitterData().location();
+    case TxTableModel::ColTime:
+        return itemL.rxTime() < itemR.rxTime();
+    case TxTableModel::ColEnsId:
+        if (itemL.ensId().ueid() == itemR.ensId().ueid())
+        {
+            return itemL.rxTime() < itemR.rxTime();
+        }
+        return itemL.ensId().ueid() < itemR.ensId().ueid();
+    case TxTableModel::ColEnsLabel:
+        if (itemL.ensLabel() == itemR.ensLabel())
+        {
+            return itemL.rxTime() < itemR.rxTime();
+        }
+        return itemL.ensLabel() < itemR.ensLabel();
+    case TxTableModel::ColNumServices:
+        if (itemL.numServices() == itemR.numServices())
+        {
+            return itemL.rxTime() < itemR.rxTime();
+        }
+        return itemL.numServices() < itemR.numServices();
+    case TxTableModel::ColSnr:
+        if (itemL.snr() == itemR.snr())
+        {
+            return itemL.rxTime() < itemR.rxTime();
+        }
+        return itemL.snr() < itemR.snr();
     }
 
     return true;

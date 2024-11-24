@@ -56,7 +56,7 @@ public:
 
     enum { ColTime, ColChannel, ColFreq, ColEnsId, ColEnsLabel, ColNumServices, ColSnr,
            ColMainId, ColSubId,
-           ColLevel, ColName, ColDist, ColAzimuth, // keep order of these
+           ColLevel, ColLocation, ColDist, ColAzimuth, // keep order of these
            NumCols};
 
     explicit TxTableModel(QObject *parent = nullptr);

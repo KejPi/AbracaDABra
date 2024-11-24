@@ -53,7 +53,7 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     resize(QSize(800, 800));
 
     // Set window flags to add maximize and minimize buttons
-    setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
+    //setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
 
     m_sortedFilteredModel->setFilter(false);
 
@@ -140,7 +140,8 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
 
     m_txTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_txTableView->setSelectionMode(QAbstractItemView::SingleSelection);
-    m_txTableView->setSortingEnabled(false);
+    m_txTableView->setSortingEnabled(true);
+    m_txTableView->sortByColumn(TxTableModel::ColTime, Qt::AscendingOrder);
 
     m_startStopButton->setText(tr("Start"));
     connect(m_startStopButton, &QPushButton::clicked, this, &ScannerDialog::startStopClicked);
@@ -421,7 +422,7 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 
         //m_txTableView->resizeColumnsToContents();
         m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-        m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColName, QHeaderView::Stretch);
+        m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColLocation, QHeaderView::Stretch);
         //m_txTableView->horizontalHeader()->setStretchLastSection(true);
 
         if (m_isTiiActive)

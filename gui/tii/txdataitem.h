@@ -63,10 +63,10 @@ private:
     QString m_ensLabel;
     QString m_location;
     ServiceListId m_ensId;
-    uint8_t m_mainId;
-    uint8_t m_subId;
+    uint8_t m_mainId = -1;
+    uint8_t m_subId = -1;
     QGeoCoordinate m_coordinates;
-    float m_power;
+    float m_power = -1.0;
     // int m_antenna;
     // Polarization m_polarization;
 };

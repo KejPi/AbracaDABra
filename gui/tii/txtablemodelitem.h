@@ -34,7 +34,7 @@ class TxTableModelItem
 {
 public:
     TxTableModelItem();
-    TxTableModelItem(uint8_t mainId, uint8_t subId, float level, const QGeoCoordinate & coordinates, const QList<TxDataItem *> txItemList);
+    TxTableModelItem(int8_t mainId, int8_t subId, float level, const QGeoCoordinate & coordinates, const QList<TxDataItem *> txItemList);
 
     bool hasTxData() const { return m_transmitterData.isValid(); }
 
@@ -44,9 +44,9 @@ public:
     const TxDataItem &transmitterData() const;
     void setTransmitterData(const TxDataItem &newTransmitterData);
 
-    void setTII(uint8_t newMainId, int8_t newSubId);
-    uint8_t mainId() const;    
-    uint8_t subId() const;    
+    void setTII(int8_t newMainId, int8_t newSubId);
+    int8_t mainId() const;
+    int8_t subId() const;
 
     float distance() const;
     void setDistance(float newDistance);
@@ -67,20 +67,20 @@ public:
     void setRxTime(const QDateTime &newRxTime);
 
 private:
-    int m_id;           // subId << 8 | mainId (this is unique)
-    uint8_t m_mainId;   // main ID
-    uint8_t m_subId;    // sub ID
-    float m_level;      // signal level
-    float m_distance;   // distance of the transmitter from current position (must be >= 0)
-    float m_azimuth;    // azimuth of the transmitter from current position
+    int m_id;                  // subId << 8 | mainId (this is unique)
+    int8_t m_mainId = -1;      // main ID
+    int8_t m_subId = -1;       // sub ID
+    float m_level;             // signal level
+    float m_distance = -1.0;   // distance of the transmitter from current position (must be >= 0)
+    float m_azimuth = -1.0;    // azimuth of the transmitter from current position
     TxDataItem m_transmitterData;   // information about transmitter
 
     // used for scanner
-    ServiceListId m_ensId;  // ensemble id
-    QString m_ensLabel;     // ensemble label
-    int m_numServices;      // number of services in ensemble
-    QDateTime m_rxTime;     // reception time
-    float m_snr;            // ensemble SNR
+    ServiceListId m_ensId;     // ensemble id
+    QString m_ensLabel;        // ensemble label
+    int m_numServices = 0;     // number of services in ensemble
+    QDateTime m_rxTime;        // reception time
+    float m_snr = 0.0;         // ensemble SNR
 };
 
 #endif // TXTABLEMODELITEM_H

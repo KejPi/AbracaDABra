@@ -87,13 +87,13 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
         case ColSnr:
             return QString("%1 dB").arg(static_cast<double>(item.snr()), 0, 'f', 1);
         case ColMainId:
-            return (item.mainId() != 255) ? QString::number(item.mainId()) : "";
+            return (item.mainId() != -1) ? QString::number(item.mainId()) : "";
         case ColSubId:
-            return (item.subId() != 255) ? QString::number(item.subId()) : "";
+            return (item.subId() != -1) ? QString::number(item.subId()) : "";
         case ColLevel:
             return QString("%1 dB").arg(static_cast<double>(item.level()), 5, 'f', 1); // QString::number(static_cast<double>(item.level()), 'f', 3);
-        case ColName:
-            return item.transmitterData().location();
+        case ColLocation:
+            return item.hasTxData() ? item.transmitterData().location() : "";
         case ColDist:
             if (item.hasTxData() && item.distance() >= 0.0)
             {
@@ -127,12 +127,12 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
         case ColSnr:
             return QString("%1").arg(static_cast<double>(item.snr()), 0, 'f', 1);
         case ColMainId:
-            return (item.mainId() != 255) ? QString::number(item.mainId()) : "";
+            return (item.mainId() != -1) ? QString::number(item.mainId()) : "";
         case ColSubId:
-            return (item.subId() != 255) ? QString::number(item.subId()) : "";
+            return (item.subId() != -1) ? QString::number(item.subId()) : "";
         case ColLevel:
             return QString("%1").arg(static_cast<double>(item.level()), 5, 'f', 1);
-        case ColName:
+        case ColLocation:
             return item.transmitterData().location();
         case ColDist:
             if (item.hasTxData() && item.distance() >= 0.0)
@@ -156,7 +156,7 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
     case TxTableModelRoles::SubIdRole:
         return item.subId();
     case TxTableModelRoles::TiiRole:
-        return (item.mainId() != 255) ? QVariant(QString("%1-%2").arg(item.mainId()).arg(item.subId())) : "";
+        return (item.mainId() != -1) ? QVariant(QString("%1-%2").arg(item.mainId()).arg(item.subId())) : "";
     case TxTableModelRoles::LevelColorRole:
         if (item.level() > -6)
         {
@@ -209,8 +209,8 @@ QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int 
             return tr("Sub");
         case ColLevel:
             return tr("Level");
-        case ColName:
-            return tr("Name");
+        case ColLocation:
+            return tr("Location");
         case ColDist:
             return tr("Distance");
         case ColAzimuth:
@@ -242,8 +242,8 @@ QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int 
             return tr("Sub");
         case ColLevel:
             return tr("Level [dB]");
-        case ColName:
-            return tr("Name");
+        case ColLocation:
+            return tr("Location");
         case ColDist:
             return tr("Distance [km]");
         case ColAzimuth:
