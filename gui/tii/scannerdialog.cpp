@@ -47,13 +47,13 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     TxMapDialog(settings, false, parent)
 {
     // UI
-    setWindowTitle(tr("Scanning Tool"));
-    setModal(true);
+    setWindowTitle(tr("DAB Scanning Tool"));
+    //setModal(true);
     setMinimumSize(QSize(600, 400));
     resize(QSize(800, 800));
 
     // Set window flags to add maximize and minimize buttons
-    //setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
+    setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
 
     m_sortedFilteredModel->setFilter(false);
 

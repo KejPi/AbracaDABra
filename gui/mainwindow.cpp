@@ -1484,22 +1484,24 @@ void MainWindow::onTuneDone(uint32_t freq)
     m_frequency = freq;
     if (freq != 0)
     {
-        ui->channelCombo->setEnabled(true);
-        ui->channelDown->setEnabled(true);
-        ui->channelUp->setEnabled(true);
-        ui->serviceListView->setEnabled(true);
-        ui->serviceTreeView->setEnabled(true);
-        if (m_hasListViewFocus)
-        {
-            ui->serviceListView->setFocus();
-        }
-        else if (m_hasTreeViewFocus)
-        {
-            ui->serviceTreeView->setFocus();
-        }
-        else
-        {
-            ui->channelCombo->setFocus();
+        if (!m_isScannerRunning) {
+            ui->channelCombo->setEnabled(true);
+            ui->channelDown->setEnabled(true);
+            ui->channelUp->setEnabled(true);
+            ui->serviceListView->setEnabled(true);
+            ui->serviceTreeView->setEnabled(true);
+            if (m_hasListViewFocus)
+            {
+                ui->serviceListView->setFocus();
+            }
+            else if (m_hasTreeViewFocus)
+            {
+                ui->serviceTreeView->setFocus();
+            }
+            else
+            {
+                ui->channelCombo->setFocus();
+            }
         }
 
         ui->frequencyLabel->setText(QString("%1 MHz").arg(freq/1000.0, 3, 'f', 3, QChar('0')));
@@ -3561,12 +3563,32 @@ void MainWindow::showScannerDialog()
     connect(dialog, &ScannerDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
 
     connect(dialog, &QDialog::finished, this, [this]() {
+        // restore UI
+        m_setupAction->setEnabled(true);
+        m_scanningToolAction->setEnabled(true);
+        m_bandScanAction->setEnabled(true);
+
         m_isScannerRunning = false;
         onBandScanFinished(BandScanDialogResult::Done);
     } );
     connect(dialog, &QDialog::finished, dialog, &QObject::deleteLater);
 
+    ui->channelCombo->setEnabled(false);
+    ui->channelDown->setEnabled(false);
+    ui->channelUp->setEnabled(false);
+    m_hasListViewFocus = ui->serviceListView->hasFocus();
+    m_hasTreeViewFocus = ui->serviceTreeView->hasFocus();
+    ui->serviceListView->setEnabled(false);
+    ui->serviceTreeView->setEnabled(false);
+    m_setupAction->setEnabled(false);
+    m_scanningToolAction->setEnabled(false);
+    m_bandScanAction->setEnabled(false);
+
+
     m_isScannerRunning = true;
+
+    //dialog->setModal(true);
+    //dialog->exec();
 
     dialog->show();
     dialog->raise();
