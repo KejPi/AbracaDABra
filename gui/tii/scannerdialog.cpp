@@ -188,7 +188,7 @@ void ScannerDialog::startStopClicked()
         // 1. wait for tune (event)
         // 2. wait for sync (timer or event)
         // 4. wait for ensemble (timer or event)
-        // 5. wait for services (timer)
+        // 5. wait for tii (timer)
         if (m_timer->isActive())
         {   // state 2, 3, 4
             m_timer->stop();
@@ -461,6 +461,28 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
             m_timer->stop();
             scanStep();
         }
+    }
+}
+
+void ScannerDialog::onInputDeviceError(const InputDeviceErrorCode)
+{
+    if (m_isScanning)
+    {   // stop pressed
+        m_startStopButton->setEnabled(false);
+        m_isScanning = false;
+        m_ensemble.reset();
+
+        // the state machine has 4 possible states
+        // 1. wait for tune (event)
+        // 2. wait for sync (timer or event)
+        // 4. wait for ensemble (timer or event)
+        // 5. wait for tii (timer)
+        if (m_timer->isActive())
+        {   // state 2, 3, 4
+            m_timer->stop();
+        }
+        stopScan();
+        m_scanningLabel->setText(tr("Scanning failed"));
     }
 }
 

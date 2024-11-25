@@ -455,6 +455,11 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
     }
 }
 
+void SetupDialog::setInputDeviceEnabled(bool ena)
+{
+    ui->inputCombo->setEnabled(ena);
+}
+
 void SetupDialog::setSettings(Settings * settings)
 {
     m_settings = settings;

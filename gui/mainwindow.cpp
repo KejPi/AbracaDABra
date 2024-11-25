@@ -201,6 +201,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 #endif
     m_epgDialog = nullptr;
     m_tiiDialog = nullptr;
+    m_scannerDialog = nullptr;
 #if HAVE_FMLIST_INTERFACE
     m_fmlistInterface = nullptr;
 #endif
@@ -3557,47 +3558,54 @@ void MainWindow::showTiiDialog()
 }
 void MainWindow::showScannerDialog()
 {
-    ScannerDialog * dialog = new ScannerDialog(m_settings, this);
+    if (m_scannerDialog == nullptr)
+    {
+        m_scannerDialog = new ScannerDialog(m_settings, this);
 
-    connect(dialog, &ScannerDialog::tuneChannel, this, &MainWindow::onTuneChannel);
-    connect(m_radioControl, &RadioControl::signalState, dialog, &ScannerDialog::onSyncStatus, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::ensembleInformation, dialog, &ScannerDialog::onEnsembleInformation, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::tuneDone, dialog, &ScannerDialog::onTuneDone, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::serviceListEntry, dialog, &ScannerDialog::onServiceListEntry, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::tiiData, dialog, &ScannerDialog::onTiiData, Qt::QueuedConnection);
-    connect(dialog, &ScannerDialog::scanStarts, this, [this]() {
-        ui->channelCombo->setEnabled(false);
-        ui->channelDown->setEnabled(false);
-        ui->channelUp->setEnabled(false);
-        m_hasListViewFocus = ui->serviceListView->hasFocus();
-        m_hasTreeViewFocus = ui->serviceTreeView->hasFocus();
-        ui->serviceListView->setEnabled(false);
-        ui->serviceTreeView->setEnabled(false);
-        m_setupAction->setEnabled(false);
-        m_scanningToolAction->setEnabled(false);
-        m_bandScanAction->setEnabled(false);
+        connect(m_scannerDialog, &ScannerDialog::tuneChannel, this, &MainWindow::onTuneChannel);
+        connect(m_radioControl, &RadioControl::signalState, m_scannerDialog, &ScannerDialog::onSyncStatus, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::ensembleInformation, m_scannerDialog, &ScannerDialog::onEnsembleInformation, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::tuneDone, m_scannerDialog, &ScannerDialog::onTuneDone, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::serviceListEntry, m_scannerDialog, &ScannerDialog::onServiceListEntry, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::tiiData, m_scannerDialog, &ScannerDialog::onTiiData, Qt::QueuedConnection);
+        connect(m_inputDevice, &InputDevice::error, m_scannerDialog, &ScannerDialog::onInputDeviceError, Qt::QueuedConnection);
+        connect(m_scannerDialog, &ScannerDialog::scanStarts, this, [this]() {
+            ui->channelCombo->setEnabled(false);
+            ui->channelDown->setEnabled(false);
+            ui->channelUp->setEnabled(false);
+            m_hasListViewFocus = ui->serviceListView->hasFocus();
+            m_hasTreeViewFocus = ui->serviceTreeView->hasFocus();
+            ui->serviceListView->setEnabled(false);
+            ui->serviceTreeView->setEnabled(false);
 
-        m_isScannerRunning = true;
+            m_isScannerRunning = true;
 
-        onBandScanStart();
-    });
+            onBandScanStart();
+        });
 
-    connect(dialog, &ScannerDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
+        connect(m_scannerDialog, &ScannerDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
 
-    connect(dialog, &ScannerDialog::scanFinished, this, [this]() {
-        // restore UI
-        m_setupAction->setEnabled(true);
-        m_scanningToolAction->setEnabled(true);
-        m_bandScanAction->setEnabled(true);
+        connect(m_scannerDialog, &ScannerDialog::scanFinished, this, [this]() {
+            m_isScannerRunning = false;
+            onBandScanFinished(BandScanDialogResult::Done);
+        } );
+        connect(m_scannerDialog, &ScannerDialog::finished, this, [this]() {
+            // restore UI
+            m_setupDialog->setInputDeviceEnabled(true);
+            m_scanningToolAction->setEnabled(true);
+            m_bandScanAction->setEnabled(true);
+        } );
+        connect(m_scannerDialog, &QDialog::finished, m_scannerDialog, &QObject::deleteLater);
+        connect(m_scannerDialog, &QDialog::destroyed, this, [this]() { m_scannerDialog = nullptr; } );
+    }
 
-        m_isScannerRunning = false;
-        onBandScanFinished(BandScanDialogResult::Done);
-    } );
-    connect(dialog, &QDialog::finished, dialog, &QObject::deleteLater);
-
-    dialog->show();
-    dialog->raise();
-    dialog->activateWindow();
+    // force closing settings to avoti user changing input device while scanning
+    m_scanningToolAction->setEnabled(false);
+    m_bandScanAction->setEnabled(false);
+    m_setupDialog->setInputDeviceEnabled(false);
+    m_scannerDialog->show();
+    m_scannerDialog->raise();
+    m_scannerDialog->activateWindow();
 }
 
 void MainWindow::onExpertModeToggled(bool checked)

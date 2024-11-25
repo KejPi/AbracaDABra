@@ -51,6 +51,7 @@ public:
     SetupDialog(QWidget *parent = nullptr);
     void setupDarkMode(bool darkModeEna);
     void setGainValues(const QList<float> & gainList);
+    void setInputDeviceEnabled(bool ena);
     void resetInputDevice();
     void setSettings(Settings  * settings);
     void setXmlHeader(const InputDeviceDescription & desc);

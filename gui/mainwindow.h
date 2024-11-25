@@ -129,6 +129,7 @@ private:
     LogDialog * m_logDialog;
     AudioRecScheduleDialog * m_audioRecScheduleDialog;
     TIIDialog * m_tiiDialog;
+    ScannerDialog * m_scannerDialog;
 #if HAVE_QCUSTOMPLOT
     SNRPlotDialog * m_snrPlotDialog;    
     ClickableLabel * m_snrLabel;    
