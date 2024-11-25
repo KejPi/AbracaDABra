@@ -237,7 +237,9 @@ void ScannerDialog::stopScan()
     m_spinBox->setEnabled(true);
 
     m_isScanning = false;
-    m_state = ScannerState::Init;
+    m_state = ScannerState::Idle;
+
+    emit scanFinished();
 }
 
 void ScannerDialog::exportClicked()
@@ -352,27 +354,32 @@ void ScannerDialog::scanStep()
 
 void ScannerDialog::onTuneDone(uint32_t freq)
 {
-    if (ScannerState::Init == m_state)
+    switch (m_state)
     {
+    case ScannerState::Init:
         if (m_timer->isActive())
         {
             m_timer->stop();
         }
         scanStep();
-    }
-    else if (ScannerState::Interrupted == m_state)
-    {   // exit
+        break;
+    case ScannerState::Interrupted:
+        // exit
         stopScan();
-    }
-    else
-    {   // tuned to some frequency -> wait for sync
+        break;
+    case ScannerState::WaitForTune:
+       // tuned to some frequency -> wait for sync
         m_state = ScannerState::WaitForSync;
         m_timer->start(m_settings->scanner.waitForSync*1000);
+        break;
+    default:
+        // do nothing
+        break;
     }
 }
 
 void ScannerDialog::onSyncStatus(uint8_t sync, float snr)
-{
+{    
     if (DabSyncLevel::NullSync <= DabSyncLevel(sync))
     {
         if (ScannerState::WaitForSync == m_state)
@@ -397,7 +404,7 @@ void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble & ens)
 
     m_timer->stop();
 
-    m_state = ScannerState::WaitForServices;
+    m_state = ScannerState::WaitForTII;
 
     // this will stop when TII data is received
     m_timer->start(10000);
@@ -410,12 +417,15 @@ void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble & ens)
 
 void ScannerDialog::onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &)
 {
-    m_numServicesFound += 1;
+    if (m_state > ScannerState::WaitForEnsemble)
+    {
+        m_numServicesFound += 1;
+    }
 }
 
 void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 {
-    if (m_ensemble.isValid())
+    if ((ScannerState::WaitForTII == m_state) && m_ensemble.isValid())
     {
         m_model->appendEnsData(data.idList, ServiceListId(m_ensemble), m_ensemble.label, m_numServicesFound, m_snr);
         m_exportButton->setEnabled(true);

@@ -2366,8 +2366,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         delete m_inputDevice;
     }
 
-    // disable band scan - will be enable when it makes sense (RTL-SDR at the moment)
+    // disable band scan and scanner - will be enable when it makes sense
     m_bandScanAction->setDisabled(true);
+    m_scanningToolAction->setDisabled(true);
 
     // disable file recording
     m_ensembleInfoDialog->enableRecording(false);
@@ -2460,6 +2461,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // enable band scan
             m_bandScanAction->setEnabled(true);
+            m_scanningToolAction->setEnabled(true);
 
             // enable service list
             ui->serviceListView->setEnabled(true);
@@ -2539,6 +2541,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // enable band scan
             m_bandScanAction->setEnabled(true);
+            m_scanningToolAction->setEnabled(true);
 
             // enable service list
             ui->serviceListView->setEnabled(true);
@@ -2616,6 +2619,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // enable band scan
             m_bandScanAction->setEnabled(true);
+            m_scanningToolAction->setEnabled(true);
 
             // enable service list
             ui->serviceListView->setEnabled(true);
@@ -2690,6 +2694,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // enable band scan
             m_bandScanAction->setEnabled(true);
+            m_scanningToolAction->setEnabled(true);
 
             // enable service list
             ui->serviceListView->setEnabled(true);
@@ -2777,6 +2782,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // enable band scan
             m_bandScanAction->setEnabled(true);
+            m_scanningToolAction->setEnabled(true);
 
             // enable service list
             ui->serviceListView->setEnabled(true);
@@ -3559,10 +3565,26 @@ void MainWindow::showScannerDialog()
     connect(m_radioControl, &RadioControl::tuneDone, dialog, &ScannerDialog::onTuneDone, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListEntry, dialog, &ScannerDialog::onServiceListEntry, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::tiiData, dialog, &ScannerDialog::onTiiData, Qt::QueuedConnection);
-    connect(dialog, &ScannerDialog::scanStarts, this, &MainWindow::onBandScanStart);
+    connect(dialog, &ScannerDialog::scanStarts, this, [this]() {
+        ui->channelCombo->setEnabled(false);
+        ui->channelDown->setEnabled(false);
+        ui->channelUp->setEnabled(false);
+        m_hasListViewFocus = ui->serviceListView->hasFocus();
+        m_hasTreeViewFocus = ui->serviceTreeView->hasFocus();
+        ui->serviceListView->setEnabled(false);
+        ui->serviceTreeView->setEnabled(false);
+        m_setupAction->setEnabled(false);
+        m_scanningToolAction->setEnabled(false);
+        m_bandScanAction->setEnabled(false);
+
+        m_isScannerRunning = true;
+
+        onBandScanStart();
+    });
+
     connect(dialog, &ScannerDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
 
-    connect(dialog, &QDialog::finished, this, [this]() {
+    connect(dialog, &ScannerDialog::scanFinished, this, [this]() {
         // restore UI
         m_setupAction->setEnabled(true);
         m_scanningToolAction->setEnabled(true);
@@ -3572,23 +3594,6 @@ void MainWindow::showScannerDialog()
         onBandScanFinished(BandScanDialogResult::Done);
     } );
     connect(dialog, &QDialog::finished, dialog, &QObject::deleteLater);
-
-    ui->channelCombo->setEnabled(false);
-    ui->channelDown->setEnabled(false);
-    ui->channelUp->setEnabled(false);
-    m_hasListViewFocus = ui->serviceListView->hasFocus();
-    m_hasTreeViewFocus = ui->serviceTreeView->hasFocus();
-    ui->serviceListView->setEnabled(false);
-    ui->serviceTreeView->setEnabled(false);
-    m_setupAction->setEnabled(false);
-    m_scanningToolAction->setEnabled(false);
-    m_bandScanAction->setEnabled(false);
-
-
-    m_isScannerRunning = true;
-
-    //dialog->setModal(true);
-    //dialog->exec();
 
     dialog->show();
     dialog->raise();

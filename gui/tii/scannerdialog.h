@@ -64,6 +64,7 @@ public:
     void setSelectedRow(int modelRow) override;
 signals:
     void scanStarts();
+    void scanFinished();
     void tuneChannel(uint32_t freq);
 
 protected:
@@ -78,7 +79,7 @@ private:
         WaitForTune,
         WaitForSync,
         WaitForEnsemble,
-        WaitForServices,
+        WaitForTII,
         Interrupted
     };
 
