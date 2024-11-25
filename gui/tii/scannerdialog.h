@@ -61,7 +61,7 @@ public:
     void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &);
     void onTiiData(const RadioControlTIIData & data) override;
     void onInputDeviceError(const InputDeviceErrorCode);
-    void setupDarkMode(bool darkModeEna) override {}
+    void setupDarkMode(bool darkModeEna) override;
     void setSelectedRow(int modelRow) override;
 signals:
     void scanStarts();

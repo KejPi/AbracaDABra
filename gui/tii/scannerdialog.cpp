@@ -486,6 +486,18 @@ void ScannerDialog::onInputDeviceError(const InputDeviceErrorCode)
     }
 }
 
+void ScannerDialog::setupDarkMode(bool darkModeEna)
+{
+    if (darkModeEna)
+    {
+        m_qmlView->setColor(Qt::black);
+    }
+    else
+    {
+        m_qmlView->setColor(Qt::white);
+    }
+}
+
 void ScannerDialog::setSelectedRow(int modelRow)
 {
     if (m_selectedRow == modelRow)

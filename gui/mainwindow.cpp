@@ -3561,7 +3561,7 @@ void MainWindow::showScannerDialog()
     if (m_scannerDialog == nullptr)
     {
         m_scannerDialog = new ScannerDialog(m_settings, this);
-
+        m_scannerDialog->setupDarkMode(isDarkMode());
         connect(m_scannerDialog, &ScannerDialog::tuneChannel, this, &MainWindow::onTuneChannel);
         connect(m_radioControl, &RadioControl::signalState, m_scannerDialog, &ScannerDialog::onSyncStatus, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::ensembleInformation, m_scannerDialog, &ScannerDialog::onEnsembleInformation, Qt::QueuedConnection);
@@ -4039,6 +4039,10 @@ void MainWindow::setupDarkMode()
     if (m_tiiDialog != nullptr)
     {
         m_tiiDialog->setupDarkMode(darkMode);
+    }
+    if (m_scannerDialog != nullptr)
+    {
+        m_scannerDialog->setupDarkMode(darkMode);
     }
 
     if (darkMode)
