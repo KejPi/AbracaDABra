@@ -117,6 +117,12 @@ bool TxTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &rig
             return itemL.rxTime() < itemR.rxTime();
         }
         return itemL.snr() < itemR.snr();
+    case TxTableModel::ColPower:
+        if (itemL.power() == itemR.power())
+        {
+            return itemL.rxTime() < itemR.rxTime();
+        }
+        return itemL.power() < itemR.power();
     }
 
     return true;

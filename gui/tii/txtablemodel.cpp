@@ -106,6 +106,12 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
                 return QString("%1°").arg(static_cast<double>(item.azimuth()), 0, 'f', 1);
             }
             return QVariant("");
+        case ColPower:
+            if (item.hasTxData() && item.power() > 0.0)
+            {
+                return QString("%1 kW").arg(static_cast<double>(item.power()), 0, 'f', 1);
+            }
+            return QVariant("");
         }
     }
         break;
@@ -144,6 +150,12 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
             if (item.hasTxData() && item.azimuth() >= 0.0)
             {
                 return QString("%1").arg(static_cast<double>(item.azimuth()), 0, 'f', 1);
+            }
+            return QVariant("");
+        case ColPower:
+            if (item.hasTxData() && item.power() > 0)
+            {
+                return QString("%1").arg(static_cast<double>(item.power()), 0, 'f', 1);
             }
             return QVariant("");
         }
@@ -211,10 +223,12 @@ QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int 
             return tr("Level");
         case ColLocation:
             return tr("Location");
+        case ColPower:
+            return tr("Power");
         case ColDist:
             return tr("Distance");
         case ColAzimuth:
-            return tr("Azimuth");
+            return tr("Azimuth");            
         default:
             break;
         }
@@ -244,6 +258,8 @@ QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int 
             return tr("Level [dB]");
         case ColLocation:
             return tr("Location");
+        case ColPower:
+            return tr("Power [kW]");
         case ColDist:
             return tr("Distance [km]");
         case ColAzimuth:

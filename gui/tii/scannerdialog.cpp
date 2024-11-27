@@ -49,8 +49,7 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
 {
     // UI
     setWindowTitle(tr("DAB Scanning Tool"));
-    //setModal(true);
-    setMinimumSize(QSize(600, 400));
+    setMinimumSize(QSize(700, 500));
     resize(QSize(800, 800));
 
     // Set window flags to add maximize and minimize buttons

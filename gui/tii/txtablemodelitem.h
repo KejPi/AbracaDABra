@@ -58,6 +58,8 @@ public:
     int id() const;
     void updateGeo(const QGeoCoordinate & coordinates);
 
+    float power() const;
+
     void setEnsData(const ServiceListId &ensId, const QString &ensLabel, int numServices, float snr);
     ServiceListId ensId() const;
     QString ensLabel() const;

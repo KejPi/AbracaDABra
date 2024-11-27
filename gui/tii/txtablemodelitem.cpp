@@ -119,6 +119,15 @@ void TxTableModelItem::updateGeo(const QGeoCoordinate &coordinates)
     }
 }
 
+float TxTableModelItem::power() const
+{
+    if (hasTxData())
+    {
+        return m_transmitterData.power();
+    }
+    return 0.0;
+}
+
 void TxTableModelItem::setLevel(float newLevel)
 {
     m_level = newLevel;
