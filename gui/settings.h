@@ -166,9 +166,10 @@ public:
         QString exportPath;
         QByteArray geometry;
         QByteArray splitterState;
+        QMap<uint32_t, bool> channelSelection;
         int numCycles;
         int waitForSync;
-        int waitForEnsemble;
+        int waitForEnsemble;        
     } scanner;
 
 };

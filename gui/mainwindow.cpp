@@ -1005,6 +1005,11 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    if (m_scannerDialog)
+    {
+        m_scannerDialog->close();
+    }
+
     if (0 == m_frequency)
     {   // in idle
         emit exit();
@@ -2998,6 +3003,13 @@ void MainWindow::loadSettings()
     m_settings->scanner.numCycles = settings->value("Scanner/numCycles", 1).toInt();
     m_settings->scanner.waitForSync = settings->value("Scanner/waitForSyncSec", 3).toInt();
     m_settings->scanner.waitForEnsemble = settings->value("Scanner/waitForEnsembleSec", 6).toInt();
+    int numCh = settings->beginReadArray("Scanner/channels");
+    for (int ch = 0; ch < numCh; ++ch)
+    {
+        settings->setArrayIndex(ch);
+        m_settings->scanner.channelSelection.insert(settings->value("frequency").toInt(), settings->value("active").toBool());
+    }
+    settings->endArray();
 
     m_settings->proxy.config = static_cast<Settings::ProxyConfig>(settings->value("Proxy/config", static_cast<int>(Settings::ProxyConfig::System)).toInt());
     m_settings->proxy.server = settings->value("Proxy/server", "").toString();
@@ -3199,6 +3211,16 @@ void MainWindow::saveSettings()
     settings->setValue("Scanner/windowGeometry", m_settings->scanner.geometry);
     settings->setValue("Scanner/layout", m_settings->scanner.splitterState);
     settings->setValue("Scanner/numCycles", m_settings->scanner.numCycles);
+
+    settings->beginWriteArray("Scanner/channels");
+    int ch = 0;
+    for (auto it = m_settings->scanner.channelSelection.cbegin(); it != m_settings->scanner.channelSelection.cend(); ++it)
+    {
+        settings->setArrayIndex(ch++);
+        settings->setValue("frequency", it.key());
+        settings->setValue("active", it.value());
+    }
+    settings->endArray();
 
     settings->setValue("EnsembleInfo/windowGeometry", m_settings->ensembleInfo.geometry);
     settings->setValue("EnsembleInfo/exportPath", m_ensembleInfoDialog->exportPath());
@@ -3585,8 +3607,13 @@ void MainWindow::showScannerDialog()
 
         connect(m_scannerDialog, &ScannerDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
 
-        connect(m_scannerDialog, &ScannerDialog::scanFinished, this, [this]() {
+        connect(m_scannerDialog, &ScannerDialog::scanFinished, this, [this]() {            
             m_isScannerRunning = false;
+            ui->channelCombo->setEnabled(true);
+            ui->channelDown->setEnabled(true);
+            ui->channelUp->setEnabled(true);
+            ui->serviceListView->setEnabled(true);
+            ui->serviceTreeView->setEnabled(true);
             onBandScanFinished(BandScanDialogResult::Done);
         } );
         connect(m_scannerDialog, &ScannerDialog::finished, this, [this]() {

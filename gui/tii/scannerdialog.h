@@ -93,6 +93,7 @@ private:
     QLabel * m_scanningLabel;
     QLabel * m_progressChannel;
     QPushButton * m_exportButton;
+    QPushButton * m_channelListButton;
     QSpinBox * m_spinBox;
 
     QTimer * m_timer = nullptr;
@@ -106,6 +107,7 @@ private:
     RadioControlEnsemble m_ensemble;
     int m_numServicesFound = 0;
     dabChannelList_t::ConstIterator m_channelIt;
+    QMap<uint32_t, bool> m_channelSelection;
     float m_snr;
     QDateTime m_scanStartTime;
 
@@ -114,6 +116,7 @@ private:
     void startStopClicked();
     void stopScan();
     void exportClicked();
+    void channelSelectionClicked();
 };
 
 #endif // SCANNERDIALOG_H

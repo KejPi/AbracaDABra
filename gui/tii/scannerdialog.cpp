@@ -24,6 +24,7 @@
  * SOFTWARE.
  */
 
+#include "channelselectiondialog.h"
 #include <QDebug>
 #include <QHeaderView>
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && QT_CONFIG(permissions)
@@ -83,7 +84,8 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     m_progressBar->setTextVisible(false);
 
     m_exportButton = new QPushButton(this);
-    m_startStopButton = new QPushButton(this);
+    m_channelListButton = new QPushButton(this);
+    m_startStopButton = new QPushButton(this);    
     m_startStopButton->setDefault(true);
 
     QFrame * line = new QFrame(this);
@@ -106,9 +108,9 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     controlsLayout->addWidget(m_exportButton);
     controlsLayout->addWidget(line);
     controlsLayout->addLayout(formLayout);
+    controlsLayout->addWidget(m_channelListButton);
     controlsLayout->addWidget(m_startStopButton);
     mainLayout->addLayout(controlsLayout);
-
 
     mainLayout->addWidget(m_progressBar);
 
@@ -150,9 +152,23 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     m_progressChannel->setText(tr("None"));
     m_progressChannel->setVisible(false);
     m_scanningLabel->setText("");
+    m_channelListButton->setText(tr("Select channels"));
     m_exportButton->setText(tr("Export as CSV"));
     m_exportButton->setEnabled(false);
     connect(m_exportButton, &QPushButton::clicked, this, &ScannerDialog::exportClicked);
+
+    for (auto it = DabTables::channelList.cbegin(); it != DabTables::channelList.cend(); ++it)
+    {
+        if (m_settings->scanner.channelSelection.contains(it.key()))
+        {
+            m_channelSelection.insert(it.key(), m_settings->scanner.channelSelection.value(it.key()));
+        }
+        else
+        {
+            m_channelSelection.insert(it.key(), true);
+        }
+    }
+    connect(m_channelListButton, &QPushButton::clicked, this, &ScannerDialog::channelSelectionClicked);
 
     m_ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
 
@@ -203,12 +219,17 @@ void ScannerDialog::startStopClicked()
     {   // start pressed
         m_startStopButton->setText(tr("Stop"));
         m_spinBox->setEnabled(false);
+        int numActive = 0;
+        for (const auto ch : m_channelSelection)
+        {
+            numActive += ch ? 1 : 0;
+        }
         if (m_spinBox->value() > 0) {
-            m_progressBar->setMaximum(DabTables::channelList.size() * m_spinBox->value());
+            m_progressBar->setMaximum(numActive * m_spinBox->value());
         }
         else
         {
-            m_progressBar->setMaximum(DabTables::channelList.size());
+            m_progressBar->setMaximum(numActive);
         }
         startScan();
     }
@@ -235,6 +256,7 @@ void ScannerDialog::stopScan()
     m_startStopButton->setText(tr("Start"));
     m_startStopButton->setEnabled(true);
     m_spinBox->setEnabled(true);
+    m_channelListButton->setEnabled(true);
 
     m_isScanning = false;
     m_state = ScannerState::Idle;
@@ -282,6 +304,19 @@ void ScannerDialog::exportClicked()
     }
 }
 
+void ScannerDialog::channelSelectionClicked()
+{
+    auto dialog = new ChannelSelectionDialog(m_channelSelection, this);
+    connect(dialog, &QDialog::accepted, this, [this, dialog]() {
+        dialog->getChannelList(m_channelSelection);
+    });
+    connect(dialog, &ChannelSelectionDialog::finished, dialog, &QObject::deleteLater);
+    dialog->setWindowModality(Qt::WindowModal);
+    dialog->open();
+    //dialog->setModal(true);
+    //dialog->show();
+}
+
 void ScannerDialog::startScan()
 {
     m_isScanning = true;
@@ -292,6 +327,7 @@ void ScannerDialog::startScan()
 
     m_model->clear();
     m_exportButton->setEnabled(false);
+    m_channelListButton->setEnabled(false);
     m_scanCycleCntr = 0;
 
     if (m_timer == nullptr)
@@ -317,7 +353,13 @@ void ScannerDialog::scanStep()
     else
     {   // next step
         ++m_channelIt;
-    }    
+    }
+
+    // find active channel
+    while ((m_channelSelection.value(m_channelIt.key()) == false) && (DabTables::channelList.constEnd() != m_channelIt))
+    {
+        ++m_channelIt;
+    }
 
     if (DabTables::channelList.constEnd() == m_channelIt)
     {
@@ -332,6 +374,12 @@ void ScannerDialog::scanStep()
         if (m_spinBox->value() == 0)
         {   // endless scan
             m_progressBar->setValue(0);
+        }
+
+        // find first active channel
+        while ((m_channelSelection.value(m_channelIt.key()) == false) && (DabTables::channelList.constEnd() != m_channelIt))
+        {
+            ++m_channelIt;
         }
     }
 
@@ -558,6 +606,7 @@ void ScannerDialog::closeEvent(QCloseEvent *event)
     m_settings->scanner.splitterState = m_splitter->saveState();
     m_settings->scanner.geometry = saveGeometry();
     m_settings->scanner.numCycles = m_spinBox->value();
+    m_settings->scanner.channelSelection = m_channelSelection;
 
     TxMapDialog::closeEvent(event);
 }

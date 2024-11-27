@@ -210,6 +210,7 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     tii/txdataloader.h tii/txdataloader.cpp      
     # Scanner tool
     tii/scannerdialog.h tii/scannerdialog.cpp
+    tii/channelselectiondialog.h tii/channelselectiondialog.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
