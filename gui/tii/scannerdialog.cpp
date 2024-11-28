@@ -320,11 +320,10 @@ void ScannerDialog::startScan()
 {
     m_isScanning = true;
 
+    reset();
     m_scanStartTime = QDateTime::currentDateTime();
     m_scanningLabel->setText(tr("Scanning channel:"));
     m_progressChannel->setVisible(true);
-
-    m_model->clear();
     m_exportButton->setEnabled(false);
     m_channelListButton->setEnabled(false);
     m_scanCycleCntr = 0;

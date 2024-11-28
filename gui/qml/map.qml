@@ -135,7 +135,7 @@ Item {
                 coordinate:  coordinates
                 tiiCode: tiiString
                 markerColor: levelColor
-                isSelected: index === tii.selectedRow
+                isSelected: (index >= 0) && (index === tii.selectedRow)
                 isTiiMode: tii.isTii
                 z: isSelected ? 2 : 1
 
