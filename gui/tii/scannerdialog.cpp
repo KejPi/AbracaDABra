@@ -587,8 +587,11 @@ void ScannerDialog::setSelectedRow(int modelRow)
 
 void ScannerDialog::showEvent(QShowEvent *event)
 {
-    m_txTableView->setMinimumWidth(700);
-    m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    if (!isVisible())
+    {
+        m_txTableView->setMinimumWidth(700);
+        m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    }
 
     TxMapDialog::showEvent(event);
 }

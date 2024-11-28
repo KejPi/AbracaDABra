@@ -3582,15 +3582,16 @@ void MainWindow::showScannerDialog()
 {
     if (m_scannerDialog == nullptr)
     {
-        m_scannerDialog = new ScannerDialog(m_settings, this);
+        m_scannerDialog = new ScannerDialog(m_settings);
         m_scannerDialog->setupDarkMode(isDarkMode());
         connect(m_scannerDialog, &ScannerDialog::tuneChannel, this, &MainWindow::onTuneChannel);
+        connect(m_setupDialog, &SetupDialog::tiiSettingsChanged, m_scannerDialog, &ScannerDialog::onSettingsChanged);
         connect(m_radioControl, &RadioControl::signalState, m_scannerDialog, &ScannerDialog::onSyncStatus, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::ensembleInformation, m_scannerDialog, &ScannerDialog::onEnsembleInformation, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tuneDone, m_scannerDialog, &ScannerDialog::onTuneDone, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::serviceListEntry, m_scannerDialog, &ScannerDialog::onServiceListEntry, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tiiData, m_scannerDialog, &ScannerDialog::onTiiData, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::error, m_scannerDialog, &ScannerDialog::onInputDeviceError, Qt::QueuedConnection);
+        connect(m_inputDevice, &InputDevice::error, m_scannerDialog, &ScannerDialog::onInputDeviceError, Qt::QueuedConnection);        
         connect(m_scannerDialog, &ScannerDialog::scanStarts, this, [this]() {
             ui->channelCombo->setEnabled(false);
             ui->channelDown->setEnabled(false);

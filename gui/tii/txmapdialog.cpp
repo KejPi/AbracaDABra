@@ -66,9 +66,12 @@ TxMapDialog::~TxMapDialog()
 
 void TxMapDialog::showEvent(QShowEvent *event)
 {
-    reset();
-    startLocationUpdate();
-    setIsVisible(true);
+    if (!isVisible())
+    {
+        reset();
+        startLocationUpdate();
+        setIsVisible(true);
+    }
 
     QDialog::showEvent(event);
 }

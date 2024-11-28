@@ -163,7 +163,10 @@ TIIDialog::~TIIDialog()
 
 void TIIDialog::showEvent(QShowEvent *event)
 {
-    emit setTii(true);
+    if (!isVisible())
+    {
+        emit setTii(true);
+    }
     TxMapDialog::showEvent(event);
 }
 
