@@ -43,7 +43,7 @@ class TxDataItem;
 
 class TIIDialog : public TxMapDialog
 {
-
+    Q_OBJECT
 public:
     explicit TIIDialog(Settings * settings, QWidget *parent = nullptr);
     ~TIIDialog();
