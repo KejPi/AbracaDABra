@@ -244,7 +244,7 @@ void ScannerDialog::stopScan()
 
     if (m_exitRequested)
     {
-        done(QDialog::Accepted);
+        close();
     }
 
     // restore UI
@@ -327,6 +327,7 @@ void ScannerDialog::startScan()
     m_exportButton->setEnabled(false);
     m_channelListButton->setEnabled(false);
     m_scanCycleCntr = 0;
+    m_frequency = 0;
 
     if (m_timer == nullptr)
     {
@@ -392,10 +393,20 @@ void ScannerDialog::scanStep()
     {
         m_progressChannel->setText(QString(tr("%1  (cycle %2)")).arg(m_channelIt.value()).arg(m_scanCycleCntr+1));
     }
-    m_numServicesFound = 0;
-    m_ensemble.reset();
-    m_state = ScannerState::WaitForTune;
-    emit tuneChannel(m_channelIt.key());
+
+    if (m_frequency != m_channelIt.key())
+    {
+        m_frequency = m_channelIt.key();
+        m_numServicesFound = 0;
+        m_ensemble.reset();
+        m_state = ScannerState::WaitForTune;
+        emit tuneChannel(m_frequency);
+    }
+    else
+    {   // this is a case when only 1 channel is selected for scanning
+        m_state = ScannerState::WaitForEnsemble;
+        onEnsembleInformation(m_ensemble);
+    }
 }
 
 void ScannerDialog::onTuneDone(uint32_t freq)
@@ -447,7 +458,6 @@ void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble & ens)
     {   // do nothing
         return;
     }
-
     m_timer->stop();
 
     m_state = ScannerState::WaitForTII;
@@ -486,8 +496,6 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
             emit setTii(false);
             m_isTiiActive = false;
         }
-        m_ensemble.reset();
-
 
         // handle selection
         int id = -1;
@@ -500,7 +508,6 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 
         // forcing update of UI
         onSelectionChanged(QItemSelection(),QItemSelection());
-
 
         if ((nullptr != m_timer) && (m_timer->isActive()))
         {
@@ -600,7 +607,8 @@ void ScannerDialog::closeEvent(QCloseEvent *event)
     if (m_isScanning)
     {   // stopping scanning first
         m_exitRequested = true;
-        startStopClicked();
+        QTimer::singleShot(50, this, [this]() { startStopClicked(); });
+        event->ignore();
         return;
     }
 

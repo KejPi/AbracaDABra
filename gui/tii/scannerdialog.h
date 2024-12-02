@@ -104,6 +104,7 @@ private:
     int m_scanCycleCntr;
     ScannerState m_state = ScannerState::Idle;
 
+    uint32_t m_frequency;
     RadioControlEnsemble m_ensemble;
     int m_numServicesFound = 0;
     dabChannelList_t::ConstIterator m_channelIt;
