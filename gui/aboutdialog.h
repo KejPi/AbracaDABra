@@ -41,9 +41,6 @@ public:
     explicit AboutDialog(QWidget *parent = nullptr);
     ~AboutDialog();
 
-signals:
-    void checkForUpdate();
-
 private:
     Ui::AboutDialog *ui;
 };

@@ -69,6 +69,7 @@
 #include "fmlistinterface.h"
 #include "txdataloader.h"
 #endif
+#include "updatedialog.h"
 
 // Input devices
 #include "rawfileinput.h"
@@ -897,6 +898,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // this causes focus to be set to service list when tune is finished
     m_hasListViewFocus = true;
     m_hasTreeViewFocus = false;
+
+    QTimer::singleShot(5000, this, &MainWindow::checkForUpdate);
 }
 
 MainWindow::~MainWindow()
@@ -2263,10 +2266,59 @@ void MainWindow::setProxy()
 
 void MainWindow::checkForUpdate()
 {
-    qDebug() << Q_FUNC_INFO;
-    UpdateChecker * updateChecker = new UpdateChecker(this);
-    connect(updateChecker, &UpdateChecker::finished, updateChecker, &QObject::deleteLater);
-    updateChecker->check();
+    if (m_settings->updateCheckEna && m_settings->updateCheckTime.daysTo(QDateTime::currentDateTime()) >= 0)
+    {
+        UpdateChecker * updateChecker = new UpdateChecker(this);
+        connect(updateChecker, &UpdateChecker::finished, this, [this, updateChecker] (bool result) {
+            if (result)
+            {   // success
+                QString version = updateChecker->version();
+                static const QRegularExpression verRe("v(\\d+)\\.(\\d+)\\.(\\d+)");
+                QRegularExpressionMatch verMatch = verRe.match(version);
+                if (verMatch.hasMatch())
+                {
+                    // qDebug() << version << verMatch.captured(1) << verMatch.captured(2) << verMatch.captured(3);
+
+                    m_settings->updateCheckTime = QDateTime::currentDateTime();
+
+                    bool updateFound = false;
+                    int major = verMatch.captured(1).toInt();
+                    int minor = verMatch.captured(2).toInt();
+                    int patch = verMatch.captured(3).toInt();
+                    if (major > PROJECT_VER_MAJOR)
+                    {
+                        updateFound = true;
+                    }
+                    else if (minor > PROJECT_VER_MINOR)
+                    {
+                        updateFound = true;
+                    }
+                    else if (patch > PROJECT_VER_PATCH-1)
+                    {
+                        updateFound = true;
+                    }
+                    if (updateFound)
+                    {
+                        qCInfo(application) << "New application version found:" << version;
+
+                        auto dialog = new UpdateDialog(version, updateChecker->releaseNotes(), Qt::WindowTitleHint | Qt::WindowCloseButtonHint, this);
+                        connect(dialog, &UpdateDialog::rejected, this, [this]() {
+                            m_setupDialog->setCheckUpdatesEna(false);
+                        });
+                        connect(dialog, &UpdateDialog::finished, dialog, &QObject::deleteLater);
+                        dialog->open();
+                    }
+                }
+            }
+            else
+            {
+                qCWarning(application) << "Update check failed";
+            }
+
+            updateChecker->deleteLater();
+        });
+        updateChecker->check();
+    }
 }
 
 void MainWindow::clearEnsembleInformationLabels()
@@ -2969,7 +3021,8 @@ void MainWindow::loadSettings()
     m_settings->useInternet = settings->value("useInternet", true).toBool();
     m_settings->radioDnsEna = settings->value("radioDNS", true).toBool();
     m_settings->slsBackground = QColor::fromString(settings->value("slsBg", QString("#000000")).toString());
-
+    m_settings->updateCheckEna = settings->value("updateCheckEna", true).toBool();
+    m_settings->updateCheckTime = settings->value("updateCheckTime", QDateTime::currentDateTime().addDays(-1)).value<QDateTime>();
 
     m_settings->audioRecFolder = settings->value("AudioRecording/folder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
     m_settings->audioRecCaptureOutput = settings->value("AudioRecording/captureOutput", false).toBool();
@@ -3184,6 +3237,8 @@ void MainWindow::saveSettings()
     settings->setValue("useInternet", m_settings->useInternet);
     settings->setValue("radioDNS", m_settings->radioDnsEna);
     settings->setValue("slsBg", m_settings->slsBackground.name(QColor::HexArgb));
+    settings->setValue("updateCheckEna", m_settings->updateCheckEna);
+    settings->setValue("updateCheckTime", m_settings->updateCheckTime);
 
     settings->setValue("AudioRecording/folder", m_settings->audioRecFolder);
     settings->setValue("AudioRecording/captureOutput", m_settings->audioRecCaptureOutput);
@@ -3487,7 +3542,6 @@ void MainWindow::showEPG()
 void MainWindow::showAboutDialog()
 {
     AboutDialog *aboutDialog = new AboutDialog(this);
-    connect(aboutDialog, &AboutDialog::checkForUpdate, this, &MainWindow::checkForUpdate);
     connect(aboutDialog, &QDialog::finished, aboutDialog, &QObject::deleteLater);
     aboutDialog->exec();
 }

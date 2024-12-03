@@ -24,9 +24,15 @@
  * SOFTWARE.
  */
 
+#include <QDebug>
+#include <QLoggingCategory>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include "updatechecker.h"
+
+
+Q_LOGGING_CATEGORY(updater, "UpdateCheck", QtWarningMsg)
+
 
 UpdateChecker::UpdateChecker(QObject *parent)
     : QObject{parent}
@@ -71,30 +77,40 @@ void UpdateChecker::check()
     }
 }
 
+QString UpdateChecker::version() const
+{
+    return m_version;
+}
+
+bool UpdateChecker::isPreRelease() const
+{
+    return m_isPreRelease;
+}
+
+QString UpdateChecker::releaseNotes() const
+{
+    return m_releaseNotes;
+}
+
 void UpdateChecker::onFileDownloaded(QNetworkReply *reply)
 {
+    bool result = false;
     if (reply->error() == QNetworkReply::NoError)
     {
         QByteArray data = reply->readAll();
         if (!data.isEmpty())
         {
-            if (parseResponse(data))
-            {
-                qDebug() << m_version << m_isPreRelease << m_releaseNotes;
-            }
+            result = parseResponse(data);
         }
     }
     else
     {
-#ifdef QT_DEBUG
-        qDebug() << reply->error();
-#endif
+        qCWarning(updater) << reply->errorString();
     }
-    // emit updateFinished(reply->error());
     reply->deleteLater();
     m_netAccessManager->deleteLater();
 
-    emit finished();
+    emit finished(result);
 }
 
 bool UpdateChecker::parseResponse(const QByteArray &data)
@@ -122,5 +138,6 @@ bool UpdateChecker::parseResponse(const QByteArray &data)
 
         return true;
     }
+    qCWarning(updater) << "Failed to parse server response";
     return false;
 }

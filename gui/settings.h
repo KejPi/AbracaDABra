@@ -30,6 +30,7 @@
 #include <QLocale>
 #include <QGeoCoordinate>
 #include <QAbstractItemModel>
+#include <QDateTime>
 #include <QColor>
 #include "config.h"
 #include "inputdevice.h"
@@ -117,6 +118,8 @@ public:
     bool audioRecDlAbsTime;
     bool trayIconEna;
     QColor slsBackground = Qt::red;
+    bool updateCheckEna;
+    QDateTime updateCheckTime;
 
     // this is settings for UA data dumping (storage)
     struct UADumpSettings

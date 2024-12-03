@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>530</width>
-    <height>634</height>
+    <height>666</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -1899,7 +1899,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
       <attribute name="title">
        <string notr="true">Others</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_6">
+      <layout class="QVBoxLayout" name="verticalLayout_20">
        <item>
         <widget class="QGroupBox" name="styleGroupBox">
          <property name="title">
@@ -2021,6 +2021,22 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
            <widget class="QCheckBox" name="xmlHeaderCheckBox">
             <property name="text">
              <string>Include XML header</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="updateGroupBox">
+         <property name="title">
+          <string>Application update</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QCheckBox" name="checkForUpdates">
+            <property name="text">
+             <string>Check for application update on start</string>
             </property>
            </widget>
           </item>

@@ -58,6 +58,7 @@ public:
     void onFileLength(int msec);
     void onFileProgress(int msec);
     void setAudioRecAutoStop(bool ena);
+    void setCheckUpdatesEna(bool ena);
     QLocale::Language applicationLanguage() const;
     void setSlsDumpPaternDefault(const QString &newSlsDumpPaternDefault);
     void setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault);

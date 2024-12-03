@@ -6,14 +6,58 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>596</width>
-    <height>448</height>
+    <width>563</width>
+    <height>348</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>About AbracaDABra</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="1">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="appName">
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Abraca DAB radio</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="version">
+       <property name="text">
+        <string>Version 1.0+, build 4654e4f4</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="qtVersion">
+       <property name="text">
+        <string>Based on Qt 6.2.2</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="dabsdrVersion">
+       <property name="text">
+        <string>DAB SDR version 1.2.3</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="author">
+       <property name="text">
+        <string>Developed by Petr Kopecký (xkejpi@gmail.com)</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
    <item row="0" column="0">
     <widget class="QLabel" name="appIcon">
      <property name="sizePolicy">
@@ -65,60 +109,6 @@
      </item>
      <item>
       <widget class="QTextEdit" name="disclaimer"/>
-     </item>
-    </layout>
-   </item>
-   <item row="0" column="1">
-    <layout class="QGridLayout" name="gridLayout_2">
-     <property name="verticalSpacing">
-      <number>0</number>
-     </property>
-     <item row="0" column="0">
-      <widget class="QLabel" name="appName">
-       <property name="font">
-        <font>
-         <pointsize>16</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Abraca DAB radio</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="version">
-       <property name="text">
-        <string>Version 1.0+, build 4654e4f4</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="qtVersion">
-       <property name="text">
-        <string>Based on Qt 6.2.2</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="author">
-       <property name="text">
-        <string>Developed by Petr Kopecký (xkejpi@gmail.com)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="dabsdrVersion">
-       <property name="text">
-        <string>DAB SDR version 1.2.3</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QPushButton" name="checkUpdateButton">
-       <property name="text">
-        <string>Check for update</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>

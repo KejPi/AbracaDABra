@@ -39,9 +39,12 @@ public:
     explicit UpdateChecker(QObject *parent = nullptr);
     ~UpdateChecker();
     void check();
+    QString version() const;
+    bool isPreRelease() const;
+    QString releaseNotes() const;
 
 signals:
-    void finished();
+    void finished(bool result);
 
 private:
     QNetworkAccessManager *m_netAccessManager = nullptr;

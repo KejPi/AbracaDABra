@@ -100,24 +100,20 @@ AboutDialog::AboutDialog(QWidget *parent) :
                             "THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.");
     ui->disclaimer->setReadOnly(true);
 
-    connect(ui->version, &QLabel::linkActivated,
+    QObject::connect(
+        ui->version, &QLabel::linkActivated,
         [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
-    );
+        );
 
-    connect(ui->author, &QLabel::linkActivated,
-        [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
-    );
+    QObject::connect(
+                ui->author, &QLabel::linkActivated,
+                [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
+            );
+    QObject::connect(
+                ui->libraries, &QLabel::linkActivated,
+                [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
+            );
 
-    connect(ui->libraries, &QLabel::linkActivated,
-        [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
-    );
-
-    connect(ui->checkUpdateButton, &QPushButton::clicked,
-        [this]() { emit checkForUpdate(); }
-    );
-
-
-    setFixedWidth(width());
     //resize(minimumSizeHint());
 }
 

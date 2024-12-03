@@ -469,6 +469,7 @@ void SetupDialog::setSettings(Settings * settings)
     connect(ui->loopCheckbox, &QCheckBox::stateChanged, this, [=](int val) { m_settings->rawfile.loopEna = (Qt::Unchecked != val); });
 #endif
     connect(ui->autoStopRecordingCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings->audioRecAutoStopEna = checked; });
+    connect(ui->checkForUpdates, &QCheckBox::toggled, this, &SetupDialog::setCheckUpdatesEna);
 
     setUiState();
     onExpertModeChecked(m_settings->expertModeEna);
@@ -549,6 +550,12 @@ void SetupDialog::setAudioRecAutoStop(bool ena)
 {
     m_settings->audioRecAutoStopEna = ena;
     ui->autoStopRecordingCheckBox->setChecked(ena);
+}
+
+void SetupDialog::setCheckUpdatesEna(bool ena)
+{
+    m_settings->updateCheckEna = ena;
+    ui->checkForUpdates->setChecked(ena);
 }
 
 QLocale::Language SetupDialog::applicationLanguage() const
@@ -802,6 +809,7 @@ void SetupDialog::setUiState()
     ui->locationSourceCombo->setCurrentIndex(static_cast<int>(m_settings->tii.locationSource));
     ui->tiiSpectPlotCheckBox->setChecked(m_settings->tii.showSpectumPlot);
 
+    ui->checkForUpdates->setChecked(m_settings->updateCheckEna);
     ui->proxyConfigCombo->setCurrentIndex(static_cast<int>(m_settings->proxy.config));
     ui->proxyServerEdit->setText(m_settings->proxy.server);
     ui->proxyPortEdit->setText(QString::number(m_settings->proxy.port));
