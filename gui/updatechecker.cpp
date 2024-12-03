@@ -40,7 +40,6 @@ UpdateChecker::UpdateChecker(QObject *parent)
 
 UpdateChecker::~UpdateChecker()
 {
-    qDebug() << Q_FUNC_INFO;
     if (m_netAccessManager != nullptr)
     {
         m_netAccessManager->deleteLater();
