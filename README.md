@@ -262,6 +262,13 @@ Following libraries are required:
 * SoapySDR (optional)
 * QCustomPlot (optional) - it is automatically cloned from [GitHub](https://github.com/legerch/QCustomPlot-library) during CMake execution. Use QCUSTOMPLOT=OFF option to disable QCustomPlot usage in the application.
 
+For a fresh Ubuntu 22.04 installation you can use the following commands to install all required packages:
+
+       sudo apt-get install git cmake build-essential mesa-common-dev 
+       sudo apt-get install libcups2-dev libxkbcommon-x11-dev libxcb-cursor0 libxcb-cursor-dev
+       sudo apt-get install libusb-dev librtlsdr-dev libfaad2 mpg123 libmpg123-dev libfaad-dev
+       sudo apt-get install portaudio19-dev rtl-sdr    
+
 Ubuntu 24.04 or lower does not support Qt>=6.5.0 that is required for full applications features. If you want to compile the application you shall [install](https://doc.qt.io/qt-6/qt-online-installation.html) Qt using [online installer](https://www.qt.io/download-qt-installer-oss). Following modules are sufficcient to compile AbracaDABra:
 
 ![Screenshot from 2024-11-08 19-51-02](https://github.com/user-attachments/assets/56c32368-9472-4f8a-8d18-4cc65120b88b)
