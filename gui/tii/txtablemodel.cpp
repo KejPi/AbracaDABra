@@ -237,7 +237,7 @@ QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int 
     case TxTableModelRoles::ExportRole: {
         switch (section) {
         case ColTime:
-            return QString("%1 [%2]").arg(tr("Time"), QDateTime::currentDateTime().timeZoneAbbreviation());
+            return QString(tr("Local Time"));
         case ColChannel:
             return tr("Channel");
         case ColFreq:

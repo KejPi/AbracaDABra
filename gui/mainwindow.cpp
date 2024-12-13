@@ -2266,7 +2266,7 @@ void MainWindow::setProxy()
 
 void MainWindow::checkForUpdate()
 {
-    if (m_settings->updateCheckEna && m_settings->updateCheckTime.daysTo(QDateTime::currentDateTime()) >= 0)
+    if (m_settings->updateCheckEna && m_settings->updateCheckTime.daysTo(QDateTime::currentDateTime()) >= 1)
     {
         UpdateChecker * updateChecker = new UpdateChecker(this);
         connect(updateChecker, &UpdateChecker::finished, this, [this, updateChecker] (bool result) {
@@ -2293,7 +2293,7 @@ void MainWindow::checkForUpdate()
                     {
                         updateFound = true;
                     }
-                    else if (patch > PROJECT_VER_PATCH-1)
+                    else if (patch > PROJECT_VER_PATCH)
                     {
                         updateFound = true;
                     }
