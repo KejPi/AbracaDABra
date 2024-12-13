@@ -70,6 +70,7 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
 
     bool newService = false;
     bool updatedService = false;
+    bool updatedEnsemble = false;
 
     qCInfo(serviceList, "          [%6.6X @ %6d kHz | %3s] %-18s %X : %d", e.ueid, e.frequency, DabTables::channelList.value(e.frequency).toUtf8().data(),
                                                                             s.label.toUtf8().data(), s.SId.value(), s.SCIdS);
@@ -130,6 +131,10 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
         pEns = new EnsembleListItem(e);
         m_ensembleList.insert(ensId, pEns);
     }
+    else {
+        // update labels
+        updatedEnsemble = pEns->update(e);
+    }
 
     // we have ens and service item => lets link them together
     pService->addEnsemble(pEns);
@@ -142,7 +147,7 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
         emit serviceAdded(pService->id());
     }
 
-    if (updatedService)
+    if (updatedService || updatedEnsemble)
     {
         emit serviceUpdated(pService->id());
         emit serviceUpdatedInEnsemble(pEns->id(), pService->id());
