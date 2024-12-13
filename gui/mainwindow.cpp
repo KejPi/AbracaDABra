@@ -2932,7 +2932,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // show XML header is available
             m_setupDialog->setXmlHeader(m_inputDevice->deviceDescription());
-            if (m_inputDevice->deviceDescription().rawFile.hasXmlHeader)
+            if (m_inputDevice->deviceDescription().rawFile.frequency_kHz != 0)
             {
                 m_channelListModel->setChannelFilter(m_inputDevice->deviceDescription().rawFile.frequency_kHz);
             }
