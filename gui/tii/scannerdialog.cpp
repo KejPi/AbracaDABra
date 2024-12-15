@@ -218,17 +218,17 @@ void ScannerDialog::startStopClicked()
     {   // start pressed
         m_startStopButton->setText(tr("Stop"));
         m_spinBox->setEnabled(false);
-        int numActive = 0;
+        m_numSelectedChannels = 0;
         for (const auto ch : m_channelSelection)
         {
-            numActive += ch ? 1 : 0;
+            m_numSelectedChannels += ch ? 1 : 0;
         }
         if (m_spinBox->value() > 0) {
-            m_progressBar->setMaximum(numActive * m_spinBox->value());
+            m_progressBar->setMaximum(m_numSelectedChannels * m_spinBox->value());
         }
         else
         {
-            m_progressBar->setMaximum(numActive);
+            m_progressBar->setMaximum(m_numSelectedChannels);
         }
         startScan();
     }
@@ -459,16 +459,26 @@ void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble & ens)
         return;
     }
     m_timer->stop();
+    if (ens.isValid())
+    {   // this shoud be the normal case
+        m_state = ScannerState::WaitForTII;
 
-    m_state = ScannerState::WaitForTII;
+        // this will stop when TII data is received
+        m_timer->start(10000);
 
-    // this will stop when TII data is received
-    m_timer->start(10000);
-
-    m_ensemble = ens;
-    m_snr = 0.0;
-    emit setTii(true);
-    m_isTiiActive = true;
+        m_ensemble = ens;
+        m_snr = 0.0;
+        if (m_isTiiActive == false)
+        {
+            emit setTii(true);
+            m_isTiiActive = true;
+        }
+    }
+    else
+    {   // this can happen in single channel mode
+        // wait for ensemble
+        m_timer->start(m_settings->scanner.waitForEnsemble*1000);
+    }
 }
 
 void ScannerDialog::onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &)
@@ -491,7 +501,7 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
         m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColLocation, QHeaderView::Stretch);
         //m_txTableView->horizontalHeader()->setStretchLastSection(true);
 
-        if (m_isTiiActive)
+        if (m_isTiiActive && m_numSelectedChannels > 1)
         {
             emit setTii(false);
             m_isTiiActive = false;
@@ -506,14 +516,14 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
             id = m_sortedFilteredModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt();
         }
 
-        // forcing update of UI
+        // forcing update of UI        
         onSelectionChanged(QItemSelection(),QItemSelection());
 
         if ((nullptr != m_timer) && (m_timer->isActive()))
         {
             m_timer->stop();
             scanStep();
-        }
+        }        
     }
 }
 

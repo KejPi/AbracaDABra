@@ -109,6 +109,7 @@ private:
     int m_numServicesFound = 0;
     dabChannelList_t::ConstIterator m_channelIt;
     QMap<uint32_t, bool> m_channelSelection;
+    int m_numSelectedChannels = 0;
     float m_snr;
     QDateTime m_scanStartTime;
 
