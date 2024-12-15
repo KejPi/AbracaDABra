@@ -111,15 +111,19 @@ public:
     bool spiAppEna;
     bool useInternet;
     bool radioDnsEna;
-    QString audioRecFolder;
-    bool audioRecCaptureOutput;
-    bool audioRecAutoStopEna;
-    bool audioRecDl;
-    bool audioRecDlAbsTime;
     bool trayIconEna;
     QColor slsBackground = Qt::red;
     bool updateCheckEna;
     QDateTime updateCheckTime;
+
+    // audio recording settings
+    struct AudioRec{
+        QString folder;
+        bool captureOutput;
+        bool autoStopEna;
+        bool dl;
+        bool dlAbsTime;
+    } audioRec;
 
     // this is settings for UA data dumping (storage)
     struct UADumpSettings

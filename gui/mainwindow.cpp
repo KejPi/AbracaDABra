@@ -1593,7 +1593,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
 
 bool MainWindow::stopAudioRecordingMsg(const QString & infoText)
 {
-    if ((m_audioRecManager->isAudioRecordingActive() || m_audioRecManager->isAudioScheduleActive()) && !m_settings->audioRecAutoStopEna)
+    if ((m_audioRecManager->isAudioRecordingActive() || m_audioRecManager->isAudioScheduleActive()) && !m_settings->audioRec.autoStopEna)
     //if (!m_settings->audioRecAutoStopEna)
     {
         QMessageBox msgBox(QMessageBox::Warning, tr("Warning"),
@@ -3024,11 +3024,11 @@ void MainWindow::loadSettings()
     m_settings->updateCheckEna = settings->value("updateCheckEna", true).toBool();
     m_settings->updateCheckTime = settings->value("updateCheckTime", QDateTime::currentDateTime().addDays(-1)).value<QDateTime>();
 
-    m_settings->audioRecFolder = settings->value("AudioRecording/folder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
-    m_settings->audioRecCaptureOutput = settings->value("AudioRecording/captureOutput", false).toBool();
-    m_settings->audioRecAutoStopEna = settings->value("AudioRecording/autoStop", false).toBool();
-    m_settings->audioRecDl = settings->value("AudioRecording/DL", false).toBool();
-    m_settings->audioRecDlAbsTime = settings->value("AudioRecording/DLAbsTime", false).toBool();
+    m_settings->audioRec.folder = settings->value("AudioRecording/folder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
+    m_settings->audioRec.captureOutput = settings->value("AudioRecording/captureOutput", false).toBool();
+    m_settings->audioRec.autoStopEna = settings->value("AudioRecording/autoStop", false).toBool();
+    m_settings->audioRec.dl = settings->value("AudioRecording/DL", false).toBool();
+    m_settings->audioRec.dlAbsTime = settings->value("AudioRecording/DLAbsTime", false).toBool();
 
 #ifdef Q_OS_MAC
     m_settings->trayIconEna = settings->value("showTrayIcon", false).toBool();
@@ -3241,11 +3241,11 @@ void MainWindow::saveSettings()
     settings->setValue("updateCheckEna", m_settings->updateCheckEna);
     settings->setValue("updateCheckTime", m_settings->updateCheckTime);
 
-    settings->setValue("AudioRecording/folder", m_settings->audioRecFolder);
-    settings->setValue("AudioRecording/captureOutput", m_settings->audioRecCaptureOutput);
-    settings->setValue("AudioRecording/autoStop", m_settings->audioRecAutoStopEna);
-    settings->setValue("AudioRecording/DL", m_settings->audioRecDl);
-    settings->setValue("AudioRecording/DLAbsTime", m_settings->audioRecDlAbsTime);
+    settings->setValue("AudioRecording/folder", m_settings->audioRec.folder);
+    settings->setValue("AudioRecording/captureOutput", m_settings->audioRec.captureOutput);
+    settings->setValue("AudioRecording/autoStop", m_settings->audioRec.autoStopEna);
+    settings->setValue("AudioRecording/DL", m_settings->audioRec.dl);
+    settings->setValue("AudioRecording/DLAbsTime", m_settings->audioRec.dlAbsTime);
 
     settings->setValue("showTrayIcon", m_settings->trayIconEna);
 

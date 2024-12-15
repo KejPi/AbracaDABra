@@ -470,7 +470,7 @@ void SetupDialog::setSettings(Settings * settings)
 #else
     connect(ui->loopCheckbox, &QCheckBox::stateChanged, this, [=](int val) { m_settings->rawfile.loopEna = (Qt::Unchecked != val); });
 #endif
-    connect(ui->autoStopRecordingCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings->audioRecAutoStopEna = checked; });
+    connect(ui->autoStopRecordingCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings->audioRec.autoStopEna = checked; });
     connect(ui->checkForUpdates, &QCheckBox::toggled, this, &SetupDialog::setCheckUpdatesEna);
 
     setUiState();
@@ -479,12 +479,12 @@ void SetupDialog::setSettings(Settings * settings)
     emit newAnnouncementSettings();
     emit noiseConcealmentLevelChanged(m_settings->noiseConcealmentLevel);
     emit xmlHeaderToggled(m_settings->xmlHeaderEna);
-    emit audioRecordingSettings(m_settings->audioRecFolder, m_settings->audioRecCaptureOutput);
+    emit audioRecordingSettings(m_settings->audioRec.folder, m_settings->audioRec.captureOutput);
     emit uaDumpSettings(m_settings->uaDump);
     emit tiiSettingsChanged();
     onUseInternetChecked(m_settings->useInternet);
     onSpiAppChecked(m_settings->spiAppEna);
-    onDlRecordingChecked(m_settings->audioRecDl);
+    onDlRecordingChecked(m_settings->audioRec.dl);
     emit proxySettingsChanged();
     emit trayIconToggled(m_settings->trayIconEna);
     emit slsBgChanged(m_settings->slsBackground);
@@ -550,7 +550,7 @@ void SetupDialog::onFileProgress(int msec)
 
 void SetupDialog::setAudioRecAutoStop(bool ena)
 {
-    m_settings->audioRecAutoStopEna = ena;
+    m_settings->audioRec.autoStopEna = ena;
     ui->autoStopRecordingCheckBox->setChecked(ena);
 }
 
@@ -774,8 +774,8 @@ void SetupDialog::setUiState()
     }
     ui->langComboBox->setCurrentIndex(index);
 
-    ui->audioRecordingFolderLabel->setText(m_settings->audioRecFolder);
-    if (m_settings->audioRecCaptureOutput)
+    ui->audioRecordingFolderLabel->setText(m_settings->audioRec.folder);
+    if (m_settings->audioRec.captureOutput)
     {
         ui->audioOutRecordingRadioButton->setChecked(true);
     }
@@ -783,9 +783,9 @@ void SetupDialog::setUiState()
     {
         ui->audioInRecordingRadioButton->setChecked(true);
     }
-    ui->autoStopRecordingCheckBox->setChecked(m_settings->audioRecAutoStopEna);
-    ui->dlAbsTimeCheckBox->setChecked(m_settings->audioRecDlAbsTime);
-    ui->dlRecordCheckBox->setChecked(m_settings->audioRecDl);
+    ui->autoStopRecordingCheckBox->setChecked(m_settings->audioRec.autoStopEna);
+    ui->dlAbsTimeCheckBox->setChecked(m_settings->audioRec.dlAbsTime);
+    ui->dlRecordCheckBox->setChecked(m_settings->audioRec.dl);
 
     ui->dataDumpFolderLabel->setText(m_settings->uaDump.folder);
     ui->dumpSlsPatternEdit->setText(m_settings->uaDump.slsPattern);
@@ -1501,16 +1501,16 @@ void SetupDialog::onRadioDnsChecked(bool checked)
 void SetupDialog::onAudioRecordingFolderButtonClicked()
 {
     QString dir = QDir::homePath();
-    if (!m_settings->audioRecFolder.isEmpty())
+    if (!m_settings->audioRec.folder.isEmpty())
     {
-        dir = QFileInfo(m_settings->audioRecFolder).path();
+        dir = QFileInfo(m_settings->audioRec.folder).path();
     }
     dir = QFileDialog::getExistingDirectory(this, tr("Audio recording folder"), dir);
     if (!dir.isEmpty())
     {
-        m_settings->audioRecFolder = dir;
+        m_settings->audioRec.folder = dir;
         ui->audioRecordingFolderLabel->setText(dir);
-        emit audioRecordingSettings(m_settings->audioRecFolder, m_settings->audioRecCaptureOutput);
+        emit audioRecordingSettings(m_settings->audioRec.folder, m_settings->audioRec.captureOutput);
 
 #ifdef Q_OS_MACOS // bug in Ventura
         show(); //bring window to top on OSX
@@ -1522,8 +1522,8 @@ void SetupDialog::onAudioRecordingFolderButtonClicked()
 
 void SetupDialog::onAudioRecordingChecked(bool checked)
 {
-    m_settings->audioRecCaptureOutput = ui->audioOutRecordingRadioButton->isChecked();
-    emit audioRecordingSettings(m_settings->audioRecFolder, m_settings->audioRecCaptureOutput);
+    m_settings->audioRec.captureOutput = ui->audioOutRecordingRadioButton->isChecked();
+    emit audioRecordingSettings(m_settings->audioRec.folder, m_settings->audioRec.captureOutput);
 }
 
 void SetupDialog::onDataDumpFolderButtonClicked()
@@ -1588,13 +1588,13 @@ void SetupDialog::onDataDumpResetClicked()
 
 void SetupDialog::onDlRecordingChecked(bool checked)
 {
-    m_settings->audioRecDl = checked;
+    m_settings->audioRec.dl = checked;
     ui->dlAbsTimeCheckBox->setEnabled(checked);
 }
 
 void SetupDialog::onDlAbsTimeChecked(bool checked)
 {
-    m_settings->audioRecDlAbsTime = checked;
+    m_settings->audioRec.dlAbsTime = checked;
 }
 
 void SetupDialog::onGeolocationSourceChanged(int index)

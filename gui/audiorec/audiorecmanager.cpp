@@ -205,7 +205,7 @@ void AudioRecManager::onAudioRecordingStarted(const QString &filename)
 {
     m_audioRecordingFile = filename;
     m_isAudioRecordingActive = true;
-    if (m_settings->audioRecDl && (nullptr == m_dlLogFile))
+    if (m_settings->audioRec.dl && (nullptr == m_dlLogFile))
     {
         QFileInfo fi(filename);
         QString dlLogFilename  = fi.path() + "/" + fi.completeBaseName() + ".txt";
@@ -214,7 +214,7 @@ void AudioRecManager::onAudioRecordingStarted(const QString &filename)
         {
             QTextStream out(m_dlLogFile);
             if (!m_dlText.isEmpty()) {
-                if (m_settings->audioRecDlAbsTime)
+                if (m_settings->audioRec.dlAbsTime)
                 {
                     out << "00:00:00\t" << EPGTime::getInstance()->dabTime().toString("yyyy-MM-dd-hhmmss\t") << m_dlText << Qt::endl;
                 }
@@ -300,7 +300,7 @@ void AudioRecManager::onDLComplete(const QString &dl)
             int hours = m_recTimeSec / 3600;
             int min = (m_recTimeSec - hours*3600)/60;
             int sec = (m_recTimeSec - hours*3600 - min*60);
-            if (m_settings->audioRecDlAbsTime)
+            if (m_settings->audioRec.dlAbsTime)
             {
                 out << QString("%1:%2:%3\t%4\t%5\n").arg(hours, 2, 10, QChar('0')).arg(min, 2, 10, QChar('0')).arg(sec, 2, 10, QChar('0'))
                            .arg(EPGTime::getInstance()->dabTime().toString("yyyy-MM-dd-hhmmss"), dl);
