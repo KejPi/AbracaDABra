@@ -48,12 +48,14 @@ public:
     explicit TIIDialog(Settings * settings, QWidget *parent = nullptr);
     ~TIIDialog();
     void onTiiData(const RadioControlTIIData & data) override;
+    void onSignalState(uint8_t , float snr) { m_snr = snr; };
     void setupDarkMode(bool darkModeEna) override;
     void onChannelSelection();
     void onEnsembleInformation(const RadioControlEnsemble &ens) override;
     void onSettingsChanged() override;
     void setSelectedRow(int modelRow) override;
 
+    Q_INVOKABLE void startStopLog() override;
 protected:
     void showEvent(QShowEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
@@ -68,10 +70,12 @@ private:
     bool m_isZoomed;
     QSplitter * m_splitter;
 #endif
-    QQuickView *m_qmlView ;
+    QQuickView *m_qmlView;
+    QFile * m_logFile = nullptr;
+    float m_snr = 0.0;
 
     void reset() override;
-
+    void logTiiData() const;
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     void showPointToolTip(QMouseEvent *event);
     void onXRangeChanged(const QCPRange &newRange);

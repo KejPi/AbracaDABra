@@ -48,6 +48,7 @@ class TxMapDialog : public QDialog
     Q_PROPERTY(QStringList txInfo READ txInfo NOTIFY txInfoChanged FINAL)
     Q_PROPERTY(int selectedRow READ selectedRow WRITE setSelectedRow NOTIFY selectedRowChanged FINAL)
     Q_PROPERTY(bool isTii READ isTii CONSTANT FINAL)
+    Q_PROPERTY(bool isRecordingLog READ isRecordingLog WRITE setIsRecordingLog NOTIFY isRecordingLogChanged FINAL)
 
 public:
     explicit TxMapDialog(Settings * settings, bool isTii, QWidget *parent = nullptr);
@@ -75,8 +76,11 @@ public:
     virtual void setSelectedRow(int modelRow) = 0;
 
     bool showTiiTable() const;
-
     bool isTii() const;
+
+    Q_INVOKABLE virtual void startStopLog() { }
+    bool isRecordingLog() const;
+    void setIsRecordingLog(bool newIsRecordingLog);
 
 signals:
     void setTii(bool ena);
@@ -86,6 +90,8 @@ signals:
     void ensembleInfoChanged();
     void txInfoChanged();
     void selectedRowChanged();
+
+    void isRecordingLogChanged();
 
 protected:
     void showEvent(QShowEvent *event) override;
@@ -113,6 +119,7 @@ private:
     bool m_positionValid = false;
     bool m_isVisible = false;
     const bool m_isTii;
+    bool m_isRecordingLog;
 };
 
 #endif // TXMAPDIALOG_H

@@ -3045,6 +3045,7 @@ void MainWindow::loadSettings()
     m_settings->tii.locationSource = static_cast<Settings::GeolocationSource>(settings->value("TII/locationSource", static_cast<int>(Settings::GeolocationSource::System)).toInt());
     m_settings->tii.coordinates = QGeoCoordinate(settings->value("TII/latitude", 0.0).toDouble(), settings->value("TII/longitude", 0.0).toDouble());
     m_settings->tii.serialPort = settings->value("TII/serialPort", "").toString();
+    m_settings->tii.logFolder = settings->value("TII/logFolder", QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)).toString();
     m_settings->tii.showSpectumPlot = settings->value("TII/showSpectrumPlot", false).toBool();
     m_settings->tii.geometry = settings->value("TII/windowGeometry").toByteArray();
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
@@ -3256,6 +3257,7 @@ void MainWindow::saveSettings()
     settings->setValue("TII/latitude", m_settings->tii.coordinates.latitude());
     settings->setValue("TII/longitude", m_settings->tii.coordinates.longitude());
     settings->setValue("TII/serialPort", m_settings->tii.serialPort);
+    settings->setValue("TII/logFolder", m_settings->tii.logFolder);
     settings->setValue("TII/showSpectrumPlot", m_settings->tii.showSpectumPlot);
     settings->setValue("TII/windowGeometry", m_settings->tii.geometry);
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
@@ -3621,6 +3623,7 @@ void MainWindow::showTiiDialog()
         m_tiiDialog->setupDarkMode(isDarkMode());
         connect(m_setupDialog, &SetupDialog::tiiSettingsChanged, m_tiiDialog, &TIIDialog::onSettingsChanged);
         connect(m_tiiDialog, &TIIDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::signalState, m_tiiDialog, &TIIDialog::onSignalState, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tiiData, m_tiiDialog, &TIIDialog::onTiiData, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::ensembleInformation, m_tiiDialog, &TIIDialog::onEnsembleInformation, Qt::QueuedConnection);
         emit getEnsembleInfo();  // this triggers ensemble infomation used to configure EPG dialog
@@ -3640,7 +3643,7 @@ void MainWindow::showScannerDialog()
         m_scannerDialog->setupDarkMode(isDarkMode());
         connect(m_scannerDialog, &ScannerDialog::tuneChannel, this, &MainWindow::onTuneChannel);
         connect(m_setupDialog, &SetupDialog::tiiSettingsChanged, m_scannerDialog, &ScannerDialog::onSettingsChanged);
-        connect(m_radioControl, &RadioControl::signalState, m_scannerDialog, &ScannerDialog::onSyncStatus, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::signalState, m_scannerDialog, &ScannerDialog::onSignalState, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::ensembleInformation, m_scannerDialog, &ScannerDialog::onEnsembleInformation, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tuneDone, m_scannerDialog, &ScannerDialog::onTuneDone, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::serviceListEntry, m_scannerDialog, &ScannerDialog::onServiceListEntry, Qt::QueuedConnection);

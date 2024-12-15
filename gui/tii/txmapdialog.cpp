@@ -292,3 +292,18 @@ void TxMapDialog::onSelectedRowChanged()
     }
 }
 
+
+bool TxMapDialog::isRecordingLog() const
+{
+    return m_isRecordingLog;
+}
+
+void TxMapDialog::setIsRecordingLog(bool newIsRecordingLog)
+{
+    if (m_isRecordingLog == newIsRecordingLog)
+    {
+        return;
+    }
+    m_isRecordingLog = newIsRecordingLog;
+    emit isRecordingLogChanged();
+}

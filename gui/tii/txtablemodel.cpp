@@ -301,7 +301,7 @@ void TxTableModel::clear()
     endResetModel();
 }
 
-void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceListId & ensId)
+void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceListId & ensId, const QString &ensLabel, int numServices, float snr)
 {
 #if 0
     beginResetModel();
@@ -312,13 +312,17 @@ void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceLi
     }
     endResetModel();
 #else
-    // add new items and remove old
+    QDateTime time = QDateTime::currentDateTime();
+
+    // add new items and remove old    
     int row = 0;
     QList<TxTableModelItem> appendList;
     for (int dataIdx = 0; dataIdx < data.count(); ++dataIdx)
     {
         // create new item
         TxTableModelItem item(data.at(dataIdx).main, data.at(dataIdx).sub, data.at(dataIdx).level, m_coordinates, m_txList.values(ensId));
+        item.setEnsData(ensId, ensLabel, numServices, snr);
+        item.setRxTime(time);
 
         if (row < m_modelData.size())
         {

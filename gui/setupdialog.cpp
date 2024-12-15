@@ -362,6 +362,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 #else
     ui->updateDbButton->setEnabled(false);
 #endif
+    ui->tiiLogFolderLabel->setElideMode(Qt::ElideLeft);
+    connect(ui->tiiLogFolderButton, &QPushButton::clicked, this, &SetupDialog::onTiiLogFolderButtonClicked);
 
     ui->proxyConfigCombo->addItem(tr("No proxy"), QVariant::fromValue(Settings::ProxyConfig::NoProxy));
     ui->proxyConfigCombo->addItem(tr("System"), QVariant::fromValue(Settings::ProxyConfig::System));
@@ -808,6 +810,7 @@ void SetupDialog::setUiState()
     ui->serialPortEdit->setText(m_settings->tii.serialPort);
     ui->locationSourceCombo->setCurrentIndex(static_cast<int>(m_settings->tii.locationSource));
     ui->tiiSpectPlotCheckBox->setChecked(m_settings->tii.showSpectumPlot);
+    ui->tiiLogFolderLabel->setText(m_settings->tii.logFolder);
 
     ui->checkForUpdates->setChecked(m_settings->updateCheckEna);
     ui->proxyConfigCombo->setCurrentIndex(static_cast<int>(m_settings->proxy.config));
@@ -1670,6 +1673,27 @@ void SetupDialog::onTiiUpdateDbClicked()
     ui->spinnerLabel->setVisible(true);
     m_spinner->start();
     emit updateTxDb();
+}
+
+void SetupDialog::onTiiLogFolderButtonClicked()
+{
+    QString dir = QDir::homePath();
+    if (!m_settings->tii.logFolder.isEmpty())
+    {
+        dir = QFileInfo(m_settings->tii.logFolder).path();
+    }
+    dir = QFileDialog::getExistingDirectory(this, tr("TII log folder"), dir);
+    if (!dir.isEmpty())
+    {
+        m_settings->tii.logFolder = dir;
+        ui->tiiLogFolderLabel->setText(dir);
+
+#ifdef Q_OS_MACOS // bug in Ventura
+        show(); //bring window to top on OSX
+        raise(); //bring window from minimized state on OSX
+        activateWindow(); //bring window to front/unminimize on windows
+#endif
+    }
 }
 
 void SetupDialog::onTiiUpdateFinished(QNetworkReply::NetworkError err)

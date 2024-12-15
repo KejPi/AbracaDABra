@@ -69,7 +69,7 @@ public:
     const TxTableModelItem & itemAt(int row) const;
     void clear();
 
-    void updateTiiData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId);
+    void updateTiiData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId, const QString &ensLabel, int numServices, float snr);
     void appendEnsData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId, const QString & ensLabel, int numServices, float snr);
 
     void setCoordinates(const QGeoCoordinate &newCoordinates);

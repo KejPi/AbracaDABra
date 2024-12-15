@@ -60,7 +60,7 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     // QML View
     m_qmlView = new QQuickView();
     QQmlContext * context = m_qmlView->rootContext();
-    context->setContextProperty("tii", this);
+    context->setContextProperty("tiiBackend", this);
     context->setContextProperty("tiiTable", m_model);
     context->setContextProperty("tiiTableSorted", m_sortedFilteredModel);
     context->setContextProperty("tiiTableSelectionModel", m_tableSelectionModel);
@@ -435,7 +435,7 @@ void ScannerDialog::onTuneDone(uint32_t freq)
     }
 }
 
-void ScannerDialog::onSyncStatus(uint8_t sync, float snr)
+void ScannerDialog::onSignalState(uint8_t sync, float snr)
 {    
     if (DabSyncLevel::NullSync <= DabSyncLevel(sync))
     {

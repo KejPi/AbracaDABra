@@ -36,10 +36,10 @@ Item {
     anchors.fill: parent
     property bool centerToCurrentPosition: true
     Connections {
-        target: tii
+        target: tiiBackend
         function onCurrentPositionChanged() {
-            if (tii.positionValid && centerToCurrentPosition) {
-                map.center = tii.currentPosition;
+            if (tiiBackend.positionValid && centerToCurrentPosition) {
+                map.center = tiiBackend.currentPosition;
             }
         }
     }
@@ -54,7 +54,7 @@ Item {
         id: map
         anchors.fill: parent
         plugin: mapPlugin
-        center: tii.positionValid ? tii.currentPosition : QtPositioning.coordinate(50.08804, 14.42076) // Prague
+        center: tiiBackend.positionValid ? tiiBackend.currentPosition : QtPositioning.coordinate(50.08804, 14.42076) // Prague
         zoomLevel: 9
         property geoCoordinate startCentroid
 
@@ -103,7 +103,7 @@ Item {
             gesturePolicy: TapHandler.WithinBounds
             onTapped: {
                 // deselection of transmitter
-                tii.selectedRow = -1;
+                tiiBackend.selectedRow = -1;
             }
         }
         Shortcut {
@@ -121,10 +121,10 @@ Item {
             id: currentPosition
             parent: map
             sourceItem: Rectangle { width: 14; height: 14; color: "#251ee4"; border.width: 2; border.color: "white"; smooth: true; radius: 7; opacity: 0.8 }
-            coordinate: tii.currentPosition
+            coordinate: tiiBackend.currentPosition
             opacity: 1.0
             anchorPoint: Qt.point(sourceItem.width/2, sourceItem.height/2)
-            visible: tii.positionValid
+            visible: tiiBackend.positionValid
         }
 
         MapItemView {
@@ -135,8 +135,8 @@ Item {
                 coordinate:  coordinates
                 tiiCode: tiiString
                 markerColor: levelColor
-                isSelected: (index >= 0) && (index === tii.selectedRow)
-                isTiiMode: tii.isTii
+                isSelected: (index >= 0) && (index === tiiBackend.selectedRow)
+                isTiiMode: tiiBackend.isTii
                 z: isSelected ? 2 : 1
 
                 TapHandler {
@@ -144,7 +144,7 @@ Item {
                     acceptedButtons: Qt.LeftButton
                     gesturePolicy: TapHandler.WithinBounds
                     onTapped: {
-                        tii.selectedRow = index;
+                        tiiBackend.selectedRow = index;
                     }
                 }
             }
@@ -165,14 +165,14 @@ Item {
             anchors.top: parent.top
             anchors.rightMargin: 10
             anchors.topMargin: 10
-            visible: tii.ensembleInfo[0] !== ""
+            visible: tiiBackend.ensembleInfo[0] !== ""
             z: 3
 
             ColumnLayout {
                 id: infoLayout
                 anchors.centerIn: parent
                 Repeater {
-                    model: tii.ensembleInfo
+                    model: tiiBackend.ensembleInfo
                     delegate: Text {
                         Layout.fillWidth: true
                         text: modelData
@@ -197,13 +197,13 @@ Item {
             width: txInfoLayout.width + 10
             height: txInfoLayout.height + 10
 
-            visible: tii.txInfo.length > 0
+            visible: tiiBackend.txInfo.length > 0
             z: 3
             ColumnLayout {
                 id: txInfoLayout
                 anchors.centerIn: parent
                 Repeater {
-                    model: tii.txInfo
+                    model: tiiBackend.txInfo
                     delegate: Text {
                         Layout.fillWidth: true
                         text: modelData
@@ -212,7 +212,7 @@ Item {
             }
         }
         TIITableView {
-            isVisible: tii.isTii
+            isVisible: tiiBackend.isTii
             anchors.left: parent.left
             anchors.top: parent.top
             anchors.leftMargin: 10
@@ -236,7 +236,7 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     color: "white"
-                    opacity: plusMouseArea.containsMouse ? 1.0 : 0.5
+                    opacity: plusMouseArea.containsMouse ? 1.0 : 0.75
                 }
                 Rectangle {
                     width: 14
@@ -266,7 +266,7 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     color: "white"
-                    opacity: minusMouseArea.containsMouse ? 1.0 : 0.5
+                    opacity: minusMouseArea.containsMouse ? 1.0 : 0.75
                 }
                 Rectangle {
                     width: 14
@@ -280,6 +280,54 @@ Item {
                     anchors.fill: parent
                     onClicked: {
                         map.zoomLevel -= 0.1;
+                    }
+                }
+            }
+            Item {
+                id: logButtonItem
+                readonly property int spacing: 7
+                Layout.preferredHeight: logText.implicitHeight * 2
+                Layout.preferredWidth: logText.width + recSymbol.width + 2*spacing + (logText.visible ? spacing : 0)
+                visible: tiiBackend.isTii
+                Rectangle {
+                    id: logButton
+                    anchors.fill: parent
+                    color: "white"
+                    opacity: logMouseArea.containsMouse ? 1.0 : 0.75
+                    Text {
+                        id: logText
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        anchors.leftMargin: recSymbol.width + 2*logButtonItem.spacing
+                        text: tiiBackend.isRecordingLog ? qsTr("Stop logging") : qsTr("Record CSV log")
+                        visible: logMouseArea.containsMouse
+                        width: visible ? implicitWidth : 0
+                    }
+                }
+                Rectangle {
+                    id: recSymbol
+                    color: tiiBackend.isRecordingLog ? "#ff4b4b" : logMouseArea.containsMouse ? "black" : "#707070"
+                    height: 14
+                    width: height
+                    radius: 7
+                    anchors.verticalCenter: logButton.verticalCenter
+                    anchors.left: logButton.left
+                    anchors.leftMargin: logButtonItem.spacing
+                    SequentialAnimation on opacity {
+                        loops: Animation.Infinite
+                        PropertyAnimation { from: 1.0; to: 0.5; duration: 1000 }
+                        PropertyAnimation { from: 0.5; to: 1.0; duration: 1000 }
+                        running: tiiBackend.isRecordingLog
+                    }
+                }
+                MouseArea {
+                    id: logMouseArea
+                    hoverEnabled: true
+                    anchors.fill: parent
+                    propagateComposedEvents: true
+                    onClicked: {
+                        recSymbol.opacity = 1.0
+                        tiiBackend.startStopLog();
                     }
                 }
             }

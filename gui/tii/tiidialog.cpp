@@ -63,7 +63,7 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     // QML View
     m_qmlView = new QQuickView();
     QQmlContext * context = m_qmlView->rootContext();
-    context->setContextProperty("tii", this);
+    context->setContextProperty("tiiBackend", this);
     context->setContextProperty("tiiTable", m_model);
     context->setContextProperty("tiiTableSorted", m_sortedFilteredModel);
     context->setContextProperty("tiiTableSelectionModel", m_tableSelectionModel);
@@ -157,6 +157,10 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
 
 TIIDialog::~TIIDialog()
 {
+    if (m_logFile) {
+        m_logFile->close();
+        delete m_logFile;
+    }
     delete m_qmlView;
     delete m_sortedFilteredModel;
 }
@@ -219,7 +223,7 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
         QModelIndex currentIndex = selectedList.at(0);
         id = m_sortedFilteredModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt();
     }
-    m_model->updateTiiData(data.idList, ensId);
+    m_model->updateTiiData(data.idList, ensId, m_currentEnsemble.label, 0, m_snr);
 
     if (id >= 0)
     {   // update selection
@@ -240,6 +244,28 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     addToPlot(data);
 #endif
+    logTiiData();
+}
+
+void TIIDialog::logTiiData() const
+{
+    if (m_logFile)
+    {
+        QTextStream out(m_logFile);
+        // Body
+        for (int row = 0; row < m_model->rowCount(); ++row)
+        {
+            for (int col = 0; col < TxTableModel::NumCols-1; ++col)
+            {
+                if (col != TxTableModel::ColNumServices)
+                {   // num services is not logged
+                    out << m_model->data(m_model->index(row, col), TxTableModel::TxTableModelRoles::ExportRole).toString() << ";";
+                }
+            }
+            out << m_model->data(m_model->index(row, TxTableModel::NumCols-1), TxTableModel::TxTableModelRoles::ExportRole).toString() << Qt::endl;
+        }
+        out.flush();
+    }
 }
 
 void TIIDialog::setupDarkMode(bool darkModeEna)
@@ -412,6 +438,57 @@ void TIIDialog::setSelectedRow(int modelRow)
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     updateTiiPlot();
 #endif
+}
+
+void TIIDialog::startStopLog()
+{
+    if (isRecordingLog() == false)
+    {
+        if (!m_settings->tii.logFolder.isEmpty())
+        {
+            QDir().mkpath(m_settings->tii.logFolder);
+            QString filePath = QString("%1/%2_TII.csv").arg(m_settings->tii.logFolder, QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
+            if (m_logFile)
+            {
+                m_logFile->close();
+                delete m_logFile;
+            }
+            m_logFile = new QFile(filePath);
+            if (m_logFile->open(QIODevice::WriteOnly)) {
+                setIsRecordingLog(true);
+
+                // write header
+                QTextStream out(m_logFile);
+
+                // Header
+                for (int col = 0; col < TxTableModel::NumCols-1; ++col)
+                {
+                    if (col != TxTableModel::ColNumServices)
+                    {   // num services is not logged
+                        out << m_model->headerData(col, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString() << ";";
+                    }
+                }
+                out << m_model->headerData(TxTableModel::NumCols - 1, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString() <<  Qt::endl;
+            }
+            else
+            {
+                delete m_logFile;
+                m_logFile = nullptr;
+                qCCritical(tii) << "Unable to write TII log:" << filePath;
+                setIsRecordingLog(false);
+            }
+        }
+    }
+    else
+    {
+        if (m_logFile)
+        {
+            m_logFile->close();
+            delete m_logFile;
+            m_logFile = nullptr;
+        }
+        setIsRecordingLog(false);
+    }
 }
 
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT

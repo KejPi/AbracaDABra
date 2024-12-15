@@ -162,6 +162,7 @@ private:
     void onSerialPortEditFinished();
     void onTiiSpectPlotClicked(bool checked);
     void onTiiUpdateDbClicked();
+    void onTiiLogFolderButtonClicked();
 
     void onProxyConfigChanged(int index);
     void onProxyApplyButtonClicked();

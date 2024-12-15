@@ -56,7 +56,7 @@ public:
     ~ScannerDialog();
 
     void onTuneDone(uint32_t freq);
-    void onSyncStatus(uint8_t sync, float snr);
+    void onSignalState(uint8_t sync, float snr);
     void onEnsembleInformation(const RadioControlEnsemble &ens) override;
     void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &);
     void onTiiData(const RadioControlTIIData & data) override;

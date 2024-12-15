@@ -136,6 +136,7 @@ public:
         GeolocationSource locationSource;
         QGeoCoordinate coordinates;
         QString serialPort;
+        QString logFolder;
         bool showSpectumPlot;
         QByteArray geometry;
         QByteArray splitterState;
