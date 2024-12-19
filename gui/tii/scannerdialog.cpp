@@ -49,8 +49,8 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
 {
     // UI
     setWindowTitle(tr("DAB Scanning Tool"));
-    setMinimumSize(QSize(700, 500));
-    resize(QSize(800, 800));
+    setMinimumSize(QSize(800, 500));
+    resize(QSize(900, 800));
 
     // Set window flags to add maximize and minimize buttons
     setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
@@ -91,22 +91,36 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     line->setFrameShape(QFrame::Shape::VLine);
     line->setFrameShadow(QFrame::Shadow::Sunken);
 
-    QLabel * label = new QLabel(this);
-    m_spinBox = new QSpinBox(this);
-    m_spinBox->setSpecialValueText(tr("Inf"));
-    m_spinBox->setValue(m_settings->scanner.numCycles);
-    label->setText(tr("Number of cycles:"));
+    QLabel * labelMode = new QLabel(this);
+    labelMode->setText(tr("Mode:"));
 
-    QFormLayout * formLayout = new QFormLayout();
-    formLayout->setWidget(0, QFormLayout::LabelRole, label);
-    formLayout->setWidget(0, QFormLayout::FieldRole, m_spinBox);
+    m_modeCombo = new QComboBox(this);
+    m_modeCombo->addItem(tr("Fast"), Mode_Fast);
+    m_modeCombo->addItem(tr("Normal"), Mode_Normal);
+    m_modeCombo->addItem(tr("Precise"), Mode_Precise);
+    int idx = m_modeCombo->findData(m_settings->scanner.mode, Qt::UserRole);
+    if (idx <= 0)
+    {   // set Mode_Normal as default
+        idx = 1;
+    }
+    m_modeCombo->setCurrentIndex(idx);
+
+    QLabel * labelCycles = new QLabel(this);
+    m_numCyclesSpinBox = new QSpinBox(this);
+    m_numCyclesSpinBox->setSpecialValueText(tr("Inf"));
+    m_numCyclesSpinBox->setValue(m_settings->scanner.numCycles);
+    labelCycles->setText(tr("Number of cycles:"));
 
     controlsLayout->addWidget(m_scanningLabel);
     controlsLayout->addWidget(m_progressChannel);
     controlsLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum));
     controlsLayout->addWidget(m_exportButton);
     controlsLayout->addWidget(line);
-    controlsLayout->addLayout(formLayout);
+    controlsLayout->addWidget(labelMode);
+    controlsLayout->addWidget(m_modeCombo);
+    controlsLayout->addWidget(labelCycles);
+    controlsLayout->addWidget(m_numCyclesSpinBox);
+
     controlsLayout->addWidget(m_channelListButton);
     controlsLayout->addWidget(m_startStopButton);
     mainLayout->addLayout(controlsLayout);
@@ -128,6 +142,8 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     QVBoxLayout * layout = new QVBoxLayout(this);
     layout->setContentsMargins(0,0,0,0);
     layout->addWidget(m_splitter);
+
+    m_startStopButton->setFocus();
 
     if (!m_settings->scanner.splitterState.isEmpty()) {
         m_splitter->restoreState(m_settings->scanner.splitterState);
@@ -153,7 +169,7 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     m_scanningLabel->setText("");
     m_channelListButton->setText(tr("Select channels"));
     m_exportButton->setText(tr("Export as CSV"));
-    m_exportButton->setEnabled(false);
+    m_exportButton->setEnabled(false);        
     connect(m_exportButton, &QPushButton::clicked, this, &ScannerDialog::exportClicked);
 
     for (auto it = DabTables::channelList.cbegin(); it != DabTables::channelList.cend(); ++it)
@@ -217,14 +233,15 @@ void ScannerDialog::startStopClicked()
     else
     {   // start pressed
         m_startStopButton->setText(tr("Stop"));
-        m_spinBox->setEnabled(false);
+        m_numCyclesSpinBox->setEnabled(false);
+        m_modeCombo->setEnabled(false);
         m_numSelectedChannels = 0;
         for (const auto ch : m_channelSelection)
         {
             m_numSelectedChannels += ch ? 1 : 0;
         }
-        if (m_spinBox->value() > 0) {
-            m_progressBar->setMaximum(m_numSelectedChannels * m_spinBox->value());
+        if (m_numCyclesSpinBox->value() > 0) {
+            m_progressBar->setMaximum(m_numSelectedChannels * m_numCyclesSpinBox->value());
         }
         else
         {
@@ -254,8 +271,9 @@ void ScannerDialog::stopScan()
     m_progressChannel->setText(tr("None"));
     m_startStopButton->setText(tr("Start"));
     m_startStopButton->setEnabled(true);
-    m_spinBox->setEnabled(true);
+    m_numCyclesSpinBox->setEnabled(true);
     m_channelListButton->setEnabled(true);
+    m_modeCombo->setEnabled(true);
 
     m_isScanning = false;
     m_state = ScannerState::Idle;
@@ -265,8 +283,6 @@ void ScannerDialog::stopScan()
 
 void ScannerDialog::exportClicked()
 {
-    static const QRegularExpression regexp( "[" + QRegularExpression::escape("/:*?\"<>|") + "]");
-
     QString f = QString("%1/%2.csv").arg(m_settings->scanner.exportPath, m_scanStartTime.toString("yyyy-MM-dd_hhmmss"));
 
     QString fileName = QFileDialog::getSaveFileName(this,
@@ -362,7 +378,7 @@ void ScannerDialog::scanStep()
 
     if (DabTables::channelList.constEnd() == m_channelIt)
     {
-        if (++m_scanCycleCntr == m_spinBox->value())
+        if (++m_scanCycleCntr == m_numCyclesSpinBox->value())
         {   // scan finished
             stopScan();
             return;
@@ -370,7 +386,7 @@ void ScannerDialog::scanStep()
 
         // restarting
         m_channelIt = DabTables::channelList.constBegin();
-        if (m_spinBox->value() == 0)
+        if (m_numCyclesSpinBox->value() == 0)
         {   // endless scan
             m_progressBar->setValue(0);
         }
@@ -385,7 +401,7 @@ void ScannerDialog::scanStep()
     m_progressBar->setValue(m_progressBar->value()+1);
     //m_progressChannel->setText(QString("%1 [ %2 MHz ]").arg(m_channelIt.value()).arg(m_channelIt.key()/1000.0, 3, 'f', 3, QChar('0')));
     //m_progressChannel->setText(QString("%1 (%2 / %3)").arg(m_channelIt.value()).arg(m_progressBar->value()).arg(m_progressBar->maximum()));
-    if (m_spinBox->value() == 1)
+    if (m_numCyclesSpinBox->value() == 1)
     {
         m_progressChannel->setText(m_channelIt.value());
     }
@@ -468,6 +484,7 @@ void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble & ens)
 
         m_ensemble = ens;
         m_snr = 0.0;
+        m_tiiCntr = 0;
         if (m_isTiiActive == false)
         {
             emit setTii(true);
@@ -475,7 +492,7 @@ void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble & ens)
         }
     }
     else
-    {   // this can happen in single channel mode
+    {   // this can happen in single channel mode in no signal case
         // wait for ensemble
         m_timer->start(m_settings->scanner.waitForEnsemble*1000);
     }
@@ -491,39 +508,42 @@ void ScannerDialog::onServiceListEntry(const RadioControlEnsemble &, const Radio
 
 void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 {
+    if (nullptr != m_timer)
+    {
+        m_timer->stop();
+    }
     if ((ScannerState::WaitForTII == m_state) && m_ensemble.isValid())
     {
-        m_model->appendEnsData(data.idList, ServiceListId(m_ensemble), m_ensemble.label, m_numServicesFound, m_snr);
-        m_exportButton->setEnabled(true);
-
-        //m_txTableView->resizeColumnsToContents();
-        m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-        m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColLocation, QHeaderView::Stretch);
-        //m_txTableView->horizontalHeader()->setStretchLastSection(true);
-
-        if (m_isTiiActive && m_numSelectedChannels > 1)
+        if (++m_tiiCntr >= m_modeCombo->currentData().toInt())
         {
-            emit setTii(false);
-            m_isTiiActive = false;
-        }
+            m_model->appendEnsData(data.idList, ServiceListId(m_ensemble), m_ensemble.label, m_numServicesFound, m_snr);
+            m_exportButton->setEnabled(true);
 
-        // handle selection
-        int id = -1;
-        QModelIndexList	selectedList = m_tableSelectionModel->selectedRows();
-        if (!selectedList.isEmpty())
-        {
-            QModelIndex currentIndex = selectedList.at(0);
-            id = m_sortedFilteredModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt();
-        }
+            //m_txTableView->resizeColumnsToContents();
+            m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+            m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColLocation, QHeaderView::Stretch);
+            //m_txTableView->horizontalHeader()->setStretchLastSection(true);
 
-        // forcing update of UI        
-        onSelectionChanged(QItemSelection(),QItemSelection());
+            if (m_isTiiActive && m_numSelectedChannels > 1)
+            {
+                emit setTii(false);
+                m_isTiiActive = false;
+            }
 
-        if ((nullptr != m_timer) && (m_timer->isActive()))
-        {
-            m_timer->stop();
+            // handle selection
+            int id = -1;
+            QModelIndexList	selectedList = m_tableSelectionModel->selectedRows();
+            if (!selectedList.isEmpty())
+            {
+                QModelIndex currentIndex = selectedList.at(0);
+            }
+
+            // forcing update of UI
+            onSelectionChanged(QItemSelection(),QItemSelection());
+
+            // next channel
             scanStep();
-        }        
+        }
     }
 }
 
@@ -624,7 +644,7 @@ void ScannerDialog::closeEvent(QCloseEvent *event)
 
     m_settings->scanner.splitterState = m_splitter->saveState();
     m_settings->scanner.geometry = saveGeometry();
-    m_settings->scanner.numCycles = m_spinBox->value();
+    m_settings->scanner.numCycles = m_numCyclesSpinBox->value();
     m_settings->scanner.channelSelection = m_channelSelection;
 
     TxMapDialog::closeEvent(event);

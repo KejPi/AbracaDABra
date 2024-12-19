@@ -84,6 +84,12 @@ private:
         Interrupted
     };
 
+    enum Mode {
+        Mode_Fast = 1,
+        Mode_Normal = 2,
+        Mode_Precise = 4
+    };
+
     // UI
     QSplitter * m_splitter;
     QQuickView * m_qmlView ;
@@ -94,7 +100,8 @@ private:
     QLabel * m_progressChannel;
     QPushButton * m_exportButton;
     QPushButton * m_channelListButton;
-    QSpinBox * m_spinBox;
+    QSpinBox * m_numCyclesSpinBox;
+    QComboBox * m_modeCombo;
 
     QTimer * m_timer = nullptr;
 
@@ -110,6 +117,7 @@ private:
     dabChannelList_t::ConstIterator m_channelIt;
     QMap<uint32_t, bool> m_channelSelection;
     int m_numSelectedChannels = 0;
+    uint m_tiiCntr = 0;
     float m_snr;
     QDateTime m_scanStartTime;
 

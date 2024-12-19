@@ -1522,6 +1522,8 @@ void MainWindow::onTuneDone(uint32_t freq)
             ui->switchSourceLabel->setVisible(true);
         }
 
+        restoreTimeQualWidget();
+
         emit resetUserApps();  // new channel -> reset user apps
     }
     else
@@ -3054,7 +3056,8 @@ void MainWindow::loadSettings()
     m_settings->scanner.exportPath = settings->value("Scanner/exportPath", QDir::homePath()).toString();
     m_settings->scanner.splitterState = settings->value("Scanner/layout").toByteArray();
     m_settings->scanner.geometry = settings->value("Scanner/windowGeometry").toByteArray();
-    m_settings->scanner.numCycles = settings->value("Scanner/numCycles", 1).toInt();
+    m_settings->scanner.mode = settings->value("Scanner/mode", 0).toInt();
+    m_settings->scanner.numCycles = settings->value("Scanner/numCycles", 1).toInt();    
     m_settings->scanner.waitForSync = settings->value("Scanner/waitForSyncSec", 3).toInt();
     m_settings->scanner.waitForEnsemble = settings->value("Scanner/waitForEnsembleSec", 6).toInt();
     int numCh = settings->beginReadArray("Scanner/channels");
@@ -3267,6 +3270,7 @@ void MainWindow::saveSettings()
     settings->setValue("Scanner/exportPath", m_settings->scanner.exportPath);
     settings->setValue("Scanner/windowGeometry", m_settings->scanner.geometry);
     settings->setValue("Scanner/layout", m_settings->scanner.splitterState);
+    settings->setValue("Scanner/mode", m_settings->scanner.mode);
     settings->setValue("Scanner/numCycles", m_settings->scanner.numCycles);
 
     settings->beginWriteArray("Scanner/channels");
@@ -3789,6 +3793,7 @@ void MainWindow::onTuneChannel(uint32_t freq)
 {
     // change combo - find combo index
     ui->channelCombo->setCurrentIndex(ui->channelCombo->findData(freq));
+
 }
 
 void MainWindow::stop()

@@ -175,6 +175,7 @@ public:
         QByteArray geometry;
         QByteArray splitterState;
         QMap<uint32_t, bool> channelSelection;
+        int mode;
         int numCycles;
         int waitForSync;
         int waitForEnsemble;        
