@@ -119,7 +119,7 @@ private:
     bool m_positionValid = false;
     bool m_isVisible = false;
     const bool m_isTii;
-    bool m_isRecordingLog;
+    bool m_isRecordingLog = false;
 };
 
 #endif // TXMAPDIALOG_H
