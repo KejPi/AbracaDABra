@@ -480,7 +480,7 @@ void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble & ens)
         m_state = ScannerState::WaitForTII;
 
         // this will stop when TII data is received
-        m_timer->start(10000);
+        m_timer->start(5000 + m_modeCombo->currentData().toInt()*5000);
 
         m_ensemble = ens;
         m_snr = 0.0;
@@ -508,10 +508,6 @@ void ScannerDialog::onServiceListEntry(const RadioControlEnsemble &, const Radio
 
 void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 {
-    if (nullptr != m_timer)
-    {
-        m_timer->stop();
-    }
     if ((ScannerState::WaitForTII == m_state) && m_ensemble.isValid())
     {
         if (++m_tiiCntr >= m_modeCombo->currentData().toInt())
@@ -541,8 +537,12 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
             // forcing update of UI
             onSelectionChanged(QItemSelection(),QItemSelection());
 
-            // next channel
-            scanStep();
+            if (nullptr != m_timer && m_timer->isActive())
+            {
+                m_timer->stop();
+                // next channel
+                scanStep();
+            }
         }
     }
 }
@@ -646,6 +646,7 @@ void ScannerDialog::closeEvent(QCloseEvent *event)
     m_settings->scanner.geometry = saveGeometry();
     m_settings->scanner.numCycles = m_numCyclesSpinBox->value();
     m_settings->scanner.channelSelection = m_channelSelection;
+    m_settings->scanner.mode = m_modeCombo->currentData().toInt();
 
     TxMapDialog::closeEvent(event);
 }
