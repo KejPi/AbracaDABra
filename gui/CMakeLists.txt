@@ -158,6 +158,9 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     aboutdialog.cpp
     aboutdialog.ui
 
+    updatechecker.h updatechecker.cpp
+    updatedialog.h updatedialog.cpp updatedialog.ui
+
     metadatamanager.h
     metadatamanager.cpp
 
@@ -199,11 +202,16 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     audiorec/audiorecmanager.cpp
 
     # TII decoder
+    tii/txmapdialog.h tii/txmapdialog.cpp
     tii/tiidialog.h tii/tiidialog.cpp
-    tii/tiitablemodel.h tii/tiitablemodel.cpp
-    tii/tiitablemodelitem.h tii/tiitablemodelitem.cpp
+    tii/txtablemodel.cpp tii/txtablemodel.h
+    tii/txtableproxymodel.h tii/txtableproxymodel.cpp
+    tii/txtablemodelitem.cpp tii/txtablemodelitem.h
     tii/txdataitem.h tii/txdataitem.cpp
-    tii/txdataloader.h tii/txdataloader.cpp
+    tii/txdataloader.h tii/txdataloader.cpp      
+    # Scanner tool
+    tii/scannerdialog.h tii/scannerdialog.cpp
+    tii/channelselectiondialog.h tii/channelselectiondialog.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -212,6 +220,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/epg)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/data)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/input)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/tii)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/scanner)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets)
 
 # QML
@@ -356,6 +365,7 @@ set(TSFILES
     l10n/${TARGET}_cs.ts
     l10n/${TARGET}_de.ts
     l10n/${TARGET}_pl.ts
+    l10n/${TARGET}_nl.ts
 )
 qt_add_translations(${TARGET} TS_FILES ${TSFILES}
     LUPDATE_OPTIONS "-noobsolete"

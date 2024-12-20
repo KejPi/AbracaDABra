@@ -30,6 +30,7 @@
 #include <QLocale>
 #include <QGeoCoordinate>
 #include <QAbstractItemModel>
+#include <QDateTime>
 #include <QColor>
 #include "config.h"
 #include "inputdevice.h"
@@ -110,13 +111,19 @@ public:
     bool spiAppEna;
     bool useInternet;
     bool radioDnsEna;
-    QString audioRecFolder;
-    bool audioRecCaptureOutput;
-    bool audioRecAutoStopEna;
-    bool audioRecDl;
-    bool audioRecDlAbsTime;
     bool trayIconEna;
     QColor slsBackground = Qt::red;
+    bool updateCheckEna;
+    QDateTime updateCheckTime;
+
+    // audio recording settings
+    struct AudioRec{
+        QString folder;
+        bool captureOutput;
+        bool autoStopEna;
+        bool dl;
+        bool dlAbsTime;
+    } audioRec;
 
     // this is settings for UA data dumping (storage)
     struct UADumpSettings
@@ -133,6 +140,7 @@ public:
         GeolocationSource locationSource;
         QGeoCoordinate coordinates;
         QString serialPort;
+        QString logFolder;
         bool showSpectumPlot;
         QByteArray geometry;
         QByteArray splitterState;
@@ -162,6 +170,17 @@ public:
     struct CatSLS {
         QByteArray geometry;
     } catSls;
+    struct ScannerSettings {
+        QString exportPath;
+        QByteArray geometry;
+        QByteArray splitterState;
+        QMap<uint32_t, bool> channelSelection;
+        int mode;
+        int numCycles;
+        int waitForSync;
+        int waitForEnsemble;        
+    } scanner;
+
 };
 
 #endif // SETTINGS_H

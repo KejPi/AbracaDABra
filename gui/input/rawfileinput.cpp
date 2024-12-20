@@ -28,7 +28,9 @@
 #include <QLoggingCategory>
 #include <QFile>
 #include <QDomDocument>
+#include <QFileInfo>
 #include "rawfileinput.h"
+#include "dabtables.h"
 
 Q_LOGGING_CATEGORY(rawFileInput, "RawFileInput", QtInfoMsg)
 
@@ -112,7 +114,7 @@ bool RawFileInput::openDevice()
         }
 
         if (!m_deviceDescription.rawFile.hasXmlHeader)
-        {   // header was not correctly parsed or not found
+        {   // header was not correctly parsed or not found            
             if (!m_inputFile->seek(0))
             {   // seek to start failed -> align to IQ samples
                 while (idx++ & 0x07)
@@ -161,6 +163,23 @@ void RawFileInput::setFile(const QString & fileName, const RawFileInputFormat &s
 {
     m_fileName = fileName;
     setFileFormat(sampleFormat);
+
+    // try to guess frequency from filename
+    m_deviceDescription.rawFile.frequency_kHz = 0;
+    QString basename = QFileInfo(m_fileName).baseName();
+    QStringList qsl = basename.split('_');
+    for (const QString & token : qsl)
+    {
+        for (auto it = DabTables::channelList.cbegin(); it != DabTables::channelList.cend(); ++it)
+        {
+            if (it.value() == token)
+            {
+                //qDebug() << "Channel =" << it.value() << "frequency =" << it.key();
+                m_deviceDescription.rawFile.frequency_kHz = it.key();
+                return;
+            }
+        }
+    }
 }
 
 void RawFileInput::setFileFormat(const RawFileInputFormat &sampleFormat)

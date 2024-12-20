@@ -74,6 +74,22 @@ const ServiceListItem * EnsembleListItem::getService(int num) const
     return nullptr;
 }
 
+bool EnsembleListItem::update(const RadioControlEnsemble &ens)
+{
+    if (m_label != ens.label)
+    {
+        m_label = ens.label;
+        m_shortLabel = ens.labelShort;
+        return true;
+    }
+    if (m_shortLabel != ens.labelShort)
+    {
+        m_shortLabel = ens.labelShort;
+        return true;
+    }
+    return false;
+}
+
 void EnsembleListItem::beginUpdate()
 {
     for (auto & s : m_serviceList)

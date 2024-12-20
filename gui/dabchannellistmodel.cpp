@@ -60,7 +60,14 @@ DABChannelListFilteredModel::DABChannelListFilteredModel(QObject *parent)
 
 void DABChannelListFilteredModel::setChannelFilter(int freq)
 {
-    m_frequencyFilter = freq;
+    if (DabTables::channelList.contains(freq))
+    {   // this is protection from setting invalid DAB frequency
+        m_frequencyFilter = freq;
+    }
+    else
+    {
+        m_frequencyFilter = 0;
+    }
     invalidateFilter();
 }
 

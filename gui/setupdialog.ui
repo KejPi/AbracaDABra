@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>530</width>
-    <height>634</height>
+    <height>666</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -1652,7 +1652,7 @@
       <attribute name="title">
        <string>TII</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_19">
+      <layout class="QVBoxLayout" name="verticalLayout_21">
        <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
@@ -1874,6 +1874,69 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
         </widget>
        </item>
        <item>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>Logging</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_19">
+          <item>
+           <layout class="QGridLayout" name="gridLayout_11">
+            <item row="1" column="0">
+             <widget class="QPushButton" name="tiiLogFolderButton">
+              <property name="text">
+               <string>Change CSV log folder...</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <spacer name="horizontalSpacer_14">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="0" colspan="2">
+             <layout class="QHBoxLayout" name="horizontalLayout_23">
+              <item>
+               <widget class="QLabel" name="label_5">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Folder:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="ElidedLabel" name="tiiLogFolderLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string notr="true">/current/folder</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="tiiSpectPlotCheckBox">
          <property name="text">
           <string>Show spectrum plot</string>
@@ -1899,7 +1962,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
       <attribute name="title">
        <string notr="true">Others</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_6">
+      <layout class="QVBoxLayout" name="verticalLayout_20">
        <item>
         <widget class="QGroupBox" name="styleGroupBox">
          <property name="title">
@@ -2021,6 +2084,22 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
            <widget class="QCheckBox" name="xmlHeaderCheckBox">
             <property name="text">
              <string>Include XML header</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="updateGroupBox">
+         <property name="title">
+          <string>Application update</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QCheckBox" name="checkForUpdates">
+            <property name="text">
+             <string>Check for application update on start</string>
             </property>
            </widget>
           </item>

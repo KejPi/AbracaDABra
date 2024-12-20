@@ -24,52 +24,37 @@
  * SOFTWARE.
  */
 
-#ifndef TXDATAITEM_H
-#define TXDATAITEM_H
+#ifndef UPDATECHECKER_H
+#define UPDATECHECKER_H
 
-#include <QString>
-#include "servicelistid.h"
-#include <QGeoCoordinate>
+#include <QObject>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
-class TxDataItem {
+
+class UpdateChecker : public QObject
+{
+    Q_OBJECT
 public:
-    TxDataItem();
+    explicit UpdateChecker(QObject *parent = nullptr);
+    ~UpdateChecker();
+    void check();
+    QString version() const;
+    bool isPreRelease() const;
+    QString releaseNotes() const;
 
-    bool isValid() const { return m_ensId.isValid(); }
-
-    QString ensLabel() const;
-    void setEnsLabel(const QString &newEnsLabel);
-
-    QString location() const;
-    void setLocation(const QString &newLocation);
-
-    ServiceListId ensId() const;
-    void setEnsId(const ServiceListId &newEnsId);
-
-    uint8_t mainId() const;
-    void setMainId(uint8_t newMainId);
-
-    uint8_t subId() const;
-    void setSubId(uint8_t newSubId);
-
-    QGeoCoordinate coordinates() const;
-    void setCoordinates(const QGeoCoordinate &newCoordinates);
-
-    float power() const;
-    void setPower(float newPower);
+signals:
+    void finished(bool result);
 
 private:
-    // enum Polarization { Unknown = -1, Vertical, Horizontal };
-    QString m_ensLabel;
-    QString m_location;
-    ServiceListId m_ensId;
-    uint8_t m_mainId = -1;
-    uint8_t m_subId = -1;
-    QGeoCoordinate m_coordinates;
-    float m_power = -1.0;
-    // int m_antenna;
-    // Polarization m_polarization;
+    QNetworkAccessManager *m_netAccessManager = nullptr;
+    QString m_version;
+    bool m_isPreRelease;
+    QString m_releaseNotes;
+
+    void onFileDownloaded(QNetworkReply *reply);
+    bool parseResponse(const QByteArray & data);
 };
 
 
-#endif // TXDATAITEM_H
+#endif // UPDATECHECKER_H

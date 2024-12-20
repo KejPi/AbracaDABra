@@ -131,6 +131,7 @@ struct RadioControlEnsemble
     uint8_t ecc() const { return (ueid >> 16); }
 
     bool isValid() const { return (0 != frequency) && (RADIO_CONTROL_UEID_INVALID != ueid); }
+    void reset() { frequency = 0; ueid = RADIO_CONTROL_UEID_INVALID; }
 };
 Q_DECLARE_METATYPE(RadioControlEnsemble)
 
@@ -432,6 +433,8 @@ private:
 
     bool m_isReconfigurationOngoing = false;
     bool m_spiAppEnabled = false;
+
+    int m_tiiEna = 0;
 
     RadioControlEnsemble m_ensemble;
     RadioControlServiceList m_serviceList;

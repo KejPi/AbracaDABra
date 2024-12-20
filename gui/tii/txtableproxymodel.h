@@ -24,52 +24,30 @@
  * SOFTWARE.
  */
 
-#ifndef TXDATAITEM_H
-#define TXDATAITEM_H
+#ifndef TXTABLEPROXYMODEL_H
+#define TXTABLEPROXYMODEL_H
 
-#include <QString>
-#include "servicelistid.h"
-#include <QGeoCoordinate>
+#include <QObject>
+#include <QAbstractTableModel>
+#include <QGeoPositionInfo>
+#include <QSortFilterProxyModel>
 
-class TxDataItem {
+class TxTableProxyModel : public QSortFilterProxyModel
+{
+    Q_OBJECT
+    Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
 public:
-    TxDataItem();
+    TxTableProxyModel(QObject *parent = nullptr);
+    void setFilter(bool newFilterCols);
 
-    bool isValid() const { return m_ensId.isValid(); }
+signals:
+    void rowCountChanged();
 
-    QString ensLabel() const;
-    void setEnsLabel(const QString &newEnsLabel);
-
-    QString location() const;
-    void setLocation(const QString &newLocation);
-
-    ServiceListId ensId() const;
-    void setEnsId(const ServiceListId &newEnsId);
-
-    uint8_t mainId() const;
-    void setMainId(uint8_t newMainId);
-
-    uint8_t subId() const;
-    void setSubId(uint8_t newSubId);
-
-    QGeoCoordinate coordinates() const;
-    void setCoordinates(const QGeoCoordinate &newCoordinates);
-
-    float power() const;
-    void setPower(float newPower);
-
-private:
-    // enum Polarization { Unknown = -1, Vertical, Horizontal };
-    QString m_ensLabel;
-    QString m_location;
-    ServiceListId m_ensId;
-    uint8_t m_mainId = -1;
-    uint8_t m_subId = -1;
-    QGeoCoordinate m_coordinates;
-    float m_power = -1.0;
-    // int m_antenna;
-    // Polarization m_polarization;
+protected:
+    bool m_enaFilter = true;
+    bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
+    bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const override;
 };
 
 
-#endif // TXDATAITEM_H
+#endif // TXTABLEPROXYMODEL_H

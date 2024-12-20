@@ -33,40 +33,62 @@ MapQuickItem {
     property string tiiCode: ""
     property color markerColor: "gray"
     property bool isSelected: false
+    property bool isTiiMode: true
 
     HoverHandler {
         id: hoverHandler
     }
 
-    //parent: map
-    sourceItem: Item {
-        width: img.width
-        height: img.height
-        Image {
-            id: img
-            source: "resources/map_marker_"+ tiiCode.length + ".png"
-            visible: false
-        }
-        MultiEffect {
-            id: colorizationEffect
-            source: img
-            anchors.fill: img
-            opacity: (hoverHandler.hovered || isSelected) ? 1.0 : 0.6
-            colorizationColor: markerColor
-            colorization: 0.5
-            shadowEnabled: true          // QTBUG-124730
-            shadowOpacity: isSelected    // QTBUG-124730
-        }
-        Text{
-            id: txtTII
-            y: (19-height)/2
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: tiiCode
-            opacity: (hoverHandler.hovered || isSelected) ? 1.0 : 0.6
-            horizontalAlignment: Text.AlignHCenter
+    sourceItem: Loader {
+        active: tiiCode !== ""
+        sourceComponent: (isTiiMode || isSelected) ? txBubble : txPoint
+    }
+
+    anchorPoint: (isTiiMode || isSelected) ? Qt.point(sourceItem.width/2, sourceItem.height) : Qt.point(sourceItem.width/2, sourceItem.height/2)
+    visible: true
+
+    Component {
+        id: txBubble
+        Item {
+            width: img.width
+            height: img.height
+            Image {
+                id: img
+                source: "resources/map_marker_"+ tiiCode.length + ".png"
+                visible: false
+            }
+            MultiEffect {
+                id: colorizationEffect
+                source: img
+                anchors.fill: img
+                opacity: (hoverHandler.hovered || isSelected) ? 1.0 : 0.6
+                colorizationColor: markerColor
+                colorization: 0.5
+                shadowEnabled: true          // QTBUG-124730
+                shadowOpacity: isSelected    // QTBUG-124730
+            }
+            Text{
+                id: txtTII
+                y: (19-height)/2
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: tiiCode
+                opacity: (hoverHandler.hovered || isSelected) ? 1.0 : 0.6
+                horizontalAlignment: Text.AlignHCenter
+            }
         }
     }
-    anchorPoint: Qt.point(sourceItem.width/2, sourceItem.height)
-    visible: true
+    Component {
+        id: txPoint
+        Rectangle {
+            width: 14;
+            height: 14;
+            color: "red" // "#251ee4";
+            border.width: 2;
+            border.color: "white";
+            smooth: true;
+            radius: 7;
+            opacity: 0.8
+        }
+    }
 }
 

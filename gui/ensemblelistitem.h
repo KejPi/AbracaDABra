@@ -53,6 +53,7 @@ public:
     float snr() const { return m_lastSnr; }              // last SNR
     int numServices() const { return m_serviceList.size(); }
     const ServiceListItem * getService(int num = 0) const;
+    bool update(const RadioControlEnsemble &ens);
     void beginUpdate();
     void endUpdate();
 

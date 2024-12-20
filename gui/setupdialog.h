@@ -51,12 +51,14 @@ public:
     SetupDialog(QWidget *parent = nullptr);
     void setupDarkMode(bool darkModeEna);
     void setGainValues(const QList<float> & gainList);
+    void setInputDeviceEnabled(bool ena);
     void resetInputDevice();
     void setSettings(Settings  * settings);
     void setXmlHeader(const InputDeviceDescription & desc);
     void onFileLength(int msec);
     void onFileProgress(int msec);
     void setAudioRecAutoStop(bool ena);
+    void setCheckUpdatesEna(bool ena);
     QLocale::Language applicationLanguage() const;
     void setSlsDumpPaternDefault(const QString &newSlsDumpPaternDefault);
     void setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault);
@@ -160,6 +162,7 @@ private:
     void onSerialPortEditFinished();
     void onTiiSpectPlotClicked(bool checked);
     void onTiiUpdateDbClicked();
+    void onTiiLogFolderButtonClicked();
 
     void onProxyConfigChanged(int index);
     void onProxyApplyButtonClicked();

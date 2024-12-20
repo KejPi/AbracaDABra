@@ -39,14 +39,8 @@
 Q_LOGGING_CATEGORY(tii, "TII", QtInfoMsg)
 
 TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
-    : QDialog(parent)
-    , m_settings(settings)
+    : TxMapDialog(settings, true, parent)
 {
-    m_model = new TiiTableModel(this);
-    m_sortModel = new TiiTableSortModel(this);
-    m_sortModel->setSourceModel(m_model);
-    m_tiiTableSelectionModel = new QItemSelectionModel(m_sortModel, this);
-
     // UI
     setWindowTitle(tr("TII Decoder"));
     setMinimumSize(QSize(600, 400));
@@ -69,10 +63,10 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     // QML View
     m_qmlView = new QQuickView();
     QQmlContext * context = m_qmlView->rootContext();
-    context->setContextProperty("tii", this);
+    context->setContextProperty("tiiBackend", this);
     context->setContextProperty("tiiTable", m_model);
-    context->setContextProperty("tiiTableSorted", m_sortModel);
-    context->setContextProperty("tiiTableSelectionModel", m_tiiTableSelectionModel);
+    context->setContextProperty("tiiTableSorted", m_sortedFilteredModel);
+    context->setContextProperty("tiiTableSelectionModel", m_tableSelectionModel);
     m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map.qml"));
 
     QWidget *container = QWidget::createWindowContainer(m_qmlView, this);
@@ -99,9 +93,6 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     layout->setContentsMargins(0,0,0,0);
     layout->addWidget(container);
 #endif
-
-    connect(m_tiiTableSelectionModel, &QItemSelectionModel::selectionChanged, this, &TIIDialog::onSelectionChanged);
-    connect(this, &TIIDialog::selectedRowChanged, this, &TIIDialog::onSelectedRowChanged);
 
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     QCPItemStraightLine *verticalLine;
@@ -164,46 +155,40 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
 }
 
-void TIIDialog::positionUpdated(const QGeoPositionInfo &position)
-{
-    setCurrentPosition(position.coordinate());
-    m_model->setCoordinates(m_currentPosition);
-    setPositionValid(true);
-}
-
 TIIDialog::~TIIDialog()
 {
+    if (m_logFile) {
+        m_logFile->close();
+        delete m_logFile;
+    }
     delete m_qmlView;
-    delete m_tiiTableSelectionModel;
-    delete m_sortModel;
-    delete m_model;
+    delete m_sortedFilteredModel;
 }
 
 void TIIDialog::showEvent(QShowEvent *event)
 {
-    reset();
-    emit setTii(true, 0.0);
-    startLocationUpdate();
-    setIsVisible(true);
-
-    QDialog::showEvent(event);
+    if (!isVisible())
+    {
+        emit setTii(true);
+    }
+    TxMapDialog::showEvent(event);
 }
 
 void TIIDialog::closeEvent(QCloseEvent *event)
 {
-    emit setTii(false, 0.0);
-    setIsVisible(false);
-    stopLocationUpdate();
+    emit setTii(false);
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     m_settings->tii.splitterState = m_splitter->saveState();
 #endif
-    m_settings->tii.geometry = saveGeometry();
+    m_settings->tii.geometry = saveGeometry();    
 
-    QDialog::closeEvent(event);
+    TxMapDialog::closeEvent(event);
 }
 
 void TIIDialog::reset()
 {
+    TxMapDialog::reset();
+
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     QList<double> f;
     QList<double> none;
@@ -219,16 +204,12 @@ void TIIDialog::reset()
     m_tiiSpectrumPlot->replot();
     m_isZoomed = false;
 #endif
-
-    //m_currentEnsemble.frequency = 0;
-    m_model->clear();
-    setSelectedRow(-1);
 }
 
 void TIIDialog::onTiiData(const RadioControlTIIData &data)
 {
     ServiceListId ensId = ServiceListId(m_currentEnsemble.frequency, m_currentEnsemble.ueid);
-    if (!ensId.isValid())
+    if (!m_currentEnsemble.isValid())
     {   // when we receive data without valid ensemble
         reset();
         return;
@@ -236,23 +217,23 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
 
     // handle selection
     int id = -1;
-    QModelIndexList	selectedList = m_tiiTableSelectionModel->selectedRows();
+    QModelIndexList	selectedList = m_tableSelectionModel->selectedRows();
     if (!selectedList.isEmpty())
     {
         QModelIndex currentIndex = selectedList.at(0);
-        id = m_sortModel->data(currentIndex, TiiTableModel::TiiTableModelRoles::IdRole).toInt();
+        id = m_sortedFilteredModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt();
     }
-    m_model->updateData(data.idList, ensId);
+    m_model->updateTiiData(data.idList, ensId, m_currentEnsemble.label, 0, m_snr);
 
     if (id >= 0)
     {   // update selection
-        QModelIndexList	selectedList = m_tiiTableSelectionModel->selectedRows();
+        QModelIndexList	selectedList = m_tableSelectionModel->selectedRows();
         if (!selectedList.isEmpty())
         {
             QModelIndex currentIndex = selectedList.at(0);
-            if (id != m_sortModel->data(currentIndex, TiiTableModel::TiiTableModelRoles::IdRole).toInt())
+            if (id != m_sortedFilteredModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt())
             {  // selection was updated
-                m_tiiTableSelectionModel->clear();
+                m_tableSelectionModel->clear();
             }
         }
     }
@@ -263,39 +244,27 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     addToPlot(data);
 #endif
+    logTiiData();
 }
 
-void TIIDialog::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+void TIIDialog::logTiiData() const
 {
-    Q_UNUSED(selected)
-    Q_UNUSED(deselected)
-
-    QModelIndexList selectedRows = m_tiiTableSelectionModel->selectedRows();
-    if (selectedRows.isEmpty())
-    {   // no selection => return
-        setSelectedRow(-1);
-        return;
-    }
-
-    QModelIndex currentIndex = selectedRows.at(0);
-    currentIndex = m_sortModel->mapToSource(currentIndex);
-    setSelectedRow(currentIndex.row());
-}
-
-void TIIDialog::onSelectedRowChanged()
-{
-    if (m_selectedRow == -1)
+    if (m_logFile)
     {
-        m_tiiTableSelectionModel->clear();
-        return;
-    }
-
-    // m_selectedRow is in source model while selection uses indexes of sort model!!!
-    QModelIndexList selection = m_tiiTableSelectionModel->selectedRows();
-    QModelIndex idx = m_sortModel->mapFromSource(m_model->index(m_selectedRow, 0));
-    if (idx.isValid() && (selection.isEmpty() || selection.at(0) != idx))
-    {
-        m_tiiTableSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current | QItemSelectionModel::Rows);
+        QTextStream out(m_logFile);
+        // Body
+        for (int row = 0; row < m_model->rowCount(); ++row)
+        {
+            for (int col = 0; col < TxTableModel::NumCols-1; ++col)
+            {
+                if (col != TxTableModel::ColNumServices)
+                {   // num services is not logged
+                    out << m_model->data(m_model->index(row, col), TxTableModel::TxTableModelRoles::ExportRole).toString() << ";";
+                }
+            }
+            out << m_model->data(m_model->index(row, TxTableModel::NumCols-1), TxTableModel::TxTableModelRoles::ExportRole).toString() << Qt::endl;
+        }
+        out.flush();
     }
 }
 
@@ -411,83 +380,6 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
     }    
 }
 
-void TIIDialog::startLocationUpdate()
-{
-    switch (m_settings->tii.locationSource)
-    {
-    case Settings::GeolocationSource::System:
-    {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
-        // ask for permission
-#if QT_CONFIG(permissions)
-        QLocationPermission locationsPermission;
-        locationsPermission.setAccuracy(QLocationPermission::Precise);
-        locationsPermission.setAvailability(QLocationPermission::WhenInUse);
-        switch (qApp->checkPermission(locationsPermission)) {
-        case Qt::PermissionStatus::Undetermined:
-            qApp->requestPermission(locationsPermission, this, [this]() { startLocationUpdate(); } );
-            qCDebug(tii) << "LocationPermission Undetermined";
-            return;
-        case Qt::PermissionStatus::Denied:
-        {
-            qCInfo(tii) << "LocationPermission Denied";
-            QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), tr("Device location access is denied."), {}, this);
-            msgBox.setInformativeText(tr("If you want to display current position on map, grant the location permission in Settings then open the app again."));
-            msgBox.exec();
-        }
-            return;
-        case Qt::PermissionStatus::Granted:
-            qCInfo(tii) << "LocationPermission Granted";
-            break; // Proceed
-        }
-#endif
-#endif
-        // start location update
-        if (m_geopositionSource == nullptr)
-        {
-            m_geopositionSource = QGeoPositionInfoSource::createDefaultSource(this);
-        }
-        if (m_geopositionSource != nullptr)
-        {
-            qCDebug(tii) << "Start position update";
-            connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &TIIDialog::positionUpdated);
-            m_geopositionSource->startUpdates();
-        }
-    }
-    break;
-    case Settings::GeolocationSource::Manual:
-        if (m_geopositionSource != nullptr)
-        {
-            delete m_geopositionSource;
-            m_geopositionSource = nullptr;
-        }
-        positionUpdated(QGeoPositionInfo(m_settings->tii.coordinates, QDateTime::currentDateTime()));
-        break;
-    case Settings::GeolocationSource::SerialPort:
-    {
-        // serial port
-        QVariantMap params;
-        params["nmea.source"] = "serial:"+m_settings->tii.serialPort;
-        m_geopositionSource = QGeoPositionInfoSource::createSource("nmea", params, this);
-        if (m_geopositionSource != nullptr)
-        {
-            qCDebug(tii) << "Start position update";
-            connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &TIIDialog::positionUpdated);
-            m_geopositionSource->startUpdates();
-        }
-    }
-        break;
-    }
-}
-
-void TIIDialog::stopLocationUpdate()
-{
-    if (m_geopositionSource != nullptr)
-    {
-        m_geopositionSource->stopUpdates();
-    }
-}
-
 void TIIDialog::onChannelSelection()
 {
     onEnsembleInformation(RadioControlEnsemble());
@@ -497,89 +389,17 @@ void TIIDialog::onChannelSelection()
 void TIIDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
 {
     m_currentEnsemble = ens;
+
     emit ensembleInfoChanged();
 }
 
 void TIIDialog::onSettingsChanged()
 {
-    if (m_geopositionSource != nullptr)
-    {
-        delete m_geopositionSource;
-        m_geopositionSource = nullptr;
-    }
-    if (m_isVisible)
-    {
-        startLocationUpdate();
-    }
+    TxMapDialog::onSettingsChanged();
+
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     m_tiiSpectrumPlot->setVisible(m_settings->tii.showSpectumPlot);
 #endif
-}
-
-
-QGeoCoordinate TIIDialog::currentPosition() const
-{
-    return m_currentPosition;
-}
-
-void TIIDialog::setCurrentPosition(const QGeoCoordinate &newCurrentPosition)
-{
-    if (m_currentPosition == newCurrentPosition)
-        return;
-    m_currentPosition = newCurrentPosition;
-    emit currentPositionChanged();
-}
-
-bool TIIDialog::positionValid() const
-{
-    return m_positionValid;
-}
-
-void TIIDialog::setPositionValid(bool newPositionValid)
-{
-    if (m_positionValid == newPositionValid)
-        return;
-    m_positionValid = newPositionValid;
-    emit positionValidChanged();
-}
-
-bool TIIDialog::isVisible() const
-{
-    return m_isVisible;
-}
-
-void TIIDialog::setIsVisible(bool newIsVisible)
-{
-    if (m_isVisible == newIsVisible)
-        return;
-    m_isVisible = newIsVisible;
-    emit isVisibleChanged();
-}
-
-QStringList TIIDialog::ensembleInfo() const
-{
-    if (!m_currentEnsemble.isValid())
-    {
-        return QStringList{"","",""};
-    }
-
-    QStringList info;
-    info.append(tr("Ensemble: <b>%1</b>").arg(m_currentEnsemble.label));
-    info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b>").arg(m_currentEnsemble.ecc(), 2, 16, QChar('0'))
-                    .arg(m_currentEnsemble.eid(), 4, 16, QChar('0'))
-                    .toUpper());
-    info.append(QString(tr("Channel: <b>%1 (%2 kHz)</b>")).arg(DabTables::channelList[m_currentEnsemble.frequency]).arg(m_currentEnsemble.frequency));
-    return info;
-}
-
-QStringList TIIDialog::txInfo() const
-{
-    return m_txInfo;
-}
-
-int TIIDialog::selectedRow() const
-{
-    return m_selectedRow;
 }
 
 void TIIDialog::setSelectedRow(int modelRow)
@@ -601,7 +421,7 @@ void TIIDialog::setSelectedRow(int modelRow)
         return;
     }
 
-    TiiTableModelItem item = m_model->data(m_model->index(modelRow, 0), TiiTableModel::TiiTableModelRoles::ItemRole).value<TiiTableModelItem>();
+    TxTableModelItem item = m_model->data(m_model->index(modelRow, 0), TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
     if (item.hasTxData())
     {
         m_txInfo.append(QString("<b>%1</b>").arg(item.transmitterData().location()));
@@ -618,6 +438,57 @@ void TIIDialog::setSelectedRow(int modelRow)
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     updateTiiPlot();
 #endif
+}
+
+void TIIDialog::startStopLog()
+{
+    if (isRecordingLog() == false)
+    {
+        if (!m_settings->tii.logFolder.isEmpty())
+        {
+            QDir().mkpath(m_settings->tii.logFolder);
+            QString filePath = QString("%1/%2_TII.csv").arg(m_settings->tii.logFolder, QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
+            if (m_logFile)
+            {
+                m_logFile->close();
+                delete m_logFile;
+            }
+            m_logFile = new QFile(filePath);
+            if (m_logFile->open(QIODevice::WriteOnly)) {
+                setIsRecordingLog(true);
+
+                // write header
+                QTextStream out(m_logFile);
+
+                // Header
+                for (int col = 0; col < TxTableModel::NumCols-1; ++col)
+                {
+                    if (col != TxTableModel::ColNumServices)
+                    {   // num services is not logged
+                        out << m_model->headerData(col, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString() << ";";
+                    }
+                }
+                out << m_model->headerData(TxTableModel::NumCols - 1, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString() <<  Qt::endl;
+            }
+            else
+            {
+                delete m_logFile;
+                m_logFile = nullptr;
+                qCCritical(tii) << "Unable to write TII log:" << filePath;
+                setIsRecordingLog(false);
+            }
+        }
+    }
+    else
+    {
+        if (m_logFile)
+        {
+            m_logFile->close();
+            delete m_logFile;
+            m_logFile = nullptr;
+        }
+        setIsRecordingLog(false);
+    }
 }
 
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT

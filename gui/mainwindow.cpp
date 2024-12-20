@@ -59,6 +59,7 @@
 #include "bandscandialog.h"
 #include "aboutdialog.h"
 #include "audiooutputqt.h"
+#include "updatechecker.h"
 #if HAVE_PORTAUDIO
 #include "audiooutputpa.h"
 #endif
@@ -68,6 +69,7 @@
 #include "fmlistinterface.h"
 #include "txdataloader.h"
 #endif
+#include "updatedialog.h"
 
 // Input devices
 #include "rawfileinput.h"
@@ -200,6 +202,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 #endif
     m_epgDialog = nullptr;
     m_tiiDialog = nullptr;
+    m_scannerDialog = nullptr;
 #if HAVE_FMLIST_INTERFACE
     m_fmlistInterface = nullptr;
 #endif
@@ -376,6 +379,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_tiiAction = new QAction(tr("TII decoder"), this);
     connect(m_tiiAction, &QAction::triggered, this, &MainWindow::showTiiDialog);
 
+    m_scanningToolAction = new QAction(tr("Scanning tool..."), this);
+    connect(m_scanningToolAction, &QAction::triggered, this, &MainWindow::showScannerDialog);
+
     m_audioRecordingScheduleAction = new QAction(tr("Audio recording schedule..."), this);
     connect(m_audioRecordingScheduleAction, &QAction::triggered, this, &MainWindow::showAudioRecordingSchedule);
 
@@ -416,6 +422,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_menu->addAction(m_epgAction);
     m_menu->addAction(m_ensembleInfoAction);
     m_menu->addAction(m_tiiAction);
+    m_menu->addAction(m_scanningToolAction);
     m_menu->addAction(m_logAction);
     m_menu->addAction(m_aboutAction);
 
@@ -891,6 +898,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // this causes focus to be set to service list when tune is finished
     m_hasListViewFocus = true;
     m_hasTreeViewFocus = false;
+
+    QTimer::singleShot(5000, this, &MainWindow::checkForUpdate);
 }
 
 MainWindow::~MainWindow()
@@ -999,6 +1008,11 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    if (m_scannerDialog)
+    {
+        m_scannerDialog->close();
+    }
+
     if (0 == m_frequency)
     {   // in idle
         emit exit();
@@ -1076,7 +1090,10 @@ void MainWindow::onEnsembleInfo(const RadioControlEnsemble &ens)
                                   .arg(QString("%1").arg(ens.ecc(), 2, 16, QChar('0')).toUpper())
                                   .arg(QString("%1").arg(ens.eid(), 4, 16, QChar('0')).toUpper())
                                   .arg(DabTables::getCountryName(ens.ueid)));
-    m_serviceList->beginEnsembleUpdate(ens);
+    if (!m_isScannerRunning)
+    {
+        m_serviceList->beginEnsembleUpdate(ens);
+    }
 }
 
 void MainWindow::onEnsembleReconfiguration(const RadioControlEnsemble &ens) const
@@ -1086,12 +1103,15 @@ void MainWindow::onEnsembleReconfiguration(const RadioControlEnsemble &ens) cons
 
 void MainWindow::onServiceListComplete(const RadioControlEnsemble &ens)
 {
+    if (m_isScannerRunning)
+    {
+        return;
+    }
+
     m_serviceList->endEnsembleUpdate(ens);
 
     serviceListViewUpdateSelection();
     serviceTreeViewUpdateSelection();
-
-
 }
 
 void MainWindow::onEnsembleRemoved(const RadioControlEnsemble &ens)
@@ -1194,8 +1214,8 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
 
 void MainWindow::onServiceListEntry(const RadioControlEnsemble &ens, const RadioControlServiceComponent &slEntry)
 {
-    if (slEntry.TMId != DabTMId::StreamAudio)
-    {  // do nothing - data services not supported
+    if ((slEntry.TMId != DabTMId::StreamAudio) || m_isScannerRunning)
+    {  // do nothing - data services not supported or scanning tool is running
         return;
     }
 
@@ -1440,7 +1460,7 @@ void MainWindow::onChannelChange(int index)
 void MainWindow::onBandScanStart()
 {
     stop();
-    if (!m_keepServiceListOnScan)
+    if (!m_keepServiceListOnScan && !m_isScannerRunning)
     {
         m_serviceList->clear(false);  // do not clear favorites
     }
@@ -1473,22 +1493,24 @@ void MainWindow::onTuneDone(uint32_t freq)
     m_frequency = freq;
     if (freq != 0)
     {
-        ui->channelCombo->setEnabled(true);
-        ui->channelDown->setEnabled(true);
-        ui->channelUp->setEnabled(true);
-        ui->serviceListView->setEnabled(true);
-        ui->serviceTreeView->setEnabled(true);
-        if (m_hasListViewFocus)
-        {
-            ui->serviceListView->setFocus();
-        }
-        else if (m_hasTreeViewFocus)
-        {
-            ui->serviceTreeView->setFocus();
-        }
-        else
-        {
-            ui->channelCombo->setFocus();
+        if (!m_isScannerRunning) {
+            ui->channelCombo->setEnabled(true);
+            ui->channelDown->setEnabled(true);
+            ui->channelUp->setEnabled(true);
+            ui->serviceListView->setEnabled(true);
+            ui->serviceTreeView->setEnabled(true);
+            if (m_hasListViewFocus)
+            {
+                ui->serviceListView->setFocus();
+            }
+            else if (m_hasTreeViewFocus)
+            {
+                ui->serviceTreeView->setFocus();
+            }
+            else
+            {
+                ui->channelCombo->setFocus();
+            }
         }
 
         ui->frequencyLabel->setText(QString("%1 MHz").arg(freq/1000.0, 3, 'f', 3, QChar('0')));
@@ -1499,6 +1521,8 @@ void MainWindow::onTuneDone(uint32_t freq)
         {
             ui->switchSourceLabel->setVisible(true);
         }
+
+        restoreTimeQualWidget();
 
         emit resetUserApps();  // new channel -> reset user apps
     }
@@ -1571,7 +1595,7 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
 
 bool MainWindow::stopAudioRecordingMsg(const QString & infoText)
 {
-    if ((m_audioRecManager->isAudioRecordingActive() || m_audioRecManager->isAudioScheduleActive()) && !m_settings->audioRecAutoStopEna)
+    if ((m_audioRecManager->isAudioRecordingActive() || m_audioRecManager->isAudioScheduleActive()) && !m_settings->audioRec.autoStopEna)
     //if (!m_settings->audioRecAutoStopEna)
     {
         QMessageBox msgBox(QMessageBox::Warning, tr("Warning"),
@@ -2242,6 +2266,63 @@ void MainWindow::setProxy()
     QNetworkProxy::setApplicationProxy(proxy);
 }
 
+void MainWindow::checkForUpdate()
+{
+    if (m_settings->updateCheckEna && m_settings->updateCheckTime.daysTo(QDateTime::currentDateTime()) >= 1)
+    {
+        UpdateChecker * updateChecker = new UpdateChecker(this);
+        connect(updateChecker, &UpdateChecker::finished, this, [this, updateChecker] (bool result) {
+            if (result)
+            {   // success
+                QString version = updateChecker->version();
+                static const QRegularExpression verRe("v(\\d+)\\.(\\d+)\\.(\\d+)");
+                QRegularExpressionMatch verMatch = verRe.match(version);
+                if (verMatch.hasMatch())
+                {
+                    // qDebug() << version << verMatch.captured(1) << verMatch.captured(2) << verMatch.captured(3);
+
+                    m_settings->updateCheckTime = QDateTime::currentDateTime();
+
+                    bool updateFound = false;
+                    int major = verMatch.captured(1).toInt();
+                    int minor = verMatch.captured(2).toInt();
+                    int patch = verMatch.captured(3).toInt();
+                    if (major > PROJECT_VER_MAJOR)
+                    {
+                        updateFound = true;
+                    }
+                    else if (minor > PROJECT_VER_MINOR)
+                    {
+                        updateFound = true;
+                    }
+                    else if (patch > PROJECT_VER_PATCH)
+                    {
+                        updateFound = true;
+                    }
+                    if (updateFound)
+                    {
+                        qCInfo(application) << "New application version found:" << version;
+
+                        auto dialog = new UpdateDialog(version, updateChecker->releaseNotes(), Qt::WindowTitleHint | Qt::WindowCloseButtonHint, this);
+                        connect(dialog, &UpdateDialog::rejected, this, [this]() {
+                            m_setupDialog->setCheckUpdatesEna(false);
+                        });
+                        connect(dialog, &UpdateDialog::finished, dialog, &QObject::deleteLater);
+                        dialog->open();
+                    }
+                }
+            }
+            else
+            {
+                qCWarning(application) << "Update check failed";
+            }
+
+            updateChecker->deleteLater();
+        });
+        updateChecker->check();
+    }
+}
+
 void MainWindow::clearEnsembleInformationLabels()
 {
     m_timeLabel->setText("");
@@ -2345,8 +2426,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
         delete m_inputDevice;
     }
 
-    // disable band scan - will be enable when it makes sense (RTL-SDR at the moment)
+    // disable band scan and scanner - will be enable when it makes sense
     m_bandScanAction->setDisabled(true);
+    m_scanningToolAction->setDisabled(true);
 
     // disable file recording
     m_ensembleInfoDialog->enableRecording(false);
@@ -2439,6 +2521,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // enable band scan
             m_bandScanAction->setEnabled(true);
+            m_scanningToolAction->setEnabled(true);
 
             // enable service list
             ui->serviceListView->setEnabled(true);
@@ -2518,6 +2601,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // enable band scan
             m_bandScanAction->setEnabled(true);
+            m_scanningToolAction->setEnabled(true);
 
             // enable service list
             ui->serviceListView->setEnabled(true);
@@ -2595,6 +2679,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // enable band scan
             m_bandScanAction->setEnabled(true);
+            m_scanningToolAction->setEnabled(true);
 
             // enable service list
             ui->serviceListView->setEnabled(true);
@@ -2669,6 +2754,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // enable band scan
             m_bandScanAction->setEnabled(true);
+            m_scanningToolAction->setEnabled(true);
 
             // enable service list
             ui->serviceListView->setEnabled(true);
@@ -2756,6 +2842,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // enable band scan
             m_bandScanAction->setEnabled(true);
+            m_scanningToolAction->setEnabled(true);
 
             // enable service list
             ui->serviceListView->setEnabled(true);
@@ -2847,7 +2934,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // show XML header is available
             m_setupDialog->setXmlHeader(m_inputDevice->deviceDescription());
-            if (m_inputDevice->deviceDescription().rawFile.hasXmlHeader)
+            if (m_inputDevice->deviceDescription().rawFile.frequency_kHz != 0)
             {
                 m_channelListModel->setChannelFilter(m_inputDevice->deviceDescription().rawFile.frequency_kHz);
             }
@@ -2936,13 +3023,14 @@ void MainWindow::loadSettings()
     m_settings->useInternet = settings->value("useInternet", true).toBool();
     m_settings->radioDnsEna = settings->value("radioDNS", true).toBool();
     m_settings->slsBackground = QColor::fromString(settings->value("slsBg", QString("#000000")).toString());
+    m_settings->updateCheckEna = settings->value("updateCheckEna", true).toBool();
+    m_settings->updateCheckTime = settings->value("updateCheckTime", QDateTime::currentDateTime().addDays(-1)).value<QDateTime>();
 
-
-    m_settings->audioRecFolder = settings->value("AudioRecording/folder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
-    m_settings->audioRecCaptureOutput = settings->value("AudioRecording/captureOutput", false).toBool();
-    m_settings->audioRecAutoStopEna = settings->value("AudioRecording/autoStop", false).toBool();
-    m_settings->audioRecDl = settings->value("AudioRecording/DL", false).toBool();
-    m_settings->audioRecDlAbsTime = settings->value("AudioRecording/DLAbsTime", false).toBool();
+    m_settings->audioRec.folder = settings->value("AudioRecording/folder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
+    m_settings->audioRec.captureOutput = settings->value("AudioRecording/captureOutput", false).toBool();
+    m_settings->audioRec.autoStopEna = settings->value("AudioRecording/autoStop", false).toBool();
+    m_settings->audioRec.dl = settings->value("AudioRecording/DL", false).toBool();
+    m_settings->audioRec.dlAbsTime = settings->value("AudioRecording/DLAbsTime", false).toBool();
 
 #ifdef Q_OS_MAC
     m_settings->trayIconEna = settings->value("showTrayIcon", false).toBool();
@@ -2959,12 +3047,26 @@ void MainWindow::loadSettings()
     m_settings->tii.locationSource = static_cast<Settings::GeolocationSource>(settings->value("TII/locationSource", static_cast<int>(Settings::GeolocationSource::System)).toInt());
     m_settings->tii.coordinates = QGeoCoordinate(settings->value("TII/latitude", 0.0).toDouble(), settings->value("TII/longitude", 0.0).toDouble());
     m_settings->tii.serialPort = settings->value("TII/serialPort", "").toString();
+    m_settings->tii.logFolder = settings->value("TII/logFolder", QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)).toString();
     m_settings->tii.showSpectumPlot = settings->value("TII/showSpectrumPlot", false).toBool();
     m_settings->tii.geometry = settings->value("TII/windowGeometry").toByteArray();
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     m_settings->tii.splitterState = settings->value("TII/layout").toByteArray();
 #endif
-
+    m_settings->scanner.exportPath = settings->value("Scanner/exportPath", QDir::homePath()).toString();
+    m_settings->scanner.splitterState = settings->value("Scanner/layout").toByteArray();
+    m_settings->scanner.geometry = settings->value("Scanner/windowGeometry").toByteArray();
+    m_settings->scanner.mode = settings->value("Scanner/mode", 0).toInt();
+    m_settings->scanner.numCycles = settings->value("Scanner/numCycles", 1).toInt();    
+    m_settings->scanner.waitForSync = settings->value("Scanner/waitForSyncSec", 3).toInt();
+    m_settings->scanner.waitForEnsemble = settings->value("Scanner/waitForEnsembleSec", 6).toInt();
+    int numCh = settings->beginReadArray("Scanner/channels");
+    for (int ch = 0; ch < numCh; ++ch)
+    {
+        settings->setArrayIndex(ch);
+        m_settings->scanner.channelSelection.insert(settings->value("frequency").toInt(), settings->value("active").toBool());
+    }
+    settings->endArray();
 
     m_settings->proxy.config = static_cast<Settings::ProxyConfig>(settings->value("Proxy/config", static_cast<int>(Settings::ProxyConfig::System)).toInt());
     m_settings->proxy.server = settings->value("Proxy/server", "").toString();
@@ -3056,7 +3158,7 @@ void MainWindow::loadSettings()
     }
 
     m_inputDeviceRecorder->setRecordingPath(settings->value("recordingPath", QVariant(QDir::homePath())).toString());
-    m_ensembleInfoDialog->setExportPath(settings->value("ensembleExportPath", QVariant(QDir::homePath())).toString());
+    m_ensembleInfoDialog->setExportPath(settings->value("EnsembleInfo/exportPath", QVariant(QDir::homePath())).toString());
     ui->slsView_Service->setSavePath(settings->value("slideSavePath", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)).toString());
     ui->slsView_Announcement->setSavePath(settings->value("slideSavePath", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)).toString());
 
@@ -3108,7 +3210,6 @@ void MainWindow::saveSettings()
 
     settings->setValue("inputDeviceId", int(m_settings->inputDevice));
     settings->setValue("recordingPath", m_inputDeviceRecorder->recordingPath());
-    settings->setValue("ensembleExportPath", m_ensembleInfoDialog->exportPath());
     settings->setValue("slideSavePath", ui->slsView_Service->savePath());
     if (nullptr != m_audioDevicesGroup)
     {
@@ -3140,12 +3241,14 @@ void MainWindow::saveSettings()
     settings->setValue("useInternet", m_settings->useInternet);
     settings->setValue("radioDNS", m_settings->radioDnsEna);
     settings->setValue("slsBg", m_settings->slsBackground.name(QColor::HexArgb));
+    settings->setValue("updateCheckEna", m_settings->updateCheckEna);
+    settings->setValue("updateCheckTime", m_settings->updateCheckTime);
 
-    settings->setValue("AudioRecording/folder", m_settings->audioRecFolder);
-    settings->setValue("AudioRecording/captureOutput", m_settings->audioRecCaptureOutput);
-    settings->setValue("AudioRecording/autoStop", m_settings->audioRecAutoStopEna);
-    settings->setValue("AudioRecording/DL", m_settings->audioRecDl);
-    settings->setValue("AudioRecording/DLAbsTime", m_settings->audioRecDlAbsTime);
+    settings->setValue("AudioRecording/folder", m_settings->audioRec.folder);
+    settings->setValue("AudioRecording/captureOutput", m_settings->audioRec.captureOutput);
+    settings->setValue("AudioRecording/autoStop", m_settings->audioRec.autoStopEna);
+    settings->setValue("AudioRecording/DL", m_settings->audioRec.dl);
+    settings->setValue("AudioRecording/DLAbsTime", m_settings->audioRec.dlAbsTime);
 
     settings->setValue("showTrayIcon", m_settings->trayIconEna);
 
@@ -3157,13 +3260,32 @@ void MainWindow::saveSettings()
     settings->setValue("TII/latitude", m_settings->tii.coordinates.latitude());
     settings->setValue("TII/longitude", m_settings->tii.coordinates.longitude());
     settings->setValue("TII/serialPort", m_settings->tii.serialPort);
+    settings->setValue("TII/logFolder", m_settings->tii.logFolder);
     settings->setValue("TII/showSpectrumPlot", m_settings->tii.showSpectumPlot);
     settings->setValue("TII/windowGeometry", m_settings->tii.geometry);
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     settings->setValue("TII/layout", m_settings->tii.splitterState);
 #endif
 
+    settings->setValue("Scanner/exportPath", m_settings->scanner.exportPath);
+    settings->setValue("Scanner/windowGeometry", m_settings->scanner.geometry);
+    settings->setValue("Scanner/layout", m_settings->scanner.splitterState);
+    settings->setValue("Scanner/mode", m_settings->scanner.mode);
+    settings->setValue("Scanner/numCycles", m_settings->scanner.numCycles);
+
+    settings->beginWriteArray("Scanner/channels");
+    int ch = 0;
+    for (auto it = m_settings->scanner.channelSelection.cbegin(); it != m_settings->scanner.channelSelection.cend(); ++it)
+    {
+        settings->setArrayIndex(ch++);
+        settings->setValue("frequency", it.key());
+        settings->setValue("active", it.value());
+    }
+    settings->endArray();
+
     settings->setValue("EnsembleInfo/windowGeometry", m_settings->ensembleInfo.geometry);
+    settings->setValue("EnsembleInfo/exportPath", m_ensembleInfoDialog->exportPath());
+
     settings->setValue("Log/windowGeometry", m_settings->log.geometry);
     settings->setValue("CatSLS/windowGeometry", m_settings->catSls.geometry);
 
@@ -3425,8 +3547,9 @@ void MainWindow::showEPG()
 
 void MainWindow::showAboutDialog()
 {
-    AboutDialog aboutDialog(this);
-    aboutDialog.exec();
+    AboutDialog *aboutDialog = new AboutDialog(this);
+    connect(aboutDialog, &QDialog::finished, aboutDialog, &QObject::deleteLater);
+    aboutDialog->exec();
 }
 
 void MainWindow::showSetupDialog()
@@ -3504,6 +3627,7 @@ void MainWindow::showTiiDialog()
         m_tiiDialog->setupDarkMode(isDarkMode());
         connect(m_setupDialog, &SetupDialog::tiiSettingsChanged, m_tiiDialog, &TIIDialog::onSettingsChanged);
         connect(m_tiiDialog, &TIIDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::signalState, m_tiiDialog, &TIIDialog::onSignalState, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tiiData, m_tiiDialog, &TIIDialog::onTiiData, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::ensembleInformation, m_tiiDialog, &TIIDialog::onEnsembleInformation, Qt::QueuedConnection);
         emit getEnsembleInfo();  // this triggers ensemble infomation used to configure EPG dialog
@@ -3514,6 +3638,63 @@ void MainWindow::showTiiDialog()
     m_tiiDialog->show();
     m_tiiDialog->raise();
     m_tiiDialog->activateWindow();
+}
+void MainWindow::showScannerDialog()
+{
+    if (m_scannerDialog == nullptr)
+    {
+        m_scannerDialog = new ScannerDialog(m_settings);
+        m_scannerDialog->setupDarkMode(isDarkMode());
+        connect(m_scannerDialog, &ScannerDialog::tuneChannel, this, &MainWindow::onTuneChannel);
+        connect(m_setupDialog, &SetupDialog::tiiSettingsChanged, m_scannerDialog, &ScannerDialog::onSettingsChanged);
+        connect(m_radioControl, &RadioControl::signalState, m_scannerDialog, &ScannerDialog::onSignalState, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::ensembleInformation, m_scannerDialog, &ScannerDialog::onEnsembleInformation, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::tuneDone, m_scannerDialog, &ScannerDialog::onTuneDone, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::serviceListEntry, m_scannerDialog, &ScannerDialog::onServiceListEntry, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::tiiData, m_scannerDialog, &ScannerDialog::onTiiData, Qt::QueuedConnection);
+        connect(m_inputDevice, &InputDevice::error, m_scannerDialog, &ScannerDialog::onInputDeviceError, Qt::QueuedConnection);        
+        connect(m_scannerDialog, &ScannerDialog::scanStarts, this, [this]() {
+            ui->channelCombo->setEnabled(false);
+            ui->channelDown->setEnabled(false);
+            ui->channelUp->setEnabled(false);
+            m_hasListViewFocus = ui->serviceListView->hasFocus();
+            m_hasTreeViewFocus = ui->serviceTreeView->hasFocus();
+            ui->serviceListView->setEnabled(false);
+            ui->serviceTreeView->setEnabled(false);
+
+            m_isScannerRunning = true;
+
+            onBandScanStart();
+        });
+
+        connect(m_scannerDialog, &ScannerDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
+
+        connect(m_scannerDialog, &ScannerDialog::scanFinished, this, [this]() {            
+            m_isScannerRunning = false;
+            ui->channelCombo->setEnabled(true);
+            ui->channelDown->setEnabled(true);
+            ui->channelUp->setEnabled(true);
+            ui->serviceListView->setEnabled(true);
+            ui->serviceTreeView->setEnabled(true);
+            onBandScanFinished(BandScanDialogResult::Done);
+        } );
+        connect(m_scannerDialog, &ScannerDialog::finished, this, [this]() {
+            // restore UI
+            m_setupDialog->setInputDeviceEnabled(true);
+            m_scanningToolAction->setEnabled(true);
+            m_bandScanAction->setEnabled(true);
+        } );
+        connect(m_scannerDialog, &QDialog::finished, m_scannerDialog, &QObject::deleteLater);
+        connect(m_scannerDialog, &QDialog::destroyed, this, [this]() { m_scannerDialog = nullptr; } );
+    }
+
+    // force closing settings to avoti user changing input device while scanning
+    m_scanningToolAction->setEnabled(false);
+    m_bandScanAction->setEnabled(false);
+    m_setupDialog->setInputDeviceEnabled(false);
+    m_scannerDialog->show();
+    m_scannerDialog->raise();
+    m_scannerDialog->activateWindow();
 }
 
 void MainWindow::onExpertModeToggled(bool checked)
@@ -3546,6 +3727,7 @@ void MainWindow::setExpertMode(bool ena)
     ui->slsView_Announcement->setExpertMode(ena);
     m_catSlsDialog->setExpertMode(ena);
     m_tiiAction->setVisible(ena);
+    m_scanningToolAction->setVisible(ena);
 
     // set tab order
     if (ena)
@@ -3611,6 +3793,7 @@ void MainWindow::onTuneChannel(uint32_t freq)
 {
     // change combo - find combo index
     ui->channelCombo->setCurrentIndex(ui->channelCombo->findData(freq));
+
 }
 
 void MainWindow::stop()
@@ -3946,6 +4129,10 @@ void MainWindow::setupDarkMode()
     if (m_tiiDialog != nullptr)
     {
         m_tiiDialog->setupDarkMode(darkMode);
+    }
+    if (m_scannerDialog != nullptr)
+    {
+        m_scannerDialog->setupDarkMode(darkMode);
     }
 
     if (darkMode)

@@ -24,52 +24,29 @@
  * SOFTWARE.
  */
 
-#ifndef TXDATAITEM_H
-#define TXDATAITEM_H
+#ifndef CHANNELSELECTIONDIALOG_H
+#define CHANNELSELECTIONDIALOG_H
 
-#include <QString>
-#include "servicelistid.h"
-#include <QGeoCoordinate>
+#include <QDialog>
+#include <QList>
 
-class TxDataItem {
+class QCheckBox;
+class ChannelSelectionDialog : public QDialog
+{
+    Q_OBJECT
+
 public:
-    TxDataItem();
-
-    bool isValid() const { return m_ensId.isValid(); }
-
-    QString ensLabel() const;
-    void setEnsLabel(const QString &newEnsLabel);
-
-    QString location() const;
-    void setLocation(const QString &newLocation);
-
-    ServiceListId ensId() const;
-    void setEnsId(const ServiceListId &newEnsId);
-
-    uint8_t mainId() const;
-    void setMainId(uint8_t newMainId);
-
-    uint8_t subId() const;
-    void setSubId(uint8_t newSubId);
-
-    QGeoCoordinate coordinates() const;
-    void setCoordinates(const QGeoCoordinate &newCoordinates);
-
-    float power() const;
-    void setPower(float newPower);
+    explicit ChannelSelectionDialog(const QMap<uint32_t, bool> & channelSelection, QWidget *parent = nullptr);
+    ~ChannelSelectionDialog();
+    void getChannelList(QMap<uint32_t, bool> &channelSelection) const;
 
 private:
-    // enum Polarization { Unknown = -1, Vertical, Horizontal };
-    QString m_ensLabel;
-    QString m_location;
-    ServiceListId m_ensId;
-    uint8_t m_mainId = -1;
-    uint8_t m_subId = -1;
-    QGeoCoordinate m_coordinates;
-    float m_power = -1.0;
-    // int m_antenna;
-    // Polarization m_polarization;
+    QMap<uint32_t, QCheckBox *> m_chList;
+    QPushButton * m_acceptButton;
+    int m_checkCntr = 0;
+
+    void checkAll(bool check);
+    void onCheckBoxClicked(bool checked);
 };
 
-
-#endif // TXDATAITEM_H
+#endif // CHANNELSELECTIONDIALOG_H

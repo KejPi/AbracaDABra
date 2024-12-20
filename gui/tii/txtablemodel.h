@@ -24,8 +24,8 @@
  * SOFTWARE.
  */
 
-#ifndef TIITABLEMODEL_H
-#define TIITABLEMODEL_H
+#ifndef TXTABLEMODEL_H
+#define TXTABLEMODEL_H
 
 #include <QObject>
 #include <QAbstractTableModel>
@@ -34,17 +34,18 @@
 
 #include "dabsdr.h"
 #include "servicelistid.h"
-#include "tiitablemodelitem.h"
+#include "txtablemodelitem.h"
 
 class TxDataItem;
 
-class TiiTableModel : public QAbstractTableModel
+class TxTableModel : public QAbstractTableModel
 {
     Q_OBJECT
     Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
 public:
-    enum TiiTableModelRoles {
-        CoordinatesRole = Qt::UserRole,
+    enum TxTableModelRoles {
+        ExportRole = Qt::UserRole,
+        CoordinatesRole,
         TiiRole,
         MainIdRole,
         SubIdRole,
@@ -53,45 +54,32 @@ public:
         IdRole,
     };
 
-    enum { ColMainId, ColSubId,
-           ColLevel, ColDist, ColAzimuth, // keep order of these
+    enum { ColTime, ColChannel, ColFreq, ColEnsId, ColEnsLabel, ColNumServices, ColSnr,
+           ColMainId, ColSubId,
+           ColLevel, ColLocation, ColPower, ColDist, ColAzimuth, // keep order of these
            NumCols};
 
-    explicit TiiTableModel(QObject *parent = nullptr);
-    ~TiiTableModel();
+    explicit TxTableModel(QObject *parent = nullptr);
+    ~TxTableModel();
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
-    const TiiTableModelItem & itemAt(int row) const;
+    const TxTableModelItem & itemAt(int row) const;
     void clear();
 
-    void updateData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId);
+    void updateTiiData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId, const QString &ensLabel, int numServices, float snr);
+    void appendEnsData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId, const QString & ensLabel, int numServices, float snr);
 
     void setCoordinates(const QGeoCoordinate &newCoordinates);
 signals:
     void rowCountChanged();
 
 private:
-    QList<TiiTableModelItem> m_modelData;
+    QList<TxTableModelItem> m_modelData;
     QMultiHash<ServiceListId, TxDataItem*> m_txList;
     QGeoCoordinate m_coordinates;
 };
 
-class TiiTableSortModel : public QSortFilterProxyModel
-{
-    Q_OBJECT
-    Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
-public:
-    TiiTableSortModel(QObject *parent = nullptr);
-
-signals:
-    void rowCountChanged();
-
-protected:
-    bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
-};
-
-
-#endif // TIITABLEMODEL_H
+#endif // TXTABLEMODEL_H

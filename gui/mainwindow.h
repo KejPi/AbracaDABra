@@ -51,6 +51,7 @@
 #include "dabchannellistmodel.h"
 #include "epgdialog.h"
 #include "metadatamanager.h"
+#include "scannerdialog.h"
 #include "setupdialog.h"
 #include "ensembleinfodialog.h"
 #include "catslsdialog.h"
@@ -128,6 +129,7 @@ private:
     LogDialog * m_logDialog;
     AudioRecScheduleDialog * m_audioRecScheduleDialog;
     TIIDialog * m_tiiDialog;
+    ScannerDialog * m_scannerDialog;
 #if HAVE_QCUSTOMPLOT
     SNRPlotDialog * m_snrPlotDialog;    
     ClickableLabel * m_snrLabel;    
@@ -160,6 +162,7 @@ private:
     QAction * m_bandScanAction;
     QAction * m_ensembleInfoAction;
     QAction * m_tiiAction;
+    QAction * m_scanningToolAction;
     QAction * m_aboutAction;
     QAction * m_logAction;
     QAction * m_audioRecordingAction;
@@ -211,6 +214,7 @@ private:
     bool m_hasTreeViewFocus;
     int m_audioVolume = 100;
     bool m_keepServiceListOnScan;
+    bool m_isScannerRunning = false;
 
     // channel list combo
     DABChannelListFilteredModel * m_channelListModel;
@@ -241,6 +245,7 @@ private:
     void showAudioRecordingSchedule();
     void showSnrPlotDialog();
     void showTiiDialog();
+    void showScannerDialog();
     void setExpertMode(bool ena);
     void stop();
     void bandScan();
@@ -325,6 +330,7 @@ private:
     void onMetadataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role);
     void onEpgEmpty();
     void setProxy();
+    void checkForUpdate();
 };
 
 class DLPlusObjectUI
