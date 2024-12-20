@@ -39,15 +39,7 @@ UpdateDialog::UpdateDialog(const QString &version, const QString &releaseNotes, 
     setWindowTitle(tr("Application update"));
     ui->title->setText(tr("AbracaDABra update available"));
     ui->currentLabel->setText(tr("Current version: %1").arg(PROJECT_VER));
-#if 0
-    ui->availableLabel->setText(tr("Available version: %1 (<a href=\"https://github.com/KejPi/AbracaDABra/releases/tag/%1\">link</a>)").arg(version));
-    connect(
-        ui->availableLabel, &QLabel::linkActivated,
-        [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
-        );
-#else
     ui->availableLabel->setText(tr("Available version: %1").arg(version));
-#endif
 
     auto font = ui->title->font();
     font.setPointSize(font.pointSize() + 2);

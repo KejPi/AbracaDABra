@@ -252,6 +252,24 @@
     </message>
 </context>
 <context>
+    <name>ChannelSelectionDialog</name>
+    <message>
+        <location filename="../tii/channelselectiondialog.cpp" line="39"/>
+        <source>Channel selection</source>
+        <translation>Výběr kanálů</translation>
+    </message>
+    <message>
+        <location filename="../tii/channelselectiondialog.cpp" line="72"/>
+        <source>Select all</source>
+        <translation>Vybrat vše</translation>
+    </message>
+    <message>
+        <location filename="../tii/channelselectiondialog.cpp" line="73"/>
+        <source>Unselect all</source>
+        <translation>Zrušit výběr</translation>
+    </message>
+</context>
+<context>
     <name>EPGDialog</name>
     <message>
         <location filename="../epg/epgdialog.ui" line="14"/>
@@ -368,176 +386,176 @@
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="617"/>
-        <location filename="../ensembleinfodialog.cpp" line="226"/>
+        <location filename="../ensembleinfodialog.cpp" line="228"/>
         <source>Record raw data</source>
         <translation>Zaznamenat vstupní signál</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="67"/>
-        <location filename="../ensembleinfodialog.cpp" line="68"/>
+        <location filename="../ensembleinfodialog.cpp" line="69"/>
+        <location filename="../ensembleinfodialog.cpp" line="70"/>
         <source>Tuned frequency</source>
         <translation>Naladěná frekvence</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="69"/>
-        <location filename="../ensembleinfodialog.cpp" line="70"/>
+        <location filename="../ensembleinfodialog.cpp" line="71"/>
+        <location filename="../ensembleinfodialog.cpp" line="72"/>
         <source>Tuned DAB channel</source>
         <translation>Naladěný kanál</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="71"/>
-        <location filename="../ensembleinfodialog.cpp" line="72"/>
+        <location filename="../ensembleinfodialog.cpp" line="73"/>
+        <location filename="../ensembleinfodialog.cpp" line="74"/>
         <source>Estimated frequency offset</source>
         <translation>Odhadovaná vfrekvenční odchylka</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="73"/>
-        <location filename="../ensembleinfodialog.cpp" line="74"/>
+        <location filename="../ensembleinfodialog.cpp" line="75"/>
+        <location filename="../ensembleinfodialog.cpp" line="76"/>
         <source>Estimated SNR</source>
         <translation>Odhadovaný odstup signálu od šumu</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="75"/>
-        <location filename="../ensembleinfodialog.cpp" line="76"/>
+        <location filename="../ensembleinfodialog.cpp" line="77"/>
+        <location filename="../ensembleinfodialog.cpp" line="78"/>
         <source>Current AGC gain&lt;br&gt;(only in software mode)</source>
         <translation>Současný zisk AGC&lt;br&gt;(jen pro SW mód)</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="78"/>
-        <location filename="../ensembleinfodialog.cpp" line="79"/>
+        <location filename="../ensembleinfodialog.cpp" line="80"/>
+        <location filename="../ensembleinfodialog.cpp" line="81"/>
         <source>Current service name</source>
         <translation>Název současné stanice</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="80"/>
-        <location filename="../ensembleinfodialog.cpp" line="81"/>
+        <location filename="../ensembleinfodialog.cpp" line="82"/>
+        <location filename="../ensembleinfodialog.cpp" line="83"/>
         <source>Current Service Identifier</source>
         <translation>Identifikátor současné stanice (SId)</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="82"/>
-        <location filename="../ensembleinfodialog.cpp" line="83"/>
+        <location filename="../ensembleinfodialog.cpp" line="84"/>
+        <location filename="../ensembleinfodialog.cpp" line="85"/>
         <source>Service Component Identifier within the Service</source>
         <translation>Identifikátor komponenty současné stanice (SCIdS)</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="84"/>
-        <location filename="../ensembleinfodialog.cpp" line="85"/>
+        <location filename="../ensembleinfodialog.cpp" line="86"/>
+        <location filename="../ensembleinfodialog.cpp" line="87"/>
         <source>Number of capacity units used by sub-channel</source>
         <translation>Počet kapacitních jednotek (CU) obsazených subkanálem</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="86"/>
-        <location filename="../ensembleinfodialog.cpp" line="87"/>
+        <location filename="../ensembleinfodialog.cpp" line="88"/>
+        <location filename="../ensembleinfodialog.cpp" line="89"/>
         <source>First capacity unit used by sub-channel</source>
         <translation>První kapacitni jednotka (CU) subkanálu</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="88"/>
-        <location filename="../ensembleinfodialog.cpp" line="89"/>
+        <location filename="../ensembleinfodialog.cpp" line="90"/>
+        <location filename="../ensembleinfodialog.cpp" line="91"/>
         <source>Sub-channel Identifier</source>
         <translation>Číslo subkanálu</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="91"/>
-        <location filename="../ensembleinfodialog.cpp" line="92"/>
+        <location filename="../ensembleinfodialog.cpp" line="93"/>
+        <location filename="../ensembleinfodialog.cpp" line="94"/>
         <source>Total number of FIB&apos;s</source>
         <translation>Celkový počet přijatých FIB</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="93"/>
-        <location filename="../ensembleinfodialog.cpp" line="94"/>
+        <location filename="../ensembleinfodialog.cpp" line="95"/>
+        <location filename="../ensembleinfodialog.cpp" line="96"/>
         <source>Number of FIB&apos;s with CRC error</source>
         <translation>Počet FIB s chybným kontrolním součtem CRC</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="95"/>
-        <location filename="../ensembleinfodialog.cpp" line="96"/>
+        <location filename="../ensembleinfodialog.cpp" line="97"/>
+        <location filename="../ensembleinfodialog.cpp" line="98"/>
         <source>FIB error rate</source>
         <translation>Chybovost FIB</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="97"/>
-        <location filename="../ensembleinfodialog.cpp" line="98"/>
+        <location filename="../ensembleinfodialog.cpp" line="99"/>
+        <location filename="../ensembleinfodialog.cpp" line="100"/>
         <source>Total number of audio frames (AU for DAB+)</source>
         <translation>Celkový počet přijatých audio rámců (AU v DAB+)</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="99"/>
-        <location filename="../ensembleinfodialog.cpp" line="100"/>
+        <location filename="../ensembleinfodialog.cpp" line="101"/>
+        <location filename="../ensembleinfodialog.cpp" line="102"/>
         <source>Total number of audio frames with CRC error (AU for DAB+)</source>
         <translation>Celkový počet audio rámců s chybným kontrolním součtem CRC (AU v DAB+)</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="101"/>
-        <location filename="../ensembleinfodialog.cpp" line="102"/>
+        <location filename="../ensembleinfodialog.cpp" line="103"/>
+        <location filename="../ensembleinfodialog.cpp" line="104"/>
         <source>Audio frame (AU for DAB+) error rate</source>
         <translation>Chybovost audio rámců (AU v DAB+)</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="104"/>
-        <location filename="../ensembleinfodialog.cpp" line="227"/>
+        <location filename="../ensembleinfodialog.cpp" line="106"/>
+        <location filename="../ensembleinfodialog.cpp" line="229"/>
         <source>Record raw IQ stream to file</source>
         <translation>Zaznamenat vstupní IQ signál do souboru</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="105"/>
+        <location filename="../ensembleinfodialog.cpp" line="107"/>
         <source>Export ensemble information to CSV file</source>
         <translation>Exportovat informace o multiplexu do CVS souboru</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="134"/>
+        <location filename="../ensembleinfodialog.cpp" line="136"/>
         <source>Ensemble information</source>
         <translation>Informace o multiplexu</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="163"/>
+        <location filename="../ensembleinfodialog.cpp" line="165"/>
         <source>Export CSV file</source>
         <translation>Exportovat CSV soubor</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="165"/>
+        <location filename="../ensembleinfodialog.cpp" line="167"/>
         <source>CSV Files</source>
         <translation>CSV soubory</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="221"/>
+        <location filename="../ensembleinfodialog.cpp" line="223"/>
         <source>Stop recording</source>
         <translation>Ukončit záznam</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="222"/>
+        <location filename="../ensembleinfodialog.cpp" line="224"/>
         <source>Stop recording of raw IQ stream</source>
         <translation>Zastavit záznam vstupního IQ signálu</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="239"/>
+        <location filename="../ensembleinfodialog.cpp" line="241"/>
         <source> sec</source>
         <translation> s</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="246"/>
-        <location filename="../ensembleinfodialog.cpp" line="266"/>
-        <location filename="../ensembleinfodialog.cpp" line="283"/>
-        <location filename="../ensembleinfodialog.cpp" line="292"/>
-        <location filename="../ensembleinfodialog.cpp" line="301"/>
-        <location filename="../ensembleinfodialog.cpp" line="406"/>
-        <location filename="../ensembleinfodialog.cpp" line="407"/>
+        <location filename="../ensembleinfodialog.cpp" line="248"/>
+        <location filename="../ensembleinfodialog.cpp" line="268"/>
+        <location filename="../ensembleinfodialog.cpp" line="285"/>
+        <location filename="../ensembleinfodialog.cpp" line="294"/>
+        <location filename="../ensembleinfodialog.cpp" line="303"/>
+        <location filename="../ensembleinfodialog.cpp" line="408"/>
+        <location filename="../ensembleinfodialog.cpp" line="409"/>
         <source>N/A</source>
         <translation>Nedostupný</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="369"/>
+        <location filename="../ensembleinfodialog.cpp" line="371"/>
         <source>Reset statistics</source>
         <translation>Vynulovat statistiky</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="371"/>
+        <location filename="../ensembleinfodialog.cpp" line="373"/>
         <source>Reset FIB statistics</source>
         <translation>Vynulovat statistiku FIB</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="372"/>
+        <location filename="../ensembleinfodialog.cpp" line="374"/>
         <source>Reset MSC statistics</source>
         <translation>Vynulovat statistiku MSC</translation>
     </message>
@@ -604,7 +622,7 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../mainwindow.cpp" line="373"/>
+        <location filename="../mainwindow.cpp" line="376"/>
         <source>Ensemble information</source>
         <translation>Informace o multiplexu</translation>
     </message>
@@ -626,498 +644,503 @@
         <translation>Kliknutím pravým tlačítkem se zkopíruje Dynamic Label +</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="93"/>
+        <location filename="../mainwindow.cpp" line="95"/>
         <source>No signal</source>
         <translation>Bez signálu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="93"/>
+        <location filename="../mainwindow.cpp" line="95"/>
         <source>Signal found</source>
         <translation>Detekován signál</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="93"/>
+        <location filename="../mainwindow.cpp" line="95"/>
         <source>Sync</source>
-        <translation>Synchronizace</translation>
+        <translation type="unfinished">Sync</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="94"/>
+        <location filename="../mainwindow.cpp" line="96"/>
         <source>DAB signal not detected&lt;br&gt;Looking for signal...</source>
         <translation>DAB signál nenalezen&lt;br&gt;Hledám signál...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="95"/>
+        <location filename="../mainwindow.cpp" line="97"/>
         <source>Found DAB signal,&lt;br&gt;trying to synchronize...</source>
         <translation>DAB signál detekován,&lt;br&gt;zkouším synchronizovat...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="96"/>
+        <location filename="../mainwindow.cpp" line="98"/>
         <source>Synchronized to DAB signal</source>
         <translation>Přijímám DAB signál</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="246"/>
+        <location filename="../mainwindow.cpp" line="249"/>
         <source>Add service to favorites</source>
         <translation>Přidat stanici k oblíbeným</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="247"/>
+        <location filename="../mainwindow.cpp" line="250"/>
         <source>Remove service from favorites</source>
         <translation>Odebraz stanici z oblíbených</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="291"/>
+        <location filename="../mainwindow.cpp" line="294"/>
         <source>DAB time</source>
         <translation>Čas z DAB vysílání</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="294"/>
+        <location filename="../mainwindow.cpp" line="297"/>
         <source>DAB signal quality</source>
         <translation>Kvalita DAB signálu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="307"/>
-        <location filename="../mainwindow.cpp" line="2159"/>
+        <location filename="../mainwindow.cpp" line="310"/>
+        <location filename="../mainwindow.cpp" line="2183"/>
         <source>Stop audio recording</source>
         <translation>Ukončit nahrávání zvuku</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="334"/>
-        <location filename="../mainwindow.cpp" line="342"/>
+        <location filename="../mainwindow.cpp" line="337"/>
+        <location filename="../mainwindow.cpp" line="345"/>
         <source>DAB signal SNR</source>
         <translation>Odstup DAB signálu od šumu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="364"/>
+        <location filename="../mainwindow.cpp" line="367"/>
         <source>Settings...</source>
         <translation>Nastavení...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="367"/>
+        <location filename="../mainwindow.cpp" line="370"/>
         <source>Clear service list</source>
         <translation>Vymazat seznam stanic</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="370"/>
+        <location filename="../mainwindow.cpp" line="373"/>
         <source>Band scan...</source>
         <translation>Vyhledat stanice...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2163"/>
+        <location filename="../mainwindow.cpp" line="2187"/>
         <source>Start audio recording</source>
         <translation>Spustit nahrávání zvuku</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="386"/>
+        <location filename="../mainwindow.cpp" line="392"/>
         <source>Program guide...</source>
         <translation>Programový průvodce...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="338"/>
+        <location filename="../mainwindow.cpp" line="341"/>
         <source>Display SNR plot</source>
         <translation>Zobrazit graf SNR</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="376"/>
+        <location filename="../mainwindow.cpp" line="379"/>
         <source>TII decoder</source>
         <translation>Dekodér TII</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="379"/>
+        <location filename="../mainwindow.cpp" line="382"/>
+        <source>Scanning tool...</source>
+        <translation>DAB Scanner...</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="385"/>
         <source>Audio recording schedule...</source>
         <translation>Plán nahrávání zvuku...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="390"/>
+        <location filename="../mainwindow.cpp" line="396"/>
         <source>Application log</source>
         <translation>Log aplikace</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="393"/>
+        <location filename="../mainwindow.cpp" line="399"/>
         <source>About</source>
         <translation>O AbracaDABra</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="405"/>
+        <location filename="../mainwindow.cpp" line="411"/>
         <source>Audio output</source>
         <translation>Zvukový výstup</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="425"/>
+        <location filename="../mainwindow.cpp" line="432"/>
         <source>Open menu</source>
         <translation>Otevřít menu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="430"/>
+        <location filename="../mainwindow.cpp" line="437"/>
         <source>Mute audio</source>
         <translation>Vypnout zvuk</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="431"/>
+        <location filename="../mainwindow.cpp" line="438"/>
         <source>Unmute audio</source>
         <translation>Zapnout zvuk</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="438"/>
+        <location filename="../mainwindow.cpp" line="445"/>
         <source>Audio volume</source>
         <translation>Hlasitost</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="469"/>
-        <location filename="../mainwindow.cpp" line="472"/>
-        <location filename="../mainwindow.cpp" line="481"/>
-        <location filename="../mainwindow.cpp" line="483"/>
+        <location filename="../mainwindow.cpp" line="476"/>
+        <location filename="../mainwindow.cpp" line="479"/>
+        <location filename="../mainwindow.cpp" line="488"/>
+        <location filename="../mainwindow.cpp" line="490"/>
         <source>Mute</source>
         <translation>Vypnout zvuk</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="472"/>
-        <location filename="../mainwindow.cpp" line="483"/>
+        <location filename="../mainwindow.cpp" line="479"/>
+        <location filename="../mainwindow.cpp" line="490"/>
         <source>Unmute</source>
         <translation>Zapnout zvuk</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="617"/>
+        <location filename="../mainwindow.cpp" line="624"/>
         <source>Audio coding</source>
         <translation>Kódování zvuku</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="625"/>
+        <location filename="../mainwindow.cpp" line="632"/>
         <source>Ongoing announcement</source>
         <translation>Probíhá hlášení</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="629"/>
+        <location filename="../mainwindow.cpp" line="636"/>
         <source>Browse categorized slides</source>
         <translation>Procházet kategorizovanou slideshow</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="632"/>
+        <location filename="../mainwindow.cpp" line="639"/>
         <source>Show program guide (EPG)</source>
         <translation>Zobrazit program (EPG)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="635"/>
+        <location filename="../mainwindow.cpp" line="642"/>
         <source>Change service source (ensemble)</source>
         <translation>Změnit zdroj stanice (multiplex)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="967"/>
+        <location filename="../mainwindow.cpp" line="976"/>
         <source>&lt;i&gt;DL text copied to clipboard&lt;/i&gt;</source>
         <translation>&lt;i&gt;DL text zkopírován do schránky&lt;/i&gt;</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="991"/>
+        <location filename="../mainwindow.cpp" line="1000"/>
         <source>&lt;i&gt;DL+ text copied to clipboard&lt;/i&gt;</source>
         <translation>&lt;i&gt;DL+ text zkopírován do schránky&lt;/i&gt;</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1012"/>
+        <location filename="../mainwindow.cpp" line="1026"/>
         <source>Stopping DAB processing, please wait...</source>
         <translation>Ukončuji DAB procesing, čekejte prosím...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1069"/>
+        <location filename="../mainwindow.cpp" line="1083"/>
         <source>&lt;b&gt;Ensemble:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %5</source>
         <translation>&lt;b&gt;Multiplex:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Krátký název:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Stát:&lt;/b&gt; %5</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1262"/>
+        <location filename="../mainwindow.cpp" line="1282"/>
         <source>&lt;b&gt;DAB audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation>&lt;b&gt;Kódování zvuku DAB&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1262"/>
+        <location filename="../mainwindow.cpp" line="1282"/>
         <source>MPEG-1 layer 2</source>
         <translation>MPEG-1 layer 2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1266"/>
-        <location filename="../mainwindow.cpp" line="1270"/>
-        <location filename="../mainwindow.cpp" line="1274"/>
+        <location filename="../mainwindow.cpp" line="1286"/>
+        <location filename="../mainwindow.cpp" line="1290"/>
+        <location filename="../mainwindow.cpp" line="1294"/>
         <source>&lt;b&gt;DAB+ audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation>&lt;b&gt;Kódování zvuku DAB+&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1266"/>
+        <location filename="../mainwindow.cpp" line="1286"/>
         <source>MPEG-4 Low Complexity AAC</source>
         <translation>MPEG-4 Low Complexity AAC</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1270"/>
+        <location filename="../mainwindow.cpp" line="1290"/>
         <source>MPEG-4 High Efficiency AAC</source>
         <translation>MPEG-4 High Efficiency AAC</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1274"/>
+        <location filename="../mainwindow.cpp" line="1294"/>
         <source>MPEG-4 High Efficiency AAC v2</source>
         <translation>MPEG-4 High Efficiency AAC v2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1283"/>
+        <location filename="../mainwindow.cpp" line="1303"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Sample rate: %2 kHz</source>
         <translation>&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Vzorkovací frekvence: %2 kHz</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1290"/>
+        <location filename="../mainwindow.cpp" line="1310"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Sample rate: %2 kHz (SBR %3)</source>
         <translation>&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Vzorkovací frekvence: %2 kHz (SBR %3)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1291"/>
-        <location filename="../mainwindow.cpp" line="1293"/>
+        <location filename="../mainwindow.cpp" line="1311"/>
+        <location filename="../mainwindow.cpp" line="1313"/>
         <source>on</source>
         <translation>zapnuto</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1291"/>
-        <location filename="../mainwindow.cpp" line="1293"/>
+        <location filename="../mainwindow.cpp" line="1311"/>
+        <location filename="../mainwindow.cpp" line="1313"/>
         <source>off</source>
         <translation>vypnuto</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1302"/>
+        <location filename="../mainwindow.cpp" line="1322"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz</source>
         <translation>&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Vzorkovací frekvence: %1 kHz</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1308"/>
+        <location filename="../mainwindow.cpp" line="1328"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz (SBR: %2)</source>
         <translation>&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Vzorkovací frekvence: %1 kHz (SBR: %2)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1330"/>
+        <location filename="../mainwindow.cpp" line="1350"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1 (dynamic)</source>
         <translation>&lt;b&gt;Typ programu (PTY)&lt;/b&gt;&lt;br&gt;%1 (dynamický)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1339"/>
+        <location filename="../mainwindow.cpp" line="1359"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1</source>
         <translation>&lt;b&gt;Typ programu (PTY)&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1362"/>
+        <location filename="../mainwindow.cpp" line="1382"/>
         <source>Tuning...  </source>
         <translation>Ladím...  </translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1397"/>
+        <location filename="../mainwindow.cpp" line="1417"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you change DAB channel.</source>
         <translation>Probíhá nahrávání zvuku. Záznam bude ukončen a uložen pokud přeladíte na jiný DAB kanál.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1426"/>
-        <location filename="../mainwindow.cpp" line="1437"/>
+        <location filename="../mainwindow.cpp" line="1446"/>
+        <location filename="../mainwindow.cpp" line="1457"/>
         <source>Tune to %1</source>
         <translation>Přeladit na %1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1534"/>
+        <location filename="../mainwindow.cpp" line="1558"/>
         <source>End of file</source>
         <translation>Konec soubory</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1538"/>
+        <location filename="../mainwindow.cpp" line="1562"/>
         <source>Select any service to restart</source>
         <translation>Přehrávání se restartuje po zvolení stanice</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1549"/>
-        <location filename="../mainwindow.cpp" line="1559"/>
+        <location filename="../mainwindow.cpp" line="1573"/>
+        <location filename="../mainwindow.cpp" line="1583"/>
         <source>Go to settings and try to reconnect the device</source>
         <translation>Otevřete nastavení a zkuste znovu připojit zařízení</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1548"/>
+        <location filename="../mainwindow.cpp" line="1572"/>
         <source>Input device error: Device disconnected</source>
         <translation>Chyba vstupního zařízení: Zařízení odpojeno</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="487"/>
+        <location filename="../mainwindow.cpp" line="494"/>
         <source>Quit</source>
         <translation>Ukončit</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1558"/>
+        <location filename="../mainwindow.cpp" line="1582"/>
         <source>Input device error: No data</source>
         <translation>Chyba vstupního zařízení: Žádná data</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1577"/>
+        <location filename="../mainwindow.cpp" line="1601"/>
         <source>Warning</source>
         <translation>Varování</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1578"/>
+        <location filename="../mainwindow.cpp" line="1602"/>
         <source>Do you want to stop audio recording?</source>
         <translation>Chtete ukončit nahrávání zvuku?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1589"/>
+        <location filename="../mainwindow.cpp" line="1613"/>
         <source>Keep recording</source>
         <translation>Pokračovat v nahrávání</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1590"/>
+        <location filename="../mainwindow.cpp" line="1614"/>
         <source>Stop recording and do not ask again</source>
         <translation>Ukončit nahrávání a příště se neptat</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1591"/>
+        <location filename="../mainwindow.cpp" line="1615"/>
         <source>Stop recording</source>
         <translation>Ukončit nahrávání</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1639"/>
-        <location filename="../mainwindow.cpp" line="1706"/>
+        <location filename="../mainwindow.cpp" line="1663"/>
+        <location filename="../mainwindow.cpp" line="1730"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you switch current service.</source>
         <translation>Probíhá nahrávání zvuku. Záznam bude ukončen a uložen pokud přepnete na jinou stanici.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1779"/>
+        <location filename="../mainwindow.cpp" line="1803"/>
         <source>&lt;b&gt;Ensemble %1/%2&lt;/b&gt;&lt;br&gt;Click for switching to:&lt;br&gt;&lt;i&gt;%3&lt;/i&gt;</source>
         <translation>&lt;b&gt;Multiplex %1/%2&lt;/b&gt;&lt;br&gt;Kliknutím přepnout na:&lt;br&gt;&lt;i&gt;%3&lt;/i&gt;</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1788"/>
+        <location filename="../mainwindow.cpp" line="1812"/>
         <source>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Language:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %6</source>
         <translation>&lt;b&gt;Stanice:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Krátký název:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Jazyk:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Stát:&lt;/b&gt; %6</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1847"/>
+        <location filename="../mainwindow.cpp" line="1871"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Coderate: %2/%3&lt;br&gt;Capacity units: %4 CU</source>
         <translation>&lt;B&gt;Chybové zabezpečení&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Kódový poměr: %2/%3&lt;br&gt;Kapacitní jednotky: %4 CU</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1858"/>
+        <location filename="../mainwindow.cpp" line="1882"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Protection level: %2&lt;br&gt;Capacity units: %3 CU</source>
         <translation>&lt;B&gt;Chybové zabezpečení&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Kódový poměr: %2&lt;br&gt;Kapacitní jednotky: %3 CU</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1868"/>
+        <location filename="../mainwindow.cpp" line="1892"/>
         <source>%1 kbps</source>
         <translation>%1 kb/s</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1870"/>
+        <location filename="../mainwindow.cpp" line="1894"/>
         <source>&lt;b&gt;Service bitrate&lt;/b&gt;&lt;br&gt;Audio &amp; data: %1</source>
         <translatorcomment>Bitrate stanice</translatorcomment>
         <translation>&lt;b&gt;Bitrate stanice&lt;/b&gt;&lt;br&gt;Audio a data: %1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1894"/>
+        <location filename="../mainwindow.cpp" line="1918"/>
         <source>Service currently unavailable</source>
         <translation>Stanice je nedostupná</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1895"/>
+        <location filename="../mainwindow.cpp" line="1919"/>
         <source>Service was removed from ensemble</source>
         <translation>Stanice byla odebraná z multiplexu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1931"/>
+        <location filename="../mainwindow.cpp" line="1955"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;on current service</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Probíhá hlášení&lt;br&gt;na současné stanici</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1944"/>
+        <location filename="../mainwindow.cpp" line="1968"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to suspend this announcement</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Probíhá hlášení&lt;br&gt;Na stanici: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknutím pozastavíte toho hlášení</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1963"/>
+        <location filename="../mainwindow.cpp" line="1987"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Suspended announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to resume this announcement</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Pozastavené hlášení&lt;br&gt;Na stanici: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknutím obnovíte toto hlášení</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2026"/>
+        <location filename="../mainwindow.cpp" line="2050"/>
         <source>Audio Output Error</source>
         <translation>Chyba zvukového výstupu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2027"/>
+        <location filename="../mainwindow.cpp" line="2051"/>
         <source>Try to select other service to recover</source>
         <translation>Pro zotavení zkuste vybrat jinou stanici</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2079"/>
+        <location filename="../mainwindow.cpp" line="2103"/>
         <source>Audio recording: %1:%2</source>
         <translation>Nahrávání: %1:%2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2080"/>
+        <location filename="../mainwindow.cpp" line="2104"/>
         <source>Audio recording ongoing (%2 kBytes recorded)
 File: %1</source>
         <translation>Probíhá nahrávání audia (uloženo %2 kByte)
 Soubor: %1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2086"/>
+        <location filename="../mainwindow.cpp" line="2110"/>
         <source>Audio recording: 0:00</source>
         <translation>Nahrávání: 0:00</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2087"/>
+        <location filename="../mainwindow.cpp" line="2111"/>
         <source>Scheduled audio recording is getting ready</source>
         <translation>Připravuje se plánované nahrávání</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2103"/>
+        <location filename="../mainwindow.cpp" line="2127"/>
         <source>Scheduled recording should start in %1 seconds</source>
         <translation>Plánované nahrávání by mělo začít za %1 sekund</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2104"/>
+        <location filename="../mainwindow.cpp" line="2128"/>
         <source>Ongoing recording now prevents the start of a scheduled recording. The schedule will be cancelled if you do not choose otherwise. If you select to keep the schedule, the service might be switched.</source>
         <translation>Probíhající nahrávání znemožňuje spuštění plánovaného nahrávání. Plán bude zrušen, pokud nezvolíte jinak.Pokud vyberete pokračovat podle plánu, stanice může být přepnuta.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2108"/>
+        <location filename="../mainwindow.cpp" line="2132"/>
         <source>Keep schedule</source>
         <translation>Pokračovat podle plánu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2109"/>
+        <location filename="../mainwindow.cpp" line="2133"/>
         <source>Keep current recording</source>
         <translation>Pokračovat v nahrávání</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2115"/>
+        <location filename="../mainwindow.cpp" line="2139"/>
         <source>Scheduled recording starts in %1 seconds</source>
         <translation>Plánované nahrávání začne za %1 sekund</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2116"/>
+        <location filename="../mainwindow.cpp" line="2140"/>
         <source>Recording is going to start according to the schedule. The service might be switched if it differs from the current one.</source>
         <translation>Nahrávání začne podle plánu. Stanice může být přepnuta, pokud je jiná než současná stanice.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2118"/>
+        <location filename="../mainwindow.cpp" line="2142"/>
         <source>Cancel plan</source>
         <translation>Zrušit plán</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2119"/>
+        <location filename="../mainwindow.cpp" line="2143"/>
         <source>Continue as planned</source>
         <translation>Pokračovat podle plánu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2248"/>
+        <location filename="../mainwindow.cpp" line="2329"/>
         <source>No ensemble</source>
         <translation>Žádný multiplex</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2249"/>
+        <location filename="../mainwindow.cpp" line="2330"/>
         <source>No ensemble tuned</source>
         <translation>Není naladěný žádný multiplex</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2256"/>
+        <location filename="../mainwindow.cpp" line="2337"/>
         <source>No service</source>
         <translation>Žádná stanice</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2261"/>
+        <location filename="../mainwindow.cpp" line="2342"/>
         <source>No service playing</source>
         <translation>Nepřehrává žádnou stanici</translation>
     </message>
@@ -1135,280 +1158,280 @@ Soubor: %1</translation>
         <translation>Volitelný INI soubor. Pokud není vybraný, AbracaDABra.použije výchozí ini soubor.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4176"/>
-        <location filename="../mainwindow.cpp" line="4186"/>
+        <location filename="../mainwindow.cpp" line="4363"/>
+        <location filename="../mainwindow.cpp" line="4373"/>
         <source>Open link</source>
         <translation>Otevřít odkaz</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4265"/>
+        <location filename="../mainwindow.cpp" line="4452"/>
         <source>Title</source>
         <translation>Název</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4266"/>
+        <location filename="../mainwindow.cpp" line="4453"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4267"/>
+        <location filename="../mainwindow.cpp" line="4454"/>
         <source>Track Number</source>
         <oldsource>Track Number:</oldsource>
         <translation>Číslo skladby</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4268"/>
+        <location filename="../mainwindow.cpp" line="4455"/>
         <source>Artist</source>
         <translation>Umělec</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4269"/>
+        <location filename="../mainwindow.cpp" line="4456"/>
         <source>Composition</source>
         <translation>Skladbe</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4270"/>
+        <location filename="../mainwindow.cpp" line="4457"/>
         <source>Movement</source>
         <translation>Věta</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4271"/>
+        <location filename="../mainwindow.cpp" line="4458"/>
         <source>Conductor</source>
         <translation>Dirigent</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4272"/>
+        <location filename="../mainwindow.cpp" line="4459"/>
         <source>Composer</source>
         <translation>Skladatel</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4273"/>
+        <location filename="../mainwindow.cpp" line="4460"/>
         <source>Band</source>
         <translation>Skupina</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4274"/>
+        <location filename="../mainwindow.cpp" line="4461"/>
         <source>Comment</source>
         <translation>Komentář</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4275"/>
+        <location filename="../mainwindow.cpp" line="4462"/>
         <source>Genre</source>
         <translation>Žánr</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4276"/>
+        <location filename="../mainwindow.cpp" line="4463"/>
         <location filename="../dabtables.cpp" line="210"/>
         <location filename="../dabtables.cpp" line="1049"/>
         <source>News</source>
         <translation>Zprávy</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4277"/>
+        <location filename="../mainwindow.cpp" line="4464"/>
         <source>News (local)</source>
         <translation>Zprávy (místní)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4278"/>
+        <location filename="../mainwindow.cpp" line="4465"/>
         <source>Stock Market</source>
         <translation>Burza</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4279"/>
+        <location filename="../mainwindow.cpp" line="4466"/>
         <location filename="../dabtables.cpp" line="213"/>
         <source>Sport</source>
         <translation>Sport</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4280"/>
+        <location filename="../mainwindow.cpp" line="4467"/>
         <source>Lottery</source>
         <translation>Loterie</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4281"/>
+        <location filename="../mainwindow.cpp" line="4468"/>
         <source>Horoscope</source>
         <translation>Horoskop</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4282"/>
+        <location filename="../mainwindow.cpp" line="4469"/>
         <source>Daily Diversion</source>
         <translation>Pro tento den</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4283"/>
+        <location filename="../mainwindow.cpp" line="4470"/>
         <source>Health</source>
         <translation>Zdraví</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4284"/>
+        <location filename="../mainwindow.cpp" line="4471"/>
         <location filename="../dabtables.cpp" line="1051"/>
         <source>Event</source>
         <translation>Událost</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4285"/>
+        <location filename="../mainwindow.cpp" line="4472"/>
         <source>Scene</source>
         <translation>Scéna</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4286"/>
+        <location filename="../mainwindow.cpp" line="4473"/>
         <source>Cinema</source>
         <translation>Kino</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4287"/>
+        <location filename="../mainwindow.cpp" line="4474"/>
         <source>TV</source>
         <translation>TV</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4291"/>
+        <location filename="../mainwindow.cpp" line="4478"/>
         <location filename="../dabtables.cpp" line="1050"/>
         <source>Weather</source>
         <translation>Počasí</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4292"/>
+        <location filename="../mainwindow.cpp" line="4479"/>
         <source>Traffic</source>
         <translation>Doprava</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4293"/>
+        <location filename="../mainwindow.cpp" line="4480"/>
         <location filename="../dabtables.cpp" line="1045"/>
         <source>Alarm</source>
         <translation>Alarm</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4294"/>
+        <location filename="../mainwindow.cpp" line="4481"/>
         <source>Advertisment</source>
         <translation>Reklama</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4295"/>
+        <location filename="../mainwindow.cpp" line="4482"/>
         <source>URL</source>
         <translation>URL</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4296"/>
+        <location filename="../mainwindow.cpp" line="4483"/>
         <source>Other</source>
         <translation>Ostatní</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4297"/>
+        <location filename="../mainwindow.cpp" line="4484"/>
         <source>Station (short)</source>
         <translation>Stanice (krátce)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4298"/>
+        <location filename="../mainwindow.cpp" line="4485"/>
         <source>Station</source>
         <translation>Stanice</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4299"/>
+        <location filename="../mainwindow.cpp" line="4486"/>
         <source>Now</source>
         <translation>Právě teď</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4300"/>
+        <location filename="../mainwindow.cpp" line="4487"/>
         <source>Next</source>
         <translation>Další</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4301"/>
+        <location filename="../mainwindow.cpp" line="4488"/>
         <source>Programme Part</source>
         <translation>Programová část</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4302"/>
+        <location filename="../mainwindow.cpp" line="4489"/>
         <source>Host</source>
         <translation>Moderátor</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4303"/>
+        <location filename="../mainwindow.cpp" line="4490"/>
         <source>Editorial</source>
         <translation>Redakce</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4307"/>
+        <location filename="../mainwindow.cpp" line="4494"/>
         <source>Homepage</source>
         <translation>Web</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4311"/>
+        <location filename="../mainwindow.cpp" line="4498"/>
         <source>Phone (Hotline)</source>
         <translation>Telefon (hotline)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4312"/>
+        <location filename="../mainwindow.cpp" line="4499"/>
         <source>Phone (Studio)</source>
         <translation>Telefon (studio)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4313"/>
+        <location filename="../mainwindow.cpp" line="4500"/>
         <source>Phone (Other)</source>
         <translation>Telefon (jiný)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4314"/>
+        <location filename="../mainwindow.cpp" line="4501"/>
         <source>SMS (Studio)</source>
         <translation>SMS (studio)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4315"/>
+        <location filename="../mainwindow.cpp" line="4502"/>
         <source>SMS (Other)</source>
         <translation>SMS (jiný)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4316"/>
+        <location filename="../mainwindow.cpp" line="4503"/>
         <source>E-mail (Hotline)</source>
         <translation>Email (hotline)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4317"/>
+        <location filename="../mainwindow.cpp" line="4504"/>
         <source>E-mail (Studio)</source>
         <translation>Email (studio)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4318"/>
+        <location filename="../mainwindow.cpp" line="4505"/>
         <source>E-mail (Other)</source>
         <translation>Email (jiný)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4319"/>
+        <location filename="../mainwindow.cpp" line="4506"/>
         <source>MMS</source>
         <translation>MMS</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4320"/>
+        <location filename="../mainwindow.cpp" line="4507"/>
         <source>Chat Message</source>
         <translation>Z chatu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4321"/>
+        <location filename="../mainwindow.cpp" line="4508"/>
         <source>Chat</source>
         <translation>Chat</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4322"/>
+        <location filename="../mainwindow.cpp" line="4509"/>
         <source>Vote Question</source>
         <translation>Hlasovací otázka</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4323"/>
+        <location filename="../mainwindow.cpp" line="4510"/>
         <source>Vote Here</source>
         <translation>Hlasujte</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4326"/>
+        <location filename="../mainwindow.cpp" line="4513"/>
         <source>Private 1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4327"/>
+        <location filename="../mainwindow.cpp" line="4514"/>
         <source>Private 2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4328"/>
+        <location filename="../mainwindow.cpp" line="4515"/>
         <source>Private 3</source>
         <translation></translation>
     </message>
@@ -3299,9 +3322,114 @@ Soubor: %1</translation>
         <translation>Synchronizace</translation>
     </message>
     <message>
-        <location filename="../snrplotdialog.cpp" line="63"/>
+        <location filename="../snrplotdialog.cpp" line="68"/>
         <source>DAB signal SNR</source>
         <translation>Odstup DAB signálu od šumu</translation>
+    </message>
+</context>
+<context>
+    <name>ScannerDialog</name>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="51"/>
+        <source>DAB Scanning Tool</source>
+        <translation>DAB scanner</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="95"/>
+        <source>Mode:</source>
+        <translation>Mód:</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="98"/>
+        <source>Fast</source>
+        <translation>Rychlý</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="99"/>
+        <source>Normal</source>
+        <translation>Normální</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="100"/>
+        <source>Precise</source>
+        <translation>Přesný</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="110"/>
+        <source>Inf</source>
+        <translation>Inf</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="112"/>
+        <source>Number of cycles:</source>
+        <translation>Počet cyklů:</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="163"/>
+        <location filename="../tii/scannerdialog.cpp" line="272"/>
+        <source>Start</source>
+        <translation>Start</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="167"/>
+        <location filename="../tii/scannerdialog.cpp" line="271"/>
+        <source>None</source>
+        <translation>Žádný</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="170"/>
+        <source>Select channels</source>
+        <translation>Vybrat kanály</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="171"/>
+        <source>Export as CSV</source>
+        <translation>Exportovat jako CSV</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="235"/>
+        <source>Stop</source>
+        <translation>Stop</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="269"/>
+        <source>Scanning finished</source>
+        <translation>Prohledávání ukončeno</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="289"/>
+        <source>Export CSV file</source>
+        <translation>Exportovat CSV soubor</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="291"/>
+        <source>CSV Files</source>
+        <translation>CSV soubory</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="341"/>
+        <source>Scanning channel:</source>
+        <translation>Prohledávám kanál:</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="410"/>
+        <source>%1  (cycle %2)</source>
+        <translation>%1  (cyklus %2)</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="568"/>
+        <source>Scanning failed</source>
+        <translation>Prohledávání selhalo</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="611"/>
+        <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
+        <translation>Nadmořská výška: &lt;b&gt;%1 m&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="613"/>
+        <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
+        <translation>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
     </message>
 </context>
 <context>
@@ -3372,7 +3500,7 @@ Soubor: %1</translation>
         <location filename="../setupdialog.ui" line="731"/>
         <location filename="../setupdialog.ui" line="1144"/>
         <location filename="../setupdialog.cpp" line="337"/>
-        <location filename="../setupdialog.cpp" line="368"/>
+        <location filename="../setupdialog.cpp" line="370"/>
         <source>Manual</source>
         <translation>Manuálně</translation>
     </message>
@@ -3427,7 +3555,7 @@ Soubor: %1</translation>
     <message>
         <location filename="../setupdialog.ui" line="457"/>
         <location filename="../setupdialog.ui" line="1200"/>
-        <location filename="../setupdialog.ui" line="2077"/>
+        <location filename="../setupdialog.ui" line="2156"/>
         <source>Port:</source>
         <translation>Port:</translation>
     </message>
@@ -3546,6 +3674,7 @@ Soubor: %1</translation>
     <message>
         <location filename="../setupdialog.ui" line="1308"/>
         <location filename="../setupdialog.ui" line="1489"/>
+        <location filename="../setupdialog.ui" line="1915"/>
         <source>Folder:</source>
         <translation>Složka:</translation>
     </message>
@@ -3610,37 +3739,47 @@ Soubor: %1</translation>
         <translation>Aplikace využívá databázi DAB vysílačů od &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;Kliknutím na tlačítko &lt;i&gt;Aktualizovat&lt;/i&gt; souhlasíte s &lt;a href=&apos;https://www.fmlist.org/fmlist_copyright_disclaimer_legal_notice.php&apos;&gt;všeobecnými smluvními podmínkami&lt;/a&gt; služby.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1956"/>
+        <location filename="../setupdialog.ui" line="2019"/>
         <source>Show tray icon</source>
         <translation>Zobrazit ikonu v systémové části panelu</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2033"/>
+        <location filename="../setupdialog.ui" line="2096"/>
+        <source>Application update</source>
+        <translation>Aktualizace aplikace</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="2102"/>
+        <source>Check for application update on start</source>
+        <translation>Zkontrolovat aktualizace při startu aplikace</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="2112"/>
         <source>Network proxy configuration</source>
         <translation>Nastavení proxy serveru</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2056"/>
+        <location filename="../setupdialog.ui" line="2135"/>
         <source>Server:</source>
         <translation>Server:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2070"/>
+        <location filename="../setupdialog.ui" line="2149"/>
         <source>Password:</source>
         <translation>Heslo:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2093"/>
+        <location filename="../setupdialog.ui" line="2172"/>
         <source>Configuration:</source>
         <translation>Konfigurace:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2116"/>
+        <location filename="../setupdialog.ui" line="2195"/>
         <source>Apply</source>
         <translation>Použít</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2125"/>
+        <location filename="../setupdialog.ui" line="2204"/>
         <source>Username:</source>
         <translation>Jméno:</translation>
     </message>
@@ -3666,7 +3805,7 @@ Soubor: %1</translation>
     <message>
         <location filename="../setupdialog.ui" line="1236"/>
         <location filename="../setupdialog.cpp" line="80"/>
-        <location filename="../setupdialog.cpp" line="1212"/>
+        <location filename="../setupdialog.cpp" line="1230"/>
         <source>No device connected</source>
         <translation>Žádné zařízení není připojeno</translation>
     </message>
@@ -3789,36 +3928,46 @@ a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1879"/>
+        <source>Logging</source>
+        <translation>Logování</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="1887"/>
+        <source>Change CSV log folder...</source>
+        <translation>Změnit složku pro ukládání CSV logu...</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="1942"/>
         <source>Show spectrum plot</source>
         <translation>Zobrazovat spektrum</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1906"/>
+        <location filename="../setupdialog.ui" line="1969"/>
         <source>Visual Style</source>
         <translation>Styl aplikace</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1936"/>
+        <location filename="../setupdialog.ui" line="1999"/>
         <source>User Interface</source>
         <translation>Uživatelské rozhraní</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1942"/>
+        <location filename="../setupdialog.ui" line="2005"/>
         <source>Expert mode UI</source>
         <translation>Pokročilé uživatelské rozhraní</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1949"/>
+        <location filename="../setupdialog.ui" line="2012"/>
         <source>Dynamic Label Plus (DL+)</source>
         <translation>Dynamic Label Plus (DL+)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1975"/>
+        <location filename="../setupdialog.ui" line="2038"/>
         <source>Slideshow background:</source>
         <translation>Pozadí slideshow:</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1982"/>
+        <location filename="../setupdialog.ui" line="2045"/>
         <source>Language:</source>
         <translation>Jazyk:</translation>
     </message>
@@ -3919,12 +4068,12 @@ a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&
 &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2017"/>
+        <location filename="../setupdialog.ui" line="2080"/>
         <source>Raw Data Recording</source>
         <translation>Záznam vstupního signálu</translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2023"/>
+        <location filename="../setupdialog.ui" line="2086"/>
         <source>Include XML header</source>
         <translation>Vkládat XML záhlaví</translation>
     </message>
@@ -3950,7 +4099,7 @@ a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="67"/>
-        <location filename="../setupdialog.cpp" line="1394"/>
+        <location filename="../setupdialog.cpp" line="1413"/>
         <source>Raw file</source>
         <translation>Raw soubor</translation>
     </message>
@@ -4063,7 +4212,7 @@ a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="336"/>
-        <location filename="../setupdialog.cpp" line="367"/>
+        <location filename="../setupdialog.cpp" line="369"/>
         <source>System</source>
         <translation>Systém</translation>
     </message>
@@ -4073,49 +4222,55 @@ a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&
         <translation>NMEA sériový port</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="366"/>
+        <location filename="../setupdialog.cpp" line="368"/>
         <source>No proxy</source>
         <translation>Nepoužívat proxy</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="380"/>
+        <location filename="../setupdialog.cpp" line="382"/>
         <source>Select slideshow background color</source>
         <translation>Vybrat pozadí slideshow (SLS)</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="390"/>
-        <location filename="../setupdialog.cpp" line="1669"/>
+        <location filename="../setupdialog.cpp" line="392"/>
+        <location filename="../setupdialog.cpp" line="1709"/>
         <source>Last update: </source>
         <translation>Poslední aktualizace: </translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="394"/>
-        <location filename="../setupdialog.cpp" line="1673"/>
+        <location filename="../setupdialog.cpp" line="396"/>
+        <location filename="../setupdialog.cpp" line="1713"/>
         <source>Data not available</source>
         <translation>Není k dispozici</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1456"/>
+        <location filename="../setupdialog.cpp" line="537"/>
+        <location filename="../setupdialog.cpp" line="1475"/>
         <source>sec</source>
         <translation>s</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1489"/>
+        <location filename="../setupdialog.cpp" line="1508"/>
         <source>Audio recording folder</source>
         <translation>Složka pro ukládaní audio nahrávek</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1517"/>
+        <location filename="../setupdialog.cpp" line="1536"/>
         <source>Data storage folder</source>
         <translation>Složka pro ukládání dat</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1678"/>
+        <location filename="../setupdialog.cpp" line="1685"/>
+        <source>TII log folder</source>
+        <translation>Složka pro ukládaní TII logu</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="1718"/>
         <source>Update failed</source>
         <translation>Aktualizace selhala</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1740"/>
+        <location filename="../setupdialog.cpp" line="1780"/>
         <source>Select SLS Background Color</source>
         <translation>Vybrat pozadí SLS</translation>
     </message>
@@ -4194,49 +4349,49 @@ a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&
         <translation>Vyberte úroveň šumu, ktery je generovaný během výpadku zvuku.&lt;br&gt;Toto nastavení může zlepšit posluchačský zážitek a zmírnit nepříjemný vjem způsobený výpadkem zvuku.</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="587"/>
-        <location filename="../setupdialog.cpp" line="597"/>
-        <location filename="../setupdialog.cpp" line="684"/>
+        <location filename="../setupdialog.cpp" line="603"/>
+        <location filename="../setupdialog.cpp" line="613"/>
+        <location filename="../setupdialog.cpp" line="700"/>
         <source>N/A</source>
         <translation>Nedostupný</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1206"/>
+        <location filename="../setupdialog.cpp" line="1224"/>
         <source>RTL SDR device connected</source>
         <translation>RTL SDR zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1209"/>
+        <location filename="../setupdialog.cpp" line="1227"/>
         <source>RTL TCP device connected</source>
         <translation>RTL TCP zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1215"/>
+        <location filename="../setupdialog.cpp" line="1233"/>
         <source>Raw file connected</source>
         <translation>Raw soubor připojen</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1218"/>
+        <location filename="../setupdialog.cpp" line="1236"/>
         <source>Airspy device connected</source>
         <translation>Airspy zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1221"/>
+        <location filename="../setupdialog.cpp" line="1239"/>
         <source>Soapy SDR device connected</source>
         <translation>Soapy SDR zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1272"/>
+        <location filename="../setupdialog.cpp" line="1290"/>
         <source>Open IQ stream</source>
         <translation>Otevřít IQ soubor</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1272"/>
+        <location filename="../setupdialog.cpp" line="1290"/>
         <source>Binary files</source>
         <translation>Binární soubory</translation>
     </message>
     <message>
-        <location filename="../setupdialog.h" line="94"/>
+        <location filename="../setupdialog.h" line="96"/>
         <source>No file selected</source>
         <translation>Není vybraný soubor</translation>
     </message>
@@ -4244,82 +4399,205 @@ a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&
 <context>
     <name>TIIDialog</name>
     <message>
-        <location filename="../tii/tiidialog.cpp" line="51"/>
+        <location filename="../tii/tiidialog.cpp" line="45"/>
         <source>TII Decoder</source>
         <translation>Dekodér TII</translation>
     </message>
     <message>
-        <location filename="../tii/tiidialog.cpp" line="431"/>
-        <source>Warning</source>
-        <translation>Varování</translation>
-    </message>
-    <message>
-        <location filename="../tii/tiidialog.cpp" line="431"/>
-        <source>Device location access is denied.</source>
-        <translation>Přístup k poloze zařízení není povolen.</translation>
-    </message>
-    <message>
-        <location filename="../tii/tiidialog.cpp" line="432"/>
-        <source>If you want to display current position on map, grant the location permission in Settings then open the app again.</source>
-        <translation>Pokud chcete zobrazit současnou polohu v mapě, povolte přístup k poloze zařízení v nastavení systému a restartuje aplikaci.</translation>
-    </message>
-    <message>
-        <location filename="../tii/tiidialog.cpp" line="564"/>
-        <source>Ensemble: &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation>Multiplex: &lt;b&gt;%1&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location filename="../tii/tiidialog.cpp" line="565"/>
-        <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</source>
-        <translation>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location filename="../tii/tiidialog.cpp" line="568"/>
-        <source>Channel: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</source>
-        <translation>Kanál: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location filename="../tii/tiidialog.cpp" line="610"/>
+        <location filename="../tii/tiidialog.cpp" line="433"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
         <translation>Nadmořská výška: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../tii/tiidialog.cpp" line="612"/>
+        <location filename="../tii/tiidialog.cpp" line="435"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
         <translation>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../tii/tiidialog.cpp" line="629"/>
+        <location filename="../tii/tiidialog.cpp" line="503"/>
         <source>Carrier Pair: %1&lt;br&gt;SubId: %3&lt;br&gt;Level: %2</source>
         <translation>Carrier Pair: %1&lt;br&gt;SubId: %3&lt;br&gt;Level: %2</translation>
     </message>
 </context>
 <context>
-    <name>TiiTableModel</name>
+    <name>TxMapDialog</name>
     <message>
-        <location filename="../tii/tiitablemodel.cpp" line="135"/>
+        <location filename="../tii/txmapdialog.cpp" line="113"/>
+        <source>Warning</source>
+        <translation>Varování</translation>
+    </message>
+    <message>
+        <location filename="../tii/txmapdialog.cpp" line="113"/>
+        <source>Device location access is denied.</source>
+        <translation>Přístup k poloze zařízení není povolen.</translation>
+    </message>
+    <message>
+        <location filename="../tii/txmapdialog.cpp" line="114"/>
+        <source>If you want to display current position on map, grant the location permission in Settings then open the app again.</source>
+        <translation>Pokud chcete zobrazit současnou polohu v mapě, povolte přístup k poloze zařízení v nastavení systému a restartuje aplikaci.</translation>
+    </message>
+    <message>
+        <location filename="../tii/txmapdialog.cpp" line="242"/>
+        <source>Ensemble: &lt;b&gt;%1&lt;/b&gt;</source>
+        <translation>Multiplex: &lt;b&gt;%1&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="../tii/txmapdialog.cpp" line="243"/>
+        <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</source>
+        <translation>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="../tii/txmapdialog.cpp" line="246"/>
+        <source>Channel: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</source>
+        <translation>Kanál: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</translation>
+    </message>
+</context>
+<context>
+    <name>TxTableModel</name>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="205"/>
+        <source>Time</source>
+        <translation>Čas</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="207"/>
+        <location filename="../tii/txtablemodel.cpp" line="242"/>
+        <source>Channel</source>
+        <translation>Kanál</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="209"/>
+        <source>Frequency</source>
+        <translation>Frekvence</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="211"/>
+        <location filename="../tii/txtablemodel.cpp" line="246"/>
+        <source>UEID</source>
+        <translation>UEID</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="213"/>
+        <location filename="../tii/txtablemodel.cpp" line="248"/>
+        <source>Label</source>
+        <translation>Název</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="215"/>
+        <location filename="../tii/txtablemodel.cpp" line="250"/>
+        <source>Services</source>
+        <translation>Stanice</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="217"/>
+        <source>SNR</source>
+        <translation>SNR</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="219"/>
+        <location filename="../tii/txtablemodel.cpp" line="254"/>
         <source>Main</source>
         <translation>Main</translation>
     </message>
     <message>
-        <location filename="../tii/tiitablemodel.cpp" line="137"/>
+        <location filename="../tii/txtablemodel.cpp" line="221"/>
+        <location filename="../tii/txtablemodel.cpp" line="256"/>
         <source>Sub</source>
         <translation>Sub</translation>
     </message>
     <message>
-        <location filename="../tii/tiitablemodel.cpp" line="139"/>
+        <location filename="../tii/txtablemodel.cpp" line="223"/>
         <source>Level</source>
         <translation>Úroveň</translation>
     </message>
     <message>
-        <location filename="../tii/tiitablemodel.cpp" line="141"/>
+        <location filename="../tii/txtablemodel.cpp" line="225"/>
+        <location filename="../tii/txtablemodel.cpp" line="260"/>
+        <source>Location</source>
+        <translation>Umístění</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="227"/>
+        <source>Power</source>
+        <translation>Výkon</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="229"/>
         <source>Distance</source>
         <translation>Vzdálenost</translation>
     </message>
     <message>
-        <location filename="../tii/tiitablemodel.cpp" line="143"/>
+        <location filename="../tii/txtablemodel.cpp" line="231"/>
         <source>Azimuth</source>
         <translation>Azimut</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="240"/>
+        <source>Local Time</source>
+        <translation>Lokální čas</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="244"/>
+        <source>Frequency [kHz]</source>
+        <translation>Frekvence [kHz]</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="252"/>
+        <source>SNR [dB]</source>
+        <translation>SNR [dB]</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="258"/>
+        <source>Level [dB]</source>
+        <translation>Úroveň [dB]</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="262"/>
+        <source>Power [kW]</source>
+        <translation>Výkon [kW]</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="264"/>
+        <source>Distance [km]</source>
+        <translation>Vzdálenost [km]</translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="266"/>
+        <source>Azimuth [deg]</source>
+        <translation>Azimut [°]</translation>
+    </message>
+</context>
+<context>
+    <name>UpdateDialog</name>
+    <message>
+        <location filename="../updatedialog.cpp" line="39"/>
+        <source>Application update</source>
+        <translation>Aktualizace aplikace</translation>
+    </message>
+    <message>
+        <location filename="../updatedialog.cpp" line="40"/>
+        <source>AbracaDABra update available</source>
+        <translation>Je k dispozici nová verze AbracaDABra</translation>
+    </message>
+    <message>
+        <location filename="../updatedialog.cpp" line="41"/>
+        <source>Current version: %1</source>
+        <translation>Současná verze: %1</translation>
+    </message>
+    <message>
+        <location filename="../updatedialog.cpp" line="42"/>
+        <source>Available version: %1</source>
+        <translation>Nová verze: %1</translation>
+    </message>
+    <message>
+        <location filename="../updatedialog.cpp" line="49"/>
+        <source>Do not show again</source>
+        <translation>Znovu nezobrazovat</translation>
+    </message>
+    <message>
+        <location filename="../updatedialog.cpp" line="50"/>
+        <source>Go to release page</source>
+        <translation>Přejít na stránku s aktualizací</translation>
     </message>
 </context>
 <context>
@@ -4353,6 +4631,19 @@ a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&
         <location filename="../qml/epg.qml" line="456"/>
         <source>Schedule audio recording</source>
         <translation>Naplánovat nahrávání zvuku</translation>
+    </message>
+</context>
+<context>
+    <name>map</name>
+    <message>
+        <location filename="../qml/map.qml" line="302"/>
+        <source>Stop logging</source>
+        <translation>Zastavit logování</translation>
+    </message>
+    <message>
+        <location filename="../qml/map.qml" line="302"/>
+        <source>Record CSV log</source>
+        <translation>Zaznamenat CSV log</translation>
     </message>
 </context>
 </TS>
