@@ -219,7 +219,6 @@ void AudioRecScheduleModel::save(QSettings &settings)
 
 void AudioRecScheduleModel::cleanup(const QDateTime &currentTime)
 {
-    beginResetModel();
     auto it = m_modelData.constBegin();
     while (it != m_modelData.constEnd())
     {        
@@ -232,7 +231,6 @@ void AudioRecScheduleModel::cleanup(const QDateTime &currentTime)
             ++it;
         }
     }
-    endResetModel();
 }
 
 void AudioRecScheduleModel::clear()
