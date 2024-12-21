@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -73,10 +73,18 @@
           <enum>QFrame::Shadow::Sunken</enum>
          </property>
          <property name="currentIndex">
-          <number>5</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="rtlsdrPage">
           <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QGroupBox" name="rtlsdrInfoWidget">
+             <property name="title">
+              <string>Hardware</string>
+             </property>
+             <layout class="QGridLayout" name="rtlsdrInfoWidgetLayout"/>
+            </widget>
+           </item>
            <item>
             <widget class="QGroupBox" name="rtlsdrGainModeGroup">
              <property name="title">
@@ -317,16 +325,10 @@
          </widget>
          <widget class="QWidget" name="rtltcpPage">
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="0" column="3">
-            <widget class="QSpinBox" name="rtltcpIpPortSpinBox">
-             <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignCenter</set>
-             </property>
-             <property name="maximum">
-              <number>99999</number>
-             </property>
-             <property name="value">
-              <number>1234</number>
+           <item row="0" column="0">
+            <widget class="QLabel" name="rtltcpIpAddrLabel">
+             <property name="text">
+              <string>IP Address:</string>
              </property>
             </widget>
            </item>
@@ -347,6 +349,62 @@
             </widget>
            </item>
            <item row="5" column="0" colspan="4">
+            <widget class="QWidget" name="rtltcpGainWidget" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="rtltcpGainLabel">
+                <property name="text">
+                 <string>Gain</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="rtltcpGainSlider">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="rtltcpGainValueLabel">
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string notr="true">18 dB</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="3" column="0" colspan="4">
+            <widget class="QGroupBox" name="rtltcpInfoWidget">
+             <property name="title">
+              <string>Hardware</string>
+             </property>
+             <layout class="QGridLayout" name="rtltcpInfoWidgetLayout"/>
+            </widget>
+           </item>
+           <item row="7" column="0" colspan="4">
             <widget class="QGroupBox" name="rtltcpExpertGroup">
              <property name="title">
               <string>Expert settings</string>
@@ -458,6 +516,19 @@
              </property>
             </widget>
            </item>
+           <item row="0" column="3">
+            <widget class="QSpinBox" name="rtltcpIpPortSpinBox">
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+             <property name="maximum">
+              <number>99999</number>
+             </property>
+             <property name="value">
+              <number>1234</number>
+             </property>
+            </widget>
+           </item>
            <item row="1" column="0" colspan="4">
             <widget class="Line" name="line">
              <property name="orientation">
@@ -465,7 +536,7 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="0" colspan="4">
+           <item row="6" column="0" colspan="4">
             <spacer name="verticalSpacer_4">
              <property name="orientation">
               <enum>Qt::Orientation::Vertical</enum>
@@ -478,7 +549,7 @@
              </property>
             </spacer>
            </item>
-           <item row="2" column="0" colspan="4">
+           <item row="4" column="0" colspan="4">
             <widget class="QGroupBox" name="rtltcpGainModeGroup">
              <property name="title">
               <string>Gain control</string>
@@ -515,61 +586,6 @@
                </widget>
               </item>
              </layout>
-            </widget>
-           </item>
-           <item row="3" column="0" colspan="4">
-            <widget class="QWidget" name="rtltcpGainWidget" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_5">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="rtltcpGainLabel">
-                <property name="text">
-                 <string>Gain</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSlider" name="rtltcpGainSlider">
-                <property name="orientation">
-                 <enum>Qt::Orientation::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="rtltcpGainValueLabel">
-                <property name="minimumSize">
-                 <size>
-                  <width>50</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string notr="true">18 dB</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignmentFlag::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="rtltcpIpAddrLabel">
-             <property name="text">
-              <string>IP Address:</string>
-             </property>
             </widget>
            </item>
           </layout>

@@ -63,6 +63,7 @@ public:
     void setSlsDumpPaternDefault(const QString &newSlsDumpPaternDefault);
     void setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault);
     void onTiiUpdateFinished(QNetworkReply::NetworkError err);
+    void setDeviceDescription(const InputDeviceDescription & desc);
 
 signals:
     void inputDeviceChanged(const InputDeviceId & inputDevice);
@@ -91,6 +92,8 @@ private:
     enum SetupDialogXmlHeader { XMLDate = 0, XMLRecorder, XMLDevice,
                                 XMLSampleRate, XMLFreq, XMLLength, XMLFormat,
                                 XMLNumLabels};
+    enum SetupDialogDeviceInfo { DevInfoDevice, DevInfoTuner, DevInfoSampleFormat, DevInfoLables};
+
 
     const QList<QLocale::Language> m_supportedLocalization = { QLocale::Czech, QLocale::German, QLocale::Polish };
     const QString m_noFileString = tr("No file selected");
@@ -104,6 +107,8 @@ private:
     QCheckBox * m_announcementCheckBox[static_cast<int>(DabAnnouncement::Undefined)];
     QCheckBox * m_bringWindowToForegroundCheckbox;
     QLabel * m_xmlHeaderLabel[SetupDialogXmlHeader::XMLNumLabels];
+    QLabel * m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoLables];
+    QLabel * m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoLables];
     QString m_slsDumpPaternDefault;
     QString m_spiDumpPaternDefault;
     QMovie * m_spinner;

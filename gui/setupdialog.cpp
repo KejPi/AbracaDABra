@@ -196,6 +196,37 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 
     ui->xmlHeaderWidget->setVisible(false);
 
+    // RTL SDR device info
+    label = new QLabel(tr("Device:"));
+    m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoDevice] = new QLabel(ui->rtlsdrInfoWidget);
+    ui->rtlsdrInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoDevice, 0);
+    ui->rtlsdrInfoWidgetLayout->addWidget(m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoDevice], SetupDialogDeviceInfo::DevInfoDevice, 1, 1, 2);
+    label = new QLabel(tr("Tuner:"), ui->rtlsdrInfoWidget);
+    m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoTuner] = new QLabel(ui->rtlsdrInfoWidget);
+    ui->rtlsdrInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoTuner, 0);
+    ui->rtlsdrInfoWidgetLayout->addWidget(m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoTuner], SetupDialogDeviceInfo::DevInfoTuner, 1, 1, 2);
+    label = new QLabel(tr("Sample format:"), ui->rtlsdrInfoWidget);
+    m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoSampleFormat] = new QLabel(ui->rtlsdrInfoWidget);
+    ui->rtlsdrInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoSampleFormat, 0);
+    ui->rtlsdrInfoWidgetLayout->addWidget(m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoSampleFormat], SetupDialogDeviceInfo::DevInfoSampleFormat, 1, 1, 2);
+    ui->rtlsdrInfoWidget->setVisible(false);
+
+    label = new QLabel(tr("Device:"));
+    m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoDevice] = new QLabel(ui->rtltcpInfoWidget);
+    ui->rtltcpInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoDevice, 0);
+    ui->rtltcpInfoWidgetLayout->addWidget(m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoDevice], SetupDialogDeviceInfo::DevInfoDevice, 1, 1, 2);
+    label = new QLabel(tr("Tuner:"), ui->rtltcpInfoWidget);
+    m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoTuner] = new QLabel(ui->rtltcpInfoWidget);
+    ui->rtltcpInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoTuner, 0);
+    ui->rtltcpInfoWidgetLayout->addWidget(m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoTuner], SetupDialogDeviceInfo::DevInfoTuner, 1, 1, 2);
+    label = new QLabel(tr("Sample format:"), ui->rtltcpInfoWidget);
+    m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoSampleFormat] = new QLabel(ui->rtltcpInfoWidget);
+    ui->rtltcpInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoSampleFormat, 0);
+    ui->rtltcpInfoWidgetLayout->addWidget(m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoSampleFormat], SetupDialogDeviceInfo::DevInfoSampleFormat, 1, 1, 2);
+    ui->rtltcpInfoWidget->setVisible(false);
+
+
+
     connect(ui->inputCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onInputChanged);
     connect(ui->openFileButton, &QPushButton::clicked, this, &SetupDialog::onOpenFileButtonClicked);
 
@@ -850,6 +881,8 @@ void SetupDialog::setupDarkMode(bool darkModeEna)
 void SetupDialog::onConnectDeviceClicked()
 {
     ui->connectButton->setHidden(true);
+    ui->rtlsdrInfoWidget->setVisible(false);
+    ui->rtltcpInfoWidget->setVisible(false);
     m_settings->inputDevice = static_cast<InputDeviceId>(ui->inputCombo->itemData(ui->inputCombo->currentIndex()).toInt());
     setStatusLabel();
     switch (m_settings->inputDevice)
@@ -1348,6 +1381,8 @@ void SetupDialog::resetInputDevice()
 
     m_settings->inputDevice = InputDeviceId::UNDEFINED;
     setStatusLabel();
+    ui->rtlsdrInfoWidget->setVisible(false);
+    ui->rtltcpInfoWidget->setVisible(false);
     ui->connectButton->setVisible(true);
     ui->tabWidget->setCurrentIndex(SetupDialogTabs::Device);
 }
@@ -1718,6 +1753,31 @@ void SetupDialog::onTiiUpdateFinished(QNetworkReply::NetworkError err)
         ui->tiiDbLabel->setText(tr("Update failed"));
     }
     ui->updateDbButton->setEnabled(!lastModified.isValid() || lastModified.msecsTo(QDateTime::currentDateTime()) > 10*60*1000);
+}
+
+void SetupDialog::setDeviceDescription(const InputDeviceDescription &desc)
+{
+    switch (m_settings->inputDevice)
+    {
+    case InputDeviceId::RTLSDR:
+    {
+        m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoDevice]->setText(desc.device.model);
+        m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoTuner]->setText(desc.device.name.mid(9, desc.device.name.length()-9-1));
+        m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoSampleFormat]->setText(desc.sample.channelContainer);
+        ui->rtlsdrInfoWidget->setVisible(true);
+    }
+        break;
+    case InputDeviceId::RTLTCP: {
+        m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoDevice]->setText(desc.device.model);
+        m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoTuner]->setText(desc.device.name.mid(9, desc.device.name.length()-9-1));
+        m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoSampleFormat]->setText(desc.sample.channelContainer);
+        ui->rtltcpInfoWidget->setVisible(true);
+    }
+        break;
+    default:
+        // do nothing
+        break;
+    }
 }
 
 void SetupDialog::onProxyConfigChanged(int index)

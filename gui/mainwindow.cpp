@@ -2518,6 +2518,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // setup dialog
             m_setupDialog->setGainValues(dynamic_cast<RtlSdrInput*>(m_inputDevice)->getGainList());
+            m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
 
             // enable band scan
             m_bandScanAction->setEnabled(true);
@@ -2598,6 +2599,7 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
             // setup dialog
             m_setupDialog->setGainValues(dynamic_cast<RtlTcpInput*>(m_inputDevice)->getGainList());
+            m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
 
             // enable band scan
             m_bandScanAction->setEnabled(true);
@@ -2686,6 +2688,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             ui->serviceTreeView->setEnabled(true);
             ui->favoriteLabel->setEnabled(true);
 
+            // setup dialog
+            m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
+
             // recorder
             m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
             connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
@@ -2761,7 +2766,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             ui->serviceTreeView->setEnabled(true);
             ui->favoriteLabel->setEnabled(true);
 
-            // ensemble info dialog
+            // setup dialog
+            m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
+
             // recorder
             m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
             connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
@@ -2849,7 +2856,9 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
             ui->serviceTreeView->setEnabled(true);
             ui->favoriteLabel->setEnabled(true);
 
-            // ensemble info dialog
+            // setup dialog
+            m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
+
             // recorder
             m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
             connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
