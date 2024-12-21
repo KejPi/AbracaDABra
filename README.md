@@ -23,7 +23,7 @@ ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/
 * MOT slideshow (SLS) and categorized slideshow (CatSLS) from PAD or from secondary data service
 * SPI (Service and Programme information)
 * RadioDNS
-* TII decoding
+* TII decoding and continuous scanning (DX)
 * Audio and data services reconfiguration
 * Dynamic programme type (PTy)
 * Ensemble structure view with all technical details
@@ -175,10 +175,10 @@ _Notes:_
 </p>
 
 ## TII decoding
-TII decoder is considered to be advanced feature thus it is only available when application is in [Expert mode](#expert-mode). Before using it, the feature needs to be configured from application settings:
+TII decoder is considered to be advanced DX feature thus it is only available when application is in [Expert mode](#expert-mode). Before using it, the feature needs to be configured from application settings:
 
 <p align="center" width="100%">
-<img width="642" alt="TII_settings" src="https://github.com/user-attachments/assets/3bf9cfd5-9489-478f-ba35-4ad0adad5061">
+<img width="642" alt="Snímek obrazovky 2024-12-21 v 17 38 42" src="https://github.com/user-attachments/assets/a7ad9841-f50f-4301-b2a5-1e323ec7d6ac" />
 </p>
 
 First update the DAB transmitter database kindly provided by [FMLIST](https://www.fmlist.org). _Note:_ you might need to configure network proxy in Others tab. 
@@ -190,16 +190,42 @@ Then set your location, 3 options are available:
 
 _Note:_ Map is centered in Prague when location is not valid.
 
+You can also configure default folder to be used to store TII log in CVS format. By default it is `Documents` folder. Logging can be started from TII dialog.
+
 Last TII related option is a possibility to enable spectrum plot. This option is mostly for debug purposes. If enabled it displays spectrum-like plot in the TII Decoder dialog that shows sum of carrier pairs calculated from NULL symbol of DAB signal. 
-Plot can be zoomed in both axes by mouse wheel or in one axis by clicking on the axis a zooming by mouse wheel. When zoomed plot can be dragged by mouse, zoom is reset do default by right click on plot area. Note: Optional [QCustomPlot library](https://www.qcustomplot.com) is needed for this functionality.
+
+_Note:_ It is not a real spectrum of NULL symbol but rather preprocessed TII information extracted from it.
+
+Plot can be zoomed in both axes by mouse wheel or in one axis by clicking on the axis a zooming by mouse wheel. When zoomed plot can be dragged by mouse, zoom is reset do default by right click on plot area. _Note:_ Optional [QCustomPlot library](https://www.qcustomplot.com) is needed for this functionality.
 
 <p align="center" width="100%">
-<img width="915" alt="TII_1" src="https://github.com/user-attachments/assets/e842a718-258a-4f30-8b23-daae828d7966">
+<img width="1183" alt="Snímek obrazovky 2024-12-21 v 17 49 49" src="https://github.com/user-attachments/assets/79f107ad-4243-41c2-a8b9-b70aad27bfe1" />
 </p>
 
 TII Decoder dialog shows an interactive map provided by [OpenStreetMap](https://www.openstreetmap.org/copyright), table of detected transmitter codes and ensemble information. Blue dot shows location configured in Settings.
 Table shows TII code (Main & Sub), relative transmitter level, distance and azimuth if position of the transmitter is known. Table can be sorted by any column by clicking on its header, by default it is sorted by Level so that the strongest transmitter is on top.
 To see details of particular transmitter, you can either select it by clicking on the row in table or you can click on position bubble in the map. Transmitter details are shown above the map in bottom right corner like in the screenshot above. 
+It is also possible to record CVS log with recieved codes using "recording dot" button in bottom left corner of the dialog. Please note, that logs are stored to `Documents` folder unless the location is changed in Settings dialog (TII tab).
+
+## Scanning tool
+AbracaDABra offers a possibility to run an unattended DAB band scan and to store all received transmitters. This is an advanced DX feature thus it is only available when application is in [Expert mode](#expert-mode). [TII decoding](#tii-decoding) configuration is required for correct functionality of the tool. 
+
+<p align="center" width="100%">
+<img width="1289" alt="Snímek obrazovky 2024-12-21 v 18 04 09" src="https://github.com/user-attachments/assets/08ca4130-e3ea-4c6f-a82b-abbee57cba74" />
+</p>
+
+Scanning tool can be configured to run in one of 3 different modes: 
+* Fast - fast scanning but week transmitters might no be detected (about 4 seconds per ensemble)
+* Normal (this is default mode) - the best compromise between scanning speed and TII decoding performance (about 8 seconds per ensemble)
+* Precise - the best TII decoding performance but it is quite slow (about 16 seconds per ensemble)
+
+Number of scan cycles can be configured. One scan cycle means scanning all selected channels once. You can let the Scanning tool to run "forever" by setting number of cycles to Inf (value 0). 
+
+By default all channels in band III are scanned (5A-13F, 38 channels in total) but you can scan only some channels using Select channels button.
+
+Scanning results are displayed in the table as well as red circles on the map. Blue circle is location specified in TII settings. You can select any row in the table by clicking on it and corresponding transmitter is shown as bubble on map with detailed information in bottom right corner (see screenshot above). It works also the other way around by clicking the red circle on the map. Table can be sorted by any column by clicking on it. Results can be stored to CVS file using Export as CSV button. Unlike TII dialog, Scanner tool does not store the results "on the fly" during scanning.
+
+_Note:_ Application service list is preserved when Scannig tool is running. Use Band scan functionality if you want to update service list. Furthermore, iteractions with application are limited when Scanning tool performs scanning.
 
 ## SNR Plot
 SNR Plot is considered to be advanced feature thus it is only available when application is in [Expert mode](#expert-mode). It needs optional [QCustomPlot library](https://www.qcustomplot.com).
