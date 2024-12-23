@@ -60,6 +60,7 @@ public:
     void onEnsembleInformation(const RadioControlEnsemble &ens) override;
     void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &);
     void onTiiData(const RadioControlTIIData & data) override;
+    void onEnsembleConfigurationAndCSV(const QString & config, const QString & csvString);
     void onInputDeviceError(const InputDeviceErrorCode);
     void setupDarkMode(bool darkModeEna) override;
     void setSelectedRow(int modelRow) override;
@@ -67,6 +68,7 @@ signals:
     void scanStarts();
     void scanFinished();
     void tuneChannel(uint32_t freq);
+    void requestEnsembleConfiguration();
 
 protected:
     void showEvent(QShowEvent *event) override;
@@ -121,12 +123,16 @@ private:
     float m_snr;
     QDateTime m_scanStartTime;
 
+    // this is used in precise mode
+    RadioControlTIIData m_tiiData;
+
     void startScan();
     void scanStep();
     void startStopClicked();
     void stopScan();
     void exportClicked();
     void channelSelectionClicked();
+    void storeEnsembleData(const RadioControlTIIData & tiiData, const QString & conf, const QString & csvConf);
 };
 
 #endif // SCANNERDIALOG_H

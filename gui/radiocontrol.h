@@ -351,6 +351,7 @@ public:
     void tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS);
     void getEnsembleConfiguration();
     void getEnsembleCSV();
+    void getEnsembleConfigurationAndCSV();
     void getEnsembleInformation();
     void startUserApplication(DabUserApplicationType uaType, bool start, bool singleChannel = true);
     uint32_t getEnsembleUEID() const { return m_ensemble.ueid; }
@@ -382,6 +383,7 @@ signals:
     void ensembleInformation(const RadioControlEnsemble & ens);
     void ensembleConfiguration(const QString &);
     void ensembleCSV(const QString &);
+    void ensembleConfigurationAndCSV(const QString &, const QString &);
     void ensembleReconfiguration(const RadioControlEnsemble & ens);
     void ensembleRemoved(const RadioControlEnsemble & ens);
     void announcement(DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent & s);

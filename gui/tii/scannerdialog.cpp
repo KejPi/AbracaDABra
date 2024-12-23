@@ -512,39 +512,56 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
     {
         if (++m_tiiCntr >= m_modeCombo->currentData().toInt())
         {
-            m_model->appendEnsData(data.idList, ServiceListId(m_ensemble), m_ensemble.label, m_numServicesFound, m_snr);
-            m_exportButton->setEnabled(true);
-
-            //m_txTableView->resizeColumnsToContents();
-            m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-            m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColLocation, QHeaderView::Stretch);
-            //m_txTableView->horizontalHeader()->setStretchLastSection(true);
-
-            if (m_isTiiActive && m_numSelectedChannels > 1)
-            {
-                emit setTii(false);
-                m_isTiiActive = false;
+            if (m_modeCombo->currentData().toInt() == Mode::Mode_Precise)
+            {   // request ensemble info
+                m_tiiData = data;
+                emit requestEnsembleConfiguration();
             }
-
-            // handle selection
-            int id = -1;
-            QModelIndexList	selectedList = m_tableSelectionModel->selectedRows();
-            if (!selectedList.isEmpty())
+            else
             {
-                QModelIndex currentIndex = selectedList.at(0);
-            }
-
-            // forcing update of UI
-            onSelectionChanged(QItemSelection(),QItemSelection());
-
-            if (nullptr != m_timer && m_timer->isActive())
-            {
-                m_timer->stop();
-                // next channel
-                scanStep();
+                storeEnsembleData(data, QString(), QString());
             }
         }
     }
+}
+
+void ScannerDialog::storeEnsembleData(const RadioControlTIIData &tiiData,  const QString & conf, const QString & csvConf)
+{
+    m_model->appendEnsData(tiiData.idList, ServiceListId(m_ensemble), m_ensemble.label, conf, csvConf, m_numServicesFound, m_snr);
+    m_exportButton->setEnabled(true);
+
+    m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColLocation, QHeaderView::Stretch);
+
+    if (m_isTiiActive && m_numSelectedChannels > 1)
+    {
+        emit setTii(false);
+        m_isTiiActive = false;
+    }
+
+    // handle selection
+    int id = -1;
+    QModelIndexList	selectedList = m_tableSelectionModel->selectedRows();
+    if (!selectedList.isEmpty())
+    {
+        QModelIndex currentIndex = selectedList.at(0);
+    }
+
+    // forcing update of UI
+    onSelectionChanged(QItemSelection(),QItemSelection());
+
+    if (nullptr != m_timer && m_timer->isActive())
+    {
+        m_timer->stop();
+        // next channel
+        scanStep();
+    }
+}
+
+
+void ScannerDialog::onEnsembleConfigurationAndCSV(const QString & config, const QString & csvString)
+{
+    storeEnsembleData(m_tiiData, config, csvString);
 }
 
 void ScannerDialog::onInputDeviceError(const InputDeviceErrorCode)

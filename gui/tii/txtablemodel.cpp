@@ -397,7 +397,7 @@ void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceLi
 #endif
 }
 
-void TxTableModel::appendEnsData(const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel, int numServices, float snr)
+void TxTableModel::appendEnsData(const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel, const QString & ensConfig, const QString & ensCSV, int numServices, float snr)
 {
     QDateTime time = QDateTime::currentDateTime();
     if (!data.empty()) {
@@ -406,6 +406,7 @@ void TxTableModel::appendEnsData(const QList<dabsdrTii_t> &data, const ServiceLi
             // create new item
             TxTableModelItem item(it->main, it->sub, it->level, m_coordinates, m_txList.values(ensId));
             item.setEnsData(ensId, ensLabel, numServices, snr);
+            item.setEnsConfig(ensConfig, ensCSV);
             item.setRxTime(time);
             beginInsertRows(QModelIndex(), m_modelData.size(), m_modelData.size());
             m_modelData.append(item);

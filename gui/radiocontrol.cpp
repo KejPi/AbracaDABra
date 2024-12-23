@@ -570,6 +570,11 @@ void RadioControl::getEnsembleCSV()
     emit ensembleCSV(ensembleConfigurationCSV());
 }
 
+void RadioControl::getEnsembleConfigurationAndCSV()
+{
+    emit ensembleConfigurationAndCSV(ensembleConfigurationString(), ensembleConfigurationCSV());
+}
+
 void RadioControl::getEnsembleInformation()
 {
     if (m_ensemble.isValid())

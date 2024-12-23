@@ -151,6 +151,12 @@ void TxTableModelItem::setEnsData(const ServiceListId &ensId, const QString &ens
     m_snr = snr;
 }
 
+void TxTableModelItem::setEnsConfig(const QString &config, const QString &configCSV)
+{
+    m_ensConfig = config;
+    m_ensConfigCSV = configCSV;
+}
+
 ServiceListId TxTableModelItem::ensId() const
 {
     return m_ensId;
@@ -174,6 +180,16 @@ QDateTime TxTableModelItem::rxTime() const
 void TxTableModelItem::setRxTime(const QDateTime &newRxTime)
 {
     m_rxTime = newRxTime;
+}
+
+QString TxTableModelItem::ensConfig() const
+{
+    return m_ensConfig;
+}
+
+QString TxTableModelItem::ensConfigCSV() const
+{
+    return m_ensConfigCSV;
 }
 
 float TxTableModelItem::snr() const

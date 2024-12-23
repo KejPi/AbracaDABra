@@ -61,12 +61,15 @@ public:
     float power() const;
 
     void setEnsData(const ServiceListId &ensId, const QString &ensLabel, int numServices, float snr);
+    void setEnsConfig(const QString & config, const QString & configCSV);
     ServiceListId ensId() const;
     QString ensLabel() const;
     int numServices() const;
     float snr() const;
     QDateTime rxTime() const;
     void setRxTime(const QDateTime &newRxTime);
+    QString ensConfig() const;
+    QString ensConfigCSV() const;
 
 private:
     int m_id;                  // subId << 8 | mainId (this is unique)
@@ -80,6 +83,8 @@ private:
     // used for scanner
     ServiceListId m_ensId;     // ensemble id
     QString m_ensLabel;        // ensemble label
+    QString m_ensConfig;       // ensemble configuration
+    QString m_ensConfigCSV;    // emsemble configuration CSV
     int m_numServices = 0;     // number of services in ensemble
     QDateTime m_rxTime;        // reception time
     float m_snr = 0.0;         // ensemble SNR

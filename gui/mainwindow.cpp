@@ -3661,7 +3661,11 @@ void MainWindow::showScannerDialog()
         connect(m_radioControl, &RadioControl::tuneDone, m_scannerDialog, &ScannerDialog::onTuneDone, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::serviceListEntry, m_scannerDialog, &ScannerDialog::onServiceListEntry, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tiiData, m_scannerDialog, &ScannerDialog::onTiiData, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::error, m_scannerDialog, &ScannerDialog::onInputDeviceError, Qt::QueuedConnection);        
+        connect(m_inputDevice, &InputDevice::error, m_scannerDialog, &ScannerDialog::onInputDeviceError, Qt::QueuedConnection);
+        // ensemble configuration
+        connect(m_scannerDialog, &ScannerDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfigurationAndCSV, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::ensembleConfigurationAndCSV, m_scannerDialog, &ScannerDialog::onEnsembleConfigurationAndCSV, Qt::QueuedConnection);
+
         connect(m_scannerDialog, &ScannerDialog::scanStarts, this, [this]() {
             ui->channelCombo->setEnabled(false);
             ui->channelDown->setEnabled(false);
