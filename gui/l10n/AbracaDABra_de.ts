@@ -86,7 +86,7 @@
     <message>
         <location filename="../aboutdialog.cpp" line="87"/>
         <source>and DAB transmitter database provided by</source>
-        <translation></translation>
+        <translation>und DAB Senderdatenbank zur Verfügung gestellt von</translation>
     </message>
 </context>
 <context>
@@ -256,17 +256,17 @@
     <message>
         <location filename="../tii/channelselectiondialog.cpp" line="39"/>
         <source>Channel selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Kanalauswahl</translation>
     </message>
     <message>
         <location filename="../tii/channelselectiondialog.cpp" line="72"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle auswählen</translation>
     </message>
     <message>
         <location filename="../tii/channelselectiondialog.cpp" line="73"/>
         <source>Unselect all</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine auswählen</translation>
     </message>
 </context>
 <context>
@@ -740,7 +740,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="382"/>
         <source>Scanning tool...</source>
-        <translation type="unfinished"></translation>
+        <translation>Scannertool...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="385"/>
@@ -3122,7 +3122,7 @@ Datei: %1</translation>
     <message>
         <location filename="../dabtables.cpp" line="717"/>
         <source>Australia: Capital Cities (commercial and community broadcasters)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="718"/>
@@ -3327,27 +3327,27 @@ Datei: %1</translation>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="51"/>
         <source>DAB Scanning Tool</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB Scannertool</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="95"/>
         <source>Mode:</source>
-        <translation type="unfinished"></translation>
+        <translation>Modus:</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="98"/>
         <source>Fast</source>
-        <translation type="unfinished"></translation>
+        <translation>Schnell</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="99"/>
         <source>Normal</source>
-        <translation type="unfinished"></translation>
+        <translation>Normal</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="100"/>
         <source>Precise</source>
-        <translation type="unfinished"></translation>
+        <translation>Genau</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="110"/>
@@ -3357,74 +3357,74 @@ Datei: %1</translation>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="112"/>
         <source>Number of cycles:</source>
-        <translation type="unfinished"></translation>
+        <translation>Anzahl der Durchläufe:</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="163"/>
         <location filename="../tii/scannerdialog.cpp" line="272"/>
         <source>Start</source>
-        <translation type="unfinished">Start</translation>
+        <translation>Start</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="167"/>
         <location filename="../tii/scannerdialog.cpp" line="271"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Keines</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="170"/>
         <source>Select channels</source>
-        <translation type="unfinished"></translation>
+        <translation>Kanäle auswählen</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="171"/>
         <source>Export as CSV</source>
-        <translation type="unfinished">Als CSV exportieren</translation>
+        <translation>Als CSV exportieren</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="235"/>
         <source>Stop</source>
-        <translation type="unfinished">Stop</translation>
+        <translation>Stop</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="269"/>
         <source>Scanning finished</source>
-        <translation type="unfinished"></translation>
+        <translation>Scanvorgang beendet</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="289"/>
         <source>Export CSV file</source>
-        <translation type="unfinished">CSV Datei exportieren</translation>
+        <translation>CSV Datei exportieren</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="291"/>
         <source>CSV Files</source>
-        <translation type="unfinished">CSV Dateien</translation>
+        <translation>CSV Dateien</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="341"/>
         <source>Scanning channel:</source>
-        <translation type="unfinished">Durchsuche Kanal:</translation>
+        <translation>Durchsuche Kanal:</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="410"/>
         <source>%1  (cycle %2)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1  (Durchlauf %2)</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="568"/>
         <source>Scanning failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Scanvorgang fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="611"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished">Seehöhe: &lt;b&gt;%1 m&lt;/b&gt;</translation>
+        <translation>Seehöhe: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="613"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
-        <translation type="unfinished">ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
+        <translation>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
     </message>
 </context>
 <context>
@@ -3679,7 +3679,7 @@ Datei: %1</translation>
         <location filename="../setupdialog.ui" line="83"/>
         <location filename="../setupdialog.ui" line="402"/>
         <source>Hardware</source>
-        <translation type="unfinished"></translation>
+        <translation>Hardware</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1252"/>
@@ -3834,12 +3834,12 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="1895"/>
         <source>Logging</source>
-        <translation type="unfinished"></translation>
+        <translation>Logfunktion</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1903"/>
         <source>Change CSV log folder...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordner für CSV Logs ändern...</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1958"/>
@@ -3884,12 +3884,12 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="2112"/>
         <source>Application update</source>
-        <translation type="unfinished"></translation>
+        <translation>Programmaktualisierung</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2118"/>
         <source>Check for application update on start</source>
-        <translation type="unfinished"></translation>
+        <translation>Bei Programmstart auf Aktualisierung prüfen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2128"/>
@@ -4173,7 +4173,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
         <location filename="../setupdialog.cpp" line="204"/>
         <location filename="../setupdialog.cpp" line="218"/>
         <source>Tuner:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tuner:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="289"/>
@@ -4237,7 +4237,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="1720"/>
         <source>TII log folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordner für TII Logs</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1753"/>
@@ -4434,32 +4434,32 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../tii/txmapdialog.cpp" line="113"/>
         <source>Warning</source>
-        <translation type="unfinished">Warnung</translation>
+        <translation>Warnung</translation>
     </message>
     <message>
         <location filename="../tii/txmapdialog.cpp" line="113"/>
         <source>Device location access is denied.</source>
-        <translation type="unfinished">Standortzugriff wurde abgelehnt.</translation>
+        <translation>Standortzugriff wurde abgelehnt.</translation>
     </message>
     <message>
         <location filename="../tii/txmapdialog.cpp" line="114"/>
         <source>If you want to display current position on map, grant the location permission in Settings then open the app again.</source>
-        <translation type="unfinished">Um die aktuell Position in der Karte anzuzeigen, legen Sie den Standort in den Einstellungen fest und starten das Programm neu.</translation>
+        <translation>Um die aktuelle Position in der Karte anzuzeigen, legen Sie den Standort in den Einstellungen fest und starten das Programm neu.</translation>
     </message>
     <message>
         <location filename="../tii/txmapdialog.cpp" line="242"/>
         <source>Ensemble: &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation type="unfinished">Ensemble: &lt;b&gt;%1&lt;/b&gt;</translation>
+        <translation>Ensembel: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/txmapdialog.cpp" line="243"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</source>
-        <translation type="unfinished">ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</translation>
+        <translation>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/txmapdialog.cpp" line="246"/>
         <source>Channel: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</source>
-        <translation type="unfinished">Kanal: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</translation>
+        <translation>Kanal: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</translation>
     </message>
 </context>
 <context>
@@ -4467,114 +4467,114 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../tii/txtablemodel.cpp" line="205"/>
         <source>Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="207"/>
         <location filename="../tii/txtablemodel.cpp" line="242"/>
         <source>Channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Kanal</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="209"/>
         <source>Frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>Frequenz</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="211"/>
         <location filename="../tii/txtablemodel.cpp" line="246"/>
         <source>UEID</source>
-        <translation type="unfinished"></translation>
+        <translation>UEID</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="213"/>
         <location filename="../tii/txtablemodel.cpp" line="248"/>
         <source>Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Label</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="215"/>
         <location filename="../tii/txtablemodel.cpp" line="250"/>
         <source>Services</source>
-        <translation type="unfinished"></translation>
+        <translation>Services</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="217"/>
         <source>SNR</source>
-        <translation type="unfinished"></translation>
+        <translation>SNR</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="219"/>
         <location filename="../tii/txtablemodel.cpp" line="254"/>
         <source>Main</source>
-        <translation type="unfinished">Main</translation>
+        <translation>Main</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="221"/>
         <location filename="../tii/txtablemodel.cpp" line="256"/>
         <source>Sub</source>
-        <translation type="unfinished">Sub</translation>
+        <translation>Sub</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="223"/>
         <source>Level</source>
-        <translation type="unfinished">Stärke</translation>
+        <translation>Feldstärke</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="225"/>
         <location filename="../tii/txtablemodel.cpp" line="260"/>
         <source>Location</source>
-        <translation type="unfinished"></translation>
+        <translation>Standort</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="227"/>
         <source>Power</source>
-        <translation type="unfinished"></translation>
+        <translation>Leistung</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="229"/>
         <source>Distance</source>
-        <translation type="unfinished">Entfernung</translation>
+        <translation>Entfernung</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="231"/>
         <source>Azimuth</source>
-        <translation type="unfinished">Azimut</translation>
+        <translation>Azimut</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="240"/>
         <source>Local Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Lokale Zeit</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="244"/>
         <source>Frequency [kHz]</source>
-        <translation type="unfinished"></translation>
+        <translation>Frequenz [kHz]</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="252"/>
         <source>SNR [dB]</source>
-        <translation type="unfinished"></translation>
+        <translation>SNR [dB]</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="258"/>
         <source>Level [dB]</source>
-        <translation type="unfinished"></translation>
+        <translation>Feldstärke [dB]</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="262"/>
         <source>Power [kW]</source>
-        <translation type="unfinished"></translation>
+        <translation>Leistung [kW]</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="264"/>
         <source>Distance [km]</source>
-        <translation type="unfinished"></translation>
+        <translation>Entfernung [km]</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="266"/>
         <source>Azimuth [deg]</source>
-        <translation type="unfinished"></translation>
+        <translation>Azimut [deg]</translation>
     </message>
 </context>
 <context>
@@ -4582,32 +4582,32 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../updatedialog.cpp" line="39"/>
         <source>Application update</source>
-        <translation type="unfinished"></translation>
+        <translation>Programm aktualisieren</translation>
     </message>
     <message>
         <location filename="../updatedialog.cpp" line="40"/>
         <source>AbracaDABra update available</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktualisierung für AbracaDABra verfügbar</translation>
     </message>
     <message>
         <location filename="../updatedialog.cpp" line="41"/>
         <source>Current version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuelle Version: %1</translation>
     </message>
     <message>
         <location filename="../updatedialog.cpp" line="42"/>
         <source>Available version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Verfügbare Version: %1</translation>
     </message>
     <message>
         <location filename="../updatedialog.cpp" line="49"/>
         <source>Do not show again</source>
-        <translation type="unfinished"></translation>
+        <translation>Nicht wieder anzeigen</translation>
     </message>
     <message>
         <location filename="../updatedialog.cpp" line="50"/>
         <source>Go to release page</source>
-        <translation type="unfinished"></translation>
+        <translation>Zur Release-Seite gehen</translation>
     </message>
 </context>
 <context>
@@ -4648,12 +4648,12 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../qml/map.qml" line="302"/>
         <source>Stop logging</source>
-        <translation type="unfinished"></translation>
+        <translation>Aufzeichnung der Logs beenden</translation>
     </message>
     <message>
         <location filename="../qml/map.qml" line="302"/>
         <source>Record CSV log</source>
-        <translation type="unfinished"></translation>
+        <translation>CSV Logs aufzeichnen</translation>
     </message>
 </context>
 </TS>
