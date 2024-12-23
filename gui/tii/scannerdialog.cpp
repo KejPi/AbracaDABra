@@ -99,7 +99,7 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     m_modeCombo->addItem(tr("Normal"), Mode_Normal);
     m_modeCombo->addItem(tr("Precise"), Mode_Precise);
     int idx = m_modeCombo->findData(m_settings->scanner.mode, Qt::UserRole);
-    if (idx <= 0)
+    if (idx < 0)
     {   // set Mode_Normal as default
         idx = 1;
     }
