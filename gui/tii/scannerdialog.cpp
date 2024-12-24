@@ -25,6 +25,7 @@
  */
 
 #include "channelselectiondialog.h"
+#include "ensembleconfigdialog.h"
 #include <QDebug>
 #include <QHeaderView>
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && QT_CONFIG(permissions)
@@ -38,6 +39,7 @@
 #include <QGridLayout>
 #include <QSpinBox>
 #include <QFormLayout>
+#include <QMenu>
 #include "scannerdialog.h"
 #include "dabtables.h"
 #include "settings.h"
@@ -159,6 +161,9 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     m_txTableView->setSelectionMode(QAbstractItemView::SingleSelection);
     m_txTableView->setSortingEnabled(true);
     m_txTableView->sortByColumn(TxTableModel::ColTime, Qt::AscendingOrder);
+    m_txTableView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(m_txTableView, &QTableView::customContextMenuRequested, this, &ScannerDialog::showContextMenu);
+    connect(m_txTableView, &QTableView::doubleClicked, this, &ScannerDialog::showEnsembleConfig);
 
     m_startStopButton->setText(tr("Start"));
     connect(m_startStopButton, &QPushButton::clicked, this, &ScannerDialog::startStopClicked);
@@ -236,6 +241,7 @@ void ScannerDialog::startStopClicked()
         m_numCyclesSpinBox->setEnabled(false);
         m_modeCombo->setEnabled(false);
         m_numSelectedChannels = 0;
+        m_isPreciseMode = (m_modeCombo->currentData().toInt() == Mode::Mode_Precise);
         for (const auto ch : m_channelSelection)
         {
             m_numSelectedChannels += ch ? 1 : 0;
@@ -512,7 +518,7 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
     {
         if (++m_tiiCntr >= m_modeCombo->currentData().toInt())
         {
-            if (m_modeCombo->currentData().toInt() == Mode::Mode_Precise)
+            if (m_isPreciseMode)
             {   // request ensemble info
                 m_tiiData = data;
                 emit requestEnsembleConfiguration();
@@ -558,6 +564,38 @@ void ScannerDialog::storeEnsembleData(const RadioControlTIIData &tiiData,  const
     }
 }
 
+void ScannerDialog::showEnsembleConfig(const QModelIndex &index)
+{
+    if (m_isPreciseMode)
+    {
+        QModelIndex srcIndex = m_sortedFilteredModel->mapToSource(index);
+        if (srcIndex.isValid())
+        {
+            EnsembleConfigDialog dialog(m_model->itemAt(srcIndex.row()), this);
+            dialog.setExportPath(m_settings->scanner.exportPath);
+            dialog.exec();
+            m_settings->scanner.exportPath = dialog.exportPath();
+        }
+    }
+}
+
+void ScannerDialog::showContextMenu(const QPoint &pos)
+{
+    if (m_isPreciseMode)
+    {
+        QModelIndex index = m_txTableView->indexAt(pos);
+        if (index.isValid())
+        {
+            QMenu *menu=new QMenu(this);
+            menu->addAction(new QAction("Show ensemble information", this));
+            QAction * selectedItem = menu->exec(m_txTableView->viewport()->mapToGlobal(pos));
+            if (nullptr != selectedItem)
+            {
+                showEnsembleConfig(index);
+            }
+        }
+    }
+}
 
 void ScannerDialog::onEnsembleConfigurationAndCSV(const QString & config, const QString & csvString)
 {

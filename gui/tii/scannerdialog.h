@@ -124,6 +124,7 @@ private:
     QDateTime m_scanStartTime;
 
     // this is used in precise mode
+    bool m_isPreciseMode = false;
     RadioControlTIIData m_tiiData;
 
     void startScan();
@@ -133,6 +134,8 @@ private:
     void exportClicked();
     void channelSelectionClicked();
     void storeEnsembleData(const RadioControlTIIData & tiiData, const QString & conf, const QString & csvConf);
+    void showEnsembleConfig(const QModelIndex &index);
+    void showContextMenu(const QPoint & pos);
 };
 
 #endif // SCANNERDIALOG_H
