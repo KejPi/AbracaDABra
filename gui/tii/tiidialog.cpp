@@ -242,6 +242,8 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
     // forcing update of UI
     onSelectionChanged(QItemSelection(),QItemSelection());
 
+    emit ensembleInfoChanged();
+
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     addToPlot(data);
 #endif

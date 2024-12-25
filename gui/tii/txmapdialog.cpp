@@ -240,9 +240,19 @@ QStringList TxMapDialog::ensembleInfo() const
 
     QStringList info;
     info.append(tr("Ensemble: <b>%1</b>").arg(m_currentEnsemble.label));
-    info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b>").arg(m_currentEnsemble.ecc(), 2, 16, QChar('0'))
-                    .arg(m_currentEnsemble.eid(), 4, 16, QChar('0'))
-                    .toUpper());
+    if (m_isTii && m_model->rowCount() > 0)
+    {
+        info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b> | TX: <b>%3</b>").arg(m_currentEnsemble.ecc(), 2, 16, QChar('0'))
+                        .arg(m_currentEnsemble.eid(), 4, 16, QChar('0')).arg(m_model->rowCount())
+                        .toUpper());
+    }
+    else
+    {
+        info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b>").arg(m_currentEnsemble.ecc(), 2, 16, QChar('0'))
+                        .arg(m_currentEnsemble.eid(), 4, 16, QChar('0'))
+                        .toUpper());
+
+    }
     info.append(QString(tr("Channel: <b>%1 (%2 kHz)</b>")).arg(DabTables::channelList[m_currentEnsemble.frequency]).arg(m_currentEnsemble.frequency));
     return info;
 }
