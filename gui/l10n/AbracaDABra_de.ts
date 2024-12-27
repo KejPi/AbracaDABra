@@ -282,27 +282,27 @@
     <message>
         <location filename="../tii/ensembleconfigdialog.ui" line="14"/>
         <source>Ensemble Information</source>
-        <translation type="unfinished">Ensembleinformationen</translation>
+        <translation>Ensembleinformationen</translation>
     </message>
     <message>
         <location filename="../tii/ensembleconfigdialog.ui" line="35"/>
         <source>Export as CSV</source>
-        <translation type="unfinished">Als CSV exportieren</translation>
+        <translation>Als CSV exportieren</translation>
     </message>
     <message>
         <location filename="../tii/ensembleconfigdialog.ui" line="55"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Schließen</translation>
     </message>
     <message>
         <location filename="../tii/ensembleconfigdialog.cpp" line="61"/>
         <source>Export CSV file</source>
-        <translation type="unfinished">CSV Datei exportieren</translation>
+        <translation>CSV Datei exportieren</translation>
     </message>
     <message>
         <location filename="../tii/ensembleconfigdialog.cpp" line="63"/>
         <source>CSV Files</source>
-        <translation type="unfinished">CSV Dateien</translation>
+        <translation>CSV Dateien</translation>
     </message>
 </context>
 <context>
@@ -4482,7 +4482,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../tii/txmapdialog.cpp" line="260"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt; | TX: &lt;b&gt;%3&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt; | TX: &lt;b&gt;%3&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/txmapdialog.cpp" line="266"/>
