@@ -571,10 +571,15 @@ void ScannerDialog::showEnsembleConfig(const QModelIndex &index)
         QModelIndex srcIndex = m_sortedFilteredModel->mapToSource(index);
         if (srcIndex.isValid())
         {
-            EnsembleConfigDialog dialog(m_model->itemAt(srcIndex.row()), this);
-            dialog.setExportPath(m_settings->scanner.exportPath);
-            dialog.exec();
-            m_settings->scanner.exportPath = dialog.exportPath();
+            auto dialog = new EnsembleConfigDialog(m_model->itemAt(srcIndex.row()), this);
+            connect(dialog, &QDialog::finished, this, [this, dialog]() {
+                m_settings->scanner.exportPath = dialog->exportPath();
+                dialog->deleteLater();
+            });
+
+            dialog->setExportPath(m_settings->scanner.exportPath);
+            dialog->setWindowModality(Qt::WindowModal);
+            dialog->open();
         }
     }
 }
