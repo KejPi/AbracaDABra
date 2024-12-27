@@ -103,7 +103,7 @@ Item {
             gesturePolicy: TapHandler.WithinBounds
             onTapped: {
                 // deselection of transmitter
-                tiiBackend.selectedRow = -1;
+                tiiBackend.selectTx(-1);
             }
         }
         Shortcut {
@@ -135,7 +135,7 @@ Item {
                 coordinate:  coordinates
                 tiiCode: tiiString
                 markerColor: levelColor
-                isSelected: (index >= 0) && (index === tiiBackend.selectedRow)
+                isSelected: (index >= 0) ? selectedTx : false
                 isTiiMode: tiiBackend.isTii
                 z: isSelected ? 2 : 1
 
@@ -144,7 +144,7 @@ Item {
                     acceptedButtons: Qt.LeftButton
                     gesturePolicy: TapHandler.WithinBounds
                     onTapped: {
-                        tiiBackend.selectedRow = index;
+                        tiiBackend.selectTx(index);
                     }
                 }
             }

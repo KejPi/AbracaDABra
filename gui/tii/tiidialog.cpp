@@ -216,28 +216,7 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
         return;
     }
 
-    // handle selection
-    int id = -1;
-    QModelIndexList	selectedList = m_tableSelectionModel->selectedRows();
-    if (!selectedList.isEmpty())
-    {
-        QModelIndex currentIndex = selectedList.at(0);
-        id = m_sortedFilteredModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt();
-    }
     m_model->updateTiiData(data.idList, ensId, m_currentEnsemble.label, 0, m_snr);
-
-    if (id >= 0)
-    {   // update selection
-        QModelIndexList	selectedList = m_tableSelectionModel->selectedRows();
-        if (!selectedList.isEmpty())
-        {
-            QModelIndex currentIndex = selectedList.at(0);
-            if (id != m_sortedFilteredModel->data(currentIndex, TxTableModel::TxTableModelRoles::IdRole).toInt())
-            {  // selection was updated
-                m_tableSelectionModel->clear();
-            }
-        }
-    }
 
     // forcing update of UI
     onSelectionChanged(QItemSelection(),QItemSelection());
@@ -405,17 +384,11 @@ void TIIDialog::onSettingsChanged()
 #endif
 }
 
-void TIIDialog::setSelectedRow(int modelRow)
+void TIIDialog::onSelectedRowChanged()
 {
-    if (m_selectedRow == modelRow)
-    {
-        return;
-    }
-    m_selectedRow = modelRow;
-    emit selectedRowChanged();
 
     m_txInfo.clear();
-    if (modelRow < 0)
+    if (selectedRow() < 0)
     {   // reset info
         emit txInfoChanged();
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
@@ -424,7 +397,7 @@ void TIIDialog::setSelectedRow(int modelRow)
         return;
     }
 
-    TxTableModelItem item = m_model->data(m_model->index(modelRow, 0), TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
+    TxTableModelItem item = m_model->data(m_model->index(selectedRow(), 0), TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
     if (item.hasTxData())
     {
         m_txInfo.append(QString("<b>%1</b>").arg(item.transmitterData().location()));
@@ -522,7 +495,8 @@ void TIIDialog::addToPlot(const RadioControlTIIData &data)
 void TIIDialog::updateTiiPlot()
 {
     m_tiiSpectrumPlot->graph(GraphId::TII)->data()->clear();
-    if (m_selectedRow < 0)
+
+    if (selectedRow() < 0)
     {  // draw all
         for (int row = 0; row < m_model->rowCount(); ++row)
         {
@@ -537,9 +511,9 @@ void TIIDialog::updateTiiPlot()
     }
     else
     {   // draw only selected TII item
-        if (m_selectedRow < m_model->rowCount())
+        if (selectedRow() < m_model->rowCount())
         {
-            const auto & item = m_model->itemAt(m_selectedRow);
+            const auto & item = m_model->itemAt(selectedRow());
             QList<int> subcar = DabTables::getTiiSubcarriers(item.mainId(), item.subId());
             for (const auto & c : subcar)
             {
@@ -548,7 +522,6 @@ void TIIDialog::updateTiiPlot()
             }
         }
     }
-
     m_tiiSpectrumPlot->replot();
 }
 

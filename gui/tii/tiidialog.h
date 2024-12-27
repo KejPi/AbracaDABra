@@ -53,12 +53,12 @@ public:
     void onChannelSelection();
     void onEnsembleInformation(const RadioControlEnsemble &ens) override;
     void onSettingsChanged() override;
-    void setSelectedRow(int modelRow) override;
 
     Q_INVOKABLE void startStopLog() override;
 protected:
     void showEvent(QShowEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
+    void onSelectedRowChanged() override;
 
 private:
     enum GraphId {Spect, TII};
@@ -76,6 +76,7 @@ private:
 
     void reset() override;
     void logTiiData() const;
+
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     void showPointToolTip(QMouseEvent *event);
     void onXRangeChanged(const QCPRange &newRange);

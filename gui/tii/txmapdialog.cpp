@@ -47,7 +47,7 @@ TxMapDialog::TxMapDialog(Settings *settings, bool isTii, QWidget *parent)
     m_sortedFilteredModel = new TxTableProxyModel(this);
     m_sortedFilteredModel->setSourceModel(m_model);
     m_tableSelectionModel = new QItemSelectionModel(m_sortedFilteredModel, this);
-    connect(m_tableSelectionModel, &QItemSelectionModel::selectionChanged, this, &TxMapDialog::onSelectionChanged);
+    connect(m_tableSelectionModel, &QItemSelectionModel::selectionChanged, this, &TxMapDialog::onSelectionChanged, Qt::QueuedConnection);
     connect(this, &TxMapDialog::selectedRowChanged, this, &TxMapDialog::onSelectedRowChanged);
 }
 
@@ -84,10 +84,25 @@ void TxMapDialog::closeEvent(QCloseEvent *event)
     QDialog::closeEvent(event);
 }
 
+int TxMapDialog::selectedRow() const
+{
+    return m_selectedRow;
+}
+
+void TxMapDialog::setSelectedRow(int newSelectedRow)
+{
+    if (m_selectedRow == newSelectedRow)
+    {
+        return;
+    }
+    m_selectedRow = newSelectedRow;
+    emit selectedRowChanged();
+}
+
 void TxMapDialog::reset()
 {
     m_model->clear();
-    setSelectedRow(-1);
+    m_tableSelectionModel->clear();
 }
 
 void TxMapDialog::startLocationUpdate()
@@ -257,10 +272,10 @@ QStringList TxMapDialog::ensembleInfo() const
     return info;
 }
 
-int TxMapDialog::selectedRow() const
-{
-    return m_selectedRow;
-}
+// int TxMapDialog::selectedRow() const
+// {
+//     return m_selectedRow;
+// }
 
 
 bool TxMapDialog::isTii() const
@@ -274,7 +289,20 @@ void TxMapDialog::onSelectionChanged(const QItemSelection &selected, const QItem
     Q_UNUSED(deselected)
 
     QModelIndexList selectedRows = m_tableSelectionModel->selectedRows();
-    if (selectedRows.isEmpty())
+
+    //selection is in proxy model => maping indexes back to source model
+    QSet<int> selectedTx;
+    for (const auto &index : selectedRows) {
+        auto srcIdx = m_sortedFilteredModel->mapToSource(index);
+        if (srcIdx.isValid())
+        {
+            //qDebug() << m_model->data(srcIdx, TxTableModel::TiiRole);
+            selectedTx.insert(srcIdx.row());
+        }
+    }
+    m_model->setSelectedRows(selectedTx);
+
+    if (selectedRows.count() != 1)
     {   // no selection => return
         setSelectedRow(-1);
         return;
@@ -285,23 +313,22 @@ void TxMapDialog::onSelectionChanged(const QItemSelection &selected, const QItem
     setSelectedRow(currentIndex.row());
 }
 
-void TxMapDialog::onSelectedRowChanged()
-{
-    if (m_selectedRow == -1)
+void TxMapDialog::selectTx(int index)
+{   // index is row of source model !!!
+    if (index == -1)
     {
         m_tableSelectionModel->clear();
         return;
     }
 
-    // m_selectedRow is in source model while selection uses indexes of sort model!!!
+    // index is in source model while selection uses indexes of sort model!!!
     QModelIndexList selection = m_tableSelectionModel->selectedRows();
-    QModelIndex idx = m_sortedFilteredModel->mapFromSource(m_model->index(m_selectedRow, TxTableModel::ColMainId));
+    QModelIndex idx = m_sortedFilteredModel->mapFromSource(m_model->index(index, TxTableModel::ColMainId));
     if (idx.isValid() && (selection.isEmpty() || selection.at(0) != idx))
     {
         m_tableSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current | QItemSelectionModel::Rows);
     }
 }
-
 
 bool TxMapDialog::isRecordingLog() const
 {

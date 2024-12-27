@@ -46,7 +46,6 @@ class TxMapDialog : public QDialog
     Q_PROPERTY(bool isVisible READ isVisible WRITE setIsVisible NOTIFY isVisibleChanged FINAL)
     Q_PROPERTY(QStringList ensembleInfo READ ensembleInfo NOTIFY ensembleInfoChanged FINAL)
     Q_PROPERTY(QStringList txInfo READ txInfo NOTIFY txInfoChanged FINAL)
-    Q_PROPERTY(int selectedRow READ selectedRow WRITE setSelectedRow NOTIFY selectedRowChanged FINAL)
     Q_PROPERTY(bool isTii READ isTii CONSTANT FINAL)
     Q_PROPERTY(bool isRecordingLog READ isRecordingLog WRITE setIsRecordingLog NOTIFY isRecordingLogChanged FINAL)
 
@@ -72,8 +71,9 @@ public:
     virtual QStringList ensembleInfo() const;
     virtual QStringList txInfo() const;
 
-    int selectedRow() const;
-    virtual void setSelectedRow(int modelRow) = 0;
+    //int selectedRow() const;
+    //virtual void setSelectedRow(int modelRow) = 0;
+    Q_INVOKABLE void selectTx(int index);
 
     bool showTiiTable() const;
     bool isTii() const;
@@ -84,18 +84,21 @@ public:
 
 signals:
     void setTii(bool ena);
+    void selectedRowChanged();
     void currentPositionChanged();
     void positionValidChanged();
     void isVisibleChanged();
     void ensembleInfoChanged();
     void txInfoChanged();
-    void selectedRowChanged();
-
     void isRecordingLogChanged();
 
 protected:
     void showEvent(QShowEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
+    int selectedRow() const;
+    void setSelectedRow(int newSelectedRow);
+
+    virtual void onSelectedRowChanged() { /* do nothing by default */ };
 
     Settings * m_settings;
     TxTableModel * m_model;
@@ -105,12 +108,10 @@ protected:
     // UI
     RadioControlEnsemble m_currentEnsemble;
     QStringList m_txInfo;
-    int m_selectedRow;  // this is row in source model !!!
 
     virtual void reset();
 
     void positionUpdated(const QGeoPositionInfo & position);
-    void onSelectedRowChanged();
     void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
@@ -119,7 +120,10 @@ private:
     bool m_positionValid = false;
     bool m_isVisible = false;
     const bool m_isTii;
-    bool m_isRecordingLog = false;
+    bool m_isRecordingLog = false;    
+    int m_selectedRow = -1;  // source model row
+
+
 };
 
 #endif // TXMAPDIALOG_H

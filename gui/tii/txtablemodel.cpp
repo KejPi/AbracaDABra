@@ -182,7 +182,9 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
     case TxTableModelRoles::ItemRole:
         return QVariant().fromValue(item);
     case TxTableModelRoles::IdRole:
-        return QVariant(item.id());        
+        return QVariant(item.id());
+    case TxTableModelRoles::SelectedTxRole:
+        return m_selectedRows.contains(index.row());
     default:
         break;
     }
@@ -267,7 +269,7 @@ QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int 
         default:
             break;
         }
-    }
+    }    
     break;
     }
     return QVariant();
@@ -283,6 +285,7 @@ QHash<int, QByteArray> TxTableModel::roleNames() const
     roles[TxTableModelRoles::MainIdRole] = "mainId";
     roles[TxTableModelRoles::SubIdRole] = "subId";
     roles[TxTableModelRoles::LevelColorRole] = "levelColor";
+    roles[TxTableModelRoles::SelectedTxRole] = "selectedTx";
 
     return roles;
 }
@@ -298,20 +301,21 @@ void TxTableModel::clear()
 {
     beginResetModel();
     m_modelData.clear();
+    m_selectedRows.clear();
     endResetModel();
+}
+
+void TxTableModel::setSelectedRows(const QSet<int> &rows)
+{
+    if (m_selectedRows != rows)
+    {
+        m_selectedRows = rows;
+        emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), {TxTableModelRoles::SelectedTxRole});
+    }
 }
 
 void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceListId & ensId, const QString &ensLabel, int numServices, float snr)
 {
-#if 0
-    beginResetModel();
-    m_modelData.clear();
-    for (const auto & tii : data)
-    {
-        m_modelData.append(TxTableModelItem(tii.main, tii.sub, tii.level, m_coordinates, m_txList.values(ensId)));
-    }
-    endResetModel();
-#else
     QDateTime time = QDateTime::currentDateTime();
 
     // add new items and remove old    
@@ -388,13 +392,11 @@ void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceLi
 
     // #warning "Remove this check"
     // Q_ASSERT(m_modelData.size() == data.size());
-    for (int n = 0; n < m_modelData.size(); ++n) {
-        Q_ASSERT(m_modelData.at(n).mainId() == data.at(n).main);
-        Q_ASSERT(m_modelData.at(n).subId() == data.at(n).sub);
-        Q_ASSERT(m_modelData.at(n).level() == data.at(n).level);
-    }
-
-#endif
+    // for (int n = 0; n < m_modelData.size(); ++n) {
+    //     Q_ASSERT(m_modelData.at(n).mainId() == data.at(n).main);
+    //     Q_ASSERT(m_modelData.at(n).subId() == data.at(n).sub);
+    //     Q_ASSERT(m_modelData.at(n).level() == data.at(n).level);
+    // }
 }
 
 void TxTableModel::appendEnsData(const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel, const QString & ensConfig, const QString & ensCSV, int numServices, float snr)

@@ -63,7 +63,7 @@ public:
     void onEnsembleConfigurationAndCSV(const QString & config, const QString & csvString);
     void onInputDeviceError(const InputDeviceErrorCode);
     void setupDarkMode(bool darkModeEna) override;
-    void setSelectedRow(int modelRow) override;
+    //void setSelectedRow(int modelRow) override;
 signals:
     void scanStarts();
     void scanFinished();
@@ -73,6 +73,7 @@ signals:
 protected:
     void showEvent(QShowEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
+    void onSelectedRowChanged() override;
 
 private:
     enum class ScannerState

@@ -158,7 +158,7 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     m_txTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_txTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    m_txTableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     m_txTableView->setSortingEnabled(true);
     m_txTableView->sortByColumn(TxTableModel::ColTime, Qt::AscendingOrder);
     m_txTableView->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -636,25 +636,18 @@ void ScannerDialog::setupDarkMode(bool darkModeEna)
     }
 }
 
-void ScannerDialog::setSelectedRow(int modelRow)
+void ScannerDialog::onSelectedRowChanged()
 {
-    if (m_selectedRow == modelRow)
-    {
-        return;
-    }
-    m_selectedRow = modelRow;
-    emit selectedRowChanged();
-
     m_txInfo.clear();
     m_currentEnsemble.reset();
-    if (modelRow < 0)
+    if (selectedRow() < 0)
     {   // reset info
         emit txInfoChanged();
         emit ensembleInfoChanged();
         return;
     }
 
-    TxTableModelItem item = m_model->data(m_model->index(modelRow, 0), TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
+    TxTableModelItem item = m_model->data(m_model->index(selectedRow(), 0), TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
     if (item.hasTxData())
     {
         m_txInfo.append(QString("<b>%1</b>").arg(item.transmitterData().location()));

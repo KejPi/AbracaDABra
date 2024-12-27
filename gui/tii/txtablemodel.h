@@ -52,6 +52,7 @@ public:
         LevelColorRole,
         ItemRole,
         IdRole,
+        SelectedTxRole,
     };
 
     enum { ColTime, ColChannel, ColFreq, ColEnsId, ColEnsLabel, ColNumServices, ColSnr,
@@ -68,16 +69,18 @@ public:
     QHash<int, QByteArray> roleNames() const override;
     const TxTableModelItem & itemAt(int row) const;
     void clear();
+    void setSelectedRows(const QSet<int> &rows);
 
     void updateTiiData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId, const QString &ensLabel, int numServices, float snr);
     void appendEnsData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId, const QString & ensLabel, const QString & ensConfig, const QString & ensCSV, int numServices, float snr);
-
     void setCoordinates(const QGeoCoordinate &newCoordinates);
+
 signals:
     void rowCountChanged();
 
 private:
     QList<TxTableModelItem> m_modelData;
+    QSet<int> m_selectedRows;
     QMultiHash<ServiceListId, TxDataItem*> m_txList;
     QGeoCoordinate m_coordinates;
 };
