@@ -122,6 +122,7 @@ private:
     int m_numSelectedChannels = 0;
     uint m_tiiCntr = 0;
     float m_snr;
+    uint m_snrCntr;
     QDateTime m_scanStartTime;
 
     // this is used in precise mode

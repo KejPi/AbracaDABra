@@ -468,9 +468,10 @@ void ScannerDialog::onSignalState(uint8_t sync, float snr)
             m_timer->start(m_settings->scanner.waitForEnsemble*1000);
         }
     }
-    if (m_ensemble.isValid())
+    if (m_ensemble.isValid() && m_isScanning)
     {
-        m_snr = snr;
+        m_snr += snr;
+        m_snrCntr += 1;
     }
 }
 
@@ -490,6 +491,7 @@ void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble & ens)
 
         m_ensemble = ens;
         m_snr = 0.0;
+        m_snrCntr = 0;
         m_tiiCntr = 0;
         if (m_isTiiActive == false)
         {
@@ -533,7 +535,7 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 
 void ScannerDialog::storeEnsembleData(const RadioControlTIIData &tiiData,  const QString & conf, const QString & csvConf)
 {
-    m_model->appendEnsData(tiiData.idList, ServiceListId(m_ensemble), m_ensemble.label, conf, csvConf, m_numServicesFound, m_snr);
+    m_model->appendEnsData(tiiData.idList, ServiceListId(m_ensemble), m_ensemble.label, conf, csvConf, m_numServicesFound, m_snr/m_snrCntr);
     m_exportButton->setEnabled(true);
 
     m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
