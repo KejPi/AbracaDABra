@@ -278,6 +278,34 @@
     </message>
 </context>
 <context>
+    <name>EnsembleConfigDialog</name>
+    <message>
+        <location filename="../tii/ensembleconfigdialog.ui" line="14"/>
+        <source>Ensemble Information</source>
+        <translation type="unfinished">Ensembleinformationen</translation>
+    </message>
+    <message>
+        <location filename="../tii/ensembleconfigdialog.ui" line="35"/>
+        <source>Export as CSV</source>
+        <translation type="unfinished">Als CSV exportieren</translation>
+    </message>
+    <message>
+        <location filename="../tii/ensembleconfigdialog.ui" line="55"/>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/ensembleconfigdialog.cpp" line="61"/>
+        <source>Export CSV file</source>
+        <translation type="unfinished">CSV Datei exportieren</translation>
+    </message>
+    <message>
+        <location filename="../tii/ensembleconfigdialog.cpp" line="63"/>
+        <source>CSV Files</source>
+        <translation type="unfinished">CSV Dateien</translation>
+    </message>
+</context>
+<context>
     <name>EnsembleInfoDialog</name>
     <message>
         <location filename="../ensembleinfodialog.ui" line="14"/>
@@ -1154,213 +1182,213 @@ Datei: %1</translation>
         <translation>Optionale INI-Datei. Falls nicht spezifiziert, wird AbracaDABra.ini im Systemverzeichnis verwendet.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4372"/>
-        <location filename="../mainwindow.cpp" line="4382"/>
+        <location filename="../mainwindow.cpp" line="4376"/>
+        <location filename="../mainwindow.cpp" line="4386"/>
         <source>Open link</source>
         <translation>Link öffnen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4461"/>
+        <location filename="../mainwindow.cpp" line="4465"/>
         <source>Title</source>
         <translation>Titel</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4462"/>
+        <location filename="../mainwindow.cpp" line="4466"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4463"/>
+        <location filename="../mainwindow.cpp" line="4467"/>
         <source>Track Number</source>
         <translation>Titelnummer</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4464"/>
+        <location filename="../mainwindow.cpp" line="4468"/>
         <source>Artist</source>
         <translation>Interpret</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4468"/>
+        <location filename="../mainwindow.cpp" line="4472"/>
         <source>Composer</source>
         <translation>Komponist</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4470"/>
+        <location filename="../mainwindow.cpp" line="4474"/>
         <source>Comment</source>
         <translation>Bemerkung</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4471"/>
+        <location filename="../mainwindow.cpp" line="4475"/>
         <source>Genre</source>
         <translation>Genre</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4472"/>
+        <location filename="../mainwindow.cpp" line="4476"/>
         <location filename="../dabtables.cpp" line="210"/>
         <location filename="../dabtables.cpp" line="1049"/>
         <source>News</source>
         <translation>Nachrichten</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4473"/>
+        <location filename="../mainwindow.cpp" line="4477"/>
         <source>News (local)</source>
         <translation>Nachrichten (lokal)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4475"/>
+        <location filename="../mainwindow.cpp" line="4479"/>
         <location filename="../dabtables.cpp" line="213"/>
         <source>Sport</source>
         <translation>Sport</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4476"/>
+        <location filename="../mainwindow.cpp" line="4480"/>
         <source>Lottery</source>
         <translation>Lotterie</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4477"/>
+        <location filename="../mainwindow.cpp" line="4481"/>
         <source>Horoscope</source>
         <translation>Horoskop</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4479"/>
+        <location filename="../mainwindow.cpp" line="4483"/>
         <source>Health</source>
         <translation>Gesundheit</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4481"/>
+        <location filename="../mainwindow.cpp" line="4485"/>
         <source>Scene</source>
         <translation>Szene</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4482"/>
+        <location filename="../mainwindow.cpp" line="4486"/>
         <source>Cinema</source>
         <translation>Kino</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4483"/>
+        <location filename="../mainwindow.cpp" line="4487"/>
         <source>TV</source>
         <translation>Fernsehen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4487"/>
+        <location filename="../mainwindow.cpp" line="4491"/>
         <location filename="../dabtables.cpp" line="1050"/>
         <source>Weather</source>
         <translation>Wetter</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4488"/>
+        <location filename="../mainwindow.cpp" line="4492"/>
         <source>Traffic</source>
         <translation>Verkehr</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4489"/>
+        <location filename="../mainwindow.cpp" line="4493"/>
         <location filename="../dabtables.cpp" line="1045"/>
         <source>Alarm</source>
         <translation>Alarm</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4490"/>
+        <location filename="../mainwindow.cpp" line="4494"/>
         <source>Advertisment</source>
         <translation>Werbung</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4491"/>
+        <location filename="../mainwindow.cpp" line="4495"/>
         <source>URL</source>
         <translation>URL</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4492"/>
+        <location filename="../mainwindow.cpp" line="4496"/>
         <source>Other</source>
         <translation>Andere</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4493"/>
+        <location filename="../mainwindow.cpp" line="4497"/>
         <source>Station (short)</source>
         <translation>Station (kurz)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4494"/>
+        <location filename="../mainwindow.cpp" line="4498"/>
         <source>Station</source>
         <translation>Station</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4495"/>
+        <location filename="../mainwindow.cpp" line="4499"/>
         <source>Now</source>
         <translation>Jetzt</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4496"/>
+        <location filename="../mainwindow.cpp" line="4500"/>
         <source>Next</source>
         <translation>Später</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4503"/>
+        <location filename="../mainwindow.cpp" line="4507"/>
         <source>Homepage</source>
         <translation>Homepage</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4507"/>
+        <location filename="../mainwindow.cpp" line="4511"/>
         <source>Phone (Hotline)</source>
         <translation>Telefon (Hotline)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4508"/>
+        <location filename="../mainwindow.cpp" line="4512"/>
         <source>Phone (Studio)</source>
         <translation>Telefon (Studio)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4509"/>
+        <location filename="../mainwindow.cpp" line="4513"/>
         <source>Phone (Other)</source>
         <translation>Telefon (andere)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4510"/>
+        <location filename="../mainwindow.cpp" line="4514"/>
         <source>SMS (Studio)</source>
         <translation>SMS (Studio)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4511"/>
+        <location filename="../mainwindow.cpp" line="4515"/>
         <source>SMS (Other)</source>
         <translation>SMS (andere)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4512"/>
+        <location filename="../mainwindow.cpp" line="4516"/>
         <source>E-mail (Hotline)</source>
         <translation>E-Mail (Hotline)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4513"/>
+        <location filename="../mainwindow.cpp" line="4517"/>
         <source>E-mail (Studio)</source>
         <translation>E-Mail (Hotline)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4514"/>
+        <location filename="../mainwindow.cpp" line="4518"/>
         <source>E-mail (Other)</source>
         <translation>E-Mail (andere)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4515"/>
+        <location filename="../mainwindow.cpp" line="4519"/>
         <source>MMS</source>
         <translation>MMS</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4516"/>
+        <location filename="../mainwindow.cpp" line="4520"/>
         <source>Chat Message</source>
         <translation>Chatnachricht</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4517"/>
+        <location filename="../mainwindow.cpp" line="4521"/>
         <source>Chat</source>
         <translation>Chat</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4518"/>
+        <location filename="../mainwindow.cpp" line="4522"/>
         <source>Vote Question</source>
         <translation>Abstimmungsfrage</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4519"/>
+        <location filename="../mainwindow.cpp" line="4523"/>
         <source>Vote Here</source>
         <translation>Hier abstimmen</translation>
     </message>
@@ -3160,7 +3188,7 @@ Datei: %1</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4480"/>
+        <location filename="../mainwindow.cpp" line="4484"/>
         <location filename="../dabtables.cpp" line="1051"/>
         <source>Event</source>
         <translation>Ereignis</translation>
@@ -3171,62 +3199,62 @@ Datei: %1</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4465"/>
+        <location filename="../mainwindow.cpp" line="4469"/>
         <source>Composition</source>
         <translation>Komposition</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4466"/>
+        <location filename="../mainwindow.cpp" line="4470"/>
         <source>Movement</source>
         <translation>Satz</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4467"/>
+        <location filename="../mainwindow.cpp" line="4471"/>
         <source>Conductor</source>
         <translation>Dirigent</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4469"/>
+        <location filename="../mainwindow.cpp" line="4473"/>
         <source>Band</source>
         <translation>Band</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4474"/>
+        <location filename="../mainwindow.cpp" line="4478"/>
         <source>Stock Market</source>
         <translation>Aktienmark</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4478"/>
+        <location filename="../mainwindow.cpp" line="4482"/>
         <source>Daily Diversion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4497"/>
+        <location filename="../mainwindow.cpp" line="4501"/>
         <source>Programme Part</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4498"/>
+        <location filename="../mainwindow.cpp" line="4502"/>
         <source>Host</source>
         <translation>Am Mikrofon</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4499"/>
+        <location filename="../mainwindow.cpp" line="4503"/>
         <source>Editorial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4522"/>
+        <location filename="../mainwindow.cpp" line="4526"/>
         <source>Private 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4523"/>
+        <location filename="../mainwindow.cpp" line="4527"/>
         <source>Private 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4524"/>
+        <location filename="../mainwindow.cpp" line="4528"/>
         <source>Private 3</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3325,104 +3353,104 @@ Datei: %1</translation>
 <context>
     <name>ScannerDialog</name>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="51"/>
+        <location filename="../tii/scannerdialog.cpp" line="53"/>
         <source>DAB Scanning Tool</source>
         <translation>DAB Scannertool</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="95"/>
+        <location filename="../tii/scannerdialog.cpp" line="97"/>
         <source>Mode:</source>
         <translation>Modus:</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="98"/>
+        <location filename="../tii/scannerdialog.cpp" line="100"/>
         <source>Fast</source>
         <translation>Schnell</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="99"/>
+        <location filename="../tii/scannerdialog.cpp" line="101"/>
         <source>Normal</source>
         <translation>Normal</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="100"/>
+        <location filename="../tii/scannerdialog.cpp" line="102"/>
         <source>Precise</source>
         <translation>Genau</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="110"/>
+        <location filename="../tii/scannerdialog.cpp" line="112"/>
         <source>Inf</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="112"/>
+        <location filename="../tii/scannerdialog.cpp" line="114"/>
         <source>Number of cycles:</source>
         <translation>Anzahl der Durchläufe:</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="163"/>
-        <location filename="../tii/scannerdialog.cpp" line="272"/>
+        <location filename="../tii/scannerdialog.cpp" line="168"/>
+        <location filename="../tii/scannerdialog.cpp" line="278"/>
         <source>Start</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="167"/>
-        <location filename="../tii/scannerdialog.cpp" line="271"/>
+        <location filename="../tii/scannerdialog.cpp" line="172"/>
+        <location filename="../tii/scannerdialog.cpp" line="277"/>
         <source>None</source>
         <translation>Keines</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="170"/>
+        <location filename="../tii/scannerdialog.cpp" line="175"/>
         <source>Select channels</source>
         <translation>Kanäle auswählen</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="171"/>
+        <location filename="../tii/scannerdialog.cpp" line="176"/>
         <source>Export as CSV</source>
         <translation>Als CSV exportieren</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="235"/>
+        <location filename="../tii/scannerdialog.cpp" line="240"/>
         <source>Stop</source>
         <translation>Stop</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="269"/>
+        <location filename="../tii/scannerdialog.cpp" line="275"/>
         <source>Scanning finished</source>
         <translation>Scanvorgang beendet</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="289"/>
+        <location filename="../tii/scannerdialog.cpp" line="295"/>
         <source>Export CSV file</source>
         <translation>CSV Datei exportieren</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="291"/>
+        <location filename="../tii/scannerdialog.cpp" line="297"/>
         <source>CSV Files</source>
         <translation>CSV Dateien</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="341"/>
+        <location filename="../tii/scannerdialog.cpp" line="347"/>
         <source>Scanning channel:</source>
         <translation>Durchsuche Kanal:</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="410"/>
+        <location filename="../tii/scannerdialog.cpp" line="416"/>
         <source>%1  (cycle %2)</source>
         <translation>%1  (Durchlauf %2)</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="568"/>
+        <location filename="../tii/scannerdialog.cpp" line="630"/>
         <source>Scanning failed</source>
         <translation>Scanvorgang fehlgeschlagen</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="611"/>
+        <location filename="../tii/scannerdialog.cpp" line="666"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
         <translation>Seehöhe: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="613"/>
+        <location filename="../tii/scannerdialog.cpp" line="668"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
         <translation>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
     </message>
@@ -4414,17 +4442,17 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
         <translation>TII Dekoder</translation>
     </message>
     <message>
-        <location filename="../tii/tiidialog.cpp" line="434"/>
+        <location filename="../tii/tiidialog.cpp" line="409"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
         <translation>Seehöhe: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../tii/tiidialog.cpp" line="436"/>
+        <location filename="../tii/tiidialog.cpp" line="411"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
         <translation>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../tii/tiidialog.cpp" line="504"/>
+        <location filename="../tii/tiidialog.cpp" line="479"/>
         <source>Carrier Pair: %1&lt;br&gt;SubId: %3&lt;br&gt;Level: %2</source>
         <translation>Trägerpaar: %1&lt;br&gt;SubId: %3&lt;br&gt;Stärke: %2</translation>
     </message>
@@ -4432,32 +4460,37 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
 <context>
     <name>TxMapDialog</name>
     <message>
-        <location filename="../tii/txmapdialog.cpp" line="113"/>
+        <location filename="../tii/txmapdialog.cpp" line="128"/>
         <source>Warning</source>
         <translation>Warnung</translation>
     </message>
     <message>
-        <location filename="../tii/txmapdialog.cpp" line="113"/>
+        <location filename="../tii/txmapdialog.cpp" line="128"/>
         <source>Device location access is denied.</source>
         <translation>Standortzugriff wurde abgelehnt.</translation>
     </message>
     <message>
-        <location filename="../tii/txmapdialog.cpp" line="114"/>
+        <location filename="../tii/txmapdialog.cpp" line="129"/>
         <source>If you want to display current position on map, grant the location permission in Settings then open the app again.</source>
         <translation>Um die aktuelle Position in der Karte anzuzeigen, legen Sie den Standort in den Einstellungen fest und starten das Programm neu.</translation>
     </message>
     <message>
-        <location filename="../tii/txmapdialog.cpp" line="242"/>
+        <location filename="../tii/txmapdialog.cpp" line="257"/>
         <source>Ensemble: &lt;b&gt;%1&lt;/b&gt;</source>
         <translation>Ensembel: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../tii/txmapdialog.cpp" line="243"/>
+        <location filename="../tii/txmapdialog.cpp" line="260"/>
+        <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt; | TX: &lt;b&gt;%3&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/txmapdialog.cpp" line="266"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</source>
         <translation>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../tii/txmapdialog.cpp" line="246"/>
+        <location filename="../tii/txmapdialog.cpp" line="271"/>
         <source>Channel: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</source>
         <translation>Kanal: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</translation>
     </message>
@@ -4465,114 +4498,114 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
 <context>
     <name>TxTableModel</name>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="205"/>
+        <location filename="../tii/txtablemodel.cpp" line="207"/>
         <source>Time</source>
         <translation>Zeit</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="207"/>
-        <location filename="../tii/txtablemodel.cpp" line="242"/>
+        <location filename="../tii/txtablemodel.cpp" line="209"/>
+        <location filename="../tii/txtablemodel.cpp" line="244"/>
         <source>Channel</source>
         <translation>Kanal</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="209"/>
+        <location filename="../tii/txtablemodel.cpp" line="211"/>
         <source>Frequency</source>
         <translation>Frequenz</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="211"/>
-        <location filename="../tii/txtablemodel.cpp" line="246"/>
+        <location filename="../tii/txtablemodel.cpp" line="213"/>
+        <location filename="../tii/txtablemodel.cpp" line="248"/>
         <source>UEID</source>
         <translation>UEID</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="213"/>
-        <location filename="../tii/txtablemodel.cpp" line="248"/>
+        <location filename="../tii/txtablemodel.cpp" line="215"/>
+        <location filename="../tii/txtablemodel.cpp" line="250"/>
         <source>Label</source>
         <translation>Label</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="215"/>
-        <location filename="../tii/txtablemodel.cpp" line="250"/>
+        <location filename="../tii/txtablemodel.cpp" line="217"/>
+        <location filename="../tii/txtablemodel.cpp" line="252"/>
         <source>Services</source>
         <translation>Services</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="217"/>
+        <location filename="../tii/txtablemodel.cpp" line="219"/>
         <source>SNR</source>
         <translation>SNR</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="219"/>
-        <location filename="../tii/txtablemodel.cpp" line="254"/>
+        <location filename="../tii/txtablemodel.cpp" line="221"/>
+        <location filename="../tii/txtablemodel.cpp" line="256"/>
         <source>Main</source>
         <translation>Main</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="221"/>
-        <location filename="../tii/txtablemodel.cpp" line="256"/>
+        <location filename="../tii/txtablemodel.cpp" line="223"/>
+        <location filename="../tii/txtablemodel.cpp" line="258"/>
         <source>Sub</source>
         <translation>Sub</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="223"/>
+        <location filename="../tii/txtablemodel.cpp" line="225"/>
         <source>Level</source>
         <translation>Feldstärke</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="225"/>
-        <location filename="../tii/txtablemodel.cpp" line="260"/>
+        <location filename="../tii/txtablemodel.cpp" line="227"/>
+        <location filename="../tii/txtablemodel.cpp" line="262"/>
         <source>Location</source>
         <translation>Standort</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="227"/>
+        <location filename="../tii/txtablemodel.cpp" line="229"/>
         <source>Power</source>
         <translation>Leistung</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="229"/>
+        <location filename="../tii/txtablemodel.cpp" line="231"/>
         <source>Distance</source>
         <translation>Entfernung</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="231"/>
+        <location filename="../tii/txtablemodel.cpp" line="233"/>
         <source>Azimuth</source>
         <translation>Azimut</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="240"/>
+        <location filename="../tii/txtablemodel.cpp" line="242"/>
         <source>Local Time</source>
         <translation>Lokale Zeit</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="244"/>
+        <location filename="../tii/txtablemodel.cpp" line="246"/>
         <source>Frequency [kHz]</source>
         <translation>Frequenz [kHz]</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="252"/>
+        <location filename="../tii/txtablemodel.cpp" line="254"/>
         <source>SNR [dB]</source>
         <translation>SNR [dB]</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="258"/>
+        <location filename="../tii/txtablemodel.cpp" line="260"/>
         <source>Level [dB]</source>
         <translation>Feldstärke [dB]</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="262"/>
+        <location filename="../tii/txtablemodel.cpp" line="264"/>
         <source>Power [kW]</source>
         <translation>Leistung [kW]</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="264"/>
+        <location filename="../tii/txtablemodel.cpp" line="266"/>
         <source>Distance [km]</source>
         <translation>Entfernung [km]</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="266"/>
+        <location filename="../tii/txtablemodel.cpp" line="268"/>
         <source>Azimuth [deg]</source>
         <translation>Azimut [deg]</translation>
     </message>
