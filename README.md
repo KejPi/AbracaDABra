@@ -178,7 +178,7 @@ _Notes:_
 TII decoder is considered to be advanced DX feature thus it is only available when application is in [Expert mode](#expert-mode). Before using it, the feature needs to be configured from application settings:
 
 <p align="center" width="100%">
-<img width="642" alt="Snímek obrazovky 2024-12-21 v 17 38 42" src="https://github.com/user-attachments/assets/a7ad9841-f50f-4301-b2a5-1e323ec7d6ac" />
+<img width="1185" alt="Snímek obrazovky 2024-12-28 v 17 30 49" src="https://github.com/user-attachments/assets/d2307701-0cab-4fdb-9dad-782d0987d7df" />
 </p>
 
 First update the DAB transmitter database kindly provided by [FMLIST](https://www.fmlist.org). _Note:_ you might need to configure network proxy in Others tab. 
@@ -217,13 +217,14 @@ AbracaDABra offers a possibility to run an unattended DAB band scan and to store
 Scanning tool can be configured to run in one of 3 different modes: 
 * Fast - fast scanning but week transmitters might no be detected (about 4 seconds per ensemble)
 * Normal (this is default mode) - the best compromise between scanning speed and TII decoding performance (about 8 seconds per ensemble)
-* Precise - the best TII decoding performance but it is quite slow (about 16 seconds per ensemble)
+* Precise - the best TII decoding performance but it is quite slow (about 16 seconds per ensemble). Ensemble configuration is additionally recorded in this mode. 
 
 Number of scan cycles can be configured. One scan cycle means scanning all selected channels once. You can let the Scanning tool to run "forever" by setting number of cycles to Inf (value 0). 
 
 By default all channels in band III are scanned (5A-13F, 38 channels in total) but you can scan only some channels using Select channels button.
 
-Scanning results are displayed in the table as well as red circles on the map. Blue circle is location specified in TII settings. You can select any row in the table by clicking on it and corresponding transmitter is shown as bubble on map with detailed information in bottom right corner (see screenshot above). It works also the other way around by clicking the red circle on the map. Table can be sorted by any column by clicking on it. Results can be stored to CVS file using Export as CSV button. Unlike TII dialog, Scanner tool does not store the results "on the fly" during scanning.
+Scanning results are displayed in the table as well as red circles on the map. Blue circle is location specified in TII settings. You can select any row in the table by clicking on it and corresponding transmitter is shown as bubble on map with detailed information in bottom right corner (see screenshot above). It works also the other way around by clicking the red circle on the map. Multiple rows selection is also supported. In this case corresponding bubles are shown on the map but no details about transmitters are available. Table can be sorted by any column by clicking on it. It is possible to display ensemble structure by double clicking on the row or from context menu on right mouse click (Precise mode only).
+Results can be stored to CVS file using Export as CSV button. Unlike TII dialog, Scanner tool does not store the results "on the fly" during scanning.
 
 _Note:_ Application service list is preserved when Scannig tool is running. Use Band scan functionality if you want to update service list. Furthermore, iteractions with application are limited when Scanning tool performs scanning.
 
