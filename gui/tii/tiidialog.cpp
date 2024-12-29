@@ -605,12 +605,20 @@ void TIIDialog::onContextMenuRequest(QPoint pos)
     {
         QMenu *menu = new QMenu(this);
         menu->setAttribute(Qt::WA_DeleteOnClose);
-        menu->addAction("Restore default zoom", this, [this]() {
+        auto restoreZoomAction = new QAction(tr("Restore default zoom"), this);
+        restoreZoomAction->setEnabled(m_isZoomed);
+        connect(restoreZoomAction, &QAction::triggered, this, [this]() {
             m_tiiSpectrumPlot->rescaleAxes();
             m_tiiSpectrumPlot->deselectAll();
             m_tiiSpectrumPlot->replot();
             m_isZoomed = false;
         });
+
+        connect(menu, &QWidget::destroyed, [=]() { // delete actions
+            restoreZoomAction->deleteLater();
+        });
+
+        menu->addAction(restoreZoomAction);
         menu->popup(m_tiiSpectrumPlot->mapToGlobal(pos));
     }
 }
