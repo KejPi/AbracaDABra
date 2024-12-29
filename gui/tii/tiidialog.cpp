@@ -193,9 +193,9 @@ void TIIDialog::reset()
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     QList<double> f;
     QList<double> none;
-    for (int n = 0; n<192; ++n)
+    for (int n = 0; n<2*192; ++n)
     {
-        f.append(n);
+        f.append(n/2.0);
         none.append(0.0);
     }    
     m_tiiSpectrumPlot->graph(GraphId::Spect)->setData(f, none, true);
@@ -281,7 +281,7 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
 
         m_tiiSpectrumPlot->graph(GraphId::Spect)->setPen(QPen(Qt::lightGray, 1));
         m_tiiSpectrumPlot->graph(GraphId::Spect)->setBrush(QBrush(QColor(120, 120, 120, 100)));
-        m_tiiSpectrumPlot->graph(GraphId::TII)->setPen(QPen(Qt::cyan, 3));
+        m_tiiSpectrumPlot->graph(GraphId::TII)->setPen(QPen(Qt::cyan, 2));
 
         QColor axisSelectionColor(Qt::red);
         axisSelectionColor = qApp->style()->standardPalette().color(QPalette::Active, QPalette::Link);
@@ -335,7 +335,7 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
 
         m_tiiSpectrumPlot->graph(GraphId::Spect)->setPen(QPen(Qt::gray, 1));
         m_tiiSpectrumPlot->graph(GraphId::Spect)->setBrush(QBrush(QColor(80, 80, 80, 100)));
-        m_tiiSpectrumPlot->graph(GraphId::TII)->setPen(QPen(Qt::blue, 3));
+        m_tiiSpectrumPlot->graph(GraphId::TII)->setPen(QPen(Qt::blue, 2));
 
         QColor axisSelectionColor(48, 140, 198);
         axisSelectionColor = qApp->style()->standardPalette().color(QPalette::Active, QPalette::Link);
@@ -470,13 +470,16 @@ void TIIDialog::startStopLog()
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
 void TIIDialog::showPointToolTip(QMouseEvent *event)
 {
-    int x = qRound(m_tiiSpectrumPlot->xAxis->pixelToCoord(event->pos().x()));
-    x = qMin(static_cast<int>(GraphRange::MaxX), x);
+    int x = qRound(m_tiiSpectrumPlot->xAxis->pixelToCoord(event->pos().x()) * 2);
+    x = qMin(static_cast<int>(GraphRange::MaxX) * 2 + 1, x);
     x = qMax(static_cast<int>(GraphRange::MinX), x);
+
+    // x is in range 0 ... 383
+
     double y = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(x)->value;
 
-    int subId = x % 24;
-    m_tiiSpectrumPlot->setToolTip(QString(tr("Carrier Pair: %1<br>SubId: %3<br>Level: %2")).arg(x).arg(y).arg(subId, 2, 10, QChar('0')));
+    int subId = (x % 48) / 2;
+    m_tiiSpectrumPlot->setToolTip(QString(tr("Carrier Pair: %1<br>SubId: %3<br>Level: %2")).arg(x / 2).arg(y).arg(subId, 2, 10, QChar('0')));
 }
 
 void TIIDialog::addToPlot(const RadioControlTIIData &data)
@@ -485,7 +488,7 @@ void TIIDialog::addToPlot(const RadioControlTIIData &data)
 
     QSharedPointer<QCPGraphDataContainer> container = m_tiiSpectrumPlot->graph(GraphId::Spect)->data();
     QCPGraphDataContainer::iterator it = container->begin();
-    for (int n = 0; n < 192; ++n)
+    for (int n = 0; n < 2*192; ++n)
     {
         (*it++).value = data.spectrum.at(n)*norm;
     }
@@ -504,8 +507,10 @@ void TIIDialog::updateTiiPlot()
             QList<int> subcar = DabTables::getTiiSubcarriers(item.mainId(), item.subId());
             for (const auto & c : subcar)
             {
-                float val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(c)->value;
+                float val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2*c)->value;
                 m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c, val);
+                val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2*c+1)->value;
+                m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c+0.5, val);
             }
         }
     }
@@ -517,8 +522,10 @@ void TIIDialog::updateTiiPlot()
             QList<int> subcar = DabTables::getTiiSubcarriers(item.mainId(), item.subId());
             for (const auto & c : subcar)
             {
-                float val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(c)->value;
+                float val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2*c)->value;
                 m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c, val);
+                val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2*c+1)->value;
+                m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c+0.5, val);
             }
         }
     }

@@ -257,7 +257,7 @@ struct RadioControlAudioData
 
 struct RadioControlTIIData
 {
-    RadioControlTIIData() : spectrum(2048) {}
+    RadioControlTIIData() : spectrum(384) {}
     QList<dabsdrTii_t> idList;
     QList<float> spectrum;
 };
