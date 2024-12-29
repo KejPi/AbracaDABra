@@ -593,8 +593,13 @@ void ScannerDialog::showContextMenu(const QPoint &pos)
         QModelIndex index = m_txTableView->indexAt(pos);
         if (index.isValid())
         {
-            QMenu *menu=new QMenu(this);
-            menu->addAction(new QAction("Show ensemble information", this));
+            QMenu *menu = new QMenu(this);
+            menu->setAttribute(Qt::WA_DeleteOnClose);
+            auto action = new QAction(tr("Show ensemble information"), this);
+            connect(menu, &QWidget::destroyed, [=]() { // delete actions
+                action->deleteLater();
+            });
+            menu->addAction(action);
             QAction * selectedItem = menu->exec(m_txTableView->viewport()->mapToGlobal(pos));
             if (nullptr != selectedItem)
             {
