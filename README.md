@@ -178,7 +178,7 @@ _Notes:_
 TII decoder is considered to be advanced DX feature thus it is only available when application is in [Expert mode](#expert-mode). Before using it, the feature needs to be configured from application settings:
 
 <p align="center" width="100%">
-<img width="1185" alt="Snímek obrazovky 2024-12-28 v 17 30 49" src="https://github.com/user-attachments/assets/d2307701-0cab-4fdb-9dad-782d0987d7df" />
+<img width="642" alt="Snímek obrazovky 2024-12-21 v 17 38 42" src="https://github.com/user-attachments/assets/8bc1e9b2-e234-4960-8176-8764b8502929" />
 </p>
 
 First update the DAB transmitter database kindly provided by [FMLIST](https://www.fmlist.org). _Note:_ you might need to configure network proxy in Others tab. 
@@ -199,7 +199,7 @@ _Note:_ It is not a real spectrum of NULL symbol but rather preprocessed TII inf
 Plot can be zoomed in both axes by mouse wheel or in one axis by clicking on the axis a zooming by mouse wheel. When zoomed plot can be dragged by mouse, zoom is reset do default by right click on plot area. _Note:_ Optional [QCustomPlot library](https://www.qcustomplot.com) is needed for this functionality.
 
 <p align="center" width="100%">
-<img width="1183" alt="Snímek obrazovky 2024-12-21 v 17 49 49" src="https://github.com/user-attachments/assets/79f107ad-4243-41c2-a8b9-b70aad27bfe1" />
+<img width="1185" alt="Snímek obrazovky 2024-12-28 v 17 30 49" src="https://github.com/user-attachments/assets/d2307701-0cab-4fdb-9dad-782d0987d7df" />
 </p>
 
 TII Decoder dialog shows an interactive map provided by [OpenStreetMap](https://www.openstreetmap.org/copyright), table of detected transmitter codes and ensemble information. Blue dot shows location configured in Settings.
