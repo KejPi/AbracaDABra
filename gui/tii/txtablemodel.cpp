@@ -419,6 +419,7 @@ void TxTableModel::appendEnsData(const QList<dabsdrTii_t> &data, const ServiceLi
         // create new item
         TxTableModelItem item(-1, -1, 0, m_coordinates, m_txList.values(ensId));
         item.setEnsData(ensId, ensLabel, numServices, snr);
+        item.setEnsConfig(ensConfig, ensCSV);
         item.setRxTime(time);
         beginInsertRows(QModelIndex(), m_modelData.size(), m_modelData.size());
         m_modelData.append(item);
