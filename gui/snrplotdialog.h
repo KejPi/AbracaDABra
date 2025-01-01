@@ -45,6 +45,10 @@ public:
     ~SNRPlotDialog();
     void setSignalState(uint8_t sync, float snr);
     void setupDarkMode(bool darkModeEna);
+    void onSignalSpectrum(std::shared_ptr<std::vector<float>> data);
+
+signals:
+    void setSignalSpectrum(bool ena);
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -57,6 +61,8 @@ private:
     Settings * m_settings = nullptr;
     QTime m_startTime;
     QTimer * m_timer = nullptr;
+    int m_avrgCntr = 0;
+    std::vector<float> m_spectrumBuffer;
 
     void addToPlot(float snr);
 };

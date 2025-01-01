@@ -40,7 +40,7 @@ SNRPlotDialog::SNRPlotDialog(Settings *settings, QWidget *parent)
     , ui(new Ui::SNRPlotDialog)
     , m_settings(settings)
 {
-    ui->setupUi(this);
+    ui->setupUi(this);    
 
 #ifndef Q_OS_MAC
     // Set window flags to add minimize buttons
@@ -67,7 +67,7 @@ SNRPlotDialog::SNRPlotDialog(Settings *settings, QWidget *parent)
     ui->snrValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);    
     ui->snrValue->setToolTip(QString(tr("DAB signal SNR")));
     ui->snrValue->setText("");
-    ui->fixedSpacer->setGeometry(QRect(0,0, syncLabelWidth-snrValueWidth, 5));
+    ui->fixedSpacer->setGeometry(QRect(0,0, syncLabelWidth-snrValueWidth, 5));    
     ui->progressBar->setFixedHeight(ui->snrValue->fontMetrics().boundingRect(" 36.0 dB").height() * 0.6);
     // ui->progressBar->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
     ui->progressBar->setMinimum(0);
@@ -75,9 +75,6 @@ SNRPlotDialog::SNRPlotDialog(Settings *settings, QWidget *parent)
 
     ui->snrPlot->addGraph();
     ui->snrPlot->graph(0)->setLineStyle(QCPGraph::lsStepCenter);
-    // ui->snrPlot->addGraph();
-    // ui->snrPlot->graph(1)->setPen(QPen(QColor(255, 110, 40), 2));
-
     ui->snrPlot->xAxis->grid()->setSubGridVisible(true);
     ui->snrPlot->yAxis->grid()->setSubGridVisible(true);
 
@@ -92,10 +89,41 @@ SNRPlotDialog::SNRPlotDialog(Settings *settings, QWidget *parent)
     connect(ui->snrPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->snrPlot->xAxis2, SLOT(setRange(QCPRange)));
     connect(ui->snrPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->snrPlot->yAxis2, SLOT(setRange(QCPRange)));
 
+    m_spectrumBuffer.assign(2048, 0.0);
+
+    ui->spectrumPlot->setAttribute(Qt::WA_OpaquePaintEvent);
+    //ui->spectrumPlot->setOpenGl(true);
+    //ui->spectrumPlot->setBufferDevicePixelRatio(1.0);
+    ui->spectrumPlot->addGraph();
+    ui->spectrumPlot->graph(0)->setLineStyle(QCPGraph::lsLine);
+    ui->spectrumPlot->xAxis->grid()->setSubGridVisible(true);
+    ui->spectrumPlot->yAxis->grid()->setSubGridVisible(true);
+
+
+    ui->spectrumPlot->axisRect()->setupFullAxesBox();
+    ui->spectrumPlot->xAxis->setRange(0, 2047);
+    ui->spectrumPlot->yAxis->setRange(0, 100);
+    ui->spectrumPlot->xAxis2->setRange(0, 2047);
+    ui->spectrumPlot->yAxis2->setRange(0, 100);
+
+    // QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
+    // timeTicker->setTimeFormat("%m:%s");
+    // ui->snrPlot->xAxis->setTicker(timeTicker);
+    // ui->snrPlot->axisRect()->setupFullAxesBox();
+    // ui->snrPlot->xAxis->setRange(0, xPlotRange);
+    // ui->snrPlot->yAxis->setRange(0, 36);
+
+    // make bottom and left axes transfer their ranges to top and right axes:
+    connect(ui->spectrumPlot->xAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), ui->spectrumPlot->xAxis2, QOverload<const QCPRange &>::of(&QCPAxis::setRange));
+    connect(ui->spectrumPlot->yAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), ui->spectrumPlot->yAxis2, QOverload<const QCPRange &>::of(&QCPAxis::setRange));
+
+
     m_timer = new QTimer;
     m_timer->setInterval(1500);
     connect(m_timer, &QTimer::timeout, this, [this]() { setSignalState(0, 0.0); } );
     setSignalState(0, 0.0);
+
+    QTimer::singleShot(100, this, [this]() { emit setSignalSpectrum(true); });
 }
 
 SNRPlotDialog::~SNRPlotDialog()
@@ -155,11 +183,16 @@ void SNRPlotDialog::setupDarkMode(bool darkModeEna)
         ui->snrPlot->yAxis->grid()->setSubGridPen(QPen(QColor(190, 190, 190), 0, Qt::DotLine));
         ui->snrPlot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
         ui->snrPlot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
-        ui->snrPlot->setBackground(QBrush(Qt::black));
 
+        ui->snrPlot->setBackground(QBrush(Qt::black));
         ui->snrPlot->graph(0)->setPen(QPen(Qt::cyan, 2));
         ui->snrPlot->graph(0)->setBrush(QBrush(QColor(0, 255, 255, 100)));
         ui->snrPlot->replot();
+
+        ui->spectrumPlot->setBackground(QBrush(Qt::black));
+        ui->spectrumPlot->graph(0)->setPen(QPen(Qt::cyan, 2));
+        ui->spectrumPlot->graph(0)->setBrush(QBrush(QColor(0, 255, 255, 100)));
+        ui->spectrumPlot->replot();
     }
     else
     {
@@ -185,16 +218,61 @@ void SNRPlotDialog::setupDarkMode(bool darkModeEna)
         ui->snrPlot->yAxis->grid()->setSubGridPen(QPen(QColor(60, 60, 60), 0, Qt::DotLine));
         ui->snrPlot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
         ui->snrPlot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
-        ui->snrPlot->setBackground(QBrush(Qt::white));
 
+        ui->snrPlot->setBackground(QBrush(Qt::white));
         ui->snrPlot->graph(0)->setPen(QPen(Qt::blue, 2));
         ui->snrPlot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 100)));
         ui->snrPlot->replot();
+
+        ui->spectrumPlot->setBackground(QBrush(Qt::white));
+        ui->spectrumPlot->graph(0)->setPen(QPen(Qt::blue));
+        //ui->spectrumPlot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 100)));
+        ui->spectrumPlot->replot();
+    }
+}
+
+void SNRPlotDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
+{
+    //static QElapsedTimer timer;
+    //qDebug() << Q_FUNC_INFO << timer.restart();
+
+    int idx = 0;
+    for (auto it = m_spectrumBuffer.begin(); it != m_spectrumBuffer.end(); ++it)
+    {
+        *it += data->at(idx++);
+    }
+
+    if (++m_avrgCntr >= 10)
+    {
+        //qDebug() << Q_FUNC_INFO;
+        m_avrgCntr = 0;
+        ui->spectrumPlot->graph(0)->data()->clear();
+        float freq = 0;
+        for (auto it = m_spectrumBuffer.cbegin(); it != m_spectrumBuffer.cend(); ++it)
+        {
+            ui->spectrumPlot->graph(0)->addData(freq, 20*std::log10(*it) - 20);
+            freq += 1.0;
+
+            if (freq == 1024.0)
+            {
+                freq = -1024.0;
+            }
+
+            // if (freq < 10) {
+            //     qDebug() << 20*std::log10(*it);
+            // }
+        }
+        m_spectrumBuffer.assign(2048, 0.0);
+        ui->spectrumPlot->xAxis->setRange(-1024, 1024);
+        //ui->spectrumPlot->xAxis->setRange(0, 2048e3);
+        ui->spectrumPlot->replot();
     }
 }
 
 void SNRPlotDialog::closeEvent(QCloseEvent *event)
 {
+    emit setSignalSpectrum(false);
+
     m_settings->snr.geometry = saveGeometry();
 
     QDialog::closeEvent(event);

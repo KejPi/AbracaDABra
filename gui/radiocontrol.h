@@ -259,7 +259,7 @@ struct RadioControlTIIData
 {
     RadioControlTIIData() : spectrum(384) {}
     QList<dabsdrTii_t> idList;
-    QList<float> spectrum;
+    std::vector<float> spectrum;
 };
 
 enum class RadioControlEventType
@@ -359,7 +359,8 @@ public:
     void setupAnnouncements(uint16_t enaFlags);
     void suspendResumeAnnouncement();
     void onSpiApplicationEnabled(bool enabled);
-    void setTii(bool ena);    
+    void setTii(bool ena);
+    void setSignalSpectrum(bool ena);
 
 signals:
     void dabEvent(RadioControlEvent * pEvent);
@@ -379,6 +380,7 @@ signals:
     void audioServiceSelection(const RadioControlServiceComponent & s);
     void audioServiceReconfiguration(const RadioControlServiceComponent & s);
     void audioData(RadioControlAudioData * pData);
+    void signalSpectrum(std::shared_ptr<std::vector<float>> data);
     void dabTime(const QDateTime & dateAndTime);   
     void ensembleInformation(const RadioControlEnsemble & ens);
     void ensembleConfiguration(const QString &);
@@ -490,17 +492,20 @@ private:
     void dabServiceStop(uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t decoderId) { dabsdrRequest_ServiceStop(m_dabsdrHandle, SId, SCIdS, decoderId); }
     void dabXPadAppStart(uint8_t appType, bool start, dabsdrDecoderId_t decoderId) { dabsdrRequest_XPadAppStart(m_dabsdrHandle, appType, start, decoderId); }
     void dabSetTii(bool ena) { dabsdrRequest_SetTII(m_dabsdrHandle, ena); }
+    void dabEnableSignalSpectrum(bool ena) { dabsdrRequest_SignalSpectrum(m_dabsdrHandle, ena); }
 
     // wrappers used in callback functions (emit requires class instance)
     void emit_dabEvent(RadioControlEvent * pEvent) { emit dabEvent(pEvent); }
     void emit_audioData(RadioControlAudioData * pData) { emit audioData(pData); }
     void emit_announcementAudioAvailable() { emit announcementAudioAvailable(); }
+    void emit_spectrum(std::shared_ptr<std::vector<float>> data) { emit signalSpectrum(data); }
 
     // static methods used as dabsdr library callbacks
     static void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx);
     static void dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx);
     static void dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx);
     static void audioDataCb(dabsdrAudioCBData_t * p, void * ctx);
+    static void signalSpectrumCb(const float * p, void * ctx);
 private slots:
     void onDabEvent(RadioControlEvent * pEvent);
 };

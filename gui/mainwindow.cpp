@@ -3617,6 +3617,8 @@ void MainWindow::showSnrPlotDialog()
         m_snrPlotDialog = new SNRPlotDialog(m_settings);
         connect(this, &MainWindow::exit, m_snrPlotDialog, &SNRPlotDialog::close);
         m_snrPlotDialog->setupDarkMode(isDarkMode());
+        connect(m_snrPlotDialog, &SNRPlotDialog::setSignalSpectrum, m_radioControl, &RadioControl::setSignalSpectrum, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::signalSpectrum, m_snrPlotDialog, &SNRPlotDialog::onSignalSpectrum, Qt::QueuedConnection);
         connect(m_snrPlotDialog, &QDialog::finished, m_snrPlotDialog, &QObject::deleteLater);
         connect(m_snrPlotDialog, &QDialog::destroyed, this, [this]() { m_snrPlotDialog = nullptr; } );        
     }

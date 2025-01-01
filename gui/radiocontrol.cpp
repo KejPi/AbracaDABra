@@ -87,6 +87,7 @@ bool RadioControl::init()
         dabsdrRegisterDynamicLabelCb(m_dabsdrHandle, dynamicLabelCb, (void*) this);
         dabsdrRegisterDataGroupCb(m_dabsdrHandle, dataGroupCb, (void*) this);
         dabsdrRegisterAudioCb(m_dabsdrHandle, audioDataCb, this);
+        dabsdrRegisterSignalSpectrumCb(m_dabsdrHandle, signalSpectrumCb, this);
         // this starts dab processing thread and retunrs
         dabsdr(m_dabsdrHandle);
     }
@@ -733,6 +734,11 @@ void RadioControl::setTii(bool ena)
             dabSetTii(false);
         }
     }
+}
+
+void RadioControl::setSignalSpectrum(bool ena)
+{
+    dabEnableSignalSpectrum(ena);
 }
 
 QString RadioControl::ensembleConfigurationString() const
@@ -2346,4 +2352,11 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t * p, void * ctx)
         }
     }
     }
+}
+
+void RadioControl::signalSpectrumCb(const float *p, void *ctx)
+{
+    RadioControl * radioCtrl = static_cast<RadioControl *>(ctx);
+    auto data = std::shared_ptr<std::vector<float>>(new std::vector<float>(p, p+2048));
+    radioCtrl->emit_spectrum(data);
 }
