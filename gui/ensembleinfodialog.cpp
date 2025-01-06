@@ -76,6 +76,8 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
     ui->snr->setToolTip(tr("Estimated SNR"));
     ui->agcGainLabel->setToolTip(tr("Current AGC gain<br>(only in software mode)"));
     ui->agcGain->setToolTip(tr("Current AGC gain<br>(only in software mode)"));
+    ui->rfLevelLabel->setToolTip(tr("Estimated RF level<br>(only RTL-SDR)"));
+    ui->rfLevel->setToolTip(tr("Estimated RF level<br>(only RTL-SDR)"));
 
     ui->serviceLabel->setToolTip(tr("Current service name"));
     ui->service->setToolTip(tr("Current service name"));
@@ -251,6 +253,16 @@ void EnsembleInfoDialog::updateAgcGain(float gain)
     ui->agcGain->setText(QString::number(double(gain),'f', 1) + " dB");
 }
 
+void EnsembleInfoDialog::updateRfLevel(float rfLevel)
+{
+    if (std::isnan(rfLevel))
+    {   // level is not available (input device in HW mode or not RTL-SDR)
+        ui->rfLevel->setText(tr("N/A"));
+        return;
+    }
+    ui->rfLevel->setText(QString::number(double(rfLevel),'f', 1) + " dBm");
+}
+
 void EnsembleInfoDialog::updateFIBstatus(int fibCntr, int fibErrCount)
 {
     m_fibCounter += (fibCntr - fibErrCount);
@@ -407,6 +419,7 @@ void EnsembleInfoDialog::clearSignalInfo()
 {
     ui->snr->setText(tr("N/A"));
     ui->freqOffset->setText(tr("N/A"));
+    ui->rfLevel->setText(tr("N/A"));
     //ui->agcGain->setText(tr("N/A"));
 }
 

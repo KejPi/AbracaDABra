@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>648</width>
+    <width>854</width>
     <height>666</height>
    </rect>
   </property>
@@ -147,6 +147,32 @@
            <widget class="QLabel" name="agcGain">
             <property name="text">
              <string notr="true">36.4 dB</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_22">
+          <item>
+           <widget class="QLabel" name="rfLevelLabel">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>RF level:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="rfLevel">
+            <property name="text">
+             <string notr="true">-60.4 dBm</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>

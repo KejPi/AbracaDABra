@@ -120,8 +120,6 @@ public:
     ~InputDevice();
     virtual bool openDevice() = 0;
     const InputDeviceDescription & deviceDescription() const { return m_deviceDescription; }
-
-public slots:
     virtual void tune(uint32_t freq) = 0;
     virtual void startStopRecording(bool start) = 0;
 
@@ -129,6 +127,7 @@ signals:
     void deviceReady();
     void tuned(uint32_t freq);
     void agcGain(float gain);
+    void rfLevel(float level);
     void recordBuffer(const uint8_t * buf, uint32_t len);
     void error(const InputDeviceErrorCode errCode = InputDeviceErrorCode::Undefined);
 

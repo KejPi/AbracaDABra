@@ -46,6 +46,7 @@ RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
     m_frequency = 0;
     m_biasT = false;
     m_ppm = 0;
+    m_levelReadCntr = 0;
 
     connect(&m_watchdogTimer, &QTimer::timeout, this, &RtlSdrInput::onWatchdogTimeout);
 }
@@ -138,7 +139,7 @@ bool RtlSdrInput::openDevice()
             else
             {
                 qCInfo(rtlsdrInput, "Opening rtl-sdr device #%d: %s", n, deviceName);
-            }                        
+            }
             break;
         }
         else { /* not successful */ }
@@ -247,7 +248,7 @@ void RtlSdrInput::run()
     connect(m_worker, &RtlSdrWorker::destroyed, this, [=]() { m_worker = nullptr; } );
 
     m_worker->start();
-    m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);    
+    m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
 }
 
 void RtlSdrInput::stop()
@@ -321,6 +322,7 @@ void RtlSdrInput::setGainMode(RtlGainMode gainMode, int gainIdx)
     {   // signalize that gain is not available
         emit agcGain(NAN);
     }
+    emit rfLevel(NAN);
 }
 
 void RtlSdrInput::setGain(int gIdx)
@@ -358,11 +360,34 @@ void RtlSdrInput::resetAgc()
     {
         setGain(m_gainList->size() >> 1);
     }
+    m_levelReadCntr = 0;
+    emit rfLevel(NAN);
 }
 
 void RtlSdrInput::onAgcLevel(float agcLevel)
 {
-    // qDebug() << agcLevel;
+#ifdef RTLSDR_OLD_DAB
+    if (RtlGainMode::Hardware != m_gainMode)
+    {
+        if (++m_levelReadCntr > 4)
+        {
+            m_levelReadCntr = 0;
+            unsigned char reg_values[256];
+            int reglen;
+            int tuner_gain;
+            if (0 == rtlsdr_get_tuner_i2c_register(m_device, reg_values, &reglen, &tuner_gain))
+            {
+                //emit rfLevel(20*log10(agcLevel) - (tuner_gain + 5) / 10 - 46);
+                emit rfLevel(m_20log10[static_cast<int>(std::roundf(agcLevel))] - (tuner_gain + 5) / 10 - 46);
+            }
+            else
+            {
+                qCWarning(rtlsdrInput) << "Failed to get tuner gain";
+            }
+        }
+    }
+#endif
+
     if (RtlGainMode::Software == m_gainMode)
     {
         if (agcLevel < m_agcLevelMin)
@@ -399,7 +424,7 @@ void RtlSdrInput::startStopRecording(bool start)
 }
 
 void RtlSdrInput::setBW(uint32_t bw)
-{   
+{
     if (bw <= 0)
     {   // setting default BW
         bw = INPUTDEVICE_BANDWIDTH;   // 1.53 MHz
