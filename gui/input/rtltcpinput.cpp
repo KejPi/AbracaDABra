@@ -32,6 +32,7 @@
 Q_LOGGING_CATEGORY(rtlTcpInput, "RtlTcpInput", QtInfoMsg)
 
 const int RtlTcpInput::e4k_gains[] = { -10, 15, 40, 65, 90, 115, 140, 165, 190, 215, 240, 290, 340, 420 };
+const int RtlTcpInput::e4k_gains_olddab[] = {0, 29,  60,  89, 119, 147, 176, 206, 235, 264, 294, 323, 353, 382, 408, 436, 466, 495, 521, 548};
 const int RtlTcpInput::fc0012_gains[] = { -99, -40, 71, 179, 192 };
 const int RtlTcpInput::fc0013_gains[] = { -99, -73, -65, -63, -60, -58, -54, 58, 61,
                                          63, 65, 67, 68, 70, 71, 179, 181, 182,
@@ -375,8 +376,14 @@ bool RtlTcpInput::openDevice()
         {
         case RTLSDR_TUNER_E4000:
             qCInfo(rtlTcpInput) << "RTLSDR_TUNER_E4000";
-            gains = e4k_gains;
-            numGains = *(&e4k_gains + 1) - e4k_gains;
+            numGains = *(&e4k_gains_olddab + 1) - e4k_gains_olddab;
+            if (dongleInfo.tunerGainCount == numGains) {
+                gains = e4k_gains_olddab;
+            }
+            else {
+                numGains = *(&e4k_gains + 1) - e4k_gains;
+                gains = e4k_gains;
+            }
             m_deviceDescription.device.name += " [E4000]";
             break;
         case RTLSDR_TUNER_FC0012:

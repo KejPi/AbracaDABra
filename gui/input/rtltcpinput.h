@@ -128,6 +128,7 @@ class RtlTcpInput : public InputDevice
     /* taken from rtlsdr_get_tuner_gains() implementation */
     /* all gain values are expressed in tenths of a dB */
     static const int e4k_gains[];
+    static const int e4k_gains_olddab[];
     static const int fc0012_gains[];
     static const int fc0013_gains[];
     static const int fc2580_gains[];
