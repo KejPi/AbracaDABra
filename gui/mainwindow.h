@@ -70,7 +70,7 @@
 #include "audiorecschedulemodel.h"
 #include "tiidialog.h"
 #if HAVE_QCUSTOMPLOT
-#include "snrplotdialog.h"
+#include "signaldialog.h"
 #endif
 
 QT_BEGIN_NAMESPACE
@@ -131,7 +131,7 @@ private:
     TIIDialog * m_tiiDialog;
     ScannerDialog * m_scannerDialog;
 #if HAVE_QCUSTOMPLOT
-    SNRPlotDialog * m_snrPlotDialog;    
+    SignalDialog * m_signalDialog;
     ClickableLabel * m_snrLabel;    
 #else
     QLabel * m_snrLabel;
@@ -163,6 +163,7 @@ private:
     QAction * m_ensembleInfoAction;
     QAction * m_tiiAction;
     QAction * m_scanningToolAction;
+    QAction * m_signalDialogAction;
     QAction * m_aboutAction;
     QAction * m_logAction;
     QAction * m_audioRecordingAction;
@@ -243,7 +244,7 @@ private:
     void showLog();
     void showCatSLS();
     void showAudioRecordingSchedule();
-    void showSnrPlotDialog();
+    void showSignalDialog();
     void showTiiDialog();
     void showScannerDialog();
     void setExpertMode(bool ena);

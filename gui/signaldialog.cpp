@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,19 +24,19 @@
  * SOFTWARE.
  */
 
-#include "snrplotdialog.h"
-#include "ui_snrplotdialog.h"
+#include "signaldialog.h"
+#include "ui_signaldialog.h"
 
-const char * SNRPlotDialog::syncLevelLabels[] = {QT_TR_NOOP("No signal"), QT_TR_NOOP("Signal found"), QT_TR_NOOP("Sync")};
-const QStringList SNRPlotDialog::snrLevelIcons = {
+const char * SignalDialog::syncLevelLabels[] = {QT_TR_NOOP("No signal"), QT_TR_NOOP("Signal found"), QT_TR_NOOP("Sync")};
+const QStringList SignalDialog::snrLevelIcons = {
     QString(R"(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#ff4b4b"/></svg>)"),  // red
     QString(R"(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#ffb527"/></svg>)"),  // yellow
     QString(R"(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#5bc214"/></svg>)")   // green
 };
 
-SNRPlotDialog::SNRPlotDialog(Settings *settings, int freq, QWidget *parent)
+SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     : QDialog(parent)
-    , ui(new Ui::SNRPlotDialog)
+    , ui(new Ui::SignalDialog)
     , m_settings(settings)
     , m_frequency(freq)
 {
@@ -184,7 +184,7 @@ SNRPlotDialog::SNRPlotDialog(Settings *settings, int freq, QWidget *parent)
     });
 }
 
-SNRPlotDialog::~SNRPlotDialog()
+SignalDialog::~SignalDialog()
 {
     m_timer->stop();
     delete m_timer;
@@ -192,7 +192,7 @@ SNRPlotDialog::~SNRPlotDialog()
     delete ui;
 }
 
-void SNRPlotDialog::setSignalState(uint8_t sync, float snr)
+void SignalDialog::setSignalState(uint8_t sync, float snr)
 {
     ui->snrValue->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
     int snrLevel = 2;
@@ -218,7 +218,7 @@ void SNRPlotDialog::setSignalState(uint8_t sync, float snr)
     m_timer->start();
 }
 
-void SNRPlotDialog::setupDarkMode(bool darkModeEna)
+void SignalDialog::setupDarkMode(bool darkModeEna)
 {
     if (darkModeEna)
     {
@@ -330,7 +330,7 @@ void SNRPlotDialog::setupDarkMode(bool darkModeEna)
     }
 }
 
-void SNRPlotDialog::setFreqRange()
+void SignalDialog::setFreqRange()
 {
     for (int n = 0; n < 3; ++n)
     {
@@ -340,14 +340,14 @@ void SNRPlotDialog::setFreqRange()
     ui->spectrumPlot->xAxis->setRange((-1024 + m_frequency)*0.001, (1024 + m_frequency)*0.001);
 }
 
-void SNRPlotDialog::reset()
+void SignalDialog::reset()
 {
     m_spectrumBuffer.assign(2048, 0.0);
     m_avrgCntr = 0;
     ui->spectrumPlot->graph(0)->data()->clear();
 }
 
-void SNRPlotDialog::setRfLevelVisible(bool visible)
+void SignalDialog::setRfLevelVisible(bool visible)
 {
     if (visible != ui->rfLevelValue->isVisible())
     {
@@ -357,7 +357,7 @@ void SNRPlotDialog::setRfLevelVisible(bool visible)
     }
 }
 
-void SNRPlotDialog::setGainVisible(bool visible)
+void SignalDialog::setGainVisible(bool visible)
 {
     if (visible != ui->gainValue->isVisible())
     {
@@ -377,7 +377,7 @@ void SNRPlotDialog::setGainVisible(bool visible)
     }
 }
 
-void SNRPlotDialog::onTuneDone(uint32_t freq)
+void SignalDialog::onTuneDone(uint32_t freq)
 {
     if (freq == m_frequency)
     {
@@ -390,7 +390,7 @@ void SNRPlotDialog::onTuneDone(uint32_t freq)
     ui->spectrumPlot->replot();
 }
 
-void SNRPlotDialog::updateRfLevel(float rfLevel, float gain)
+void SignalDialog::updateRfLevel(float rfLevel, float gain)
 {
     m_rfLevel = rfLevel;
     m_tunerGain = gain;
@@ -417,12 +417,12 @@ void SNRPlotDialog::updateRfLevel(float rfLevel, float gain)
     }
 }
 
-void SNRPlotDialog::updateFreqOffset(float offset)
+void SignalDialog::updateFreqOffset(float offset)
 {
     ui->freqOffsetValue->setText(QString("%1 Hz").arg(offset, 0, 'f', 1));
 }
 
-void SNRPlotDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
+void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
 {
     //static QElapsedTimer timer;
     //qDebug() << Q_FUNC_INFO << timer.restart();
@@ -495,7 +495,7 @@ void SNRPlotDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
     }
 }
 
-void SNRPlotDialog::closeEvent(QCloseEvent *event)
+void SignalDialog::closeEvent(QCloseEvent *event)
 {
     emit setSignalSpectrum(false);
 
@@ -505,7 +505,7 @@ void SNRPlotDialog::closeEvent(QCloseEvent *event)
     QDialog::closeEvent(event);
 }
 
-void SNRPlotDialog::addToPlot(float snr)
+void SignalDialog::addToPlot(float snr)
 {
     double key = 0.0;
     if (m_startTime.isNull())

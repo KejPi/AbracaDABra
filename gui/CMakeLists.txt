@@ -48,7 +48,7 @@ if (HAVE_PORTAUDIO)
 endif(HAVE_PORTAUDIO)
 if (HAVE_QCUSTOMPLOT)
     set(QCUSTOMPLOT_SOURCES
-        snrplotdialog.h snrplotdialog.cpp snrplotdialog.ui
+        signaldialog.h signaldialog.cpp signaldialog.ui
     )
 endif(HAVE_QCUSTOMPLOT)
 

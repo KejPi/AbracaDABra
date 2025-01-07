@@ -198,7 +198,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     m_audioRecScheduleDialog = nullptr;
 #if HAVE_QCUSTOMPLOT
-    m_snrPlotDialog = nullptr;
+    m_signalDialog = nullptr;
 #endif
     m_epgDialog = nullptr;
     m_tiiDialog = nullptr;
@@ -338,8 +338,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
 #if HAVE_QCUSTOMPLOT
     m_snrLabel = new ClickableLabel();
-    m_snrLabel->setToolTip(QString(tr("Display SNR plot")));
-    connect(m_snrLabel, &ClickableLabel::clicked, this, &MainWindow::showSnrPlotDialog);
+    m_snrLabel->setToolTip(QString(tr("Show DAB signal overview")));
+    connect(m_snrLabel, &ClickableLabel::clicked, this, &MainWindow::showSignalDialog);
 #else
     m_snrLabel = new QLabel();
     m_snrLabel->setToolTip(QString(tr("DAB signal SNR")));
@@ -382,6 +382,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_scanningToolAction = new QAction(tr("Scanning tool..."), this);
     connect(m_scanningToolAction, &QAction::triggered, this, &MainWindow::showScannerDialog);
 
+    m_signalDialogAction = new QAction(tr("DAB signal overview"), this);
+    connect(m_signalDialogAction, &QAction::triggered, this, &MainWindow::showSignalDialog);
+
     m_audioRecordingScheduleAction = new QAction(tr("Audio recording schedule..."), this);
     connect(m_audioRecordingScheduleAction, &QAction::triggered, this, &MainWindow::showAudioRecordingSchedule);
 
@@ -421,6 +424,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_menu->addSeparator();
     m_menu->addAction(m_epgAction);
     m_menu->addAction(m_ensembleInfoAction);
+    m_menu->addAction(m_signalDialogAction);
     m_menu->addAction(m_tiiAction);
     m_menu->addAction(m_scanningToolAction);
     m_menu->addAction(m_logAction);
@@ -1032,9 +1036,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
         emit serviceRequest(0,0,0);
         event->ignore();
 #if HAVE_QCUSTOMPLOT
-        if (m_snrPlotDialog)
+        if (m_signalDialog)
         {
-            m_snrPlotDialog->close();
+            m_signalDialog->close();
         }
 #endif
         if (m_tiiDialog)
@@ -1161,9 +1165,9 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
     m_snrLabel->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
 
 #if HAVE_QCUSTOMPLOT
-    if (m_snrPlotDialog != nullptr)
+    if (m_signalDialog != nullptr)
     {
-        m_snrPlotDialog->setSignalState(sync, snr);
+        m_signalDialog->setSignalState(sync, snr);
     }
 #endif
 
@@ -3613,26 +3617,26 @@ void MainWindow::showAudioRecordingSchedule()
 
 }
 
-void MainWindow::showSnrPlotDialog()
+void MainWindow::showSignalDialog()
 {
 #if HAVE_QCUSTOMPLOT
-    if (m_snrPlotDialog == nullptr)
+    if (m_signalDialog == nullptr)
     {
-        m_snrPlotDialog = new SNRPlotDialog(m_settings, m_frequency);
-        connect(this, &MainWindow::exit, m_snrPlotDialog, &SNRPlotDialog::close);
-        m_snrPlotDialog->setupDarkMode(isDarkMode());
-        connect(m_snrPlotDialog, &SNRPlotDialog::setSignalSpectrum, m_radioControl, &RadioControl::setSignalSpectrum, Qt::QueuedConnection);
-        connect(m_radioControl, &RadioControl::tuneDone, m_snrPlotDialog, &SNRPlotDialog::onTuneDone, Qt::QueuedConnection);
-        connect(m_radioControl, &RadioControl::freqOffset, m_snrPlotDialog, &SNRPlotDialog::updateFreqOffset, Qt::QueuedConnection);
-        connect(m_radioControl, &RadioControl::signalSpectrum, m_snrPlotDialog, &SNRPlotDialog::onSignalSpectrum, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::rfLevel, m_snrPlotDialog, &SNRPlotDialog::updateRfLevel);
-        connect(m_snrPlotDialog, &QDialog::finished, m_snrPlotDialog, &QObject::deleteLater);
-        connect(m_snrPlotDialog, &QDialog::destroyed, this, [this]() { m_snrPlotDialog = nullptr; } );        
+        m_signalDialog = new SignalDialog(m_settings, m_frequency);
+        connect(this, &MainWindow::exit, m_signalDialog, &SignalDialog::close);
+        m_signalDialog->setupDarkMode(isDarkMode());
+        connect(m_signalDialog, &SignalDialog::setSignalSpectrum, m_radioControl, &RadioControl::setSignalSpectrum, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::tuneDone, m_signalDialog, &SignalDialog::onTuneDone, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::freqOffset, m_signalDialog, &SignalDialog::updateFreqOffset, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::signalSpectrum, m_signalDialog, &SignalDialog::onSignalSpectrum, Qt::QueuedConnection);
+        connect(m_inputDevice, &InputDevice::rfLevel, m_signalDialog, &SignalDialog::updateRfLevel);
+        connect(m_signalDialog, &QDialog::finished, m_signalDialog, &QObject::deleteLater);
+        connect(m_signalDialog, &QDialog::destroyed, this, [this]() { m_signalDialog = nullptr; } );
     }
 
-    m_snrPlotDialog->show();
-    m_snrPlotDialog->raise();
-    m_snrPlotDialog->activateWindow();
+    m_signalDialog->show();
+    m_signalDialog->raise();
+    m_signalDialog->activateWindow();
 #endif // HAVE_QCUSTOMPLOT
 }
 
@@ -4143,9 +4147,9 @@ void MainWindow::setupDarkMode()
         m_epgDialog->setupDarkMode(darkMode);
     }
 #if HAVE_QCUSTOMPLOT
-    if (m_snrPlotDialog != nullptr)
+    if (m_signalDialog != nullptr)
     {
-        m_snrPlotDialog->setupDarkMode(darkMode);
+        m_signalDialog->setupDarkMode(darkMode);
     }
 #endif
     if (m_tiiDialog != nullptr)

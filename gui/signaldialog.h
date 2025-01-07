@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,8 @@
  * SOFTWARE.
  */
 
-#ifndef SNRPLOTDIALOG_H
-#define SNRPLOTDIALOG_H
+#ifndef SIGNALDIALOG_H
+#define SIGNALDIALOG_H
 
 #include <QDateTime>
 #include <QDialog>
@@ -33,17 +33,17 @@
 #include "settings.h"
 
 namespace Ui {
-class SNRPlotDialog;
+class SignalDialog;
 }
 
 class QCPItemStraightLine;
-class SNRPlotDialog : public QDialog
+class SignalDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit SNRPlotDialog(Settings *settings, int freq, QWidget *parent = nullptr);
-    ~SNRPlotDialog();
+    explicit SignalDialog(Settings *settings, int freq, QWidget *parent = nullptr);
+    ~SignalDialog();
     void setSignalState(uint8_t sync, float snr);
     void setupDarkMode(bool darkModeEna);
     void onTuneDone(uint32_t freq);
@@ -61,7 +61,7 @@ private:
     enum { xPlotRange = 2*60 };
     static const char * syncLevelLabels[];
     static const QStringList snrLevelIcons;
-    Ui::SNRPlotDialog *ui;
+    Ui::SignalDialog *ui;
     Settings * m_settings = nullptr;
     QTime m_startTime;
     QTimer * m_timer = nullptr;
@@ -81,4 +81,4 @@ private:
     void setGainVisible(bool visible);
 };
 
-#endif // SNRPLOTDIALOG_H
+#endif // SIGNALDIALOG_H
