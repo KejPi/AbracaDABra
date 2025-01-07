@@ -145,9 +145,10 @@ public:
         QByteArray geometry;
         QByteArray splitterState;
     } tii;
-    struct SNRSettings {
+    struct SignalDialog {
         QByteArray geometry;
-    } snr;
+        QByteArray splitterState;
+    } signal;
     struct EPGSettings {
         bool filterEmptyEpg;
         bool filterEnsemble;

@@ -3084,7 +3084,9 @@ void MainWindow::loadSettings()
     m_settings->proxy.user = settings->value("Proxy/user", "").toString();
     m_settings->proxy.pass = QByteArray::fromBase64(settings->value("Proxy/pass", "").toByteArray());
 
-    m_settings->snr.geometry = settings->value("SNR/windowGeometry").toByteArray();
+    m_settings->signal.geometry = settings->value("SignalDialog/windowGeometry").toByteArray();
+    m_settings->signal.splitterState = settings->value("SignalDialog/layout").toByteArray();
+
     m_settings->ensembleInfo.geometry = settings->value("EnsembleInfo/windowGeometry").toByteArray();
     m_settings->log.geometry = settings->value("Log/windowGeometry").toByteArray();
     m_settings->catSls.geometry = settings->value("CatSLS/windowGeometry").toByteArray();
@@ -3305,7 +3307,8 @@ void MainWindow::saveSettings()
     settings->setValue("Proxy/user", m_settings->proxy.user);
     settings->setValue("Proxy/pass", m_settings->proxy.pass.toBase64());
 
-    settings->setValue("SNR/windowGeometry", m_settings->snr.geometry);
+    settings->setValue("SignalDialog/windowGeometry", m_settings->signal.geometry);
+    settings->setValue("SignalDialog/layout", m_settings->signal.splitterState);
 
     settings->setValue("UA-STORAGE/folder", m_settings->uaDump.folder);
     settings->setValue("UA-STORAGE/overwriteEna", m_settings->uaDump.overwriteEna);
@@ -3615,13 +3618,14 @@ void MainWindow::showSnrPlotDialog()
 #if HAVE_QCUSTOMPLOT
     if (m_snrPlotDialog == nullptr)
     {
-        //m_snrPlotDialog = new SNRPlotDialog(m_settings, m_frequency);
-        m_snrPlotDialog = new SNRPlotDialog(m_settings);
+        m_snrPlotDialog = new SNRPlotDialog(m_settings, m_frequency);
         connect(this, &MainWindow::exit, m_snrPlotDialog, &SNRPlotDialog::close);
         m_snrPlotDialog->setupDarkMode(isDarkMode());
         connect(m_snrPlotDialog, &SNRPlotDialog::setSignalSpectrum, m_radioControl, &RadioControl::setSignalSpectrum, Qt::QueuedConnection);
-        //connect(m_radioControl, &RadioControl::tuneDone, m_snrPlotDialog, &SNRPlotDialog::onTuneDone, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::tuneDone, m_snrPlotDialog, &SNRPlotDialog::onTuneDone, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::freqOffset, m_snrPlotDialog, &SNRPlotDialog::updateFreqOffset, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::signalSpectrum, m_snrPlotDialog, &SNRPlotDialog::onSignalSpectrum, Qt::QueuedConnection);
+        connect(m_inputDevice, &InputDevice::rfLevel, m_snrPlotDialog, &SNRPlotDialog::updateRfLevel);
         connect(m_snrPlotDialog, &QDialog::finished, m_snrPlotDialog, &QObject::deleteLater);
         connect(m_snrPlotDialog, &QDialog::destroyed, this, [this]() { m_snrPlotDialog = nullptr; } );        
     }

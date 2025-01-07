@@ -52,7 +52,7 @@ public:
     void onRecording(bool isActive);
     void updateRecordingStatus(uint64_t bytes, float ms);
     void updateAgcGain(float gain);
-    void updateRfLevel(float rfLevel);
+    void updateRfLevel(float rfLevel, float);
     void updateFIBstatus(int fibCount, int fibErrCount);
     void updateMSCstatus(int crcOkCount, int crcErrCount);
     void resetFibStat();

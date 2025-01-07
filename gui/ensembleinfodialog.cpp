@@ -253,7 +253,7 @@ void EnsembleInfoDialog::updateAgcGain(float gain)
     ui->agcGain->setText(QString::number(double(gain),'f', 1) + " dB");
 }
 
-void EnsembleInfoDialog::updateRfLevel(float rfLevel)
+void EnsembleInfoDialog::updateRfLevel(float rfLevel, float)
 {
     if (std::isnan(rfLevel))
     {   // level is not available (input device in HW mode or not RTL-SDR)

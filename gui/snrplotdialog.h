@@ -36,15 +36,19 @@ namespace Ui {
 class SNRPlotDialog;
 }
 
+class QCPItemStraightLine;
 class SNRPlotDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit SNRPlotDialog(Settings *settings, QWidget *parent = nullptr);
+    explicit SNRPlotDialog(Settings *settings, int freq, QWidget *parent = nullptr);
     ~SNRPlotDialog();
     void setSignalState(uint8_t sync, float snr);
     void setupDarkMode(bool darkModeEna);
+    void onTuneDone(uint32_t freq);
+    void updateRfLevel(float rfLevel, float gain);
+    void updateFreqOffset(float offset);
     void onSignalSpectrum(std::shared_ptr<std::vector<float>> data);
 
 signals:
@@ -56,15 +60,25 @@ protected:
 private:
     enum { xPlotRange = 2*60 };
     static const char * syncLevelLabels[];
-    static const QStringList snrProgressStylesheet;
+    static const QStringList snrLevelIcons;
     Ui::SNRPlotDialog *ui;
     Settings * m_settings = nullptr;
     QTime m_startTime;
     QTimer * m_timer = nullptr;
     int m_avrgCntr = 0;
     std::vector<float> m_spectrumBuffer;
+    QList<QCPItemStraightLine *> m_spectLineList;
+    int m_frequency = 0;
+    float m_rfLevel = NAN;
+    float m_tunerGain = NAN;
+    int m_snrLevel = -1;
 
     void addToPlot(float snr);
+    void setFreqRange();
+    void reset();
+
+    void setRfLevelVisible(bool visible);
+    void setGainVisible(bool visible);
 };
 
 #endif // SNRPLOTDIALOG_H

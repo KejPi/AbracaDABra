@@ -560,7 +560,6 @@ if (QCUSTOMPLOT)
             endif()
 
             set(PROJECT_BUILD_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/qcustomplot)
-            add_compile_definitions(QCUSTOMPLOT_USE_OPENGL)
             add_subdirectory(extern/qcustomplot-lib ${CMAKE_CURRENT_BINARY_DIR}/qcustomplot)
             set(QCUSTOMPLOT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/qcustomplot-lib/lib)
             set(QCUSTOMPLOT_LINK_LIBRARIES qcustomplot)

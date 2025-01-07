@@ -322,7 +322,7 @@ void RtlSdrInput::setGainMode(RtlGainMode gainMode, int gainIdx)
     {   // signalize that gain is not available
         emit agcGain(NAN);
     }
-    emit rfLevel(NAN);
+    emit rfLevel(NAN, NAN);
 }
 
 void RtlSdrInput::setGain(int gIdx)
@@ -361,7 +361,7 @@ void RtlSdrInput::resetAgc()
         setGain(m_gainList->size() >> 1);
     }
     m_levelReadCntr = 0;
-    emit rfLevel(NAN);
+    emit rfLevel(NAN, NAN);
 }
 
 void RtlSdrInput::onAgcLevel(float agcLevel)
@@ -378,7 +378,8 @@ void RtlSdrInput::onAgcLevel(float agcLevel)
             if (0 == rtlsdr_get_tuner_i2c_register(m_device, reg_values, &reglen, &tuner_gain))
             {
                 //emit rfLevel(20*log10(agcLevel) - (tuner_gain + 5) / 10 - 46);
-                emit rfLevel(m_20log10[static_cast<int>(std::roundf(agcLevel))] - (tuner_gain + 5) / 10 - 46);
+                int gain = (tuner_gain + 5) / 10;
+                emit rfLevel(m_20log10[static_cast<int>(std::roundf(agcLevel))] - gain - 46, gain);
             }
             else
             {

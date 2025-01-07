@@ -28,17 +28,17 @@
 #include "ui_snrplotdialog.h"
 
 const char * SNRPlotDialog::syncLevelLabels[] = {QT_TR_NOOP("No signal"), QT_TR_NOOP("Signal found"), QT_TR_NOOP("Sync")};
-const QStringList SNRPlotDialog::snrProgressStylesheet = {
-    QString::fromUtf8("QProgressBar { border: 1px solid grey;} QProgressBar::chunk {background-color: #ff4b4b; }"),  // red
-    QString::fromUtf8("QProgressBar { border: 1px solid grey;} QProgressBar::chunk {background-color: #ffb527; }"),  // yellow
-    QString::fromUtf8("QProgressBar { border: 1px solid grey;} QProgressBar::chunk {background-color: #5bc214; }")   // green
+const QStringList SNRPlotDialog::snrLevelIcons = {
+    QString(R"(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#ff4b4b"/></svg>)"),  // red
+    QString(R"(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#ffb527"/></svg>)"),  // yellow
+    QString(R"(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#5bc214"/></svg>)")   // green
 };
 
-
-SNRPlotDialog::SNRPlotDialog(Settings *settings, QWidget *parent)
+SNRPlotDialog::SNRPlotDialog(Settings *settings, int freq, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::SNRPlotDialog)
     , m_settings(settings)
+    , m_frequency(freq)
 {
     ui->setupUi(this);    
 
@@ -47,36 +47,60 @@ SNRPlotDialog::SNRPlotDialog(Settings *settings, QWidget *parent)
     setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
 #endif
 
-    QSize sz = QSize(780, 300);
-    if (!m_settings->snr.geometry.isEmpty())
-    {
-        restoreGeometry(m_settings->snr.geometry);
-        sz = size();
-    }
-    QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
-
-    QFont boldBigFont;
-    boldBigFont.setBold(true);
-    boldBigFont.setPointSize(ui->syncLabel->font().pointSize() + 2);
-    ui->syncLabel->setFont(boldBigFont);
-    int syncLabelWidth = ui->syncLabel->fontMetrics().boundingRect(tr(syncLevelLabels[1])).width()+10;
-    ui->syncLabel->setFixedWidth(syncLabelWidth);
-    ui->snrValue->setFont(boldBigFont);
-    int snrValueWidth = ui->snrValue->fontMetrics().boundingRect(" 36.0 dB").width();
-    ui->snrValue->setFixedWidth(snrValueWidth);
-    ui->snrValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);    
+    int w = ui->snrValue->fontMetrics().boundingRect(" 36.0 dB").width();
+    ui->snrValue->setFixedWidth(w);
+    ui->snrValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     ui->snrValue->setToolTip(QString(tr("DAB signal SNR")));
     ui->snrValue->setText("");
-    ui->fixedSpacer->setGeometry(QRect(0,0, syncLabelWidth-snrValueWidth, 5));    
-    ui->progressBar->setFixedHeight(ui->snrValue->fontMetrics().boundingRect(" 36.0 dB").height() * 0.6);
-    // ui->progressBar->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
-    ui->progressBar->setMinimum(0);
-    ui->progressBar->setMaximum(360);  // 36dB * 10
+    ui->snrLabel->setToolTip(ui->snrValue->toolTip());
+
+    w = ui->rfLevelValue->fontMetrics().boundingRect(" -100.0 dBm").width();
+    ui->rfLevelValue->setFixedWidth(w);
+    ui->rfLevelValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    ui->rfLevelValue->setToolTip(QString(tr("Estimated RF level")));
+    ui->rfLevelValue->setText("");
+    ui->rfLevelLabel->setToolTip(ui->rfLevelValue->toolTip());
+
+    w = ui->gainValue->fontMetrics().boundingRect(" 88 dB").width();
+    ui->gainValue->setFixedWidth(w);
+    ui->gainValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    ui->gainValue->setToolTip(QString(tr("Tuner gain")));
+    ui->gainValue->setText("");
+    ui->gainLabel->setToolTip(ui->gainValue->toolTip());
+
+    w = ui->freqValue->fontMetrics().boundingRect(" 227360 kHz").width();
+    ui->freqValue->setFixedWidth(w);
+    ui->freqValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    ui->freqValue->setToolTip(QString(tr("Tuned frequency")));
+    if (m_frequency > 0)
+    {
+        ui->freqValue->setText(QString::number(m_frequency) + " kHz");
+    }
+    else
+    {
+        ui->freqValue->setText("");
+    }
+    ui->freqLabel->setToolTip(ui->freqValue->toolTip());
+
+    w = ui->freqOffsetValue->fontMetrics().boundingRect(" -12345.5 Hz").width();
+    ui->freqOffsetValue->setFixedWidth(w);
+    ui->freqOffsetValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    ui->freqOffsetValue->setToolTip(QString(tr("Estimated frequency offset")));
+    ui->freqOffsetValue->setText("");
+    ui->freqOffsetLabel->setToolTip(ui->freqOffsetValue->toolTip());
+
+    ui->syncLabel->setText("");
+    ui->syncLabel->setFixedSize(18,18);
+
+    // ui->snrPlot->plotLayout()->insertRow(0);
+    // QCPTextElement *title = new QCPTextElement(ui->snrPlot, "SNR Plot", QFont("sans", 17, QFont::Bold));
+    // ui->snrPlot->plotLayout()->addElement(0, 0, title);
 
     ui->snrPlot->addGraph();
     ui->snrPlot->graph(0)->setLineStyle(QCPGraph::lsStepCenter);
     ui->snrPlot->xAxis->grid()->setSubGridVisible(true);
     ui->snrPlot->yAxis->grid()->setSubGridVisible(true);
+    ui->snrPlot->yAxis->setLabel(tr("SNR [dB]"));
 
     QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
     timeTicker->setTimeFormat("%m:%s");
@@ -84,6 +108,9 @@ SNRPlotDialog::SNRPlotDialog(Settings *settings, QWidget *parent)
     ui->snrPlot->axisRect()->setupFullAxesBox();
     ui->snrPlot->xAxis->setRange(0, xPlotRange);
     ui->snrPlot->yAxis->setRange(0, 36);
+    //ui->snrPlot->xAxis->setLabel(tr("time"));
+    ui->snrPlot->setMinimumHeight(180);
+
 
     // make left and bottom axes transfer their ranges to right and top axes:
     connect(ui->snrPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->snrPlot->xAxis2, SLOT(setRange(QCPRange)));
@@ -91,39 +118,70 @@ SNRPlotDialog::SNRPlotDialog(Settings *settings, QWidget *parent)
 
     m_spectrumBuffer.assign(2048, 0.0);
 
+    // ui->spectrumPlot->plotLayout()->insertRow(0);
+    // title = new QCPTextElement(ui->spectrumPlot, "Signal spectrum", QFont("sans", 17, QFont::Bold));
+    // ui->spectrumPlot->plotLayout()->addElement(0, 0, title);
+
+    ui->spectrumPlot->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom)); // decimal point
     ui->spectrumPlot->setAttribute(Qt::WA_OpaquePaintEvent);
-    //ui->spectrumPlot->setOpenGl(true);
-    //ui->spectrumPlot->setBufferDevicePixelRatio(1.0);
     ui->spectrumPlot->addGraph();
     ui->spectrumPlot->graph(0)->setLineStyle(QCPGraph::lsLine);
     ui->spectrumPlot->xAxis->grid()->setSubGridVisible(true);
     ui->spectrumPlot->yAxis->grid()->setSubGridVisible(true);
 
-
     ui->spectrumPlot->axisRect()->setupFullAxesBox();
-    ui->spectrumPlot->xAxis->setRange(0, 2047);
-    ui->spectrumPlot->yAxis->setRange(0, 100);
-    ui->spectrumPlot->xAxis2->setRange(0, 2047);
-    ui->spectrumPlot->yAxis2->setRange(0, 100);
+    ui->spectrumPlot->xAxis->setRange(-1.024, 1.024);
+    ui->spectrumPlot->yAxis->setRange(-100, 0);    
+    ui->spectrumPlot->xAxis2->setRange(-1.024, 1.024);
+    ui->spectrumPlot->yAxis2->setRange(-100, 0);
 
-    // QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
-    // timeTicker->setTimeFormat("%m:%s");
-    // ui->snrPlot->xAxis->setTicker(timeTicker);
-    // ui->snrPlot->axisRect()->setupFullAxesBox();
-    // ui->snrPlot->xAxis->setRange(0, xPlotRange);
-    // ui->snrPlot->yAxis->setRange(0, 36);
+    ui->spectrumPlot->xAxis->setLabel(tr("frequency [MHz]"));
+    ui->spectrumPlot->yAxis->setLabel("dBFS");
+    ui->spectrumPlot->setMinimumHeight(200);
+
+    QSharedPointer<QCPAxisTickerFixed> freqTicker(new QCPAxisTickerFixed);
+    freqTicker->setTickStep(0.2);
+    ui->spectrumPlot->xAxis->setTicker(freqTicker);
+
+    QSharedPointer<QCPAxisTickerFixed> levelTicker(new QCPAxisTickerFixed);
+    levelTicker->setTickStep(10);
+    ui->spectrumPlot->yAxis->setTicker(levelTicker);
+
+
+    QCPItemStraightLine *verticalLine;
+    for (int n = -1; n <= 1; ++n)
+    {
+        verticalLine = new QCPItemStraightLine(ui->spectrumPlot);
+        m_spectLineList.append(verticalLine);
+    }
+    setFreqRange();
 
     // make bottom and left axes transfer their ranges to top and right axes:
     connect(ui->spectrumPlot->xAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), ui->spectrumPlot->xAxis2, QOverload<const QCPRange &>::of(&QCPAxis::setRange));
     connect(ui->spectrumPlot->yAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), ui->spectrumPlot->yAxis2, QOverload<const QCPRange &>::of(&QCPAxis::setRange));
-
 
     m_timer = new QTimer;
     m_timer->setInterval(1500);
     connect(m_timer, &QTimer::timeout, this, [this]() { setSignalState(0, 0.0); } );
     setSignalState(0, 0.0);
 
-    QTimer::singleShot(100, this, [this]() { emit setSignalSpectrum(true); });
+    if (!m_settings->signal.splitterState.isEmpty()) {
+        ui->splitter->restoreState(m_settings->signal.splitterState);
+    }
+
+    QSize sz = QSize(750, 500);
+    if (!m_settings->signal.geometry.isEmpty())
+    {
+        restoreGeometry(m_settings->signal.geometry);
+        sz = size();
+    }
+    QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
+
+    QTimer::singleShot(100, this, [this]() {
+        setRfLevelVisible(false);
+        setGainVisible(false);
+        emit setSignalSpectrum(true);
+    });
 }
 
 SNRPlotDialog::~SNRPlotDialog()
@@ -136,22 +194,25 @@ SNRPlotDialog::~SNRPlotDialog()
 
 void SNRPlotDialog::setSignalState(uint8_t sync, float snr)
 {
-    ui->syncLabel->setText(tr(syncLevelLabels[sync]));
     ui->snrValue->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
-    ui->progressBar->setValue(snr*10);
+    int snrLevel = 2;
     if (snr < 7.0)
     {
-        ui->progressBar->setStyleSheet(snrProgressStylesheet[0]);
+        snrLevel = 0;
     }
     else if (snr < 10.0)
     {
-        ui->progressBar->setStyleSheet(snrProgressStylesheet[1]);
+        snrLevel = 1;
     }
-    else
-    {
-        ui->progressBar->setStyleSheet(snrProgressStylesheet[2]);
-    }
+    if (snrLevel != m_snrLevel)
+    {   // update icon
+        m_snrLevel = snrLevel;
 
+        QPixmap icon;
+        icon.loadFromData(snrLevelIcons.at(m_snrLevel).toUtf8(), "svg");
+        ui->syncLabel->setPixmap(icon);
+        ui->syncLabel->setToolTip(syncLevelLabels[m_snrLevel]);
+    }
     addToPlot(snr);
 
     m_timer->start();
@@ -161,74 +222,204 @@ void SNRPlotDialog::setupDarkMode(bool darkModeEna)
 {
     if (darkModeEna)
     {
-        ui->snrPlot->xAxis->setBasePen(QPen(Qt::white, 0));
-        ui->snrPlot->yAxis->setBasePen(QPen(Qt::white, 0));
-        ui->snrPlot->xAxis2->setBasePen(QPen(Qt::white, 0));
-        ui->snrPlot->yAxis2->setBasePen(QPen(Qt::white, 0));
-        ui->snrPlot->xAxis->setTickPen(QPen(Qt::white, 0));
-        ui->snrPlot->yAxis->setTickPen(QPen(Qt::white, 0));
-        ui->snrPlot->xAxis2->setTickPen(QPen(Qt::white, 0));
-        ui->snrPlot->yAxis2->setTickPen(QPen(Qt::white, 0));
-        ui->snrPlot->xAxis->setSubTickPen(QPen(Qt::white, 0));
-        ui->snrPlot->yAxis->setSubTickPen(QPen(Qt::white, 0));
-        ui->snrPlot->xAxis2->setSubTickPen(QPen(Qt::white, 0));
-        ui->snrPlot->yAxis2->setSubTickPen(QPen(Qt::white, 0));
-        ui->snrPlot->xAxis->setTickLabelColor(Qt::white);
-        ui->snrPlot->yAxis->setTickLabelColor(Qt::white);
-        ui->snrPlot->xAxis2->setTickLabelColor(Qt::white);
-        ui->snrPlot->yAxis2->setTickLabelColor(Qt::white);
-        ui->snrPlot->xAxis->grid()->setPen(QPen(QColor(190, 190, 190), 0, Qt::DotLine));
-        ui->snrPlot->yAxis->grid()->setPen(QPen(QColor(150, 150, 150), 1, Qt::DotLine));
-        ui->snrPlot->xAxis->grid()->setSubGridPen(QPen(QColor(190, 190, 190), 0, Qt::DotLine));
-        ui->snrPlot->yAxis->grid()->setSubGridPen(QPen(QColor(190, 190, 190), 0, Qt::DotLine));
-        ui->snrPlot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
-        ui->snrPlot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+        auto plot = ui->snrPlot;
+        for (int p = 0; p < 2; ++p)
+        {
+            plot->xAxis->setBasePen(QPen(Qt::white, 0));
+            plot->yAxis->setBasePen(QPen(Qt::white, 0));
+            plot->xAxis2->setBasePen(QPen(Qt::white, 0));
+            plot->yAxis2->setBasePen(QPen(Qt::white, 0));
+            plot->xAxis->setTickPen(QPen(Qt::white, 0));
+            plot->yAxis->setTickPen(QPen(Qt::white, 0));
+            plot->xAxis2->setTickPen(QPen(Qt::white, 0));
+            plot->yAxis2->setTickPen(QPen(Qt::white, 0));
+            plot->xAxis->setSubTickPen(QPen(Qt::white, 0));
+            plot->yAxis->setSubTickPen(QPen(Qt::white, 0));
+            plot->xAxis2->setSubTickPen(QPen(Qt::white, 0));
+            plot->yAxis2->setSubTickPen(QPen(Qt::white, 0));
+            plot->xAxis->setTickLabelColor(Qt::white);
+            plot->yAxis->setTickLabelColor(Qt::white);
+            plot->xAxis2->setTickLabelColor(Qt::white);
+            plot->yAxis2->setTickLabelColor(Qt::white);
+            plot->xAxis->setLabelColor(Qt::white);
+            plot->yAxis->setLabelColor(Qt::white);
+            plot->xAxis->grid()->setPen(QPen(QColor(190, 190, 190), 0, Qt::DotLine));
+            plot->yAxis->grid()->setPen(QPen(QColor(150, 150, 150), 1, Qt::DotLine));
+            plot->xAxis->grid()->setSubGridPen(QPen(QColor(190, 190, 190), 0, Qt::DotLine));
+            plot->yAxis->grid()->setSubGridPen(QPen(QColor(190, 190, 190), 0, Qt::DotLine));
+            plot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
+            plot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+            plot->setBackground(QBrush(Qt::black));
 
-        ui->snrPlot->setBackground(QBrush(Qt::black));
+            plot = ui->spectrumPlot;
+        }
+
         ui->snrPlot->graph(0)->setPen(QPen(Qt::cyan, 2));
         ui->snrPlot->graph(0)->setBrush(QBrush(QColor(0, 255, 255, 100)));
         ui->snrPlot->replot();
 
-        ui->spectrumPlot->setBackground(QBrush(Qt::black));
-        ui->spectrumPlot->graph(0)->setPen(QPen(Qt::cyan, 2));
-        ui->spectrumPlot->graph(0)->setBrush(QBrush(QColor(0, 255, 255, 100)));
+        ui->spectrumPlot->graph(0)->setPen(QPen(Qt::cyan));
+
+        for (int n = 0; n < 3; ++n)
+        {
+            if (n == 1)
+            {
+                m_spectLineList.at(n)->setPen(QPen(Qt::magenta, 1, Qt::SolidLine));
+            }
+            else
+            {
+                m_spectLineList.at(n)->setPen(QPen(Qt::white, 1, Qt::DotLine));
+            }
+        }
+
         ui->spectrumPlot->replot();
     }
     else
     {
-        ui->snrPlot->xAxis->setBasePen(QPen(Qt::black, 0));
-        ui->snrPlot->yAxis->setBasePen(QPen(Qt::black, 0));
-        ui->snrPlot->xAxis2->setBasePen(QPen(Qt::black, 0));
-        ui->snrPlot->yAxis2->setBasePen(QPen(Qt::black, 0));
-        ui->snrPlot->xAxis->setTickPen(QPen(Qt::black, 0));
-        ui->snrPlot->yAxis->setTickPen(QPen(Qt::black, 0));
-        ui->snrPlot->xAxis2->setTickPen(QPen(Qt::black, 0));
-        ui->snrPlot->yAxis2->setTickPen(QPen(Qt::black, 0));
-        ui->snrPlot->xAxis->setSubTickPen(QPen(Qt::black, 0));
-        ui->snrPlot->yAxis->setSubTickPen(QPen(Qt::black, 0));
-        ui->snrPlot->xAxis2->setSubTickPen(QPen(Qt::black, 0));
-        ui->snrPlot->yAxis2->setSubTickPen(QPen(Qt::black, 0));
-        ui->snrPlot->xAxis->setTickLabelColor(Qt::black);
-        ui->snrPlot->yAxis->setTickLabelColor(Qt::black);
-        ui->snrPlot->xAxis2->setTickLabelColor(Qt::black);
-        ui->snrPlot->yAxis2->setTickLabelColor(Qt::black);
-        ui->snrPlot->xAxis->grid()->setPen(QPen(QColor(60, 60, 60), 0, Qt::DotLine));
-        ui->snrPlot->yAxis->grid()->setPen(QPen(QColor(100, 100, 100), 1, Qt::DotLine));
-        ui->snrPlot->xAxis->grid()->setSubGridPen(QPen(QColor(60, 60, 60), 0, Qt::DotLine));
-        ui->snrPlot->yAxis->grid()->setSubGridPen(QPen(QColor(60, 60, 60), 0, Qt::DotLine));
-        ui->snrPlot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
-        ui->snrPlot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+        auto plot = ui->snrPlot;
+        for (int p = 0; p < 2; ++p)
+        {
+            plot->xAxis->setBasePen(QPen(Qt::black, 0));
+            plot->yAxis->setBasePen(QPen(Qt::black, 0));
+            plot->xAxis2->setBasePen(QPen(Qt::black, 0));
+            plot->yAxis2->setBasePen(QPen(Qt::black, 0));
+            plot->xAxis->setTickPen(QPen(Qt::black, 0));
+            plot->yAxis->setTickPen(QPen(Qt::black, 0));
+            plot->xAxis2->setTickPen(QPen(Qt::black, 0));
+            plot->yAxis2->setTickPen(QPen(Qt::black, 0));
+            plot->xAxis->setSubTickPen(QPen(Qt::black, 0));
+            plot->yAxis->setSubTickPen(QPen(Qt::black, 0));
+            plot->xAxis2->setSubTickPen(QPen(Qt::black, 0));
+            plot->yAxis2->setSubTickPen(QPen(Qt::black, 0));
+            plot->xAxis->setTickLabelColor(Qt::black);
+            plot->yAxis->setTickLabelColor(Qt::black);
+            plot->xAxis2->setTickLabelColor(Qt::black);
+            plot->yAxis2->setTickLabelColor(Qt::black);
+            plot->xAxis->setLabelColor(Qt::black);
+            plot->yAxis->setLabelColor(Qt::black);
+            plot->xAxis->grid()->setPen(QPen(QColor(60, 60, 60), 0, Qt::DotLine));
+            plot->yAxis->grid()->setPen(QPen(QColor(100, 100, 100), 1, Qt::DotLine));
+            plot->xAxis->grid()->setSubGridPen(QPen(QColor(60, 60, 60), 0, Qt::DotLine));
+            plot->yAxis->grid()->setSubGridPen(QPen(QColor(60, 60, 60), 0, Qt::DotLine));
+            plot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
+            plot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+            plot->setBackground(QBrush(Qt::white));
 
-        ui->snrPlot->setBackground(QBrush(Qt::white));
+            plot = ui->spectrumPlot;
+        }
+
         ui->snrPlot->graph(0)->setPen(QPen(Qt::blue, 2));
         ui->snrPlot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 100)));
         ui->snrPlot->replot();
 
         ui->spectrumPlot->setBackground(QBrush(Qt::white));
         ui->spectrumPlot->graph(0)->setPen(QPen(Qt::blue));
-        //ui->spectrumPlot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 100)));
+        for (int n = 0; n < 3; ++n)
+        {
+            if (n == 1)
+            {
+                m_spectLineList.at(n)->setPen(QPen(Qt::red, 1, Qt::SolidLine));
+            }
+            else
+            {
+                m_spectLineList.at(n)->setPen(QPen(Qt::darkGray, 1, Qt::DotLine));
+            }
+        }
+
         ui->spectrumPlot->replot();
     }
+}
+
+void SNRPlotDialog::setFreqRange()
+{
+    for (int n = 0; n < 3; ++n)
+    {
+        m_spectLineList.at(n)->point1->setCoords(((n-1) * 768 + m_frequency)*0.001, -100);
+        m_spectLineList.at(n)->point2->setCoords(((n-1) * 768 + m_frequency)*0.001, 0);
+    }
+    ui->spectrumPlot->xAxis->setRange((-1024 + m_frequency)*0.001, (1024 + m_frequency)*0.001);
+}
+
+void SNRPlotDialog::reset()
+{
+    m_spectrumBuffer.assign(2048, 0.0);
+    m_avrgCntr = 0;
+    ui->spectrumPlot->graph(0)->data()->clear();
+}
+
+void SNRPlotDialog::setRfLevelVisible(bool visible)
+{
+    if (visible != ui->rfLevelValue->isVisible())
+    {
+        ui->rfLevelLabel->setVisible(visible);
+        ui->rfLevelValue->setVisible(visible);
+        ui->rfLevelVLine->setVisible(visible);
+    }
+}
+
+void SNRPlotDialog::setGainVisible(bool visible)
+{
+    if (visible != ui->gainValue->isVisible())
+    {
+        ui->gainLabel->setVisible(visible);
+        ui->gainValue->setVisible(visible);
+        ui->gainVLine->setVisible(visible);
+
+        // change plot label
+        if (visible)
+        {
+            ui->spectrumPlot->yAxis->setLabel("dBm");
+        }
+        else
+        {
+            ui->spectrumPlot->yAxis->setLabel("dBFS");
+        }
+    }
+}
+
+void SNRPlotDialog::onTuneDone(uint32_t freq)
+{
+    if (freq == m_frequency)
+    {
+        return;
+    }
+    m_frequency = freq;
+    reset();
+    setFreqRange();
+    ui->freqValue->setText(QString::number(m_frequency) + " kHz");
+    ui->spectrumPlot->replot();
+}
+
+void SNRPlotDialog::updateRfLevel(float rfLevel, float gain)
+{
+    m_rfLevel = rfLevel;
+    m_tunerGain = gain;
+    if (std::isnan(gain))
+    {
+        ui->rfLevelValue->setText(tr("N/A"));
+        setGainVisible(false);
+    }
+    else
+    {
+        ui->gainValue->setText(QString::number(static_cast<int>(gain)) + " dB");
+        setGainVisible(true);
+    }
+
+    if (std::isnan(rfLevel))
+    {   // level is not available (input device in HW mode or not RTL-SDR)
+        ui->rfLevelValue->setText(tr("N/A"));
+        setRfLevelVisible(false);
+    }
+    else
+    {
+        ui->rfLevelValue->setText(QString::number(double(rfLevel),'f', 1) + " dBm");
+        setRfLevelVisible(true);
+    }
+}
+
+void SNRPlotDialog::updateFreqOffset(float offset)
+{
+    ui->freqOffsetValue->setText(QString("%1 Hz").arg(offset, 0, 'f', 1));
 }
 
 void SNRPlotDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
@@ -244,27 +435,62 @@ void SNRPlotDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
 
     if (++m_avrgCntr >= 10)
     {
+        //qDebug() << *std::min_element(m_spectrumBuffer.cbegin(), m_spectrumBuffer.cend())*0.1 << *std::max_element(m_spectrumBuffer.cbegin(), m_spectrumBuffer.cend())*0.1;
         //qDebug() << Q_FUNC_INFO;
         m_avrgCntr = 0;
+
+        // -20 dB is averaging factor 1/10
+        // 66.227dB is FFT gain 2048
+        float offset_dB = -20.0 - 66.227;
+        if (m_settings->inputDevice == InputDeviceId::RTLSDR || m_settings->inputDevice == InputDeviceId::RTLTCP  || m_settings->inputDevice == InputDeviceId::RAWFILE)
+        {   // input is -128 .. +127  ==> * 1/128 = -42.144 dB
+            offset_dB = offset_dB - 42.144;
+        }
+        if (!std::isnan(m_tunerGain))
+        {
+            offset_dB -= m_tunerGain - 3;
+        }
+
         ui->spectrumPlot->graph(0)->data()->clear();
         float freq = 0;
-        for (auto it = m_spectrumBuffer.cbegin(); it != m_spectrumBuffer.cend(); ++it)
+        // float sum1536 = -m_spectrumBuffer.front();
+        float minVal = 1000;
+        float maxVal = -1000;
+        for (auto it = m_spectrumBuffer.begin(); it != m_spectrumBuffer.end(); ++it)
         {
-            ui->spectrumPlot->graph(0)->addData(freq, 20*std::log10(*it) - 20);
+            float val = 20*std::log10(*it) + offset_dB;
+            if (val < -200) {
+                val = -200;
+            }
+            minVal = (val < minVal) ? val : minVal;
+            maxVal = (val > maxVal) ? val : maxVal;
+
+            ui->spectrumPlot->graph(0)->addData((freq+m_frequency)*0.001, val);
+
+            // if ((freq >= -768.0) && (freq <= 768.0))
+            // {
+            //     sum1536 += (*it) * (*it);
+            // }
+
             freq += 1.0;
 
             if (freq == 1024.0)
             {
                 freq = -1024.0;
             }
-
-            // if (freq < 10) {
-            //     qDebug() << 20*std::log10(*it);
-            // }
+            *it = 0.0;
         }
-        m_spectrumBuffer.assign(2048, 0.0);
-        ui->spectrumPlot->xAxis->setRange(-1024, 1024);
-        //ui->spectrumPlot->xAxis->setRange(0, 2048e3);
+
+        auto range = ui->spectrumPlot->yAxis->range();
+        if ((minVal - range.lower) < 5 || (minVal - range.lower) > 25)
+        {   // set minumum to at least minVal + 10, use multiples of 10
+            range.lower = (ceilf((minVal - 20)/10.0))*10.0;
+        }
+        if ((range.upper - maxVal) < 5 || (range.upper - maxVal) > 25)
+        {
+            range.upper = (floorf((maxVal + 20)/10.0))*10.0;
+        }
+        ui->spectrumPlot->yAxis->setRange(range);
         ui->spectrumPlot->replot();
     }
 }
@@ -273,7 +499,8 @@ void SNRPlotDialog::closeEvent(QCloseEvent *event)
 {
     emit setSignalSpectrum(false);
 
-    m_settings->snr.geometry = saveGeometry();
+    m_settings->signal.geometry = saveGeometry();
+    m_settings->signal.splitterState = ui->splitter->saveState();
 
     QDialog::closeEvent(event);
 }
@@ -325,5 +552,5 @@ void SNRPlotDialog::addToPlot(float snr)
     }
 
     ui->snrPlot->replot();
-
 }
+
