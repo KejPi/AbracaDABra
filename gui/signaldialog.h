@@ -60,7 +60,10 @@ protected:
 private:
     enum { xPlotRange = 2*60 };
     static const char * syncLevelLabels[];
-    static const QStringList snrLevelIcons;
+    static const QStringList snrLevelColors;
+    static const QString templateSvgFill;
+    static const QString templateSvgOutline;
+    QPixmap m_snrLevelIcons[7];
     Ui::SignalDialog *ui;
     Settings * m_settings = nullptr;
     QTime m_startTime;
@@ -71,7 +74,7 @@ private:
     int m_frequency = 0;
     float m_rfLevel = NAN;
     float m_tunerGain = NAN;
-    int m_snrLevel = -1;
+    int m_syncSnrLevel = -1;
 
     void addToPlot(float snr);
     void setFreqRange();
