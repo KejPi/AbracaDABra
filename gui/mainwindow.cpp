@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -1177,13 +1177,16 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
 #ifndef __APPLE__
         m_snrProgressbar->setStyleSheet(snrProgressStylesheet[0]);
 #endif
-        if (isDarkMode())
+        if (DabSyncLevel::FullSync == DabSyncLevel(sync))
         {
-            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal1_dark.png"));
-        }
-        else
-        {
-            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal1.png"));
+            if (isDarkMode())
+            {
+                m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal1_dark.png"));
+            }
+            else
+            {
+                m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal1.png"));
+            }
         }
     }
     else if (static_cast<int>(SNR10Threhold::SNR_GOOD) > snr10)
@@ -1191,13 +1194,16 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
 #ifndef __APPLE__
         m_snrProgressbar->setStyleSheet(snrProgressStylesheet[1]);
 #endif
-        if (isDarkMode())
+        if (DabSyncLevel::FullSync == DabSyncLevel(sync))
         {
-            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal2_dark.png"));
-        }
-        else
-        {
-            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal2.png"));
+            if (isDarkMode())
+            {
+                m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal2_dark.png"));
+            }
+            else
+            {
+                m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal2.png"));
+            }
         }
     }
     else
@@ -1205,13 +1211,16 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
 #ifndef __APPLE__
         m_snrProgressbar->setStyleSheet(snrProgressStylesheet[2]);
 #endif
-        if (isDarkMode())
+        if (DabSyncLevel::FullSync == DabSyncLevel(sync))
         {
-            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal3_dark.png"));
-        }
-        else
-        {
-            m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal3.png"));
+            if (isDarkMode())
+            {
+                m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal3_dark.png"));
+            }
+            else
+            {
+                m_basicSignalQualityLabel->setPixmap(QPixmap(":/resources/signal3.png"));
+            }
         }
     }
 }
