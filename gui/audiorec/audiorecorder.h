@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,11 +27,11 @@
 #ifndef AUDIORECORDER_H
 #define AUDIORECORDER_H
 
-#include <QObject>
 #include <QFile>
+#include <QObject>
 
-#include "radiocontrol.h"
 #include "dabsdr.h"
+#include "radiocontrol.h"
 
 class AudioRecorder : public QObject
 {
@@ -49,20 +49,20 @@ public:
     ~AudioRecorder();
     QString recordingPath() const;
     void setup(const QString &recordingPath, bool doOutputRecording = false);
-    void setAudioService(const RadioControlServiceComponent & s);
+    void setAudioService(const RadioControlServiceComponent &s);
     void setDataFormat(int sampleRateKHz, bool isAAC);
     void start();
     void stop();
     void recordData(const RadioControlAudioData *inData, const int16_t *outputData, size_t numOutputSamples);
 
 signals:
-    void recordingStarted(const QString & filename);
+    void recordingStarted(const QString &filename);
     void recordingStopped();
     void recordingProgress(size_t bytes, size_t timeSec);
 
 private:
     QString m_recordingPath;
-    QFile * m_file;
+    QFile *m_file;
     DabSId m_sid;
     QString m_serviceName;
     RecordingState m_recordingState;
@@ -73,10 +73,10 @@ private:
     int m_sampleRateKHz;
     bool m_isAAC;
 
-    void writeMP2(const std::vector<uint8_t> & data);
+    void writeMP2(const std::vector<uint8_t> &data);
     void writeAAC(const std::vector<uint8_t> &data, const dabsdrAudioFrameHeader_t &aacHeader);
-    void writeWav(const int16_t * data, size_t numSamples);
+    void writeWav(const int16_t *data, size_t numSamples);
     void writeWavHeader();
 };
 
-#endif // AUDIORECORDER_H
+#endif  // AUDIORECORDER_H

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,15 +28,16 @@
 #define AUDIORECMANAGER_H
 
 #include <QObject>
-#include "audiorecschedulemodel.h"
+
 #include "audiorecorder.h"
+#include "audiorecschedulemodel.h"
 #include "settings.h"
 
 class AudioRecManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit AudioRecManager(AudioRecScheduleModel * model, SLModel *slModel, AudioRecorder * recorder, Settings * settings, QObject *parent = nullptr);
+    explicit AudioRecManager(AudioRecScheduleModel *model, SLModel *slModel, AudioRecorder *recorder, Settings *settings, QObject *parent = nullptr);
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
 
     bool isAudioRecordingActive() const;
@@ -48,7 +49,7 @@ public:
     void requestCancelSchedule();
 
     void setHaveAudio(bool newHaveAudio);
-    void onDLComplete(const QString & dl);
+    void onDLComplete(const QString &dl);
     void onDLReset() { m_dlText.clear(); }
 
 signals:
@@ -56,7 +57,7 @@ signals:
     void audioRecordingStarted();
     void audioRecordingStopped();
     void audioRecordingProgress(size_t bytes, qint64 timeSec);
-    void requestServiceSelection(const ServiceListId & serviceId);
+    void requestServiceSelection(const ServiceListId &serviceId);
 
     // used to communicate with worker
     void startRecording();
@@ -66,27 +67,37 @@ protected:
     void timerEvent(QTimerEvent *);
 
 private:
-    enum { COUNTDOWN_SEC = 30,
-           SERVICESELECTION_SEC = 10,
-           STARTADVANCE_SEC = 0};
-    enum ScheduledRecordingState {StateIdle, StateCountdown, StateServiceSelection, StateReady, StateRecording} m_scheduledRecordingState;
+    enum
+    {
+        COUNTDOWN_SEC = 30,
+        SERVICESELECTION_SEC = 10,
+        STARTADVANCE_SEC = 0
+    };
+    enum ScheduledRecordingState
+    {
+        StateIdle,
+        StateCountdown,
+        StateServiceSelection,
+        StateReady,
+        StateRecording
+    } m_scheduledRecordingState;
 
     QBasicTimer m_timer;
 
-    Settings * m_settings;
-    SLModel * m_slModel;
-    AudioRecScheduleModel * m_model;    
-    AudioRecorder * m_recorder;
+    Settings *m_settings;
+    SLModel *m_slModel;
+    AudioRecScheduleModel *m_model;
+    AudioRecorder *m_recorder;
     bool m_isAudioRecordingActive;
     QString m_audioRecordingFile;
-    bool m_haveTimeConnection;    
+    bool m_haveTimeConnection;
 
     qint64 m_scheduleTimeSecSinceEpoch;
     AudioRecScheduleItem m_currentItem;
 
     qint64 m_recTimeSec;
     QString m_dlText;
-    QFile * m_dlLogFile;
+    QFile *m_dlLogFile;
 
     // this information is required to start scheduled recoding
     ServiceListId m_serviceId;
@@ -101,4 +112,4 @@ private:
     void stopCurrentSchedule();
 };
 
-#endif // AUDIORECMANAGER_H
+#endif  // AUDIORECMANAGER_H

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,7 @@
 
 #include "dabchannellistmodel.h"
 
-DABChannelListModel::DABChannelListModel(QObject *parent)
-    : QAbstractListModel{parent}
+DABChannelListModel::DABChannelListModel(QObject *parent) : QAbstractListModel{parent}
 {}
 
 QVariant DABChannelListModel::data(const QModelIndex &index, int role) const
@@ -46,22 +45,21 @@ QVariant DABChannelListModel::data(const QModelIndex &index, int role) const
         auto key = DabTables::channelList.keys().at(index.row());
         return QVariant(DabTables::channelList.value(key));
     }
-    if (role == Roles::FrequencyRole) {
+    if (role == Roles::FrequencyRole)
+    {
         return DabTables::channelList.keys().at(index.row());
     }
 
     return QVariant();
 }
 
-DABChannelListFilteredModel::DABChannelListFilteredModel(QObject *parent)
-    : QSortFilterProxyModel(parent)
-    , m_frequencyFilter(0)
+DABChannelListFilteredModel::DABChannelListFilteredModel(QObject *parent) : QSortFilterProxyModel(parent), m_frequencyFilter(0)
 {}
 
 void DABChannelListFilteredModel::setChannelFilter(int freq)
 {
     if (DabTables::channelList.contains(freq))
-    {   // this is protection from setting invalid DAB frequency
+    {  // this is protection from setting invalid DAB frequency
         m_frequencyFilter = freq;
     }
     else
@@ -77,7 +75,6 @@ bool DABChannelListFilteredModel::filterAcceptsRow(int sourceRow, const QModelIn
     {
         return true;
     }
-    QModelIndex index= sourceModel()->index(sourceRow, 0, sourceParent);
+    QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
     return sourceModel()->data(index, DABChannelListModel::Roles::FrequencyRole).toInt() == m_frequencyFilter;
 }
-

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,9 @@
 #ifndef UPDATECHECKER_H
 #define UPDATECHECKER_H
 
-#include <QObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-
+#include <QObject>
 
 class UpdateChecker : public QObject
 {
@@ -53,8 +52,7 @@ private:
     QString m_releaseNotes;
 
     void onFileDownloaded(QNetworkReply *reply);
-    bool parseResponse(const QByteArray & data);
+    bool parseResponse(const QByteArray &data);
 };
 
-
-#endif // UPDATECHECKER_H
+#endif  // UPDATECHECKER_H

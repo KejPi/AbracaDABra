@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,15 @@
  * SOFTWARE.
  */
 
-#include <QRegularExpression>
-#include <QFileDialog>
-
 #include "ensembleconfigdialog.h"
+
+#include <QFileDialog>
+#include <QRegularExpression>
+
 #include "ui_ensembleconfigdialog.h"
 
-EnsembleConfigDialog::EnsembleConfigDialog(const TxTableModelItem & item, QWidget *parent)
-    : QDialog(parent)
-    , ui(new Ui::EnsembleConfigDialog)
-    , m_txTableModelItem(item)
+EnsembleConfigDialog::EnsembleConfigDialog(const TxTableModelItem &item, QWidget *parent)
+    : QDialog(parent), ui(new Ui::EnsembleConfigDialog), m_txTableModelItem(item)
 {
     ui->setupUi(this);
     ui->ensStructureTextEdit->setHtml(item.ensConfig());
@@ -49,22 +48,18 @@ EnsembleConfigDialog::~EnsembleConfigDialog()
 
 void EnsembleConfigDialog::onExportCSV()
 {
-    static const QRegularExpression regexp( "[" + QRegularExpression::escape("/:*?\"<>|") + "]");
+    static const QRegularExpression regexp("[" + QRegularExpression::escape("/:*?\"<>|") + "]");
     QString ensemblename = m_txTableModelItem.ensLabel();
     ensemblename.replace(regexp, "_");
-    QString f = QString("%1/%2_%3_%4.csv").arg(m_exportPath,
-                                               QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"),
-                                               DabTables::channelList.value(m_txTableModelItem.ensId().freq()),
-                                               ensemblename);
+    QString f = QString("%1/%2_%3_%4.csv")
+                    .arg(m_exportPath, QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"),
+                         DabTables::channelList.value(m_txTableModelItem.ensId().freq()), ensemblename);
 
-    QString fileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Export CSV file"),
-                                                    QDir::toNativeSeparators(f),
-                                                    tr("CSV Files")+" (*.csv)");
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Export CSV file"), QDir::toNativeSeparators(f), tr("CSV Files") + " (*.csv)");
 
     if (!fileName.isEmpty())
     {
-        m_exportPath = QFileInfo(fileName).path(); // store path for next time
+        m_exportPath = QFileInfo(fileName).path();  // store path for next time
         QFile file(fileName);
         if (file.open(QIODevice::WriteOnly))
         {

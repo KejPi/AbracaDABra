@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,9 @@
 #ifndef TXTABLEPROXYMODEL_H
 #define TXTABLEPROXYMODEL_H
 
-#include <QObject>
 #include <QAbstractTableModel>
 #include <QGeoPositionInfo>
+#include <QObject>
 #include <QSortFilterProxyModel>
 
 class TxTableProxyModel : public QSortFilterProxyModel
@@ -49,5 +49,4 @@ protected:
     bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const override;
 };
 
-
-#endif // TXTABLEPROXYMODEL_H
+#endif  // TXTABLEPROXYMODEL_H

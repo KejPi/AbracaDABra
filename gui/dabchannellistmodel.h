@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,13 +30,15 @@
 #include <QAbstractListModel>
 #include <QObject>
 #include <QSortFilterProxyModel>
+
 #include "dabtables.h"
 
 class DABChannelListModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    enum Roles {
+    enum Roles
+    {
         FrequencyRole = Qt::UserRole,
     };
 
@@ -54,8 +56,9 @@ public:
 
 protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+
 private:
     int m_frequencyFilter;
 };
 
-#endif // DABCHANNELLISTMODEL_H
+#endif  // DABCHANNELLISTMODEL_H

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,15 @@
 #ifndef LOGDIALOG_H
 #define LOGDIALOG_H
 
-#include <QDialog>
 #include <QAbstractItemModel>
-#include <QStringListModel>
+#include <QDialog>
 #include <QFontDatabase>
+#include <QStringListModel>
+
 #include "logmodel.h"
 
-namespace Ui {
+namespace Ui
+{
 class LogDialog;
 }
 
@@ -45,16 +47,16 @@ public:
     explicit LogDialog(QWidget *parent = nullptr);
     ~LogDialog();
 
-    QAbstractItemModel * getModel() const;
+    QAbstractItemModel *getModel() const;
 
     void setupDarkMode(bool darkModeEna);
 
 private:
     Ui::LogDialog *ui;
-    LogModel * m_dataModel;
+    LogModel *m_dataModel;
 
     void saveLogToFile();
     void copyToClipboard();
 };
 
-#endif // LOGDIALOG_H
+#endif  // LOGDIALOG_H

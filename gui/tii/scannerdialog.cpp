@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,31 @@
  * SOFTWARE.
  */
 
-#include "channelselectiondialog.h"
-#include "ensembleconfigdialog.h"
 #include <QDebug>
 #include <QHeaderView>
+
+#include "channelselectiondialog.h"
+#include "ensembleconfigdialog.h"
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && QT_CONFIG(permissions)
 #include <QPermissions>
 #endif
 #include <QCoreApplication>
 #include <QFileDialog>
-#include <QMessageBox>
-#include <QLoggingCategory>
-#include <QQmlContext>
-#include <QGridLayout>
-#include <QSpinBox>
 #include <QFormLayout>
+#include <QGridLayout>
+#include <QLoggingCategory>
 #include <QMenu>
-#include "scannerdialog.h"
+#include <QMessageBox>
+#include <QQmlContext>
+#include <QSpinBox>
+
 #include "dabtables.h"
+#include "scannerdialog.h"
 #include "settings.h"
 
 Q_LOGGING_CATEGORY(scanner, "Scanner", QtInfoMsg)
 
-ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
-    TxMapDialog(settings, false, parent)
+ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(settings, false, parent)
 {
     // UI
     setWindowTitle(tr("DAB Scanning Tool"));
@@ -61,7 +62,7 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
 
     // QML View
     m_qmlView = new QQuickView();
-    QQmlContext * context = m_qmlView->rootContext();
+    QQmlContext *context = m_qmlView->rootContext();
     context->setContextProperty("tiiBackend", this);
     context->setContextProperty("tiiTable", m_model);
     context->setContextProperty("tiiTableSorted", m_sortedFilteredModel);
@@ -75,8 +76,8 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     qmlContainer->setSizePolicy(sizePolicyContainer);
 
     // scanner widget
-    QVBoxLayout * mainLayout = new QVBoxLayout(this);
-    QHBoxLayout * controlsLayout = new QHBoxLayout();
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    QHBoxLayout *controlsLayout = new QHBoxLayout();
 
     m_scanningLabel = new QLabel(this);
     m_progressChannel = new QLabel(this);
@@ -86,14 +87,14 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
 
     m_exportButton = new QPushButton(this);
     m_channelListButton = new QPushButton(this);
-    m_startStopButton = new QPushButton(this);    
+    m_startStopButton = new QPushButton(this);
     m_startStopButton->setDefault(true);
 
-    QFrame * line = new QFrame(this);
+    QFrame *line = new QFrame(this);
     line->setFrameShape(QFrame::Shape::VLine);
     line->setFrameShadow(QFrame::Shadow::Sunken);
 
-    QLabel * labelMode = new QLabel(this);
+    QLabel *labelMode = new QLabel(this);
     labelMode->setText(tr("Mode:"));
 
     m_modeCombo = new QComboBox(this);
@@ -102,12 +103,12 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     m_modeCombo->addItem(tr("Precise"), Mode_Precise);
     int idx = m_modeCombo->findData(m_settings->scanner.mode, Qt::UserRole);
     if (idx < 0)
-    {   // set Mode_Normal as default
+    {  // set Mode_Normal as default
         idx = 1;
     }
     m_modeCombo->setCurrentIndex(idx);
 
-    QLabel * labelCycles = new QLabel(this);
+    QLabel *labelCycles = new QLabel(this);
     m_numCyclesSpinBox = new QSpinBox(this);
     m_numCyclesSpinBox->setSpecialValueText(tr("Inf"));
     m_numCyclesSpinBox->setValue(m_settings->scanner.numCycles);
@@ -132,7 +133,7 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     m_txTableView = new QTableView(this);
     mainLayout->addWidget(m_txTableView);
 
-    QWidget * scannerWidget = new QWidget(this);
+    QWidget *scannerWidget = new QWidget(this);
     scannerWidget->setLayout(mainLayout);
 
     m_splitter = new QSplitter(this);
@@ -141,13 +142,14 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     m_splitter->addWidget(scannerWidget);
     m_splitter->setChildrenCollapsible(false);
 
-    QVBoxLayout * layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0,0,0,0);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(m_splitter);
 
     m_startStopButton->setFocus();
 
-    if (!m_settings->scanner.splitterState.isEmpty()) {
+    if (!m_settings->scanner.splitterState.isEmpty())
+    {
         m_splitter->restoreState(m_settings->scanner.splitterState);
     }
 
@@ -174,7 +176,7 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
     m_scanningLabel->setText("");
     m_channelListButton->setText(tr("Select channels"));
     m_exportButton->setText(tr("Export as CSV"));
-    m_exportButton->setEnabled(false);        
+    m_exportButton->setEnabled(false);
     connect(m_exportButton, &QPushButton::clicked, this, &ScannerDialog::exportClicked);
 
     for (auto it = DabTables::channelList.cbegin(); it != DabTables::channelList.cend(); ++it)
@@ -198,7 +200,7 @@ ScannerDialog::ScannerDialog(Settings * settings, QWidget *parent) :
         restoreGeometry(m_settings->scanner.geometry);
         sz = size();
     }
-    QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
+    QTimer::singleShot(10, this, [this, sz]() { resize(sz); });
 }
 
 ScannerDialog::~ScannerDialog()
@@ -213,9 +215,9 @@ ScannerDialog::~ScannerDialog()
 }
 
 void ScannerDialog::startStopClicked()
-{       
+{
     if (m_isScanning)
-    {   // stop pressed
+    {  // stop pressed
         m_startStopButton->setEnabled(false);
         m_isScanning = false;
         m_ensemble.reset();
@@ -226,17 +228,18 @@ void ScannerDialog::startStopClicked()
         // 4. wait for ensemble (timer or event)
         // 5. wait for tii (timer)
         if (m_timer->isActive())
-        {   // state 2, 3, 4
+        {  // state 2, 3, 4
             m_timer->stop();
             stopScan();
         }
-        else {
+        else
+        {
             // timer not running -> state 1
             m_state = ScannerState::Interrupted;  // ==> it will be finished when tune is complete
         }
     }
     else
-    {   // start pressed
+    {  // start pressed
         m_startStopButton->setText(tr("Stop"));
         m_numCyclesSpinBox->setEnabled(false);
         m_modeCombo->setEnabled(false);
@@ -246,7 +249,8 @@ void ScannerDialog::startStopClicked()
         {
             m_numSelectedChannels += ch ? 1 : 0;
         }
-        if (m_numCyclesSpinBox->value() > 0) {
+        if (m_numCyclesSpinBox->value() > 0)
+        {
             m_progressBar->setMaximum(m_numSelectedChannels * m_numCyclesSpinBox->value());
         }
         else
@@ -291,34 +295,32 @@ void ScannerDialog::exportClicked()
 {
     QString f = QString("%1/%2.csv").arg(m_settings->scanner.exportPath, m_scanStartTime.toString("yyyy-MM-dd_hhmmss"));
 
-    QString fileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Export CSV file"),
-                                                    QDir::toNativeSeparators(f),
-                                                    tr("CSV Files")+" (*.csv)");
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Export CSV file"), QDir::toNativeSeparators(f), tr("CSV Files") + " (*.csv)");
 
     if (!fileName.isEmpty())
     {
-        m_settings->scanner.exportPath = QFileInfo(fileName).path(); // store path for next time
+        m_settings->scanner.exportPath = QFileInfo(fileName).path();  // store path for next time
         QFile file(fileName);
         if (file.open(QIODevice::WriteOnly))
         {
             QTextStream out(&file);
 
             // Header
-            for (int col = 0; col < TxTableModel::NumCols-1; ++col)
+            for (int col = 0; col < TxTableModel::NumCols - 1; ++col)
             {
                 out << m_model->headerData(col, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString() << ";";
             }
-            out << m_model->headerData(TxTableModel::NumCols - 1, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString() <<  Qt::endl;
+            out << m_model->headerData(TxTableModel::NumCols - 1, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString() << Qt::endl;
 
             // Body
             for (int row = 0; row < m_model->rowCount(); ++row)
             {
-                for (int col = 0; col < TxTableModel::NumCols-1; ++col)
+                for (int col = 0; col < TxTableModel::NumCols - 1; ++col)
                 {
                     out << m_model->data(m_model->index(row, col), TxTableModel::TxTableModelRoles::ExportRole).toString() << ";";
                 }
-                out << m_model->data(m_model->index(row, TxTableModel::NumCols-1), TxTableModel::TxTableModelRoles::ExportRole).toString() << Qt::endl;
+                out << m_model->data(m_model->index(row, TxTableModel::NumCols - 1), TxTableModel::TxTableModelRoles::ExportRole).toString()
+                    << Qt::endl;
             }
             file.close();
         }
@@ -328,14 +330,12 @@ void ScannerDialog::exportClicked()
 void ScannerDialog::channelSelectionClicked()
 {
     auto dialog = new ChannelSelectionDialog(m_channelSelection, this);
-    connect(dialog, &QDialog::accepted, this, [this, dialog]() {
-        dialog->getChannelList(m_channelSelection);
-    });
+    connect(dialog, &QDialog::accepted, this, [this, dialog]() { dialog->getChannelList(m_channelSelection); });
     connect(dialog, &ChannelSelectionDialog::finished, dialog, &QObject::deleteLater);
     dialog->setWindowModality(Qt::WindowModal);
     dialog->open();
-    //dialog->setModal(true);
-    //dialog->show();
+    // dialog->setModal(true);
+    // dialog->show();
 }
 
 void ScannerDialog::startScan()
@@ -368,11 +368,11 @@ void ScannerDialog::startScan()
 void ScannerDialog::scanStep()
 {
     if (ScannerState::Init == m_state)
-    {   // first step
+    {  // first step
         m_channelIt = DabTables::channelList.constBegin();
     }
     else
-    {   // next step
+    {  // next step
         ++m_channelIt;
     }
 
@@ -385,7 +385,7 @@ void ScannerDialog::scanStep()
     if (DabTables::channelList.constEnd() == m_channelIt)
     {
         if (++m_scanCycleCntr == m_numCyclesSpinBox->value())
-        {   // scan finished
+        {  // scan finished
             stopScan();
             return;
         }
@@ -393,7 +393,7 @@ void ScannerDialog::scanStep()
         // restarting
         m_channelIt = DabTables::channelList.constBegin();
         if (m_numCyclesSpinBox->value() == 0)
-        {   // endless scan
+        {  // endless scan
             m_progressBar->setValue(0);
         }
 
@@ -404,16 +404,16 @@ void ScannerDialog::scanStep()
         }
     }
 
-    m_progressBar->setValue(m_progressBar->value()+1);
-    //m_progressChannel->setText(QString("%1 [ %2 MHz ]").arg(m_channelIt.value()).arg(m_channelIt.key()/1000.0, 3, 'f', 3, QChar('0')));
-    //m_progressChannel->setText(QString("%1 (%2 / %3)").arg(m_channelIt.value()).arg(m_progressBar->value()).arg(m_progressBar->maximum()));
+    m_progressBar->setValue(m_progressBar->value() + 1);
+    // m_progressChannel->setText(QString("%1 [ %2 MHz ]").arg(m_channelIt.value()).arg(m_channelIt.key()/1000.0, 3, 'f', 3, QChar('0')));
+    // m_progressChannel->setText(QString("%1 (%2 / %3)").arg(m_channelIt.value()).arg(m_progressBar->value()).arg(m_progressBar->maximum()));
     if (m_numCyclesSpinBox->value() == 1)
     {
         m_progressChannel->setText(m_channelIt.value());
     }
     else
     {
-        m_progressChannel->setText(QString(tr("%1  (cycle %2)")).arg(m_channelIt.value()).arg(m_scanCycleCntr+1));
+        m_progressChannel->setText(QString(tr("%1  (cycle %2)")).arg(m_channelIt.value()).arg(m_scanCycleCntr + 1));
     }
 
     if (m_frequency != m_channelIt.key())
@@ -425,7 +425,7 @@ void ScannerDialog::scanStep()
         emit tuneChannel(m_frequency);
     }
     else
-    {   // this is a case when only 1 channel is selected for scanning
+    {  // this is a case when only 1 channel is selected for scanning
         m_state = ScannerState::WaitForEnsemble;
         onEnsembleInformation(m_ensemble);
     }
@@ -435,37 +435,37 @@ void ScannerDialog::onTuneDone(uint32_t freq)
 {
     switch (m_state)
     {
-    case ScannerState::Init:
-        if (m_timer->isActive())
-        {
-            m_timer->stop();
-        }
-        scanStep();
-        break;
-    case ScannerState::Interrupted:
-        // exit
-        stopScan();
-        break;
-    case ScannerState::WaitForTune:
-       // tuned to some frequency -> wait for sync
-        m_state = ScannerState::WaitForSync;
-        m_timer->start(m_settings->scanner.waitForSync*1000);
-        break;
-    default:
-        // do nothing
-        break;
+        case ScannerState::Init:
+            if (m_timer->isActive())
+            {
+                m_timer->stop();
+            }
+            scanStep();
+            break;
+        case ScannerState::Interrupted:
+            // exit
+            stopScan();
+            break;
+        case ScannerState::WaitForTune:
+            // tuned to some frequency -> wait for sync
+            m_state = ScannerState::WaitForSync;
+            m_timer->start(m_settings->scanner.waitForSync * 1000);
+            break;
+        default:
+            // do nothing
+            break;
     }
 }
 
 void ScannerDialog::onSignalState(uint8_t sync, float snr)
-{    
+{
     if (DabSyncLevel::NullSync <= DabSyncLevel(sync))
     {
         if (ScannerState::WaitForSync == m_state)
-        {   // if we are waiting for sync (move to next step)
+        {  // if we are waiting for sync (move to next step)
             m_timer->stop();
             m_state = ScannerState::WaitForEnsemble;
-            m_timer->start(m_settings->scanner.waitForEnsemble*1000);
+            m_timer->start(m_settings->scanner.waitForEnsemble * 1000);
         }
     }
     if (m_ensemble.isValid() && m_isScanning)
@@ -475,19 +475,19 @@ void ScannerDialog::onSignalState(uint8_t sync, float snr)
     }
 }
 
-void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble & ens)
+void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
 {
     if (ScannerState::WaitForEnsemble != m_state)
-    {   // do nothing
+    {  // do nothing
         return;
     }
     m_timer->stop();
     if (ens.isValid())
-    {   // this shoud be the normal case
+    {  // this shoud be the normal case
         m_state = ScannerState::WaitForTII;
 
         // this will stop when TII data is received
-        m_timer->start(5000 + m_modeCombo->currentData().toInt()*5000);
+        m_timer->start(5000 + m_modeCombo->currentData().toInt() * 5000);
 
         m_ensemble = ens;
         m_snr = 0.0;
@@ -500,9 +500,9 @@ void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble & ens)
         }
     }
     else
-    {   // this can happen in single channel mode in no signal case
+    {  // this can happen in single channel mode in no signal case
         // wait for ensemble
-        m_timer->start(m_settings->scanner.waitForEnsemble*1000);
+        m_timer->start(m_settings->scanner.waitForEnsemble * 1000);
     }
 }
 
@@ -521,7 +521,7 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
         if (++m_tiiCntr >= m_modeCombo->currentData().toInt())
         {
             if (m_isPreciseMode)
-            {   // request ensemble info
+            {  // request ensemble info
                 m_tiiData = data;
                 emit requestEnsembleConfiguration();
             }
@@ -533,9 +533,9 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
     }
 }
 
-void ScannerDialog::storeEnsembleData(const RadioControlTIIData &tiiData,  const QString & conf, const QString & csvConf)
+void ScannerDialog::storeEnsembleData(const RadioControlTIIData &tiiData, const QString &conf, const QString &csvConf)
 {
-    m_model->appendEnsData(tiiData.idList, ServiceListId(m_ensemble), m_ensemble.label, conf, csvConf, m_numServicesFound, m_snr/m_snrCntr);
+    m_model->appendEnsData(tiiData.idList, ServiceListId(m_ensemble), m_ensemble.label, conf, csvConf, m_numServicesFound, m_snr / m_snrCntr);
     m_exportButton->setEnabled(true);
 
     m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -549,14 +549,14 @@ void ScannerDialog::storeEnsembleData(const RadioControlTIIData &tiiData,  const
 
     // handle selection
     int id = -1;
-    QModelIndexList	selectedList = m_tableSelectionModel->selectedRows();
+    QModelIndexList selectedList = m_tableSelectionModel->selectedRows();
     if (!selectedList.isEmpty())
     {
         QModelIndex currentIndex = selectedList.at(0);
     }
 
     // forcing update of UI
-    onSelectionChanged(QItemSelection(),QItemSelection());
+    onSelectionChanged(QItemSelection(), QItemSelection());
 
     if (nullptr != m_timer && m_timer->isActive())
     {
@@ -574,10 +574,12 @@ void ScannerDialog::showEnsembleConfig(const QModelIndex &index)
         if (srcIndex.isValid())
         {
             auto dialog = new EnsembleConfigDialog(m_model->itemAt(srcIndex.row()), this);
-            connect(dialog, &QDialog::finished, this, [this, dialog]() {
-                m_settings->scanner.exportPath = dialog->exportPath();
-                dialog->deleteLater();
-            });
+            connect(dialog, &QDialog::finished, this,
+                    [this, dialog]()
+                    {
+                        m_settings->scanner.exportPath = dialog->exportPath();
+                        dialog->deleteLater();
+                    });
 
             dialog->setExportPath(m_settings->scanner.exportPath);
             dialog->setWindowModality(Qt::WindowModal);
@@ -600,7 +602,7 @@ void ScannerDialog::showContextMenu(const QPoint &pos)
                 action->deleteLater();
             });
             menu->addAction(action);
-            QAction * selectedItem = menu->exec(m_txTableView->viewport()->mapToGlobal(pos));
+            QAction *selectedItem = menu->exec(m_txTableView->viewport()->mapToGlobal(pos));
             if (nullptr != selectedItem)
             {
                 showEnsembleConfig(index);
@@ -609,7 +611,7 @@ void ScannerDialog::showContextMenu(const QPoint &pos)
     }
 }
 
-void ScannerDialog::onEnsembleConfigurationAndCSV(const QString & config, const QString & csvString)
+void ScannerDialog::onEnsembleConfigurationAndCSV(const QString &config, const QString &csvString)
 {
     storeEnsembleData(m_tiiData, config, csvString);
 }
@@ -617,7 +619,7 @@ void ScannerDialog::onEnsembleConfigurationAndCSV(const QString & config, const 
 void ScannerDialog::onInputDeviceError(const InputDeviceErrorCode)
 {
     if (m_isScanning)
-    {   // stop pressed
+    {  // stop pressed
         m_startStopButton->setEnabled(false);
         m_isScanning = false;
         m_ensemble.reset();
@@ -628,7 +630,7 @@ void ScannerDialog::onInputDeviceError(const InputDeviceErrorCode)
         // 4. wait for ensemble (timer or event)
         // 5. wait for tii (timer)
         if (m_timer->isActive())
-        {   // state 2, 3, 4
+        {  // state 2, 3, 4
             m_timer->stop();
         }
         stopScan();
@@ -653,7 +655,7 @@ void ScannerDialog::onSelectedRowChanged()
     m_txInfo.clear();
     m_currentEnsemble.reset();
     if (selectedRow() < 0)
-    {   // reset info
+    {  // reset info
         emit txInfoChanged();
         emit ensembleInfoChanged();
         return;
@@ -695,7 +697,7 @@ void ScannerDialog::showEvent(QShowEvent *event)
 void ScannerDialog::closeEvent(QCloseEvent *event)
 {
     if (m_isScanning)
-    {   // stopping scanning first
+    {  // stopping scanning first
         m_exitRequested = true;
         QTimer::singleShot(50, this, [this]() { startStopClicked(); });
         event->ignore();
@@ -710,5 +712,3 @@ void ScannerDialog::closeEvent(QCloseEvent *event)
 
     TxMapDialog::closeEvent(event);
 }
-
-

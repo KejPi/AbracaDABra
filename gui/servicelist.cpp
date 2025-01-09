@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,14 @@
  * SOFTWARE.
  */
 
-#include <QLoggingCategory>
 #include "servicelist.h"
+
+#include <QLoggingCategory>
 
 Q_LOGGING_CATEGORY(serviceList, "ServiceList", QtInfoMsg)
 
-ServiceList::ServiceList(QObject * parent) : QObject(parent)
-{
-
-}
+ServiceList::ServiceList(QObject *parent) : QObject(parent)
+{}
 
 ServiceList::~ServiceList()
 {
@@ -41,13 +40,13 @@ ServiceList::~ServiceList()
 
 void ServiceList::clear(bool clearFavorites)
 {
-    foreach (ServiceListItem * item, m_serviceList)
+    foreach (ServiceListItem *item, m_serviceList)
     {
         delete item;
     }
     m_serviceList.clear();
 
-    foreach (EnsembleListItem * item, m_ensembleList)
+    foreach (EnsembleListItem *item, m_ensembleList)
     {
         delete item;
     }
@@ -61,10 +60,10 @@ void ServiceList::clear(bool clearFavorites)
     emit empty();
 }
 
-void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlServiceComponent & s, bool fav, int currentEns)
+void ServiceList::addService(const RadioControlEnsemble &e, const RadioControlServiceComponent &s, bool fav, int currentEns)
 {
     if (!e.isValid())
-    {   // invalid ensemble -> do nothing
+    {  // invalid ensemble -> do nothing
         return;
     }
 
@@ -72,11 +71,10 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     bool updatedService = false;
     bool updatedEnsemble = false;
 
-    qCInfo(serviceList, "          [%6.6X @ %6d kHz | %3s] %-18s %X : %d", e.ueid, e.frequency, DabTables::channelList.value(e.frequency).toUtf8().data(),
-                                                                            s.label.toUtf8().data(), s.SId.value(), s.SCIdS);
+    qCInfo(serviceList, "          [%6.6X @ %6d kHz | %3s] %-18s %X : %d", e.ueid, e.frequency,
+           DabTables::channelList.value(e.frequency).toUtf8().data(), s.label.toUtf8().data(), s.SId.value(), s.SCIdS);
 
-
-    ServiceListItem * pService = nullptr;
+    ServiceListItem *pService = nullptr;
     ServiceListId servId(s);
     ServiceListIterator sit = m_serviceList.find(servId);
     if (m_serviceList.end() == sit)
@@ -97,20 +95,20 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
 
     pService->setIsObsolete(false);
 
-    EnsembleListItem * pEns = nullptr;
+    EnsembleListItem *pEns = nullptr;
     ServiceListId ensId(e);
     uint32_t freq = e.frequency;
     EnsembleListIterator eit = m_ensembleList.begin();
     while (eit != m_ensembleList.end())
     {
         if (freq == (*eit)->frequency())
-        {   // frequency is equal to ensemble to be added
+        {  // frequency is equal to ensemble to be added
             if (e.ueid == (*eit)->ueid())
-            {   // ensemble is the same
+            {  // ensemble is the same
                 pEns = *eit;
             }
             else
-            {   // different ensemble in channel -> this is not allowed ensemble to be removed
+            {  // different ensemble in channel -> this is not allowed ensemble to be removed
                 // construct dummy RadioControlEnsemble so that removeEnsemble interface can be used
                 RadioControlEnsemble dummyEnsToBeRemoved;
                 dummyEnsToBeRemoved.frequency = (*eit)->frequency();
@@ -127,11 +125,12 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
         ++eit;
     }
     if (nullptr == pEns)
-    {   // not found
+    {  // not found
         pEns = new EnsembleListItem(e);
         m_ensembleList.insert(ensId, pEns);
     }
-    else {
+    else
+    {
         // update labels
         updatedEnsemble = pEns->update(e);
     }
@@ -139,11 +138,11 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     // we have ens and service item => lets link them together
     pService->addEnsemble(pEns);
     if (pEns->addService(pService))
-    {   // new service in ensemble
+    {  // new service in ensemble
         emit serviceAddedToEnsemble(pEns->id(), pService->id());
     }
     if (newService)
-    {   // emit signal when new service is added
+    {  // emit signal when new service is added
         emit serviceAdded(pService->id());
     }
 
@@ -154,7 +153,7 @@ void ServiceList::addService(const RadioControlEnsemble & e, const RadioControlS
     }
 }
 
-void ServiceList::setServiceFavorite(const ServiceListId & servId, bool ena)
+void ServiceList::setServiceFavorite(const ServiceListId &servId, bool ena)
 {
 #if 0
     ServiceListIterator sit = m_serviceList.find(servId);
@@ -166,7 +165,7 @@ void ServiceList::setServiceFavorite(const ServiceListId & servId, bool ena)
     if (ena)
     {
         if (m_serviceList.find(servId) != m_serviceList.cend())
-        {   // if service exists in the list
+        {  // if service exists in the list
             m_favoritesList.insert(servId);
         }
     }
@@ -177,7 +176,7 @@ void ServiceList::setServiceFavorite(const ServiceListId & servId, bool ena)
 #endif
 }
 
-bool ServiceList::isServiceFavorite(const ServiceListId & servId) const
+bool ServiceList::isServiceFavorite(const ServiceListId &servId) const
 {
 #if 0
     ServiceListConstIterator sit = m_serviceList.find(servId);
@@ -191,7 +190,7 @@ bool ServiceList::isServiceFavorite(const ServiceListId & servId) const
 #endif
 }
 
-int ServiceList::numEnsembles(const ServiceListId & servId) const
+int ServiceList::numEnsembles(const ServiceListId &servId) const
 {
     if (!servId.isValid())
     {
@@ -201,35 +200,35 @@ int ServiceList::numEnsembles(const ServiceListId & servId) const
     {
         ServiceListConstIterator sit = m_serviceList.find(servId);
         if (m_serviceList.end() != sit)
-        {   // found
+        {  // found
             return (*sit)->numEnsembles();
         }
         return 0;
     }
 }
 
-int ServiceList::currentEnsembleIdx(const ServiceListId & servId) const
+int ServiceList::currentEnsembleIdx(const ServiceListId &servId) const
 {
     ServiceListConstIterator sit = m_serviceList.find(servId);
     if (m_serviceList.end() != sit)
-    {   // found
+    {  // found
         return (*sit)->currentEnsembleIdx();
     }
     return 0;
 }
 
-void ServiceList::save(QSettings & settings)
+void ServiceList::save(QSettings &settings)
 {
     // first sort service list by ID
     // this is needed to restore secondary services correctly
     QVector<uint64_t> idVect;
-    for (auto & s : m_serviceList)
+    for (auto &s : m_serviceList)
     {
         idVect.append(s->id().value());
     }
     std::sort(idVect.begin(), idVect.end());
 
-    settings.beginWriteArray("ServiceList", m_serviceList.size());          
+    settings.beginWriteArray("ServiceList", m_serviceList.size());
     int n = 0;
     for (auto id : idVect)
     {
@@ -240,7 +239,7 @@ void ServiceList::save(QSettings & settings)
         settings.setValue("SCIdS", (*it)->SCIdS());
         settings.setValue("Label", (*it)->label());
         settings.setValue("ShortLabel", (*it)->shortLabel());
-        //settings.setValue("Fav", (*it)->isFavorite());
+        // settings.setValue("Fav", (*it)->isFavorite());
         settings.setValue("Fav", m_favoritesList.contains(ServiceListId(id)));
         settings.setValue("LastEns", (*it)->currentEnsembleIdx());
         settings.beginWriteArray("Ensemble", (*it)->numEnsembles());
@@ -251,14 +250,14 @@ void ServiceList::save(QSettings & settings)
             settings.setValue("Frequency", (*it)->getEnsemble(e)->frequency());
             settings.setValue("Label", (*it)->getEnsemble(e)->label());
             settings.setValue("ShortLabel", (*it)->getEnsemble(e)->shortLabel());
-            //settings.setValue("SNR", (*it)->getEnsemble(e)->snr());
+            // settings.setValue("SNR", (*it)->getEnsemble(e)->snr());
         }
         settings.endArray();
     }
     settings.endArray();
 }
 
-void ServiceList::load(QSettings & settings)
+void ServiceList::load(QSettings &settings)
 {
     int numServ = settings.beginReadArray("ServiceList");
     RadioControlServiceComponent item;
@@ -304,34 +303,34 @@ void ServiceList::load(QSettings & settings)
             }
             ens.label = settings.value("Label").toString();
             ens.labelShort = settings.value("ShortLabel").toString();
-            //float snr = settings.value("SNR").toFloat();
+            // float snr = settings.value("SNR").toFloat();
             addService(ens, item, fav, currentEns);
-
-        }       
+        }
         settings.endArray();
     }
     settings.endArray();
 }
 
 // this marks all services as obsolete
-void ServiceList::beginEnsembleUpdate(const RadioControlEnsemble & e)
+void ServiceList::beginEnsembleUpdate(const RadioControlEnsemble &e)
 {
-    EnsembleListItem * pEns = nullptr;
+    EnsembleListItem *pEns = nullptr;
     ServiceListId ensId(e);
     EnsembleListIterator eit = m_ensembleList.find(ensId);
     if (m_ensembleList.end() != eit)
-    {   // found
+    {  // found
         // ensemble to be updated
         (*eit)->beginUpdate();
     }
     else
-    {  /* do nothing, ensemble not found */ }
+    { /* do nothing, ensemble not found */
+    }
 }
 
 // this removed all services marked as obsolete
-void ServiceList::endEnsembleUpdate(const RadioControlEnsemble & e)
+void ServiceList::endEnsembleUpdate(const RadioControlEnsemble &e)
 {
-    EnsembleListItem * pEns = nullptr;
+    EnsembleListItem *pEns = nullptr;
     ServiceListId ensId(e);
     EnsembleListIterator eit = m_ensembleList.find(ensId);
     if (m_ensembleList.end() != eit)
@@ -339,7 +338,7 @@ void ServiceList::endEnsembleUpdate(const RadioControlEnsemble & e)
         pEns = *eit;
     }
     else
-    {   // do nothing, ensemble not found
+    {  // do nothing, ensemble not found
         return;
     }
 
@@ -351,17 +350,18 @@ void ServiceList::endEnsembleUpdate(const RadioControlEnsemble & e)
     while (it != m_serviceList.end())
     {
         if ((*it)->isObsolete())
-        {   // service is obsolete
-            qCInfo(serviceList, "Removing service: [%6.6X] %-18s %X : %d", e.ueid, (*it)->label().toUtf8().data(), (*it)->SId().value(), (*it)->SCIdS());
+        {  // service is obsolete
+            qCInfo(serviceList, "Removing service: [%6.6X] %-18s %X : %d", e.ueid, (*it)->label().toUtf8().data(), (*it)->SId().value(),
+                   (*it)->SCIdS());
 
             emit serviceRemovedFromEnsemble(ensId, (*it)->id());
 
             if (false == (*it)->removeEnsemble(pEns))
-            {   // this was the last ensemble -> remove service completely
+            {  // this was the last ensemble -> remove service completely
                 emit serviceRemoved((*it)->id());
 
                 delete *it;                    // release memory
-                it = m_serviceList.erase(it);  // remove record from hash                
+                it = m_serviceList.erase(it);  // remove record from hash
             }
             else
             {
@@ -392,6 +392,3 @@ void ServiceList::removeEnsemble(const RadioControlEnsemble &e)
         emit ensembleRemoved(ensId);
     }
 }
-
-
-

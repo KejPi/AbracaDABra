@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,14 +26,14 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
-#include <QTranslator>
 #include <QLibraryInfo>
-#include "mainwindow.h"
+#include <QTranslator>
+
 #include "config.h"
+#include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
-
     QCoreApplication::setApplicationName("AbracaDABra");
     QCoreApplication::setApplicationVersion(PROJECT_VER);
 
@@ -61,10 +61,11 @@ int main(int argc, char *argv[])
 
     // loading of translation
     // use system default or user selected
-    QSettings * settings;
+    QSettings *settings;
     if (iniFile.isEmpty())
     {
-        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::applicationName(), QCoreApplication::applicationName());
+        settings =
+            new QSettings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::applicationName(), QCoreApplication::applicationName());
     }
     else
     {
@@ -83,14 +84,14 @@ int main(int argc, char *argv[])
     QTranslator translator;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0) && QT_VERSION < QT_VERSION_CHECK(6, 7, 2)
     if (QLocale::AnyLanguage == lang)
-    {   // system default
+    {  // system default
         if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n/gui")))
         {
             a.installTranslator(&translator);
         }
     }
     else if (QLocale::English != lang)
-    {   // user selected translation
+    {  // user selected translation
         if (translator.load(QString("AbracaDABra_%1").arg(QLocale::languageToCode(lang)), QLatin1String(":/i18n/gui")))
         {
             a.installTranslator(&translator);
@@ -98,14 +99,14 @@ int main(int argc, char *argv[])
     }
 #else
     if (QLocale::AnyLanguage == lang)
-    {   // system default
+    {  // system default
         if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n")))
         {
             a.installTranslator(&translator);
         }
     }
     else if (QLocale::English != lang)
-    {   // user selected translation
+    {  // user selected translation
         if (translator.load(QString("AbracaDABra_%1").arg(QLocale::languageToCode(lang)), QLatin1String(":/i18n")))
         {
             a.installTranslator(&translator);
@@ -113,6 +114,6 @@ int main(int argc, char *argv[])
     }
 #endif
     MainWindow w(iniFile);
-    w.show();        
+    w.show();
     return a.exec();
 }

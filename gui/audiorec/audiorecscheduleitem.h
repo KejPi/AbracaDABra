@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,10 @@
 #ifndef AUDIORECSCHEDULEITEM_H
 #define AUDIORECSCHEDULEITEM_H
 
-#include "servicelistid.h"
-#include <QString>
 #include <QDateTime>
+#include <QString>
+
+#include "servicelistid.h"
 
 class AudioRecScheduleItem
 {
@@ -46,7 +47,7 @@ public:
     int durationSec() const;
     void setDurationSec(int newDurationSec);
     QTime duration() const;
-    void setDuration(const QTime & time);
+    void setDuration(const QTime &time);
 
     ServiceListId serviceId() const;
     void setServiceId(const ServiceListId &newServiceId);
@@ -65,6 +66,6 @@ private:
     bool m_isRecorded = false;
 };
 
-bool operator<(const AudioRecScheduleItem & a, const AudioRecScheduleItem & b);
+bool operator<(const AudioRecScheduleItem &a, const AudioRecScheduleItem &b);
 
-#endif // AUDIORECSCHEDULEITEM_H
+#endif  // AUDIORECSCHEDULEITEM_H

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,37 +27,39 @@
 #ifndef RTLTCPINPUT_H
 #define RTLTCPINPUT_H
 
+#include <rtl-sdr.h>
+
 #include <QObject>
 #include <QThread>
 #include <QTimer>
-#include <rtl-sdr.h>
+
 #include "inputdevice.h"
 
 // socket
 #if defined(_WIN32)
+#include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#include <windows.h>
 
 #else
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <netdb.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <poll.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 #define SOCKET int
 #define INVALID_SOCKET (-1)
 #endif
 
-#define RTLTCP_CHUNK_SIZE (16384*100)
+#define RTLTCP_CHUNK_SIZE (16384 * 100)
 
-#define RTLTCP_DOC_ENABLE 1         // enable DOC
-#define RTLTCP_AGC_ENABLE 1         // enable AGC
-#define RTLTCP_START_COUNTER_INIT 2 // init value of the counter used to reset buffer after tune
+#define RTLTCP_DOC_ENABLE 1          // enable DOC
+#define RTLTCP_AGC_ENABLE 1          // enable AGC
+#define RTLTCP_START_COUNTER_INIT 2  // init value of the counter used to reset buffer after tune
 
 #define RTLTCP_AGC_LEVEL_MAX_DEFAULT 105
 
@@ -69,12 +71,14 @@ public:
     void captureIQ(bool ena);
     void startStopRecording(bool ena);
     bool isRunning();
+
 protected:
     void run() override;
 signals:
     void agcLevel(float level);
-    void recordBuffer(const uint8_t * buf, uint32_t len);
+    void recordBuffer(const uint8_t *buf, uint32_t len);
     void dataReady();
+
 private:
     SOCKET m_sock;
 
@@ -109,20 +113,20 @@ class RtlTcpInput : public InputDevice
 
     enum class RtlTcpCommand
     {
-        SET_FREQ             = 0x01,
-        SET_SAMPLE_RATE      = 0x02,
-        SET_GAIN_MODE        = 0x03,
-        SET_GAIN             = 0x04,
-        SET_FREQ_CORR        = 0x05,
-        SET_IF_GAIN          = 0x06,
-        SET_TEST_MODE        = 0x07,
-        SET_AGC_MODE         = 0x08,
-        SET_DIRECT_SAMPLING  = 0x09,
-        SET_OFFSET_TUNING    = 0x0A,
-        SET_RTL_XTAL_FREQ    = 0x0B,
-        SET_TUNER_XTAL_FREQ  = 0x0C,
-        SET_GAIN_IDX         = 0x0D,
-        SET_BIAS_TEE         = 0x0E
+        SET_FREQ = 0x01,
+        SET_SAMPLE_RATE = 0x02,
+        SET_GAIN_MODE = 0x03,
+        SET_GAIN = 0x04,
+        SET_FREQ_CORR = 0x05,
+        SET_IF_GAIN = 0x06,
+        SET_TEST_MODE = 0x07,
+        SET_AGC_MODE = 0x08,
+        SET_DIRECT_SAMPLING = 0x09,
+        SET_OFFSET_TUNING = 0x0A,
+        SET_RTL_XTAL_FREQ = 0x0B,
+        SET_TUNER_XTAL_FREQ = 0x0C,
+        SET_GAIN_IDX = 0x0D,
+        SET_BIAS_TEE = 0x0E
     };
 
     /* taken from rtlsdr_get_tuner_gains() implementation */
@@ -141,27 +145,28 @@ public:
     ~RtlTcpInput();
     bool openDevice() override;
     void tune(uint32_t frequency) override;
-    void setTcpIp(const QString & address, int port);
+    void setTcpIp(const QString &address, int port);
     void setGainMode(RtlGainMode gainMode, int gainIdx = 0);
     void setAgcLevelMax(float agcLevelMax);
     void setPPM(int ppm);
     void setDAGC(bool ena);
     void startStopRecording(bool start) override;
     QList<float> getGainList() const;
-private:    
+
+private:
     uint32_t m_frequency;
     SOCKET m_sock;
     QString m_address;
     int m_port;
 
-    RtlTcpWorker * m_worker;
+    RtlTcpWorker *m_worker;
     QTimer m_watchdogTimer;
     RtlGainMode m_gainMode = RtlGainMode::Undefined;
     int m_gainIdx;
-    QList<int> * m_gainList;
+    QList<int> *m_gainList;
     float m_agcLevelMax;
     float m_agcLevelMin;
-    QList<float> * m_agcLevelMinFactorList;
+    QList<float> *m_agcLevelMinFactorList;
     int m_ppm;
 
     void resetAgc();
@@ -173,11 +178,10 @@ private:
     // used by worker
     void onAgcLevel(float agcLevel);
 
-    void sendCommand(const RtlTcpCommand & cmd, uint32_t param);
+    void sendCommand(const RtlTcpCommand &cmd, uint32_t param);
 private slots:
     void onReadThreadStopped();
     void onWatchdogTimeout();
 };
 
-
-#endif // RTLTCPINPUT_H
+#endif  // RTLTCPINPUT_H

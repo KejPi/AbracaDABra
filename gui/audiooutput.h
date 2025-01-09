@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,31 +27,30 @@
 #ifndef AUDIOOUTPUT_H
 #define AUDIOOUTPUT_H
 
-#include <QIODevice>
-#include <QObject>
-#include <QWaitCondition>
-#include <QMutex>
-#include <QTimer>
 #include <QAudioSink>
+#include <QIODevice>
 #include <QMediaDevices>
+#include <QMutex>
+#include <QObject>
+#include <QTimer>
+#include <QWaitCondition>
 
 #include "audiofifo.h"
 
 // muting
-#define AUDIOOUTPUT_FADE_TIME_MS    60
+#define AUDIOOUTPUT_FADE_TIME_MS 60
 // these 2 values must be aligned
-#define AUDIOOUTPUT_FADE_MIN_DB    -80.0
-#define AUDIOOUTPUT_FADE_MIN_LIN     0.0001
+#define AUDIOOUTPUT_FADE_MIN_DB -80.0
+#define AUDIOOUTPUT_FADE_MIN_LIN 0.0001
 
 // debug switch
-//#define AUDIOOUTPUT_RAW_FILE_OUT
+// #define AUDIOOUTPUT_RAW_FILE_OUT
 
 enum class AudioOutputPlaybackState
 {
     Muted = 0,
     Playing = 1,
 };
-
 
 class AudioOutput : public QObject
 {
@@ -68,7 +67,7 @@ public:
     virtual void stop() = 0;
     virtual void mute(bool on) = 0;
     virtual void setVolume(int value) = 0;
-    virtual void setAudioDevice(const QByteArray & deviceId) = 0;
+    virtual void setAudioDevice(const QByteArray &deviceId) = 0;
     QList<QAudioDevice> getAudioDevices()
     {
         QList<QAudioDevice> list;
@@ -88,9 +87,10 @@ signals:
     void audioOutputError();
     void audioOutputRestart();
     void audioDevicesList(QList<QAudioDevice> deviceList);
-    void audioDeviceChanged(const QByteArray & id);
+    void audioDeviceChanged(const QByteArray &id);
+
 protected:
-    QMediaDevices * m_devices;
+    QMediaDevices *m_devices;
     QAudioDevice m_currentAudioDevice;
     void updateAudioDevices()
     {
@@ -99,7 +99,7 @@ protected:
         emit audioDevicesList(list);
 
         bool currentDeviceFound = false;
-        for (auto & dev : list)
+        for (auto &dev : list)
         {
             if (dev.id() == m_currentAudioDevice.id())
             {
@@ -109,11 +109,11 @@ protected:
         }
 
         if (!currentDeviceFound)
-        {   // current device no longer exists => default is used
+        {  // current device no longer exists => default is used
             m_currentAudioDevice = m_devices->defaultAudioOutput();
         }
         emit audioDeviceChanged(m_currentAudioDevice.id());
     }
 };
 
-#endif // AUDIOOUTPUT_H
+#endif  // AUDIOOUTPUT_H

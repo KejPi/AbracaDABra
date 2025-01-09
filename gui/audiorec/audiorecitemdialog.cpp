@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,14 @@
  * SOFTWARE.
  */
 
-#include <QPushButton>
 #include "audiorecitemdialog.h"
+
+#include <QPushButton>
+
 #include "ui_audiorecitemdialog.h"
 
 AudioRecItemDialog::AudioRecItemDialog(QLocale locale, SLModel *slModel, QWidget *parent)
-    : QDialog(parent)
-    , ui(new Ui::AudioRecItemDialog)
-    , m_locale(locale)
-    , m_slModel(slModel)
+    : QDialog(parent), ui(new Ui::AudioRecItemDialog), m_locale(locale), m_slModel(slModel)
 {
     ui->setupUi(this);
 
@@ -54,7 +53,6 @@ AudioRecItemDialog::AudioRecItemDialog(QLocale locale, SLModel *slModel, QWidget
     ui->servicelistView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->servicelistView->setSelectionMode(QAbstractItemView::SingleSelection);
 
-
     // init item data
     m_itemData.setName(tr("New audio recording schedule"));
     m_itemData.setStartTime(QDateTime(startDate, startTime).toOffsetFromUtc(offset));
@@ -66,9 +64,9 @@ AudioRecItemDialog::AudioRecItemDialog(QLocale locale, SLModel *slModel, QWidget
     connect(ui->durationEdit, &QDateEdit::dateTimeChanged, this, &AudioRecItemDialog::onDurationChanged);
     connect(ui->startDateCalendar, &QCalendarWidget::selectionChanged, this, &AudioRecItemDialog::onStartDateChanged);
     connect(ui->servicelistView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &AudioRecItemDialog::onServiceSelection);
-    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, [this]() { m_itemData.setName(ui->nameEdit->text()); } );
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, [this]() { m_itemData.setName(ui->nameEdit->text()); });
 
-    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
+    QTimer::singleShot(10, this, [this]() { resize(minimumSizeHint()); });
 }
 
 AudioRecItemDialog::~AudioRecItemDialog()
@@ -117,7 +115,7 @@ void AudioRecItemDialog::alignUiState()
     {
         index = m_slModel->index(r, 0);
         if (m_slModel->id(index) == m_itemData.serviceId())
-        {   // found
+        {  // found
             ui->servicelistView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
             ui->servicelistView->scrollTo(index);
             found = true;
@@ -125,7 +123,6 @@ void AudioRecItemDialog::alignUiState()
         }
     }
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(found && (m_itemData.durationSec() != 0));
-
 }
 
 void AudioRecItemDialog::onStartDateChanged()
@@ -138,7 +135,7 @@ void AudioRecItemDialog::onStartDateChanged()
     updateEndTime();
 }
 
-void AudioRecItemDialog::onStartTimeChanged(const QTime & time)
+void AudioRecItemDialog::onStartTimeChanged(const QTime &time)
 {
     QDateTime start;
     start.setDate(ui->startDateCalendar->selectedDate());
@@ -148,7 +145,7 @@ void AudioRecItemDialog::onStartTimeChanged(const QTime & time)
     updateEndTime();
 }
 
-void AudioRecItemDialog::onDurationChanged(const QDateTime & duration)
+void AudioRecItemDialog::onDurationChanged(const QDateTime &duration)
 {
     m_itemData.setDuration(duration.time());
     updateEndTime();
@@ -160,7 +157,8 @@ void AudioRecItemDialog::onDurationChanged(const QDateTime & duration)
 void AudioRecItemDialog::onServiceSelection(const QItemSelection &selection)
 {
     QModelIndexList indexes = selection.indexes();
-    if (!indexes.isEmpty()) {
+    if (!indexes.isEmpty())
+    {
         m_itemData.setServiceId(ServiceListId(m_slModel->data(indexes.at(0), SLModelRole::IdRole).value<uint64_t>()));
         ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(m_itemData.durationSec() != 0);
     }

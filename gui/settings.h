@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,11 +27,12 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <QLocale>
-#include <QGeoCoordinate>
 #include <QAbstractItemModel>
-#include <QDateTime>
 #include <QColor>
+#include <QDateTime>
+#include <QGeoCoordinate>
+#include <QLocale>
+
 #include "config.h"
 #include "inputdevice.h"
 #if HAVE_AIRSPY
@@ -42,9 +43,24 @@
 class Settings
 {
 public:
-    enum class ApplicationStyle { Default = 0, Light, Dark};
-    enum class GeolocationSource { System = 0, Manual, SerialPort };
-    enum class ProxyConfig { NoProxy = 0, System, Manual };
+    enum class ApplicationStyle
+    {
+        Default = 0,
+        Light,
+        Dark
+    };
+    enum class GeolocationSource
+    {
+        System = 0,
+        Manual,
+        SerialPort
+    };
+    enum class ProxyConfig
+    {
+        NoProxy = 0,
+        System,
+        Manual
+    };
 
     Settings() {};
 
@@ -117,7 +133,8 @@ public:
     QDateTime updateCheckTime;
 
     // audio recording settings
-    struct AudioRec{
+    struct AudioRec
+    {
         QString folder;
         bool captureOutput;
         bool autoStopEna;
@@ -136,7 +153,8 @@ public:
         QString spiPattern;
     } uaDump;
 
-    struct TIISettings {
+    struct TIISettings
+    {
         GeolocationSource locationSource;
         QGeoCoordinate coordinates;
         QString serialPort;
@@ -145,33 +163,40 @@ public:
         QByteArray geometry;
         QByteArray splitterState;
     } tii;
-    struct SignalDialog {
+    struct SignalDialog
+    {
         QByteArray geometry;
         QByteArray splitterState;
     } signal;
-    struct EPGSettings {
+    struct EPGSettings
+    {
         bool filterEmptyEpg;
         bool filterEnsemble;
         QPersistentModelIndex selectedItem;
         QByteArray geometry;
     } epg;
-    struct Proxy {
+    struct Proxy
+    {
         ProxyConfig config;
         QString server;
         uint32_t port;
         QString user;
         QByteArray pass;
     } proxy;
-    struct EnsembleInfo {
+    struct EnsembleInfo
+    {
         QByteArray geometry;
     } ensembleInfo;
-    struct Log {
+    struct Log
+    {
         QByteArray geometry;
     } log;
-    struct CatSLS {
+    struct CatSLS
+    {
         QByteArray geometry;
     } catSls;
-    struct ScannerSettings {
+    struct ScannerSettings
+    {
         QString exportPath;
         QByteArray geometry;
         QByteArray splitterState;
@@ -179,9 +204,8 @@ public:
         int mode;
         int numCycles;
         int waitForSync;
-        int waitForEnsemble;        
+        int waitForEnsemble;
     } scanner;
-
 };
 
-#endif // SETTINGS_H
+#endif  // SETTINGS_H

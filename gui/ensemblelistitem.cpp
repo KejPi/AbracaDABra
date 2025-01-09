@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,22 +25,23 @@
  */
 
 #include "ensemblelistitem.h"
+
 #include "servicelistitem.h"
 
-EnsembleListItem::EnsembleListItem(const RadioControlEnsemble & ens) : m_id(ens)
-{    
+EnsembleListItem::EnsembleListItem(const RadioControlEnsemble &ens) : m_id(ens)
+{
     m_frequency = ens.frequency;
     m_ueid = ens.ueid;
     m_label = ens.label;
     m_shortLabel = ens.labelShort;
 }
 
-bool EnsembleListItem::operator==(const EnsembleListItem & other) const
+bool EnsembleListItem::operator==(const EnsembleListItem &other) const
 {
     return id() == other.id();
 }
 
-bool EnsembleListItem::addService(ServiceListItem * servPtr)
+bool EnsembleListItem::addService(ServiceListItem *servPtr)
 {
     QList<ServiceListItem *>::iterator it = findService(servPtr->id());
     if (m_serviceList.end() == it)
@@ -51,7 +52,7 @@ bool EnsembleListItem::addService(ServiceListItem * servPtr)
     return false;
 }
 
-QList<ServiceListItem *>::iterator EnsembleListItem::findService(const ServiceListId & id)
+QList<ServiceListItem *>::iterator EnsembleListItem::findService(const ServiceListId &id)
 {
     QList<ServiceListItem *>::iterator it;
     for (it = m_serviceList.begin(); it < m_serviceList.end(); ++it)
@@ -65,7 +66,7 @@ QList<ServiceListItem *>::iterator EnsembleListItem::findService(const ServiceLi
     return it;
 }
 
-const ServiceListItem * EnsembleListItem::getService(int num) const
+const ServiceListItem *EnsembleListItem::getService(int num) const
 {
     if (num < m_serviceList.size())
     {
@@ -92,7 +93,7 @@ bool EnsembleListItem::update(const RadioControlEnsemble &ens)
 
 void EnsembleListItem::beginUpdate()
 {
-    for (auto & s : m_serviceList)
+    for (auto &s : m_serviceList)
     {
         s->setIsObsolete(true);
     }

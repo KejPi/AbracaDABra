@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,8 @@
 #ifndef EPGMODELITEM_H
 #define EPGMODELITEM_H
 
-#include <QString>
 #include <QDateTime>
+#include <QString>
 
 class EPGModelItem
 {
@@ -61,7 +61,7 @@ public:
     int startTimeSec() const;
     int endTimeSec() const;
     QDateTime endTime() const;
-        qint64 startTimeSecSinceEpoch() const;
+    qint64 startTimeSecSinceEpoch() const;
     qint64 endTimeSecSinceEpoch() const;
 
     int shortId() const;
@@ -79,4 +79,4 @@ private:
     int m_shortId;
 };
 
-#endif // EPGMODELITEM_H
+#endif  // EPGMODELITEM_H

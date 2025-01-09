@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,24 +24,21 @@
  * SOFTWARE.
  */
 
+#include <QBoxLayout>
 #include <QMenu>
 #include <QQmlContext>
-#include <QBoxLayout>
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && QT_CONFIG(permissions)
 #include <QPermissions>
 #endif
 #include <QCoreApplication>
-#include <QMessageBox>
 #include <QLoggingCategory>
-#include "txmapdialog.h"
+#include <QMessageBox>
 
+#include "txmapdialog.h"
 
 Q_LOGGING_CATEGORY(txMap, "TII", QtInfoMsg)
 
-TxMapDialog::TxMapDialog(Settings *settings, bool isTii, QWidget *parent)
-    : QDialog(parent)
-    , m_settings(settings)
-    , m_isTii(isTii)
+TxMapDialog::TxMapDialog(Settings *settings, bool isTii, QWidget *parent) : QDialog(parent), m_settings(settings), m_isTii(isTii)
 {
     m_model = new TxTableModel(this);
     m_sortedFilteredModel = new TxTableProxyModel(this);
@@ -109,67 +106,69 @@ void TxMapDialog::startLocationUpdate()
 {
     switch (m_settings->tii.locationSource)
     {
-    case Settings::GeolocationSource::System:
-    {
+        case Settings::GeolocationSource::System:
+        {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
-        // ask for permission
+            // ask for permission
 #if QT_CONFIG(permissions)
-        QLocationPermission locationsPermission;
-        locationsPermission.setAccuracy(QLocationPermission::Precise);
-        locationsPermission.setAvailability(QLocationPermission::WhenInUse);
-        switch (qApp->checkPermission(locationsPermission)) {
-        case Qt::PermissionStatus::Undetermined:
-            qApp->requestPermission(locationsPermission, this, [this]() { startLocationUpdate(); } );
-            qCDebug(txMap) << "LocationPermission Undetermined";
-            return;
-        case Qt::PermissionStatus::Denied:
-        {
-            qCInfo(txMap) << "LocationPermission Denied";
-            QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), tr("Device location access is denied."), {}, this);
-            msgBox.setInformativeText(tr("If you want to display current position on map, grant the location permission in Settings then open the app again."));
-            msgBox.exec();
-        }
-            return;
-        case Qt::PermissionStatus::Granted:
-            qCInfo(txMap) << "LocationPermission Granted";
-            break; // Proceed
-        }
+            QLocationPermission locationsPermission;
+            locationsPermission.setAccuracy(QLocationPermission::Precise);
+            locationsPermission.setAvailability(QLocationPermission::WhenInUse);
+            switch (qApp->checkPermission(locationsPermission))
+            {
+                case Qt::PermissionStatus::Undetermined:
+                    qApp->requestPermission(locationsPermission, this, [this]() { startLocationUpdate(); });
+                    qCDebug(txMap) << "LocationPermission Undetermined";
+                    return;
+                case Qt::PermissionStatus::Denied:
+                {
+                    qCInfo(txMap) << "LocationPermission Denied";
+                    QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), tr("Device location access is denied."), {}, this);
+                    msgBox.setInformativeText(
+                        tr("If you want to display current position on map, grant the location permission in Settings then open the app again."));
+                    msgBox.exec();
+                }
+                    return;
+                case Qt::PermissionStatus::Granted:
+                    qCInfo(txMap) << "LocationPermission Granted";
+                    break;  // Proceed
+            }
 #endif
 #endif
-        // start location update
-        if (m_geopositionSource == nullptr)
-        {
-            m_geopositionSource = QGeoPositionInfoSource::createDefaultSource(this);
+            // start location update
+            if (m_geopositionSource == nullptr)
+            {
+                m_geopositionSource = QGeoPositionInfoSource::createDefaultSource(this);
+            }
+            if (m_geopositionSource != nullptr)
+            {
+                qCDebug(txMap) << "Start position update";
+                connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &TxMapDialog::positionUpdated);
+                m_geopositionSource->startUpdates();
+            }
         }
-        if (m_geopositionSource != nullptr)
-        {
-            qCDebug(txMap) << "Start position update";
-            connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &TxMapDialog::positionUpdated);
-            m_geopositionSource->startUpdates();
-        }
-    }
-    break;
-    case Settings::GeolocationSource::Manual:
-        if (m_geopositionSource != nullptr)
-        {
-            delete m_geopositionSource;
-            m_geopositionSource = nullptr;
-        }
-        positionUpdated(QGeoPositionInfo(m_settings->tii.coordinates, QDateTime::currentDateTime()));
         break;
-    case Settings::GeolocationSource::SerialPort:
-    {
-        // serial port
-        QVariantMap params;
-        params["nmea.source"] = "serial:"+m_settings->tii.serialPort;
-        m_geopositionSource = QGeoPositionInfoSource::createSource("nmea", params, this);
-        if (m_geopositionSource != nullptr)
+        case Settings::GeolocationSource::Manual:
+            if (m_geopositionSource != nullptr)
+            {
+                delete m_geopositionSource;
+                m_geopositionSource = nullptr;
+            }
+            positionUpdated(QGeoPositionInfo(m_settings->tii.coordinates, QDateTime::currentDateTime()));
+            break;
+        case Settings::GeolocationSource::SerialPort:
         {
-            qCDebug(txMap) << "Start position update";
-            connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &TxMapDialog::positionUpdated);
-            m_geopositionSource->startUpdates();
+            // serial port
+            QVariantMap params;
+            params["nmea.source"] = "serial:" + m_settings->tii.serialPort;
+            m_geopositionSource = QGeoPositionInfoSource::createSource("nmea", params, this);
+            if (m_geopositionSource != nullptr)
+            {
+                qCDebug(txMap) << "Start position update";
+                connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &TxMapDialog::positionUpdated);
+                m_geopositionSource->startUpdates();
+            }
         }
-    }
         break;
     }
 }
@@ -194,7 +193,6 @@ void TxMapDialog::onSettingsChanged()
         startLocationUpdate();
     }
 }
-
 
 QGeoCoordinate TxMapDialog::currentPosition() const
 {
@@ -250,23 +248,25 @@ QStringList TxMapDialog::ensembleInfo() const
 {
     if (!m_currentEnsemble.isValid())
     {
-        return QStringList{"","",""};
+        return QStringList{"", "", ""};
     }
 
     QStringList info;
     info.append(tr("Ensemble: <b>%1</b>").arg(m_currentEnsemble.label));
     if (m_isTii && m_model->rowCount() > 0)
     {
-        info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b> | TX: <b>%3</b>").arg(m_currentEnsemble.ecc(), 2, 16, QChar('0'))
-                        .arg(m_currentEnsemble.eid(), 4, 16, QChar('0')).arg(m_model->rowCount())
+        info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b> | TX: <b>%3</b>")
+                        .arg(m_currentEnsemble.ecc(), 2, 16, QChar('0'))
+                        .arg(m_currentEnsemble.eid(), 4, 16, QChar('0'))
+                        .arg(m_model->rowCount())
                         .toUpper());
     }
     else
     {
-        info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b>").arg(m_currentEnsemble.ecc(), 2, 16, QChar('0'))
+        info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b>")
+                        .arg(m_currentEnsemble.ecc(), 2, 16, QChar('0'))
                         .arg(m_currentEnsemble.eid(), 4, 16, QChar('0'))
                         .toUpper());
-
     }
     info.append(QString(tr("Channel: <b>%1 (%2 kHz)</b>")).arg(DabTables::channelList[m_currentEnsemble.frequency]).arg(m_currentEnsemble.frequency));
     return info;
@@ -276,7 +276,6 @@ QStringList TxMapDialog::ensembleInfo() const
 // {
 //     return m_selectedRow;
 // }
-
 
 bool TxMapDialog::isTii() const
 {
@@ -290,20 +289,21 @@ void TxMapDialog::onSelectionChanged(const QItemSelection &selected, const QItem
 
     QModelIndexList selectedRows = m_tableSelectionModel->selectedRows();
 
-    //selection is in proxy model => maping indexes back to source model
+    // selection is in proxy model => maping indexes back to source model
     QSet<int> selectedTx;
-    for (const auto &index : selectedRows) {
+    for (const auto &index : selectedRows)
+    {
         auto srcIdx = m_sortedFilteredModel->mapToSource(index);
         if (srcIdx.isValid())
         {
-            //qDebug() << m_model->data(srcIdx, TxTableModel::TiiRole);
+            // qDebug() << m_model->data(srcIdx, TxTableModel::TiiRole);
             selectedTx.insert(srcIdx.row());
         }
     }
     m_model->setSelectedRows(selectedTx);
 
     if (selectedRows.count() != 1)
-    {   // no selection => return
+    {  // no selection => return
         setSelectedRow(-1);
         return;
     }
@@ -314,7 +314,7 @@ void TxMapDialog::onSelectionChanged(const QItemSelection &selected, const QItem
 }
 
 void TxMapDialog::selectTx(int index)
-{   // index is row of source model !!!
+{  // index is row of source model !!!
     if (index == -1)
     {
         m_tableSelectionModel->clear();

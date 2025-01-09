@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,11 +27,13 @@
 #ifndef ENSEMBLEINFODIALOG_H
 #define ENSEMBLEINFODIALOG_H
 
-#include <QDialog>
 #include <QCloseEvent>
+#include <QDialog>
+
 #include "radiocontrol.h"
 
-namespace Ui {
+namespace Ui
+{
 class EnsembleInfoDialog;
 }
 
@@ -42,7 +44,7 @@ class EnsembleInfoDialog : public QDialog
 public:
     explicit EnsembleInfoDialog(QWidget *parent = nullptr);
     ~EnsembleInfoDialog();
-    void refreshEnsembleConfiguration(const QString & txt);
+    void refreshEnsembleConfiguration(const QString &txt);
     void updateSnr(uint8_t, float snr);
     void updateFreqOffset(float offset);
 
@@ -60,12 +62,12 @@ public:
     void newFrequency(quint32 f);
     void serviceChanged(const RadioControlServiceComponent &s);
     void onEnsembleInformation(const RadioControlEnsemble &ens) { m_ensembleName = ens.label; }
-    void onEnsembleCSV(const QString & csvString);
+    void onEnsembleCSV(const QString &csvString);
     QString exportPath() const;
     void setExportPath(const QString &newExportPath);
 
 signals:
-    void recordingStart(QWidget * widgetParent);
+    void recordingStart(QWidget *widgetParent);
     void recordingStop();
     void requestEnsembleConfiguration();
     void requestEnsembleCSV();
@@ -73,6 +75,7 @@ signals:
 protected:
     void showEvent(QShowEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
+
 private:
     Ui::EnsembleInfoDialog *ui;
 
@@ -94,4 +97,4 @@ private:
     void showRecordingStat(bool ena);
 };
 
-#endif // ENSEMBLEINFODIALOG_H
+#endif  // ENSEMBLEINFODIALOG_H

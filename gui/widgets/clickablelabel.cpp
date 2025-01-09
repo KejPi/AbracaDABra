@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,20 +24,20 @@
  * SOFTWARE.
  */
 
-#include <QDebug>
-#include <QPainter>
 #include "clickablelabel.h"
 
-ClickableLabel::ClickableLabel(QWidget *parent)
-    : QLabel(parent)
-{
-  setCursor(Qt::PointingHandCursor);
-  setScaledContents(false);
+#include <QDebug>
+#include <QPainter>
 
-  m_pic = new QPixmap(18,18);
-  m_pic->fill(Qt::transparent);
-  m_picChecked = new QPixmap(18,18);
-  m_picChecked->fill(Qt::transparent);
+ClickableLabel::ClickableLabel(QWidget *parent) : QLabel(parent)
+{
+    setCursor(Qt::PointingHandCursor);
+    setScaledContents(false);
+
+    m_pic = new QPixmap(18, 18);
+    m_pic->fill(Qt::transparent);
+    m_picChecked = new QPixmap(18, 18);
+    m_picChecked->fill(Qt::transparent);
 }
 
 ClickableLabel::~ClickableLabel()
@@ -50,14 +50,14 @@ ClickableLabel::~ClickableLabel()
 
 // only mouse click emits signals
 void ClickableLabel::mouseReleaseEvent(QMouseEvent *)
-{    
+{
     if (m_checkable)
     {  // toggling state
         setChecked(!m_checked);
         emit toggled(m_checked);
     }
     else
-    {   // showing menu if set, otherwise only sending signal
+    {  // showing menu if set, otherwise only sending signal
         if (nullptr != m_menu)
         {
             m_menu->popup(mapToGlobal(QPoint(0, height())));
@@ -67,23 +67,23 @@ void ClickableLabel::mouseReleaseEvent(QMouseEvent *)
     }
 }
 
-bool ClickableLabel::setIcon(const QString & file, bool checked)
+bool ClickableLabel::setIcon(const QString &file, bool checked)
 {
-    QPixmap * pic = new QPixmap();
+    QPixmap *pic = new QPixmap();
 
     if (!pic->load(file))
-    {   // do nothing
-        qDebug() << Q_FUNC_INFO << "Unable to load icon from file:"<< file;
+    {  // do nothing
+        qDebug() << Q_FUNC_INFO << "Unable to load icon from file:" << file;
         delete pic;
         return false;
     }
 
     // this could be used to calculate transparent picture
-//    QPainter p;
-//    p.begin(pic);
-//    p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
-//    p.fillRect(pic->rect(), QColor(0, 0, 0, 180));
-//    p.end();
+    //    QPainter p;
+    //    p.begin(pic);
+    //    p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+    //    p.fillRect(pic->rect(), QColor(0, 0, 0, 180));
+    //    p.end();
 
     // we have picture loaded here
     if (checked)
@@ -101,9 +101,9 @@ bool ClickableLabel::setIcon(const QString & file, bool checked)
     return true;
 }
 
-void ClickableLabel::setTooltip(const QString & text, bool checked)
+void ClickableLabel::setTooltip(const QString &text, bool checked)
 {
-    QString * tooltip = new QString(text);
+    QString *tooltip = new QString(text);
     if (checked)
     {
         delete m_tooltipChecked;
@@ -141,7 +141,8 @@ void ClickableLabel::toggle()
         emit toggled(m_checked);
     }
     else
-    { /* do nothing */ }
+    { /* do nothing */
+    }
 }
 
 void ClickableLabel::update()

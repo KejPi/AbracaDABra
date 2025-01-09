@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,11 +27,13 @@
 #ifndef TXDATAITEM_H
 #define TXDATAITEM_H
 
-#include <QString>
-#include "servicelistid.h"
 #include <QGeoCoordinate>
+#include <QString>
 
-class TxDataItem {
+#include "servicelistid.h"
+
+class TxDataItem
+{
 public:
     TxDataItem();
 
@@ -71,5 +73,4 @@ private:
     // Polarization m_polarization;
 };
 
-
-#endif // TXDATAITEM_H
+#endif  // TXDATAITEM_H

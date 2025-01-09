@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,9 @@
 #ifndef SLSVIEW_H
 #define SLSVIEW_H
 
+#include <QGraphicsPixmapItem>
 #include <QGraphicsView>
 #include <QObject>
-#include <QGraphicsPixmapItem>
 
 #include "slideshowapp.h"
 
@@ -48,7 +48,7 @@ public:
     void showAnnouncement(DabAnnouncement id);
 
     //! @brief This slot shall be invoked when new slide is to be shown
-    void showSlide(const Slide & slide);
+    void showSlide(const Slide &slide);
 
     //! @brief This method implements fintInViw without borders
     void fitInViewTight(const QRectF &rect, Qt::AspectRatioMode aspectRatioMode);
@@ -60,7 +60,7 @@ public:
     void setExpertMode(bool expertModeEna);
 
     //! @brief This method shows station logo
-    void showServiceLogo(const QPixmap & logo, bool force = false);
+    void showServiceLogo(const QPixmap &logo, bool force = false);
 
     //! @brief This method returns default slide save path
     QString savePath() const;
@@ -69,7 +69,7 @@ public:
     void setSavePath(const QString &newSavePath);
 
     //! @brief This method sets slide background color
-    void setBgColor(const QColor & color);
+    void setBgColor(const QColor &color);
 
 protected:
     //! @brief Reimplemented to scale image correctly
@@ -83,10 +83,10 @@ protected:
 
 private:
     //! @brief Used to store current pixmap
-    QGraphicsPixmapItem * m_pixmapItem;
+    QGraphicsPixmapItem *m_pixmapItem;
 
     //! @brief Used to store current announcement text
-    QGraphicsTextItem * m_announcementText;
+    QGraphicsTextItem *m_announcementText;
 
     //! @brief URL of current slide
     QString m_clickThroughURL;
@@ -113,7 +113,7 @@ private:
     QPixmap getLogo() const;
 
     //! @brief Methods displays pixmap
-    void displayPixmap(const QPixmap & logo);
+    void displayPixmap(const QPixmap &logo);
 };
 
-#endif // SLSVIEW_H
+#endif  // SLSVIEW_H

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,10 @@
 #ifndef DABTABLES_H
 #define DABTABLES_H
 
+#include <QDateTime>
+#include <QMap>
 #include <QObject>
 #include <QStringList>
-#include <QMap>
-#include <QDateTime>
 
 enum class DabProtectionLevel
 {
@@ -42,23 +42,23 @@ enum class DabProtectionLevel
     UEP_5 = 5,
     UEP_MAX = UEP_5,
 
-    EEP_MIN = (UEP_MAX+1),
-    EEP_1A =  (0+EEP_MIN),
-    EEP_2A =  (1+EEP_MIN),
-    EEP_3A =  (2+EEP_MIN),
-    EEP_4A =  (3+EEP_MIN),
+    EEP_MIN = (UEP_MAX + 1),
+    EEP_1A = (0 + EEP_MIN),
+    EEP_2A = (1 + EEP_MIN),
+    EEP_3A = (2 + EEP_MIN),
+    EEP_4A = (3 + EEP_MIN),
 
-    EEP_1B =  (4+EEP_MIN),
-    EEP_2B =  (5+EEP_MIN),
-    EEP_3B =  (6+EEP_MIN),
-    EEP_4B =  (7+EEP_MIN),
+    EEP_1B = (4 + EEP_MIN),
+    EEP_2B = (5 + EEP_MIN),
+    EEP_3B = (6 + EEP_MIN),
+    EEP_4B = (7 + EEP_MIN),
 };
 
 enum class DabTMId
 {
     StreamAudio = 0,
-    StreamData  = 1,
-    PacketData  = 3
+    StreamData = 1,
+    PacketData = 3
 };
 
 // ETSI TS 101 756 V2.4.1 table 2a and 2b
@@ -87,10 +87,10 @@ enum class DabUserApplicationType
 
 enum class DabCharset
 {
-    EBULATIN = 0x0,       // [TSI TS 101 756 V2.4.1 Table 1 & 19]
-    LATIN1 = 0x4,         // [TSI TS 101 756 V2.4.1 Table 19]
-    UCS2 = 0x6,           // [TSI TS 101 756 V2.4.1 Table 1]
-    UTF8 = 0xF,           // [TSI TS 101 756 V2.4.1 Table 1 & 19]
+    EBULATIN = 0x0,  // [TSI TS 101 756 V2.4.1 Table 1 & 19]
+    LATIN1 = 0x4,    // [TSI TS 101 756 V2.4.1 Table 19]
+    UCS2 = 0x6,      // [TSI TS 101 756 V2.4.1 Table 1]
+    UTF8 = 0xF,      // [TSI TS 101 756 V2.4.1 Table 1 & 19]
 };
 
 enum class DabMotExtParameter
@@ -133,12 +133,15 @@ typedef QMap<uint32_t, QString> dabChannelList_t;
 class DabTables
 {
 public:
-    //DabTables();
-    enum {NUM_PTY = 32};
+    // DabTables();
+    enum
+    {
+        NUM_PTY = 32
+    };
     static const dabChannelList_t channelList;
     static const uint16_t ebuLatin2UCS2[];
     static const QList<uint16_t> ASwValues;
-    //static const QList<uint8_t> TIIPattern;
+    // static const QList<uint8_t> TIIPattern;
     static const uint8_t TIIPattern[][4];
 
     static QString convertToQString(const char *c, uint8_t charset, uint8_t len = 16);
@@ -155,4 +158,4 @@ public:
     static QList<int> getTiiSubcarriers(int mainId, int subId);
 };
 
-#endif // DABTABLES_H
+#endif  // DABTABLES_H

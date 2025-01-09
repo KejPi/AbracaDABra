@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,19 +24,18 @@
  * SOFTWARE.
  */
 
-#include <QFileDialog>
-#include <QScrollBar>
+#include "ensembleinfodialog.h"
+
 #include <QDateTime>
 #include <QDebug>
+#include <QFileDialog>
 #include <QMenu>
 #include <QRegularExpression>
+#include <QScrollBar>
 
-#include "ensembleinfodialog.h"
 #include "ui_ensembleinfodialog.h"
 
-EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::EnsembleInfoDialog)
+EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(new Ui::EnsembleInfoDialog)
 {
     ui->setupUi(this);
 
@@ -117,13 +116,13 @@ EnsembleInfoDialog::~EnsembleInfoDialog()
     delete ui;
 }
 
-void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
-{    
+void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString &txt)
+{
     if (isVisible())
     {
         ui->ensStructureTextEdit->setHtml(txt);
         if (txt.isEmpty())
-        {   // empty ensemble configuration means tuning to new frequency
+        {  // empty ensemble configuration means tuning to new frequency
             clearSignalInfo();
             clearServiceInfo();
 
@@ -137,10 +136,8 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
         {
             ui->ensStructureTextEdit->setDocumentTitle(tr("Ensemble information"));
 
-            int minWidth = ui->ensStructureTextEdit->document()->idealWidth()
-                           + ui->ensStructureTextEdit->contentsMargins().left()
-                           + ui->ensStructureTextEdit->contentsMargins().right()
-                           + ui->ensStructureTextEdit->verticalScrollBar()->width();
+            int minWidth = ui->ensStructureTextEdit->document()->idealWidth() + ui->ensStructureTextEdit->contentsMargins().left() +
+                           ui->ensStructureTextEdit->contentsMargins().right() + ui->ensStructureTextEdit->verticalScrollBar()->width();
 
             if (minWidth > 1000)
             {
@@ -154,23 +151,19 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString & txt)
 
 void EnsembleInfoDialog::onEnsembleCSV(const QString &csvString)
 {
-    static const QRegularExpression regexp( "[" + QRegularExpression::escape("/:*?\"<>|") + "]");
+    static const QRegularExpression regexp("[" + QRegularExpression::escape("/:*?\"<>|") + "]");
     QString ensemblename = m_ensembleName;
     ensemblename.replace(regexp, "_");
 
-    QString f = QString("%1/%2_%3_%4.csv").arg(m_exportPath,
-                                            QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"),
-                                            DabTables::channelList.value(m_frequency),
-                                            ensemblename);
+    QString f =
+        QString("%1/%2_%3_%4.csv")
+            .arg(m_exportPath, QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"), DabTables::channelList.value(m_frequency), ensemblename);
 
-    QString fileName = QFileDialog::getSaveFileName(this,
-                                            tr("Export CSV file"),
-                                            QDir::toNativeSeparators(f),
-                                            tr("CSV Files")+" (*.csv)");
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Export CSV file"), QDir::toNativeSeparators(f), tr("CSV Files") + " (*.csv)");
 
     if (!fileName.isEmpty())
     {
-        m_exportPath = QFileInfo(fileName).path(); // store path for next time
+        m_exportPath = QFileInfo(fileName).path();  // store path for next time
         QFile file(fileName);
         if (file.open(QIODevice::WriteOnly))
         {
@@ -239,41 +232,41 @@ void EnsembleInfoDialog::onRecording(bool isActive)
 
 void EnsembleInfoDialog::updateRecordingStatus(uint64_t bytes, float ms)
 {
-    ui->dumpSize->setText(QString::number(double(bytes/(1024*1024.0)),'f', 1) + " MB");
-    ui->dumpLength->setText(QString::number(double(ms * 0.001),'f', 1) + tr(" sec"));
+    ui->dumpSize->setText(QString::number(double(bytes / (1024 * 1024.0)), 'f', 1) + " MB");
+    ui->dumpLength->setText(QString::number(double(ms * 0.001), 'f', 1) + tr(" sec"));
 }
 
 void EnsembleInfoDialog::updateAgcGain(float gain)
 {
     if (std::isnan(gain))
-    {   // gain is not available (input device in HW mode)
+    {  // gain is not available (input device in HW mode)
         ui->agcGain->setText(tr("N/A"));
         return;
     }
-    ui->agcGain->setText(QString::number(double(gain),'f', 1) + " dB");
+    ui->agcGain->setText(QString::number(double(gain), 'f', 1) + " dB");
 }
 
 void EnsembleInfoDialog::updateRfLevel(float rfLevel, float)
 {
     if (std::isnan(rfLevel))
-    {   // level is not available (input device in HW mode or not RTL-SDR)
+    {  // level is not available (input device in HW mode or not RTL-SDR)
         ui->rfLevel->setText(tr("N/A"));
         return;
     }
-    ui->rfLevel->setText(QString::number(double(rfLevel),'f', 1) + " dBm");
+    ui->rfLevel->setText(QString::number(double(rfLevel), 'f', 1) + " dBm");
 }
 
 void EnsembleInfoDialog::updateFIBstatus(int fibCntr, int fibErrCount)
 {
     m_fibCounter += (fibCntr - fibErrCount);
-    m_fibCounter &= 0x7FFFFFFF;       // wrapping
+    m_fibCounter &= 0x7FFFFFFF;  // wrapping
     m_fibErrorCounter += fibErrCount;
     m_fibErrorCounter &= 0x7FFFFFFF;  // wrapping
     ui->fibCount->setText(QString::number(m_fibCounter));
     ui->fibErrCount->setText(QString::number(m_fibErrorCounter));
     if (m_fibCounter > 0)
     {
-        ui->fibErrRate->setText(QString::number(double(m_fibErrorCounter)/m_fibCounter,'e', 4));
+        ui->fibErrRate->setText(QString::number(double(m_fibErrorCounter) / m_fibCounter, 'e', 4));
         return;
     }
     // else
@@ -283,14 +276,14 @@ void EnsembleInfoDialog::updateFIBstatus(int fibCntr, int fibErrCount)
 void EnsembleInfoDialog::updateMSCstatus(int crcOkCount, int crcErrCount)
 {
     m_crcCounter += (crcOkCount + crcErrCount);
-    m_crcCounter &= 0x7FFFFFFF;       // wrapping
+    m_crcCounter &= 0x7FFFFFFF;  // wrapping
     m_crcErrorCounter += crcErrCount;
     m_crcErrorCounter &= 0x7FFFFFFF;  // wrapping
     ui->crcCount->setText(QString::number(m_crcCounter));
     ui->crcErrCount->setText(QString::number(m_crcErrorCounter));
     if (m_crcCounter > 0)
     {
-        ui->crcErrRate->setText(QString::number(double(m_crcErrorCounter)/m_crcCounter,'e', 4));
+        ui->crcErrRate->setText(QString::number(double(m_crcErrorCounter) / m_crcCounter, 'e', 4));
         return;
     }
     // else
@@ -317,7 +310,8 @@ void EnsembleInfoDialog::resetMscStat()
 
 void EnsembleInfoDialog::newFrequency(quint32 f)
 {
-    if (f != m_frequency) {
+    if (f != m_frequency)
+    {
         m_frequency = f;
 
         clearFreqInfo();
@@ -336,13 +330,13 @@ void EnsembleInfoDialog::newFrequency(quint32 f)
 void EnsembleInfoDialog::serviceChanged(const RadioControlServiceComponent &s)
 {
     if (!s.SId.isValid())
-    {   // service component not valid -> can happen during reconfig
+    {  // service component not valid -> can happen during reconfig
         clearServiceInfo();
         return;
     }
 
     ui->service->setText(QString("%1").arg(s.label, 16));
-    ui->serviceId->setText("0x"+QString("%1").arg(s.SId.countryServiceRef(), 4, 16, QChar('0')).toUpper());
+    ui->serviceId->setText("0x" + QString("%1").arg(s.SId.countryServiceRef(), 4, 16, QChar('0')).toUpper());
     ui->scids->setText(QString::number(s.SCIdS));
     ui->subChannel->setText(QString::number(s.SubChId));
     ui->startCU->setText(QString::number(s.SubChAddr));
@@ -376,30 +370,30 @@ void EnsembleInfoDialog::setExportPath(const QString &newExportPath)
     m_exportPath = newExportPath;
 }
 
-void EnsembleInfoDialog::fibFrameContextMenu(const QPoint& pos)
+void EnsembleInfoDialog::fibFrameContextMenu(const QPoint &pos)
 {
     QPoint globalPos = ui->FIBframe->mapToGlobal(pos);
     QMenu menu(this);
-    QAction * resetAllAction = menu.addAction(tr("Reset statistics"));
+    QAction *resetAllAction = menu.addAction(tr("Reset statistics"));
     menu.addSeparator();
-    QAction * fibResetAction = menu.addAction(tr("Reset FIB statistics"));
-    QAction * mscResetAction = menu.addAction(tr("Reset MSC statistics"));
-    QAction * selectedItem = menu.exec(globalPos);
+    QAction *fibResetAction = menu.addAction(tr("Reset FIB statistics"));
+    QAction *mscResetAction = menu.addAction(tr("Reset MSC statistics"));
+    QAction *selectedItem = menu.exec(globalPos);
     if (nullptr == selectedItem)
     {  // nothing was chosen
-       return;
+        return;
     }
 
     if (selectedItem == mscResetAction)
-    {   // msc reset
+    {  // msc reset
         resetMscStat();
     }
     else if (selectedItem == fibResetAction)
-    {   // fib reset
+    {  // fib reset
         resetFibStat();
     }
     else
-    {   // reset all
+    {  // reset all
         resetFibStat();
         resetMscStat();
     }
@@ -420,7 +414,7 @@ void EnsembleInfoDialog::clearSignalInfo()
     ui->snr->setText(tr("N/A"));
     ui->freqOffset->setText(tr("N/A"));
     ui->rfLevel->setText(tr("N/A"));
-    //ui->agcGain->setText(tr("N/A"));
+    // ui->agcGain->setText(tr("N/A"));
 }
 
 void EnsembleInfoDialog::clearFreqInfo()
@@ -435,5 +429,3 @@ void EnsembleInfoDialog::showRecordingStat(bool ena)
     ui->dumpSizeLabel->setVisible(ena);
     ui->dumpVLine->setVisible(ena);
 }
-
-

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,26 +27,28 @@
 #ifndef AIRSPYINPUT_H
 #define AIRSPYINPUT_H
 
+#include <libairspy/airspy.h>
+#include <libairspy/airspy_commands.h>
+
 #include <QObject>
 #include <QThread>
 #include <QTimer>
-#include <libairspy/airspy.h>
-#include <libairspy/airspy_commands.h>
+
 #include "inputdevice.h"
 #include "inputdevicesrc.h"
 
-#define AIRSPY_AGC_ENABLE  1     // enable AGC
-#define AIRSPY_RECORD_INT16  1   // record raw stream in int16 instead of float
+#define AIRSPY_AGC_ENABLE 1    // enable AGC
+#define AIRSPY_RECORD_INT16 1  // record raw stream in int16 instead of float
 
-#define AIRSPY_RECORD_FLOAT2INT16  (16384*2)   // conversion constant to int16
+#define AIRSPY_RECORD_FLOAT2INT16 (16384 * 2)  // conversion constant to int16
 
-#define AIRSPY_SW_AGC_MIN      0
-#define AIRSPY_SW_AGC_MAX     17
-#define AIRSPY_HW_AGC_MIN      0
-#define AIRSPY_HW_AGC_MAX     17
+#define AIRSPY_SW_AGC_MIN 0
+#define AIRSPY_SW_AGC_MAX 17
+#define AIRSPY_HW_AGC_MIN 0
+#define AIRSPY_HW_AGC_MAX 17
 #define AIRSPY_LEVEL_THR_MIN (0.001)
 #define AIRSPY_LEVEL_THR_MAX (0.1)
-#define AIRSPY_LEVEL_RESET   (0.008)
+#define AIRSPY_LEVEL_RESET (0.008)
 
 enum class AirpyGainMode
 {
@@ -75,7 +77,7 @@ public:
     ~AirspyInput();
     bool openDevice() override;
     void tune(uint32_t frequency) override;
-    void setGainMode(const AirspyGainStr & gain);
+    void setGainMode(const AirspyGainStr &gain);
     void startStopRecording(bool start) override;
     void setBiasT(bool ena);
     void setDataPacking(bool ena);
@@ -91,11 +93,11 @@ private:
     int m_gainIdx;
     std::atomic<bool> m_isRecording;
     bool m_try4096kHz;
-    float * m_filterOutBuffer;
-    InputDeviceSRC * m_src;
+    float *m_filterOutBuffer;
+    InputDeviceSRC *m_src;
     uint_fast8_t m_signalLevelEmitCntr;
 
-    void run();           
+    void run();
     void stop();
     void resetAgc();
 
@@ -107,8 +109,8 @@ private:
     void onWatchdogTimeout();
 
     void doRecordBuffer(const float *buf, uint32_t len);
-    void processInputData(airspy_transfer* transfer);
-    static int callback(airspy_transfer* transfer);
+    void processInputData(airspy_transfer *transfer);
+    static int callback(airspy_transfer *transfer);
 };
 
-#endif // AIRSPYNPUT_H
+#endif  // AIRSPYNPUT_H

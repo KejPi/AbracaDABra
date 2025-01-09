@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,22 +27,23 @@
 #ifndef INPUTDEVICE_H
 #define INPUTDEVICE_H
 
-#include <QObject>
-#include <QMutex>
-#include <QWaitCondition>
 #include <pthread.h>
 
+#include <QMutex>
+#include <QObject>
+#include <QWaitCondition>
+
 // this is chunk that is received from input device to be stored in input FIFO
-#define INPUT_CHUNK_MS            (200)
-#define INPUT_CHUNK_IQ_SAMPLES    (2048 * INPUT_CHUNK_MS)
+#define INPUT_CHUNK_MS (200)
+#define INPUT_CHUNK_IQ_SAMPLES (2048 * INPUT_CHUNK_MS)
 
 // Input FIFO size in bytes - FIFO contains float _Complex samples => [float float]
 // total capacity is 8 input chunks
-#define INPUT_FIFO_SIZE           (INPUT_CHUNK_IQ_SAMPLES * (2*sizeof(float)) * 8)
+#define INPUT_FIFO_SIZE (INPUT_CHUNK_IQ_SAMPLES * (2 * sizeof(float)) * 8)
 
-#define INPUTDEVICE_WDOG_TIMEOUT_SEC 3     // watchdog timeout in seconds (if implemented and enabled)
+#define INPUTDEVICE_WDOG_TIMEOUT_SEC 3  // watchdog timeout in seconds (if implemented and enabled)
 
-#define INPUTDEVICE_BANDWIDTH  (1530*1000)
+#define INPUTDEVICE_BANDWIDTH (1530 * 1000)
 
 struct ComplexFifo
 {
@@ -59,7 +60,16 @@ struct ComplexFifo
 };
 typedef struct ComplexFifo fifo_t;
 
-enum class InputDeviceId { UNDEFINED = 0, RTLSDR, RTLTCP, RAWFILE, AIRSPY, SOAPYSDR, RARTTCP};
+enum class InputDeviceId
+{
+    UNDEFINED = 0,
+    RTLSDR,
+    RTLTCP,
+    RAWFILE,
+    AIRSPY,
+    SOAPYSDR,
+    RARTTCP
+};
 
 enum class RtlGainMode
 {
@@ -79,9 +89,9 @@ enum class SoapyGainMode
 enum class InputDeviceErrorCode
 {
     Undefined = 0,
-    EndOfFile = -1,                // Raw file input
-    DeviceDisconnected = -2,       // USB disconnected or socket disconnected
-    NoDataAvailable = -3,          // This can happen when TCP server is connected but stopped sending data for some reason
+    EndOfFile = -1,           // Raw file input
+    DeviceDisconnected = -2,  // USB disconnected or socket disconnected
+    NoDataAvailable = -3,     // This can happen when TCP server is connected but stopped sending data for some reason
 };
 
 struct InputDeviceDescription
@@ -95,9 +105,9 @@ struct InputDeviceDescription
     struct
     {
         int sampleRate;
-        int channelBits;          // I or Q
-        int containerBits;        // I or Q
-        QString channelContainer; // I or Q
+        int channelBits;           // I or Q
+        int containerBits;         // I or Q
+        QString channelContainer;  // I or Q
     } sample;
     struct
     {
@@ -109,17 +119,16 @@ struct InputDeviceDescription
     } rawFile;
 };
 
-
 Q_DECLARE_METATYPE(InputDeviceErrorCode);
 
 class InputDevice : public QObject
 {
-    Q_OBJECT    
+    Q_OBJECT
 public:
     InputDevice(QObject *parent = nullptr);
     ~InputDevice();
     virtual bool openDevice() = 0;
-    const InputDeviceDescription & deviceDescription() const { return m_deviceDescription; }
+    const InputDeviceDescription &deviceDescription() const { return m_deviceDescription; }
     virtual void tune(uint32_t freq) = 0;
     virtual void startStopRecording(bool start) = 0;
 
@@ -128,7 +137,7 @@ signals:
     void tuned(uint32_t freq);
     void agcGain(float gain);
     void rfLevel(float level, float gain);
-    void recordBuffer(const uint8_t * buf, uint32_t len);
+    void recordBuffer(const uint8_t *buf, uint32_t len);
     void error(const InputDeviceErrorCode errCode = InputDeviceErrorCode::Undefined);
 
 protected:
@@ -139,4 +148,4 @@ extern fifo_t inputBuffer;
 void getSamples(float buffer[], uint16_t len);
 void skipSamples(float buffer[], uint16_t numSamples);
 
-#endif // INPUTDEVICE_H
+#endif  // INPUTDEVICE_H

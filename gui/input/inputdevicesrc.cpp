@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,9 @@
  * SOFTWARE.
  */
 
-#include <QDebug>
 #include "inputdevicesrc.h"
+
+#include <QDebug>
 #include <cmath>
 #include <cstring>
 
@@ -35,7 +36,7 @@ InputDeviceSRC::InputDeviceSRC(float inputSampleRate)
     {
         m_filter = new InputDeviceSRCPassthrough();
     }
-    else if (2*2048e3 == inputSampleRate)
+    else if (2 * 2048e3 == inputSampleRate)
     {
         m_filter = new InputDeviceSRCFilterDS2();
     }
@@ -75,21 +76,21 @@ int InputDeviceSRC::process(float inDataIQ[], int numInDataIQ, float outDataIQ[]
 
 InputDeviceSRCFilterDS2::InputDeviceSRCFilterDS2()
 {
-    m_bufferI = new float[2*m_taps];
-    m_bufferQ = new float[2*m_taps];
+    m_bufferI = new float[2 * m_taps];
+    m_bufferQ = new float[2 * m_taps];
     m_bufferPtrI = m_bufferI;
     m_bufferPtrQ = m_bufferQ;
 
-    m_catt = 1 - std::exp(-1/(INPUTDEVICESRC_LEVEL_ATTACK * 2048e3));
-    m_crel = 1 - std::exp(-1/(INPUTDEVICESRC_LEVEL_RELEASE * 2048e3));
+    m_catt = 1 - std::exp(-1 / (INPUTDEVICESRC_LEVEL_ATTACK * 2048e3));
+    m_crel = 1 - std::exp(-1 / (INPUTDEVICESRC_LEVEL_RELEASE * 2048e3));
 
     InputDeviceSRCFilterDS2::reset();
 }
 
 InputDeviceSRCFilterDS2::~InputDeviceSRCFilterDS2()
 {
-    delete [] m_bufferI;
-    delete [] m_bufferQ;
+    delete[] m_bufferI;
+    delete[] m_bufferQ;
 }
 
 void InputDeviceSRCFilterDS2::reset()
@@ -98,7 +99,7 @@ void InputDeviceSRCFilterDS2::reset()
 
     m_bufferPtrI = m_bufferI;
     m_bufferPtrQ = m_bufferQ;
-    for (int n = 0; n < 2*m_taps; ++n)
+    for (int n = 0; n < 2 * m_taps; ++n)
     {
         m_bufferI[n] = 0;
         m_bufferQ[n] = 0;
@@ -109,16 +110,15 @@ int InputDeviceSRCFilterDS2::process(float inDataIQ[], int numInDataIQ, float ou
 {
     float level = m_signalLevel;
 
-    float * bufPtrI = m_bufferPtrI;
-    float * bufPtrQ = m_bufferPtrQ;
+    float* bufPtrI = m_bufferPtrI;
+    float* bufPtrQ = m_bufferPtrQ;
 
-    for (int n = 0; n<numInDataIQ/2; ++n)
+    for (int n = 0; n < numInDataIQ / 2; ++n)
     {
-        float * fwdI = bufPtrI;
-        float * revI = bufPtrI + m_taps;
-        float * fwdQ = bufPtrQ;
-        float * revQ = bufPtrQ + m_taps;
-
+        float* fwdI = bufPtrI;
+        float* revI = bufPtrI + m_taps;
+        float* fwdQ = bufPtrQ;
+        float* revQ = bufPtrQ + m_taps;
 
         *fwdI++ = *inDataIQ;
         *revI = *inDataIQ++;
@@ -128,7 +128,7 @@ int InputDeviceSRCFilterDS2::process(float inDataIQ[], int numInDataIQ, float ou
         float accI = 0;
         float accQ = 0;
 
-        for (int c = 0; c < (m_taps+1)/4; ++c)
+        for (int c = 0; c < (m_taps + 1) / 4; ++c)
         {
             accI += (*fwdI + *revI) * m_coef[c];
             fwdI += 2;  // every other coeff is zero
@@ -138,8 +138,8 @@ int InputDeviceSRCFilterDS2::process(float inDataIQ[], int numInDataIQ, float ou
             revQ -= 2;  // every other coeff is zero
         }
 
-        accI += *(fwdI-1) * m_coef[(m_taps+1)/4];
-        accQ += *(fwdQ-1) * m_coef[(m_taps+1)/4];
+        accI += *(fwdI - 1) * m_coef[(m_taps + 1) / 4];
+        accQ += *(fwdQ - 1) * m_coef[(m_taps + 1) / 4];
 
         *outDataIQ++ = accI;
         *outDataIQ++ = accQ;
@@ -155,14 +155,14 @@ int InputDeviceSRCFilterDS2::process(float inDataIQ[], int numInDataIQ, float ou
         float abs2 = (*inDataIQ) * (*inDataIQ);  // I*I
 
         // insert to delay line
-        *(bufPtrI + m_taps) = *inDataIQ;           // I
-        *bufPtrI++ = *inDataIQ++;                // I
+        *(bufPtrI + m_taps) = *inDataIQ;  // I
+        *bufPtrI++ = *inDataIQ++;         // I
 
-        abs2 += (*inDataIQ) * (*inDataIQ);       // Q*Q
+        abs2 += (*inDataIQ) * (*inDataIQ);  // Q*Q
 
         // insert to delay line
-        *(bufPtrQ + m_taps) = *inDataIQ;           // Q
-        *bufPtrQ++ = *inDataIQ++;                // Q
+        *(bufPtrQ + m_taps) = *inDataIQ;  // Q
+        *bufPtrQ++ = *inDataIQ++;         // Q
 
         // calculate signal level (rectifier, fast attack slow release)
         float c = m_crel;
@@ -173,10 +173,10 @@ int InputDeviceSRCFilterDS2::process(float inDataIQ[], int numInDataIQ, float ou
         level = c * abs2 + level - c * level;
 #else
         // insert new samples to delay line
-        *(bufPtrI + taps) = *inDataIQ;    // I
-        *bufPtrI++ = *inDataIQ++;         // I
-        *(bufPtrQ + taps) = *inDataIQ;    // Q
-        *bufPtrQ++ = *inDataIQ++;         // Q
+        *(bufPtrI + taps) = *inDataIQ;  // I
+        *bufPtrI++ = *inDataIQ++;       // I
+        *(bufPtrQ + taps) = *inDataIQ;  // Q
+        *bufPtrQ++ = *inDataIQ++;       // Q
 #endif
         if (bufPtrI == m_bufferI + m_taps)
         {
@@ -191,7 +191,7 @@ int InputDeviceSRCFilterDS2::process(float inDataIQ[], int numInDataIQ, float ou
     // store signal level
     m_signalLevel = level;
 
-    return numInDataIQ/2;
+    return numInDataIQ / 2;
 }
 
 //===================================================================================================
@@ -203,16 +203,14 @@ InputDeviceSRCFilterFarrow::InputDeviceSRCFilterFarrow(float inputSampleRate)
     m_R = 2048e3 / inputSampleRate;
 
     // calculate catt and crel
-    m_catt = 1 - std::exp(-1/(INPUTDEVICESRC_LEVEL_ATTACK * inputSampleRate));
-    m_crel = 1 - std::exp(-1/(INPUTDEVICESRC_LEVEL_RELEASE * inputSampleRate));
+    m_catt = 1 - std::exp(-1 / (INPUTDEVICESRC_LEVEL_ATTACK * inputSampleRate));
+    m_crel = 1 - std::exp(-1 / (INPUTDEVICESRC_LEVEL_RELEASE * inputSampleRate));
 
     InputDeviceSRCFilterFarrow::reset();
 }
 
 InputDeviceSRCFilterFarrow::~InputDeviceSRCFilterFarrow()
-{
-
-}
+{}
 
 void InputDeviceSRCFilterFarrow::reset()
 {
@@ -242,10 +240,10 @@ int InputDeviceSRCFilterFarrow::process(float inDataIQ[], int numInDataIQ, float
     {
         m_mu = m_mu - m_R;
         if (m_mu < 0)
-        {   // dump condition
+        {  // dump condition
             m_mu = m_mu + 1.0;
             // calc FIR for each polynomial
-            for (int n = 0; n<NUM_POLY; ++n)
+            for (int n = 0; n < NUM_POLY; ++n)
             {
                 float accI = 0;
                 float accQ = 0;
@@ -262,10 +260,10 @@ int InputDeviceSRCFilterFarrow::process(float inDataIQ[], int numInDataIQ, float
             numOutDataIQ += 1;
 
             // shift delay line -> prepare for next dump
-            std::memmove(&m_yI[0], &m_yI[1], (NUM_POLY-1)*sizeof(float));
-            std::memmove(&m_yQ[0], &m_yQ[1], (NUM_POLY-1)*sizeof(float));
-            m_yI[NUM_POLY-1] = 0.0;
-            m_yQ[NUM_POLY-1] = 0.0;
+            std::memmove(&m_yI[0], &m_yI[1], (NUM_POLY - 1) * sizeof(float));
+            std::memmove(&m_yQ[0], &m_yQ[1], (NUM_POLY - 1) * sizeof(float));
+            m_yI[NUM_POLY - 1] = 0.0;
+            m_yQ[NUM_POLY - 1] = 0.0;
 
             // dump xIQ
             for (int m = 0; m < POLY_COEFS; ++m)
@@ -274,7 +272,9 @@ int InputDeviceSRCFilterFarrow::process(float inDataIQ[], int numInDataIQ, float
                 m_xQ[m] = 0.0;
             }
         }
-        else { /* continue with integration */ }
+        else
+        { /* continue with integration */
+        }
 
         float inI = *inDataIQ++;
         float inQ = *inDataIQ++;
@@ -297,8 +297,8 @@ int InputDeviceSRCFilterFarrow::process(float inDataIQ[], int numInDataIQ, float
 
         for (int m = 1; m < POLY_COEFS; ++m)
         {
-            inI = inI*m_mu;
-            inQ = inQ*m_mu;
+            inI = inI * m_mu;
+            inQ = inQ * m_mu;
 
             m_xI[m] += inI;
             m_xQ[m] += inQ;
@@ -313,16 +313,14 @@ int InputDeviceSRCFilterFarrow::process(float inDataIQ[], int numInDataIQ, float
 
 InputDeviceSRCPassthrough::InputDeviceSRCPassthrough()
 {
-    m_catt = 1 - std::exp(-1/(INPUTDEVICESRC_LEVEL_ATTACK * 2048e3));
-    m_crel = 1 - std::exp(-1/(INPUTDEVICESRC_LEVEL_RELEASE * 2048e3));
+    m_catt = 1 - std::exp(-1 / (INPUTDEVICESRC_LEVEL_ATTACK * 2048e3));
+    m_crel = 1 - std::exp(-1 / (INPUTDEVICESRC_LEVEL_RELEASE * 2048e3));
 
     InputDeviceSRCPassthrough::reset();
 }
 
 InputDeviceSRCPassthrough::~InputDeviceSRCPassthrough()
-{
-
-}
+{}
 
 void InputDeviceSRCPassthrough::reset()
 {
@@ -353,7 +351,7 @@ int InputDeviceSRCPassthrough::process(float inDataIQ[], int numInDataIQ, float 
     // store signal level
     m_signalLevel = level;
 #else
-    std::memcpy(outDataIQ, inDataIQ, numInDataIQ * 2*sizeof(float));
+    std::memcpy(outDataIQ, inDataIQ, numInDataIQ * 2 * sizeof(float));
 #endif
 
     return numInDataIQ;

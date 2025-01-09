@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,11 +28,12 @@
 #define TXMAPDIALOG_H
 
 #include <QDialog>
-#include <QQuickView>
 #include <QGeoPositionInfoSource>
 #include <QItemSelectionModel>
-#include "settings.h"
+#include <QQuickView>
+
 #include "radiocontrol.h"
+#include "settings.h"
 #include "txtablemodel.h"
 #include "txtableproxymodel.h"
 
@@ -50,9 +51,9 @@ class TxMapDialog : public QDialog
     Q_PROPERTY(bool isRecordingLog READ isRecordingLog WRITE setIsRecordingLog NOTIFY isRecordingLogChanged FINAL)
 
 public:
-    explicit TxMapDialog(Settings * settings, bool isTii, QWidget *parent = nullptr);
+    explicit TxMapDialog(Settings *settings, bool isTii, QWidget *parent = nullptr);
     ~TxMapDialog();
-    virtual void onTiiData(const RadioControlTIIData & data) = 0;
+    virtual void onTiiData(const RadioControlTIIData &data) = 0;
     virtual void setupDarkMode(bool darkModeEna) = 0;
     void startLocationUpdate();
     void stopLocationUpdate();
@@ -71,14 +72,14 @@ public:
     virtual QStringList ensembleInfo() const;
     virtual QStringList txInfo() const;
 
-    //int selectedRow() const;
-    //virtual void setSelectedRow(int modelRow) = 0;
+    // int selectedRow() const;
+    // virtual void setSelectedRow(int modelRow) = 0;
     Q_INVOKABLE void selectTx(int index);
 
     bool showTiiTable() const;
     bool isTii() const;
 
-    Q_INVOKABLE virtual void startStopLog() { }
+    Q_INVOKABLE virtual void startStopLog() {}
     bool isRecordingLog() const;
     void setIsRecordingLog(bool newIsRecordingLog);
 
@@ -100,10 +101,10 @@ protected:
 
     virtual void onSelectedRowChanged() { /* do nothing by default */ };
 
-    Settings * m_settings;
-    TxTableModel * m_model;
-    TxTableProxyModel * m_sortedFilteredModel;
-    QItemSelectionModel * m_tableSelectionModel;
+    Settings *m_settings;
+    TxTableModel *m_model;
+    TxTableProxyModel *m_sortedFilteredModel;
+    QItemSelectionModel *m_tableSelectionModel;
 
     // UI
     RadioControlEnsemble m_currentEnsemble;
@@ -111,19 +112,17 @@ protected:
 
     virtual void reset();
 
-    void positionUpdated(const QGeoPositionInfo & position);
+    void positionUpdated(const QGeoPositionInfo &position);
     void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
-    QGeoPositionInfoSource * m_geopositionSource = nullptr;
+    QGeoPositionInfoSource *m_geopositionSource = nullptr;
     QGeoCoordinate m_currentPosition;
     bool m_positionValid = false;
     bool m_isVisible = false;
     const bool m_isTii;
-    bool m_isRecordingLog = false;    
+    bool m_isRecordingLog = false;
     int m_selectedRow = -1;  // source model row
-
-
 };
 
-#endif // TXMAPDIALOG_H
+#endif  // TXMAPDIALOG_H

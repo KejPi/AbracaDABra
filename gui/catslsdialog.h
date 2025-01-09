@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,13 +28,14 @@
 #define CATSLSDIALOG_H
 
 #include <QDialog>
-#include <QGraphicsView>
 #include <QGraphicsPixmapItem>
+#include <QGraphicsView>
 #include <QShowEvent>
 
 #include "slideshowapp.h"
 
-namespace Ui {
+namespace Ui
+{
 class CatSLSDialog;
 }
 
@@ -53,16 +54,16 @@ public:
     void reset();
 
     //! @brief Slot for new category, removal of category (title is empty) or update of the category name
-    void onCategoryUpdate(int catId, const QString & title);
+    void onCategoryUpdate(int catId, const QString &title);
 
     //! @brief Slot for new slide to come
-    void onCatSlide(const Slide & slide, int catId, int slideIdx, int numSlides);
+    void onCatSlide(const Slide &slide, int catId, int slideIdx, int numSlides);
 
     //! @brief This method enables expert mode features
     void setExpertMode(bool expertModeEna);
 
     //! @brief This method sets slide background color
-    void setSlsBgColor(const QColor & color);
+    void setSlsBgColor(const QColor &color);
 
 signals:
     //! @brief Signal to get current slide in category (when user changes category or when category is updated)
@@ -85,4 +86,4 @@ private:
     void onCategoryViewClicked(const QModelIndex &index);
 };
 
-#endif // CATSLSDIALOG_H
+#endif  // CATSLSDIALOG_H

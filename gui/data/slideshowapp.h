@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,20 +27,20 @@
 #ifndef SLIDESHOWAPP_H
 #define SLIDESHOWAPP_H
 
+#include <QHash>
 #include <QObject>
 #include <QPixmap>
-#include <QHash>
 #include <QSharedData>
-#include "radiocontrol.h"
-#include "motdecoder.h"
-#include "userapplication.h"
 
+#include "motdecoder.h"
+#include "radiocontrol.h"
+#include "userapplication.h"
 
 class SlideData : public QSharedData
 {
 public:
     SlideData();
-    SlideData(const SlideData & other);
+    SlideData(const SlideData &other);
     ~SlideData() {}
 
     QPixmap pixmap;
@@ -60,7 +60,7 @@ class Slide
 {
 public:
     Slide();
-    Slide(const Slide &other) : d (other.d) { }
+    Slide(const Slide &other) : d(other.d) {}
 
     QPixmap getPixmap() const;
     bool setPixmap(const QByteArray &data);
@@ -87,7 +87,7 @@ public:
     int getTransportID() const;
     void setTransportID(int newTransportID);
 
-    const QByteArray & getRawData() const { return d->rawData; }
+    const QByteArray &getRawData() const { return d->rawData; }
     int getNumBytes() const { return d->numBytes; }
 
     const QString &getAlternativeLocationURL() const;
@@ -96,7 +96,7 @@ public:
     bool isDecategorizeRequested() const;
     bool isEmpty() const { return d->contentName.isEmpty(); }
 
-    bool operator==(const Slide & other) const;
+    bool operator==(const Slide &other) const;
 
 private:
     QSharedDataPointer<SlideData> d;
@@ -121,46 +121,48 @@ class SlideShowApp : public UserApplication
 public:
     SlideShowApp(QObject *parent = nullptr);
     ~SlideShowApp();
-    void onNewMOTObject(const MOTObject & obj) override;
-    void onUserAppData(const RadioControlUserAppData & data) override;
+    void onNewMOTObject(const MOTObject &obj) override;
+    void onUserAppData(const RadioControlUserAppData &data) override;
     void start() override;
     void stop() override;
     void restart() override;
-    void setDataDumping(const Settings::UADumpSettings & settings) override;
+    void setDataDumping(const Settings::UADumpSettings &settings) override;
 
     void getCurrentCatSlide(int catId);
     void getNextCatSlide(int catId, bool forward = true);
 signals:
     // this signal is emitted anytime when new slide is received
-    void currentSlide(const Slide & slide);
+    void currentSlide(const Slide &slide);
 
     // catSLS signals
-    void categoryUpdate(int catId, const QString & title);
-    void catSlide(const Slide & slide, int catId, int slideIdx, int numSlides);
+    void categoryUpdate(int catId, const QString &title);
+    void catSlide(const Slide &slide, int catId, int slideIdx, int numSlides);
 
     void catSlsAvailable(bool isAvailable);
+
 private:
-    MOTDecoder * m_decoder;
+    MOTDecoder *m_decoder;
     QHash<QString, Slide> m_cache;
     QHash<int, Category> m_catSls;
 
-    void addSlideToCategory(const Slide & slide);
-    void removeSlideFromCategory(const Slide & slide);
-    void dumpSlide(const Slide & slide);
+    void addSlideToCategory(const Slide &slide);
+    void removeSlideFromCategory(const Slide &slide);
+    void dumpSlide(const Slide &slide);
 };
 
 class SlideShowApp::Category
 {
 public:
-    Category(QString & categoryTitle);
+    Category(QString &categoryTitle);
     const QString &getTitle() const;
     void setTitle(const QString &newTitle);
-    int insertSlide(const Slide & s);
+    int insertSlide(const Slide &s);
     int removeSlide(int id);
     int size() const;
     QString getCurrentSlide() const;
     QString getNextSlide(bool moveForward = true);
     int getCurrentIndex() const;
+
 private:
     struct SlideItem
     {
@@ -174,4 +176,4 @@ private:
     QList<SlideItem> m_slidesList;
 };
 
-#endif // SLIDESHOWAPP_H
+#endif  // SLIDESHOWAPP_H

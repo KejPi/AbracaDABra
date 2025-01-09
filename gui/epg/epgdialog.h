@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,16 +28,18 @@
 #define EPGDIALOG_H
 
 #include <QDialog>
+#include <QItemSelectionModel>
 #include <QQuickImageProvider>
 #include <QQuickView>
-#include <QItemSelectionModel>
+
 #include "audiorecscheduleitem.h"
 #include "metadatamanager.h"
 #include "settings.h"
 #include "slmodel.h"
 #include "slproxymodel.h"
 
-namespace Ui {
+namespace Ui
+{
 class EPGDialog;
 }
 
@@ -51,7 +53,8 @@ class EPGDialog : public QDialog
     Q_PROPERTY(QList<QColor> colors READ colors NOTIFY colorsChanged FINAL)
 
 public:
-    explicit EPGDialog(SLModel *serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager *metadataManager, Settings *settings, QWidget *parent = nullptr);
+    explicit EPGDialog(SLModel *serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager *metadataManager, Settings *settings,
+                       QWidget *parent = nullptr);
     ~EPGDialog();
 
     QPersistentModelIndex selectedEpgItem() const;
@@ -63,7 +66,7 @@ public:
     bool filterEmptyEpg() const;
     void setFilterEmptyEpg(bool newFilterEmptyEpg);
 
-    void onEnsembleInformation(const RadioControlEnsemble & ens);
+    void onEnsembleInformation(const RadioControlEnsemble &ens);
     bool filterEnsemble() const;
     void setFilterEnsemble(bool newFilterEnsemble);
 
@@ -84,7 +87,7 @@ signals:
 
     void colorsChanged();
 
-    void scheduleAudioRecording(const AudioRecScheduleItem & item);
+    void scheduleAudioRecording(const AudioRecScheduleItem &item);
 
 protected:
     void showEvent(QShowEvent *event) override;
@@ -93,33 +96,30 @@ protected:
 private:
     Ui::EPGDialog *ui;
     QQuickView *m_qmlView;
-    Settings * m_settings;
+    Settings *m_settings;
 
-    MetadataManager * m_metadataManager;
+    MetadataManager *m_metadataManager;
     bool m_isVisible = false;
-    SLProxyModel * m_slProxyModel;
+    SLProxyModel *m_slProxyModel;
     int m_currentUEID;
     bool m_isDarkMode;
     QList<QColor> m_colors;
 };
 
-
 // this class serves as simple image provider for EPG QML using MatedataManager as backend
 class LogoProvider : public QQuickImageProvider
 {
 public:
-    explicit LogoProvider(MetadataManager * metadataManager) : QQuickImageProvider(QQuickImageProvider::Pixmap)
-        , m_metadataManager(metadataManager) {};
+    explicit LogoProvider(MetadataManager *metadataManager) : QQuickImageProvider(QQuickImageProvider::Pixmap), m_metadataManager(metadataManager) {};
 
     QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize) override
     {
-        QPixmap logo = m_metadataManager->data(ServiceListId(static_cast<uint64_t>(id.toUInt())),
-                                               MetadataManager::MetadataRole::SmallLogo).value<QPixmap>();
+        QPixmap logo =
+            m_metadataManager->data(ServiceListId(static_cast<uint64_t>(id.toUInt())), MetadataManager::MetadataRole::SmallLogo).value<QPixmap>();
         if (logo.isNull())
         {
-            logo = QPixmap(requestedSize.width() > 0 ? requestedSize.width() : 32,
-                           requestedSize.height() > 0 ? requestedSize.height() : 32);
-            logo.fill(QColor(0,0,0,0));
+            logo = QPixmap(requestedSize.width() > 0 ? requestedSize.width() : 32, requestedSize.height() > 0 ? requestedSize.height() : 32);
+            logo.fill(QColor(0, 0, 0, 0));
         }
 
         if (size)
@@ -131,8 +131,7 @@ public:
     }
 
 private:
-    MetadataManager * m_metadataManager;
+    MetadataManager *m_metadataManager;
 };
 
-
-#endif // EPGDIALOG_H
+#endif  // EPGDIALOG_H

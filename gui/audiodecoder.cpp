@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,14 @@
  * SOFTWARE.
  */
 
+#include "audiodecoder.h"
+
+#include <math.h>
+
 #include <QDebug>
 #include <QFile>
 #include <QLoggingCategory>
 #include <QStandardPaths>
-#include <math.h>
-
-#include "audiodecoder.h"
 
 Q_LOGGING_CATEGORY(audioDecoder, "AudioDecoder", QtDebugMsg)
 
@@ -57,7 +58,7 @@ AudioDecoder::AudioDecoder(AudioRecorder *recorder, QObject *parent) : QObject(p
 #if AUDIO_DECODER_NOISE_CONCEALMENT
     m_noiseBufferPtr = new int16_t[AUDIO_DECODER_BUFFER_SIZE];
     m_noiseFile = nullptr;
-    memset(m_noiseBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE*sizeof(int16_t));
+    memset(m_noiseBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
 #endif
 #endif
 }
@@ -72,7 +73,7 @@ AudioDecoder::~AudioDecoder()
         NeAACDecClose(m_aacDecoderHandle);
 #endif
     }
-    delete [] m_outBufferPtr;
+    delete[] m_outBufferPtr;
 
 #if !HAVE_FDKAAC
 #if AUDIO_DECODER_NOISE_CONCEALMENT
@@ -81,7 +82,7 @@ AudioDecoder::~AudioDecoder()
         m_noiseFile->close();
         delete m_noiseFile;
     }
-    delete [] m_noiseBufferPtr;
+    delete[] m_noiseBufferPtr;
 #endif
 #endif
 
@@ -98,19 +99,19 @@ AudioDecoder::~AudioDecoder()
     }
 }
 
-void AudioDecoder::start(const RadioControlServiceComponent&s)
+void AudioDecoder::start(const RadioControlServiceComponent &s)
 {
     if (s.isAudioService())
     {
         if (PlaybackState::Stopped != m_playbackState)
-        {   // if running, then stop it first
+        {  // if running, then stop it first
             stop();
         }
         m_playbackState = PlaybackState::WaitForInit;
         m_recorder->setAudioService(s);
     }
     else
-    {   // no audio service -> can happen during reconfiguration
+    {  // no audio service -> can happen during reconfiguration
         stop();
     }
 }
@@ -225,11 +226,8 @@ void AudioDecoder::readAACHeader()
     m_recorder->setDataFormat(m_audioParameters.sampleRateKHz, true);
     emit audioParametersInfo(m_audioParameters);
 
-    qCInfo(audioDecoder, "%s %d kHz %s",
-           (m_aacHeader.bits.sbr_flag ? (m_aacHeader.bits.ps_flag ? "HE-AAC v2" : "HE-AAC") : "AAC-LC"),
-           (m_aacHeader.bits.dac_rate ? 48 : 32),
-           (m_aacHeader.bits.aac_channel_mode || m_aacHeader.bits.ps_flag ? "stereo" : "mono")
-           );
+    qCInfo(audioDecoder, "%s %d kHz %s", (m_aacHeader.bits.sbr_flag ? (m_aacHeader.bits.ps_flag ? "HE-AAC v2" : "HE-AAC") : "AAC-LC"),
+           (m_aacHeader.bits.dac_rate ? 48 : 32), (m_aacHeader.bits.aac_channel_mode || m_aacHeader.bits.ps_flag ? "stereo" : "mono"));
 
     /* AudioSpecificConfig structure (the only way to select 960 transform here!)
      *
@@ -256,27 +254,27 @@ void AudioDecoder::readAACHeader()
     uint8_t coreSrIndex = 0;
     if ((m_aacHeader.bits.dac_rate == 0) && (m_aacHeader.bits.sbr_flag == 1))
     {
-        //audioFs = 16*2;
+        // audioFs = 16*2;
         coreSrIndex = 0x8;  // 16 kHz
     }
     if ((m_aacHeader.bits.dac_rate == 1) && (m_aacHeader.bits.sbr_flag == 1))
     {
-        //audioFs = 24*2;
+        // audioFs = 24*2;
         coreSrIndex = 0x6;  // 24 kHz
     }
     if ((m_aacHeader.bits.dac_rate == 0) && (m_aacHeader.bits.sbr_flag == 0))
     {
-        //audioFs = 32;
+        // audioFs = 32;
         coreSrIndex = 0x5;  // 32 kHz
     }
     if ((m_aacHeader.bits.dac_rate == 1) && (m_aacHeader.bits.sbr_flag == 0))
     {
-        //audioFs = 48;
+        // audioFs = 48;
         coreSrIndex = 0x3;  // 48 kHz
     }
 
     uint8_t coreChannelConfig = m_aacHeader.bits.aac_channel_mode + 1;
-    uint8_t extensionSrIndex = 5 - 2 * m_aacHeader.bits.dac_rate; // dac_rate ? 3 : 5
+    uint8_t extensionSrIndex = 5 - 2 * m_aacHeader.bits.dac_rate;  // dac_rate ? 3 : 5
 
     // AAC LC
     m_ascLen = 0;
@@ -325,27 +323,30 @@ void AudioDecoder::initAACDecoder()
      * Older lib versions use a combined parameter for the output channel count.
      * As the headers of these didn't define the version, branch accordingly.
      */
-#if !defined (AACDECODER_LIB_VL0) && !defined (AACDECODER_LIB_VL1) && !defined (AACDECODER_LIB_VL2)
+#if !defined(AACDECODER_LIB_VL0) && !defined(AACDECODER_LIB_VL1) && !defined(AACDECODER_LIB_VL2)
     init_result = aacDecoder_SetParam(m_aacDecoderHandle, AAC_PCM_OUTPUT_CHANNELS, channels);
     if (AAC_DEC_OK != init_result)
     {
-        throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while setting parameter AAC_PCM_OUTPUT_CHANNELS: " + std::to_string(init_result));
+        throw std::runtime_error(std::string(Q_FUNC_INFO) +
+                                 ": error while setting parameter AAC_PCM_OUTPUT_CHANNELS: " + std::to_string(init_result));
     }
 #else
     init_result = aacDecoder_SetParam(m_aacDecoderHandle, AAC_PCM_MIN_OUTPUT_CHANNELS, channels);
     if (AAC_DEC_OK != init_result)
     {
-        throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while setting parameter AAC_PCM_MIN_OUTPUT_CHANNELS: " + std::to_string(init_result));
+        throw std::runtime_error(std::string(Q_FUNC_INFO) +
+                                 ": error while setting parameter AAC_PCM_MIN_OUTPUT_CHANNELS: " + std::to_string(init_result));
     }
     init_result = aacDecoder_SetParam(m_aacDecoderHandle, AAC_PCM_MAX_OUTPUT_CHANNELS, channels);
     if (AAC_DEC_OK != init_result)
     {
-        throw std::runtime_error(std::string(Q_FUNC_INFO) + ": error while setting parameter AAC_PCM_MAX_OUTPUT_CHANNELS: " + std::to_string(init_result));
+        throw std::runtime_error(std::string(Q_FUNC_INFO) +
+                                 ": error while setting parameter AAC_PCM_MAX_OUTPUT_CHANNELS: " + std::to_string(init_result));
     }
 #endif
 
-    uint8_t * asc_array[1] { m_asc };
-    const unsigned int asc_sizeof_array[1] { (unsigned int)m_ascLen };
+    uint8_t *asc_array[1]{m_asc};
+    const unsigned int asc_sizeof_array[1]{(unsigned int)m_ascLen};
     init_result = aacDecoder_ConfigRaw(m_aacDecoderHandle, asc_array, asc_sizeof_array);
     if (AAC_DEC_OK != init_result)
     {
@@ -362,7 +363,7 @@ void AudioDecoder::initAACDecoder()
     setOutput(m_aacHeader.bits.dac_rate ? 48000 : 32000, channels);
 }
 
-#else // HAVE_FDKAAC
+#else   // HAVE_FDKAAC
 void AudioDecoder::initAACDecoder()
 {
     deinitMPG123();
@@ -412,7 +413,7 @@ void AudioDecoder::initAACDecoder()
     // calculate mute ramp
     // mute ramp is sin^2 that changes from 0 to 1 during AUDIOOUTPUT_FADE_TIME_MS
     m_muteRamp.clear();
-    int sampleRate_kHz = sampleRate/1000.0;
+    int sampleRate_kHz = sampleRate / 1000.0;
     float coe = M_PI / (2.0 * AUDIO_DECODER_FADE_TIME_MS * sampleRate_kHz);
     for (int n = 0; n < AUDIO_DECODER_FADE_TIME_MS * sampleRate_kHz; ++n)
     {
@@ -424,7 +425,7 @@ void AudioDecoder::initAACDecoder()
 
     setOutput(sampleRate, numChannels);
 }
-#endif // HAVE_FDKAAC
+#endif  // HAVE_FDKAAC
 
 void AudioDecoder::deinitAACDecoder()
 {
@@ -442,23 +443,22 @@ void AudioDecoder::deinitAACDecoder()
 void AudioDecoder::decodeData(RadioControlAudioData *inData)
 {
     if (PlaybackState::Stopped == m_playbackState)
-    {   // do nothing if not running
+    {                   // do nothing if not running
         delete inData;  // free input buffer
         return;
     }
 
     switch (inData->ASCTy)
     {
-    case DabAudioDataSCty::DAB_AUDIO:
-        processMP2(inData);
-        break;
+        case DabAudioDataSCty::DAB_AUDIO:
+            processMP2(inData);
+            break;
 
-    case DabAudioDataSCty::DABPLUS_AUDIO:
-        processAAC(inData);
-        break;
+        case DabAudioDataSCty::DABPLUS_AUDIO:
+            processAAC(inData);
+            break;
 
-    default:
-        ; // do nothing
+        default:;  // do nothing
     }
 
     m_recorder->recordData(inData, m_outBufferPtr, m_outputBufferSamples);
@@ -498,16 +498,16 @@ void AudioDecoder::setNoiseConcealment(int level)
             qCWarning(audioDecoder) << "Unable to open noise file";
             delete m_noiseFile;
             m_noiseFile = nullptr;
-            memset(m_noiseBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE*sizeof(int16_t));
+            memset(m_noiseBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
         }
         else
         {  // OK
-            m_noiseLevel = pow(10,  -1.0*level/20);
+            m_noiseLevel = pow(10, -1.0 * level / 20);
         }
     }
     else
-    {   // set buffer to zero
-        memset(m_noiseBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE*sizeof(int16_t));
+    {  // set buffer to zero
+        memset(m_noiseBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
         m_noiseLevel = 0.0;
     }
 #endif
@@ -516,10 +516,10 @@ void AudioDecoder::setNoiseConcealment(int level)
 void AudioDecoder::processMP2(RadioControlAudioData *inData)
 {
 #define MP2_FRAME_PCM_SAMPLES (2 * 1152)
-#define MP2_DRC_ENABLE        1
+#define MP2_DRC_ENABLE 1
 
     if (nullptr == m_mp2DecoderHandle)
-    {   // this can happen when audio changes from AAC to MP2
+    {  // this can happen when audio changes from AAC to MP2
         m_inputDataDecoderId = inData->id;
         initMPG123();
     }
@@ -534,9 +534,10 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
 
         /* Feed input chunk and get first chunk of decoded audio. */
         size_t size;
-        int ret = mpg123_decode(m_mp2DecoderHandle, &inData->data[0], inData->data.size(), m_outBufferPtr, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t), &size);
+        int ret = mpg123_decode(m_mp2DecoderHandle, &inData->data[0], inData->data.size(), m_outBufferPtr,
+                                AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t), &size);
         if ((MPG123_NEW_FORMAT == ret) || (inData->id != m_inputDataDecoderId))
-        {   // this is stream reconfiguration or announcement (different instance)
+        {  // this is stream reconfiguration or announcement (different instance)
             long sampleRate;
             int numChannels, enc;
             mpg123_getformat(m_mp2DecoderHandle, &sampleRate, &numChannels, &enc);
@@ -548,7 +549,7 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
             getFormatMP2();
 
             if (inData->id != m_inputDataDecoderId)
-            {   // announcement -> should not happen
+            {  // announcement -> should not happen
                 m_recorder->stop();
             }
 
@@ -560,8 +561,9 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
 
         // there should be nothing more to decode, but try to be sure
         while (ret != MPG123_ERR && ret != MPG123_NEED_MORE)
-        {   // Get all decoded audio that is available now before feeding more input
-            ret = mpg123_decode(m_mp2DecoderHandle, NULL, 0, m_outBufferPtr + m_outputBufferSamples, (AUDIO_DECODER_BUFFER_SIZE - m_outputBufferSamples) * sizeof(int16_t), &size);
+        {  // Get all decoded audio that is available now before feeding more input
+            ret = mpg123_decode(m_mp2DecoderHandle, NULL, 0, m_outBufferPtr + m_outputBufferSamples,
+                                (AUDIO_DECODER_BUFFER_SIZE - m_outputBufferSamples) * sizeof(int16_t), &size);
 
             m_outputBufferSamples += size / sizeof(int16_t);
 
@@ -575,14 +577,14 @@ void AudioDecoder::processMP2(RadioControlAudioData *inData)
 
 #if MP2_DRC_ENABLE
         if (m_mp2DRC != 0)
-        {   // multiply buffer by gain
-            float gain = pow(10, m_mp2DRC * 0.0125);    // 0.0125 = 1/(4*20)
-            for (int n = 0; n < m_outputBufferSamples; ++n)     // considering int16_t data => 2 bytes
-            {   // multiply all samples by gain
+        {                                                    // multiply buffer by gain
+            float gain = pow(10, m_mp2DRC * 0.0125);         // 0.0125 = 1/(4*20)
+            for (int n = 0; n < m_outputBufferSamples; ++n)  // considering int16_t data => 2 bytes
+            {                                                // multiply all samples by gain
                 m_outBufferPtr[n] = int16_t(qRound(m_outBufferPtr[n] * gain));
             }
         }
-#endif // MP2_DRC_ENABLE
+#endif  // MP2_DRC_ENABLE
 
         int64_t bytesToWrite = m_outputBufferSamples * sizeof(int16_t);
 
@@ -631,44 +633,44 @@ void AudioDecoder::getFormatMP2()
     m_audioParameters.parametricStereo = false;
     switch (info.mode)
     {
-    case MPG123_M_STEREO:
-        m_audioParameters.stereo = true;
-        m_audioParameters.sbr = false;
-        break;
+        case MPG123_M_STEREO:
+            m_audioParameters.stereo = true;
+            m_audioParameters.sbr = false;
+            break;
 
-    case MPG123_M_JOINT:
-        m_audioParameters.stereo = true;
-        m_audioParameters.sbr = true;
-        break;
+        case MPG123_M_JOINT:
+            m_audioParameters.stereo = true;
+            m_audioParameters.sbr = true;
+            break;
 
-    case MPG123_M_DUAL:
-        // this should not happen -> not supported by DAB
-        m_audioParameters.stereo = true;
-        m_audioParameters.sbr = false;
-        break;
+        case MPG123_M_DUAL:
+            // this should not happen -> not supported by DAB
+            m_audioParameters.stereo = true;
+            m_audioParameters.sbr = false;
+            break;
 
-    case MPG123_M_MONO:
-        m_audioParameters.stereo = false;
-        m_audioParameters.sbr = false;
-        break;
+        case MPG123_M_MONO:
+            m_audioParameters.stereo = false;
+            m_audioParameters.sbr = false;
+            break;
     }
 
     m_audioParameters.sampleRateKHz = info.rate / 1000;
     m_recorder->setDataFormat(m_audioParameters.sampleRateKHz, false);
-    emit audioParametersInfo(m_audioParameters);    
+    emit audioParametersInfo(m_audioParameters);
 }
 
 void AudioDecoder::processAAC(RadioControlAudioData *inData)
-{      
+{
     dabsdrAudioFrameHeader_t header;
 
     header = inData->header;
 
     if (nullptr == m_aacDecoderHandle)
-    {   // this can happen when format changes from MP2 to AAC or during init
+    {  // this can happen when format changes from MP2 to AAC or during init
 #if !HAVE_FDKAAC
-        // not necessary -> will be set in init state
-        //memset(m_outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
+       // not necessary -> will be set in init state
+        // memset(m_outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
         m_state = OutputState::Init;
 #endif
         m_aacHeader.raw = header.raw;
@@ -700,15 +702,15 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     }
 
     if ((header.raw != m_aacHeader.raw) || (inData->id != m_inputDataDecoderId))
-    {   // this is stream reconfiguration or announcement (different instance)
+    {  // this is stream reconfiguration or announcement (different instance)
 #if !HAVE_FDKAAC
-        // not necessary -> will be set in init state
-        //memset(m_outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
+       // not necessary -> will be set in init state
+        // memset(m_outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
         m_state = OutputState::Init;
 #endif
 
         if (inData->id != m_inputDataDecoderId)
-        {   // announcement -> should not happen
+        {  // announcement -> should not happen
             m_recorder->stop();
         }
 
@@ -720,7 +722,7 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
 
 // decode audio
 #if HAVE_FDKAAC
-    uint8_t * aacData[1] = {  &inData->data[0] };
+    uint8_t *aacData[1] = {&inData->data[0]};
     unsigned int len[1];
     len[0] = inData->data.size();
     unsigned int bytesValid = len[0];
@@ -745,7 +747,7 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     }
 
     if (!IS_OUTPUT_VALID(result))
-    {   // no output
+    {  // no output
         return;
     }
 
@@ -777,46 +779,46 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     m_outFifoPtr->mutex.lock();
     m_outFifoPtr->count += bytesToWrite;
     m_outFifoPtr->mutex.unlock();
-#else // HAVE_FDKAAC
-    uint8_t * outputFrame = (uint8_t *)NeAACDecDecode(m_aacDecoderHandle, &m_aacDecFrameInfo, &inData->data[0], inData->data.size());
+#else   // HAVE_FDKAAC
+    uint8_t *outputFrame = (uint8_t *)NeAACDecDecode(m_aacDecoderHandle, &m_aacDecFrameInfo, &inData->data[0], inData->data.size());
 
     handleAudioOutputFAAD(m_aacDecFrameInfo, outputFrame);
-#endif // HAVE_FDKAAC
+#endif  // HAVE_FDKAAC
 }
 
 #if !HAVE_FDKAAC
-void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, const uint8_t *inFramePtr)
+void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo &frameInfo, const uint8_t *inFramePtr)
 {
     if (frameInfo.samples != m_outputBufferSamples)
     {
         if (OutputState::Unmuted == m_state)
-        {   // do mute
+        {  // do mute
 #if AUDIO_DECODER_NOISE_CONCEALMENT
-            // read noise samples
+           // read noise samples
             qCInfo(audioDecoder) << "Muting audio (decoding errors)";
-            int valuesToRead = m_muteRamp.size()*m_numChannels;
+            int valuesToRead = m_muteRamp.size() * m_numChannels;
             if (nullptr != m_noiseFile)
             {
-                if (m_noiseFile->bytesAvailable() < valuesToRead*sizeof(int16_t))
+                if (m_noiseFile->bytesAvailable() < valuesToRead * sizeof(int16_t))
                 {
                     m_noiseFile->seek(0);
                 }
-                m_noiseFile->read((char *) m_noiseBufferPtr, valuesToRead*sizeof(int16_t));
+                m_noiseFile->read((char *)m_noiseBufferPtr, valuesToRead * sizeof(int16_t));
             }
-            int16_t * noisePtr = m_noiseBufferPtr;
+            int16_t *noisePtr = m_noiseBufferPtr;
 #else
 
 #endif
 
-            int16_t * dataPtr = &m_outBufferPtr[m_outputBufferSamples - 1];  // last sample
-            std::vector <float>::const_iterator it = m_muteRamp.cbegin();            
+            int16_t *dataPtr = &m_outBufferPtr[m_outputBufferSamples - 1];  // last sample
+            std::vector<float>::const_iterator it = m_muteRamp.cbegin();
             while (it != m_muteRamp.end())
             {
                 float gain = *it++;
                 for (uint_fast32_t ch = 0; ch < m_numChannels; ++ch)
                 {
 #if AUDIO_DECODER_NOISE_CONCEALMENT
-                    *dataPtr = int16_t(qRound(gain * *dataPtr)) + (1-gain) * m_noiseLevel * *noisePtr++;
+                    *dataPtr = int16_t(qRound(gain * *dataPtr)) + (1 - gain) * m_noiseLevel * *noisePtr++;
 #else
                     *dataPtr = int16_t(qRound(gain * *dataPtr));
 #endif
@@ -825,20 +827,21 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
             }
         }
         else if (OutputState::Init == m_state)
-        {   // do nothing and return -> decoder is initializing
+        {  // do nothing and return -> decoder is initializing
             return;
         }
-        else // muted
-        { /* do nothing */ }
+        else  // muted
+        {     /* do nothing */
+        }
     }
 
     if (OutputState::Init == m_state)
-    {   // only copy to internal buffer -> this is the first buffer
+    {  // only copy to internal buffer -> this is the first buffer
         memcpy(m_outBufferPtr, inFramePtr, m_outputBufferSamples * sizeof(int16_t));
 
         // apply unmute ramp
-        int16_t * dataPtr = &m_outBufferPtr[0];  // first sample
-        std::vector <float>::const_iterator it = m_muteRamp.cbegin();
+        int16_t *dataPtr = &m_outBufferPtr[0];  // first sample
+        std::vector<float>::const_iterator it = m_muteRamp.cbegin();
         while (it != m_muteRamp.end())
         {
             float gain = *it++;
@@ -849,7 +852,7 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
             }
         }
 
-        m_state = OutputState::Unmuted;                
+        m_state = OutputState::Unmuted;
         return;
     }
 
@@ -885,21 +888,21 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
 
     // copy new data to buffer
     if (frameInfo.samples != m_outputBufferSamples)
-    {   // error
+    {  // error
 #if AUDIO_DECODER_NOISE_CONCEALMENT
-        // read noise
+       // read noise
         int valuesToRead = m_outputBufferSamples;
         if (nullptr != m_noiseFile)
         {
-            if (m_noiseFile->bytesAvailable() < valuesToRead*sizeof(int16_t))
+            if (m_noiseFile->bytesAvailable() < valuesToRead * sizeof(int16_t))
             {
                 m_noiseFile->seek(0);
             }
-            m_noiseFile->read((char *) m_noiseBufferPtr, valuesToRead*sizeof(int16_t));
+            m_noiseFile->read((char *)m_noiseBufferPtr, valuesToRead * sizeof(int16_t));
         }
         // copy noise
-        int16_t * dataPtr = m_outBufferPtr;
-        int16_t * noisePtr = m_noiseBufferPtr;
+        int16_t *dataPtr = m_outBufferPtr;
+        int16_t *noisePtr = m_noiseBufferPtr;
         for (int n = 0; n < m_outputBufferSamples; ++n)
         {
             *dataPtr++ = m_noiseLevel * *noisePtr++;
@@ -907,43 +910,43 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
         m_state = OutputState::Muted;
 #else
         if (OutputState::Unmuted == m_state)
-        {   // copy 0
+        {  // copy 0
             memset(m_outBufferPtr, 0, m_outputBufferSamples * sizeof(int16_t));
             m_state = OutputState::Muted;
         }
 #endif
     }
     else
-    {   // OK
+    {  // OK
         memcpy(m_outBufferPtr, inFramePtr, m_outputBufferSamples * sizeof(int16_t));
 
         if (OutputState::Muted == m_state)
-        {   // do unmute
+        {  // do unmute
             qCInfo(audioDecoder) << "Umuting audio";
 #if AUDIO_DECODER_NOISE_CONCEALMENT
             // read noise
-            int valuesToRead = m_muteRamp.size()*m_numChannels;
+            int valuesToRead = m_muteRamp.size() * m_numChannels;
             if (nullptr != m_noiseFile)
             {
-                if (m_noiseFile->bytesAvailable() < valuesToRead*sizeof(int16_t))
+                if (m_noiseFile->bytesAvailable() < valuesToRead * sizeof(int16_t))
                 {
                     m_noiseFile->seek(0);
                 }
-                m_noiseFile->read((char *) m_noiseBufferPtr, valuesToRead*sizeof(int16_t));
+                m_noiseFile->read((char *)m_noiseBufferPtr, valuesToRead * sizeof(int16_t));
             }
-            int16_t * noisePtr = m_noiseBufferPtr;
+            int16_t *noisePtr = m_noiseBufferPtr;
 #endif
 
             // apply unmute ramp
-            int16_t * dataPtr = &m_outBufferPtr[0];  // first sample
-            std::vector <float>::const_iterator it = m_muteRamp.cbegin();
+            int16_t *dataPtr = &m_outBufferPtr[0];  // first sample
+            std::vector<float>::const_iterator it = m_muteRamp.cbegin();
             while (it != m_muteRamp.end())
             {
                 float gain = *it++;
                 for (uint_fast32_t ch = 0; ch < m_numChannels; ++ch)
                 {
 #if AUDIO_DECODER_NOISE_CONCEALMENT
-                    *dataPtr = int16_t(qRound(gain * *dataPtr)) + (1-gain) * m_noiseLevel * *noisePtr++;
+                    *dataPtr = int16_t(qRound(gain * *dataPtr)) + (1 - gain) * m_noiseLevel * *noisePtr++;
 #else
                     *dataPtr = int16_t(qRound(gain * *dataPtr));
 #endif
@@ -954,7 +957,7 @@ void AudioDecoder::handleAudioOutputFAAD(const NeAACDecFrameInfo&frameInfo, cons
         }
     }
 }
-#endif // HAVE_FDKAAC
+#endif  // HAVE_FDKAAC
 
 void AudioDecoder::setOutput(int sampleRate, int numChannels)
 {
@@ -967,12 +970,11 @@ void AudioDecoder::setOutput(int sampleRate, int numChannels)
     m_outFifoPtr->reset();
 
     if (PlaybackState::Running == m_playbackState)
-    {   // switch audio source
+    {  // switch audio source
         emit switchAudio(m_outFifoPtr);
-
     }
     else
-    {   // start audio
+    {  // start audio
         m_playbackState = PlaybackState::Running;
         emit startAudio(m_outFifoPtr);
     }

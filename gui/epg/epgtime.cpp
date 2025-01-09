@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@
 
 #include "epgtime.h"
 
-EPGTime* EPGTime ::m_instancePtr = nullptr;
+EPGTime *EPGTime ::m_instancePtr = nullptr;
 
 EPGTime *EPGTime::getInstance()
 {
@@ -44,7 +44,7 @@ EPGTime *EPGTime::getInstance()
 EPGTime::EPGTime() : QObject(nullptr)
 {
     m_minuteTimer = new QTimer();
-    m_minuteTimer->setInterval(1000*60); // 1 minute
+    m_minuteTimer->setInterval(1000 * 60);  // 1 minute
     m_isLiveBroadcasting = true;
     m_secSinceEpoch = 0;
 }
@@ -55,19 +55,19 @@ EPGTime::~EPGTime()
     delete m_minuteTimer;
 }
 
-void EPGTime::setTime(const QDateTime & time)
+void EPGTime::setTime(const QDateTime &time)
 {
     if (!isValid())
-    {   // evaluate timezone
+    {  // evaluate timezone
         if (m_isLiveBroadcasting)
-        {   // time zone is taken from system
+        {  // time zone is taken from system
             m_ltoSec = QDateTime::currentDateTime().offsetFromUtc();
         }
         else
-        {   // using timezone from DAB
+        {  // using timezone from DAB
             m_ltoSec = time.toLocalTime().offsetFromUtc();
         }
-        //qDebug() << "LTO [minutes]" << m_ltoSec/60;
+        // qDebug() << "LTO [minutes]" << m_ltoSec/60;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
         m_currentTime = time.toTimeZone(QTimeZone::fromSecondsAheadOfUtc(m_ltoSec));
@@ -119,7 +119,7 @@ void EPGTime::setTimeLocale(const QLocale &newTimeLocale)
 void EPGTime::setIsLiveBroadcasting(bool newIsLiveBroadcasting)
 {
     if ((newIsLiveBroadcasting == false) || (newIsLiveBroadcasting != m_isLiveBroadcasting))
-    {   // switching raw file
+    {  // switching raw file
         // or switching between live and file
         m_isLiveBroadcasting = newIsLiveBroadcasting;
         // reset time value
@@ -127,11 +127,10 @@ void EPGTime::setIsLiveBroadcasting(bool newIsLiveBroadcasting)
     }
 }
 
-
 void EPGTime::onDabTime(const QDateTime &d)
 {
     setTime(d);
-    //setTime(QDateTime::currentDateTime());
+    // setTime(QDateTime::currentDateTime());
     m_minuteTimer->start();
 }
 
@@ -143,7 +142,9 @@ qint64 EPGTime::secSinceEpoch() const
 void EPGTime::setSecSinceEpoch(qint64 newSecSinceEpoch)
 {
     if (m_secSinceEpoch == newSecSinceEpoch)
+    {
         return;
+    }
     m_secSinceEpoch = newSecSinceEpoch;
     emit secSinceEpochChanged();
 }
@@ -156,7 +157,9 @@ QString EPGTime::currentDateString() const
 void EPGTime::setCurrentDateString(const QString &newCurrentDateString)
 {
     if (m_currentDateString == newCurrentDateString)
+    {
         return;
+    }
     m_currentDateString = newCurrentDateString;
     emit currentDateStringChanged();
 }
@@ -169,7 +172,9 @@ QString EPGTime::currentTimeString() const
 void EPGTime::setCurrentTimeString(const QString &newCurrentTimeString)
 {
     if (m_currentTimeString == newCurrentTimeString)
+    {
         return;
+    }
     m_currentTimeString = newCurrentTimeString;
     emit currentTimeStringChanged();
 }

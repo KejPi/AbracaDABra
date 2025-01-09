@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,20 +30,19 @@
 #include <QAbstractItemModel>
 #include <QObject>
 
-#include "slmodelitem.h"
 #include "servicelist.h"
+#include "slmodelitem.h"
 
 class SLTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit SLTreeModel(const ServiceList * sl, const MetadataManager *mm, QObject *parent = 0);
+    explicit SLTreeModel(const ServiceList *sl, const MetadataManager *mm, QObject *parent = 0);
     ~SLTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
-    QModelIndex index(int row, int column,
-                      const QModelIndex &parent = QModelIndex()) const override;
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
     QModelIndex parent(const QModelIndex &index) const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -55,16 +54,16 @@ public:
     bool isFavoriteService(const QModelIndex &index) const;
 
 public slots:
-    void addEnsembleService(const ServiceListId & ensId, const ServiceListId & servId);
-    void updateEnsembleService(const ServiceListId & ensId, const ServiceListId & servId);
+    void addEnsembleService(const ServiceListId &ensId, const ServiceListId &servId);
+    void updateEnsembleService(const ServiceListId &ensId, const ServiceListId &servId);
     void removeEnsembleService(const ServiceListId &ensId, const ServiceListId &servId);
     void removeEnsemble(const ServiceListId &ensId);
     void clear();
 
 private:
-    SLModelItem * m_rootItem;    
-    const ServiceList * m_slPtr;
-    const MetadataManager * m_metadataMgrPtr;
+    SLModelItem *m_rootItem;
+    const ServiceList *m_slPtr;
+    const MetadataManager *m_metadataMgrPtr;
 };
 
-#endif // SLTREEMODEL_H
+#endif  // SLTREEMODEL_H

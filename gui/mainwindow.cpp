@@ -24,47 +24,47 @@
  * SOFTWARE.
  */
 
-#include <QString>
-#include <QFileDialog>
-#include <QDir>
-#include <QMap>
-#include <QDebug>
-#include <QLoggingCategory>
-#include <QGraphicsScene>
-#include <QToolButton>
-#include <QFormLayout>
-#include <QSettings>
-#include <QDesktopServices>
-#include <QUrl>
-#include <QMessageBox>
-#include <QStyleFactory>
-#include <QtGlobal>
-#include <QStyleHints>
-#include <QClipboard>
-#include <QToolTip>
-#include <QActionGroup>
-#include <QStandardPaths>
-#include <QtGlobal>
-#include <QQuickStyle>
-#include <iostream>
-#include <QNetworkProxy>
-
 #include "mainwindow.h"
-#include "slsview.h"
+
+#include <QActionGroup>
+#include <QClipboard>
+#include <QDebug>
+#include <QDesktopServices>
+#include <QDir>
+#include <QFileDialog>
+#include <QFormLayout>
+#include <QGraphicsScene>
+#include <QLoggingCategory>
+#include <QMap>
+#include <QMessageBox>
+#include <QNetworkProxy>
+#include <QQuickStyle>
+#include <QSettings>
+#include <QStandardPaths>
+#include <QString>
+#include <QStyleFactory>
+#include <QStyleHints>
+#include <QToolButton>
+#include <QToolTip>
+#include <QUrl>
+#include <QtGlobal>
+#include <iostream>
+
 #include "./ui_mainwindow.h"
-#include "dabtables.h"
-#include "epgtime.h"
-#include "epgproxymodel.h"
-#include "radiocontrol.h"
-#include "bandscandialog.h"
 #include "aboutdialog.h"
 #include "audiooutputqt.h"
+#include "bandscandialog.h"
+#include "dabtables.h"
+#include "epgproxymodel.h"
+#include "epgtime.h"
+#include "radiocontrol.h"
+#include "slsview.h"
 #include "updatechecker.h"
 #if HAVE_PORTAUDIO
 #include "audiooutputpa.h"
 #endif
-#include "metadatamanager.h"
 #include "audiorecscheduledialog.h"
+#include "metadatamanager.h"
 #if HAVE_FMLIST_INTERFACE
 #include "fmlistinterface.h"
 #include "txdataloader.h"
@@ -92,14 +92,13 @@
 Q_LOGGING_CATEGORY(application, "Application", QtInfoMsg)
 
 const QString MainWindow::appName("AbracaDABra");
-const char * MainWindow::syncLevelLabels[] = {QT_TR_NOOP("No signal"), QT_TR_NOOP("Signal found"), QT_TR_NOOP("Sync")};
-const char * MainWindow::syncLevelTooltip[] = {QT_TR_NOOP("DAB signal not detected<br>Looking for signal..."),
-                                               QT_TR_NOOP("Found DAB signal,<br>trying to synchronize..."),
-                                               QT_TR_NOOP("Synchronized to DAB signal")};
+const char *MainWindow::syncLevelLabels[] = {QT_TR_NOOP("No signal"), QT_TR_NOOP("Signal found"), QT_TR_NOOP("Sync")};
+const char *MainWindow::syncLevelTooltip[] = {QT_TR_NOOP("DAB signal not detected<br>Looking for signal..."),
+                                              QT_TR_NOOP("Found DAB signal,<br>trying to synchronize..."), QT_TR_NOOP("Synchronized to DAB signal")};
 const QStringList MainWindow::snrProgressStylesheet = {
     QString::fromUtf8("QProgressBar::chunk {background-color: #ff4b4b; }"),  // red
     QString::fromUtf8("QProgressBar::chunk {background-color: #ffb527; }"),  // yellow
-    QString::fromUtf8("QProgressBar::chunk {background-color: #5bc214; }")   // green    
+    QString::fromUtf8("QProgressBar::chunk {background-color: #5bc214; }")   // green
 };
 const QString MainWindow::slsDumpPatern("SLS/{serviceId}/{contentNameWithExt}");
 const QString MainWindow::spiDumpPatern("SPI/{ensId}/{scId}_{directoryId}/{contentName}");
@@ -110,34 +109,33 @@ enum class SNR10Threhold
     SNR_GOOD = 100
 };
 
-static LogModel * logModel;
+static LogModel *logModel;
 
 // this is default log handler printing the sam format to log windows and to stderr
 void logToModelHandlerDefault(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     QString timeStamp = QTime::currentTime().toString("HH:mm:ss.zzz");
     QString txt;
-    switch (type) {
-    case QtDebugMsg:
-        txt = QString("%1 [D] %2: %3").arg(timeStamp, context.category, msg);
-        break;
-    case QtInfoMsg:
-        txt = QString("%1 [I] %2: %3").arg(timeStamp, context.category, msg);
-        break;
-    case QtWarningMsg:
-        txt = QString("%1 [W] %2: %3").arg(timeStamp, context.category, msg);
-        break;
-    case QtCriticalMsg:
-        txt = QString("%1 [C] %2: %3").arg(timeStamp, context.category, msg);
-        break;
-    case QtFatalMsg:
-        txt = QString("%1 [F] %2: %3").arg(timeStamp, context.category, msg);
-        break;
+    switch (type)
+    {
+        case QtDebugMsg:
+            txt = QString("%1 [D] %2: %3").arg(timeStamp, context.category, msg);
+            break;
+        case QtInfoMsg:
+            txt = QString("%1 [I] %2: %3").arg(timeStamp, context.category, msg);
+            break;
+        case QtWarningMsg:
+            txt = QString("%1 [W] %2: %3").arg(timeStamp, context.category, msg);
+            break;
+        case QtCriticalMsg:
+            txt = QString("%1 [C] %2: %3").arg(timeStamp, context.category, msg);
+            break;
+        case QtFatalMsg:
+            txt = QString("%1 [F] %2: %3").arg(timeStamp, context.category, msg);
+            break;
     }
 
-    QMetaObject::invokeMethod(logModel, "appendRow", Qt::QueuedConnection,
-                              Q_ARG(QString, txt),
-                              Q_ARG(int, type));
+    QMetaObject::invokeMethod(logModel, "appendRow", Qt::QueuedConnection, Q_ARG(QString, txt), Q_ARG(int, type));
 
     std::cerr << txt.toStdString() << std::endl;
 }
@@ -150,27 +148,26 @@ void logToModelHandlerCustom(QtMsgType type, const QMessageLogContext &context, 
 
     std::cerr << qFormatLogMessage(type, context, msg).toStdString() << std::endl;
 
-    switch (type) {
-    case QtDebugMsg:
-        txt = QString("%1 [D] %2: %3").arg(timeStamp, context.category, msg);
-        break;
-    case QtInfoMsg:
-        txt = QString("%1 [I] %2: %3").arg(timeStamp, context.category, msg);
-        break;
-    case QtWarningMsg:
-        txt = QString("%1 [W] %2: %3").arg(timeStamp, context.category, msg);
-        break;
-    case QtCriticalMsg:
-        txt = QString("%1 [C] %2: %3").arg(timeStamp, context.category, msg);
-        break;
-    case QtFatalMsg:
-        txt = QString("%1 [F] %2: %3").arg(timeStamp, context.category, msg);
-        break;
+    switch (type)
+    {
+        case QtDebugMsg:
+            txt = QString("%1 [D] %2: %3").arg(timeStamp, context.category, msg);
+            break;
+        case QtInfoMsg:
+            txt = QString("%1 [I] %2: %3").arg(timeStamp, context.category, msg);
+            break;
+        case QtWarningMsg:
+            txt = QString("%1 [W] %2: %3").arg(timeStamp, context.category, msg);
+            break;
+        case QtCriticalMsg:
+            txt = QString("%1 [C] %2: %3").arg(timeStamp, context.category, msg);
+            break;
+        case QtFatalMsg:
+            txt = QString("%1 [F] %2: %3").arg(timeStamp, context.category, msg);
+            break;
     }
 
-    QMetaObject::invokeMethod(logModel, "appendRow", Qt::QueuedConnection,
-                              Q_ARG(QString, txt),
-                              Q_ARG(int, type));
+    QMetaObject::invokeMethod(logModel, "appendRow", Qt::QueuedConnection, Q_ARG(QString, txt), Q_ARG(int, type));
 }
 
 void setLogToModel(QAbstractItemModel *model)
@@ -187,12 +184,9 @@ void setLogToModel(QAbstractItemModel *model)
     }
 }
 
-MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-    , m_iniFilename(iniFilename)
+MainWindow::MainWindow(const QString &iniFilename, QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_iniFilename(iniFilename)
 {
-    initStyle(); // init style as soon as possible
+    initStyle();  // init style as soon as possible
 
     m_settings = new Settings();
 
@@ -220,13 +214,18 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     // creating log windows as soon as possible
     m_logDialog = new LogDialog();
-    connect(this, &MainWindow::exit, [this]() {m_logDialog->close(); m_logDialog->deleteLater(); });
-    connect(m_logDialog, &QObject::destroyed, this, [](){ logModel = nullptr; });
+    connect(this, &MainWindow::exit,
+            [this]()
+            {
+                m_logDialog->close();
+                m_logDialog->deleteLater();
+            });
+    connect(m_logDialog, &QObject::destroyed, this, []() { logModel = nullptr; });
     connect(m_logDialog, &QDialog::finished, this, [this]() { m_settings->log.geometry = m_logDialog->saveGeometry(); });
 
     setLogToModel(m_logDialog->getModel());
 
-    ui->serviceListView->setIconSize(QSize(16,16));
+    ui->serviceListView->setIconSize(QSize(16, 16));
 
     // set UI
     setWindowTitle("Abraca DAB Radio");
@@ -235,7 +234,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // this is Windows specific code, not portable - allows to bring window to front (used for alarm announcement)
     // does not exit on Qt6 yet
     // workaround: https://forum.qt.io/topic/133694/using-alwaysactivatewindow-to-gain-foreground-in-win10-using-qt6-2/3
-    //QWindowsWindowFunctions::setWindowActivationBehavior(QWindowsWindowFunctions::AlwaysActivateWindow);
+    // QWindowsWindowFunctions::setWindowActivationBehavior(QWindowsWindowFunctions::AlwaysActivateWindow);
 #endif
 
     ui->channelDown->setText(QString::fromUtf8("\u2039"));
@@ -253,7 +252,12 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_inputDeviceRecorder = new InputDeviceRecorder();
 
     m_setupDialog = new SetupDialog();
-    connect(this, &MainWindow::exit, [this]() {m_setupDialog->close(); m_setupDialog->deleteLater(); });  // QTBUG-117779 ==> using parentless dialogs as workaround
+    connect(this, &MainWindow::exit,
+            [this]()
+            {
+                m_setupDialog->close();
+                m_setupDialog->deleteLater();
+            });  // QTBUG-117779 ==> using parentless dialogs as workaround
     m_setupDialog->setSlsDumpPaternDefault(slsDumpPatern);
     m_setupDialog->setSpiDumpPaternDefault(spiDumpPatern);
 
@@ -261,34 +265,47 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::newInputDeviceSettings, this, &MainWindow::onNewInputDeviceSettings);
     connect(m_setupDialog, &SetupDialog::applicationStyleChanged, this, &MainWindow::onApplicationStyleChanged);
     connect(m_setupDialog, &SetupDialog::expertModeToggled, this, &MainWindow::onExpertModeToggled);
-    connect(m_setupDialog, &SetupDialog::trayIconToggled, this, [this](bool ena) {
-        if (m_trayIcon != nullptr) { ena ? m_trayIcon->show() : m_trayIcon->hide(); }
-    });
+    connect(m_setupDialog, &SetupDialog::trayIconToggled, this,
+            [this](bool ena)
+            {
+                if (m_trayIcon != nullptr)
+                {
+                    ena ? m_trayIcon->show() : m_trayIcon->hide();
+                }
+            });
     connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, this, &MainWindow::onNewAnnouncementSettings);
     connect(m_setupDialog, &SetupDialog::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
     connect(m_setupDialog, &SetupDialog::proxySettingsChanged, this, &MainWindow::setProxy);
 #if HAVE_FMLIST_INTERFACE
-    connect(m_setupDialog, &SetupDialog::updateTxDb, this, [this]() {
-        if (m_fmlistInterface == nullptr)
-        {
-            m_fmlistInterface = new FMListInterface(TxDataLoader::dbfile());
-        }
-        connect(m_fmlistInterface, &FMListInterface::updateTiiDataFinished, m_setupDialog, &SetupDialog::onTiiUpdateFinished);
-        qCInfo(application, "Updating TX database (library version %s)", m_fmlistInterface->version().toUtf8().data());
-        m_fmlistInterface->updateTiiData();
-    });
+    connect(m_setupDialog, &SetupDialog::updateTxDb, this,
+            [this]()
+            {
+                if (m_fmlistInterface == nullptr)
+                {
+                    m_fmlistInterface = new FMListInterface(TxDataLoader::dbfile());
+                }
+                connect(m_fmlistInterface, &FMListInterface::updateTiiDataFinished, m_setupDialog, &SetupDialog::onTiiUpdateFinished);
+                qCInfo(application, "Updating TX database (library version %s)", m_fmlistInterface->version().toUtf8().data());
+                m_fmlistInterface->updateTiiData();
+            });
 #endif
 
     m_ensembleInfoDialog = new EnsembleInfoDialog();
-    connect(this, &MainWindow::exit, [this]() {m_ensembleInfoDialog->close(); m_ensembleInfoDialog->deleteLater(); });
+    connect(this, &MainWindow::exit,
+            [this]()
+            {
+                m_ensembleInfoDialog->close();
+                m_ensembleInfoDialog->deleteLater();
+            });
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStart, m_inputDeviceRecorder, &InputDeviceRecorder::start);
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStop, m_inputDeviceRecorder, &InputDeviceRecorder::stop);
-    connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_ensembleInfoDialog, &EnsembleInfoDialog::onRecording);       
-    connect(m_inputDeviceRecorder, &InputDeviceRecorder::bytesRecorded, m_ensembleInfoDialog, &EnsembleInfoDialog::updateRecordingStatus, Qt::QueuedConnection);
+    connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_ensembleInfoDialog, &EnsembleInfoDialog::onRecording);
+    connect(m_inputDeviceRecorder, &InputDeviceRecorder::bytesRecorded, m_ensembleInfoDialog, &EnsembleInfoDialog::updateRecordingStatus,
+            Qt::QueuedConnection);
     connect(m_ensembleInfoDialog, &QDialog::finished, this, [this]() { m_settings->ensembleInfo.geometry = m_ensembleInfoDialog->saveGeometry(); });
 
     // status bar
-    QWidget * widget = new QWidget();
+    QWidget *widget = new QWidget();
     m_timeLabel = new QLabel("");
     m_timeLabel->setMinimumWidth(150);
     m_timeLabel->setToolTip(tr("DAB time"));
@@ -313,12 +330,12 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     // m_audioRecordingProgressLabel->setFont(boldFont);   // bold font
     m_audioRecordingProgressLabel->setAlignment(Qt::AlignCenter);
 
-    QHBoxLayout * audioRecordingLayout = new QHBoxLayout();
+    QHBoxLayout *audioRecordingLayout = new QHBoxLayout();
     audioRecordingLayout->addWidget(m_audioRecordingLabel);
     audioRecordingLayout->addWidget(m_audioRecordingProgressLabel);
     audioRecordingLayout->setStretch(1, 100);
     audioRecordingLayout->setSpacing(5);
-    audioRecordingLayout->setContentsMargins(0,0,0,0);
+    audioRecordingLayout->setContentsMargins(0, 0, 0, 0);
     audioRecordingLayout->setAlignment(m_audioRecordingLabel, Qt::AlignCenter);
     audioRecordingLayout->setAlignment(m_audioRecordingProgressLabel, Qt::AlignLeft | Qt::AlignHCenter);
     m_audioRecordingWidget = new QWidget(this);
@@ -329,7 +346,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_syncLabel->setAlignment(Qt::AlignRight);
 
     m_snrProgressbar = new QProgressBar();
-    m_snrProgressbar->setMaximum(30*10);
+    m_snrProgressbar->setMaximum(30 * 10);
     m_snrProgressbar->setMinimum(0);
     m_snrProgressbar->setFixedWidth(80);
     m_snrProgressbar->setFixedHeight(m_syncLabel->fontInfo().pixelSize());
@@ -348,7 +365,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_snrLabel->setFixedWidth(width);
     m_snrLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
-    QHBoxLayout * signalQualityLayout = new QHBoxLayout();
+    QHBoxLayout *signalQualityLayout = new QHBoxLayout();
     signalQualityLayout->addWidget(m_syncLabel);
     signalQualityLayout->addWidget(m_snrProgressbar);
     signalQualityLayout->setAlignment(m_snrProgressbar, Qt::AlignCenter);
@@ -357,9 +374,9 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     signalQualityLayout->addWidget(m_snrLabel);
     signalQualityLayout->setSpacing(10);
 #ifdef Q_OS_MAC
-    signalQualityLayout->setContentsMargins(0,2,0,0);
+    signalQualityLayout->setContentsMargins(0, 2, 0, 0);
 #else
-    signalQualityLayout->setContentsMargins(0,0,0,0);
+    signalQualityLayout->setContentsMargins(0, 0, 0, 0);
 #endif
     m_signalQualityWidget = new QWidget();
     m_signalQualityWidget->setLayout(signalQualityLayout);
@@ -394,7 +411,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     m_epgAction = new QAction(tr("Program guide..."), this);
     m_epgAction->setEnabled(false);
-    connect(m_epgAction, &QAction::triggered, this, &MainWindow::showEPG);    
+    connect(m_epgAction, &QAction::triggered, this, &MainWindow::showEPG);
 
     m_logAction = new QAction(tr("Application log"), this);
     connect(m_logAction, &QAction::triggered, this, &MainWindow::showLog);
@@ -418,7 +435,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_menu->addAction(m_audioRecordingAction);
 
     m_menu->addSeparator();
-    m_menu->addAction(m_setupAction);   
+    m_menu->addAction(m_setupAction);
     m_menu->addAction(m_bandScanAction);
     m_menu->addAction(m_clearServiceListAction);
     m_menu->addSeparator();
@@ -453,19 +470,18 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_audioVolumeSlider, &QSlider::valueChanged, this, &MainWindow::onAudioVolumeSliderChanged);
     connect(m_muteLabel, &ClickableLabel::toggled, this, &MainWindow::onMuteLabelToggled);
 
-
-    QHBoxLayout * volumeLayout = new QHBoxLayout();
+    QHBoxLayout *volumeLayout = new QHBoxLayout();
     volumeLayout->addWidget(m_muteLabel);
     volumeLayout->addWidget(m_audioVolumeSlider);
     volumeLayout->setAlignment(m_audioVolumeSlider, Qt::AlignCenter);
     volumeLayout->setStretch(0, 100);
     volumeLayout->setAlignment(m_muteLabel, Qt::AlignCenter);
     volumeLayout->setSpacing(10);
-    volumeLayout->setContentsMargins(10,0,0,0);
-    QWidget * volumeWidget = new QWidget();
+    volumeLayout->setContentsMargins(10, 0, 0, 0);
+    QWidget *volumeWidget = new QWidget();
     volumeWidget->setLayout(volumeLayout);
 
-    QGridLayout * layout = new QGridLayout(widget);
+    QGridLayout *layout = new QGridLayout(widget);
     layout->addWidget(m_timeBasicQualInfoWidget, 0, 0, Qt::AlignVCenter | Qt::AlignLeft);
     layout->addWidget(m_audioRecordingWidget, 0, 1, Qt::AlignVCenter | Qt::AlignLeft);
     layout->addWidget(m_signalQualityWidget, 0, 2, Qt::AlignVCenter | Qt::AlignRight);
@@ -473,15 +489,13 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     layout->addWidget(m_menuLabel, 0, 4, Qt::AlignVCenter | Qt::AlignRight);
     layout->setColumnStretch(1, 100);
     layout->setSpacing(20);
-    ui->statusbar->addWidget(widget,1);
+    ui->statusbar->addWidget(widget, 1);
 
 #ifdef Q_OS_MAC
-    QMenu * dockMenu = new QMenu(this);
-    QAction * muteAction = new QAction(tr("Mute"), this);
+    QMenu *dockMenu = new QMenu(this);
+    QAction *muteAction = new QAction(tr("Mute"), this);
     dockMenu->addAction(muteAction);
-    connect(m_muteLabel, &ClickableLabel::toggled, this, [muteAction](bool checked) {
-        muteAction->setText(checked ? tr("Unmute") : tr("Mute"));
-    });
+    connect(m_muteLabel, &ClickableLabel::toggled, this, [muteAction](bool checked) { muteAction->setText(checked ? tr("Unmute") : tr("Mute")); });
     connect(muteAction, &QAction::triggered, m_muteLabel, &ClickableLabel::toggle);
 
     dockMenu->setAsDockMenu();
@@ -489,16 +503,15 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 #ifndef QT_NO_SYSTEMTRAYICON
     if (QSystemTrayIcon::isSystemTrayAvailable())
     {
-        QAction * muteAction = new QAction(tr("Mute"), this);
-        connect(m_muteLabel, &ClickableLabel::toggled, this, [muteAction](bool checked) {
-            muteAction->setText(checked ? tr("Unmute") : tr("Mute"));
-        });
+        QAction *muteAction = new QAction(tr("Mute"), this);
+        connect(m_muteLabel, &ClickableLabel::toggled, this,
+                [muteAction](bool checked) { muteAction->setText(checked ? tr("Unmute") : tr("Mute")); });
         connect(muteAction, &QAction::triggered, m_muteLabel, &ClickableLabel::toggle);
 
-        QAction * quitAction = new QAction(tr("Quit"), this);
+        QAction *quitAction = new QAction(tr("Quit"), this);
         connect(quitAction, &QAction::triggered, this, &QApplication::quit);
 
-        QMenu * trayIconMenu = new QMenu(this);
+        QMenu *trayIconMenu = new QMenu(this);
         trayIconMenu->addAction(muteAction);
         trayIconMenu->addSeparator();
         trayIconMenu->addAction(quitAction);
@@ -546,7 +559,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     ui->serviceListView->setModel(m_slModel);
     ui->serviceListView->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->serviceListView->setEditTriggers(QAbstractItemView::NoEditTriggers);    
+    ui->serviceListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->serviceListView->installEventFilter(this);
     connect(ui->serviceListView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::onServiceListSelection);
 
@@ -564,21 +577,24 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_serviceList, &ServiceList::empty, m_slTreeModel, &SLTreeModel::clear);
 
     // EPG
-    connect(m_metadataManager, &MetadataManager::epgAvailable, this, [this](){
-        m_epgAction->setEnabled(true);
-        ui->epgLabel->setVisible(true);
-    } );
+    connect(m_metadataManager, &MetadataManager::epgAvailable, this,
+            [this]()
+            {
+                m_epgAction->setEnabled(true);
+                ui->epgLabel->setVisible(true);
+            });
     connect(m_metadataManager, &MetadataManager::epgEmpty, this, &MainWindow::onEpgEmpty);
 
     // fill channel list
     int freqLabelMaxWidth = 0;
     dabChannelList_t::const_iterator it = DabTables::channelList.constBegin();
-    while (it != DabTables::channelList.constEnd()) {
+    while (it != DabTables::channelList.constEnd())
+    {
         // insert to combo
-        //ui->channelCombo->addItem(it.value(), it.key());
+        // ui->channelCombo->addItem(it.value(), it.key());
 
         // calculate label size
-        QString freqStr = QString("%1 MHz").arg(it.key()/1000.0, 3, 'f', 3, QChar('0'));
+        QString freqStr = QString("%1 MHz").arg(it.key() / 1000.0, 3, 'f', 3, QChar('0'));
         if (freqLabelMaxWidth < ui->frequencyLabel->fontMetrics().boundingRect(freqStr).width())
         {
             freqLabelMaxWidth = ui->frequencyLabel->fontMetrics().boundingRect(freqStr).width();
@@ -602,7 +618,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->favoriteLabel->setEnabled(false);
 
     clearEnsembleInformationLabels();
-    clearServiceInformationLabels();    
+    clearServiceInformationLabels();
     ui->dynamicLabel_Service->clear();
     ui->dynamicLabel_Announcement->clear();
     ui->dlWidget->setCurrentIndex(Instance::Service);
@@ -616,14 +632,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     ui->dlPlusFrame_Announcement->installEventFilter(this);
 
     // URL
-    QObject::connect(
-        ui->dynamicLabel_Service, &QLabel::linkActivated,
-        [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
-        );
-    QObject::connect(
-        ui->dynamicLabel_Announcement, &QLabel::linkActivated,
-        [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
-        );
+    QObject::connect(ui->dynamicLabel_Service, &QLabel::linkActivated,
+                     [=](const QString &link) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); });
+    QObject::connect(ui->dynamicLabel_Announcement, &QLabel::linkActivated,
+                     [=](const QString &link) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); });
 
     ui->audioEncodingLabel->setToolTip(tr("Audio coding"));
 
@@ -675,7 +687,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         ::exit(1);
     }
 
-    AudioRecorder * audioRecorder = new AudioRecorder();
+    AudioRecorder *audioRecorder = new AudioRecorder();
     m_audioDecoder = new AudioDecoder(audioRecorder);
     m_audioDecoderThread = new QThread(this);
     m_audioDecoderThread->setObjectName("audioDecoderThr");
@@ -700,7 +712,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     onAudioRecordingStopped();
 
-
 #if (HAVE_PORTAUDIO)
     if (AudioFramework::Pa == audioFramework)
     {
@@ -720,7 +731,8 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
         m_audioOutput = new AudioOutputQt();
         connect(m_audioOutput, &AudioOutput::audioDevicesList, this, &MainWindow::onAudioDevicesList);
         connect(m_audioOutput, &AudioOutput::audioDeviceChanged, this, &MainWindow::onAudioDeviceChanged);
-        connect(static_cast<AudioOutputQt *>(m_audioOutput), &AudioOutputQt::audioOutputError, this, &MainWindow::onAudioOutputError, Qt::QueuedConnection);
+        connect(static_cast<AudioOutputQt *>(m_audioOutput), &AudioOutputQt::audioOutputError, this, &MainWindow::onAudioOutputError,
+                Qt::QueuedConnection);
         connect(this, &MainWindow::audioOutput, m_audioOutput, &AudioOutput::setAudioDevice, Qt::QueuedConnection);
         onAudioDevicesList(m_audioOutput->getAudioDevices());
         m_audioOutputThread = new QThread(this);
@@ -749,26 +761,30 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::dabTime, this, &MainWindow::onDabTime, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListEntry, this, &MainWindow::onServiceListEntry, Qt::BlockingQueuedConnection);
     connect(m_radioControl, &RadioControl::announcement, this, &MainWindow::onAnnouncement, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::programmeTypeChanged, this, &MainWindow::onProgrammeTypeChanged, Qt::QueuedConnection);    
+    connect(m_radioControl, &RadioControl::programmeTypeChanged, this, &MainWindow::onProgrammeTypeChanged, Qt::QueuedConnection);
     connect(this, &MainWindow::announcementMask, m_radioControl, &RadioControl::setupAnnouncements, Qt::QueuedConnection);
     connect(m_audioOutput, &AudioOutput::audioOutputRestart, m_radioControl, &RadioControl::onAudioOutputRestart, Qt::QueuedConnection);
     connect(this, &MainWindow::toggleAnnouncement, m_radioControl, &RadioControl::suspendResumeAnnouncement, Qt::QueuedConnection);
     connect(this, &MainWindow::getEnsembleInfo, m_radioControl, &RadioControl::getEnsembleInformation, Qt::QueuedConnection);
-    connect(m_ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfiguration, Qt::QueuedConnection);
+    connect(m_ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfiguration,
+            Qt::QueuedConnection);
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleCSV, m_radioControl, &RadioControl::getEnsembleCSV, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::signalState, m_ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::freqOffset, m_ensembleInfoDialog, &EnsembleInfoDialog::updateFreqOffset, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::ensembleConfiguration, m_ensembleInfoDialog, &EnsembleInfoDialog::refreshEnsembleConfiguration, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::ensembleConfiguration, m_ensembleInfoDialog, &EnsembleInfoDialog::refreshEnsembleConfiguration,
+            Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleCSV, m_ensembleInfoDialog, &EnsembleInfoDialog::onEnsembleCSV, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::tuneDone, m_ensembleInfoDialog, &EnsembleInfoDialog::newFrequency, Qt::QueuedConnection);    
+    connect(m_radioControl, &RadioControl::tuneDone, m_ensembleInfoDialog, &EnsembleInfoDialog::newFrequency, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::tuneDone, m_inputDeviceRecorder, &InputDeviceRecorder::setCurrentFrequency, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::fibCounter, m_ensembleInfoDialog, &EnsembleInfoDialog::updateFIBstatus, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::mscCounter, m_ensembleInfoDialog, &EnsembleInfoDialog::updateMSCstatus, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_ensembleInfoDialog, &EnsembleInfoDialog::serviceChanged, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::ensembleInformation, m_ensembleInfoDialog, &EnsembleInfoDialog::onEnsembleInformation, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::ensembleInformation, m_ensembleInfoDialog, &EnsembleInfoDialog::onEnsembleInformation,
+            Qt::QueuedConnection);
 
     connect(m_radioControl, &RadioControl::dlDataGroup_Service, m_dlDecoder[Instance::Service], &DLDecoder::newDataGroup, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::dlDataGroup_Announcement, m_dlDecoder[Instance::Announcement], &DLDecoder::newDataGroup, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::dlDataGroup_Announcement, m_dlDecoder[Instance::Announcement], &DLDecoder::newDataGroup,
+            Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, this, &MainWindow::onAudioServiceSelection, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_dlDecoder[Instance::Service], &DLDecoder::reset, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_dlDecoder[Instance::Announcement], &DLDecoder::reset, Qt::QueuedConnection);
@@ -824,7 +840,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
 
     // slide show application is created by default
     // ETSI TS 101 499 V3.1.1  [5.1.1]
-    // The application should be automatically started when a SlideShow service is discovered for the current radio service    
+    // The application should be automatically started when a SlideShow service is discovered for the current radio service
     m_slideShowApp[Instance::Service] = new SlideShowApp();
     m_slideShowApp[Instance::Announcement] = new SlideShowApp();
 
@@ -836,7 +852,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::ensembleInformation, m_slideShowApp[Instance::Service], &UserApplication::setEnsId);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_slideShowApp[Instance::Service], &UserApplication::setAudioServiceId);
 
-    //connect(this, &MainWindow::serviceRequest, m_metadataManager, &MetadataManager::onServiceRequest);
+    // connect(this, &MainWindow::serviceRequest, m_metadataManager, &MetadataManager::onServiceRequest);
 
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::currentSlide, ui->slsView_Service, &SLSView::showSlide, Qt::QueuedConnection);
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::resetTerminal, ui->slsView_Service, &SLSView::reset, Qt::QueuedConnection);
@@ -848,7 +864,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_radioControl, &RadioControl::userAppData_Announcement, m_slideShowApp[Instance::Announcement], &SlideShowApp::onUserAppData);
     connect(m_slideShowApp[Instance::Announcement], &SlideShowApp::currentSlide, ui->slsView_Announcement, &SLSView::showSlide, Qt::QueuedConnection);
     connect(m_slideShowApp[Instance::Announcement], &SlideShowApp::resetTerminal, ui->slsView_Announcement, &SLSView::reset, Qt::QueuedConnection);
-    //connect(m_radioControl, &RadioControl::announcement, ui->slsView_Service, &SLSView::showAnnouncement, Qt::QueuedConnection);
+    // connect(m_radioControl, &RadioControl::announcement, ui->slsView_Service, &SLSView::showAnnouncement, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::announcement, ui->slsView_Announcement, &SLSView::showAnnouncement, Qt::QueuedConnection);
     connect(this, &MainWindow::stopUserApps, m_slideShowApp[Instance::Announcement], &SlideShowApp::stop, Qt::QueuedConnection);
 
@@ -856,11 +872,17 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     connect(m_setupDialog, &SetupDialog::uaDumpSettings, m_slideShowApp[Instance::Announcement], &SlideShowApp::setDataDumping, Qt::QueuedConnection);
 
     m_catSlsDialog = new CatSLSDialog();
-    connect(this, &MainWindow::exit, [this]() {m_catSlsDialog->close(); m_catSlsDialog->deleteLater(); });
+    connect(this, &MainWindow::exit,
+            [this]()
+            {
+                m_catSlsDialog->close();
+                m_catSlsDialog->deleteLater();
+            });
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::categoryUpdate, m_catSlsDialog, &CatSLSDialog::onCategoryUpdate, Qt::QueuedConnection);
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::catSlide, m_catSlsDialog, &CatSLSDialog::onCatSlide, Qt::QueuedConnection);
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::resetTerminal, m_catSlsDialog, &CatSLSDialog::reset, Qt::QueuedConnection);
-    connect(m_catSlsDialog, &CatSLSDialog::getCurrentCatSlide, m_slideShowApp[Instance::Service], &SlideShowApp::getCurrentCatSlide, Qt::QueuedConnection);
+    connect(m_catSlsDialog, &CatSLSDialog::getCurrentCatSlide, m_slideShowApp[Instance::Service], &SlideShowApp::getCurrentCatSlide,
+            Qt::QueuedConnection);
     connect(m_catSlsDialog, &CatSLSDialog::getNextCatSlide, m_slideShowApp[Instance::Service], &SlideShowApp::getNextCatSlide, Qt::QueuedConnection);
     connect(m_catSlsDialog, &QDialog::finished, this, [this]() { m_settings->catSls.geometry = m_catSlsDialog->saveGeometry(); });
 
@@ -868,10 +890,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent)
     m_spiApp->moveToThread(m_radioControlThread);
     connect(m_radioControlThread, &QThread::finished, m_spiApp, &QObject::deleteLater);
     connect(m_radioControl, &RadioControl::userAppData_Service, m_spiApp, &SPIApp::onUserAppData);
-    connect(m_radioControl, &RadioControl::audioServiceSelection,  m_spiApp, &SPIApp::start);
+    connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &SPIApp::start);
     connect(this, &MainWindow::stopUserApps, m_spiApp, &SPIApp::stop, Qt::QueuedConnection);
     connect(this, &MainWindow::resetUserApps, m_spiApp, &SPIApp::reset, Qt::QueuedConnection);
-    connect(m_setupDialog, &SetupDialog::uaDumpSettings,m_spiApp, &SPIApp::setDataDumping, Qt::QueuedConnection);
+    connect(m_setupDialog, &SetupDialog::uaDumpSettings, m_spiApp, &SPIApp::setDataDumping, Qt::QueuedConnection);
 
     connect(m_spiApp, &SPIApp::xmlDocument, m_metadataManager, &MetadataManager::processXML, Qt::QueuedConnection);
     connect(m_metadataManager, &MetadataManager::getSI, m_spiApp, &SPIApp::getSI, Qt::QueuedConnection);
@@ -926,13 +948,13 @@ MainWindow::~MainWindow()
     delete m_audioDecoderThread;
 
     if (nullptr != m_audioOutputThread)
-    {  // Qt audio
+    {                                 // Qt audio
         m_audioOutputThread->quit();  // this deletes audiooutput
         m_audioOutputThread->wait();
         delete m_audioOutputThread;
     }
     else
-    {   // PortAudio
+    {  // PortAudio
         delete m_audioOutput;
     }
 
@@ -948,9 +970,9 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
 {
     if (o == ui->serviceListView)
     {
-        if(e->type() == QEvent::KeyPress)
+        if (e->type() == QEvent::KeyPress)
         {
-            QKeyEvent * event = static_cast<QKeyEvent *>(e);
+            QKeyEvent *event = static_cast<QKeyEvent *>(e);
             if (Qt::Key_Space == event->key())
             {
                 ui->favoriteLabel->toggle();
@@ -963,10 +985,10 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
     {
         if (e->type() == QEvent::MouseButtonRelease)
         {
-            QMouseEvent * event = static_cast<QMouseEvent *>(e);
+            QMouseEvent *event = static_cast<QMouseEvent *>(e);
             if (Qt::RightButton == event->button())
             {
-                QLabel * label = static_cast<QLabel *>(o);
+                QLabel *label = static_cast<QLabel *>(o);
 
                 // Retrieve the rich text from the QLabel
                 QString richText = label->text();
@@ -987,16 +1009,16 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
     {
         if (e->type() == QEvent::MouseButtonRelease)
         {
-            QMouseEvent * event = static_cast<QMouseEvent *>(e);
+            QMouseEvent *event = static_cast<QMouseEvent *>(e);
             if (Qt::RightButton == event->button())
-            {   // create text representation
-                QMap<DLPlusContentType, DLPlusObjectUI*> * dlObjCachePtr = &m_dlObjCache[Instance::Service];
+            {  // create text representation
+                QMap<DLPlusContentType, DLPlusObjectUI *> *dlObjCachePtr = &m_dlObjCache[Instance::Service];
                 if (o == ui->dlPlusFrame_Announcement)
                 {
                     dlObjCachePtr = &m_dlObjCache[Instance::Announcement];
                 }
                 QString text;
-                for (auto & obj : *dlObjCachePtr)
+                for (auto &obj : *dlObjCachePtr)
                 {
                     text += QString("%1: %2\n").arg(obj->getLabel(obj->getDlPlusObject().getType()), obj->getDlPlusObject().getTag());
                 }
@@ -1018,7 +1040,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 
     if (0 == m_frequency)
-    {   // in idle
+    {  // in idle
         emit exit();
 
         saveSettings();
@@ -1026,14 +1048,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->accept();
     }
     else
-    {   // message is needed for Windows -> stopping RTL SDR thread may take long time :-(
+    {  // message is needed for Windows -> stopping RTL SDR thread may take long time :-(
         m_infoLabel->setText(tr("Stopping DAB processing, please wait..."));
         m_infoLabel->setToolTip("");
         m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
 
         m_exitRequested = true;
         emit resetUserApps();
-        emit serviceRequest(0,0,0);
+        emit serviceRequest(0, 0, 0);
         event->ignore();
 #if HAVE_QCUSTOMPLOT
         if (m_signalDialog)
@@ -1085,15 +1107,15 @@ void MainWindow::onEnsembleInfo(const RadioControlEnsemble &ens)
 {
     ui->ensembleLabel->setText(ens.label);
     ui->ensembleLabel->setToolTip(QString(tr("<b>Ensemble:</b> %1<br>"
-                                          "<b>Short label:</b> %2<br>"
-                                          "<b>ECC:</b> 0x%3<br>"
-                                          "<b>EID:</b> 0x%4<br>"
+                                             "<b>Short label:</b> %2<br>"
+                                             "<b>ECC:</b> 0x%3<br>"
+                                             "<b>EID:</b> 0x%4<br>"
                                              "<b>Country:</b> %5"))
-                                  .arg(ens.label)
-                                  .arg(ens.labelShort)
-                                  .arg(QString("%1").arg(ens.ecc(), 2, 16, QChar('0')).toUpper())
-                                  .arg(QString("%1").arg(ens.eid(), 4, 16, QChar('0')).toUpper())
-                                  .arg(DabTables::getCountryName(ens.ueid)));
+                                      .arg(ens.label)
+                                      .arg(ens.labelShort)
+                                      .arg(QString("%1").arg(ens.ecc(), 2, 16, QChar('0')).toUpper())
+                                      .arg(QString("%1").arg(ens.eid(), 4, 16, QChar('0')).toUpper())
+                                      .arg(DabTables::getCountryName(ens.ueid)));
     if (!m_isScannerRunning)
     {
         m_serviceList->beginEnsembleUpdate(ens);
@@ -1131,13 +1153,13 @@ void MainWindow::onEnsembleRemoved(const RadioControlEnsemble &ens)
     ui->favoriteLabel->setEnabled(false);
     m_audioRecordingAction->setDisabled(true);
 
-    m_serviceList->removeEnsemble(ens);        
+    m_serviceList->removeEnsemble(ens);
 }
 
 void MainWindow::onSignalState(uint8_t sync, float snr)
 {
     if (DabSyncLevel::FullSync > DabSyncLevel(sync))
-    {   // hide time when no sync
+    {  // hide time when no sync
         m_timeLabel->setText("");
 
         // set no signal quality when no sync
@@ -1153,9 +1175,8 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
     m_syncLabel->setText(tr(syncLevelLabels[sync]));
     m_syncLabel->setToolTip(tr(syncLevelTooltip[sync]));
 
-
     // limit SNR to progressbar maximum
-    int snr10 = qRound(snr*10);
+    int snr10 = qRound(snr * 10);
     if (snr10 > m_snrProgressbar->maximum())
     {
         snr10 = m_snrProgressbar->maximum();
@@ -1173,7 +1194,7 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
 
     // progressbar styling -> it does not look good on Apple
     if (static_cast<int>(SNR10Threhold::SNR_BAD) > snr10)
-    {   // bad SNR
+    {  // bad SNR
 #ifndef __APPLE__
         m_snrProgressbar->setStyleSheet(snrProgressStylesheet[0]);
 #endif
@@ -1190,7 +1211,7 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
         }
     }
     else if (static_cast<int>(SNR10Threhold::SNR_GOOD) > snr10)
-    {   // medium SNR
+    {  // medium SNR
 #ifndef __APPLE__
         m_snrProgressbar->setStyleSheet(snrProgressStylesheet[1]);
 #endif
@@ -1207,7 +1228,7 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
         }
     }
     else
-    {   // good SNR
+    {  // good SNR
 #ifndef __APPLE__
         m_snrProgressbar->setStyleSheet(snrProgressStylesheet[2]);
 #endif
@@ -1236,18 +1257,17 @@ void MainWindow::onServiceListEntry(const RadioControlEnsemble &ens, const Radio
     m_serviceList->addService(ens, slEntry);
 }
 
-
-void MainWindow::onDLComplete_Service(const QString & dl)
+void MainWindow::onDLComplete_Service(const QString &dl)
 {
     onDLComplete(dl, ui->dynamicLabel_Service);
 }
 
-void MainWindow::onDLComplete_Announcement(const QString & dl)
+void MainWindow::onDLComplete_Announcement(const QString &dl)
 {
     onDLComplete(dl, ui->dynamicLabel_Announcement);
 }
 
-void MainWindow::onDLComplete(const QString & dl, QLabel * dlLabel)
+void MainWindow::onDLComplete(const QString &dl, QLabel *dlLabel)
 {
     QString dlText = dl;
 
@@ -1280,32 +1300,32 @@ void MainWindow::onDLComplete(const QString & dl, QLabel * dlLabel)
     }
 }
 
-void MainWindow::onDabTime(const QDateTime & d)
+void MainWindow::onDabTime(const QDateTime &d)
 {
     m_timeLabel->setText(m_timeLocale.toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
     EPGTime::getInstance()->onDabTime(d);
 }
 
-void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)
+void MainWindow::onAudioParametersInfo(const struct AudioParameters &params)
 {
     switch (params.coding)
     {
-    case AudioCoding::MP2:
-        ui->audioEncodingLabel->setText("MP2");
-        ui->audioEncodingLabel->setToolTip(QString(tr("<b>DAB audio encoding</b><br>%1")).arg(tr("MPEG-1 layer 2")));
-        break;
-    case AudioCoding::AACLC:
-        ui->audioEncodingLabel->setText("AAC-LC");
-        ui->audioEncodingLabel->setToolTip(QString(tr("<b>DAB+ audio encoding</b><br>%1")).arg(tr("MPEG-4 Low Complexity AAC")));
-        break;
-    case AudioCoding::HEAAC:
-        ui->audioEncodingLabel->setText("HE-AAC");
-        ui->audioEncodingLabel->setToolTip(QString(tr("<b>DAB+ audio encoding</b><br>%1")).arg(tr("MPEG-4 High Efficiency AAC")));
-        break;
-    case AudioCoding::HEAACv2:
-        ui->audioEncodingLabel->setText("HE-AACv2");
-        ui->audioEncodingLabel->setToolTip(QString(tr("<b>DAB+ audio encoding</b><br>%1")).arg(tr("MPEG-4 High Efficiency AAC v2")));
-        break;
+        case AudioCoding::MP2:
+            ui->audioEncodingLabel->setText("MP2");
+            ui->audioEncodingLabel->setToolTip(QString(tr("<b>DAB audio encoding</b><br>%1")).arg(tr("MPEG-1 layer 2")));
+            break;
+        case AudioCoding::AACLC:
+            ui->audioEncodingLabel->setText("AAC-LC");
+            ui->audioEncodingLabel->setToolTip(QString(tr("<b>DAB+ audio encoding</b><br>%1")).arg(tr("MPEG-4 Low Complexity AAC")));
+            break;
+        case AudioCoding::HEAAC:
+            ui->audioEncodingLabel->setText("HE-AAC");
+            ui->audioEncodingLabel->setToolTip(QString(tr("<b>DAB+ audio encoding</b><br>%1")).arg(tr("MPEG-4 High Efficiency AAC")));
+            break;
+        case AudioCoding::HEAACv2:
+            ui->audioEncodingLabel->setText("HE-AACv2");
+            ui->audioEncodingLabel->setToolTip(QString(tr("<b>DAB+ audio encoding</b><br>%1")).arg(tr("MPEG-4 High Efficiency AAC v2")));
+            break;
     }
 
     if (params.stereo)
@@ -1313,18 +1333,15 @@ void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)
         ui->stereoLabel->setText("STEREO");
         if (AudioCoding::MP2 == params.coding)
         {
-            ui->stereoLabel->setToolTip(QString(tr("<b>Audio signal</b><br>%1Stereo<br>Sample rate: %2 kHz"))
-                    .arg(params.sbr ? "Joint " : "")
-                    .arg(params.sampleRateKHz)
-                );
+            ui->stereoLabel->setToolTip(
+                QString(tr("<b>Audio signal</b><br>%1Stereo<br>Sample rate: %2 kHz")).arg(params.sbr ? "Joint " : "").arg(params.sampleRateKHz));
         }
         else
         {
             ui->stereoLabel->setToolTip(QString(tr("<b>Audio signal</b><br>Stereo (PS %1)<br>Sample rate: %2 kHz (SBR %3)"))
-                                            .arg(params.parametricStereo? tr("on") : tr("off"))
+                                            .arg(params.parametricStereo ? tr("on") : tr("off"))
                                             .arg(params.sampleRateKHz)
-                                            .arg(params.sbr ? tr("on") : tr("off"))
-                );
+                                            .arg(params.sbr ? tr("on") : tr("off")));
         }
     }
     else
@@ -1332,16 +1349,12 @@ void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)
         ui->stereoLabel->setText("MONO");
         if (AudioCoding::MP2 == params.coding)
         {
-            ui->stereoLabel->setToolTip(QString(tr("<b>Audio signal</b><br>Mono<br>Sample rate: %1 kHz"))
-                        .arg(params.sampleRateKHz)
-                    );
+            ui->stereoLabel->setToolTip(QString(tr("<b>Audio signal</b><br>Mono<br>Sample rate: %1 kHz")).arg(params.sampleRateKHz));
         }
         else
         {
-            ui->stereoLabel->setToolTip(QString(tr("<b>Audio signal</b><br>Mono<br>Sample rate: %1 kHz (SBR: %2)"))
-                        .arg(params.sampleRateKHz)
-                        .arg(params.sbr ? "on" : "off")
-                    );
+            ui->stereoLabel->setToolTip(
+                QString(tr("<b>Audio signal</b><br>Mono<br>Sample rate: %1 kHz (SBR: %2)")).arg(params.sampleRateKHz).arg(params.sbr ? "on" : "off"));
         }
     }
     m_audioRecordingAction->setEnabled(true);
@@ -1351,20 +1364,18 @@ void MainWindow::onAudioParametersInfo(const struct AudioParameters & params)
 void MainWindow::onProgrammeTypeChanged(const DabSId &sid, const DabPTy &pty)
 {
     if (m_SId.value() == sid.value())
-    {   // belongs to current service
+    {  // belongs to current service
 
         // ETSI EN 300 401 V2.1.1 [8.1.5]
         // At any one time, the PTy shall be either Static or Dynamic;
         // there shall be only one PTy per service.
 
         if (pty.d != 0)
-        {   // dynamic PTy available != static PTy
+        {  // dynamic PTy available != static PTy
             ui->programTypeLabel->setText(DabTables::getPtyName(pty.d));
             ui->programTypeLabel->setToolTip(QString(tr("<b>Programme Type</b><br>"
                                                         "%1 (dynamic)"))
                                                  .arg(DabTables::getPtyName(pty.d)));
-
-
         }
         else
         {
@@ -1373,9 +1384,10 @@ void MainWindow::onProgrammeTypeChanged(const DabSId &sid, const DabPTy &pty)
                                                         "%1"))
                                                  .arg(DabTables::getPtyName(pty.s)));
         }
-
     }
-    else { /* ignoring - not current service */ }
+    else
+    { /* ignoring - not current service */
+    }
 }
 
 void MainWindow::channelSelected()
@@ -1423,7 +1435,7 @@ void MainWindow::onChannelChange(int index)
 {
     int idx = ui->channelCombo->findData(m_frequency, Qt::UserRole);
     if (index == idx)
-    {   // no change (it can happen when audio recording is ongoing and channel change is rejected)
+    {  // no change (it can happen when audio recording is ongoing and channel change is rejected)
         return;
     }
 
@@ -1445,7 +1457,7 @@ void MainWindow::onChannelChange(int index)
         channelSelected();
 
         if (index < 0)
-        {   // this indx is set when service list is cleared by user -> we want combo enabled
+        {  // this indx is set when service list is cleared by user -> we want combo enabled
             ui->channelCombo->setEnabled(true);
             ui->channelDown->setEnabled(true);
             ui->channelUp->setEnabled(true);
@@ -1502,11 +1514,12 @@ void MainWindow::onChannelDownClicked()
 }
 
 void MainWindow::onTuneDone(uint32_t freq)
-{   // this slot is called when tune is complete
+{  // this slot is called when tune is complete
     m_frequency = freq;
     if (freq != 0)
     {
-        if (!m_isScannerRunning) {
+        if (!m_isScannerRunning)
+        {
             ui->channelCombo->setEnabled(true);
             ui->channelDown->setEnabled(true);
             ui->channelUp->setEnabled(true);
@@ -1526,7 +1539,7 @@ void MainWindow::onTuneDone(uint32_t freq)
             }
         }
 
-        ui->frequencyLabel->setText(QString("%1 MHz").arg(freq/1000.0, 3, 'f', 3, QChar('0')));
+        ui->frequencyLabel->setText(QString("%1 MHz").arg(freq / 1000.0, 3, 'f', 3, QChar('0')));
         m_isPlaying = true;
 
         // if current service has alternatives show icon immediately to avoid UI blocking when audio does not work
@@ -1543,7 +1556,7 @@ void MainWindow::onTuneDone(uint32_t freq)
     {
         // this can only happen when device is changed, or when exit is requested
         if (m_exitRequested)
-        {   // processing in IDLE, close window
+        {  // processing in IDLE, close window
             close();
             return;
         }
@@ -1566,65 +1579,64 @@ void MainWindow::onInputDeviceError(const InputDeviceErrorCode errCode)
 {
     switch (errCode)
     {
-    case InputDeviceErrorCode::EndOfFile:
-        // tune to 0
-        m_infoLabel->setText(tr("End of file"));
-        m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
-        if (!m_settings->rawfile.loopEna)
-        {
-            m_infoLabel->setToolTip(tr("Select any service to restart"));
-            ui->channelCombo->setCurrentIndex(-1);
-        }
-        else
-        {   // rewind - restore info after timeout
-            m_infoLabel->setToolTip("");
-            QTimer::singleShot(2000, this, [this](){ restoreTimeQualWidget(); });
-        }
-        break;
-    case InputDeviceErrorCode::DeviceDisconnected:
-        m_infoLabel->setText(tr("Input device error: Device disconnected"));
-        m_infoLabel->setToolTip(tr("Go to settings and try to reconnect the device"));
-        m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
+        case InputDeviceErrorCode::EndOfFile:
+            // tune to 0
+            m_infoLabel->setText(tr("End of file"));
+            m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
+            if (!m_settings->rawfile.loopEna)
+            {
+                m_infoLabel->setToolTip(tr("Select any service to restart"));
+                ui->channelCombo->setCurrentIndex(-1);
+            }
+            else
+            {  // rewind - restore info after timeout
+                m_infoLabel->setToolTip("");
+                QTimer::singleShot(2000, this, [this]() { restoreTimeQualWidget(); });
+            }
+            break;
+        case InputDeviceErrorCode::DeviceDisconnected:
+            m_infoLabel->setText(tr("Input device error: Device disconnected"));
+            m_infoLabel->setToolTip(tr("Go to settings and try to reconnect the device"));
+            m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
 
-        // force no device
-        m_setupDialog->resetInputDevice();
-        changeInputDevice(InputDeviceId::UNDEFINED);
-        showSetupDialog();
-        break;
-    case InputDeviceErrorCode::NoDataAvailable:
-        m_infoLabel->setText(tr("Input device error: No data"));
-        m_infoLabel->setToolTip(tr("Go to settings and try to reconnect the device"));
-        m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
+            // force no device
+            m_setupDialog->resetInputDevice();
+            changeInputDevice(InputDeviceId::UNDEFINED);
+            showSetupDialog();
+            break;
+        case InputDeviceErrorCode::NoDataAvailable:
+            m_infoLabel->setText(tr("Input device error: No data"));
+            m_infoLabel->setToolTip(tr("Go to settings and try to reconnect the device"));
+            m_timeBasicQualInfoWidget->setCurrentWidget(m_infoLabel);
 
-        // force no device
-        m_setupDialog->resetInputDevice();
-        changeInputDevice(InputDeviceId::UNDEFINED);
-        showSetupDialog();
-        break;
-    default:
-        qCWarning(application) << "InputDevice error" << int(errCode);
+            // force no device
+            m_setupDialog->resetInputDevice();
+            changeInputDevice(InputDeviceId::UNDEFINED);
+            showSetupDialog();
+            break;
+        default:
+            qCWarning(application) << "InputDevice error" << int(errCode);
     }
 }
 
-bool MainWindow::stopAudioRecordingMsg(const QString & infoText)
+bool MainWindow::stopAudioRecordingMsg(const QString &infoText)
 {
     if ((m_audioRecManager->isAudioRecordingActive() || m_audioRecManager->isAudioScheduleActive()) && !m_settings->audioRec.autoStopEna)
-    //if (!m_settings->audioRecAutoStopEna)
+    // if (!m_settings->audioRecAutoStopEna)
     {
-        QMessageBox msgBox(QMessageBox::Warning, tr("Warning"),
-                           tr("Do you want to stop audio recording?"), {}, this);
+        QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), tr("Do you want to stop audio recording?"), {}, this);
         msgBox.setInformativeText(infoText);
 #ifdef Q_OS_LINUX
-#define KEEP_BUTTON_ROLE      QMessageBox::RejectRole
+#define KEEP_BUTTON_ROLE QMessageBox::RejectRole
 #define DONOTSHOW_BUTTON_ROLE QMessageBox::YesRole
-#define STOP_BUTTON_ROLE      QMessageBox::AcceptRole
+#define STOP_BUTTON_ROLE QMessageBox::AcceptRole
 #else
-#define KEEP_BUTTON_ROLE      QMessageBox::AcceptRole
+#define KEEP_BUTTON_ROLE QMessageBox::AcceptRole
 #define DONOTSHOW_BUTTON_ROLE QMessageBox::RejectRole
-#define STOP_BUTTON_ROLE      QMessageBox::RejectRole
+#define STOP_BUTTON_ROLE QMessageBox::RejectRole
 #endif
-        QPushButton * keepButton = msgBox.addButton(tr("Keep recording"), KEEP_BUTTON_ROLE);
-        QPushButton * doNotShowButton = msgBox.addButton(tr("Stop recording and do not ask again"), DONOTSHOW_BUTTON_ROLE);
+        QPushButton *keepButton = msgBox.addButton(tr("Keep recording"), KEEP_BUTTON_ROLE);
+        QPushButton *doNotShowButton = msgBox.addButton(tr("Stop recording and do not ask again"), DONOTSHOW_BUTTON_ROLE);
         msgBox.addButton(tr("Stop recording"), STOP_BUTTON_ROLE);
 
         msgBox.setEscapeButton(keepButton);
@@ -1645,13 +1657,13 @@ bool MainWindow::stopAudioRecordingMsg(const QString & infoText)
 void MainWindow::selectService(const ServiceListId &serviceId)
 {
     // we need to find the item in model and select it
-    const SLModel * model = reinterpret_cast<const SLModel*>(ui->serviceListView->model());
+    const SLModel *model = reinterpret_cast<const SLModel *>(ui->serviceListView->model());
     QModelIndex index;
     for (int r = 0; r < model->rowCount(); ++r)
     {
         index = model->index(r, 0);
         if (model->id(index) == serviceId)
-        {   // found
+        {  // found
             ui->serviceListView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
             return;
         }
@@ -1660,14 +1672,15 @@ void MainWindow::selectService(const ServiceListId &serviceId)
 
 void MainWindow::onServiceListSelection(const QItemSelection &selected, const QItemSelection &deselected)
 {
-    QModelIndexList	selectedList = selected.indexes();
-    if (0 == selectedList.count()) {
+    QModelIndexList selectedList = selected.indexes();
+    if (0 == selectedList.count())
+    {
         // no selection => return
         return;
     }
 
     QModelIndex currentIndex = selectedList.at(0);
-    const SLModel * model = reinterpret_cast<const SLModel*>(currentIndex.model());
+    const SLModel *model = reinterpret_cast<const SLModel *>(currentIndex.model());
     if (model->id(currentIndex) == ServiceListId(m_SId.value(), m_SCIdS))
     {
         return;
@@ -1675,7 +1688,7 @@ void MainWindow::onServiceListSelection(const QItemSelection &selected, const QI
 
     if (!stopAudioRecordingMsg(tr("Audio recording is ongoing. It will be stopped and saved if you switch current service.")))
     {
-        QModelIndexList	deselectedList = deselected.indexes();
+        QModelIndexList deselectedList = deselected.indexes();
         if (deselectedList.count() > 0)
         {
             QModelIndex previousIndex = deselectedList.at(0);
@@ -1693,7 +1706,7 @@ void MainWindow::onServiceListSelection(const QItemSelection &selected, const QI
 
         if (newFrequency != m_frequency)
         {
-           m_frequency = newFrequency;
+            m_frequency = newFrequency;
 
             // change combo
             ui->channelCombo->setCurrentIndex(ui->channelCombo->findData(m_frequency));
@@ -1702,7 +1715,7 @@ void MainWindow::onServiceListSelection(const QItemSelection &selected, const QI
             channelSelected();
         }
         else
-        {   // if new service has alternatives show icon immediately to avoid UI blocking when audio does not work
+        {  // if new service has alternatives show icon immediately to avoid UI blocking when audio does not work
             ui->switchSourceLabel->setVisible(m_serviceList->numEnsembles(ServiceListId(m_SId.value(), m_SCIdS)) > 1);
         }
         serviceSelected();
@@ -1715,17 +1728,18 @@ void MainWindow::onServiceListSelection(const QItemSelection &selected, const QI
 
 void MainWindow::onServiceListTreeSelection(const QItemSelection &selected, const QItemSelection &deselected)
 {
-    QModelIndexList	selectedList = selected.indexes();
-    if (0 == selectedList.count()) {
+    QModelIndexList selectedList = selected.indexes();
+    if (0 == selectedList.count())
+    {
         // no selection => return
         return;
     }
 
     QModelIndex currentIndex = selectedList.at(0);
-    const SLTreeModel * model = reinterpret_cast<const SLTreeModel*>(currentIndex.model());
+    const SLTreeModel *model = reinterpret_cast<const SLTreeModel *>(currentIndex.model());
 
     if (currentIndex.parent().isValid())
-    {   // service, not ensemble selected
+    {  // service, not ensemble selected
         // if both service ID and ensemble ID are the same then return
         ServiceListId currentServiceId(m_SId.value(), m_SCIdS);
         ServiceListId currentEnsId(0);
@@ -1742,7 +1756,7 @@ void MainWindow::onServiceListTreeSelection(const QItemSelection &selected, cons
 
         if (!stopAudioRecordingMsg(tr("Audio recording is ongoing. It will be stopped and saved if you switch current service.")))
         {
-            QModelIndexList	deselectedList = deselected.indexes();
+            QModelIndexList deselectedList = deselected.indexes();
             if (deselectedList.count() > 0)
             {
                 QModelIndex previousIndex = deselectedList.at(0);
@@ -1769,7 +1783,7 @@ void MainWindow::onServiceListTreeSelection(const QItemSelection &selected, cons
                 channelSelected();
             }
             else
-            {   // if new service has alternatives show icon immediately to avoid UI blocking when audio does not work
+            {  // if new service has alternatives show icon immediately to avoid UI blocking when audio does not work
                 ui->switchSourceLabel->setVisible(m_serviceList->numEnsembles(ServiceListId(m_SId.value(), m_SCIdS)) > 1);
             }
             serviceSelected();
@@ -1786,7 +1800,7 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
     if (s.isAudioService())
     {
         if (s.SId.value() != m_SId.value())
-        {   // this can happen when service is selected while still acquiring ensemble infomation
+        {  // this can happen when service is selected while still acquiring ensemble infomation
             m_SId = s.SId;
             m_SCIdS = s.SCIdS;
             selectService(ServiceListId(s.SId.value(), s.SCIdS));
@@ -1794,7 +1808,7 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
         }
 
         if (s.label.isEmpty())
-        {   // service component not valid -> shoudl not happen
+        {  // service component not valid -> shoudl not happen
             return;
         }
         // set service name in UI until information arrives from decoder
@@ -1805,36 +1819,35 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
         ServiceListConstIterator it = m_serviceList->findService(id);
         if (it != m_serviceList->serviceListEnd())
         {
-            //ui->favoriteLabel->setChecked((*it)->isFavorite());
+            // ui->favoriteLabel->setChecked((*it)->isFavorite());
             ui->favoriteLabel->setChecked(m_serviceList->isServiceFavorite(id));
             int numEns = (*it)->numEnsembles();
             if (numEns > 1)
             {
                 ui->switchSourceLabel->setVisible(true);
                 int current = (*it)->currentEnsembleIdx();
-                const EnsembleListItem * ens = (*it)->getEnsemble(current+1);  // get next ensemble
+                const EnsembleListItem *ens = (*it)->getEnsemble(current + 1);  // get next ensemble
                 ui->switchSourceLabel->setToolTip(QString(tr("<b>Ensemble %1/%2</b><br>"
                                                              "Click for switching to:<br>"
                                                              "<i>%3</i>"))
-                                                  .arg(current+1)
-                                                  .arg(numEns)
-                                                  .arg(ens->label()));
+                                                      .arg(current + 1)
+                                                      .arg(numEns)
+                                                      .arg(ens->label()));
             }
         }
         ui->serviceLabel->setText(s.label);
         ui->serviceLabel->setToolTip(QString(tr("<b>Service:</b> %1<br>"
-                                             "<b>Short label:</b> %2<br>"
-                                             "<b>SId:</b> 0x%3<br>"
-                                             "<b>SCIdS:</b> %4<br>"
-                                             "<b>Language:</b> %5<br>"
+                                                "<b>Short label:</b> %2<br>"
+                                                "<b>SId:</b> 0x%3<br>"
+                                                "<b>SCIdS:</b> %4<br>"
+                                                "<b>Language:</b> %5<br>"
                                                 "<b>Country:</b> %6"))
-                                     .arg(s.label)
-                                     .arg(s.labelShort)
-                                     .arg(QString("%1").arg(s.SId.countryServiceRef(), 4, 16, QChar('0')).toUpper() )
-                                     .arg(s.SCIdS)
-                                     .arg(DabTables::getLangName(s.lang))
-                                     .arg(DabTables::getCountryName(s.SId.value())));
-
+                                         .arg(s.label)
+                                         .arg(s.labelShort)
+                                         .arg(QString("%1").arg(s.SId.countryServiceRef(), 4, 16, QChar('0')).toUpper())
+                                         .arg(s.SCIdS)
+                                         .arg(DabTables::getLangName(s.lang))
+                                         .arg(DabTables::getCountryName(s.SId.value())));
 
         onProgrammeTypeChanged(s.SId, s.pty);
         displaySubchParams(s);
@@ -1854,12 +1867,12 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
         ui->slsView_Service->showServiceLogo(m_metadataManager->data(s.SId.value(), s.SCIdS, MetadataManager::SLSLogo).value<QPixmap>(), true);
     }
     else
-    {   // not audio service
+    {  // not audio service
         m_SId.set(0);
 
         ui->serviceListView->clearSelection();
         ui->serviceTreeView->clearSelection();
-        //ui->serviceListView->selectionModel()->select(ui->serviceListView->selectionModel()->selection(), QItemSelectionModel::Deselect);
+        // ui->serviceListView->selectionModel()->select(ui->serviceListView->selectionModel()->selection(), QItemSelectionModel::Deselect);
     }
 }
 
@@ -1875,7 +1888,6 @@ void MainWindow::displaySubchParams(const RadioControlServiceComponent &s)
             if (s.protection.level < DabProtectionLevel::EEP_1B)
             {  // EEP x-A
                 label = QString("EEP %1-%2").arg(int(s.protection.level) - int(DabProtectionLevel::EEP_1A) + 1).arg("A");
-
             }
             else
             {  // EEP x+B
@@ -1907,18 +1919,19 @@ void MainWindow::displaySubchParams(const RadioControlServiceComponent &s)
         ui->audioBitrateLabel->setToolTip(QString(tr("<b>Service bitrate</b><br>Audio & data: %1")).arg(br));
     }
     else
-    {   /* this should not happen */ }
+    { /* this should not happen */
+    }
 }
 
 void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponent &s)
 {
     if (s.SId.isValid() && s.isAudioService() && (s.SId.value() == m_SId.value()))
-    {   // set UI
+    {  // set UI
         onAudioServiceSelection(s);
         emit getAudioInfo();
     }
     else
-    {   // service probably disapeared
+    {  // service probably disapeared
         // ETSI TS 103 176 V2.4.1 (2020-08) [6.4.3 Receiver behaviour]
         // If by the above methods a continuation of service cannot be established, the receiver shall stop the service.
         // It should display a 'service ceased' message as appropriate.
@@ -1940,100 +1953,100 @@ void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponen
     }
 }
 
-void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent & s)
+void MainWindow::onAnnouncement(const DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent &s)
 {
     switch (state)
     {
-    case RadioControlAnnouncementState::None:
-        ui->dlWidget->setCurrentIndex(Instance::Service);
-        ui->dynamicLabel_Announcement->clear();   // clear for next announcment
-        ui->dlPlusWidget->setCurrentIndex(Instance::Service);
-        // reset DL+
-        for (auto objPtr : m_dlObjCache[Instance::Announcement])
-        {
-            delete objPtr;
-        }
-        m_dlObjCache[Instance::Announcement].clear();
+        case RadioControlAnnouncementState::None:
+            ui->dlWidget->setCurrentIndex(Instance::Service);
+            ui->dynamicLabel_Announcement->clear();  // clear for next announcment
+            ui->dlPlusWidget->setCurrentIndex(Instance::Service);
+            // reset DL+
+            for (auto objPtr : m_dlObjCache[Instance::Announcement])
+            {
+                delete objPtr;
+            }
+            m_dlObjCache[Instance::Announcement].clear();
 
-        // disabling DL+ if no objects
-        toggleDLPlus(!m_dlObjCache[Instance::Service].isEmpty());
+            // disabling DL+ if no objects
+            toggleDLPlus(!m_dlObjCache[Instance::Service].isEmpty());
 
-        ui->slsWidget->setCurrentIndex(Instance::Service);
-        ui->announcementLabel->setVisible(false);
+            ui->slsWidget->setCurrentIndex(Instance::Service);
+            ui->announcementLabel->setVisible(false);
 
-        // enable audio recording menu item
-        m_audioRecordingAction->setEnabled(true);
-        break;
-    case RadioControlAnnouncementState::OnCurrentService:
-        ui->announcementLabel->setToolTip(QString(tr("<b>%1</b><br>"
-                                                     "Ongoing announcement<br>"
-                                                     "on current service"))
-                                              .arg(DabTables::getAnnouncementName(id)));
-        ui->announcementLabel->setChecked(true);
-        ui->announcementLabel->setEnabled(false);
-        ui->announcementLabel->setVisible(true);
-        ui->slsWidget->setCurrentIndex(Instance::Service);
+            // enable audio recording menu item
+            m_audioRecordingAction->setEnabled(true);
+            break;
+        case RadioControlAnnouncementState::OnCurrentService:
+            ui->announcementLabel->setToolTip(QString(tr("<b>%1</b><br>"
+                                                         "Ongoing announcement<br>"
+                                                         "on current service"))
+                                                  .arg(DabTables::getAnnouncementName(id)));
+            ui->announcementLabel->setChecked(true);
+            ui->announcementLabel->setEnabled(false);
+            ui->announcementLabel->setVisible(true);
+            ui->slsWidget->setCurrentIndex(Instance::Service);
 
-        // enable audio recording menu item
-        m_audioRecordingAction->setEnabled(true);
-        break;
-    case RadioControlAnnouncementState::OnOtherService:
-        ui->announcementLabel->setToolTip(QString(tr("<b>%1</b><br>"
-                                                     "Ongoing announcement<br>"
-                                                     "Source service: <i>%2</i><br>"
-                                                     "<br>"
-                                                     "Click to suspend this announcement"))
-                                              .arg(DabTables::getAnnouncementName(id), s.label));
-        ui->announcementLabel->setChecked(true);
-        ui->announcementLabel->setEnabled(true);
-        ui->announcementLabel->setVisible(true);        
+            // enable audio recording menu item
+            m_audioRecordingAction->setEnabled(true);
+            break;
+        case RadioControlAnnouncementState::OnOtherService:
+            ui->announcementLabel->setToolTip(QString(tr("<b>%1</b><br>"
+                                                         "Ongoing announcement<br>"
+                                                         "Source service: <i>%2</i><br>"
+                                                         "<br>"
+                                                         "Click to suspend this announcement"))
+                                                  .arg(DabTables::getAnnouncementName(id), s.label));
+            ui->announcementLabel->setChecked(true);
+            ui->announcementLabel->setEnabled(true);
+            ui->announcementLabel->setVisible(true);
 
-        ui->dlWidget->setCurrentIndex(Instance::Announcement);
-        ui->dlPlusWidget->setCurrentIndex(Instance::Announcement);
-        ui->slsWidget->setCurrentIndex(Instance::Announcement);
+            ui->dlWidget->setCurrentIndex(Instance::Announcement);
+            ui->dlPlusWidget->setCurrentIndex(Instance::Announcement);
+            ui->slsWidget->setCurrentIndex(Instance::Announcement);
 
-        // disable audio recording menu item
-        m_audioRecordingAction->setEnabled(false);
+            // disable audio recording menu item
+            m_audioRecordingAction->setEnabled(false);
 
-        break;
-    case RadioControlAnnouncementState::Suspended:
-        ui->announcementLabel->setToolTip(QString(tr("<b>%1</b><br>"
-                                                     "Suspended announcement<br>"
-                                                     "Source service: <i>%2</i><br>"
-                                                     "<br>"
-                                                     "Click to resume this announcement"))
-                                              .arg(DabTables::getAnnouncementName(id), s.label));
-        ui->announcementLabel->setChecked(false);
-        ui->announcementLabel->setEnabled(true);
-        ui->announcementLabel->setVisible(true);
+            break;
+        case RadioControlAnnouncementState::Suspended:
+            ui->announcementLabel->setToolTip(QString(tr("<b>%1</b><br>"
+                                                         "Suspended announcement<br>"
+                                                         "Source service: <i>%2</i><br>"
+                                                         "<br>"
+                                                         "Click to resume this announcement"))
+                                                  .arg(DabTables::getAnnouncementName(id), s.label));
+            ui->announcementLabel->setChecked(false);
+            ui->announcementLabel->setEnabled(true);
+            ui->announcementLabel->setVisible(true);
 
-        ui->dlWidget->setCurrentIndex(Instance::Service);
-        ui->dynamicLabel_Announcement->clear();   // clear for next announcment
-        ui->dlPlusWidget->setCurrentIndex(Instance::Service);
-        // reset DL+
-        for (auto objPtr : m_dlObjCache[Instance::Announcement])
-        {
-            delete objPtr;
-        }
-        m_dlObjCache[Instance::Announcement].clear();
+            ui->dlWidget->setCurrentIndex(Instance::Service);
+            ui->dynamicLabel_Announcement->clear();  // clear for next announcment
+            ui->dlPlusWidget->setCurrentIndex(Instance::Service);
+            // reset DL+
+            for (auto objPtr : m_dlObjCache[Instance::Announcement])
+            {
+                delete objPtr;
+            }
+            m_dlObjCache[Instance::Announcement].clear();
 
-        // disabling DL+ if no objects
-        toggleDLPlus(!m_dlObjCache[Instance::Service].isEmpty());
+            // disabling DL+ if no objects
+            toggleDLPlus(!m_dlObjCache[Instance::Service].isEmpty());
 
-        ui->slsWidget->setCurrentIndex(Instance::Service);
+            ui->slsWidget->setCurrentIndex(Instance::Service);
 
-        // enable audio recording menu item
-        m_audioRecordingAction->setEnabled(true);
-        break;
+            // enable audio recording menu item
+            m_audioRecordingAction->setEnabled(true);
+            break;
     }
 
     displaySubchParams(s);
 
     if ((DabAnnouncement::Alarm == id) && (m_settings->bringWindowToForeground))
     {
-        show(); //bring window to top on OSX
-        raise(); //bring window from minimized state on OSX
-        activateWindow(); //bring window to front/unminimize on windows
+        show();            // bring window to top on OSX
+        raise();           // bring window from minimized state on OSX
+        activateWindow();  // bring window to front/unminimize on windows
     }
 }
 
@@ -2047,7 +2060,7 @@ void MainWindow::onAudioDevicesList(QList<QAudioDevice> list)
     m_audioDevicesGroup = new QActionGroup(m_audioOutputMenu);
     for (const QAudioDevice &device : list)
     {
-        QAction * action = new QAction(device.description(), m_audioDevicesGroup);
+        QAction *action = new QAction(device.description(), m_audioDevicesGroup);
         action->setData(QVariant::fromValue(device));
         action->setCheckable(true);
     }
@@ -2055,7 +2068,7 @@ void MainWindow::onAudioDevicesList(QList<QAudioDevice> list)
 }
 
 void MainWindow::onAudioOutputError()
-{   // tuning to 0
+{  // tuning to 0
     // no service is selected
     m_SId.set(0);
 
@@ -2073,7 +2086,7 @@ void MainWindow::onAudioOutputSelected(QAction *action)
 
 void MainWindow::onAudioDeviceChanged(const QByteArray &id)
 {
-    for (const auto & action : m_audioDevicesGroup->actions())
+    for (const auto &action : m_audioDevicesGroup->actions())
     {
         if (action->data().value<QAudioDevice>().id() == id)
         {
@@ -2097,15 +2110,15 @@ void MainWindow::audioRecordingToggle()
 void MainWindow::onAudioRecordingStarted()
 {
     m_audioRecordingAction->setEnabled(true);
-    emit announcementMask(0x0001);             // disable announcements during recording (only alarm is enabled)
+    emit announcementMask(0x0001);  // disable announcements during recording (only alarm is enabled)
     onAudioRecordingProgress(0, 0);
     setAudioRecordingUI();
 }
 
 void MainWindow::onAudioRecordingStopped()
-{       
+{
     setAudioRecordingUI();
-    emit announcementMask(m_settings->announcementEna);   // restore announcement settings
+    emit announcementMask(m_settings->announcementEna);  // restore announcement settings
 }
 
 void MainWindow::onAudioRecordingProgress(size_t bytes, qint64 timeSec)
@@ -2115,10 +2128,12 @@ void MainWindow::onAudioRecordingProgress(size_t bytes, qint64 timeSec)
         int min = timeSec / 60;
         m_audioRecordingProgressLabel->setText(QString(tr("Audio recording: %1:%2")).arg(min).arg(timeSec - min * 60, 2, 10, QChar('0')));
         m_audioRecordingProgressLabel->setToolTip(QString(tr("Audio recording ongoing (%2 kBytes recorded)\n"
-                                                             "File: %1")).arg(m_audioRecManager->audioRecordingFile()).arg(bytes >> 10));
+                                                             "File: %1"))
+                                                      .arg(m_audioRecManager->audioRecordingFile())
+                                                      .arg(bytes >> 10));
     }
     else
-    {   // schedued recording will start
+    {  // schedued recording will start
         m_audioRecordingWidget->setVisible(true);
         m_audioRecordingProgressLabel->setText(QString(tr("Audio recording: 0:00")));
         m_audioRecordingProgressLabel->setToolTip(QString(tr("Scheduled audio recording is getting ready")));
@@ -2128,19 +2143,21 @@ void MainWindow::onAudioRecordingProgress(size_t bytes, qint64 timeSec)
 void MainWindow::onAudioRecordingCountdown(int numSec)
 {
     m_audioRecordingAction->setDisabled(true);
-    if (numSec > 0) {
+    if (numSec > 0)
+    {
         QMessageBox msg;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
-        msg.setOption(QMessageBox::Option::DontUseNativeDialog); // 6.6
+        msg.setOption(QMessageBox::Option::DontUseNativeDialog);  // 6.6
 #endif
         QString text;
-        QPushButton * cancelButton;
+        QPushButton *cancelButton;
         if (m_audioRecManager->isAudioRecordingActive())
         {
             text = QString(tr("Scheduled recording should start in %1 seconds"));
-            msg.setInformativeText(tr("Ongoing recording now prevents the start of a scheduled recording. "
-                                      "The schedule will be cancelled if you do not choose otherwise. "
-                                      "If you select to keep the schedule, the service might be switched."));
+            msg.setInformativeText(
+                tr("Ongoing recording now prevents the start of a scheduled recording. "
+                   "The schedule will be cancelled if you do not choose otherwise. "
+                   "If you select to keep the schedule, the service might be switched."));
             msg.setIcon(QMessageBox::Warning);
             msg.addButton(tr("Keep schedule"), QMessageBox::ButtonRole::RejectRole);
             cancelButton = msg.addButton(tr("Keep current recording"), QMessageBox::ButtonRole::AcceptRole);
@@ -2150,35 +2167,34 @@ void MainWindow::onAudioRecordingCountdown(int numSec)
         else
         {
             text = QString(tr("Scheduled recording starts in %1 seconds"));
-            msg.setInformativeText(tr("Recording is going to start according to the schedule. The service might be switched if it differs from the current one."));
+            msg.setInformativeText(
+                tr("Recording is going to start according to the schedule. The service might be switched if it differs from the current one."));
             msg.setIcon(QMessageBox::Information);
             cancelButton = msg.addButton(tr("Cancel plan"), QMessageBox::ButtonRole::RejectRole);
-            QPushButton * okButton = msg.addButton(tr("Continue as planned"), QMessageBox::ButtonRole::AcceptRole);
+            QPushButton *okButton = msg.addButton(tr("Continue as planned"), QMessageBox::ButtonRole::AcceptRole);
             msg.setDefaultButton(okButton);
             msg.setEscapeButton(okButton);
         }
         msg.setText(text.arg(numSec));
         QTimer cntDown;
         int cnt = numSec;
-        QObject::connect(&cntDown, &QTimer::timeout, this, [&cntDown, &cnt, &msg, &text]() {
-            if(--cnt <= 0)
-            {
-                cntDown.stop();
-                //msg.close();
-                msg.defaultButton()->animateClick();
-            }
-            else
-            {
-                msg.setText(text.arg(cnt));
-            }
-        });
+        QObject::connect(&cntDown, &QTimer::timeout, this,
+                         [&cntDown, &cnt, &msg, &text]()
+                         {
+                             if (--cnt <= 0)
+                             {
+                                 cntDown.stop();
+                                 // msg.close();
+                                 msg.defaultButton()->animateClick();
+                             }
+                             else
+                             {
+                                 msg.setText(text.arg(cnt));
+                             }
+                         });
         cntDown.start(1000);
         msg.show();
-        msg.setGeometry(QStyle::alignedRect(
-            Qt::LeftToRight,
-            Qt::AlignCenter,
-            msg.size(),
-            geometry()));
+        msg.setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, msg.size(), geometry()));
         msg.exec();
         if (msg.clickedButton() == cancelButton)
         {
@@ -2189,40 +2205,40 @@ void MainWindow::onAudioRecordingCountdown(int numSec)
 }
 
 void MainWindow::setAudioRecordingUI()
-{    
+{
     if (m_audioRecManager->isAudioRecordingActive())
     {
         m_audioRecordingWidget->setVisible(true);
         m_audioRecordingAction->setText(tr("Stop audio recording"));
     }
     else
-    {   m_audioRecordingWidget->setVisible(false);
+    {
+        m_audioRecordingWidget->setVisible(false);
         m_audioRecordingAction->setText(tr("Start audio recording"));
     }
 }
 
-
-void MainWindow::onMetadataUpdated(const ServiceListId & id, MetadataManager::MetadataRole role)
+void MainWindow::onMetadataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role)
 {
     if ((id.sid() == m_SId.value()) && (id.scids() == m_SCIdS))
     {  // current service data
         switch (role)
         {
-        case MetadataManager::MetadataRole::SLSLogo:
-            ui->slsView_Service->showServiceLogo(m_metadataManager->data(id, MetadataManager::SLSLogo).value<QPixmap>());
-            break;
-        case MetadataManager::SmallLogo:
-        {
-            QPixmap logo = m_metadataManager->data(id, MetadataManager::SmallLogo).value<QPixmap>();
-            if (!logo.isNull())
+            case MetadataManager::MetadataRole::SLSLogo:
+                ui->slsView_Service->showServiceLogo(m_metadataManager->data(id, MetadataManager::SLSLogo).value<QPixmap>());
+                break;
+            case MetadataManager::SmallLogo:
             {
-                ui->logoLabel->setPixmap(logo);
-                ui->logoLabel->setVisible(true);
+                QPixmap logo = m_metadataManager->data(id, MetadataManager::SmallLogo).value<QPixmap>();
+                if (!logo.isNull())
+                {
+                    ui->logoLabel->setPixmap(logo);
+                    ui->logoLabel->setVisible(true);
+                }
             }
-        }
             break;
-        default:
-            break;
+            default:
+                break;
         }
     }
 }
@@ -2242,39 +2258,41 @@ void MainWindow::setProxy()
     QNetworkProxy proxy;
     switch (m_settings->proxy.config)
     {
-    case Settings::ProxyConfig::NoProxy:
-        qCInfo(application) << "Proxy config: No proxy";
-        proxy.setType(QNetworkProxy::NoProxy);
-        break;
-    case Settings::ProxyConfig::System:
-        qCInfo(application) << "Proxy config: System";
-        QNetworkProxyFactory::setUseSystemConfiguration(true);
-        return;
-    case Settings::ProxyConfig::Manual:
-        qCInfo(application) << "Proxy config: Manual";
-        proxy.setType(QNetworkProxy::HttpProxy);
-        proxy.setHostName(m_settings->proxy.server);
-        proxy.setPort(m_settings->proxy.port);
-        if (!m_settings->proxy.user.isEmpty())
-        {
-            proxy.setUser(m_settings->proxy.user);
-            int key = 0;
-            for (int n = 0; n < 4; ++n) {
-                key += m_settings->proxy.pass.at(n);
-            }
-            key = key & 0x00FF;
-            if (key == 0) {
-                key = 0x5C;
-            }
-            QByteArray ba;
-            for (int n = 4; n < m_settings->proxy.pass.length(); ++n)
+        case Settings::ProxyConfig::NoProxy:
+            qCInfo(application) << "Proxy config: No proxy";
+            proxy.setType(QNetworkProxy::NoProxy);
+            break;
+        case Settings::ProxyConfig::System:
+            qCInfo(application) << "Proxy config: System";
+            QNetworkProxyFactory::setUseSystemConfiguration(true);
+            return;
+        case Settings::ProxyConfig::Manual:
+            qCInfo(application) << "Proxy config: Manual";
+            proxy.setType(QNetworkProxy::HttpProxy);
+            proxy.setHostName(m_settings->proxy.server);
+            proxy.setPort(m_settings->proxy.port);
+            if (!m_settings->proxy.user.isEmpty())
             {
-                ba.append(m_settings->proxy.pass.at(n) ^ key);
+                proxy.setUser(m_settings->proxy.user);
+                int key = 0;
+                for (int n = 0; n < 4; ++n)
+                {
+                    key += m_settings->proxy.pass.at(n);
+                }
+                key = key & 0x00FF;
+                if (key == 0)
+                {
+                    key = 0x5C;
+                }
+                QByteArray ba;
+                for (int n = 4; n < m_settings->proxy.pass.length(); ++n)
+                {
+                    ba.append(m_settings->proxy.pass.at(n) ^ key);
+                }
+                QString pass = QString::fromUtf8(ba);
+                proxy.setPassword(pass);
             }
-            QString pass = QString::fromUtf8(ba);
-            proxy.setPassword(pass);
-        }
-        break;
+            break;
     }
     QNetworkProxy::setApplicationProxy(proxy);
 }
@@ -2283,55 +2301,56 @@ void MainWindow::checkForUpdate()
 {
     if (m_settings->updateCheckEna && m_settings->updateCheckTime.daysTo(QDateTime::currentDateTime()) >= 1)
     {
-        UpdateChecker * updateChecker = new UpdateChecker(this);
-        connect(updateChecker, &UpdateChecker::finished, this, [this, updateChecker] (bool result) {
-            if (result)
-            {   // success
-                QString version = updateChecker->version();
-                static const QRegularExpression verRe("v(\\d+)\\.(\\d+)\\.(\\d+)");
-                QRegularExpressionMatch verMatch = verRe.match(version);
-                if (verMatch.hasMatch())
+        UpdateChecker *updateChecker = new UpdateChecker(this);
+        connect(updateChecker, &UpdateChecker::finished, this,
+                [this, updateChecker](bool result)
                 {
-                    // qDebug() << version << verMatch.captured(1) << verMatch.captured(2) << verMatch.captured(3);
+                    if (result)
+                    {  // success
+                        QString version = updateChecker->version();
+                        static const QRegularExpression verRe("v(\\d+)\\.(\\d+)\\.(\\d+)");
+                        QRegularExpressionMatch verMatch = verRe.match(version);
+                        if (verMatch.hasMatch())
+                        {
+                            // qDebug() << version << verMatch.captured(1) << verMatch.captured(2) << verMatch.captured(3);
 
-                    m_settings->updateCheckTime = QDateTime::currentDateTime();
+                            m_settings->updateCheckTime = QDateTime::currentDateTime();
 
-                    bool updateFound = false;
-                    int major = verMatch.captured(1).toInt();
-                    int minor = verMatch.captured(2).toInt();
-                    int patch = verMatch.captured(3).toInt();
-                    if (major > PROJECT_VER_MAJOR)
-                    {
-                        updateFound = true;
-                    }
-                    else if (minor > PROJECT_VER_MINOR)
-                    {
-                        updateFound = true;
-                    }
-                    else if (patch > PROJECT_VER_PATCH)
-                    {
-                        updateFound = true;
-                    }
-                    if (updateFound)
-                    {
-                        qCInfo(application) << "New application version found:" << version;
+                            bool updateFound = false;
+                            int major = verMatch.captured(1).toInt();
+                            int minor = verMatch.captured(2).toInt();
+                            int patch = verMatch.captured(3).toInt();
+                            if (major > PROJECT_VER_MAJOR)
+                            {
+                                updateFound = true;
+                            }
+                            else if (minor > PROJECT_VER_MINOR)
+                            {
+                                updateFound = true;
+                            }
+                            else if (patch > PROJECT_VER_PATCH)
+                            {
+                                updateFound = true;
+                            }
+                            if (updateFound)
+                            {
+                                qCInfo(application) << "New application version found:" << version;
 
-                        auto dialog = new UpdateDialog(version, updateChecker->releaseNotes(), Qt::WindowTitleHint | Qt::WindowCloseButtonHint, this);
-                        connect(dialog, &UpdateDialog::rejected, this, [this]() {
-                            m_setupDialog->setCheckUpdatesEna(false);
-                        });
-                        connect(dialog, &UpdateDialog::finished, dialog, &QObject::deleteLater);
-                        dialog->open();
+                                auto dialog =
+                                    new UpdateDialog(version, updateChecker->releaseNotes(), Qt::WindowTitleHint | Qt::WindowCloseButtonHint, this);
+                                connect(dialog, &UpdateDialog::rejected, this, [this]() { m_setupDialog->setCheckUpdatesEna(false); });
+                                connect(dialog, &UpdateDialog::finished, dialog, &QObject::deleteLater);
+                                dialog->open();
+                            }
+                        }
                     }
-                }
-            }
-            else
-            {
-                qCWarning(application) << "Update check failed";
-            }
+                    else
+                    {
+                        qCWarning(application) << "Update check failed";
+                    }
 
-            updateChecker->deleteLater();
-        });
+                    updateChecker->deleteLater();
+                });
         updateChecker->check();
     }
 }
@@ -2382,56 +2401,55 @@ void MainWindow::onNewInputDeviceSettings()
 {
     switch (m_inputDeviceId)
     {
-    case InputDeviceId::RTLSDR:
-        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);
-        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setBW(m_settings->rtlsdr.bandwidth);
-        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setBiasT(m_settings->rtlsdr.biasT);
-        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setAgcLevelMax(m_settings->rtlsdr.agcLevelMax);
-        dynamic_cast<RtlSdrInput*>(m_inputDevice)->setPPM(m_settings->rtlsdr.ppm);
-        break;
-    case InputDeviceId::RTLTCP:
-        dynamic_cast<RtlTcpInput*>(m_inputDevice)->setGainMode(m_settings->rtltcp.gainMode, m_settings->rtltcp.gainIdx);
-        dynamic_cast<RtlTcpInput*>(m_inputDevice)->setAgcLevelMax(m_settings->rtltcp.agcLevelMax);
-        dynamic_cast<RtlTcpInput*>(m_inputDevice)->setPPM(m_settings->rtltcp.ppm);
-        break;
-    case InputDeviceId::AIRSPY:
+        case InputDeviceId::RTLSDR:
+            dynamic_cast<RtlSdrInput *>(m_inputDevice)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);
+            dynamic_cast<RtlSdrInput *>(m_inputDevice)->setBW(m_settings->rtlsdr.bandwidth);
+            dynamic_cast<RtlSdrInput *>(m_inputDevice)->setBiasT(m_settings->rtlsdr.biasT);
+            dynamic_cast<RtlSdrInput *>(m_inputDevice)->setAgcLevelMax(m_settings->rtlsdr.agcLevelMax);
+            dynamic_cast<RtlSdrInput *>(m_inputDevice)->setPPM(m_settings->rtlsdr.ppm);
+            break;
+        case InputDeviceId::RTLTCP:
+            dynamic_cast<RtlTcpInput *>(m_inputDevice)->setGainMode(m_settings->rtltcp.gainMode, m_settings->rtltcp.gainIdx);
+            dynamic_cast<RtlTcpInput *>(m_inputDevice)->setAgcLevelMax(m_settings->rtltcp.agcLevelMax);
+            dynamic_cast<RtlTcpInput *>(m_inputDevice)->setPPM(m_settings->rtltcp.ppm);
+            break;
+        case InputDeviceId::AIRSPY:
 #if HAVE_AIRSPY
-        dynamic_cast<AirspyInput*>(m_inputDevice)->setGainMode(m_settings->airspy.gain);
-        dynamic_cast<AirspyInput*>(m_inputDevice)->setBiasT(m_settings->airspy.biasT);
+            dynamic_cast<AirspyInput *>(m_inputDevice)->setGainMode(m_settings->airspy.gain);
+            dynamic_cast<AirspyInput *>(m_inputDevice)->setBiasT(m_settings->airspy.biasT);
 #endif
-        break;
-    case InputDeviceId::SOAPYSDR:
+            break;
+        case InputDeviceId::SOAPYSDR:
 #if HAVE_SOAPYSDR
-        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setGainMode(m_settings->soapysdr.gainMode, m_settings->soapysdr.gainIdx);
-        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setBW(m_settings->soapysdr.bandwidth);
+            dynamic_cast<SoapySdrInput *>(m_inputDevice)->setGainMode(m_settings->soapysdr.gainMode, m_settings->soapysdr.gainIdx);
+            dynamic_cast<SoapySdrInput *>(m_inputDevice)->setBW(m_settings->soapysdr.bandwidth);
 #endif
-        break;
-    case InputDeviceId::RAWFILE:
-    case InputDeviceId::RARTTCP:
-    case InputDeviceId::UNDEFINED:
-        break;
+            break;
+        case InputDeviceId::RAWFILE:
+        case InputDeviceId::RARTTCP:
+        case InputDeviceId::UNDEFINED:
+            break;
     }
 }
 
-
-void MainWindow::changeInputDevice(const InputDeviceId & d)
+void MainWindow::changeInputDevice(const InputDeviceId &d)
 {
     m_inputDeviceIdRequest = d;
     m_deviceChangeRequested = true;
     if (m_isPlaying)
-    { // stop
+    {  // stop
         stop();
         ui->channelCombo->setDisabled(true);  // enabled when device is ready
         ui->channelDown->setDisabled(true);
         ui->channelUp->setDisabled(true);
     }
     else
-    { // device is not playing
+    {  // device is not playing
         initInputDevice(d);
     }
 }
 
-void MainWindow::initInputDevice(const InputDeviceId & d)
+void MainWindow::initInputDevice(const InputDeviceId &d)
 {
     m_deviceChangeRequested = false;
     if (nullptr != m_inputDevice)
@@ -2451,481 +2469,12 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
 
     switch (d)
     {
-    case InputDeviceId::UNDEFINED:
-        qDebug() << "InputDeviceId::UNDEFINED";
-        // store service list if previous was not RAWFILE or UNDEFINED
-        if ((InputDeviceId::RAWFILE != m_inputDeviceId) && (InputDeviceId::UNDEFINED != m_inputDeviceId))
-        {   // if switching from live source save current service list & schedule
-            QSettings * settings;
-            if (m_iniFilename.isEmpty())
-            {
-                settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-            }
-            else
-            {
-                settings = new QSettings(m_iniFilename, QSettings::IniFormat);
-            }
-            m_serviceList->save(*settings);
-
-            // save audio schedule
-            m_audioRecScheduleModel->save(*settings);
-
-            settings->sync();
-
-            delete settings;
-        }
-        else { /* do nothing if switching from RAW file */ }
-
-        m_inputDeviceId = InputDeviceId::UNDEFINED;
-        m_inputDevice = nullptr;
-        ui->channelCombo->setDisabled(true);   // it will be enabled when device is ready
-        ui->channelDown->setDisabled(true);
-        ui->channelUp->setDisabled(true);
-
-        ui->serviceListView->setEnabled(false);
-        ui->serviceTreeView->setEnabled(false);
-        ui->favoriteLabel->setEnabled(false);
-
-        break;
-    case InputDeviceId::RTLSDR:
-    {
-        m_inputDevice = new RtlSdrInput();
-
-        // signals have to be connected before calling openDevice
-
-        // tuning procedure
-        connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
-
-        // HMI
-        connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
-
-        if (m_inputDevice->openDevice())
-        {   // rtl sdr is available
-            if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
-            {   // if switching from RAW or UNDEFINED load service list & rec schedule
-
-                // clear service list
-                m_serviceList->clear();
-
-                // clear schedule
-                m_audioRecScheduleModel->clear();
-
-                QSettings * settings;
-                if (m_iniFilename.isEmpty())
-                {
-                    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-                }
-                else
-                {
-                    settings = new QSettings(m_iniFilename, QSettings::IniFormat);
-                }
-                m_serviceList->load(*settings);
-                m_audioRecScheduleModel->load(*settings);
-                delete settings;
-            }
-            else { /* keep service list as it is */}
-
-            m_inputDeviceId = InputDeviceId::RTLSDR;
-
-            // setup dialog
-            m_setupDialog->setGainValues(dynamic_cast<RtlSdrInput*>(m_inputDevice)->getGainList());
-            m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
-
-            // enable band scan
-            m_bandScanAction->setEnabled(true);
-            m_scanningToolAction->setEnabled(true);
-
-            // enable service list
-            ui->serviceListView->setEnabled(true);
-            ui->serviceTreeView->setEnabled(true);
-            ui->favoriteLabel->setEnabled(true);
-
-            // recorder
-            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
-            connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
-            connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
-
-            // ensemble info dialog
-            connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
-            connect(m_inputDevice, &InputDevice::rfLevel, m_ensembleInfoDialog, &EnsembleInfoDialog::updateRfLevel);
-            m_ensembleInfoDialog->enableRecording(true);
-
-            // metadata & EPG
-            EPGTime::getInstance()->setIsLiveBroadcasting(true);
-
-            // apply current settings
-            onNewInputDeviceSettings();
-        }
-        else
-        {
-            m_setupDialog->resetInputDevice();
-            initInputDevice(InputDeviceId::UNDEFINED);
-        }
-    }
-        break;
-    case InputDeviceId::RTLTCP:
-    {
-        m_inputDevice = new RtlTcpInput();
-
-        // signals have to be connected before calling openDevice
-        // RTL_TCP is opened immediately and starts receiving data
-
-        // HMI
-        connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
-
-        // tuning procedure
-        connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
-
-        // set IP address and port
-        dynamic_cast<RtlTcpInput*>(m_inputDevice)->setTcpIp(m_settings->rtltcp.tcpAddress, m_settings->rtltcp.tcpPort);
-
-        if (m_inputDevice->openDevice())
-        {  // rtl tcp is available
-            if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
-            {   // if switching from RAW or UNDEFINED load service list & rec schedule
-
-                // clear service list
-                m_serviceList->clear();
-
-                // clear rec scheduile
-                m_audioRecScheduleModel->clear();
-
-                QSettings * settings;
-                if (m_iniFilename.isEmpty())
-                {
-                    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-                }
-                else
-                {
-                    settings = new QSettings(m_iniFilename, QSettings::IniFormat);
-                }
-                m_serviceList->load(*settings);
-                m_audioRecScheduleModel->load(*settings);
-                delete settings;
-            }
-            else { /* keep service list as it is */}
-
-            m_inputDeviceId = InputDeviceId::RTLTCP;
-
-            // setup dialog
-            m_setupDialog->setGainValues(dynamic_cast<RtlTcpInput*>(m_inputDevice)->getGainList());
-            m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
-
-            // enable band scan
-            m_bandScanAction->setEnabled(true);
-            m_scanningToolAction->setEnabled(true);
-
-            // enable service list
-            ui->serviceListView->setEnabled(true);
-            ui->serviceTreeView->setEnabled(true);
-            ui->favoriteLabel->setEnabled(true);
-
-            // recorder
-            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
-            connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
-            connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
-
-            // ensemble info dialog
-            connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
-            m_ensembleInfoDialog->enableRecording(true);
-
-            // metadata & EPG
-            EPGTime::getInstance()->setIsLiveBroadcasting(true);
-
-            // apply current settings
-            onNewInputDeviceSettings();
-        }
-        else
-        {
-            m_setupDialog->resetInputDevice();
-            initInputDevice(InputDeviceId::UNDEFINED);
-        }
-    }
-    break;
-    case InputDeviceId::RARTTCP:
-    {
-#if HAVE_RARTTCP
-        m_inputDevice = new RartTcpInput();
-
-        // signals have to be connected before calling isAvailable
-        // RTL_TCP is opened immediately and starts receiving data
-
-        // HMI
-        connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
-
-        // tuning procedure
-        connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
-
-        // set IP address and port
-        dynamic_cast<RartTcpInput*>(m_inputDevice)->setTcpIp(m_settings->rarttcp.tcpAddress, m_settings->rarttcp.tcpPort);
-
-        if (m_inputDevice->openDevice())
-        {  // RaRT tcp is available
-            if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
-            {   // if switching from RAW or UNDEFINED load service list & rec schedule
-
-                // clear service list
-                m_serviceList->clear();
-
-                // clear rec scheduile
-                m_audioRecScheduleModel->clear();
-
-                QSettings * settings;
-                if (m_iniFilename.isEmpty())
-                {
-                    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-                }
-                else
-                {
-                    settings = new QSettings(m_iniFilename, QSettings::IniFormat);
-                }
-                m_serviceList->load(*settings);
-                m_audioRecScheduleModel->load(*settings);
-                delete settings;
-            }
-            else { /* keep service list as it is */}
-
-            m_inputDeviceId = InputDeviceId::RARTTCP;
-
-            // enable band scan
-            m_bandScanAction->setEnabled(true);
-            m_scanningToolAction->setEnabled(true);
-
-            // enable service list
-            ui->serviceListView->setEnabled(true);
-            ui->serviceTreeView->setEnabled(true);
-            ui->favoriteLabel->setEnabled(true);
-
-            // setup dialog
-            m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
-
-            // recorder
-            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
-            connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
-            connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
-
-            // ensemble info dialog
-            connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
-            m_ensembleInfoDialog->enableRecording(true);
-
-            // metadata & EPG
-            EPGTime::getInstance()->setIsLiveBroadcasting(true);
-
-            // apply current settings
-            onNewInputDeviceSettings();
-        }
-        else
-        {
-            m_setupDialog->resetInputDevice();
-            initInputDevice(InputDeviceId::UNDEFINED);
-        }
-#endif
-    }
-    break;
-    case InputDeviceId::AIRSPY:
-    {
-#if HAVE_AIRSPY
-        m_inputDevice = new AirspyInput(m_settings->airspy.prefer4096kHz);
-
-        // signals have to be connected before calling isAvailable
-
-        // tuning procedure
-        connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
-
-        // HMI
-        connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
-
-        if (m_inputDevice->openDevice())
-        {  // airspy is available
-            if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
-            {   // if switching from RAW or UNDEFINED load service list & rec schedule
-
-                // clear service list
-                m_serviceList->clear();
-
-                // clear rec schedule
-                m_audioRecScheduleModel->clear();
-
-                QSettings * settings;
-                if (m_iniFilename.isEmpty())
-                {
-                    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-                }
-                else
-                {
-                    settings = new QSettings(m_iniFilename, QSettings::IniFormat);
-                }
-                m_serviceList->load(*settings);
-                m_audioRecScheduleModel->load(*settings);
-                delete settings;
-            }
-            else { /* keep service list as it is */}
-
-            m_inputDeviceId = InputDeviceId::AIRSPY;
-
-            // enable band scan
-            m_bandScanAction->setEnabled(true);
-            m_scanningToolAction->setEnabled(true);
-
-            // enable service list
-            ui->serviceListView->setEnabled(true);
-            ui->serviceTreeView->setEnabled(true);
-            ui->favoriteLabel->setEnabled(true);
-
-            // setup dialog
-            m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
-
-            // recorder
-            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
-            connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
-            connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
-
-            // ensemble info dialog
-            connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
-            m_ensembleInfoDialog->enableRecording(true);
-
-            // metadata & EPG
-            EPGTime::getInstance()->setIsLiveBroadcasting(true);
-
-            // these are settings that are configures in ini file manually
-            // they are only set when device is initialized
-            dynamic_cast<AirspyInput*>(m_inputDevice)->setDataPacking(m_settings->airspy.dataPacking);
-
-            // apply current settings
-            onNewInputDeviceSettings();
-        }
-        else
-        {
-            m_setupDialog->resetInputDevice();
-            initInputDevice(InputDeviceId::UNDEFINED);
-        }
-#endif
-    }
-    break;
-    case InputDeviceId::SOAPYSDR:
-    {
-#if HAVE_SOAPYSDR
-        m_inputDevice = new SoapySdrInput();
-
-        // signals have to be connected before calling isAvailable
-
-        // tuning procedure
-        connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
-
-        // HMI
-        connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
-
-        // set connection paramaters
-        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setDevArgs(m_settings->soapysdr.devArgs);
-        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setRxChannel(m_settings->soapysdr.channel);
-        dynamic_cast<SoapySdrInput*>(m_inputDevice)->setAntenna(m_settings->soapysdr.antenna);
-
-        if (m_inputDevice->openDevice())
-        {  // SoapySDR is available
-            if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
-            {   // if switching from RAW or UNDEFINED load service list & rec schedule
-
-                // clear service list
-                m_serviceList->clear();
-
-                // clear rec schedule
-                m_audioRecScheduleModel->clear();
-
-                QSettings * settings;
-                if (m_iniFilename.isEmpty())
-                {
-                    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-                }
-                else
-                {
-                    settings = new QSettings(m_iniFilename, QSettings::IniFormat);
-                }
-                m_serviceList->load(*settings);
-                m_audioRecScheduleModel->load(*settings);
-                delete settings;
-            }
-            else { /* keep service list as it is */}
-
-            m_inputDeviceId = InputDeviceId::SOAPYSDR;
-
-            // setup dialog
-            m_setupDialog->setGainValues(dynamic_cast<SoapySdrInput*>(m_inputDevice)->getGainList());
-
-            // enable band scan
-            m_bandScanAction->setEnabled(true);
-            m_scanningToolAction->setEnabled(true);
-
-            // enable service list
-            ui->serviceListView->setEnabled(true);
-            ui->serviceTreeView->setEnabled(true);
-            ui->favoriteLabel->setEnabled(true);
-
-            // setup dialog
-            m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
-
-            // recorder
-            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
-            connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
-            connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
-
-            // ensemble info dialog
-            connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
-            m_ensembleInfoDialog->enableRecording(true);
-
-            // metadata & EPG
-            EPGTime::getInstance()->setIsLiveBroadcasting(true);
-
-            // these are settings that are configures in ini file manually
-            // they are only set when device is initialized
-            dynamic_cast<SoapySdrInput*>(m_inputDevice)->setBW(m_settings->soapysdr.bandwidth);
-
-            // apply current settings
-            onNewInputDeviceSettings();
-        }
-        else
-        {
-            m_setupDialog->resetInputDevice();
-            initInputDevice(InputDeviceId::UNDEFINED);
-        }
-#endif
-    }
-    break;
-
-    case InputDeviceId::RAWFILE:
-    {
-        m_inputDevice = new RawFileInput();
-
-        // tuning procedure
-        connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
-
-        // HMI
-        connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
-
-        RawFileInputFormat format = m_settings->rawfile.format;
-        dynamic_cast<RawFileInput*>(m_inputDevice)->setFile(m_settings->rawfile.file, format);
-
-        connect(dynamic_cast<RawFileInput*>(m_inputDevice), &RawFileInput::fileLength, m_setupDialog, &SetupDialog::onFileLength);
-        connect(dynamic_cast<RawFileInput*>(m_inputDevice), &RawFileInput::fileProgress, m_setupDialog, &SetupDialog::onFileProgress);
-        connect(m_setupDialog, &SetupDialog::rawFileSeek, dynamic_cast<RawFileInput*>(m_inputDevice), &RawFileInput::seek);
-
-        // we can open device now
-        if (m_inputDevice->openDevice())
-        {   // raw file is available
+        case InputDeviceId::UNDEFINED:
+            qDebug() << "InputDeviceId::UNDEFINED";
+            // store service list if previous was not RAWFILE or UNDEFINED
             if ((InputDeviceId::RAWFILE != m_inputDeviceId) && (InputDeviceId::UNDEFINED != m_inputDeviceId))
-            {   // if switching from live source save current service list & rec schedule
-                QSettings * settings;
+            {  // if switching from live source save current service list & schedule
+                QSettings *settings;
                 if (m_iniFilename.isEmpty())
                 {
                     settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
@@ -2935,54 +2484,536 @@ void MainWindow::initInputDevice(const InputDeviceId & d)
                     settings = new QSettings(m_iniFilename, QSettings::IniFormat);
                 }
                 m_serviceList->save(*settings);
+
+                // save audio schedule
                 m_audioRecScheduleModel->save(*settings);
+
                 settings->sync();
 
                 delete settings;
             }
-            else { /* do nothing if switching from RAW file */ }
-
-            // clear service list
-            m_serviceList->clear();
-
-            // clear rec schedule
-            m_audioRecScheduleModel->clear();
-
-            m_inputDeviceId = InputDeviceId::RAWFILE;
-
-            // enable service list
-            ui->serviceListView->setEnabled(true);
-            ui->serviceTreeView->setEnabled(true);
-            ui->favoriteLabel->setEnabled(true);
-
-            // show XML header is available
-            m_setupDialog->setXmlHeader(m_inputDevice->deviceDescription());
-            if (m_inputDevice->deviceDescription().rawFile.frequency_kHz != 0)
-            {
-                m_channelListModel->setChannelFilter(m_inputDevice->deviceDescription().rawFile.frequency_kHz);
+            else
+            { /* do nothing if switching from RAW file */
             }
 
-            // metadata & EPG
-            EPGTime::getInstance()->setIsLiveBroadcasting(false);
+            m_inputDeviceId = InputDeviceId::UNDEFINED;
+            m_inputDevice = nullptr;
+            ui->channelCombo->setDisabled(true);  // it will be enabled when device is ready
+            ui->channelDown->setDisabled(true);
+            ui->channelUp->setDisabled(true);
 
-            // apply current settings
-            onNewInputDeviceSettings();
-        }
-        else
+            ui->serviceListView->setEnabled(false);
+            ui->serviceTreeView->setEnabled(false);
+            ui->favoriteLabel->setEnabled(false);
+
+            break;
+        case InputDeviceId::RTLSDR:
         {
-            m_setupDialog->resetInputDevice();
-            initInputDevice(InputDeviceId::UNDEFINED);
+            m_inputDevice = new RtlSdrInput();
+
+            // signals have to be connected before calling openDevice
+
+            // tuning procedure
+            connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+            connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+            // HMI
+            connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
+            connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
+
+            if (m_inputDevice->openDevice())
+            {  // rtl sdr is available
+                if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
+                {  // if switching from RAW or UNDEFINED load service list & rec schedule
+
+                    // clear service list
+                    m_serviceList->clear();
+
+                    // clear schedule
+                    m_audioRecScheduleModel->clear();
+
+                    QSettings *settings;
+                    if (m_iniFilename.isEmpty())
+                    {
+                        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+                    }
+                    else
+                    {
+                        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+                    }
+                    m_serviceList->load(*settings);
+                    m_audioRecScheduleModel->load(*settings);
+                    delete settings;
+                }
+                else
+                { /* keep service list as it is */
+                }
+
+                m_inputDeviceId = InputDeviceId::RTLSDR;
+
+                // setup dialog
+                m_setupDialog->setGainValues(dynamic_cast<RtlSdrInput *>(m_inputDevice)->getGainList());
+                m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
+
+                // enable band scan
+                m_bandScanAction->setEnabled(true);
+                m_scanningToolAction->setEnabled(true);
+
+                // enable service list
+                ui->serviceListView->setEnabled(true);
+                ui->serviceTreeView->setEnabled(true);
+                ui->favoriteLabel->setEnabled(true);
+
+                // recorder
+                m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
+                connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
+                connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
+
+                // ensemble info dialog
+                connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
+                connect(m_inputDevice, &InputDevice::rfLevel, m_ensembleInfoDialog, &EnsembleInfoDialog::updateRfLevel);
+                m_ensembleInfoDialog->enableRecording(true);
+
+                // metadata & EPG
+                EPGTime::getInstance()->setIsLiveBroadcasting(true);
+
+                // apply current settings
+                onNewInputDeviceSettings();
+            }
+            else
+            {
+                m_setupDialog->resetInputDevice();
+                initInputDevice(InputDeviceId::UNDEFINED);
+            }
         }
-    }
+        break;
+        case InputDeviceId::RTLTCP:
+        {
+            m_inputDevice = new RtlTcpInput();
+
+            // signals have to be connected before calling openDevice
+            // RTL_TCP is opened immediately and starts receiving data
+
+            // HMI
+            connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
+            connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
+
+            // tuning procedure
+            connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+            connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+            // set IP address and port
+            dynamic_cast<RtlTcpInput *>(m_inputDevice)->setTcpIp(m_settings->rtltcp.tcpAddress, m_settings->rtltcp.tcpPort);
+
+            if (m_inputDevice->openDevice())
+            {  // rtl tcp is available
+                if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
+                {  // if switching from RAW or UNDEFINED load service list & rec schedule
+
+                    // clear service list
+                    m_serviceList->clear();
+
+                    // clear rec scheduile
+                    m_audioRecScheduleModel->clear();
+
+                    QSettings *settings;
+                    if (m_iniFilename.isEmpty())
+                    {
+                        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+                    }
+                    else
+                    {
+                        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+                    }
+                    m_serviceList->load(*settings);
+                    m_audioRecScheduleModel->load(*settings);
+                    delete settings;
+                }
+                else
+                { /* keep service list as it is */
+                }
+
+                m_inputDeviceId = InputDeviceId::RTLTCP;
+
+                // setup dialog
+                m_setupDialog->setGainValues(dynamic_cast<RtlTcpInput *>(m_inputDevice)->getGainList());
+                m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
+
+                // enable band scan
+                m_bandScanAction->setEnabled(true);
+                m_scanningToolAction->setEnabled(true);
+
+                // enable service list
+                ui->serviceListView->setEnabled(true);
+                ui->serviceTreeView->setEnabled(true);
+                ui->favoriteLabel->setEnabled(true);
+
+                // recorder
+                m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
+                connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
+                connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
+
+                // ensemble info dialog
+                connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
+                m_ensembleInfoDialog->enableRecording(true);
+
+                // metadata & EPG
+                EPGTime::getInstance()->setIsLiveBroadcasting(true);
+
+                // apply current settings
+                onNewInputDeviceSettings();
+            }
+            else
+            {
+                m_setupDialog->resetInputDevice();
+                initInputDevice(InputDeviceId::UNDEFINED);
+            }
+        }
+        break;
+        case InputDeviceId::RARTTCP:
+        {
+#if HAVE_RARTTCP
+            m_inputDevice = new RartTcpInput();
+
+            // signals have to be connected before calling isAvailable
+            // RTL_TCP is opened immediately and starts receiving data
+
+            // HMI
+            connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
+            connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
+
+            // tuning procedure
+            connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+            connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+            // set IP address and port
+            dynamic_cast<RartTcpInput *>(m_inputDevice)->setTcpIp(m_settings->rarttcp.tcpAddress, m_settings->rarttcp.tcpPort);
+
+            if (m_inputDevice->openDevice())
+            {  // RaRT tcp is available
+                if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
+                {  // if switching from RAW or UNDEFINED load service list & rec schedule
+
+                    // clear service list
+                    m_serviceList->clear();
+
+                    // clear rec scheduile
+                    m_audioRecScheduleModel->clear();
+
+                    QSettings *settings;
+                    if (m_iniFilename.isEmpty())
+                    {
+                        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+                    }
+                    else
+                    {
+                        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+                    }
+                    m_serviceList->load(*settings);
+                    m_audioRecScheduleModel->load(*settings);
+                    delete settings;
+                }
+                else
+                { /* keep service list as it is */
+                }
+
+                m_inputDeviceId = InputDeviceId::RARTTCP;
+
+                // enable band scan
+                m_bandScanAction->setEnabled(true);
+                m_scanningToolAction->setEnabled(true);
+
+                // enable service list
+                ui->serviceListView->setEnabled(true);
+                ui->serviceTreeView->setEnabled(true);
+                ui->favoriteLabel->setEnabled(true);
+
+                // setup dialog
+                m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
+
+                // recorder
+                m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
+                connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
+                connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
+
+                // ensemble info dialog
+                connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
+                m_ensembleInfoDialog->enableRecording(true);
+
+                // metadata & EPG
+                EPGTime::getInstance()->setIsLiveBroadcasting(true);
+
+                // apply current settings
+                onNewInputDeviceSettings();
+            }
+            else
+            {
+                m_setupDialog->resetInputDevice();
+                initInputDevice(InputDeviceId::UNDEFINED);
+            }
+#endif
+        }
+        break;
+        case InputDeviceId::AIRSPY:
+        {
+#if HAVE_AIRSPY
+            m_inputDevice = new AirspyInput(m_settings->airspy.prefer4096kHz);
+
+            // signals have to be connected before calling isAvailable
+
+            // tuning procedure
+            connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+            connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+            // HMI
+            connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
+            connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
+
+            if (m_inputDevice->openDevice())
+            {  // airspy is available
+                if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
+                {  // if switching from RAW or UNDEFINED load service list & rec schedule
+
+                    // clear service list
+                    m_serviceList->clear();
+
+                    // clear rec schedule
+                    m_audioRecScheduleModel->clear();
+
+                    QSettings *settings;
+                    if (m_iniFilename.isEmpty())
+                    {
+                        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+                    }
+                    else
+                    {
+                        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+                    }
+                    m_serviceList->load(*settings);
+                    m_audioRecScheduleModel->load(*settings);
+                    delete settings;
+                }
+                else
+                { /* keep service list as it is */
+                }
+
+                m_inputDeviceId = InputDeviceId::AIRSPY;
+
+                // enable band scan
+                m_bandScanAction->setEnabled(true);
+                m_scanningToolAction->setEnabled(true);
+
+                // enable service list
+                ui->serviceListView->setEnabled(true);
+                ui->serviceTreeView->setEnabled(true);
+                ui->favoriteLabel->setEnabled(true);
+
+                // setup dialog
+                m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
+
+                // recorder
+                m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
+                connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
+                connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
+
+                // ensemble info dialog
+                connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
+                m_ensembleInfoDialog->enableRecording(true);
+
+                // metadata & EPG
+                EPGTime::getInstance()->setIsLiveBroadcasting(true);
+
+                // these are settings that are configures in ini file manually
+                // they are only set when device is initialized
+                dynamic_cast<AirspyInput *>(m_inputDevice)->setDataPacking(m_settings->airspy.dataPacking);
+
+                // apply current settings
+                onNewInputDeviceSettings();
+            }
+            else
+            {
+                m_setupDialog->resetInputDevice();
+                initInputDevice(InputDeviceId::UNDEFINED);
+            }
+#endif
+        }
+        break;
+        case InputDeviceId::SOAPYSDR:
+        {
+#if HAVE_SOAPYSDR
+            m_inputDevice = new SoapySdrInput();
+
+            // signals have to be connected before calling isAvailable
+
+            // tuning procedure
+            connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+            connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+            // HMI
+            connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
+            connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
+
+            // set connection paramaters
+            dynamic_cast<SoapySdrInput *>(m_inputDevice)->setDevArgs(m_settings->soapysdr.devArgs);
+            dynamic_cast<SoapySdrInput *>(m_inputDevice)->setRxChannel(m_settings->soapysdr.channel);
+            dynamic_cast<SoapySdrInput *>(m_inputDevice)->setAntenna(m_settings->soapysdr.antenna);
+
+            if (m_inputDevice->openDevice())
+            {  // SoapySDR is available
+                if ((InputDeviceId::RAWFILE == m_inputDeviceId) || (InputDeviceId::UNDEFINED == m_inputDeviceId))
+                {  // if switching from RAW or UNDEFINED load service list & rec schedule
+
+                    // clear service list
+                    m_serviceList->clear();
+
+                    // clear rec schedule
+                    m_audioRecScheduleModel->clear();
+
+                    QSettings *settings;
+                    if (m_iniFilename.isEmpty())
+                    {
+                        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+                    }
+                    else
+                    {
+                        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+                    }
+                    m_serviceList->load(*settings);
+                    m_audioRecScheduleModel->load(*settings);
+                    delete settings;
+                }
+                else
+                { /* keep service list as it is */
+                }
+
+                m_inputDeviceId = InputDeviceId::SOAPYSDR;
+
+                // setup dialog
+                m_setupDialog->setGainValues(dynamic_cast<SoapySdrInput *>(m_inputDevice)->getGainList());
+
+                // enable band scan
+                m_bandScanAction->setEnabled(true);
+                m_scanningToolAction->setEnabled(true);
+
+                // enable service list
+                ui->serviceListView->setEnabled(true);
+                ui->serviceTreeView->setEnabled(true);
+                ui->favoriteLabel->setEnabled(true);
+
+                // setup dialog
+                m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
+
+                // recorder
+                m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
+                connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
+                connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
+
+                // ensemble info dialog
+                connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
+                m_ensembleInfoDialog->enableRecording(true);
+
+                // metadata & EPG
+                EPGTime::getInstance()->setIsLiveBroadcasting(true);
+
+                // these are settings that are configures in ini file manually
+                // they are only set when device is initialized
+                dynamic_cast<SoapySdrInput *>(m_inputDevice)->setBW(m_settings->soapysdr.bandwidth);
+
+                // apply current settings
+                onNewInputDeviceSettings();
+            }
+            else
+            {
+                m_setupDialog->resetInputDevice();
+                initInputDevice(InputDeviceId::UNDEFINED);
+            }
+#endif
+        }
+        break;
+
+        case InputDeviceId::RAWFILE:
+        {
+            m_inputDevice = new RawFileInput();
+
+            // tuning procedure
+            connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+            connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+            // HMI
+            connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
+            connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
+
+            RawFileInputFormat format = m_settings->rawfile.format;
+            dynamic_cast<RawFileInput *>(m_inputDevice)->setFile(m_settings->rawfile.file, format);
+
+            connect(dynamic_cast<RawFileInput *>(m_inputDevice), &RawFileInput::fileLength, m_setupDialog, &SetupDialog::onFileLength);
+            connect(dynamic_cast<RawFileInput *>(m_inputDevice), &RawFileInput::fileProgress, m_setupDialog, &SetupDialog::onFileProgress);
+            connect(m_setupDialog, &SetupDialog::rawFileSeek, dynamic_cast<RawFileInput *>(m_inputDevice), &RawFileInput::seek);
+
+            // we can open device now
+            if (m_inputDevice->openDevice())
+            {  // raw file is available
+                if ((InputDeviceId::RAWFILE != m_inputDeviceId) && (InputDeviceId::UNDEFINED != m_inputDeviceId))
+                {  // if switching from live source save current service list & rec schedule
+                    QSettings *settings;
+                    if (m_iniFilename.isEmpty())
+                    {
+                        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+                    }
+                    else
+                    {
+                        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+                    }
+                    m_serviceList->save(*settings);
+                    m_audioRecScheduleModel->save(*settings);
+                    settings->sync();
+
+                    delete settings;
+                }
+                else
+                { /* do nothing if switching from RAW file */
+                }
+
+                // clear service list
+                m_serviceList->clear();
+
+                // clear rec schedule
+                m_audioRecScheduleModel->clear();
+
+                m_inputDeviceId = InputDeviceId::RAWFILE;
+
+                // enable service list
+                ui->serviceListView->setEnabled(true);
+                ui->serviceTreeView->setEnabled(true);
+                ui->favoriteLabel->setEnabled(true);
+
+                // show XML header is available
+                m_setupDialog->setXmlHeader(m_inputDevice->deviceDescription());
+                if (m_inputDevice->deviceDescription().rawFile.frequency_kHz != 0)
+                {
+                    m_channelListModel->setChannelFilter(m_inputDevice->deviceDescription().rawFile.frequency_kHz);
+                }
+
+                // metadata & EPG
+                EPGTime::getInstance()->setIsLiveBroadcasting(false);
+
+                // apply current settings
+                onNewInputDeviceSettings();
+            }
+            else
+            {
+                m_setupDialog->resetInputDevice();
+                initInputDevice(InputDeviceId::UNDEFINED);
+            }
+        }
         break;
     }
 }
 
-
 MainWindow::AudioFramework MainWindow::getAudioFramework()
 {
 #if (HAVE_PORTAUDIO)
-    QSettings * settings;
+    QSettings *settings;
     if (m_iniFilename.isEmpty())
     {
         settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
@@ -3003,7 +3034,7 @@ MainWindow::AudioFramework MainWindow::getAudioFramework()
 
 void MainWindow::loadSettings()
 {
-    QSettings * settings;
+    QSettings *settings;
     if (m_iniFilename.isEmpty())
     {
         settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
@@ -3023,7 +3054,7 @@ void MainWindow::loadSettings()
     m_audioVolumeSlider->setValue(m_audioVolume);
     bool mute = settings->value("mute", false).toBool();
     if (mute)
-    {   // this sends signal
+    {  // this sends signal
         m_muteLabel->toggle();
     }
     emit audioOutput(settings->value("audioDevice", "").toByteArray());
@@ -3034,7 +3065,8 @@ void MainWindow::loadSettings()
     m_settings->expertModeEna = settings->value("expertMode", false).toBool();
     setExpertMode(m_settings->expertModeEna);
 
-    m_settings->applicationStyle = static_cast<Settings::ApplicationStyle>(settings->value("style", static_cast<int>(Settings::ApplicationStyle::Default)).toInt());
+    m_settings->applicationStyle =
+        static_cast<Settings::ApplicationStyle>(settings->value("style", static_cast<int>(Settings::ApplicationStyle::Default)).toInt());
     m_settings->dlPlusEna = settings->value("dlPlus", true).toBool();
     m_settings->lang = QLocale::codeToLanguage(settings->value("language", QString("")).toString());
     m_settings->inputDevice = static_cast<InputDeviceId>(inDevice);
@@ -3049,7 +3081,8 @@ void MainWindow::loadSettings()
     m_settings->updateCheckEna = settings->value("updateCheckEna", true).toBool();
     m_settings->updateCheckTime = settings->value("updateCheckTime", QDateTime::currentDateTime().addDays(-1)).value<QDateTime>();
 
-    m_settings->audioRec.folder = settings->value("AudioRecording/folder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
+    m_settings->audioRec.folder =
+        settings->value("AudioRecording/folder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
     m_settings->audioRec.captureOutput = settings->value("AudioRecording/captureOutput", false).toBool();
     m_settings->audioRec.autoStopEna = settings->value("AudioRecording/autoStop", false).toBool();
     m_settings->audioRec.dl = settings->value("AudioRecording/DL", false).toBool();
@@ -3060,14 +3093,16 @@ void MainWindow::loadSettings()
 #else
     m_settings->trayIconEna = settings->value("showTrayIcon", true).toBool();
 #endif
-    m_settings->uaDump.folder = settings->value("UA-STORAGE/folder", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + "/" + appName).toString();
-    m_settings->uaDump.overwriteEna  = settings->value("UA-STORAGE/overwriteEna", false).toBool();
+    m_settings->uaDump.folder =
+        settings->value("UA-STORAGE/folder", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + "/" + appName).toString();
+    m_settings->uaDump.overwriteEna = settings->value("UA-STORAGE/overwriteEna", false).toBool();
     m_settings->uaDump.slsEna = settings->value("UA-STORAGE/slsEna", false).toBool();
     m_settings->uaDump.spiEna = settings->value("UA-STORAGE/spiEna", false).toBool();
     m_settings->uaDump.slsPattern = settings->value("UA-STORAGE/slsPattern", slsDumpPatern).toString();
     m_settings->uaDump.spiPattern = settings->value("UA-STORAGE/spiPattern", spiDumpPatern).toString();
 
-    m_settings->tii.locationSource = static_cast<Settings::GeolocationSource>(settings->value("TII/locationSource", static_cast<int>(Settings::GeolocationSource::System)).toInt());
+    m_settings->tii.locationSource = static_cast<Settings::GeolocationSource>(
+        settings->value("TII/locationSource", static_cast<int>(Settings::GeolocationSource::System)).toInt());
     m_settings->tii.coordinates = QGeoCoordinate(settings->value("TII/latitude", 0.0).toDouble(), settings->value("TII/longitude", 0.0).toDouble());
     m_settings->tii.serialPort = settings->value("TII/serialPort", "").toString();
     m_settings->tii.logFolder = settings->value("TII/logFolder", QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)).toString();
@@ -3080,7 +3115,7 @@ void MainWindow::loadSettings()
     m_settings->scanner.splitterState = settings->value("Scanner/layout").toByteArray();
     m_settings->scanner.geometry = settings->value("Scanner/windowGeometry").toByteArray();
     m_settings->scanner.mode = settings->value("Scanner/mode", 0).toInt();
-    m_settings->scanner.numCycles = settings->value("Scanner/numCycles", 1).toInt();    
+    m_settings->scanner.numCycles = settings->value("Scanner/numCycles", 1).toInt();
     m_settings->scanner.waitForSync = settings->value("Scanner/waitForSyncSec", 3).toInt();
     m_settings->scanner.waitForEnsemble = settings->value("Scanner/waitForEnsembleSec", 6).toInt();
     int numCh = settings->beginReadArray("Scanner/channels");
@@ -3091,7 +3126,8 @@ void MainWindow::loadSettings()
     }
     settings->endArray();
 
-    m_settings->proxy.config = static_cast<Settings::ProxyConfig>(settings->value("Proxy/config", static_cast<int>(Settings::ProxyConfig::System)).toInt());
+    m_settings->proxy.config =
+        static_cast<Settings::ProxyConfig>(settings->value("Proxy/config", static_cast<int>(Settings::ProxyConfig::System)).toInt());
     m_settings->proxy.server = settings->value("Proxy/server", "").toString();
     m_settings->proxy.port = settings->value("Proxy/port", "").toUInt();
     m_settings->proxy.user = settings->value("Proxy/user", "").toString();
@@ -3141,7 +3177,8 @@ void MainWindow::loadSettings()
 #endif
 #if HAVE_SOAPYSDR
     m_settings->soapysdr.gainIdx = settings->value("SOAPYSDR/gainIndex", 0).toInt();
-    m_settings->soapysdr.gainMode = static_cast<SoapyGainMode>(settings->value("SOAPYSDR/gainMode", static_cast<int>(SoapyGainMode::Hardware)).toInt());
+    m_settings->soapysdr.gainMode =
+        static_cast<SoapyGainMode>(settings->value("SOAPYSDR/gainMode", static_cast<int>(SoapyGainMode::Hardware)).toInt());
     m_settings->soapysdr.devArgs = settings->value("SOAPYSDR/devArgs", QString("driver=rtlsdr")).toString();
     m_settings->soapysdr.antenna = settings->value("SOAPYSDR/antenna", QString("RX")).toString();
     m_settings->soapysdr.channel = settings->value("SOAPYSDR/rxChannel", 0).toInt();
@@ -3162,12 +3199,12 @@ void MainWindow::loadSettings()
         sz = size();
     }
     else
-    {   // this should happen only when ini is deleted ot on the first run
+    {  // this should happen only when ini is deleted ot on the first run
         sz = minimumSizeHint();
     }
 
     // this is workaround to force size when window appears (not clear why it is necessary)
-    QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
+    QTimer::singleShot(10, this, [this, sz]() { resize(sz); });
 
     // set DAB time locale
     m_timeLocale = QLocale(m_setupDialog->applicationLanguage());
@@ -3185,20 +3222,19 @@ void MainWindow::loadSettings()
     m_inputDeviceRecorder->setRecordingPath(settings->value("recordingPath", QVariant(QDir::homePath())).toString());
     m_ensembleInfoDialog->setExportPath(settings->value("EnsembleInfo/exportPath", QVariant(QDir::homePath())).toString());
     ui->slsView_Service->setSavePath(settings->value("slideSavePath", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)).toString());
-    ui->slsView_Announcement->setSavePath(settings->value("slideSavePath", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)).toString());
+    ui->slsView_Announcement->setSavePath(
+        settings->value("slideSavePath", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)).toString());
 
     if (InputDeviceId::UNDEFINED != static_cast<InputDeviceId>(inDevice))
     {
         initInputDevice(m_settings->inputDevice);
 
         // if input device has switched to what was stored and it is RTLSDR or RTLTCP or Airspy
-        if ((m_settings->inputDevice == m_inputDeviceId)
-            && (    (InputDeviceId::RTLSDR == m_inputDeviceId)
-                || (InputDeviceId::AIRSPY == m_inputDeviceId)
-                || (InputDeviceId::SOAPYSDR == m_inputDeviceId)
-                || (InputDeviceId::RTLTCP == m_inputDeviceId)
-                || (InputDeviceId::RARTTCP == m_inputDeviceId)))
-        {   // restore channel
+        if ((m_settings->inputDevice == m_inputDeviceId) &&
+            ((InputDeviceId::RTLSDR == m_inputDeviceId) || (InputDeviceId::AIRSPY == m_inputDeviceId) ||
+             (InputDeviceId::SOAPYSDR == m_inputDeviceId) || (InputDeviceId::RTLTCP == m_inputDeviceId) ||
+             (InputDeviceId::RARTTCP == m_inputDeviceId)))
+        {  // restore channel
             int sid = settings->value("SID", 0).toInt();
             uint8_t scids = settings->value("SCIdS", 0).toInt();
             selectService(ServiceListId(sid, scids));
@@ -3207,23 +3243,20 @@ void MainWindow::loadSettings()
 
     delete settings;
 
-    if (((InputDeviceId::RTLSDR == m_inputDeviceId)
-         || (InputDeviceId::AIRSPY == m_inputDeviceId)
-         || (InputDeviceId::SOAPYSDR == m_inputDeviceId))
-        && (m_serviceList->numServices() == 0))
+    if (((InputDeviceId::RTLSDR == m_inputDeviceId) || (InputDeviceId::AIRSPY == m_inputDeviceId) || (InputDeviceId::SOAPYSDR == m_inputDeviceId)) &&
+        (m_serviceList->numServices() == 0))
     {
-        QTimer::singleShot(1, this, [this](){ bandScan(); } );
+        QTimer::singleShot(1, this, [this]() { bandScan(); });
     }
-    if ((InputDeviceId::UNDEFINED == m_inputDeviceId)
-        || ((InputDeviceId::RAWFILE == m_inputDeviceId) && (m_settings->rawfile.file.isEmpty())))
+    if ((InputDeviceId::UNDEFINED == m_inputDeviceId) || ((InputDeviceId::RAWFILE == m_inputDeviceId) && (m_settings->rawfile.file.isEmpty())))
     {
-        QTimer::singleShot(1, this, [this](){ showSetupDialog(); } );
+        QTimer::singleShot(1, this, [this]() { showSetupDialog(); });
     }
 }
 
 void MainWindow::saveSettings()
 {
-    QSettings * settings;
+    QSettings *settings;
     if (m_iniFilename.isEmpty())
     {
         settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
@@ -3376,9 +3409,9 @@ void MainWindow::saveSettings()
     settings->setValue("RAW-FILE/loop", m_settings->rawfile.loopEna);
 
     if ((InputDeviceId::RAWFILE != m_inputDeviceId) && (InputDeviceId::UNDEFINED != m_inputDeviceId))
-    {   // save current service and service list
+    {  // save current service and service list
         QModelIndex current = ui->serviceListView->currentIndex();
-        const SLModel * model = reinterpret_cast<const SLModel*>(current.model());
+        const SLModel *model = reinterpret_cast<const SLModel *>(current.model());
         ServiceListConstIterator it = m_serviceList->findService(model->id(current));
         if (m_serviceList->serviceListEnd() != it)
         {
@@ -3395,7 +3428,9 @@ void MainWindow::saveSettings()
         // save audio schedule
         m_audioRecScheduleModel->save(*settings);
     }
-    else { /* RAW file does not store service, service list and schedule */ }
+    else
+    { /* RAW file does not store service, service list and schedule */
+    }
 
     settings->sync();
 
@@ -3405,7 +3440,7 @@ void MainWindow::saveSettings()
 void MainWindow::onFavoriteToggled(bool checked)
 {
     QModelIndex current = ui->serviceListView->currentIndex();
-    const SLModel * model = reinterpret_cast<const SLModel*>(current.model());
+    const SLModel *model = reinterpret_cast<const SLModel *>(current.model());
     ServiceListId id = model->id(current);
     m_serviceList->setServiceFavorite(id, checked);
 
@@ -3417,7 +3452,7 @@ void MainWindow::onFavoriteToggled(bool checked)
     {
         index = model->index(r, 0);
         if (model->id(index) == id)
-        {   // found
+        {  // found
             ui->serviceListView->setCurrentIndex(index);
             ui->serviceListView->setFocus();
             break;
@@ -3432,14 +3467,16 @@ void MainWindow::onAudioVolumeSliderChanged(int volume)
         m_audioVolume = volume;
         emit audioVolume(volume);
     }
-    else { /* we are muted -> no volume change for user is possible */ }
+    else
+    { /* we are muted -> no volume change for user is possible */
+    }
 }
 
 void MainWindow::onMuteLabelToggled(bool doMute)
 {
     m_audioVolumeSlider->setDisabled(doMute);
     if (doMute)
-    {   // store current volume
+    {  // store current volume
         m_audioVolume = m_audioVolumeSlider->value();
         m_audioVolumeSlider->setValue(0);  // --> this emits signal
     }
@@ -3453,7 +3490,7 @@ void MainWindow::onMuteLabelToggled(bool doMute)
 void MainWindow::onSwitchSourceClicked()
 {
     QModelIndex current = ui->serviceListView->currentIndex();
-    const SLModel * model = reinterpret_cast<const SLModel*>(current.model());
+    const SLModel *model = reinterpret_cast<const SLModel *>(current.model());
     ServiceListId id = model->id(current);
     ServiceListConstIterator it = m_serviceList->findService(id);
     if (it != m_serviceList->serviceListEnd())
@@ -3464,7 +3501,7 @@ void MainWindow::onSwitchSourceClicked()
         {
             if (newFrequency != m_frequency)
             {
-               m_frequency = newFrequency;
+                m_frequency = newFrequency;
 
                 // change combo
                 ui->channelCombo->setCurrentIndex(ui->channelCombo->findData(m_frequency));
@@ -3491,7 +3528,7 @@ void MainWindow::onAnnouncementClicked()
 
 void MainWindow::serviceTreeViewUpdateSelection()
 {
-    const SLTreeModel * model = reinterpret_cast<const SLTreeModel*>(ui->serviceTreeView->model());
+    const SLTreeModel *model = reinterpret_cast<const SLTreeModel *>(ui->serviceTreeView->model());
     ServiceListId serviceId(m_SId.value(), uint8_t(m_SCIdS));
     ServiceListId ensembleId;
     ServiceListConstIterator it = m_serviceList->findService(serviceId);
@@ -3500,12 +3537,12 @@ void MainWindow::serviceTreeViewUpdateSelection()
         ensembleId = (*it)->getEnsemble((*it)->currentEnsembleIdx())->id();
     }
     for (int r = 0; r < model->rowCount(); ++r)
-    {   // go through ensembles
+    {  // go through ensembles
         QModelIndex ensembleIndex = model->index(r, 0);
         if (model->id(ensembleIndex) == ensembleId)
-        {   // found ensemble
+        {  // found ensemble
             for (int s = 0; s < model->rowCount(ensembleIndex); ++s)
-            {   // go through services
+            {  // go through services
                 QModelIndex serviceIndex = model->index(s, 0, ensembleIndex);
                 if (model->id(serviceIndex) == serviceId)
                 {  // found
@@ -3519,14 +3556,14 @@ void MainWindow::serviceTreeViewUpdateSelection()
 
 void MainWindow::serviceListViewUpdateSelection()
 {
-    const SLModel * model = reinterpret_cast<const SLModel*>(ui->serviceListView->model());
+    const SLModel *model = reinterpret_cast<const SLModel *>(ui->serviceListView->model());
     ServiceListId id(m_SId.value(), uint8_t(m_SCIdS));
     QModelIndex index;
     for (int r = 0; r < model->rowCount(); ++r)
     {
         index = model->index(r, 0);
         if (model->id(index) == id)
-        {   // found
+        {  // found
             ui->serviceListView->setCurrentIndex(index);
             return;
         }
@@ -3544,7 +3581,7 @@ void MainWindow::showEnsembleInfo()
     {
         m_ensembleInfoDialog->restoreGeometry(m_settings->ensembleInfo.geometry);
     }
-    m_ensembleInfoDialog->show();    
+    m_ensembleInfoDialog->show();
     m_ensembleInfoDialog->raise();
     m_ensembleInfoDialog->activateWindow();
 }
@@ -3556,15 +3593,17 @@ void MainWindow::showEPG()
         m_epgDialog = new EPGDialog(m_slModel, ui->serviceListView->selectionModel(), m_metadataManager, m_settings);
         connect(this, &MainWindow::exit, m_epgDialog, &EPGDialog::close);
         m_epgDialog->setupDarkMode(isDarkMode());
-        connect(m_epgDialog, &EPGDialog::scheduleAudioRecording, this, [this](const AudioRecScheduleItem & item) {
-            showAudioRecordingSchedule();
-            m_audioRecScheduleDialog->addItem(item);
-        });
+        connect(m_epgDialog, &EPGDialog::scheduleAudioRecording, this,
+                [this](const AudioRecScheduleItem &item)
+                {
+                    showAudioRecordingSchedule();
+                    m_audioRecScheduleDialog->addItem(item);
+                });
 
         connect(m_radioControl, &RadioControl::ensembleInformation, m_epgDialog, &EPGDialog::onEnsembleInformation, Qt::QueuedConnection);
         emit getEnsembleInfo();  // this triggers ensemble infomation used to configure EPG dialog
         connect(m_epgDialog, &QDialog::finished, m_epgDialog, &QObject::deleteLater);
-        connect(m_epgDialog, &QDialog::destroyed, this, [this]() { m_epgDialog = nullptr; } );
+        connect(m_epgDialog, &QDialog::destroyed, this, [this]() { m_epgDialog = nullptr; });
     }
     m_epgDialog->show();
     m_epgDialog->raise();
@@ -3614,7 +3653,7 @@ void MainWindow::showAudioRecordingSchedule()
         m_audioRecScheduleDialog = new AudioRecScheduleDialog(m_audioRecScheduleModel, m_slModel);
         connect(this, &MainWindow::exit, m_audioRecScheduleDialog, &AudioRecScheduleDialog::close);
         connect(m_audioRecScheduleDialog, &QDialog::finished, m_audioRecScheduleDialog, &QObject::deleteLater);
-        connect(m_audioRecScheduleDialog, &QDialog::destroyed, this, [this]() { m_audioRecScheduleDialog = nullptr; } );
+        connect(m_audioRecScheduleDialog, &QDialog::destroyed, this, [this]() { m_audioRecScheduleDialog = nullptr; });
         m_audioRecScheduleDialog->setLocale(m_timeLocale);
         m_audioRecScheduleDialog->setServiceListModel(m_slModel);
         m_audioRecScheduleDialog->setAttribute(Qt::WA_DeleteOnClose);
@@ -3623,7 +3662,6 @@ void MainWindow::showAudioRecordingSchedule()
     m_audioRecScheduleDialog->show();
     m_audioRecScheduleDialog->raise();
     m_audioRecScheduleDialog->activateWindow();
-
 }
 
 void MainWindow::showSignalDialog()
@@ -3640,13 +3678,13 @@ void MainWindow::showSignalDialog()
         connect(m_radioControl, &RadioControl::signalSpectrum, m_signalDialog, &SignalDialog::onSignalSpectrum, Qt::QueuedConnection);
         connect(m_inputDevice, &InputDevice::rfLevel, m_signalDialog, &SignalDialog::updateRfLevel);
         connect(m_signalDialog, &QDialog::finished, m_signalDialog, &QObject::deleteLater);
-        connect(m_signalDialog, &QDialog::destroyed, this, [this]() { m_signalDialog = nullptr; } );
+        connect(m_signalDialog, &QDialog::destroyed, this, [this]() { m_signalDialog = nullptr; });
     }
 
     m_signalDialog->show();
     m_signalDialog->raise();
     m_signalDialog->activateWindow();
-#endif // HAVE_QCUSTOMPLOT
+#endif  // HAVE_QCUSTOMPLOT
 }
 
 void MainWindow::showTiiDialog()
@@ -3663,7 +3701,7 @@ void MainWindow::showTiiDialog()
         connect(m_radioControl, &RadioControl::ensembleInformation, m_tiiDialog, &TIIDialog::onEnsembleInformation, Qt::QueuedConnection);
         emit getEnsembleInfo();  // this triggers ensemble infomation used to configure EPG dialog
         connect(m_tiiDialog, &QDialog::finished, m_tiiDialog, &QObject::deleteLater);
-        connect(m_tiiDialog, &QDialog::destroyed, this, [this]() { m_tiiDialog = nullptr; } );
+        connect(m_tiiDialog, &QDialog::destroyed, this, [this]() { m_tiiDialog = nullptr; });
     }
 
     m_tiiDialog->show();
@@ -3685,42 +3723,50 @@ void MainWindow::showScannerDialog()
         connect(m_radioControl, &RadioControl::tiiData, m_scannerDialog, &ScannerDialog::onTiiData, Qt::QueuedConnection);
         connect(m_inputDevice, &InputDevice::error, m_scannerDialog, &ScannerDialog::onInputDeviceError, Qt::QueuedConnection);
         // ensemble configuration
-        connect(m_scannerDialog, &ScannerDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfigurationAndCSV, Qt::QueuedConnection);
-        connect(m_radioControl, &RadioControl::ensembleConfigurationAndCSV, m_scannerDialog, &ScannerDialog::onEnsembleConfigurationAndCSV, Qt::QueuedConnection);
+        connect(m_scannerDialog, &ScannerDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfigurationAndCSV,
+                Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::ensembleConfigurationAndCSV, m_scannerDialog, &ScannerDialog::onEnsembleConfigurationAndCSV,
+                Qt::QueuedConnection);
 
-        connect(m_scannerDialog, &ScannerDialog::scanStarts, this, [this]() {
-            ui->channelCombo->setEnabled(false);
-            ui->channelDown->setEnabled(false);
-            ui->channelUp->setEnabled(false);
-            m_hasListViewFocus = ui->serviceListView->hasFocus();
-            m_hasTreeViewFocus = ui->serviceTreeView->hasFocus();
-            ui->serviceListView->setEnabled(false);
-            ui->serviceTreeView->setEnabled(false);
+        connect(m_scannerDialog, &ScannerDialog::scanStarts, this,
+                [this]()
+                {
+                    ui->channelCombo->setEnabled(false);
+                    ui->channelDown->setEnabled(false);
+                    ui->channelUp->setEnabled(false);
+                    m_hasListViewFocus = ui->serviceListView->hasFocus();
+                    m_hasTreeViewFocus = ui->serviceTreeView->hasFocus();
+                    ui->serviceListView->setEnabled(false);
+                    ui->serviceTreeView->setEnabled(false);
 
-            m_isScannerRunning = true;
+                    m_isScannerRunning = true;
 
-            onBandScanStart();
-        });
+                    onBandScanStart();
+                });
 
         connect(m_scannerDialog, &ScannerDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
 
-        connect(m_scannerDialog, &ScannerDialog::scanFinished, this, [this]() {            
-            m_isScannerRunning = false;
-            ui->channelCombo->setEnabled(true);
-            ui->channelDown->setEnabled(true);
-            ui->channelUp->setEnabled(true);
-            ui->serviceListView->setEnabled(true);
-            ui->serviceTreeView->setEnabled(true);
-            onBandScanFinished(BandScanDialogResult::Done);
-        } );
-        connect(m_scannerDialog, &ScannerDialog::finished, this, [this]() {
-            // restore UI
-            m_setupDialog->setInputDeviceEnabled(true);
-            m_scanningToolAction->setEnabled(true);
-            m_bandScanAction->setEnabled(true);
-        } );
+        connect(m_scannerDialog, &ScannerDialog::scanFinished, this,
+                [this]()
+                {
+                    m_isScannerRunning = false;
+                    ui->channelCombo->setEnabled(true);
+                    ui->channelDown->setEnabled(true);
+                    ui->channelUp->setEnabled(true);
+                    ui->serviceListView->setEnabled(true);
+                    ui->serviceTreeView->setEnabled(true);
+                    onBandScanFinished(BandScanDialogResult::Done);
+                });
+        connect(m_scannerDialog, &ScannerDialog::finished, this,
+                [this]()
+                {
+                    // restore UI
+                    m_setupDialog->setInputDeviceEnabled(true);
+                    m_scanningToolAction->setEnabled(true);
+                    m_bandScanAction->setEnabled(true);
+                });
         connect(m_scannerDialog, &QDialog::finished, m_scannerDialog, &QObject::deleteLater);
-        connect(m_scannerDialog, &QDialog::destroyed, this, [this]() { m_scannerDialog = nullptr; } );
+        connect(m_scannerDialog, &QDialog::destroyed, this, [this]() { m_scannerDialog = nullptr; });
     }
 
     // force closing settings to avoti user changing input device while scanning
@@ -3735,7 +3781,7 @@ void MainWindow::showScannerDialog()
 void MainWindow::onExpertModeToggled(bool checked)
 {
     setExpertMode(checked);
-    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
+    QTimer::singleShot(10, this, [this]() { resize(minimumSizeHint()); });
 }
 
 void MainWindow::setExpertMode(bool ena)
@@ -3747,7 +3793,7 @@ void MainWindow::setExpertMode(bool ena)
     ui->serviceTreeView->setVisible(ena);
     m_signalQualityWidget->setVisible(ena);
     if (m_timeBasicQualInfoWidget->currentIndex() != 2)
-    {   // if not information
+    {  // if not information
         m_timeBasicQualInfoWidget->setCurrentIndex(ena ? 1 : 0);
     }
 
@@ -3779,7 +3825,8 @@ void MainWindow::setExpertMode(bool ena)
 
 void MainWindow::bandScan()
 {
-    BandScanDialog * dialog = new BandScanDialog(this, (m_serviceList->numServices() == 0) || m_keepServiceListOnScan, Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+    BandScanDialog *dialog =
+        new BandScanDialog(this, (m_serviceList->numServices() == 0) || m_keepServiceListOnScan, Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
     connect(dialog, &BandScanDialog::finished, dialog, &QObject::deleteLater);
     connect(dialog, &BandScanDialog::tuneChannel, this, &MainWindow::onTuneChannel);
     connect(m_radioControl, &RadioControl::signalState, dialog, &BandScanDialog::onSyncStatus, Qt::QueuedConnection);
@@ -3800,27 +3847,26 @@ void MainWindow::bandScan()
     dialog->open();
 }
 
-
 void MainWindow::onBandScanFinished(int result)
 {
     switch (result)
     {
-    case BandScanDialogResult::Done:
-    case BandScanDialogResult::Interrupted:
-    {
-        if (m_serviceList->numServices() > 0)
-        {   // going to select first service
-            const SLModel * model = reinterpret_cast<const SLModel*>(ui->serviceListView->model());
-            //ui->serviceListView->setSe
-            QModelIndex index = model->index(0, 0);
-            ui->serviceListView->setCurrentIndex(index);
-            ui->serviceListView->setFocus();
+        case BandScanDialogResult::Done:
+        case BandScanDialogResult::Interrupted:
+        {
+            if (m_serviceList->numServices() > 0)
+            {  // going to select first service
+                const SLModel *model = reinterpret_cast<const SLModel *>(ui->serviceListView->model());
+                // ui->serviceListView->setSe
+                QModelIndex index = model->index(0, 0);
+                ui->serviceListView->setCurrentIndex(index);
+                ui->serviceListView->setFocus();
+            }
         }
-    }
         break;
-    case BandScanDialogResult::Cancelled:
-        // do nothing
-        break;
+        case BandScanDialogResult::Cancelled:
+            // do nothing
+            break;
     }
 }
 
@@ -3828,13 +3874,12 @@ void MainWindow::onTuneChannel(uint32_t freq)
 {
     // change combo - find combo index
     ui->channelCombo->setCurrentIndex(ui->channelCombo->findData(freq));
-
 }
 
 void MainWindow::stop()
 {
     if (m_isPlaying)
-    { // stop
+    {  // stop
         m_audioRecManager->doAudioRecording(false);
 
         // tune to 0
@@ -3850,31 +3895,31 @@ void MainWindow::clearServiceList()
 
 void MainWindow::onApplicationStyleChanged(Settings::ApplicationStyle style)
 {
-    switch(style)
+    switch (style)
     {
-    case Settings::ApplicationStyle::Default:
+        case Settings::ApplicationStyle::Default:
 #ifndef Q_OS_LINUX
-        qApp->setStyle(QStyleFactory::create(m_defaultStyleName));
-        qApp->setPalette(qApp->style()->standardPalette());
-        qApp->setStyleSheet("");
-        setupDarkMode();
-        break;
+            qApp->setStyle(QStyleFactory::create(m_defaultStyleName));
+            qApp->setPalette(qApp->style()->standardPalette());
+            qApp->setStyleSheet("");
+            setupDarkMode();
+            break;
 #endif
-    case Settings::ApplicationStyle::Light:
-    case Settings::ApplicationStyle::Dark:
-        qApp->setStyle(QStyleFactory::create("Fusion"));
+        case Settings::ApplicationStyle::Light:
+        case Settings::ApplicationStyle::Dark:
+            qApp->setStyle(QStyleFactory::create("Fusion"));
 
-        QSizePolicy sizePolicy = ui->scrollArea->sizePolicy();
-        sizePolicy.setVerticalStretch(1);
-        ui->scrollArea->setSizePolicy(sizePolicy);
+            QSizePolicy sizePolicy = ui->scrollArea->sizePolicy();
+            sizePolicy.setVerticalStretch(1);
+            ui->scrollArea->setSizePolicy(sizePolicy);
 
-        sizePolicy = ui->slsWidget->sizePolicy();
-        sizePolicy.setVerticalStretch(1);
-        ui->slsWidget->setSizePolicy(sizePolicy);
+            sizePolicy = ui->slsWidget->sizePolicy();
+            sizePolicy.setVerticalStretch(1);
+            ui->slsWidget->setSizePolicy(sizePolicy);
 
-        forceDarkStyle(Settings::ApplicationStyle::Dark == style);
+            forceDarkStyle(Settings::ApplicationStyle::Dark == style);
 
-        break;
+            break;
     }
 }
 
@@ -3892,7 +3937,7 @@ void MainWindow::initStyle()
 #else
     m_defaultStyleName = qApp->style()->name();
 #endif
-    QPalette * palette = &m_palette;
+    QPalette *palette = &m_palette;
 
     // standardPalette Qt::ColorScheme::Light
     palette->setColor(QPalette::Active, QPalette::WindowText, QColor(0, 0, 0, 255));
@@ -4089,19 +4134,18 @@ void MainWindow::onColorSchemeChanged(Qt::ColorScheme colorScheme)
 #endif
 }
 
-#else // QT version < 6.5.0 -> switching is supported only on MacOS
-void MainWindow::changeEvent( QEvent* e )
+#else  // QT version < 6.5.0 -> switching is supported only on MacOS
+void MainWindow::changeEvent(QEvent *e)
 {
 #ifdef Q_OS_MACX
-    if ( e->type() == QEvent::PaletteChange )
+    if (e->type() == QEvent::PaletteChange)
     {
         setupDarkMode();
     }
 #endif
-    QMainWindow::changeEvent( e );
+    QMainWindow::changeEvent(e);
 }
 #endif
-
 
 bool MainWindow::isDarkMode()
 {
@@ -4117,7 +4161,7 @@ bool MainWindow::isDarkMode()
     // else
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     return (Qt::ColorScheme::Dark == qApp->styleHints()->colorScheme());
-#else // QT < 6.5.0
+#else  // QT < 6.5.0
 #ifdef Q_OS_MACX
     return macIsInDarkTheme();
 #else
@@ -4131,15 +4175,18 @@ void MainWindow::forceDarkStyle(bool ena)
     if (ena)
     {
         qApp->setPalette(m_darkPalette);
-        qApp->setStyleSheet("QToolTip { color: rgba(230, 230, 230, 240); "
-                            "background-color: rgba(100, 100, 100, 160); "
-                            "border: 1px rgba(0, 0, 0, 128); }");    }
+        qApp->setStyleSheet(
+            "QToolTip { color: rgba(230, 230, 230, 240); "
+            "background-color: rgba(100, 100, 100, 160); "
+            "border: 1px rgba(0, 0, 0, 128); }");
+    }
     else
     {
         qApp->setPalette(m_palette);
-        qApp->setStyleSheet("QToolTip { color: rgba(50, 50, 50, 240); "
-                            "background-color: rgba(255, 255, 255, 160); "
-                            "border: 1px rgba(0, 0, 0, 128); }");
+        qApp->setStyleSheet(
+            "QToolTip { color: rgba(50, 50, 50, 240); "
+            "background-color: rgba(255, 255, 255, 160); "
+            "border: 1px rgba(0, 0, 0, 128); }");
     }
     setupDarkMode();
 }
@@ -4218,61 +4265,64 @@ void MainWindow::setupDarkMode()
     }
 }
 
-void MainWindow::onDLPlusObjReceived_Service(const DLPlusObject & object)
+void MainWindow::onDLPlusObjReceived_Service(const DLPlusObject &object)
 {
     onDLPlusObjReceived(object, Instance::Service);
 }
 
-void MainWindow::onDLPlusObjReceived_Announcement(const DLPlusObject & object)
+void MainWindow::onDLPlusObjReceived_Announcement(const DLPlusObject &object)
 {
     onDLPlusObjReceived(object, Instance::Announcement);
 }
 
-void MainWindow::onDLPlusObjReceived(const DLPlusObject & object, Instance inst)
+void MainWindow::onDLPlusObjReceived(const DLPlusObject &object, Instance inst)
 {
-    QMap<DLPlusContentType, DLPlusObjectUI*> * dlObjCachePtr = &m_dlObjCache[inst];
-    QWidget * dlPlusFrame = ui->dlPlusFrame_Service;
+    QMap<DLPlusContentType, DLPlusObjectUI *> *dlObjCachePtr = &m_dlObjCache[inst];
+    QWidget *dlPlusFrame = ui->dlPlusFrame_Service;
     if (Instance::Service != inst)
     {
         dlPlusFrame = ui->dlPlusFrame_Announcement;
     }
     else
-    { /* Service - already initialized */ }
+    { /* Service - already initialized */
+    }
 
     if (DLPlusContentType::DUMMY == object.getType())
-    {   // dummy object = do nothing
+    {  // dummy object = do nothing
         // or
         // [ETSI TS 102 980 V2.1.2] Annex A (normative): List of DL Plus content types
         // NOTE 6 : Intended for RT+ receivers; DL Plus equipped receivers ignore this content type.
         return;
     }
     else
-    { /* no dummy object */ }
+    { /* no dummy object */
+    }
 
     toggleDLPlus(true);
 
     if (object.isDelete())
-    {   // [ETSI TS 102 980 V2.1.2] 5.3.2 Deleting objects
+    {  // [ETSI TS 102 980 V2.1.2] 5.3.2 Deleting objects
         // Objects are deleted by transmitting a "delete" object
         const auto it = dlObjCachePtr->constFind(object.getType());
         if (it != dlObjCachePtr->cend())
-        {   // object type found in cache
-            DLPlusObjectUI* uiObj = dlObjCachePtr->take(object.getType());
+        {  // object type found in cache
+            DLPlusObjectUI *uiObj = dlObjCachePtr->take(object.getType());
             delete uiObj;
         }
         else
-        { /* not in cache, do nothing */ }
+        { /* not in cache, do nothing */
+        }
     }
     else
     {
         auto it = dlObjCachePtr->find(object.getType());
         if (it != dlObjCachePtr->end())
-        {   // object type found in cahe            
-            (*it)->update(object);            
+        {  // object type found in cahe
+            (*it)->update(object);
         }
         else
-        {   // not in cache yet -> insert
-            DLPlusObjectUI * uiObj = new DLPlusObjectUI(object);
+        {  // not in cache yet -> insert
+            DLPlusObjectUI *uiObj = new DLPlusObjectUI(object);
             if (nullptr != uiObj->getLayout())
             {
                 it = dlObjCachePtr->insert(object.getType(), uiObj);
@@ -4280,12 +4330,13 @@ void MainWindow::onDLPlusObjReceived(const DLPlusObject & object, Instance inst)
                 // we want it sorted -> need to find the position
                 int index = std::distance(dlObjCachePtr->begin(), it);
 
-                QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(dlPlusFrame->layout());
+                QVBoxLayout *layout = qobject_cast<QVBoxLayout *>(dlPlusFrame->layout());
                 layout->insertLayout(index, uiObj->getLayout());
-                //dlPlusFrame->setMaximumHeight(dlPlusFrame->minimumHeight() > 120 ? dlPlusFrame->minimumHeight() : 120);
+                // dlPlusFrame->setMaximumHeight(dlPlusFrame->minimumHeight() > 120 ? dlPlusFrame->minimumHeight() : 120);
             }
             else
-            { /* objects that we do not display: Descriptors, PROGRAMME_FREQUENCY, INFO_DATE_TIME, PROGRAMME_SUBCHANNEL*/ }
+            { /* objects that we do not display: Descriptors, PROGRAMME_FREQUENCY, INFO_DATE_TIME, PROGRAMME_SUBCHANNEL*/
+            }
         }
     }
 }
@@ -4302,7 +4353,7 @@ void MainWindow::onDLPlusItemToggle_Announcement()
 
 void MainWindow::onDLPlusItemToggle(Instance inst)
 {
-    QMap<DLPlusContentType, DLPlusObjectUI*> * dlObjCachePtr = &m_dlObjCache[inst];
+    QMap<DLPlusContentType, DLPlusObjectUI *> *dlObjCachePtr = &m_dlObjCache[inst];
 
     // delete all ITEMS.*
     auto it = dlObjCachePtr->cbegin();
@@ -4310,12 +4361,12 @@ void MainWindow::onDLPlusItemToggle(Instance inst)
     {
         if (it.key() < DLPlusContentType::INFO_NEWS)
         {
-            DLPlusObjectUI* uiObj = it.value();
+            DLPlusObjectUI *uiObj = it.value();
             delete uiObj;
             it = dlObjCachePtr->erase(it);
         }
         else
-        {   // no more items ot ITEM type in cache
+        {  // no more items ot ITEM type in cache
             break;
         }
     }
@@ -4333,7 +4384,7 @@ void MainWindow::onDLPlusItemRunning_Announcement(bool isRunning)
 
 void MainWindow::onDLPlusItemRunning(bool isRunning, Instance inst)
 {
-    QMap<DLPlusContentType, DLPlusObjectUI*> * dlObjCachePtr = &m_dlObjCache[inst];
+    QMap<DLPlusContentType, DLPlusObjectUI *> *dlObjCachePtr = &m_dlObjCache[inst];
 
     auto it = dlObjCachePtr->cbegin();
     while (it != dlObjCachePtr->cend())
@@ -4344,7 +4395,7 @@ void MainWindow::onDLPlusItemRunning(bool isRunning, Instance inst)
             ++it;
         }
         else
-        {   // no more items ot ITEM type in cache
+        {  // no more items ot ITEM type in cache
             break;
         }
     }
@@ -4389,33 +4440,28 @@ DLPlusObjectUI::DLPlusObjectUI(const DLPlusObject &obj) : m_dlPlusObject(obj)
         m_tagLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         m_layout->addWidget(m_tagLabel);
 
-
         switch (obj.getType())
         {
-        case DLPlusContentType::PROGRAMME_HOMEPAGE:
-        case DLPlusContentType::INFO_URL:
-            m_tagText = new QLabel(QString("<a href=\"%1\">%1</a>").arg(obj.getTag()));
-            m_tagText->setToolTip(QString(QObject::tr("Open link")));
-            QObject::connect(
-                        m_tagText, &QLabel::linkActivated,
-                        [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
-                    );
-            break;
-        case DLPlusContentType::EMAIL_HOTLINE:
-        case DLPlusContentType::EMAIL_STUDIO:
-        case DLPlusContentType::EMAIL_OTHER:
-            m_tagText = new QLabel(QString("<a href=\"mailto:%1\">%1</a>").arg(obj.getTag()));
-            m_tagText->setToolTip(QString(QObject::tr("Open link")));
-            QObject::connect(
-                        m_tagText, &QLabel::linkActivated,
-                        [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
-                    );
-            break;
-        default:
-            m_tagText = new QLabel(obj.getTag());
+            case DLPlusContentType::PROGRAMME_HOMEPAGE:
+            case DLPlusContentType::INFO_URL:
+                m_tagText = new QLabel(QString("<a href=\"%1\">%1</a>").arg(obj.getTag()));
+                m_tagText->setToolTip(QString(QObject::tr("Open link")));
+                QObject::connect(m_tagText, &QLabel::linkActivated,
+                                 [=](const QString &link) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); });
+                break;
+            case DLPlusContentType::EMAIL_HOTLINE:
+            case DLPlusContentType::EMAIL_STUDIO:
+            case DLPlusContentType::EMAIL_OTHER:
+                m_tagText = new QLabel(QString("<a href=\"mailto:%1\">%1</a>").arg(obj.getTag()));
+                m_tagText->setToolTip(QString(QObject::tr("Open link")));
+                QObject::connect(m_tagText, &QLabel::linkActivated,
+                                 [=](const QString &link) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); });
+                break;
+            default:
+                m_tagText = new QLabel(obj.getTag());
         }
 
-        //m_tagText->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
+        // m_tagText->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
         m_tagText->setWordWrap(true);
         m_tagText->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         m_layout->addWidget(m_tagText);
@@ -4424,7 +4470,6 @@ DLPlusObjectUI::DLPlusObjectUI(const DLPlusObject &obj) : m_dlPlusObject(obj)
 
 DLPlusObjectUI::~DLPlusObjectUI()
 {
-
     if (nullptr != m_layout)
     {
         delete m_tagLabel;
@@ -4445,23 +4490,23 @@ void DLPlusObjectUI::update(const DLPlusObject &obj)
         m_dlPlusObject = obj;
         switch (obj.getType())
         {
-        case DLPlusContentType::PROGRAMME_HOMEPAGE:
-        case DLPlusContentType::INFO_URL:
-        {
-            QString text = QString("<a href=\"%1\">%1</a>").arg(obj.getTag());
-            m_tagText->setText(text);
-        }
+            case DLPlusContentType::PROGRAMME_HOMEPAGE:
+            case DLPlusContentType::INFO_URL:
+            {
+                QString text = QString("<a href=\"%1\">%1</a>").arg(obj.getTag());
+                m_tagText->setText(text);
+            }
             break;
-        case DLPlusContentType::EMAIL_HOTLINE:
-        case DLPlusContentType::EMAIL_STUDIO:
-        case DLPlusContentType::EMAIL_OTHER:
-        {
-            QString  text = QString("<a href=\"mailto:%1\">%1</a>").arg(obj.getTag());
-            m_tagText->setText(text);
-        }
+            case DLPlusContentType::EMAIL_HOTLINE:
+            case DLPlusContentType::EMAIL_STUDIO:
+            case DLPlusContentType::EMAIL_OTHER:
+            {
+                QString text = QString("<a href=\"mailto:%1\">%1</a>").arg(obj.getTag());
+                m_tagText->setText(text);
+            }
             break;
-        default:
-            m_tagText->setText(obj.getTag());
+            default:
+                m_tagText->setText(obj.getTag());
         }
     }
 }
@@ -4483,79 +4528,184 @@ QString DLPlusObjectUI::getLabel(DLPlusContentType type) const
 
     switch (type)
     {
-    //case DLPlusContentType::DUMMY: label = "DUMMY"; break;
-    case DLPlusContentType::ITEM_TITLE: label = QObject::tr("Title"); break;
-    case DLPlusContentType::ITEM_ALBUM: label = QObject::tr("Album"); break;
-    case DLPlusContentType::ITEM_TRACKNUMBER: label = QObject::tr("Track Number"); break;
-    case DLPlusContentType::ITEM_ARTIST: label = QObject::tr("Artist"); break;
-    case DLPlusContentType::ITEM_COMPOSITION: label = QObject::tr("Composition"); break;
-    case DLPlusContentType::ITEM_MOVEMENT: label = QObject::tr("Movement"); break;
-    case DLPlusContentType::ITEM_CONDUCTOR: label = QObject::tr("Conductor"); break;
-    case DLPlusContentType::ITEM_COMPOSER: label = QObject::tr("Composer"); break;
-    case DLPlusContentType::ITEM_BAND: label = QObject::tr("Band"); break;
-    case DLPlusContentType::ITEM_COMMENT: label = QObject::tr("Comment"); break;
-    case DLPlusContentType::ITEM_GENRE: label = QObject::tr("Genre"); break;
-    case DLPlusContentType::INFO_NEWS: label = QObject::tr("News"); break;
-    case DLPlusContentType::INFO_NEWS_LOCAL: label = QObject::tr("News (local)"); break;
-    case DLPlusContentType::INFO_STOCKMARKET: label = QObject::tr("Stock Market"); break;
-    case DLPlusContentType::INFO_SPORT: label = QObject::tr("Sport"); break;
-    case DLPlusContentType::INFO_LOTTERY: label = QObject::tr("Lottery"); break;
-    case DLPlusContentType::INFO_HOROSCOPE: label = QObject::tr("Horoscope"); break;
-    case DLPlusContentType::INFO_DAILY_DIVERSION: label = QObject::tr("Daily Diversion"); break;
-    case DLPlusContentType::INFO_HEALTH: label = QObject::tr("Health"); break;
-    case DLPlusContentType::INFO_EVENT: label = QObject::tr("Event"); break;
-    case DLPlusContentType::INFO_SCENE: label = QObject::tr("Scene"); break;
-    case DLPlusContentType::INFO_CINEMA: label = QObject::tr("Cinema"); break;
-    case DLPlusContentType::INFO_TV: label = QObject::tr("TV"); break;
-        // [ETSI TS 102 980 V2.1.2] Annex A (normative): List of DL Plus content types
-        // NOTE 6 : Intended for RT+ receivers; DL Plus equipped receivers ignore this content type.
-        //case DLPlusContentType::INFO_DATE_TIME: label = "INFO_DATE_TIME"; break;
-    case DLPlusContentType::INFO_WEATHER: label = QObject::tr("Weather"); break;
-    case DLPlusContentType::INFO_TRAFFIC: label = QObject::tr("Traffic"); break;
-    case DLPlusContentType::INFO_ALARM: label = QObject::tr("Alarm"); break;
-    case DLPlusContentType::INFO_ADVERTISEMENT: label = QObject::tr("Advertisment"); break;
-    case DLPlusContentType::INFO_URL: label = QObject::tr("URL"); break;
-    case DLPlusContentType::INFO_OTHER: label = QObject::tr("Other"); break;
-    case DLPlusContentType::STATIONNAME_SHORT: label = QObject::tr("Station (short)"); break;
-    case DLPlusContentType::STATIONNAME_LONG: label = QObject::tr("Station"); break;
-    case DLPlusContentType::PROGRAMME_NOW: label = QObject::tr("Now"); break;
-    case DLPlusContentType::PROGRAMME_NEXT: label = QObject::tr("Next"); break;
-    case DLPlusContentType::PROGRAMME_PART: label = QObject::tr("Programme Part"); break;
-    case DLPlusContentType::PROGRAMME_HOST: label = QObject::tr("Host"); break;
-    case DLPlusContentType::PROGRAMME_EDITORIAL_STAFF: label = QObject::tr("Editorial"); break;
-        // [ETSI TS 102 980 V2.1.2] Annex A (normative): List of DL Plus content types
-        // NOTE 6 : Intended for RT+ receivers; DL Plus equipped receivers ignore this content type.
-        //case DLPlusContentType::PROGRAMME_FREQUENCY: label = "Frequency"; break;
-    case DLPlusContentType::PROGRAMME_HOMEPAGE: label = QObject::tr("Homepage"); break;
-        // [ETSI TS 102 980 V2.1.2] Annex A (normative): List of DL Plus content types
-        // NOTE 6 : Intended for RT+ receivers; DL Plus equipped receivers ignore this content type.
-        //case DLPlusContentType::PROGRAMME_SUBCHANNEL: label = "Subchannel"; break;
-    case DLPlusContentType::PHONE_HOTLINE: label = QObject::tr("Phone (Hotline)"); break;
-    case DLPlusContentType::PHONE_STUDIO: label = QObject::tr("Phone (Studio)"); break;
-    case DLPlusContentType::PHONE_OTHER: label = QObject::tr("Phone (Other)"); break;
-    case DLPlusContentType::SMS_STUDIO: label = QObject::tr("SMS (Studio)"); break;
-    case DLPlusContentType::SMS_OTHER: label = QObject::tr("SMS (Other)"); break;
-    case DLPlusContentType::EMAIL_HOTLINE: label = QObject::tr("E-mail (Hotline)"); break;
-    case DLPlusContentType::EMAIL_STUDIO: label = QObject::tr("E-mail (Studio)"); break;
-    case DLPlusContentType::EMAIL_OTHER: label = QObject::tr("E-mail (Other)"); break;
-    case DLPlusContentType::MMS_OTHER: label = QObject::tr("MMS"); break;
-    case DLPlusContentType::CHAT: label = QObject::tr("Chat Message"); break;
-    case DLPlusContentType::CHAT_CENTER: label = QObject::tr("Chat"); break;
-    case DLPlusContentType::VOTE_QUESTION: label = QObject::tr("Vote Question"); break;
-    case DLPlusContentType::VOTE_CENTRE: label = QObject::tr("Vote Here"); break;
-        // rfu = 54
-        // rfu = 55
-    case DLPlusContentType::PRIVATE_1: label = QObject::tr("Private 1"); break;
-    case DLPlusContentType::PRIVATE_2: label = QObject::tr("Private 2"); break;
-    case DLPlusContentType::PRIVATE_3: label = QObject::tr("Private 3"); break;
-//    case DLPlusContentType::DESCRIPTOR_PLACE: label = "DESCRIPTOR_PLACE"; break;
-//    case DLPlusContentType::DESCRIPTOR_APPOINTMENT: label = "DESCRIPTOR_APPOINTMENT"; break;
-//    case DLPlusContentType::DESCRIPTOR_IDENTIFIER: label = "DESCRIPTOR_IDENTIFIER"; break;
-//    case DLPlusContentType::DESCRIPTOR_PURCHASE: label = "DESCRIPTOR_PURCHASE"; break;
-//    case DLPlusContentType::DESCRIPTOR_GET_DATA: label = "DESCRIPTOR_GET_DATA"; break;
-    default:
-        break;
-
+        // case DLPlusContentType::DUMMY: label = "DUMMY"; break;
+        case DLPlusContentType::ITEM_TITLE:
+            label = QObject::tr("Title");
+            break;
+        case DLPlusContentType::ITEM_ALBUM:
+            label = QObject::tr("Album");
+            break;
+        case DLPlusContentType::ITEM_TRACKNUMBER:
+            label = QObject::tr("Track Number");
+            break;
+        case DLPlusContentType::ITEM_ARTIST:
+            label = QObject::tr("Artist");
+            break;
+        case DLPlusContentType::ITEM_COMPOSITION:
+            label = QObject::tr("Composition");
+            break;
+        case DLPlusContentType::ITEM_MOVEMENT:
+            label = QObject::tr("Movement");
+            break;
+        case DLPlusContentType::ITEM_CONDUCTOR:
+            label = QObject::tr("Conductor");
+            break;
+        case DLPlusContentType::ITEM_COMPOSER:
+            label = QObject::tr("Composer");
+            break;
+        case DLPlusContentType::ITEM_BAND:
+            label = QObject::tr("Band");
+            break;
+        case DLPlusContentType::ITEM_COMMENT:
+            label = QObject::tr("Comment");
+            break;
+        case DLPlusContentType::ITEM_GENRE:
+            label = QObject::tr("Genre");
+            break;
+        case DLPlusContentType::INFO_NEWS:
+            label = QObject::tr("News");
+            break;
+        case DLPlusContentType::INFO_NEWS_LOCAL:
+            label = QObject::tr("News (local)");
+            break;
+        case DLPlusContentType::INFO_STOCKMARKET:
+            label = QObject::tr("Stock Market");
+            break;
+        case DLPlusContentType::INFO_SPORT:
+            label = QObject::tr("Sport");
+            break;
+        case DLPlusContentType::INFO_LOTTERY:
+            label = QObject::tr("Lottery");
+            break;
+        case DLPlusContentType::INFO_HOROSCOPE:
+            label = QObject::tr("Horoscope");
+            break;
+        case DLPlusContentType::INFO_DAILY_DIVERSION:
+            label = QObject::tr("Daily Diversion");
+            break;
+        case DLPlusContentType::INFO_HEALTH:
+            label = QObject::tr("Health");
+            break;
+        case DLPlusContentType::INFO_EVENT:
+            label = QObject::tr("Event");
+            break;
+        case DLPlusContentType::INFO_SCENE:
+            label = QObject::tr("Scene");
+            break;
+        case DLPlusContentType::INFO_CINEMA:
+            label = QObject::tr("Cinema");
+            break;
+        case DLPlusContentType::INFO_TV:
+            label = QObject::tr("TV");
+            break;
+            // [ETSI TS 102 980 V2.1.2] Annex A (normative): List of DL Plus content types
+            // NOTE 6 : Intended for RT+ receivers; DL Plus equipped receivers ignore this content type.
+            // case DLPlusContentType::INFO_DATE_TIME: label = "INFO_DATE_TIME"; break;
+        case DLPlusContentType::INFO_WEATHER:
+            label = QObject::tr("Weather");
+            break;
+        case DLPlusContentType::INFO_TRAFFIC:
+            label = QObject::tr("Traffic");
+            break;
+        case DLPlusContentType::INFO_ALARM:
+            label = QObject::tr("Alarm");
+            break;
+        case DLPlusContentType::INFO_ADVERTISEMENT:
+            label = QObject::tr("Advertisment");
+            break;
+        case DLPlusContentType::INFO_URL:
+            label = QObject::tr("URL");
+            break;
+        case DLPlusContentType::INFO_OTHER:
+            label = QObject::tr("Other");
+            break;
+        case DLPlusContentType::STATIONNAME_SHORT:
+            label = QObject::tr("Station (short)");
+            break;
+        case DLPlusContentType::STATIONNAME_LONG:
+            label = QObject::tr("Station");
+            break;
+        case DLPlusContentType::PROGRAMME_NOW:
+            label = QObject::tr("Now");
+            break;
+        case DLPlusContentType::PROGRAMME_NEXT:
+            label = QObject::tr("Next");
+            break;
+        case DLPlusContentType::PROGRAMME_PART:
+            label = QObject::tr("Programme Part");
+            break;
+        case DLPlusContentType::PROGRAMME_HOST:
+            label = QObject::tr("Host");
+            break;
+        case DLPlusContentType::PROGRAMME_EDITORIAL_STAFF:
+            label = QObject::tr("Editorial");
+            break;
+            // [ETSI TS 102 980 V2.1.2] Annex A (normative): List of DL Plus content types
+            // NOTE 6 : Intended for RT+ receivers; DL Plus equipped receivers ignore this content type.
+            // case DLPlusContentType::PROGRAMME_FREQUENCY: label = "Frequency"; break;
+        case DLPlusContentType::PROGRAMME_HOMEPAGE:
+            label = QObject::tr("Homepage");
+            break;
+            // [ETSI TS 102 980 V2.1.2] Annex A (normative): List of DL Plus content types
+            // NOTE 6 : Intended for RT+ receivers; DL Plus equipped receivers ignore this content type.
+            // case DLPlusContentType::PROGRAMME_SUBCHANNEL: label = "Subchannel"; break;
+        case DLPlusContentType::PHONE_HOTLINE:
+            label = QObject::tr("Phone (Hotline)");
+            break;
+        case DLPlusContentType::PHONE_STUDIO:
+            label = QObject::tr("Phone (Studio)");
+            break;
+        case DLPlusContentType::PHONE_OTHER:
+            label = QObject::tr("Phone (Other)");
+            break;
+        case DLPlusContentType::SMS_STUDIO:
+            label = QObject::tr("SMS (Studio)");
+            break;
+        case DLPlusContentType::SMS_OTHER:
+            label = QObject::tr("SMS (Other)");
+            break;
+        case DLPlusContentType::EMAIL_HOTLINE:
+            label = QObject::tr("E-mail (Hotline)");
+            break;
+        case DLPlusContentType::EMAIL_STUDIO:
+            label = QObject::tr("E-mail (Studio)");
+            break;
+        case DLPlusContentType::EMAIL_OTHER:
+            label = QObject::tr("E-mail (Other)");
+            break;
+        case DLPlusContentType::MMS_OTHER:
+            label = QObject::tr("MMS");
+            break;
+        case DLPlusContentType::CHAT:
+            label = QObject::tr("Chat Message");
+            break;
+        case DLPlusContentType::CHAT_CENTER:
+            label = QObject::tr("Chat");
+            break;
+        case DLPlusContentType::VOTE_QUESTION:
+            label = QObject::tr("Vote Question");
+            break;
+        case DLPlusContentType::VOTE_CENTRE:
+            label = QObject::tr("Vote Here");
+            break;
+            // rfu = 54
+            // rfu = 55
+        case DLPlusContentType::PRIVATE_1:
+            label = QObject::tr("Private 1");
+            break;
+        case DLPlusContentType::PRIVATE_2:
+            label = QObject::tr("Private 2");
+            break;
+        case DLPlusContentType::PRIVATE_3:
+            label = QObject::tr("Private 3");
+            break;
+            //    case DLPlusContentType::DESCRIPTOR_PLACE: label = "DESCRIPTOR_PLACE"; break;
+            //    case DLPlusContentType::DESCRIPTOR_APPOINTMENT: label = "DESCRIPTOR_APPOINTMENT"; break;
+            //    case DLPlusContentType::DESCRIPTOR_IDENTIFIER: label = "DESCRIPTOR_IDENTIFIER"; break;
+            //    case DLPlusContentType::DESCRIPTOR_PURCHASE: label = "DESCRIPTOR_PURCHASE"; break;
+            //    case DLPlusContentType::DESCRIPTOR_GET_DATA: label = "DESCRIPTOR_GET_DATA"; break;
+        default:
+            break;
     }
 
     return label;

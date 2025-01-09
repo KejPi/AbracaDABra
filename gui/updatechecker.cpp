@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +24,16 @@
  * SOFTWARE.
  */
 
-#include <QDebug>
-#include <QLoggingCategory>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include "updatechecker.h"
 
+#include <QDebug>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QLoggingCategory>
 
 Q_LOGGING_CATEGORY(updater, "UpdateCheck", QtWarningMsg)
 
-
-UpdateChecker::UpdateChecker(QObject *parent)
-    : QObject{parent}
+UpdateChecker::UpdateChecker(QObject *parent) : QObject{parent}
 {}
 
 UpdateChecker::~UpdateChecker()
@@ -52,17 +50,17 @@ void UpdateChecker::check()
     {
         m_netAccessManager = new QNetworkAccessManager();
 #ifdef QT_DEBUG
-        connect(m_netAccessManager, &QNetworkAccessManager::sslErrors, this, [this](QNetworkReply *reply, const QList<QSslError> &errors) {
-            for (const auto & e : errors)
-            {
-                qDebug() << e;
-            }
-        });
+        connect(m_netAccessManager, &QNetworkAccessManager::sslErrors, this,
+                [this](QNetworkReply *reply, const QList<QSslError> &errors)
+                {
+                    for (const auto &e : errors)
+                    {
+                        qDebug() << e;
+                    }
+                });
 #endif
         connect(m_netAccessManager, &QNetworkAccessManager::finished, this, &UpdateChecker::onFileDownloaded);
-        connect(m_netAccessManager, &QNetworkAccessManager::destroyed, this, [this]() {
-            m_netAccessManager = nullptr;
-        });
+        connect(m_netAccessManager, &QNetworkAccessManager::destroyed, this, [this]() { m_netAccessManager = nullptr; });
 
         QNetworkRequest request;
         request.setUrl(QUrl("https://api.github.com/repos/kejpi/AbracaDABra/releases/latest"));
@@ -71,7 +69,7 @@ void UpdateChecker::check()
         sslConfiguration.setCaCertificates(QSslConfiguration::systemCaCertificates());
         sslConfiguration.setProtocol(QSsl::AnyProtocol);
         request.setSslConfiguration(sslConfiguration);
-        request.setTransferTimeout(10*1000);
+        request.setTransferTimeout(10 * 1000);
         m_netAccessManager->get(request);
     }
 }

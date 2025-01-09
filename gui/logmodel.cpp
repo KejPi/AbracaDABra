@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,9 @@
  * SOFTWARE.
  */
 
-#include <QColor>
 #include "logmodel.h"
+
+#include <QColor>
 
 int LogModel::rowCount(const QModelIndex &parent) const
 {
@@ -43,57 +44,57 @@ QVariant LogModel::data(const QModelIndex &index, int role) const
     {
         switch (role)
         {
-        case Qt::FontRole:
-            return QVariant(fixedFont);
-        case Qt::ForegroundRole:
-            if (m_isDarkMode)
-            {
-                switch (m_msgList.at(index.row()).type)
+            case Qt::FontRole:
+                return QVariant(fixedFont);
+            case Qt::ForegroundRole:
+                if (m_isDarkMode)
                 {
-                case QtInfoMsg:
-                    return QVariant();
-                case QtDebugMsg:
-                    return QVariant(QColor(Qt::cyan));
-                case QtWarningMsg:
-                    return QVariant(QColor(Qt::yellow));
-                case QtCriticalMsg:
-                    return QVariant(QColor(Qt::red));
-                case QtFatalMsg:
-                    return QVariant(QColor(Qt::red));
-                default:
-                    return QVariant();
+                    switch (m_msgList.at(index.row()).type)
+                    {
+                        case QtInfoMsg:
+                            return QVariant();
+                        case QtDebugMsg:
+                            return QVariant(QColor(Qt::cyan));
+                        case QtWarningMsg:
+                            return QVariant(QColor(Qt::yellow));
+                        case QtCriticalMsg:
+                            return QVariant(QColor(Qt::red));
+                        case QtFatalMsg:
+                            return QVariant(QColor(Qt::red));
+                        default:
+                            return QVariant();
+                    }
                 }
-            }
-            else
-            {
-                switch (m_msgList.at(index.row()).type)
+                else
                 {
-                case QtInfoMsg:
-                    return QVariant();
-                case QtDebugMsg:
-                    return QVariant(QColor(Qt::blue));
-                case QtWarningMsg:
-                    return QVariant(QColor(Qt::magenta));
-                case QtCriticalMsg:
-                    return QVariant(QColor(Qt::red));
-                case QtFatalMsg:
-                    return QVariant(QColor(Qt::red));
-                default:
-                    return QVariant();
+                    switch (m_msgList.at(index.row()).type)
+                    {
+                        case QtInfoMsg:
+                            return QVariant();
+                        case QtDebugMsg:
+                            return QVariant(QColor(Qt::blue));
+                        case QtWarningMsg:
+                            return QVariant(QColor(Qt::magenta));
+                        case QtCriticalMsg:
+                            return QVariant(QColor(Qt::red));
+                        case QtFatalMsg:
+                            return QVariant(QColor(Qt::red));
+                        default:
+                            return QVariant();
+                    }
                 }
-            }
-            break;
-        case Qt::DisplayRole:
-            return m_msgList.at(index.row()).msg;
-        default:
-            return QVariant();
+                break;
+            case Qt::DisplayRole:
+                return m_msgList.at(index.row()).msg;
+            default:
+                return QVariant();
         }
     }
 
     return QVariant();
 }
 
-bool LogModel::setData(const QModelIndex & index, const QVariant & value, int role)
+bool LogModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (!index.isValid())
     {
@@ -113,9 +114,10 @@ bool LogModel::setData(const QModelIndex & index, const QVariant & value, int ro
 
 bool LogModel::insertRows(int position, int rows, const QModelIndex &index)
 {
-    beginInsertRows(QModelIndex(), position, position+rows-1);
+    beginInsertRows(QModelIndex(), position, position + rows - 1);
 
-    for (int row = 0; row < rows; ++row) {
+    for (int row = 0; row < rows; ++row)
+    {
         m_msgList.insert(position, LogItem());
     }
 
@@ -125,9 +127,10 @@ bool LogModel::insertRows(int position, int rows, const QModelIndex &index)
 
 bool LogModel::removeRows(int position, int rows, const QModelIndex &index)
 {
-    beginRemoveRows(QModelIndex(), position, position+rows-1);
+    beginRemoveRows(QModelIndex(), position, position + rows - 1);
 
-    for (int row = 0; row < rows; ++row) {
+    for (int row = 0; row < rows; ++row)
+    {
         m_msgList.removeAt(position);
     }
 
@@ -135,10 +138,9 @@ bool LogModel::removeRows(int position, int rows, const QModelIndex &index)
     return true;
 }
 
-void LogModel::appendRow(const QString & rowTxt, int role)
+void LogModel::appendRow(const QString &rowTxt, int role)
 {
     int row = rowCount();
     insertRow(row);
     setData(index(row, 0), rowTxt, role);
-
 }

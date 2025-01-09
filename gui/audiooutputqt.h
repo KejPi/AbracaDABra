@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,16 +27,16 @@
 #ifndef AUDIOOUTPUTQT_H
 #define AUDIOOUTPUTQT_H
 
-#include <QIODevice>
-#include <QObject>
-#include <QWaitCondition>
-#include <QMutex>
-#include <QTimer>
 #include <QAudioSink>
+#include <QIODevice>
 #include <QMediaDevices>
+#include <QMutex>
+#include <QObject>
+#include <QTimer>
+#include <QWaitCondition>
 
-#include "audiooutput.h"
 #include "audiofifo.h"
+#include "audiooutput.h"
 
 class AudioIODevice;
 
@@ -53,22 +53,21 @@ public:
     void stop() override;
     void mute(bool on) override;
     void setVolume(int value) override;
-    void setAudioDevice(const QByteArray & deviceId) override;
+    void setAudioDevice(const QByteArray &deviceId) override;
 
 private:
     // Qt audio
-    AudioIODevice * m_ioDevice;
-    QAudioSink * m_audioSink;
+    AudioIODevice *m_ioDevice;
+    QAudioSink *m_audioSink;
     float m_linearVolume;
-    audioFifo_t * m_currentFifoPtr = nullptr;
-    audioFifo_t * m_restartFifoPtr = nullptr;
+    audioFifo_t *m_currentFifoPtr = nullptr;
+    audioFifo_t *m_restartFifoPtr = nullptr;
 
     void handleStateChanged(QAudio::State newState);
     int64_t bytesAvailable();
     void doStop();
     void doRestart(audioFifo_t *buffer);
 };
-
 
 class AudioIODevice : public QIODevice
 {
@@ -77,7 +76,7 @@ public:
 
     void start();
     void stop();
-    void setBuffer(audioFifo_t * buffer);
+    void setBuffer(audioFifo_t *buffer);
 
     qint64 readData(char *data, qint64 maxlen) override;
     qint64 writeData(const char *data, qint64 len) override;
@@ -87,7 +86,7 @@ public:
     bool isMuted() const { return AudioOutputPlaybackState::Muted == m_playbackState; }
 
 private:
-    audioFifo_t * m_inFifoPtr = nullptr;
+    audioFifo_t *m_inFifoPtr = nullptr;
     AudioOutputPlaybackState m_playbackState;
     uint8_t m_bytesPerFrame;
     uint32_t m_sampleRate_kHz;
@@ -95,8 +94,8 @@ private:
     float m_muteFactor;
     bool m_doStop = false;
 
-    std::atomic<bool> m_muteFlag  = false;
-    std::atomic<bool> m_stopFlag  = false;
+    std::atomic<bool> m_muteFlag = false;
+    std::atomic<bool> m_stopFlag = false;
 };
 
-#endif // AUDIOOUTPUTQT_H
+#endif  // AUDIOOUTPUTQT_H

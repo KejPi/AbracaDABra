@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,20 +27,22 @@
 #ifndef BANDSCANDIALOG_H
 #define BANDSCANDIALOG_H
 
-#include <QDialog>
 #include <QComboBox>
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QPushButton>
-#include <QDialogButtonBox>
 
 #include "radiocontrol.h"
 #include "servicelistid.h"
 
-namespace Ui {
+namespace Ui
+{
 class BandScanDialog;
 }
 
-namespace BandScanDialogResult {
+namespace BandScanDialogResult
+{
 enum
 {
     Cancelled = 0,
@@ -80,9 +82,9 @@ signals:
 
 private:
     Ui::BandScanDialog *ui;
-    QPushButton * m_buttonStart;
-    QPushButton * m_buttonStop;
-    QTimer * m_timer = nullptr;
+    QPushButton *m_buttonStart;
+    QPushButton *m_buttonStop;
+    QTimer *m_timer = nullptr;
 
     bool m_isScanning = false;
     BandScanState m_state = BandScanState::Idle;
@@ -96,4 +98,4 @@ private:
     void stopPressed();
 };
 
-#endif // BANDSCANDIALOG_H
+#endif  // BANDSCANDIALOG_H

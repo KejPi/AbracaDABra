@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,17 +29,18 @@
 
 #include <QList>
 #include <QVariant>
+
 #include "metadatamanager.h"
 #include "servicelist.h"
 
 class SLModelItem
 {
 public:
-    explicit SLModelItem(const ServiceList *  slPtr, const MetadataManager *mmPtr, SLModelItem *parentItem = 0);
+    explicit SLModelItem(const ServiceList *slPtr, const MetadataManager *mmPtr, SLModelItem *parentItem = 0);
     explicit SLModelItem(const ServiceList *slPtr, const MetadataManager *mmPtr, const ServiceListId &id, SLModelItem *parentItem = 0);
     ~SLModelItem();
 
-    void appendChild(SLModelItem *child);    
+    void appendChild(SLModelItem *child);
 
     SLModelItem *child(int row);
     int childCount() const;
@@ -48,25 +49,24 @@ public:
     int row() const;
     SLModelItem *parentItem();
     ServiceListId id() const;
-    bool isService() const;    
+    bool isService() const;
     bool isEnsemble() const;
     bool isFavoriteService() const;
     QString label() const;
     QString shortLabel() const;
     uint32_t frequency() const;
     DabSId SId() const;
-    SLModelItem* findChildId(const ServiceListId &id, bool recursive = false) const;
+    SLModelItem *findChildId(const ServiceListId &id, bool recursive = false) const;
     bool removeChildId(const ServiceListId &id);
     void sort(Qt::SortOrder order);
 
 private:
-    QList<SLModelItem*> m_childItems;
+    QList<SLModelItem *> m_childItems;
     SLModelItem *m_parentItem;
 
-    const ServiceList * m_slPtr;
-    const MetadataManager * m_metadataMgrPtr;
+    const ServiceList *m_slPtr;
+    const MetadataManager *m_metadataMgrPtr;
     ServiceListId m_id;
-
 };
 
-#endif // SLMODELITEM_H
+#endif  // SLMODELITEM_H

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,11 +27,13 @@
 #ifndef AUDIODECODER_H
 #define AUDIODECODER_H
 
-#include <QObject>
+#include <mpg123.h>
+
 #include <QByteArray>
 #include <QDataStream>
 #include <QFile>
-#include <mpg123.h>
+#include <QObject>
+
 #include "config.h"
 
 #if HAVE_FDKAAC
@@ -39,20 +41,20 @@
 #else
 #include <neaacdec.h>
 
-#endif // HAVE_FDKAAC
+#endif  // HAVE_FDKAAC
 
-#include "radiocontrol.h"
 #include "audiofifo.h"
 #include "audiorecorder.h"
+#include "radiocontrol.h"
 
-#define AUDIO_DECODER_BUFFER_SIZE     3840  // this is maximum buffer size for HE-AAC
+#define AUDIO_DECODER_BUFFER_SIZE 3840  // this is maximum buffer size for HE-AAC
 #if HAVE_FDKAAC
 #define AUDIO_DECODER_FDKAAC_CONCEALMENT 1
-#define AUDIO_DECODER_NOISE_CONCEALMENT  0 // keep 0 here
-#else // HAVE_FDKAAC
-#define AUDIO_DECODER_FADE_TIME_MS      20  // maximum is 20 ms
-#define AUDIO_DECODER_NOISE_CONCEALMENT  1
-#endif // HAVE_FDKAAC
+#define AUDIO_DECODER_NOISE_CONCEALMENT 0  // keep 0 here
+#else                                      // HAVE_FDKAAC
+#define AUDIO_DECODER_FADE_TIME_MS 20      // maximum is 20 ms
+#define AUDIO_DECODER_NOISE_CONCEALMENT 1
+#endif  // HAVE_FDKAAC
 
 enum class AudioCoding
 {
@@ -77,7 +79,7 @@ class AudioDecoder : public QObject
 {
     Q_OBJECT
 public:
-    explicit AudioDecoder(AudioRecorder* recorder, QObject *parent = nullptr);
+    explicit AudioDecoder(AudioRecorder *recorder, QObject *parent = nullptr);
     ~AudioDecoder();
     void start(const RadioControlServiceComponent &s);
     void stop();
@@ -89,34 +91,39 @@ signals:
     void startAudio(audioFifo_t *buffer);
     void switchAudio(audioFifo_t *buffer);
     void stopAudio();
-    void audioParametersInfo(const AudioParameters & params);
+    void audioParametersInfo(const AudioParameters &params);
 
 private:
-    enum class PlaybackState { Stopped = 0, WaitForInit, Running } m_playbackState;
+    enum class PlaybackState
+    {
+        Stopped = 0,
+        WaitForInit,
+        Running
+    } m_playbackState;
 
-    AudioRecorder * m_recorder;
+    AudioRecorder *m_recorder;
 
     dabsdrAudioFrameHeader_t m_aacHeader;
     AudioParameters m_audioParameters;
 
-    int16_t * m_outBufferPtr;
+    int16_t *m_outBufferPtr;
     size_t m_outputBufferSamples;
 #if HAVE_FDKAAC
     HANDLE_AACDECODER m_aacDecoderHandle;
 #else
     NeAACDecHandle m_aacDecoderHandle;
     NeAACDecFrameInfo m_aacDecFrameInfo;
-    void handleAudioOutputFAAD(const NeAACDecFrameInfo & frameInfo, const uint8_t * inFramePtr);
+    void handleAudioOutputFAAD(const NeAACDecFrameInfo &frameInfo, const uint8_t *inFramePtr);
 #endif
     int m_ascLen;
     uint8_t m_asc[7];
 
     float m_mp2DRC = 0;
-    mpg123_handle * m_mp2DecoderHandle;
+    mpg123_handle *m_mp2DecoderHandle;
 
     dabsdrDecoderId_t m_inputDataDecoderId;
     int m_outFifoIdx;
-    audioFifo_t * m_outFifoPtr;
+    audioFifo_t *m_outFifoPtr;
 
 #if !HAVE_FDKAAC
     int m_numChannels;
@@ -128,8 +135,8 @@ private:
         Unmuted
     } m_state;
 #if AUDIO_DECODER_NOISE_CONCEALMENT
-    QFile * m_noiseFile = nullptr;
-    int16_t * m_noiseBufferPtr;
+    QFile *m_noiseFile = nullptr;
+    int16_t *m_noiseBufferPtr;
     float m_noiseLevel;
 #endif
 #endif
@@ -146,4 +153,4 @@ private:
     void getFormatMP2();
 };
 
-#endif // AUDIODECODER_H
+#endif  // AUDIODECODER_H

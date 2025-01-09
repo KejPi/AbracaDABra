@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,25 +27,24 @@
 #ifndef RADIOCONTROL_H
 #define RADIOCONTROL_H
 
-#include <QObject>
-#include <QMap>
-#include <QHash>
 #include <QDateTime>
-#include <QStringList>
 #include <QDebug>
-#include <QTimer>
+#include <QHash>
+#include <QMap>
+#include <QObject>
+#include <QStringList>
 #include <QThread>
+#include <QTimer>
 
-#include "dabtables.h"
 #include "dabsdr.h"
+#include "dabtables.h"
 
-
-#define RADIO_CONTROL_UEID_INVALID  0xFF000000
-#define RADIO_CONTROL_N_CHANNELS_ENABLE  0
-#define RADIO_CONTROL_NOTIFICATION_PERIOD  3  // 2^3 = 8 DAB frames = 8*96ms = 768ms
+#define RADIO_CONTROL_UEID_INVALID 0xFF000000
+#define RADIO_CONTROL_N_CHANNELS_ENABLE 0
+#define RADIO_CONTROL_NOTIFICATION_PERIOD 3  // 2^3 = 8 DAB frames = 8*96ms = 768ms
 // number of FIB expected to be received during noticication period
 // there are 12 FIB's in one DAB frame
-#define RADIO_CONTROL_NOTIFICATION_FIB_EXPECTED  (12*(1 << RADIO_CONTROL_NOTIFICATION_PERIOD))
+#define RADIO_CONTROL_NOTIFICATION_FIB_EXPECTED (12 * (1 << RADIO_CONTROL_NOTIFICATION_PERIOD))
 
 #define RADIO_CONTROL_ENSEMBLE_CONFIGURATION_UPDATE_TIMEOUT_SEC (1)
 #define RADIO_CONTROL_ANNOUNCEMENT_TIMEOUT_SEC (5)
@@ -69,40 +68,51 @@ public:
     bool isProgServiceId() const { return 0 == (m_eccsid & 0xFF000000); }
     uint32_t value() const { return m_eccsid; }
     uint16_t progSId() const { return uint16_t(m_eccsid); }
-    uint8_t ecc() const { return uint8_t(m_eccsid >> 16);}
-    uint16_t gcc() const { return isProgServiceId()
-                                      ? ((m_eccsid & 0x00FF0000) >> 16) | ((m_eccsid & 0x0000F000) >> 4)
-                                      : ((m_eccsid & 0xFF000000) >> 24) | ((m_eccsid & 0x00F00000) >> 12); }
+    uint8_t ecc() const { return uint8_t(m_eccsid >> 16); }
+    uint16_t gcc() const
+    {
+        return isProgServiceId() ? ((m_eccsid & 0x00FF0000) >> 16) | ((m_eccsid & 0x0000F000) >> 4)
+                                 : ((m_eccsid & 0xFF000000) >> 24) | ((m_eccsid & 0x00F00000) >> 12);
+    }
     void set(uint32_t sid, uint8_t ensEcc = 0)
     {
         if (0 == (sid & 0xFF000000))
-        {   // programme service ID
+        {  // programme service ID
             uint8_t ecc = (sid >> 16);
-            if (0 == ecc) { ecc = ensEcc; }
+            if (0 == ecc)
+            {
+                ecc = ensEcc;
+            }
             m_eccsid = (ecc << 16) | (sid & 0x0000FFFF);
         }
         else
-        {   // data service ID
+        {  // data service ID
             m_eccsid = sid;
         }
     }
-    uint16_t eccc() const { return ((isProgServiceId() ? (m_eccsid >> 12) : (m_eccsid >> 20)) & 0x0FFF ); }
-    uint32_t countryServiceRef() const { return (isProgServiceId() ? (m_eccsid & 0x0000FFFF) : (m_eccsid & 0x00FFFFFF));  }
+    uint16_t eccc() const { return ((isProgServiceId() ? (m_eccsid >> 12) : (m_eccsid >> 20)) & 0x0FFF); }
+    uint32_t countryServiceRef() const { return (isProgServiceId() ? (m_eccsid & 0x0000FFFF) : (m_eccsid & 0x00FFFFFF)); }
     bool isValid() const { return m_eccsid != 0; }
-    inline bool operator==(const DabSId & other) const { return m_eccsid == other.m_eccsid; }
+    inline bool operator==(const DabSId &other) const { return m_eccsid == other.m_eccsid; }
+
 private:
     uint32_t m_eccsid;
 };
-inline size_t qHash(const DabSId & sid, size_t seed = 0) { return sid.value(); }
+inline size_t qHash(const DabSId &sid, size_t seed = 0)
+{
+    return sid.value();
+}
 
 struct DabProtection
 {
     DabProtectionLevel level;
-    union {
-        struct {
+    union
+    {
+        struct
+        {
             uint8_t codeRateLower : 4;
             uint8_t codeRateUpper : 3;
-            uint8_t fecScheme     : 1;
+            uint8_t fecScheme : 1;
         };
         uint8_t codeRateFecValue;
         uint8_t uepIndex;
@@ -120,8 +130,8 @@ struct RadioControlEnsemble
 {
     uint32_t frequency = 0;
     uint32_t ueid = RADIO_CONTROL_UEID_INVALID;
-    int8_t LTO;       // Ensemble LTO (Local Time Offset): Local Time Offset (LTO) for the ensemble.
-                      // It is expressed in multiples of half hours in the range -15,5 hours to +15,5 hours
+    int8_t LTO;        // Ensemble LTO (Local Time Offset): Local Time Offset (LTO) for the ensemble.
+                       // It is expressed in multiples of half hours in the range -15,5 hours to +15,5 hours
     uint8_t intTable;  // Inter. (International) Table Id: this 8-bit field shall be used to select an international table
     uint8_t alarm;
     QString label;
@@ -131,16 +141,21 @@ struct RadioControlEnsemble
     uint8_t ecc() const { return (ueid >> 16); }
 
     bool isValid() const { return (0 != frequency) && (RADIO_CONTROL_UEID_INVALID != ueid); }
-    void reset() { frequency = 0; ueid = RADIO_CONTROL_UEID_INVALID; }
+    void reset()
+    {
+        frequency = 0;
+        ueid = RADIO_CONTROL_UEID_INVALID;
+    }
 };
 Q_DECLARE_METATYPE(RadioControlEnsemble)
 
 struct RadioControlUserApp
 {
-    QString label;        // Service label
-    QString labelShort;   // Short label
-    DabUserApplicationType uaType;      // User application type
-    struct {
+    QString label;                  // Service label
+    QString labelShort;             // Short label
+    DabUserApplicationType uaType;  // User application type
+    struct
+    {
         DabAudioDataSCty DScTy;
         int8_t xpadAppTy;
         bool dgFlag;
@@ -155,29 +170,29 @@ struct RadioControlServiceComponent
     // Each service component shall be uniquely identified by the combination of the
     // SId and the Service Component Identifier within the Service (SCIdS).
     DabSId SId;
-    uint8_t SCIdS;        // Service Component Identifier within the Service (SCIdS)
-    uint8_t SubChId;      // SubChId (Sub-channel Identifier)
-    uint16_t SubChAddr;   // address 0-863
-    uint16_t SubChSize;   // subchannel size
-    int8_t ps;            // P/S (Primary/Secondary): this 1-bit flag shall indicate whether the service component is the primary one
-    int8_t lang;          // language [8.1.2] this 8-bit field shall indicate the language of the audio or data service component
-    DabPTy pty;           // Static and dynamic programme type [8.1.5]
-    uint8_t CAId;         // CAId (Conditional Access Identifier): this 3-bit field shall identify the
-                          // Access Control System (ACS) used for the service
-    bool CAflag;          // CA flag: this 1-bit field flag shall indicate whether access control applies to the service component
+    uint8_t SCIdS;       // Service Component Identifier within the Service (SCIdS)
+    uint8_t SubChId;     // SubChId (Sub-channel Identifier)
+    uint16_t SubChAddr;  // address 0-863
+    uint16_t SubChSize;  // subchannel size
+    int8_t ps;           // P/S (Primary/Secondary): this 1-bit flag shall indicate whether the service component is the primary one
+    int8_t lang;         // language [8.1.2] this 8-bit field shall indicate the language of the audio or data service component
+    DabPTy pty;          // Static and dynamic programme type [8.1.5]
+    uint8_t CAId;        // CAId (Conditional Access Identifier): this 3-bit field shall identify the
+                         // Access Control System (ACS) used for the service
+    bool CAflag;         // CA flag: this 1-bit field flag shall indicate whether access control applies to the service component
 
-    //int8_t numUserApps;   // Number of user applications
-    QHash<DabUserApplicationType,RadioControlUserApp> userApps;
+    // int8_t numUserApps;   // Number of user applications
+    QHash<DabUserApplicationType, RadioControlUserApp> userApps;
 
-    QString label;        // Service label
-    QString labelShort;   // Short label
+    QString label;       // Service label
+    QString labelShort;  // Short label
 
     struct DabProtection protection;  // Protection infomation EEP/UEP/FEC scheme
 
     // TMStreamAudio = 0,
     // TMStreamData  = 1,
     // TMPacketData  = 3
-    DabTMId TMId;       // TMId (Transport Mechanism Identifier)
+    DabTMId TMId;  // TMId (Transport Mechanism Identifier)
     union
     {
         struct  // TMId == 0 or 1
@@ -187,13 +202,13 @@ struct RadioControlServiceComponent
         } streamAudioData;
         struct  // TMId == 3
         {
-            DabAudioDataSCty DSCTy; // DSCTy (Data Service Component Type)
-            uint16_t SCId;          // SCId (Service Component Identifier): this 12-bit field shall uniquely
-                                    // identify the service component within the ensemble
-            bool DGflag;            // DG flag: this 1-bit flag shall indicate whether data groups are used to transport the service component as follows:
-                                    //   0: data groups are used to transport the service component;
-                                    //   1: data groups are not used to transport the service component.
-            uint16_t packetAddress; // this 10-bit field shall define the address of the packet in which the service component is carried.
+            DabAudioDataSCty DSCTy;  // DSCTy (Data Service Component Type)
+            uint16_t SCId;           // SCId (Service Component Identifier): this 12-bit field shall uniquely
+                                     // identify the service component within the ensemble
+            bool DGflag;  // DG flag: this 1-bit flag shall indicate whether data groups are used to transport the service component as follows:
+                          //   0: data groups are used to transport the service component;
+                          //   1: data groups are not used to transport the service component.
+            uint16_t packetAddress;  // this 10-bit field shall define the address of the packet in which the service component is carried.
         } packetData;
     };
 
@@ -207,7 +222,6 @@ struct RadioControlServiceComponent
 Q_DECLARE_METATYPE(RadioControlServiceComponent)
 
 typedef QMap<uint8_t, RadioControlServiceComponent> RadioControlServiceCompList;
-
 
 struct RadioControlService
 {
@@ -302,39 +316,39 @@ struct RadioControlEvent
     uint32_t SId;
     uint8_t SCIdS;
     union
-    {   // this is data payload transferred from DABSDR
+    {  // this is data payload transferred from DABSDR
         // sync status
         dabsdrNtfSyncStatus_t syncStatus;
         // tuned frequency
         uint32_t frequency;
         // ensemble information
-        dabsdrNtfEnsemble_t * pEnsembleInfo;
+        dabsdrNtfEnsemble_t *pEnsembleInfo;
         // service list
-        QList<dabsdrServiceListItem_t> * pServiceList;
+        QList<dabsdrServiceListItem_t> *pServiceList;
         // service component list
-        QList<dabsdrServiceCompListItem_t> * pServiceCompList;
+        QList<dabsdrServiceCompListItem_t> *pServiceCompList;
         // user applications list
-        QList<dabsdrUserAppListItem_t> * pUserAppList;
+        QList<dabsdrUserAppListItem_t> *pUserAppList;
         // supported announcements
-        dabsdrNtfAnnouncementSupport_t * pAnnouncementSupport;
+        dabsdrNtfAnnouncementSupport_t *pAnnouncementSupport;
         // xpad application started / stopped
-        dabsdrNtfXpadAppStartStop_t * pXpadAppStartStopInfo;
+        dabsdrNtfXpadAppStartStop_t *pXpadAppStartStopInfo;
         // periodic notification
-        dabsdrNtfPeriodic_t * pNotifyData;
+        dabsdrNtfPeriodic_t *pNotifyData;
         // reset occured
         dabsdrNtfResetFlags_t resetFlag;
         // user application data group
-        RadioControlUserAppData * pUserAppData;
+        RadioControlUserAppData *pUserAppData;
         // dynamic labale data group
-        RadioControlDataDL * pDynamicLabelData;
+        RadioControlDataDL *pDynamicLabelData;
         // announcement switching
-        dabsdrNtfAnnouncementSwitching_t * pAnnouncement;
+        dabsdrNtfAnnouncementSwitching_t *pAnnouncement;
         // audio service instance
         dabsdrDecoderId_t decoderId;
         // programme type change
-        dabsdrNtfPTy_t * pPty;
+        dabsdrNtfPTy_t *pPty;
         // TII data
-        RadioControlTIIData * pTII;
+        RadioControlTIIData *pTII;
     };
 };
 
@@ -363,7 +377,7 @@ public:
     void setSignalSpectrum(bool ena);
 
 signals:
-    void dabEvent(RadioControlEvent * pEvent);
+    void dabEvent(RadioControlEvent *pEvent);
     void signalState(uint8_t sync, float snr);
     void freqOffset(float f);
     void fibCounter(int expected, int errors);
@@ -371,29 +385,35 @@ signals:
     void tuneInputDevice(uint32_t freq);
     void tuneDone(uint32_t freq);
     void stopAudio();
-    void serviceListEntry(const RadioControlEnsemble & ens, const RadioControlServiceComponent & slEntry);
-    void serviceListComplete(const RadioControlEnsemble & ens);
-    void dlDataGroup_Service(const QByteArray & dg);
-    void dlDataGroup_Announcement(const QByteArray & dg);
-    void userAppData_Service(const RadioControlUserAppData & data);
-    void userAppData_Announcement(const RadioControlUserAppData & data);
-    void audioServiceSelection(const RadioControlServiceComponent & s);
-    void audioServiceReconfiguration(const RadioControlServiceComponent & s);
-    void audioData(RadioControlAudioData * pData);
+    void serviceListEntry(const RadioControlEnsemble &ens, const RadioControlServiceComponent &slEntry);
+    void serviceListComplete(const RadioControlEnsemble &ens);
+    void dlDataGroup_Service(const QByteArray &dg);
+    void dlDataGroup_Announcement(const QByteArray &dg);
+    void userAppData_Service(const RadioControlUserAppData &data);
+    void userAppData_Announcement(const RadioControlUserAppData &data);
+    void audioServiceSelection(const RadioControlServiceComponent &s);
+    void audioServiceReconfiguration(const RadioControlServiceComponent &s);
+    void audioData(RadioControlAudioData *pData);
     void signalSpectrum(std::shared_ptr<std::vector<float>> data);
-    void dabTime(const QDateTime & dateAndTime);   
-    void ensembleInformation(const RadioControlEnsemble & ens);
+    void dabTime(const QDateTime &dateAndTime);
+    void ensembleInformation(const RadioControlEnsemble &ens);
     void ensembleConfiguration(const QString &);
     void ensembleCSV(const QString &);
     void ensembleConfigurationAndCSV(const QString &, const QString &);
-    void ensembleReconfiguration(const RadioControlEnsemble & ens);
-    void ensembleRemoved(const RadioControlEnsemble & ens);
-    void announcement(DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent & s);
+    void ensembleReconfiguration(const RadioControlEnsemble &ens);
+    void ensembleRemoved(const RadioControlEnsemble &ens);
+    void announcement(DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent &s);
     void announcementAudioAvailable();
-    void programmeTypeChanged(const DabSId & sid, const struct DabPTy & pty);
-    void tiiData(const RadioControlTIIData & data);
+    void programmeTypeChanged(const DabSId &sid, const struct DabPTy &pty);
+    void tiiData(const RadioControlTIIData &data);
+
 private:
-    enum class AnnouncementSwitchState { NoAnnouncement, WaitForAnnouncement, OngoingAnnouncement };
+    enum class AnnouncementSwitchState
+    {
+        NoAnnouncement,
+        WaitForAnnouncement,
+        OngoingAnnouncement
+    };
 
     static const uint8_t EEPCoderate[];
 
@@ -401,21 +421,23 @@ private:
     dabsdrSyncLevel_t m_syncLevel;
     bool m_enaAutoNotification = false;
     uint32_t m_frequency;
-    struct {
+    struct
+    {
         uint32_t SId;
         uint8_t SCIdS;
     } m_serviceRequest;
 
-    struct {
+    struct
+    {
         uint32_t SId;
         uint8_t SCIdS;
         struct
-        {   // announcement support
+        {  // announcement support
             uint16_t ASu;
             QList<uint8_t> clusterIds;
             uint8_t activeCluster = 0;
             DabAnnouncement id;
-            QTimer * timeoutTimer;
+            QTimer *timeoutTimer;
             std::atomic<AnnouncementSwitchState> switchState;
             uint32_t SId;
             uint8_t SCIdS;
@@ -432,7 +454,7 @@ private:
     int m_numReqPendingServiceList = 0;
 
     // set when ensemble information is complete
-    QTimer * m_ensembleConfigurationTimer;
+    QTimer *m_ensembleConfigurationTimer;
     bool m_ensembleConfigurationUpdateRequest = false;
 
     bool m_isReconfigurationOngoing = false;
@@ -448,10 +470,10 @@ private:
     typedef RadioControlServiceList::iterator serviceIterator;
     typedef RadioControlServiceList::const_iterator serviceConstIterator;
 
-    bool getCurrentAudioServiceComponent(serviceComponentIterator & scIt);
-    bool cgetCurrentAudioServiceComponent(serviceComponentConstIterator & scIt) const;
+    bool getCurrentAudioServiceComponent(serviceComponentIterator &scIt);
+    bool cgetCurrentAudioServiceComponent(serviceComponentConstIterator &scIt) const;
 
-    QString toShortLabel(QString & label, uint16_t charField) const;
+    QString toShortLabel(QString &label, uint16_t charField) const;
 
     void clearEnsemble();
     QString ensembleConfigurationString() const;
@@ -467,7 +489,7 @@ private:
     void announcementHandler(dabsdrAsw_t *pAnnouncement);
     bool startAnnouncement(uint8_t subChId);
     void stopAnnouncement();
-    inline QString removeTrailingSpaces(QString & s) const;
+    inline QString removeTrailingSpaces(QString &s) const;
 
     // event handlers
     void eventHandler_ensembleInfo(RadioControlEvent *pEvent);
@@ -477,38 +499,46 @@ private:
     void eventHandler_serviceSelection(RadioControlEvent *pEvent);
     void eventHandler_serviceStop(RadioControlEvent *pEvent);
     void eventHandler_announcementSupport(RadioControlEvent *pEvent);
-    void eventHandler_announcementSwitching(RadioControlEvent * pEvent);
-    void eventHandler_programmeType(RadioControlEvent * pEvent);
+    void eventHandler_announcementSwitching(RadioControlEvent *pEvent);
+    void eventHandler_programmeType(RadioControlEvent *pEvent);
 
     // wrapper functions for dabsdr API
     void dabTune(uint32_t freq) { dabsdrRequest_Tune(m_dabsdrHandle, freq); }
     void dabGetEnsembleInfo() { dabsdrRequest_GetEnsemble(m_dabsdrHandle); }
     void dabGetServiceList() { dabsdrRequest_GetServiceList(m_dabsdrHandle); }
-    void dabGetServiceComponent(uint32_t SId) { dabsdrRequest_GetServiceComponents(m_dabsdrHandle, SId); }    
+    void dabGetServiceComponent(uint32_t SId) { dabsdrRequest_GetServiceComponents(m_dabsdrHandle, SId); }
     void dabGetUserApps(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_GetUserAppList(m_dabsdrHandle, SId, SCIdS); }
     void dabGetAnnouncementSupport(uint32_t SId) { dabsdrRequest_GetAnnouncementSupport(m_dabsdrHandle, SId); }
     void dabEnableAutoNotification() { dabsdrRequest_SetPeriodicNotify(m_dabsdrHandle, RADIO_CONTROL_NOTIFICATION_PERIOD, 0); }
-    void dabServiceSelection(uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t decoderId) { dabsdrRequest_ServiceSelection(m_dabsdrHandle, SId, SCIdS, decoderId); }
-    void dabServiceStop(uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t decoderId) { dabsdrRequest_ServiceStop(m_dabsdrHandle, SId, SCIdS, decoderId); }
-    void dabXPadAppStart(uint8_t appType, bool start, dabsdrDecoderId_t decoderId) { dabsdrRequest_XPadAppStart(m_dabsdrHandle, appType, start, decoderId); }
+    void dabServiceSelection(uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t decoderId)
+    {
+        dabsdrRequest_ServiceSelection(m_dabsdrHandle, SId, SCIdS, decoderId);
+    }
+    void dabServiceStop(uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t decoderId)
+    {
+        dabsdrRequest_ServiceStop(m_dabsdrHandle, SId, SCIdS, decoderId);
+    }
+    void dabXPadAppStart(uint8_t appType, bool start, dabsdrDecoderId_t decoderId)
+    {
+        dabsdrRequest_XPadAppStart(m_dabsdrHandle, appType, start, decoderId);
+    }
     void dabSetTii(bool ena) { dabsdrRequest_SetTII(m_dabsdrHandle, ena); }
     void dabEnableSignalSpectrum(bool ena) { dabsdrRequest_SignalSpectrum(m_dabsdrHandle, ena); }
 
     // wrappers used in callback functions (emit requires class instance)
-    void emit_dabEvent(RadioControlEvent * pEvent) { emit dabEvent(pEvent); }
-    void emit_audioData(RadioControlAudioData * pData) { emit audioData(pData); }
+    void emit_dabEvent(RadioControlEvent *pEvent) { emit dabEvent(pEvent); }
+    void emit_audioData(RadioControlAudioData *pData) { emit audioData(pData); }
     void emit_announcementAudioAvailable() { emit announcementAudioAvailable(); }
     void emit_spectrum(std::shared_ptr<std::vector<float>> data) { emit signalSpectrum(data); }
 
     // static methods used as dabsdr library callbacks
-    static void dabNotificationCb(dabsdrNotificationCBData_t * p, void * ctx);
-    static void dynamicLabelCb(dabsdrDynamicLabelCBData_t * p, void * ctx);
-    static void dataGroupCb(dabsdrDataGroupCBData_t * p, void * ctx);
-    static void audioDataCb(dabsdrAudioCBData_t * p, void * ctx);
-    static void signalSpectrumCb(const float * p, void * ctx);
+    static void dabNotificationCb(dabsdrNotificationCBData_t *p, void *ctx);
+    static void dynamicLabelCb(dabsdrDynamicLabelCBData_t *p, void *ctx);
+    static void dataGroupCb(dabsdrDataGroupCBData_t *p, void *ctx);
+    static void audioDataCb(dabsdrAudioCBData_t *p, void *ctx);
+    static void signalSpectrumCb(const float *p, void *ctx);
 private slots:
-    void onDabEvent(RadioControlEvent * pEvent);
+    void onDabEvent(RadioControlEvent *pEvent);
 };
 
-
-#endif // RADIOCONTROL_H
+#endif  // RADIOCONTROL_H

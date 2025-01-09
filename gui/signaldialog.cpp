@@ -25,21 +25,21 @@
  */
 
 #include "signaldialog.h"
+
 #include "radiocontrol.h"
 #include "ui_signaldialog.h"
 
-const char * SignalDialog::syncLevelLabels[] = {QT_TR_NOOP("No signal"), QT_TR_NOOP("Signal found"), QT_TR_NOOP("Sync")};
-const QStringList SignalDialog::snrLevelColors = { "white",  "#ff4b4b", "#ffb527", "#5bc214" };
-const QString SignalDialog::templateSvgFill =    R"(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" fill="%1"/></svg>)";
-const QString SignalDialog::templateSvgOutline = R"(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18"><circle cx="9" cy="9" r="6" stroke="%1" stroke-width="2" fill="white"/></svg>)";
+const char *SignalDialog::syncLevelLabels[] = {QT_TR_NOOP("No signal"), QT_TR_NOOP("Signal found"), QT_TR_NOOP("Sync")};
+const QStringList SignalDialog::snrLevelColors = {"white", "#ff4b4b", "#ffb527", "#5bc214"};
+const QString SignalDialog::templateSvgFill =
+    R"(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" fill="%1"/></svg>)";
+const QString SignalDialog::templateSvgOutline =
+    R"(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18"><circle cx="9" cy="9" r="6" stroke="%1" stroke-width="2" fill="white"/></svg>)";
 
 SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
-    : QDialog(parent)
-    , ui(new Ui::SignalDialog)
-    , m_settings(settings)
-    , m_frequency(freq)
+    : QDialog(parent), ui(new Ui::SignalDialog), m_settings(settings), m_frequency(freq)
 {
-    ui->setupUi(this);    
+    ui->setupUi(this);
 
 #ifndef Q_OS_MAC
     // Set window flags to add minimize buttons
@@ -89,7 +89,7 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     ui->freqOffsetLabel->setToolTip(ui->freqOffsetValue->toolTip());
 
     ui->syncLabel->setText("");
-    ui->syncLabel->setFixedSize(18+10,18);
+    ui->syncLabel->setFixedSize(18 + 10, 18);
 
     // ui->snrPlot->plotLayout()->insertRow(0);
     // QCPTextElement *title = new QCPTextElement(ui->snrPlot, "SNR Plot", QFont("sans", 17, QFont::Bold));
@@ -107,7 +107,7 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     ui->snrPlot->axisRect()->setupFullAxesBox();
     ui->snrPlot->xAxis->setRange(0, xPlotRange);
     ui->snrPlot->yAxis->setRange(0, 36);
-    //ui->snrPlot->xAxis->setLabel(tr("time"));
+    // ui->snrPlot->xAxis->setLabel(tr("time"));
     ui->snrPlot->setMinimumHeight(180);
 
     // make left and bottom axes transfer their ranges to right and top axes:
@@ -120,7 +120,7 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     // title = new QCPTextElement(ui->spectrumPlot, "Signal spectrum", QFont("sans", 17, QFont::Bold));
     // ui->spectrumPlot->plotLayout()->addElement(0, 0, title);
 
-    ui->spectrumPlot->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom)); // decimal point
+    ui->spectrumPlot->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));  // decimal point
     ui->spectrumPlot->setAttribute(Qt::WA_OpaquePaintEvent);
     ui->spectrumPlot->addGraph();
     ui->spectrumPlot->graph(0)->setLineStyle(QCPGraph::lsLine);
@@ -129,7 +129,7 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
 
     ui->spectrumPlot->axisRect()->setupFullAxesBox();
     ui->spectrumPlot->xAxis->setRange(-1.024, 1.024);
-    ui->spectrumPlot->yAxis->setRange(-100, 0);    
+    ui->spectrumPlot->yAxis->setRange(-100, 0);
     ui->spectrumPlot->xAxis2->setRange(-1.024, 1.024);
     ui->spectrumPlot->yAxis2->setRange(-100, 0);
 
@@ -145,7 +145,6 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     levelTicker->setTickStep(10);
     ui->spectrumPlot->yAxis->setTicker(levelTicker);
 
-
     QCPItemStraightLine *verticalLine;
     for (int n = -1; n <= 1; ++n)
     {
@@ -155,22 +154,26 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     setFreqRange();
 
     // make bottom and left axes transfer their ranges to top and right axes:
-    connect(ui->spectrumPlot->xAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), ui->spectrumPlot->xAxis2, QOverload<const QCPRange &>::of(&QCPAxis::setRange));
-    connect(ui->spectrumPlot->yAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), ui->spectrumPlot->yAxis2, QOverload<const QCPRange &>::of(&QCPAxis::setRange));
+    connect(ui->spectrumPlot->xAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), ui->spectrumPlot->xAxis2,
+            QOverload<const QCPRange &>::of(&QCPAxis::setRange));
+    connect(ui->spectrumPlot->yAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), ui->spectrumPlot->yAxis2,
+            QOverload<const QCPRange &>::of(&QCPAxis::setRange));
 
     // render level icons
     m_snrLevelIcons[0].loadFromData(templateSvgFill.arg(snrLevelColors.at(0)).toUtf8(), "svg");
-    for (int n = 1; n < 4; ++n) {
+    for (int n = 1; n < 4; ++n)
+    {
         m_snrLevelIcons[n].loadFromData(templateSvgOutline.arg(snrLevelColors.at(n)).toUtf8(), "svg");
-        m_snrLevelIcons[n+3].loadFromData(templateSvgFill.arg(snrLevelColors.at(n)).toUtf8(), "svg");
+        m_snrLevelIcons[n + 3].loadFromData(templateSvgFill.arg(snrLevelColors.at(n)).toUtf8(), "svg");
     }
 
     m_timer = new QTimer;
     m_timer->setInterval(1500);
-    connect(m_timer, &QTimer::timeout, this, [this]() { setSignalState(0, 0.0); } );
-    setSignalState(0, 0.0);            
+    connect(m_timer, &QTimer::timeout, this, [this]() { setSignalState(0, 0.0); });
+    setSignalState(0, 0.0);
 
-    if (!m_settings->signal.splitterState.isEmpty()) {
+    if (!m_settings->signal.splitterState.isEmpty())
+    {
         ui->splitter->restoreState(m_settings->signal.splitterState);
     }
 
@@ -180,13 +183,15 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
         restoreGeometry(m_settings->signal.geometry);
         sz = size();
     }
-    QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
+    QTimer::singleShot(10, this, [this, sz]() { resize(sz); });
 
-    QTimer::singleShot(100, this, [this]() {
-        setRfLevelVisible(false);
-        setGainVisible(false);
-        emit setSignalSpectrum(true);
-    });
+    QTimer::singleShot(100, this,
+                       [this]()
+                       {
+                           setRfLevelVisible(false);
+                           setGainVisible(false);
+                           emit setSignalSpectrum(true);
+                       });
 }
 
 SignalDialog::~SignalDialog()
@@ -345,10 +350,10 @@ void SignalDialog::setFreqRange()
 {
     for (int n = 0; n < 3; ++n)
     {
-        m_spectLineList.at(n)->point1->setCoords(((n-1) * 768 + m_frequency)*0.001, -100);
-        m_spectLineList.at(n)->point2->setCoords(((n-1) * 768 + m_frequency)*0.001, 0);
+        m_spectLineList.at(n)->point1->setCoords(((n - 1) * 768 + m_frequency) * 0.001, -100);
+        m_spectLineList.at(n)->point2->setCoords(((n - 1) * 768 + m_frequency) * 0.001, 0);
     }
-    ui->spectrumPlot->xAxis->setRange((-1024 + m_frequency)*0.001, (1024 + m_frequency)*0.001);
+    ui->spectrumPlot->xAxis->setRange((-1024 + m_frequency) * 0.001, (1024 + m_frequency) * 0.001);
 }
 
 void SignalDialog::reset()
@@ -417,13 +422,13 @@ void SignalDialog::updateRfLevel(float rfLevel, float gain)
     }
 
     if (std::isnan(rfLevel))
-    {   // level is not available (input device in HW mode or not RTL-SDR)
+    {  // level is not available (input device in HW mode or not RTL-SDR)
         ui->rfLevelValue->setText(tr("N/A"));
         setRfLevelVisible(false);
     }
     else
     {
-        ui->rfLevelValue->setText(QString::number(double(rfLevel),'f', 1) + " dBm");
+        ui->rfLevelValue->setText(QString::number(double(rfLevel), 'f', 1) + " dBm");
         setRfLevelVisible(true);
     }
 }
@@ -435,8 +440,8 @@ void SignalDialog::updateFreqOffset(float offset)
 
 void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
 {
-    //static QElapsedTimer timer;
-    //qDebug() << Q_FUNC_INFO << timer.restart();
+    // static QElapsedTimer timer;
+    // qDebug() << Q_FUNC_INFO << timer.restart();
 
     int idx = 0;
     for (auto it = m_spectrumBuffer.begin(); it != m_spectrumBuffer.end(); ++it)
@@ -446,15 +451,16 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
 
     if (++m_avrgCntr >= 10)
     {
-        //qDebug() << *std::min_element(m_spectrumBuffer.cbegin(), m_spectrumBuffer.cend())*0.1 << *std::max_element(m_spectrumBuffer.cbegin(), m_spectrumBuffer.cend())*0.1;
-        //qDebug() << Q_FUNC_INFO;
+        // qDebug() << *std::min_element(m_spectrumBuffer.cbegin(), m_spectrumBuffer.cend())*0.1 << *std::max_element(m_spectrumBuffer.cbegin(),
+        // m_spectrumBuffer.cend())*0.1; qDebug() << Q_FUNC_INFO;
         m_avrgCntr = 0;
 
         // -10 dB is averaging factor 1/10
         // 66.227dB is FFT gain 2048
         float offset_dB = -10.0 - 66.227;
-        if (m_settings->inputDevice == InputDeviceId::RTLSDR || m_settings->inputDevice == InputDeviceId::RTLTCP  || m_settings->inputDevice == InputDeviceId::RAWFILE)
-        {   // input is -128 .. +127  ==> * 1/128 = -42.144 dB
+        if (m_settings->inputDevice == InputDeviceId::RTLSDR || m_settings->inputDevice == InputDeviceId::RTLTCP ||
+            m_settings->inputDevice == InputDeviceId::RAWFILE)
+        {  // input is -128 .. +127  ==> * 1/128 = -42.144 dB
             offset_dB = offset_dB - 42.144;
         }
         if (!std::isnan(m_tunerGain))
@@ -469,14 +475,15 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
         float maxVal = -1000;
         for (auto it = m_spectrumBuffer.begin(); it != m_spectrumBuffer.end(); ++it)
         {
-            float val = 10*std::log10(*it) + offset_dB;
-            if (val < -200) {
+            float val = 10 * std::log10(*it) + offset_dB;
+            if (val < -200)
+            {
                 val = -200;
             }
             minVal = (val < minVal) ? val : minVal;
             maxVal = (val > maxVal) ? val : maxVal;
 
-            ui->spectrumPlot->graph(0)->addData((freq+m_frequency)*0.001, val);
+            ui->spectrumPlot->graph(0)->addData((freq + m_frequency) * 0.001, val);
 
             // if ((freq >= -768.0) && (freq <= 768.0))
             // {
@@ -494,12 +501,12 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
 
         auto range = ui->spectrumPlot->yAxis->range();
         if ((minVal - range.lower) < 5 || (minVal - range.lower) > 25)
-        {   // set minumum to at least minVal + 10, use multiples of 10
-            range.lower = (ceilf((minVal - 20)/10.0))*10.0;
+        {  // set minumum to at least minVal + 10, use multiples of 10
+            range.lower = (ceilf((minVal - 20) / 10.0)) * 10.0;
         }
         if ((range.upper - maxVal) < 5 || (range.upper - maxVal) > 25)
         {
-            range.upper = (floorf((maxVal + 20)/10.0))*10.0;
+            range.upper = (floorf((maxVal + 20) / 10.0)) * 10.0;
         }
         ui->spectrumPlot->yAxis->setRange(range);
         ui->spectrumPlot->replot();
@@ -554,14 +561,14 @@ void SignalDialog::addToPlot(float snr)
     {
         ui->snrPlot->xAxis->setRange(0, xPlotRange);
     }
-    else {
-        ui->snrPlot->xAxis->setRange(key-xPlotRange, key);
+    else
+    {
+        ui->snrPlot->xAxis->setRange(key - xPlotRange, key);
     }
     if (ui->snrPlot->graph(0)->data()->size() > 500)
-    {   // remove first points
+    {  // remove first points
         ui->snrPlot->graph(0)->data()->removeBefore(key - xPlotRange);
     }
 
     ui->snrPlot->replot();
 }
-

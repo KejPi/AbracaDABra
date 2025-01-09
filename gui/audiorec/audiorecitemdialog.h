@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,10 +29,12 @@
 
 #include <QDialog>
 #include <QItemSelectionModel>
-#include "slmodel.h"
-#include "audiorecscheduleitem.h"
 
-namespace Ui {
+#include "audiorecscheduleitem.h"
+#include "slmodel.h"
+
+namespace Ui
+{
 class AudioRecItemDialog;
 }
 
@@ -41,24 +43,24 @@ class AudioRecItemDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit AudioRecItemDialog(QLocale locale, SLModel * slModel, QWidget *parent = nullptr);
+    explicit AudioRecItemDialog(QLocale locale, SLModel *slModel, QWidget *parent = nullptr);
     ~AudioRecItemDialog();
 
-    const AudioRecScheduleItem & itemData() const;
+    const AudioRecScheduleItem &itemData() const;
     void setItemData(const AudioRecScheduleItem &newItemData);
 
 private:
     Ui::AudioRecItemDialog *ui;
     QLocale m_locale;
     AudioRecScheduleItem m_itemData;
-    SLModel * m_slModel;
+    SLModel *m_slModel;
 
     void alignUiState();
     void onStartDateChanged();
-    void onStartTimeChanged(const QTime & time);
+    void onStartTimeChanged(const QTime &time);
     void onDurationChanged(const QDateTime &duration);
     void onServiceSelection(const QItemSelection &selection);
     void updateEndTime();
 };
 
-#endif // AUDIORECITEMDIALOG_H
+#endif  // AUDIORECITEMDIALOG_H

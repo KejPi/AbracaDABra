@@ -1,35 +1,37 @@
 #ifndef RARTTCPINPUT_H
 #define RARTTCPINPUT_H
 
+#include <stdio.h>
+
 #include <QObject>
 #include <QThread>
 #include <QTimer>
-#include <stdio.h>
+
 #include "inputdevice.h"
 
 // socket
 #if defined(_WIN32)
+#include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#include <windows.h>
 
 #else
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <netdb.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <poll.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 #define SOCKET int
 #define INVALID_SOCKET (-1)
 #endif
 
-#define RARTTCP_CHUNK_SIZE (16384*100)
+#define RARTTCP_CHUNK_SIZE (16384 * 100)
 
-#define RARTTCP_START_COUNTER_INIT 2 // init value of the counter used to reset buffer after tune
+#define RARTTCP_START_COUNTER_INIT 2  // init value of the counter used to reset buffer after tune
 
 class RartTcpWorker : public QThread
 {
@@ -39,10 +41,11 @@ public:
     void captureIQ(bool ena);
     void startStopRecording(bool ena);
     bool isRunning();
+
 protected:
     void run() override;
 signals:
-    void recordBuffer(const uint8_t * buf, uint32_t len);
+    void recordBuffer(const uint8_t *buf, uint32_t len);
     void dataReady();
 
 private:
@@ -65,7 +68,7 @@ class RartTcpInput : public InputDevice
 
     enum class RartTcpCommand
     {
-        SET_FREQ             = 0x01,
+        SET_FREQ = 0x01,
     };
 
 public:
@@ -73,23 +76,23 @@ public:
     ~RartTcpInput();
     bool openDevice() override;
     void tune(uint32_t frequency) override;
-    void setTcpIp(const QString & address, int port);
+    void setTcpIp(const QString &address, int port);
     void startStopRecording(bool start) override;
-private:    
+
+private:
     uint32_t m_frequency;
     SOCKET m_sock;
     QString m_address;
     int m_port;
 
-    RartTcpWorker * m_worker;
+    RartTcpWorker *m_worker;
     QTimer m_watchdogTimer;
 
     // private function
-    void sendCommand(const RartTcpCommand & cmd, uint32_t param);
+    void sendCommand(const RartTcpCommand &cmd, uint32_t param);
 private slots:
     void onReadThreadStopped();
     void onWatchdogTimeout();
 };
 
-
-#endif // RARTTCPINPUT_H
+#endif  // RARTTCPINPUT_H

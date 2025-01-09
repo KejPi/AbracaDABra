@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,14 @@
  * SOFTWARE.
  */
 
-#include <QTime>
-#include <QBrush>
-#include <QPixmap>
 #include "audiorecschedulemodel.h"
 
-AudioRecScheduleModel::AudioRecScheduleModel(QObject *parent)
-    : QAbstractTableModel{parent}, m_slModel(nullptr)
-{
-}
+#include <QBrush>
+#include <QPixmap>
+#include <QTime>
+
+AudioRecScheduleModel::AudioRecScheduleModel(QObject *parent) : QAbstractTableModel{parent}, m_slModel(nullptr)
+{}
 
 int AudioRecScheduleModel::rowCount(const QModelIndex &parent) const
 {
@@ -57,42 +56,50 @@ QVariant AudioRecScheduleModel::data(const QModelIndex &index, int role) const
     }
 
     const auto &item = m_modelData.at(index.row());
-    if (role == Qt::DisplayRole) {
-        switch (index.column()) {
-        case ColState:
-            break;
-        case ColLabel:
-            return item.name();
-        case ColStartTime:
-            return item.startTime();
-        case ColEndTime:
-            return item.endTime();
-        case ColDuration:
-            return item.duration();
-        case ColService: {
-            if (m_slModel == nullptr) {
-                return QString("%1").arg(item.serviceId().sid(), 6, 16, QChar('0')).toUpper();
+    if (role == Qt::DisplayRole)
+    {
+        switch (index.column())
+        {
+            case ColState:
+                break;
+            case ColLabel:
+                return item.name();
+            case ColStartTime:
+                return item.startTime();
+            case ColEndTime:
+                return item.endTime();
+            case ColDuration:
+                return item.duration();
+            case ColService:
+            {
+                if (m_slModel == nullptr)
+                {
+                    return QString("%1").arg(item.serviceId().sid(), 6, 16, QChar('0')).toUpper();
+                }
+                const ServiceList *slPtr = m_slModel->getServiceList();
+                const auto it = slPtr->findService(item.serviceId());
+                if (it != slPtr->serviceListEnd())
+                {
+                    return it.value()->label();
+                }
+                else
+                {
+                    return QString("%1").arg(item.serviceId().sid(), 6, 16, QChar('0')).toUpper();
+                }
             }
-            const ServiceList * slPtr = m_slModel->getServiceList();
-            const auto it = slPtr->findService(item.serviceId());
-            if (it != slPtr->serviceListEnd()) {
-                return it.value()->label();
-            }
-            else {
-                return QString("%1").arg(item.serviceId().sid(), 6, 16, QChar('0')).toUpper();
-            }
-        }
             break;
-        default:
-            break;
+            default:
+                break;
         }
     }
     else if (role == Qt::DecorationRole)
     {
-        if ((index.column() == ColState) && item.isRecorded()) {
+        if ((index.column() == ColState) && item.isRecorded())
+        {
             return QPixmap(":/resources/record.png");
         }
-        if ((index.column() == ColState) && item.hasConflict()) {
+        if ((index.column() == ColState) && item.hasConflict())
+        {
             return QPixmap(":/resources/conflict.png");
         }
     }
@@ -106,22 +113,24 @@ QVariant AudioRecScheduleModel::headerData(int section, Qt::Orientation orientat
         return QVariant();
     }
 
-    if (orientation == Qt::Horizontal) {
-        switch (section) {
-        case ColState:
-            return "";
-        case ColLabel:
-            return tr("Name");
-        case ColStartTime:
-            return tr("Start time");
-        case ColEndTime:
-            return tr("End time");
-        case ColDuration:
-            return tr("Duration");
-        case ColService:
-            return tr("Service");
-        default:
-            break;
+    if (orientation == Qt::Horizontal)
+    {
+        switch (section)
+        {
+            case ColState:
+                return "";
+            case ColLabel:
+                return tr("Name");
+            case ColStartTime:
+                return tr("Start time");
+            case ColEndTime:
+                return tr("End time");
+            case ColDuration:
+                return tr("Duration");
+            case ColService:
+                return tr("Service");
+            default:
+                break;
         }
     }
     return QVariant();
@@ -163,7 +172,7 @@ void AudioRecScheduleModel::insertItem(const AudioRecScheduleItem &item)
     endResetModel();
 }
 
-void AudioRecScheduleModel::replaceItemAtIndex(const QModelIndex & index, const AudioRecScheduleItem & item)
+void AudioRecScheduleModel::replaceItemAtIndex(const QModelIndex &index, const AudioRecScheduleItem &item)
 {
     beginResetModel();
     m_modelData[index.row()] = item;
@@ -186,7 +195,7 @@ void AudioRecScheduleModel::load(QSettings &settings)
     beginResetModel();
     m_modelData.clear();
     int numItems = settings.beginReadArray("AudioRecordingSchedule");
-    for (int n = 0; n<numItems; ++n)
+    for (int n = 0; n < numItems; ++n)
     {
         AudioRecScheduleItem item;
         settings.setArrayIndex(n);
@@ -206,7 +215,7 @@ void AudioRecScheduleModel::save(QSettings &settings)
 {
     settings.beginWriteArray("AudioRecordingSchedule", m_modelData.size());
     int n = 0;
-    for (const auto & item : m_modelData)
+    for (const auto &item : m_modelData)
     {
         settings.setArrayIndex(n++);
         settings.setValue("Name", item.name());
@@ -221,7 +230,7 @@ void AudioRecScheduleModel::cleanup(const QDateTime &currentTime)
 {
     auto it = m_modelData.constBegin();
     while (it != m_modelData.constEnd())
-    {        
+    {
         if (it->endTime() <= currentTime)
         {
             it = m_modelData.erase(it);
@@ -245,7 +254,8 @@ void AudioRecScheduleModel::sortFindConflicts()
     std::sort(m_modelData.begin(), m_modelData.end());
     QDateTime endTime;
     endTime.setSecsSinceEpoch(0);
-    for (auto & item : m_modelData) {
+    for (auto &item : m_modelData)
+    {
         if (item.startTime() >= endTime)
         {
             item.setHasConflict(false);
@@ -254,7 +264,8 @@ void AudioRecScheduleModel::sortFindConflicts()
         else
         {
             item.setHasConflict(true);
-            if (item.endTime() > endTime) {
+            if (item.endTime() > endTime)
+            {
                 endTime = item.endTime();
             }
         }
@@ -263,14 +274,16 @@ void AudioRecScheduleModel::sortFindConflicts()
 
 bool AudioRecScheduleModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (index.isValid() && role == Qt::EditRole) {
+    if (index.isValid() && role == Qt::EditRole)
+    {
         const int row = index.row();
-        switch (index.column()) {
-        case ColState:
-            m_modelData[row].setIsRecorded(value.toBool());
-            break;
-        default:
-            return false;
+        switch (index.column())
+        {
+            case ColState:
+                m_modelData[row].setIsRecorded(value.toBool());
+                break;
+            default:
+                return false;
         }
         emit dataChanged(index, index, {Qt::DisplayRole, Qt::EditRole});
 

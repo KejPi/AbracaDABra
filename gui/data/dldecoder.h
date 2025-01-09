@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,11 +27,11 @@
 #ifndef DLDECODER_H
 #define DLDECODER_H
 
-#include <QObject>
 #include <QHash>
+#include <QObject>
 
 #define XPAD_DL_NUM_DG_MAX (8)
-#define XPAD_DL_LEN_MAX  (XPAD_DL_NUM_DG_MAX*16)
+#define XPAD_DL_LEN_MAX (XPAD_DL_NUM_DG_MAX * 16)
 
 #define DLDECODER_VERBOSE 1
 
@@ -68,10 +68,10 @@ enum class DLPlusContentType
     INFO_TRAFFIC = 26,
     INFO_ALARM = 27,
     INFO_ADVERTISEMENT = 28,
-    INFO_URL  = 29,
+    INFO_URL = 29,
     INFO_OTHER = 30,
-    STATIONNAME_SHORT  = 31,
-    STATIONNAME_LONG  = 32,
+    STATIONNAME_SHORT = 31,
+    STATIONNAME_LONG = 32,
     PROGRAMME_NOW = 33,
     PROGRAMME_NEXT = 34,
     PROGRAMME_PART = 35,
@@ -84,17 +84,17 @@ enum class DLPlusContentType
     // [ETSI TS 102 980 V2.1.2] Annex A (normative): List of DL Plus content types
     // NOTE 6 : Intended for RT+ receivers; DL Plus equipped receivers ignore this content type.
     PROGRAMME_SUBCHANNEL = 40,
-    PHONE_HOTLINE  = 41,
-    PHONE_STUDIO  = 42,
-    PHONE_OTHER  = 43,
+    PHONE_HOTLINE = 41,
+    PHONE_STUDIO = 42,
+    PHONE_OTHER = 43,
     SMS_STUDIO = 44,
     SMS_OTHER = 45,
-    EMAIL_HOTLINE  = 46,
-    EMAIL_STUDIO  = 47,
+    EMAIL_HOTLINE = 46,
+    EMAIL_STUDIO = 47,
     EMAIL_OTHER = 48,
-    MMS_OTHER  = 49,
+    MMS_OTHER = 49,
     CHAT = 50,
-    CHAT_CENTER  = 51,
+    CHAT_CENTER = 51,
     VOTE_QUESTION = 52,
     VOTE_CENTRE = 53,
     // rfu = 54
@@ -115,7 +115,7 @@ class DLPlusObject
 public:
     //! @brief Constructors
     DLPlusObject();
-    DLPlusObject(const QString & newTag, DLPlusContentType newType);
+    DLPlusObject(const QString &newTag, DLPlusContentType newType);
 
     DLPlusContentType getType() const;
     void setType(DLPlusContentType newType);
@@ -127,8 +127,9 @@ public:
     bool isItem() const;
     bool isDummy() const;
 
-    bool operator==(const DLPlusObject & other) const;
-    bool operator!=(const DLPlusObject & other) const;
+    bool operator==(const DLPlusObject &other) const;
+    bool operator!=(const DLPlusObject &other) const;
+
 private:
     DLPlusContentType type;
     QString tag;
@@ -141,7 +142,7 @@ public:
     explicit DLDecoder(QObject *parent = nullptr);
 
 public slots:
-    void newDataGroup(const QByteArray & dataGroup);
+    void newDataGroup(const QByteArray &dataGroup);
     void reset();
 
 signals:
@@ -165,11 +166,11 @@ private:
     QByteArray dlCommand;
     QString message;
 
-    bool crc16check(const QByteArray & data);
+    bool crc16check(const QByteArray &data);
 
     bool assembleDL(const QByteArray &dataGroup);
     bool assembleDLPlusCommand(const QByteArray &dataGroup);
     void parseDLPlusCommand();
 };
 
-#endif // DLDECODER_H
+#endif  // DLDECODER_H

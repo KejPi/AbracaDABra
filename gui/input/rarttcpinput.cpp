@@ -1,27 +1,30 @@
-#include <QDir>
-#include <QDebug>
-#include <QLoggingCategory>
 #include "rarttcpinput.h"
+
+#include <QDebug>
+#include <QDir>
+#include <QLoggingCategory>
 
 Q_LOGGING_CATEGORY(rartTcpInput, "RaRTTcpInput", QtInfoMsg)
 
 #if defined(_WIN32)
-class SocketInitialiseWrapper {
+class SocketInitialiseWrapper
+{
 public:
-    SocketInitialiseWrapper() {
+    SocketInitialiseWrapper()
+    {
         WSADATA wsa;
         qDebug() << "RART-TCP: Initialising Winsock...";
 
-        if (WSAStartup(MAKEWORD(2,2),&wsa) != 0)
+        if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+        {
             qDebug() << "RART-TCP: Winsock init failed. Error Code:" << WSAGetLastError();
+        }
     }
 
-    ~SocketInitialiseWrapper() {
-        WSACleanup();
-    }
+    ~SocketInitialiseWrapper() { WSACleanup(); }
 
-    SocketInitialiseWrapper(SocketInitialiseWrapper&) = delete;
-    SocketInitialiseWrapper& operator=(SocketInitialiseWrapper&) = delete;
+    SocketInitialiseWrapper(SocketInitialiseWrapper &) = delete;
+    SocketInitialiseWrapper &operator=(SocketInitialiseWrapper &) = delete;
 };
 
 static SocketInitialiseWrapper socketInitialiseWrapper;
@@ -57,7 +60,7 @@ RartTcpInput::~RartTcpInput()
 
         m_worker->wait(2000);
 
-        while  (!m_worker->isFinished())
+        while (!m_worker->isFinished())
         {
             qCWarning(rartTcpInput) << "Worker thread not finished after timeout - this should not happen :-(";
 
@@ -74,7 +77,7 @@ RartTcpInput::~RartTcpInput()
 bool RartTcpInput::openDevice()
 {
     if (nullptr != m_worker)
-    {   // device already opened
+    {  // device already opened
         return true;
     }
 
@@ -83,7 +86,7 @@ bool RartTcpInput::openDevice()
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = 0;
-    hints.ai_protocol = 0;          /* Any protocol */
+    hints.ai_protocol = 0; /* Any protocol */
 
     QString port_str = QString().number(m_port);
 
@@ -124,14 +127,14 @@ bool RartTcpInput::openDevice()
             qCWarning(rartTcpInput) << "Failed to set non-blocking socket";
         }
 
-        struct sockaddr_in *sa = (struct sockaddr_in *) rp->ai_addr;
+        struct sockaddr_in *sa = (struct sockaddr_in *)rp->ai_addr;
         qCInfo(rartTcpInput, "Trying to connect to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
         ::connect(sfd, rp->ai_addr, rp->ai_addrlen);
         // https://docs.microsoft.com/en-us/previous-versions/windows/embedded/aa450263(v=msdn.10)
         //  It is normal for WSAEWOULDBLOCK to be reported as the result from calling connect (Windows Sockets)
         // on a nonblocking SOCK_STREAM socket, since some time must elapse for the connection to be established.
 #if (_WIN32_WINNT >= 0x0600)
-        struct pollfd  pfd;
+        struct pollfd pfd;
         pfd.fd = sfd;
         pfd.events = POLLIN;
         if (WSAPoll(&pfd, 1, 2000) > 0)
@@ -148,10 +151,10 @@ bool RartTcpInput::openDevice()
             break; /* Success */
         }
         else
-        {   // -1 is error, 0 is timeout
+        {  // -1 is error, 0 is timeout
             qCCritical(rartTcpInput) << "Unable to connect";
         }
-#else   // (_WIN32_WINNT < 0x0600) \
+#else  // (_WIN32_WINNT < 0x0600) \
     // poll API does not exist :-( \
     // this part was not tested
         fd_set connFd;
@@ -162,7 +165,7 @@ bool RartTcpInput::openDevice()
         TIMEVAL connTimeout;
         connTimeout.tv_sec = 2;
         connTimeout.tv_usec = 0;
-        if (::select(sfd+1, nullptr, &connFd, nullptr, &connTimeout) > 0)
+        if (::select(sfd + 1, nullptr, &connFd, nullptr, &connTimeout) > 0)
         {
             qCInfo(rartTcpInput, "Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
 
@@ -176,24 +179,24 @@ bool RartTcpInput::openDevice()
             break; /* Success */
         }
         else
-        {   // -1 is error, 0 is timeout
+        {  // -1 is error, 0 is timeout
             qCCritical(rartTcpInputrartTcpInput) << "Unable to connect";
         }
 #endif
 
-#else   // not defined(_WIN32)
+#else  // not defined(_WIN32)
         long arg;
-        if( (arg = fcntl(sfd, F_GETFL, NULL)) < 0)
+        if ((arg = fcntl(sfd, F_GETFL, NULL)) < 0)
         {
             qCWarning(rartTcpInput, "Error fcntl(..., F_GETFL) (%s)", strerror(errno));
         }
         arg |= O_NONBLOCK;
-        if( fcntl(sfd, F_SETFL, arg) < 0)
+        if (fcntl(sfd, F_SETFL, arg) < 0)
         {
             qCWarning(rartTcpInput, "Error fcntl(..., F_SETFL) (%s)", strerror(errno));
         }
 
-        struct sockaddr_in *sa = (struct sockaddr_in *) rp->ai_addr;
+        struct sockaddr_in *sa = (struct sockaddr_in *)rp->ai_addr;
         qCInfo(rartTcpInput, "Trying to connect to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
         ::connect(sfd, rp->ai_addr, rp->ai_addrlen);
 
@@ -205,12 +208,12 @@ bool RartTcpInput::openDevice()
             qCInfo(rartTcpInput, "Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
 
             // set bloking mode again
-            if( (arg = fcntl(sfd, F_GETFL, NULL)) < 0)
+            if ((arg = fcntl(sfd, F_GETFL, NULL)) < 0)
             {
                 qCWarning(rartTcpInput, "Error fcntl(..., F_GETFL) (%s)", strerror(errno));
             }
             arg &= (~O_NONBLOCK);
-            if( fcntl(sfd, F_SETFL, arg) < 0)
+            if (fcntl(sfd, F_SETFL, arg) < 0)
             {
                 qCWarning(rartTcpInput, "Error fcntl(..., F_SETFL) (%s)", strerror(errno));
             }
@@ -219,7 +222,7 @@ bool RartTcpInput::openDevice()
             break; /* Success */
         }
         else
-        {   // -1 is error, 0 is timeout
+        {  // -1 is error, 0 is timeout
             qCCritical(rartTcpInput) << "Unable to connect";
         }
 #endif
@@ -232,7 +235,7 @@ bool RartTcpInput::openDevice()
     }
 
     if (NULL == rp)
-    {   /* No address succeeded */
+    { /* No address succeeded */
         qCCritical(rartTcpInput) << "Could not connect";
         return false;
     }
@@ -247,15 +250,15 @@ bool RartTcpInput::openDevice()
     // get information about the device
 #if defined(_WIN32)
 #if (_WIN32_WINNT >= 0x0600)
-    struct pollfd  fd;
+    struct pollfd fd;
     fd.fd = m_sock;
     fd.events = POLLIN;
     if (WSAPoll(&fd, 1, 2000) > 0)
     {
-        ::recv(m_sock, (char *) &dongleInfo, sizeof(dongleInfo), 0);
+        ::recv(m_sock, (char *)&dongleInfo, sizeof(dongleInfo), 0);
     }
     else
-    {   // -1 is error, 0 is timeout
+    {  // -1 is error, 0 is timeout
         qCCritical(rartTcpInput) << "Unable to get RTL dongle infomation";
         return false;
     }
@@ -269,12 +272,12 @@ bool RartTcpInput::openDevice()
     TIMEVAL Timeout;
     Timeout.tv_sec = 2;
     Timeout.tv_usec = 0;
-    if (::select(sock+1, nullptr, &readFd, nullptr, &Timeout) > 0)
+    if (::select(sock + 1, nullptr, &readFd, nullptr, &Timeout) > 0)
     {
-        ::recv(sock, (char *) &dongleInfo, sizeof(dongleInfo), 0);
+        ::recv(sock, (char *)&dongleInfo, sizeof(dongleInfo), 0);
     }
     else
-    {   // -1 is error, 0 is timeout
+    {  // -1 is error, 0 is timeout
         qCCritical(rartTcpInput) << "Unable to get RTL dongle infomation";
         return false;
     }
@@ -285,10 +288,10 @@ bool RartTcpInput::openDevice()
     fd.events = POLLIN;
     if (poll(&fd, 1, 2000) > 0)
     {
-        ::recv(m_sock, (char *) &dongleInfo, sizeof(dongleInfo), 0);
+        ::recv(m_sock, (char *)&dongleInfo, sizeof(dongleInfo), 0);
     }
     else
-    {   // -1 is error, 0 is timeout
+    {  // -1 is error, 0 is timeout
         qCCritical(rartTcpInput) << "Unable to get RTL dongle infomation";
         return false;
     }
@@ -297,10 +300,7 @@ bool RartTcpInput::openDevice()
     // Convert the byte order
     dongleInfo.tunerType = ntohl(dongleInfo.tunerType);
     dongleInfo.tunerGainCount = ntohl(dongleInfo.tunerGainCount);
-    if(dongleInfo.magic[0] == 'R' &&
-        dongleInfo.magic[1] == 'a' &&
-        dongleInfo.magic[2] == 'R' &&
-        dongleInfo.magic[3] == 'T')
+    if (dongleInfo.magic[0] == 'R' && dongleInfo.magic[1] == 'a' && dongleInfo.magic[2] == 'R' && dongleInfo.magic[3] == 'T')
     {
         m_deviceDescription.device.name = "rart_tcp";
         m_deviceDescription.device.model = "RaRT";
@@ -311,11 +311,11 @@ bool RartTcpInput::openDevice()
 
         // need to create worker, server is pushing samples
         m_worker = new RartTcpWorker(m_sock, this);
-        connect(m_worker, &RartTcpWorker::dataReady, this, [=](){ emit tuned(m_frequency); }, Qt::QueuedConnection);
+        connect(m_worker, &RartTcpWorker::dataReady, this, [=]() { emit tuned(m_frequency); }, Qt::QueuedConnection);
         connect(m_worker, &RartTcpWorker::recordBuffer, this, &InputDevice::recordBuffer, Qt::DirectConnection);
         connect(m_worker, &RartTcpWorker::finished, this, &RartTcpInput::onReadThreadStopped, Qt::QueuedConnection);
         connect(m_worker, &RartTcpWorker::finished, m_worker, &QObject::deleteLater);
-        connect(m_worker, &RartTcpWorker::destroyed, this, [=]() { m_worker = nullptr; } );
+        connect(m_worker, &RartTcpWorker::destroyed, this, [=]() { m_worker = nullptr; });
         m_worker->start();
         m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
         emit deviceReady();
@@ -324,7 +324,7 @@ bool RartTcpInput::openDevice()
     {
         qDebug() << "RART-TCP: \"RaRT\" magic key not found. Server not supported";
         return false;
-    }    
+    }
     return true;
 }
 
@@ -333,8 +333,8 @@ void RartTcpInput::tune(uint32_t frequency)
     m_frequency = frequency;
 
     if ((m_frequency > 0) && (nullptr != m_worker))
-    {   // Tune to new frequency
-        sendCommand(RartTcpCommand::SET_FREQ, m_frequency*1000);
+    {  // Tune to new frequency
+        sendCommand(RartTcpCommand::SET_FREQ, m_frequency * 1000);
 
         m_worker->captureIQ(true);
 
@@ -359,7 +359,7 @@ void RartTcpInput::setTcpIp(const QString &address, int port)
 
 void RartTcpInput::onReadThreadStopped()
 {
-   qCCritical(rartTcpInput) << "server disconnected.";
+    qCCritical(rartTcpInput) << "server disconnected.";
 
     // close socket
 #if defined(_WIN32)
@@ -398,7 +398,7 @@ void RartTcpInput::startStopRecording(bool start)
     m_worker->startStopRecording(start);
 }
 
-void RartTcpInput::sendCommand(const RartTcpCommand & cmd, uint32_t param)
+void RartTcpInput::sendCommand(const RartTcpCommand &cmd, uint32_t param)
 {
     if (nullptr == m_worker)
     {
@@ -413,7 +413,7 @@ void RartTcpInput::sendCommand(const RartTcpCommand & cmd, uint32_t param)
     cmdBuffer[2] = (param >> 16) & 0xFF;
     cmdBuffer[1] = (param >> 24) & 0xFF;
 
-    ::send(m_sock, (char *) cmdBuffer, 5, 0);
+    ::send(m_sock, (char *)cmdBuffer, 5, 0);
 }
 
 RartTcpWorker::RartTcpWorker(SOCKET sock, QObject *parent) : QThread(parent)
@@ -438,9 +438,9 @@ void RartTcpWorker::run()
         size_t read = 0;
         do
         {
-            ssize_t ret = ::recv(m_sock, (char *) m_bufferIQ+read, RARTTCP_CHUNK_SIZE - read, 0);
+            ssize_t ret = ::recv(m_sock, (char *)m_bufferIQ + read, RARTTCP_CHUNK_SIZE - read, 0);
             if (0 == ret)
-            {   // disconnected => finish thread operation
+            {  // disconnected => finish thread operation
                 qDebug() << "RART-TCP: socket disconnected";
                 goto worker_exit;
             }
@@ -452,13 +452,13 @@ void RartTcpWorker::run()
                     continue;
                 }
                 else if (WSAECONNABORTED == WSAGetLastError())
-                {   // disconnected => finish thread operation
+                {  // disconnected => finish thread operation
                     // when socket is diconnected under Win, recv returns -1 but error code is 0
                     qDebug() << "RART-TCP: socket disconnected";
                     goto worker_exit;
                 }
                 else if ((WSAECONNRESET == WSAGetLastError()) || (WSAEBADF == WSAGetLastError()))
-                {   // disconnected => finish thread operation
+                {  // disconnected => finish thread operation
                     qDebug() << "RART-TCP: socket read error:" << strerror(WSAGetLastError());
                     goto worker_exit;
                 }
@@ -472,7 +472,7 @@ void RartTcpWorker::run()
                     continue;
                 }
                 else if ((ECONNRESET == errno) || (EBADF == errno))
-                {   // disconnected => finish thread operation
+                {  // disconnected => finish thread operation
                     qDebug() << "RART-TCP: error: " << strerror(errno);
                     goto worker_exit;
                 }
@@ -493,11 +493,11 @@ void RartTcpWorker::run()
 
         // full chunk is read at this point
         if (m_enaCaptureIQ)
-        {   // process data
+        {  // process data
             if (m_captureStartCntr > 0)
-            {   // reset procedure
+            {  // reset procedure
                 if (0 == --m_captureStartCntr)
-                {   // restart finished
+                {  // restart finished
 
                     // clear buffer to avoid mixing of channels
                     inputBuffer.reset();
@@ -505,12 +505,14 @@ void RartTcpWorker::run()
                     emit dataReady();
                 }
                 else
-                {   // only reecord if recording
+                {  // only reecord if recording
                     if (m_isRecording)
                     {
                         emit recordBuffer(m_bufferIQ, RARTTCP_CHUNK_SIZE);
                     }
-                    else { /* not recording */ }
+                    else
+                    { /* not recording */
+                    }
 
                     // done
                     continue;
@@ -557,7 +559,7 @@ void RartTcpWorker::processInputData(unsigned char *buf, uint32_t len)
     pthread_mutex_unlock(&inputBuffer.countMutex);
 
     uint32_t numSamples = len >> 1;  // number of I and Q samples, one I or Q sample is 2 bytes (int16)
-    if ((INPUT_FIFO_SIZE - count) < numSamples*sizeof(float))
+    if ((INPUT_FIFO_SIZE - count) < numSamples * sizeof(float))
     {
         qCWarning(rartTcpInput) << "dropping" << numSamples << "samples...";
         return;
@@ -568,38 +570,37 @@ void RartTcpWorker::processInputData(unsigned char *buf, uint32_t len)
 
     // there is enough room in buffer
     uint64_t bytesTillEnd = INPUT_FIFO_SIZE - inputBuffer.head;
-    int16_t * inPtr = (int16_t *) buf;
-    if (bytesTillEnd >= numSamples*sizeof(float))
+    int16_t *inPtr = (int16_t *)buf;
+    if (bytesTillEnd >= numSamples * sizeof(float))
     {
-        float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
-        for (uint64_t k=0; k<numSamples; k++)
-        {   // convert to float
+        float *outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
+        for (uint64_t k = 0; k < numSamples; k++)
+        {                                 // convert to float
             *outPtr++ = float(*inPtr++);  // I or Q
         }
-        inputBuffer.head = (inputBuffer.head + numSamples*sizeof(float));
+        inputBuffer.head = (inputBuffer.head + numSamples * sizeof(float));
     }
     else
     {
         Q_ASSERT(sizeof(float) == 4);
-        uint64_t samplesTillEnd = bytesTillEnd >> 2; // / sizeof(float);
+        uint64_t samplesTillEnd = bytesTillEnd >> 2;  // / sizeof(float);
 
-        float * outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
-        for (uint64_t k=0; k<samplesTillEnd; ++k)
-        {   // convert to float
+        float *outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
+        for (uint64_t k = 0; k < samplesTillEnd; ++k)
+        {                                 // convert to float
             *outPtr++ = float(*inPtr++);  // I or Q
         }
 
         outPtr = (float *)(inputBuffer.buffer);
-        for (uint64_t k=0; k<numSamples-samplesTillEnd; ++k)
-        {   // convert to float
+        for (uint64_t k = 0; k < numSamples - samplesTillEnd; ++k)
+        {                                 // convert to float
             *outPtr++ = float(*inPtr++);  // I or Q
         }
-        inputBuffer.head = (numSamples-samplesTillEnd)*sizeof(float);
+        inputBuffer.head = (numSamples - samplesTillEnd) * sizeof(float);
     }
 
     pthread_mutex_lock(&inputBuffer.countMutex);
-    inputBuffer.count = inputBuffer.count + numSamples*sizeof(float);
+    inputBuffer.count = inputBuffer.count + numSamples * sizeof(float);
     pthread_cond_signal(&inputBuffer.countCondition);
     pthread_mutex_unlock(&inputBuffer.countMutex);
 }
-

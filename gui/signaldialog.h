@@ -30,9 +30,11 @@
 #include <QDateTime>
 #include <QDialog>
 #include <QTimer>
+
 #include "settings.h"
 
-namespace Ui {
+namespace Ui
+{
 class SignalDialog;
 }
 
@@ -58,16 +60,19 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
-    enum { xPlotRange = 2*60 };
-    static const char * syncLevelLabels[];
+    enum
+    {
+        xPlotRange = 2 * 60
+    };
+    static const char *syncLevelLabels[];
     static const QStringList snrLevelColors;
     static const QString templateSvgFill;
     static const QString templateSvgOutline;
     QPixmap m_snrLevelIcons[7];
     Ui::SignalDialog *ui;
-    Settings * m_settings = nullptr;
+    Settings *m_settings = nullptr;
     QTime m_startTime;
-    QTimer * m_timer = nullptr;
+    QTimer *m_timer = nullptr;
     int m_avrgCntr = 0;
     std::vector<float> m_spectrumBuffer;
     QList<QCPItemStraightLine *> m_spectLineList;
@@ -84,4 +89,4 @@ private:
     void setGainVisible(bool visible);
 };
 
-#endif // SIGNALDIALOG_H
+#endif  // SIGNALDIALOG_H

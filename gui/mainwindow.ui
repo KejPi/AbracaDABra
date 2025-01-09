@@ -814,7 +814,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
   <customwidget>
    <class>SLSView</class>
    <extends>QGraphicsView</extends>
-   <header>mainwindow.h</header>
+   <header>slsview.h</header>
   </customwidget>
   <customwidget>
    <class>ClickableLabel</class>

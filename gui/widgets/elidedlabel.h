@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ public:
     explicit ElidedLabel(QWidget *parent = nullptr);
 
     void setText(const QString &text);
-    const QString & text() const { return content; }
+    const QString &text() const { return content; }
 
     void setElideMode(Qt::TextElideMode elideMode);
     Qt::TextElideMode elideMode() const { return m_elideMode; }
@@ -51,5 +51,4 @@ private:
     QString content;
 };
 
-
-#endif // ELIDEDLABEL_H
+#endif  // ELIDEDLABEL_H

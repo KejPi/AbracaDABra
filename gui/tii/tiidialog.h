@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,13 +28,14 @@
 #define TIIDIALOG_H
 
 #include <QDialog>
-#include <QQuickView>
 #include <QGeoPositionInfoSource>
 #include <QItemSelectionModel>
-#include "settings.h"
-#include "radiocontrol.h"
-#include "txmapdialog.h"
+#include <QQuickView>
+
 #include "config.h"
+#include "radiocontrol.h"
+#include "settings.h"
+#include "txmapdialog.h"
 #if HAVE_QCUSTOMPLOT
 #include <qcustomplot.h>
 #endif
@@ -45,33 +46,44 @@ class TIIDialog : public TxMapDialog
 {
     Q_OBJECT
 public:
-    explicit TIIDialog(Settings * settings, QWidget *parent = nullptr);
+    explicit TIIDialog(Settings *settings, QWidget *parent = nullptr);
     ~TIIDialog();
-    void onTiiData(const RadioControlTIIData & data) override;
-    void onSignalState(uint8_t , float snr) { m_snr = snr; };
+    void onTiiData(const RadioControlTIIData &data) override;
+    void onSignalState(uint8_t, float snr) { m_snr = snr; };
     void setupDarkMode(bool darkModeEna) override;
     void onChannelSelection();
     void onEnsembleInformation(const RadioControlEnsemble &ens) override;
     void onSettingsChanged() override;
 
     Q_INVOKABLE void startStopLog() override;
+
 protected:
     void showEvent(QShowEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
     void onSelectedRowChanged() override;
 
 private:
-    enum GraphId {Spect, TII};
-    enum GraphRange { MinX = 0, MaxX = 191, MinY = 0, MaxY = 1 };
+    enum GraphId
+    {
+        Spect,
+        TII
+    };
+    enum GraphRange
+    {
+        MinX = 0,
+        MaxX = 191,
+        MinY = 0,
+        MaxY = 1
+    };
 
     // UI
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     QCustomPlot *m_tiiSpectrumPlot;
     bool m_isZoomed;
-    QSplitter * m_splitter;
+    QSplitter *m_splitter;
 #endif
     QQuickView *m_qmlView;
-    QFile * m_logFile = nullptr;
+    QFile *m_logFile = nullptr;
     float m_snr = 0.0;
 
     void reset() override;
@@ -84,10 +96,10 @@ private:
     void addToPlot(const RadioControlTIIData &data);
     void updateTiiPlot();
     void onPlotSelectionChanged();
-    void onPlotMousePress(QMouseEvent * event);
-    void onPlotMouseWheel(QWheelEvent * event);
+    void onPlotMousePress(QMouseEvent *event);
+    void onPlotMouseWheel(QWheelEvent *event);
     void onContextMenuRequest(QPoint pos);
 #endif
 };
 
-#endif // TIIDIALOG_H
+#endif  // TIIDIALOG_H

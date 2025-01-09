@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,19 +31,20 @@
 #include <QThread>
 #include <QTimer>
 #include <SoapySDR/Device.hpp>
-#include <SoapySDR/Types.hpp>
 #include <SoapySDR/Formats.hpp>
+#include <SoapySDR/Types.hpp>
+
 #include "inputdevice.h"
 #include "inputdevicesrc.h"
 
-#define SOAPYSDR_RECORD_INT16  1               // record raw stream in int16 instead of float
-#define SOAPYSDR_RECORD_FLOAT2INT16  (32768)   // conversion constant to int16
+#define SOAPYSDR_RECORD_INT16 1              // record raw stream in int16 instead of float
+#define SOAPYSDR_RECORD_FLOAT2INT16 (32768)  // conversion constant to int16
 
 #define SOAPYSDR_INPUT_SAMPLES (16384)
 
 #define SOAPYSDR_LEVEL_THR_MAX (0.5)
-#define SOAPYSDR_LEVEL_THR_MIN (SOAPYSDR_LEVEL_THR_MAX/20.0)
-#define SOAPYSDR_LEVEL_RESET   ((SOAPYSDR_LEVEL_THR_MAX-SOAPYSDR_LEVEL_THR_MIN)/2.0 + SOAPYSDR_LEVEL_THR_MIN)
+#define SOAPYSDR_LEVEL_THR_MIN (SOAPYSDR_LEVEL_THR_MAX / 20.0)
+#define SOAPYSDR_LEVEL_RESET ((SOAPYSDR_LEVEL_THR_MAX - SOAPYSDR_LEVEL_THR_MIN) / 2.0 + SOAPYSDR_LEVEL_THR_MIN)
 
 class SoapySdrWorker : public QThread
 {
@@ -54,21 +55,23 @@ public:
     void startStopRecording(bool ena);
     bool isRunning();
     void stop();
+
 protected:
     void run() override;
 signals:
     void agcLevel(float level);
-    void recordBuffer(const uint8_t * buf, uint32_t len);
+    void recordBuffer(const uint8_t *buf, uint32_t len);
+
 private:
-    SoapySDR::Device * m_device;
+    SoapySDR::Device *m_device;
     int m_rxChannel;
     std::atomic<bool> m_isRecording;
     std::atomic<bool> m_watchdogFlag;
     std::atomic<bool> m_doReadIQ;
 
     // SRC
-    float * m_filterOutBuffer;
-    InputDeviceSRC * m_src;
+    float *m_filterOutBuffer;
+    InputDeviceSRC *m_src;
 
     // AGC memory
     float m_agcLevel = 0.0;
@@ -86,13 +89,13 @@ public:
     ~SoapySdrInput();
     bool openDevice() override;
     void tune(uint32_t frequency) override;
-    void setDevArgs(const QString & devArgs) { m_devArgs = devArgs; }
+    void setDevArgs(const QString &devArgs) { m_devArgs = devArgs; }
     void setRxChannel(int rxChannel) { m_rxChannel = rxChannel; }
-    void setAntenna(const QString & antenna) { m_antenna = antenna; }
+    void setAntenna(const QString &antenna) { m_antenna = antenna; }
     void setGainMode(SoapyGainMode gainMode, int gainIdx = 0);
     void startStopRecording(bool start) override;
     void setBW(uint32_t bw);
-    QList<float> getGainList() const { return * m_gainList; }
+    QList<float> getGainList() const { return *m_gainList; }
 
 private:
     double m_sampleRate;
@@ -100,19 +103,19 @@ private:
     uint32_t m_bandwidth;
     bool m_deviceUnpluggedFlag;
     bool m_deviceRunningFlag;
-    SoapySDR::Device * m_device;
+    SoapySDR::Device *m_device;
 
     // settimgs
     QString m_devArgs;
     QString m_antenna;
     int m_rxChannel = 0;
-    SoapySdrWorker * m_worker;
+    SoapySdrWorker *m_worker;
     QTimer m_watchdogTimer;
     SoapyGainMode m_gainMode = SoapyGainMode::Manual;
     int m_gainIdx;
-    QList<float> * m_gainList;
+    QList<float> *m_gainList;
 
-    void run();           
+    void run();
     void stop();
     void resetAgc();
 
@@ -127,5 +130,4 @@ private:
     void onWatchdogTimeout();
 };
 
-
-#endif // SOAPYSDRINPUT_H
+#endif  // SOAPYSDRINPUT_H

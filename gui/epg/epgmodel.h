@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,9 @@
 #ifndef EPGMODEL_H
 #define EPGMODEL_H
 
-#include "servicelistid.h"
 #include <QAbstractListModel>
+
+#include "servicelistid.h"
 #if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
 #include <QtQmlIntegration>
 #else
@@ -36,13 +37,14 @@
 #endif
 #include "epgmodelitem.h"
 
-enum EPGModelRoles {
+enum EPGModelRoles
+{
     ShortIdRole = Qt::UserRole,
     NameRole,
     LongNameRole,
     MediumNameRole,
     ShortNameRole,
-    StartTimeRole,    
+    StartTimeRole,
     StartTimeSecRole,
     StartTimeStringRole,
     StartTimeSecSinceEpochRole,
@@ -76,4 +78,4 @@ private:
     ServiceListId m_serviceId;
 };
 
-#endif // EPGMODEL_H
+#endif  // EPGMODEL_H

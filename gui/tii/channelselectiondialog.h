@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,17 +36,17 @@ class ChannelSelectionDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ChannelSelectionDialog(const QMap<uint32_t, bool> & channelSelection, QWidget *parent = nullptr);
+    explicit ChannelSelectionDialog(const QMap<uint32_t, bool> &channelSelection, QWidget *parent = nullptr);
     ~ChannelSelectionDialog();
     void getChannelList(QMap<uint32_t, bool> &channelSelection) const;
 
 private:
     QMap<uint32_t, QCheckBox *> m_chList;
-    QPushButton * m_acceptButton;
+    QPushButton *m_acceptButton;
     int m_checkCntr = 0;
 
     void checkAll(bool check);
     void onCheckBoxClicked(bool checked);
 };
 
-#endif // CHANNELSELECTIONDIALOG_H
+#endif  // CHANNELSELECTIONDIALOG_H

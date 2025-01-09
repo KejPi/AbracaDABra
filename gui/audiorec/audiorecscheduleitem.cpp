@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,8 @@
 
 #include "audiorecscheduleitem.h"
 
-AudioRecScheduleItem::AudioRecScheduleItem() {}
+AudioRecScheduleItem::AudioRecScheduleItem()
+{}
 
 QString AudioRecScheduleItem::name() const
 {
@@ -71,12 +72,12 @@ void AudioRecScheduleItem::setDurationSec(int newDurationSec)
 
 QTime AudioRecScheduleItem::duration() const
 {
-    return QTime(0,0,0).addSecs(m_durationSec);
+    return QTime(0, 0, 0).addSecs(m_durationSec);
 }
 
 void AudioRecScheduleItem::setDuration(const QTime &time)
 {
-    m_durationSec = time.msecsSinceStartOfDay()/1000;
+    m_durationSec = time.msecsSinceStartOfDay() / 1000;
 }
 
 ServiceListId AudioRecScheduleItem::serviceId() const
@@ -109,7 +110,7 @@ void AudioRecScheduleItem::setIsRecorded(bool newIsRecorded)
     m_isRecorded = newIsRecorded;
 }
 
-bool operator<(const AudioRecScheduleItem & a, const AudioRecScheduleItem & b)
+bool operator<(const AudioRecScheduleItem &a, const AudioRecScheduleItem &b)
 {
     if (a.isRecorded())
     {

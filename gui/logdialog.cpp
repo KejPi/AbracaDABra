@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,23 +24,22 @@
  * SOFTWARE.
  */
 
-#include <QDebug>
-#include <QString>
-#include <QScrollBar>
-#include <QFileDialog>
-#include <QFile>
-#include <QStandardPaths>
-#include <QLoggingCategory>
-#include <QClipboard>
 #include "logdialog.h"
+
+#include <QClipboard>
+#include <QDebug>
+#include <QFile>
+#include <QFileDialog>
+#include <QLoggingCategory>
+#include <QScrollBar>
+#include <QStandardPaths>
+#include <QString>
+
 #include "ui_logdialog.h"
 
 Q_DECLARE_LOGGING_CATEGORY(application)
 
-
-LogDialog::LogDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::LogDialog)
+LogDialog::LogDialog(QWidget *parent) : QDialog(parent), ui(new Ui::LogDialog)
 {
     ui->setupUi(this);
 
@@ -51,7 +50,8 @@ LogDialog::LogDialog(QWidget *parent) :
     static const char kViewAtBottom[] = "viewAtBottom";
     auto *scrollBar = ui->logListView->verticalScrollBar();
     Q_ASSERT(scrollBar);
-    auto rescroller = [scrollBar]() mutable {
+    auto rescroller = [scrollBar]() mutable
+    {
         if (scrollBar->property(kViewAtBottom).isNull())
         {
             scrollBar->setProperty(kViewAtBottom, true);
@@ -63,12 +63,14 @@ LogDialog::LogDialog(QWidget *parent) :
         }
     };
     QObject::connect(scrollBar, &QAbstractSlider::rangeChanged, ui->logListView, rescroller, Qt::QueuedConnection);
-    QObject::connect(scrollBar, &QAbstractSlider::valueChanged, ui->logListView, [scrollBar] {
-        auto const atBottom = scrollBar->value() == scrollBar->maximum();
-        scrollBar->setProperty(kViewAtBottom, atBottom);
-    });
+    QObject::connect(scrollBar, &QAbstractSlider::valueChanged, ui->logListView,
+                     [scrollBar]
+                     {
+                         auto const atBottom = scrollBar->value() == scrollBar->maximum();
+                         scrollBar->setProperty(kViewAtBottom, atBottom);
+                     });
 
-    QObject::connect(ui->clearButton, &QPushButton::clicked, this, [this] { m_dataModel->removeRows(0, m_dataModel->rowCount()); } );
+    QObject::connect(ui->clearButton, &QPushButton::clicked, this, [this] { m_dataModel->removeRows(0, m_dataModel->rowCount()); });
     QObject::connect(ui->saveButton, &QPushButton::clicked, this, &LogDialog::saveLogToFile);
     QObject::connect(ui->copyButton, &QPushButton::clicked, this, &LogDialog::copyToClipboard);
 }
@@ -90,13 +92,10 @@ void LogDialog::setupDarkMode(bool darkModeEna)
 
 void LogDialog::saveLogToFile()
 {
-    QString f = QString("%1/AbracaDABra_%2.log").arg(QStandardPaths::writableLocation(QStandardPaths::HomeLocation),
-                                            QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
+    QString f = QString("%1/AbracaDABra_%2.log")
+                    .arg(QStandardPaths::writableLocation(QStandardPaths::HomeLocation), QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
 
-    QString fileName = QFileDialog::getSaveFileName(this,
-                                            tr("Save application log"),
-                                            QDir::toNativeSeparators(f),
-                                            tr("Log files")+" (*.log)");
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save application log"), QDir::toNativeSeparators(f), tr("Log files") + " (*.log)");
 
     if (!fileName.isEmpty())
     {
@@ -118,7 +117,8 @@ void LogDialog::saveLogToFile()
         logFile.close();
     }
     else
-    { /* no file selected */ }
+    { /* no file selected */
+    }
 }
 
 void LogDialog::copyToClipboard()

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,12 @@
 #ifndef ENSEMBLECONFIGDIALOG_H
 #define ENSEMBLECONFIGDIALOG_H
 
-#include "txtablemodelitem.h"
 #include <QDialog>
 
-namespace Ui {
+#include "txtablemodelitem.h"
+
+namespace Ui
+{
 class EnsembleConfigDialog;
 }
 
@@ -51,4 +53,4 @@ private:
     QString m_exportPath;
 };
 
-#endif // ENSEMBLECONFIGDIALOG_H
+#endif  // ENSEMBLECONFIGDIALOG_H

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,22 +28,24 @@
 #define SERVICELISTITEM_H
 
 #include <stdint.h>
-#include <QString>
+
 #include <QList>
-#include "servicelistid.h"
+#include <QString>
+
 #include "radiocontrol.h"
+#include "servicelistid.h"
 
 class EnsembleListItem;
 
 class ServiceListItem
 {
 public:
-    ServiceListItem(const RadioControlServiceComponent & item, int currentEns = 0);
+    ServiceListItem(const RadioControlServiceComponent &item, int currentEns = 0);
 
     bool update(const RadioControlServiceComponent &item);
-    bool addEnsemble(EnsembleListItem * ensPtr);     // returns true when new ensemble was added
-    bool removeEnsemble(EnsembleListItem * ensPtr);     // returns true when new ensemble was added
-    //void setFavorite(bool ena) { m_favorite = ena; }
+    bool addEnsemble(EnsembleListItem *ensPtr);     // returns true when new ensemble was added
+    bool removeEnsemble(EnsembleListItem *ensPtr);  // returns true when new ensemble was added
+    // void setFavorite(bool ena) { m_favorite = ena; }
 
     ServiceListId id() const { return m_id; }
 
@@ -52,30 +54,31 @@ public:
     QString label() const { return m_label; }
     QString shortLabel() const { return m_shortLabel; }
     int numEnsembles() const { return m_ensembleList.size(); }
-    //bool isFavorite() const { return m_favorite; }
-    const EnsembleListItem * getEnsemble(int num = -1) const;          // returns ensemble idx (wraps over end of list)
-    const EnsembleListItem * switchEnsemble(const ServiceListId &id);  // switches current ensemble, returns ensemble
+    // bool isFavorite() const { return m_favorite; }
+    const EnsembleListItem *getEnsemble(int num = -1) const;           // returns ensemble idx (wraps over end of list)
+    const EnsembleListItem *switchEnsemble(const ServiceListId &id);   // switches current ensemble, returns ensemble
     uint32_t currentEnsembleIdx() const { return m_currentEnsemble; }  // used to save service list
 
-    bool operator==(const ServiceListItem & other) const;
+    bool operator==(const ServiceListItem &other) const;
 
     bool isObsolete() const;
     void setIsObsolete(bool isObsolete);
+
 private:
     // Service
-    ServiceListId m_id;     // unique service list ID
-    DabSId m_sid;           // SId (contains ECC)
-    uint8_t m_scids;        // service component ID within the service
-    QString m_label;        // Service label
-    QString m_shortLabel;   // Short label
-    //bool m_favorite;        // Favorite service
+    ServiceListId m_id;    // unique service list ID
+    DabSId m_sid;          // SId (contains ECC)
+    uint8_t m_scids;       // service component ID within the service
+    QString m_label;       // Service label
+    QString m_shortLabel;  // Short label
+    // bool m_favorite;        // Favorite service
     int m_currentEnsemble;
-    bool m_isObsolete;      // this is used for ensemble update
+    bool m_isObsolete;  // this is used for ensemble update
 
     QList<EnsembleListItem *> m_ensembleList;
 
-    ServiceListItem() = delete;           // disabled
+    ServiceListItem() = delete;  // disabled
     QList<EnsembleListItem *>::iterator findEnsemble(const ServiceListId &id);
 };
 
-#endif // SERVICELISTITEM_H
+#endif  // SERVICELISTITEM_H

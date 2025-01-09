@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,14 @@
  * SOFTWARE.
  */
 
+#include "bandscandialog.h"
+
 #include <QDebug>
 
-#include "bandscandialog.h"
-#include "ui_bandscandialog.h"
 #include "dabtables.h"
+#include "ui_bandscandialog.h"
 
-BandScanDialog::BandScanDialog(QWidget *parent, bool autoStart, Qt::WindowFlags f) :
-    QDialog(parent, f),
-    ui(new Ui::BandScanDialog)
+BandScanDialog::BandScanDialog(QWidget *parent, bool autoStart, Qt::WindowFlags f) : QDialog(parent, f), ui(new Ui::BandScanDialog)
 {
     ui->setupUi(this);
 
@@ -63,11 +62,11 @@ BandScanDialog::BandScanDialog(QWidget *parent, bool autoStart, Qt::WindowFlags 
         ui->scanningLabel->setText(tr("<span style=\"color:red\"><b>Warning:</b> Band scan deletes current service list!</span>"));
     }
 
-    setFixedSize( sizeHint() );
+    setFixedSize(sizeHint());
 
     if (autoStart)
     {
-        QTimer::singleShot(1, this, [this](){ startScan(); } );
+        QTimer::singleShot(1, this, [this]() { startScan(); });
     }
 }
 
@@ -92,7 +91,7 @@ void BandScanDialog::stopPressed()
         // 4. wait for ensemble (timer or event)
         // 5. wait for services (timer)
         if (m_timer->isActive())
-        {   // state 2, 3, 4
+        {  // state 2, 3, 4
             m_timer->stop();
             done(BandScanDialogResult::Interrupted);
         }
@@ -131,11 +130,11 @@ void BandScanDialog::scanStep()
 {
     if (BandScanState::Init == m_state)
     {  // first step
-       m_channelIt = DabTables::channelList.constBegin();
+        m_channelIt = DabTables::channelList.constBegin();
     }
     else
     {  // next step
-       ++m_channelIt;
+        ++m_channelIt;
     }
 
     if (DabTables::channelList.constEnd() == m_channelIt)
@@ -145,10 +144,8 @@ void BandScanDialog::scanStep()
         return;
     }
 
-    ui->progressBar->setValue(ui->progressBar->value()+1);
-    ui->progressLabel->setText(QString("%1 / %2")
-                               .arg(ui->progressBar->value())
-                               .arg(DabTables::channelList.size()));
+    ui->progressBar->setValue(ui->progressBar->value() + 1);
+    ui->progressLabel->setText(QString("%1 / %2").arg(ui->progressBar->value()).arg(DabTables::channelList.size()));
     ui->progressChannel->setText(m_channelIt.value());
     m_state = BandScanState::WaitForTune;
     emit tuneChannel(m_channelIt.key());
@@ -165,11 +162,11 @@ void BandScanDialog::onTuneDone(uint32_t freq)
         scanStep();
     }
     else if (BandScanState::Interrupted == m_state)
-    {   // exit
+    {  // exit
         done(BandScanDialogResult::Interrupted);
     }
     else
-    {   // tuned to some frequency -> wait for sync
+    {  // tuned to some frequency -> wait for sync
         m_state = BandScanState::WaitForSync;
         m_timer->start(3000);
     }
@@ -180,7 +177,7 @@ void BandScanDialog::onSyncStatus(uint8_t sync, float)
     if (DabSyncLevel::NullSync <= DabSyncLevel(sync))
     {
         if (BandScanState::WaitForSync == m_state)
-        {   // if we are waiting for sync (move to next step)
+        {  // if we are waiting for sync (move to next step)
             m_timer->stop();
             m_state = BandScanState::WaitForEnsemble;
             m_timer->start(6000);
@@ -191,7 +188,7 @@ void BandScanDialog::onSyncStatus(uint8_t sync, float)
 void BandScanDialog::onEnsembleFound(const RadioControlEnsemble &)
 {
     if (BandScanState::Idle == m_state)
-    {   // do nothing
+    {  // do nothing
         return;
     }
 
@@ -216,11 +213,10 @@ void BandScanDialog::onServiceListEntry(const RadioControlEnsemble &, const Radi
 }
 
 void BandScanDialog::onServiceListComplete(const RadioControlEnsemble &)
-{   // this means that ensemble information is complete => stop timer and do next set
+{  // this means that ensemble information is complete => stop timer and do next set
     if ((nullptr != m_timer) && (m_timer->isActive()))
     {
         m_timer->stop();
         scanStep();
     }
 }
-

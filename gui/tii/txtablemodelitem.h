@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ class TxTableModelItem
 {
 public:
     TxTableModelItem();
-    TxTableModelItem(int8_t mainId, int8_t subId, float level, const QGeoCoordinate & coordinates, const QList<TxDataItem *> txItemList);
+    TxTableModelItem(int8_t mainId, int8_t subId, float level, const QGeoCoordinate &coordinates, const QList<TxDataItem *> txItemList);
 
     bool hasTxData() const { return m_transmitterData.isValid(); }
 
@@ -56,12 +56,12 @@ public:
 
     // used for scanner
     int id() const;
-    void updateGeo(const QGeoCoordinate & coordinates);
+    void updateGeo(const QGeoCoordinate &coordinates);
 
     float power() const;
 
     void setEnsData(const ServiceListId &ensId, const QString &ensLabel, int numServices, float snr);
-    void setEnsConfig(const QString & config, const QString & configCSV);
+    void setEnsConfig(const QString &config, const QString &configCSV);
     ServiceListId ensId() const;
     QString ensLabel() const;
     int numServices() const;
@@ -72,22 +72,22 @@ public:
     QString ensConfigCSV() const;
 
 private:
-    int m_id;                  // subId << 8 | mainId (this is unique)
-    int8_t m_mainId = -1;      // main ID
-    int8_t m_subId = -1;       // sub ID
-    float m_level;             // signal level
-    float m_distance = -1.0;   // distance of the transmitter from current position (must be >= 0)
-    float m_azimuth = -1.0;    // azimuth of the transmitter from current position
-    TxDataItem m_transmitterData;   // information about transmitter
+    int m_id;                      // subId << 8 | mainId (this is unique)
+    int8_t m_mainId = -1;          // main ID
+    int8_t m_subId = -1;           // sub ID
+    float m_level;                 // signal level
+    float m_distance = -1.0;       // distance of the transmitter from current position (must be >= 0)
+    float m_azimuth = -1.0;        // azimuth of the transmitter from current position
+    TxDataItem m_transmitterData;  // information about transmitter
 
     // used for scanner
-    ServiceListId m_ensId;     // ensemble id
-    QString m_ensLabel;        // ensemble label
-    QString m_ensConfig;       // ensemble configuration
-    QString m_ensConfigCSV;    // emsemble configuration CSV
-    int m_numServices = 0;     // number of services in ensemble
-    QDateTime m_rxTime;        // reception time
-    float m_snr = 0.0;         // ensemble SNR
+    ServiceListId m_ensId;   // ensemble id
+    QString m_ensLabel;      // ensemble label
+    QString m_ensConfig;     // ensemble configuration
+    QString m_ensConfigCSV;  // emsemble configuration CSV
+    int m_numServices = 0;   // number of services in ensemble
+    QDateTime m_rxTime;      // reception time
+    float m_snr = 0.0;       // ensemble SNR
 };
 
-#endif // TXTABLEMODELITEM_H
+#endif  // TXTABLEMODELITEM_H

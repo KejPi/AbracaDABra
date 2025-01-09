@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,21 +27,19 @@
 #ifndef SCANNERDIALOG_H
 #define SCANNERDIALOG_H
 
-#include <QDialog>
-#include <QQuickView>
 #include <QComboBox>
-#include <QLabel>
-#include <QPushButton>
+#include <QDialog>
 #include <QDialogButtonBox>
 #include <QGeoPositionInfoSource>
 #include <QItemSelectionModel>
-#include <QSplitter>
+#include <QLabel>
 #include <QProgressBar>
 #include <QPushButton>
+#include <QQuickView>
 #include <QSpacerItem>
-#include <QTableView>
 #include <QSpinBox>
-
+#include <QSplitter>
+#include <QTableView>
 
 #include "radiocontrol.h"
 #include "txmapdialog.h"
@@ -59,11 +57,11 @@ public:
     void onSignalState(uint8_t sync, float snr);
     void onEnsembleInformation(const RadioControlEnsemble &ens) override;
     void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &);
-    void onTiiData(const RadioControlTIIData & data) override;
-    void onEnsembleConfigurationAndCSV(const QString & config, const QString & csvString);
+    void onTiiData(const RadioControlTIIData &data) override;
+    void onEnsembleConfigurationAndCSV(const QString &config, const QString &csvString);
     void onInputDeviceError(const InputDeviceErrorCode);
     void setupDarkMode(bool darkModeEna) override;
-    //void setSelectedRow(int modelRow) override;
+    // void setSelectedRow(int modelRow) override;
 signals:
     void scanStarts();
     void scanFinished();
@@ -87,26 +85,27 @@ private:
         Interrupted
     };
 
-    enum Mode {
+    enum Mode
+    {
         Mode_Fast = 1,
         Mode_Normal = 2,
         Mode_Precise = 4
     };
 
     // UI
-    QSplitter * m_splitter;
-    QQuickView * m_qmlView ;
-    QTableView * m_txTableView;
-    QProgressBar * m_progressBar;
-    QPushButton * m_startStopButton;
-    QLabel * m_scanningLabel;
-    QLabel * m_progressChannel;
-    QPushButton * m_exportButton;
-    QPushButton * m_channelListButton;
-    QSpinBox * m_numCyclesSpinBox;
-    QComboBox * m_modeCombo;
+    QSplitter *m_splitter;
+    QQuickView *m_qmlView;
+    QTableView *m_txTableView;
+    QProgressBar *m_progressBar;
+    QPushButton *m_startStopButton;
+    QLabel *m_scanningLabel;
+    QLabel *m_progressChannel;
+    QPushButton *m_exportButton;
+    QPushButton *m_channelListButton;
+    QSpinBox *m_numCyclesSpinBox;
+    QComboBox *m_modeCombo;
 
-    QTimer * m_timer = nullptr;
+    QTimer *m_timer = nullptr;
 
     bool m_isScanning = false;
     bool m_isTiiActive = false;
@@ -135,9 +134,9 @@ private:
     void stopScan();
     void exportClicked();
     void channelSelectionClicked();
-    void storeEnsembleData(const RadioControlTIIData & tiiData, const QString & conf, const QString & csvConf);
+    void storeEnsembleData(const RadioControlTIIData &tiiData, const QString &conf, const QString &csvConf);
     void showEnsembleConfig(const QModelIndex &index);
-    void showContextMenu(const QPoint & pos);
+    void showContextMenu(const QPoint &pos);
 };
 
-#endif // SCANNERDIALOG_H
+#endif  // SCANNERDIALOG_H

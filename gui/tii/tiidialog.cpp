@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,23 +24,22 @@
  * SOFTWARE.
  */
 
+#include <QBoxLayout>
 #include <QMenu>
 #include <QQmlContext>
-#include <QBoxLayout>
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)) && QT_CONFIG(permissions)
 #include <QPermissions>
 #endif
 #include <QCoreApplication>
-#include <QMessageBox>
 #include <QDir>
 #include <QLoggingCategory>
-#include "tiidialog.h"
+#include <QMessageBox>
 
+#include "tiidialog.h"
 
 Q_LOGGING_CATEGORY(tii, "TII", QtInfoMsg)
 
-TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
-    : TxMapDialog(settings, true, parent)
+TIIDialog::TIIDialog(Settings *settings, QWidget *parent) : TxMapDialog(settings, true, parent)
 {
     // UI
     setWindowTitle(tr("TII Decoder"));
@@ -63,7 +62,7 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
 
     // QML View
     m_qmlView = new QQuickView();
-    QQmlContext * context = m_qmlView->rootContext();
+    QQmlContext *context = m_qmlView->rootContext();
     context->setContextProperty("tiiBackend", this);
     context->setContextProperty("tiiTable", m_model);
     context->setContextProperty("tiiTableSorted", m_sortedFilteredModel);
@@ -77,21 +76,22 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     container->setSizePolicy(sizePolicyContainer);
 
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
-    /*QSplitter * */m_splitter = new QSplitter(this);
+    /*QSplitter * */ m_splitter = new QSplitter(this);
     m_splitter->setOrientation(Qt::Vertical);
     m_splitter->addWidget(container);
     m_splitter->addWidget(m_tiiSpectrumPlot);
 
-    QVBoxLayout * layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0,0,0,0);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(m_splitter);
 
-    if (!m_settings->tii.splitterState.isEmpty()) {
+    if (!m_settings->tii.splitterState.isEmpty())
+    {
         m_splitter->restoreState(m_settings->tii.splitterState);
     }
 #else
-    QVBoxLayout * layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0,0,0,0);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(container);
 #endif
 
@@ -100,8 +100,8 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     for (int n = 1; n < 8; ++n)
     {
         verticalLine = new QCPItemStraightLine(m_tiiSpectrumPlot);
-        verticalLine->point1->setCoords(n*24, 0);  // location of point 1 in plot coordinate
-        verticalLine->point2->setCoords(n*24, 1);  // location of point 2 in plot coordinate
+        verticalLine->point1->setCoords(n * 24, 0);  // location of point 1 in plot coordinate
+        verticalLine->point2->setCoords(n * 24, 1);  // location of point 2 in plot coordinate
         verticalLine->setPen(QPen(Qt::red, 1, Qt::SolidLine));
     }
 
@@ -117,8 +117,8 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     QSharedPointer<QCPAxisTickerFixed> freqTicker(new QCPAxisTickerFixed);
     m_tiiSpectrumPlot->xAxis->setTicker(freqTicker);
 
-    freqTicker->setTickStep(8.0); // tick step shall be 8.0
-    freqTicker->setScaleStrategy(QCPAxisTickerFixed::ssNone); // and no scaling of the tickstep (like multiples or powers) is allowed
+    freqTicker->setTickStep(8.0);                              // tick step shall be 8.0
+    freqTicker->setScaleStrategy(QCPAxisTickerFixed::ssNone);  // and no scaling of the tickstep (like multiples or powers) is allowed
 
     m_tiiSpectrumPlot->axisRect()->setupFullAxesBox();
     m_tiiSpectrumPlot->xAxis->setRange(GraphRange::MinX, GraphRange::MaxX);
@@ -133,8 +133,10 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     connect(m_tiiSpectrumPlot, &QCustomPlot::mouseWheel, this, &TIIDialog::onPlotMouseWheel);
 
     // make bottom and left axes transfer their ranges to top and right axes:
-    connect(m_tiiSpectrumPlot->xAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), m_tiiSpectrumPlot->xAxis2, QOverload<const QCPRange &>::of(&QCPAxis::setRange));
-    connect(m_tiiSpectrumPlot->yAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), m_tiiSpectrumPlot->yAxis2, QOverload<const QCPRange &>::of(&QCPAxis::setRange));
+    connect(m_tiiSpectrumPlot->xAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), m_tiiSpectrumPlot->xAxis2,
+            QOverload<const QCPRange &>::of(&QCPAxis::setRange));
+    connect(m_tiiSpectrumPlot->yAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), m_tiiSpectrumPlot->yAxis2,
+            QOverload<const QCPRange &>::of(&QCPAxis::setRange));
     connect(m_tiiSpectrumPlot->xAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), this, &TIIDialog::onXRangeChanged);
     connect(m_tiiSpectrumPlot->yAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), this, &TIIDialog::onYRangeChanged);
 
@@ -142,7 +144,7 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
     m_tiiSpectrumPlot->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(m_tiiSpectrumPlot, &QCustomPlot::customContextMenuRequested, this, &TIIDialog::onContextMenuRequest);
 
-    connect(m_tiiSpectrumPlot, &QCustomPlot::mouseMove, this,  &TIIDialog::showPointToolTip);
+    connect(m_tiiSpectrumPlot, &QCustomPlot::mouseMove, this, &TIIDialog::showPointToolTip);
 
     m_tiiSpectrumPlot->setVisible(m_settings->tii.showSpectumPlot);
 #endif
@@ -153,12 +155,13 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent)
         restoreGeometry(m_settings->tii.geometry);
         sz = size();
     }
-    QTimer::singleShot(10, this, [this, sz](){ resize(sz); } );
+    QTimer::singleShot(10, this, [this, sz]() { resize(sz); });
 }
 
 TIIDialog::~TIIDialog()
 {
-    if (m_logFile) {
+    if (m_logFile)
+    {
         m_logFile->close();
         delete m_logFile;
     }
@@ -181,7 +184,7 @@ void TIIDialog::closeEvent(QCloseEvent *event)
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     m_settings->tii.splitterState = m_splitter->saveState();
 #endif
-    m_settings->tii.geometry = saveGeometry();    
+    m_settings->tii.geometry = saveGeometry();
 
     TxMapDialog::closeEvent(event);
 }
@@ -193,11 +196,11 @@ void TIIDialog::reset()
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     QList<double> f;
     QList<double> none;
-    for (int n = 0; n<2*192; ++n)
+    for (int n = 0; n < 2 * 192; ++n)
     {
-        f.append(n/2.0);
+        f.append(n / 2.0);
         none.append(0.0);
-    }    
+    }
     m_tiiSpectrumPlot->graph(GraphId::Spect)->setData(f, none, true);
     m_tiiSpectrumPlot->graph(GraphId::TII)->setData({0.0}, {-1.0});
     m_tiiSpectrumPlot->rescaleAxes();
@@ -211,7 +214,7 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
 {
     ServiceListId ensId = ServiceListId(m_currentEnsemble.frequency, m_currentEnsemble.ueid);
     if (!m_currentEnsemble.isValid())
-    {   // when we receive data without valid ensemble
+    {  // when we receive data without valid ensemble
         reset();
         return;
     }
@@ -219,7 +222,7 @@ void TIIDialog::onTiiData(const RadioControlTIIData &data)
     m_model->updateTiiData(data.idList, ensId, m_currentEnsemble.label, 0, m_snr);
 
     // forcing update of UI
-    onSelectionChanged(QItemSelection(),QItemSelection());
+    onSelectionChanged(QItemSelection(), QItemSelection());
 
     emit ensembleInfoChanged();
 
@@ -237,14 +240,14 @@ void TIIDialog::logTiiData() const
         // Body
         for (int row = 0; row < m_model->rowCount(); ++row)
         {
-            for (int col = 0; col < TxTableModel::NumCols-1; ++col)
+            for (int col = 0; col < TxTableModel::NumCols - 1; ++col)
             {
                 if (col != TxTableModel::ColNumServices)
-                {   // num services is not logged
+                {  // num services is not logged
                     out << m_model->data(m_model->index(row, col), TxTableModel::TxTableModelRoles::ExportRole).toString() << ";";
                 }
             }
-            out << m_model->data(m_model->index(row, TxTableModel::NumCols-1), TxTableModel::TxTableModelRoles::ExportRole).toString() << Qt::endl;
+            out << m_model->data(m_model->index(row, TxTableModel::NumCols - 1), TxTableModel::TxTableModelRoles::ExportRole).toString() << Qt::endl;
         }
         out.flush();
     }
@@ -303,7 +306,7 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
         m_tiiSpectrumPlot->yAxis2->setSelectedTickLabelColor(axisSelectionColor);
 
         m_tiiSpectrumPlot->replot();
-#endif // HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
+#endif  // HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
         m_qmlView->setColor(Qt::black);
     }
     else
@@ -357,9 +360,9 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
         m_tiiSpectrumPlot->yAxis2->setSelectedTickLabelColor(axisSelectionColor);
 
         m_tiiSpectrumPlot->replot();
-#endif // HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
+#endif  // HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
         m_qmlView->setColor(Qt::white);
-    }    
+    }
 }
 
 void TIIDialog::onChannelSelection()
@@ -386,10 +389,9 @@ void TIIDialog::onSettingsChanged()
 
 void TIIDialog::onSelectedRowChanged()
 {
-
     m_txInfo.clear();
     if (selectedRow() < 0)
-    {   // reset info
+    {  // reset info
         emit txInfoChanged();
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
         updateTiiPlot();
@@ -430,21 +432,23 @@ void TIIDialog::startStopLog()
                 delete m_logFile;
             }
             m_logFile = new QFile(filePath);
-            if (m_logFile->open(QIODevice::WriteOnly)) {
+            if (m_logFile->open(QIODevice::WriteOnly))
+            {
                 setIsRecordingLog(true);
 
                 // write header
                 QTextStream out(m_logFile);
 
                 // Header
-                for (int col = 0; col < TxTableModel::NumCols-1; ++col)
+                for (int col = 0; col < TxTableModel::NumCols - 1; ++col)
                 {
                     if (col != TxTableModel::ColNumServices)
-                    {   // num services is not logged
+                    {  // num services is not logged
                         out << m_model->headerData(col, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString() << ";";
                     }
                 }
-                out << m_model->headerData(TxTableModel::NumCols - 1, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString() <<  Qt::endl;
+                out << m_model->headerData(TxTableModel::NumCols - 1, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString()
+                    << Qt::endl;
             }
             else
             {
@@ -484,13 +488,13 @@ void TIIDialog::showPointToolTip(QMouseEvent *event)
 
 void TIIDialog::addToPlot(const RadioControlTIIData &data)
 {
-    float norm = 1.0/(*std::max_element(data.spectrum.begin(), data.spectrum.end()));
+    float norm = 1.0 / (*std::max_element(data.spectrum.begin(), data.spectrum.end()));
 
     QSharedPointer<QCPGraphDataContainer> container = m_tiiSpectrumPlot->graph(GraphId::Spect)->data();
     QCPGraphDataContainer::iterator it = container->begin();
-    for (int n = 0; n < 2*192; ++n)
+    for (int n = 0; n < 2 * 192; ++n)
     {
-        (*it++).value = data.spectrum.at(n)*norm;
+        (*it++).value = data.spectrum.at(n) * norm;
     }
     updateTiiPlot();
 }
@@ -503,29 +507,29 @@ void TIIDialog::updateTiiPlot()
     {  // draw all
         for (int row = 0; row < m_model->rowCount(); ++row)
         {
-            const auto & item = m_model->itemAt(row);
+            const auto &item = m_model->itemAt(row);
             QList<int> subcar = DabTables::getTiiSubcarriers(item.mainId(), item.subId());
-            for (const auto & c : subcar)
+            for (const auto &c : subcar)
             {
-                float val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2*c)->value;
+                float val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2 * c)->value;
                 m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c, val);
-                val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2*c+1)->value;
-                m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c+0.5, val);
+                val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2 * c + 1)->value;
+                m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c + 0.5, val);
             }
         }
     }
     else
-    {   // draw only selected TII item
+    {  // draw only selected TII item
         if (selectedRow() < m_model->rowCount())
         {
-            const auto & item = m_model->itemAt(selectedRow());
+            const auto &item = m_model->itemAt(selectedRow());
             QList<int> subcar = DabTables::getTiiSubcarriers(item.mainId(), item.subId());
-            for (const auto & c : subcar)
+            for (const auto &c : subcar)
             {
-                float val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2*c)->value;
+                float val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2 * c)->value;
                 m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c, val);
-                val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2*c+1)->value;
-                m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c+0.5, val);
+                val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2 * c + 1)->value;
+                m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c + 0.5, val);
             }
         }
     }
@@ -541,23 +545,24 @@ void TIIDialog::onPlotSelectionChanged()
     // The selection state of the left and right axes shall be synchronized as well as the state of the
     // bottom and top axes.
 
-
     // make top and bottom axes be selected synchronously, and handle axis and tick labels as one selectable object:
-    if (m_tiiSpectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis)
-        || m_tiiSpectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spTickLabels)
-        || m_tiiSpectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxisLabel)
-        || m_tiiSpectrumPlot->xAxis2->selectedParts().testFlag(QCPAxis::spAxis)
-        || m_tiiSpectrumPlot->xAxis2->selectedParts().testFlag(QCPAxis::spTickLabels))
+    if (m_tiiSpectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis) ||
+        m_tiiSpectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spTickLabels) ||
+        m_tiiSpectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxisLabel) ||
+        m_tiiSpectrumPlot->xAxis2->selectedParts().testFlag(QCPAxis::spAxis) ||
+        m_tiiSpectrumPlot->xAxis2->selectedParts().testFlag(QCPAxis::spTickLabels))
     {
-        m_tiiSpectrumPlot->xAxis2->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
-        m_tiiSpectrumPlot->xAxis->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels|QCPAxis::spAxisLabel);
+        m_tiiSpectrumPlot->xAxis2->setSelectedParts(QCPAxis::spAxis | QCPAxis::spTickLabels);
+        m_tiiSpectrumPlot->xAxis->setSelectedParts(QCPAxis::spAxis | QCPAxis::spTickLabels | QCPAxis::spAxisLabel);
     }
     // make left and right axes be selected synchronously, and handle axis and tick labels as one selectable object:
-    if (m_tiiSpectrumPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis) || m_tiiSpectrumPlot->yAxis->selectedParts().testFlag(QCPAxis::spTickLabels) ||
-        m_tiiSpectrumPlot->yAxis2->selectedParts().testFlag(QCPAxis::spAxis) || m_tiiSpectrumPlot->yAxis2->selectedParts().testFlag(QCPAxis::spTickLabels))
+    if (m_tiiSpectrumPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis) ||
+        m_tiiSpectrumPlot->yAxis->selectedParts().testFlag(QCPAxis::spTickLabels) ||
+        m_tiiSpectrumPlot->yAxis2->selectedParts().testFlag(QCPAxis::spAxis) ||
+        m_tiiSpectrumPlot->yAxis2->selectedParts().testFlag(QCPAxis::spTickLabels))
     {
-        m_tiiSpectrumPlot->yAxis2->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
-        m_tiiSpectrumPlot->yAxis->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
+        m_tiiSpectrumPlot->yAxis2->setSelectedParts(QCPAxis::spAxis | QCPAxis::spTickLabels);
+        m_tiiSpectrumPlot->yAxis->setSelectedParts(QCPAxis::spAxis | QCPAxis::spTickLabels);
     }
 }
 
@@ -576,7 +581,7 @@ void TIIDialog::onPlotMousePress(QMouseEvent *event)
     }
     else
     {
-        m_tiiSpectrumPlot->axisRect()->setRangeDrag(Qt::Horizontal|Qt::Vertical);
+        m_tiiSpectrumPlot->axisRect()->setRangeDrag(Qt::Horizontal | Qt::Vertical);
     }
 }
 
@@ -594,7 +599,7 @@ void TIIDialog::onPlotMouseWheel(QWheelEvent *event)
     }
     else
     {
-        m_tiiSpectrumPlot->axisRect()->setRangeZoom(Qt::Horizontal|Qt::Vertical);
+        m_tiiSpectrumPlot->axisRect()->setRangeZoom(Qt::Horizontal | Qt::Vertical);
     }
     m_isZoomed = true;
 }
@@ -607,12 +612,14 @@ void TIIDialog::onContextMenuRequest(QPoint pos)
         menu->setAttribute(Qt::WA_DeleteOnClose);
         auto restoreZoomAction = new QAction(tr("Restore default zoom"), this);
         restoreZoomAction->setEnabled(m_isZoomed);
-        connect(restoreZoomAction, &QAction::triggered, this, [this]() {
-            m_tiiSpectrumPlot->rescaleAxes();
-            m_tiiSpectrumPlot->deselectAll();
-            m_tiiSpectrumPlot->replot();
-            m_isZoomed = false;
-        });
+        connect(restoreZoomAction, &QAction::triggered, this,
+                [this]()
+                {
+                    m_tiiSpectrumPlot->rescaleAxes();
+                    m_tiiSpectrumPlot->deselectAll();
+                    m_tiiSpectrumPlot->replot();
+                    m_isZoomed = false;
+                });
 
         connect(menu, &QWidget::destroyed, [=]() { // delete actions
             restoreZoomAction->deleteLater();
@@ -632,16 +639,17 @@ void TIIDialog::onXRangeChanged(const QCPRange &newRange)
     {
         fixedRange.lower = lowerBound;
         fixedRange.upper = lowerBound + newRange.size();
-        if (fixedRange.upper > upperBound || qFuzzyCompare(newRange.size(), upperBound-lowerBound))
+        if (fixedRange.upper > upperBound || qFuzzyCompare(newRange.size(), upperBound - lowerBound))
         {
             fixedRange.upper = upperBound;
         }
         m_tiiSpectrumPlot->xAxis->setRange(fixedRange);
-    } else if (fixedRange.upper > upperBound)
+    }
+    else if (fixedRange.upper > upperBound)
     {
         fixedRange.upper = upperBound;
         fixedRange.lower = upperBound - newRange.size();
-        if (fixedRange.lower < lowerBound || qFuzzyCompare(newRange.size(), upperBound-lowerBound))
+        if (fixedRange.lower < lowerBound || qFuzzyCompare(newRange.size(), upperBound - lowerBound))
         {
             fixedRange.lower = lowerBound;
         }
@@ -658,20 +666,21 @@ void TIIDialog::onYRangeChanged(const QCPRange &newRange)
     {
         fixedRange.lower = lowerBound;
         fixedRange.upper = lowerBound + newRange.size();
-        if (fixedRange.upper > upperBound || qFuzzyCompare(newRange.size(), upperBound-lowerBound))
+        if (fixedRange.upper > upperBound || qFuzzyCompare(newRange.size(), upperBound - lowerBound))
         {
             fixedRange.upper = upperBound;
         }
         m_tiiSpectrumPlot->yAxis->setRange(fixedRange);
-    } else if (fixedRange.upper > upperBound)
+    }
+    else if (fixedRange.upper > upperBound)
     {
         fixedRange.upper = upperBound;
         fixedRange.lower = upperBound - newRange.size();
-        if (fixedRange.lower < lowerBound || qFuzzyCompare(newRange.size(), upperBound-lowerBound))
+        if (fixedRange.lower < lowerBound || qFuzzyCompare(newRange.size(), upperBound - lowerBound))
         {
             fixedRange.lower = lowerBound;
         }
         m_tiiSpectrumPlot->yAxis->setRange(fixedRange);
     }
 }
-#endif // HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
+#endif  // HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT

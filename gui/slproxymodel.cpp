@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,12 +25,10 @@
  */
 
 #include "slproxymodel.h"
+
 #include "slmodel.h"
 
-SLProxyModel::SLProxyModel(QObject *parent)
-    : QSortFilterProxyModel{parent},
-    m_emptyEpgFilter(false),
-    m_ueidFilter(0)
+SLProxyModel::SLProxyModel(QObject *parent) : QSortFilterProxyModel{parent}, m_emptyEpgFilter(false), m_ueidFilter(0)
 {}
 
 bool SLProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
@@ -39,9 +37,10 @@ bool SLProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourcePare
     bool ret = true;
     if (m_emptyEpgFilter)
     {
-        ret = ret && (sourceModel()->data(index, SLModelRole::EpgModelRole).value<EPGModel*>() != nullptr);
+        ret = ret && (sourceModel()->data(index, SLModelRole::EpgModelRole).value<EPGModel *>() != nullptr);
     }
-    if (m_ueidFilter > 0) {
+    if (m_ueidFilter > 0)
+    {
         QList<int> ensList = sourceModel()->data(index, SLModelRole::EnsembleListRole).value<QList<int>>();
         ret = ret && ensList.contains(m_ueidFilter);
     }
@@ -57,7 +56,9 @@ bool SLProxyModel::emptyEpgFilter() const
 void SLProxyModel::setEmptyEpgFilter(bool newEmptyEpgFilter)
 {
     if (m_emptyEpgFilter == newEmptyEpgFilter)
+    {
         return;
+    }
     m_emptyEpgFilter = newEmptyEpgFilter;
     invalidateFilter();
     emit emptyEpgFilterChanged();
@@ -71,7 +72,9 @@ int SLProxyModel::ueidFilter() const
 void SLProxyModel::setUeidFilter(int newUeidFilter)
 {
     if (m_ueidFilter == newUeidFilter)
+    {
         return;
+    }
     m_ueidFilter = newUeidFilter;
     invalidateFilter();
     emit ueidFilterChanged();

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,23 +24,23 @@
  * SOFTWARE.
  */
 
-#include <QDebug>
-#include <QGridLayout>
-#include <QCheckBox>
-#include <QPushButton>
-#include <QDialogButtonBox>
-#include "dabtables.h"
-
 #include "channelselectiondialog.h"
 
-ChannelSelectionDialog::ChannelSelectionDialog(const QMap<uint32_t, bool> &channelSelection, QWidget *parent)
-    : QDialog(parent)
+#include <QCheckBox>
+#include <QDebug>
+#include <QDialogButtonBox>
+#include <QGridLayout>
+#include <QPushButton>
+
+#include "dabtables.h"
+
+ChannelSelectionDialog::ChannelSelectionDialog(const QMap<uint32_t, bool> &channelSelection, QWidget *parent) : QDialog(parent)
 {
     setWindowTitle(tr("Channel selection"));
     setSizeGripEnabled(false);
 
     m_checkCntr = 0;
-    QGridLayout * mainLayout = new QGridLayout(this);
+    QGridLayout *mainLayout = new QGridLayout(this);
     int col = 0;
     int row = 0;
     for (auto it = DabTables::channelList.cbegin(); it != DabTables::channelList.cend(); ++it)
@@ -49,7 +49,8 @@ ChannelSelectionDialog::ChannelSelectionDialog(const QMap<uint32_t, bool> &chann
         checkbox->setChecked(channelSelection.value(it.key()));
         m_checkCntr += checkbox->isChecked();
         checkbox->setText(it.value());
-        if (row == 4) {
+        if (row == 4)
+        {
             mainLayout->setColumnMinimumWidth(col, 50);
             col += 1;
             row = 0;
@@ -61,8 +62,7 @@ ChannelSelectionDialog::ChannelSelectionDialog(const QMap<uint32_t, bool> &chann
 
     mainLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum), 4, 0);
 
-    auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
-                                     | QDialogButtonBox::Cancel);
+    auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
     connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
@@ -77,7 +77,7 @@ ChannelSelectionDialog::ChannelSelectionDialog(const QMap<uint32_t, bool> &chann
     buttonBox->addButton(selectAll, QDialogButtonBox::ActionRole);
     buttonBox->addButton(unselectAll, QDialogButtonBox::ActionRole);
 
-    mainLayout->addWidget(buttonBox, 5, 0, 2, (13+1-5+1));
+    mainLayout->addWidget(buttonBox, 5, 0, 2, (13 + 1 - 5 + 1));
 
     setFixedSize(sizeHint());
 }
@@ -87,7 +87,7 @@ ChannelSelectionDialog::~ChannelSelectionDialog()
     qDeleteAll(m_chList);
 }
 
-void ChannelSelectionDialog::getChannelList(QMap<uint32_t, bool> & channelSelection) const
+void ChannelSelectionDialog::getChannelList(QMap<uint32_t, bool> &channelSelection) const
 {
     for (auto it = m_chList.cbegin(); it != m_chList.cend(); ++it)
     {
@@ -119,7 +119,8 @@ void ChannelSelectionDialog::onCheckBoxClicked(bool checked)
     {
         m_checkCntr += 1;
     }
-    else {
+    else
+    {
         m_checkCntr -= 1;
     }
     m_acceptButton->setEnabled(m_checkCntr > 0);

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,15 +26,16 @@
 
 #include "txtablemodelitem.h"
 
-TxTableModelItem::TxTableModelItem() {}
+TxTableModelItem::TxTableModelItem()
+{}
 
 TxTableModelItem::TxTableModelItem(int8_t mainId, int8_t subId, float level, const QGeoCoordinate &coordinates, const QList<TxDataItem *> txItemList)
 {
     setTII(mainId, subId);
     setLevel(level);
 
-    TxDataItem * tx = nullptr;
-    for (const auto & txItem : txItemList)
+    TxDataItem *tx = nullptr;
+    for (const auto &txItem : txItemList)
     {
         if ((txItem->subId() == subId) && (txItem->mainId() == mainId))
         {
@@ -43,15 +44,16 @@ TxTableModelItem::TxTableModelItem(int8_t mainId, int8_t subId, float level, con
         }
     }
     if (tx != nullptr)
-    {   // found transmitter record
+    {  // found transmitter record
         setTransmitterData(*tx);
 
         if (coordinates.isValid())
-        {   // we can calculate distance and azimuth
+        {  // we can calculate distance and azimuth
             setDistance(coordinates.distanceTo(tx->coordinates()) * 0.001);
             setAzimuth(coordinates.azimuthTo(tx->coordinates()));
         }
-        else {
+        else
+        {
             setDistance(-1.0);
             setAzimuth(-1.0);
         }
@@ -133,7 +135,7 @@ void TxTableModelItem::setLevel(float newLevel)
     m_level = newLevel;
 }
 
-const TxDataItem & TxTableModelItem::transmitterData() const
+const TxDataItem &TxTableModelItem::transmitterData() const
 {
     return m_transmitterData;
 }
@@ -196,4 +198,3 @@ float TxTableModelItem::snr() const
 {
     return m_snr;
 }
-

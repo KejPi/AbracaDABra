@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,37 +24,42 @@
  * SOFTWARE.
  */
 
-#include <QDesktopServices>
-#include <rtl-sdr.h>
 #include "aboutdialog.h"
-#include "ui_aboutdialog.h"
+
+#include <rtl-sdr.h>
+
+#include <QDesktopServices>
+
 #include "config.h"
 #include "dabsdr.h"
+#include "ui_aboutdialog.h"
 
-AboutDialog::AboutDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::AboutDialog)
+AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
     ui->appName->setText("<b>Abraca DAB radio</b>");
-    ui->author->setText(tr("Developed by")+" Petr Kopecký (<a href=\"mailto:xkejpi@gmail.com\">xkejpi@gmail.com</a>)");
+    ui->author->setText(tr("Developed by") + " Petr Kopecký (<a href=\"mailto:xkejpi@gmail.com\">xkejpi@gmail.com</a>)");
 
     dabsdrVersion_t dabsdrVer = {0};
     dabsdrGetVersion(&dabsdrVer);
 
-    ui->version->setText(QString("Version %1 (%2, %3)").arg(PROJECT_VER,"<a href=\"https://github.com/KejPi/AbracaDABra\">GitHub</a>", "<a href=\"https://www.rundfunkforum.de/viewtopic.php?p=1657726\">forum</a>"));
+    ui->version->setText(QString("Version %1 (%2, %3)")
+                             .arg(PROJECT_VER, "<a href=\"https://github.com/KejPi/AbracaDABra\">GitHub</a>",
+                                  "<a href=\"https://www.rundfunkforum.de/viewtopic.php?p=1657726\">forum</a>"));
     ui->qtVersion->setText(QString(tr("Based on Qt %1")).arg(QT_VERSION_STR));
     ui->dabsdrVersion->setText(QString(tr("DAB SDR version %1.%2.%3")).arg(dabsdrVer.major).arg(dabsdrVer.minor).arg(dabsdrVer.patch));
 
-    ui->libraries->setText(tr("AbracaDABra & DAB SDR library use following libraries (special thanks to):")+
+    ui->libraries->setText(tr("AbracaDABra & DAB SDR library use following libraries (special thanks to):") +
                            "<ul>"
                            "<li><a href=\"https://github.com/anthonix/ffts\">FFTS</a> by Anthony Blake</li>"
                            "<li><a href=\"https://github.com/mborgerding/kissfft\">KISS FFT</a> by Mark Borgerding</li>"
                            "<li><a href=\"https://github.com/Opendigitalradio/ka9q-fec\">FEC</a> by Phil Karn, KA9Q</li>"
 #ifdef RTLSDR_OLD_DAB
-                           "<li><a href=\"https://github.com/old-dab/rtlsdr\">rtlsdr</a> by Steve Markgraf, Dimitri Stolnikov, and Hoernchen, with contributions by Kyle Keen, Christian Vogel, Harald Welte and Hayati Ayguen.</li>"
+                           "<li><a href=\"https://github.com/old-dab/rtlsdr\">rtlsdr</a> by Steve Markgraf, Dimitri Stolnikov, and Hoernchen, with "
+                           "contributions by Kyle Keen, Christian Vogel, Harald Welte and Hayati Ayguen.</li>"
 #else
-                           "<li><a href=\"https://osmocom.org/projects/rtl-sdr/wiki/rtl-sdr\">rtl-sdr</a> by Steve Markgraf, Dimitri Stolnikov, and Hoernchen, with contributions by Kyle Keen, Christian Vogel and Harald Welte.</li>"
+                           "<li><a href=\"https://osmocom.org/projects/rtl-sdr/wiki/rtl-sdr\">rtl-sdr</a> by Steve Markgraf, Dimitri Stolnikov, and "
+                           "Hoernchen, with contributions by Kyle Keen, Christian Vogel and Harald Welte.</li>"
 #endif
 #ifdef HAVE_AIRSPY
                            "<li><a href=\"https://github.com/airspy\">AirSpy</a> by Benjamin Vernoux and Youssef Touil.</li>"
@@ -76,49 +81,47 @@ AboutDialog::AboutDialog(QWidget *parent) :
 #if HAVE_QCUSTOMPLOT
                            "<li><a href=\"https://www.qcustomplot.com\">QCustomPlot</a> by Emanuel Eichhammer</li>"
 #endif
-                           "</ul>"+
-                           tr("Contributors to the translation:")+
+                           "</ul>" +
+                           tr("Contributors to the translation:") +
                            "<ul>"
-                           "<li>"+tr("Czech") +": Petr Kopecký</li>"
-                           "<li>"+tr("German")+": Andreas Mikula</li>"
-                           "<li>"+tr("Polish")+": Marek Schirmer</li>"
-                           "</ul>"+
-                           tr("AbracaDABra uses some artwork created by")+" <a href=\"https://www.flaticon.com/authors/basic-miscellany/lineal-color\">Smashicons - Flaticon</a> "+
-                           tr("and DAB transmitter database provided by")+" <a href=\"https://www.fmlist.org\">FMLIST</a>");
-    ui->disclaimer->setText("<p>Copyright © 2019-2024 Petr Kopecký</p>"
-                            "<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software "
-                            "and associated documentation files (the “Software”), to deal in the Software without restriction, "
-                            "including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, "
-                            "and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, "
-                            "subject to the following conditions: </p>"
-                            "The above copyright notice and this permission notice shall be included in all copies or substantial "
-                            "portions of the Software.</p>"
-                            "<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING "
-                            "BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. "
-                            "IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, "
-                            "WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH "
-                            "THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.");
+                           "<li>" +
+                           tr("Czech") +
+                           ": Petr Kopecký</li>"
+                           "<li>" +
+                           tr("German") +
+                           ": Andreas Mikula</li>"
+                           "<li>" +
+                           tr("Polish") +
+                           ": Marek Schirmer</li>"
+                           "</ul>" +
+                           tr("AbracaDABra uses some artwork created by") +
+                           " <a href=\"https://www.flaticon.com/authors/basic-miscellany/lineal-color\">Smashicons - Flaticon</a> " +
+                           tr("and DAB transmitter database provided by") + " <a href=\"https://www.fmlist.org\">FMLIST</a>");
+    ui->disclaimer->setText(
+        "<p>Copyright © 2019-2024 Petr Kopecký</p>"
+        "<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software "
+        "and associated documentation files (the “Software”), to deal in the Software without restriction, "
+        "including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, "
+        "and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, "
+        "subject to the following conditions: </p>"
+        "The above copyright notice and this permission notice shall be included in all copies or substantial "
+        "portions of the Software.</p>"
+        "<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING "
+        "BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. "
+        "IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, "
+        "WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH "
+        "THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.");
     ui->disclaimer->setReadOnly(true);
 
-    QObject::connect(
-        ui->version, &QLabel::linkActivated,
-        [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
-        );
+    QObject::connect(ui->version, &QLabel::linkActivated, [=](const QString &link) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); });
 
-    QObject::connect(
-                ui->author, &QLabel::linkActivated,
-                [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
-            );
-    QObject::connect(
-                ui->libraries, &QLabel::linkActivated,
-                [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
-            );
+    QObject::connect(ui->author, &QLabel::linkActivated, [=](const QString &link) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); });
+    QObject::connect(ui->libraries, &QLabel::linkActivated, [=](const QString &link) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); });
 
-    //resize(minimumSizeHint());
+    // resize(minimumSizeHint());
 }
 
 AboutDialog::~AboutDialog()
 {
     delete ui;
 }
-

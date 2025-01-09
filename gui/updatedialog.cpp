@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,16 @@
  * SOFTWARE.
  */
 
-#include <QPushButton>
-#include <QDesktopServices>
-#include "config.h"
 #include "updatedialog.h"
+
+#include <QDesktopServices>
+#include <QPushButton>
+
+#include "config.h"
 #include "ui_updatedialog.h"
 
 UpdateDialog::UpdateDialog(const QString &version, const QString &releaseNotes, Qt::WindowFlags f, QWidget *parent)
-    : QDialog(parent, f)
-    , ui(new Ui::UpdateDialog)
+    : QDialog(parent, f), ui(new Ui::UpdateDialog)
 {
     ui->setupUi(this);
     setModal(true);
@@ -48,9 +49,8 @@ UpdateDialog::UpdateDialog(const QString &version, const QString &releaseNotes, 
     ui->releaseNotes->setMarkdown("**Changelog:**\n\n" + releaseNotes);
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Do not show again"));
     auto goTo = new QPushButton(tr("Go to release page"), this);
-    connect(goTo, &QPushButton::clicked, this, [this, version]() {
-        QDesktopServices::openUrl(QUrl::fromUserInput(QString("https://github.com/KejPi/AbracaDABra/releases/tag/%1").arg(version)));
-    });
+    connect(goTo, &QPushButton::clicked, this, [this, version]()
+            { QDesktopServices::openUrl(QUrl::fromUserInput(QString("https://github.com/KejPi/AbracaDABra/releases/tag/%1").arg(version))); });
     ui->buttonBox->addButton(goTo, QDialogButtonBox::ActionRole);
 
     setFixedSize(size());

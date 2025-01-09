@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,12 +25,11 @@
  */
 
 #include "epgproxymodel.h"
+
 #include "epgmodel.h"
 
-EPGProxyModel::EPGProxyModel(QObject *parent)
-    : QSortFilterProxyModel{parent}
-{
-}
+EPGProxyModel::EPGProxyModel(QObject *parent) : QSortFilterProxyModel{parent}
+{}
 
 bool EPGProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
@@ -47,7 +46,9 @@ QDate EPGProxyModel::dateFilter() const
 void EPGProxyModel::setDateFilter(const QDate &newDateFilter)
 {
     if (m_dateFilter == newDateFilter)
+    {
         return;
+    }
     m_dateFilter = newDateFilter;
     invalidateFilter();
     emit dateFilterChanged();

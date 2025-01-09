@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
  */
 
 #include "servicelistitem.h"
+
 #include "ensemblelistitem.h"
 
 ServiceListItem::ServiceListItem(const RadioControlServiceComponent &item, int currentEns) : m_id(item)
@@ -33,7 +34,7 @@ ServiceListItem::ServiceListItem(const RadioControlServiceComponent &item, int c
     m_scids = item.SCIdS;
     m_label = item.label;
     m_shortLabel = item.labelShort;
-    //m_favorite = fav;
+    // m_favorite = fav;
     m_currentEnsemble = currentEns;
     m_isObsolete = false;
 }
@@ -54,7 +55,7 @@ bool ServiceListItem::update(const RadioControlServiceComponent &item)
     return false;
 }
 
-bool ServiceListItem::addEnsemble(EnsembleListItem * ensPtr)
+bool ServiceListItem::addEnsemble(EnsembleListItem *ensPtr)
 {
     QList<EnsembleListItem *>::iterator it = findEnsemble(ensPtr->id());
     if (m_ensembleList.end() == it)
@@ -70,7 +71,7 @@ bool ServiceListItem::removeEnsemble(EnsembleListItem *ensPtr)
 {
     QList<EnsembleListItem *>::const_iterator it = findEnsemble(ensPtr->id());
     if (m_ensembleList.cend() != it)
-    {   // found ensemble
+    {  // found ensemble
         m_ensembleList.erase(it);
         m_isObsolete = false;
         return (0 != m_ensembleList.size());
@@ -78,7 +79,7 @@ bool ServiceListItem::removeEnsemble(EnsembleListItem *ensPtr)
     return true;
 }
 
-const EnsembleListItem * ServiceListItem::switchEnsemble(const ServiceListId & id)
+const EnsembleListItem *ServiceListItem::switchEnsemble(const ServiceListId &id)
 {
     if (!id.isValid())
     {
@@ -102,7 +103,7 @@ const EnsembleListItem * ServiceListItem::switchEnsemble(const ServiceListId & i
     }
 }
 
-bool ServiceListItem::operator==(const ServiceListItem & other) const
+bool ServiceListItem::operator==(const ServiceListItem &other) const
 {
     return id() == other.id();
 }
@@ -117,7 +118,7 @@ void ServiceListItem::setIsObsolete(bool isObsolete)
     m_isObsolete = isObsolete;
 }
 
-QList<EnsembleListItem *>::iterator ServiceListItem::findEnsemble(const ServiceListId &  id)
+QList<EnsembleListItem *>::iterator ServiceListItem::findEnsemble(const ServiceListId &id)
 {
     QList<EnsembleListItem *>::iterator it;
     for (it = m_ensembleList.begin(); it < m_ensembleList.end(); ++it)
@@ -131,15 +132,15 @@ QList<EnsembleListItem *>::iterator ServiceListItem::findEnsemble(const ServiceL
     return it;
 }
 
-const EnsembleListItem * ServiceListItem::getEnsemble(int num) const
+const EnsembleListItem *ServiceListItem::getEnsemble(int num) const
 {
     if (num < 0)
-    {   // best ensemble
+    {  // best ensemble
         // #warning "Best ensemble to be implemented"
         return m_ensembleList.at(m_currentEnsemble);
     }
     else
-    {   // wrapping over the end
+    {  // wrapping over the end
         return m_ensembleList.at(num % m_ensembleList.size());
     }
     return m_ensembleList.at(0);

@@ -9,4 +9,4 @@ void macSetToDarkTheme();
 void macSetToLightTheme();
 void macSetToAutoTheme();
 
-#endif // MAC_H
+#endif  // MAC_H

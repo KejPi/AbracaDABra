@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,17 @@
  * SOFTWARE.
  */
 
-#include <QFileDialog>
-#include <QFile>
-#include <QDebug>
-#include <QStandardItemModel>
-#include <QGeoCoordinate>
-#include <QRandomGenerator>
-#include <QMovie>
-#include <QColorDialog>
-
 #include "setupdialog.h"
+
+#include <QColorDialog>
+#include <QDebug>
+#include <QFile>
+#include <QFileDialog>
+#include <QGeoCoordinate>
+#include <QMovie>
+#include <QRandomGenerator>
+#include <QStandardItemModel>
+
 #include "./ui_setupdialog.h"
 #include "audiodecoder.h"
 #include "txdataloader.h"
@@ -77,27 +78,26 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     // this has to be aligned with mainwindow
     ui->loopCheckbox->setChecked(false);
 
-    ui->statusLabel->setText("<span style=\"color:red\">"+tr("No device connected")+"</span>");
+    ui->statusLabel->setText("<span style=\"color:red\">" + tr("No device connected") + "</span>");
 
     QString ipRange = "(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])";
-    QRegularExpression ipRegex ("^" + ipRange
-                               +                                + "(\\." + ipRange + ")"
-                               +                                + "(\\." + ipRange + ")"
-                               +                                + "(\\." + ipRange + ")$");
+    QRegularExpression ipRegex("^" + ipRange + +"(\\." + ipRange + ")" + +"(\\." + ipRange + ")" + +"(\\." + ipRange + ")$");
     QRegularExpressionValidator *ipValidator = new QRegularExpressionValidator(ipRegex, this);
-    ui->rtltcpIpAddressEdit->setValidator(ipValidator);    
+    ui->rtltcpIpAddressEdit->setValidator(ipValidator);
     ui->rarttcpIpAddressEdit->setValidator(ipValidator);
     ui->rtltcpSwAgcMaxLevel->setToolTip(ui->rtlsdrSwAgcMaxLevel->toolTip());
     ui->rtltcpSwAgcMaxLevel->setMinimumWidth(ui->rtlsdrSwAgcMaxLevel->width());
 
     ui->rtlsdrBiasTCombo->addItem(tr("Off"), false);
     ui->rtlsdrBiasTCombo->addItem(tr("On"), true);
-    ui->rtlsdrBiasTCombo->setToolTip(QString(tr("Enable/disable bias tee.<br><br>"
-                                                   "<b>WARNING:</b> Before using the bias tee please ensure that you understand "
-                                                   "that you should not use this option when the dongle is connected directly "
-                                                   "to a DC short circuited antenna unless you are using an LNA.")));
+    ui->rtlsdrBiasTCombo->setToolTip(
+        QString(tr("Enable/disable bias tee.<br><br>"
+                   "<b>WARNING:</b> Before using the bias tee please ensure that you understand "
+                   "that you should not use this option when the dongle is connected directly "
+                   "to a DC short circuited antenna unless you are using an LNA.")));
 
-    ui->rtlsdrBandwidth->setToolTip(QString(tr("Input signal bandwidth in kHz. Value '0' means default bandwidth %1 kHz.")).arg(INPUTDEVICE_BANDWIDTH/1000));
+    ui->rtlsdrBandwidth->setToolTip(
+        QString(tr("Input signal bandwidth in kHz. Value '0' means default bandwidth %1 kHz.")).arg(INPUTDEVICE_BANDWIDTH / 1000));
     ui->rtlsdrPPM->setToolTip(QString(tr("Input device XTAL frequency correction in PPM.")));
     ui->rtltcpPPM->setToolTip(ui->rtlsdrPPM->toolTip());
     ui->airspyBiasTCombo->addItem(tr("Off"), false);
@@ -122,9 +122,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(m_announcementCheckBox[ann], &QCheckBox::clicked, this, &SetupDialog::onAnnouncementClicked);
     gridLayout->addWidget(m_announcementCheckBox[ann], 0, 1);
 
-    QLabel * label = new QLabel(tr("<br>Note: Alarm announcement cannot be disabled."));
+    QLabel *label = new QLabel(tr("<br>Note: Alarm announcement cannot be disabled."));
     gridLayout->addWidget(label, 4, 0, 1, 2);
-    QGroupBox * groupBox = new QGroupBox(tr("Alarm Announcements"));
+    QGroupBox *groupBox = new QGroupBox(tr("Alarm Announcements"));
     groupBox->setLayout(gridLayout);
     QVBoxLayout *vLayout = new QVBoxLayout;
     vLayout->addWidget(groupBox);
@@ -140,7 +140,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     int row = 0;
     int column = 0;
     gridLayout = new QGridLayout;
-    for (int ann = static_cast<int>(DabAnnouncement::Alarm)+1; ann < static_cast<int>(DabAnnouncement::AlarmTest); ++ann)
+    for (int ann = static_cast<int>(DabAnnouncement::Alarm) + 1; ann < static_cast<int>(DabAnnouncement::AlarmTest); ++ann)
     {
         m_announcementCheckBox[ann] = new QCheckBox();
         m_announcementCheckBox[ann]->setText(DabTables::getAnnouncementName(static_cast<DabAnnouncement>(ann)));
@@ -156,12 +156,11 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     groupBox->setLayout(gridLayout);
     vLayout->addWidget(groupBox);
 
-    QSpacerItem * verticalSpacer = new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+    QSpacerItem *verticalSpacer = new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     vLayout->addItem(verticalSpacer);
     ui->tabAnnouncement->setLayout(vLayout);
 
-
-    //gridLayout_4->addWidget(xmlHeaderWidget, 3, 0, 1, 3);
+    // gridLayout_4->addWidget(xmlHeaderWidget, 3, 0, 1, 3);
     gridLayout = new QGridLayout;
     label = new QLabel(tr("Recording date:"));
     m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDate] = new QLabel;
@@ -208,7 +207,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     label = new QLabel(tr("Sample format:"), ui->rtlsdrInfoWidget);
     m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoSampleFormat] = new QLabel(ui->rtlsdrInfoWidget);
     ui->rtlsdrInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoSampleFormat, 0);
-    ui->rtlsdrInfoWidgetLayout->addWidget(m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoSampleFormat], SetupDialogDeviceInfo::DevInfoSampleFormat, 1, 1, 2);
+    ui->rtlsdrInfoWidgetLayout->addWidget(m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoSampleFormat], SetupDialogDeviceInfo::DevInfoSampleFormat, 1, 1,
+                                          2);
     ui->rtlsdrInfoWidget->setVisible(false);
 
     label = new QLabel(tr("Device:"));
@@ -222,10 +222,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     label = new QLabel(tr("Sample format:"), ui->rtltcpInfoWidget);
     m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoSampleFormat] = new QLabel(ui->rtltcpInfoWidget);
     ui->rtltcpInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoSampleFormat, 0);
-    ui->rtltcpInfoWidgetLayout->addWidget(m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoSampleFormat], SetupDialogDeviceInfo::DevInfoSampleFormat, 1, 1, 2);
+    ui->rtltcpInfoWidgetLayout->addWidget(m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoSampleFormat], SetupDialogDeviceInfo::DevInfoSampleFormat, 1, 1,
+                                          2);
     ui->rtltcpInfoWidget->setVisible(false);
-
-
 
     connect(ui->inputCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onInputChanged);
     connect(ui->openFileButton, &QPushButton::clicked, this, &SetupDialog::onOpenFileButtonClicked);
@@ -237,9 +236,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->rtlsdrGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onRtlSdrGainModeToggled);
     connect(ui->rtlsdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onRtlSdrGainModeToggled);
     connect(ui->rtlsdrBandwidth, &QSpinBox::valueChanged, this, &SetupDialog::onRtlSdrBandwidthChanged);
-    connect(ui->rtlsdrBandwidthDefault, &QPushButton::clicked, this, [this]() { ui->rtlsdrBandwidth->setValue(0); } );
+    connect(ui->rtlsdrBandwidthDefault, &QPushButton::clicked, this, [this]() { ui->rtlsdrBandwidth->setValue(0); });
     connect(ui->rtlsdrSwAgcMaxLevel, &QSpinBox::valueChanged, this, &SetupDialog::onRtlSdrSwAgcMaxLevelChanged);
-    connect(ui->rtlsdrSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtlsdrSwAgcMaxLevel->setValue(0); } );
+    connect(ui->rtlsdrSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtlsdrSwAgcMaxLevel->setValue(0); });
     connect(ui->rtlsdrBiasTCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onRtlSdrBiasTCurrentIdxChanged);
     connect(ui->rtlsdrPPM, &QSpinBox::valueChanged, this, &SetupDialog::onRtlSdrPPMChanged);
 
@@ -250,7 +249,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->rtltcpIpAddressEdit, &QLineEdit::editingFinished, this, &SetupDialog::onRtlTcpIpAddrEditFinished);
     connect(ui->rtltcpIpPortSpinBox, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpPortValueChanged);
     connect(ui->rtltcpSwAgcMaxLevel, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpSwAgcMaxLevelChanged);
-    connect(ui->rtltcpSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtltcpSwAgcMaxLevel->setValue(0); } );
+    connect(ui->rtltcpSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtltcpSwAgcMaxLevel->setValue(0); });
     connect(ui->rtltcpPPM, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpPPMChanged);
 
     connect(ui->fileFormatCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onRawFileFormatChanged);
@@ -283,7 +282,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->soapysdrGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
     connect(ui->soapysdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
     connect(ui->soapysdrBandwidth, &QSpinBox::valueChanged, this, &SetupDialog::onSoapySdrBandwidthChanged);
-    connect(ui->soapysdrBandwidthDefault, &QPushButton::clicked, this, [this]() { ui->soapysdrBandwidth->setValue(0); } );
+    connect(ui->soapysdrBandwidthDefault, &QPushButton::clicked, this, [this]() { ui->soapysdrBandwidth->setValue(0); });
 #endif
 
     ui->defaultStyleRadioButton->setText(tr("Default style (OS dependent)"));
@@ -292,14 +291,14 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 
     // create combo box with language selection
     ui->langComboBox->addItem("<" + tr("System language") + ">", QVariant(QLocale::AnyLanguage));
-    ui->langComboBox->addItem("English", QVariant(QLocale::English));   // QLocale::English native name returns "American English" :-(
+    ui->langComboBox->addItem("English", QVariant(QLocale::English));  // QLocale::English native name returns "American English" :-(
     for (auto l : m_supportedLocalization)
     {
         ui->langComboBox->addItem(QLocale(l).nativeLanguageName(), QVariant(l));
     }
     ui->langComboBox->model()->sort(0);
     ui->langComboBox->setToolTip(tr("User interface language, the change will take effect after application restart."));
-    ui->langWarningLabel->setText("<span style=\"color:red\">"+tr("Language change will take effect after application restart.")+"</span>");
+    ui->langWarningLabel->setText("<span style=\"color:red\">" + tr("Language change will take effect after application restart.") + "</span>");
     ui->langWarningLabel->setVisible(false);
     connect(ui->langComboBox, &QComboBox::currentIndexChanged, this, &SetupDialog::onLanguageChanged);
 
@@ -330,10 +329,12 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->dlAbsTimeCheckBox, &QCheckBox::clicked, this, &SetupDialog::onDlAbsTimeChecked);
 
     ui->dataDumpFolderLabel->setElideMode(Qt::ElideLeft);
-    ui->dumpSlsPatternEdit->setToolTip(tr("Storage path template for SLS application. Following tokens are supported:\n"
-                                          "{serviceId, ensId, contentName, contentNameWithExt, transportId}"));
-    ui->dumpSpiPatternEdit->setToolTip(tr("Storage path template for SPI application. Following tokens are supported:\n"
-                                          "{serviceId, ensId, scId, contentName, directoryId, transportId}"));
+    ui->dumpSlsPatternEdit->setToolTip(
+        tr("Storage path template for SLS application. Following tokens are supported:\n"
+           "{serviceId, ensId, contentName, contentNameWithExt, transportId}"));
+    ui->dumpSpiPatternEdit->setToolTip(
+        tr("Storage path template for SPI application. Following tokens are supported:\n"
+           "{serviceId, ensId, scId, contentName, directoryId, transportId}"));
     connect(ui->dataDumpFolderButton, &QPushButton::clicked, this, &SetupDialog::onDataDumpFolderButtonClicked);
     connect(ui->dumpSlsCheckBox, &QCheckBox::toggled, this, &SetupDialog::onDataDumpCheckboxToggled);
     connect(ui->dumpSpiCheckBox, &QCheckBox::toggled, this, &SetupDialog::onDataDumpCheckboxToggled);
@@ -343,7 +344,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->dumpSlsPatternEdit, &QLineEdit::editingFinished, this, &SetupDialog::onDataDumpPatternEditingFinished);
     connect(ui->dumpSpiPatternEdit, &QLineEdit::editingFinished, this, &SetupDialog::onDataDumpPatternEditingFinished);
     connect(ui->rawFileSlider, &QSlider::valueChanged, this, &SetupDialog::onRawFileProgressChanged);
-    connect(ui->rawFileSlider, &QSlider::sliderReleased, this, [this]() { emit rawFileSeek(ui->rawFileSlider->value());} );
+    connect(ui->rawFileSlider, &QSlider::sliderReleased, this, [this]() { emit rawFileSeek(ui->rawFileSlider->value()); });
 
     // reset UI
     onFileLength(0);
@@ -356,8 +357,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->noiseConcealmentCombo->addItem("-35 dBFS", QVariant(35));
     ui->noiseConcealmentCombo->addItem("-40 dBFS", QVariant(40));
     ui->noiseConcealmentCombo->addItem(tr("Disabled"), QVariant(0));
-    ui->noiseConcealmentCombo->setToolTip(tr("Select noise level that is generated during audio interruptions.<br>"
-                                             "This may help to improve listening experience and make the audio interruptions less annoying."));
+    ui->noiseConcealmentCombo->setToolTip(
+        tr("Select noise level that is generated during audio interruptions.<br>"
+           "This may help to improve listening experience and make the audio interruptions less annoying."));
 #if AUDIO_DECODER_NOISE_CONCEALMENT
     connect(ui->noiseConcealmentCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onNoiseLevelChanged);
 #else
@@ -386,9 +388,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->spinnerLabel->setVisible(false);
 #if HAVE_FMLIST_INTERFACE
     m_spinner = new QMovie(this);
-    m_spinner->setScaledSize(QSize(18,18));
+    m_spinner->setScaledSize(QSize(18, 18));
     ui->spinnerLabel->setMovie(m_spinner);
-    ui->spinnerLabel->setFixedSize(QSize(18,18));
+    ui->spinnerLabel->setFixedSize(QSize(18, 18));
     connect(ui->updateDbButton, &QPushButton::clicked, this, &SetupDialog::onTiiUpdateDbClicked);
 #else
     ui->updateDbButton->setEnabled(false);
@@ -412,7 +414,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->slsBgButton, &QPushButton::clicked, this, &SetupDialog::onSlsBgButtonClicked);
     ui->slsBgButton->setToolTip(tr("Select slideshow background color"));
 
-    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
+    QTimer::singleShot(10, this, [this]() { resize(minimumSizeHint()); });
 }
 
 void SetupDialog::showEvent(QShowEvent *event)
@@ -427,13 +429,13 @@ void SetupDialog::showEvent(QShowEvent *event)
         ui->tiiDbLabel->setText(tr("Data not available"));
     }
 #if HAVE_FMLIST_INTERFACE
-    ui->updateDbButton->setEnabled(!lastModified.isValid() || lastModified.msecsTo(QDateTime::currentDateTime()) > 10*60*1000);
+    ui->updateDbButton->setEnabled(!lastModified.isValid() || lastModified.msecsTo(QDateTime::currentDateTime()) > 10 * 60 * 1000);
 #endif
     ui->tabWidget->setFocus();
     QDialog::showEvent(event);
 
-    //QTimer::singleShot(10, this, [this](){ adjustSize(); } );
-    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
+    // QTimer::singleShot(10, this, [this](){ adjustSize(); } );
+    QTimer::singleShot(10, this, [this]() { resize(minimumSizeHint()); });
 }
 
 void SetupDialog::setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault)
@@ -448,43 +450,42 @@ void SetupDialog::setSlsDumpPaternDefault(const QString &newSlsDumpPaternDefault
 
 void SetupDialog::setGainValues(const QList<float> &gainList)
 {
-
     switch (m_settings->inputDevice)
     {
-    case InputDeviceId::RTLSDR:
-        m_rtlsdrGainList.clear();
-        m_rtlsdrGainList = gainList;
-        ui->rtlsdrGainSlider->setMinimum(0);
-        ui->rtlsdrGainSlider->setMaximum(m_rtlsdrGainList.size()-1);
-        ui->rtlsdrGainSlider->setValue((m_settings->rtlsdr.gainIdx >= 0) ? m_settings->rtlsdr.gainIdx : 0);
-        ui->rtlsdrGainSlider->setDisabled(m_rtlsdrGainList.empty());
-        ui->rtlsdrGainModeManual->setDisabled(m_rtlsdrGainList.empty());
-        break;
-    case InputDeviceId::RTLTCP:
-        m_rtltcpGainList.clear();
-        m_rtltcpGainList = gainList;
-        ui->rtltcpGainSlider->setMinimum(0);
-        ui->rtltcpGainSlider->setMaximum(m_rtltcpGainList.size()-1);
-        ui->rtltcpGainSlider->setValue((m_settings->rtltcp.gainIdx >= 0) ? m_settings->rtltcp.gainIdx : 0);
-        ui->rtltcpGainSlider->setDisabled(m_rtltcpGainList.empty());
-        ui->rtltcpGainModeManual->setDisabled(m_rtltcpGainList.empty());
-        break;
-    case InputDeviceId::SOAPYSDR:
+        case InputDeviceId::RTLSDR:
+            m_rtlsdrGainList.clear();
+            m_rtlsdrGainList = gainList;
+            ui->rtlsdrGainSlider->setMinimum(0);
+            ui->rtlsdrGainSlider->setMaximum(m_rtlsdrGainList.size() - 1);
+            ui->rtlsdrGainSlider->setValue((m_settings->rtlsdr.gainIdx >= 0) ? m_settings->rtlsdr.gainIdx : 0);
+            ui->rtlsdrGainSlider->setDisabled(m_rtlsdrGainList.empty());
+            ui->rtlsdrGainModeManual->setDisabled(m_rtlsdrGainList.empty());
+            break;
+        case InputDeviceId::RTLTCP:
+            m_rtltcpGainList.clear();
+            m_rtltcpGainList = gainList;
+            ui->rtltcpGainSlider->setMinimum(0);
+            ui->rtltcpGainSlider->setMaximum(m_rtltcpGainList.size() - 1);
+            ui->rtltcpGainSlider->setValue((m_settings->rtltcp.gainIdx >= 0) ? m_settings->rtltcp.gainIdx : 0);
+            ui->rtltcpGainSlider->setDisabled(m_rtltcpGainList.empty());
+            ui->rtltcpGainModeManual->setDisabled(m_rtltcpGainList.empty());
+            break;
+        case InputDeviceId::SOAPYSDR:
 #if HAVE_SOAPYSDR
-        m_soapysdrGainList.clear();
-        m_soapysdrGainList = gainList;
-        ui->soapysdrGainSlider->setMinimum(0);
-        ui->soapysdrGainSlider->setMaximum(m_soapysdrGainList.size()-1);
-        ui->soapysdrGainSlider->setValue((m_settings->soapysdr.gainIdx >= 0) ? m_settings->soapysdr.gainIdx : 0);
-        ui->soapysdrGainSlider->setDisabled(m_soapysdrGainList.empty());
-        ui->soapysdrGainModeManual->setDisabled(m_soapysdrGainList.empty());
-#endif // HAVE_SOAPYSDR
-        break;
-    case InputDeviceId::UNDEFINED:
-    case InputDeviceId::RAWFILE:
-    case InputDeviceId::AIRSPY:
-    case InputDeviceId::RARTTCP:
-        return;
+            m_soapysdrGainList.clear();
+            m_soapysdrGainList = gainList;
+            ui->soapysdrGainSlider->setMinimum(0);
+            ui->soapysdrGainSlider->setMaximum(m_soapysdrGainList.size() - 1);
+            ui->soapysdrGainSlider->setValue((m_settings->soapysdr.gainIdx >= 0) ? m_settings->soapysdr.gainIdx : 0);
+            ui->soapysdrGainSlider->setDisabled(m_soapysdrGainList.empty());
+            ui->soapysdrGainModeManual->setDisabled(m_soapysdrGainList.empty());
+#endif  // HAVE_SOAPYSDR
+            break;
+        case InputDeviceId::UNDEFINED:
+        case InputDeviceId::RAWFILE:
+        case InputDeviceId::AIRSPY:
+        case InputDeviceId::RARTTCP:
+            return;
     }
 }
 
@@ -493,7 +494,7 @@ void SetupDialog::setInputDeviceEnabled(bool ena)
     ui->inputCombo->setEnabled(ena);
 }
 
-void SetupDialog::setSettings(Settings * settings)
+void SetupDialog::setSettings(Settings *settings)
 {
     m_settings = settings;
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
@@ -506,7 +507,7 @@ void SetupDialog::setSettings(Settings * settings)
 
     setUiState();
     onExpertModeChecked(m_settings->expertModeEna);
-    setStatusLabel();    
+    setStatusLabel();
     emit newAnnouncementSettings();
     emit noiseConcealmentLevelChanged(m_settings->noiseConcealmentLevel);
     emit xmlHeaderToggled(m_settings->xmlHeaderEna);
@@ -535,12 +536,12 @@ void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
 
         switch (desc.sample.containerBits)
         {
-        case 8:
-            m_settings->rawfile.format = RawFileInputFormat::SAMPLE_FORMAT_U8;
-            break;
-        case 16:
-            m_settings->rawfile.format = RawFileInputFormat::SAMPLE_FORMAT_S16;
-            break;
+            case 8:
+                m_settings->rawfile.format = RawFileInputFormat::SAMPLE_FORMAT_U8;
+                break;
+            case 16:
+                m_settings->rawfile.format = RawFileInputFormat::SAMPLE_FORMAT_S16;
+                break;
         }
         ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings->rawfile.format));
         ui->fileFormatCombo->setEnabled(false);
@@ -554,7 +555,7 @@ void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
 }
 
 void SetupDialog::onFileLength(int msec)
-{    
+{
     ui->rawFileSlider->setMinimum(0);
     ui->rawFileSlider->setMaximum(msec);
     ui->rawFileSlider->setValue(0);
@@ -565,7 +566,7 @@ void SetupDialog::onFileLength(int msec)
 
     onRawFileProgressChanged(0);
 
-    int labelWidth = ui->rawFileTime->fontMetrics().boundingRect(QString("%1 / %1 "+tr("sec")).arg(msec/1000.0, 0, 'f', 1)).width() + 10;
+    int labelWidth = ui->rawFileTime->fontMetrics().boundingRect(QString("%1 / %1 " + tr("sec")).arg(msec / 1000.0, 0, 'f', 1)).width() + 10;
     ui->rawFileTime->setMinimumWidth(labelWidth);
     ui->rawFileTime->setVisible(0 != msec);
 }
@@ -594,11 +595,11 @@ void SetupDialog::setCheckUpdatesEna(bool ena)
 QLocale::Language SetupDialog::applicationLanguage() const
 {
     if (m_supportedLocalization.contains(m_settings->lang) || (QLocale::English == m_settings->lang))
-    {   // selected specific localization
+    {  // selected specific localization
         return m_settings->lang;
     }
     else
-    {   // system default or not supported
+    {  // system default or not supported
         // find if system default is supported
         if (m_supportedLocalization.contains(QLocale::system().language()))
         {
@@ -644,56 +645,59 @@ void SetupDialog::setUiState()
         ui->rtltcpGainValueLabel->setText(tr("N/A"));
     }
 
-    switch (m_settings->rtlsdr.gainMode) {
-    case RtlGainMode::Software:
-        ui->rtlsdrGainModeSw->setChecked(true);
-        break;
-    case RtlGainMode::Hardware:
-        ui->rtlsdrGainModeHw->setChecked(true);
-        break;
-    case RtlGainMode::Manual:
-        ui->rtlsdrGainModeManual->setChecked(true);
-        break;
-    default:
-        break;
-    }   
+    switch (m_settings->rtlsdr.gainMode)
+    {
+        case RtlGainMode::Software:
+            ui->rtlsdrGainModeSw->setChecked(true);
+            break;
+        case RtlGainMode::Hardware:
+            ui->rtlsdrGainModeHw->setChecked(true);
+            break;
+        case RtlGainMode::Manual:
+            ui->rtlsdrGainModeManual->setChecked(true);
+            break;
+        default:
+            break;
+    }
     ui->rtlsdrBandwidth->setValue(m_settings->rtlsdr.bandwidth / 1000);
     ui->rtlsdrBiasTCombo->setCurrentIndex(m_settings->rtlsdr.biasT ? 1 : 0);
     ui->rtlsdrSwAgcMaxLevel->setValue(m_settings->rtlsdr.agcLevelMax);
     ui->rtlsdrPPM->setValue(m_settings->rtlsdr.ppm);
 
-    switch (m_settings->rtltcp.gainMode) {
-    case RtlGainMode::Software:
-        ui->rtltcpGainModeSw->setChecked(true);
-        break;
-    case RtlGainMode::Hardware:
-        ui->rtltcpGainModeHw->setChecked(true);
-        break;
-    case RtlGainMode::Manual:
-        ui->rtltcpGainModeManual->setChecked(true);
-        break;
-    default:
-        break;
+    switch (m_settings->rtltcp.gainMode)
+    {
+        case RtlGainMode::Software:
+            ui->rtltcpGainModeSw->setChecked(true);
+            break;
+        case RtlGainMode::Hardware:
+            ui->rtltcpGainModeHw->setChecked(true);
+            break;
+        case RtlGainMode::Manual:
+            ui->rtltcpGainModeManual->setChecked(true);
+            break;
+        default:
+            break;
     }
     ui->rtltcpSwAgcMaxLevel->setValue(m_settings->rtltcp.agcLevelMax);
     ui->rtltcpPPM->setValue(m_settings->rtltcp.ppm);
 
 #if HAVE_AIRSPY
-    switch (m_settings->airspy.gain.mode) {
-    case AirpyGainMode::Software:
-        ui->airspyGainModeSw->setChecked(true);
-        break;
-    case AirpyGainMode::Hybrid:
-        ui->airspyGainModeHybrid->setChecked(true);
-        break;
-    case AirpyGainMode::Manual:
-        ui->airspyGainModeManual->setChecked(true);
-        break;
-    case AirpyGainMode::Sensitivity:
-        ui->airspyGainModeSensitivity->setChecked(true);
-        break;
-    default:
-        break;
+    switch (m_settings->airspy.gain.mode)
+    {
+        case AirpyGainMode::Software:
+            ui->airspyGainModeSw->setChecked(true);
+            break;
+        case AirpyGainMode::Hybrid:
+            ui->airspyGainModeHybrid->setChecked(true);
+            break;
+        case AirpyGainMode::Manual:
+            ui->airspyGainModeManual->setChecked(true);
+            break;
+        case AirpyGainMode::Sensitivity:
+            ui->airspyGainModeSensitivity->setChecked(true);
+            break;
+        default:
+            break;
     }
 
     ui->airspySensitivityGainSlider->setValue(m_settings->airspy.gain.sensitivityGainIdx);
@@ -706,18 +710,19 @@ void SetupDialog::setUiState()
 #endif
 
 #if HAVE_SOAPYSDR
-    switch (m_settings->soapysdr.gainMode) {
-    case SoapyGainMode::Software:
-        ui->soapysdrGainModeSw->setChecked(true);
-        break;
-    case SoapyGainMode::Hardware:
-        ui->soapysdrGainModeHw->setChecked(true);
-        break;
-    case SoapyGainMode::Manual:
-        ui->soapysdrGainModeManual->setChecked(true);
-        break;
-    default:
-        break;
+    switch (m_settings->soapysdr.gainMode)
+    {
+        case SoapyGainMode::Software:
+            ui->soapysdrGainModeSw->setChecked(true);
+            break;
+        case SoapyGainMode::Hardware:
+            ui->soapysdrGainModeHw->setChecked(true);
+            break;
+        case SoapyGainMode::Manual:
+            ui->soapysdrGainModeManual->setChecked(true);
+            break;
+        default:
+            break;
     }
 
     if (!m_soapysdrGainList.isEmpty())
@@ -773,15 +778,15 @@ void SetupDialog::setUiState()
     // other settings
     switch (m_settings->applicationStyle)
     {
-    case Settings::ApplicationStyle::Default:
-        ui->defaultStyleRadioButton->setChecked(true);
-        break;
-    case Settings::ApplicationStyle::Light:
-        ui->lightStyleRadioButton->setChecked(true);
-        break;
-    case Settings::ApplicationStyle::Dark:
-        ui->darkStyleRadioButton->setChecked(true);
-        break;
+        case Settings::ApplicationStyle::Default:
+            ui->defaultStyleRadioButton->setChecked(true);
+            break;
+        case Settings::ApplicationStyle::Light:
+            ui->lightStyleRadioButton->setChecked(true);
+            break;
+        case Settings::ApplicationStyle::Dark:
+            ui->darkStyleRadioButton->setChecked(true);
+            break;
     }
     ui->expertCheckBox->setChecked(m_settings->expertModeEna);
     ui->trayIconCheckBox->setChecked(m_settings->trayIconEna);
@@ -789,7 +794,7 @@ void SetupDialog::setUiState()
 
     index = ui->noiseConcealmentCombo->findData(QVariant(m_settings->noiseConcealmentLevel));
     if (index < 0)
-    {   // not found
+    {  // not found
         index = 0;
     }
     ui->noiseConcealmentCombo->setCurrentIndex(index);
@@ -800,7 +805,7 @@ void SetupDialog::setUiState()
 
     index = ui->langComboBox->findData(QVariant(m_settings->lang));
     if (index < 0)
-    {   // not found
+    {  // not found
         index = 0;
     }
     ui->langComboBox->setCurrentIndex(index);
@@ -851,10 +856,10 @@ void SetupDialog::setUiState()
     ui->proxyPassEdit->setText(m_settings->proxy.pass);
     onProxyConfigChanged(static_cast<int>(m_settings->proxy.config));
 
-
-    QString qss = QString("QPushButton {background-color: %1; border: 1px solid black; border-radius: 3px}").arg(m_settings->slsBackground.name(QColor::HexArgb));
+    QString qss = QString("QPushButton {background-color: %1; border: 1px solid black; border-radius: 3px}")
+                      .arg(m_settings->slsBackground.name(QColor::HexArgb));
     ui->slsBgButton->setStyleSheet(qss);
-    ui->slsBgButton->setMaximumWidth(ui->slsBgButton->height()*2);
+    ui->slsBgButton->setMaximumWidth(ui->slsBgButton->height() * 2);
 }
 
 void SetupDialog::setupDarkMode(bool darkModeEna)
@@ -887,36 +892,36 @@ void SetupDialog::onConnectDeviceClicked()
     setStatusLabel();
     switch (m_settings->inputDevice)
     {
-    case InputDeviceId::RTLSDR:
-        activateRtlSdrControls(true);
-        break;
-    case InputDeviceId::RTLTCP:
-        m_settings->rtltcp.tcpAddress = ui->rtltcpIpAddressEdit->text();
-        m_settings->rtltcp.tcpPort = ui->rtltcpIpPortSpinBox->value();
-        activateRtlTcpControls(true);
-        break;
-    case InputDeviceId::RARTTCP:
-        break;
-    case InputDeviceId::UNDEFINED:
-        break;
-    case InputDeviceId::RAWFILE:
-        m_settings->rawfile.file = m_rawfilename;
-        m_settings->rawfile.loopEna = ui->loopCheckbox->isChecked();
-        m_settings->rawfile.format = static_cast<RawFileInputFormat>(ui->fileFormatCombo->currentIndex());
-        break;
-    case InputDeviceId::AIRSPY:
+        case InputDeviceId::RTLSDR:
+            activateRtlSdrControls(true);
+            break;
+        case InputDeviceId::RTLTCP:
+            m_settings->rtltcp.tcpAddress = ui->rtltcpIpAddressEdit->text();
+            m_settings->rtltcp.tcpPort = ui->rtltcpIpPortSpinBox->value();
+            activateRtlTcpControls(true);
+            break;
+        case InputDeviceId::RARTTCP:
+            break;
+        case InputDeviceId::UNDEFINED:
+            break;
+        case InputDeviceId::RAWFILE:
+            m_settings->rawfile.file = m_rawfilename;
+            m_settings->rawfile.loopEna = ui->loopCheckbox->isChecked();
+            m_settings->rawfile.format = static_cast<RawFileInputFormat>(ui->fileFormatCombo->currentIndex());
+            break;
+        case InputDeviceId::AIRSPY:
 #if HAVE_AIRSPY
-        activateAirspyControls(true);
+            activateAirspyControls(true);
 #endif
-        break;
-    case InputDeviceId::SOAPYSDR:
+            break;
+        case InputDeviceId::SOAPYSDR:
 #if HAVE_SOAPYSDR
-        m_settings->soapysdr.devArgs = ui->soapysdrDevArgs->text();
-        m_settings->soapysdr.channel = ui->soapysdrChannelNum->text().toInt();
-        m_settings->soapysdr.antenna = ui->soapySdrAntenna->text();
-        activateSoapySdrControls(true);
+            m_settings->soapysdr.devArgs = ui->soapysdrDevArgs->text();
+            m_settings->soapysdr.channel = ui->soapysdrChannelNum->text().toInt();
+            m_settings->soapysdr.antenna = ui->soapySdrAntenna->text();
+            activateSoapySdrControls(true);
 #endif
-        break;
+            break;
     }
     emit inputDeviceChanged(m_settings->inputDevice);
 }
@@ -929,7 +934,9 @@ void SetupDialog::onRtlSdrGainSliderChanged(int val)
         m_settings->rtlsdr.gainIdx = val;
         emit newInputDeviceSettings();
     }
-    else { /* empy gain list => do nothing */}
+    else
+    { /* empy gain list => do nothing */
+    }
 }
 
 void SetupDialog::onRtlSdrBandwidthChanged(int val)
@@ -949,7 +956,7 @@ void SetupDialog::onRtlSdrSwAgcMaxLevelChanged(int val)
 {
     m_settings->rtlsdr.agcLevelMax = val;
     ui->rtlsdrSwAgcMaxLevelDefault->setEnabled(val > 0);
-    emit newInputDeviceSettings();    
+    emit newInputDeviceSettings();
 }
 
 void SetupDialog::onRtlSdrBiasTCurrentIdxChanged(int)
@@ -994,7 +1001,9 @@ void SetupDialog::onRtlTcpGainSliderChanged(int val)
         m_settings->rtltcp.gainIdx = val;
         emit newInputDeviceSettings();
     }
-    else { /* empy gain list => do nothing */}
+    else
+    { /* empy gain list => do nothing */
+    }
 }
 
 void SetupDialog::onRtlTcpIpAddrEditFinished()
@@ -1011,7 +1020,6 @@ void SetupDialog::onRtlTcpPortValueChanged(int val)
     {
         ui->connectButton->setVisible(true);
     }
-
 }
 
 void SetupDialog::onTcpGainModeToggled(bool checked)
@@ -1048,7 +1056,6 @@ void SetupDialog::onRtlTcpPPMChanged(int val)
     emit newInputDeviceSettings();
 }
 
-
 void SetupDialog::activateRtlTcpControls(bool en)
 {
     ui->rtltcpGainModeGroup->setEnabled(en);
@@ -1060,7 +1067,7 @@ void SetupDialog::onRawFileFormatChanged(int idx)
 {
     if (static_cast<RawFileInputFormat>(idx) != m_settings->rawfile.format)
     {
-        ui->connectButton->setVisible(true);               
+        ui->connectButton->setVisible(true);
     }
 }
 
@@ -1174,7 +1181,7 @@ void SetupDialog::onAirspyBiasTCurrentIdxChanged(int)
     m_settings->airspy.biasT = ui->airspyBiasTCombo->currentData().toBool();
     emit newInputDeviceSettings();
 }
-#endif // HAVE_AIRSPY
+#endif  // HAVE_AIRSPY
 
 #if HAVE_SOAPYSDR
 void SetupDialog::onSoapySdrGainSliderChanged(int val)
@@ -1185,7 +1192,9 @@ void SetupDialog::onSoapySdrGainSliderChanged(int val)
         m_settings->soapysdr.gainIdx = val;
         emit newInputDeviceSettings();
     }
-    else { /* empy gain list => do nothing */}
+    else
+    { /* empy gain list => do nothing */
+    }
 }
 
 void SetupDialog::activateSoapySdrControls(bool en)
@@ -1247,68 +1256,68 @@ void SetupDialog::onSoapySdrBandwidthChanged(int val)
     emit newInputDeviceSettings();
 }
 
-#endif // HAVE_SOAPYSDR
+#endif  // HAVE_SOAPYSDR
 
 void SetupDialog::setStatusLabel()
 {
     switch (m_settings->inputDevice)
     {
-    case InputDeviceId::RTLSDR:
-        ui->statusLabel->setText(tr("RTL SDR device connected"));
-        break;
-    case InputDeviceId::RTLTCP:
-        ui->statusLabel->setText(tr("RTL TCP device connected"));
-        break;
-    case InputDeviceId::UNDEFINED:
-        ui->statusLabel->setText("<span style=\"color:red\">"+tr("No device connected")+"</span>");
-        break;
-    case InputDeviceId::RAWFILE:
-        ui->statusLabel->setText(tr("Raw file connected"));
-        break;
-    case InputDeviceId::AIRSPY:
-        ui->statusLabel->setText(tr("Airspy device connected"));
-        break;
-    case InputDeviceId::SOAPYSDR:
-        ui->statusLabel->setText(tr("Soapy SDR device connected"));
-        break;
-    case InputDeviceId::RARTTCP:
-        ui->statusLabel->setText("RART TCP device connected");
-        break;
+        case InputDeviceId::RTLSDR:
+            ui->statusLabel->setText(tr("RTL SDR device connected"));
+            break;
+        case InputDeviceId::RTLTCP:
+            ui->statusLabel->setText(tr("RTL TCP device connected"));
+            break;
+        case InputDeviceId::UNDEFINED:
+            ui->statusLabel->setText("<span style=\"color:red\">" + tr("No device connected") + "</span>");
+            break;
+        case InputDeviceId::RAWFILE:
+            ui->statusLabel->setText(tr("Raw file connected"));
+            break;
+        case InputDeviceId::AIRSPY:
+            ui->statusLabel->setText(tr("Airspy device connected"));
+            break;
+        case InputDeviceId::SOAPYSDR:
+            ui->statusLabel->setText(tr("Soapy SDR device connected"));
+            break;
+        case InputDeviceId::RARTTCP:
+            ui->statusLabel->setText("RART TCP device connected");
+            break;
     }
 }
 
 void SetupDialog::onInputChanged(int index)
 {
     int inputDeviceInt = ui->inputCombo->itemData(index).toInt();
-    ui->deviceOptionsWidget->setCurrentIndex(inputDeviceInt-1);
+    ui->deviceOptionsWidget->setCurrentIndex(inputDeviceInt - 1);
 
     ui->connectButton->setHidden(m_settings->inputDevice == static_cast<InputDeviceId>(inputDeviceInt));
     if (m_settings->inputDevice != static_cast<InputDeviceId>(inputDeviceInt))
-    {   // selected input device does not match current input device
+    {  // selected input device does not match current input device
         switch (static_cast<InputDeviceId>(inputDeviceInt))
         {
-        case InputDeviceId::RTLSDR:
-            activateRtlSdrControls(false);
-            break;            
-        case InputDeviceId::RTLTCP:
-            activateRtlTcpControls(false);
-            break;
-        case InputDeviceId::UNDEFINED:
-            break;
-        case InputDeviceId::RAWFILE:
-            break;
-        case InputDeviceId::AIRSPY:
+            case InputDeviceId::RTLSDR:
+                activateRtlSdrControls(false);
+                break;
+            case InputDeviceId::RTLTCP:
+                activateRtlTcpControls(false);
+                break;
+            case InputDeviceId::UNDEFINED:
+                break;
+            case InputDeviceId::RAWFILE:
+                break;
+            case InputDeviceId::AIRSPY:
 #if HAVE_AIRSPY
-            activateAirspyControls(false);
+                activateAirspyControls(false);
 #endif
-            return;
-        case InputDeviceId::SOAPYSDR:
+                return;
+            case InputDeviceId::SOAPYSDR:
 #if HAVE_SOAPYSDR
-            activateSoapySdrControls(false);
+                activateSoapySdrControls(false);
 #endif
-            return;
-        case InputDeviceId::RARTTCP:
-            break;
+                return;
+            case InputDeviceId::RARTTCP:
+                break;
         }
     }
 }
@@ -1320,8 +1329,9 @@ void SetupDialog::onOpenFileButtonClicked()
     {
         dir = QFileInfo(m_rawfilename).path();
     }
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open IQ stream"), dir, tr("Binary files")+" (*.bin *.s16 *.u8 *.raw *.sdr *.uff *.wav)",
-                                                    nullptr, QFileDialog::Option::DontResolveSymlinks);
+    QString fileName =
+        QFileDialog::getOpenFileName(this, tr("Open IQ stream"), dir, tr("Binary files") + " (*.bin *.s16 *.u8 *.raw *.sdr *.uff *.wav)", nullptr,
+                                     QFileDialog::Option::DontResolveSymlinks);
     if (!fileName.isEmpty())
     {
         m_rawfilename = fileName;
@@ -1336,7 +1346,8 @@ void SetupDialog::onOpenFileButtonClicked()
             ui->fileFormatCombo->setCurrentIndex(int(RawFileInputFormat::SAMPLE_FORMAT_U8));
         }
         else
-        {   /* format cannot be guessed from extension - if XML header is recognized, then it will be set automatically */ }
+        { /* format cannot be guessed from extension - if XML header is recognized, then it will be set automatically */
+        }
 
         ui->connectButton->setVisible(true);
         ui->fileFormatCombo->setEnabled(true);
@@ -1344,10 +1355,10 @@ void SetupDialog::onOpenFileButtonClicked()
         // we do not know the length yet
         onFileLength(0);
 
-#ifdef Q_OS_MACOS // bug in Ventura
-        show(); //bring window to top on OSX
-        raise(); //bring window from minimized state on OSX
-        activateWindow(); //bring window to front/unminimize on windows
+#ifdef Q_OS_MACOS          // bug in Ventura
+        show();            // bring window to top on OSX
+        raise();           // bring window from minimized state on OSX
+        activateWindow();  // bring window to front/unminimize on windows
 #endif
     }
 }
@@ -1356,27 +1367,27 @@ void SetupDialog::resetInputDevice()
 {
     switch (m_settings->inputDevice)
     {
-    case InputDeviceId::RTLSDR:
-        activateRtlSdrControls(false);
-        break;
-    case InputDeviceId::RTLTCP:
-        activateRtlTcpControls(false);
-        break;
-    case InputDeviceId::RAWFILE:
-    case InputDeviceId::RARTTCP:
-        break;
-    case InputDeviceId::UNDEFINED:
-        break;
-    case InputDeviceId::AIRSPY:
+        case InputDeviceId::RTLSDR:
+            activateRtlSdrControls(false);
+            break;
+        case InputDeviceId::RTLTCP:
+            activateRtlTcpControls(false);
+            break;
+        case InputDeviceId::RAWFILE:
+        case InputDeviceId::RARTTCP:
+            break;
+        case InputDeviceId::UNDEFINED:
+            break;
+        case InputDeviceId::AIRSPY:
 #if HAVE_AIRSPY
-        activateAirspyControls(false);
+            activateAirspyControls(false);
 #endif
-        break;
-    case InputDeviceId::SOAPYSDR:
+            break;
+        case InputDeviceId::SOAPYSDR:
 #if HAVE_SOAPYSDR
-        activateSoapySdrControls(false);
+            activateSoapySdrControls(false);
 #endif
-        break;
+            break;
     }
 
     m_settings->inputDevice = InputDeviceId::UNDEFINED;
@@ -1388,7 +1399,7 @@ void SetupDialog::resetInputDevice()
 }
 
 void SetupDialog::onAnnouncementClicked()
-{   // calculate ena flag
+{  // calculate ena flag
     uint16_t announcementEna = 0;
     for (int a = 0; a < static_cast<int>(DabAnnouncement::Undefined); ++a)
     {
@@ -1444,12 +1455,13 @@ void SetupDialog::onExpertModeChecked(bool checked)
 
     int idx = ui->inputCombo->findData(QVariant(static_cast<int>(InputDeviceId::RAWFILE)));
     if (checked && (idx < 0))
-    {   // add item
+    {  // add item
         ui->inputCombo->addItem(tr("Raw file"), QVariant(int(InputDeviceId::RAWFILE)));
     }
     if (!checked && (idx >= 0))
-    {   // remove it
-        if (ui->inputCombo->currentIndex() == idx) {
+    {  // remove it
+        if (ui->inputCombo->currentIndex() == idx)
+        {
             ui->inputCombo->removeItem(idx);
             ui->inputCombo->setCurrentIndex(0);
         }
@@ -1464,7 +1476,7 @@ void SetupDialog::onExpertModeChecked(bool checked)
 
     emit expertModeToggled(checked);
 
-    QTimer::singleShot(10, this, [this](){ resize(minimumSizeHint()); } );
+    QTimer::singleShot(10, this, [this]() { resize(minimumSizeHint()); });
 }
 
 void SetupDialog::onTrayIconChecked(bool checked)
@@ -1488,7 +1500,6 @@ void SetupDialog::onLanguageChanged(int index)
     }
 }
 
-
 void SetupDialog::onNoiseLevelChanged(int index)
 {
     int noiseLevel = ui->noiseConcealmentCombo->itemData(index).toInt();
@@ -1507,7 +1518,7 @@ void SetupDialog::onXmlHeaderChecked(bool checked)
 
 void SetupDialog::onRawFileProgressChanged(int val)
 {
-    ui->rawFileTime->setText(QString("%1 / %2 "+tr("sec")).arg(val/1000.0, 0, 'f', 1).arg(ui->rawFileSlider->maximum()/1000.0, 0, 'f', 1));
+    ui->rawFileTime->setText(QString("%1 / %2 " + tr("sec")).arg(val / 1000.0, 0, 'f', 1).arg(ui->rawFileSlider->maximum() / 1000.0, 0, 'f', 1));
 }
 
 void SetupDialog::onSpiAppChecked(bool checked)
@@ -1525,7 +1536,6 @@ void SetupDialog::onUseInternetChecked(bool checked)
     ui->radioDNSCheckBox->setEnabled(checked);
     emit spiApplicationSettingsChanged(m_settings->useInternet, m_settings->radioDnsEna);
 }
-
 
 void SetupDialog::onRadioDnsChecked(bool checked)
 {
@@ -1547,10 +1557,10 @@ void SetupDialog::onAudioRecordingFolderButtonClicked()
         ui->audioRecordingFolderLabel->setText(dir);
         emit audioRecordingSettings(m_settings->audioRec.folder, m_settings->audioRec.captureOutput);
 
-#ifdef Q_OS_MACOS // bug in Ventura
-        show(); //bring window to top on OSX
-        raise(); //bring window from minimized state on OSX
-        activateWindow(); //bring window to front/unminimize on windows
+#ifdef Q_OS_MACOS          // bug in Ventura
+        show();            // bring window to top on OSX
+        raise();           // bring window from minimized state on OSX
+        activateWindow();  // bring window to front/unminimize on windows
 #endif
     }
 }
@@ -1575,10 +1585,10 @@ void SetupDialog::onDataDumpFolderButtonClicked()
         ui->dataDumpFolderLabel->setText(dir);
         emit uaDumpSettings(m_settings->uaDump);
 
-#ifdef Q_OS_MACOS // bug in Ventura
-        show(); //bring window to top on OSX
-        raise(); //bring window from minimized state on OSX
-        activateWindow(); //bring window to front/unminimize on windows
+#ifdef Q_OS_MACOS          // bug in Ventura
+        show();            // bring window to top on OSX
+        raise();           // bring window from minimized state on OSX
+        activateWindow();  // bring window to front/unminimize on windows
 #endif
     }
 }
@@ -1591,7 +1601,6 @@ void SetupDialog::onDataDumpCheckboxToggled(bool)
 
     emit uaDumpSettings(m_settings->uaDump);
 }
-
 
 void SetupDialog::onDataDumpPatternEditingFinished()
 {
@@ -1637,7 +1646,7 @@ void SetupDialog::onGeolocationSourceChanged(int index)
     int srcInt = ui->locationSourceCombo->itemData(index).toInt();
     if (srcInt > 0)
     {
-        ui->locationSrcWidget->setCurrentIndex(srcInt-1);
+        ui->locationSrcWidget->setCurrentIndex(srcInt - 1);
     }
     else
     {
@@ -1657,7 +1666,7 @@ void SetupDialog::onCoordinateEditFinished()
     if (coord.size() != 2)
     {
         ui->coordinatesEdit->setText("0.0, 0.0");
-        m_settings->tii.coordinates = QGeoCoordinate(0.0,0.0);
+        m_settings->tii.coordinates = QGeoCoordinate(0.0, 0.0);
         emit tiiSettingsChanged();
         return;
     }
@@ -1672,7 +1681,7 @@ void SetupDialog::onCoordinateEditFinished()
     if (!ok)
     {
         ui->coordinatesEdit->setText("0.0, 0.0");
-        m_settings->tii.coordinates = QGeoCoordinate(0.0,0.0);
+        m_settings->tii.coordinates = QGeoCoordinate(0.0, 0.0);
         emit tiiSettingsChanged();
         return;
     }
@@ -1681,7 +1690,7 @@ void SetupDialog::onCoordinateEditFinished()
     if (!coordinate.isValid())
     {
         ui->coordinatesEdit->setText("0.0, 0.0");
-        m_settings->tii.coordinates = QGeoCoordinate(0.0,0.0);
+        m_settings->tii.coordinates = QGeoCoordinate(0.0, 0.0);
         emit tiiSettingsChanged();
         return;
     }
@@ -1723,10 +1732,10 @@ void SetupDialog::onTiiLogFolderButtonClicked()
         m_settings->tii.logFolder = dir;
         ui->tiiLogFolderLabel->setText(dir);
 
-#ifdef Q_OS_MACOS // bug in Ventura
-        show(); //bring window to top on OSX
-        raise(); //bring window from minimized state on OSX
-        activateWindow(); //bring window to front/unminimize on windows
+#ifdef Q_OS_MACOS          // bug in Ventura
+        show();            // bring window to top on OSX
+        raise();           // bring window from minimized state on OSX
+        activateWindow();  // bring window to front/unminimize on windows
 #endif
     }
 }
@@ -1752,31 +1761,32 @@ void SetupDialog::onTiiUpdateFinished(QNetworkReply::NetworkError err)
     {
         ui->tiiDbLabel->setText(tr("Update failed"));
     }
-    ui->updateDbButton->setEnabled(!lastModified.isValid() || lastModified.msecsTo(QDateTime::currentDateTime()) > 10*60*1000);
+    ui->updateDbButton->setEnabled(!lastModified.isValid() || lastModified.msecsTo(QDateTime::currentDateTime()) > 10 * 60 * 1000);
 }
 
 void SetupDialog::setDeviceDescription(const InputDeviceDescription &desc)
 {
     switch (m_settings->inputDevice)
     {
-    case InputDeviceId::RTLSDR:
-    {
-        m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoDevice]->setText(desc.device.model);
-        m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoTuner]->setText(desc.device.name.mid(9, desc.device.name.length()-9-1));
-        m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoSampleFormat]->setText(desc.sample.channelContainer);
-        ui->rtlsdrInfoWidget->setVisible(true);
-    }
+        case InputDeviceId::RTLSDR:
+        {
+            m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoDevice]->setText(desc.device.model);
+            m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoTuner]->setText(desc.device.name.mid(9, desc.device.name.length() - 9 - 1));
+            m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoSampleFormat]->setText(desc.sample.channelContainer);
+            ui->rtlsdrInfoWidget->setVisible(true);
+        }
         break;
-    case InputDeviceId::RTLTCP: {
-        m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoDevice]->setText(desc.device.model);
-        m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoTuner]->setText(desc.device.name.mid(9, desc.device.name.length()-9-1));
-        m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoSampleFormat]->setText(desc.sample.channelContainer);
-        ui->rtltcpInfoWidget->setVisible(true);
-    }
+        case InputDeviceId::RTLTCP:
+        {
+            m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoDevice]->setText(desc.device.model);
+            m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoTuner]->setText(desc.device.name.mid(9, desc.device.name.length() - 9 - 1));
+            m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoSampleFormat]->setText(desc.sample.channelContainer);
+            ui->rtltcpInfoWidget->setVisible(true);
+        }
         break;
-    default:
-        // do nothing
-        break;
+        default:
+            // do nothing
+            break;
     }
 }
 
@@ -1792,7 +1802,7 @@ void SetupDialog::onProxyConfigChanged(int index)
     ui->proxyPassLabel->setEnabled(enaManual);
     ui->proxyPassEdit->setEnabled(enaManual);
 
-    ui->proxyApplyButton->setEnabled(static_cast<Settings::ProxyConfig>(ui->proxyConfigCombo->itemData(index).toInt())  != m_settings->proxy.config);
+    ui->proxyApplyButton->setEnabled(static_cast<Settings::ProxyConfig>(ui->proxyConfigCombo->itemData(index).toInt()) != m_settings->proxy.config);
 }
 
 void SetupDialog::onProxyConfigEdit()
@@ -1810,22 +1820,24 @@ void SetupDialog::onProxyApplyButtonClicked()
         m_settings->proxy.user = ui->proxyUserEdit->text().trimmed();
 
         if (m_settings->proxy.pass != ui->proxyPassEdit->text())
-        {   // this is very very weak protection of pass used only to avoid storing pass in plain text
+        {  // this is very very weak protection of pass used only to avoid storing pass in plain text
             QByteArray ba;
             int key = 0;
-            for (int n = 0; n < 4; ++n) {
+            for (int n = 0; n < 4; ++n)
+            {
                 int val = QRandomGenerator::global()->generate() & 0xFF;
                 ba.append(static_cast<char>(val));
                 key += val;
             }
             key = key & 0x00FF;
-            if (key == 0) {
+            if (key == 0)
+            {
                 key = 0x5C;
             }
             ba.append(ui->proxyPassEdit->text().toUtf8());
-            for (int n = 4; n < ba.length(); ++n) {
+            for (int n = 4; n < ba.length(); ++n)
+            {
                 ba[n] = ba[n] ^ key;
-
             }
             m_settings->proxy.pass = ba;
         }

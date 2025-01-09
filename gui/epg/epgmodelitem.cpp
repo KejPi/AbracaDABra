@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,8 @@
 
 #include "epgmodelitem.h"
 
-EPGModelItem::EPGModelItem() {}
+EPGModelItem::EPGModelItem()
+{}
 
 QString EPGModelItem::longName() const
 {
@@ -66,7 +67,7 @@ QDateTime EPGModelItem::startTime() const
 int EPGModelItem::startTimeSec() const
 {
     QTime time = m_startTime.time();
-    return time.hour()*3600 + time.minute() * 60 + time.second();
+    return time.hour() * 3600 + time.minute() * 60 + time.second();
 }
 
 int EPGModelItem::endTimeSec() const
@@ -84,7 +85,6 @@ QDateTime EPGModelItem::endTime() const
 {
     return m_startTime.addSecs(m_durationSec);
 }
-
 
 void EPGModelItem::setStartTime(const QDateTime &newStartTime)
 {
@@ -124,10 +124,22 @@ void EPGModelItem::setShortDescription(const QString &newShortDescription)
 
 bool EPGModelItem::isValid() const
 {
-    if ((m_shortId < 0) || (m_shortId >= 16777215)) return false;
-    if (m_mediumName.isEmpty()) return false;
-    if (!m_startTime.isValid()) return false;
-    if (m_durationSec == 0) return false;
+    if ((m_shortId < 0) || (m_shortId >= 16777215))
+    {
+        return false;
+    }
+    if (m_mediumName.isEmpty())
+    {
+        return false;
+    }
+    if (!m_startTime.isValid())
+    {
+        return false;
+    }
+    if (m_durationSec == 0)
+    {
+        return false;
+    }
     return true;
 }
 

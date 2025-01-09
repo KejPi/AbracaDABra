@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,8 @@
 #ifndef MOTDECODER_H
 #define MOTDECODER_H
 
-#include <QObject>
 #include <QByteArray>
+#include <QObject>
 
 #include "motobject.h"
 
@@ -47,23 +47,23 @@ public:
     int directoryIsComplete() const { return hasDirectory() ? m_directory->isComplete() : false; }
     uint_fast32_t getDirectoryId() const { return hasDirectory() ? m_directory->getTransportId() : 0xFFFFFFFF; }
     MOTObjectCache::const_iterator find(uint16_t transportId) const { return m_directory->cfind(transportId); }
-    MOTObjectCache::const_iterator find(const QString & filename) const;    
-    MOTObjectCache::const_iterator directoryBegin() const { return  m_directory->begin(); }
-    MOTObjectCache::const_iterator directoryEnd() const { return  m_directory->end(); }
+    MOTObjectCache::const_iterator find(const QString &filename) const;
+    MOTObjectCache::const_iterator directoryBegin() const { return m_directory->begin(); }
+    MOTObjectCache::const_iterator directoryEnd() const { return m_directory->end(); }
 
 signals:
-    void newMOTObject(const MOTObject & obj);
+    void newMOTObject(const MOTObject &obj);
     void newMOTDirectory();
 
     // ETSI EN 301 234 V2.1.1 (2006-05) [6.2.2.1.1 ContentName]
     // The parameter ContentName is used to uniquely identify an object. At any time only one object with a certain ContentName shall be broadcast.
-    void newMOTObjectInDirectory(const QString & contentName);
+    void newMOTObjectInDirectory(const QString &contentName);
 
     void directoryComplete();
 
 private:
-    MOTDirectory * m_directory;
-    MOTObjectCache * m_objCache;
+    MOTDirectory *m_directory;
+    MOTObjectCache *m_objCache;
 };
 
-#endif // MOTDECODER_H
+#endif  // MOTDECODER_H

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,12 +27,13 @@
 #ifndef METADATAMANAGER_H
 #define METADATAMANAGER_H
 
-#include <QObject>
 #include <QDomDocument>
-#include <QPixmap>
 #include <QHash>
-#include "servicelist.h"
+#include <QObject>
+#include <QPixmap>
+
 #include "epgmodel.h"
+#include "servicelist.h"
 
 typedef QHash<QString, QString> serviceInfo_t;
 
@@ -42,7 +43,8 @@ class MetadataManager : public QObject
     Q_PROPERTY(QStringList epgDatesList READ epgDatesList NOTIFY epgDatesListChanged FINAL)
 
 public:
-    enum MetadataRole{
+    enum MetadataRole
+    {
         SmallLogo = Qt::UserRole,
         SLSLogo,
         ShortName,
@@ -50,38 +52,38 @@ public:
         LongName,
     };
 
-    explicit MetadataManager(const ServiceList * serviceList, QObject * parent = nullptr);
+    explicit MetadataManager(const ServiceList *serviceList, QObject *parent = nullptr);
     ~MetadataManager();
-    void processXML(const QString &xmldocument, const QString & scopeId, uint16_t decoderId);
-    void onFileReceived(const QByteArray & data, const QString & requestId);
+    void processXML(const QString &xmldocument, const QString &scopeId, uint16_t decoderId);
+    void onFileReceived(const QByteArray &data, const QString &requestId);
     QVariant data(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role) const;
-    QVariant data(const ServiceListId & id, MetadataManager::MetadataRole role) const;
+    QVariant data(const ServiceListId &id, MetadataManager::MetadataRole role) const;
 
-    EPGModel *epgModel(const ServiceListId & id) const;
+    EPGModel *epgModel(const ServiceListId &id) const;
 
     Q_INVOKABLE QDate epgDate(int idx) const;
     QStringList epgDatesList() const;
 
     void getEpgData();
-    void onEnsembleInformation(const RadioControlEnsemble & ens);
-    void onAudioServiceSelection(const RadioControlServiceComponent & s);
+    void onEnsembleInformation(const RadioControlEnsemble &ens);
+    void onAudioServiceSelection(const RadioControlServiceComponent &s);
 
-    void addServiceEpg(const ServiceListId &ensId, const ServiceListId & servId);
-    void removeServiceEpg(const ServiceListId & servId);
+    void addServiceEpg(const ServiceListId &ensId, const ServiceListId &servId);
+    void removeServiceEpg(const ServiceListId &servId);
     void clearEpg();
 
 signals:
-    void getFile(uint16_t decoderId, const QString & url, const QString & requestId);
-    void getSI(const ServiceListId &servId, const uint32_t & ueid);
-    void getPI(const ServiceListId &servId, const QList<uint32_t> &ueidList, const QDate & date);
-    void dataUpdated(const ServiceListId & id, MetadataManager::MetadataRole role);
-    void epgModelChanged(const ServiceListId & id);
+    void getFile(uint16_t decoderId, const QString &url, const QString &requestId);
+    void getSI(const ServiceListId &servId, const uint32_t &ueid);
+    void getPI(const ServiceListId &servId, const QList<uint32_t> &ueidList, const QDate &date);
+    void dataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role);
+    void epgModelChanged(const ServiceListId &id);
     void epgDatesListChanged();
     void epgAvailable();
     void epgEmpty();
 
 private:
-    const ServiceList * m_serviceList;
+    const ServiceList *m_serviceList;
     bool m_isLoadingFromCache;
     bool m_cleanEpgCache;
     QMap<QDate, QString> m_epgDates;
@@ -92,10 +94,10 @@ private:
     bool parseProgramme(const QDomElement &element, const ServiceListId &id);
     void parseDescription(const QDomElement &element, EPGModelItem *progItem);
 
-    ServiceListId bearerToServiceId(const QString & bearerUri) const;
+    ServiceListId bearerToServiceId(const QString &bearerUri) const;
 
-    void loadEpg(const ServiceListId & servId, const QList<uint32_t> &ueidList);
+    void loadEpg(const ServiceListId &servId, const QList<uint32_t> &ueidList);
     void addEpgDate(const QDate &date);
 };
 
-#endif // METADATAMANAGER_H
+#endif  // METADATAMANAGER_H

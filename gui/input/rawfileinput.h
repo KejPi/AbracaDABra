@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,14 @@
 #ifndef RAWFILEINPUT_H
 #define RAWFILEINPUT_H
 
-#include <QObject>
-#include <QString>
-#include <QFile>
-#include <QTimer>
-#include <QThread>
 #include <QElapsedTimer>
+#include <QFile>
+#include <QObject>
 #include <QSemaphore>
+#include <QString>
+#include <QThread>
+#include <QTimer>
+
 #include "inputdevice.h"
 
 #define RAWFILEINPUT_XML_PADDING 2048
@@ -48,26 +49,27 @@ class RawFileWorker : public QThread
 {
     Q_OBJECT
 public:
-    explicit RawFileWorker(QFile * inputFile, RawFileInputFormat sampleFormat, int bytesRead, QObject *parent = nullptr);
+    explicit RawFileWorker(QFile *inputFile, RawFileInputFormat sampleFormat, int bytesRead, QObject *parent = nullptr);
     void trigger();
     void stop();
     bool isRunning();
+
 protected:
     void run() override;
 signals:
     void bytesRead(qint64 numBytes);
     void endOfFile(bool status);
+
 private:
     QAtomicInt m_stopRequest = false;
     std::atomic<bool> m_watchdogFlag;
     QSemaphore m_semaphore;
-    QFile * m_inputFile = nullptr;
+    QFile *m_inputFile = nullptr;
     QElapsedTimer m_elapsedTimer;
     qint64 m_lastTriggerTime = 0;
     RawFileInputFormat m_sampleFormat;
     qint64 m_bytesRead;
 };
-
 
 class RawFileInput : public InputDevice
 {
@@ -75,10 +77,10 @@ class RawFileInput : public InputDevice
 public:
     explicit RawFileInput(QObject *parent = nullptr);
     ~RawFileInput();
-    bool openDevice() override;    
+    bool openDevice() override;
     void tune(uint32_t freq) override;
-    void setFile(const QString & fileName, const RawFileInputFormat & sampleFormat = RawFileInputFormat::SAMPLE_FORMAT_U8);
-    void setFileFormat(const RawFileInputFormat & sampleFormat);
+    void setFile(const QString &fileName, const RawFileInputFormat &sampleFormat = RawFileInputFormat::SAMPLE_FORMAT_U8);
+    void setFileFormat(const RawFileInputFormat &sampleFormat);
     void startStopRecording(bool start) override { /* do nothing */ }
     void seek(int msec);
 
@@ -89,17 +91,16 @@ signals:
 private:
     RawFileInputFormat m_sampleFormat;
     QString m_fileName;
-    QFile * m_inputFile = nullptr;
-    RawFileWorker * m_worker = nullptr;
-    QTimer * m_inputTimer = nullptr;
+    QFile *m_inputFile = nullptr;
+    RawFileWorker *m_worker = nullptr;
+    QTimer *m_inputTimer = nullptr;
     QTimer m_watchdogTimer;
     void stop();
     void rewind();
     void onBytesRead(quint64 bytesRead);
     void onWatchdogTimeout();
     void onEndOfFile(bool status) { emit error(status ? InputDeviceErrorCode::EndOfFile : InputDeviceErrorCode::NoDataAvailable); }
-    void parseXmlHeader(const QByteArray & xml);
+    void parseXmlHeader(const QByteArray &xml);
 };
 
-
-#endif // RAWFILEINPUT_H
+#endif  // RAWFILEINPUT_H

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,11 @@
  * SOFTWARE.
  */
 
-#include <QDir>
-#include <QDebug>
-#include <QLoggingCategory>
 #include "airspyinput.h"
+
+#include <QDebug>
+#include <QDir>
+#include <QLoggingCategory>
 
 Q_LOGGING_CATEGORY(airspyInput, "AirspyInput", QtInfoMsg)
 
@@ -59,7 +60,7 @@ AirspyInput::~AirspyInput()
 
     if (nullptr != m_filterOutBuffer)
     {
-        operator delete [] (m_filterOutBuffer, std::align_val_t(16));
+        operator delete[](m_filterOutBuffer, std::align_val_t(16));
     }
     if (nullptr != m_src)
     {
@@ -71,7 +72,7 @@ void AirspyInput::tune(uint32_t frequency)
 {
     m_frequency = frequency;
     if (airspy_is_streaming(m_device) || (0 == frequency))
-    {   // airspy is running
+    {  // airspy is running
         //      sequence in this case is:
         //      1) stop
         //      2) wait to finish
@@ -80,7 +81,7 @@ void AirspyInput::tune(uint32_t frequency)
         stop();
     }
     else
-    {   // airspy is not running
+    {  // airspy is not running
         run();
     }
 }
@@ -108,25 +109,25 @@ bool AirspyInput::openDevice()
     // here we try SR=4096kHz that is not oficailly supported by Airspy devices
     // however it works on Airspy Mini
     // it seems that this sample rate leads to lower CPU load
-    if (m_try4096kHz && (AIRSPY_SUCCESS == airspy_set_samplerate(m_device, 4096*1000)))
-    {   // succesfull
-        sampleRate = 4096*1000;
+    if (m_try4096kHz && (AIRSPY_SUCCESS == airspy_set_samplerate(m_device, 4096 * 1000)))
+    {  // succesfull
+        sampleRate = 4096 * 1000;
         qCInfo(airspyInput) << "Sample rate set to" << sampleRate << "Hz";
     }
     else
-    {   // find lowest supported sample rated that is >= 2048kHz
+    {  // find lowest supported sample rated that is >= 2048kHz
         uint32_t samplerateCount;
         airspy_get_samplerates(m_device, &samplerateCount, 0);
-        uint32_t * samplerateArray = new uint32_t[samplerateCount];
+        uint32_t *samplerateArray = new uint32_t[samplerateCount];
         airspy_get_samplerates(m_device, samplerateArray, samplerateCount);
         for (int s = 0; s < samplerateCount; ++s)
         {
-            if ((samplerateArray[s] >= (2048*1000)) && (samplerateArray[s] < sampleRate))
+            if ((samplerateArray[s] >= (2048 * 1000)) && (samplerateArray[s] < sampleRate))
             {
                 sampleRate = samplerateArray[s];
             }
         }
-        delete [] samplerateArray;
+        delete[] samplerateArray;
 
         // Set sample rate
         if (AIRSPY_SUCCESS != airspy_set_samplerate(m_device, sampleRate))
@@ -142,7 +143,7 @@ bool AirspyInput::openDevice()
 
     // airspy provides 49152 samples in callback in packed modes
     // we cannot produce more samples in SRC => allocating for worst case
-    m_filterOutBuffer = new ( std::align_val_t(16) ) float[49152*2];
+    m_filterOutBuffer = new (std::align_val_t(16)) float[49152 * 2];
     m_src = new InputDeviceSRC(sampleRate);
 
     // set automatic gain
@@ -160,7 +161,7 @@ bool AirspyInput::openDevice()
             m_deviceDescription.device.model = "Mini";
         }
         else if (tmp.startsWith("AirSpy NOS", Qt::CaseInsensitive))
-        {   // TODO: how to detect R2 correctly ???
+        {  // TODO: how to detect R2 correctly ???
             m_deviceDescription.device.model = "R2";
         }
         else
@@ -177,7 +178,7 @@ bool AirspyInput::openDevice()
     m_deviceDescription.sample.channelBits = sizeof(int16_t) * 8;
     m_deviceDescription.sample.containerBits = sizeof(int16_t) * 8;
     m_deviceDescription.sample.channelContainer = "int16";
-#else // recording in float
+#else  // recording in float
     m_deviceDescription.sample.channelBits = sizeof(float) * 8;
     m_deviceDescription.sample.containerBits = sizeof(float) * 8;
     m_deviceDescription.sample.channelContainer = "float";
@@ -196,8 +197,8 @@ void AirspyInput::run()
     m_src->reset();
 
     if (m_frequency != 0)
-    {   // Tune to new frequency
-        if (AIRSPY_SUCCESS != airspy_set_freq(m_device, m_frequency*1000))
+    {  // Tune to new frequency
+        if (AIRSPY_SUCCESS != airspy_set_freq(m_device, m_frequency * 1000))
         {
             qCCritical(airspyInput, "Tune to %d kHz failed", m_frequency);
             emit error(InputDeviceErrorCode::DeviceDisconnected);
@@ -208,7 +209,7 @@ void AirspyInput::run()
 
         m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
 
-        if (AIRSPY_SUCCESS != airspy_start_rx(m_device, AirspyInput::callback, (void*)this))
+        if (AIRSPY_SUCCESS != airspy_start_rx(m_device, AirspyInput::callback, (void *)this))
         {
             qCCritical(airspyInput, "Failed to start RX");
             emit error(InputDeviceErrorCode::DeviceDisconnected);
@@ -216,7 +217,8 @@ void AirspyInput::run()
         }
     }
     else
-    { /* tune to 0 => going to idle */  }
+    { /* tune to 0 => going to idle */
+    }
 
     emit tuned(m_frequency);
 }
@@ -224,7 +226,7 @@ void AirspyInput::run()
 void AirspyInput::stop()
 {
     if (AIRSPY_TRUE == airspy_is_streaming(m_device))
-    {   // if devise is running, stop RX
+    {  // if devise is running, stop RX
         airspy_stop_rx(m_device);
         m_watchdogTimer.stop();
 
@@ -241,10 +243,10 @@ void AirspyInput::stop()
             QThread::msleep(2000);
         }
 
-        run(); // restart
+        run();  // restart
     }
     else if (0 == m_frequency)
-    {   // going to idle
+    {  // going to idle
         emit tuned(0);
     }
 }
@@ -253,51 +255,51 @@ void AirspyInput::setGainMode(const AirspyGainStr &gain)
 {
     switch (gain.mode)
     {
-    case AirpyGainMode::Hybrid:
-        if (m_gainMode == gain.mode)
-        {   // do nothing -> mode does not change
-            break;
-        }
-        // mode changes
-        m_gainMode = gain.mode;
-        airspy_set_lna_agc(m_device, 1);
-        airspy_set_mixer_agc(m_device, 1);
-        resetAgc();
-        break;
-    case AirpyGainMode::Manual:
-        m_gainMode = gain.mode;
-        airspy_set_vga_gain(m_device, gain.ifGainIdx);
-        if (gain.lnaAgcEna)
-        {
+        case AirpyGainMode::Hybrid:
+            if (m_gainMode == gain.mode)
+            {  // do nothing -> mode does not change
+                break;
+            }
+            // mode changes
+            m_gainMode = gain.mode;
             airspy_set_lna_agc(m_device, 1);
-        }
-        else
-        {
-            airspy_set_lna_agc(m_device, 0);
-            airspy_set_lna_gain(m_device, gain.lnaGainIdx);
-        }
-        if (gain.mixerAgcEna)
-        {
             airspy_set_mixer_agc(m_device, 1);
-        }
-        else
-        {
-            airspy_set_mixer_agc(m_device, 0);
-            airspy_set_mixer_gain(m_device, gain.mixerGainIdx);
-        }
-        break;
-    case AirpyGainMode::Software:
-        if (m_gainMode == gain.mode)
-        {   // do nothing -> mode does not change
+            resetAgc();
             break;
-        }
-        m_gainMode = gain.mode;
-        resetAgc();
-        break;
-    case AirpyGainMode::Sensitivity:
-        m_gainMode = gain.mode;
-        airspy_set_sensitivity_gain(m_device, gain.sensitivityGainIdx);
-        break;
+        case AirpyGainMode::Manual:
+            m_gainMode = gain.mode;
+            airspy_set_vga_gain(m_device, gain.ifGainIdx);
+            if (gain.lnaAgcEna)
+            {
+                airspy_set_lna_agc(m_device, 1);
+            }
+            else
+            {
+                airspy_set_lna_agc(m_device, 0);
+                airspy_set_lna_gain(m_device, gain.lnaGainIdx);
+            }
+            if (gain.mixerAgcEna)
+            {
+                airspy_set_mixer_agc(m_device, 1);
+            }
+            else
+            {
+                airspy_set_mixer_agc(m_device, 0);
+                airspy_set_mixer_gain(m_device, gain.mixerGainIdx);
+            }
+            break;
+        case AirpyGainMode::Software:
+            if (m_gainMode == gain.mode)
+            {  // do nothing -> mode does not change
+                break;
+            }
+            m_gainMode = gain.mode;
+            resetAgc();
+            break;
+        case AirpyGainMode::Sensitivity:
+            m_gainMode = gain.mode;
+            airspy_set_sensitivity_gain(m_device, gain.sensitivityGainIdx);
+            break;
     }
 
     emit agcGain(NAN);
@@ -330,7 +332,7 @@ void AirspyInput::setGain(int gainIdx)
         else
         {
             qCDebug(airspyInput) << "Tuner VGA gain set to" << gainIdx;
-            //emit agcGain(gainList->at(gainIdx));
+            // emit agcGain(gainList->at(gainIdx));
         }
         return;
     }
@@ -372,7 +374,7 @@ void AirspyInput::resetAgc()
     if (AirpyGainMode::Software == m_gainMode)
     {
         m_gainIdx = -1;
-        setGain((AIRSPY_SW_AGC_MAX+1)/2); // set it to the middle
+        setGain((AIRSPY_SW_AGC_MAX + 1) / 2);  // set it to the middle
         return;
     }
     if (AirpyGainMode::Hybrid == m_gainMode)
@@ -386,12 +388,12 @@ void AirspyInput::onAgcLevel(float level)
 {
     if (level > AIRSPY_LEVEL_THR_MAX)
     {
-        setGain(m_gainIdx-1);
+        setGain(m_gainIdx - 1);
         return;
     }
     if (level < AIRSPY_LEVEL_THR_MIN)
     {
-        setGain(m_gainIdx+1);
+        setGain(m_gainIdx + 1);
     }
 }
 
@@ -443,21 +445,21 @@ void AirspyInput::doRecordBuffer(const float *buf, uint32_t len)
     {
         int16Buf[n] = *buf++ * AIRSPY_RECORD_FLOAT2INT16;
     }
-    emit recordBuffer((const uint8_t *) int16Buf, len * sizeof(int16_t));
+    emit recordBuffer((const uint8_t *)int16Buf, len * sizeof(int16_t));
 #else
     // dumping in float
-    emit recordBuffer((const uint8_t *) buf, len * sizeof(float));
+    emit recordBuffer((const uint8_t *)buf, len * sizeof(float));
 #endif
 }
 
-int AirspyInput::callback(airspy_transfer* transfer)
+int AirspyInput::callback(airspy_transfer *transfer)
 {
     static_cast<AirspyInput *>(transfer->ctx)->processInputData(transfer);
     return 0;
 }
 
 void AirspyInput::processInputData(airspy_transfer *transfer)
-{    
+{
     if (transfer->dropped_samples > 0)
     {
         qCWarning(airspyInput) << "Dropping" << transfer->dropped_samples << "samples";
@@ -473,7 +475,7 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
 
     // input samples are IQ = [float float] @ 4096kHz
     // going to transform them to [float float] @ 2048kHz
-    int numIQ = m_src->process((float*) transfer->samples, transfer->sample_count, m_filterOutBuffer);
+    int numIQ = m_src->process((float *)transfer->samples, transfer->sample_count, m_filterOutBuffer);
     uint64_t bytesToWrite = numIQ * 2 * sizeof(float);
 
     if ((INPUT_FIFO_SIZE - count) < bytesToWrite)
@@ -491,7 +493,7 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
 
     if (m_isRecording)
     {
-        doRecordBuffer(m_filterOutBuffer, 2*numIQ);
+        doRecordBuffer(m_filterOutBuffer, 2 * numIQ);
     }
 
     // there is enough room in buffer
@@ -499,14 +501,14 @@ void AirspyInput::processInputData(airspy_transfer *transfer)
 
     if (bytesTillEnd >= bytesToWrite)
     {
-        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *) m_filterOutBuffer, bytesToWrite);
+        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *)m_filterOutBuffer, bytesToWrite);
         inputBuffer.head = (inputBuffer.head + bytesToWrite);
     }
     else
     {
-        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *) m_filterOutBuffer, bytesTillEnd);
-        std::memcpy((inputBuffer.buffer), ((uint8_t *) m_filterOutBuffer)+bytesTillEnd, bytesToWrite-bytesTillEnd);
-        inputBuffer.head = bytesToWrite-bytesTillEnd;
+        std::memcpy((inputBuffer.buffer + inputBuffer.head), (uint8_t *)m_filterOutBuffer, bytesTillEnd);
+        std::memcpy((inputBuffer.buffer), ((uint8_t *)m_filterOutBuffer) + bytesTillEnd, bytesToWrite - bytesTillEnd);
+        inputBuffer.head = bytesToWrite - bytesTillEnd;
     }
 
     pthread_mutex_lock(&inputBuffer.countMutex);

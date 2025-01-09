@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,8 @@
 
 #include <QDialog>
 
-namespace Ui {
+namespace Ui
+{
 class UpdateDialog;
 }
 
@@ -38,11 +39,11 @@ class UpdateDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit UpdateDialog(const QString & version, const QString & releaseNotes, Qt::WindowFlags f, QWidget *parent = nullptr);
+    explicit UpdateDialog(const QString &version, const QString &releaseNotes, Qt::WindowFlags f, QWidget *parent = nullptr);
     ~UpdateDialog();
 
 private:
     Ui::UpdateDialog *ui;
 };
 
-#endif // UPDATEDIALOG_H
+#endif  // UPDATEDIALOG_H

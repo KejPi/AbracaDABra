@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,21 +27,22 @@
 #ifndef SERVICELIST_H
 #define SERVICELIST_H
 
-//#include <QAbstractItemModel>
-//#include <QModelIndex>
+// #include <QAbstractItemModel>
+// #include <QModelIndex>
 
-#include <QObject>
-#include <QString>
+#include <stdint.h>
+
+#include <QHash>
 #include <QList>
 #include <QMutex>
-#include <stdint.h>
-#include <QHash>
+#include <QObject>
 #include <QSettings>
+#include <QString>
 
+#include "ensemblelistitem.h"
 #include "radiocontrol.h"
 #include "servicelistid.h"
 #include "servicelistitem.h"
-#include "ensemblelistitem.h"
 
 typedef QHash<ServiceListId, ServiceListItem *>::Iterator ServiceListIterator;
 typedef QHash<ServiceListId, EnsembleListItem *>::Iterator EnsembleListIterator;
@@ -53,7 +54,7 @@ class ServiceList : public QObject
     Q_OBJECT
 
 public:
-    ServiceList(QObject * parent = 0);
+    ServiceList(QObject *parent = 0);
     ~ServiceList();
 
     void addService(const RadioControlEnsemble &e, const RadioControlServiceComponent &s, bool fav = false, int currentEns = 0);
@@ -64,34 +65,35 @@ public:
 
     void setServiceFavorite(const ServiceListId &servId, bool ena);
     bool isServiceFavorite(const ServiceListId &servId) const;
-    ServiceListConstIterator serviceListBegin() const { return m_serviceList.cbegin();}
-    ServiceListConstIterator serviceListEnd() const { return m_serviceList.cend();}
-    ServiceListConstIterator findService(const ServiceListId & id) const { return m_serviceList.find(id); }
-    EnsembleListConstIterator ensembleListBegin() const { return m_ensembleList.cbegin();}
-    EnsembleListConstIterator ensembleListEnd() const { return m_ensembleList.cend();}
-    EnsembleListConstIterator findEnsemble(const ServiceListId & id) const { return m_ensembleList.find(id); }
-    void save(QSettings & settings);
-    void load(QSettings & settings);
+    ServiceListConstIterator serviceListBegin() const { return m_serviceList.cbegin(); }
+    ServiceListConstIterator serviceListEnd() const { return m_serviceList.cend(); }
+    ServiceListConstIterator findService(const ServiceListId &id) const { return m_serviceList.find(id); }
+    EnsembleListConstIterator ensembleListBegin() const { return m_ensembleList.cbegin(); }
+    EnsembleListConstIterator ensembleListEnd() const { return m_ensembleList.cend(); }
+    EnsembleListConstIterator findEnsemble(const ServiceListId &id) const { return m_ensembleList.find(id); }
+    void save(QSettings &settings);
+    void load(QSettings &settings);
 
     void beginEnsembleUpdate(const RadioControlEnsemble &e);
     void endEnsembleUpdate(const RadioControlEnsemble &e);
     void removeEnsemble(const RadioControlEnsemble &e);
 signals:
-    void serviceAddedToEnsemble(const ServiceListId & ensId, const ServiceListId & servId);        
-    void serviceAdded(const ServiceListId & servId);
+    void serviceAddedToEnsemble(const ServiceListId &ensId, const ServiceListId &servId);
+    void serviceAdded(const ServiceListId &servId);
 
-    void serviceUpdatedInEnsemble(const ServiceListId & ensId, const ServiceListId & servId);
-    void serviceUpdated(const ServiceListId & servId);
+    void serviceUpdatedInEnsemble(const ServiceListId &ensId, const ServiceListId &servId);
+    void serviceUpdated(const ServiceListId &servId);
 
-    void serviceRemovedFromEnsemble(const ServiceListId & ensId, const ServiceListId & servId);
-    void serviceRemoved(const ServiceListId & servId);
+    void serviceRemovedFromEnsemble(const ServiceListId &ensId, const ServiceListId &servId);
+    void serviceRemoved(const ServiceListId &servId);
 
-    void ensembleRemoved(const ServiceListId & ensId);
+    void ensembleRemoved(const ServiceListId &ensId);
     void empty();
+
 private:
     QHash<ServiceListId, ServiceListItem *> m_serviceList;
     QHash<ServiceListId, EnsembleListItem *> m_ensembleList;
     QSet<ServiceListId> m_favoritesList;
 };
 
-#endif // SERVICELIST_H
+#endif  // SERVICELIST_H

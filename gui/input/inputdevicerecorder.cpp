@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,12 +24,14 @@
  * SOFTWARE.
  */
 
+#include "inputdevicerecorder.h"
+
 #include <QDir>
 #include <QFileDialog>
 #include <QLoggingCategory>
-#include "inputdevicerecorder.h"
-#include "dabtables.h"
+
 #include "config.h"
+#include "dabtables.h"
 
 Q_LOGGING_CATEGORY(inputDeviceRecorder, "InputDeviceRecorder", QtInfoMsg)
 
@@ -59,7 +61,7 @@ void InputDeviceRecorder::setDeviceDescription(const InputDeviceDescription &des
     m_deviceDescription = desc;
 
     // 1 / (2 channels(IQ) * channel containerBits/8.0 * sampleRate/1000.0)
-    m_bytes2ms = 8*1000.0/(2 * m_deviceDescription.sample.containerBits * m_deviceDescription.sample.sampleRate);
+    m_bytes2ms = 8 * 1000.0 / (2 * m_deviceDescription.sample.containerBits * m_deviceDescription.sample.sampleRate);
 
     qCDebug(inputDeviceRecorder) << "name:" << m_deviceDescription.device.name;
     qCDebug(inputDeviceRecorder) << "model:" << m_deviceDescription.device.model;
@@ -68,8 +70,8 @@ void InputDeviceRecorder::setDeviceDescription(const InputDeviceDescription &des
     qCDebug(inputDeviceRecorder) << "channelContainer:" << m_deviceDescription.sample.channelContainer;
 }
 
-void InputDeviceRecorder::start(QWidget * callerWidget)
-{  
+void InputDeviceRecorder::start(QWidget *callerWidget)
+{
     std::lock_guard<std::mutex> guard(m_fileMutex);
     if (nullptr == m_file)
     {
@@ -77,30 +79,26 @@ void InputDeviceRecorder::start(QWidget * callerWidget)
         QString fileName;
         if (m_xmlHeaderEna)
         {
-            QString f = QString("%1/%2_%3.uff").arg(m_recordingPath,
-                                                    QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"),
-                                                    DabTables::channelList.value(m_frequency));
+            QString f =
+                QString("%1/%2_%3.uff")
+                    .arg(m_recordingPath, QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"), DabTables::channelList.value(m_frequency));
 
-            fileName = QFileDialog::getSaveFileName(callerWidget,
-                                                    tr("Record IQ stream (Raw File XML Header)"),
-                                                    QDir::toNativeSeparators(f),
-                                                    tr("Binary XML files")+" (*.uff)");
+            fileName = QFileDialog::getSaveFileName(callerWidget, tr("Record IQ stream (Raw File XML Header)"), QDir::toNativeSeparators(f),
+                                                    tr("Binary XML files") + " (*.uff)");
         }
         else
         {
-            QString f = QString("%1/%2_%3.raw").arg(m_recordingPath,
-                                                    QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"),
-                                                    DabTables::channelList.value(m_frequency));
+            QString f =
+                QString("%1/%2_%3.raw")
+                    .arg(m_recordingPath, QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"), DabTables::channelList.value(m_frequency));
 
-            fileName = QFileDialog::getSaveFileName(callerWidget,
-                                                    tr("Record IQ stream"),
-                                                    QDir::toNativeSeparators(f),
-                                                    tr("Binary files")+" (*.raw)");
+            fileName =
+                QFileDialog::getSaveFileName(callerWidget, tr("Record IQ stream"), QDir::toNativeSeparators(f), tr("Binary files") + " (*.raw)");
         }
         if (!fileName.isEmpty())
         {
             m_bytesRecorded = 0;
-            m_recordingPath = QFileInfo(fileName).path(); // store path for next time
+            m_recordingPath = QFileInfo(fileName).path();  // store path for next time
 
             m_file = fopen(QDir::toNativeSeparators(fileName).toUtf8().data(), "wb");
             if (nullptr != m_file)
@@ -108,15 +106,15 @@ void InputDeviceRecorder::start(QWidget * callerWidget)
                 if (m_xmlHeaderEna)
                 {
                     startXmlHeader();
-                    char * padding = new char[INPUTDEVICERECORDER_XML_PADDING];
+                    char *padding = new char[INPUTDEVICERECORDER_XML_PADDING];
                     memset(padding, 0, INPUTDEVICERECORDER_XML_PADDING);
                     fwrite(padding, 1, INPUTDEVICERECORDER_XML_PADDING, m_file);
-                    delete [] padding;
+                    delete[] padding;
                 }
                 emit recording(true);
             }
             else
-            {   // error
+            {  // error
                 emit recording(false);
             }
         }
@@ -126,7 +124,8 @@ void InputDeviceRecorder::start(QWidget * callerWidget)
         }
     }
     else
-    { /* file is already opened */ }
+    { /* file is already opened */
+    }
 
     return;
 }
@@ -145,7 +144,9 @@ void InputDeviceRecorder::stop()
             fseek(m_file, 0, SEEK_SET);
             fwrite(bytearray.data(), 1, bytearray.size(), m_file);
         }
-        else { /* XML header is not enabled */ }
+        else
+        { /* XML header is not enabled */
+        }
         fflush(m_file);
         fclose(m_file);
         m_file = nullptr;
@@ -221,7 +222,7 @@ void InputDeviceRecorder::finishXmlHeader()
     QDomElement datablocks = m_xmlHeader.createElement("Datablocks");
     QDomElement datablock = m_xmlHeader.createElement("Datablock");
     datablock.setAttribute("Number", "1");
-    datablock.setAttribute("Count", QString("%1").arg(8 * m_bytesRecorded/m_deviceDescription.sample.containerBits));
+    datablock.setAttribute("Count", QString("%1").arg(8 * m_bytesRecorded / m_deviceDescription.sample.containerBits));
     datablock.setAttribute("Unit", "Channel");
     datablock.setAttribute("Offset", QString("%1").arg(INPUTDEVICERECORDER_XML_PADDING));
 

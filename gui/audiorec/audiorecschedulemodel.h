@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,8 +28,9 @@
 #define AUDIORECSCHEDULEMODEL_H
 
 #include <QAbstractTableModel>
-#include <QObject>
 #include <QList>
+#include <QObject>
+
 #include "audiorecscheduleitem.h"
 #include "slmodel.h"
 
@@ -48,24 +49,35 @@ public:
     const QList<AudioRecScheduleItem> &getSchedule() const;
     bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
-    void insertItem(const AudioRecScheduleItem & item);
-    void replaceItemAtIndex(const QModelIndex & index, const AudioRecScheduleItem & item);
-    const AudioRecScheduleItem & itemAtIndex(const QModelIndex & index) const;
+    void insertItem(const AudioRecScheduleItem &item);
+    void replaceItemAtIndex(const QModelIndex &index, const AudioRecScheduleItem &item);
+    const AudioRecScheduleItem &itemAtIndex(const QModelIndex &index) const;
     void setSlModel(SLModel *newSlModel);
-    void load(QSettings & settings);
-    void save(QSettings & settings);
-    void cleanup(const QDateTime & currentTime);
+    void load(QSettings &settings);
+    void save(QSettings &settings);
+    void cleanup(const QDateTime &currentTime);
     void clear();
     bool isEmpty() const { return m_modelData.isEmpty(); }
 
 private:
-    enum { NumColumns = 6 };
-    enum { ColState, ColLabel, ColStartTime, ColEndTime, ColDuration, ColService };
+    enum
+    {
+        NumColumns = 6
+    };
+    enum
+    {
+        ColState,
+        ColLabel,
+        ColStartTime,
+        ColEndTime,
+        ColDuration,
+        ColService
+    };
 
     QList<AudioRecScheduleItem> m_modelData;
-    SLModel * m_slModel;
+    SLModel *m_slModel;
 
     void sortFindConflicts();
 };
 
-#endif // AUDIORECSCHEDULEMODEL_H
+#endif  // AUDIORECSCHEDULEMODEL_H

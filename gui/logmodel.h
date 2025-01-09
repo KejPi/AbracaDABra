@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,8 @@
 #ifndef LOGMODEL_H
 #define LOGMODEL_H
 
-#include <QFontDatabase>
 #include <QAbstractListModel>
+#include <QFontDatabase>
 #include <QObject>
 
 class LogModel : public QAbstractListModel
@@ -38,11 +38,11 @@ public:
     LogModel(QObject *parent = nullptr) : m_isDarkMode(false), QAbstractListModel(parent) {}
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-    bool setData(const QModelIndex & index, const QVariant & value, int role) override;
+    bool setData(const QModelIndex &index, const QVariant &value, int role) override;
     bool insertRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
     void setupDarkMode(bool darkModeEna) { m_isDarkMode = darkModeEna; }
-    Q_INVOKABLE void appendRow(const QString & rowTxt, int role);
+    Q_INVOKABLE void appendRow(const QString &rowTxt, int role);
 
 private:
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -56,4 +56,4 @@ private:
     QList<struct LogItem> m_msgList;
 };
 
-#endif // LOGMODEL_H
+#endif  // LOGMODEL_H

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,9 @@
 #ifndef TXTABLEMODEL_H
 #define TXTABLEMODEL_H
 
-#include <QObject>
 #include <QAbstractTableModel>
 #include <QGeoPositionInfo>
+#include <QObject>
 #include <QSortFilterProxyModel>
 
 #include "dabsdr.h"
@@ -43,7 +43,8 @@ class TxTableModel : public QAbstractTableModel
     Q_OBJECT
     Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
 public:
-    enum TxTableModelRoles {
+    enum TxTableModelRoles
+    {
         ExportRole = Qt::UserRole,
         CoordinatesRole,
         TiiRole,
@@ -55,10 +56,24 @@ public:
         SelectedTxRole,
     };
 
-    enum { ColTime, ColChannel, ColFreq, ColEnsId, ColEnsLabel, ColNumServices, ColSnr,
-           ColMainId, ColSubId,
-           ColLevel, ColLocation, ColPower, ColDist, ColAzimuth, // keep order of these
-           NumCols};
+    enum
+    {
+        ColTime,
+        ColChannel,
+        ColFreq,
+        ColEnsId,
+        ColEnsLabel,
+        ColNumServices,
+        ColSnr,
+        ColMainId,
+        ColSubId,
+        ColLevel,
+        ColLocation,
+        ColPower,
+        ColDist,
+        ColAzimuth,  // keep order of these
+        NumCols
+    };
 
     explicit TxTableModel(QObject *parent = nullptr);
     ~TxTableModel();
@@ -67,12 +82,13 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
-    const TxTableModelItem & itemAt(int row) const;
+    const TxTableModelItem &itemAt(int row) const;
     void clear();
     void setSelectedRows(const QSet<int> &rows);
 
-    void updateTiiData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId, const QString &ensLabel, int numServices, float snr);
-    void appendEnsData(const QList<dabsdrTii_t> & data, const ServiceListId & ensId, const QString & ensLabel, const QString & ensConfig, const QString & ensCSV, int numServices, float snr);
+    void updateTiiData(const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel, int numServices, float snr);
+    void appendEnsData(const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel, const QString &ensConfig,
+                       const QString &ensCSV, int numServices, float snr);
     void setCoordinates(const QGeoCoordinate &newCoordinates);
 
 signals:
@@ -81,8 +97,8 @@ signals:
 private:
     QList<TxTableModelItem> m_modelData;
     QSet<int> m_selectedRows;
-    QMultiHash<ServiceListId, TxDataItem*> m_txList;
+    QMultiHash<ServiceListId, TxDataItem *> m_txList;
     QGeoCoordinate m_coordinates;
 };
 
-#endif // TXTABLEMODEL_H
+#endif  // TXTABLEMODEL_H

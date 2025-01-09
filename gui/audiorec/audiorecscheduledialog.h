@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,10 +29,12 @@
 
 #include <QDialog>
 #include <QItemSelectionModel>
+
 #include "audiorecschedulemodel.h"
 #include "slmodel.h"
 
-namespace Ui {
+namespace Ui
+{
 class AudioRecScheduleDialog;
 }
 
@@ -41,11 +43,11 @@ class AudioRecScheduleDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit AudioRecScheduleDialog(AudioRecScheduleModel * model, SLModel * slModel, QWidget *parent = nullptr);
+    explicit AudioRecScheduleDialog(AudioRecScheduleModel *model, SLModel *slModel, QWidget *parent = nullptr);
     ~AudioRecScheduleDialog();
 
     void addItem();
-    void addItem(const AudioRecScheduleItem & item);
+    void addItem(const AudioRecScheduleItem &item);
     void editItem();
     void removeItem();
     void deleteAll();
@@ -54,16 +56,16 @@ public:
     void setServiceListModel(SLModel *newSlModel);
 
 signals:
-    void selectionChanged (const QItemSelection &selected);
+    void selectionChanged(const QItemSelection &selected);
 
 private:
     Ui::AudioRecScheduleDialog *ui;
 
     QLocale m_locale;
-    AudioRecScheduleModel * m_model;
-    SLModel * m_slModel;
+    AudioRecScheduleModel *m_model;
+    SLModel *m_slModel;
     void updateActions(const QItemSelection &selection);
     void resizeTableColumns();
 };
 
-#endif // AUDIORECSCHEDULEDIALOG_H
+#endif  // AUDIORECSCHEDULEDIALOG_H

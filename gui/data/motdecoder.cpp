@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,11 @@
  * SOFTWARE.
  */
 
+#include "motdecoder.h"
+
 #include <QDebug>
 #include <QLoggingCategory>
-#include "motdecoder.h"
+
 #include "mscdatagroup.h"
 
 Q_LOGGING_CATEGORY(motDecoder, "MOTDecoder", QtInfoMsg)
@@ -40,7 +42,7 @@ MOTDecoder::MOTDecoder(QObject *parent) : QObject(parent)
 MOTDecoder::~MOTDecoder()
 {
     if (nullptr != m_directory)
-    {   // delete existing MOT directory
+    {  // delete existing MOT directory
         delete m_directory;
     }
     delete m_objCache;
@@ -49,7 +51,7 @@ MOTDecoder::~MOTDecoder()
 void MOTDecoder::reset()
 {
     if (nullptr != m_directory)
-    {   // delete existing MOT directory
+    {  // delete existing MOT directory
         delete m_directory;
         m_directory = nullptr;
     }
@@ -74,14 +76,15 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
 
     MSCDataGroup mscDataGroup(dataGroup);
     if (!mscDataGroup.isValid())
-    {   // data group was not valid - wrong CRC, or length
+    {  // data group was not valid - wrong CRC, or length
         return;
     }
     else
-    { /* datagroup was valid */ }
+    { /* datagroup was valid */
+    }
 
     // unsigned required
-    const uint8_t * dataFieldPtr = reinterpret_cast<const uint8_t *>(mscDataGroup.dataFieldConstBegin());
+    const uint8_t *dataFieldPtr = reinterpret_cast<const uint8_t *>(mscDataGroup.dataFieldConstBegin());
 
     // [ETSI EN 301 234, 5.1.1 Segmentation header]
     uint8_t repetitionCount = (*dataFieldPtr >> 5) & 0x7;
@@ -92,109 +95,112 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
     segmentSize += *dataFieldPtr++;
 
     qCDebug(motDecoder) << "Data group type =" << mscDataGroup.getType();
-    qCDebug(motDecoder) << "Segment number = "<< mscDataGroup.getSegmentNum() << ", last = " << mscDataGroup.getLastFlag();
+    qCDebug(motDecoder) << "Segment number = " << mscDataGroup.getSegmentNum() << ", last = " << mscDataGroup.getLastFlag();
     qCDebug(motDecoder) << "Segment size = " << segmentSize << ", Repetition count = " << repetitionCount;
 
     switch (mscDataGroup.getType())
     {
-    case 3:
-    {   // [ETSI EN 301 234, 5.1.4 Segmentation of the MOT header]
-        // The segments of the MOT header shall be transported in MSC Data group type 3.
-        // this is header mode
-        MOTObjectCache::iterator objIt = m_objCache->findMotObj(mscDataGroup.getTransportId());
-        if (m_objCache->end() == objIt)
-        {  // object does not exist in cache
-            qCDebug(motDecoder) << "New MOT header ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << m_objCache->size();
+        case 3:
+        {  // [ETSI EN 301 234, 5.1.4 Segmentation of the MOT header]
+            // The segments of the MOT header shall be transported in MSC Data group type 3.
+            // this is header mode
+            MOTObjectCache::iterator objIt = m_objCache->findMotObj(mscDataGroup.getTransportId());
+            if (m_objCache->end() == objIt)
+            {  // object does not exist in cache
+                qCDebug(motDecoder) << "New MOT header ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << m_objCache->size();
 
-            // all existing object shall be removed, only one MOT object is transmitted in header mode
-            m_objCache->clear();
+                // all existing object shall be removed, only one MOT object is transmitted in header mode
+                m_objCache->clear();
 
-            // add new object to cache
-            objIt = m_objCache->addMotObj(MOTObject(mscDataGroup.getTransportId()));
+                // add new object to cache
+                objIt = m_objCache->addMotObj(MOTObject(mscDataGroup.getTransportId()));
+            }
+            else
+            { /* do nothing - it already exists, just adding next segment */
+            }
+
+            // add header segment
+            objIt->addSegment((const uint8_t *)dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag(), true);
         }
-        else
-        {  /* do nothing - it already exists, just adding next segment */ }
-
-        // add header segment
-        objIt->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag(), true);
-    }
         break;
-    case 4:
-    {   // [ETSI EN 301 234, 5.1.2 Segmentation of the MOT body]
-        // If conditional access on MOT level is applied, then scrambled MOT body segments
-        // shall be transported in MSC data group type 5. In all other cases (no scrambling on MOT level
-        // or unscrambled MOT body segments) the segments of the MOT body shall be transported in MSC data group type 4.
+        case 4:
+        {  // [ETSI EN 301 234, 5.1.2 Segmentation of the MOT body]
+            // If conditional access on MOT level is applied, then scrambled MOT body segments
+            // shall be transported in MSC data group type 5. In all other cases (no scrambling on MOT level
+            // or unscrambled MOT body segments) the segments of the MOT body shall be transported in MSC data group type 4.
 
-        // first check if we are in direcory mode
-        if (nullptr != m_directory)
-        {  // directory mode
-            if (m_directory->addObjectSegment(mscDataGroup.getTransportId(), (const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(),
-                                              segmentSize, mscDataGroup.getLastFlag()))
-            {   // directory updated
-                emit newMOTObjectInDirectory(m_directory->cfind(mscDataGroup.getTransportId())->getContentName());
-                if (m_directory->isComplete()) {
-                    emit directoryComplete();
+            // first check if we are in direcory mode
+            if (nullptr != m_directory)
+            {  // directory mode
+                if (m_directory->addObjectSegment(mscDataGroup.getTransportId(), (const uint8_t *)dataFieldPtr, mscDataGroup.getSegmentNum(),
+                                                  segmentSize, mscDataGroup.getLastFlag()))
+                {  // directory updated
+                    emit newMOTObjectInDirectory(m_directory->cfind(mscDataGroup.getTransportId())->getContentName());
+                    if (m_directory->isComplete())
+                    {
+                        emit directoryComplete();
+                    }
+                }
+            }
+            else
+            {  // this can be either directory mode but directory was not recieved yet or it can be header mode
+                // Header mode is handled within the cache
+                MOTObjectCache::iterator objIt = m_objCache->findMotObj(mscDataGroup.getTransportId());
+                if (m_objCache->end() == objIt)
+                {  // does not exist in cache -> body without header
+                    // add new object to cache
+                    qCDebug(motDecoder) << "New MOT object ID" << mscDataGroup.getTransportId() << "number of objects in carousel"
+                                        << m_objCache->size();
+
+                    objIt = m_objCache->addMotObj(MOTObject(mscDataGroup.getTransportId()));
+                }
+                objIt->addSegment((const uint8_t *)dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
+
+                if (objIt->isComplete())
+                {
+                    QByteArray body = objIt->getBody();
+                    qCDebug(motDecoder) << "MOT complete :)";
+
+                    emit newMOTObject(*objIt);
+
+                    m_objCache->deleteMotObj(objIt->getId());
                 }
             }
         }
-        else
-        {   // this can be either directory mode but directory was not recieved yet or it can be header mode
-            // Header mode is handled within the cache
-            MOTObjectCache::iterator objIt = m_objCache->findMotObj(mscDataGroup.getTransportId());
-            if (m_objCache->end() == objIt)
-            {   // does not exist in cache -> body without header
-                // add new object to cache
-                qCDebug(motDecoder) << "New MOT object ID" << mscDataGroup.getTransportId() << "number of objects in carousel" << m_objCache->size();
-
-                objIt = m_objCache->addMotObj(MOTObject(mscDataGroup.getTransportId()));
-            }
-            objIt->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
-
-            if (objIt->isComplete())
-            {
-                QByteArray body = objIt->getBody();
-                qCDebug(motDecoder) << "MOT complete :)";
-
-                emit newMOTObject(*objIt);
-
-                m_objCache->deleteMotObj(objIt->getId());
-            }
-        }
-    }
         break;
-    case 6:
-    {   // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]
-        // The segments of an uncompressed MOT directory shall be transported in MSC Data Group type 6.
-        if (nullptr != m_directory)
-        {   // some directory exists
-            // lets check if the segment belong to current directory
-            if (m_directory->getTransportId() != mscDataGroup.getTransportId())
-            {   // new directory
-                delete m_directory;
-                m_directory = new MOTDirectory(mscDataGroup.getTransportId(), m_objCache);
+        case 6:
+        {  // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]
+            // The segments of an uncompressed MOT directory shall be transported in MSC Data Group type 6.
+            if (nullptr != m_directory)
+            {  // some directory exists
+                // lets check if the segment belong to current directory
+                if (m_directory->getTransportId() != mscDataGroup.getTransportId())
+                {  // new directory
+                    delete m_directory;
+                    m_directory = new MOTDirectory(mscDataGroup.getTransportId(), m_objCache);
+                }
+                else
+                { /* segment belongs to existing directory */
+                }
             }
             else
-            { /* segment belongs to existing directory */ }
-        }
-        else
-        {   // directory does not exist -> creating new directory
-            m_directory = new MOTDirectory(mscDataGroup.getTransportId(), m_objCache);
-        }
+            {  // directory does not exist -> creating new directory
+                m_directory = new MOTDirectory(mscDataGroup.getTransportId(), m_objCache);
+            }
 
-        if (m_directory->addSegment((const uint8_t *) dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag()))
-        {   // directory just completed
-            qCDebug(motDecoder) << "MOT Directory is complete";
-            emit newMOTDirectory();
+            if (m_directory->addSegment((const uint8_t *)dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag()))
+            {  // directory just completed
+                qCDebug(motDecoder) << "MOT Directory is complete";
+                emit newMOTDirectory();
+            }
         }
-    }
         break;
-    case 7:
-        // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]
-        // The segments of a compressed MOT directory shall be transported in MSC Data Group type 7.
-        qCWarning(motDecoder) << "Compressed MOT directory not supported";
-        break;
-    default:
-        return;
+        case 7:
+            // [ETSI EN 301 234, 5.1.3 Segmentation of the MOT directory]
+            // The segments of a compressed MOT directory shall be transported in MSC Data Group type 7.
+            qCWarning(motDecoder) << "Compressed MOT directory not supported";
+            break;
+        default:
+            return;
     }
 }
-

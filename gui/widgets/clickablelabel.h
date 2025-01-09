@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,19 +28,23 @@
 #define CLICKABLELABEL_H
 
 #include <QLabel>
-#include <QObject>
 #include <QMenu>
+#include <QObject>
 
 class ClickableLabel : public QLabel
 {
     Q_OBJECT
 public:
-    ClickableLabel(QWidget *parent=0);
+    ClickableLabel(QWidget *parent = 0);
     ~ClickableLabel();
-    void setMenu(QMenu * menu) { m_menu = menu; }
-    bool setIcon(const QString & file, bool checked = false);
-    void setTooltip(const QString & text, bool checked = false);
-    void setCheckable(bool checkable) { m_checkable = checkable; m_checked = false; }
+    void setMenu(QMenu *menu) { m_menu = menu; }
+    bool setIcon(const QString &file, bool checked = false);
+    void setTooltip(const QString &text, bool checked = false);
+    void setCheckable(bool checkable)
+    {
+        m_checkable = checkable;
+        m_checked = false;
+    }
     bool isCheckable() const { return m_checkable; }
     void setChecked(bool checked);
     bool isChecked() const { return m_checked; }
@@ -48,21 +52,22 @@ public:
 signals:
     void clicked();
     void toggled(bool checked);
-protected:
-    void mouseReleaseEvent(QMouseEvent*);
 
-private:    
-    QMenu * m_menu = nullptr;
+protected:
+    void mouseReleaseEvent(QMouseEvent *);
+
+private:
+    QMenu *m_menu = nullptr;
     bool m_checkable = false;
     bool m_checked = false;
 
-    QPixmap * m_pic = nullptr;
-    QPixmap * m_picChecked = nullptr;
+    QPixmap *m_pic = nullptr;
+    QPixmap *m_picChecked = nullptr;
 
-    QString * m_tooltip = nullptr;
-    QString * m_tooltipChecked = nullptr;
+    QString *m_tooltip = nullptr;
+    QString *m_tooltipChecked = nullptr;
 
     void update();
 };
 
-#endif // CLICKABLELABEL_H
+#endif  // CLICKABLELABEL_H

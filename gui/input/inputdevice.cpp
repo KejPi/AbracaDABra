@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,8 @@
 
 #include "inputdevice.h"
 
-//input FIFO
+// input FIFO
 fifo_t inputBuffer;
-
 
 void ComplexFifo::reset()
 {
@@ -73,7 +72,7 @@ void getSamples(float buffer[], uint16_t numSamples)
     pthread_mutex_lock(&inputBuffer.countMutex);
     uint64_t count = inputBuffer.count;
     uint_fast32_t numIQ = numSamples * 2;
-    while (count < numIQ*sizeof(float))
+    while (count < numIQ * sizeof(float))
     {
         pthread_cond_wait(&inputBuffer.countCondition, &inputBuffer.countMutex);
         count = inputBuffer.count;
@@ -82,42 +81,42 @@ void getSamples(float buffer[], uint16_t numSamples)
 
     // there is enough samples in input buffer
     uint64_t bytesTillEnd = INPUT_FIFO_SIZE - inputBuffer.tail;
-    if (bytesTillEnd >= numIQ*sizeof(float))
+    if (bytesTillEnd >= numIQ * sizeof(float))
     {
-        memcpy(buffer, inputBuffer.buffer + inputBuffer.tail, numIQ*sizeof(float));
-        inputBuffer.tail = (inputBuffer.tail + numIQ*sizeof(float));
+        memcpy(buffer, inputBuffer.buffer + inputBuffer.tail, numIQ * sizeof(float));
+        inputBuffer.tail = (inputBuffer.tail + numIQ * sizeof(float));
     }
     else
     {
         memcpy(buffer, inputBuffer.buffer + inputBuffer.tail, bytesTillEnd);
-        Q_ASSERT(2*sizeof(float) == 8);
+        Q_ASSERT(2 * sizeof(float) == 8);
         uint64_t numIQtillEnd = bytesTillEnd >> 2;
-        memcpy(buffer+numIQtillEnd, inputBuffer.buffer, (numIQ - numIQtillEnd)*sizeof(float));
+        memcpy(buffer + numIQtillEnd, inputBuffer.buffer, (numIQ - numIQtillEnd) * sizeof(float));
         inputBuffer.tail = (numIQ - numIQtillEnd) * sizeof(float);
     }
 
     pthread_mutex_lock(&inputBuffer.countMutex);
-    inputBuffer.count = inputBuffer.count - numIQ*sizeof(float);
+    inputBuffer.count = inputBuffer.count - numIQ * sizeof(float);
     pthread_cond_signal(&inputBuffer.countCondition);
     pthread_mutex_unlock(&inputBuffer.countMutex);
 }
 
 void skipSamples(float buffer[], uint16_t numSamples)
 {
-    (void) buffer;
+    (void)buffer;
 
     // input read -> lets store it to FIFO
     pthread_mutex_lock(&inputBuffer.countMutex);
     uint64_t count = inputBuffer.count;
-    while (count < numSamples*2*sizeof(float))
+    while (count < numSamples * 2 * sizeof(float))
     {
         pthread_cond_wait(&inputBuffer.countCondition, &inputBuffer.countMutex);
         count = inputBuffer.count;
     }
 
-    inputBuffer.tail = (inputBuffer.tail + numSamples*2*sizeof(float)) % INPUT_FIFO_SIZE;
+    inputBuffer.tail = (inputBuffer.tail + numSamples * 2 * sizeof(float)) % INPUT_FIFO_SIZE;
 
-    inputBuffer.count = inputBuffer.count - numSamples*2*sizeof(float);
+    inputBuffer.count = inputBuffer.count - numSamples * 2 * sizeof(float);
     pthread_cond_signal(&inputBuffer.countCondition);
     pthread_mutex_unlock(&inputBuffer.countMutex);
 }

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-20243 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-20243 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,23 +28,23 @@
 #define SLMODEL_H
 
 #include <QAbstractItemModel>
+#include <QIcon>
+#include <QList>
 #include <QModelIndex>
 #include <QVariant>
-#include <QList>
-#include <QIcon>
+
+#include "metadatamanager.h"
+#include "servicelist.h"
 #include "slmodelitem.h"
 
-#include "servicelist.h"
-#include "metadatamanager.h"
-
-enum SLModelRole{
+enum SLModelRole
+{
     IdRole = Qt::UserRole,
     SmallLogoRole,
-    SmallLogoIdRole,   // this role is used to trick QML for loading the logo when available
+    SmallLogoIdRole,  // this role is used to trick QML for loading the logo when available
     EpgModelRole,
     EnsembleListRole,
 };
-
 
 class SLModel : public QAbstractItemModel
 {
@@ -52,13 +52,12 @@ class SLModel : public QAbstractItemModel
     QML_ELEMENT
 
 public:
-    explicit SLModel(const ServiceList * sl, const MetadataManager * mm, QObject *parent = 0);
+    explicit SLModel(const ServiceList *sl, const MetadataManager *mm, QObject *parent = 0);
     ~SLModel();
 
     QVariant data(const QModelIndex &index, int role) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
-    QModelIndex index(int row, int column,
-                      const QModelIndex &parent = QModelIndex()) const override;
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
     QModelIndex parent(const QModelIndex &index) const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -67,23 +66,23 @@ public:
 
     ServiceListId id(const QModelIndex &index) const;
     bool isFavoriteService(const QModelIndex &index) const;
-    const ServiceList * getServiceList() const { return m_slPtr; }
+    const ServiceList *getServiceList() const { return m_slPtr; }
 
 public slots:
-    void addService(const ServiceListId & servId);
-    void updateService(const ServiceListId & servId);
-    void removeService(const ServiceListId & servId);
-    void epgModelChanged(const ServiceListId & servId);
+    void addService(const ServiceListId &servId);
+    void updateService(const ServiceListId &servId);
+    void removeService(const ServiceListId &servId);
+    void epgModelChanged(const ServiceListId &servId);
     void metadataUpdated(const ServiceListId &servId, MetadataManager::MetadataRole role);
     void clear();
 
 private:
-    const ServiceList * m_slPtr;
-    const MetadataManager * m_metadataMgrPtr;
-    QList<SLModelItem *> m_serviceItems;    
+    const ServiceList *m_slPtr;
+    const MetadataManager *m_metadataMgrPtr;
+    QList<SLModelItem *> m_serviceItems;
 
     QIcon m_favIcon;
     QIcon m_noIcon;
 };
 
-#endif // SLMODEL_H
+#endif  // SLMODEL_H

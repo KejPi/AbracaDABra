@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,10 @@
 #ifndef INPUTDEVICERECORDER_H
 #define INPUTDEVICERECORDER_H
 
+#include <QDomDocument>
 #include <QObject>
 #include <mutex>
-#include <QDomDocument>
+
 #include "inputdevice.h"
 
 #define INPUTDEVICERECORDER_XML_PADDING 2048
@@ -42,7 +43,7 @@ public:
     ~InputDeviceRecorder();
     const QString recordingPath() const;
     void setRecordingPath(const QString &recordingPath);
-    void setDeviceDescription(const InputDeviceDescription & desc);
+    void setDeviceDescription(const InputDeviceDescription &desc);
     void start(QWidget *callerWidget);
     void stop();
     void writeBuffer(const uint8_t *buf, uint32_t len);
@@ -54,7 +55,7 @@ signals:
 
 private:
     InputDeviceDescription m_deviceDescription;
-    FILE * m_file;
+    FILE *m_file;
     std::mutex m_fileMutex;
     uint64_t m_bytesRecorded = 0;
     float m_bytes2ms;
@@ -66,4 +67,4 @@ private:
     void finishXmlHeader();
 };
 
-#endif // INPUTDEVICERECORDER_H
+#endif  // INPUTDEVICERECORDER_H

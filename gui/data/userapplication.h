@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +28,10 @@
 #define USERAPPLICATION_H
 
 #include <QObject>
-#include "settings.h"
-#include "radiocontrol.h"
+
 #include "motobject.h"
+#include "radiocontrol.h"
+#include "settings.h"
 
 #define USER_APPLICATION_VERBOSE 1
 
@@ -40,22 +41,22 @@ class UserApplication : public QObject
 public:
     UserApplication(QObject *parent = nullptr);
 
-    virtual void onNewMOTObject(const MOTObject & obj) = 0;
-    virtual void onUserAppData(const RadioControlUserAppData & data) = 0;
+    virtual void onNewMOTObject(const MOTObject &obj) = 0;
+    virtual void onUserAppData(const RadioControlUserAppData &data) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual void restart() = 0;
     virtual void reset() { stop(); }
 
     // data dumping support
-    virtual void setDataDumping(const Settings::UADumpSettings & settings) = 0;
+    virtual void setDataDumping(const Settings::UADumpSettings &settings) = 0;
     void setEnsId(const RadioControlEnsemble &ens) { m_ueid = ens.ueid; }
     void setAudioServiceId(const RadioControlServiceComponent &s) { m_SId = s.SId; }
 signals:
     void resetTerminal();
 
 protected:
-    bool m_isRunning;    
+    bool m_isRunning;
     bool m_dumpEna;
     bool m_dumpOverwrite;
     QString m_dumpPath;
@@ -64,4 +65,4 @@ protected:
     DabSId m_SId;
 };
 
-#endif // USERAPPLICATION_H
+#endif  // USERAPPLICATION_H

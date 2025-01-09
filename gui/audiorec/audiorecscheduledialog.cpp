@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,15 @@
  * SOFTWARE.
  */
 
-#include <QDebug>
 #include "audiorecscheduledialog.h"
-#include "ui_audiorecscheduledialog.h"
+
+#include <QDebug>
+
 #include "audiorecitemdialog.h"
+#include "ui_audiorecscheduledialog.h"
 
 AudioRecScheduleDialog::AudioRecScheduleDialog(AudioRecScheduleModel *model, SLModel *slModel, QWidget *parent)
-    : QDialog(parent)
-    , ui(new Ui::AudioRecScheduleDialog)
-    , m_model(model)
-    , m_slModel(slModel)
+    : QDialog(parent), ui(new Ui::AudioRecScheduleDialog), m_model(model), m_slModel(slModel)
 {
     ui->setupUi(this);
     m_locale = QLocale::C;
@@ -101,7 +100,8 @@ void AudioRecScheduleDialog::editItem()
 {
     QItemSelectionModel *selectionModel = ui->scheduleTableView->selectionModel();
     const QModelIndexList indexes = selectionModel->selectedRows();
-    if (indexes.size() > 0) {
+    if (indexes.size() > 0)
+    {
         QModelIndex index = indexes.at(0);
         AudioRecItemDialog dialog(m_locale, m_slModel);
         dialog.setWindowTitle(tr("Edit recording schedule"));
@@ -120,7 +120,8 @@ void AudioRecScheduleDialog::removeItem()
     QItemSelectionModel *selectionModel = ui->scheduleTableView->selectionModel();
     const QModelIndexList indexes = selectionModel->selectedRows();
 
-    for (QModelIndex index : indexes) {
+    for (QModelIndex index : indexes)
+    {
         int row = index.row();
         m_model->removeRows(row, 1, QModelIndex());
     }
@@ -147,10 +148,13 @@ void AudioRecScheduleDialog::updateActions(const QItemSelection &selection)
 {
     QModelIndexList indexes = selection.indexes();
 
-    if (!indexes.isEmpty()) {
+    if (!indexes.isEmpty())
+    {
         ui->deleteButton->setEnabled(true);
         ui->editButton->setEnabled(true);
-    } else {
+    }
+    else
+    {
         ui->deleteButton->setEnabled(false);
         ui->editButton->setEnabled(false);
     }
@@ -159,11 +163,12 @@ void AudioRecScheduleDialog::updateActions(const QItemSelection &selection)
 
 void AudioRecScheduleDialog::resizeTableColumns()
 {
-    QAbstractItemModel* tableModel = ui->scheduleTableView->model();
+    QAbstractItemModel *tableModel = ui->scheduleTableView->model();
 
     // Fit to size all but last item
     ui->scheduleTableView->horizontalHeader()->setStretchLastSection(true);
-    for (int i = 0; i < tableModel->columnCount() - 1; ++i) {
+    for (int i = 0; i < tableModel->columnCount() - 1; ++i)
+    {
         ui->scheduleTableView->resizeColumnToContents(i);
     }
 }

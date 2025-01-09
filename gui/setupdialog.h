@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,21 +27,25 @@
 #ifndef SETUPDIALOG_H
 #define SETUPDIALOG_H
 
-#include <QDialog>
-#include <QWidget>
-#include <QList>
 #include <QAbstractButton>
-#include <QLocale>
-#include <QGeoCoordinate>
 #include <QCheckBox>
+#include <QDialog>
+#include <QGeoCoordinate>
 #include <QLabel>
+#include <QList>
+#include <QLocale>
 #include <QNetworkReply>
+#include <QWidget>
+
 #include "config.h"
-#include "settings.h"
 #include "dabtables.h"
+#include "settings.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class SetupDialog; }
+namespace Ui
+{
+class SetupDialog;
+}
 QT_END_NAMESPACE
 
 class SetupDialog : public QDialog
@@ -50,11 +54,11 @@ class SetupDialog : public QDialog
 public:
     SetupDialog(QWidget *parent = nullptr);
     void setupDarkMode(bool darkModeEna);
-    void setGainValues(const QList<float> & gainList);
+    void setGainValues(const QList<float> &gainList);
     void setInputDeviceEnabled(bool ena);
     void resetInputDevice();
-    void setSettings(Settings  * settings);
-    void setXmlHeader(const InputDeviceDescription & desc);
+    void setSettings(Settings *settings);
+    void setXmlHeader(const InputDeviceDescription &desc);
     void onFileLength(int msec);
     void onFileProgress(int msec);
     void setAudioRecAutoStop(bool ena);
@@ -63,10 +67,10 @@ public:
     void setSlsDumpPaternDefault(const QString &newSlsDumpPaternDefault);
     void setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault);
     void onTiiUpdateFinished(QNetworkReply::NetworkError err);
-    void setDeviceDescription(const InputDeviceDescription & desc);
+    void setDeviceDescription(const InputDeviceDescription &desc);
 
 signals:
-    void inputDeviceChanged(const InputDeviceId & inputDevice);
+    void inputDeviceChanged(const InputDeviceId &inputDevice);
     void newInputDeviceSettings();
     void newAnnouncementSettings();
     void expertModeToggled(bool enabled);
@@ -77,41 +81,62 @@ signals:
     void spiApplicationEnabled(bool enabled);
     void spiApplicationSettingsChanged(bool useInterent, bool enaRadioDNS);
     void audioRecordingSettings(const QString &folder, bool doOutputRecording);
-    void uaDumpSettings(const Settings::UADumpSettings & settings);
+    void uaDumpSettings(const Settings::UADumpSettings &settings);
     void tiiSettingsChanged();
     void rawFileSeek(int msec);
     void updateTxDb();
     void proxySettingsChanged();
-    void slsBgChanged(const QColor & color);
+    void slsBgChanged(const QColor &color);
 
 protected:
     void showEvent(QShowEvent *event);
 
 private:
-    enum SetupDialogTabs { Device = 0, Audio, Announcement, UserApps, Tii, Other };
-    enum SetupDialogXmlHeader { XMLDate = 0, XMLRecorder, XMLDevice,
-                                XMLSampleRate, XMLFreq, XMLLength, XMLFormat,
-                                XMLNumLabels};
-    enum SetupDialogDeviceInfo { DevInfoDevice, DevInfoTuner, DevInfoSampleFormat, DevInfoLables};
+    enum SetupDialogTabs
+    {
+        Device = 0,
+        Audio,
+        Announcement,
+        UserApps,
+        Tii,
+        Other
+    };
+    enum SetupDialogXmlHeader
+    {
+        XMLDate = 0,
+        XMLRecorder,
+        XMLDevice,
+        XMLSampleRate,
+        XMLFreq,
+        XMLLength,
+        XMLFormat,
+        XMLNumLabels
+    };
+    enum SetupDialogDeviceInfo
+    {
+        DevInfoDevice,
+        DevInfoTuner,
+        DevInfoSampleFormat,
+        DevInfoLables
+    };
 
-
-    const QList<QLocale::Language> m_supportedLocalization = { QLocale::Czech, QLocale::German, QLocale::Polish };
+    const QList<QLocale::Language> m_supportedLocalization = {QLocale::Czech, QLocale::German, QLocale::Polish};
     const QString m_noFileString = tr("No file selected");
 
     Ui::SetupDialog *ui;
-    Settings * m_settings;
+    Settings *m_settings;
     QString m_rawfilename;
     QList<float> m_rtlsdrGainList;
     QList<float> m_rtltcpGainList;
     QList<float> m_soapysdrGainList;
-    QCheckBox * m_announcementCheckBox[static_cast<int>(DabAnnouncement::Undefined)];
-    QCheckBox * m_bringWindowToForegroundCheckbox;
-    QLabel * m_xmlHeaderLabel[SetupDialogXmlHeader::XMLNumLabels];
-    QLabel * m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoLables];
-    QLabel * m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoLables];
+    QCheckBox *m_announcementCheckBox[static_cast<int>(DabAnnouncement::Undefined)];
+    QCheckBox *m_bringWindowToForegroundCheckbox;
+    QLabel *m_xmlHeaderLabel[SetupDialogXmlHeader::XMLNumLabels];
+    QLabel *m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoLables];
+    QLabel *m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoLables];
     QString m_slsDumpPaternDefault;
     QString m_spiDumpPaternDefault;
-    QMovie * m_spinner;
+    QMovie *m_spinner;
 
     void setUiState();
     void setStatusLabel();
@@ -138,7 +163,7 @@ private:
     void activateRtlTcpControls(bool en);
     void onRtlTcpPPMChanged(int val);
 
-    void onRawFileFormatChanged(int idx);    
+    void onRawFileFormatChanged(int idx);
     void onAnnouncementClicked();
     void onBringWindowToForegroundClicked(bool checked);
 
@@ -147,7 +172,7 @@ private:
     void onTrayIconChecked(bool checked);
     void onDLPlusChecked(bool checked);
     void onLanguageChanged(int index);
-    void onNoiseLevelChanged(int index);    
+    void onNoiseLevelChanged(int index);
     void onXmlHeaderChecked(bool checked);
     void onRawFileProgressChanged(int val);
     void onSpiAppChecked(bool checked);
@@ -197,4 +222,4 @@ private:
 #endif
 };
 
-#endif // SETUPDIALOG_H
+#endif  // SETUPDIALOG_H

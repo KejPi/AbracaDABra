@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,15 @@
  * SOFTWARE.
  */
 
-#include <QLoggingCategory>
 #include "epgmodel.h"
+
+#include <QLoggingCategory>
+
 #include "epgtime.h"
 
 Q_DECLARE_LOGGING_CATEGORY(metadataManager)
 
-EPGModel::EPGModel(QObject *parent)
-    : QAbstractListModel{parent}
+EPGModel::EPGModel(QObject *parent) : QAbstractListModel{parent}
 {}
 
 EPGModel::~EPGModel()
@@ -50,11 +51,12 @@ QVariant EPGModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
     // valid index
-    const EPGModelItem * item = m_itemList.at(index.row());
-    switch (static_cast<EPGModelRoles>(role)) {
-    case EPGModelRoles::ShortIdRole:
-        return QVariant(item->shortId());
-    case EPGModelRoles::NameRole:
+    const EPGModelItem *item = m_itemList.at(index.row());
+    switch (static_cast<EPGModelRoles>(role))
+    {
+        case EPGModelRoles::ShortIdRole:
+            return QVariant(item->shortId());
+        case EPGModelRoles::NameRole:
 #if 0
         if (item->durationSec() < 10 * 60) {
             if (!item->shortName().isEmpty()) {
@@ -67,56 +69,59 @@ QVariant EPGModel::data(const QModelIndex &index, int role) const
             }
         }
 #endif
-        if (!item->longName().isEmpty()) {
-            return QVariant(item->longName());
-        }
-        return QVariant(item->mediumName());
+            if (!item->longName().isEmpty())
+            {
+                return QVariant(item->longName());
+            }
+            return QVariant(item->mediumName());
 
-        // return QVariant(QString("%1 %2 %3-%4 [%5]").arg(item->shortId()).arg(item->startTime().toString("dd.MM hh:mm"))
-        //                                                                          .arg(item->startTimeSec())
-        //                                                                          .arg(item->endTimeSec())
-        //                                                                          .arg(item->durationSec())
-        //                                                                      );
-        break;
-    case LongNameRole:
-        return QVariant(item->longName());
-    case MediumNameRole:
-        return QVariant(item->mediumName());
-    case ShortNameRole:
-        return QVariant(item->shortName());
-    case StartTimeRole:
-        return QVariant(item->startTime());
-    case StartTimeStringRole:
-        return QVariant(EPGTime::getInstance()->timeLocale().toString(item->startTime(), QString("dddd, dd.MM.yyyy, hh:mm")));
-    case StartTimeSecRole:
-        return QVariant(item->startTimeSec());
-    case EndTimeSecRole:
-        return QVariant(item->endTimeSec());
-    case EndTimeStringRole:
-        return QVariant(EPGTime::getInstance()->timeLocale().toString(item->endTime(), QString("hh:mm")));
-    case DurationSecRole:
-        return QVariant(item->durationSec());
-    case LongDescriptionRole:
-        return QVariant(item->longDescription());
-    case ShortDescriptionRole:
-        return QVariant(item->shortDescription());
-    case StartTimeSecSinceEpochRole:
-        return QVariant(item->startTimeSecSinceEpoch());
-    case EPGModelRoles::EndTimeSecSinceEpochRole:
-        return QVariant(item->endTimeSecSinceEpoch());
-    case EPGModelRoles::StartToEndTimeStringRole:
-    {
-        QDateTime start = item->startTime();
-        QDateTime end = item->endTime();
-        QString str = EPGTime::getInstance()->timeLocale().toString(start, QString("dddd, dd.MM.yyyy, hh:mm"));
-        if (start.date() != end.date()) {
-            str += " - " + EPGTime::getInstance()->timeLocale().toString(end, QString("dddd, dd.MM.yyyy, hh:mm"));
+            // return QVariant(QString("%1 %2 %3-%4 [%5]").arg(item->shortId()).arg(item->startTime().toString("dd.MM hh:mm"))
+            //                                                                          .arg(item->startTimeSec())
+            //                                                                          .arg(item->endTimeSec())
+            //                                                                          .arg(item->durationSec())
+            //                                                                      );
+            break;
+        case LongNameRole:
+            return QVariant(item->longName());
+        case MediumNameRole:
+            return QVariant(item->mediumName());
+        case ShortNameRole:
+            return QVariant(item->shortName());
+        case StartTimeRole:
+            return QVariant(item->startTime());
+        case StartTimeStringRole:
+            return QVariant(EPGTime::getInstance()->timeLocale().toString(item->startTime(), QString("dddd, dd.MM.yyyy, hh:mm")));
+        case StartTimeSecRole:
+            return QVariant(item->startTimeSec());
+        case EndTimeSecRole:
+            return QVariant(item->endTimeSec());
+        case EndTimeStringRole:
+            return QVariant(EPGTime::getInstance()->timeLocale().toString(item->endTime(), QString("hh:mm")));
+        case DurationSecRole:
+            return QVariant(item->durationSec());
+        case LongDescriptionRole:
+            return QVariant(item->longDescription());
+        case ShortDescriptionRole:
+            return QVariant(item->shortDescription());
+        case StartTimeSecSinceEpochRole:
+            return QVariant(item->startTimeSecSinceEpoch());
+        case EPGModelRoles::EndTimeSecSinceEpochRole:
+            return QVariant(item->endTimeSecSinceEpoch());
+        case EPGModelRoles::StartToEndTimeStringRole:
+        {
+            QDateTime start = item->startTime();
+            QDateTime end = item->endTime();
+            QString str = EPGTime::getInstance()->timeLocale().toString(start, QString("dddd, dd.MM.yyyy, hh:mm"));
+            if (start.date() != end.date())
+            {
+                str += " - " + EPGTime::getInstance()->timeLocale().toString(end, QString("dddd, dd.MM.yyyy, hh:mm"));
+            }
+            else
+            {
+                str += " - " + EPGTime::getInstance()->timeLocale().toString(end, QString("hh:mm"));
+            }
+            return QVariant(str);
         }
-        else {
-            str += " - " + EPGTime::getInstance()->timeLocale().toString(end, QString("hh:mm"));
-        }
-        return QVariant(str);
-    }
     }
 
     return QVariant();
@@ -133,7 +138,7 @@ QHash<int, QByteArray> EPGModel::roleNames() const
     roles[EPGModelRoles::ShortNameRole] = "shortName";
     roles[EPGModelRoles::StartTimeRole] = "startTime";
     roles[EPGModelRoles::StartTimeStringRole] = "startTimeString";
-    roles[EPGModelRoles::StartTimeSecRole] = "startTimeSec";    
+    roles[EPGModelRoles::StartTimeSecRole] = "startTimeSec";
     roles[EPGModelRoles::StartTimeSecSinceEpochRole] = "startTimeSecSinceEpoch";
     roles[EPGModelRoles::EndTimeSecRole] = "endTimeSec";
     roles[EPGModelRoles::EndTimeStringRole] = "endTimeString";
@@ -141,7 +146,7 @@ QHash<int, QByteArray> EPGModel::roleNames() const
     roles[EPGModelRoles::StartToEndTimeStringRole] = "startToEndTimeString";
     roles[EPGModelRoles::DurationSecRole] = "durationSec";
     roles[EPGModelRoles::LongDescriptionRole] = "longDescription";
-    roles[EPGModelRoles::ShortDescriptionRole] = "shortDescription";    
+    roles[EPGModelRoles::ShortDescriptionRole] = "shortDescription";
 
     return roles;
 }
@@ -161,8 +166,9 @@ bool EPGModel::addItem(EPGModelItem *item)
     if (item->isValid())
     {
         if (m_startTimeList.contains(item->startTime()))
-        {   // already in list
-            if (item->shortId() != m_startTimeList[item->startTime()]) {
+        {  // already in list
+            if (item->shortId() != m_startTimeList[item->startTime()])
+            {
                 qCDebug(metadataManager) << "Unexpected EPG item ID" << item->shortId() << "start time:" << item->startTime();
             }
             delete item;

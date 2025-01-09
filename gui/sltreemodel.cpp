@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,19 +24,17 @@
  * SOFTWARE.
  */
 
-#include <QLoggingCategory>
 #include "sltreemodel.h"
+
+#include <QLoggingCategory>
 
 Q_DECLARE_LOGGING_CATEGORY(serviceList)
 
 SLTreeModel::SLTreeModel(const ServiceList *sl, const MetadataManager *mm, QObject *parent)
-    : QAbstractItemModel(parent)
-    , m_slPtr(sl)
-    , m_metadataMgrPtr(mm)
+    : QAbstractItemModel(parent), m_slPtr(sl), m_metadataMgrPtr(mm)
 {
     m_rootItem = new SLModelItem(m_slPtr, m_metadataMgrPtr);
 }
-
 
 SLTreeModel::~SLTreeModel()
 {
@@ -48,7 +46,6 @@ int SLTreeModel::columnCount(const QModelIndex & /*parent*/) const
     return 1;
 }
 
-
 QVariant SLTreeModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
@@ -56,7 +53,7 @@ QVariant SLTreeModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    SLModelItem *item = static_cast<SLModelItem*>(index.internalPointer());
+    SLModelItem *item = static_cast<SLModelItem *>(index.internalPointer());
 
     return item->data(index.column(), role);
 }
@@ -68,7 +65,7 @@ bool SLTreeModel::isService(const QModelIndex &index) const
         return false;
     }
 
-    SLModelItem *item = static_cast<SLModelItem*>(index.internalPointer());
+    SLModelItem *item = static_cast<SLModelItem *>(index.internalPointer());
 
     return item->isService();
 }
@@ -80,7 +77,7 @@ bool SLTreeModel::isFavoriteService(const QModelIndex &index) const
         return false;
     }
 
-    SLModelItem *item = static_cast<SLModelItem*>(index.internalPointer());
+    SLModelItem *item = static_cast<SLModelItem *>(index.internalPointer());
 
     return item->isFavoriteService();
 }
@@ -92,7 +89,7 @@ bool SLTreeModel::isEnsemble(const QModelIndex &index) const
         return false;
     }
 
-    SLModelItem *item = static_cast<SLModelItem*>(index.internalPointer());
+    SLModelItem *item = static_cast<SLModelItem *>(index.internalPointer());
 
     return item->isEnsemble();
 }
@@ -104,7 +101,7 @@ ServiceListId SLTreeModel::id(const QModelIndex &index) const
         return 0;
     }
 
-    SLModelItem *item = static_cast<SLModelItem*>(index.internalPointer());
+    SLModelItem *item = static_cast<SLModelItem *>(index.internalPointer());
 
     return item->id();
 }
@@ -119,8 +116,7 @@ Qt::ItemFlags SLTreeModel::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index);
 }
 
-QModelIndex SLTreeModel::index(int row, int column, const QModelIndex &parent)
-            const
+QModelIndex SLTreeModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (!hasIndex(row, column, parent))
     {
@@ -135,7 +131,7 @@ QModelIndex SLTreeModel::index(int row, int column, const QModelIndex &parent)
     }
     else
     {
-        parentItem = static_cast<SLModelItem*>(parent.internalPointer());
+        parentItem = static_cast<SLModelItem *>(parent.internalPointer());
     }
 
     SLModelItem *childItem = parentItem->child(row);
@@ -149,7 +145,6 @@ QModelIndex SLTreeModel::index(int row, int column, const QModelIndex &parent)
     }
 }
 
-
 QModelIndex SLTreeModel::parent(const QModelIndex &index) const
 {
     if (!index.isValid())
@@ -157,7 +152,7 @@ QModelIndex SLTreeModel::parent(const QModelIndex &index) const
         return QModelIndex();
     }
 
-    SLModelItem *childItem = static_cast<SLModelItem*>(index.internalPointer());
+    SLModelItem *childItem = static_cast<SLModelItem *>(index.internalPointer());
     SLModelItem *parentItem = childItem->parentItem();
 
     if (parentItem == m_rootItem)
@@ -167,7 +162,6 @@ QModelIndex SLTreeModel::parent(const QModelIndex &index) const
 
     return createIndex(parentItem->row(), 0, parentItem);
 }
-
 
 int SLTreeModel::rowCount(const QModelIndex &parent) const
 {
@@ -183,18 +177,18 @@ int SLTreeModel::rowCount(const QModelIndex &parent) const
     }
     else
     {
-        parentItem = static_cast<SLModelItem*>(parent.internalPointer());
+        parentItem = static_cast<SLModelItem *>(parent.internalPointer());
     }
 
     return parentItem->childCount();
 }
 
-void SLTreeModel::addEnsembleService(const ServiceListId & ensId, const ServiceListId & servId)
+void SLTreeModel::addEnsembleService(const ServiceListId &ensId, const ServiceListId &servId)
 {  // new service in service list
 
-    SLModelItem * ensChild = m_rootItem->findChildId(ensId);
+    SLModelItem *ensChild = m_rootItem->findChildId(ensId);
     if (nullptr == ensChild)
-    {   // not found ==> new ensemble
+    {  // not found ==> new ensemble
         ensChild = new SLModelItem(m_slPtr, m_metadataMgrPtr, ensId, m_rootItem);
         beginInsertRows(QModelIndex(), m_rootItem->childCount(), m_rootItem->childCount());
         m_rootItem->appendChild(ensChild);
@@ -202,14 +196,15 @@ void SLTreeModel::addEnsembleService(const ServiceListId & ensId, const ServiceL
     }
 
     if (servId.scids() != 0)
-    {   // this part is to creates secondary service item as second level service in the tree
+    {  // this part is to creates secondary service item as second level service in the tree
         // not tested much - only one stimuli for testing is available
         // it expects that parent item is created first -> if not it will add secondary component as normal service
         ServiceListId id(servId.sid(), uint8_t(0));
-        SLModelItem * serviceChild = ensChild->findChildId(id);
+        SLModelItem *serviceChild = ensChild->findChildId(id);
         if (nullptr != serviceChild)
-        {   // primary service found
-            beginInsertRows(index(serviceChild->row(), 0, index(ensChild->row(), 0, QModelIndex())), serviceChild->childCount(), serviceChild->childCount());
+        {  // primary service found
+            beginInsertRows(index(serviceChild->row(), 0, index(ensChild->row(), 0, QModelIndex())), serviceChild->childCount(),
+                            serviceChild->childCount());
             serviceChild->appendChild(new SLModelItem(m_slPtr, m_metadataMgrPtr, servId, serviceChild));
             endInsertRows();
         }
@@ -227,7 +222,7 @@ void SLTreeModel::addEnsembleService(const ServiceListId & ensId, const ServiceL
     }
     else
     {
-        SLModelItem * serviceChild = ensChild->findChildId(servId);
+        SLModelItem *serviceChild = ensChild->findChildId(servId);
         if (nullptr == serviceChild)
         {  // new service to be added
             beginInsertRows(index(ensChild->row(), 0, QModelIndex()), ensChild->childCount(), ensChild->childCount());
@@ -240,23 +235,23 @@ void SLTreeModel::addEnsembleService(const ServiceListId & ensId, const ServiceL
 }
 
 void SLTreeModel::updateEnsembleService(const ServiceListId &ensId, const ServiceListId &servId)
-{   // service label was updated -> need to sort
+{             // service label was updated -> need to sort
     sort(0);  // --> this emits dataChanged()
 }
 
-void SLTreeModel::removeEnsembleService(const ServiceListId & ensId, const ServiceListId & servId)
+void SLTreeModel::removeEnsembleService(const ServiceListId &ensId, const ServiceListId &servId)
 {
-    SLModelItem * ensChild = m_rootItem->findChildId(ensId);
+    SLModelItem *ensChild = m_rootItem->findChildId(ensId);
     if (nullptr == ensChild)
-    {   // not found ==> new ensemble
+    {  // not found ==> new ensemble
         return;
     }
 
     // search for servId recursively (it can be secondary service)
-    SLModelItem * serviceChild = ensChild->findChildId(servId, true);
+    SLModelItem *serviceChild = ensChild->findChildId(servId, true);
     if (nullptr != serviceChild)
-    {   // found
-        //beginRemoveRows(index(ensChild->row(), 0, QModelIndex()), serviceChild->row(), serviceChild->row());
+    {  // found
+        // beginRemoveRows(index(ensChild->row(), 0, QModelIndex()), serviceChild->row(), serviceChild->row());
         beginRemoveRows(index(serviceChild->parentItem()->row(), 0, QModelIndex()), serviceChild->row(), serviceChild->row());
         serviceChild->parentItem()->removeChildId(servId);
         endRemoveRows();
@@ -265,9 +260,9 @@ void SLTreeModel::removeEnsembleService(const ServiceListId & ensId, const Servi
 
 void SLTreeModel::removeEnsemble(const ServiceListId &ensId)
 {
-    SLModelItem * ensChild = m_rootItem->findChildId(ensId);
+    SLModelItem *ensChild = m_rootItem->findChildId(ensId);
     if (nullptr == ensChild)
-    {   // not found (it shoud not happen)
+    {  // not found (it shoud not happen)
         return;
     }
 
@@ -287,7 +282,7 @@ void SLTreeModel::clear()
 }
 
 void SLTreeModel::sort(int column, Qt::SortOrder order)
-{   
+{
     Q_UNUSED(column)
 
     beginResetModel();
@@ -296,4 +291,3 @@ void SLTreeModel::sort(int column, Qt::SortOrder order)
 
     emit dataChanged(QModelIndex(), QModelIndex());
 }
-

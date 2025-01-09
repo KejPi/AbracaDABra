@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,11 +28,12 @@
 #define ENSEMBLELISTITEM_H
 
 #include <stdint.h>
-#include <QString>
-#include <QList>
-#include "servicelistid.h"
-#include "radiocontrol.h"
 
+#include <QList>
+#include <QString>
+
+#include "radiocontrol.h"
+#include "servicelistid.h"
 
 class ServiceListItem;
 
@@ -41,7 +42,7 @@ class EnsembleListItem
 public:
     EnsembleListItem(const RadioControlEnsemble &ens);
 
-    bool addService(ServiceListItem *servPtr);          // returns true when new service was added
+    bool addService(ServiceListItem *servPtr);  // returns true when new service was added
     void storeSnr(float snr) { m_lastSnr = snr; }
 
     ServiceListId id() const { return m_id; }
@@ -52,25 +53,25 @@ public:
     QString shortLabel() const { return m_shortLabel; }  // ensemble short label
     float snr() const { return m_lastSnr; }              // last SNR
     int numServices() const { return m_serviceList.size(); }
-    const ServiceListItem * getService(int num = 0) const;
+    const ServiceListItem *getService(int num = 0) const;
     bool update(const RadioControlEnsemble &ens);
     void beginUpdate();
     void endUpdate();
 
-    bool operator==(const EnsembleListItem & other) const;
+    bool operator==(const EnsembleListItem &other) const;
+
 private:
     ServiceListId m_id;
-    uint32_t m_frequency;   // frequency of ensemble
-    uint32_t m_ueid;        // UEID of ensemble
-    QString m_label;        // ensemble label
-    QString m_shortLabel;   // Short label
+    uint32_t m_frequency;  // frequency of ensemble
+    uint32_t m_ueid;       // UEID of ensemble
+    QString m_label;       // ensemble label
+    QString m_shortLabel;  // Short label
     float m_lastSnr = 0;
 
     QList<ServiceListItem *> m_serviceList;
 
-    EnsembleListItem() = delete;           // disabled
+    EnsembleListItem() = delete;  // disabled
     QList<ServiceListItem *>::iterator findService(const ServiceListId &id);
-
 };
 
-#endif // ENSEMBLELISTITEM_H
+#endif  // ENSEMBLELISTITEM_H

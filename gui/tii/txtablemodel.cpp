@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2024 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,14 @@
  * SOFTWARE.
  */
 
-#include <QColor>
 #include "txtablemodel.h"
+
+#include <QColor>
+
 #include "txdataloader.h"
 
-TxTableModel::TxTableModel(QObject *parent)
-    : QAbstractTableModel{parent}
+TxTableModel::TxTableModel(QObject *parent) : QAbstractTableModel{parent}
 {
-
     TxDataLoader::loadTable(m_txList);
 
     connect(this, &QAbstractListModel::rowsInserted, this, &TxTableModel::rowCountChanged);
@@ -69,124 +69,128 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
     const auto &item = m_modelData.at(index.row());
     switch (role)
     {
-    case Qt::DisplayRole: {
-        switch (index.column())
+        case Qt::DisplayRole:
         {
-        case ColTime:
-            return item.rxTime().toString("yy-MM-dd hh:mm:ss");
-        case ColChannel:
-            return DabTables::channelList.value(item.ensId().freq(), 0);
-        case ColFreq:
-            return QString("%1 kHz").arg(item.ensId().freq()); // QString::number(item.ensId().freq());
-        case ColEnsId:
-            return QString("%1").arg(item.ensId().ueid(), 6, 16, QChar(' ')).toUpper();
-        case ColEnsLabel:
-            return item.ensLabel();
-        case ColNumServices:
-            return item.numServices();
-        case ColSnr:
-            return QString("%1 dB").arg(static_cast<double>(item.snr()), 0, 'f', 1);
-        case ColMainId:
-            return (item.mainId() != -1) ? QString::number(item.mainId()) : "";
-        case ColSubId:
-            return (item.subId() != -1) ? QString::number(item.subId()) : "";
-        case ColLevel:
-            return QString("%1 dB").arg(static_cast<double>(item.level()), 5, 'f', 1); // QString::number(static_cast<double>(item.level()), 'f', 3);
-        case ColLocation:
-            return item.hasTxData() ? item.transmitterData().location() : "";
-        case ColDist:
-            if (item.hasTxData() && item.distance() >= 0.0)
+            switch (index.column())
             {
-                return QString("%1 km").arg(static_cast<double>(item.distance()), 0, 'f', 1);
+                case ColTime:
+                    return item.rxTime().toString("yy-MM-dd hh:mm:ss");
+                case ColChannel:
+                    return DabTables::channelList.value(item.ensId().freq(), 0);
+                case ColFreq:
+                    return QString("%1 kHz").arg(item.ensId().freq());  // QString::number(item.ensId().freq());
+                case ColEnsId:
+                    return QString("%1").arg(item.ensId().ueid(), 6, 16, QChar(' ')).toUpper();
+                case ColEnsLabel:
+                    return item.ensLabel();
+                case ColNumServices:
+                    return item.numServices();
+                case ColSnr:
+                    return QString("%1 dB").arg(static_cast<double>(item.snr()), 0, 'f', 1);
+                case ColMainId:
+                    return (item.mainId() != -1) ? QString::number(item.mainId()) : "";
+                case ColSubId:
+                    return (item.subId() != -1) ? QString::number(item.subId()) : "";
+                case ColLevel:
+                    return QString("%1 dB").arg(static_cast<double>(item.level()), 5, 'f',
+                                                1);  // QString::number(static_cast<double>(item.level()), 'f', 3);
+                case ColLocation:
+                    return item.hasTxData() ? item.transmitterData().location() : "";
+                case ColDist:
+                    if (item.hasTxData() && item.distance() >= 0.0)
+                    {
+                        return QString("%1 km").arg(static_cast<double>(item.distance()), 0, 'f', 1);
+                    }
+                    return QVariant("");
+                case ColAzimuth:
+                    if (item.hasTxData() && item.azimuth() >= 0.0)
+                    {
+                        return QString("%1°").arg(static_cast<double>(item.azimuth()), 0, 'f', 1);
+                    }
+                    return QVariant("");
+                case ColPower:
+                    if (item.hasTxData() && item.power() > 0.0)
+                    {
+                        return QString("%1 kW").arg(static_cast<double>(item.power()), 0, 'f', 1);
+                    }
+                    return QVariant("");
             }
-            return QVariant("");
-        case ColAzimuth:
-            if (item.hasTxData() && item.azimuth() >= 0.0)
-            {
-                return QString("%1°").arg(static_cast<double>(item.azimuth()), 0, 'f', 1);
-            }
-            return QVariant("");
-        case ColPower:
-            if (item.hasTxData() && item.power() > 0.0)
-            {
-                return QString("%1 kW").arg(static_cast<double>(item.power()), 0, 'f', 1);
-            }
-            return QVariant("");
         }
-    }
         break;
-    case TxTableModelRoles::ExportRole: {
-        switch (index.column())
+        case TxTableModelRoles::ExportRole:
         {
-        case ColTime:
-            return item.rxTime().toString("yy-MM-dd hh:mm:ss");
-        case ColChannel:
-            return DabTables::channelList.value(item.ensId().freq(), 0);
-        case ColFreq:
-            return QString::number(item.ensId().freq());
-        case ColEnsId:
-            return QString("%1").arg(item.ensId().ueid(), 6, 16, QChar(' ')).toUpper();
-        case ColEnsLabel:
-            return item.ensLabel();
-        case ColNumServices:
-            return item.numServices();
-        case ColSnr:
-            return QString("%1").arg(static_cast<double>(item.snr()), 0, 'f', 1);
-        case ColMainId:
-            return (item.mainId() != -1) ? QString::number(item.mainId()) : "";
-        case ColSubId:
-            return (item.subId() != -1) ? QString::number(item.subId()) : "";
-        case ColLevel:
-            return QString("%1").arg(static_cast<double>(item.level()), 5, 'f', 1);
-        case ColLocation:
-            return item.transmitterData().location();
-        case ColDist:
-            if (item.hasTxData() && item.distance() >= 0.0)
+            switch (index.column())
             {
-                return QString("%1").arg(static_cast<double>(item.distance()), 0, 'f', 1);
+                case ColTime:
+                    return item.rxTime().toString("yy-MM-dd hh:mm:ss");
+                case ColChannel:
+                    return DabTables::channelList.value(item.ensId().freq(), 0);
+                case ColFreq:
+                    return QString::number(item.ensId().freq());
+                case ColEnsId:
+                    return QString("%1").arg(item.ensId().ueid(), 6, 16, QChar(' ')).toUpper();
+                case ColEnsLabel:
+                    return item.ensLabel();
+                case ColNumServices:
+                    return item.numServices();
+                case ColSnr:
+                    return QString("%1").arg(static_cast<double>(item.snr()), 0, 'f', 1);
+                case ColMainId:
+                    return (item.mainId() != -1) ? QString::number(item.mainId()) : "";
+                case ColSubId:
+                    return (item.subId() != -1) ? QString::number(item.subId()) : "";
+                case ColLevel:
+                    return QString("%1").arg(static_cast<double>(item.level()), 5, 'f', 1);
+                case ColLocation:
+                    return item.transmitterData().location();
+                case ColDist:
+                    if (item.hasTxData() && item.distance() >= 0.0)
+                    {
+                        return QString("%1").arg(static_cast<double>(item.distance()), 0, 'f', 1);
+                    }
+                    return QVariant("");
+                case ColAzimuth:
+                    if (item.hasTxData() && item.azimuth() >= 0.0)
+                    {
+                        return QString("%1").arg(static_cast<double>(item.azimuth()), 0, 'f', 1);
+                    }
+                    return QVariant("");
+                case ColPower:
+                    if (item.hasTxData() && item.power() > 0)
+                    {
+                        return QString("%1").arg(static_cast<double>(item.power()), 0, 'f', 1);
+                    }
+                    return QVariant("");
             }
-            return QVariant("");
-        case ColAzimuth:
-            if (item.hasTxData() && item.azimuth() >= 0.0)
-            {
-                return QString("%1").arg(static_cast<double>(item.azimuth()), 0, 'f', 1);
-            }
-            return QVariant("");
-        case ColPower:
-            if (item.hasTxData() && item.power() > 0)
-            {
-                return QString("%1").arg(static_cast<double>(item.power()), 0, 'f', 1);
-            }
-            return QVariant("");
         }
-    }
-    break;
-    case TxTableModelRoles::CoordinatesRole:
-        return QVariant().fromValue(item.transmitterData().coordinates());
-    case TxTableModelRoles::MainIdRole:
-        return item.mainId();
-    case TxTableModelRoles::SubIdRole:
-        return item.subId();
-    case TxTableModelRoles::TiiRole:
-        return (item.mainId() != -1) ? QVariant(QString("%1-%2").arg(item.mainId()).arg(item.subId())) : "";
-    case TxTableModelRoles::LevelColorRole:
-        if (item.level() > -6)
-        {
-            //return QVariant(QColor(0x5b, 0xc2, 0x14));
-            return QVariant(QColor(Qt::green));
-        }
-        if (item.level() > -12) {
-            return QVariant(QColor(0xff, 0xb5, 0x27));
-        }
-        return QVariant(QColor(0xff, 0x4b, 0x4b));
-    case TxTableModelRoles::ItemRole:
-        return QVariant().fromValue(item);
-    case TxTableModelRoles::IdRole:
-        return QVariant(item.id());
-    case TxTableModelRoles::SelectedTxRole:
-        return m_selectedRows.contains(index.row());
-    default:
         break;
+        case TxTableModelRoles::CoordinatesRole:
+            return QVariant().fromValue(item.transmitterData().coordinates());
+        case TxTableModelRoles::MainIdRole:
+            return item.mainId();
+        case TxTableModelRoles::SubIdRole:
+            return item.subId();
+        case TxTableModelRoles::TiiRole:
+            return (item.mainId() != -1) ? QVariant(QString("%1-%2").arg(item.mainId()).arg(item.subId())) : "";
+        case TxTableModelRoles::LevelColorRole:
+            if (item.level() > -6)
+            {
+                // return QVariant(QColor(0x5b, 0xc2, 0x14));
+                return QVariant(QColor(Qt::green));
+            }
+            if (item.level() > -12)
+            {
+                return QVariant(QColor(0xff, 0xb5, 0x27));
+            }
+            return QVariant(QColor(0xff, 0x4b, 0x4b));
+        case TxTableModelRoles::ItemRole:
+            return QVariant().fromValue(item);
+        case TxTableModelRoles::IdRole:
+            return QVariant(item.id());
+        case TxTableModelRoles::SelectedTxRole:
+            return m_selectedRows.contains(index.row());
+        default:
+            break;
     }
 
     return QVariant();
@@ -201,76 +205,80 @@ QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int 
 
     switch (role)
     {
-    case Qt::DisplayRole: {
-        switch (section) {
-        case ColTime:
-            return tr("Time");
-        case ColChannel:
-            return tr("Channel");
-        case ColFreq:
-            return tr("Frequency");
-        case ColEnsId:
-            return tr("UEID");
-        case ColEnsLabel:
-            return tr("Label");
-        case ColNumServices:
-            return tr("Services");
-        case ColSnr:
-            return tr("SNR");
-        case ColMainId:
-            return tr("Main");
-        case ColSubId:
-            return tr("Sub");
-        case ColLevel:
-            return tr("Level");
-        case ColLocation:
-            return tr("Location");
-        case ColPower:
-            return tr("Power");
-        case ColDist:
-            return tr("Distance");
-        case ColAzimuth:
-            return tr("Azimuth");            
-        default:
-            break;
+        case Qt::DisplayRole:
+        {
+            switch (section)
+            {
+                case ColTime:
+                    return tr("Time");
+                case ColChannel:
+                    return tr("Channel");
+                case ColFreq:
+                    return tr("Frequency");
+                case ColEnsId:
+                    return tr("UEID");
+                case ColEnsLabel:
+                    return tr("Label");
+                case ColNumServices:
+                    return tr("Services");
+                case ColSnr:
+                    return tr("SNR");
+                case ColMainId:
+                    return tr("Main");
+                case ColSubId:
+                    return tr("Sub");
+                case ColLevel:
+                    return tr("Level");
+                case ColLocation:
+                    return tr("Location");
+                case ColPower:
+                    return tr("Power");
+                case ColDist:
+                    return tr("Distance");
+                case ColAzimuth:
+                    return tr("Azimuth");
+                default:
+                    break;
+            }
         }
-    }
-    break;
-    case TxTableModelRoles::ExportRole: {
-        switch (section) {
-        case ColTime:
-            return QString(tr("Local Time"));
-        case ColChannel:
-            return tr("Channel");
-        case ColFreq:
-            return tr("Frequency [kHz]");
-        case ColEnsId:
-            return tr("UEID");
-        case ColEnsLabel:
-            return tr("Label");
-        case ColNumServices:
-            return tr("Services");
-        case ColSnr:
-            return tr("SNR [dB]");
-        case ColMainId:
-            return tr("Main");
-        case ColSubId:
-            return tr("Sub");
-        case ColLevel:
-            return tr("Level [dB]");
-        case ColLocation:
-            return tr("Location");
-        case ColPower:
-            return tr("Power [kW]");
-        case ColDist:
-            return tr("Distance [km]");
-        case ColAzimuth:
-            return tr("Azimuth [deg]");
-        default:
-            break;
+        break;
+        case TxTableModelRoles::ExportRole:
+        {
+            switch (section)
+            {
+                case ColTime:
+                    return QString(tr("Local Time"));
+                case ColChannel:
+                    return tr("Channel");
+                case ColFreq:
+                    return tr("Frequency [kHz]");
+                case ColEnsId:
+                    return tr("UEID");
+                case ColEnsLabel:
+                    return tr("Label");
+                case ColNumServices:
+                    return tr("Services");
+                case ColSnr:
+                    return tr("SNR [dB]");
+                case ColMainId:
+                    return tr("Main");
+                case ColSubId:
+                    return tr("Sub");
+                case ColLevel:
+                    return tr("Level [dB]");
+                case ColLocation:
+                    return tr("Location");
+                case ColPower:
+                    return tr("Power [kW]");
+                case ColDist:
+                    return tr("Distance [km]");
+                case ColAzimuth:
+                    return tr("Azimuth [deg]");
+                default:
+                    break;
+            }
         }
-    }    
-    break;
+        break;
     }
     return QVariant();
 }
@@ -314,11 +322,11 @@ void TxTableModel::setSelectedRows(const QSet<int> &rows)
     }
 }
 
-void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceListId & ensId, const QString &ensLabel, int numServices, float snr)
+void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel, int numServices, float snr)
 {
     QDateTime time = QDateTime::currentDateTime();
 
-    // add new items and remove old    
+    // add new items and remove old
     int row = 0;
     QList<TxTableModelItem> appendList;
     for (int dataIdx = 0; dataIdx < data.count(); ++dataIdx)
@@ -346,16 +354,16 @@ void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceLi
             }
 
             if (row < m_modelData.size())
-            {   // we are still not at the end
+            {  // we are still not at the end
                 // all id < new id were removed
                 if (m_modelData.at(row).id() == item.id())
-                {   // equal ID ==> update item
+                {  // equal ID ==> update item
                     m_modelData[row] = item;
                     // inform views
                     emit dataChanged(index(row, ColLevel), index(row, ColAzimuth));
                 }
                 else
-                {   // insert item
+                {  // insert item
                     beginInsertRows(QModelIndex(), row, row);
                     m_modelData.insert(row, item);
                     endInsertRows();
@@ -363,28 +371,28 @@ void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceLi
                 row += 1;
             }
             else
-            {   // we are at the end of m_model data -> insert remaining items
+            {  // we are at the end of m_model data -> insert remaining items
                 appendList.append(item);
             }
         }
         else
-        {   // we are at the end of m_model data -> insert remaining items
+        {  // we are at the end of m_model data -> insert remaining items
             appendList.append(item);
         }
     }
 
     // final clean up
     if (appendList.isEmpty())
-    {   // nothing to append
+    {  // nothing to append
         if (row < m_modelData.size())
-        {   // some rows to remove
+        {  // some rows to remove
             beginRemoveRows(QModelIndex(), row, m_modelData.size() - 1);
             m_modelData.remove(row, m_modelData.size() - row);
             endRemoveRows();
         }
     }
     else
-    {   // rows to append
+    {  // rows to append
         beginInsertRows(QModelIndex(), m_modelData.size(), m_modelData.size() + appendList.count() - 1);
         m_modelData.append(appendList);
         endInsertRows();
@@ -399,10 +407,12 @@ void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceLi
     // }
 }
 
-void TxTableModel::appendEnsData(const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel, const QString & ensConfig, const QString & ensCSV, int numServices, float snr)
+void TxTableModel::appendEnsData(const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel, const QString &ensConfig,
+                                 const QString &ensCSV, int numServices, float snr)
 {
     QDateTime time = QDateTime::currentDateTime();
-    if (!data.empty()) {
+    if (!data.empty())
+    {
         for (auto it = data.cbegin(); it != data.cend(); ++it)
         {
             // create new item
@@ -415,7 +425,8 @@ void TxTableModel::appendEnsData(const QList<dabsdrTii_t> &data, const ServiceLi
             endInsertRows();
         }
     }
-    else {
+    else
+    {
         // create new item
         TxTableModelItem item(-1, -1, 0, m_coordinates, m_txList.values(ensId));
         item.setEnsData(ensId, ensLabel, numServices, snr);
@@ -434,7 +445,7 @@ void TxTableModel::setCoordinates(const QGeoCoordinate &newCoordinates)
         m_coordinates = newCoordinates;
 
         int row = 0;
-        for (auto & item : m_modelData)
+        for (auto &item : m_modelData)
         {
             if (item.hasTxData())
             {
@@ -445,4 +456,3 @@ void TxTableModel::setCoordinates(const QGeoCoordinate &newCoordinates)
         }
     }
 }
-
