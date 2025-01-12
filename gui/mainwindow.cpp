@@ -262,7 +262,6 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent) : QMainWindo
     m_setupDialog->setSpiDumpPaternDefault(spiDumpPatern);
 
     connect(m_setupDialog, &SetupDialog::inputDeviceChanged, this, &MainWindow::changeInputDevice);
-    connect(m_setupDialog, &SetupDialog::newInputDeviceSettings, this, &MainWindow::onNewInputDeviceSettings);
     connect(m_setupDialog, &SetupDialog::applicationStyleChanged, this, &MainWindow::onApplicationStyleChanged);
     connect(m_setupDialog, &SetupDialog::expertModeToggled, this, &MainWindow::onExpertModeToggled);
     connect(m_setupDialog, &SetupDialog::trayIconToggled, this,
@@ -2397,42 +2396,6 @@ void MainWindow::onNewAnnouncementSettings()
     }
 }
 
-void MainWindow::onNewInputDeviceSettings()
-{
-    switch (m_inputDeviceId)
-    {
-        case InputDevice::Id::RTLSDR:
-            dynamic_cast<RtlSdrInput *>(m_inputDevice)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);
-            dynamic_cast<RtlSdrInput *>(m_inputDevice)->setBW(m_settings->rtlsdr.bandwidth);
-            dynamic_cast<RtlSdrInput *>(m_inputDevice)->setBiasT(m_settings->rtlsdr.biasT);
-            dynamic_cast<RtlSdrInput *>(m_inputDevice)->setAgcLevelMax(m_settings->rtlsdr.agcLevelMax);
-            dynamic_cast<RtlSdrInput *>(m_inputDevice)->setPPM(m_settings->rtlsdr.ppm);
-            break;
-        case InputDevice::Id::RTLTCP:
-            dynamic_cast<RtlTcpInput *>(m_inputDevice)->setGainMode(m_settings->rtltcp.gainMode, m_settings->rtltcp.gainIdx);
-            dynamic_cast<RtlTcpInput *>(m_inputDevice)->setAgcLevelMax(m_settings->rtltcp.agcLevelMax);
-            dynamic_cast<RtlTcpInput *>(m_inputDevice)->setPPM(m_settings->rtltcp.ppm);
-            break;
-        case InputDevice::Id::AIRSPY:
-#if HAVE_AIRSPY
-            dynamic_cast<AirspyInput *>(m_inputDevice)->setGainMode(m_settings->airspy.gain);
-            dynamic_cast<AirspyInput *>(m_inputDevice)->setBiasT(m_settings->airspy.biasT);
-#endif
-            break;
-        case InputDevice::Id::SOAPYSDR:
-#if HAVE_SOAPYSDR
-            dynamic_cast<SoapySdrInput *>(m_inputDevice)->setGainMode(m_settings->soapysdr.gainMode, m_settings->soapysdr.gainIdx);
-            dynamic_cast<SoapySdrInput *>(m_inputDevice)->setBW(m_settings->soapysdr.bandwidth);
-            dynamic_cast<SoapySdrInput *>(m_inputDevice)->setPPM(m_settings->soapysdr.ppm);
-#endif
-            break;
-        case InputDevice::Id::RAWFILE:
-        case InputDevice::Id::RARTTCP:
-        case InputDevice::Id::UNDEFINED:
-            break;
-    }
-}
-
 void MainWindow::changeInputDevice(const InputDevice::Id &d)
 {
     m_inputDeviceIdRequest = d;
@@ -2553,33 +2516,8 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
                 m_inputDeviceId = InputDevice::Id::RTLSDR;
 
                 // setup dialog
-                m_setupDialog->setGainValues(dynamic_cast<RtlSdrInput *>(m_inputDevice)->getGainList());
-                m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
-
-                // enable band scan
-                m_bandScanAction->setEnabled(true);
-                m_scanningToolAction->setEnabled(true);
-
-                // enable service list
-                ui->serviceListView->setEnabled(true);
-                ui->serviceTreeView->setEnabled(true);
-                ui->favoriteLabel->setEnabled(true);
-
-                // recorder
-                m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
-                connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
-                connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
-
-                // ensemble info dialog
-                connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
-                connect(m_inputDevice, &InputDevice::rfLevel, m_ensembleInfoDialog, &EnsembleInfoDialog::updateRfLevel);
-                m_ensembleInfoDialog->enableRecording(true);
-
-                // metadata & EPG
-                EPGTime::getInstance()->setIsLiveBroadcasting(true);
-
-                // apply current settings
-                onNewInputDeviceSettings();
+                m_setupDialog->setInputDevice(m_inputDeviceId, m_inputDevice);
+                configureForInputDevice();
             }
             else
             {
@@ -2637,32 +2575,8 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
                 m_inputDeviceId = InputDevice::Id::RTLTCP;
 
                 // setup dialog
-                m_setupDialog->setGainValues(dynamic_cast<RtlTcpInput *>(m_inputDevice)->getGainList());
-                m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
-
-                // enable band scan
-                m_bandScanAction->setEnabled(true);
-                m_scanningToolAction->setEnabled(true);
-
-                // enable service list
-                ui->serviceListView->setEnabled(true);
-                ui->serviceTreeView->setEnabled(true);
-                ui->favoriteLabel->setEnabled(true);
-
-                // recorder
-                m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
-                connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
-                connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
-
-                // ensemble info dialog
-                connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
-                m_ensembleInfoDialog->enableRecording(true);
-
-                // metadata & EPG
-                EPGTime::getInstance()->setIsLiveBroadcasting(true);
-
-                // apply current settings
-                onNewInputDeviceSettings();
+                m_setupDialog->setInputDevice(m_inputDeviceId, m_inputDevice);
+                configureForInputDevice();
             }
             else
             {
@@ -2720,32 +2634,9 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
 
                 m_inputDeviceId = InputDevice::Id::RARTTCP;
 
-                // enable band scan
-                m_bandScanAction->setEnabled(true);
-                m_scanningToolAction->setEnabled(true);
-
-                // enable service list
-                ui->serviceListView->setEnabled(true);
-                ui->serviceTreeView->setEnabled(true);
-                ui->favoriteLabel->setEnabled(true);
-
                 // setup dialog
-                m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
-
-                // recorder
-                m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
-                connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
-                connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
-
-                // ensemble info dialog
-                connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
-                m_ensembleInfoDialog->enableRecording(true);
-
-                // metadata & EPG
-                EPGTime::getInstance()->setIsLiveBroadcasting(true);
-
-                // apply current settings
-                onNewInputDeviceSettings();
+                m_setupDialog->setInputDevice(m_inputDeviceId, m_inputDevice);
+                configureForInputDevice();
             }
             else
             {
@@ -2800,36 +2691,13 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
 
                 m_inputDeviceId = InputDevice::Id::AIRSPY;
 
-                // enable band scan
-                m_bandScanAction->setEnabled(true);
-                m_scanningToolAction->setEnabled(true);
-
-                // enable service list
-                ui->serviceListView->setEnabled(true);
-                ui->serviceTreeView->setEnabled(true);
-                ui->favoriteLabel->setEnabled(true);
-
                 // setup dialog
-                m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
-
-                // recorder
-                m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
-                connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
-                connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
-
-                // ensemble info dialog
-                connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
-                m_ensembleInfoDialog->enableRecording(true);
-
-                // metadata & EPG
-                EPGTime::getInstance()->setIsLiveBroadcasting(true);
+                m_setupDialog->setInputDevice(m_inputDeviceId, m_inputDevice);
+                configureForInputDevice();
 
                 // these are settings that are configures in ini file manually
                 // they are only set when device is initialized
                 dynamic_cast<AirspyInput *>(m_inputDevice)->setDataPacking(m_settings->airspy.dataPacking);
-
-                // apply current settings
-                onNewInputDeviceSettings();
             }
             else
             {
@@ -2890,38 +2758,8 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
                 m_inputDeviceId = InputDevice::Id::SOAPYSDR;
 
                 // setup dialog
-                m_setupDialog->setGainValues(dynamic_cast<SoapySdrInput *>(m_inputDevice)->getGainList());
-
-                // enable band scan
-                m_bandScanAction->setEnabled(true);
-                m_scanningToolAction->setEnabled(true);
-
-                // enable service list
-                ui->serviceListView->setEnabled(true);
-                ui->serviceTreeView->setEnabled(true);
-                ui->favoriteLabel->setEnabled(true);
-
-                // setup dialog
-                m_setupDialog->setDeviceDescription(m_inputDevice->deviceDescription());
-
-                // recorder
-                m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
-                connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
-                connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
-
-                // ensemble info dialog
-                connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
-                m_ensembleInfoDialog->enableRecording(true);
-
-                // metadata & EPG
-                EPGTime::getInstance()->setIsLiveBroadcasting(true);
-
-                // these are settings that are configures in ini file manually
-                // they are only set when device is initialized
-                dynamic_cast<SoapySdrInput *>(m_inputDevice)->setBW(m_settings->soapysdr.bandwidth);
-
-                // apply current settings
-                onNewInputDeviceSettings();
+                m_setupDialog->setInputDevice(m_inputDeviceId, m_inputDevice);
+                configureForInputDevice();
             }
             else
             {
@@ -2983,23 +2821,14 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
 
                 m_inputDeviceId = InputDevice::Id::RAWFILE;
 
-                // enable service list
-                ui->serviceListView->setEnabled(true);
-                ui->serviceTreeView->setEnabled(true);
-                ui->favoriteLabel->setEnabled(true);
+                // setup dialog
+                m_setupDialog->setInputDevice(m_inputDeviceId, m_inputDevice);
+                configureForInputDevice();
 
-                // show XML header is available
-                m_setupDialog->setXmlHeader(m_inputDevice->deviceDescription());
                 if (m_inputDevice->deviceDescription().rawFile.frequency_kHz != 0)
                 {
                     m_channelListModel->setChannelFilter(m_inputDevice->deviceDescription().rawFile.frequency_kHz);
                 }
-
-                // metadata & EPG
-                EPGTime::getInstance()->setIsLiveBroadcasting(false);
-
-                // apply current settings
-                onNewInputDeviceSettings();
             }
             else
             {
@@ -3008,6 +2837,43 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
             }
         }
         break;
+    }
+}
+
+void MainWindow::configureForInputDevice()
+{
+    if (m_inputDeviceId != InputDevice::Id::UNDEFINED)
+    {
+        // setup dialog
+        m_setupDialog->setInputDevice(m_inputDeviceId, m_inputDevice);
+
+        bool isLive = m_inputDevice->capabilities() & InputDevice::CapabilityFlag::LiveStream;
+        bool hasRecording = m_inputDevice->capabilities() & InputDevice::CapabilityFlag::Recording;
+
+        // enable band scan
+        m_bandScanAction->setEnabled(isLive);
+        m_scanningToolAction->setEnabled(isLive);
+
+        // enable service list
+        ui->serviceListView->setEnabled(true);
+        ui->serviceTreeView->setEnabled(true);
+        ui->favoriteLabel->setEnabled(true);
+
+        if (hasRecording)
+        {
+            // recorder
+            m_inputDeviceRecorder->setDeviceDescription(m_inputDevice->deviceDescription());
+            connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_inputDevice, &InputDevice::startStopRecording);
+            connect(m_inputDevice, &InputDevice::recordBuffer, m_inputDeviceRecorder, &InputDeviceRecorder::writeBuffer, Qt::DirectConnection);
+        }
+
+        // ensemble info dialog
+        connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
+        connect(m_inputDevice, &InputDevice::rfLevel, m_ensembleInfoDialog, &EnsembleInfoDialog::updateRfLevel);
+        m_ensembleInfoDialog->enableRecording(hasRecording);
+
+        // metadata & EPG
+        EPGTime::getInstance()->setIsLiveBroadcasting(isLive);
     }
 }
 
@@ -3245,7 +3111,8 @@ void MainWindow::loadSettings()
 
     delete settings;
 
-    if (((InputDevice::Id::RTLSDR == m_inputDeviceId) || (InputDevice::Id::AIRSPY == m_inputDeviceId) || (InputDevice::Id::SOAPYSDR == m_inputDeviceId)) &&
+    if (((InputDevice::Id::RTLSDR == m_inputDeviceId) || (InputDevice::Id::AIRSPY == m_inputDeviceId) ||
+         (InputDevice::Id::SOAPYSDR == m_inputDeviceId)) &&
         (m_serviceList->numServices() == 0))
     {
         QTimer::singleShot(1, this, [this]() { bandScan(); });

@@ -137,6 +137,9 @@ public:
     virtual void tune(uint32_t freq) = 0;
     virtual void startStopRecording(bool start) = 0;
     virtual InputDevice::Capabilities capabilities() const = 0;
+    virtual void setBW(uint32_t bw) { Q_UNUSED(bw) }
+    virtual void setBiasT(bool ena) { Q_UNUSED(ena) }
+    virtual void setPPM(int ppm) { Q_UNUSED(ppm) }
 
 signals:
     void deviceReady();

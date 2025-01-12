@@ -54,11 +54,10 @@ class SetupDialog : public QDialog
 public:
     SetupDialog(QWidget *parent = nullptr);
     void setupDarkMode(bool darkModeEna);
-    void setGainValues(const QList<float> &gainList);
     void setInputDeviceEnabled(bool ena);
+    void setInputDevice(InputDevice::Id id, InputDevice *device);
     void resetInputDevice();
     void setSettings(Settings *settings);
-    void setXmlHeader(const InputDevice::Description &desc);
     void onFileLength(int msec);
     void onFileProgress(int msec);
     void setAudioRecAutoStop(bool ena);
@@ -67,11 +66,9 @@ public:
     void setSlsDumpPaternDefault(const QString &newSlsDumpPaternDefault);
     void setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault);
     void onTiiUpdateFinished(QNetworkReply::NetworkError err);
-    void setDeviceDescription(const InputDevice::Description &desc);
 
 signals:
     void inputDeviceChanged(const InputDevice::Id &inputDevice);
-    void newInputDeviceSettings();
     void newAnnouncementSettings();
     void expertModeToggled(bool enabled);
     void trayIconToggled(bool enabled);
@@ -124,7 +121,9 @@ private:
     const QString m_noFileString = tr("No file selected");
 
     Ui::SetupDialog *ui;
-    Settings *m_settings;
+    Settings *m_settings = nullptr;
+    InputDevice::Id m_inputDeviceId = InputDevice::Id::UNDEFINED;
+    InputDevice *m_device = nullptr;
     QString m_rawfilename;
     QList<float> m_rtlsdrGainList;
     QList<float> m_rtltcpGainList;
@@ -139,7 +138,8 @@ private:
     QMovie *m_spinner;
 
     void setUiState();
-    void setStatusLabel();
+    void connectDeviceControlSignals();
+    void setStatusLabel(bool clearLabel = false);
 
     void onButtonClicked(QAbstractButton *button);
     void onInputChanged(int index);
@@ -147,13 +147,17 @@ private:
 
     void onConnectDeviceClicked();
 
+    void setGainValues(const QList<float> &gainList);
+    void setDeviceDescription(const InputDevice::Description &desc);
+
+    void onBandwidthChanged(int val);
+    void onPPMChanged(int val);
+    void onBiasTChanged(int val);
+
     void onRtlSdrGainModeToggled(bool checked);
     void onRtlSdrGainSliderChanged(int val);
-    void onRtlSdrBandwidthChanged(int val);
     void onRtlSdrSwAgcMaxLevelChanged(int val);
-    void onRtlSdrBiasTCurrentIdxChanged(int);
     void activateRtlSdrControls(bool en);
-    void onRtlSdrPPMChanged(int val);
 
     void onTcpGainModeToggled(bool checked);
     void onRtlTcpGainSliderChanged(int val);
@@ -161,7 +165,6 @@ private:
     void onRtlTcpPortValueChanged(int val);
     void onRtlTcpSwAgcMaxLevelChanged(int val);
     void activateRtlTcpControls(bool en);
-    void onRtlTcpPPMChanged(int val);
 
     void onRawFileFormatChanged(int idx);
     void onAnnouncementClicked();
@@ -208,7 +211,6 @@ private:
     void onAirspyMixerGainSliderChanged(int val);
     void onAirspyLNAAGCstateChanged(int state);
     void onAirspyMixerAGCstateChanged(int state);
-    void onAirspyBiasTCurrentIdxChanged(int);
     void activateAirspyControls(bool en);
 #endif
 #if HAVE_SOAPYSDR
@@ -217,8 +219,6 @@ private:
     void onSoapySdrAntennaEditFinished();
     void onSoapySdrChannelEditFinished();
     void onSoapySdrGainModeToggled(bool checked);
-    void onSoapySdrBandwidthChanged(int val);
-    void onSoapySdrPPMChanged(int val);
     void activateSoapySdrControls(bool en);
 #endif
 };

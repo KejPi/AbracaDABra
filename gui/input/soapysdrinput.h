@@ -95,8 +95,8 @@ public:
     void setAntenna(const QString &antenna) { m_antenna = antenna; }
     void setGainMode(SoapyGainMode gainMode, int gainIdx = 0);
     void startStopRecording(bool start) override;
-    void setBW(uint32_t bw);
-    void setPPM(int ppm);
+    void setBW(uint32_t bw) override;
+    void setPPM(int ppm) override;
     QList<float> getGainList() const { return *m_gainList; }
 
 private:

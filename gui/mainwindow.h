@@ -268,6 +268,7 @@ private:
     void clearEnsembleInformationLabels();
     void clearServiceInformationLabels();
     void initInputDevice(const InputDevice::Id &d);
+    void configureForInputDevice();
     bool isDarkMode();
     void forceDarkStyle(bool ena);
     void setupDarkMode();
@@ -324,7 +325,6 @@ private:
     void onDabTime(const QDateTime &d);
     void onTuneChannel(uint32_t freq);
     void onTuneDone(uint32_t freq);
-    void onNewInputDeviceSettings();
     void onNewAnnouncementSettings();
     void onInputDeviceError(const InputDevice::ErrorCode errCode);
     void onServiceListSelection(const QItemSelection &selected, const QItemSelection &deselected);

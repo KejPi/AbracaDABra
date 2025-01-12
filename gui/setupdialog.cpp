@@ -37,6 +37,11 @@
 
 #include "./ui_setupdialog.h"
 #include "audiodecoder.h"
+#include "rtlsdrinput.h"
+#include "rtltcpinput.h"
+#if HAVE_SOAPYSDR
+#include "soapysdrinput.h"
+#endif
 #include "txdataloader.h"
 
 SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDialog)
@@ -227,65 +232,10 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
                                           2);
     ui->rtltcpInfoWidget->setVisible(false);
 
-    connect(ui->inputCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onInputChanged);
     connect(ui->openFileButton, &QPushButton::clicked, this, &SetupDialog::onOpenFileButtonClicked);
 
+    connect(ui->inputCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onInputChanged);
     connect(ui->connectButton, &QPushButton::clicked, this, &SetupDialog::onConnectDeviceClicked);
-
-    connect(ui->rtlsdrGainSlider, &QSlider::valueChanged, this, &SetupDialog::onRtlSdrGainSliderChanged);
-    connect(ui->rtlsdrGainModeHw, &QRadioButton::toggled, this, &SetupDialog::onRtlSdrGainModeToggled);
-    connect(ui->rtlsdrGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onRtlSdrGainModeToggled);
-    connect(ui->rtlsdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onRtlSdrGainModeToggled);
-    connect(ui->rtlsdrBandwidth, &QSpinBox::valueChanged, this, &SetupDialog::onRtlSdrBandwidthChanged);
-    connect(ui->rtlsdrBandwidthDefault, &QPushButton::clicked, this, [this]() { ui->rtlsdrBandwidth->setValue(0); });
-    connect(ui->rtlsdrSwAgcMaxLevel, &QSpinBox::valueChanged, this, &SetupDialog::onRtlSdrSwAgcMaxLevelChanged);
-    connect(ui->rtlsdrSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtlsdrSwAgcMaxLevel->setValue(0); });
-    connect(ui->rtlsdrBiasTCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onRtlSdrBiasTCurrentIdxChanged);
-    connect(ui->rtlsdrPPM, &QSpinBox::valueChanged, this, &SetupDialog::onRtlSdrPPMChanged);
-
-    connect(ui->rtltcpGainSlider, &QSlider::valueChanged, this, &SetupDialog::onRtlTcpGainSliderChanged);
-    connect(ui->rtltcpGainModeHw, &QRadioButton::toggled, this, &SetupDialog::onTcpGainModeToggled);
-    connect(ui->rtltcpGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onTcpGainModeToggled);
-    connect(ui->rtltcpGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onTcpGainModeToggled);
-    connect(ui->rtltcpIpAddressEdit, &QLineEdit::editingFinished, this, &SetupDialog::onRtlTcpIpAddrEditFinished);
-    connect(ui->rtltcpIpPortSpinBox, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpPortValueChanged);
-    connect(ui->rtltcpSwAgcMaxLevel, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpSwAgcMaxLevelChanged);
-    connect(ui->rtltcpSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtltcpSwAgcMaxLevel->setValue(0); });
-    connect(ui->rtltcpPPM, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpPPMChanged);
-
-    connect(ui->fileFormatCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onRawFileFormatChanged);
-
-#if HAVE_AIRSPY
-    connect(ui->airspySensitivityGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspySensitivityGainSliderChanged);
-    connect(ui->airspyIFGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspyIFGainSliderChanged);
-    connect(ui->airspyLNAGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspyLNAGainSliderChanged);
-    connect(ui->airspyMixerGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspyMixerGainSliderChanged);
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
-    connect(ui->airspyLNAAGCCheckbox, &QCheckBox::checkStateChanged, this, &SetupDialog::onAirspyLNAAGCstateChanged);
-    connect(ui->airspyMixerAGCCheckbox, &QCheckBox::checkStateChanged, this, &SetupDialog::onAirspyMixerAGCstateChanged);
-#else
-    connect(ui->airspyLNAAGCCheckbox, &QCheckBox::stateChanged, this, &SetupDialog::onAirspyLNAAGCstateChanged);
-    connect(ui->airspyMixerAGCCheckbox, &QCheckBox::stateChanged, this, &SetupDialog::onAirspyMixerAGCstateChanged);
-#endif
-    connect(ui->airspyGainModeHybrid, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
-    connect(ui->airspyGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
-    connect(ui->airspyGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
-    connect(ui->airspyGainModeSensitivity, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
-    connect(ui->airspyBiasTCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onAirspyBiasTCurrentIdxChanged);
-#endif
-
-#if HAVE_SOAPYSDR
-    connect(ui->soapysdrGainSlider, &QSlider::valueChanged, this, &SetupDialog::onSoapySdrGainSliderChanged);
-    connect(ui->soapysdrDevArgs, &QLineEdit::editingFinished, this, &SetupDialog::onSoapySdrDevArgsEditFinished);
-    connect(ui->soapySdrAntenna, &QLineEdit::editingFinished, this, &SetupDialog::onSoapySdrAntennaEditFinished);
-    connect(ui->soapysdrChannelNum, &QSpinBox::editingFinished, this, &SetupDialog::onSoapySdrChannelEditFinished);
-    connect(ui->soapysdrGainModeHw, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
-    connect(ui->soapysdrGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
-    connect(ui->soapysdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
-    connect(ui->soapysdrBandwidth, &QSpinBox::valueChanged, this, &SetupDialog::onSoapySdrBandwidthChanged);
-    connect(ui->soapysdrBandwidthDefault, &QPushButton::clicked, this, [this]() { ui->soapysdrBandwidth->setValue(0); });
-    connect(ui->soapysdrPPM, &QSpinBox::valueChanged, this, &SetupDialog::onSoapySdrPPMChanged);
-#endif
 
     ui->defaultStyleRadioButton->setText(tr("Default style (OS dependent)"));
     ui->lightStyleRadioButton->setText(tr("Light style (Fusion with light colors)"));
@@ -452,7 +402,7 @@ void SetupDialog::setSlsDumpPaternDefault(const QString &newSlsDumpPaternDefault
 
 void SetupDialog::setGainValues(const QList<float> &gainList)
 {
-    switch (m_settings->inputDevice)
+    switch (m_inputDeviceId)
     {
         case InputDevice::Id::RTLSDR:
             m_rtlsdrGainList.clear();
@@ -508,6 +458,8 @@ void SetupDialog::setSettings(Settings *settings)
     connect(ui->checkForUpdates, &QCheckBox::toggled, this, &SetupDialog::setCheckUpdatesEna);
 
     setUiState();
+    connectDeviceControlSignals();
+
     onExpertModeChecked(m_settings->expertModeEna);
     setStatusLabel();
     emit newAnnouncementSettings();
@@ -522,38 +474,6 @@ void SetupDialog::setSettings(Settings *settings)
     emit proxySettingsChanged();
     emit trayIconToggled(m_settings->trayIconEna);
     emit slsBgChanged(m_settings->slsBackground);
-}
-
-void SetupDialog::setXmlHeader(const InputDevice::Description &desc)
-{
-    if (desc.rawFile.hasXmlHeader)
-    {
-        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDate]->setText(desc.rawFile.time);
-        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLRecorder]->setText(desc.rawFile.recorder);
-        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDevice]->setText(QString("%1 [ %2 ]").arg(desc.device.name, desc.device.model));
-        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLSampleRate]->setText(QString::number(desc.sample.sampleRate));
-        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFreq]->setText(QString::number(desc.rawFile.frequency_kHz));
-        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLLength]->setText(QString::number(desc.rawFile.numSamples * 1.0 / desc.sample.sampleRate));
-        m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFormat]->setText(desc.sample.channelContainer);
-
-        switch (desc.sample.containerBits)
-        {
-            case 8:
-                m_settings->rawfile.format = RawFileInputFormat::SAMPLE_FORMAT_U8;
-                break;
-            case 16:
-                m_settings->rawfile.format = RawFileInputFormat::SAMPLE_FORMAT_S16;
-                break;
-        }
-        ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings->rawfile.format));
-        ui->fileFormatCombo->setEnabled(false);
-        ui->xmlHeaderWidget->setVisible(true);
-    }
-    else
-    {
-        ui->fileFormatCombo->setEnabled(true);
-        ui->xmlHeaderWidget->setVisible(false);
-    }
 }
 
 void SetupDialog::onFileLength(int msec)
@@ -864,6 +784,64 @@ void SetupDialog::setUiState()
     ui->slsBgButton->setMaximumWidth(ui->slsBgButton->height() * 2);
 }
 
+void SetupDialog::connectDeviceControlSignals()
+{
+    connect(ui->rtlsdrGainSlider, &QSlider::valueChanged, this, &SetupDialog::onRtlSdrGainSliderChanged);
+    connect(ui->rtlsdrGainModeHw, &QRadioButton::toggled, this, &SetupDialog::onRtlSdrGainModeToggled);
+    connect(ui->rtlsdrGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onRtlSdrGainModeToggled);
+    connect(ui->rtlsdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onRtlSdrGainModeToggled);
+    connect(ui->rtlsdrBandwidth, &QSpinBox::valueChanged, this, &SetupDialog::onBandwidthChanged);
+    connect(ui->rtlsdrBandwidthDefault, &QPushButton::clicked, this, [this]() { ui->rtlsdrBandwidth->setValue(0); });
+    connect(ui->rtlsdrSwAgcMaxLevel, &QSpinBox::valueChanged, this, &SetupDialog::onRtlSdrSwAgcMaxLevelChanged);
+    connect(ui->rtlsdrSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtlsdrSwAgcMaxLevel->setValue(0); });
+    connect(ui->rtlsdrBiasTCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onBiasTChanged);
+    connect(ui->rtlsdrPPM, &QSpinBox::valueChanged, this, &SetupDialog::onPPMChanged);
+
+    connect(ui->rtltcpGainSlider, &QSlider::valueChanged, this, &SetupDialog::onRtlTcpGainSliderChanged);
+    connect(ui->rtltcpGainModeHw, &QRadioButton::toggled, this, &SetupDialog::onTcpGainModeToggled);
+    connect(ui->rtltcpGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onTcpGainModeToggled);
+    connect(ui->rtltcpGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onTcpGainModeToggled);
+    connect(ui->rtltcpIpAddressEdit, &QLineEdit::editingFinished, this, &SetupDialog::onRtlTcpIpAddrEditFinished);
+    connect(ui->rtltcpIpPortSpinBox, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpPortValueChanged);
+    connect(ui->rtltcpSwAgcMaxLevel, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpSwAgcMaxLevelChanged);
+    connect(ui->rtltcpSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtltcpSwAgcMaxLevel->setValue(0); });
+    connect(ui->rtltcpPPM, &QSpinBox::valueChanged, this, &SetupDialog::onPPMChanged);
+
+    connect(ui->fileFormatCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onRawFileFormatChanged);
+
+#if HAVE_AIRSPY
+    connect(ui->airspySensitivityGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspySensitivityGainSliderChanged);
+    connect(ui->airspyIFGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspyIFGainSliderChanged);
+    connect(ui->airspyLNAGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspyLNAGainSliderChanged);
+    connect(ui->airspyMixerGainSlider, &QSlider::valueChanged, this, &SetupDialog::onAirspyMixerGainSliderChanged);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
+    connect(ui->airspyLNAAGCCheckbox, &QCheckBox::checkStateChanged, this, &SetupDialog::onAirspyLNAAGCstateChanged);
+    connect(ui->airspyMixerAGCCheckbox, &QCheckBox::checkStateChanged, this, &SetupDialog::onAirspyMixerAGCstateChanged);
+#else
+    connect(ui->airspyLNAAGCCheckbox, &QCheckBox::stateChanged, this, &SetupDialog::onAirspyLNAAGCstateChanged);
+    connect(ui->airspyMixerAGCCheckbox, &QCheckBox::stateChanged, this, &SetupDialog::onAirspyMixerAGCstateChanged);
+#endif
+    connect(ui->airspyGainModeHybrid, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
+    connect(ui->airspyGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
+    connect(ui->airspyGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
+    connect(ui->airspyGainModeSensitivity, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
+    connect(ui->airspyBiasTCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onBiasTChanged);
+#endif
+
+#if HAVE_SOAPYSDR
+    connect(ui->soapysdrGainSlider, &QSlider::valueChanged, this, &SetupDialog::onSoapySdrGainSliderChanged);
+    connect(ui->soapysdrDevArgs, &QLineEdit::editingFinished, this, &SetupDialog::onSoapySdrDevArgsEditFinished);
+    connect(ui->soapySdrAntenna, &QLineEdit::editingFinished, this, &SetupDialog::onSoapySdrAntennaEditFinished);
+    connect(ui->soapysdrChannelNum, &QSpinBox::editingFinished, this, &SetupDialog::onSoapySdrChannelEditFinished);
+    connect(ui->soapysdrGainModeHw, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
+    connect(ui->soapysdrGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
+    connect(ui->soapysdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
+    connect(ui->soapysdrBandwidth, &QSpinBox::valueChanged, this, &SetupDialog::onBandwidthChanged);
+    connect(ui->soapysdrBandwidthDefault, &QPushButton::clicked, this, [this]() { ui->soapysdrBandwidth->setValue(0); });
+    connect(ui->soapysdrPPM, &QSpinBox::valueChanged, this, &SetupDialog::onPPMChanged);
+#endif
+}
+
 void SetupDialog::setupDarkMode(bool darkModeEna)
 {
 #if HAVE_FMLIST_INTERFACE
@@ -890,17 +868,18 @@ void SetupDialog::onConnectDeviceClicked()
     ui->connectButton->setHidden(true);
     ui->rtlsdrInfoWidget->setVisible(false);
     ui->rtltcpInfoWidget->setVisible(false);
+    m_inputDeviceId = InputDevice::Id::UNDEFINED;
+    setStatusLabel(true);  // clear label
     m_settings->inputDevice = static_cast<InputDevice::Id>(ui->inputCombo->itemData(ui->inputCombo->currentIndex()).toInt());
-    setStatusLabel();
     switch (m_settings->inputDevice)
     {
         case InputDevice::Id::RTLSDR:
-            activateRtlSdrControls(true);
+            // activateRtlSdrControls(true);
             break;
         case InputDevice::Id::RTLTCP:
             m_settings->rtltcp.tcpAddress = ui->rtltcpIpAddressEdit->text();
             m_settings->rtltcp.tcpPort = ui->rtltcpIpPortSpinBox->value();
-            activateRtlTcpControls(true);
+            // activateRtlTcpControls(true);
             break;
         case InputDevice::Id::RARTTCP:
             break;
@@ -913,7 +892,7 @@ void SetupDialog::onConnectDeviceClicked()
             break;
         case InputDevice::Id::AIRSPY:
 #if HAVE_AIRSPY
-            activateAirspyControls(true);
+            // activateAirspyControls(true);
 #endif
             break;
         case InputDevice::Id::SOAPYSDR:
@@ -921,11 +900,103 @@ void SetupDialog::onConnectDeviceClicked()
             m_settings->soapysdr.devArgs = ui->soapysdrDevArgs->text();
             m_settings->soapysdr.channel = ui->soapysdrChannelNum->text().toInt();
             m_settings->soapysdr.antenna = ui->soapySdrAntenna->text();
-            activateSoapySdrControls(true);
+            // activateSoapySdrControls(true);
 #endif
             break;
     }
     emit inputDeviceChanged(m_settings->inputDevice);
+}
+
+void SetupDialog::onBandwidthChanged(int val)
+{
+    switch (m_inputDeviceId)
+    {
+        case InputDevice::Id::RTLSDR:
+            m_settings->rtlsdr.bandwidth = val * 1000;
+            ui->rtlsdrBandwidthDefault->setEnabled(val > 0);
+            if (m_device)
+            {
+                m_device->setBW(m_settings->rtlsdr.bandwidth);
+            }
+            break;
+        case InputDevice::Id::SOAPYSDR:
+#if HAVE_SOAPYSDR
+            m_settings->soapysdr.bandwidth = val * 1000;
+            ui->soapysdrBandwidthDefault->setEnabled(val > 0);
+            if (m_device)
+            {
+                m_device->setBW(m_settings->soapysdr.bandwidth);
+            }
+#endif
+            break;
+        case InputDevice::Id::RTLTCP:
+        case InputDevice::Id::AIRSPY:
+        case InputDevice::Id::RARTTCP:
+        default:
+            break;
+    }
+}
+
+void SetupDialog::onPPMChanged(int val)
+{
+    switch (m_inputDeviceId)
+    {
+        case InputDevice::Id::RTLSDR:
+            m_settings->rtlsdr.ppm = val;
+            if (m_device)
+            {
+                m_device->setPPM(m_settings->rtlsdr.ppm);
+            }
+            break;
+        case InputDevice::Id::RTLTCP:
+            m_settings->rtltcp.ppm = val;
+            if (m_device)
+            {
+                m_device->setPPM(m_settings->rtltcp.ppm);
+            }
+            break;
+        case InputDevice::Id::SOAPYSDR:
+#if HAVE_SOAPYSDR
+            m_settings->soapysdr.ppm = val;
+            if (m_device)
+            {
+                m_device->setPPM(m_settings->soapysdr.ppm);
+            }
+#endif
+            break;
+        case InputDevice::Id::AIRSPY:
+        case InputDevice::Id::RARTTCP:
+        default:
+            break;
+    }
+}
+
+void SetupDialog::onBiasTChanged(int)
+{
+    switch (m_inputDeviceId)
+    {
+        case InputDevice::Id::RTLSDR:
+            m_settings->rtlsdr.biasT = ui->rtlsdrBiasTCombo->currentData().toBool();
+            if (m_device)
+            {
+                m_device->setBiasT(m_settings->rtlsdr.biasT);
+            }
+            break;
+        case InputDevice::Id::AIRSPY:
+#if HAVE_AIRSPY
+            m_settings->airspy.biasT = ui->airspyBiasTCombo->currentData().toBool();
+            if (m_device)
+            {
+                m_device->setBiasT(m_settings->airspy.biasT);
+            }
+#endif
+            break;
+        case InputDevice::Id::RTLTCP:
+        case InputDevice::Id::SOAPYSDR:
+        case InputDevice::Id::RARTTCP:
+        default:
+            break;
+    }
 }
 
 void SetupDialog::onRtlSdrGainSliderChanged(int val)
@@ -934,37 +1005,18 @@ void SetupDialog::onRtlSdrGainSliderChanged(int val)
     {
         ui->rtlsdrGainValueLabel->setText(QString("%1 dB").arg(m_rtlsdrGainList.at(val)));
         m_settings->rtlsdr.gainIdx = val;
-        emit newInputDeviceSettings();
+        dynamic_cast<RtlSdrInput *>(m_device)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);
     }
     else
     { /* empy gain list => do nothing */
     }
 }
 
-void SetupDialog::onRtlSdrBandwidthChanged(int val)
-{
-    m_settings->rtlsdr.bandwidth = val * 1000;
-    ui->rtlsdrBandwidthDefault->setEnabled(val > 0);
-    emit newInputDeviceSettings();
-}
-
-void SetupDialog::onRtlSdrPPMChanged(int val)
-{
-    m_settings->rtlsdr.ppm = val;
-    emit newInputDeviceSettings();
-}
-
 void SetupDialog::onRtlSdrSwAgcMaxLevelChanged(int val)
 {
     m_settings->rtlsdr.agcLevelMax = val;
     ui->rtlsdrSwAgcMaxLevelDefault->setEnabled(val > 0);
-    emit newInputDeviceSettings();
-}
-
-void SetupDialog::onRtlSdrBiasTCurrentIdxChanged(int)
-{
-    m_settings->rtlsdr.biasT = ui->rtlsdrBiasTCombo->currentData().toBool();
-    emit newInputDeviceSettings();
+    dynamic_cast<RtlSdrInput *>(m_device)->setAgcLevelMax(m_settings->rtlsdr.agcLevelMax);
 }
 
 void SetupDialog::onRtlSdrGainModeToggled(bool checked)
@@ -984,7 +1036,7 @@ void SetupDialog::onRtlSdrGainModeToggled(bool checked)
             m_settings->rtlsdr.gainMode = RtlGainMode::Manual;
         }
         activateRtlSdrControls(true);
-        emit newInputDeviceSettings();
+        dynamic_cast<RtlSdrInput *>(m_device)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);
     }
 }
 
@@ -1001,7 +1053,7 @@ void SetupDialog::onRtlTcpGainSliderChanged(int val)
     {
         ui->rtltcpGainValueLabel->setText(QString("%1 dB").arg(m_rtltcpGainList.at(val)));
         m_settings->rtltcp.gainIdx = val;
-        emit newInputDeviceSettings();
+        dynamic_cast<RtlTcpInput *>(m_device)->setGainMode(m_settings->rtltcp.gainMode, m_settings->rtltcp.gainIdx);
     }
     else
     { /* empy gain list => do nothing */
@@ -1041,7 +1093,7 @@ void SetupDialog::onTcpGainModeToggled(bool checked)
             m_settings->rtltcp.gainMode = RtlGainMode::Manual;
         }
         activateRtlTcpControls(true);
-        emit newInputDeviceSettings();
+        dynamic_cast<RtlTcpInput *>(m_device)->setGainMode(m_settings->rtltcp.gainMode, m_settings->rtltcp.gainIdx);
     }
 }
 
@@ -1049,13 +1101,7 @@ void SetupDialog::onRtlTcpSwAgcMaxLevelChanged(int val)
 {
     m_settings->rtltcp.agcLevelMax = val;
     ui->rtltcpSwAgcMaxLevelDefault->setEnabled(val > 0);
-    emit newInputDeviceSettings();
-}
-
-void SetupDialog::onRtlTcpPPMChanged(int val)
-{
-    m_settings->rtltcp.ppm = val;
-    emit newInputDeviceSettings();
+    dynamic_cast<RtlTcpInput *>(m_device)->setAgcLevelMax(m_settings->rtltcp.agcLevelMax);
 }
 
 void SetupDialog::activateRtlTcpControls(bool en)
@@ -1124,7 +1170,7 @@ void SetupDialog::onAirspyModeToggled(bool checked)
             m_settings->airspy.gain.mode = AirpyGainMode::Sensitivity;
         }
         activateAirspyControls(true);
-        emit newInputDeviceSettings();
+        dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
     }
 }
 
@@ -1132,28 +1178,28 @@ void SetupDialog::onAirspySensitivityGainSliderChanged(int val)
 {
     ui->airspySensitivityGainLabel->setText(QString::number(val));
     m_settings->airspy.gain.sensitivityGainIdx = val;
-    emit newInputDeviceSettings();
+    dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
 }
 
 void SetupDialog::onAirspyIFGainSliderChanged(int val)
 {
     ui->airspyIFGainLabel->setText(QString::number(val));
     m_settings->airspy.gain.ifGainIdx = val;
-    emit newInputDeviceSettings();
+    dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
 }
 
 void SetupDialog::onAirspyLNAGainSliderChanged(int val)
 {
     ui->airspyLNAGainLabel->setText(QString::number(val));
     m_settings->airspy.gain.lnaGainIdx = val;
-    emit newInputDeviceSettings();
+    dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
 }
 
 void SetupDialog::onAirspyMixerGainSliderChanged(int val)
 {
     ui->airspyMixerGainLabel->setText(QString::number(val));
     m_settings->airspy.gain.mixerGainIdx = val;
-    emit newInputDeviceSettings();
+    dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
 }
 
 void SetupDialog::onAirspyLNAAGCstateChanged(int state)
@@ -1164,7 +1210,7 @@ void SetupDialog::onAirspyLNAAGCstateChanged(int state)
     ui->airspyLNAGainSlider->setEnabled(ena);
 
     m_settings->airspy.gain.lnaAgcEna = !ena;
-    emit newInputDeviceSettings();
+    dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
 }
 
 void SetupDialog::onAirspyMixerAGCstateChanged(int state)
@@ -1175,13 +1221,7 @@ void SetupDialog::onAirspyMixerAGCstateChanged(int state)
     ui->airspyMixerGainSlider->setEnabled(ena);
 
     m_settings->airspy.gain.mixerAgcEna = !ena;
-    emit newInputDeviceSettings();
-}
-
-void SetupDialog::onAirspyBiasTCurrentIdxChanged(int)
-{
-    m_settings->airspy.biasT = ui->airspyBiasTCombo->currentData().toBool();
-    emit newInputDeviceSettings();
+    dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
 }
 #endif  // HAVE_AIRSPY
 
@@ -1192,7 +1232,7 @@ void SetupDialog::onSoapySdrGainSliderChanged(int val)
     {
         ui->soapysdrGainValueLabel->setText(QString("%1 dB").arg(m_soapysdrGainList.at(val)));
         m_settings->soapysdr.gainIdx = val;
-        emit newInputDeviceSettings();
+        dynamic_cast<SoapySdrInput *>(m_device)->setGainMode(m_settings->soapysdr.gainMode, m_settings->soapysdr.gainIdx);
     }
     else
     { /* empy gain list => do nothing */
@@ -1247,50 +1287,44 @@ void SetupDialog::onSoapySdrGainModeToggled(bool checked)
             m_settings->soapysdr.gainMode = SoapyGainMode::Manual;
         }
         activateSoapySdrControls(true);
-        emit newInputDeviceSettings();
+        dynamic_cast<SoapySdrInput *>(m_device)->setGainMode(m_settings->soapysdr.gainMode, m_settings->soapysdr.gainIdx);
     }
-}
-
-void SetupDialog::onSoapySdrBandwidthChanged(int val)
-{
-    m_settings->soapysdr.bandwidth = val * 1000;
-    ui->soapysdrBandwidthDefault->setEnabled(val > 0);
-    emit newInputDeviceSettings();
-}
-
-void SetupDialog::onSoapySdrPPMChanged(int val)
-{
-    m_settings->soapysdr.ppm = val;
-    emit newInputDeviceSettings();
 }
 
 #endif  // HAVE_SOAPYSDR
 
-void SetupDialog::setStatusLabel()
+void SetupDialog::setStatusLabel(bool clearLabel)
 {
-    switch (m_settings->inputDevice)
+    if (clearLabel)
     {
-        case InputDevice::Id::RTLSDR:
-            ui->statusLabel->setText(tr("RTL SDR device connected"));
-            break;
-        case InputDevice::Id::RTLTCP:
-            ui->statusLabel->setText(tr("RTL TCP device connected"));
-            break;
-        case InputDevice::Id::UNDEFINED:
-            ui->statusLabel->setText("<span style=\"color:red\">" + tr("No device connected") + "</span>");
-            break;
-        case InputDevice::Id::RAWFILE:
-            ui->statusLabel->setText(tr("Raw file connected"));
-            break;
-        case InputDevice::Id::AIRSPY:
-            ui->statusLabel->setText(tr("Airspy device connected"));
-            break;
-        case InputDevice::Id::SOAPYSDR:
-            ui->statusLabel->setText(tr("Soapy SDR device connected"));
-            break;
-        case InputDevice::Id::RARTTCP:
-            ui->statusLabel->setText("RART TCP device connected");
-            break;
+        ui->statusLabel->setText("");
+    }
+    else
+    {
+        switch (m_inputDeviceId)
+        {
+            case InputDevice::Id::RTLSDR:
+                ui->statusLabel->setText(tr("RTL SDR device connected"));
+                break;
+            case InputDevice::Id::RTLTCP:
+                ui->statusLabel->setText(tr("RTL TCP device connected"));
+                break;
+            case InputDevice::Id::UNDEFINED:
+                ui->statusLabel->setText("<span style=\"color:red\">" + tr("No device connected") + "</span>");
+                break;
+            case InputDevice::Id::RAWFILE:
+                ui->statusLabel->setText(tr("Raw file connected"));
+                break;
+            case InputDevice::Id::AIRSPY:
+                ui->statusLabel->setText(tr("Airspy device connected"));
+                break;
+            case InputDevice::Id::SOAPYSDR:
+                ui->statusLabel->setText(tr("Soapy SDR device connected"));
+                break;
+            case InputDevice::Id::RARTTCP:
+                ui->statusLabel->setText("RART TCP device connected");
+                break;
+        }
     }
 }
 
@@ -1300,7 +1334,7 @@ void SetupDialog::onInputChanged(int index)
     ui->deviceOptionsWidget->setCurrentIndex(inputDeviceInt - 1);
 
     ui->connectButton->setHidden(m_settings->inputDevice == static_cast<InputDevice::Id>(inputDeviceInt));
-    if (m_settings->inputDevice != static_cast<InputDevice::Id>(inputDeviceInt))
+    if (m_inputDeviceId != static_cast<InputDevice::Id>(inputDeviceInt))
     {  // selected input device does not match current input device
         switch (static_cast<InputDevice::Id>(inputDeviceInt))
         {
@@ -1371,34 +1405,76 @@ void SetupDialog::onOpenFileButtonClicked()
     }
 }
 
-void SetupDialog::resetInputDevice()
+void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
 {
-    switch (m_settings->inputDevice)
+    m_device = device;
+    m_inputDeviceId = id;
+
+    Q_ASSERT(m_inputDeviceId == m_settings->inputDevice);
+
+    // apply current settings and populate dialog
+    setStatusLabel();
+
+    switch (id)
     {
         case InputDevice::Id::RTLSDR:
-            activateRtlSdrControls(false);
+            setGainValues(dynamic_cast<RtlSdrInput *>(m_device)->getGainList());
+            setDeviceDescription(m_device->deviceDescription());
+
+            m_device->setBW(m_settings->rtlsdr.bandwidth);
+            m_device->setBiasT(m_settings->rtlsdr.biasT);
+            m_device->setPPM(m_settings->rtlsdr.ppm);
+            dynamic_cast<RtlSdrInput *>(m_device)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);
+            dynamic_cast<RtlSdrInput *>(m_device)->setAgcLevelMax(m_settings->rtlsdr.agcLevelMax);
+            activateRtlSdrControls(true);
             break;
         case InputDevice::Id::RTLTCP:
-            activateRtlTcpControls(false);
-            break;
-        case InputDevice::Id::RAWFILE:
-        case InputDevice::Id::RARTTCP:
-            break;
-        case InputDevice::Id::UNDEFINED:
+            setGainValues(dynamic_cast<RtlTcpInput *>(m_device)->getGainList());
+            setDeviceDescription(m_device->deviceDescription());
+            m_device->setPPM(m_settings->rtltcp.ppm);
+            dynamic_cast<RtlTcpInput *>(m_device)->setGainMode(m_settings->rtltcp.gainMode, m_settings->rtltcp.gainIdx);
+            dynamic_cast<RtlTcpInput *>(m_device)->setAgcLevelMax(m_settings->rtltcp.agcLevelMax);
+            activateRtlTcpControls(true);
             break;
         case InputDevice::Id::AIRSPY:
 #if HAVE_AIRSPY
-            activateAirspyControls(false);
+            m_device->setBiasT(m_settings->airspy.biasT);
+            dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
+            activateAirspyControls(true);
 #endif
             break;
         case InputDevice::Id::SOAPYSDR:
 #if HAVE_SOAPYSDR
-            activateSoapySdrControls(false);
+            m_device->setBW(m_settings->soapysdr.bandwidth);
+            m_device->setPPM(m_settings->soapysdr.ppm);
+            dynamic_cast<SoapySdrInput *>(m_device)->setGainMode(m_settings->soapysdr.gainMode, m_settings->soapysdr.gainIdx);
+            activateSoapySdrControls(true);
 #endif
             break;
+        case InputDevice::Id::RAWFILE:
+            setDeviceDescription(m_device->deviceDescription());
+            break;
+        case InputDevice::Id::RARTTCP:
+        case InputDevice::Id::UNDEFINED:
+            break;
     }
+}
+
+void SetupDialog::resetInputDevice()
+{
+    // deactivate controls for all devices
+    activateRtlSdrControls(false);
+    activateRtlTcpControls(false);
+#if HAVE_AIRSPY
+    activateAirspyControls(false);
+#endif
+#if HAVE_SOAPYSDR
+    activateSoapySdrControls(false);
+#endif
 
     m_settings->inputDevice = InputDevice::Id::UNDEFINED;
+    m_inputDeviceId = InputDevice::Id::UNDEFINED;
+    m_device = nullptr;
     setStatusLabel();
     ui->rtlsdrInfoWidget->setVisible(false);
     ui->rtltcpInfoWidget->setVisible(false);
@@ -1774,7 +1850,7 @@ void SetupDialog::onTiiUpdateFinished(QNetworkReply::NetworkError err)
 
 void SetupDialog::setDeviceDescription(const InputDevice::Description &desc)
 {
-    switch (m_settings->inputDevice)
+    switch (m_inputDeviceId)
     {
         case InputDevice::Id::RTLSDR:
         {
@@ -1792,6 +1868,36 @@ void SetupDialog::setDeviceDescription(const InputDevice::Description &desc)
             ui->rtltcpInfoWidget->setVisible(true);
         }
         break;
+        case InputDevice::Id::RAWFILE:
+            if (desc.rawFile.hasXmlHeader)
+            {
+                m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDate]->setText(desc.rawFile.time);
+                m_xmlHeaderLabel[SetupDialogXmlHeader::XMLRecorder]->setText(desc.rawFile.recorder);
+                m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDevice]->setText(QString("%1 [ %2 ]").arg(desc.device.name, desc.device.model));
+                m_xmlHeaderLabel[SetupDialogXmlHeader::XMLSampleRate]->setText(QString::number(desc.sample.sampleRate));
+                m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFreq]->setText(QString::number(desc.rawFile.frequency_kHz));
+                m_xmlHeaderLabel[SetupDialogXmlHeader::XMLLength]->setText(QString::number(desc.rawFile.numSamples * 1.0 / desc.sample.sampleRate));
+                m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFormat]->setText(desc.sample.channelContainer);
+
+                switch (desc.sample.containerBits)
+                {
+                    case 8:
+                        m_settings->rawfile.format = RawFileInputFormat::SAMPLE_FORMAT_U8;
+                        break;
+                    case 16:
+                        m_settings->rawfile.format = RawFileInputFormat::SAMPLE_FORMAT_S16;
+                        break;
+                }
+                ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings->rawfile.format));
+                ui->fileFormatCombo->setEnabled(false);
+                ui->xmlHeaderWidget->setVisible(true);
+            }
+            else
+            {
+                ui->fileFormatCombo->setEnabled(true);
+                ui->xmlHeaderWidget->setVisible(false);
+            }
+            break;
         default:
             // do nothing
             break;

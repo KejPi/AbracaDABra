@@ -80,7 +80,7 @@ public:
     InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
     void setGainMode(const AirspyGainStr &gain);
     void startStopRecording(bool start) override;
-    void setBiasT(bool ena);
+    void setBiasT(bool ena) override;
     void setDataPacking(bool ena);
 signals:
     void agcLevel(float level);
