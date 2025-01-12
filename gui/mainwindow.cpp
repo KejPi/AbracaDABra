@@ -2423,6 +2423,7 @@ void MainWindow::onNewInputDeviceSettings()
 #if HAVE_SOAPYSDR
             dynamic_cast<SoapySdrInput *>(m_inputDevice)->setGainMode(m_settings->soapysdr.gainMode, m_settings->soapysdr.gainIdx);
             dynamic_cast<SoapySdrInput *>(m_inputDevice)->setBW(m_settings->soapysdr.bandwidth);
+            dynamic_cast<SoapySdrInput *>(m_inputDevice)->setPPM(m_settings->soapysdr.ppm);
 #endif
             break;
         case InputDeviceId::RAWFILE:
@@ -3183,6 +3184,7 @@ void MainWindow::loadSettings()
     m_settings->soapysdr.antenna = settings->value("SOAPYSDR/antenna", QString("RX")).toString();
     m_settings->soapysdr.channel = settings->value("SOAPYSDR/rxChannel", 0).toInt();
     m_settings->soapysdr.bandwidth = settings->value("SOAPYSDR/bandwidth", 0).toUInt();
+    m_settings->soapysdr.ppm = settings->value("SOAPYSDR/ppm", 0).toInt();
 #endif
     m_settings->rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
     m_settings->rawfile.format = RawFileInputFormat(settings->value("RAW-FILE/format", 0).toInt());
@@ -3390,6 +3392,7 @@ void MainWindow::saveSettings()
     settings->setValue("SOAPYSDR/rxChannel", m_settings->soapysdr.channel);
     settings->setValue("SOAPYSDR/antenna", m_settings->soapysdr.antenna);
     settings->setValue("SOAPYSDR/bandwidth", m_settings->soapysdr.bandwidth);
+    settings->setValue("SOAPYSDR/ppm", m_settings->soapysdr.ppm);
 #endif
 
     settings->setValue("RTL-TCP/gainIndex", m_settings->rtltcp.gainIdx);

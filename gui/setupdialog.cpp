@@ -100,6 +100,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
         QString(tr("Input signal bandwidth in kHz. Value '0' means default bandwidth %1 kHz.")).arg(INPUTDEVICE_BANDWIDTH / 1000));
     ui->rtlsdrPPM->setToolTip(QString(tr("Input device XTAL frequency correction in PPM.")));
     ui->rtltcpPPM->setToolTip(ui->rtlsdrPPM->toolTip());
+    ui->soapysdrPPM->setToolTip(ui->rtlsdrPPM->toolTip());
     ui->airspyBiasTCombo->addItem(tr("Off"), false);
     ui->airspyBiasTCombo->addItem(tr("On"), true);
     ui->airspyBiasTCombo->setToolTip(ui->rtlsdrBiasTCombo->toolTip());
@@ -283,6 +284,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->soapysdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
     connect(ui->soapysdrBandwidth, &QSpinBox::valueChanged, this, &SetupDialog::onSoapySdrBandwidthChanged);
     connect(ui->soapysdrBandwidthDefault, &QPushButton::clicked, this, [this]() { ui->soapysdrBandwidth->setValue(0); });
+    connect(ui->soapysdrPPM, &QSpinBox::valueChanged, this, &SetupDialog::onSoapySdrPPMChanged);
 #endif
 
     ui->defaultStyleRadioButton->setText(tr("Default style (OS dependent)"));
@@ -739,8 +741,8 @@ void SetupDialog::setUiState()
     ui->soapysdrDevArgs->setText(m_settings->soapysdr.devArgs);
     ui->soapysdrChannelNum->setValue(m_settings->soapysdr.channel);
     ui->soapySdrAntenna->setText(m_settings->soapysdr.antenna);
-
     ui->soapysdrBandwidth->setValue(m_settings->soapysdr.bandwidth / 1000);
+    ui->soapysdrPPM->setValue(m_settings->soapysdr.ppm);
 #endif
 
     if (m_settings->rawfile.file.isEmpty())
@@ -1253,6 +1255,12 @@ void SetupDialog::onSoapySdrBandwidthChanged(int val)
 {
     m_settings->soapysdr.bandwidth = val * 1000;
     ui->soapysdrBandwidthDefault->setEnabled(val > 0);
+    emit newInputDeviceSettings();
+}
+
+void SetupDialog::onSoapySdrPPMChanged(int val)
+{
+    m_settings->soapysdr.ppm = val;
     emit newInputDeviceSettings();
 }
 

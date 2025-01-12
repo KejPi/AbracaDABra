@@ -42,6 +42,7 @@ SoapySdrInput::SoapySdrInput(QObject *parent) : InputDevice(parent)
     m_gainList = nullptr;
     m_frequency = 0;
     m_bandwidth = 0;
+    m_ppm = 0;
 
     connect(&m_watchdogTimer, &QTimer::timeout, this, &SoapySdrInput::onWatchdogTimeout);
 }
@@ -532,16 +533,88 @@ void SoapySdrInput::setBW(uint32_t bw)
     {
         m_bandwidth = bw;
 
+        // find the closest supported BW value
+        double bwToApply = findApplicableBw(bw);
+
         try
         {
-            m_device->setBandwidth(SOAPY_SDR_RX, m_rxChannel, bw);
+            m_device->setBandwidth(SOAPY_SDR_RX, m_rxChannel, bwToApply);
         }
         catch (const std::exception &ex)
         {
-            qCWarning(soapySdrInput) << "Failed to set bandwidth" << bw << "kHz:" << ex.what();
+            qCWarning(soapySdrInput) << "Failed to set bandwidth" << bwToApply << "kHz:" << ex.what();
             return;
         }
-        qCInfo(soapySdrInput) << "Bandwidth set to" << bw / 1000.0 << "kHz";
+
+        auto currentBw = m_device->getBandwidth(SOAPY_SDR_RX, m_rxChannel);
+        if (currentBw == m_bandwidth)
+        {
+            qCInfo(soapySdrInput) << "Bandwidth set to" << bwToApply / 1000.0 << "kHz";
+        }
+        else
+        {
+            qCInfo(soapySdrInput) << "Setting bandwidth" << m_bandwidth / 1000.0 << "kHz resulted to" << currentBw / 1000 << "kHz";
+        }
+    }
+}
+
+double SoapySdrInput::findApplicableBw(uint32_t bw) const
+{
+    const auto bwList = m_device->getBandwidthRange(SOAPY_SDR_RX, m_rxChannel);
+    if (bwList.empty())
+    {  // no banwidth list
+        return bw;
+    }
+
+    for (const auto bwRange : bwList)
+    {
+        if (bw >= bwRange.minimum() && bw <= bwRange.maximum())
+        {  // in the range ==> retunr input value
+            return bw;
+        }
+    }
+    // we are here if bw was not in any range -> need to find best match
+    // assuming the list is sorted
+    if (bw < bwList.front().minimum())
+    {  // returning minimum supported bandwidth
+        return bwList.front().minimum();
+    }
+    double ret = bwList.front().maximum();
+    for (int b = 1; b < bwList.size(); ++b)
+    {
+        if (bw >= ret && bw <= bwList.at(b).minimum())
+        {  // we have found the right gap
+            if ((bw - ret) < (bwList.at(b).minimum() - ret))
+            {
+                return ret;
+            }
+            return bwList.at(b).minimum();
+        }
+        ret = bw <= bwList.at(b).maximum();
+    }
+    return ret;
+}
+
+void SoapySdrInput::setPPM(int ppm)
+{
+    if (ppm != m_ppm)
+    {
+        try
+        {
+            m_device->setFrequencyCorrection(SOAPY_SDR_RX, m_rxChannel, ppm);
+        }
+        catch (const std::exception &ex)
+        {
+            qCWarning(soapySdrInput) << "Failed to set frequency correction" << ex.what();
+            return;
+        }
+
+        qCInfo(soapySdrInput) << "Frequency correction PPM:" << ppm;
+        m_ppm = ppm;
+        if (m_frequency != 0)
+        {
+            tune(m_frequency);
+        }
     }
 }
 
@@ -591,8 +664,8 @@ void SoapySdrWorker::run()
         int flags;
         long long time_ns;
 
-        // read samples with timeout 100 ms
-        int ret = m_device->readStream(stream, buffs, SOAPYSDR_INPUT_SAMPLES, flags, time_ns, 100000);
+        // read samples with timeout 1 sec
+        int ret = m_device->readStream(stream, buffs, SOAPYSDR_INPUT_SAMPLES, flags, time_ns, 1e6);
 
         // reset watchDog flag, timer sets it to false
         m_watchdogFlag = true;

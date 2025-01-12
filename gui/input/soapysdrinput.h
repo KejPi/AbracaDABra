@@ -95,12 +95,14 @@ public:
     void setGainMode(SoapyGainMode gainMode, int gainIdx = 0);
     void startStopRecording(bool start) override;
     void setBW(uint32_t bw);
+    void setPPM(int ppm);
     QList<float> getGainList() const { return *m_gainList; }
 
 private:
     double m_sampleRate;
     uint32_t m_frequency;
     uint32_t m_bandwidth;
+    int m_ppm;
     bool m_deviceUnpluggedFlag;
     bool m_deviceRunningFlag;
     SoapySDR::Device *m_device;
@@ -128,6 +130,7 @@ private:
 
     void onReadThreadStopped();
     void onWatchdogTimeout();
+    double findApplicableBw(uint32_t bw) const;
 };
 
 #endif  // SOAPYSDRINPUT_H

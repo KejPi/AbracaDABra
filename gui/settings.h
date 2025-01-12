@@ -107,6 +107,7 @@ public:
         QString antenna;
         int channel;
         uint32_t bandwidth;
+        int ppm;
     } soapysdr;
 #endif
 #if HAVE_RARTTCP

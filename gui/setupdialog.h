@@ -218,6 +218,7 @@ private:
     void onSoapySdrChannelEditFinished();
     void onSoapySdrGainModeToggled(bool checked);
     void onSoapySdrBandwidthChanged(int val);
+    void onSoapySdrPPMChanged(int val);
     void activateSoapySdrControls(bool en);
 #endif
 };
