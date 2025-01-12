@@ -111,10 +111,11 @@ private:
     };
     enum SetupDialogDeviceInfo
     {
-        DevInfoDevice,
+        DevInfoDevice = 0,
         DevInfoTuner,
         DevInfoSampleFormat,
-        DevInfoLables
+        DevInfoLables,
+        DevInfoSoapySdrLables = DevInfoDevice + 1,
     };
 
     const QList<QLocale::Language> m_supportedLocalization = {QLocale::Czech, QLocale::German, QLocale::Polish};
@@ -133,6 +134,9 @@ private:
     QLabel *m_xmlHeaderLabel[SetupDialogXmlHeader::XMLNumLabels];
     QLabel *m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoLables];
     QLabel *m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoLables];
+#if HAVE_SOAPYSDR
+    QLabel *m_soapySdrLabel[SetupDialogDeviceInfo::DevInfoSoapySdrLables];
+#endif
     QString m_slsDumpPaternDefault;
     QString m_spiDumpPaternDefault;
     QMovie *m_spinner;

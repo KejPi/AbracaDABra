@@ -123,12 +123,12 @@ public:
         NoDataAvailable = -3,     // This can happen when TCP server is connected but stopped sending data for some reason
     };
 
-    enum CapabilityFlag
+    enum Capability
     {
         LiveStream = (1 << 0),
         Recording = (1 << 1),
     };
-    Q_DECLARE_FLAGS(Capabilities, CapabilityFlag)
+    Q_DECLARE_FLAGS(Capabilities, Capability)
 
     InputDevice(QObject *parent = nullptr);
     ~InputDevice();

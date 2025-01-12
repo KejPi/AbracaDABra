@@ -2847,8 +2847,8 @@ void MainWindow::configureForInputDevice()
         // setup dialog
         m_setupDialog->setInputDevice(m_inputDeviceId, m_inputDevice);
 
-        bool isLive = m_inputDevice->capabilities() & InputDevice::CapabilityFlag::LiveStream;
-        bool hasRecording = m_inputDevice->capabilities() & InputDevice::CapabilityFlag::Recording;
+        bool isLive = m_inputDevice->capabilities() & InputDevice::Capability::LiveStream;
+        bool hasRecording = m_inputDevice->capabilities() & InputDevice::Capability::Recording;
 
         // enable band scan
         m_bandScanAction->setEnabled(isLive);

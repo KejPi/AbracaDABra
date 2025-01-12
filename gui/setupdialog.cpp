@@ -231,7 +231,15 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->rtltcpInfoWidgetLayout->addWidget(m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoSampleFormat], SetupDialogDeviceInfo::DevInfoSampleFormat, 1, 1,
                                           2);
     ui->rtltcpInfoWidget->setVisible(false);
+#if HAVE_SOAPYSDR
+    // RTL SDR device info
+    label = new QLabel(tr("Device:"));
+    m_soapySdrLabel[SetupDialogDeviceInfo::DevInfoDevice] = new QLabel(ui->soapysdrInfoWidget);
+    ui->soapysdrInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoDevice, 0);
+    ui->soapysdrInfoWidgetLayout->addWidget(m_soapySdrLabel[SetupDialogDeviceInfo::DevInfoDevice], SetupDialogDeviceInfo::DevInfoDevice, 1, 1, 2);
 
+    ui->soapysdrInfoWidget->setVisible(false);
+#endif
     connect(ui->openFileButton, &QPushButton::clicked, this, &SetupDialog::onOpenFileButtonClicked);
 
     connect(ui->inputCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onInputChanged);
@@ -868,6 +876,7 @@ void SetupDialog::onConnectDeviceClicked()
     ui->connectButton->setHidden(true);
     ui->rtlsdrInfoWidget->setVisible(false);
     ui->rtltcpInfoWidget->setVisible(false);
+    ui->soapysdrInfoWidget->setVisible(false);
     m_inputDeviceId = InputDevice::Id::UNDEFINED;
     setStatusLabel(true);  // clear label
     m_settings->inputDevice = static_cast<InputDevice::Id>(ui->inputCombo->itemData(ui->inputCombo->currentIndex()).toInt());
@@ -1419,8 +1428,6 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
     {
         case InputDevice::Id::RTLSDR:
             setGainValues(dynamic_cast<RtlSdrInput *>(m_device)->getGainList());
-            setDeviceDescription(m_device->deviceDescription());
-
             m_device->setBW(m_settings->rtlsdr.bandwidth);
             m_device->setBiasT(m_settings->rtlsdr.biasT);
             m_device->setPPM(m_settings->rtlsdr.ppm);
@@ -1430,7 +1437,6 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
             break;
         case InputDevice::Id::RTLTCP:
             setGainValues(dynamic_cast<RtlTcpInput *>(m_device)->getGainList());
-            setDeviceDescription(m_device->deviceDescription());
             m_device->setPPM(m_settings->rtltcp.ppm);
             dynamic_cast<RtlTcpInput *>(m_device)->setGainMode(m_settings->rtltcp.gainMode, m_settings->rtltcp.gainIdx);
             dynamic_cast<RtlTcpInput *>(m_device)->setAgcLevelMax(m_settings->rtltcp.agcLevelMax);
@@ -1452,12 +1458,12 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
 #endif
             break;
         case InputDevice::Id::RAWFILE:
-            setDeviceDescription(m_device->deviceDescription());
             break;
         case InputDevice::Id::RARTTCP:
         case InputDevice::Id::UNDEFINED:
             break;
     }
+    setDeviceDescription(m_device->deviceDescription());
 }
 
 void SetupDialog::resetInputDevice()
@@ -1478,6 +1484,7 @@ void SetupDialog::resetInputDevice()
     setStatusLabel();
     ui->rtlsdrInfoWidget->setVisible(false);
     ui->rtltcpInfoWidget->setVisible(false);
+    ui->soapysdrInfoWidget->setVisible(false);
     ui->connectButton->setVisible(true);
     ui->tabWidget->setCurrentIndex(SetupDialogTabs::Device);
 }
@@ -1868,6 +1875,12 @@ void SetupDialog::setDeviceDescription(const InputDevice::Description &desc)
             ui->rtltcpInfoWidget->setVisible(true);
         }
         break;
+        case InputDevice::Id::SOAPYSDR:
+#if HAVE_SOAPYSDR
+            m_soapySdrLabel[SetupDialogDeviceInfo::DevInfoDevice]->setText(desc.device.model);
+            ui->soapysdrInfoWidget->setVisible(true);
+#endif
+            break;
         case InputDevice::Id::RAWFILE:
             if (desc.rawFile.hasXmlHeader)
             {
