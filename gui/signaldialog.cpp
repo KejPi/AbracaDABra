@@ -133,6 +133,8 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     ui->spectrumPlot->xAxis2->setRange(-1.024, 1.024);
     ui->spectrumPlot->yAxis2->setRange(-100, 0);
 
+    m_spectYRangeSet = false;
+
     ui->spectrumPlot->xAxis->setLabel(tr("frequency [MHz]"));
     ui->spectrumPlot->yAxis->setLabel("dBFS");
     ui->spectrumPlot->setMinimumHeight(200);
@@ -361,6 +363,8 @@ void SignalDialog::reset()
     m_spectrumBuffer.assign(2048, 0.0);
     m_avrgCntr = 0;
     ui->spectrumPlot->graph(0)->data()->clear();
+    ui->spectrumPlot->yAxis->setRange(-100, 0);
+    m_spectYRangeSet = false;
 }
 
 void SignalDialog::setRfLevelVisible(bool visible)
@@ -500,14 +504,30 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
         }
 
         auto range = ui->spectrumPlot->yAxis->range();
-        if ((minVal - range.lower) < 5 || (minVal - range.lower) > 25)
-        {  // set minumum to at least minVal + 10, use multiples of 10
-            range.lower = (ceilf((minVal - 20) / 10.0)) * 10.0;
-        }
-        if ((range.upper - maxVal) < 5 || (range.upper - maxVal) > 25)
+        if (m_spectYRangeSet)
         {
-            range.upper = (floorf((maxVal + 20) / 10.0)) * 10.0;
+            if ((minVal - range.lower) < 0)
+            {  // set minumum to at least minVal + 10, use multiples of 10
+                range.lower = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, -120.0);
+            }
+            if ((range.upper - maxVal) < 0)
+            {
+                range.upper = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, 0.0);
+            }
         }
+        else
+        {
+            if ((minVal - range.lower) < 0 || (minVal - range.lower) > 20)
+            {  // set minumum to at least minVal + 10, use multiples of 10
+                range.lower = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, -120.0);
+            }
+            if ((range.upper - maxVal) < 0 || (range.upper - maxVal) > 20)
+            {
+                range.upper = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, 0);
+            }
+            m_spectYRangeSet = true;
+        }
+
         ui->spectrumPlot->yAxis->setRange(range);
         ui->spectrumPlot->replot();
     }
