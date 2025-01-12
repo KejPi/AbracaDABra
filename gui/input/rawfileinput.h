@@ -79,6 +79,7 @@ public:
     ~RawFileInput();
     bool openDevice() override;
     void tune(uint32_t freq) override;
+    InputDevice::Capabilities capabilities() const override { return {}; }
     void setFile(const QString &fileName, const RawFileInputFormat &sampleFormat = RawFileInputFormat::SAMPLE_FORMAT_U8);
     void setFileFormat(const RawFileInputFormat &sampleFormat);
     void startStopRecording(bool start) override { /* do nothing */ }
@@ -99,7 +100,7 @@ private:
     void rewind();
     void onBytesRead(quint64 bytesRead);
     void onWatchdogTimeout();
-    void onEndOfFile(bool status) { emit error(status ? InputDeviceErrorCode::EndOfFile : InputDeviceErrorCode::NoDataAvailable); }
+    void onEndOfFile(bool status) { emit error(status ? InputDevice::ErrorCode::EndOfFile : InputDevice::ErrorCode::NoDataAvailable); }
     void parseXmlHeader(const QByteArray &xml);
 };
 

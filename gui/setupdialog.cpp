@@ -54,18 +54,18 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->tabWidget->setTabText(SetupDialogTabs::Other, tr("Others"));
     ui->tabWidget->setCurrentIndex(SetupDialogTabs::Device);
 
-    ui->inputCombo->addItem("RTL SDR", QVariant(int(InputDeviceId::RTLSDR)));
+    ui->inputCombo->addItem("RTL SDR", QVariant(int(InputDevice::Id::RTLSDR)));
 #if HAVE_AIRSPY
-    ui->inputCombo->addItem("Airspy", QVariant(int(InputDeviceId::AIRSPY)));
+    ui->inputCombo->addItem("Airspy", QVariant(int(InputDevice::Id::AIRSPY)));
 #endif
 #if HAVE_SOAPYSDR
-    ui->inputCombo->addItem("Soapy SDR", QVariant(int(InputDeviceId::SOAPYSDR)));
+    ui->inputCombo->addItem("Soapy SDR", QVariant(int(InputDevice::Id::SOAPYSDR)));
 #endif
-    ui->inputCombo->addItem("RTL TCP", QVariant(int(InputDeviceId::RTLTCP)));
+    ui->inputCombo->addItem("RTL TCP", QVariant(int(InputDevice::Id::RTLTCP)));
 #if HAVE_RARTTCP
-    ui->inputCombo->addItem("RaRT TCP", QVariant(int(InputDeviceId::RARTTCP)));
+    ui->inputCombo->addItem("RaRT TCP", QVariant(int(InputDevice::Id::RARTTCP)));
 #endif
-    ui->inputCombo->addItem(tr("Raw file"), QVariant(int(InputDeviceId::RAWFILE)));
+    ui->inputCombo->addItem(tr("Raw file"), QVariant(int(InputDevice::Id::RAWFILE)));
     ui->inputCombo->setCurrentIndex(-1);  // undefined
 
     ui->fileNameLabel->setElideMode(Qt::ElideLeft);
@@ -454,7 +454,7 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
 {
     switch (m_settings->inputDevice)
     {
-        case InputDeviceId::RTLSDR:
+        case InputDevice::Id::RTLSDR:
             m_rtlsdrGainList.clear();
             m_rtlsdrGainList = gainList;
             ui->rtlsdrGainSlider->setMinimum(0);
@@ -463,7 +463,7 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
             ui->rtlsdrGainSlider->setDisabled(m_rtlsdrGainList.empty());
             ui->rtlsdrGainModeManual->setDisabled(m_rtlsdrGainList.empty());
             break;
-        case InputDeviceId::RTLTCP:
+        case InputDevice::Id::RTLTCP:
             m_rtltcpGainList.clear();
             m_rtltcpGainList = gainList;
             ui->rtltcpGainSlider->setMinimum(0);
@@ -472,7 +472,7 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
             ui->rtltcpGainSlider->setDisabled(m_rtltcpGainList.empty());
             ui->rtltcpGainModeManual->setDisabled(m_rtltcpGainList.empty());
             break;
-        case InputDeviceId::SOAPYSDR:
+        case InputDevice::Id::SOAPYSDR:
 #if HAVE_SOAPYSDR
             m_soapysdrGainList.clear();
             m_soapysdrGainList = gainList;
@@ -483,10 +483,10 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
             ui->soapysdrGainModeManual->setDisabled(m_soapysdrGainList.empty());
 #endif  // HAVE_SOAPYSDR
             break;
-        case InputDeviceId::UNDEFINED:
-        case InputDeviceId::RAWFILE:
-        case InputDeviceId::AIRSPY:
-        case InputDeviceId::RARTTCP:
+        case InputDevice::Id::UNDEFINED:
+        case InputDevice::Id::RAWFILE:
+        case InputDevice::Id::AIRSPY:
+        case InputDevice::Id::RARTTCP:
             return;
     }
 }
@@ -524,7 +524,7 @@ void SetupDialog::setSettings(Settings *settings)
     emit slsBgChanged(m_settings->slsBackground);
 }
 
-void SetupDialog::setXmlHeader(const InputDeviceDescription &desc)
+void SetupDialog::setXmlHeader(const InputDevice::Description &desc)
 {
     if (desc.rawFile.hasXmlHeader)
     {
@@ -622,7 +622,7 @@ void SetupDialog::setUiState()
     int index = ui->inputCombo->findData(QVariant(static_cast<int>(m_settings->inputDevice)));
     if (index < 0)
     {  // not found -> show rtlsdr as default
-        index = ui->inputCombo->findData(QVariant(static_cast<int>(InputDeviceId::RTLSDR)));
+        index = ui->inputCombo->findData(QVariant(static_cast<int>(InputDevice::Id::RTLSDR)));
     }
     ui->inputCombo->setCurrentIndex(index);
 
@@ -890,33 +890,33 @@ void SetupDialog::onConnectDeviceClicked()
     ui->connectButton->setHidden(true);
     ui->rtlsdrInfoWidget->setVisible(false);
     ui->rtltcpInfoWidget->setVisible(false);
-    m_settings->inputDevice = static_cast<InputDeviceId>(ui->inputCombo->itemData(ui->inputCombo->currentIndex()).toInt());
+    m_settings->inputDevice = static_cast<InputDevice::Id>(ui->inputCombo->itemData(ui->inputCombo->currentIndex()).toInt());
     setStatusLabel();
     switch (m_settings->inputDevice)
     {
-        case InputDeviceId::RTLSDR:
+        case InputDevice::Id::RTLSDR:
             activateRtlSdrControls(true);
             break;
-        case InputDeviceId::RTLTCP:
+        case InputDevice::Id::RTLTCP:
             m_settings->rtltcp.tcpAddress = ui->rtltcpIpAddressEdit->text();
             m_settings->rtltcp.tcpPort = ui->rtltcpIpPortSpinBox->value();
             activateRtlTcpControls(true);
             break;
-        case InputDeviceId::RARTTCP:
+        case InputDevice::Id::RARTTCP:
             break;
-        case InputDeviceId::UNDEFINED:
+        case InputDevice::Id::UNDEFINED:
             break;
-        case InputDeviceId::RAWFILE:
+        case InputDevice::Id::RAWFILE:
             m_settings->rawfile.file = m_rawfilename;
             m_settings->rawfile.loopEna = ui->loopCheckbox->isChecked();
             m_settings->rawfile.format = static_cast<RawFileInputFormat>(ui->fileFormatCombo->currentIndex());
             break;
-        case InputDeviceId::AIRSPY:
+        case InputDevice::Id::AIRSPY:
 #if HAVE_AIRSPY
             activateAirspyControls(true);
 #endif
             break;
-        case InputDeviceId::SOAPYSDR:
+        case InputDevice::Id::SOAPYSDR:
 #if HAVE_SOAPYSDR
             m_settings->soapysdr.devArgs = ui->soapysdrDevArgs->text();
             m_settings->soapysdr.channel = ui->soapysdrChannelNum->text().toInt();
@@ -1270,25 +1270,25 @@ void SetupDialog::setStatusLabel()
 {
     switch (m_settings->inputDevice)
     {
-        case InputDeviceId::RTLSDR:
+        case InputDevice::Id::RTLSDR:
             ui->statusLabel->setText(tr("RTL SDR device connected"));
             break;
-        case InputDeviceId::RTLTCP:
+        case InputDevice::Id::RTLTCP:
             ui->statusLabel->setText(tr("RTL TCP device connected"));
             break;
-        case InputDeviceId::UNDEFINED:
+        case InputDevice::Id::UNDEFINED:
             ui->statusLabel->setText("<span style=\"color:red\">" + tr("No device connected") + "</span>");
             break;
-        case InputDeviceId::RAWFILE:
+        case InputDevice::Id::RAWFILE:
             ui->statusLabel->setText(tr("Raw file connected"));
             break;
-        case InputDeviceId::AIRSPY:
+        case InputDevice::Id::AIRSPY:
             ui->statusLabel->setText(tr("Airspy device connected"));
             break;
-        case InputDeviceId::SOAPYSDR:
+        case InputDevice::Id::SOAPYSDR:
             ui->statusLabel->setText(tr("Soapy SDR device connected"));
             break;
-        case InputDeviceId::RARTTCP:
+        case InputDevice::Id::RARTTCP:
             ui->statusLabel->setText("RART TCP device connected");
             break;
     }
@@ -1299,32 +1299,32 @@ void SetupDialog::onInputChanged(int index)
     int inputDeviceInt = ui->inputCombo->itemData(index).toInt();
     ui->deviceOptionsWidget->setCurrentIndex(inputDeviceInt - 1);
 
-    ui->connectButton->setHidden(m_settings->inputDevice == static_cast<InputDeviceId>(inputDeviceInt));
-    if (m_settings->inputDevice != static_cast<InputDeviceId>(inputDeviceInt))
+    ui->connectButton->setHidden(m_settings->inputDevice == static_cast<InputDevice::Id>(inputDeviceInt));
+    if (m_settings->inputDevice != static_cast<InputDevice::Id>(inputDeviceInt))
     {  // selected input device does not match current input device
-        switch (static_cast<InputDeviceId>(inputDeviceInt))
+        switch (static_cast<InputDevice::Id>(inputDeviceInt))
         {
-            case InputDeviceId::RTLSDR:
+            case InputDevice::Id::RTLSDR:
                 activateRtlSdrControls(false);
                 break;
-            case InputDeviceId::RTLTCP:
+            case InputDevice::Id::RTLTCP:
                 activateRtlTcpControls(false);
                 break;
-            case InputDeviceId::UNDEFINED:
+            case InputDevice::Id::UNDEFINED:
                 break;
-            case InputDeviceId::RAWFILE:
+            case InputDevice::Id::RAWFILE:
                 break;
-            case InputDeviceId::AIRSPY:
+            case InputDevice::Id::AIRSPY:
 #if HAVE_AIRSPY
                 activateAirspyControls(false);
 #endif
                 return;
-            case InputDeviceId::SOAPYSDR:
+            case InputDevice::Id::SOAPYSDR:
 #if HAVE_SOAPYSDR
                 activateSoapySdrControls(false);
 #endif
                 return;
-            case InputDeviceId::RARTTCP:
+            case InputDevice::Id::RARTTCP:
                 break;
         }
     }
@@ -1375,30 +1375,30 @@ void SetupDialog::resetInputDevice()
 {
     switch (m_settings->inputDevice)
     {
-        case InputDeviceId::RTLSDR:
+        case InputDevice::Id::RTLSDR:
             activateRtlSdrControls(false);
             break;
-        case InputDeviceId::RTLTCP:
+        case InputDevice::Id::RTLTCP:
             activateRtlTcpControls(false);
             break;
-        case InputDeviceId::RAWFILE:
-        case InputDeviceId::RARTTCP:
+        case InputDevice::Id::RAWFILE:
+        case InputDevice::Id::RARTTCP:
             break;
-        case InputDeviceId::UNDEFINED:
+        case InputDevice::Id::UNDEFINED:
             break;
-        case InputDeviceId::AIRSPY:
+        case InputDevice::Id::AIRSPY:
 #if HAVE_AIRSPY
             activateAirspyControls(false);
 #endif
             break;
-        case InputDeviceId::SOAPYSDR:
+        case InputDevice::Id::SOAPYSDR:
 #if HAVE_SOAPYSDR
             activateSoapySdrControls(false);
 #endif
             break;
     }
 
-    m_settings->inputDevice = InputDeviceId::UNDEFINED;
+    m_settings->inputDevice = InputDevice::Id::UNDEFINED;
     setStatusLabel();
     ui->rtlsdrInfoWidget->setVisible(false);
     ui->rtltcpInfoWidget->setVisible(false);
@@ -1461,10 +1461,10 @@ void SetupDialog::onExpertModeChecked(bool checked)
     }
     emit uaDumpSettings(m_settings->uaDump);
 
-    int idx = ui->inputCombo->findData(QVariant(static_cast<int>(InputDeviceId::RAWFILE)));
+    int idx = ui->inputCombo->findData(QVariant(static_cast<int>(InputDevice::Id::RAWFILE)));
     if (checked && (idx < 0))
     {  // add item
-        ui->inputCombo->addItem(tr("Raw file"), QVariant(int(InputDeviceId::RAWFILE)));
+        ui->inputCombo->addItem(tr("Raw file"), QVariant(int(InputDevice::Id::RAWFILE)));
     }
     if (!checked && (idx >= 0))
     {  // remove it
@@ -1772,11 +1772,11 @@ void SetupDialog::onTiiUpdateFinished(QNetworkReply::NetworkError err)
     ui->updateDbButton->setEnabled(!lastModified.isValid() || lastModified.msecsTo(QDateTime::currentDateTime()) > 10 * 60 * 1000);
 }
 
-void SetupDialog::setDeviceDescription(const InputDeviceDescription &desc)
+void SetupDialog::setDeviceDescription(const InputDevice::Description &desc)
 {
     switch (m_settings->inputDevice)
     {
-        case InputDeviceId::RTLSDR:
+        case InputDevice::Id::RTLSDR:
         {
             m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoDevice]->setText(desc.device.model);
             m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoTuner]->setText(desc.device.name.mid(9, desc.device.name.length() - 9 - 1));
@@ -1784,7 +1784,7 @@ void SetupDialog::setDeviceDescription(const InputDeviceDescription &desc)
             ui->rtlsdrInfoWidget->setVisible(true);
         }
         break;
-        case InputDeviceId::RTLTCP:
+        case InputDevice::Id::RTLTCP:
         {
             m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoDevice]->setText(desc.device.model);
             m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoTuner]->setText(desc.device.name.mid(9, desc.device.name.length() - 9 - 1));

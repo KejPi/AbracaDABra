@@ -89,6 +89,7 @@ public:
     ~SoapySdrInput();
     bool openDevice() override;
     void tune(uint32_t frequency) override;
+    InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
     void setDevArgs(const QString &devArgs) { m_devArgs = devArgs; }
     void setRxChannel(int rxChannel) { m_rxChannel = rxChannel; }
     void setAntenna(const QString &antenna) { m_antenna = antenna; }

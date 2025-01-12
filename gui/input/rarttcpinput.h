@@ -76,6 +76,7 @@ public:
     ~RartTcpInput();
     bool openDevice() override;
     void tune(uint32_t frequency) override;
+    InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
     void setTcpIp(const QString &address, int port);
     void startStopRecording(bool start) override;
 

@@ -34,7 +34,7 @@ Q_LOGGING_CATEGORY(rtlsdrInput, "RtlSdrInput", QtInfoMsg)
 
 RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
 {
-    m_deviceDescription.id = InputDeviceId::RTLSDR;
+    m_deviceDescription.id = InputDevice::Id::RTLSDR;
 
     m_device = nullptr;
     m_worker = nullptr;
@@ -297,7 +297,7 @@ void RtlSdrInput::onReadThreadStopped()
 
         m_frequency = 0;
 
-        emit error(InputDeviceErrorCode::DeviceDisconnected);
+        emit error(InputDevice::ErrorCode::DeviceDisconnected);
     }
     else
     { /* do nothing -> go to idle was requested */
@@ -423,7 +423,7 @@ void RtlSdrInput::onWatchdogTimeout()
         {  // some problem in data input
             qCCritical(rtlsdrInput) << "Watchdog timeout";
             inputBuffer.fillDummy();
-            emit error(InputDeviceErrorCode::NoDataAvailable);
+            emit error(InputDevice::ErrorCode::NoDataAvailable);
         }
     }
     else

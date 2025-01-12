@@ -34,7 +34,7 @@ Q_LOGGING_CATEGORY(soapySdrInput, "SoapySdrInput", QtInfoMsg)
 
 SoapySdrInput::SoapySdrInput(QObject *parent) : InputDevice(parent)
 {
-    m_deviceDescription.id = InputDeviceId::SOAPYSDR;
+    m_deviceDescription.id = InputDevice::Id::SOAPYSDR;
 
     m_device = nullptr;
     m_deviceUnpluggedFlag = true;
@@ -487,7 +487,7 @@ void SoapySdrInput::onReadThreadStopped()
         // fill buffer (artificially to avoid blocking of the DAB processing thread)
         inputBuffer.fillDummy();
 
-        emit error(InputDeviceErrorCode::DeviceDisconnected);
+        emit error(InputDevice::ErrorCode::DeviceDisconnected);
     }
     else
     {
@@ -505,7 +505,7 @@ void SoapySdrInput::onWatchdogTimeout()
         {  // some problem in data input
             qCCritical(soapySdrInput) << "Watchdog timeout";
             inputBuffer.fillDummy();
-            emit error(InputDeviceErrorCode::NoDataAvailable);
+            emit error(InputDevice::ErrorCode::NoDataAvailable);
         }
     }
     else

@@ -145,6 +145,7 @@ public:
     ~RtlTcpInput();
     bool openDevice() override;
     void tune(uint32_t frequency) override;
+    InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
     void setTcpIp(const QString &address, int port);
     void setGainMode(RtlGainMode gainMode, int gainIdx = 0);
     void setAgcLevelMax(float agcLevelMax);

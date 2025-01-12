@@ -68,7 +68,7 @@ static SocketInitialiseWrapper socketInitialiseWrapper;
 
 RtlTcpInput::RtlTcpInput(QObject *parent) : InputDevice(parent)
 {
-    m_deviceDescription.id = InputDeviceId::RTLTCP;
+    m_deviceDescription.id = InputDevice::Id::RTLTCP;
 
     m_gainList = nullptr;
     m_worker = nullptr;
@@ -664,7 +664,7 @@ void RtlTcpInput::onReadThreadStopped()
     // fill buffer (artificially to avoid blocking of the DAB processing thread)
     inputBuffer.fillDummy();
 
-    emit error(InputDeviceErrorCode::DeviceDisconnected);
+    emit error(InputDevice::ErrorCode::DeviceDisconnected);
 }
 
 void RtlTcpInput::onWatchdogTimeout()
@@ -675,7 +675,7 @@ void RtlTcpInput::onWatchdogTimeout()
         {  // some problem in data input
             qCCritical(rtlTcpInput) << "watchdog timeout";
             inputBuffer.fillDummy();
-            emit error(InputDeviceErrorCode::NoDataAvailable);
+            emit error(InputDevice::ErrorCode::NoDataAvailable);
         }
     }
     else

@@ -616,7 +616,7 @@ void ScannerDialog::onEnsembleConfigurationAndCSV(const QString &config, const Q
     storeEnsembleData(m_tiiData, config, csvString);
 }
 
-void ScannerDialog::onInputDeviceError(const InputDeviceErrorCode)
+void ScannerDialog::onInputDeviceError(const InputDevice::ErrorCode)
 {
     if (m_isScanning)
     {  // stop pressed

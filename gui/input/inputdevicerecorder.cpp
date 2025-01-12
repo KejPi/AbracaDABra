@@ -56,7 +56,7 @@ void InputDeviceRecorder::setRecordingPath(const QString &recordingPath)
     m_recordingPath = recordingPath;
 }
 
-void InputDeviceRecorder::setDeviceDescription(const InputDeviceDescription &desc)
+void InputDeviceRecorder::setDeviceDescription(const InputDevice::Description &desc)
 {
     m_deviceDescription = desc;
 

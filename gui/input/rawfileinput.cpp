@@ -38,7 +38,7 @@ Q_LOGGING_CATEGORY(rawFileInput, "RawFileInput", QtInfoMsg)
 
 RawFileInput::RawFileInput(QObject *parent) : InputDevice(parent)
 {
-    m_deviceDescription.id = InputDeviceId::RAWFILE;
+    m_deviceDescription.id = InputDevice::Id::RAWFILE;
 
     m_worker = nullptr;
     m_inputTimer = nullptr;
@@ -282,7 +282,7 @@ void RawFileInput::onWatchdogTimeout()
                 m_worker->wait(2000);
             }
             inputBuffer.fillDummy();
-            emit error(InputDeviceErrorCode::NoDataAvailable);
+            emit error(InputDevice::ErrorCode::NoDataAvailable);
         }
     }
     else

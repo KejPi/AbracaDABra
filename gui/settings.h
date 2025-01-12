@@ -64,7 +64,7 @@ public:
 
     Settings() {};
 
-    InputDeviceId inputDevice;
+    InputDevice::Id inputDevice;
     struct
     {
         QString file;

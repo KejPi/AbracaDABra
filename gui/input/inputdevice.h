@@ -60,17 +60,6 @@ struct ComplexFifo
 };
 typedef struct ComplexFifo fifo_t;
 
-enum class InputDeviceId
-{
-    UNDEFINED = 0,
-    RTLSDR,
-    RTLTCP,
-    RAWFILE,
-    AIRSPY,
-    SOAPYSDR,
-    RARTTCP
-};
-
 enum class RtlGainMode
 {
     Undefined = -1,
@@ -86,51 +75,68 @@ enum class SoapyGainMode
     Manual
 };
 
-enum class InputDeviceErrorCode
-{
-    Undefined = 0,
-    EndOfFile = -1,           // Raw file input
-    DeviceDisconnected = -2,  // USB disconnected or socket disconnected
-    NoDataAvailable = -3,     // This can happen when TCP server is connected but stopped sending data for some reason
-};
-
-struct InputDeviceDescription
-{
-    InputDeviceId id = InputDeviceId::UNDEFINED;
-    struct
-    {
-        QString name;
-        QString model;
-    } device;
-    struct
-    {
-        int sampleRate;
-        int channelBits;           // I or Q
-        int containerBits;         // I or Q
-        QString channelContainer;  // I or Q
-    } sample;
-    struct
-    {
-        bool hasXmlHeader;
-        QString recorder;
-        QString time;
-        uint32_t frequency_kHz;
-        uint64_t numSamples;
-    } rawFile;
-};
-
-Q_DECLARE_METATYPE(InputDeviceErrorCode);
-
 class InputDevice : public QObject
 {
     Q_OBJECT
 public:
+    enum class Id
+    {
+        UNDEFINED = 0,
+        RTLSDR,
+        RTLTCP,
+        RAWFILE,
+        AIRSPY,
+        SOAPYSDR,
+        RARTTCP
+    };
+
+    struct Description
+    {
+        InputDevice::Id id = InputDevice::Id::UNDEFINED;
+        struct
+        {
+            QString name;
+            QString model;
+        } device;
+        struct
+        {
+            int sampleRate;
+            int channelBits;           // I or Q
+            int containerBits;         // I or Q
+            QString channelContainer;  // I or Q
+        } sample;
+        struct
+        {
+            bool hasXmlHeader;
+            QString recorder;
+            QString time;
+            uint32_t frequency_kHz;
+            uint64_t numSamples;
+        } rawFile;
+    };
+
+    enum class ErrorCode
+    {
+        Undefined = 0,
+        EndOfFile = -1,           // Raw file input
+        DeviceDisconnected = -2,  // USB disconnected or socket disconnected
+        NoDataAvailable = -3,     // This can happen when TCP server is connected but stopped sending data for some reason
+    };
+
+    enum CapabilityFlag
+    {
+        LiveStream = (1 << 0),
+        Recording = (1 << 1),
+    };
+    Q_DECLARE_FLAGS(Capabilities, CapabilityFlag)
+
     InputDevice(QObject *parent = nullptr);
     ~InputDevice();
     virtual bool openDevice() = 0;
-    const InputDeviceDescription &deviceDescription() const { return m_deviceDescription; }
+    const InputDevice::Description &deviceDescription() const { return m_deviceDescription; }
     virtual void tune(uint32_t freq) = 0;
     virtual void startStopRecording(bool start) = 0;
+    virtual InputDevice::Capabilities capabilities() const = 0;
 
 signals:
     void deviceReady();
@@ -138,11 +144,14 @@ signals:
     void agcGain(float gain);
     void rfLevel(float level, float gain);
     void recordBuffer(const uint8_t *buf, uint32_t len);
-    void error(const InputDeviceErrorCode errCode = InputDeviceErrorCode::Undefined);
+    void error(const InputDevice::ErrorCode errCode = InputDevice::ErrorCode::Undefined);
 
 protected:
-    InputDeviceDescription m_deviceDescription;
+    Description m_deviceDescription;
 };
+
+Q_DECLARE_METATYPE(InputDevice::ErrorCode);
+Q_DECLARE_OPERATORS_FOR_FLAGS(InputDevice::Capabilities)
 
 extern fifo_t inputBuffer;
 void getSamples(float buffer[], uint16_t len);

@@ -59,7 +59,7 @@ public:
     void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &);
     void onTiiData(const RadioControlTIIData &data) override;
     void onEnsembleConfigurationAndCSV(const QString &config, const QString &csvString);
-    void onInputDeviceError(const InputDeviceErrorCode);
+    void onInputDeviceError(const InputDevice::ErrorCode);
     void setupDarkMode(bool darkModeEna) override;
     // void setSelectedRow(int modelRow) override;
 signals:

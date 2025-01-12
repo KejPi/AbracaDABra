@@ -34,7 +34,7 @@ Q_LOGGING_CATEGORY(airspyInput, "AirspyInput", QtInfoMsg)
 
 AirspyInput::AirspyInput(bool try4096kHz, QObject *parent) : InputDevice(parent)
 {
-    m_deviceDescription.id = InputDeviceId::AIRSPY;
+    m_deviceDescription.id = InputDevice::Id::AIRSPY;
 
     m_try4096kHz = try4096kHz;
     m_device = nullptr;
@@ -201,7 +201,7 @@ void AirspyInput::run()
         if (AIRSPY_SUCCESS != airspy_set_freq(m_device, m_frequency * 1000))
         {
             qCCritical(airspyInput, "Tune to %d kHz failed", m_frequency);
-            emit error(InputDeviceErrorCode::DeviceDisconnected);
+            emit error(InputDevice::ErrorCode::DeviceDisconnected);
             return;
         }
 
@@ -212,7 +212,7 @@ void AirspyInput::run()
         if (AIRSPY_SUCCESS != airspy_start_rx(m_device, AirspyInput::callback, (void *)this))
         {
             qCCritical(airspyInput, "Failed to start RX");
-            emit error(InputDeviceErrorCode::DeviceDisconnected);
+            emit error(InputDevice::ErrorCode::DeviceDisconnected);
             return;
         }
     }
@@ -403,7 +403,7 @@ void AirspyInput::onWatchdogTimeout()
     {
         qCCritical(airspyInput) << "watchdog timeout";
         inputBuffer.fillDummy();
-        emit error(InputDeviceErrorCode::NoDataAvailable);
+        emit error(InputDevice::ErrorCode::NoDataAvailable);
     }
 }
 

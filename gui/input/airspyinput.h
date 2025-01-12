@@ -77,6 +77,7 @@ public:
     ~AirspyInput();
     bool openDevice() override;
     void tune(uint32_t frequency) override;
+    InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
     void setGainMode(const AirspyGainStr &gain);
     void startStopRecording(bool start) override;
     void setBiasT(bool ena);

@@ -58,7 +58,7 @@ public:
     void setInputDeviceEnabled(bool ena);
     void resetInputDevice();
     void setSettings(Settings *settings);
-    void setXmlHeader(const InputDeviceDescription &desc);
+    void setXmlHeader(const InputDevice::Description &desc);
     void onFileLength(int msec);
     void onFileProgress(int msec);
     void setAudioRecAutoStop(bool ena);
@@ -67,10 +67,10 @@ public:
     void setSlsDumpPaternDefault(const QString &newSlsDumpPaternDefault);
     void setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault);
     void onTiiUpdateFinished(QNetworkReply::NetworkError err);
-    void setDeviceDescription(const InputDeviceDescription &desc);
+    void setDeviceDescription(const InputDevice::Description &desc);
 
 signals:
-    void inputDeviceChanged(const InputDeviceId &inputDevice);
+    void inputDeviceChanged(const InputDevice::Id &inputDevice);
     void newInputDeviceSettings();
     void newAnnouncementSettings();
     void expertModeToggled(bool enabled);

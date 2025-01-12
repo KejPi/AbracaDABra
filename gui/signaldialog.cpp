@@ -462,8 +462,8 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
         // -10 dB is averaging factor 1/10
         // 66.227dB is FFT gain 2048
         float offset_dB = -10.0 - 66.227;
-        if (m_settings->inputDevice == InputDeviceId::RTLSDR || m_settings->inputDevice == InputDeviceId::RTLTCP ||
-            m_settings->inputDevice == InputDeviceId::RAWFILE)
+        if (m_settings->inputDevice == InputDevice::Id::RTLSDR || m_settings->inputDevice == InputDevice::Id::RTLTCP ||
+            m_settings->inputDevice == InputDevice::Id::RAWFILE)
         {  // input is -128 .. +127  ==> * 1/128 = -42.144 dB
             offset_dB = offset_dB - 42.144;
         }

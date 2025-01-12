@@ -32,7 +32,7 @@ static SocketInitialiseWrapper socketInitialiseWrapper;
 
 RartTcpInput::RartTcpInput(QObject *parent) : InputDevice(parent)
 {
-    m_deviceDescription.id = InputDeviceId::RARTTCP;
+    m_deviceDescription.id = InputDevice::Id::RARTTCP;
 
     m_worker = nullptr;
     m_frequency = 0;
@@ -373,7 +373,7 @@ void RartTcpInput::onReadThreadStopped()
     // fill buffer (artificially to avoid blocking of the DAB processing thread)
     inputBuffer.fillDummy();
 
-    emit error(InputDeviceErrorCode::DeviceDisconnected);
+    emit error(InputDevice::ErrorCode::DeviceDisconnected);
 }
 
 void RartTcpInput::onWatchdogTimeout()
@@ -384,7 +384,7 @@ void RartTcpInput::onWatchdogTimeout()
         {  // some problem in data input
             qCCritical(rartTcpInput) << "watchdog timeout";
             inputBuffer.fillDummy();
-            emit error(InputDeviceErrorCode::NoDataAvailable);
+            emit error(InputDevice::ErrorCode::NoDataAvailable);
         }
     }
     else

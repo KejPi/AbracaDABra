@@ -43,7 +43,7 @@ public:
     ~InputDeviceRecorder();
     const QString recordingPath() const;
     void setRecordingPath(const QString &recordingPath);
-    void setDeviceDescription(const InputDeviceDescription &desc);
+    void setDeviceDescription(const InputDevice::Description &desc);
     void start(QWidget *callerWidget);
     void stop();
     void writeBuffer(const uint8_t *buf, uint32_t len);
@@ -54,7 +54,7 @@ signals:
     void bytesRecorded(uint64_t bytes, uint64_t ms);
 
 private:
-    InputDeviceDescription m_deviceDescription;
+    InputDevice::Description m_deviceDescription;
     FILE *m_file;
     std::mutex m_fileMutex;
     uint64_t m_bytesRecorded = 0;
