@@ -58,7 +58,7 @@ enum class AirpyGainMode
     Manual
 };
 
-struct AirspyGainStr
+struct AirspyGainStruct
 {
     AirpyGainMode mode;
     int sensitivityGainIdx;
@@ -78,7 +78,7 @@ public:
     bool openDevice() override;
     void tune(uint32_t frequency) override;
     InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
-    void setGainMode(const AirspyGainStr &gain);
+    void setGainMode(const AirspyGainStruct &gain);
     void startStopRecording(bool start) override;
     void setBiasT(bool ena) override;
     void setDataPacking(bool ena);

@@ -35,10 +35,14 @@
 
 #include "config.h"
 #include "inputdevice.h"
+#include "rawfileinput.h"
+
 #if HAVE_AIRSPY
 #include "airspyinput.h"
 #endif
-#include "rawfileinput.h"
+#if HAVE_SOAPYSDR
+#include "soapysdrinput.h"
+#endif
 
 class Settings
 {
@@ -92,7 +96,7 @@ public:
 #if HAVE_AIRSPY
     struct
     {
-        AirspyGainStr gain;
+        AirspyGainStruct gain;
         bool biasT;
         bool dataPacking;
         bool prefer4096kHz;
@@ -101,13 +105,13 @@ public:
 #if HAVE_SOAPYSDR
     struct
     {
-        SoapyGainMode gainMode;
-        int gainIdx;
         QString devArgs;
         QString antenna;
         int channel;
         uint32_t bandwidth;
         int ppm;
+        QString driver;
+        QHash<QString, SoapyGainStruct> gainMap;
     } soapysdr;
 #endif
 #if HAVE_RARTTCP

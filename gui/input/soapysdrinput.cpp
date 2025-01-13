@@ -39,7 +39,7 @@ SoapySdrInput::SoapySdrInput(QObject *parent) : InputDevice(parent)
     m_device = nullptr;
     m_deviceUnpluggedFlag = true;
     m_deviceRunningFlag = false;
-    m_gainList = nullptr;
+    m_gains = nullptr;
     m_frequency = 0;
     m_bandwidth = 0;
     m_ppm = 0;
@@ -54,9 +54,9 @@ SoapySdrInput::~SoapySdrInput()
     {
         SoapySDR::Device::unmake(m_device);
     }
-    if (nullptr != m_gainList)
+    if (nullptr != m_gains)
     {
-        delete m_gainList;
+        delete m_gains;
     }
 }
 
@@ -233,21 +233,17 @@ bool SoapySdrInput::openDevice()
     {  // expecting step 1
         gainStep = 1.0;
     }
-    m_gainList = new QList<float>();
-    double gain = gainRange.minimum();
-    while (gain <= gainRange.maximum())
-    {
-        m_gainList->append(gain);
-        gain += gainStep;
-    }
 
-    if (m_device->hasGainMode(SOAPY_SDR_RX, m_rxChannel))
-    {  // set automatic gain
-        setGainMode(SoapyGainMode::Hardware);
-    }
-    else
+    std::vector<std::string> gainsNames = m_device->listGains(SOAPY_SDR_RX, m_rxChannel);
+    if (!gainsNames.empty())
     {
-        setGainMode(SoapyGainMode::Software);
+        m_gains = new QList<QPair<QString, SoapySDR::Range>>();
+        for (size_t i = 0; i < gainsNames.size(); i++)
+        {
+            auto range = m_device->getGainRange(SOAPY_SDR_RX, m_rxChannel, gainsNames.at(i));
+            m_gains->append(QPair<QString, SoapySDR::Range>(QString::fromStdString(gainsNames.at(i)), range));
+            qDebug() << gainsNames.at(i) << range.minimum() << range.step() << range.maximum();
+        }
     }
 
     if (m_device->hasDCOffsetMode(SOAPY_SDR_RX, m_rxChannel))
@@ -333,9 +329,6 @@ void SoapySdrInput::run()
     {  // Tune to new frequency
         m_device->setFrequency(SOAPY_SDR_RX, m_rxChannel, m_frequency * 1000);
 
-        // does nothing if manual AGC
-        resetAgc();
-
         m_worker = new SoapySdrWorker(m_device, m_sampleRate, m_rxChannel, this);
         connect(m_worker, &SoapySdrWorker::agcLevel, this, &SoapySdrInput::onAgcLevel, Qt::QueuedConnection);
         connect(m_worker, &SoapySdrWorker::recordBuffer, this, &InputDevice::recordBuffer, Qt::DirectConnection);
@@ -382,96 +375,42 @@ void SoapySdrInput::stop()
     }
 }
 
-void SoapySdrInput::setGainMode(SoapyGainMode gainMode, int gainIdx)
+void SoapySdrInput::setGainMode(const SoapyGainStruct &gain)
 {
-    if (gainMode != m_gainMode)
+    if (SoapyGainMode::Hardware == gain.mode && m_device->hasGainMode(SOAPY_SDR_RX, m_rxChannel))
     {
-        if (SoapyGainMode::Hardware == gainMode)
-        {
-            if (m_device->hasGainMode(SOAPY_SDR_RX, m_rxChannel))
-            {
-                m_device->setGainMode(SOAPY_SDR_RX, m_rxChannel, true);
-            }
-            else
-            {
-                m_device->setGainMode(SOAPY_SDR_RX, m_rxChannel, false);
-                gainMode = SoapyGainMode::Software;  // SW AC is fallback
-            }
-        }
-        else
-        {
-            m_device->setGainMode(SOAPY_SDR_RX, m_rxChannel, false);
-        }
-
-        m_gainMode = gainMode;
-
-        // does nothing in (GainMode::Software != mode)
-        resetAgc();
-    }
-
-    if (SoapyGainMode::Manual == m_gainMode)
-    {
-        setGain(gainIdx);
-
-        // always emit gain when switching mode to manual
-        emit agcGain(m_gainList->at(gainIdx));
-    }
-
-    if (SoapyGainMode::Hardware == m_gainMode)
-    {  // signalize that gain is not available
-        emit agcGain(NAN);
-    }
-}
-
-void SoapySdrInput::setGain(int gainIdx)
-{
-    if (!m_gainList->empty())
-    {
-        // force index vaslidity
-        if (gainIdx < 0)
-        {
-            gainIdx = 0;
-        }
-        if (gainIdx >= m_gainList->size())
-        {
-            gainIdx = m_gainList->size() - 1;
-        }
-
-        if (gainIdx != m_gainIdx)
-        {
-            m_gainIdx = gainIdx;
-            m_device->setGain(SOAPY_SDR_RX, m_rxChannel, m_gainList->at(m_gainIdx));
-            emit agcGain(m_gainList->at(m_gainIdx));
-        }
+        m_device->setGainMode(SOAPY_SDR_RX, m_rxChannel, true);
+        m_gainMode = SoapyGainMode::Hardware;
     }
     else
-    { /* empy gain list => do nothing */
-    }
-}
-
-void SoapySdrInput::resetAgc()
-{
-    if (SoapyGainMode::Software == m_gainMode)
     {
-        m_gainIdx = -1;
-        setGain(m_gainList->size() >> 1);
+        m_device->setGainMode(SOAPY_SDR_RX, m_rxChannel, false);
+        m_gainMode = SoapyGainMode::Manual;
+        for (int n = 0; n < gain.gainList.count(); ++n)
+        {  // apply manual gain
+            setGain(n, gain.gainList.at(n));
+        }
     }
+
+    // SoapySDR does not gurantee single gain value to be used in UI
+    emit agcGain(NAN);
 }
 
 void SoapySdrInput::onAgcLevel(float agcLevel)
 {
-    if (SoapyGainMode::Software == m_gainMode)
-    {
-        if (agcLevel > SOAPYSDR_LEVEL_THR_MAX)
-        {
-            setGain(m_gainIdx - 1);
-            return;
-        }
-        if (agcLevel < SOAPYSDR_LEVEL_THR_MIN)
-        {
-            setGain(m_gainIdx + 1);
-        }
-    }
+    qDebug() << agcLevel;
+    // if (SoapyGainMode::Software == m_gainMode)
+    // {
+    //     if (agcLevel > SOAPYSDR_LEVEL_THR_MAX)
+    //     {
+    //         setGain(m_gainIdx - 1);
+    //         return;
+    //     }
+    //     if (agcLevel < SOAPYSDR_LEVEL_THR_MIN)
+    //     {
+    //         setGain(m_gainIdx + 1);
+    //     }
+    // }
 }
 
 void SoapySdrInput::onReadThreadStopped()
@@ -618,6 +557,47 @@ void SoapySdrInput::setPPM(int ppm)
     }
 }
 
+QString SoapySdrInput::getDriver() const
+{
+    return QString::fromStdString(m_device->getDriverKey());
+}
+
+SoapyGainStruct SoapySdrInput::getDefaultGainStruct() const
+{
+    SoapyGainStruct g;
+
+    if (m_device->hasGainMode(SOAPY_SDR_RX, m_rxChannel))
+    {
+        g.mode = SoapyGainMode::Hardware;
+    }
+    else
+    {
+        g.mode = SoapyGainMode::Manual;
+    }
+    for (auto it = m_gains->cbegin(); it != m_gains->cend(); ++it)
+    {
+        g.gainList.append(it->second.minimum());
+    }
+    return g;
+}
+
+void SoapySdrInput::setGain(int idx, float gain)
+{
+    if (m_gainMode == SoapyGainMode::Manual)
+    {
+        Q_ASSERT(idx < m_gains->count());
+        try
+        {
+            m_device->setGain(SOAPY_SDR_RX, m_rxChannel, m_gains->at(idx).first.toStdString(), gain);
+        }
+        catch (const std::exception &ex)
+        {
+            qCWarning(soapySdrInput) << "Failed to set gain " + m_gains->at(idx).first << "to" << gain << ex.what();
+            return;
+        }
+    }
+}
+
 SoapySdrWorker::SoapySdrWorker(SoapySDR::Device *device, double sampleRate, int rxChannel, QObject *parent) : QThread(parent)
 {
     m_isRecording = false;
@@ -742,8 +722,6 @@ void SoapySdrWorker::stop()
 
 void SoapySdrWorker::processInputData(std::complex<float> buff[], size_t numSamples)
 {
-    static float signalLevel = SOAPYSDR_LEVEL_RESET;
-
     // get FIFO space
     pthread_mutex_lock(&inputBuffer.countMutex);
     uint64_t count = inputBuffer.count;

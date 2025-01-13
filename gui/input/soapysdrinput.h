@@ -42,9 +42,11 @@
 
 #define SOAPYSDR_INPUT_SAMPLES (16384)
 
-#define SOAPYSDR_LEVEL_THR_MAX (0.5)
-#define SOAPYSDR_LEVEL_THR_MIN (SOAPYSDR_LEVEL_THR_MAX / 20.0)
-#define SOAPYSDR_LEVEL_RESET ((SOAPYSDR_LEVEL_THR_MAX - SOAPYSDR_LEVEL_THR_MIN) / 2.0 + SOAPYSDR_LEVEL_THR_MIN)
+struct SoapyGainStruct
+{
+    SoapyGainMode mode;
+    QList<float> gainList;
+};
 
 class SoapySdrWorker : public QThread
 {
@@ -93,11 +95,15 @@ public:
     void setDevArgs(const QString &devArgs) { m_devArgs = devArgs; }
     void setRxChannel(int rxChannel) { m_rxChannel = rxChannel; }
     void setAntenna(const QString &antenna) { m_antenna = antenna; }
-    void setGainMode(SoapyGainMode gainMode, int gainIdx = 0);
+    void setGainMode(const SoapyGainStruct &gain);
     void startStopRecording(bool start) override;
     void setBW(uint32_t bw) override;
     void setPPM(int ppm) override;
-    QList<float> getGainList() const { return *m_gainList; }
+
+    QString getDriver() const;
+    SoapyGainStruct getDefaultGainStruct() const;
+    const QList<QPair<QString, SoapySDR::Range>> *getGains() const { return m_gains; }
+    void setGain(int idx, float gain);
 
 private:
     double m_sampleRate;
@@ -115,16 +121,10 @@ private:
     SoapySdrWorker *m_worker;
     QTimer m_watchdogTimer;
     SoapyGainMode m_gainMode = SoapyGainMode::Manual;
-    int m_gainIdx;
-    QList<float> *m_gainList;
+    QList<QPair<QString, SoapySDR::Range>> *m_gains;  // using list to keep original order
 
     void run();
     void stop();
-    void resetAgc();
-
-    // private function
-    // gain is set from outside usin setGainMode() function
-    void setGain(int gainIdx);
 
     // used by worker
     void onAgcLevel(float agcLevel);

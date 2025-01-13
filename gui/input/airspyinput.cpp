@@ -251,7 +251,7 @@ void AirspyInput::stop()
     }
 }
 
-void AirspyInput::setGainMode(const AirspyGainStr &gain)
+void AirspyInput::setGainMode(const AirspyGainStruct &gain)
 {
     switch (gain.mode)
     {

@@ -2516,7 +2516,6 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
                 m_inputDeviceId = InputDevice::Id::RTLSDR;
 
                 // setup dialog
-                m_setupDialog->setInputDevice(m_inputDeviceId, m_inputDevice);
                 configureForInputDevice();
             }
             else
@@ -2575,7 +2574,6 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
                 m_inputDeviceId = InputDevice::Id::RTLTCP;
 
                 // setup dialog
-                m_setupDialog->setInputDevice(m_inputDeviceId, m_inputDevice);
                 configureForInputDevice();
             }
             else
@@ -2634,8 +2632,6 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
 
                 m_inputDeviceId = InputDevice::Id::RARTTCP;
 
-                // setup dialog
-                m_setupDialog->setInputDevice(m_inputDeviceId, m_inputDevice);
                 configureForInputDevice();
             }
             else
@@ -2691,8 +2687,6 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
 
                 m_inputDeviceId = InputDevice::Id::AIRSPY;
 
-                // setup dialog
-                m_setupDialog->setInputDevice(m_inputDeviceId, m_inputDevice);
                 configureForInputDevice();
 
                 // these are settings that are configures in ini file manually
@@ -2757,8 +2751,6 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
 
                 m_inputDeviceId = InputDevice::Id::SOAPYSDR;
 
-                // setup dialog
-                m_setupDialog->setInputDevice(m_inputDeviceId, m_inputDevice);
                 configureForInputDevice();
             }
             else
@@ -2821,8 +2813,6 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
 
                 m_inputDeviceId = InputDevice::Id::RAWFILE;
 
-                // setup dialog
-                m_setupDialog->setInputDevice(m_inputDeviceId, m_inputDevice);
                 configureForInputDevice();
 
                 if (m_inputDevice->deviceDescription().rawFile.frequency_kHz != 0)
@@ -3043,14 +3033,29 @@ void MainWindow::loadSettings()
     m_settings->airspy.prefer4096kHz = settings->value("AIRSPY/preferSampleRate4096kHz", true).toBool();
 #endif
 #if HAVE_SOAPYSDR
-    m_settings->soapysdr.gainIdx = settings->value("SOAPYSDR/gainIndex", 0).toInt();
-    m_settings->soapysdr.gainMode =
-        static_cast<SoapyGainMode>(settings->value("SOAPYSDR/gainMode", static_cast<int>(SoapyGainMode::Hardware)).toInt());
     m_settings->soapysdr.devArgs = settings->value("SOAPYSDR/devArgs", QString("driver=rtlsdr")).toString();
     m_settings->soapysdr.antenna = settings->value("SOAPYSDR/antenna", QString("RX")).toString();
     m_settings->soapysdr.channel = settings->value("SOAPYSDR/rxChannel", 0).toInt();
     m_settings->soapysdr.bandwidth = settings->value("SOAPYSDR/bandwidth", 0).toUInt();
     m_settings->soapysdr.ppm = settings->value("SOAPYSDR/ppm", 0).toInt();
+    m_settings->soapysdr.driver = settings->value("SOAPYSDR/driver", 0).toString();
+    settings->beginGroup("SOAPYSDR");
+    QStringList groups = settings->childGroups();
+    for (auto it = groups.cbegin(); it != groups.cend(); ++it)
+    {
+        SoapyGainStruct gainStr;
+        gainStr.mode = static_cast<SoapyGainMode>(settings->value(*it + "/mode").toInt());
+        int numGains = settings->beginReadArray(*it + "/gainList");
+        for (int g = 0; g < numGains; ++g)
+        {
+            settings->setArrayIndex(g);
+            gainStr.gainList.append(settings->value("gain").toFloat());
+        }
+        settings->endArray();
+        m_settings->soapysdr.gainMap.insert(*it, gainStr);
+    }
+    settings->endGroup();
+
 #endif
     m_settings->rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
     m_settings->rawfile.format = RawFileInputFormat(settings->value("RAW-FILE/format", 0).toInt());
@@ -3253,13 +3258,25 @@ void MainWindow::saveSettings()
 #endif
 
 #if HAVE_SOAPYSDR
-    settings->setValue("SOAPYSDR/gainIndex", m_settings->soapysdr.gainIdx);
-    settings->setValue("SOAPYSDR/gainMode", static_cast<int>(m_settings->soapysdr.gainMode));
     settings->setValue("SOAPYSDR/devArgs", m_settings->soapysdr.devArgs);
     settings->setValue("SOAPYSDR/rxChannel", m_settings->soapysdr.channel);
     settings->setValue("SOAPYSDR/antenna", m_settings->soapysdr.antenna);
     settings->setValue("SOAPYSDR/bandwidth", m_settings->soapysdr.bandwidth);
     settings->setValue("SOAPYSDR/ppm", m_settings->soapysdr.ppm);
+    settings->setValue("SOAPYSDR/driver", m_settings->soapysdr.driver);
+    for (auto it = m_settings->soapysdr.gainMap.cbegin(); it != m_settings->soapysdr.gainMap.cend(); ++it)
+    {
+        settings->beginGroup("SOAPYSDR/" + it.key());
+        settings->setValue("mode", static_cast<int>(it.value().mode));
+        settings->beginWriteArray("gainList");
+        for (int g = 0; g < it.value().gainList.count(); ++g)
+        {
+            settings->setArrayIndex(g);
+            settings->setValue("gain", it.value().gainList.at(g));
+        }
+        settings->endArray();
+        settings->endGroup();
+    }
 #endif
 
     settings->setValue("RTL-TCP/gainIndex", m_settings->rtltcp.gainIdx);

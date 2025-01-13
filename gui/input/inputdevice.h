@@ -71,7 +71,6 @@ enum class RtlGainMode
 enum class SoapyGainMode
 {
     Hardware,
-    Software,
     Manual
 };
 

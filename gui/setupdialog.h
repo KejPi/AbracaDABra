@@ -128,7 +128,6 @@ private:
     QString m_rawfilename;
     QList<float> m_rtlsdrGainList;
     QList<float> m_rtltcpGainList;
-    QList<float> m_soapysdrGainList;
     QCheckBox *m_announcementCheckBox[static_cast<int>(DabAnnouncement::Undefined)];
     QCheckBox *m_bringWindowToForegroundCheckbox;
     QLabel *m_xmlHeaderLabel[SetupDialogXmlHeader::XMLNumLabels];
@@ -218,12 +217,12 @@ private:
     void activateAirspyControls(bool en);
 #endif
 #if HAVE_SOAPYSDR
-    void onSoapySdrGainSliderChanged(int val);
     void onSoapySdrDevArgsEditFinished();
     void onSoapySdrAntennaEditFinished();
     void onSoapySdrChannelEditFinished();
     void onSoapySdrGainModeToggled(bool checked);
     void activateSoapySdrControls(bool en);
+    void setSoapySdrGainWidget(bool activate);
 #endif
 };
 

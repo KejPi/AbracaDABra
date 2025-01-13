@@ -239,6 +239,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->soapysdrInfoWidgetLayout->addWidget(m_soapySdrLabel[SetupDialogDeviceInfo::DevInfoDevice], SetupDialogDeviceInfo::DevInfoDevice, 1, 1, 2);
 
     ui->soapysdrInfoWidget->setVisible(false);
+    ui->soapysdrGainWidget->setLayout(new QGridLayout(this));
+    ui->soapysdrGainWidget->setVisible(false);
 #endif
     connect(ui->openFileButton, &QPushButton::clicked, this, &SetupDialog::onOpenFileButtonClicked);
 
@@ -432,13 +434,13 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
             break;
         case InputDevice::Id::SOAPYSDR:
 #if HAVE_SOAPYSDR
-            m_soapysdrGainList.clear();
-            m_soapysdrGainList = gainList;
-            ui->soapysdrGainSlider->setMinimum(0);
-            ui->soapysdrGainSlider->setMaximum(m_soapysdrGainList.size() - 1);
-            ui->soapysdrGainSlider->setValue((m_settings->soapysdr.gainIdx >= 0) ? m_settings->soapysdr.gainIdx : 0);
-            ui->soapysdrGainSlider->setDisabled(m_soapysdrGainList.empty());
-            ui->soapysdrGainModeManual->setDisabled(m_soapysdrGainList.empty());
+            // m_soapysdrGainList.clear();
+            // m_soapysdrGainList = gainList;
+            // ui->soapysdrGainSlider->setMinimum(0);
+            // ui->soapysdrGainSlider->setMaximum(m_soapysdrGainList.size() - 1);
+            // ui->soapysdrGainSlider->setValue((m_settings->soapysdr.gainIdx >= 0) ? m_settings->soapysdr.gainIdx : 0);
+            // ui->soapysdrGainSlider->setDisabled(m_soapysdrGainList.empty());
+            // ui->soapysdrGainModeManual->setDisabled(m_soapysdrGainList.empty());
 #endif  // HAVE_SOAPYSDR
             break;
         case InputDevice::Id::UNDEFINED:
@@ -640,31 +642,25 @@ void SetupDialog::setUiState()
 #endif
 
 #if HAVE_SOAPYSDR
-    switch (m_settings->soapysdr.gainMode)
-    {
-        case SoapyGainMode::Software:
-            ui->soapysdrGainModeSw->setChecked(true);
-            break;
-        case SoapyGainMode::Hardware:
-            ui->soapysdrGainModeHw->setChecked(true);
-            break;
-        case SoapyGainMode::Manual:
-            ui->soapysdrGainModeManual->setChecked(true);
-            break;
-        default:
-            break;
-    }
-
-    if (!m_soapysdrGainList.isEmpty())
-    {
-        ui->soapysdrGainSlider->setValue(m_settings->soapysdr.gainIdx);
-        onSoapySdrGainSliderChanged(m_settings->soapysdr.gainIdx);
+    if (m_settings->soapysdr.driver.isEmpty() || !m_settings->soapysdr.gainMap.contains(m_settings->soapysdr.driver))
+    {  // no last driver -> using defaults
+        ui->soapysdrGainModeHw->setChecked(true);
     }
     else
     {
-        ui->soapysdrGainSlider->setValue(0);
-        ui->soapysdrGainValueLabel->setText(tr("N/A"));
+        switch (m_settings->soapysdr.gainMap[m_settings->soapysdr.driver].mode)
+        {
+            case SoapyGainMode::Hardware:
+                ui->soapysdrGainModeHw->setChecked(true);
+                break;
+            case SoapyGainMode::Manual:
+                ui->soapysdrGainModeManual->setChecked(true);
+                break;
+            default:
+                break;
+        }
     }
+    ui->soapysdrGainWidget->setVisible(false);
 
     ui->soapysdrDevArgs->setText(m_settings->soapysdr.devArgs);
     ui->soapysdrChannelNum->setValue(m_settings->soapysdr.channel);
@@ -837,13 +833,11 @@ void SetupDialog::connectDeviceControlSignals()
 #endif
 
 #if HAVE_SOAPYSDR
-    connect(ui->soapysdrGainSlider, &QSlider::valueChanged, this, &SetupDialog::onSoapySdrGainSliderChanged);
     connect(ui->soapysdrDevArgs, &QLineEdit::editingFinished, this, &SetupDialog::onSoapySdrDevArgsEditFinished);
     connect(ui->soapySdrAntenna, &QLineEdit::editingFinished, this, &SetupDialog::onSoapySdrAntennaEditFinished);
     connect(ui->soapysdrChannelNum, &QSpinBox::editingFinished, this, &SetupDialog::onSoapySdrChannelEditFinished);
-    connect(ui->soapysdrGainModeHw, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
-    connect(ui->soapysdrGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
     connect(ui->soapysdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
+    connect(ui->soapysdrGainModeHw, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
     connect(ui->soapysdrBandwidth, &QSpinBox::valueChanged, this, &SetupDialog::onBandwidthChanged);
     connect(ui->soapysdrBandwidthDefault, &QPushButton::clicked, this, [this]() { ui->soapysdrBandwidth->setValue(0); });
     connect(ui->soapysdrPPM, &QSpinBox::valueChanged, this, &SetupDialog::onPPMChanged);
@@ -877,6 +871,7 @@ void SetupDialog::onConnectDeviceClicked()
     ui->rtlsdrInfoWidget->setVisible(false);
     ui->rtltcpInfoWidget->setVisible(false);
     ui->soapysdrInfoWidget->setVisible(false);
+    setSoapySdrGainWidget(false);
     m_inputDeviceId = InputDevice::Id::UNDEFINED;
     setStatusLabel(true);  // clear label
     m_settings->inputDevice = static_cast<InputDevice::Id>(ui->inputCombo->itemData(ui->inputCombo->currentIndex()).toInt());
@@ -1235,23 +1230,65 @@ void SetupDialog::onAirspyMixerAGCstateChanged(int state)
 #endif  // HAVE_AIRSPY
 
 #if HAVE_SOAPYSDR
-void SetupDialog::onSoapySdrGainSliderChanged(int val)
+
+void SetupDialog::setSoapySdrGainWidget(bool activate)
 {
-    if (!m_soapysdrGainList.empty())
+    if (activate)
     {
-        ui->soapysdrGainValueLabel->setText(QString("%1 dB").arg(m_soapysdrGainList.at(val)));
-        m_settings->soapysdr.gainIdx = val;
-        dynamic_cast<SoapySdrInput *>(m_device)->setGainMode(m_settings->soapysdr.gainMode, m_settings->soapysdr.gainIdx);
+        auto gains = dynamic_cast<SoapySdrInput *>(m_device)->getGains();
+        if (!gains->empty())
+        {
+            QGridLayout *layout = dynamic_cast<QGridLayout *>(ui->soapysdrGainWidget->layout());
+            for (int row = 0; row < gains->count(); ++row)
+            {
+                auto nameLabel = new QLabel(gains->at(row).first, ui->soapysdrGainWidget);
+                auto valueLabel = new QLabel(QString::number(m_settings->soapysdr.gainMap[m_settings->soapysdr.driver].gainList[row], 'f', 1) + " dB",
+                                             ui->soapysdrGainWidget);
+                valueLabel->setFixedWidth(valueLabel->fontMetrics().boundingRect(" 88.8 dB").width());
+                valueLabel->setAlignment(Qt::AlignRight);
+                auto slider = new QSlider(Qt::Horizontal, ui->soapysdrGainWidget);
+                slider->setMinimum(gains->at(row).second.minimum());
+                slider->setMaximum(gains->at(row).second.maximum());
+                int step = 1;
+                if (gains->at(row).second.step() != 0)
+                {
+                    step = gains->at(row).second.step();
+                }
+                slider->setSingleStep(step);
+                slider->setValue(m_settings->soapysdr.gainMap[m_settings->soapysdr.driver].gainList[row]);
+                dynamic_cast<SoapySdrInput *>(m_device)->setGain(row, m_settings->soapysdr.gainMap[m_settings->soapysdr.driver].gainList[row]);
+                connect(slider, &QSlider::valueChanged, this,
+                        [=](int val)
+                        {
+                            valueLabel->setText(QString::number(val * step, '1', 1) + " dB");
+                            m_settings->soapysdr.gainMap[m_settings->soapysdr.driver].gainList[row] = val * step;
+                            dynamic_cast<SoapySdrInput *>(m_device)->setGain(row, val * step);
+                        });
+
+                layout->addWidget(nameLabel, row, 0);
+                layout->addWidget(slider, row, 1);
+                layout->addWidget(valueLabel, row, 2);
+            }
+        }
+        ui->soapysdrGainWidget->setEnabled(SoapyGainMode::Manual == m_settings->soapysdr.gainMap[m_settings->soapysdr.driver].mode);
     }
     else
-    { /* empy gain list => do nothing */
+    {
+        QLayout *layout = ui->soapysdrGainWidget->layout();
+        QLayoutItem *child;
+        while ((child = layout->takeAt(0)) != 0)
+        {
+            delete child->widget();
+            delete child;
+        }
     }
+    ui->soapysdrGainWidget->setVisible(activate);
 }
 
 void SetupDialog::activateSoapySdrControls(bool en)
 {
     ui->soapysdrGainModeGroup->setEnabled(en);
-    ui->soapysdrGainWidget->setEnabled(en && (SoapyGainMode::Manual == m_settings->soapysdr.gainMode));
+    ui->soapysdrGainWidget->setEnabled(en && (SoapyGainMode::Manual == m_settings->soapysdr.gainMap[m_settings->soapysdr.driver].mode));
     ui->soapysdrExpertGroup->setEnabled(en);
 }
 
@@ -1285,18 +1322,15 @@ void SetupDialog::onSoapySdrGainModeToggled(bool checked)
     {
         if (ui->soapysdrGainModeHw->isChecked())
         {
-            m_settings->soapysdr.gainMode = SoapyGainMode::Hardware;
-        }
-        else if (ui->soapysdrGainModeSw->isChecked())
-        {
-            m_settings->soapysdr.gainMode = SoapyGainMode::Software;
+            m_settings->soapysdr.gainMap[m_settings->soapysdr.driver].mode = SoapyGainMode::Hardware;
         }
         else if (ui->soapysdrGainModeManual->isChecked())
         {
-            m_settings->soapysdr.gainMode = SoapyGainMode::Manual;
+            m_settings->soapysdr.gainMap[m_settings->soapysdr.driver].mode = SoapyGainMode::Manual;
         }
+        qDebug() << Q_FUNC_INFO << (m_settings->soapysdr.gainMap[m_settings->soapysdr.driver].mode == SoapyGainMode::Manual);
         activateSoapySdrControls(true);
-        dynamic_cast<SoapySdrInput *>(m_device)->setGainMode(m_settings->soapysdr.gainMode, m_settings->soapysdr.gainIdx);
+        dynamic_cast<SoapySdrInput *>(m_device)->setGainMode(m_settings->soapysdr.gainMap[m_settings->soapysdr.driver]);
     }
 }
 
@@ -1451,9 +1485,16 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
             break;
         case InputDevice::Id::SOAPYSDR:
 #if HAVE_SOAPYSDR
+            // store last driver
+            m_settings->soapysdr.driver = dynamic_cast<SoapySdrInput *>(m_device)->getDriver();
+            if (!m_settings->soapysdr.gainMap.contains(m_settings->soapysdr.driver))
+            {
+                m_settings->soapysdr.gainMap[m_settings->soapysdr.driver] = dynamic_cast<SoapySdrInput *>(m_device)->getDefaultGainStruct();
+            }
+            dynamic_cast<SoapySdrInput *>(m_device)->setGainMode(m_settings->soapysdr.gainMap[m_settings->soapysdr.driver]);
+            setSoapySdrGainWidget(true);
             m_device->setBW(m_settings->soapysdr.bandwidth);
             m_device->setPPM(m_settings->soapysdr.ppm);
-            dynamic_cast<SoapySdrInput *>(m_device)->setGainMode(m_settings->soapysdr.gainMode, m_settings->soapysdr.gainIdx);
             activateSoapySdrControls(true);
 #endif
             break;
@@ -1475,6 +1516,7 @@ void SetupDialog::resetInputDevice()
     activateAirspyControls(false);
 #endif
 #if HAVE_SOAPYSDR
+    setSoapySdrGainWidget(false);
     activateSoapySdrControls(false);
 #endif
 
