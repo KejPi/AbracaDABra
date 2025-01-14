@@ -89,7 +89,7 @@ class SoapySdrInput : public InputDevice
 public:
     explicit SoapySdrInput(QObject *parent = nullptr);
     ~SoapySdrInput();
-    bool openDevice() override;
+    bool openDevice(const QVariant &hwId = QVariant()) override;
     void tune(uint32_t frequency) override;
     InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
     void setDevArgs(const QString &devArgs) { m_devArgs = devArgs; }

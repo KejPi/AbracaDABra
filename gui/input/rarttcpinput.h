@@ -74,7 +74,7 @@ class RartTcpInput : public InputDevice
 public:
     explicit RartTcpInput(QObject *parent = nullptr);
     ~RartTcpInput();
-    bool openDevice() override;
+    bool openDevice(const QVariant &hwId = QVariant()) override;
     void tune(uint32_t frequency) override;
     InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
     void setTcpIp(const QString &address, int port);

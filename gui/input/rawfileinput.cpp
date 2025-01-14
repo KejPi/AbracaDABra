@@ -64,8 +64,9 @@ RawFileInput::~RawFileInput()
     }
 }
 
-bool RawFileInput::openDevice()
+bool RawFileInput::openDevice(const QVariant &hwId)
 {
+    Q_UNUSED(hwId);
     if (nullptr != m_inputFile)
     {
         m_inputFile->close();

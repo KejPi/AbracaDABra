@@ -198,7 +198,8 @@ private:
     // input device
     InputDevice::Id m_inputDeviceId = InputDevice::Id::UNDEFINED;
     InputDevice *m_inputDevice = nullptr;
-    InputDevice::Id m_inputDeviceIdRequest = InputDevice::Id::UNDEFINED;
+    InputDevice::Id m_inputDeviceRequest = InputDevice::Id::UNDEFINED;
+    QVariant m_inputDeviceIdRequest;
     InputDeviceRecorder *m_inputDeviceRecorder = nullptr;
 
     // audio decoder
@@ -267,7 +268,7 @@ private:
     void clearServiceList();
     void clearEnsembleInformationLabels();
     void clearServiceInformationLabels();
-    void initInputDevice(const InputDevice::Id &d);
+    void initInputDevice(const InputDevice::Id &d, const QVariant &id);
     void configureForInputDevice();
     bool isDarkMode();
     void forceDarkStyle(bool ena);
@@ -276,7 +277,7 @@ private:
     void channelSelected();
     void serviceTreeViewUpdateSelection();
     void serviceListViewUpdateSelection();
-    void changeInputDevice(const InputDevice::Id &d);
+    void changeInputDevice(const InputDevice::Id &d, const QVariant &id);
     void displaySubchParams(const RadioControlServiceComponent &s);
     void toggleDLPlus(bool toggle);
     void initStyle();

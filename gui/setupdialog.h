@@ -29,6 +29,7 @@
 
 #include <QAbstractButton>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QDialog>
 #include <QGeoCoordinate>
 #include <QLabel>
@@ -68,7 +69,7 @@ public:
     void onTiiUpdateFinished(QNetworkReply::NetworkError err);
 
 signals:
-    void inputDeviceChanged(const InputDevice::Id &inputDevice);
+    void inputDeviceChanged(const InputDevice::Id &inputDevice, QVariant &id);
     void newAnnouncementSettings();
     void expertModeToggled(bool enabled);
     void trayIconToggled(bool enabled);
@@ -117,6 +118,12 @@ private:
         DevInfoLables,
         DevInfoSoapySdrLables = DevInfoDevice + 1,
     };
+    enum SetupDialogConnectButtonState
+    {
+        ConnectButtonOn = 0,
+        ConnectButtonOff,
+        ConnectButtonAuto
+    };
 
     const QList<QLocale::Language> m_supportedLocalization = {QLocale::Czech, QLocale::German, QLocale::Polish};
     const QString m_noFileString = tr("No file selected");
@@ -144,7 +151,6 @@ private:
     void connectDeviceControlSignals();
     void setStatusLabel(bool clearLabel = false);
 
-    void onButtonClicked(QAbstractButton *button);
     void onInputChanged(int index);
     void onOpenFileButtonClicked();
 
@@ -152,6 +158,8 @@ private:
 
     void setGainValues(const QList<float> &gainList);
     void setDeviceDescription(const InputDevice::Description &desc);
+    void reloadDeviceList(const InputDevice::Id inputDeviceId, QComboBox *combo);
+    void setConnectButton(SetupDialogConnectButtonState state);
 
     void onBandwidthChanged(int val);
     void onPPMChanged(int val);

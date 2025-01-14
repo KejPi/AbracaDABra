@@ -913,7 +913,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent) : QMainWindo
     connect(m_setupDialog, &SetupDialog::slsBgChanged, m_catSlsDialog, &CatSLSDialog::setSlsBgColor);
 
     // input device connections
-    initInputDevice(InputDevice::Id::UNDEFINED);
+    initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
 
     loadSettings();
 
@@ -1569,7 +1569,7 @@ void MainWindow::onTuneDone(uint32_t freq)
         m_audioRecordingAction->setDisabled(true);
         if (m_deviceChangeRequested)
         {
-            initInputDevice(m_inputDeviceIdRequest);
+            initInputDevice(m_inputDeviceRequest, m_inputDeviceIdRequest);
         }
     }
 }
@@ -1600,7 +1600,7 @@ void MainWindow::onInputDeviceError(const InputDevice::ErrorCode errCode)
 
             // force no device
             m_setupDialog->resetInputDevice();
-            changeInputDevice(InputDevice::Id::UNDEFINED);
+            changeInputDevice(InputDevice::Id::UNDEFINED, QVariant());
             showSetupDialog();
             break;
         case InputDevice::ErrorCode::NoDataAvailable:
@@ -1610,7 +1610,7 @@ void MainWindow::onInputDeviceError(const InputDevice::ErrorCode errCode)
 
             // force no device
             m_setupDialog->resetInputDevice();
-            changeInputDevice(InputDevice::Id::UNDEFINED);
+            changeInputDevice(InputDevice::Id::UNDEFINED, QVariant());
             showSetupDialog();
             break;
         default:
@@ -2396,9 +2396,10 @@ void MainWindow::onNewAnnouncementSettings()
     }
 }
 
-void MainWindow::changeInputDevice(const InputDevice::Id &d)
+void MainWindow::changeInputDevice(const InputDevice::Id &d, const QVariant &id)
 {
-    m_inputDeviceIdRequest = d;
+    m_inputDeviceRequest = d;
+    m_inputDeviceIdRequest = id;
     m_deviceChangeRequested = true;
     if (m_isPlaying)
     {  // stop
@@ -2409,11 +2410,11 @@ void MainWindow::changeInputDevice(const InputDevice::Id &d)
     }
     else
     {  // device is not playing
-        initInputDevice(d);
+        initInputDevice(d, id);
     }
 }
 
-void MainWindow::initInputDevice(const InputDevice::Id &d)
+void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
 {
     m_deviceChangeRequested = false;
     if (nullptr != m_inputDevice)
@@ -2434,7 +2435,6 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
     switch (d)
     {
         case InputDevice::Id::UNDEFINED:
-            qDebug() << "InputDevice::Id::UNDEFINED";
             // store service list if previous was not RAWFILE or UNDEFINED
             if ((InputDevice::Id::RAWFILE != m_inputDeviceId) && (InputDevice::Id::UNDEFINED != m_inputDeviceId))
             {  // if switching from live source save current service list & schedule
@@ -2485,7 +2485,7 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
             connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
             connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
-            if (m_inputDevice->openDevice())
+            if (m_inputDevice->openDevice(id))
             {  // rtl sdr is available
                 if ((InputDevice::Id::RAWFILE == m_inputDeviceId) || (InputDevice::Id::UNDEFINED == m_inputDeviceId))
                 {  // if switching from RAW or UNDEFINED load service list & rec schedule
@@ -2521,7 +2521,7 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
             else
             {
                 m_setupDialog->resetInputDevice();
-                initInputDevice(InputDevice::Id::UNDEFINED);
+                initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
             }
         }
         break;
@@ -2579,7 +2579,7 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
             else
             {
                 m_setupDialog->resetInputDevice();
-                initInputDevice(InputDevice::Id::UNDEFINED);
+                initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
             }
         }
         break;
@@ -2637,7 +2637,7 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
             else
             {
                 m_setupDialog->resetInputDevice();
-                initInputDevice(InputDevice::Id::UNDEFINED);
+                initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
             }
 #endif
         }
@@ -2696,7 +2696,7 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
             else
             {
                 m_setupDialog->resetInputDevice();
-                initInputDevice(InputDevice::Id::UNDEFINED);
+                initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
             }
 #endif
         }
@@ -2756,7 +2756,7 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
             else
             {
                 m_setupDialog->resetInputDevice();
-                initInputDevice(InputDevice::Id::UNDEFINED);
+                initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
             }
 #endif
         }
@@ -2823,7 +2823,7 @@ void MainWindow::initInputDevice(const InputDevice::Id &d)
             else
             {
                 m_setupDialog->resetInputDevice();
-                initInputDevice(InputDevice::Id::UNDEFINED);
+                initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
             }
         }
         break;
@@ -3001,6 +3001,7 @@ void MainWindow::loadSettings()
     m_settings->epg.filterEnsemble = settings->value("EPG/filterOtherEnsembles", false).toBool();
     m_settings->epg.geometry = settings->value("EPG/windowGeometry").toByteArray();
 
+    m_settings->rtlsdr.hwId = settings->value("RTL-SDR/lastDevice");
     m_settings->rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
     m_settings->rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
     m_settings->rtlsdr.bandwidth = settings->value("RTL-SDR/bandwidth", 0).toUInt();
@@ -3021,6 +3022,7 @@ void MainWindow::loadSettings()
 #endif
 
 #if HAVE_AIRSPY
+    m_settings->airspy.hwId = settings->value("AIRSPY/lastDevice");
     m_settings->airspy.gain.sensitivityGainIdx = settings->value("AIRSPY/sensitivityGainIdx", 9).toInt();
     m_settings->airspy.gain.lnaGainIdx = settings->value("AIRSPY/lnaGainIdx", 0).toInt();
     m_settings->airspy.gain.mixerGainIdx = settings->value("AIRSPY/mixerGainIdx", 0).toInt();
@@ -3100,13 +3102,28 @@ void MainWindow::loadSettings()
 
     if (InputDevice::Id::UNDEFINED != static_cast<InputDevice::Id>(inDevice))
     {
-        initInputDevice(m_settings->inputDevice);
+        switch (m_settings->inputDevice)
+        {
+            case InputDevice::Id::RTLSDR:
+                // try to init last device
+                initInputDevice(m_settings->inputDevice, m_settings->rtlsdr.hwId);
+                break;
+            case InputDevice::Id::AIRSPY:
+                // try to init last device
+                initInputDevice(m_settings->inputDevice, m_settings->airspy.hwId);
+                break;
+            case InputDevice::Id::RTLTCP:
+            case InputDevice::Id::RAWFILE:
+            case InputDevice::Id::SOAPYSDR:
+            case InputDevice::Id::RARTTCP:
+                initInputDevice(m_settings->inputDevice, QVariant());
+            default:
+                // do nothing
+                break;
+        }
 
-        // if input device has switched to what was stored and it is RTLSDR or RTLTCP or Airspy
-        if ((m_settings->inputDevice == m_inputDeviceId) &&
-            ((InputDevice::Id::RTLSDR == m_inputDeviceId) || (InputDevice::Id::AIRSPY == m_inputDeviceId) ||
-             (InputDevice::Id::SOAPYSDR == m_inputDeviceId) || (InputDevice::Id::RTLTCP == m_inputDeviceId) ||
-             (InputDevice::Id::RARTTCP == m_inputDeviceId)))
+        // restore service for live stream devices
+        if (m_inputDevice && (m_inputDevice->capabilities() & InputDevice::Capability::LiveStream))
         {  // restore channel
             int sid = settings->value("SID", 0).toInt();
             uint8_t scids = settings->value("SCIdS", 0).toInt();
@@ -3116,9 +3133,7 @@ void MainWindow::loadSettings()
 
     delete settings;
 
-    if (((InputDevice::Id::RTLSDR == m_inputDeviceId) || (InputDevice::Id::AIRSPY == m_inputDeviceId) ||
-         (InputDevice::Id::SOAPYSDR == m_inputDeviceId)) &&
-        (m_serviceList->numServices() == 0))
+    if (m_inputDevice && (m_inputDevice->capabilities() & InputDevice::Capability::LiveStream) && (m_serviceList->numServices() == 0))
     {
         QTimer::singleShot(1, this, [this]() { bandScan(); });
     }
@@ -3237,6 +3252,7 @@ void MainWindow::saveSettings()
     settings->setValue("UA-STORAGE/slsPattern", m_settings->uaDump.slsPattern);
     settings->setValue("UA-STORAGE/spiPattern", m_settings->uaDump.spiPattern);
 
+    settings->setValue("RTL-SDR/lastDevice", m_settings->rtlsdr.hwId);
     settings->setValue("RTL-SDR/gainIndex", m_settings->rtlsdr.gainIdx);
     settings->setValue("RTL-SDR/gainMode", static_cast<int>(m_settings->rtlsdr.gainMode));
     settings->setValue("RTL-SDR/bandwidth", m_settings->rtlsdr.bandwidth);
@@ -3245,6 +3261,7 @@ void MainWindow::saveSettings()
     settings->setValue("RTL-SDR/ppm", m_settings->rtlsdr.ppm);
 
 #if HAVE_AIRSPY
+    settings->setValue("AIRSPY/lastDevice", m_settings->airspy.hwId);
     settings->setValue("AIRSPY/sensitivityGainIdx", m_settings->airspy.gain.sensitivityGainIdx);
     settings->setValue("AIRSPY/lnaGainIdx", m_settings->airspy.gain.lnaGainIdx);
     settings->setValue("AIRSPY/mixerGainIdx", m_settings->airspy.gain.mixerGainIdx);

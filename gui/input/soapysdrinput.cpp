@@ -60,8 +60,10 @@ SoapySdrInput::~SoapySdrInput()
     }
 }
 
-bool SoapySdrInput::openDevice()
+bool SoapySdrInput::openDevice(const QVariant &hwId)
 {
+    Q_UNUSED(hwId);
+
     int ret = 0;
 
     if (m_devArgs.isEmpty())
@@ -398,7 +400,7 @@ void SoapySdrInput::setGainMode(const SoapyGainStruct &gain)
 
 void SoapySdrInput::onAgcLevel(float agcLevel)
 {
-    qDebug() << agcLevel;
+    // qDebug() << agcLevel;
     // if (SoapyGainMode::Software == m_gainMode)
     // {
     //     if (agcLevel > SOAPYSDR_LEVEL_THR_MAX)

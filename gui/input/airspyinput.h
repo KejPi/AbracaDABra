@@ -73,15 +73,18 @@ class AirspyInput : public InputDevice
 {
     Q_OBJECT
 public:
+    static InputDeviceList getDeviceList();
+
     explicit AirspyInput(bool try4096kHz, QObject *parent = nullptr);
     ~AirspyInput();
-    bool openDevice() override;
+    bool openDevice(const QVariant &hwId = QVariant()) override;
     void tune(uint32_t frequency) override;
     InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
     void setGainMode(const AirspyGainStruct &gain);
     void startStopRecording(bool start) override;
     void setBiasT(bool ena) override;
     void setDataPacking(bool ena);
+
 signals:
     void agcLevel(float level);
 

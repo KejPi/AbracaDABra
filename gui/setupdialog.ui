@@ -73,10 +73,30 @@
           <enum>QFrame::Shadow::Sunken</enum>
          </property>
          <property name="currentIndex">
-          <number>4</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="rtlsdrPage">
           <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <item>
+              <widget class="QComboBox" name="rtlsdrDeviceListCombo"/>
+             </item>
+             <item>
+              <widget class="QPushButton" name="rtlsdrReloadButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Reload</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
            <item>
             <widget class="QGroupBox" name="rtlsdrInfoWidget">
              <property name="title">
@@ -702,6 +722,26 @@
          </widget>
          <widget class="QWidget" name="airspyPage">
           <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
+              <widget class="QComboBox" name="airspyDeviceListCombo"/>
+             </item>
+             <item>
+              <widget class="QPushButton" name="airspyReloadButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Reload</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
            <item>
             <widget class="QGroupBox" name="airspyGainModeGroup">
              <property name="title">

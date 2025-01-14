@@ -32,6 +32,45 @@
 
 Q_LOGGING_CATEGORY(rtlsdrInput, "RtlSdrInput", QtInfoMsg)
 
+InputDeviceList RtlSdrInput::getDeviceList()
+{
+    InputDeviceList list;
+
+    // Get all devices
+    uint32_t deviceCount = rtlsdr_get_device_count();
+    if (deviceCount == 0)
+    {
+        qCInfo(rtlsdrInput) << "No devices found";
+        return list;
+    }
+    else
+    {
+        qCInfo(rtlsdrInput) << "Found" << deviceCount << "devices.";
+    }
+
+    //	Iterate over all found rtl-sdr devices
+    struct rtlsdr_dev *dev;
+    for (uint32_t n = 0; n < deviceCount; ++n)
+    {
+        char manufact[256];
+        char product[256];
+        char serial[256];
+        if (0 == rtlsdr_get_device_usb_strings(n, manufact, product, serial))
+        {
+            QString dispName = getDeviceId(manufact, product, serial);
+            qCInfo(rtlsdrInput, "#%d: %s | %s | %s | %s", n, rtlsdr_get_device_name(n), manufact, product, serial);
+            // dispName and id are the sam for rtl-sdr
+            list.append({.diplayName = dispName, .id = QVariant(dispName)});
+        }
+    }
+    return list;
+}
+
+QString RtlSdrInput::getDeviceId(const char manufact[], const char product[], const char serial[])
+{
+    return QString("%1 | %2 | SN: %3").arg(manufact, product, serial);
+}
+
 RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
 {
     m_deviceDescription.id = InputDevice::Id::RTLSDR;
@@ -109,7 +148,7 @@ void RtlSdrInput::tune(uint32_t frequency)
     }
 }
 
-bool RtlSdrInput::openDevice()
+bool RtlSdrInput::openDevice(const QVariant &hwId)
 {
     int ret = 0;
 
@@ -125,31 +164,75 @@ bool RtlSdrInput::openDevice()
         qCInfo(rtlsdrInput) << "Found" << deviceCount << "devices";
     }
 
-    //	Iterate over all found rtl-sdr devices and try to open it. Stops if one device is successfull opened.
+    ret = -1;
     const char *deviceName;
-    for (uint32_t n = 0; n < deviceCount; ++n)
-    {
-        ret = rtlsdr_open(&m_device, n);
-        if (ret >= 0)
+    QString idToOpen = hwId.toString();
+    if (!idToOpen.isEmpty())
+    {  // go through the devices and open selected
+        for (uint32_t n = 0; n < deviceCount; ++n)
         {
-            deviceName = rtlsdr_get_device_name(n);
-            if (NULL == deviceName)
+            char manufact[256];
+            char product[256];
+            char serial[256];
+            if (0 == rtlsdr_get_device_usb_strings(n, manufact, product, serial))
             {
-                qCInfo(rtlsdrInput) << "Opening rtl-sdr device" << n;
+                QString id = getDeviceId(manufact, product, serial);
+                if (id == idToOpen)
+                {  // found
+                    ret = rtlsdr_open(&m_device, n);
+                    if (ret >= 0)
+                    {
+                        deviceName = rtlsdr_get_device_name(n);
+                        if (NULL == deviceName)
+                        {
+                            qCInfo(rtlsdrInput) << "Opening rtl-sdr device";
+                        }
+                        else
+                        {
+                            qCInfo(rtlsdrInput, "Opening rtl-sdr device: %s", idToOpen.toLatin1().constData());
+                        }
+                        break;
+                    }
+                    else
+                    { /* not successful */
+                    }
+                }
+            }
+        }
+        if (ret < 0)
+        {  // not opened
+            qCInfo(rtlsdrInput, "Unable to open last RTL-SDR device: %s. Trying to find working device...", idToOpen.toLatin1().constData());
+        }
+    }
+
+    if (ret < 0)
+    {  // not opened
+        // Iterate over all found rtl-sdr devices and try to open it. Stops if one device is successfull opened.
+        for (uint32_t n = 0; n < deviceCount; ++n)
+        {
+            ret = rtlsdr_open(&m_device, n);
+            if (ret >= 0)
+            {
+                deviceName = rtlsdr_get_device_name(n);
+                if (NULL == deviceName)
+                {
+                    qCInfo(rtlsdrInput) << "Opening rtl-sdr device" << n;
+                }
+                else
+                {
+                    qCInfo(rtlsdrInput, "Opening rtl-sdr device #%d: %s", n, deviceName);
+                }
+                break;
             }
             else
-            {
-                qCInfo(rtlsdrInput, "Opening rtl-sdr device #%d: %s", n, deviceName);
+            { /* not successful */
             }
-            break;
-        }
-        else
-        { /* not successful */
         }
     }
 
     if (ret < 0)
     {  // no device found
+        m_device = nullptr;
         qCCritical(rtlsdrInput) << "Opening rtl-sdr failed";
         return false;
     }
@@ -520,6 +603,21 @@ void RtlSdrInput::setPPM(int ppm)
             }
         }
     }
+}
+
+QVariant RtlSdrInput::hwId()
+{
+    if (m_device)
+    {
+        char manufact[256];
+        char product[256];
+        char serial[256];
+        if (0 == rtlsdr_get_usb_strings(m_device, manufact, product, serial))
+        {
+            return getDeviceId(manufact, product, serial);
+        }
+    }
+    return QVariant();
 }
 
 void RtlSdrInput::setAgcLevelMax(float agcLevelMax)

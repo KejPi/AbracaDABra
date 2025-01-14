@@ -32,6 +32,33 @@
 
 Q_LOGGING_CATEGORY(airspyInput, "AirspyInput", QtInfoMsg)
 
+InputDeviceList AirspyInput::getDeviceList()
+{
+    InputDeviceList list;
+
+    uint64_t serials[8];
+    int deviceCount = airspy_list_devices(serials, 8);
+    if (0 == deviceCount)
+    {
+        qCInfo(airspyInput) << "No devices found";
+        return list;
+    }
+    else
+    {
+        qCInfo(airspyInput) << "Found " << deviceCount << " devices.";
+    }
+    int n = 0;
+    while (n < deviceCount)
+    {
+        qDebug("#%d: %llX", n, serials[n]);
+        QString dispName = QString("SN: %1").arg(serials[n], 0, 16).toUpper();
+        struct InputDeviceDesc desc = {.diplayName = dispName, .id = QVariant(serials[n])};
+        list.append(desc);
+        ++n;
+    }
+    return list;
+}
+
 AirspyInput::AirspyInput(bool try4096kHz, QObject *parent) : InputDevice(parent)
 {
     m_deviceDescription.id = InputDevice::Id::AIRSPY;
@@ -86,14 +113,31 @@ void AirspyInput::tune(uint32_t frequency)
     }
 }
 
-bool AirspyInput::openDevice()
+bool AirspyInput::openDevice(const QVariant &hwId)
 {
-    // open first device
-    if (AIRSPY_SUCCESS != airspy_open(&m_device))
-    {
-        qCCritical(airspyInput) << "Failed opening device";
-        m_device = nullptr;
-        return false;
+    bool found = false;
+    if (hwId.isValid())
+    {  // try to open selected device
+        uint64_t sn = hwId.toULongLong();
+        if (AIRSPY_SUCCESS != airspy_open_sn(&m_device, sn))
+        {
+            qCInfo(airspyInput, "Unable to open last AIRSPY device: %s. Trying to find working device...",
+                   QString("%1").arg(sn, 0, 16).toUpper().toLatin1().constData());
+        }
+        else
+        {
+            found = true;
+        }
+    }
+
+    if (!found)
+    {  // open first device
+        if (AIRSPY_SUCCESS != airspy_open(&m_device))
+        {
+            qCCritical(airspyInput) << "Failed opening device";
+            m_device = nullptr;
+            return false;
+        }
     }
 
     // set sample type

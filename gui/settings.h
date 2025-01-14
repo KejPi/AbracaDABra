@@ -77,6 +77,7 @@ public:
     } rawfile;
     struct
     {
+        QVariant hwId;
         RtlGainMode gainMode;
         int gainIdx;
         uint32_t bandwidth;
@@ -96,6 +97,7 @@ public:
 #if HAVE_AIRSPY
     struct
     {
+        QVariant hwId;
         AirspyGainStruct gain;
         bool biasT;
         bool dataPacking;

@@ -89,9 +89,11 @@ class RtlSdrInput : public InputDevice
 {
     Q_OBJECT
 public:
+    static InputDeviceList getDeviceList();
+
     explicit RtlSdrInput(QObject *parent = nullptr);
     ~RtlSdrInput();
-    bool openDevice() override;
+    bool openDevice(const QVariant &hwId) override;
     void tune(uint32_t frequency) override;
     InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
     void setGainMode(RtlGainMode gainMode, int gainIdx = 0);
@@ -99,6 +101,7 @@ public:
     void setBW(uint32_t bw) override;
     void setBiasT(bool ena) override;
     void setPPM(int ppm) override;
+    virtual QVariant hwId() override;
     void setAgcLevelMax(float agcMaxValue);
     QList<float> getGainList() const;
 
@@ -143,6 +146,8 @@ private:
 
     void onReadThreadStopped();
     void onWatchdogTimeout();
+
+    static QString getDeviceId(const char manufact[], const char product[], const char serial[]);
 };
 
 #endif  // RTLSDRINPUT_H

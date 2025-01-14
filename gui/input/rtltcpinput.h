@@ -143,7 +143,7 @@ class RtlTcpInput : public InputDevice
 public:
     explicit RtlTcpInput(QObject *parent = nullptr);
     ~RtlTcpInput();
-    bool openDevice() override;
+    bool openDevice(const QVariant &hwId = QVariant()) override;
     void tune(uint32_t frequency) override;
     InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
     void setTcpIp(const QString &address, int port);

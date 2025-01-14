@@ -123,8 +123,10 @@ RtlTcpInput::~RtlTcpInput()
     }
 }
 
-bool RtlTcpInput::openDevice()
+bool RtlTcpInput::openDevice(const QVariant &hwId)
 {
+    Q_UNUSED(hwId);
+
     if (nullptr != m_worker)
     {  // device already opened
         return true;

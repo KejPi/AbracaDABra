@@ -31,6 +31,7 @@
 
 #include <QMutex>
 #include <QObject>
+#include <QVariant>
 #include <QWaitCondition>
 
 // this is chunk that is received from input device to be stored in input FIFO
@@ -73,6 +74,13 @@ enum class SoapyGainMode
     Hardware,
     Manual
 };
+
+struct InputDeviceDesc
+{
+    QString diplayName;
+    QVariant id;
+};
+typedef QList<struct InputDeviceDesc> InputDeviceList;
 
 class InputDevice : public QObject
 {
@@ -131,7 +139,7 @@ public:
 
     InputDevice(QObject *parent = nullptr);
     ~InputDevice();
-    virtual bool openDevice() = 0;
+    virtual bool openDevice(const QVariant &hwId = QVariant()) = 0;
     const InputDevice::Description &deviceDescription() const { return m_deviceDescription; }
     virtual void tune(uint32_t freq) = 0;
     virtual void startStopRecording(bool start) = 0;
@@ -139,6 +147,7 @@ public:
     virtual void setBW(uint32_t bw) { Q_UNUSED(bw) }
     virtual void setBiasT(bool ena) { Q_UNUSED(ena) }
     virtual void setPPM(int ppm) { Q_UNUSED(ppm) }
+    virtual QVariant hwId() { return QVariant(); }
 
 signals:
     void deviceReady();
