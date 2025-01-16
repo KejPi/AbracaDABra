@@ -473,8 +473,8 @@ void RtlSdrInput::onAgcLevel(float agcLevel)
             int tuner_gain;
             if (0 == rtlsdr_get_tuner_i2c_register(m_device, reg_values, &reglen, &tuner_gain))
             {
-                // emit rfLevel(20*log10(agcLevel) - (tuner_gain + 5) / 10 - 46);
-                int gain = (tuner_gain + 5) / 10;
+                float gain = (tuner_gain + 5) * 0.1;
+                // qDebug() << agcLevel << gain << 20 * std::log10f(agcLevel) - gain - 46;
                 emit rfLevel(m_20log10[static_cast<int>(std::roundf(agcLevel))] - gain - 46, gain);
             }
             else

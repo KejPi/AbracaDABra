@@ -2541,7 +2541,8 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
 
             // set IP address and port
-            dynamic_cast<RtlTcpInput *>(m_inputDevice)->setTcpIp(m_settings->rtltcp.tcpAddress, m_settings->rtltcp.tcpPort);
+            dynamic_cast<RtlTcpInput *>(m_inputDevice)
+                ->setTcpIp(m_settings->rtltcp.tcpAddress, m_settings->rtltcp.tcpPort, m_settings->rtltcp.controlSocketEna);
 
             if (m_inputDevice->openDevice())
             {  // rtl tcp is available
@@ -2860,6 +2861,10 @@ void MainWindow::configureForInputDevice()
         // ensemble info dialog
         connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
         connect(m_inputDevice, &InputDevice::rfLevel, m_ensembleInfoDialog, &EnsembleInfoDialog::updateRfLevel);
+        if (m_signalDialog != nullptr)
+        {
+            connect(m_inputDevice, &InputDevice::rfLevel, m_signalDialog, &SignalDialog::updateRfLevel);
+        }
         m_ensembleInfoDialog->enableRecording(hasRecording);
 
         // metadata & EPG
@@ -3013,6 +3018,7 @@ void MainWindow::loadSettings()
     m_settings->rtltcp.gainMode = static_cast<RtlGainMode>(settings->value("RTL-TCP/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
     m_settings->rtltcp.tcpAddress = settings->value("RTL-TCP/address", QString("127.0.0.1")).toString();
     m_settings->rtltcp.tcpPort = settings->value("RTL-TCP/port", 1234).toInt();
+    m_settings->rtltcp.controlSocketEna = settings->value("RTL-TCP/controlSocket", true).toBool();
     m_settings->rtltcp.agcLevelMax = settings->value("RTL-TCP/agcLevelMax", 0).toInt();
     m_settings->rtltcp.ppm = settings->value("RTL-TCP/ppm", 0).toInt();
 
@@ -3300,6 +3306,7 @@ void MainWindow::saveSettings()
     settings->setValue("RTL-TCP/gainMode", static_cast<int>(m_settings->rtltcp.gainMode));
     settings->setValue("RTL-TCP/address", m_settings->rtltcp.tcpAddress);
     settings->setValue("RTL-TCP/port", m_settings->rtltcp.tcpPort);
+    settings->setValue("RTL-TCP/controlSocket", m_settings->rtltcp.controlSocketEna);
     settings->setValue("RTL-TCP/agcLevelMax", m_settings->rtltcp.agcLevelMax);
     settings->setValue("RTL-TCP/ppm", m_settings->rtltcp.ppm);
 

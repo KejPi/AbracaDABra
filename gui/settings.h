@@ -91,6 +91,7 @@ public:
         int gainIdx;
         QString tcpAddress;
         int tcpPort;
+        bool controlSocketEna;
         int agcLevelMax;
         int ppm;
     } rtltcp;

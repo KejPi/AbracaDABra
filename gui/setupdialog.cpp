@@ -112,6 +112,10 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->soapysdrBandwidth->setToolTip(ui->rtlsdrBandwidth->toolTip());
     ui->soapysdrBandwidth->setMinimumWidth(ui->rtlsdrSwAgcMaxLevel->width());
 
+    ui->rtltcpControlSocketCheckbox->setText(tr("Connect to control socket if available"));
+    ui->rtltcpControlSocketCheckbox->setToolTip(
+        tr("Enable connection to control socket.<br>This option requires rtl-tcp server implemented by old-dab."));
+
     // set announcement combos
     QGridLayout *gridLayout = new QGridLayout;
     // alarm announcements
@@ -599,9 +603,14 @@ void SetupDialog::setUiState()
         default:
             break;
     }
+    ui->rtltcpIpAddressEdit->setText(m_settings->rtltcp.tcpAddress);
+    ui->rtltcpIpPortSpinBox->setValue(m_settings->rtltcp.tcpPort);
+    ui->rtltcpControlSocketCheckbox->setChecked(m_settings->rtltcp.controlSocketEna);
     ui->rtlsdrBandwidth->setValue(m_settings->rtlsdr.bandwidth / 1000);
+    ui->rtlsdrBandwidthDefault->setEnabled(m_settings->rtlsdr.bandwidth != 0);
     ui->rtlsdrBiasTCombo->setCurrentIndex(m_settings->rtlsdr.biasT ? 1 : 0);
     ui->rtlsdrSwAgcMaxLevel->setValue(m_settings->rtlsdr.agcLevelMax);
+    ui->rtlsdrSwAgcMaxLevelDefault->setEnabled(m_settings->rtlsdr.agcLevelMax != 0);
     ui->rtlsdrPPM->setValue(m_settings->rtlsdr.ppm);
 
     switch (m_settings->rtltcp.gainMode)
@@ -619,6 +628,7 @@ void SetupDialog::setUiState()
             break;
     }
     ui->rtltcpSwAgcMaxLevel->setValue(m_settings->rtltcp.agcLevelMax);
+    ui->rtltcpSwAgcMaxLevelDefault->setEnabled(m_settings->rtltcp.agcLevelMax != 0);
     ui->rtltcpPPM->setValue(m_settings->rtltcp.ppm);
 
 #if HAVE_AIRSPY
@@ -674,6 +684,7 @@ void SetupDialog::setUiState()
     ui->soapysdrChannelNum->setValue(m_settings->soapysdr.channel);
     ui->soapySdrAntenna->setText(m_settings->soapysdr.antenna);
     ui->soapysdrBandwidth->setValue(m_settings->soapysdr.bandwidth / 1000);
+    ui->soapysdrBandwidthDefault->setEnabled(m_settings->soapysdr.bandwidth != 0);
     ui->soapysdrPPM->setValue(m_settings->soapysdr.ppm);
 #endif
 
@@ -691,8 +702,6 @@ void SetupDialog::setUiState()
     }
     ui->loopCheckbox->setChecked(m_settings->rawfile.loopEna);
     ui->fileFormatCombo->setCurrentIndex(static_cast<int>(m_settings->rawfile.format));
-    ui->rtltcpIpAddressEdit->setText(m_settings->rtltcp.tcpAddress);
-    ui->rtltcpIpPortSpinBox->setValue(m_settings->rtltcp.tcpPort);
 #if HAVE_RARTTCP
     ui->rarttcpIpAddressEdit->setText(m_settings->rarttcp.tcpAddress);
     ui->rarttcpIpPortSpinBox->setValue(m_settings->rarttcp.tcpPort);
@@ -818,6 +827,7 @@ void SetupDialog::connectDeviceControlSignals()
     connect(ui->rtltcpSwAgcMaxLevel, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpSwAgcMaxLevelChanged);
     connect(ui->rtltcpSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtltcpSwAgcMaxLevel->setValue(0); });
     connect(ui->rtltcpPPM, &QSpinBox::valueChanged, this, &SetupDialog::onPPMChanged);
+    connect(ui->rtltcpControlSocketCheckbox, &QCheckBox::checkStateChanged, this, &SetupDialog::onRtlTcpControlSocketChecked);
 
     connect(ui->fileFormatCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onRawFileFormatChanged);
 
@@ -893,7 +903,7 @@ void SetupDialog::onConnectDeviceClicked()
         case InputDevice::Id::RTLTCP:
             m_settings->rtltcp.tcpAddress = ui->rtltcpIpAddressEdit->text();
             m_settings->rtltcp.tcpPort = ui->rtltcpIpPortSpinBox->value();
-            // activateRtlTcpControls(true);
+            m_settings->rtltcp.controlSocketEna = ui->rtltcpControlSocketCheckbox->isChecked();
             break;
         case InputDevice::Id::RARTTCP:
             break;
@@ -915,7 +925,6 @@ void SetupDialog::onConnectDeviceClicked()
             m_settings->soapysdr.devArgs = ui->soapysdrDevArgs->text();
             m_settings->soapysdr.channel = ui->soapysdrChannelNum->text().toInt();
             m_settings->soapysdr.antenna = ui->soapySdrAntenna->text();
-            // activateSoapySdrControls(true);
 #endif
             break;
     }
@@ -1079,6 +1088,14 @@ void SetupDialog::onRtlTcpGainSliderChanged(int val)
 void SetupDialog::onRtlTcpIpAddrEditFinished()
 {
     if (ui->rtltcpIpAddressEdit->text() != m_settings->rtltcp.tcpAddress)
+    {
+        setConnectButton(ConnectButtonOn);
+    }
+}
+
+void SetupDialog::onRtlTcpControlSocketChecked(Qt::CheckState state)
+{
+    if ((state == Qt::Checked) != m_settings->rtltcp.controlSocketEna)
     {
         setConnectButton(ConnectButtonOn);
     }
@@ -1400,7 +1417,10 @@ void SetupDialog::onInputChanged(int index)
         }
         break;
         case InputDevice::Id::RTLTCP:
-            activateRtlTcpControls(false);
+            if (m_inputDeviceId != static_cast<InputDevice::Id>(inputDeviceInt))
+            {
+                activateRtlTcpControls(false);
+            }
             break;
         case InputDevice::Id::UNDEFINED:
             break;
