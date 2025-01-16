@@ -127,13 +127,15 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     ui->spectrumPlot->xAxis->grid()->setSubGridVisible(true);
     ui->spectrumPlot->yAxis->grid()->setSubGridVisible(true);
 
+    m_spectYRangeSet = false;
+    m_spectYRangeMin = -120;
+    m_spectYRangeMax = 0.0;
+
     ui->spectrumPlot->axisRect()->setupFullAxesBox();
     ui->spectrumPlot->xAxis->setRange(-1.024, 1.024);
-    ui->spectrumPlot->yAxis->setRange(-100, 0);
+    ui->spectrumPlot->yAxis->setRange(m_spectYRangeMin, m_spectYRangeMax);
     ui->spectrumPlot->xAxis2->setRange(-1.024, 1.024);
-    ui->spectrumPlot->yAxis2->setRange(-100, 0);
-
-    m_spectYRangeSet = false;
+    ui->spectrumPlot->yAxis2->setRange(m_spectYRangeMin, m_spectYRangeMax);
 
     ui->spectrumPlot->xAxis->setLabel(tr("frequency [MHz]"));
     ui->spectrumPlot->yAxis->setLabel("dBFS");
@@ -363,8 +365,15 @@ void SignalDialog::reset()
     m_spectrumBuffer.assign(2048, 0.0);
     m_avrgCntr = 0;
     ui->spectrumPlot->graph(0)->data()->clear();
-    ui->spectrumPlot->yAxis->setRange(-100, 0);
     m_spectYRangeSet = false;
+    m_spectYRangeMin = -120;
+    m_spectYRangeMax = 0;
+    ui->spectrumPlot->yAxis->setRange(m_spectYRangeMin, m_spectYRangeMax);
+
+    setRfLevelVisible(false);
+    setGainVisible(false);
+    setSignalState(0, 0.0);
+    ui->freqOffsetValue->setText(tr("N/A"));
 }
 
 void SignalDialog::setRfLevelVisible(bool visible)
@@ -406,7 +415,14 @@ void SignalDialog::onTuneDone(uint32_t freq)
     m_frequency = freq;
     reset();
     setFreqRange();
-    ui->freqValue->setText(QString::number(m_frequency) + " kHz");
+    if (m_frequency != 0)
+    {
+        ui->freqValue->setText(QString::number(m_frequency) + " kHz");
+    }
+    else
+    {
+        ui->freqValue->setText("");
+    }
     ui->spectrumPlot->replot();
 }
 
@@ -429,11 +445,15 @@ void SignalDialog::updateRfLevel(float rfLevel, float gain)
     {  // level is not available (input device in HW mode or not RTL-SDR)
         ui->rfLevelValue->setText(tr("N/A"));
         setRfLevelVisible(false);
+        m_spectYRangeMin = -120;
+        m_spectYRangeMax = 0;
     }
     else
     {
         ui->rfLevelValue->setText(QString::number(double(rfLevel), 'f', 1) + " dBm");
         setRfLevelVisible(true);
+        m_spectYRangeMin = floorf((-120 + rfLevel) / 10.0) * 10.0;
+        m_spectYRangeMax = ceilf((0 + rfLevel) / 10.0) * 10.0;
     }
 }
 
@@ -508,22 +528,22 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
         {
             if ((minVal - range.lower) < 0)
             {  // set minumum to at least minVal + 10, use multiples of 10
-                range.lower = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, -120.0);
+                range.lower = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, m_spectYRangeMin);
             }
             if ((range.upper - maxVal) < 0)
             {
-                range.upper = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, 0.0);
+                range.upper = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, m_spectYRangeMax);
             }
         }
         else
         {
             if ((minVal - range.lower) < 0 || (minVal - range.lower) > 20)
             {  // set minumum to at least minVal + 10, use multiples of 10
-                range.lower = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, -120.0);
+                range.lower = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, m_spectYRangeMin);
             }
             if ((range.upper - maxVal) < 0 || (range.upper - maxVal) > 20)
             {
-                range.upper = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, 0);
+                range.upper = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, m_spectYRangeMax);
             }
             m_spectYRangeSet = true;
         }

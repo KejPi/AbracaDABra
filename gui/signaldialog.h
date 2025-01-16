@@ -81,6 +81,8 @@ private:
     float m_tunerGain = NAN;
     int m_syncSnrLevel = -1;
     bool m_spectYRangeSet;
+    float m_spectYRangeMax;
+    float m_spectYRangeMin;
 
     void addToPlot(float snr);
     void setFreqRange();
