@@ -238,7 +238,7 @@ void EnsembleInfoDialog::updateRecordingStatus(uint64_t bytes, float ms)
 
 void EnsembleInfoDialog::updateAgcGain(float gain)
 {
-    if (std::isnan(gain))
+    if (std::isnan(gain) || m_frequency == 0)
     {  // gain is not available (input device in HW mode)
         ui->agcGain->setText(tr("N/A"));
         return;
@@ -248,7 +248,7 @@ void EnsembleInfoDialog::updateAgcGain(float gain)
 
 void EnsembleInfoDialog::updateRfLevel(float rfLevel, float)
 {
-    if (std::isnan(rfLevel))
+    if (std::isnan(rfLevel) || m_frequency == 0)
     {  // level is not available (input device in HW mode or not RTL-SDR)
         ui->rfLevel->setText(tr("N/A"));
         return;
@@ -414,7 +414,7 @@ void EnsembleInfoDialog::clearSignalInfo()
     ui->snr->setText(tr("N/A"));
     ui->freqOffset->setText(tr("N/A"));
     ui->rfLevel->setText(tr("N/A"));
-    // ui->agcGain->setText(tr("N/A"));
+    ui->agcGain->setText(tr("N/A"));
 }
 
 void EnsembleInfoDialog::clearFreqInfo()
