@@ -680,6 +680,8 @@ void ScannerDialog::onSelectedRowChanged()
     m_currentEnsemble.frequency = item.ensId().freq();
 
     emit ensembleInfoChanged();
+
+    m_txTableView->scrollTo(m_sortedFilteredModel->mapFromSource(m_model->index(selectedRow(), 0)));
 }
 
 void ScannerDialog::showEvent(QShowEvent *event)
