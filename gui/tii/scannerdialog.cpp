@@ -520,6 +520,11 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
     {
         if (++m_tiiCntr >= m_modeCombo->currentData().toInt())
         {
+            if (nullptr != m_timer && m_timer->isActive())
+            {
+                m_timer->stop();
+            }
+
             if (m_isPreciseMode)
             {   // request ensemble info
                 m_tiiData = data;
@@ -558,12 +563,8 @@ void ScannerDialog::storeEnsembleData(const RadioControlTIIData &tiiData,  const
     // forcing update of UI
     onSelectionChanged(QItemSelection(),QItemSelection());
 
-    if (nullptr != m_timer && m_timer->isActive())
-    {
-        m_timer->stop();
-        // next channel
-        scanStep();
-    }
+    // next channel
+    scanStep();
 }
 
 void ScannerDialog::showEnsembleConfig(const QModelIndex &index)
