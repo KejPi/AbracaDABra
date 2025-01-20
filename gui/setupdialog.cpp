@@ -206,7 +206,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->xmlHeaderWidget->setVisible(false);
 
     // RTL SDR device info
-    label = new QLabel(tr("Device:"));
+    label = new QLabel(tr("Connected device:"));
     m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoDevice] = new QLabel(ui->rtlsdrInfoWidget);
     ui->rtlsdrInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoDevice, 0);
     ui->rtlsdrInfoWidgetLayout->addWidget(m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoDevice], SetupDialogDeviceInfo::DevInfoDevice, 1, 1, 2);
@@ -221,7 +221,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
                                           2);
     ui->rtlsdrInfoWidget->setVisible(false);
 
-    label = new QLabel(tr("Device:"));
+    label = new QLabel(tr("Connected device:"));
     m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoDevice] = new QLabel(ui->rtltcpInfoWidget);
     ui->rtltcpInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoDevice, 0);
     ui->rtltcpInfoWidgetLayout->addWidget(m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoDevice], SetupDialogDeviceInfo::DevInfoDevice, 1, 1, 2);
@@ -237,7 +237,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->rtltcpInfoWidget->setVisible(false);
 #if HAVE_SOAPYSDR
     // RTL SDR device info
-    label = new QLabel(tr("Device:"));
+    label = new QLabel(tr("Connected device:"));
     m_soapySdrLabel[SetupDialogDeviceInfo::DevInfoDevice] = new QLabel(ui->soapysdrInfoWidget);
     ui->soapysdrInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoDevice, 0);
     ui->soapysdrInfoWidgetLayout->addWidget(m_soapySdrLabel[SetupDialogDeviceInfo::DevInfoDevice], SetupDialogDeviceInfo::DevInfoDevice, 1, 1, 2);
@@ -1444,7 +1444,7 @@ void SetupDialog::onInputChanged(int index)
                 activateSoapySdrControls(false);
             }
 #endif
-            return;
+            break;
         case InputDevice::Id::RARTTCP:
             break;
     }
