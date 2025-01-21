@@ -252,7 +252,7 @@ void RawFileInput::rewind()
     }
 }
 
-void RawFileInput::onBytesRead(quint64 bytesRead)
+void RawFileInput::onBytesRead(qint64 bytesRead)
 {
     switch (m_sampleFormat)
     {
@@ -301,15 +301,15 @@ void RawFileInput::seek(int msec)
 
     stop();
 
-    int numBytes = 0;
+    qint64 numBytes = 0;
 
     switch (m_sampleFormat)
     {
         case RawFileInputFormat::SAMPLE_FORMAT_U8:
-            numBytes = msec * 2 * 2048;
+            numBytes = static_cast<qint64>(msec) * 2 * 2048;
             break;
         case RawFileInputFormat::SAMPLE_FORMAT_S16:
-            numBytes = msec * 4 * 2048;
+            numBytes = static_cast<qint64>(msec) * 4 * 2048;
             break;
         default:
             break;
@@ -319,6 +319,7 @@ void RawFileInput::seek(int msec)
     {
         numBytes += RAWFILEINPUT_XML_PADDING;
     }
+
     m_inputFile->seek(numBytes);
 
     // Reset buffer here - worker thread it not running, DAB waits for new data
@@ -545,12 +546,6 @@ void RawFileInput::parseXmlHeader(const QByteArray &xml)
 
 void RawFileInput::stop()
 {
-    if (nullptr != m_inputTimer)
-    {
-        m_inputTimer->stop();
-        delete m_inputTimer;
-        m_inputTimer = nullptr;
-    }
     if (nullptr != m_worker)
     {
         m_worker->stop();
@@ -567,9 +562,15 @@ void RawFileInput::stop()
         delete m_worker;
         m_worker = nullptr;
     }
+    if (nullptr != m_inputTimer)
+    {
+        m_inputTimer->stop();
+        delete m_inputTimer;
+        m_inputTimer = nullptr;
+    }
 }
 
-RawFileWorker::RawFileWorker(QFile *inputFile, RawFileInputFormat sampleFormat, int bytesRead, QObject *parent)
+RawFileWorker::RawFileWorker(QFile *inputFile, RawFileInputFormat sampleFormat, qint64 bytesRead, QObject *parent)
     : QThread(parent), m_sampleFormat(sampleFormat), m_inputFile(inputFile), m_bytesRead(bytesRead)
 {
     m_stopRequest = false;
@@ -634,7 +635,7 @@ void RawFileWorker::run()
             case RawFileInputFormat::SAMPLE_FORMAT_S16:
             {
                 int16_t *tmpBuffer = new int16_t[input_chunk_iq_samples * 2];
-                uint64_t bytesRead = m_inputFile->read((char *)tmpBuffer, input_chunk_iq_samples * 2 * sizeof(int16_t));
+                qint64 bytesRead = m_inputFile->read((char *)tmpBuffer, input_chunk_iq_samples * 2 * sizeof(int16_t));
                 m_bytesRead += bytesRead;
 
                 samplesRead = bytesRead >> 1;  // one sample is int16 (I or Q) => 2 bytes
@@ -669,7 +670,7 @@ void RawFileWorker::run()
             case RawFileInputFormat::SAMPLE_FORMAT_U8:
             {
                 uint8_t *tmpBuffer = new uint8_t[input_chunk_iq_samples * 2];
-                uint64_t bytesRead = m_inputFile->read((char *)tmpBuffer, input_chunk_iq_samples * 2 * sizeof(uint8_t));
+                qint64 bytesRead = m_inputFile->read((char *)tmpBuffer, input_chunk_iq_samples * 2 * sizeof(uint8_t));
                 m_bytesRead += bytesRead;
 
                 samplesRead = bytesRead;  // one sample is uint8 => 1 byte

@@ -49,7 +49,7 @@ class RawFileWorker : public QThread
 {
     Q_OBJECT
 public:
-    explicit RawFileWorker(QFile *inputFile, RawFileInputFormat sampleFormat, int bytesRead, QObject *parent = nullptr);
+    explicit RawFileWorker(QFile *inputFile, RawFileInputFormat sampleFormat, qint64 bytesRead, QObject *parent = nullptr);
     void trigger();
     void stop();
     bool isRunning();
@@ -98,7 +98,7 @@ private:
     QTimer m_watchdogTimer;
     void stop();
     void rewind();
-    void onBytesRead(quint64 bytesRead);
+    void onBytesRead(qint64 bytesRead);
     void onWatchdogTimeout();
     void onEndOfFile(bool status) { emit error(status ? InputDevice::ErrorCode::EndOfFile : InputDevice::ErrorCode::NoDataAvailable); }
     void parseXmlHeader(const QByteArray &xml);

@@ -815,10 +815,13 @@ QString RadioControl::ensembleConfigurationString() const
                     }
                 }
                 strOut << QString("Cluster IDs [");
-                strOut << QString("%1").arg(s.clusterIds.at(0), 2, 16, QLatin1Char('0')).toUpper();
-                for (int d = 1; d < s.clusterIds.size(); ++d)
+                if (!s.clusterIds.isEmpty())
                 {
-                    strOut << QString(" %1").arg(s.clusterIds.at(d), 2, 16, QLatin1Char('0')).toUpper();
+                    strOut << QString("%1").arg(s.clusterIds.at(0), 2, 16, QLatin1Char('0')).toUpper();
+                    for (int d = 1; d < s.clusterIds.size(); ++d)
+                    {
+                        strOut << QString(" %1").arg(s.clusterIds.at(d), 2, 16, QLatin1Char('0')).toUpper();
+                    }
                 }
                 strOut << "]";
             }
