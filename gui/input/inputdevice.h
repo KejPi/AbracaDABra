@@ -104,6 +104,7 @@ public:
         {
             QString name;
             QString model;
+            QString tuner;
         } device;
         struct
         {

@@ -252,38 +252,57 @@ bool RtlSdrInput::openDevice(const QVariant &hwId)
     }
 
     // store device information
-    m_deviceDescription.device.name = "rtl-sdr";
+    if (NULL == deviceName)
+    {
+        m_deviceDescription.device.name = "Generic RTL2832U OEM";
+    }
+    else
+    {
+        m_deviceDescription.device.name = QString(deviceName);
+    }
+
     switch (rtlsdr_get_tuner_type(m_device))
     {
         case RTLSDR_TUNER_E4000:
             m_deviceDescription.device.name += " [E4000]";
+            m_deviceDescription.device.tuner = "E4000";
             break;
         case RTLSDR_TUNER_FC0012:
             m_deviceDescription.device.name += " [FC0012]";
+            m_deviceDescription.device.tuner = "FC0012";
             break;
         case RTLSDR_TUNER_FC0013:
             m_deviceDescription.device.name += " [FC0013]";
+            m_deviceDescription.device.tuner = "FC0013";
             break;
         case RTLSDR_TUNER_FC2580:
             m_deviceDescription.device.name += " [FC2580]";
+            m_deviceDescription.device.tuner = "FC2580";
             break;
         case RTLSDR_TUNER_R820T:
             m_deviceDescription.device.name += " [R820T]";
+            m_deviceDescription.device.tuner = "R820T";
             break;
         case RTLSDR_TUNER_R828D:
             m_deviceDescription.device.name += " [R828D]";
+            m_deviceDescription.device.tuner = "R828D";
             break;
         default:
             break;
     }
-    if (NULL == deviceName)
+
+    char manufact[256];
+    char product[256];
+    char serial[256];
+    if (0 == rtlsdr_get_usb_strings(m_device, manufact, product, serial))
     {
-        m_deviceDescription.device.model = "Generic RTL2832U OEM";
+        m_deviceDescription.device.model = QString("%1 | %2").arg(manufact, product);
     }
     else
     {
-        m_deviceDescription.device.model = QString(deviceName);
+        m_deviceDescription.device.model = "";
     }
+
     m_deviceDescription.sample.sampleRate = 2048000;
     m_deviceDescription.sample.channelBits = 8;
     m_deviceDescription.sample.containerBits = 8;

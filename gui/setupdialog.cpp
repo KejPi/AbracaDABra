@@ -184,6 +184,10 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDevice] = new QLabel;
     gridLayout->addWidget(label, SetupDialogXmlHeader::XMLDevice, 0);
     gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDevice], SetupDialogXmlHeader::XMLDevice, 1);
+    label = new QLabel(tr("Model:"));
+    m_xmlHeaderLabel[SetupDialogXmlHeader::XMLModel] = new QLabel;
+    gridLayout->addWidget(label, SetupDialogXmlHeader::XMLModel, 0);
+    gridLayout->addWidget(m_xmlHeaderLabel[SetupDialogXmlHeader::XMLModel], SetupDialogXmlHeader::XMLModel, 1);
     label = new QLabel(tr("Sample rate [Hz]:"));
     m_xmlHeaderLabel[SetupDialogXmlHeader::XMLSampleRate] = new QLabel;
     gridLayout->addWidget(label, SetupDialogXmlHeader::XMLSampleRate, 0);
@@ -1950,7 +1954,7 @@ void SetupDialog::setDeviceDescription(const InputDevice::Description &desc)
         case InputDevice::Id::RTLSDR:
         {
             m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoDevice]->setText(desc.device.model);
-            m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoTuner]->setText(desc.device.name.mid(9, desc.device.name.length() - 9 - 1));
+            m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoTuner]->setText(desc.device.tuner);
             m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoSampleFormat]->setText(desc.sample.channelContainer);
             ui->rtlsdrInfoWidget->setVisible(true);
         }
@@ -1958,7 +1962,7 @@ void SetupDialog::setDeviceDescription(const InputDevice::Description &desc)
         case InputDevice::Id::RTLTCP:
         {
             m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoDevice]->setText(desc.device.model);
-            m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoTuner]->setText(desc.device.name.mid(9, desc.device.name.length() - 9 - 1));
+            m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoTuner]->setText(desc.device.tuner);
             m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoSampleFormat]->setText(desc.sample.channelContainer);
             ui->rtltcpInfoWidget->setVisible(true);
         }
@@ -1974,7 +1978,8 @@ void SetupDialog::setDeviceDescription(const InputDevice::Description &desc)
             {
                 m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDate]->setText(desc.rawFile.time);
                 m_xmlHeaderLabel[SetupDialogXmlHeader::XMLRecorder]->setText(desc.rawFile.recorder);
-                m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDevice]->setText(QString("%1 [ %2 ]").arg(desc.device.name, desc.device.model));
+                m_xmlHeaderLabel[SetupDialogXmlHeader::XMLDevice]->setText(desc.device.name);
+                m_xmlHeaderLabel[SetupDialogXmlHeader::XMLModel]->setText(desc.device.model);
                 m_xmlHeaderLabel[SetupDialogXmlHeader::XMLSampleRate]->setText(QString::number(desc.sample.sampleRate));
                 m_xmlHeaderLabel[SetupDialogXmlHeader::XMLFreq]->setText(QString::number(desc.rawFile.frequency_kHz));
                 m_xmlHeaderLabel[SetupDialogXmlHeader::XMLLength]->setText(QString::number(desc.rawFile.numSamples * 1.0 / desc.sample.sampleRate));

@@ -148,7 +148,7 @@ bool RtlTcpInput::openDevice(const QVariant &hwId)
     if (dongleInfo.magic[0] == 'R' && dongleInfo.magic[1] == 'T' && dongleInfo.magic[2] == 'L' && dongleInfo.magic[3] == '0')
     {
         m_deviceDescription.device.name = "rtl_tcp";
-        m_deviceDescription.device.model = "Generic RTL2832U OEM";
+        m_deviceDescription.device.model = "Generic RTL2832U";
         m_deviceDescription.sample.sampleRate = 2048000;
         m_deviceDescription.sample.channelBits = 8;
         m_deviceDescription.sample.containerBits = 8;
@@ -170,24 +170,28 @@ bool RtlTcpInput::openDevice(const QVariant &hwId)
                     gains = e4k_gains;
                 }
                 m_deviceDescription.device.name += " [E4000]";
+                m_deviceDescription.device.tuner = "E4000";
                 break;
             case RTLSDR_TUNER_FC0012:
                 qCInfo(rtlTcpInput) << "RTLSDR_TUNER_FC0012";
                 gains = fc0012_gains;
                 numGains = *(&fc0012_gains + 1) - fc0012_gains;
                 m_deviceDescription.device.name += " [FC0012]";
+                m_deviceDescription.device.tuner = "FC0012";
                 break;
             case RTLSDR_TUNER_FC0013:
                 qCInfo(rtlTcpInput) << "RTLSDR_TUNER_FC0013";
                 gains = fc0013_gains;
                 numGains = *(&fc0013_gains + 1) - fc0013_gains;
                 m_deviceDescription.device.name += " [FC0013]";
+                m_deviceDescription.device.tuner = "FC0013";
                 break;
             case RTLSDR_TUNER_FC2580:
                 qCInfo(rtlTcpInput) << "RTLSDR_TUNER_FC2580";
                 gains = fc2580_gains;
                 numGains = *(&fc2580_gains + 1) - fc2580_gains;
                 m_deviceDescription.device.name += " [FC2580]";
+                m_deviceDescription.device.tuner = "FC2580";
                 break;
             case RTLSDR_TUNER_R820T:
                 qCInfo(rtlTcpInput) << "RTLSDR_TUNER_R820T";
@@ -202,6 +206,7 @@ bool RtlTcpInput::openDevice(const QVariant &hwId)
                     gains = r82xx_gains;
                 }
                 m_deviceDescription.device.name += " [R820T]";
+                m_deviceDescription.device.tuner = "R820T";
                 break;
             case RTLSDR_TUNER_R828D:
                 qCInfo(rtlTcpInput) << "RTLSDR_TUNER_R828D";
@@ -216,6 +221,7 @@ bool RtlTcpInput::openDevice(const QVariant &hwId)
                     gains = r82xx_gains;
                 }
                 m_deviceDescription.device.name += " [R828D]";
+                m_deviceDescription.device.tuner = "R828D";
                 break;
             case RTLSDR_TUNER_UNKNOWN:
             default:

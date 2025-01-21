@@ -104,6 +104,7 @@ private:
         XMLDate = 0,
         XMLRecorder,
         XMLDevice,
+        XMLModel,
         XMLSampleRate,
         XMLFreq,
         XMLLength,
