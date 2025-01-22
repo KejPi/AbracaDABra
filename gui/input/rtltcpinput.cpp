@@ -354,13 +354,13 @@ bool RtlTcpInput::openDevice(const QVariant &hwId)
     {
         if (::recv(m_sock, (char *)&dongleInfo, sizeof(dongleInfo), 0) <= 0)
         {
-            qCCritical(rtlTcpInput) << "RTL-TCP: Server not responding.";
+            qCCritical(rtlTcpInput) << "Server not responding.";
             return false;
         }
     }
     else
     {  // -1 is error, 0 is timeout
-        qCCritical(rtlTcpInput) << "RTL-TCP: Unable to get RTL dongle infomation";
+        qCCritical(rtlTcpInput) << "Unable to get RTL dongle infomation";
         return false;
     }
 #endif
@@ -451,7 +451,7 @@ bool RtlTcpInput::openDevice(const QVariant &hwId)
 
         if (dongleInfo.tunerGainCount != numGains)
         {
-            qCWarning(rtlTcpInput) << "unexpected number of gain values reported by server" << dongleInfo.tunerGainCount;
+            qCWarning(rtlTcpInput) << "Unexpected number of gain values reported by server" << dongleInfo.tunerGainCount;
             if (dongleInfo.tunerGainCount > numGains)
             {
                 dongleInfo.tunerGainCount = numGains;
@@ -460,7 +460,7 @@ bool RtlTcpInput::openDevice(const QVariant &hwId)
     }
     else
     {  // this is connection to unknown server => lets try and cross the fingers
-        qCWarning(rtlTcpInput) << "RTL-TCP: \"RTL0\" magic key not found. Unknown server.";
+        qCWarning(rtlTcpInput) << "\"RTL0\" magic key not found. Unknown server.";
 
         m_deviceDescription.device.name = "TCP server";
         m_deviceDescription.device.model = "Unknown";
@@ -684,7 +684,7 @@ void RtlTcpInput::onAgcLevel(float agcLevel)
 
 void RtlTcpInput::onReadThreadStopped()
 {
-    qCCritical(rtlTcpInput) << "server disconnected.";
+    qCCritical(rtlTcpInput) << "Server disconnected.";
 
     // close socket
 #if defined(_WIN32)
@@ -707,7 +707,7 @@ void RtlTcpInput::onWatchdogTimeout()
     {
         if (!m_worker->isRunning())
         {  // some problem in data input
-            qCCritical(rtlTcpInput) << "watchdog timeout";
+            qCCritical(rtlTcpInput) << "Watchdog timeout";
             inputBuffer.fillDummy();
             emit error(InputDevice::ErrorCode::NoDataAvailable);
         }
@@ -810,7 +810,7 @@ void RtlTcpWorker::run()
             ssize_t ret = ::recv(m_sock, (char *)m_bufferIQ + read, RTLTCP_CHUNK_SIZE - read, 0);
             if (0 == ret)
             {  // disconnected => finish thread operation
-                qCCritical(rtlTcpInput) << "socket disconnected";
+                qCCritical(rtlTcpInput) << "Socket disconnected";
                 goto worker_exit;
             }
             else if (-1 == ret)
@@ -843,12 +843,12 @@ void RtlTcpWorker::run()
                 }
                 else if ((ECONNRESET == errno) || (EBADF == errno))
                 {  // disconnected => finish thread operation
-                    qCCritical(rtlTcpInput) << "error: " << strerror(errno);
+                    qCCritical(rtlTcpInput) << "Error: " << strerror(errno);
                     goto worker_exit;
                 }
                 else
                 {
-                    qCCritical(rtlTcpInput) << "socket read error:" << strerror(errno);
+                    qCCritical(rtlTcpInput) << "Socket read error:" << strerror(errno);
                     goto worker_exit;
                 }
 #endif
@@ -949,7 +949,7 @@ void RtlTcpWorker::processInputData(unsigned char *buf, uint32_t len)
 
     if ((INPUT_FIFO_SIZE - count) < len * sizeof(float))
     {
-        qCWarning(rtlTcpInput) << "dropping" << len << "bytes...";
+        qCWarning(rtlTcpInput) << "Dropping" << len << "bytes...";
         return;
     }
 
