@@ -220,7 +220,7 @@ void RawFileInput::tune(uint32_t freq)
         connect(m_worker, &RawFileWorker::finished, m_worker, &QObject::deleteLater);
         connect(m_worker, &RawFileWorker::destroyed, this, [=]() { m_worker = nullptr; } );
         m_worker->start();
-        m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
+        m_watchdogTimer.start(1000 * 2 *INPUTDEVICE_WDOG_TIMEOUT_SEC);  // timeout is 2x longer than for other devices
 
         m_inputTimer = new QTimer(this);
         connect(m_inputTimer, &QTimer::timeout, m_worker, &RawFileWorker::trigger);
@@ -259,16 +259,18 @@ void RawFileInput::onBytesRead(qint64 bytesRead)
 void RawFileInput::onWatchdogTimeout()
 {
     if (nullptr != m_worker)
-    {
+    {        
         if (!m_worker->isRunning())
         {   // kill worker
-            m_worker->terminate();
+            qCWarning(rawFileInput) << "Watchdog timeout";
+
+            m_worker->stop();
             m_worker->wait(2000);
             while (!m_worker->isFinished())
             {
                 qCWarning(rawFileInput) << "Worker thread not finished after timeout";
 
-                // reset buffer - and tell the thread it is empty - buffer will be reset in any case
+                m_worker->terminate();
                 m_worker->wait(2000);
             }
             inputBuffer.fillDummy();
