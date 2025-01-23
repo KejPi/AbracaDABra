@@ -220,7 +220,7 @@ void RawFileInput::tune(uint32_t freq)
         connect(m_worker, &RawFileWorker::finished, m_worker, &QObject::deleteLater);
         connect(m_worker, &RawFileWorker::destroyed, this, [=]() { m_worker = nullptr; } );
         m_worker->start();
-        m_watchdogTimer.start(1000 * 2 *INPUTDEVICE_WDOG_TIMEOUT_SEC);  // timeout is 2x longer than for other devices
+        m_watchdogTimer.start(1000 * 4 * INPUTDEVICE_WDOG_TIMEOUT_SEC);  // timeout is 4x longer than for other devices
 
         m_inputTimer = new QTimer(this);
         connect(m_inputTimer, &QTimer::timeout, m_worker, &RawFileWorker::trigger);
@@ -273,6 +273,7 @@ void RawFileInput::onWatchdogTimeout()
                 m_worker->terminate();
                 m_worker->wait(2000);
             }
+
             inputBuffer.fillDummy();
             emit error(InputDeviceErrorCode::NoDataAvailable);
         }
@@ -604,6 +605,9 @@ void RawFileWorker::run()
 
         uint64_t samplesRead = 0;
         uint64_t input_chunk_iq_samples = period * 2048;
+        if (input_chunk_iq_samples > INPUT_CHUNK_IQ_SAMPLES*4) {
+            input_chunk_iq_samples = INPUT_CHUNK_IQ_SAMPLES*4;
+        }
 
         // get FIFO space
         pthread_mutex_lock(&inputBuffer.countMutex);
