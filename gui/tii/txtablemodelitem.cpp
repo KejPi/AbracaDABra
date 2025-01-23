@@ -35,12 +35,36 @@ TxTableModelItem::TxTableModelItem(int8_t mainId, int8_t subId, float level, con
     setLevel(level);
 
     TxDataItem *tx = nullptr;
+    float distance = 0;
     for (const auto &txItem : txItemList)
     {
         if ((txItem->subId() == subId) && (txItem->mainId() == mainId))
         {
-            tx = txItem;
-            break;
+            // tx = txItem;
+            // break;
+
+            if (coordinates.isValid())
+            {
+                if (tx == nullptr)
+                {
+                    distance = coordinates.distanceTo(txItem->coordinates());
+                    tx = txItem;
+                }
+                else
+                {
+                    float d = coordinates.distanceTo(txItem->coordinates());
+                    if (txItem->power() / (d * d) > tx->power() / (distance * distance))
+                    {
+                        tx = txItem;
+                        distance = d;
+                    }
+                }
+            }
+            else
+            {
+                tx = txItem;
+                break;
+            }
         }
     }
     if (tx != nullptr)
