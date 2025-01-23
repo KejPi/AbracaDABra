@@ -53,7 +53,7 @@ TxTableModelItem::TxTableModelItem(int8_t mainId, int8_t subId, float level, con
                 else
                 {
                     float d = coordinates.distanceTo(txItem->coordinates());
-                    if (txItem->power() / (d * d) > tx->power() / (distance * distance))
+                    if (txItem->power() * (distance * distance) > tx->power() * (d * d))
                     {
                         tx = txItem;
                         distance = d;
