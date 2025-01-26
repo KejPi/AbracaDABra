@@ -210,42 +210,69 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->xmlHeaderWidget->setVisible(false);
 
     // RTL SDR device info
-    label = new QLabel(tr("Connected device:"));
-    m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoDevice] = new QLabel(ui->rtlsdrInfoWidget);
-    ui->rtlsdrInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoDevice, 0);
-    ui->rtlsdrInfoWidgetLayout->addWidget(m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoDevice], SetupDialogDeviceInfo::DevInfoDevice, 1, 1, 2);
+    row = 0;
+    label = new QLabel(tr("Connected device:"), ui->rtlsdrInfoWidget);
+    ui->rtlsdrInfoWidgetLayout->addWidget(label, row, 0);
+    label = new QLabel(ui->rtlsdrInfoWidget);
+    ui->rtlsdrInfoWidgetLayout->addWidget(label, row++, 1, 1, 2);
+    m_rtlSdrLabel.append(label);
+    label = new QLabel(tr("Serial number:"), ui->rtlsdrInfoWidget);
+    ui->rtlsdrInfoWidgetLayout->addWidget(label, row, 0);
+    label = new QLabel(ui->rtlsdrInfoWidget);
+    ui->rtlsdrInfoWidgetLayout->addWidget(label, row++, 1, 1, 2);
+    m_rtlSdrLabel.append(label);
     label = new QLabel(tr("Tuner:"), ui->rtlsdrInfoWidget);
-    m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoTuner] = new QLabel(ui->rtlsdrInfoWidget);
-    ui->rtlsdrInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoTuner, 0);
-    ui->rtlsdrInfoWidgetLayout->addWidget(m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoTuner], SetupDialogDeviceInfo::DevInfoTuner, 1, 1, 2);
+    ui->rtlsdrInfoWidgetLayout->addWidget(label, row, 0);
+    label = new QLabel(ui->rtlsdrInfoWidget);
+    ui->rtlsdrInfoWidgetLayout->addWidget(label, row++, 1, 1, 2);
+    m_rtlSdrLabel.append(label);
     label = new QLabel(tr("Sample format:"), ui->rtlsdrInfoWidget);
-    m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoSampleFormat] = new QLabel(ui->rtlsdrInfoWidget);
-    ui->rtlsdrInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoSampleFormat, 0);
-    ui->rtlsdrInfoWidgetLayout->addWidget(m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoSampleFormat], SetupDialogDeviceInfo::DevInfoSampleFormat, 1, 1,
-                                          2);
+    ui->rtlsdrInfoWidgetLayout->addWidget(label, row, 0);
+    label = new QLabel(ui->rtlsdrInfoWidget);
+    ui->rtlsdrInfoWidgetLayout->addWidget(label, row++, 1, 1, 2);
+    m_rtlSdrLabel.append(label);
     ui->rtlsdrInfoWidget->setVisible(false);
 
-    label = new QLabel(tr("Connected device:"));
-    m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoDevice] = new QLabel(ui->rtltcpInfoWidget);
-    ui->rtltcpInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoDevice, 0);
-    ui->rtltcpInfoWidgetLayout->addWidget(m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoDevice], SetupDialogDeviceInfo::DevInfoDevice, 1, 1, 2);
+    row = 0;
+    label = new QLabel(tr("Connected device:"), ui->rtltcpInfoWidget);
+    ui->rtltcpInfoWidgetLayout->addWidget(label, row, 0);
+    label = new QLabel(ui->rtltcpInfoWidget);
+    ui->rtltcpInfoWidgetLayout->addWidget(label, row++, 1, 1, 2);
+    m_rtlTcpLabel.append(label);
     label = new QLabel(tr("Tuner:"), ui->rtltcpInfoWidget);
-    m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoTuner] = new QLabel(ui->rtltcpInfoWidget);
-    ui->rtltcpInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoTuner, 0);
-    ui->rtltcpInfoWidgetLayout->addWidget(m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoTuner], SetupDialogDeviceInfo::DevInfoTuner, 1, 1, 2);
+    ui->rtltcpInfoWidgetLayout->addWidget(label, row, 0);
+    label = new QLabel(ui->rtltcpInfoWidget);
+    ui->rtltcpInfoWidgetLayout->addWidget(label, row++, 1, 1, 2);
+    m_rtlTcpLabel.append(label);
     label = new QLabel(tr("Sample format:"), ui->rtltcpInfoWidget);
-    m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoSampleFormat] = new QLabel(ui->rtltcpInfoWidget);
-    ui->rtltcpInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoSampleFormat, 0);
-    ui->rtltcpInfoWidgetLayout->addWidget(m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoSampleFormat], SetupDialogDeviceInfo::DevInfoSampleFormat, 1, 1,
-                                          2);
+    ui->rtltcpInfoWidgetLayout->addWidget(label, row, 0);
+    label = new QLabel(ui->rtltcpInfoWidget);
+    ui->rtltcpInfoWidgetLayout->addWidget(label, row++, 1, 1, 2);
+    m_rtlTcpLabel.append(label);
     ui->rtltcpInfoWidget->setVisible(false);
+#if HAVE_AIRSPY
+    // Airspy device info
+    row = 0;
+    label = new QLabel(tr("Connected device:"), ui->airspyInfoWidget);
+    ui->airspyInfoWidgetLayout->addWidget(label, row, 0);
+    label = new QLabel(ui->airspyInfoWidget);
+    ui->airspyInfoWidgetLayout->addWidget(label, row++, 1, 1, 2);
+    m_airspyLabel.append(label);
+    label = new QLabel(tr("Serial number:"), ui->airspyInfoWidget);
+    ui->airspyInfoWidgetLayout->addWidget(label, row, 0);
+    label = new QLabel(ui->airspyInfoWidget);
+    ui->airspyInfoWidgetLayout->addWidget(label, row++, 1, 1, 2);
+    m_airspyLabel.append(label);
+    ui->airspyInfoWidget->setVisible(false);
+#endif
 #if HAVE_SOAPYSDR
-    // RTL SDR device info
-    label = new QLabel(tr("Connected device:"));
-    m_soapySdrLabel[SetupDialogDeviceInfo::DevInfoDevice] = new QLabel(ui->soapysdrInfoWidget);
-    ui->soapysdrInfoWidgetLayout->addWidget(label, SetupDialogDeviceInfo::DevInfoDevice, 0);
-    ui->soapysdrInfoWidgetLayout->addWidget(m_soapySdrLabel[SetupDialogDeviceInfo::DevInfoDevice], SetupDialogDeviceInfo::DevInfoDevice, 1, 1, 2);
-
+    // Soapy SDR device info
+    row = 0;
+    label = new QLabel(tr("Connected device:"), ui->soapysdrInfoWidget);
+    ui->soapysdrInfoWidgetLayout->addWidget(label, row, 0);
+    label = new QLabel(ui->soapysdrInfoWidget);
+    ui->soapysdrInfoWidgetLayout->addWidget(label, row++, 1, 1, 2);
+    m_soapySdrLabel.append(label);
     ui->soapysdrInfoWidget->setVisible(false);
     ui->soapysdrGainWidget->setLayout(new QGridLayout(this));
     ui->soapysdrGainWidget->setVisible(false);
@@ -892,6 +919,7 @@ void SetupDialog::onConnectDeviceClicked()
     setConnectButton(ConnectButtonOff);
     ui->rtlsdrInfoWidget->setVisible(false);
     ui->rtltcpInfoWidget->setVisible(false);
+    ui->airspyInfoWidget->setVisible(false);
     ui->soapysdrInfoWidget->setVisible(false);
     setSoapySdrGainWidget(false);
     m_inputDeviceId = InputDevice::Id::UNDEFINED;
@@ -1576,6 +1604,7 @@ void SetupDialog::resetInputDevice()
     setStatusLabel();
     ui->rtlsdrInfoWidget->setVisible(false);
     ui->rtltcpInfoWidget->setVisible(false);
+    ui->airspyInfoWidget->setVisible(false);
     ui->soapysdrInfoWidget->setVisible(false);
     setConnectButton(ConnectButtonOn);
     ui->tabWidget->setCurrentIndex(SetupDialogTabs::Device);
@@ -1953,26 +1982,42 @@ void SetupDialog::setDeviceDescription(const InputDevice::Description &desc)
     {
         case InputDevice::Id::RTLSDR:
         {
-            m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoDevice]->setText(desc.device.model);
-            m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoTuner]->setText(desc.device.tuner);
-            m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoSampleFormat]->setText(desc.sample.channelContainer);
+            auto it = m_rtlSdrLabel.begin();
+            (*it++)->setText(desc.device.model);
+            (*it++)->setText(desc.device.sn);
+            (*it++)->setText(desc.device.tuner);
+            (*it++)->setText(desc.sample.channelContainer);
             ui->rtlsdrInfoWidget->setVisible(true);
         }
         break;
         case InputDevice::Id::RTLTCP:
         {
-            m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoDevice]->setText(desc.device.model);
-            m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoTuner]->setText(desc.device.tuner);
-            m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoSampleFormat]->setText(desc.sample.channelContainer);
+            auto it = m_rtlTcpLabel.begin();
+            (*it++)->setText(desc.device.model);
+            (*it++)->setText(desc.device.tuner);
+            (*it++)->setText(desc.sample.channelContainer);
             ui->rtltcpInfoWidget->setVisible(true);
         }
         break;
+        case InputDevice::Id::AIRSPY:
+        {
+#if HAVE_AIRSPY
+            auto it = m_airspyLabel.begin();
+            (*it++)->setText("Airspy " + desc.device.model);
+            (*it++)->setText(desc.device.sn);
+            ui->airspyInfoWidget->setVisible(true);
+#endif
+        }
+        break;
         case InputDevice::Id::SOAPYSDR:
+        {
 #if HAVE_SOAPYSDR
-            m_soapySdrLabel[SetupDialogDeviceInfo::DevInfoDevice]->setText(desc.device.model);
+            auto it = m_soapySdrLabel.begin();
+            (*it)->setText(desc.device.model);
             ui->soapysdrInfoWidget->setVisible(true);
 #endif
-            break;
+        }
+        break;
         case InputDevice::Id::RAWFILE:
             if (desc.rawFile.hasXmlHeader)
             {

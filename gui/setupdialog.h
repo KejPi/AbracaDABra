@@ -111,14 +111,14 @@ private:
         XMLFormat,
         XMLNumLabels
     };
-    enum SetupDialogDeviceInfo
-    {
-        DevInfoDevice = 0,
-        DevInfoTuner,
-        DevInfoSampleFormat,
-        DevInfoLables,
-        DevInfoSoapySdrLables = DevInfoDevice + 1,
-    };
+    // enum SetupDialogDeviceInfo
+    // {
+    //     DevInfoDevice = 0,
+    //     DevInfoTuner,
+    //     DevInfoSampleFormat,
+    //     DevInfoLables,
+    //     DevInfoSoapySdrLables = DevInfoDevice + 1,
+    // };
     enum SetupDialogConnectButtonState
     {
         ConnectButtonOn = 0,
@@ -139,10 +139,13 @@ private:
     QCheckBox *m_announcementCheckBox[static_cast<int>(DabAnnouncement::Undefined)];
     QCheckBox *m_bringWindowToForegroundCheckbox;
     QLabel *m_xmlHeaderLabel[SetupDialogXmlHeader::XMLNumLabels];
-    QLabel *m_rtlSdrLabel[SetupDialogDeviceInfo::DevInfoLables];
-    QLabel *m_rtlTcpLabel[SetupDialogDeviceInfo::DevInfoLables];
+    QList<QLabel *> m_rtlSdrLabel;
+    QList<QLabel *> m_rtlTcpLabel;
+#if HAVE_AIRSPY
+    QList<QLabel *> m_airspyLabel;
+#endif
 #if HAVE_SOAPYSDR
-    QLabel *m_soapySdrLabel[SetupDialogDeviceInfo::DevInfoSoapySdrLables];
+    QList<QLabel *> m_soapySdrLabel;
 #endif
     QString m_slsDumpPaternDefault;
     QString m_spiDumpPaternDefault;

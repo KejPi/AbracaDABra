@@ -297,6 +297,7 @@ bool RtlSdrInput::openDevice(const QVariant &hwId)
     if (0 == rtlsdr_get_usb_strings(m_device, manufact, product, serial))
     {
         m_deviceDescription.device.model = QString("%1 | %2").arg(manufact, product);
+        m_deviceDescription.device.sn = serial;
     }
     else
     {
