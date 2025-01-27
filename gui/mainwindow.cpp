@@ -1369,7 +1369,7 @@ void MainWindow::onProgrammeTypeChanged(const DabSId &sid, const DabPTy &pty)
         // At any one time, the PTy shall be either Static or Dynamic;
         // there shall be only one PTy per service.
 
-        if (pty.d != 0)
+        if (pty.d != 0xFF)
         {  // dynamic PTy available != static PTy
             ui->programTypeLabel->setText(DabTables::getPtyName(pty.d));
             ui->programTypeLabel->setToolTip(QString(tr("<b>Programme Type</b><br>"

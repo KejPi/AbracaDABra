@@ -478,6 +478,7 @@ private:
     void clearEnsemble();
     QString ensembleConfigurationString() const;
     QString ensembleConfigurationCSV() const;
+    QString ensembleConfigurationCSV_FMLIST() const;
     void ensembleConfigurationUpdate();
     void ensembleConfigurationDispatch();
     bool isCurrentService(uint32_t sid, uint8_t scids) { return ((sid == m_currentService.SId) && (scids == m_currentService.SCIdS)); }

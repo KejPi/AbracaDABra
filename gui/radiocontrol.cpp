@@ -792,13 +792,20 @@ QString RadioControl::ensembleConfigurationString() const
             // ETSI EN 300 401 V2.1.1 [8.1.5]
             // At any one time, the PTy shall be either Static or Dynamic;
             // there shall be only one PTy per service.
-            if (s.pty.d != 0)
+            if (s.pty.d != 0xFF)
             {
                 strOut << QString(" PTy: %1 (dynamic), ").arg(DabTables::getPtyNameEnglish(s.pty.d));
             }
             else
             {
-                strOut << QString(" PTy: %1 (static), ").arg(DabTables::getPtyNameEnglish(s.pty.s));
+                if (s.pty.s != 0xFF)
+                {
+                    strOut << QString(" PTy: %1 (static), ").arg(DabTables::getPtyNameEnglish(s.pty.s));
+                }
+                else
+                {
+                    strOut << QString(" PTy: N/A, ");
+                }
             }
             if (0 == s.ASu)
             {
@@ -1022,7 +1029,8 @@ QString RadioControl::ensembleConfigurationCSV() const
             {  // data service
                 strOut << sc.label << QString("%1").arg(sc.SId.value(), 8, 16, QChar('0')).toUpper();
             }
-            strOut << QString::number(sc.SCIdS) << DabTables::getLangNameEnglish(sc.lang) << DabTables::getCountryNameEnglish(sc.SId.value());
+
+            strOut << DabTables::getLangNameEnglish(sc.lang) << DabTables::getCountryNameEnglish(sc.SId.value());
             if (sc.isAudioService())
             {  // audio service
                 strOut << DabTables::getPtyNameEnglish(s.pty.s);
@@ -1113,6 +1121,164 @@ QString RadioControl::ensembleConfigurationCSV() const
                 userApps << DabTables::getUserApplicationName(ua.uaType);
             }
             strOut << userApps.join(',');
+
+            // add line to output
+            output.append(strOut.join(';'));
+            output.append('\n');
+        }
+    }
+    return output;
+}
+
+QString RadioControl::ensembleConfigurationCSV_FMLIST() const
+{  // Ensemble Name;Ensemble ID;Channel;Frequency;Service Name;Service ID;Service Language;Service Country;PTY;Short Label;ECC;Component
+   // Label;Component Language;Type;Sub channel ID;Codec;Bitrate;CU;Protection level;User application
+    if (0 == m_serviceList.size())
+    {
+        return QString("");
+    }
+
+    QString output =
+        "Ensemble Name;Ensemble ID;Channel;Frequency;Service Name;Service ID;Service Language;Service Country;PTY;Short Label;ECC;Component Label;"
+        "Component Language;Type;Sub channel ID;Codec;Bitrate;CU;Protection level;User application\n";
+    for (auto const &s : m_serviceList)
+    {
+        // for (auto const &sc : s.serviceComponents)
+        if (s.serviceComponents.size() > 0)
+        {
+            const auto sc = s.serviceComponents.first();
+            QStringList strOut;
+
+            strOut << m_ensemble.label;
+            strOut << QString("%1").arg(m_ensemble.eid(), 4, 16, QChar('0')).toUpper();
+            strOut << DabTables::channelList[m_ensemble.frequency];
+            strOut << QString::number(m_ensemble.frequency);
+            if (sc.isAudioService())
+            {  // audio service
+                strOut << sc.label << QString("%1").arg(sc.SId.progSId(), 4, 16, QChar('0')).toUpper();
+            }
+            else
+            {  // data service
+                strOut << sc.label << QString("%1").arg(sc.SId.value(), 8, 16, QChar('0')).toUpper();
+            }
+            if (sc.lang == 0)
+            {
+                strOut << "none";
+            }
+            else
+            {
+                strOut << DabTables::getLangNameEnglish(sc.lang);
+            }
+            strOut << DabTables::getCountryNameEnglish(sc.SId.value());
+            if (sc.isAudioService())
+            {  // audio service
+                QString pty = DabTables::getPtyNameEnglish(s.pty.s);
+                if (pty.isEmpty())
+                {
+                    pty = "none";
+                }
+                strOut << pty;
+            }
+            else
+            {
+                strOut << "none";
+            }
+            strOut << sc.labelShort;
+            strOut << QString("%1").arg(sc.SId.eccc(), 3, 16, QChar('0')).toUpper();
+            strOut << sc.label;
+            if (sc.lang == 0)
+            {
+                strOut << "none";
+            }
+            else
+            {
+                strOut << DabTables::getLangNameEnglish(sc.lang);
+            }
+            if (sc.isAudioService())
+            {
+                strOut << (sc.streamAudioData.scType == DabAudioDataSCty::DABPLUS_AUDIO ? "Audio Stream DAB+" : "Audio Stream DAB");
+            }
+            else
+            {
+                strOut << (sc.isDataPacketService() ? "Packet Data" : "Stream Data");
+            }
+            strOut << QString::number(sc.SubChId, 16).toUpper();
+            if (sc.isAudioService())
+            {
+                strOut << (sc.streamAudioData.scType == DabAudioDataSCty::DABPLUS_AUDIO ? "AAC+" : "MP2");
+            }
+            else
+            {
+                strOut << "Data";
+            }
+
+            if (sc.isDataPacketService())
+            {
+                switch (sc.protection.level)
+                {
+                    case DabProtectionLevel::EEP_1A:
+                        strOut << QString::number(sc.SubChSize / 12 * 8);
+                        break;
+                    case DabProtectionLevel::EEP_2A:
+                        strOut << QString::number(sc.SubChSize / 8 * 8);
+                        break;
+                    case DabProtectionLevel::EEP_3A:
+                        strOut << QString::number(sc.SubChSize / 6 * 8);
+                        break;
+                    case DabProtectionLevel::EEP_4A:
+                        strOut << QString::number(sc.SubChSize / 4 * 8);
+                        break;
+                    case DabProtectionLevel::EEP_1B:
+                        strOut << QString::number(sc.SubChSize / 27 * 32);
+                        break;
+                    case DabProtectionLevel::EEP_2B:
+                        strOut << QString::number(sc.SubChSize / 21 * 32);
+                        break;
+                    case DabProtectionLevel::EEP_3B:
+                        strOut << QString::number(sc.SubChSize / 18 * 32);
+                        break;
+                    case DabProtectionLevel::EEP_4B:
+                        strOut << QString::number(sc.SubChSize / 15 * 32);
+                        break;
+                    default:
+                        strOut << "Unknown";
+                        break;
+                }
+            }
+            else
+            {
+                strOut << QString::number(sc.streamAudioData.bitRate);
+            }
+
+            strOut << QString::number(sc.SubChSize);
+            if (sc.protection.isEEP())
+            {  // EEP
+                if (sc.protection.level < DabProtectionLevel::EEP_1B)
+                {  // EEP x-A
+                    strOut << QString("EEP %1-%2").arg(int(sc.protection.level) - int(DabProtectionLevel::EEP_1A) + 1).arg("A");
+                }
+                else
+                {  // EEP x+B
+                    strOut << QString("EEP %1-%2").arg(int(sc.protection.level) - int(DabProtectionLevel::EEP_1B) + 1).arg("B");
+                }
+            }
+            else
+            {  // UEP
+                strOut << QString("%1").arg(int(sc.protection.level));
+            }
+            QStringList userApps;
+            for (const auto &ua : sc.userApps)
+            {
+                if (ua.uaType != DabUserApplicationType::SlideShow)
+                {
+                    userApps << DabTables::getUserApplicationName(ua.uaType);
+                }
+                else
+                {
+                    userApps << "MOT Slideshow";
+                }
+            }
+            strOut << userApps.join(", ");
 
             // add line to output
             output.append(strOut.join(';'));

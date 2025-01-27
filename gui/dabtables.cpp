@@ -172,6 +172,8 @@ QString DabTables::getPtyName(const uint8_t pty)
 {
     switch (pty)
     {
+        case 0:
+            return QString(QObject::tr("No programme type"));
         case 1:
             return QString(QObject::tr("News"));
         case 2:
@@ -230,12 +232,12 @@ QString DabTables::getPtyName(const uint8_t pty)
             return QString(QObject::tr("Folk Music"));
         case 29:
             return QString(QObject::tr("Documentary"));
-        case 30:
-            return QString("");
-        case 31:
-            return QString("");
+        // case 30:
+        //     return QString("");
+        // case 31:
+        //     return QString("");
         default:
-            return QString(QObject::tr("None"));
+            return QString("");
     };
 }
 
@@ -243,6 +245,8 @@ QString DabTables::getPtyNameEnglish(const uint8_t pty)
 {
     switch (pty)
     {
+        case 0:
+            return QString("No programme type");
         case 1:
             return QString("News");
         case 2:
@@ -301,12 +305,12 @@ QString DabTables::getPtyNameEnglish(const uint8_t pty)
             return QString("Folk Music");
         case 29:
             return QString("Documentary");
-        case 30:
-            return QString("");
-        case 31:
-            return QString("");
+        // case 30:
+        //     return QString("");
+        // case 31:
+        //     return QString("");
         default:
-            return QString("None");
+            return QString("");
     };
 }
 
