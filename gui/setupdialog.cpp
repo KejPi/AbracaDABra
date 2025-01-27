@@ -882,9 +882,9 @@ void SetupDialog::connectDeviceControlSignals()
 #endif
 
 #if HAVE_SOAPYSDR
-    connect(ui->soapysdrDevArgs, &QLineEdit::editingFinished, this, &SetupDialog::onSoapySdrDevArgsEditFinished);
-    connect(ui->soapySdrAntenna, &QLineEdit::editingFinished, this, &SetupDialog::onSoapySdrAntennaEditFinished);
-    connect(ui->soapysdrChannelNum, &QSpinBox::editingFinished, this, &SetupDialog::onSoapySdrChannelEditFinished);
+    connect(ui->soapysdrDevArgs, &QLineEdit::textEdited, this, [this]() { setConnectButton(ConnectButtonAuto); });
+    connect(ui->soapySdrAntenna, &QLineEdit::textEdited, this, [this]() { setConnectButton(ConnectButtonAuto); });
+    connect(ui->soapysdrChannelNum, &QSpinBox::valueChanged, this, [this]() { setConnectButton(ConnectButtonAuto); });
     connect(ui->soapysdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
     connect(ui->soapysdrGainModeHw, &QRadioButton::toggled, this, &SetupDialog::onSoapySdrGainModeToggled);
     connect(ui->soapysdrBandwidth, &QSpinBox::valueChanged, this, &SetupDialog::onBandwidthChanged);
@@ -954,9 +954,9 @@ void SetupDialog::onConnectDeviceClicked()
             break;
         case InputDevice::Id::SOAPYSDR:
 #if HAVE_SOAPYSDR
-            m_settings->soapysdr.devArgs = ui->soapysdrDevArgs->text();
+            m_settings->soapysdr.devArgs = ui->soapysdrDevArgs->text().trimmed();
             m_settings->soapysdr.channel = ui->soapysdrChannelNum->text().toInt();
-            m_settings->soapysdr.antenna = ui->soapySdrAntenna->text();
+            m_settings->soapysdr.antenna = ui->soapySdrAntenna->text().trimmed();
 #endif
             break;
     }
@@ -1352,30 +1352,6 @@ void SetupDialog::activateSoapySdrControls(bool en)
     ui->soapysdrGainModeGroup->setEnabled(en);
     ui->soapysdrGainWidget->setEnabled(en && (SoapyGainMode::Manual == m_settings->soapysdr.gainMap[m_settings->soapysdr.driver].mode));
     ui->soapysdrExpertGroup->setEnabled(en);
-}
-
-void SetupDialog::onSoapySdrDevArgsEditFinished()
-{
-    if (ui->soapysdrDevArgs->text().trimmed() != m_settings->soapysdr.devArgs.trimmed())
-    {
-        setConnectButton(ConnectButtonOn);
-    }
-}
-
-void SetupDialog::onSoapySdrAntennaEditFinished()
-{
-    if (ui->soapySdrAntenna->text().trimmed() != m_settings->soapysdr.antenna.trimmed())
-    {
-        setConnectButton(ConnectButtonOn);
-    }
-}
-
-void SetupDialog::onSoapySdrChannelEditFinished()
-{
-    if (ui->soapysdrChannelNum->value() != m_settings->soapysdr.channel)
-    {
-        setConnectButton(ConnectButtonOn);
-    }
 }
 
 void SetupDialog::onSoapySdrGainModeToggled(bool checked)
@@ -2132,9 +2108,16 @@ void SetupDialog::setConnectButton(SetupDialogConnectButtonState state)
                                  (showButton || (ui->airspyDeviceListCombo->currentData() != m_settings->airspy.hwId));
 #endif
                     break;
+                case InputDevice::Id::SOAPYSDR:
+#if HAVE_SOAPYSDR
+                    showButton = !ui->soapysdrDevArgs->text().isEmpty() &&
+                                 (showButton || ui->soapysdrDevArgs->text().trimmed() != m_settings->soapysdr.devArgs ||
+                                  ui->soapySdrAntenna->text().trimmed() != m_settings->soapysdr.antenna ||
+                                  ui->soapysdrChannelNum->value() != m_settings->soapysdr.channel);
+#endif
+                    break;
                 case InputDevice::Id::RTLTCP:
                 case InputDevice::Id::RAWFILE:
-                case InputDevice::Id::SOAPYSDR:
                 case InputDevice::Id::RARTTCP:
                 default:
                     break;

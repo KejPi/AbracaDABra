@@ -230,9 +230,6 @@ private:
     void activateAirspyControls(bool en);
 #endif
 #if HAVE_SOAPYSDR
-    void onSoapySdrDevArgsEditFinished();
-    void onSoapySdrAntennaEditFinished();
-    void onSoapySdrChannelEditFinished();
     void onSoapySdrGainModeToggled(bool checked);
     void activateSoapySdrControls(bool en);
     void setSoapySdrGainWidget(bool activate);
