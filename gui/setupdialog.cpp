@@ -54,7 +54,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->tabWidget->setTabText(SetupDialogTabs::Device, tr("Device"));
     ui->tabWidget->setTabText(SetupDialogTabs::Announcement, tr("Announcements"));
     ui->tabWidget->setTabText(SetupDialogTabs::Audio, tr("Audio"));
-    ui->tabWidget->setTabText(SetupDialogTabs::UserApps, tr("User Applications"));
+    ui->tabWidget->setTabText(SetupDialogTabs::UserApps, tr("User applications"));
     ui->tabWidget->setTabText(SetupDialogTabs::Tii, tr("TII"));
     ui->tabWidget->setTabText(SetupDialogTabs::Other, tr("Others"));
     ui->tabWidget->setCurrentIndex(SetupDialogTabs::Device);
@@ -134,7 +134,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 
     QLabel *label = new QLabel(tr("<br>Note: Alarm announcement cannot be disabled."));
     gridLayout->addWidget(label, 4, 0, 1, 2);
-    QGroupBox *groupBox = new QGroupBox(tr("Alarm Announcements"));
+    QGroupBox *groupBox = new QGroupBox(tr("Alarm announcements"));
     groupBox->setLayout(gridLayout);
     QVBoxLayout *vLayout = new QVBoxLayout;
     vLayout->addWidget(groupBox);
@@ -162,7 +162,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
             column = 1;
         }
     }
-    groupBox = new QGroupBox(tr("Regular Announcements"));
+    groupBox = new QGroupBox(tr("Regular announcements"));
     groupBox->setLayout(gridLayout);
     vLayout->addWidget(groupBox);
 

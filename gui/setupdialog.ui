@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -73,7 +73,7 @@
           <enum>QFrame::Shadow::Sunken</enum>
          </property>
          <property name="currentIndex">
-          <number>3</number>
+          <number>4</number>
          </property>
          <widget class="QWidget" name="rtlsdrPage">
           <layout class="QGridLayout" name="gridLayout_14">
@@ -1334,7 +1334,7 @@
        <item>
         <widget class="QGroupBox" name="audioDecoderGroupBox">
          <property name="title">
-          <string>Audio Decoder</string>
+          <string>Audio decoder</string>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_9">
           <item>
@@ -1353,7 +1353,7 @@
        <item>
         <widget class="QGroupBox" name="audioRecordingGroupBox">
          <property name="title">
-          <string>Audio Recording</string>
+          <string>Audio recording</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_12">
           <item>
@@ -1492,7 +1492,7 @@
        <item>
         <widget class="QGroupBox" name="spiAppGroupBox">
          <property name="title">
-          <string>SPI Application</string>
+          <string>SPI application</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <item>
@@ -1531,7 +1531,7 @@
        <item>
         <widget class="QGroupBox" name="dataDumpGroup">
          <property name="title">
-          <string>Data Storage</string>
+          <string>Data storage</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
@@ -1740,7 +1740,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
-          <string>Transmitter Database</string>
+          <string>Transmitter database</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_18">
           <item>
@@ -1800,7 +1800,7 @@
        <item>
         <widget class="QGroupBox" name="tiiGroup">
          <property name="title">
-          <string>Receiver Location</string>
+          <string>Receiver location</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_14">
           <item>
@@ -2050,7 +2050,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
        <item>
         <widget class="QGroupBox" name="styleGroupBox">
          <property name="title">
-          <string>Visual Style</string>
+          <string>Visual style</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
@@ -2080,7 +2080,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
        <item>
         <widget class="QGroupBox" name="uiGroupBox">
          <property name="title">
-          <string>User Interface</string>
+          <string>User interface</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
@@ -2159,43 +2159,32 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="recordingGroupBox">
-         <property name="title">
-          <string>Raw Data Recording</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_8">
-          <item>
-           <widget class="QCheckBox" name="xmlHeaderCheckBox">
-            <property name="text">
-             <string>Include XML header</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="updateGroupBox">
-         <property name="title">
-          <string>Application update</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <widget class="QCheckBox" name="checkForUpdates">
-            <property name="text">
-             <string>Check for application update on start</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
         <widget class="QGroupBox" name="proxyGroupBox">
          <property name="title">
           <string>Network proxy configuration</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_9">
+          <item row="1" column="0">
+           <widget class="QLabel" name="proxyServerLabel">
+            <property name="text">
+             <string>Server:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QLabel" name="proxyPassLabel">
+            <property name="text">
+             <string>Password:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="6">
+           <widget class="QLineEdit" name="proxyPortEdit">
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
           <item row="2" column="3" colspan="4">
            <widget class="QLineEdit" name="proxyPassEdit">
             <property name="echoMode">
@@ -2213,38 +2202,10 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="proxyServerLabel">
-            <property name="text">
-             <string>Server:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLineEdit" name="proxyUserEdit">
-            <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QLabel" name="proxyPassLabel">
-            <property name="text">
-             <string>Password:</string>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="5">
            <widget class="QLabel" name="proxyPortLabel">
             <property name="text">
              <string>Port:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="6">
-           <widget class="QLineEdit" name="proxyPortEdit">
-            <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -2286,6 +2247,33 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
            <widget class="QLabel" name="proxyUserLabel">
             <property name="text">
              <string>Username:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="proxyUserEdit">
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="updateGroupBox">
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QCheckBox" name="checkForUpdates">
+            <property name="text">
+             <string>Check for application update on start</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="xmlHeaderCheckBox">
+            <property name="text">
+             <string>Include XML header in raw data recording</string>
             </property>
            </widget>
           </item>
