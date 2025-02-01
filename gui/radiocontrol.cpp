@@ -1173,7 +1173,7 @@ QString RadioControl::ensembleConfigurationCSV_FMLIST() const
             if (sc.isAudioService())
             {  // audio service
                 QString pty = DabTables::getPtyNameEnglish(s.pty.s);
-                if (pty.isEmpty())
+                if (pty == "None")
                 {
                     pty = "none";
                 }

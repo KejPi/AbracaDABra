@@ -237,7 +237,7 @@ QString DabTables::getPtyName(const uint8_t pty)
         // case 31:
         //     return QString("");
         default:
-            return QString("");
+            return QString(QObject::tr("None"));
     };
 }
 
@@ -310,7 +310,7 @@ QString DabTables::getPtyNameEnglish(const uint8_t pty)
         // case 31:
         //     return QString("");
         default:
-            return QString("");
+            return QString("None");
     };
 }
 
