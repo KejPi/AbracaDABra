@@ -84,6 +84,7 @@ public:
     void startStopRecording(bool start) override;
     void setBiasT(bool ena) override;
     void setDataPacking(bool ena);
+    virtual QVariant hwId() override;
 
 signals:
     void agcLevel(float level);

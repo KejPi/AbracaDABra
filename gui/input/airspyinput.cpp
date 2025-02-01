@@ -487,6 +487,16 @@ void AirspyInput::setDataPacking(bool ena)
     }
 }
 
+QVariant AirspyInput::hwId()
+{
+    airspy_read_partid_serialno_t partid_serialno;
+    if (AIRSPY_SUCCESS == airspy_board_partid_serialno_read(m_device, &partid_serialno))
+    {
+        return QVariant(int64_t(partid_serialno.serial_no[2]) << 32 | partid_serialno.serial_no[3]);
+    }
+    return QVariant();
+}
+
 void AirspyInput::doRecordBuffer(const float *buf, uint32_t len)
 {
 #if AIRSPY_RECORD_INT16
