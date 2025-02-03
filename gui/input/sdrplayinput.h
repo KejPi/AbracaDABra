@@ -62,6 +62,7 @@ public:
     explicit SdrPlayInput(QObject *parent = nullptr);
     bool openDevice(const QVariant &hwId = QVariant()) override;
     void setGainMode(const SdrPlayGainStruct &gain);
+    void setBiasT(bool ena) override;
     void setDevArgs(const QString &devArgs) = delete;
     virtual QVariant hwId() override { return m_hwId; }
     QList<float> getRFGainList() const { return m_rfGainList; }
@@ -73,6 +74,7 @@ private:
     const float m_ifGRmin = 20;
     const float m_ifGRmax = 59;
     int m_rfGRchangeCntr;
+    bool m_biasT;
 
     QList<float> m_rfGainList;
     const QHash<QString, QList<float>> m_rfGainMap;

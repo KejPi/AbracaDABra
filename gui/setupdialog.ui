@@ -1076,16 +1076,6 @@
               <string>Expert settings</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_26">
-              <item row="4" column="0">
-               <widget class="QLabel" name="sdrplayPPMLabel">
-                <property name="midLineWidth">
-                 <number>-3</number>
-                </property>
-                <property name="text">
-                 <string>Frequency correction:</string>
-                </property>
-               </widget>
-              </item>
               <item row="4" column="1">
                <widget class="QSpinBox" name="sdrplayPPM">
                 <property name="suffix">
@@ -1114,6 +1104,26 @@
                  </size>
                 </property>
                </spacer>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="sdrplayPPMLabel">
+                <property name="midLineWidth">
+                 <number>-3</number>
+                </property>
+                <property name="text">
+                 <string>Frequency correction:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QComboBox" name="sdrplayBiasTCombo"/>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="sdrplayBiasTLabel">
+                <property name="text">
+                 <string>Bias Tee:</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>

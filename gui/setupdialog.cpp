@@ -112,6 +112,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->airspyBiasTCombo->setToolTip(ui->rtlsdrBiasTCombo->toolTip());
     ui->soapysdrBandwidth->setToolTip(ui->rtlsdrBandwidth->toolTip());
     ui->soapysdrBandwidth->setMinimumWidth(ui->rtlsdrSwAgcMaxLevel->width());
+    ui->sdrplayBiasTCombo->addItem(tr("Off"), false);
+    ui->sdrplayBiasTCombo->addItem(tr("On"), true);
+    ui->sdrplayBiasTCombo->setToolTip(ui->rtlsdrBiasTCombo->toolTip());
 
     ui->rtltcpControlSocketCheckbox->setText(tr("Connect to control socket if available"));
     ui->rtltcpControlSocketCheckbox->setToolTip(
@@ -783,6 +786,7 @@ void SetupDialog::setUiState()
     ui->sdrplayIFGainLabel->setText(tr("N/A  "));
     ui->sdrplayIFAGCCheckbox->setChecked(m_settings->sdrplay.gain.ifAgcEna);
     ui->sdrplayPPM->setValue(m_settings->sdrplay.ppm);
+    ui->sdrplayBiasTCombo->setCurrentIndex(m_settings->sdrplay.biasT ? 1 : 0);
 #endif
 
     if (m_settings->rawfile.file.isEmpty())
@@ -966,7 +970,8 @@ void SetupDialog::connectDeviceControlSignals()
 #else
     connect(ui->sdrplayIFAGCCheckbox, &QCheckBox::stateChanged, this, &SetupDialog::onSdrplayAGCstateChanged);
 #endif
-
+    connect(ui->sdrplayPPM, &QSpinBox::valueChanged, this, &SetupDialog::onPPMChanged);
+    connect(ui->sdrplayBiasTCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onBiasTChanged);
 #endif
 }
 
@@ -1144,10 +1149,20 @@ void SetupDialog::onBiasTChanged(int)
             }
 #endif
             break;
+        case InputDevice::Id::SDRPLAY:
+#if HAVE_SOAPYSDR
+            m_settings->sdrplay.biasT = ui->sdrplayBiasTCombo->currentData().toBool();
+            if (m_device)
+            {
+                m_device->setBiasT(m_settings->sdrplay.biasT);
+            }
+#endif
+            break;
         case InputDevice::Id::RTLTCP:
         case InputDevice::Id::SOAPYSDR:
         case InputDevice::Id::RARTTCP:
-        default:
+        case InputDevice::Id::UNDEFINED:
+        case InputDevice::Id::RAWFILE:
             break;
     }
 }
@@ -1815,6 +1830,7 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
             m_settings->sdrplay.hwId = m_device->hwId();
             dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
             m_device->setPPM(m_settings->sdrplay.ppm);
+            m_device->setBiasT(m_settings->sdrplay.biasT);
             activateSdrplayControls(true);
 #endif
             break;
@@ -2413,7 +2429,6 @@ void SetupDialog::setConnectButton(SetupDialogConnectButtonState state)
 #if HAVE_SOAPYSDR
                     showButton = (ui->sdrplayDeviceListCombo->count() > 0) &&
                                  (showButton || (ui->sdrplayDeviceListCombo->currentData() != m_settings->sdrplay.hwId));
-
 #endif
                     break;
                 case InputDevice::Id::RTLTCP:

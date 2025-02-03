@@ -3132,6 +3132,7 @@ void MainWindow::loadSettings()
     m_settings->sdrplay.gain.ifGain = settings->value("SDRPLAY/ifGain", 0).toInt();
     m_settings->sdrplay.gain.ifAgcEna = settings->value("SDRPLAY/ifAgcEna", true).toBool();
     m_settings->sdrplay.ppm = settings->value("SDRPLAY/ppm", 0).toInt();
+    m_settings->sdrplay.biasT = settings->value("SDRPLAY/bias-T", false).toBool();
 
 #endif
     m_settings->rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
@@ -3380,6 +3381,7 @@ void MainWindow::saveSettings()
     settings->setValue("SDRPLAY/ifGain", m_settings->sdrplay.gain.ifGain);
     settings->setValue("SDRPLAY/ifAgcEna", m_settings->sdrplay.gain.ifAgcEna);
     settings->setValue("SDRPLAY/ppm", m_settings->sdrplay.ppm);
+    settings->setValue("SDRPLAY/bias-T", m_settings->sdrplay.biasT);
 #endif
 
     settings->setValue("RTL-TCP/gainIndex", m_settings->rtltcp.gainIdx);

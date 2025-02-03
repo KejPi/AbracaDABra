@@ -122,6 +122,7 @@ public:
         QVariant hwId;
         QString antenna;
         int channel;
+        bool biasT;
         int ppm;
         SdrPlayGainStruct gain;
     } sdrplay;

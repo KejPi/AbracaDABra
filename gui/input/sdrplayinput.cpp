@@ -115,6 +115,7 @@ SdrPlayInput::SdrPlayInput(QObject *parent)
       }
 {
     m_devArgs = "driver=sdrplay";
+    m_biasT = false;
 }
 
 bool SdrPlayInput::openDevice(const QVariant &hwId)
@@ -201,6 +202,16 @@ void SdrPlayInput::setGainMode(const SdrPlayGainStruct &gain)
             break;
     }
     emit agcGain(NAN);
+}
+
+void SdrPlayInput::setBiasT(bool ena)
+{
+    if (ena != m_biasT)
+    {
+        m_device->writeSetting("biasT_ctrl", ena ? "true" : "false");
+        m_biasT = ena;
+        qCInfo(sdrPlayInput) << "Bias-T" << (ena ? "on" : "off");
+    }
 }
 
 void SdrPlayInput::resetAgc()
