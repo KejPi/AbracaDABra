@@ -277,6 +277,20 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->soapysdrInfoWidget->setVisible(false);
     ui->soapysdrGainWidget->setLayout(new QGridLayout(ui->soapysdrGainWidget));
     ui->soapysdrGainWidget->setVisible(false);
+
+    // SDRplay device info
+    row = 0;
+    label = new QLabel(tr("Connected device:"), ui->sdrplayInfoWidget);
+    ui->sdrplayInfoWidgetLayout->addWidget(label, row, 0);
+    label = new QLabel(ui->sdrplayInfoWidget);
+    ui->sdrplayInfoWidgetLayout->addWidget(label, row++, 1, 1, 2);
+    m_sdrPlayLabel.append(label);
+    label = new QLabel(tr("Serial number:"), ui->sdrplayInfoWidget);
+    ui->sdrplayInfoWidgetLayout->addWidget(label, row, 0);
+    label = new QLabel(ui->sdrplayInfoWidget);
+    ui->sdrplayInfoWidgetLayout->addWidget(label, row++, 1, 1, 2);
+    m_sdrPlayLabel.append(label);
+    ui->sdrplayInfoWidget->setVisible(false);
 #endif
     connect(ui->openFileButton, &QPushButton::clicked, this, &SetupDialog::onOpenFileButtonClicked);
 
@@ -984,6 +998,7 @@ void SetupDialog::onConnectDeviceClicked()
     ui->rtltcpInfoWidget->setVisible(false);
     ui->airspyInfoWidget->setVisible(false);
     ui->soapysdrInfoWidget->setVisible(false);
+    ui->sdrplayInfoWidget->setVisible(false);
     setSoapySdrGainWidget(false);
     m_inputDeviceId = InputDevice::Id::UNDEFINED;
     setStatusLabel(true);  // clear label
@@ -1519,6 +1534,7 @@ void SetupDialog::onSdrplayChannelChanged(int idx)
                                ui->sdrplayChannelCombo->setEnabled(m_inputDeviceId != InputDevice::Id::SDRPLAY);
                                ui->sdrplayAntennaCombo->setEnabled(m_inputDeviceId != InputDevice::Id::SDRPLAY);
                                ui->sdrplayReloadButton->setEnabled(true);
+                               setConnectButton(ConnectButtonAuto);
                            });
     }
 }
@@ -1834,6 +1850,7 @@ void SetupDialog::resetInputDevice()
     ui->rtltcpInfoWidget->setVisible(false);
     ui->airspyInfoWidget->setVisible(false);
     ui->soapysdrInfoWidget->setVisible(false);
+    ui->sdrplayInfoWidget->setVisible(false);
     setConnectButton(ConnectButtonOn);
     ui->tabWidget->setCurrentIndex(SetupDialogTabs::Device);
 }
@@ -2277,8 +2294,18 @@ void SetupDialog::setDeviceDescription(const InputDevice::Description &desc)
                 ui->xmlHeaderWidget->setVisible(false);
             }
             break;
-        default:
-            // do nothing
+        case InputDevice::Id::SDRPLAY:
+        {
+#if HAVE_SOAPYSDR
+            auto it = m_sdrPlayLabel.begin();
+            (*it++)->setText(desc.device.model);
+            (*it++)->setText(desc.device.sn);
+            ui->sdrplayInfoWidget->setVisible(true);
+#endif
+        }
+        break;
+        case InputDevice::Id::UNDEFINED:
+        case InputDevice::Id::RARTTCP:
             break;
     }
 }
@@ -2338,7 +2365,14 @@ void SetupDialog::reloadDeviceList(const InputDevice::Id inputDeviceId, QComboBo
             combo->setCurrentIndex(idx);
         }
     }
-    setConnectButton(ConnectButtonAuto);
+    if (inputDeviceId == InputDevice::Id::SDRPLAY)
+    {
+        setConnectButton(ConnectButtonOff);
+    }
+    else
+    {
+        setConnectButton(ConnectButtonAuto);
+    }
 }
 
 void SetupDialog::setConnectButton(SetupDialogConnectButtonState state)

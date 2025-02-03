@@ -73,6 +73,9 @@ int SdrPlayInput::getNumRxChannels(const QVariant &hwId)
     {
         qCCritical(sdrPlayInput) << "Error probing device: " << ex.what();
     }
+
+    // qDebug() << "-----------" << hwId << numChannels;
+
     return numChannels;
 }
 
@@ -116,11 +119,13 @@ SdrPlayInput::SdrPlayInput(QObject *parent)
 
 bool SdrPlayInput::openDevice(const QVariant &hwId)
 {
+    // find all SDRplay devices
+    const auto list = SdrPlayInput::getDeviceList();
+
     bool foundDevice = false;
     if (hwId.isValid() && !hwId.toString().isEmpty())
     {
         // first check if device with given SN is available
-        auto list = SdrPlayInput::getDeviceList();
         for (auto it = list.cbegin(); it != list.cend(); ++it)
         {
             if (it->id.toString() == hwId.toString())
@@ -131,28 +136,41 @@ bool SdrPlayInput::openDevice(const QVariant &hwId)
         }
     }
 
+    bool isConnected = false;
     if (foundDevice)
     {
         SoapySdrInput::setDevArgs(QString("driver=sdrplay,serial=%1").arg(hwId.toString()));
-    }
-    else
-    {
-        SoapySdrInput::setDevArgs("driver=sdrplay");
-    }
-    if (SoapySdrInput::openDevice(hwId))
-    {
-        if (m_rfGainMap.contains(m_deviceDescription.device.model))
+        isConnected = SoapySdrInput::openDevice(hwId);
+        if (isConnected)
         {
-            m_rfGainList = m_rfGainMap.value(m_deviceDescription.device.model);
+            m_deviceDescription.device.sn = hwId.toString();
+            m_hwId = hwId;
         }
-        else
-        {
-            return false;
-        }
-        m_hwId = hwId;
-        return true;
     }
 
+    if (!isConnected)
+    {  // either SN was not found or connection not successful
+        // go through device list and try to connect to first working device
+        for (auto it = list.cbegin(); it != list.cend(); ++it)
+        {
+            if (it->id.isValid() && !it->id.toString().isEmpty())
+            {
+                SoapySdrInput::setDevArgs(QString("driver=sdrplay,serial=%1").arg(it->id.toString()));
+                isConnected = SoapySdrInput::openDevice(hwId);
+                if (isConnected)
+                {
+                    m_deviceDescription.device.sn = it->id.toString();
+                    m_hwId = it->id;
+                    break;
+                }
+            }
+        }
+    }
+    if (isConnected && m_rfGainMap.contains(m_deviceDescription.device.model))
+    {
+        m_rfGainList = m_rfGainMap.value(m_deviceDescription.device.model);
+        return true;
+    }
     return false;
 }
 
@@ -280,5 +298,5 @@ void SdrPlayInput::onAgcLevel(float agcLevel)
             }
         }
     }
-    qDebug() << Q_FUNC_INFO << agcLevel << m_rfGR << m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) << m_ifGR;
+    // qDebug() << Q_FUNC_INFO << agcLevel << m_rfGR << m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) << m_ifGR;
 }
