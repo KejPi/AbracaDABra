@@ -331,6 +331,9 @@ void SoapySdrInput::run()
     {  // Tune to new frequency
         m_device->setFrequency(SOAPY_SDR_RX, m_rxChannel, m_frequency * 1000);
 
+        // does nothing if manual AGC
+        resetAgc();
+
         m_worker = new SoapySdrWorker(m_device, m_sampleRate, m_rxChannel, this);
         connect(m_worker, &SoapySdrWorker::agcLevel, this, &SoapySdrInput::onAgcLevel, Qt::QueuedConnection);
         connect(m_worker, &SoapySdrWorker::recordBuffer, this, &InputDevice::recordBuffer, Qt::DirectConnection);
@@ -400,6 +403,7 @@ void SoapySdrInput::setGainMode(const SoapyGainStruct &gain)
 
 void SoapySdrInput::onAgcLevel(float agcLevel)
 {
+    // qDebug() << Q_FUNC_INFO << agcLevel;
     // qDebug() << agcLevel;
     // if (SoapyGainMode::Software == m_gainMode)
     // {
@@ -743,8 +747,9 @@ void SoapySdrWorker::processInputData(std::complex<float> buff[], size_t numSamp
         return;
     }
 
-    if (0 == (++m_signalLevelEmitCntr & 0x0F))
+    if (++m_signalLevelEmitCntr > 8)
     {
+        m_signalLevelEmitCntr = 0;
         emit agcLevel(m_src->signalLevel());
     }
 

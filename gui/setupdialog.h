@@ -145,7 +145,9 @@ private:
     QList<QLabel *> m_airspyLabel;
 #endif
 #if HAVE_SOAPYSDR
+    QList<float> m_sdrplayGainList;
     QList<QLabel *> m_soapySdrLabel;
+    QList<QLabel *> m_sdrPlayLabel;
 #endif
     QString m_slsDumpPaternDefault;
     QString m_spiDumpPaternDefault;
@@ -233,6 +235,17 @@ private:
     void onSoapySdrGainModeToggled(bool checked);
     void activateSoapySdrControls(bool en);
     void setSoapySdrGainWidget(bool activate);
+
+    void activateSdrplayControls(bool en);
+    void onSdrplayReloadButtonClicked();
+    void onSdrplayDeviceChanged(int idx);
+    void onSdrplayChannelChanged(int idx);
+
+    void onSdrplayModeToggled(bool checked);
+    void onSdrplayAGCstateChanged(int state);
+    // void setSdrplaySdrGainWidget(bool activate);
+    void onSdrplayIFGainSliderChanged(int val);
+    void onSdrplayRFGainSliderChanged(int val);
 #endif
 };
 

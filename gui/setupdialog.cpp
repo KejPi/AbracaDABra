@@ -60,13 +60,14 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->tabWidget->setCurrentIndex(SetupDialogTabs::Device);
 
     ui->inputCombo->addItem("RTL SDR", QVariant(int(InputDevice::Id::RTLSDR)));
+    ui->inputCombo->addItem("RTL TCP", QVariant(int(InputDevice::Id::RTLTCP)));
 #if HAVE_AIRSPY
     ui->inputCombo->addItem("Airspy", QVariant(int(InputDevice::Id::AIRSPY)));
 #endif
 #if HAVE_SOAPYSDR
+    ui->inputCombo->addItem("SDRplay", QVariant(int(InputDevice::Id::SDRPLAY)));
     ui->inputCombo->addItem("Soapy SDR", QVariant(int(InputDevice::Id::SOAPYSDR)));
 #endif
-    ui->inputCombo->addItem("RTL TCP", QVariant(int(InputDevice::Id::RTLTCP)));
 #if HAVE_RARTTCP
     ui->inputCombo->addItem("RaRT TCP", QVariant(int(InputDevice::Id::RARTTCP)));
 #endif
@@ -274,7 +275,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->soapysdrInfoWidgetLayout->addWidget(label, row++, 1, 1, 2);
     m_soapySdrLabel.append(label);
     ui->soapysdrInfoWidget->setVisible(false);
-    ui->soapysdrGainWidget->setLayout(new QGridLayout(this));
+    ui->soapysdrGainWidget->setLayout(new QGridLayout(ui->soapysdrGainWidget));
     ui->soapysdrGainWidget->setVisible(false);
 #endif
     connect(ui->openFileButton, &QPushButton::clicked, this, &SetupDialog::onOpenFileButtonClicked);
@@ -288,6 +289,14 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 #ifdef HAVE_AIRSPY
     connect(ui->airspyReloadButton, &QPushButton::clicked, this, [this]() { reloadDeviceList(InputDevice::Id::AIRSPY, ui->airspyDeviceListCombo); });
     connect(ui->airspyDeviceListCombo, &QComboBox::activated, this, [this]() { setConnectButton(ConnectButtonAuto); });
+#endif
+#if HAVE_SOAPYSDR
+    // SDRplay
+    ui->sdrplayRFGainLabel->setFixedWidth(ui->sdrplayRFGainLabel->fontMetrics().boundingRect("-100 dB  ").width());
+    connect(ui->sdrplayReloadButton, &QPushButton::clicked, this, &SetupDialog::onSdrplayReloadButtonClicked);
+    connect(ui->sdrplayDeviceListCombo, &QComboBox::activated, this, [this]() { setConnectButton(ConnectButtonAuto); });
+    connect(ui->sdrplayDeviceListCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onSdrplayDeviceChanged);
+    connect(ui->sdrplayChannelCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onSdrplayChannelChanged);
 #endif
 
     ui->defaultStyleRadioButton->setText(tr("Default style (OS dependent)"));
@@ -475,17 +484,34 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
             ui->rtltcpGainSlider->setDisabled(m_rtltcpGainList.empty());
             ui->rtltcpGainModeManual->setDisabled(m_rtltcpGainList.empty());
             break;
-        case InputDevice::Id::SOAPYSDR:
+        case InputDevice::Id::SDRPLAY:
 #if HAVE_SOAPYSDR
-            // m_soapysdrGainList.clear();
-            // m_soapysdrGainList = gainList;
-            // ui->soapysdrGainSlider->setMinimum(0);
-            // ui->soapysdrGainSlider->setMaximum(m_soapysdrGainList.size() - 1);
-            // ui->soapysdrGainSlider->setValue((m_settings->soapysdr.gainIdx >= 0) ? m_settings->soapysdr.gainIdx : 0);
-            // ui->soapysdrGainSlider->setDisabled(m_soapysdrGainList.empty());
-            // ui->soapysdrGainModeManual->setDisabled(m_soapysdrGainList.empty());
-#endif  // HAVE_SOAPYSDR
+            m_sdrplayGainList.clear();
+            m_sdrplayGainList = gainList;
+            ui->sdrplayRFGainSlider->setMinimum(0);
+            ui->sdrplayRFGainSlider->setMaximum(m_sdrplayGainList.size() - 1);
+            if (m_settings->sdrplay.gain.rfGain >= 0)
+            {
+                ui->sdrplayRFGainSlider->setValue(m_settings->sdrplay.gain.rfGain);
+                onSdrplayRFGainSliderChanged(m_settings->sdrplay.gain.rfGain);
+            }
+            else
+            {
+                ui->sdrplayRFGainSlider->setValue(m_sdrplayGainList.size() - 1);
+            }
+            if (m_settings->sdrplay.gain.ifGain != 0)
+            {
+                ui->sdrplayIFGainSlider->setValue(m_settings->sdrplay.gain.ifGain);
+                onSdrplayIFGainSliderChanged(m_settings->sdrplay.gain.ifGain);
+            }
+            else
+            {
+                ui->sdrplayIFGainSlider->setValue(-40);
+            }
+            ui->sdrplayIFAGCCheckbox->setChecked(m_settings->sdrplay.gain.ifAgcEna);
+#endif
             break;
+        case InputDevice::Id::SOAPYSDR:
         case InputDevice::Id::UNDEFINED:
         case InputDevice::Id::RAWFILE:
         case InputDevice::Id::AIRSPY:
@@ -717,6 +743,32 @@ void SetupDialog::setUiState()
     ui->soapysdrBandwidth->setValue(m_settings->soapysdr.bandwidth / 1000);
     ui->soapysdrBandwidthDefault->setEnabled(m_settings->soapysdr.bandwidth != 0);
     ui->soapysdrPPM->setValue(m_settings->soapysdr.ppm);
+
+    switch (m_settings->sdrplay.gain.mode)
+    {
+        case SdrPlayGainMode::Software:
+            ui->sdrplayGainModeSw->setChecked(true);
+            break;
+        case SdrPlayGainMode::Manual:
+            ui->sdrplayGainModeManual->setChecked(true);
+            break;
+        default:
+            break;
+    }
+    if (!m_sdrplayGainList.isEmpty())
+    {
+        ui->sdrplayRFGainSlider->setValue(m_settings->sdrplay.gain.rfGain);
+        onSdrplayRFGainSliderChanged(m_settings->sdrplay.gain.rfGain);
+    }
+    else
+    {
+        ui->sdrplayRFGainSlider->setValue(0);
+        ui->sdrplayRFGainLabel->setText(tr("N/A  "));
+    }
+    ui->sdrplayIFGainSlider->setValue(0);
+    ui->sdrplayIFGainLabel->setText(tr("N/A  "));
+    ui->sdrplayIFAGCCheckbox->setChecked(m_settings->sdrplay.gain.ifAgcEna);
+    ui->sdrplayPPM->setValue(m_settings->sdrplay.ppm);
 #endif
 
     if (m_settings->rawfile.file.isEmpty())
@@ -890,6 +942,17 @@ void SetupDialog::connectDeviceControlSignals()
     connect(ui->soapysdrBandwidth, &QSpinBox::valueChanged, this, &SetupDialog::onBandwidthChanged);
     connect(ui->soapysdrBandwidthDefault, &QPushButton::clicked, this, [this]() { ui->soapysdrBandwidth->setValue(0); });
     connect(ui->soapysdrPPM, &QSpinBox::valueChanged, this, &SetupDialog::onPPMChanged);
+
+    connect(ui->sdrplayGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onSdrplayModeToggled);
+    connect(ui->sdrplayGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onSdrplayModeToggled);
+    connect(ui->sdrplayRFGainSlider, &QSlider::valueChanged, this, &SetupDialog::onSdrplayRFGainSliderChanged);
+    connect(ui->sdrplayIFGainSlider, &QSlider::valueChanged, this, &SetupDialog::onSdrplayIFGainSliderChanged);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
+    connect(ui->sdrplayIFAGCCheckbox, &QCheckBox::checkStateChanged, this, &SetupDialog::onSdrplayAGCstateChanged);
+#else
+    connect(ui->sdrplayIFAGCCheckbox, &QCheckBox::stateChanged, this, &SetupDialog::onSdrplayAGCstateChanged);
+#endif
+
 #endif
 }
 
@@ -959,6 +1022,17 @@ void SetupDialog::onConnectDeviceClicked()
             m_settings->soapysdr.antenna = ui->soapySdrAntenna->text().trimmed();
 #endif
             break;
+        case InputDevice::Id::SDRPLAY:
+#if HAVE_SOAPYSDR
+            id = ui->sdrplayDeviceListCombo->currentData();
+            m_settings->sdrplay.channel = ui->sdrplayChannelCombo->currentData().toInt();
+            m_settings->sdrplay.antenna = ui->sdrplayAntennaCombo->currentData().toString();
+            ui->sdrplayReloadButton->setEnabled(false);
+            ui->sdrplayDeviceListCombo->setEnabled(false);
+            ui->sdrplayChannelCombo->setEnabled(false);
+            ui->sdrplayAntennaCombo->setEnabled(false);
+#endif
+            break;
     }
     emit inputDeviceChanged(m_settings->inputDevice, id);
 }
@@ -1020,9 +1094,17 @@ void SetupDialog::onPPMChanged(int val)
             }
 #endif
             break;
+        case InputDevice::Id::SDRPLAY:
+            m_settings->sdrplay.ppm = val;
+            if (m_device)
+            {
+                m_device->setPPM(m_settings->sdrplay.ppm);
+            }
+            break;
         case InputDevice::Id::AIRSPY:
         case InputDevice::Id::RARTTCP:
-        default:
+        case InputDevice::Id::UNDEFINED:
+        case InputDevice::Id::RAWFILE:
             break;
     }
 }
@@ -1372,6 +1454,148 @@ void SetupDialog::onSoapySdrGainModeToggled(bool checked)
     }
 }
 
+void SetupDialog::onSdrplayDeviceChanged(int idx)
+{
+    ui->sdrplayDeviceListCombo->setEnabled(false);
+    ui->sdrplayChannelCombo->setEnabled(false);
+    ui->sdrplayAntennaCombo->setEnabled(false);
+    ui->sdrplayChannelCombo->clear();
+    if (idx >= 0)
+    {  // timer is needed to avoid GUI blocking
+        QTimer::singleShot(100, this,
+                           [this]()
+                           {
+                               int numCh = SdrPlayInput::getNumRxChannels(ui->sdrplayDeviceListCombo->currentData());
+                               for (int n = 0; n < numCh; ++n)
+                               {
+                                   ui->sdrplayChannelCombo->addItem(QString::number(n), QVariant(n));
+                               }
+                           });
+    }
+}
+
+void SetupDialog::activateSdrplayControls(bool en)
+{
+    ui->sdrplayGainModeGroup->setEnabled(en);
+    ui->sdrplayGainWidget->setEnabled(en && (SdrPlayGainMode::Manual == m_settings->sdrplay.gain.mode));
+    ui->sdrplayExpertGroup->setEnabled(en);
+    ui->sdrplayIFGainSlider->setEnabled(en && !m_settings->sdrplay.gain.ifAgcEna);
+}
+
+void SetupDialog::onSdrplayReloadButtonClicked()
+{
+    if (m_inputDeviceId != InputDevice::Id::SDRPLAY)
+    {
+        ui->sdrplayReloadButton->setEnabled(false);
+        reloadDeviceList(InputDevice::Id::SDRPLAY, ui->sdrplayDeviceListCombo);
+    }
+    else
+    {  // sdrplay is connected now -> need to disconnect
+        resetInputDevice();
+        m_inputDeviceId = InputDevice::Id::UNDEFINED;
+        emit inputDeviceChanged(InputDevice::Id::UNDEFINED, m_settings->sdrplay.hwId);
+        ui->sdrplayReloadButton->setEnabled(false);
+        ui->sdrplayReloadButton->setText(tr("Reload"));
+        reloadDeviceList(InputDevice::Id::SDRPLAY, ui->sdrplayDeviceListCombo);
+    }
+}
+
+void SetupDialog::onSdrplayChannelChanged(int idx)
+{
+    ui->sdrplayAntennaCombo->clear();
+    if (idx >= 0)
+    {  // timer is needed to avoid GUI blocking
+        QTimer::singleShot(100, this,
+                           [this]()
+                           {
+                               QStringList ant = SdrPlayInput::getRxAntennas(ui->sdrplayDeviceListCombo->currentData(),
+                                                                             ui->sdrplayChannelCombo->currentData().toInt());
+                               for (const auto &a : ant)
+                               {
+                                   ui->sdrplayAntennaCombo->addItem(a, a);
+                               }
+
+                               ui->sdrplayDeviceListCombo->setEnabled(m_inputDeviceId != InputDevice::Id::SDRPLAY);
+                               ui->sdrplayChannelCombo->setEnabled(m_inputDeviceId != InputDevice::Id::SDRPLAY);
+                               ui->sdrplayAntennaCombo->setEnabled(m_inputDeviceId != InputDevice::Id::SDRPLAY);
+                               ui->sdrplayReloadButton->setEnabled(true);
+                           });
+    }
+}
+
+void SetupDialog::onSdrplayModeToggled(bool checked)
+{
+    if (checked)
+    {
+        if (ui->sdrplayGainModeSw->isChecked())
+        {
+            m_settings->sdrplay.gain.mode = SdrPlayGainMode::Software;
+        }
+        else if (ui->sdrplayGainModeManual->isChecked())
+        {
+            m_settings->sdrplay.gain.mode = SdrPlayGainMode::Manual;
+        }
+        activateSdrplayControls(true);
+        dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
+    }
+}
+
+void SetupDialog::onSdrplayRFGainSliderChanged(int val)
+{
+    ui->sdrplayRFGainLabel->setText(QString("%1 dB  ").arg(m_sdrplayGainList.at(val)));
+    m_settings->sdrplay.gain.rfGain = val;
+    dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
+}
+
+void SetupDialog::onSdrplayIFGainSliderChanged(int val)
+{
+    ui->sdrplayIFGainLabel->setText(QString("%1 dB  ").arg(val));
+    m_settings->sdrplay.gain.ifGain = val;
+    dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
+}
+
+void SetupDialog::onSdrplayAGCstateChanged(int state)
+{
+    bool ena = (Qt::Unchecked == state);
+    ui->sdrplayIFGain->setEnabled(ena);
+    ui->sdrplayIFGainSlider->setEnabled(ena);
+    ui->sdrplayIFGainLabel->setEnabled(ena);
+
+    m_settings->sdrplay.gain.ifAgcEna = !ena;
+    dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
+}
+
+// void SetupDialog::setSdrplaySdrGainWidget(bool activate)
+// {
+//     if (activate)
+//     {
+//         auto gains = dynamic_cast<SoapySdrInput *>(m_device)->getGains();
+//         if (!gains->empty())
+//         {
+//             for (auto it = gains->cbegin(); it != gains->cend(); ++it)
+//             {
+//                 if (it->first == "RFGR")
+//                 {
+//                     ui->sdrplayRFGainSlider->setMinimum(-it->second.maximum());
+//                     ui->sdrplayRFGainSlider->setMaximum(-it->second.minimum());
+//                 }
+//                 else if ((*it).first == "IFGR")
+//                 {
+//                     ui->sdrplayIFGainSlider->setMinimum(-it->second.maximum());
+//                     ui->sdrplayIFGainSlider->setMaximum(-it->second.minimum());
+//                 }
+//             }
+//             ui->sdrplayRFGainSlider->setValue(m_settings->sdrplay.gain.rfGain);
+//             ui->sdrplayIFGainSlider->setValue(m_settings->sdrplay.gain.ifGain);
+//             ui->sdrplayIFAGCCheckbox->setChecked(m_settings->sdrplay.gain.ifAgcEna);
+//             ui->soapysdrGainWidget->setEnabled(SdrPlayGainMode::Manual == m_settings->sdrplay.gain.mode);
+//             ui->sdrplayRFGainLabel->setText(QString("%1 dB  ").arg(m_settings->sdrplay.gain.rfGain));
+//             ui->sdrplayIFGainLabel->setText(QString("%1 dB  ").arg(m_settings->sdrplay.gain.ifGain));
+//         }
+//     }
+//     ui->sdrplayGainWidget->setEnabled(activate);
+// }
+
 #endif  // HAVE_SOAPYSDR
 
 void SetupDialog::setStatusLabel(bool clearLabel)
@@ -1404,6 +1628,9 @@ void SetupDialog::setStatusLabel(bool clearLabel)
                 break;
             case InputDevice::Id::RARTTCP:
                 ui->statusLabel->setText("RART TCP device connected");
+                break;
+            case InputDevice::Id::SDRPLAY:
+                ui->statusLabel->setText("SDRplay device connected");
                 break;
         }
     }
@@ -1450,6 +1677,15 @@ void SetupDialog::onInputChanged(int index)
             if (m_inputDeviceId != static_cast<InputDevice::Id>(inputDeviceInt))
             {
                 activateSoapySdrControls(false);
+            }
+#endif
+            break;
+        case InputDevice::Id::SDRPLAY:
+#if HAVE_SOAPYSDR
+            QTimer::singleShot(100, this, [this]() { reloadDeviceList(InputDevice::Id::SDRPLAY, ui->sdrplayDeviceListCombo); });
+            if (m_inputDeviceId != static_cast<InputDevice::Id>(inputDeviceInt))
+            {
+                activateSdrplayControls(false);
             }
 #endif
             break;
@@ -1533,6 +1769,7 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
 #if HAVE_AIRSPY
             m_device->setBiasT(m_settings->airspy.biasT);
             dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
+            m_settings->airspy.hwId = m_device->hwId();
             activateAirspyControls(true);
 #endif
             break;
@@ -1549,6 +1786,20 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
             m_device->setBW(m_settings->soapysdr.bandwidth);
             m_device->setPPM(m_settings->soapysdr.ppm);
             activateSoapySdrControls(true);
+#endif
+            break;
+        case InputDevice::Id::SDRPLAY:
+#if HAVE_SOAPYSDR
+            setGainValues(dynamic_cast<SdrPlayInput *>(m_device)->getRFGainList());
+            ui->sdrplayReloadButton->setText(tr("Disconnect"));
+            ui->sdrplayReloadButton->setEnabled(true);
+            ui->sdrplayDeviceListCombo->setEnabled(false);
+            ui->sdrplayChannelCombo->setEnabled(false);
+            ui->sdrplayAntennaCombo->setEnabled(false);
+            m_settings->sdrplay.hwId = m_device->hwId();
+            dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
+            m_device->setPPM(m_settings->sdrplay.ppm);
+            activateSdrplayControls(true);
 #endif
             break;
         case InputDevice::Id::RAWFILE:
@@ -1572,6 +1823,7 @@ void SetupDialog::resetInputDevice()
 #if HAVE_SOAPYSDR
     setSoapySdrGainWidget(false);
     activateSoapySdrControls(false);
+    activateSdrplayControls(false);
 #endif
 
     m_settings->inputDevice = InputDevice::Id::UNDEFINED;
@@ -2060,7 +2312,14 @@ void SetupDialog::reloadDeviceList(const InputDevice::Id inputDeviceId, QComboBo
         case InputDevice::Id::SOAPYSDR:
 #if HAVE_SOAPYSDR
 #endif
-            return;
+            break;
+        case InputDevice::Id::SDRPLAY:
+#if HAVE_SOAPYSDR
+            list = SdrPlayInput::getDeviceList();
+            currentId = m_settings->sdrplay.hwId;
+            ui->sdrplayReloadButton->setEnabled(list.isEmpty());
+#endif
+            break;
         case InputDevice::Id::RARTTCP:
             break;
     }
@@ -2116,10 +2375,17 @@ void SetupDialog::setConnectButton(SetupDialogConnectButtonState state)
                                   ui->soapysdrChannelNum->value() != m_settings->soapysdr.channel);
 #endif
                     break;
+                case InputDevice::Id::SDRPLAY:
+#if HAVE_SOAPYSDR
+                    showButton = (ui->sdrplayDeviceListCombo->count() > 0) &&
+                                 (showButton || (ui->sdrplayDeviceListCombo->currentData() != m_settings->sdrplay.hwId));
+
+#endif
+                    break;
                 case InputDevice::Id::RTLTCP:
                 case InputDevice::Id::RAWFILE:
                 case InputDevice::Id::RARTTCP:
-                default:
+                case InputDevice::Id::UNDEFINED:
                     break;
             }
             ui->connectButton->setEnabled(showButton);

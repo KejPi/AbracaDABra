@@ -105,7 +105,7 @@ public:
     const QList<QPair<QString, SoapySDR::Range>> *getGains() const { return m_gains; }
     void setGain(int idx, float gain);
 
-private:
+protected:
     double m_sampleRate;
     uint32_t m_frequency;
     uint32_t m_bandwidth;
@@ -125,9 +125,10 @@ private:
 
     void run();
     void stop();
+    virtual void resetAgc() {}
 
     // used by worker
-    void onAgcLevel(float agcLevel);
+    virtual void onAgcLevel(float agcLevel);
 
     void onReadThreadStopped();
     void onWatchdogTimeout();

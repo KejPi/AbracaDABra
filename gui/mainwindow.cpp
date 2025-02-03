@@ -79,6 +79,7 @@
 #include "airspyinput.h"
 #endif
 #if HAVE_SOAPYSDR
+#include "sdrplayinput.h"
 #include "soapysdrinput.h"
 #endif
 #if HAVE_RARTTCP
@@ -2658,7 +2659,7 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
             connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
-            if (m_inputDevice->openDevice())
+            if (m_inputDevice->openDevice(id))
             {  // airspy is available
                 if ((InputDevice::Id::RAWFILE == m_inputDeviceId) || (InputDevice::Id::UNDEFINED == m_inputDeviceId))
                 {  // if switching from RAW or UNDEFINED load service list & rec schedule
@@ -2762,7 +2763,65 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
 #endif
         }
         break;
+        case InputDevice::Id::SDRPLAY:
+        {
+#if HAVE_SOAPYSDR
+            m_inputDevice = new SdrPlayInput();
 
+            // signals have to be connected before calling isAvailable
+
+            // tuning procedure
+            connect(m_radioControl, &RadioControl::tuneInputDevice, m_inputDevice, &InputDevice::tune, Qt::QueuedConnection);
+            connect(m_inputDevice, &InputDevice::tuned, m_radioControl, &RadioControl::start, Qt::QueuedConnection);
+
+            // HMI
+            connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
+            connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
+
+            // set connection paramaters
+            dynamic_cast<SoapySdrInput *>(m_inputDevice)->setRxChannel(m_settings->sdrplay.channel);
+            dynamic_cast<SoapySdrInput *>(m_inputDevice)->setAntenna(m_settings->sdrplay.antenna);
+
+            if (m_inputDevice->openDevice(id))
+            {  // SoapySDR is available
+                if ((InputDevice::Id::RAWFILE == m_inputDeviceId) || (InputDevice::Id::UNDEFINED == m_inputDeviceId))
+                {  // if switching from RAW or UNDEFINED load service list & rec schedule
+
+                    // clear service list
+                    m_serviceList->clear();
+
+                    // clear rec schedule
+                    m_audioRecScheduleModel->clear();
+
+                    QSettings *settings;
+                    if (m_iniFilename.isEmpty())
+                    {
+                        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+                    }
+                    else
+                    {
+                        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+                    }
+                    m_serviceList->load(*settings);
+                    m_audioRecScheduleModel->load(*settings);
+                    delete settings;
+                }
+                else
+                { /* keep service list as it is */
+                }
+
+                m_inputDeviceId = InputDevice::Id::SDRPLAY;
+
+                configureForInputDevice();
+            }
+            else
+            {
+                m_setupDialog->resetInputDevice();
+                initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
+            }
+#endif
+        }
+        break;
         case InputDevice::Id::RAWFILE:
         {
             m_inputDevice = new RawFileInput();
@@ -3064,6 +3123,16 @@ void MainWindow::loadSettings()
     }
     settings->endGroup();
 
+    m_settings->sdrplay.hwId = settings->value("SDRPLAY/lastDevice");
+    m_settings->sdrplay.antenna = settings->value("SDRPLAY/antenna", QString("")).toString();
+    m_settings->sdrplay.channel = settings->value("SDRPLAY/rxChannel", 0).toInt();
+    m_settings->sdrplay.gain.mode =
+        static_cast<SdrPlayGainMode>(settings->value("SDRPLAY/gainMode", static_cast<int>(SdrPlayGainMode::Software)).toInt());
+    m_settings->sdrplay.gain.rfGain = settings->value("SDRPLAY/rfGain", -1).toInt();
+    m_settings->sdrplay.gain.ifGain = settings->value("SDRPLAY/ifGain", 0).toInt();
+    m_settings->sdrplay.gain.ifAgcEna = settings->value("SDRPLAY/ifAgcEna", true).toBool();
+    m_settings->sdrplay.ppm = settings->value("SDRPLAY/ppm", 0).toInt();
+
 #endif
     m_settings->rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
     m_settings->rawfile.format = RawFileInputFormat(settings->value("RAW-FILE/format", 0).toInt());
@@ -3117,6 +3186,9 @@ void MainWindow::loadSettings()
             case InputDevice::Id::AIRSPY:
                 // try to init last device
                 initInputDevice(m_settings->inputDevice, m_settings->airspy.hwId);
+                break;
+            case InputDevice::Id::SDRPLAY:
+                initInputDevice(m_settings->inputDevice, m_settings->sdrplay.hwId);
                 break;
             case InputDevice::Id::RTLTCP:
             case InputDevice::Id::RAWFILE:
@@ -3300,6 +3372,14 @@ void MainWindow::saveSettings()
         settings->endArray();
         settings->endGroup();
     }
+    settings->setValue("SDRPLAY/lastDevice", m_settings->sdrplay.hwId);
+    settings->setValue("SDRPLAY/rxChannel", m_settings->sdrplay.channel);
+    settings->setValue("SDRPLAY/antenna", m_settings->sdrplay.antenna);
+    settings->setValue("SDRPLAY/gainMode", static_cast<int>(m_settings->sdrplay.gain.mode));
+    settings->setValue("SDRPLAY/rfGain", m_settings->sdrplay.gain.rfGain);
+    settings->setValue("SDRPLAY/ifGain", m_settings->sdrplay.gain.ifGain);
+    settings->setValue("SDRPLAY/ifAgcEna", m_settings->sdrplay.gain.ifAgcEna);
+    settings->setValue("SDRPLAY/ppm", m_settings->sdrplay.ppm);
 #endif
 
     settings->setValue("RTL-TCP/gainIndex", m_settings->rtltcp.gainIdx);

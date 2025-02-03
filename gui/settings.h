@@ -41,6 +41,7 @@
 #include "airspyinput.h"
 #endif
 #if HAVE_SOAPYSDR
+#include "sdrplayinput.h"
 #include "soapysdrinput.h"
 #endif
 
@@ -116,6 +117,14 @@ public:
         QString driver;
         QHash<QString, SoapyGainStruct> gainMap;
     } soapysdr;
+    struct
+    {
+        QVariant hwId;
+        QString antenna;
+        int channel;
+        int ppm;
+        SdrPlayGainStruct gain;
+    } sdrplay;
 #endif
 #if HAVE_RARTTCP
     struct

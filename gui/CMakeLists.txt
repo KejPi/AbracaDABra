@@ -132,6 +132,8 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     input/rtltcpinput.cpp
     input/rarttcpinput.h
     input/rarttcpinput.cpp
+    input/sdrplayinput.h
+    input/sdrplayinput.cpp
 
 
     # User applications

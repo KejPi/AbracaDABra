@@ -93,6 +93,7 @@ public:
         RTLTCP,
         RAWFILE,
         AIRSPY,
+        SDRPLAY,
         SOAPYSDR,
         RARTTCP
     };
