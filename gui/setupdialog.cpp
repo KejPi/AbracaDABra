@@ -1506,6 +1506,7 @@ void SetupDialog::onSdrplayDeviceChanged(int idx)
 
 void SetupDialog::activateSdrplayControls(bool en)
 {
+    ui->sdrplayReloadButton->setText(en ? tr("Disconnect") : tr("Reload"));
     ui->sdrplayGainModeGroup->setEnabled(en);
     ui->sdrplayGainWidget->setEnabled(en && (SdrPlayGainMode::Manual == m_settings->sdrplay.gain.mode));
     ui->sdrplayExpertGroup->setEnabled(en);
@@ -1525,7 +1526,6 @@ void SetupDialog::onSdrplayReloadButtonClicked()
         m_inputDeviceId = InputDevice::Id::UNDEFINED;
         emit inputDeviceChanged(InputDevice::Id::UNDEFINED, m_settings->sdrplay.hwId);
         ui->sdrplayReloadButton->setEnabled(false);
-        ui->sdrplayReloadButton->setText(tr("Reload"));
         reloadDeviceList(InputDevice::Id::SDRPLAY, ui->sdrplayDeviceListCombo);
     }
 }
@@ -1713,7 +1713,7 @@ void SetupDialog::onInputChanged(int index)
             break;
         case InputDevice::Id::SDRPLAY:
 #if HAVE_SOAPYSDR
-            QTimer::singleShot(100, this, [this]() { reloadDeviceList(InputDevice::Id::SDRPLAY, ui->sdrplayDeviceListCombo); });
+            QTimer::singleShot(200, this, [this]() { reloadDeviceList(InputDevice::Id::SDRPLAY, ui->sdrplayDeviceListCombo); });
             if (m_inputDeviceId != static_cast<InputDevice::Id>(inputDeviceInt))
             {
                 activateSdrplayControls(false);
@@ -1822,7 +1822,6 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
         case InputDevice::Id::SDRPLAY:
 #if HAVE_SOAPYSDR
             setGainValues(dynamic_cast<SdrPlayInput *>(m_device)->getRFGainList());
-            ui->sdrplayReloadButton->setText(tr("Disconnect"));
             ui->sdrplayReloadButton->setEnabled(true);
             ui->sdrplayDeviceListCombo->setEnabled(false);
             ui->sdrplayChannelCombo->setEnabled(false);
