@@ -243,7 +243,6 @@ private:
 
     void onSdrplayModeToggled(bool checked);
     void onSdrplayAGCstateChanged(int state);
-    // void setSdrplaySdrGainWidget(bool activate);
     void onSdrplayIFGainSliderChanged(int val);
     void onSdrplayRFGainSliderChanged(int val);
 #endif

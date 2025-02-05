@@ -731,6 +731,10 @@ void SetupDialog::setUiState()
     ui->airspyMixerAGCCheckbox->setChecked(m_settings->airspy.gain.mixerAgcEna);
     ui->airspyLNAAGCCheckbox->setChecked(m_settings->airspy.gain.lnaAgcEna);
     ui->airspyBiasTCombo->setCurrentIndex(m_settings->airspy.biasT ? 1 : 0);
+    onAirspySensitivityGainSliderChanged(m_settings->airspy.gain.sensitivityGainIdx);
+    onAirspyIFGainSliderChanged(m_settings->airspy.gain.ifGainIdx);
+    onAirspyLNAGainSliderChanged(m_settings->airspy.gain.lnaGainIdx);
+    onAirspyMixerGainSliderChanged(m_settings->airspy.gain.mixerGainIdx);
 #endif
 
 #if HAVE_SOAPYSDR
@@ -1356,28 +1360,40 @@ void SetupDialog::onAirspySensitivityGainSliderChanged(int val)
 {
     ui->airspySensitivityGainLabel->setText(QString::number(val));
     m_settings->airspy.gain.sensitivityGainIdx = val;
-    dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
+    if (dynamic_cast<AirspyInput *>(m_device))
+    {
+        dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
+    }
 }
 
 void SetupDialog::onAirspyIFGainSliderChanged(int val)
 {
     ui->airspyIFGainLabel->setText(QString::number(val));
     m_settings->airspy.gain.ifGainIdx = val;
-    dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
+    if (dynamic_cast<AirspyInput *>(m_device))
+    {
+        dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
+    }
 }
 
 void SetupDialog::onAirspyLNAGainSliderChanged(int val)
 {
     ui->airspyLNAGainLabel->setText(QString::number(val));
     m_settings->airspy.gain.lnaGainIdx = val;
-    dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
+    if (dynamic_cast<AirspyInput *>(m_device))
+    {
+        dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
+    }
 }
 
 void SetupDialog::onAirspyMixerGainSliderChanged(int val)
 {
     ui->airspyMixerGainLabel->setText(QString::number(val));
     m_settings->airspy.gain.mixerGainIdx = val;
-    dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
+    if (dynamic_cast<AirspyInput *>(m_device))
+    {
+        dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
+    }
 }
 
 void SetupDialog::onAirspyLNAAGCstateChanged(int state)
@@ -1574,14 +1590,20 @@ void SetupDialog::onSdrplayRFGainSliderChanged(int val)
 {
     ui->sdrplayRFGainLabel->setText(QString("%1 dB  ").arg(m_sdrplayGainList.at(val)));
     m_settings->sdrplay.gain.rfGain = val;
-    dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
+    if (dynamic_cast<SdrPlayInput *>(m_device))
+    {
+        dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
+    }
 }
 
 void SetupDialog::onSdrplayIFGainSliderChanged(int val)
 {
     ui->sdrplayIFGainLabel->setText(QString("%1 dB  ").arg(val));
     m_settings->sdrplay.gain.ifGain = val;
-    dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
+    if (dynamic_cast<SdrPlayInput *>(m_device))
+    {
+        dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
+    }
 }
 
 void SetupDialog::onSdrplayAGCstateChanged(int state)
@@ -1594,37 +1616,6 @@ void SetupDialog::onSdrplayAGCstateChanged(int state)
     m_settings->sdrplay.gain.ifAgcEna = !ena;
     dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
 }
-
-// void SetupDialog::setSdrplaySdrGainWidget(bool activate)
-// {
-//     if (activate)
-//     {
-//         auto gains = dynamic_cast<SoapySdrInput *>(m_device)->getGains();
-//         if (!gains->empty())
-//         {
-//             for (auto it = gains->cbegin(); it != gains->cend(); ++it)
-//             {
-//                 if (it->first == "RFGR")
-//                 {
-//                     ui->sdrplayRFGainSlider->setMinimum(-it->second.maximum());
-//                     ui->sdrplayRFGainSlider->setMaximum(-it->second.minimum());
-//                 }
-//                 else if ((*it).first == "IFGR")
-//                 {
-//                     ui->sdrplayIFGainSlider->setMinimum(-it->second.maximum());
-//                     ui->sdrplayIFGainSlider->setMaximum(-it->second.minimum());
-//                 }
-//             }
-//             ui->sdrplayRFGainSlider->setValue(m_settings->sdrplay.gain.rfGain);
-//             ui->sdrplayIFGainSlider->setValue(m_settings->sdrplay.gain.ifGain);
-//             ui->sdrplayIFAGCCheckbox->setChecked(m_settings->sdrplay.gain.ifAgcEna);
-//             ui->soapysdrGainWidget->setEnabled(SdrPlayGainMode::Manual == m_settings->sdrplay.gain.mode);
-//             ui->sdrplayRFGainLabel->setText(QString("%1 dB  ").arg(m_settings->sdrplay.gain.rfGain));
-//             ui->sdrplayIFGainLabel->setText(QString("%1 dB  ").arg(m_settings->sdrplay.gain.ifGain));
-//         }
-//     }
-//     ui->sdrplayGainWidget->setEnabled(activate);
-// }
 
 #endif  // HAVE_SOAPYSDR
 
