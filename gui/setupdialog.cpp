@@ -1526,7 +1526,6 @@ void SetupDialog::onSdrplayReloadButtonClicked()
         m_inputDeviceId = InputDevice::Id::UNDEFINED;
         emit inputDeviceChanged(InputDevice::Id::UNDEFINED, m_settings->sdrplay.hwId);
         ui->sdrplayReloadButton->setEnabled(false);
-        reloadDeviceList(InputDevice::Id::SDRPLAY, ui->sdrplayDeviceListCombo);
     }
 }
 
@@ -1856,6 +1855,29 @@ void SetupDialog::resetInputDevice()
     activateSoapySdrControls(false);
     activateSdrplayControls(false);
 #endif
+    int inputDeviceInt = ui->inputCombo->currentData().toInt();
+    switch (static_cast<InputDevice::Id>(inputDeviceInt))
+    {
+        case InputDevice::Id::RTLSDR:
+            reloadDeviceList(InputDevice::Id::RTLSDR, ui->rtlsdrDeviceListCombo);
+            break;
+        case InputDevice::Id::AIRSPY:
+#if HAVE_AIRSPY
+            reloadDeviceList(InputDevice::Id::AIRSPY, ui->airspyDeviceListCombo);
+#endif
+            break;
+        case InputDevice::Id::SDRPLAY:
+#if HAVE_SOAPYSDR
+            QTimer::singleShot(200, this, [this]() { reloadDeviceList(InputDevice::Id::SDRPLAY, ui->sdrplayDeviceListCombo); });
+#endif
+            break;
+        case InputDevice::Id::SOAPYSDR:
+        case InputDevice::Id::RARTTCP:
+        case InputDevice::Id::RTLTCP:
+        case InputDevice::Id::UNDEFINED:
+        case InputDevice::Id::RAWFILE:
+            break;
+    }
 
     m_settings->inputDevice = InputDevice::Id::UNDEFINED;
     m_inputDeviceId = InputDevice::Id::UNDEFINED;
@@ -2248,6 +2270,7 @@ void SetupDialog::setDeviceDescription(const InputDevice::Description &desc)
             (*it++)->setText(desc.device.tuner);
             (*it++)->setText(desc.sample.channelContainer);
             ui->rtlsdrInfoWidget->setVisible(true);
+            reloadDeviceList(InputDevice::Id::RTLSDR, ui->rtlsdrDeviceListCombo);
         }
         break;
         case InputDevice::Id::RTLTCP:
@@ -2266,6 +2289,7 @@ void SetupDialog::setDeviceDescription(const InputDevice::Description &desc)
             (*it++)->setText("Airspy " + desc.device.model);
             (*it++)->setText(desc.device.sn);
             ui->airspyInfoWidget->setVisible(true);
+            reloadDeviceList(InputDevice::Id::AIRSPY, ui->airspyDeviceListCombo);
 #endif
         }
         break;
