@@ -74,6 +74,7 @@ private:
     const float m_ifGRmin = 20;
     const float m_ifGRmax = 59;
     int m_rfGRchangeCntr;
+    int m_levelEmitCntr;
     bool m_biasT;
 
     QList<float> m_rfGainList;

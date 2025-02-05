@@ -199,9 +199,10 @@ void SdrPlayInput::setGainMode(const SdrPlayGainStruct &gain)
                 m_device->setGain(SOAPY_SDR_RX, m_rxChannel, "IFGR", -gain.ifGain);
                 m_ifGR = -gain.ifGain;
             }
+            emit agcGain(m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) - m_ifGR);
             break;
     }
-    emit agcGain(NAN);
+    emit rfLevel(NAN, NAN);
 }
 
 void SdrPlayInput::setBiasT(bool ena)
@@ -221,8 +222,10 @@ void SdrPlayInput::resetAgc()
         setRFGR(1);
         setIFGR(50);
         m_rfGRchangeCntr = 1;
-        return;
+        emit agcGain(m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) - m_ifGR);
     }
+    m_levelEmitCntr = 0;
+    emit rfLevel(NAN, NAN);
 }
 
 void SdrPlayInput::setRFGR(int rfGR)
@@ -309,5 +312,15 @@ void SdrPlayInput::onAgcLevel(float agcLevel)
             }
         }
     }
-    // qDebug() << Q_FUNC_INFO << agcLevel << m_rfGR << m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) << m_ifGR;
+    // qDebug() << Q_FUNC_INFO << agcLevel << -m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) << m_ifGR << 10 * std::log10(agcLevel)
+    //          << m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) - m_ifGR
+    //          << 10 * std::log10(agcLevel) - m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) + m_ifGR - 114;
+
+    if (++m_levelEmitCntr > 4)
+    {
+        m_levelEmitCntr = 0;
+        float gain = 114 + m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) - m_ifGR;
+        emit agcGain(gain);
+        emit rfLevel(10 * std::log10(agcLevel) - gain, gain);
+    }
 }
