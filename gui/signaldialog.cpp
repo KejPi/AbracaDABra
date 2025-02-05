@@ -223,6 +223,15 @@ void SignalDialog::setInputDevice(InputDevice::Id id)
             break;
         case InputDevice::Id::RAWFILE:
             // distinguish input format
+            if (m_settings->rawfile.format == RawFileInputFormat::SAMPLE_FORMAT_S16)
+            {  // input is -32768 .. +32767  ==> * 1/32768 = -90.309 dB
+                m_offset_dB = m_offset_dB - 90.309;
+            }
+            else
+            {  // input is -128 .. +127  ==> * 1/128 = -42.144 dB
+                m_offset_dB = m_offset_dB - 42.144;
+            }
+
             break;
         case InputDevice::Id::SDRPLAY:
             m_offset_dB = m_offset_dB + 7;  // +7 is empirical correction factor -> not clear where it comes from
