@@ -194,7 +194,6 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
                        {
                            setRfLevelVisible(false);
                            setGainVisible(false);
-                           emit setSignalSpectrum(true);
                        });
 }
 
@@ -204,6 +203,39 @@ SignalDialog::~SignalDialog()
     delete m_timer;
 
     delete ui;
+}
+
+void SignalDialog::setInputDevice(InputDevice::Id id)
+{
+    // -10 dB is averaging factor 1/10
+    // 66.227dB is FFT gain 2048
+    m_offset_dB = -10.0 - 66.227;
+
+    switch (id)
+    {
+        case InputDevice::Id::RTLSDR:
+            // input is -128 .. +127  ==> * 1/128 = -42.144 dB
+            m_offset_dB = m_offset_dB - 42.144 + 3;  // +3 is empirical correction factor -> not clear where it comes from
+            break;
+        case InputDevice::Id::RTLTCP:
+            // input is -128 .. +127  ==> * 1/128 = -42.144 dB
+            m_offset_dB = m_offset_dB - 42.144;
+            break;
+        case InputDevice::Id::RAWFILE:
+            // distinguish input format
+            break;
+        case InputDevice::Id::SDRPLAY:
+            m_offset_dB = m_offset_dB + 7;  // +7 is empirical correction factor -> not clear where it comes from
+            break;
+        case InputDevice::Id::RARTTCP:
+        case InputDevice::Id::AIRSPY:
+        case InputDevice::Id::SOAPYSDR:
+        case InputDevice::Id::UNDEFINED:
+            break;
+    }
+
+    // enable spectrum
+    emit setSignalSpectrum(id != InputDevice::Id::UNDEFINED);
 }
 
 void SignalDialog::setSignalState(uint8_t sync, float snr)
@@ -478,7 +510,7 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
         // qDebug() << *std::min_element(m_spectrumBuffer.cbegin(), m_spectrumBuffer.cend())*0.1 << *std::max_element(m_spectrumBuffer.cbegin(),
         // m_spectrumBuffer.cend())*0.1; qDebug() << Q_FUNC_INFO;
         m_avrgCntr = 0;
-
+#if 0
         // -10 dB is averaging factor 1/10
         // 66.227dB is FFT gain 2048
         float offset_dB = -10.0 - 66.227;
@@ -489,12 +521,17 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
         }
         if (!std::isnan(m_tunerGain))
         {
-            offset_dB -= m_tunerGain - 3;
+            offset_dB -= m_tunerGain - 3 - 3;
+        }
+#endif
+        float offset_dB = m_offset_dB;
+        if (!std::isnan(m_tunerGain))
+        {
+            offset_dB -= m_tunerGain;
         }
 
         ui->spectrumPlot->graph(0)->data()->clear();
         float freq = 0;
-        // float sum1536 = -m_spectrumBuffer.front();
         float minVal = 1000;
         float maxVal = -1000;
         for (auto it = m_spectrumBuffer.begin(); it != m_spectrumBuffer.end(); ++it)
@@ -508,12 +545,6 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
             maxVal = (val > maxVal) ? val : maxVal;
 
             ui->spectrumPlot->graph(0)->addData((freq + m_frequency) * 0.001, val);
-
-            // if ((freq >= -768.0) && (freq <= 768.0))
-            // {
-            //     sum1536 += (*it) * (*it);
-            // }
-
             freq += 1.0;
 
             if (freq == 1024.0)
@@ -522,6 +553,8 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
             }
             *it = 0.0;
         }
+
+        qDebug() << maxVal << offset_dB;
 
         auto range = ui->spectrumPlot->yAxis->range();
         if (m_spectYRangeSet)

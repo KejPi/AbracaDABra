@@ -46,6 +46,7 @@ class SignalDialog : public QDialog
 public:
     explicit SignalDialog(Settings *settings, int freq, QWidget *parent = nullptr);
     ~SignalDialog();
+    void setInputDevice(InputDevice::Id id);
     void setSignalState(uint8_t sync, float snr);
     void setupDarkMode(bool darkModeEna);
     void onTuneDone(uint32_t freq);
@@ -79,6 +80,7 @@ private:
     int m_frequency = 0;
     float m_rfLevel = NAN;
     float m_tunerGain = NAN;
+    float m_offset_dB = 0.0;
     int m_syncSnrLevel = -1;
     bool m_spectYRangeSet;
     float m_spectYRangeMax;

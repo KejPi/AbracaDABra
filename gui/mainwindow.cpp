@@ -2922,6 +2922,7 @@ void MainWindow::configureForInputDevice()
         connect(m_inputDevice, &InputDevice::rfLevel, m_ensembleInfoDialog, &EnsembleInfoDialog::updateRfLevel);
         if (m_signalDialog != nullptr)
         {
+            m_signalDialog->setInputDevice(m_inputDeviceId);
             connect(m_inputDevice, &InputDevice::rfLevel, m_signalDialog, &SignalDialog::updateRfLevel);
         }
         m_ensembleInfoDialog->enableRecording(hasRecording);
@@ -3672,6 +3673,7 @@ void MainWindow::showSignalDialog()
         connect(m_inputDevice, &InputDevice::rfLevel, m_signalDialog, &SignalDialog::updateRfLevel);
         connect(m_signalDialog, &QDialog::finished, m_signalDialog, &QObject::deleteLater);
         connect(m_signalDialog, &QDialog::destroyed, this, [this]() { m_signalDialog = nullptr; });
+        m_signalDialog->setInputDevice(m_inputDeviceId);
     }
 
     m_signalDialog->show();
