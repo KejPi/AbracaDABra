@@ -372,7 +372,7 @@ bool RtlTcpInput::openDevice(const QVariant &hwId)
     if (dongleInfo.magic[0] == 'R' && dongleInfo.magic[1] == 'T' && dongleInfo.magic[2] == 'L' && dongleInfo.magic[3] == '0')
     {
         m_deviceDescription.device.name = "rtl_tcp";
-        m_deviceDescription.device.model = "Generic RTL2832U OEM";
+        m_deviceDescription.device.model = "Generic RTL2832U";
         m_deviceDescription.sample.sampleRate = 2048000;
         m_deviceDescription.sample.channelBits = 8;
         m_deviceDescription.sample.containerBits = 8;
@@ -393,25 +393,25 @@ bool RtlTcpInput::openDevice(const QVariant &hwId)
                     numGains = *(&e4k_gains + 1) - e4k_gains;
                     gains = e4k_gains;
                 }
-                m_deviceDescription.device.name += " [E4000]";
+                m_deviceDescription.device.tuner = "E4000";
                 break;
             case RTLSDR_TUNER_FC0012:
                 qCInfo(rtlTcpInput) << "RTLSDR_TUNER_FC0012";
                 gains = fc0012_gains;
                 numGains = *(&fc0012_gains + 1) - fc0012_gains;
-                m_deviceDescription.device.name += " [FC0012]";
+                m_deviceDescription.device.tuner = "FC0012";
                 break;
             case RTLSDR_TUNER_FC0013:
                 qCInfo(rtlTcpInput) << "RTLSDR_TUNER_FC0013";
                 gains = fc0013_gains;
                 numGains = *(&fc0013_gains + 1) - fc0013_gains;
-                m_deviceDescription.device.name += " [FC0013]";
+                m_deviceDescription.device.tuner = "FC0013";
                 break;
             case RTLSDR_TUNER_FC2580:
                 qCInfo(rtlTcpInput) << "RTLSDR_TUNER_FC2580";
                 gains = fc2580_gains;
                 numGains = *(&fc2580_gains + 1) - fc2580_gains;
-                m_deviceDescription.device.name += " [FC2580]";
+                m_deviceDescription.device.tuner = "FC2580";
                 break;
             case RTLSDR_TUNER_R820T:
                 qCInfo(rtlTcpInput) << "RTLSDR_TUNER_R820T";
@@ -425,7 +425,7 @@ bool RtlTcpInput::openDevice(const QVariant &hwId)
                     numGains = *(&r82xx_gains + 1) - r82xx_gains;
                     gains = r82xx_gains;
                 }
-                m_deviceDescription.device.name += " [R820T]";
+                m_deviceDescription.device.tuner = "R820T";
                 break;
             case RTLSDR_TUNER_R828D:
                 qCInfo(rtlTcpInput) << "RTLSDR_TUNER_R828D";
@@ -439,15 +439,17 @@ bool RtlTcpInput::openDevice(const QVariant &hwId)
                     numGains = *(&r82xx_gains + 1) - r82xx_gains;
                     gains = r82xx_gains;
                 }
-                m_deviceDescription.device.name += " [R828D]";
+                m_deviceDescription.device.tuner = "R828D";
                 break;
             case RTLSDR_TUNER_UNKNOWN:
             default:
             {
                 qCWarning(rtlTcpInput) << "RTLSDR_TUNER_UNKNOWN";
                 dongleInfo.tunerGainCount = 0;
+                m_deviceDescription.device.tuner = "Unknown";
             }
         }
+        m_deviceDescription.device.name += QString(" [%1]").arg(m_deviceDescription.device.tuner);
 
         if (dongleInfo.tunerGainCount != numGains)
         {
@@ -464,6 +466,7 @@ bool RtlTcpInput::openDevice(const QVariant &hwId)
 
         m_deviceDescription.device.name = "TCP server";
         m_deviceDescription.device.model = "Unknown";
+        m_deviceDescription.device.tuner = "Unknown";
         m_deviceDescription.sample.sampleRate = 2048000;
         m_deviceDescription.sample.channelBits = 8;
         m_deviceDescription.sample.containerBits = 8;
@@ -664,7 +667,6 @@ void RtlTcpInput::onAgcLevel(float agcLevel)
         if (++m_levelCalcCntr > 2)
         {
             m_levelCalcCntr = 0;
-            // qDebug() << agcLevel << m_deviceGain << 20 * std::log10f(agcLevel) - m_deviceGain - 46;
             emit rfLevel(m_20log10[static_cast<int>(std::roundf(agcLevel))] - m_deviceGain - 46, m_deviceGain);
         }
     }
@@ -746,6 +748,7 @@ void RtlTcpInput::readControlSocketData()
         int16_t val = static_cast<uint8_t>(data.at(5)) << 8;
         val = val | static_cast<uint8_t>(data.at(6));
         m_deviceGain = val * 0.1;
+        // qDebug() << val << m_deviceGain << data.toHex(' ');
     }
 }
 
