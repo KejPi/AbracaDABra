@@ -27,6 +27,8 @@
 #ifndef SIGNALDIALOG_H
 #define SIGNALDIALOG_H
 
+#include <qcustomplot.h>
+
 #include <QDateTime>
 #include <QDialog>
 #include <QTimer>
@@ -85,6 +87,7 @@ private:
     bool m_spectYRangeSet;
     float m_spectYRangeMax;
     float m_spectYRangeMin;
+    bool m_isUserView;
 
     void addToPlot(float snr);
     void setFreqRange();
@@ -92,6 +95,15 @@ private:
 
     void setRfLevelVisible(bool visible);
     void setGainVisible(bool visible);
+
+    // user interaction with plot
+    void onPlotSelectionChanged();
+    void onPlotMousePress(QMouseEvent *event);
+    void onPlotMouseWheel(QWheelEvent *event);
+    void onContextMenuRequest(QPoint pos);
+    void onXRangeChanged(const QCPRange &newRange);
+    void onYRangeChanged(const QCPRange &newRange);
+    void showPointToolTip(QMouseEvent *event);
 };
 
 #endif  // SIGNALDIALOG_H

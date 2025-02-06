@@ -122,13 +122,14 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
 
     ui->spectrumPlot->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));  // decimal point
     ui->spectrumPlot->setAttribute(Qt::WA_OpaquePaintEvent);
+    ui->spectrumPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes);
     ui->spectrumPlot->addGraph();
     ui->spectrumPlot->graph(0)->setLineStyle(QCPGraph::lsLine);
     ui->spectrumPlot->xAxis->grid()->setSubGridVisible(true);
     ui->spectrumPlot->yAxis->grid()->setSubGridVisible(true);
 
     m_spectYRangeSet = false;
-    m_spectYRangeMin = -120;
+    m_spectYRangeMin = -140;
     m_spectYRangeMax = 0.0;
 
     ui->spectrumPlot->axisRect()->setupFullAxesBox();
@@ -157,11 +158,27 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     }
     setFreqRange();
 
+    // connect slot that ties some axis selections together (especially opposite axes):
+    connect(ui->spectrumPlot, &QCustomPlot::selectionChangedByUser, this, &SignalDialog::onPlotSelectionChanged);
+    // connect slots that takes care that when an axis is selected, only that direction can be dragged and zoomed:
+    connect(ui->spectrumPlot, &QCustomPlot::mousePress, this, &SignalDialog::onPlotMousePress);
+    connect(ui->spectrumPlot, &QCustomPlot::mouseWheel, this, &SignalDialog::onPlotMouseWheel);
+
     // make bottom and left axes transfer their ranges to top and right axes:
     connect(ui->spectrumPlot->xAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), ui->spectrumPlot->xAxis2,
             QOverload<const QCPRange &>::of(&QCPAxis::setRange));
     connect(ui->spectrumPlot->yAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), ui->spectrumPlot->yAxis2,
             QOverload<const QCPRange &>::of(&QCPAxis::setRange));
+    connect(ui->spectrumPlot->xAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), this, &SignalDialog::onXRangeChanged);
+    connect(ui->spectrumPlot->yAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), this, &SignalDialog::onYRangeChanged);
+
+    // setup policy and connect slot for context menu popup:
+    ui->spectrumPlot->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->spectrumPlot, &QCustomPlot::customContextMenuRequested, this, &SignalDialog::onContextMenuRequest);
+
+    connect(ui->spectrumPlot, &QCustomPlot::mouseMove, this, &SignalDialog::showPointToolTip);
+
+    m_isUserView = false;
 
     // render level icons
     m_snrLevelIcons[0].loadFromData(templateSvgFill.arg(snrLevelColors.at(0)).toUtf8(), "svg");
@@ -312,6 +329,25 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
             plot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
             plot->setBackground(QBrush(Qt::black));
 
+            QColor axisSelectionColor(Qt::red);
+            axisSelectionColor = qApp->style()->standardPalette().color(QPalette::Active, QPalette::Link);
+            plot->xAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
+            plot->xAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
+            plot->xAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->xAxis->setSelectedTickLabelColor(axisSelectionColor);
+            plot->xAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
+            plot->xAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
+            plot->xAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->xAxis2->setSelectedTickLabelColor(axisSelectionColor);
+            plot->yAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
+            plot->yAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
+            plot->yAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->yAxis->setSelectedTickLabelColor(axisSelectionColor);
+            plot->yAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
+            plot->yAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
+            plot->yAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->yAxis2->setSelectedTickLabelColor(axisSelectionColor);
+
             plot = ui->spectrumPlot;
         }
 
@@ -366,6 +402,25 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
             plot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
             plot->setBackground(QBrush(Qt::white));
 
+            QColor axisSelectionColor(48, 140, 198);
+            axisSelectionColor = qApp->style()->standardPalette().color(QPalette::Active, QPalette::Link);
+            plot->xAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
+            plot->xAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
+            plot->xAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->xAxis->setSelectedTickLabelColor(axisSelectionColor);
+            plot->xAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
+            plot->xAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
+            plot->xAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->xAxis2->setSelectedTickLabelColor(axisSelectionColor);
+            plot->yAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
+            plot->yAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
+            plot->yAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->yAxis->setSelectedTickLabelColor(axisSelectionColor);
+            plot->yAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
+            plot->yAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
+            plot->yAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->yAxis2->setSelectedTickLabelColor(axisSelectionColor);
+
             plot = ui->spectrumPlot;
         }
 
@@ -407,10 +462,12 @@ void SignalDialog::reset()
     m_avrgCntr = 0;
     ui->spectrumPlot->graph(0)->data()->clear();
     m_spectYRangeSet = false;
-    m_spectYRangeMin = -120;
+    m_spectYRangeMin = -140;
     m_spectYRangeMax = 0;
     ui->spectrumPlot->yAxis->setRange(m_spectYRangeMin, m_spectYRangeMax);
+    m_isUserView = false;
 
+    updateRfLevel(NAN, NAN);
     setRfLevelVisible(false);
     setGainVisible(false);
     setSignalState(0, 0.0);
@@ -486,14 +543,14 @@ void SignalDialog::updateRfLevel(float rfLevel, float gain)
     {  // level is not available (input device in HW mode or not RTL-SDR)
         ui->rfLevelValue->setText(tr("N/A"));
         setRfLevelVisible(false);
-        m_spectYRangeMin = -120;
+        m_spectYRangeMin = -140;
         m_spectYRangeMax = 0;
     }
     else
     {
         ui->rfLevelValue->setText(QString::number(double(rfLevel), 'f', 1) + " dBm");
         setRfLevelVisible(true);
-        m_spectYRangeMin = floorf((-120 + rfLevel) / 10.0) * 10.0;
+        m_spectYRangeMin = floorf((-100 + rfLevel) / 10.0) * 10.0;
         m_spectYRangeMax = ceilf((0 + rfLevel) / 10.0) * 10.0;
     }
 }
@@ -519,20 +576,6 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
         // qDebug() << *std::min_element(m_spectrumBuffer.cbegin(), m_spectrumBuffer.cend())*0.1 << *std::max_element(m_spectrumBuffer.cbegin(),
         // m_spectrumBuffer.cend())*0.1; qDebug() << Q_FUNC_INFO;
         m_avrgCntr = 0;
-#if 0
-        // -10 dB is averaging factor 1/10
-        // 66.227dB is FFT gain 2048
-        float offset_dB = -10.0 - 66.227;
-        if (m_settings->inputDevice == InputDevice::Id::RTLSDR || m_settings->inputDevice == InputDevice::Id::RTLTCP ||
-            m_settings->inputDevice == InputDevice::Id::RAWFILE)
-        {  // input is -128 .. +127  ==> * 1/128 = -42.144 dB
-            offset_dB = offset_dB - 42.144;
-        }
-        if (!std::isnan(m_tunerGain))
-        {
-            offset_dB -= m_tunerGain - 3 - 3;
-        }
-#endif
         float offset_dB = m_offset_dB;
         if (!std::isnan(m_tunerGain))
         {
@@ -563,34 +606,35 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
             *it = 0.0;
         }
 
-        qDebug() << maxVal << offset_dB;
-
-        auto range = ui->spectrumPlot->yAxis->range();
-        if (m_spectYRangeSet)
+        // qDebug() << maxVal << offset_dB;
+        if (m_isUserView == false)
         {
-            if ((minVal - range.lower) < 0)
-            {  // set minumum to at least minVal + 10, use multiples of 10
-                range.lower = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, m_spectYRangeMin);
-            }
-            if ((range.upper - maxVal) < 0)
+            auto range = ui->spectrumPlot->yAxis->range();
+            if (m_spectYRangeSet)
             {
-                range.upper = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, m_spectYRangeMax);
+                if (minVal < range.lower)
+                {  // set minumum to at least minVal + 10, use multiples of 10
+                    range.lower = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, m_spectYRangeMin);
+                }
+                if (range.upper < maxVal)
+                {
+                    range.upper = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, m_spectYRangeMax);
+                }
             }
-        }
-        else
-        {
-            if ((minVal - range.lower) < 0 || (minVal - range.lower) > 20)
-            {  // set minumum to at least minVal + 10, use multiples of 10
-                range.lower = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, m_spectYRangeMin);
-            }
-            if ((range.upper - maxVal) < 0 || (range.upper - maxVal) > 20)
+            else
             {
-                range.upper = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, m_spectYRangeMax);
+                if ((minVal - range.lower) < 0 || (minVal - range.lower) > 20)
+                {  // set minumum to at least minVal + 10, use multiples of 10
+                    range.lower = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, m_spectYRangeMin);
+                }
+                if ((range.upper - maxVal) < 0 || (range.upper - maxVal) > 20)
+                {
+                    range.upper = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, m_spectYRangeMax);
+                }
+                m_spectYRangeSet = true;
             }
-            m_spectYRangeSet = true;
+            ui->spectrumPlot->yAxis->setRange(range);
         }
-
-        ui->spectrumPlot->yAxis->setRange(range);
         ui->spectrumPlot->replot();
     }
 }
@@ -618,26 +662,7 @@ void SignalDialog::addToPlot(float snr)
     }
 
     ui->snrPlot->graph(0)->addData(key, snr);
-#if 0
-    double avrg = 0.0;
-#define AGVR_SAMPLES 8
-    if (ui->snrPlot->graph(0)->data()->size() < AGVR_SAMPLES)
-    {
-        for (int n = 0; n < ui->snrPlot->graph(0)->data()->size(); ++n)
-        {
-            avrg += ui->snrPlot->graph(0)->data()->at(n)->value;
-        }
-        avrg = avrg / ui->snrPlot->graph(0)->data()->size();
-    }
-    else {
-        for (int n = ui->snrPlot->graph(0)->data()->size()-AGVR_SAMPLES; n < ui->snrPlot->graph(0)->data()->size(); ++n)
-        {
-            avrg += ui->snrPlot->graph(0)->data()->at(n)->value;
-        }
-        avrg = avrg / AGVR_SAMPLES;
-    }
-    ui->snrPlot->graph(1)->addData(key, avrg);
-#endif
+
     // make key axis range scroll with the data (at a constant range size of 8):
     if (key < xPlotRange)
     {
@@ -653,4 +678,175 @@ void SignalDialog::addToPlot(float snr)
     }
 
     ui->snrPlot->replot();
+}
+
+void SignalDialog::onPlotSelectionChanged()
+{
+    // normally, axis base line, axis tick labels and axis labels are selectable separately, but we want
+    // the user only to be able to select the axis as a whole, so we tie the selected states of the tick labels
+    // and the axis base line together.
+
+    // The selection state of the left and right axes shall be synchronized as well as the state of the
+    // bottom and top axes.
+
+    // make top and bottom axes be selected synchronously, and handle axis and tick labels as one selectable object:
+    if (ui->spectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis) ||
+        ui->spectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spTickLabels) ||
+        ui->spectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxisLabel) ||
+        ui->spectrumPlot->xAxis2->selectedParts().testFlag(QCPAxis::spAxis) ||
+        ui->spectrumPlot->xAxis2->selectedParts().testFlag(QCPAxis::spTickLabels))
+    {
+        ui->spectrumPlot->xAxis2->setSelectedParts(QCPAxis::spAxis | QCPAxis::spTickLabels);
+        ui->spectrumPlot->xAxis->setSelectedParts(QCPAxis::spAxis | QCPAxis::spTickLabels | QCPAxis::spAxisLabel);
+    }
+    // make left and right axes be selected synchronously, and handle axis and tick labels as one selectable object:
+    if (ui->spectrumPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis) ||
+        ui->spectrumPlot->yAxis->selectedParts().testFlag(QCPAxis::spTickLabels) ||
+        ui->spectrumPlot->yAxis2->selectedParts().testFlag(QCPAxis::spAxis) ||
+        ui->spectrumPlot->yAxis2->selectedParts().testFlag(QCPAxis::spTickLabels))
+    {
+        ui->spectrumPlot->yAxis2->setSelectedParts(QCPAxis::spAxis | QCPAxis::spTickLabels);
+        ui->spectrumPlot->yAxis->setSelectedParts(QCPAxis::spAxis | QCPAxis::spTickLabels);
+    }
+}
+
+void SignalDialog::onPlotMousePress(QMouseEvent *event)
+{
+    // if an axis is selected, only allow the direction of that axis to be dragged
+    // if no axis is selected, both directions may be dragged
+
+    if (ui->spectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    {
+        ui->spectrumPlot->axisRect()->setRangeDrag(ui->spectrumPlot->xAxis->orientation());
+    }
+    else if (ui->spectrumPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    {
+        ui->spectrumPlot->axisRect()->setRangeDrag(ui->spectrumPlot->yAxis->orientation());
+    }
+    else
+    {
+        ui->spectrumPlot->axisRect()->setRangeDrag(Qt::Horizontal | Qt::Vertical);
+    }
+}
+
+void SignalDialog::onPlotMouseWheel(QWheelEvent *event)
+{
+    // if an axis is selected, only allow the direction of that axis to be zoomed
+    // if no axis is selected, both directions may be zoomed
+    if (ui->spectrumPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    {
+        ui->spectrumPlot->axisRect()->setRangeZoom(ui->spectrumPlot->xAxis->orientation());
+    }
+    else if (ui->spectrumPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    {
+        ui->spectrumPlot->axisRect()->setRangeZoom(ui->spectrumPlot->yAxis->orientation());
+    }
+    else
+    {
+        ui->spectrumPlot->axisRect()->setRangeZoom(Qt::Horizontal | Qt::Vertical);
+    }
+    m_isUserView = true;
+}
+
+void SignalDialog::onXRangeChanged(const QCPRange &newRange)
+{
+    double lowerBound = (-1024 + m_frequency) * 0.001;
+    double upperBound = (1024 + m_frequency) * 0.001;
+    QCPRange fixedRange(newRange);
+    if (fixedRange.lower < lowerBound)
+    {
+        fixedRange.lower = lowerBound;
+        fixedRange.upper = lowerBound + newRange.size();
+        if (fixedRange.upper > upperBound || qFuzzyCompare(newRange.size(), upperBound - lowerBound))
+        {
+            fixedRange.upper = upperBound;
+        }
+        ui->spectrumPlot->xAxis->setRange(fixedRange);
+        m_isUserView = true;
+    }
+    else if (fixedRange.upper > upperBound)
+    {
+        fixedRange.upper = upperBound;
+        fixedRange.lower = upperBound - newRange.size();
+        if (fixedRange.lower < lowerBound || qFuzzyCompare(newRange.size(), upperBound - lowerBound))
+        {
+            fixedRange.lower = lowerBound;
+        }
+        ui->spectrumPlot->xAxis->setRange(fixedRange);
+        m_isUserView = true;
+    }
+}
+
+void SignalDialog::onYRangeChanged(const QCPRange &newRange)
+{
+    double lowerBound = -200;
+    double upperBound = 10;
+    QCPRange fixedRange(newRange);
+    if (fixedRange.lower < lowerBound)
+    {
+        fixedRange.lower = lowerBound;
+        fixedRange.upper = lowerBound + newRange.size();
+        if (fixedRange.upper > upperBound || qFuzzyCompare(newRange.size(), upperBound - lowerBound))
+        {
+            fixedRange.upper = upperBound;
+        }
+        ui->spectrumPlot->yAxis->setRange(fixedRange);
+        m_isUserView = true;
+    }
+    else if (fixedRange.upper > upperBound)
+    {
+        fixedRange.upper = upperBound;
+        fixedRange.lower = upperBound - newRange.size();
+        if (fixedRange.lower < lowerBound || qFuzzyCompare(newRange.size(), upperBound - lowerBound))
+        {
+            fixedRange.lower = lowerBound;
+        }
+        ui->spectrumPlot->yAxis->setRange(fixedRange);
+        m_isUserView = true;
+    }
+}
+
+void SignalDialog::showPointToolTip(QMouseEvent *event)
+{
+    double x = ui->spectrumPlot->xAxis->pixelToCoord(event->pos().x());
+    auto xrange = ui->spectrumPlot->xAxis->range();
+    if (x >= xrange.lower && x <= xrange.upper)
+    {
+        double y = ui->spectrumPlot->yAxis->pixelToCoord(event->pos().y());
+        auto yrange = ui->spectrumPlot->yAxis->range();
+        if (y >= yrange.lower && y <= yrange.upper)
+        {
+            ui->spectrumPlot->setToolTip(
+                QString(tr("%1 MHz<br>%2 %3")).arg(x, 6, 'f', 3, QChar('0')).arg(y, 4, 'f', 1, QChar('0')).arg(ui->spectrumPlot->yAxis->label()));
+            return;
+        }
+    }
+    ui->spectrumPlot->setToolTip("");
+}
+
+void SignalDialog::onContextMenuRequest(QPoint pos)
+{
+    if (m_isUserView)
+    {
+        QMenu *menu = new QMenu(this);
+        menu->setAttribute(Qt::WA_DeleteOnClose);
+        auto restoreZoomAction = new QAction(tr("Restore view"), this);
+        restoreZoomAction->setEnabled(m_isUserView);
+        connect(restoreZoomAction, &QAction::triggered, this,
+                [this]()
+                {
+                    ui->spectrumPlot->rescaleAxes();
+                    ui->spectrumPlot->deselectAll();
+                    ui->spectrumPlot->replot();
+                    m_spectYRangeSet = false;
+                    m_isUserView = false;
+                });
+
+        connect(menu, &QWidget::destroyed, [=]() { // delete actions
+            restoreZoomAction->deleteLater();
+        });
+
+        menu->addAction(restoreZoomAction);
+        menu->popup(ui->spectrumPlot->mapToGlobal(pos));
+    }
 }
