@@ -363,6 +363,8 @@ void ScannerDialog::startScan()
     // using timer for mainwindow to cleanup and tune to 0 potentially (no timeout in case)
     m_timer->start(2000);
     emit scanStarts();
+
+    qCInfo(scanner) << "Scanning starts";
 }
 
 void ScannerDialog::scanStep()
@@ -422,6 +424,7 @@ void ScannerDialog::scanStep()
         m_numServicesFound = 0;
         m_ensemble.reset();
         m_state = ScannerState::WaitForTune;
+        qCInfo(scanner) << "Tune:" << m_frequency;
         emit tuneChannel(m_frequency);
     }
     else
@@ -450,6 +453,7 @@ void ScannerDialog::onTuneDone(uint32_t freq)
             // tuned to some frequency -> wait for sync
             m_state = ScannerState::WaitForSync;
             m_timer->start(m_settings->scanner.waitForSync * 1000);
+            qCDebug(scanner) << "Waiting for sync @" << m_frequency;
             break;
         default:
             // do nothing
@@ -466,6 +470,7 @@ void ScannerDialog::onSignalState(uint8_t sync, float snr)
             m_timer->stop();
             m_state = ScannerState::WaitForEnsemble;
             m_timer->start(m_settings->scanner.waitForEnsemble * 1000);
+            qCInfo(scanner) << "Signal found, waiting for ensemble info @" << m_frequency;
         }
     }
     if (m_ensemble.isValid() && m_isScanning)
@@ -490,6 +495,8 @@ void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
         m_timer->start(5000 + m_modeCombo->currentData().toInt() * 5000);
 
         m_ensemble = ens;
+        qCInfo(scanner, "Ensemble info: %s %6.6X @ %d kHz, waiting for TII", m_ensemble.label.toUtf8().data(), m_ensemble.ueid, m_ensemble.frequency);
+
         m_snr = 0.0;
         m_snrCntr = 0;
         m_tiiCntr = 0;
@@ -502,6 +509,7 @@ void ScannerDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
     else
     {  // this can happen in single channel mode in no signal case
         // wait for ensemble
+        qCDebug(scanner) << "Invalid ensemble info, still waiting @" << m_frequency;
         m_timer->start(m_settings->scanner.waitForEnsemble * 1000);
     }
 }
@@ -518,7 +526,8 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 {
     if ((ScannerState::WaitForTII == m_state) && m_ensemble.isValid())
     {
-        if (++m_tiiCntr >= m_modeCombo->currentData().toInt())
+        qCDebug(scanner) << "TII data @" << m_frequency;
+        if (++m_tiiCntr == m_modeCombo->currentData().toInt())
         {
             if (nullptr != m_timer && m_timer->isActive())
             {
@@ -528,6 +537,7 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
             if (m_isPreciseMode)
             {  // request ensemble info
                 m_tiiData = data;
+                qCDebug(scanner) << "Requesting ensemble config @" << m_frequency;
                 emit requestEnsembleConfiguration();
             }
             else
@@ -540,6 +550,8 @@ void ScannerDialog::onTiiData(const RadioControlTIIData &data)
 
 void ScannerDialog::storeEnsembleData(const RadioControlTIIData &tiiData, const QString &conf, const QString &csvConf)
 {
+    qCDebug(scanner) << "Storing results @" << m_frequency;
+
     m_model->appendEnsData(tiiData.idList, ServiceListId(m_ensemble), m_ensemble.label, conf, csvConf, m_numServicesFound, m_snr / m_snrCntr);
     m_exportButton->setEnabled(true);
 
@@ -562,6 +574,8 @@ void ScannerDialog::storeEnsembleData(const RadioControlTIIData &tiiData, const 
 
     // forcing update of UI
     onSelectionChanged(QItemSelection(), QItemSelection());
+
+    qCInfo(scanner) << "Done:" << m_frequency;
 
     // next channel
     scanStep();
@@ -614,6 +628,7 @@ void ScannerDialog::showContextMenu(const QPoint &pos)
 
 void ScannerDialog::onEnsembleConfigurationAndCSV(const QString &config, const QString &csvString)
 {
+    qCDebug(scanner) << "Ensemble config received @" << m_frequency;
     storeEnsembleData(m_tiiData, config, csvString);
 }
 
