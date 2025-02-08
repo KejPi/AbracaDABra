@@ -1139,7 +1139,8 @@ QString RadioControl::ensembleConfigurationCSV_FMLIST() const
     }
 
     QString output =
-        "Ensemble Name;Ensemble ID;Channel;Frequency;Service Name;Service ID;Service Language;Service Country;PTY;Short Label;ECC;Component Label;"
+        "Ensemble Name;Ensemble ID;Channel;Frequency;Service Name;Service ID;Service Language;Service Country;PTY;Short "
+        "Label;ECC;Component Label;"
         "Component Language;Type;Sub channel ID;Codec;Bitrate;CU;Protection level;User application\n";
     for (auto const &s : m_serviceList)
     {
@@ -1297,6 +1298,7 @@ void RadioControl::clearEnsemble()
     m_ensemble.alarm = 0;
     m_ensembleConfigurationTimer->stop();
     m_ensembleConfigurationUpdateRequest = false;
+    m_ensembleConfigurationSentCSV = false;
 
     emit ensembleConfiguration(QString());
 }
@@ -1317,6 +1319,14 @@ void RadioControl::ensembleConfigurationUpdate()
 
 void RadioControl::ensembleConfigurationDispatch()
 {
+    if (!m_ensembleConfigurationSentCSV)
+    {
+        if (m_ensemble.isValid())
+        {
+            m_ensembleConfigurationSentCSV = true;
+            emit ensembleCSV_FMLIST(m_ensemble, ensembleConfigurationCSV_FMLIST());
+        }
+    }
     if (m_ensembleConfigurationUpdateRequest)
     {
         m_ensembleConfigurationUpdateRequest = false;
@@ -1373,10 +1383,9 @@ void RadioControl::eventHandler_ensembleInfo(RadioControlEvent *pEvent)
         // request service list
         // ETSI EN 300 401 V2.1.1 (2017-01) [6.1]
         // The complete MCI for one configuration shall normally be signalled in a 96ms period;
-        // the exceptions are that the FIG 0/8 for primary service components containing data applications and for data secondary service components,
-        // and the FIG 0/13 may be signalled at a slower rate but not less frequently than once per second.
-        // When the slower rate is used, the FIG 0/8 and FIG 0/13 for the same service component should be signalled in the FIBs corresponding to the
-        // same CIF.
+        // the exceptions are that the FIG 0/8 for primary service components containing data applications and for data secondary service
+        // components, and the FIG 0/13 may be signalled at a slower rate but not less frequently than once per second. When the slower rate is
+        // used, the FIG 0/8 and FIG 0/13 for the same service component should be signalled in the FIBs corresponding to the same CIF.
         QTimer::singleShot(200, this, &RadioControl::dabGetServiceList);
     }
 

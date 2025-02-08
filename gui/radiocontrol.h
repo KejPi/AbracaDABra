@@ -399,6 +399,7 @@ signals:
     void ensembleInformation(const RadioControlEnsemble &ens);
     void ensembleConfiguration(const QString &);
     void ensembleCSV(const QString &);
+    void ensembleCSV_FMLIST(const RadioControlEnsemble &ens, const QString &);
     void ensembleConfigurationAndCSV(const QString &, const QString &);
     void ensembleReconfiguration(const RadioControlEnsemble &ens);
     void ensembleRemoved(const RadioControlEnsemble &ens);
@@ -456,6 +457,7 @@ private:
     // set when ensemble information is complete
     QTimer *m_ensembleConfigurationTimer;
     bool m_ensembleConfigurationUpdateRequest = false;
+    bool m_ensembleConfigurationSentCSV = false;
 
     bool m_isReconfigurationOngoing = false;
     bool m_spiAppEnabled = false;

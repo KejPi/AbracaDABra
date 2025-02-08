@@ -277,13 +277,10 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent) : QMainWindo
     connect(m_setupDialog, &SetupDialog::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
     connect(m_setupDialog, &SetupDialog::proxySettingsChanged, this, &MainWindow::setProxy);
 #if HAVE_FMLIST_INTERFACE
+    m_fmlistInterface = new FMListInterface(PROJECT_VER, TxDataLoader::dbfile());
     connect(m_setupDialog, &SetupDialog::updateTxDb, this,
             [this]()
             {
-                if (m_fmlistInterface == nullptr)
-                {
-                    m_fmlistInterface = new FMListInterface(TxDataLoader::dbfile());
-                }
                 connect(m_fmlistInterface, &FMListInterface::updateTiiDataFinished, m_setupDialog, &SetupDialog::onTiiUpdateFinished);
                 qCInfo(application, "Updating TX database (library version %s)", m_fmlistInterface->version().toUtf8().data());
                 m_fmlistInterface->updateTiiData();
@@ -762,6 +759,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent) : QMainWindo
     connect(m_radioControl, &RadioControl::serviceListEntry, this, &MainWindow::onServiceListEntry, Qt::BlockingQueuedConnection);
     connect(m_radioControl, &RadioControl::announcement, this, &MainWindow::onAnnouncement, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::programmeTypeChanged, this, &MainWindow::onProgrammeTypeChanged, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::ensembleCSV_FMLIST, this, &MainWindow::uploadEnsembleCSV, Qt::QueuedConnection);
     connect(this, &MainWindow::announcementMask, m_radioControl, &RadioControl::setupAnnouncements, Qt::QueuedConnection);
     connect(m_audioOutput, &AudioOutput::audioOutputRestart, m_radioControl, &RadioControl::onAudioOutputRestart, Qt::QueuedConnection);
     connect(this, &MainWindow::toggleAnnouncement, m_radioControl, &RadioControl::suspendResumeAnnouncement, Qt::QueuedConnection);
@@ -1667,6 +1665,22 @@ void MainWindow::selectService(const ServiceListId &serviceId)
             ui->serviceListView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Current);
             return;
         }
+    }
+}
+
+void MainWindow::uploadEnsembleCSV(const RadioControlEnsemble &ens, const QString &csv)
+{
+    if (m_fmlistInterface && (m_inputDeviceId != InputDevice::Id::UNDEFINED) && (m_inputDevice->capabilities() & InputDevice::Capability::LiveStream))
+    {
+        // qDebug() << QString("%1_%2_%3")
+        //                 .arg(DabTables::channelList.value(ens.frequency), ens.label,
+        //                      EPGTime::getInstance()->currentTime().toString("yyyy-MM-dd_hhmmss"));
+        // qDebug() << qPrintable(csv);
+
+        m_fmlistInterface->uploadEnsembleCSV(
+            QString("%1_%2_%3")
+                .arg(DabTables::channelList.value(ens.frequency), ens.label, EPGTime::getInstance()->currentTime().toString("yyyy-MM-dd_hhmmss")),
+            csv);
     }
 }
 
