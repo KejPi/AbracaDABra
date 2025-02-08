@@ -445,6 +445,12 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->slsBgButton, &QPushButton::clicked, this, &SetupDialog::onSlsBgButtonClicked);
     ui->slsBgButton->setToolTip(tr("Select slideshow background color"));
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
+    connect(ui->fmlistUploadCheckBox, &QCheckBox::checkStateChanged, this, &SetupDialog::setFmlistUploadInfoText);
+#else
+    connect(ui->fmlistUploadCheckBox, &QCheckBox::stateChanged, this, &SetupDialog::setFmlistUploadInfoText);
+#endif
+
     QTimer::singleShot(10, this, [this]() { resize(minimumSizeHint()); });
 }
 
@@ -908,6 +914,9 @@ void SetupDialog::setUiState()
                       .arg(m_settings->slsBackground.name(QColor::HexArgb));
     ui->slsBgButton->setStyleSheet(qss);
     ui->slsBgButton->setMaximumWidth(ui->slsBgButton->height() * 2);
+
+    ui->fmlistUploadCheckBox->setChecked(m_settings->uploadEnsembleInfo);
+    setFmlistUploadInfoText();
 }
 
 void SetupDialog::connectDeviceControlSignals()
@@ -932,7 +941,11 @@ void SetupDialog::connectDeviceControlSignals()
     connect(ui->rtltcpSwAgcMaxLevel, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpSwAgcMaxLevelChanged);
     connect(ui->rtltcpSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtltcpSwAgcMaxLevel->setValue(0); });
     connect(ui->rtltcpPPM, &QSpinBox::valueChanged, this, &SetupDialog::onPPMChanged);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
     connect(ui->rtltcpControlSocketCheckbox, &QCheckBox::checkStateChanged, this, &SetupDialog::onRtlTcpControlSocketChecked);
+#else
+    connect(ui->rtltcpControlSocketCheckbox, &QCheckBox::stateChanged, this, &SetupDialog::onRtlTcpControlSocketChecked);
+#endif
 
     connect(ui->fileFormatCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onRawFileFormatChanged);
 
@@ -1654,6 +1667,25 @@ void SetupDialog::setStatusLabel(bool clearLabel)
                 ui->statusLabel->setText("SDRplay device connected");
                 break;
         }
+    }
+}
+
+void SetupDialog::setFmlistUploadInfoText()
+{
+    m_settings->uploadEnsembleInfo = ui->fmlistUploadCheckBox->isChecked();
+    if (ui->fmlistUploadCheckBox->isChecked())
+    {
+        ui->fmlistUploadInfotext->setText(
+            tr("Application automatically uploads ensemble information to <a href=\"https://www.fmlist.org/\">FMLIST</a>.<br>"
+               "Ensemble information is a small CSV file with list of services in the ensemble, it is anonymous and contains no personal data.<br>"
+               "Thank you for supporting the community!"));
+    }
+    else
+    {
+        ui->fmlistUploadInfotext->setText(
+            tr("Upload of ensemble information to <a href=\"https://www.fmlist.org/\">FMLIST</a> is currenly disabled.<br>"
+               "Ensemble information is a small CSV file with list of services in the ensemble, it is anonymous and contains no personal data.<br>"
+               "Please consider enabling this option to help the community."));
     }
 }
 

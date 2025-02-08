@@ -149,6 +149,7 @@ public:
     QColor slsBackground = Qt::red;
     bool updateCheckEna;
     QDateTime updateCheckTime;
+    bool uploadEnsembleInfo;
 
     // audio recording settings
     struct AudioRec

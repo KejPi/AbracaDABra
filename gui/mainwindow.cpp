@@ -276,14 +276,27 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent) : QMainWindo
     connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, this, &MainWindow::onNewAnnouncementSettings);
     connect(m_setupDialog, &SetupDialog::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
     connect(m_setupDialog, &SetupDialog::proxySettingsChanged, this, &MainWindow::setProxy);
+
 #if HAVE_FMLIST_INTERFACE
     m_fmlistInterface = new FMListInterface(PROJECT_VER, TxDataLoader::dbfile());
     connect(m_setupDialog, &SetupDialog::updateTxDb, this,
             [this]()
             {
-                connect(m_fmlistInterface, &FMListInterface::updateTiiDataFinished, m_setupDialog, &SetupDialog::onTiiUpdateFinished);
                 qCInfo(application, "Updating TX database (library version %s)", m_fmlistInterface->version().toUtf8().data());
                 m_fmlistInterface->updateTiiData();
+            });
+    connect(m_fmlistInterface, &FMListInterface::updateTiiDataFinished, m_setupDialog, &SetupDialog::onTiiUpdateFinished);
+    connect(m_fmlistInterface, &FMListInterface::ensembleCsvUploaded, this,
+            [this](QNetworkReply::NetworkError err)
+            {
+                if (err == QNetworkReply::NoError)
+                {
+                    qCInfo(application) << "Ensemble information uploaded, thank you!";
+                }
+                else
+                {
+                    qCWarning(application) << "Ensemble information upload failed, error code:" << err;
+                }
             });
 #endif
 
@@ -1670,17 +1683,18 @@ void MainWindow::selectService(const ServiceListId &serviceId)
 
 void MainWindow::uploadEnsembleCSV(const RadioControlEnsemble &ens, const QString &csv)
 {
-    if (m_fmlistInterface && (m_inputDeviceId != InputDevice::Id::UNDEFINED) && (m_inputDevice->capabilities() & InputDevice::Capability::LiveStream))
+    if (m_settings->uploadEnsembleInfo && m_fmlistInterface && (m_inputDeviceId != InputDevice::Id::UNDEFINED) &&
+        (m_inputDevice->capabilities() & InputDevice::Capability::LiveStream))
     {
-        // qDebug() << QString("%1_%2_%3")
-        //                 .arg(DabTables::channelList.value(ens.frequency), ens.label,
-        //                      EPGTime::getInstance()->currentTime().toString("yyyy-MM-dd_hhmmss"));
-        // qDebug() << qPrintable(csv);
-
-        m_fmlistInterface->uploadEnsembleCSV(
-            QString("%1_%2_%3")
-                .arg(DabTables::channelList.value(ens.frequency), ens.label, EPGTime::getInstance()->currentTime().toString("yyyy-MM-dd_hhmmss")),
-            csv);
+        if (EPGTime::getInstance()->dabTime().isValid() && EPGTime::getInstance()->dabTime().secsTo(QDateTime::currentDateTime()) < 24 * 3600)
+        {  // protection from uploading ensemble information from some recording that is older than 1 day
+            // qDebug() << qPrintable(csv);
+            qCInfo(application, "Uploading ensemble information (%lld bytes)", csv.length());
+            m_fmlistInterface->uploadEnsembleCSV(
+                QString("%1_%2_%3")
+                    .arg(DabTables::channelList.value(ens.frequency), ens.label, EPGTime::getInstance()->dabTime().toString("yyyy-MM-dd_hhmmss")),
+                csv);
+        }
     }
 }
 
@@ -2447,6 +2461,9 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
     // restore all channels
     m_channelListModel->setChannelFilter(0);
 
+    // metadata & EPG
+    EPGTime::getInstance()->setIsLiveBroadcasting(false);
+
     switch (d)
     {
         case InputDevice::Id::UNDEFINED:
@@ -3016,6 +3033,7 @@ void MainWindow::loadSettings()
     m_settings->slsBackground = QColor::fromString(settings->value("slsBg", QString("#000000")).toString());
     m_settings->updateCheckEna = settings->value("updateCheckEna", true).toBool();
     m_settings->updateCheckTime = settings->value("updateCheckTime", QDateTime::currentDateTime().addDays(-1)).value<QDateTime>();
+    m_settings->uploadEnsembleInfo = settings->value("uploadEnsembleInfoEna", true).toBool();
 
     m_settings->audioRec.folder =
         settings->value("AudioRecording/folder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
@@ -3284,6 +3302,7 @@ void MainWindow::saveSettings()
     settings->setValue("slsBg", m_settings->slsBackground.name(QColor::HexArgb));
     settings->setValue("updateCheckEna", m_settings->updateCheckEna);
     settings->setValue("updateCheckTime", m_settings->updateCheckTime);
+    settings->setValue("uploadEnsembleInfoEna", m_settings->uploadEnsembleInfo);
 
     settings->setValue("AudioRecording/folder", m_settings->audioRec.folder);
     settings->setValue("AudioRecording/captureOutput", m_settings->audioRec.captureOutput);

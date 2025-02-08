@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>530</width>
-    <height>634</height>
+    <height>710</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -2519,6 +2519,40 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
            <widget class="QLineEdit" name="proxyUserEdit">
             <property name="alignment">
              <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="fmlistGroupBox">
+         <property name="title">
+          <string>FMLIST</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QCheckBox" name="fmlistUploadCheckBox">
+            <property name="text">
+             <string>Upload ensemble information</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="fmlistUploadInfotext">
+            <property name="font">
+             <font>
+              <italic>true</italic>
+             </font>
+            </property>
+            <property name="text">
+             <string notr="true">Information text</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="openExternalLinks">
+             <bool>true</bool>
             </property>
            </widget>
           </item>

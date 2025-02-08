@@ -156,6 +156,7 @@ private:
     void setUiState();
     void connectDeviceControlSignals();
     void setStatusLabel(bool clearLabel = false);
+    void setFmlistUploadInfoText();
 
     void onInputChanged(int index);
     void onOpenFileButtonClicked();
