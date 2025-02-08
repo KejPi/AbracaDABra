@@ -52,6 +52,7 @@
 
 #include "./ui_mainwindow.h"
 #include "aboutdialog.h"
+#include "appversion.h"
 #include "audiooutputqt.h"
 #include "bandscandialog.h"
 #include "dabtables.h"
@@ -2338,37 +2339,16 @@ void MainWindow::checkForUpdate()
                 {
                     if (result)
                     {  // success
-                        QString version = updateChecker->version();
-                        static const QRegularExpression verRe("v(\\d+)\\.(\\d+)\\.(\\d+)");
-                        QRegularExpressionMatch verMatch = verRe.match(version);
-                        if (verMatch.hasMatch())
+                        AppVersion ver(updateChecker->version());
+                        if (ver.isValid())
                         {
-                            // qDebug() << version << verMatch.captured(1) << verMatch.captured(2) << verMatch.captured(3);
-
                             m_settings->updateCheckTime = QDateTime::currentDateTime();
+                            if (ver >= AppVersion(PROJECT_VER))
+                            {
+                                qCInfo(application) << "New application version found:" << updateChecker->version();
 
-                            bool updateFound = false;
-                            int major = verMatch.captured(1).toInt();
-                            int minor = verMatch.captured(2).toInt();
-                            int patch = verMatch.captured(3).toInt();
-                            if (major > PROJECT_VER_MAJOR)
-                            {
-                                updateFound = true;
-                            }
-                            else if (minor > PROJECT_VER_MINOR)
-                            {
-                                updateFound = true;
-                            }
-                            else if (patch > PROJECT_VER_PATCH)
-                            {
-                                updateFound = true;
-                            }
-                            if (updateFound)
-                            {
-                                qCInfo(application) << "New application version found:" << version;
-
-                                auto dialog =
-                                    new UpdateDialog(version, updateChecker->releaseNotes(), Qt::WindowTitleHint | Qt::WindowCloseButtonHint, this);
+                                auto dialog = new UpdateDialog(updateChecker->version(), updateChecker->releaseNotes(),
+                                                               Qt::WindowTitleHint | Qt::WindowCloseButtonHint, this);
                                 connect(dialog, &UpdateDialog::rejected, this, [this]() { m_setupDialog->setCheckUpdatesEna(false); });
                                 connect(dialog, &UpdateDialog::finished, dialog, &QObject::deleteLater);
                                 dialog->open();
@@ -3270,6 +3250,11 @@ void MainWindow::saveSettings()
         settings = new QSettings(m_iniFilename, QSettings::IniFormat);
     }
 
+    if (AppVersion(settings->value("version").toString()) < AppVersion(PROJECT_VER))
+    {
+        settings->clear();
+    }
+    settings->setValue("version", PROJECT_VER);
     settings->setValue("inputDeviceId", int(m_settings->inputDevice));
     settings->setValue("recordingPath", m_inputDeviceRecorder->recordingPath());
     settings->setValue("slideSavePath", ui->slsView_Service->savePath());

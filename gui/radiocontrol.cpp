@@ -163,7 +163,6 @@ void RadioControl::onDabEvent(RadioControlEvent *pEvent)
                     m_enaAutoNotification = false;
 
                     qCInfo(radioControl, "Current frequency %.3f MHz", pEvent->frequency / 1000.0);
-                    ;
                 }
             }
             else

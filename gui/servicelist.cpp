@@ -228,6 +228,7 @@ void ServiceList::save(QSettings &settings)
     }
     std::sort(idVect.begin(), idVect.end());
 
+    settings.remove("ServiceList");
     settings.beginWriteArray("ServiceList", m_serviceList.size());
     int n = 0;
     for (auto id : idVect)

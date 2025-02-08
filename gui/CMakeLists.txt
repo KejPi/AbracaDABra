@@ -166,6 +166,8 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     metadatamanager.h
     metadatamanager.cpp
 
+    appversion.h
+
     # customized widgets
     widgets/slsview.h
     widgets/slsview.cpp
