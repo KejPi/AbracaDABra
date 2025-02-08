@@ -46,7 +46,7 @@
 #include "scannerdialog.h"
 #include "settings.h"
 
-Q_LOGGING_CATEGORY(scanner, "Scanner", QtInfoMsg)
+Q_LOGGING_CATEGORY(scanner, "Scanner", QtDebugMsg)
 
 ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(settings, false, parent)
 {
