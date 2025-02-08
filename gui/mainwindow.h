@@ -229,6 +229,7 @@ private:
     int m_audioVolume = 100;
     bool m_keepServiceListOnScan;
     bool m_isScannerRunning = false;
+    QDateTime m_dabTime;
 
     // channel list combo
     DABChannelListFilteredModel *m_channelListModel;

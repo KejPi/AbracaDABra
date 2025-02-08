@@ -1172,6 +1172,7 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
     if (DabSyncLevel::FullSync > DabSyncLevel(sync))
     {  // hide time when no sync
         m_timeLabel->setText("");
+        m_dabTime = QDateTime();  // set invalid
 
         // set no signal quality when no sync
         if (isDarkMode())
@@ -1313,6 +1314,7 @@ void MainWindow::onDLComplete(const QString &dl, QLabel *dlLabel)
 
 void MainWindow::onDabTime(const QDateTime &d)
 {
+    m_dabTime = d;
     m_timeLabel->setText(m_timeLocale.toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
     EPGTime::getInstance()->onDabTime(d);
 }
@@ -1574,6 +1576,7 @@ void MainWindow::onTuneDone(uint32_t freq)
 
         ui->frequencyLabel->setText("");
         m_isPlaying = false;
+        m_dabTime = QDateTime();  // invalid time
         clearEnsembleInformationLabels();
         clearServiceInformationLabels();
         ui->serviceListView->setCurrentIndex(QModelIndex());
@@ -1686,7 +1689,7 @@ void MainWindow::uploadEnsembleCSV(const RadioControlEnsemble &ens, const QStrin
     if (m_settings->uploadEnsembleInfo && m_fmlistInterface && (m_inputDeviceId != InputDevice::Id::UNDEFINED) &&
         (m_inputDevice->capabilities() & InputDevice::Capability::LiveStream))
     {
-        if (EPGTime::getInstance()->dabTime().isValid() && EPGTime::getInstance()->dabTime().secsTo(QDateTime::currentDateTime()) < 24 * 3600)
+        if (m_dabTime.isValid() && m_dabTime.secsTo(QDateTime::currentDateTime()) < 24 * 3600)
         {  // protection from uploading ensemble information from some recording that is older than 1 day
             // qDebug() << qPrintable(csv);
             qCInfo(application, "Uploading ensemble information (%lld bytes)", csv.length());

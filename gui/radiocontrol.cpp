@@ -1319,13 +1319,10 @@ void RadioControl::ensembleConfigurationUpdate()
 
 void RadioControl::ensembleConfigurationDispatch()
 {
-    if (!m_ensembleConfigurationSentCSV)
+    if (!m_ensembleConfigurationSentCSV && m_ensemble.isValid())
     {
-        if (m_ensemble.isValid())
-        {
-            m_ensembleConfigurationSentCSV = true;
-            emit ensembleCSV_FMLIST(m_ensemble, ensembleConfigurationCSV_FMLIST());
-        }
+        m_ensembleConfigurationSentCSV = true;
+        emit ensembleCSV_FMLIST(m_ensemble, ensembleConfigurationCSV_FMLIST());
     }
     if (m_ensembleConfigurationUpdateRequest)
     {
