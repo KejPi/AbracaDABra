@@ -365,6 +365,7 @@ public:
     void tuneService(uint32_t freq, uint32_t SId, uint8_t SCIdS);
     void getEnsembleConfiguration();
     void getEnsembleCSV();
+    void getEnsembleCSV_FMLIST();
     void getEnsembleConfigurationAndCSV();
     void getEnsembleInformation();
     void startUserApplication(DabUserApplicationType uaType, bool start, bool singleChannel = true);
@@ -399,7 +400,7 @@ signals:
     void ensembleInformation(const RadioControlEnsemble &ens);
     void ensembleConfiguration(const QString &);
     void ensembleCSV(const QString &);
-    void ensembleCSV_FMLIST(const RadioControlEnsemble &ens, const QString &);
+    void ensembleCSV_FMLIST(const RadioControlEnsemble &ens, const QString &, bool);
     void ensembleConfigurationAndCSV(const QString &, const QString &);
     void ensembleReconfiguration(const RadioControlEnsemble &ens);
     void ensembleRemoved(const RadioControlEnsemble &ens);

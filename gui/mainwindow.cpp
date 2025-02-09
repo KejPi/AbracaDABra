@@ -278,6 +278,20 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent) : QMainWindo
     connect(m_setupDialog, &SetupDialog::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
     connect(m_setupDialog, &SetupDialog::proxySettingsChanged, this, &MainWindow::setProxy);
 
+    m_ensembleInfoDialog = new EnsembleInfoDialog();
+    connect(this, &MainWindow::exit,
+            [this]()
+            {
+                m_ensembleInfoDialog->close();
+                m_ensembleInfoDialog->deleteLater();
+            });
+    connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStart, m_inputDeviceRecorder, &InputDeviceRecorder::start);
+    connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStop, m_inputDeviceRecorder, &InputDeviceRecorder::stop);
+    connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_ensembleInfoDialog, &EnsembleInfoDialog::onRecording);
+    connect(m_inputDeviceRecorder, &InputDeviceRecorder::bytesRecorded, m_ensembleInfoDialog, &EnsembleInfoDialog::updateRecordingStatus,
+            Qt::QueuedConnection);
+    connect(m_ensembleInfoDialog, &QDialog::finished, this, [this]() { m_settings->ensembleInfo.geometry = m_ensembleInfoDialog->saveGeometry(); });
+
 #if HAVE_FMLIST_INTERFACE
     m_fmlistInterface = new FMListInterface(PROJECT_VER, TxDataLoader::dbfile());
     connect(m_setupDialog, &SetupDialog::updateTxDb, this,
@@ -293,27 +307,15 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent) : QMainWindo
                 if (err == QNetworkReply::NoError)
                 {
                     qCInfo(application) << "Ensemble information uploaded, thank you!";
+                    m_ensembleInfoDialog->setEnsembleInfoUploaded(true);
                 }
                 else
                 {
                     qCWarning(application) << "Ensemble information upload failed, error code:" << err;
+                    m_ensembleInfoDialog->setEnsembleInfoUploaded(false);
                 }
             });
 #endif
-
-    m_ensembleInfoDialog = new EnsembleInfoDialog();
-    connect(this, &MainWindow::exit,
-            [this]()
-            {
-                m_ensembleInfoDialog->close();
-                m_ensembleInfoDialog->deleteLater();
-            });
-    connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStart, m_inputDeviceRecorder, &InputDeviceRecorder::start);
-    connect(m_ensembleInfoDialog, &EnsembleInfoDialog::recordingStop, m_inputDeviceRecorder, &InputDeviceRecorder::stop);
-    connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_ensembleInfoDialog, &EnsembleInfoDialog::onRecording);
-    connect(m_inputDeviceRecorder, &InputDeviceRecorder::bytesRecorded, m_ensembleInfoDialog, &EnsembleInfoDialog::updateRecordingStatus,
-            Qt::QueuedConnection);
-    connect(m_ensembleInfoDialog, &QDialog::finished, this, [this]() { m_settings->ensembleInfo.geometry = m_ensembleInfoDialog->saveGeometry(); });
 
     // status bar
     QWidget *widget = new QWidget();
@@ -781,6 +783,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent) : QMainWindo
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfiguration,
             Qt::QueuedConnection);
     connect(m_ensembleInfoDialog, &EnsembleInfoDialog::requestEnsembleCSV, m_radioControl, &RadioControl::getEnsembleCSV, Qt::QueuedConnection);
+    connect(m_ensembleInfoDialog, &EnsembleInfoDialog::requestUploadCVS, m_radioControl, &RadioControl::getEnsembleCSV_FMLIST, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::signalState, m_ensembleInfoDialog, &EnsembleInfoDialog::updateSnr, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::freqOffset, m_ensembleInfoDialog, &EnsembleInfoDialog::updateFreqOffset, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleConfiguration, m_ensembleInfoDialog, &EnsembleInfoDialog::refreshEnsembleConfiguration,
@@ -1685,9 +1688,9 @@ void MainWindow::selectService(const ServiceListId &serviceId)
     }
 }
 
-void MainWindow::uploadEnsembleCSV(const RadioControlEnsemble &ens, const QString &csv)
+void MainWindow::uploadEnsembleCSV(const RadioControlEnsemble &ens, const QString &csv, bool isRequested)
 {
-    if (m_settings->uploadEnsembleInfo && m_fmlistInterface && (m_inputDeviceId != InputDevice::Id::UNDEFINED) &&
+    if ((m_settings->uploadEnsembleInfo || isRequested) && m_fmlistInterface && (m_inputDeviceId != InputDevice::Id::UNDEFINED) &&
         (m_inputDevice->capabilities() & InputDevice::Capability::LiveStream))
     {
         if (m_dabTime.isValid() && m_dabTime.secsTo(QDateTime::currentDateTime()) < 24 * 3600)

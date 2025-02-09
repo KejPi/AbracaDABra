@@ -65,12 +65,14 @@ public:
     void onEnsembleCSV(const QString &csvString);
     QString exportPath() const;
     void setExportPath(const QString &newExportPath);
+    void setEnsembleInfoUploaded(bool newEnsembleInfoUploaded);
 
 signals:
     void recordingStart(QWidget *widgetParent);
     void recordingStop();
     void requestEnsembleConfiguration();
     void requestEnsembleCSV();
+    void requestUploadCVS();
 
 protected:
     void showEvent(QShowEvent *event) override;
@@ -83,6 +85,7 @@ private:
     quint32 m_frequency;
     QString m_exportPath;
     QString m_ensembleName;
+    bool m_ensembleInfoUploaded;
 
     quint32 m_fibCounter;
     quint32 m_fibErrorCounter;

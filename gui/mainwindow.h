@@ -285,7 +285,7 @@ private:
     void restoreTimeQualWidget();
     bool stopAudioRecordingMsg(const QString &infoText);
     void selectService(const ServiceListId &serviceId);
-    void uploadEnsembleCSV(const RadioControlEnsemble &ens, const QString &csv);
+    void uploadEnsembleCSV(const RadioControlEnsemble &ens, const QString &csv, bool isRequested);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     void onColorSchemeChanged(Qt::ColorScheme colorScheme);

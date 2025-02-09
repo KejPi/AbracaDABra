@@ -48,6 +48,12 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(ne
 
     connect(ui->recordButton, &QPushButton::clicked, this, &EnsembleInfoDialog::onRecordingButtonClicked);
     connect(ui->csvExportButton, &QPushButton::clicked, this, &EnsembleInfoDialog::requestEnsembleCSV);
+    connect(ui->uploadButton, &QPushButton::clicked, this,
+            [this]()
+            {
+                ui->uploadButton->setEnabled(false);
+                emit requestUploadCVS();
+            });
 
     clearFreqInfo();
     clearSignalInfo();
@@ -107,6 +113,9 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(ne
     ui->recordButton->setToolTip(tr("Record raw IQ stream to file"));
     ui->csvExportButton->setToolTip(tr("Export ensemble information to CSV file"));
     ui->csvExportButton->setEnabled(false);
+    ui->uploadButton->setToolTip(tr("Upload ensemble information to FMLIST"));
+    ui->uploadButton->setEnabled(false);
+    m_ensembleInfoUploaded = false;
     enableRecording(false);
     ui->recordButton->setDefault(true);
 }
@@ -131,6 +140,7 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString &txt)
 
             ui->ensStructureTextEdit->setDocumentTitle("");
             ui->csvExportButton->setEnabled(false);
+            ui->uploadButton->setEnabled(false);
         }
         else
         {
@@ -145,6 +155,7 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString &txt)
             }
             ui->ensStructureTextEdit->setMinimumWidth(minWidth);
             ui->csvExportButton->setEnabled(true);
+            ui->uploadButton->setEnabled(!m_ensembleInfoUploaded);
         }
     }
 }
@@ -319,6 +330,7 @@ void EnsembleInfoDialog::newFrequency(quint32 f)
         resetMscStat();
         resetFibStat();
         m_ensembleName.clear();
+        m_ensembleInfoUploaded = false;
         if (m_frequency)
         {
             ui->freq->setText(QString::number(m_frequency) + " kHz");
@@ -358,6 +370,12 @@ void EnsembleInfoDialog::closeEvent(QCloseEvent *event)
         emit recordingStop();
     }
     QDialog::closeEvent(event);
+}
+
+void EnsembleInfoDialog::setEnsembleInfoUploaded(bool newEnsembleInfoUploaded)
+{
+    m_ensembleInfoUploaded = newEnsembleInfoUploaded;
+    ui->uploadButton->setEnabled(!m_ensembleInfoUploaded);
 }
 
 QString EnsembleInfoDialog::exportPath() const

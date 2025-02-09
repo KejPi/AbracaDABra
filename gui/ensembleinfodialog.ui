@@ -551,6 +551,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="uploadButton">
+       <property name="text">
+        <string>Upload to FMLIST</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <layout class="QHBoxLayout" name="horizontalLayout_19">
        <item>
         <spacer name="horizontalSpacer">

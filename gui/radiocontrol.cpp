@@ -572,6 +572,11 @@ void RadioControl::getEnsembleCSV()
     emit ensembleCSV(ensembleConfigurationCSV());
 }
 
+void RadioControl::getEnsembleCSV_FMLIST()
+{
+    emit ensembleCSV_FMLIST(m_ensemble, ensembleConfigurationCSV_FMLIST(), true);
+}
+
 void RadioControl::getEnsembleConfigurationAndCSV()
 {
     emit ensembleConfigurationAndCSV(ensembleConfigurationString(), ensembleConfigurationCSV());
@@ -1321,7 +1326,7 @@ void RadioControl::ensembleConfigurationDispatch()
     if (!m_ensembleConfigurationSentCSV && m_ensemble.isValid())
     {
         m_ensembleConfigurationSentCSV = true;
-        emit ensembleCSV_FMLIST(m_ensemble, ensembleConfigurationCSV_FMLIST());
+        emit ensembleCSV_FMLIST(m_ensemble, ensembleConfigurationCSV_FMLIST(), false);
     }
     if (m_ensembleConfigurationUpdateRequest)
     {
