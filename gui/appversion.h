@@ -51,50 +51,9 @@ public:
             // qDebug() << m_major << m_minor << m_patch << m_git;
         }
     }
-    bool operator==(const AppVersion& other) const
-    {
-        return (m_major == other.m_major && m_minor == other.m_minor && m_patch == other.m_patch && m_git == other.m_git);
-    }
-    bool operator>(const AppVersion& other) const
-    {
-        if (m_major > other.m_major)
-        {
-            return true;
-        }
-        if (m_minor > other.m_minor)
-        {
-            return m_minor;
-        }
-        if (m_patch > other.m_patch)
-        {
-            return true;
-        }
-        if (m_git > other.m_git)
-        {
-            return true;
-        }
-        return false;
-    }
-    bool operator>=(const AppVersion& other) const
-    {
-        if (m_major >= other.m_major)
-        {
-            return true;
-        }
-        if (m_minor >= other.m_minor)
-        {
-            return m_minor;
-        }
-        if (m_patch >= other.m_patch)
-        {
-            return true;
-        }
-        if (m_git >= other.m_git)
-        {
-            return true;
-        }
-        return false;
-    }
+    bool operator==(const AppVersion& other) const { return toInt64() == other.toInt64(); }
+    bool operator>(const AppVersion& other) const { return toInt64() > other.toInt64(); }
+    bool operator>=(const AppVersion& other) const { return toInt64() >= other.toInt64(); }
     bool operator<(const AppVersion& other) const { return !(*this >= other); }
     bool operator<=(const AppVersion& other) const { return !(*this > other); }
     bool isValid() const { return m_major != 0; }
@@ -104,6 +63,7 @@ private:
     int m_minor = 0;
     int m_patch = 0;
     int m_git = 0;
+    int64_t toInt64() const { return int64_t((m_major << 30) + (m_minor << 20) + (m_patch << 10) + m_git); }
 };
 
 #endif  // APPVERSION_H

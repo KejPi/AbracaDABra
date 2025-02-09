@@ -2343,9 +2343,9 @@ void MainWindow::checkForUpdate()
                         if (ver.isValid())
                         {
                             m_settings->updateCheckTime = QDateTime::currentDateTime();
-                            if (ver >= AppVersion(PROJECT_VER))
+                            if (ver > AppVersion(PROJECT_VER))
                             {
-                                qCInfo(application) << "New application version found:" << updateChecker->version();
+                                qCInfo(application, "New application version found: %s", updateChecker->version().toUtf8().data());
 
                                 auto dialog = new UpdateDialog(updateChecker->version(), updateChecker->releaseNotes(),
                                                                Qt::WindowTitleHint | Qt::WindowCloseButtonHint, this);
@@ -3291,14 +3291,13 @@ void MainWindow::saveSettings()
     settings->setValue("updateCheckEna", m_settings->updateCheckEna);
     settings->setValue("updateCheckTime", m_settings->updateCheckTime);
     settings->setValue("uploadEnsembleInfoEna", m_settings->uploadEnsembleInfo);
+    settings->setValue("showTrayIcon", m_settings->trayIconEna);
 
     settings->setValue("AudioRecording/folder", m_settings->audioRec.folder);
     settings->setValue("AudioRecording/captureOutput", m_settings->audioRec.captureOutput);
     settings->setValue("AudioRecording/autoStop", m_settings->audioRec.autoStopEna);
     settings->setValue("AudioRecording/DL", m_settings->audioRec.dl);
     settings->setValue("AudioRecording/DLAbsTime", m_settings->audioRec.dlAbsTime);
-
-    settings->setValue("showTrayIcon", m_settings->trayIconEna);
 
     settings->setValue("EPG/filterEmpty", m_settings->epg.filterEmptyEpg);
     settings->setValue("EPG/filterOtherEnsembles", m_settings->epg.filterEnsemble);
