@@ -62,6 +62,9 @@ public:
     void onInputDeviceError(const InputDevice::ErrorCode);
     void setupDarkMode(bool darkModeEna) override;
     // void setSelectedRow(int modelRow) override;
+    void setServiceToRestore(const DabSId &sid, uint8_t scids) { serviceToRestore = ServiceListId(sid.value(), scids); }
+    ServiceListId getServiceToRestore() const { return serviceToRestore; };
+
 signals:
     void scanStarts();
     void scanFinished();
@@ -127,6 +130,8 @@ private:
     // this is used in precise mode
     bool m_isPreciseMode = false;
     RadioControlTIIData m_tiiData;
+
+    ServiceListId serviceToRestore;
 
     void startScan();
     void scanStep();

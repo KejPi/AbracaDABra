@@ -3752,6 +3752,7 @@ void MainWindow::showScannerDialog()
         connect(m_scannerDialog, &ScannerDialog::scanStarts, this,
                 [this]()
                 {
+                    m_scannerDialog->setServiceToRestore(m_SId, m_SCIdS);
                     ui->channelCombo->setEnabled(false);
                     ui->channelDown->setEnabled(false);
                     ui->channelUp->setEnabled(false);
@@ -3776,7 +3777,15 @@ void MainWindow::showScannerDialog()
                     ui->channelUp->setEnabled(true);
                     ui->serviceListView->setEnabled(true);
                     ui->serviceTreeView->setEnabled(true);
-                    onBandScanFinished(BandScanDialogResult::Done);
+                    ServiceListId serviceToRestore = m_scannerDialog->getServiceToRestore();
+                    if (serviceToRestore.isValid())
+                    {
+                        selectService(serviceToRestore);
+                    }
+                    else
+                    {
+                        onBandScanFinished(BandScanDialogResult::Done);
+                    }
                 });
         connect(m_scannerDialog, &ScannerDialog::finished, this,
                 [this]()
