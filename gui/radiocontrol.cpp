@@ -728,12 +728,12 @@ void RadioControl::onSpiApplicationEnabled(bool enabled)
     }
 }
 
-void RadioControl::setTii(bool ena)
+void RadioControl::startTii(bool ena)
 {
     if (ena)
     {
         m_tiiEna += 1;
-        dabSetTii(true);
+        dabSetTii(true, m_tiiMode);
     }
     else
     {
@@ -741,9 +741,19 @@ void RadioControl::setTii(bool ena)
         if (m_tiiEna <= 0)
         {
             m_tiiEna = 0;
-            dabSetTii(false);
+            dabSetTii(false, m_tiiMode);
         }
     }
+}
+
+void RadioControl::setTii(int mode)
+{
+    if (m_tiiMode == mode)
+    {  // do nothing if mode does not change
+        return;
+    }
+    m_tiiMode = static_cast<dabsdrTiiMode_t>(mode);
+    dabSetTii(m_tiiEna > 0, m_tiiMode);
 }
 
 void RadioControl::setSignalSpectrum(bool ena)

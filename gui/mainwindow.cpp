@@ -804,6 +804,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent) : QMainWindo
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_dlDecoder[Instance::Service], &DLDecoder::reset, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_dlDecoder[Instance::Announcement], &DLDecoder::reset, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioData, m_audioDecoder, &AudioDecoder::decodeData, Qt::QueuedConnection);
+    connect(m_setupDialog, &SetupDialog::tiiModeChanged, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
 
     // service stopped
     connect(m_radioControl, &RadioControl::ensembleRemoved, this, &MainWindow::onEnsembleRemoved, Qt::QueuedConnection);
@@ -3048,6 +3049,7 @@ void MainWindow::loadSettings()
     m_settings->tii.logFolder = settings->value("TII/logFolder", QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)).toString();
     m_settings->tii.showSpectumPlot = settings->value("TII/showSpectrumPlot", false).toBool();
     m_settings->tii.geometry = settings->value("TII/windowGeometry").toByteArray();
+    m_settings->tii.mode = settings->value("TII/configuration", 0).toInt();
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     m_settings->tii.splitterState = settings->value("TII/layout").toByteArray();
 #endif
@@ -3313,6 +3315,7 @@ void MainWindow::saveSettings()
     settings->setValue("TII/logFolder", m_settings->tii.logFolder);
     settings->setValue("TII/showSpectrumPlot", m_settings->tii.showSpectumPlot);
     settings->setValue("TII/windowGeometry", m_settings->tii.geometry);
+    settings->setValue("TII/configuration", m_settings->tii.mode);
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     settings->setValue("TII/layout", m_settings->tii.splitterState);
 #endif
@@ -3713,7 +3716,7 @@ void MainWindow::showTiiDialog()
         connect(this, &MainWindow::exit, m_tiiDialog, &TIIDialog::close);
         m_tiiDialog->setupDarkMode(isDarkMode());
         connect(m_setupDialog, &SetupDialog::tiiSettingsChanged, m_tiiDialog, &TIIDialog::onSettingsChanged);
-        connect(m_tiiDialog, &TIIDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
+        connect(m_tiiDialog, &TIIDialog::setTii, m_radioControl, &RadioControl::startTii, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::signalState, m_tiiDialog, &TIIDialog::onSignalState, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tiiData, m_tiiDialog, &TIIDialog::onTiiData, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::ensembleInformation, m_tiiDialog, &TIIDialog::onEnsembleInformation, Qt::QueuedConnection);
@@ -3762,7 +3765,7 @@ void MainWindow::showScannerDialog()
                     onBandScanStart();
                 });
 
-        connect(m_scannerDialog, &ScannerDialog::setTii, m_radioControl, &RadioControl::setTii, Qt::QueuedConnection);
+        connect(m_scannerDialog, &ScannerDialog::setTii, m_radioControl, &RadioControl::startTii, Qt::QueuedConnection);
 
         connect(m_scannerDialog, &ScannerDialog::scanFinished, this,
                 [this]()

@@ -81,6 +81,7 @@ signals:
     void audioRecordingSettings(const QString &folder, bool doOutputRecording);
     void uaDumpSettings(const Settings::UADumpSettings &settings);
     void tiiSettingsChanged();
+    void tiiModeChanged(int mode);
     void rawFileSeek(int msec);
     void updateTxDb();
     void proxySettingsChanged();
@@ -215,6 +216,7 @@ private:
     void onTiiSpectPlotClicked(bool checked);
     void onTiiUpdateDbClicked();
     void onTiiLogFolderButtonClicked();
+    void onTiiModeChanged(int index);
 
     void onProxyConfigChanged(int index);
     void onProxyApplyButtonClicked();

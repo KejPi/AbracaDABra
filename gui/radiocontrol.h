@@ -374,7 +374,8 @@ public:
     void setupAnnouncements(uint16_t enaFlags);
     void suspendResumeAnnouncement();
     void onSpiApplicationEnabled(bool enabled);
-    void setTii(bool ena);
+    void startTii(bool ena);
+    void setTii(int mode);
     void setSignalSpectrum(bool ena);
 
 signals:
@@ -464,6 +465,7 @@ private:
     bool m_spiAppEnabled = false;
 
     int m_tiiEna = 0;
+    dabsdrTiiMode_t m_tiiMode = DABSDR_TII_MODE_DEFAULT;
 
     RadioControlEnsemble m_ensemble;
     RadioControlServiceList m_serviceList;
@@ -526,7 +528,7 @@ private:
     {
         dabsdrRequest_XPadAppStart(m_dabsdrHandle, appType, start, decoderId);
     }
-    void dabSetTii(bool ena) { dabsdrRequest_SetTII(m_dabsdrHandle, ena); }
+    void dabSetTii(bool ena, dabsdrTiiMode_t mode) { dabsdrRequest_SetTII(m_dabsdrHandle, ena, mode); }
     void dabEnableSignalSpectrum(bool ena) { dabsdrRequest_SignalSpectrum(m_dabsdrHandle, ena); }
 
     // wrappers used in callback functions (emit requires class instance)

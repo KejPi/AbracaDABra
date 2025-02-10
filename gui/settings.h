@@ -181,6 +181,7 @@ public:
         bool showSpectumPlot;
         QByteArray geometry;
         QByteArray splitterState;
+        int mode;
     } tii;
     struct SignalDialog
     {

@@ -403,6 +403,12 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->locationSourceCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onGeolocationSourceChanged);
     ui->locationSrcWidget->setEnabled(false);
     ui->coordinatesEdit->setText("0.0, 0.0");
+    ui->tiiModeCombo->addItem(tr("Default"), DABSDR_TII_MODE_DEFAULT);
+    ui->tiiModeCombo->addItem(tr("Conservative"), DABSDR_TII_MODE_CONSERVATIVE);
+    ui->tiiModeCombo->setToolTip(
+        tr("TII detector configuration defines its sensitivity and reliability.<br>"
+           "Conservative configuration is less sensitive but more reliable."));
+    connect(ui->tiiModeCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onTiiModeChanged);
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     connect(ui->tiiSpectPlotCheckBox, &QCheckBox::clicked, this, &SetupDialog::onTiiSpectPlotClicked);
 #else
@@ -570,6 +576,7 @@ void SetupDialog::setSettings(Settings *settings)
     emit audioRecordingSettings(m_settings->audioRec.folder, m_settings->audioRec.captureOutput);
     emit uaDumpSettings(m_settings->uaDump);
     emit tiiSettingsChanged();
+    emit tiiModeChanged(m_settings->tii.mode);
     onUseInternetChecked(m_settings->useInternet);
     onSpiAppChecked(m_settings->spiAppEna);
     onDlRecordingChecked(m_settings->audioRec.dl);
@@ -901,6 +908,7 @@ void SetupDialog::setUiState()
     ui->locationSourceCombo->setCurrentIndex(static_cast<int>(m_settings->tii.locationSource));
     ui->tiiSpectPlotCheckBox->setChecked(m_settings->tii.showSpectumPlot);
     ui->tiiLogFolderLabel->setText(m_settings->tii.logFolder);
+    ui->tiiModeCombo->setCurrentIndex(static_cast<int>(m_settings->tii.mode));
 
     ui->checkForUpdates->setChecked(m_settings->updateCheckEna);
     ui->proxyConfigCombo->setCurrentIndex(static_cast<int>(m_settings->proxy.config));
@@ -2255,6 +2263,13 @@ void SetupDialog::onTiiLogFolderButtonClicked()
         activateWindow();  // bring window to front/unminimize on windows
 #endif
     }
+}
+
+void SetupDialog::onTiiModeChanged(int index)
+{
+    int mode = ui->tiiModeCombo->currentData().toInt();
+    m_settings->tii.mode = mode;
+    emit tiiModeChanged(mode);
 }
 
 void SetupDialog::onTiiUpdateFinished(QNetworkReply::NetworkError err)
