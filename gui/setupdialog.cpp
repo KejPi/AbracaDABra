@@ -485,6 +485,7 @@ void SetupDialog::showEvent(QShowEvent *event)
                        {
                            resize(minimumSizeHint());
                            setMinimumHeight(height() + 10);
+                           setFixedWidth(width());
                        });
 }
 
