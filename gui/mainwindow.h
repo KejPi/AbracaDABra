@@ -122,11 +122,6 @@ private:
         Announcement = 1,
         NumInstances
     };
-    enum AudioFramework
-    {
-        Pa = 0,
-        Qt = 1
-    };
     static const QString appName;
     static const char *syncLevelLabels[];
     static const char *syncLevelTooltip[];
@@ -252,7 +247,7 @@ private:
     // methods
     void loadSettings();
     void saveSettings();
-    AudioFramework getAudioFramework();
+    Settings::AudioFramework getAudioFramework();
 
     void showEnsembleInfo();
     void showEPG();

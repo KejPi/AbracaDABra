@@ -441,7 +441,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent) : QMainWindo
     connect(m_aboutAction, &QAction::triggered, this, &MainWindow::showAboutDialog);
 
     // load audio framework setting from ini file
-    AudioFramework audioFramework = getAudioFramework();
+    Settings::AudioFramework audioFramework = getAudioFramework();
 
     m_menu = new QMenu(this);
 
@@ -734,7 +734,7 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent) : QMainWindo
     onAudioRecordingStopped();
 
 #if (HAVE_PORTAUDIO)
-    if (AudioFramework::Pa == audioFramework)
+    if (Settings::AudioFramework::Pa == audioFramework)
     {
         m_audioOutput = new AudioOutputPa();
 #ifndef Q_OS_LINUX
@@ -2962,7 +2962,7 @@ void MainWindow::configureForInputDevice()
     }
 }
 
-MainWindow::AudioFramework MainWindow::getAudioFramework()
+Settings::AudioFramework MainWindow::getAudioFramework()
 {
 #if (HAVE_PORTAUDIO)
     QSettings *settings;
@@ -2975,10 +2975,10 @@ MainWindow::AudioFramework MainWindow::getAudioFramework()
         settings = new QSettings(m_iniFilename, QSettings::IniFormat);
     }
 
-    int val = settings->value("audioFramework", AudioFramework::Pa).toInt();
+    int val = settings->value("audioFramework", Settings::AudioFramework::Pa).toInt();
     delete settings;
 
-    return static_cast<AudioFramework>(val);
+    return static_cast<Settings::AudioFramework>(val);
 #else
     return AudioFramework::Qt;
 #endif
@@ -3033,6 +3033,16 @@ void MainWindow::loadSettings()
     m_settings->updateCheckEna = settings->value("updateCheckEna", true).toBool();
     m_settings->updateCheckTime = settings->value("updateCheckTime", QDateTime::currentDateTime().addDays(-1)).value<QDateTime>();
     m_settings->uploadEnsembleInfo = settings->value("uploadEnsembleInfoEna", true).toBool();
+#if (HAVE_PORTAUDIO)
+    if (nullptr != dynamic_cast<AudioOutputPa *>(m_audioOutput))
+    {
+        m_settings->audioFramework = Settings::AudioFramework::Pa;
+    }
+    else
+#endif
+    {
+        m_settings->audioFramework = Settings::AudioFramework::Qt;
+    }
 
     m_settings->audioRec.folder =
         settings->value("AudioRecording/folder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
@@ -3279,16 +3289,7 @@ void MainWindow::saveSettings()
     {
         settings->setValue("audioDevice", m_audioDevicesGroup->checkedAction()->data().value<QAudioDevice>().id());
     }
-#if (HAVE_PORTAUDIO)
-    if (nullptr != dynamic_cast<AudioOutputPa *>(m_audioOutput))
-    {
-        settings->setValue("audioFramework", static_cast<int>(AudioFramework::Pa));
-    }
-    else
-#endif
-    {
-        settings->setValue("audioFramework", static_cast<int>(AudioFramework::Qt));
-    }
+    settings->setValue("audioFramework", m_settings->audioFramework);
     settings->setValue("volume", m_audioVolume);
     settings->setValue("mute", m_muteLabel->isChecked());
     settings->setValue("keepServiceListOnScan", m_keepServiceListOnScan);

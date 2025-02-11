@@ -334,6 +334,15 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->langRestartButton->setVisible(false);
     connect(ui->langComboBox, &QComboBox::currentIndexChanged, this, &SetupDialog::onLanguageChanged);
     connect(ui->langRestartButton, &QPushButton::clicked, this, [this]() { emit restartRequested(); });
+#if (HAVE_PORTAUDIO)
+    ui->audioOutCombo->addItem("PortAudio", Settings::AudioFramework::Pa);
+#endif
+    ui->audioOutCombo->addItem("Qt", Settings::AudioFramework::Qt);
+    ui->audioOutWarnLabel->setText("<span style=\"color:red\">" + tr("Audio output change will take effect after application restart.") + "</span>");
+    ui->audioOutWarnLabel->setVisible(false);
+    ui->audioOutRestartButton->setVisible(false);
+    connect(ui->audioOutCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onAudioOutChanged);
+    connect(ui->audioOutRestartButton, &QPushButton::clicked, this, [this]() { emit restartRequested(); });
 
     ui->defaultStyleRadioButton->setToolTip(tr("Set default OS style."));
     ui->lightStyleRadioButton->setToolTip(tr("Force application light style."));
@@ -878,6 +887,13 @@ void SetupDialog::setUiState()
         index = 0;
     }
     ui->langComboBox->setCurrentIndex(index);
+
+    index = ui->audioOutCombo->findData(QVariant(m_settings->audioFramework));
+    if (index < 0)
+    {  // not found
+        index = 0;
+    }
+    ui->audioOutCombo->setCurrentIndex(index);
 
     ui->audioRecordingFolderLabel->setText(m_settings->audioRec.folder);
     if (m_settings->audioRec.captureOutput)
@@ -2049,6 +2065,25 @@ void SetupDialog::onNoiseLevelChanged(int index)
     {
         m_settings->noiseConcealmentLevel = noiseLevel;
         emit noiseConcealmentLevelChanged(noiseLevel);
+    }
+}
+
+void SetupDialog::onAudioOutChanged(int index)
+{
+    Settings::AudioFramework framework = static_cast<Settings::AudioFramework>(ui->audioOutCombo->currentData().toInt());
+    if (framework != m_settings->audioFramework)
+    {
+        m_settings->audioFramework = framework;
+        ui->audioOutWarnLabel->setVisible(true);
+        ui->audioOutRestartButton->setVisible(true);
+
+        QTimer::singleShot(10, this,
+                           [this]()
+                           {
+                               setMinimumHeight(0);
+                               resize(minimumSizeHint());
+                               setMinimumHeight(height() + 10);
+                           });
     }
 }
 

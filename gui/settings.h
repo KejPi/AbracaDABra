@@ -66,6 +66,11 @@ public:
         System,
         Manual
     };
+    enum AudioFramework
+    {
+        Pa = 0,
+        Qt = 1
+    };
 
     Settings() {};
 
@@ -138,6 +143,7 @@ public:
     bool bringWindowToForeground;
     ApplicationStyle applicationStyle;
     QLocale::Language lang;
+    AudioFramework audioFramework;
     bool expertModeEna;
     bool dlPlusEna;
     int noiseConcealmentLevel;
