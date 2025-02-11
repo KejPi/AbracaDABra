@@ -36,84 +36,89 @@ int main(int argc, char *argv[])
 {
     QCoreApplication::setApplicationName("AbracaDABra");
     QCoreApplication::setApplicationVersion(PROJECT_VER);
+    int currentExitCode = 0;
+    do
+    {
+        QApplication a(argc, argv);
 
-    QApplication a(argc, argv);
+        QCommandLineParser parser;
+        parser.setApplicationDescription(QObject::tr("Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)"));
+        parser.addHelpOption();
+        parser.addVersionOption();
 
-    QCommandLineParser parser;
-    parser.setApplicationDescription(QObject::tr("Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)"));
-    parser.addHelpOption();
-    parser.addVersionOption();
+        // An option with a value
+        QCommandLineOption iniFileOption(QStringList() << "i" << "ini",
+                                         QObject::tr("Optional INI file. If not specified AbracaDABra.ini in system directory will be used."), "ini");
+        parser.addOption(iniFileOption);
 
-    // An option with a value
-    QCommandLineOption iniFileOption(QStringList() << "i" << "ini",
-                                     QObject::tr("Optional INI file. If not specified AbracaDABra.ini in system directory will be used."), "ini");
-    parser.addOption(iniFileOption);
+        // Process the actual command line arguments given by the user
+        parser.process(a);
 
-    // Process the actual command line arguments given by the user
-    parser.process(a);
-
-    QString iniFile = parser.value(iniFileOption);
+        QString iniFile = parser.value(iniFileOption);
 
 #ifdef Q_OS_LINUX
-    // Set icon
-    a.setWindowIcon(QIcon(":/resources/appIcon-linux.png"));
+        // Set icon
+        a.setWindowIcon(QIcon(":/resources/appIcon-linux.png"));
 #endif
 
-    // loading of translation
-    // use system default or user selected
-    QSettings *settings;
-    if (iniFile.isEmpty())
-    {
-        settings =
-            new QSettings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::applicationName(), QCoreApplication::applicationName());
-    }
-    else
-    {
-        settings = new QSettings(iniFile, QSettings::IniFormat);
-    }
+        // loading of translation
+        // use system default or user selected
+        QSettings *settings;
+        if (iniFile.isEmpty())
+        {
+            settings =
+                new QSettings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::applicationName(), QCoreApplication::applicationName());
+        }
+        else
+        {
+            settings = new QSettings(iniFile, QSettings::IniFormat);
+        }
 
-    QLocale::Language lang = QLocale::codeToLanguage(settings->value("language", QString("")).toString());
+        QLocale::Language lang = QLocale::codeToLanguage(settings->value("language", QString("")).toString());
 
-    delete settings;
+        delete settings;
 
-    // QString filename = QLatin1String(":/i18n") + "/"  + QString("AbracaDABra_%1").arg(QLocale::languageToCode(lang))+".qm";
-    // QDirIterator it(":", QDirIterator::Subdirectories);
-    // while (it.hasNext()) {
-    //     qDebug() << it.next();
-    // }
-    QTranslator translator;
+        // QString filename = QLatin1String(":/i18n") + "/"  + QString("AbracaDABra_%1").arg(QLocale::languageToCode(lang))+".qm";
+        // QDirIterator it(":", QDirIterator::Subdirectories);
+        // while (it.hasNext()) {
+        //     qDebug() << it.next();
+        // }
+        QTranslator translator;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0) && QT_VERSION < QT_VERSION_CHECK(6, 7, 2)
-    if (QLocale::AnyLanguage == lang)
-    {  // system default
-        if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n/gui")))
-        {
-            a.installTranslator(&translator);
+        if (QLocale::AnyLanguage == lang)
+        {  // system default
+            if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n/gui")))
+            {
+                a.installTranslator(&translator);
+            }
         }
-    }
-    else if (QLocale::English != lang)
-    {  // user selected translation
-        if (translator.load(QString("AbracaDABra_%1").arg(QLocale::languageToCode(lang)), QLatin1String(":/i18n/gui")))
-        {
-            a.installTranslator(&translator);
+        else if (QLocale::English != lang)
+        {  // user selected translation
+            if (translator.load(QString("AbracaDABra_%1").arg(QLocale::languageToCode(lang)), QLatin1String(":/i18n/gui")))
+            {
+                a.installTranslator(&translator);
+            }
         }
-    }
 #else
-    if (QLocale::AnyLanguage == lang)
-    {  // system default
-        if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n")))
-        {
-            a.installTranslator(&translator);
+        if (QLocale::AnyLanguage == lang)
+        {  // system default
+            if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n")))
+            {
+                a.installTranslator(&translator);
+            }
         }
-    }
-    else if (QLocale::English != lang)
-    {  // user selected translation
-        if (translator.load(QString("AbracaDABra_%1").arg(QLocale::languageToCode(lang)), QLatin1String(":/i18n")))
-        {
-            a.installTranslator(&translator);
+        else if (QLocale::English != lang)
+        {  // user selected translation
+            if (translator.load(QString("AbracaDABra_%1").arg(QLocale::languageToCode(lang)), QLatin1String(":/i18n")))
+            {
+                a.installTranslator(&translator);
+            }
         }
-    }
 #endif
-    MainWindow w(iniFile);
-    w.show();
-    return a.exec();
+        MainWindow w(iniFile);
+        w.show();
+        currentExitCode = a.exec();
+    } while (currentExitCode == MainWindow::EXIT_CODE_RESTART);
+
+    return currentExitCode;
 }

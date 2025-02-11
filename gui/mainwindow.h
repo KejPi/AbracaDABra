@@ -88,6 +88,8 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    static int const EXIT_CODE_RESTART;
+
     MainWindow(const QString &iniFilename = QString(), QWidget *parent = nullptr);
     ~MainWindow();
     bool eventFilter(QObject *o, QEvent *e);
@@ -221,6 +223,7 @@ private:
     bool m_isPlaying = false;
     bool m_deviceChangeRequested = false;
     bool m_exitRequested = false;
+    int m_exitCode = 0;
     uint32_t m_frequency = 0;
     DabSId m_SId;
     uint8_t m_SCIdS = 0;

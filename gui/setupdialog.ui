@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>530</width>
-    <height>710</height>
+    <height>714</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>4</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -2413,6 +2413,26 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
             <item row="1" column="1">
              <widget class="QComboBox" name="langComboBox"/>
             </item>
+            <item row="1" column="3">
+             <spacer name="horizontalSpacer_13">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="langLabel">
+              <property name="text">
+               <string>Language:</string>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="1">
              <widget class="QPushButton" name="slsBgButton">
               <property name="text">
@@ -2427,25 +2447,12 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="langLabel">
+            <item row="1" column="4">
+             <widget class="QPushButton" name="langRestartButton">
               <property name="text">
-               <string>Language:</string>
+               <string>Restart</string>
               </property>
              </widget>
-            </item>
-            <item row="1" column="2">
-             <spacer name="horizontalSpacer_13">
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </item>
@@ -2523,7 +2530,14 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="proxyConfigCombo"/>
+             <widget class="QComboBox" name="proxyConfigCombo">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
             </item>
             <item>
              <spacer name="horizontalSpacer_12">

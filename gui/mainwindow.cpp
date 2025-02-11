@@ -105,6 +105,8 @@ const QStringList MainWindow::snrProgressStylesheet = {
 const QString MainWindow::slsDumpPatern("SLS/{serviceId}/{contentNameWithExt}");
 const QString MainWindow::spiDumpPatern("SPI/{ensId}/{scId}_{directoryId}/{contentName}");
 
+int const MainWindow::EXIT_CODE_RESTART = -123456789;
+
 enum class SNR10Threhold
 {
     SNR_BAD = 70,
@@ -277,6 +279,12 @@ MainWindow::MainWindow(const QString &iniFilename, QWidget *parent) : QMainWindo
     connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, this, &MainWindow::onNewAnnouncementSettings);
     connect(m_setupDialog, &SetupDialog::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
     connect(m_setupDialog, &SetupDialog::proxySettingsChanged, this, &MainWindow::setProxy);
+    connect(m_setupDialog, &SetupDialog::restartRequested, this,
+            [this]()
+            {
+                m_exitCode = MainWindow::EXIT_CODE_RESTART;
+                close();
+            });
 
     m_ensembleInfoDialog = new EnsembleInfoDialog();
     connect(this, &MainWindow::exit,
@@ -1062,6 +1070,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         saveSettings();
 
         event->accept();
+        qApp->exit(m_exitCode);
     }
     else
     {  // message is needed for Windows -> stopping RTL SDR thread may take long time :-(
@@ -1575,7 +1584,10 @@ void MainWindow::onTuneDone(uint32_t freq)
         // this can only happen when device is changed, or when exit is requested
         if (m_exitRequested)
         {  // processing in IDLE, close window
+            qDebug() << "Exit now";
+
             close();
+            qApp->exit(m_exitCode);
             return;
         }
 

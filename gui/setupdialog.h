@@ -86,6 +86,7 @@ signals:
     void updateTxDb();
     void proxySettingsChanged();
     void slsBgChanged(const QColor &color);
+    void restartRequested();
 
 protected:
     void showEvent(QShowEvent *event);

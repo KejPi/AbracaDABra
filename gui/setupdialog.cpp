@@ -331,7 +331,9 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->langComboBox->setToolTip(tr("User interface language, the change will take effect after application restart."));
     ui->langWarningLabel->setText("<span style=\"color:red\">" + tr("Language change will take effect after application restart.") + "</span>");
     ui->langWarningLabel->setVisible(false);
+    ui->langRestartButton->setVisible(false);
     connect(ui->langComboBox, &QComboBox::currentIndexChanged, this, &SetupDialog::onLanguageChanged);
+    connect(ui->langRestartButton, &QPushButton::clicked, this, [this]() { emit restartRequested(); });
 
     ui->defaultStyleRadioButton->setToolTip(tr("Set default OS style."));
     ui->lightStyleRadioButton->setToolTip(tr("Force application light style."));
@@ -478,7 +480,12 @@ void SetupDialog::showEvent(QShowEvent *event)
     QDialog::showEvent(event);
 
     // QTimer::singleShot(10, this, [this](){ adjustSize(); } );
-    QTimer::singleShot(10, this, [this]() { resize(minimumSizeHint()); });
+    QTimer::singleShot(10, this,
+                       [this]()
+                       {
+                           resize(minimumSizeHint());
+                           setMinimumHeight(height() + 10);
+                       });
 }
 
 void SetupDialog::setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault)
@@ -2022,6 +2029,15 @@ void SetupDialog::onLanguageChanged(int index)
     {
         m_settings->lang = lang;
         ui->langWarningLabel->setVisible(true);
+        ui->langRestartButton->setVisible(true);
+
+        QTimer::singleShot(10, this,
+                           [this]()
+                           {
+                               setMinimumHeight(0);
+                               resize(minimumSizeHint());
+                               setMinimumHeight(height() + 10);
+                           });
     }
 }
 
