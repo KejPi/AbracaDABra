@@ -3279,9 +3279,12 @@ void MainWindow::saveSettings()
 
     if (AppVersion(settings->value("version").toString()) < AppVersion(PROJECT_VER))
     {
-        settings->clear();
+        if ((InputDevice::Id::RAWFILE != m_inputDeviceId) && (InputDevice::Id::UNDEFINED != m_inputDeviceId))
+        {  // this prevents deleting service list
+            settings->clear();
+            settings->setValue("version", PROJECT_VER);
+        }
     }
-    settings->setValue("version", PROJECT_VER);
     settings->setValue("inputDeviceId", int(m_settings->inputDevice));
     settings->setValue("recordingPath", m_inputDeviceRecorder->recordingPath());
     settings->setValue("slideSavePath", ui->slsView_Service->savePath());
