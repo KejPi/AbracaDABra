@@ -66,6 +66,7 @@ enum class RtlGainMode
     Undefined = -1,
     Hardware = 0,
     Software,
+    Driver,
     Manual
 };
 

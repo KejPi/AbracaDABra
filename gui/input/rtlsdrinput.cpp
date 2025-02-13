@@ -413,8 +413,29 @@ void RtlSdrInput::setGainMode(RtlGainMode gainMode, int gainIdx)
 {
     if (gainMode != m_gainMode)
     {
+        int ret = 0;
+#ifdef RTLSDR_OLD_DAB
+        // set 0 = hardware agc, 1 = manual gain mode, 2 = software agc
+        switch (gainMode)
+        {
+            case RtlGainMode::Hardware:
+                ret = rtlsdr_set_tuner_gain_mode(m_device, 0);
+                break;
+            case RtlGainMode::Driver:
+                ret = rtlsdr_set_tuner_gain_mode(m_device, 2);
+                break;
+            case RtlGainMode::Software:
+            case RtlGainMode::Manual:
+                ret = rtlsdr_set_tuner_gain_mode(m_device, 1);
+                break;
+            default:
+                break;
+        }
+
+#else
         // set automatic gain 0 or manual 1
-        int ret = rtlsdr_set_tuner_gain_mode(m_device, (RtlGainMode::Hardware != gainMode));
+        ret = rtlsdr_set_tuner_gain_mode(m_device, (RtlGainMode::Hardware != gainMode));
+#endif
         if (ret != 0)
         {
             qCWarning(rtlsdrInput) << "Failed to set tuner gain";

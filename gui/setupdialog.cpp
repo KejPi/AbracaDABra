@@ -704,9 +704,20 @@ void SetupDialog::setUiState()
         case RtlGainMode::Manual:
             ui->rtlsdrGainModeManual->setChecked(true);
             break;
+        case RtlGainMode::Driver:
+#ifdef RTLSDR_OLD_DAB
+            ui->rtlsdrGainModeDriver->setChecked(true);
+#else
+            ui->rtlsdrGainModeSw->setChecked(true);
+            m_settings->rtlsdr.gainMode = RtlGainMode::Software;
+#endif
+            break;
         default:
             break;
     }
+#ifndef RTLSDR_OLD_DAB
+    ui->rtlsdrGainModeDriver->setVisible(false);
+#endif
     ui->rtltcpIpAddressEdit->setText(m_settings->rtltcp.tcpAddress);
     ui->rtltcpIpPortSpinBox->setValue(m_settings->rtltcp.tcpPort);
     ui->rtltcpControlSocketCheckbox->setChecked(m_settings->rtltcp.controlSocketEna);
@@ -956,6 +967,7 @@ void SetupDialog::connectDeviceControlSignals()
     connect(ui->rtlsdrGainSlider, &QSlider::valueChanged, this, &SetupDialog::onRtlSdrGainSliderChanged);
     connect(ui->rtlsdrGainModeHw, &QRadioButton::toggled, this, &SetupDialog::onRtlSdrGainModeToggled);
     connect(ui->rtlsdrGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onRtlSdrGainModeToggled);
+    connect(ui->rtlsdrGainModeDriver, &QRadioButton::toggled, this, &SetupDialog::onRtlSdrGainModeToggled);
     connect(ui->rtlsdrGainModeManual, &QRadioButton::toggled, this, &SetupDialog::onRtlSdrGainModeToggled);
     connect(ui->rtlsdrBandwidth, &QSpinBox::valueChanged, this, &SetupDialog::onBandwidthChanged);
     connect(ui->rtlsdrBandwidthDefault, &QPushButton::clicked, this, [this]() { ui->rtlsdrBandwidth->setValue(0); });
@@ -1251,6 +1263,10 @@ void SetupDialog::onRtlSdrGainModeToggled(bool checked)
         else if (ui->rtlsdrGainModeManual->isChecked())
         {
             m_settings->rtlsdr.gainMode = RtlGainMode::Manual;
+        }
+        else if (ui->rtlsdrGainModeDriver->isChecked())
+        {
+            m_settings->rtlsdr.gainMode = RtlGainMode::Driver;
         }
         activateRtlSdrControls(true);
         dynamic_cast<RtlSdrInput *>(m_device)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);

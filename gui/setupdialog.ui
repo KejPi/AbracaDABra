@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -73,7 +73,7 @@
           <enum>QFrame::Shadow::Sunken</enum>
          </property>
          <property name="currentIndex">
-          <number>4</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="rtlsdrPage">
           <layout class="QGridLayout" name="gridLayout_14">
@@ -128,6 +128,13 @@
                 </property>
                 <property name="text">
                  <string>Software</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="rtlsdrGainModeDriver">
+                <property name="text">
+                 <string>Driver</string>
                 </property>
                </widget>
               </item>
