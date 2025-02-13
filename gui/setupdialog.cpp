@@ -1994,6 +1994,7 @@ void SetupDialog::onExpertModeChecked(bool checked)
     ui->soapysdrExpertGroup->setVisible(checked);
     ui->dataDumpGroup->setVisible(checked);
     ui->tiiGroup->setVisible(checked);
+    ui->audioExpertGroup->setVisible(checked);
     ui->tabWidget->setTabVisible(SetupDialogTabs::Tii, checked);
     if (!checked)
     {
@@ -2025,7 +2026,13 @@ void SetupDialog::onExpertModeChecked(bool checked)
 
     emit expertModeToggled(checked);
 
-    QTimer::singleShot(10, this, [this]() { resize(minimumSizeHint()); });
+    QTimer::singleShot(10, this,
+                       [this]()
+                       {
+                           setMinimumHeight(0);
+                           resize(minimumSizeHint());
+                           setMinimumHeight(height() + 10);
+                       });
 }
 
 void SetupDialog::onTrayIconChecked(bool checked)
