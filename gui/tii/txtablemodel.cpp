@@ -27,6 +27,7 @@
 #include "txtablemodel.h"
 
 #include <QColor>
+#include <QFile>
 
 #include "txdataloader.h"
 
@@ -407,10 +408,9 @@ void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceLi
     // }
 }
 
-void TxTableModel::appendEnsData(const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel, const QString &ensConfig,
-                                 const QString &ensCSV, int numServices, float snr)
+void TxTableModel::appendEnsData(const QDateTime &time, const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel,
+                                 const QString &ensConfig, const QString &ensCSV, int numServices, float snr)
 {
-    QDateTime time = QDateTime::currentDateTime();
     if (!data.empty())
     {
         for (auto it = data.cbegin(); it != data.cend(); ++it)

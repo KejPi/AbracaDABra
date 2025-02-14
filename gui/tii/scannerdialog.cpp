@@ -85,6 +85,7 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     m_progressBar = new QProgressBar(this);
     m_progressBar->setTextVisible(false);
 
+    m_importButton = new QPushButton(this);
     m_exportButton = new QPushButton(this);
     m_channelListButton = new QPushButton(this);
     m_startStopButton = new QPushButton(this);
@@ -117,6 +118,7 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     controlsLayout->addWidget(m_scanningLabel);
     controlsLayout->addWidget(m_progressChannel);
     controlsLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum));
+    controlsLayout->addWidget(m_importButton);
     controlsLayout->addWidget(m_exportButton);
     controlsLayout->addWidget(line);
     controlsLayout->addWidget(labelMode);
@@ -175,9 +177,12 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     m_progressChannel->setVisible(false);
     m_scanningLabel->setText("");
     m_channelListButton->setText(tr("Select channels"));
-    m_exportButton->setText(tr("Export as CSV"));
+    m_exportButton->setText(tr("Save CSV"));
     m_exportButton->setEnabled(false);
     connect(m_exportButton, &QPushButton::clicked, this, &ScannerDialog::exportClicked);
+    m_importButton->setText(tr("Load CSV"));
+    m_importButton->setEnabled(true);
+    connect(m_importButton, &QPushButton::clicked, this, &ScannerDialog::importClicked);
 
     for (auto it = DabTables::channelList.cbegin(); it != DabTables::channelList.cend(); ++it)
     {
@@ -200,6 +205,7 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
         restoreGeometry(m_settings->scanner.geometry);
         sz = size();
     }
+    setMinimumWidth(900);
     QTimer::singleShot(10, this, [this, sz]() { resize(sz); });
 }
 
@@ -281,6 +287,7 @@ void ScannerDialog::stopScan()
     m_progressChannel->setText(tr("None"));
     m_startStopButton->setText(tr("Start"));
     m_startStopButton->setEnabled(true);
+    m_importButton->setVisible(true);
     m_numCyclesSpinBox->setEnabled(true);
     m_channelListButton->setEnabled(true);
     m_modeCombo->setEnabled(true);
@@ -289,6 +296,153 @@ void ScannerDialog::stopScan()
     m_state = ScannerState::Idle;
 
     emit scanFinished();
+}
+
+void ScannerDialog::importClicked()
+{
+    if (m_model->rowCount() > 0)
+    {
+        QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, tr("Warning"), tr("Data in the table will be replaced."), {}, this);
+        msgBox->setWindowModality(Qt::WindowModal);
+        msgBox->setInformativeText(tr("You will loose current data, this action is irreversible."));
+        msgBox->setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        connect(msgBox, &QMessageBox::finished, this,
+                [this, msgBox](int result)
+                {
+                    if (result == QMessageBox::Ok)
+                    {
+                        QTimer::singleShot(10, this, [this]() { loadCSV(); });
+                    }
+                    msgBox->deleteLater();
+                });
+        msgBox->open();
+    }
+    else
+    {
+        loadCSV();
+    }
+}
+
+void ScannerDialog::loadCSV()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Load CSV file"), QDir::toNativeSeparators(m_settings->scanner.exportPath),
+                                                    tr("CSV Files") + " (*.csv)");
+    if (!fileName.isEmpty())
+    {
+        reset();
+
+        qCInfo(scanner) << "Loading file:" << fileName;
+
+        QFile file(fileName);
+        if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            QTextStream in(&file);
+            in.readLine();
+            int lineNum = 2;
+            bool res = true;
+            while (!in.atEnd())
+            {
+                QString line = in.readLine();
+                // qDebug() << line;
+
+                QStringList qsl = line.split(';');
+                if (qsl.size() == TxTableModel::NumCols)
+                {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
+                    QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yy-MM-dd hh:mm:ss").addYears(100);
+#else
+                    QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yy-MM-dd hh:mm:ss", 2000);
+#endif
+                    if (!time.isValid())
+                    {
+                        qCWarning(scanner) << "Invalid time value" << qsl.at(TxTableModel::ColTime) << "line #" << lineNum;
+                        res = false;
+                        break;
+                    }
+
+                    bool isOk = false;
+                    uint32_t freq = qsl.at(TxTableModel::ColFreq).toUInt(&isOk);
+                    if (!isOk)
+                    {
+                        qCWarning(scanner) << "Invalid frequency value" << qsl.at(TxTableModel::ColFreq) << "line #" << lineNum;
+                        res = false;
+                        break;
+                    }
+
+                    uint32_t ueid = qsl.at(TxTableModel::ColEnsId).toUInt(&isOk, 16);
+                    if (!isOk)
+                    {
+                        qCWarning(scanner) << "Invalid UEID value" << qsl.at(TxTableModel::ColEnsId) << "line #" << lineNum;
+                        res = false;
+                        break;
+                    }
+                    int numServices = qsl.at(TxTableModel::ColNumServices).toInt(&isOk);
+                    if (!isOk)
+                    {
+                        qCWarning(scanner) << "Invalid number of services value" << qsl.at(TxTableModel::ColNumServices) << "line #" << lineNum;
+                        res = false;
+                        break;
+                    }
+
+                    float snr = qsl.at(TxTableModel::ColSnr).toFloat(&isOk);
+                    if (!isOk)
+                    {
+                        qCWarning(scanner) << "Invalid SNR value" << qsl.at(TxTableModel::ColSnr) << "line #" << lineNum;
+                        res = false;
+                        break;
+                    }
+                    QList<dabsdrTii_t> tiiList;
+                    if (!qsl.at(TxTableModel::ColMainId).isEmpty())
+                    {
+                        uint8_t main = qsl.at(TxTableModel::ColMainId).toUInt(&isOk);
+                        if (!isOk)
+                        {
+                            qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColMainId) << "line #" << lineNum;
+                            res = false;
+                            break;
+                        }
+                        uint8_t sub = qsl.at(TxTableModel::ColSubId).toUInt(&isOk);
+                        if (!isOk)
+                        {
+                            qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColSubId) << "line #" << lineNum;
+                            res = false;
+                            break;
+                        }
+                        float level = qsl.at(TxTableModel::ColLevel).toFloat(&isOk);
+                        if (!isOk)
+                        {
+                            qCWarning(scanner) << "Invalid TX level value" << qsl.at(TxTableModel::ColLevel) << "line #" << lineNum;
+                            res = false;
+                            break;
+                        }
+                        dabsdrTii_t tiiItem({.main = main, .sub = sub, .level = level});
+                        tiiList.append(tiiItem);
+                    }
+
+                    m_model->appendEnsData(time, tiiList, ServiceListId(freq, ueid), qsl.at(TxTableModel::ColEnsLabel), "", "", numServices, snr);
+                }
+                else
+                {
+                    qCWarning(scanner) << "Unexpected number of cols, line #" << lineNum;
+                    res = false;
+                    break;
+                }
+                lineNum += 1;
+            }
+            file.close();
+
+            if (res)
+            {
+                m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+                m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColLocation, QHeaderView::Stretch);
+            }
+            else
+            {
+                qCWarning(scanner) << "Failed to load file:" << fileName;
+                reset();
+            }
+        }
+    }
 }
 
 void ScannerDialog::exportClicked()
@@ -346,6 +500,7 @@ void ScannerDialog::startScan()
     m_scanStartTime = QDateTime::currentDateTime();
     m_scanningLabel->setText(tr("Scanning channel:"));
     m_progressChannel->setVisible(true);
+    m_importButton->setVisible(false);
     m_exportButton->setEnabled(false);
     m_channelListButton->setEnabled(false);
     m_scanCycleCntr = 0;
@@ -552,7 +707,8 @@ void ScannerDialog::storeEnsembleData(const RadioControlTIIData &tiiData, const 
 {
     qCDebug(scanner) << "Storing results @" << m_frequency;
 
-    m_model->appendEnsData(tiiData.idList, ServiceListId(m_ensemble), m_ensemble.label, conf, csvConf, m_numServicesFound, m_snr / m_snrCntr);
+    m_model->appendEnsData(QDateTime::currentDateTime(), tiiData.idList, ServiceListId(m_ensemble), m_ensemble.label, conf, csvConf,
+                           m_numServicesFound, m_snr / m_snrCntr);
     m_exportButton->setEnabled(true);
 
     m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);

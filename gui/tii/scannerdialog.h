@@ -103,6 +103,7 @@ private:
     QPushButton *m_startStopButton;
     QLabel *m_scanningLabel;
     QLabel *m_progressChannel;
+    QPushButton *m_importButton;
     QPushButton *m_exportButton;
     QPushButton *m_channelListButton;
     QSpinBox *m_numCyclesSpinBox;
@@ -137,6 +138,8 @@ private:
     void scanStep();
     void startStopClicked();
     void stopScan();
+    void importClicked();
+    void loadCSV();
     void exportClicked();
     void channelSelectionClicked();
     void storeEnsembleData(const RadioControlTIIData &tiiData, const QString &conf, const QString &csvConf);

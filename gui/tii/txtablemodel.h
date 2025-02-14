@@ -87,8 +87,8 @@ public:
     void setSelectedRows(const QSet<int> &rows);
 
     void updateTiiData(const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel, int numServices, float snr);
-    void appendEnsData(const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel, const QString &ensConfig,
-                       const QString &ensCSV, int numServices, float snr);
+    void appendEnsData(const QDateTime &time, const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel,
+                       const QString &ensConfig, const QString &ensCSV, int numServices, float snr);
     void setCoordinates(const QGeoCoordinate &newCoordinates);
 
 signals:
