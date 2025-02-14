@@ -25,6 +25,7 @@
  */
 
 #include <QApplication>
+#include <QByteArrayView>
 #include <QCommandLineParser>
 #include <QLibraryInfo>
 #include <QTranslator>
@@ -40,6 +41,12 @@ int main(int argc, char *argv[])
     do
     {
         QApplication a(argc, argv);
+
+        // this is required for correct deployment of SDRplay
+#ifdef Q_OS_MACOS
+        qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArrayView(QString(QCoreApplication::applicationDirPath() + "/../Frameworks").toUtf8()));
+#endif
+        // qDebug() << qgetenv("SOAPY_SDR_PLUGIN_PATH");
 
         QCommandLineParser parser;
         parser.setApplicationDescription(QObject::tr("Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)"));

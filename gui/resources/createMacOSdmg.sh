@@ -46,6 +46,10 @@ mkdir $BUILD_DIR
 cmake -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=11 -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DEXTERNAL_LIBS_DIR=../AbracaDABra-libs-aarch64
 cmake --build $BUILD_DIR --config Release
 
+# Deploy SDRplay
+mkdir -p $BUILD_DIR/gui/AbracaDABra.app/Contents/Frameworks
+cp $DIR/../AbracaDABra-libs-aarch64/lib/SoapySDR/modules0.8-3/libsdrPlaySupport.so $BUILD_DIR/gui/AbracaDABra.app/Contents/Frameworks
+install_name_tool -change libsdrplay_api.so.3 /usr/local/lib/libsdrplay_api.so.3 $BUILD_DIR/gui/AbracaDABra.app/Contents/Frameworks/libsdrPlaySupport.so
 
 cd $BUILD_DIR/gui
 $QT_PATH/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/gui/qml -libpath=$DIR/../AbracaDABra-libs-aarch64/lib/ -codesign="-" # -dmg
@@ -68,6 +72,10 @@ mkdir $BUILD_DIR
 cmake -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=11 -DAPPLE_BUILD_X86_64=ON -DAIRSPY=ON -DSOAPYSDR=ON -DPROJECT_VERSION_RELEASE=ON -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake -DEXTERNAL_LIBS_DIR=../AbracaDABra-libs-x86
 cmake --build $BUILD_DIR --config Release
 
+# Deploy SDRplay
+mkdir -p $BUILD_DIR/gui/AbracaDABra.app/Contents/Frameworks
+cp $DIR/../AbracaDABra-libs-x86/lib/SoapySDR/modules0.8-3/libsdrPlaySupport.so $BUILD_DIR/gui/AbracaDABra.app/Contents/Frameworks
+install_name_tool -change libsdrplay_api.so.3 /usr/local/lib/libsdrplay_api.so.3 $BUILD_DIR/gui/AbracaDABra.app/Contents/Frameworks/libsdrPlaySupport.so
 
 cd $BUILD_DIR/gui
 $QT_PATH/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/gui/qml  -libpath=$DIR/../AbracaDABra-libs-x86/lib/ -codesign="-" # -dmg
