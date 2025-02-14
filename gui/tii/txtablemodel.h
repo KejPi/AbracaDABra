@@ -84,6 +84,7 @@ public:
     QHash<int, QByteArray> roleNames() const override;
     const TxTableModelItem &itemAt(int row) const;
     void clear();
+    void reloadTxTable();
     void setSelectedRows(const QSet<int> &rows);
 
     void updateTiiData(const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel, int numServices, float snr);

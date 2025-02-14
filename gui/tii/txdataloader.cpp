@@ -89,6 +89,7 @@ void TxDataLoader::loadTable(QMultiHash<ServiceListId, TxDataItem *> &txList)
         if (file.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             qDeleteAll(txList);
+            txList.clear();
             QTextStream in(&file);
 
             // skip first line

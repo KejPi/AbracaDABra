@@ -314,6 +314,11 @@ void TxTableModel::clear()
     endResetModel();
 }
 
+void TxTableModel::reloadTxTable()
+{
+    TxDataLoader::loadTable(m_txList);
+}
+
 void TxTableModel::setSelectedRows(const QSet<int> &rows)
 {
     if (m_selectedRows != rows)

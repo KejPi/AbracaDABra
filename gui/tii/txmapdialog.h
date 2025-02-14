@@ -72,8 +72,6 @@ public:
     virtual QStringList ensembleInfo() const;
     virtual QStringList txInfo() const;
 
-    // int selectedRow() const;
-    // virtual void setSelectedRow(int modelRow) = 0;
     Q_INVOKABLE void selectTx(int index);
 
     bool showTiiTable() const;
@@ -82,6 +80,8 @@ public:
     Q_INVOKABLE virtual void startStopLog() {}
     bool isRecordingLog() const;
     void setIsRecordingLog(bool newIsRecordingLog);
+
+    void updateTxTable() { m_model->reloadTxTable(); }
 
 signals:
     void setTii(bool ena);

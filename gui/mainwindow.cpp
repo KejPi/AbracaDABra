@@ -3736,6 +3736,16 @@ void MainWindow::showTiiDialog()
         connect(m_radioControl, &RadioControl::signalState, m_tiiDialog, &TIIDialog::onSignalState, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tiiData, m_tiiDialog, &TIIDialog::onTiiData, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::ensembleInformation, m_tiiDialog, &TIIDialog::onEnsembleInformation, Qt::QueuedConnection);
+#if HAVE_FMLIST_INTERFACE
+        connect(m_fmlistInterface, &FMListInterface::updateTiiDataFinished, this,
+                [this](QNetworkReply::NetworkError err)
+                {
+                    if (err == QNetworkReply::NoError)
+                    {
+                        m_tiiDialog->updateTxTable();
+                    }
+                });
+#endif
         emit getEnsembleInfo();  // this triggers ensemble infomation used to configure EPG dialog
         connect(m_tiiDialog, &QDialog::finished, m_tiiDialog, &QObject::deleteLater);
         connect(m_tiiDialog, &QDialog::destroyed, this, [this]() { m_tiiDialog = nullptr; });
@@ -3759,6 +3769,16 @@ void MainWindow::showScannerDialog()
         connect(m_radioControl, &RadioControl::serviceListEntry, m_scannerDialog, &ScannerDialog::onServiceListEntry, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tiiData, m_scannerDialog, &ScannerDialog::onTiiData, Qt::QueuedConnection);
         connect(m_inputDevice, &InputDevice::error, m_scannerDialog, &ScannerDialog::onInputDeviceError, Qt::QueuedConnection);
+#if HAVE_FMLIST_INTERFACE
+        connect(m_fmlistInterface, &FMListInterface::updateTiiDataFinished, this,
+                [this](QNetworkReply::NetworkError err)
+                {
+                    if (err == QNetworkReply::NoError)
+                    {
+                        m_scannerDialog->updateTxTable();
+                    }
+                });
+#endif
         // ensemble configuration
         connect(m_scannerDialog, &ScannerDialog::requestEnsembleConfiguration, m_radioControl, &RadioControl::getEnsembleConfigurationAndCSV,
                 Qt::QueuedConnection);
