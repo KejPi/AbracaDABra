@@ -26,6 +26,8 @@
 
 #include "servicelist.h"
 
+#include <QFile>
+#include <QJsonDocument>
 #include <QLoggingCategory>
 
 Q_LOGGING_CATEGORY(serviceList, "ServiceList", QtInfoMsg)
@@ -217,8 +219,10 @@ int ServiceList::currentEnsembleIdx(const ServiceListId &servId) const
     return 0;
 }
 
-void ServiceList::save(QSettings &settings)
+void ServiceList::save(const QString &filename)
 {
+    QVariantList list;
+
     // first sort service list by ID
     // this is needed to restore secondary services correctly
     QVector<uint64_t> idVect;
@@ -228,88 +232,186 @@ void ServiceList::save(QSettings &settings)
     }
     std::sort(idVect.begin(), idVect.end());
 
-    settings.remove("ServiceList");
-    settings.beginWriteArray("ServiceList", m_serviceList.size());
     int n = 0;
     for (auto id : idVect)
     {
         ServiceListIterator it = m_serviceList.find(ServiceListId(id));
 
-        settings.setArrayIndex(n++);
-        settings.setValue("SID", (*it)->SId().value());
-        settings.setValue("SCIdS", (*it)->SCIdS());
-        settings.setValue("Label", (*it)->label());
-        settings.setValue("ShortLabel", (*it)->shortLabel());
-        // settings.setValue("Fav", (*it)->isFavorite());
-        settings.setValue("Fav", m_favoritesList.contains(ServiceListId(id)));
-        settings.setValue("LastEns", (*it)->currentEnsembleIdx());
-        settings.beginWriteArray("Ensemble", (*it)->numEnsembles());
+        QVariantMap map;
+
+        map["SID"] = (*it)->SId().value();
+        map["SCIdS"] = (*it)->SCIdS();
+        map["Label"] = (*it)->label();
+        map["ShortLabel"] = (*it)->shortLabel();
+        map["Fav"] = m_favoritesList.contains(ServiceListId(id));
+        map["LastEns"] = (*it)->currentEnsembleIdx();
+
+        QVariantList ensList;
+
+        // settings.beginWriteArray("Ensemble", (*it)->numEnsembles());
         for (int e = 0; e < (*it)->numEnsembles(); ++e)
         {
-            settings.setArrayIndex(e);
-            settings.setValue("UEID", (*it)->getEnsemble(e)->ueid());
-            settings.setValue("Frequency", (*it)->getEnsemble(e)->frequency());
-            settings.setValue("Label", (*it)->getEnsemble(e)->label());
-            settings.setValue("ShortLabel", (*it)->getEnsemble(e)->shortLabel());
-            // settings.setValue("SNR", (*it)->getEnsemble(e)->snr());
+            QVariantMap ensMap;
+            ensMap["UEID"] = (*it)->getEnsemble(e)->ueid();
+            ensMap["Frequency"] = (*it)->getEnsemble(e)->frequency();
+            ensMap["Label"] = (*it)->getEnsemble(e)->label();
+            ensMap["ShortLabel"] = (*it)->getEnsemble(e)->shortLabel();
+            // ensMap["SNR"] = (*it)->getEnsemble(e)->snr();
+            ensList.append(ensMap);
         }
-        settings.endArray();
+        map["Ensembles"] = ensList;
+        list.append(map);
     }
-    settings.endArray();
+
+    // qDebug() << qPrintable(QJsonDocument::fromVariant(list).toJson());
+
+    QFile saveFile(filename);
+    if (!saveFile.open(QIODevice::WriteOnly))
+    {
+        qCWarning(serviceList) << "Failed to save service list to file.";
+        return;
+    }
+    saveFile.write(QJsonDocument::fromVariant(list).toJson());
+    saveFile.close();
 }
 
-void ServiceList::load(QSettings &settings)
+void ServiceList::load(const QString &filename)
 {
-    int numServ = settings.beginReadArray("ServiceList");
+    QFile loadFile(filename);
+    if (!loadFile.exists())
+    {  // file does not exist -> do nothing
+        return;
+    }
+
+    // file exists here
+    if (!loadFile.open(QIODevice::ReadOnly))
+    {
+        qCWarning(serviceList) << "Unable to read service list settings file";
+        return;
+    }
+
+    QByteArray data = loadFile.readAll();
+    loadFile.close();
+
+    if (data.isEmpty())
+    {  // no data in the file
+        return;
+    }
+
+    QJsonDocument doc = QJsonDocument::fromJson(data);
+    if (doc.isNull() || !doc.isArray())
+    {
+        qCWarning(serviceList) << "Unable to read service list settings file";
+        return;
+    }
+
+    RadioControlServiceComponent item;
+    RadioControlEnsemble ens;
+
+    // doc is not null and is array
+    QVariantList list = doc.toVariant().toList();
+    for (auto it = list.cbegin(); it != list.cend(); ++it)
+    {  // loading the list
+        auto serviceMap = it->toMap();
+
+        bool ok = true;
+
+        // filling only what is necessary
+        item.SId.set(serviceMap.value("SID").toUInt(&ok));
+        if (!ok)
+        {
+            qCWarning(serviceList) << "Problem loading SID";
+            continue;
+        }
+        item.SCIdS = serviceMap.value("SCIdS").toUInt(&ok);
+        if (!ok)
+        {
+            qCWarning(serviceList, "Problem loading SCIdS item: %6.6X", item.SId.value());
+            continue;
+        }
+        item.label = serviceMap.value("Label").toString();
+        item.labelShort = serviceMap.value("ShortLabel").toString();
+
+        bool fav = serviceMap.value("Fav").toBool();
+        int currentEns = serviceMap.value("LastEns").toInt();
+
+        QVariantList ensList = serviceMap.value("Ensembles").toList();
+        for (auto ensIt = ensList.cbegin(); ensIt != ensList.cend(); ++ensIt)
+        {
+            auto ensMap = ensIt->toMap();
+            ens.ueid = ensMap.value("UEID").toUInt(&ok);
+            if (!ok)
+            {
+                qCWarning(serviceList, "Problem loading ensemble UEID for service %6.6X", item.SId.value());
+                continue;
+            }
+            ens.frequency = ensMap.value("Frequency").toUInt(&ok);
+            if (!ok)
+            {
+                qCWarning(serviceList, "Problem loading ensemble frequency for service %6.6X", item.SId.value());
+                continue;
+            }
+            ens.label = ensMap.value("Label").toString();
+            ens.labelShort = ensMap.value("ShortLabel").toString();
+            // float snr = settings.value("SNR").toFloat();
+            addService(ens, item, fav, currentEns);
+        }
+    }
+}
+
+void ServiceList::loadFromSettings(QSettings *settings)
+{
+    int numServ = settings->beginReadArray("ServiceList");
+
     RadioControlServiceComponent item;
     RadioControlEnsemble ens;
 
     for (int s = 0; s < numServ; ++s)
     {
         bool ok = true;
-        settings.setArrayIndex(s);
+        settings->setArrayIndex(s);
         // filling only what is necessary
-        item.SId.set(settings.value("SID").toUInt(&ok));
+        item.SId.set(settings->value("SID").toUInt(&ok));
         if (!ok)
         {
             qCWarning(serviceList) << "Problem loading SID item:" << s;
             continue;
         }
-        item.SCIdS = settings.value("SCIdS").toUInt(&ok);
+        item.SCIdS = settings->value("SCIdS").toUInt(&ok);
         if (!ok)
         {
             qCWarning(serviceList) << "Problem loading SCIdS item:" << s;
             continue;
         }
-        item.label = settings.value("Label").toString();
-        item.labelShort = settings.value("ShortLabel").toString();
+        item.label = settings->value("Label").toString();
+        item.labelShort = settings->value("ShortLabel").toString();
 
-        bool fav = settings.value("Fav").toBool();
-        int currentEns = settings.value("LastEns").toInt();
-        int numEns = settings.beginReadArray("Ensemble");
+        bool fav = settings->value("Fav").toBool();
+        int currentEns = settings->value("LastEns").toInt();
+        int numEns = settings->beginReadArray("Ensemble");
         for (int e = 0; e < numEns; ++e)
         {
-            settings.setArrayIndex(e);
-            ens.ueid = settings.value("UEID").toUInt(&ok);
+            settings->setArrayIndex(e);
+            ens.ueid = settings->value("UEID").toUInt(&ok);
             if (!ok)
             {
                 qCWarning(serviceList) << "Problem loading service" << s << "ensemble UEID" << e;
                 continue;
             }
-            ens.frequency = settings.value("Frequency").toUInt(&ok);
+            ens.frequency = settings->value("Frequency").toUInt(&ok);
             if (!ok)
             {
                 qCWarning(serviceList) << "Problem loading service" << s << "ensemble frequency" << e;
                 continue;
             }
-            ens.label = settings.value("Label").toString();
-            ens.labelShort = settings.value("ShortLabel").toString();
+            ens.label = settings->value("Label").toString();
+            ens.labelShort = settings->value("ShortLabel").toString();
             // float snr = settings.value("SNR").toFloat();
             addService(ens, item, fav, currentEns);
         }
-        settings.endArray();
+        settings->endArray();
     }
-    settings.endArray();
+    settings->endArray();
 }
 
 // this marks all services as obsolete

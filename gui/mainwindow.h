@@ -90,7 +90,7 @@ class MainWindow : public QMainWindow
 public:
     static int const EXIT_CODE_RESTART;
 
-    MainWindow(const QString &iniFilename = QString(), QWidget *parent = nullptr);
+    MainWindow(const QString &iniFilename = QString(), const QString &iniSlFilename = QString(), QWidget *parent = nullptr);
     ~MainWindow();
     bool eventFilter(QObject *o, QEvent *e);
 
@@ -214,6 +214,8 @@ private:
 
     // state variables
     QString m_iniFilename;
+    QString m_serviceListFilename;
+    QString m_audioRecScheduleFilename;
     Settings *m_settings;
     bool m_isPlaying = false;
     bool m_deviceChangeRequested = false;

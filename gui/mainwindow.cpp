@@ -188,7 +188,8 @@ void setLogToModel(QAbstractItemModel *model)
     }
 }
 
-MainWindow::MainWindow(const QString &iniFilename, QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_iniFilename(iniFilename)
+MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename, QWidget *parent)
+    : QMainWindow(parent), ui(new Ui::MainWindow), m_iniFilename(iniFilename), m_serviceListFilename(iniSlFilename)
 {
     initStyle();  // init style as soon as possible
 
@@ -2469,23 +2470,9 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             // store service list if previous was not RAWFILE or UNDEFINED
             if ((InputDevice::Id::RAWFILE != m_inputDeviceId) && (InputDevice::Id::UNDEFINED != m_inputDeviceId))
             {  // if switching from live source save current service list & schedule
-                QSettings *settings;
-                if (m_iniFilename.isEmpty())
-                {
-                    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-                }
-                else
-                {
-                    settings = new QSettings(m_iniFilename, QSettings::IniFormat);
-                }
-                m_serviceList->save(*settings);
-
+                m_serviceList->save(m_serviceListFilename);
                 // save audio schedule
-                m_audioRecScheduleModel->save(*settings);
-
-                settings->sync();
-
-                delete settings;
+                m_audioRecScheduleModel->save(m_audioRecScheduleFilename);
             }
             else
             { /* do nothing if switching from RAW file */
@@ -2527,18 +2514,8 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
                     // clear schedule
                     m_audioRecScheduleModel->clear();
 
-                    QSettings *settings;
-                    if (m_iniFilename.isEmpty())
-                    {
-                        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-                    }
-                    else
-                    {
-                        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
-                    }
-                    m_serviceList->load(*settings);
-                    m_audioRecScheduleModel->load(*settings);
-                    delete settings;
+                    m_serviceList->load(m_serviceListFilename);
+                    m_audioRecScheduleModel->load(m_audioRecScheduleFilename);
                 }
                 else
                 { /* keep service list as it is */
@@ -2586,18 +2563,8 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
                     // clear rec scheduile
                     m_audioRecScheduleModel->clear();
 
-                    QSettings *settings;
-                    if (m_iniFilename.isEmpty())
-                    {
-                        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-                    }
-                    else
-                    {
-                        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
-                    }
-                    m_serviceList->load(*settings);
-                    m_audioRecScheduleModel->load(*settings);
-                    delete settings;
+                    m_serviceList->load(m_serviceListFilename);
+                    m_audioRecScheduleModel->load(m_audioRecScheduleFilename);
                 }
                 else
                 { /* keep service list as it is */
@@ -2645,18 +2612,8 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
                     // clear rec scheduile
                     m_audioRecScheduleModel->clear();
 
-                    QSettings *settings;
-                    if (m_iniFilename.isEmpty())
-                    {
-                        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-                    }
-                    else
-                    {
-                        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
-                    }
-                    m_serviceList->load(*settings);
-                    m_audioRecScheduleModel->load(*settings);
-                    delete settings;
+                    m_serviceList->load(m_serviceListFilename);
+                    m_audioRecScheduleModel->load(m_audioRecScheduleFilename);
                 }
                 else
                 { /* keep service list as it is */
@@ -2700,18 +2657,8 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
                     // clear rec schedule
                     m_audioRecScheduleModel->clear();
 
-                    QSettings *settings;
-                    if (m_iniFilename.isEmpty())
-                    {
-                        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-                    }
-                    else
-                    {
-                        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
-                    }
-                    m_serviceList->load(*settings);
-                    m_audioRecScheduleModel->load(*settings);
-                    delete settings;
+                    m_serviceList->load(m_serviceListFilename);
+                    m_audioRecScheduleModel->load(m_audioRecScheduleFilename);
                 }
                 else
                 { /* keep service list as it is */
@@ -2764,18 +2711,8 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
                     // clear rec schedule
                     m_audioRecScheduleModel->clear();
 
-                    QSettings *settings;
-                    if (m_iniFilename.isEmpty())
-                    {
-                        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-                    }
-                    else
-                    {
-                        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
-                    }
-                    m_serviceList->load(*settings);
-                    m_audioRecScheduleModel->load(*settings);
-                    delete settings;
+                    m_serviceList->load(m_serviceListFilename);
+                    m_audioRecScheduleModel->load(m_audioRecScheduleFilename);
                 }
                 else
                 { /* keep service list as it is */
@@ -2823,18 +2760,8 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
                     // clear rec schedule
                     m_audioRecScheduleModel->clear();
 
-                    QSettings *settings;
-                    if (m_iniFilename.isEmpty())
-                    {
-                        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-                    }
-                    else
-                    {
-                        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
-                    }
-                    m_serviceList->load(*settings);
-                    m_audioRecScheduleModel->load(*settings);
-                    delete settings;
+                    m_serviceList->load(m_serviceListFilename);
+                    m_audioRecScheduleModel->load(m_audioRecScheduleFilename);
                 }
                 else
                 { /* keep service list as it is */
@@ -2876,20 +2803,8 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             {  // raw file is available
                 if ((InputDevice::Id::RAWFILE != m_inputDeviceId) && (InputDevice::Id::UNDEFINED != m_inputDeviceId))
                 {  // if switching from live source save current service list & rec schedule
-                    QSettings *settings;
-                    if (m_iniFilename.isEmpty())
-                    {
-                        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
-                    }
-                    else
-                    {
-                        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
-                    }
-                    m_serviceList->save(*settings);
-                    m_audioRecScheduleModel->save(*settings);
-                    settings->sync();
-
-                    delete settings;
+                    m_serviceList->save(m_serviceListFilename);
+                    m_audioRecScheduleModel->save(m_audioRecScheduleFilename);
                 }
                 else
                 { /* do nothing if switching from RAW file */
@@ -2996,11 +2911,35 @@ void MainWindow::loadSettings()
         settings = new QSettings(m_iniFilename, QSettings::IniFormat);
     }
 
-    // load servicelist
-    m_serviceList->load(*settings);
+    QFileInfo fi(settings->fileName());
+    if (m_serviceListFilename.isEmpty())
+    {  // create service list settings filename
+        m_serviceListFilename = fi.path() + "/ServiceList.json";
+    }
+    m_audioRecScheduleFilename = fi.path() + "/AudioRecordingSchedule.json";
 
-    // load recording schedule
-    m_audioRecScheduleModel->load(*settings);
+    if (AppVersion(settings->value("version").toString()) < AppVersion("v2.9.2-75"))
+    {  // old settings file detected
+
+        // load servicelist
+        m_serviceList->loadFromSettings(settings);
+        // write to new file
+        m_serviceList->save(m_serviceListFilename);
+
+        // load recording schedule (using current instance)
+        m_audioRecScheduleModel->loadFromSettings(settings);
+        // write to new file
+        m_audioRecScheduleModel->save(m_audioRecScheduleFilename);
+    }
+    else
+    {  // new settings with dedicated JSON for service lis and audio recording schedule
+
+        // load servicelist
+        m_serviceList->load(m_serviceListFilename);
+
+        // load recording schedule
+        m_audioRecScheduleModel->load(m_audioRecScheduleFilename);
+    }
 
     m_audioVolume = settings->value("volume", 100).toInt();
     m_audioVolumeSlider->setValue(m_audioVolume);
@@ -3459,17 +3398,15 @@ void MainWindow::saveSettings()
             settings->setValue("SCIdS", m_SCIdS);
             settings->setValue("Frequency", m_frequency);
         }
-        m_serviceList->save(*settings);
+        m_serviceList->save(m_serviceListFilename);
 
         // save audio schedule
-        m_audioRecScheduleModel->save(*settings);
+        m_audioRecScheduleModel->save(m_audioRecScheduleFilename);
     }
     else
     { /* RAW file does not store service, service list and schedule */
     }
-
     settings->sync();
-
     delete settings;
 }
 

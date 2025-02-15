@@ -27,8 +27,11 @@
 #include "audiorecschedulemodel.h"
 
 #include <QBrush>
+#include <QLoggingCategory>
 #include <QPixmap>
 #include <QTime>
+
+Q_DECLARE_LOGGING_CATEGORY(audioRecMgr)
 
 AudioRecScheduleModel::AudioRecScheduleModel(QObject *parent) : QAbstractTableModel{parent}, m_slModel(nullptr)
 {}
@@ -190,40 +193,97 @@ void AudioRecScheduleModel::setSlModel(SLModel *newSlModel)
     m_slModel = newSlModel;
 }
 
-void AudioRecScheduleModel::load(QSettings &settings)
+void AudioRecScheduleModel::load(const QString &filename)
 {
+    QFile loadFile(filename);
+    if (!loadFile.exists())
+    {  // file does not exist -> do nothing
+        return;
+    }
+
+    // file exists here
+    if (!loadFile.open(QIODevice::ReadOnly))
+    {
+        qCWarning(audioRecMgr) << "Unable to read audio recording schedule settings file";
+        return;
+    }
+
+    QByteArray data = loadFile.readAll();
+    loadFile.close();
+
+    if (data.isEmpty())
+    {  // no data in the file
+        return;
+    }
+
+    QJsonDocument doc = QJsonDocument::fromJson(data);
+    if (doc.isNull() || !doc.isArray())
+    {
+        qCWarning(audioRecMgr) << "Unable to read audio recording schedule settings file";
+        return;
+    }
+
     beginResetModel();
     m_modelData.clear();
-    int numItems = settings.beginReadArray("AudioRecordingSchedule");
-    for (int n = 0; n < numItems; ++n)
-    {
+    QVariantList list = doc.toVariant().toList();
+    for (auto it = list.cbegin(); it != list.cend(); ++it)
+    {  // loading the list
+        auto map = it->toMap();
+
         AudioRecScheduleItem item;
-        settings.setArrayIndex(n);
-        item.setName(settings.value("Name").toString());
-        item.setStartTime(settings.value("StartTime").value<QDateTime>());
-        item.setDurationSec(settings.value("DurationSec").toInt());
-        item.setServiceId(settings.value("ServiceId").value<uint64_t>());
+        item.setName(map.value("Name").toString());
+        item.setStartTime(map.value("StartTime").value<QDateTime>());
+        item.setDurationSec(map.value("DurationSec").toInt());
+        item.setServiceId(map.value("ServiceId").value<uint64_t>());
         m_modelData.append(item);
     }
-    settings.endArray();
     cleanup(QDateTime::currentDateTime());
     sortFindConflicts();
     endResetModel();
 }
 
-void AudioRecScheduleModel::save(QSettings &settings)
+void AudioRecScheduleModel::loadFromSettings(QSettings *settings)
 {
-    settings.beginWriteArray("AudioRecordingSchedule", m_modelData.size());
-    int n = 0;
+    beginResetModel();
+    m_modelData.clear();
+    int numItems = settings->beginReadArray("AudioRecordingSchedule");
+    for (int n = 0; n < numItems; ++n)
+    {
+        AudioRecScheduleItem item;
+        settings->setArrayIndex(n);
+        item.setName(settings->value("Name").toString());
+        item.setStartTime(settings->value("StartTime").value<QDateTime>());
+        item.setDurationSec(settings->value("DurationSec").toInt());
+        item.setServiceId(settings->value("ServiceId").value<uint64_t>());
+        m_modelData.append(item);
+    }
+    settings->endArray();
+    cleanup(QDateTime::currentDateTime());
+    sortFindConflicts();
+    endResetModel();
+}
+
+void AudioRecScheduleModel::save(const QString &filename)
+{
+    QVariantList list;
     for (const auto &item : m_modelData)
     {
-        settings.setArrayIndex(n++);
-        settings.setValue("Name", item.name());
-        settings.setValue("StartTime", item.startTime());
-        settings.setValue("DurationSec", item.durationSec());
-        settings.setValue("ServiceId", QVariant::fromValue(item.serviceId().value()));
+        QVariantMap map;
+        map["Name"] = item.name();
+        map["StartTime"] = item.startTime();
+        map["DurationSec"] = item.durationSec();
+        map["ServiceId"] = QVariant::fromValue(item.serviceId().value());
+        list.append(map);
     }
-    settings.endArray();
+
+    QFile saveFile(filename);
+    if (!saveFile.open(QIODevice::WriteOnly))
+    {
+        qCWarning(audioRecMgr) << "Failed to save audio recording schedule to file.";
+        return;
+    }
+    saveFile.write(QJsonDocument::fromVariant(list).toJson());
+    saveFile.close();
 }
 
 void AudioRecScheduleModel::cleanup(const QDateTime &currentTime)

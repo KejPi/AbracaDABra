@@ -58,10 +58,17 @@ int main(int argc, char *argv[])
                                          QObject::tr("Optional INI file. If not specified AbracaDABra.ini in system directory will be used."), "ini");
         parser.addOption(iniFileOption);
 
+        QCommandLineOption slFileOption(
+            QStringList() << "s" << "service-list",
+            QObject::tr("Optional service list JSON file. If not specified ServiceList.json in system directory will be used."), "json");
+
+        parser.addOption(slFileOption);
+
         // Process the actual command line arguments given by the user
         parser.process(a);
 
         QString iniFile = parser.value(iniFileOption);
+        QString slFile = parser.value(slFileOption);
 
 #ifdef Q_OS_LINUX
         // Set icon
@@ -122,7 +129,7 @@ int main(int argc, char *argv[])
             }
         }
 #endif
-        MainWindow w(iniFile);
+        MainWindow w(iniFile, slFile);
         w.show();
         currentExitCode = a.exec();
     } while (currentExitCode == MainWindow::EXIT_CODE_RESTART);

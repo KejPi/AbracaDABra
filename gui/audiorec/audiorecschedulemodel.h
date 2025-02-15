@@ -53,8 +53,9 @@ public:
     void replaceItemAtIndex(const QModelIndex &index, const AudioRecScheduleItem &item);
     const AudioRecScheduleItem &itemAtIndex(const QModelIndex &index) const;
     void setSlModel(SLModel *newSlModel);
-    void load(QSettings &settings);
-    void save(QSettings &settings);
+    void load(const QString &filename);
+    void loadFromSettings(QSettings *settings);
+    void save(const QString &filename);
     void cleanup(const QDateTime &currentTime);
     void clear();
     bool isEmpty() const { return m_modelData.isEmpty(); }

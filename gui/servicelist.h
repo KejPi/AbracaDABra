@@ -71,8 +71,9 @@ public:
     EnsembleListConstIterator ensembleListBegin() const { return m_ensembleList.cbegin(); }
     EnsembleListConstIterator ensembleListEnd() const { return m_ensembleList.cend(); }
     EnsembleListConstIterator findEnsemble(const ServiceListId &id) const { return m_ensembleList.find(id); }
-    void save(QSettings &settings);
-    void load(QSettings &settings);
+    void save(const QString &filename);
+    void load(const QString &filename);
+    void loadFromSettings(QSettings *settings);
 
     void beginEnsembleUpdate(const RadioControlEnsemble &e);
     void endEnsembleUpdate(const RadioControlEnsemble &e);
