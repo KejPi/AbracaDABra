@@ -47,9 +47,9 @@ cmake -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=11 
 cmake --build $BUILD_DIR --config Release
 
 # Deploy SDRplay
-mkdir -p $BUILD_DIR/gui/AbracaDABra.app/Contents/Frameworks
-cp $DIR/../AbracaDABra-libs-aarch64/lib/SoapySDR/modules0.8-3/libsdrPlaySupport.so $BUILD_DIR/gui/AbracaDABra.app/Contents/Frameworks
-install_name_tool -change libsdrplay_api.so.3 /usr/local/lib/libsdrplay_api.so.3 $BUILD_DIR/gui/AbracaDABra.app/Contents/Frameworks/libsdrPlaySupport.so
+mkdir -p $BUILD_DIR/gui/AbracaDABra.app/Contents/Plugins/SoapySDR
+cp $DIR/../AbracaDABra-libs-aarch64/lib/SoapySDR/modules0.8-3/libsdrPlaySupport.so $BUILD_DIR/gui/AbracaDABra.app/Contents/Plugins/SoapySDR/
+install_name_tool -change libsdrplay_api.so.3 /usr/local/lib/libsdrplay_api.so.3 $BUILD_DIR/gui/AbracaDABra.app/Contents/Plugins/SoapySDR/libsdrPlaySupport.so
 
 cd $BUILD_DIR/gui
 $QT_PATH/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/gui/qml -libpath=$DIR/../AbracaDABra-libs-aarch64/lib/ -codesign="-" # -dmg
@@ -73,9 +73,9 @@ cmake -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=11 
 cmake --build $BUILD_DIR --config Release
 
 # Deploy SDRplay
-mkdir -p $BUILD_DIR/gui/AbracaDABra.app/Contents/Frameworks
-cp $DIR/../AbracaDABra-libs-x86/lib/SoapySDR/modules0.8-3/libsdrPlaySupport.so $BUILD_DIR/gui/AbracaDABra.app/Contents/Frameworks
-install_name_tool -change libsdrplay_api.so.3 /usr/local/lib/libsdrplay_api.so.3 $BUILD_DIR/gui/AbracaDABra.app/Contents/Frameworks/libsdrPlaySupport.so
+mkdir -p $BUILD_DIR/gui/AbracaDABra.app/Contents/Plugins/SoapySDR
+cp $DIR/../AbracaDABra-libs-x86/lib/SoapySDR/modules0.8-3/libsdrPlaySupport.so $BUILD_DIR/gui/AbracaDABra.app/Contents/Plugins/SoapySDR/
+install_name_tool -change libsdrplay_api.so.3 /usr/local/lib/libsdrplay_api.so.3 $BUILD_DIR/gui/AbracaDABra.app/Contents/Plugins/SoapySDR/libsdrPlaySupport.so
 
 cd $BUILD_DIR/gui
 $QT_PATH/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/gui/qml  -libpath=$DIR/../AbracaDABra-libs-x86/lib/ -codesign="-" # -dmg

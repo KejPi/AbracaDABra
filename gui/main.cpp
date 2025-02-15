@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
         // this is required for correct deployment of SDRplay
 #ifdef Q_OS_MACOS
-        qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArrayView(QString(QCoreApplication::applicationDirPath() + "/../Frameworks").toUtf8()));
+        qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArrayView(QString(QCoreApplication::applicationDirPath() + "/../Plugins/SoapySDR").toUtf8()));
 #endif
         // qDebug() << qgetenv("SOAPY_SDR_PLUGIN_PATH");
 
