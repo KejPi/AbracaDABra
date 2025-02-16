@@ -230,6 +230,8 @@ private:
     bool m_keepServiceListOnScan;
     bool m_isScannerRunning = false;
     QDateTime m_dabTime;
+    int m_serviceSpiProgress = -1;
+    int m_ensSpiProgress = -1;
 
     // channel list combo
     DABChannelListFilteredModel *m_channelListModel;
@@ -345,6 +347,8 @@ private:
     void onAudioRecordingCountdown(int numSec);
     void onMetadataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role);
     void onEpgEmpty();
+    void onSpiProgress(bool isEns, int decoded, int total);
+    void drawSpiProgressLabel(QLabel *label, int progress);
     void setProxy();
     void checkForUpdate();
 };

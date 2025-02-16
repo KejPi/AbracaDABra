@@ -677,6 +677,8 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     ui->epgLabel->setToolTip(tr("Show program guide (EPG)"));
     ui->epgLabel->setHidden(true);
 
+    ui->ensSPIProgressLabel->setHidden(true);
+
     ui->switchSourceLabel->setToolTip(tr("Change service source (ensemble)"));
     ui->switchSourceLabel->setHidden(true);
 
@@ -918,6 +920,7 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &SPIApp::start);
     connect(this, &MainWindow::stopUserApps, m_spiApp, &SPIApp::stop, Qt::QueuedConnection);
     connect(this, &MainWindow::resetUserApps, m_spiApp, &SPIApp::reset, Qt::QueuedConnection);
+    connect(m_spiApp, &SPIApp::decodingProgress, this, &MainWindow::onSpiProgress, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::uaDumpSettings, m_spiApp, &SPIApp::setDataDumping, Qt::QueuedConnection);
 
     connect(m_spiApp, &SPIApp::xmlDocument, m_metadataManager, &MetadataManager::processXML, Qt::QueuedConnection);
@@ -2302,6 +2305,68 @@ void MainWindow::onEpgEmpty()
     ui->epgLabel->setVisible(false);
 }
 
+void MainWindow::onSpiProgress(bool isEns, int decoded, int total)
+{
+    QLabel *label;
+    int progress = static_cast<int>(100.0 * decoded / total);
+    if (isEns)
+    {
+        label = ui->ensSPIProgressLabel;
+        m_ensSpiProgress = progress;
+    }
+    else
+    {
+        label = ui->serviceSPIProgressLabel;
+        m_serviceSpiProgress = progress;
+    }
+
+    drawSpiProgressLabel(label, progress);
+
+    if (decoded != total)
+    {
+        label->setToolTip(QString(tr("SPI MOT directory not complete\nDecoded %1 / %2 MOT objects")).arg(decoded).arg(total));
+    }
+    else
+    {
+        // label->setToolTip(QString(tr("SPI MOT directory complete\n%1 MOT objects decoded")).arg(total));
+    }
+}
+
+void MainWindow::drawSpiProgressLabel(QLabel *label, int progress)
+{
+    if (progress < 0 || m_settings->expertModeEna == false)
+    {
+        label->setVisible(false);
+        return;
+    }
+
+    const QString svg =
+        isDarkMode() ?
+                     R"X(<svg width="24pt" height="24pt" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" text-rendering="geometricPrecision">
+<text x="12" y="13" font-size="12" font-family="Arial" fill="white" text-anchor="middle" dominant-baseline="middle">SPI</text>
+<rect x="2" y="16" width="20" height="4" fill="black" rx="2" ry="2" />
+<rect x="2" y="16" width="%1" height="4" fill="#A0A0A0" rx="2" ry="2" />
+</svg>)X"
+                     :
+                     R"X(<svg width="24pt" height="24pt" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" text-rendering="geometricPrecision">
+<text x="12" y="13" font-size="12" font-family="Arial" fill="black" text-anchor="middle" dominant-baseline="middle">SPI</text>
+<rect x="2" y="16" width="20" height="4" fill="white" rx="2" ry="2" />
+<rect x="2" y="16" width="%1" height="4" fill="#505050" rx="2" ry="2" />
+</svg>)X";
+
+    if (progress < 100)
+    {
+        QPixmap p;
+        p.loadFromData(svg.arg(int(20.0 * 0.01 * progress)).toUtf8(), "svg");
+        label->setPixmap(p);
+        label->setVisible(true);
+    }
+    else
+    {
+        label->setVisible(false);
+    }
+}
+
 void MainWindow::setProxy()
 {
     QNetworkProxy proxy;
@@ -2390,6 +2455,9 @@ void MainWindow::clearEnsembleInformationLabels()
     ui->ensembleLabel->setToolTip(tr("No ensemble tuned"));
     ui->frequencyLabel->setText("");
     ui->ensembleInfoLabel->setText("");
+    ui->ensSPIProgressLabel->setVisible(false);
+    ui->ensSPIProgressLabel->setToolTip("");
+    m_ensSpiProgress = -1;
 }
 
 void MainWindow::clearServiceInformationLabels()
@@ -2410,6 +2478,9 @@ void MainWindow::clearServiceInformationLabels()
     ui->audioBitrateLabel->setText("");
     ui->audioBitrateLabel->setToolTip("");
     ui->announcementLabel->setVisible(false);
+    ui->serviceSPIProgressLabel->setVisible(false);
+    ui->serviceSPIProgressLabel->setToolTip("");
+    m_serviceSpiProgress = -1;
     ui->slsWidget->setCurrentIndex(Instance::Service);
     ui->dlPlusWidget->setCurrentIndex(Instance::Service);
     ui->dlWidget->setCurrentIndex(Instance::Service);
@@ -3810,12 +3881,15 @@ void MainWindow::setExpertMode(bool ena)
     ui->channelUp->setVisible(ena);
     ui->programTypeLabel->setVisible(ena);
     ui->ensembleInfoLabel->setVisible(ena);
+    ui->ensSPIProgressLabel->setVisible(ena && m_ensSpiProgress >= 0);
+    ui->serviceSPIProgressLabel->setVisible(ena && m_serviceSpiProgress >= 0);
 
     ui->slsView_Service->setExpertMode(ena);
     ui->slsView_Announcement->setExpertMode(ena);
     m_catSlsDialog->setExpertMode(ena);
     m_tiiAction->setVisible(ena);
     m_scanningToolAction->setVisible(ena);
+    m_signalDialogAction->setVisible(ena);
 
     // set tab order
     if (ena)
@@ -4246,6 +4320,9 @@ void MainWindow::setupDarkMode()
         ui->channelUp->setIcon(":/resources/chevron-right_dark.png");
 
         m_audioRecordingLabel->setIcon(":/resources/record.png");
+
+        drawSpiProgressLabel(ui->ensSPIProgressLabel, m_ensSpiProgress);
+        drawSpiProgressLabel(ui->serviceSPIProgressLabel, m_serviceSpiProgress);
     }
     else
     {
@@ -4269,6 +4346,9 @@ void MainWindow::setupDarkMode()
         ui->channelUp->setIcon(":/resources/chevron-right.png");
 
         m_audioRecordingLabel->setIcon(":/resources/record.png");
+
+        drawSpiProgressLabel(ui->ensSPIProgressLabel, m_ensSpiProgress);
+        drawSpiProgressLabel(ui->serviceSPIProgressLabel, m_serviceSpiProgress);
     }
 }
 

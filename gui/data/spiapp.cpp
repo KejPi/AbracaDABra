@@ -248,6 +248,10 @@ void SPIApp::onNewMOTDirectory()
         qCInfo(spiApp, "%d: MOT directory NOT complete (decoded %d / %d)", decoderId, decoderPtr->directoryCountCompleted(),
                decoderPtr->directoryCount());
     }
+    if (m_decoderMap.count() <= 2)
+    {
+        emit decodingProgress(decoderId != 0xFFFF, decoderPtr->directoryCountCompleted(), decoderPtr->directoryCount());
+    }
 }
 
 void SPIApp::onNewMOTObjectInDirectory(const QString &contentName)
@@ -290,6 +294,10 @@ void SPIApp::onNewMOTObjectInDirectory(const QString &contentName)
         {
             qCInfo(spiApp, "%d: MOT directory NOT complete (decoded %d / %d)", decoderId, decoderPtr->directoryCountCompleted(),
                    decoderPtr->directoryCount());
+        }
+        if (m_decoderMap.count() <= 2)
+        {
+            emit decodingProgress(decoderId != 0xFFFF, decoderPtr->directoryCountCompleted(), decoderPtr->directoryCount());
         }
     }
 }
