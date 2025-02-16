@@ -60,9 +60,10 @@ SoapySdrInput::~SoapySdrInput()
     }
 }
 
-bool SoapySdrInput::openDevice(const QVariant &hwId)
+bool SoapySdrInput::openDevice(const QVariant &hwId, bool fallbackConnection)
 {
-    Q_UNUSED(hwId);
+    Q_UNUSED(hwId)
+    Q_UNUSED(fallbackConnection)
 
     int ret = 0;
 

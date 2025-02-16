@@ -77,7 +77,7 @@ class RawFileInput : public InputDevice
 public:
     explicit RawFileInput(QObject *parent = nullptr);
     ~RawFileInput();
-    bool openDevice(const QVariant &hwId = QVariant()) override;
+    bool openDevice(const QVariant &hwId = QVariant(), bool fallbackConnection = true) override;
     void tune(uint32_t freq) override;
     InputDevice::Capabilities capabilities() const override { return {}; }
     void setFile(const QString &fileName, const RawFileInputFormat &sampleFormat = RawFileInputFormat::SAMPLE_FORMAT_U8);

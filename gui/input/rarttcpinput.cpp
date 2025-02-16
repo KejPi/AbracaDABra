@@ -74,9 +74,10 @@ RartTcpInput::~RartTcpInput()
     }
 }
 
-bool RartTcpInput::openDevice(const QVariant &hwId)
+bool RartTcpInput::openDevice(const QVariant &hwId, bool fallbackConnection)
 {
     Q_UNUSED(hwId);
+    Q_UNUSED(fallbackConnection)
 
     if (nullptr != m_worker)
     {  // device already opened

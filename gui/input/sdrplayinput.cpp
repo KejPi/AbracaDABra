@@ -118,7 +118,7 @@ SdrPlayInput::SdrPlayInput(QObject *parent)
     m_biasT = false;
 }
 
-bool SdrPlayInput::openDevice(const QVariant &hwId)
+bool SdrPlayInput::openDevice(const QVariant &hwId, bool fallbackConnection)
 {
     // find all SDRplay devices
     const auto list = SdrPlayInput::getDeviceList();
@@ -135,6 +135,11 @@ bool SdrPlayInput::openDevice(const QVariant &hwId)
                 break;
             }
         }
+        if (foundDevice == false && fallbackConnection == false)
+        {
+            qCCritical(sdrPlayInput, "Selected SDRplay device SN %s not found", hwId.toString().toLatin1().data());
+            return false;
+        }
     }
 
     bool isConnected = false;
@@ -146,6 +151,11 @@ bool SdrPlayInput::openDevice(const QVariant &hwId)
         {
             m_deviceDescription.device.sn = hwId.toString();
             m_hwId = hwId;
+        }
+        else if (fallbackConnection == false)
+        {
+            qCCritical(sdrPlayInput, "Unable to open selected SDRplay device: SN %s", hwId.toString().toLatin1().data());
+            return false;
         }
     }
 

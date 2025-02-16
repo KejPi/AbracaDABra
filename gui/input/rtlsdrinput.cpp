@@ -148,7 +148,7 @@ void RtlSdrInput::tune(uint32_t frequency)
     }
 }
 
-bool RtlSdrInput::openDevice(const QVariant &hwId)
+bool RtlSdrInput::openDevice(const QVariant &hwId, bool fallbackConnection)
 {
     int ret = 0;
 
@@ -201,7 +201,15 @@ bool RtlSdrInput::openDevice(const QVariant &hwId)
         }
         if (ret < 0)
         {  // not opened
-            qCInfo(rtlsdrInput, "Unable to open last RTL-SDR device: %s. Trying to find working device...", idToOpen.toLatin1().constData());
+            if (fallbackConnection)
+            {
+                qCInfo(rtlsdrInput, "Unable to open selected RTL-SDR device: %s. Trying to find working device...", idToOpen.toLatin1().constData());
+            }
+            else
+            {
+                qCCritical(rtlsdrInput, "Unable to open selected RTL-SDR device: %s", idToOpen.toLatin1().constData());
+                return false;
+            }
         }
     }
 

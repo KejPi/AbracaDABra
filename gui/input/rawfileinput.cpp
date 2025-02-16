@@ -64,9 +64,10 @@ RawFileInput::~RawFileInput()
     }
 }
 
-bool RawFileInput::openDevice(const QVariant &hwId)
+bool RawFileInput::openDevice(const QVariant &hwId, bool fallbackConnection)
 {
-    Q_UNUSED(hwId);
+    Q_UNUSED(hwId)
+    Q_UNUSED(fallbackConnection)
     if (nullptr != m_inputFile)
     {
         m_inputFile->close();
@@ -270,7 +271,7 @@ void RawFileInput::onBytesRead(qint64 bytesRead)
 void RawFileInput::onWatchdogTimeout()
 {
     if (nullptr != m_worker)
-    {        
+    {
         if (!m_worker->isRunning())
         {  // kill worker
             qCWarning(rawFileInput) << "Watchdog timeout";
@@ -617,8 +618,9 @@ void RawFileWorker::run()
 
         uint64_t samplesRead = 0;
         uint64_t input_chunk_iq_samples = period * 2048;
-        if (input_chunk_iq_samples > INPUT_CHUNK_IQ_SAMPLES*4) {
-            input_chunk_iq_samples = INPUT_CHUNK_IQ_SAMPLES*4;
+        if (input_chunk_iq_samples > INPUT_CHUNK_IQ_SAMPLES * 4)
+        {
+            input_chunk_iq_samples = INPUT_CHUNK_IQ_SAMPLES * 4;
         }
 
         // get FIFO space

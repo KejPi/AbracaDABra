@@ -113,7 +113,7 @@ void AirspyInput::tune(uint32_t frequency)
     }
 }
 
-bool AirspyInput::openDevice(const QVariant &hwId)
+bool AirspyInput::openDevice(const QVariant &hwId, bool fallbackConnection)
 {
     bool found = false;
     if (hwId.isValid())
@@ -121,8 +121,16 @@ bool AirspyInput::openDevice(const QVariant &hwId)
         uint64_t sn = hwId.toULongLong();
         if (AIRSPY_SUCCESS != airspy_open_sn(&m_device, sn))
         {
-            qCInfo(airspyInput, "Unable to open last AIRSPY device: %s. Trying to find working device...",
-                   QString("%1").arg(sn, 0, 16).toUpper().toLatin1().constData());
+            if (fallbackConnection)
+            {
+                qCInfo(airspyInput, "Unable to open selected AIRSPY device: %s. Trying to find working device...",
+                       QString("%1").arg(sn, 0, 16).toUpper().toLatin1().constData());
+            }
+            else
+            {
+                qCCritical(airspyInput, "Unable to open selected AIRSPY device: %s", QString("%1").arg(sn, 0, 16).toUpper().toLatin1().constData());
+                return false;
+            }
         }
         else
         {

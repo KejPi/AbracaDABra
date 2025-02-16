@@ -727,6 +727,7 @@ void SetupDialog::setUiState()
     ui->rtlsdrSwAgcMaxLevel->setValue(m_settings->rtlsdr.agcLevelMax);
     ui->rtlsdrSwAgcMaxLevelDefault->setEnabled(m_settings->rtlsdr.agcLevelMax != 0);
     ui->rtlsdrPPM->setValue(m_settings->rtlsdr.ppm);
+    ui->rtlsdrFallbackConnection->setChecked(m_settings->rtlsdr.fallbackConnection);
 
     switch (m_settings->rtltcp.gainMode)
     {
@@ -772,6 +773,7 @@ void SetupDialog::setUiState()
     ui->airspyMixerAGCCheckbox->setChecked(m_settings->airspy.gain.mixerAgcEna);
     ui->airspyLNAAGCCheckbox->setChecked(m_settings->airspy.gain.lnaAgcEna);
     ui->airspyBiasTCombo->setCurrentIndex(m_settings->airspy.biasT ? 1 : 0);
+    ui->airspyFallbackConnection->setChecked(m_settings->airspy.fallbackConnection);
     onAirspySensitivityGainSliderChanged(m_settings->airspy.gain.sensitivityGainIdx);
     onAirspyIFGainSliderChanged(m_settings->airspy.gain.ifGainIdx);
     onAirspyLNAGainSliderChanged(m_settings->airspy.gain.lnaGainIdx);
@@ -832,6 +834,7 @@ void SetupDialog::setUiState()
     ui->sdrplayIFAGCCheckbox->setChecked(m_settings->sdrplay.gain.ifAgcEna);
     ui->sdrplayPPM->setValue(m_settings->sdrplay.ppm);
     ui->sdrplayBiasTCombo->setCurrentIndex(m_settings->sdrplay.biasT ? 1 : 0);
+    ui->sdrplayFallbackConnection->setChecked(m_settings->sdrplay.fallbackConnection);
 #endif
 
     if (m_settings->rawfile.file.isEmpty())
@@ -975,6 +978,12 @@ void SetupDialog::connectDeviceControlSignals()
     connect(ui->rtlsdrSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtlsdrSwAgcMaxLevel->setValue(0); });
     connect(ui->rtlsdrBiasTCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onBiasTChanged);
     connect(ui->rtlsdrPPM, &QSpinBox::valueChanged, this, &SetupDialog::onPPMChanged);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
+    connect(ui->rtlsdrFallbackConnection, &QCheckBox::checkStateChanged, this,
+            [this](bool checked) { m_settings->rtlsdr.fallbackConnection = checked; });
+#else
+    connect(ui->rtlsdrFallbackConnection, &QCheckBox::stateChanged, this, [this](bool checked) { m_settings->rtlsdr.fallbackConnection = checked; });
+#endif
 
     connect(ui->rtltcpGainSlider, &QSlider::valueChanged, this, &SetupDialog::onRtlTcpGainSliderChanged);
     connect(ui->rtltcpGainModeHw, &QRadioButton::toggled, this, &SetupDialog::onTcpGainModeToggled);
@@ -1001,9 +1010,12 @@ void SetupDialog::connectDeviceControlSignals()
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
     connect(ui->airspyLNAAGCCheckbox, &QCheckBox::checkStateChanged, this, &SetupDialog::onAirspyLNAAGCstateChanged);
     connect(ui->airspyMixerAGCCheckbox, &QCheckBox::checkStateChanged, this, &SetupDialog::onAirspyMixerAGCstateChanged);
+    connect(ui->airspyFallbackConnection, &QCheckBox::checkStateChanged, this,
+            [this](bool checked) { m_settings->airspy.fallbackConnection = checked; });
 #else
     connect(ui->airspyLNAAGCCheckbox, &QCheckBox::stateChanged, this, &SetupDialog::onAirspyLNAAGCstateChanged);
     connect(ui->airspyMixerAGCCheckbox, &QCheckBox::stateChanged, this, &SetupDialog::onAirspyMixerAGCstateChanged);
+    connect(ui->airspyFallbackConnection, &QCheckBox::stateChanged, this, [this](bool checked) { m_settings->airspy.fallbackConnection = checked; });
 #endif
     connect(ui->airspyGainModeHybrid, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
     connect(ui->airspyGainModeSw, &QRadioButton::toggled, this, &SetupDialog::onAirspyModeToggled);
@@ -1028,8 +1040,12 @@ void SetupDialog::connectDeviceControlSignals()
     connect(ui->sdrplayIFGainSlider, &QSlider::valueChanged, this, &SetupDialog::onSdrplayIFGainSliderChanged);
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
     connect(ui->sdrplayIFAGCCheckbox, &QCheckBox::checkStateChanged, this, &SetupDialog::onSdrplayAGCstateChanged);
+    connect(ui->sdrplayFallbackConnection, &QCheckBox::checkStateChanged, this,
+            [this](bool checked) { m_settings->sdrplay.fallbackConnection = checked; });
 #else
     connect(ui->sdrplayIFAGCCheckbox, &QCheckBox::stateChanged, this, &SetupDialog::onSdrplayAGCstateChanged);
+    connect(ui->sdrplayFallbackConnection, &QCheckBox::stateChanged, this,
+            [this](bool checked) { m_settings->sdrplay.fallbackConnection = checked; });
 #endif
     connect(ui->sdrplayPPM, &QSpinBox::valueChanged, this, &SetupDialog::onPPMChanged);
     connect(ui->sdrplayBiasTCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onBiasTChanged);
@@ -1075,6 +1091,7 @@ void SetupDialog::onConnectDeviceClicked()
         case InputDevice::Id::RTLSDR:
             id = ui->rtlsdrDeviceListCombo->currentData();
             ui->rtlsdrDeviceListCombo->setEnabled(false);
+            ui->rtlsdrFallbackConnection->setEnabled(false);
             break;
         case InputDevice::Id::RTLTCP:
             m_settings->rtltcp.tcpAddress = ui->rtltcpIpAddressEdit->text();
@@ -1094,6 +1111,7 @@ void SetupDialog::onConnectDeviceClicked()
 #if HAVE_AIRSPY
             id = ui->airspyDeviceListCombo->currentData();
             ui->airspyDeviceListCombo->setEnabled(false);
+            ui->airspyFallbackConnection->setEnabled(false);
 #endif
             break;
         case InputDevice::Id::SOAPYSDR:
@@ -1112,6 +1130,7 @@ void SetupDialog::onConnectDeviceClicked()
             ui->sdrplayDeviceListCombo->setEnabled(false);
             ui->sdrplayChannelCombo->setEnabled(false);
             ui->sdrplayAntennaCombo->setEnabled(false);
+            ui->sdrplayFallbackConnection->setEnabled(false);
 #endif
             break;
     }
@@ -1276,6 +1295,7 @@ void SetupDialog::onRtlSdrGainModeToggled(bool checked)
 void SetupDialog::activateRtlSdrControls(bool en)
 {
     ui->rtlsdrDeviceListCombo->setEnabled(true);
+    ui->rtlsdrFallbackConnection->setEnabled(true);
     ui->rtlsdrGainModeGroup->setEnabled(en);
     ui->rtlsdrGainWidget->setEnabled(en && (RtlGainMode::Manual == m_settings->rtlsdr.gainMode));
     ui->rtlsdrExpertGroup->setEnabled(en);
@@ -1365,6 +1385,7 @@ void SetupDialog::onRawFileFormatChanged(int idx)
 void SetupDialog::activateAirspyControls(bool en)
 {
     ui->airspyDeviceListCombo->setEnabled(true);
+    ui->airspyFallbackConnection->setEnabled(true);
     ui->airspyGainModeGroup->setEnabled(en);
     bool sensEna = en && (AirpyGainMode::Sensitivity == m_settings->airspy.gain.mode);
     bool manualEna = en && (AirpyGainMode::Manual == m_settings->airspy.gain.mode);
@@ -1588,6 +1609,7 @@ void SetupDialog::activateSdrplayControls(bool en)
     ui->sdrplayGainWidget->setEnabled(en && (SdrPlayGainMode::Manual == m_settings->sdrplay.gain.mode));
     ui->sdrplayExpertGroup->setEnabled(en);
     ui->sdrplayIFGainSlider->setEnabled(en && !m_settings->sdrplay.gain.ifAgcEna);
+    ui->sdrplayFallbackConnection->setEnabled(true);
 }
 
 void SetupDialog::onSdrplayReloadButtonClicked()
@@ -2546,11 +2568,13 @@ void SetupDialog::setConnectButton(SetupDialogConnectButtonState state)
                 case InputDevice::Id::RTLSDR:
                     showButton = (ui->rtlsdrDeviceListCombo->count() > 0) &&
                                  (showButton || (ui->rtlsdrDeviceListCombo->currentData() != m_settings->rtlsdr.hwId));
+                    // ui->rtlsdrFallbackConnection->setEnabled(showButton);
                     break;
                 case InputDevice::Id::AIRSPY:
 #if HAVE_AIRSPY
                     showButton = (ui->airspyDeviceListCombo->count() > 0) &&
                                  (showButton || (ui->airspyDeviceListCombo->currentData() != m_settings->airspy.hwId));
+                    // ui->airspyFallbackConnection->setEnabled(showButton);
 #endif
                     break;
                 case InputDevice::Id::SOAPYSDR:
@@ -2565,6 +2589,7 @@ void SetupDialog::setConnectButton(SetupDialogConnectButtonState state)
 #if HAVE_SOAPYSDR
                     showButton = (ui->sdrplayDeviceListCombo->count() > 0) &&
                                  (showButton || (ui->sdrplayDeviceListCombo->currentData() != m_settings->sdrplay.hwId));
+                    // ui->sdrplayFallbackConnection->setEnabled(showButton);
 #endif
                     break;
                 case InputDevice::Id::RTLTCP:

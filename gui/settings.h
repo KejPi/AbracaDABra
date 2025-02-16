@@ -84,6 +84,7 @@ public:
     struct
     {
         QVariant hwId;
+        bool fallbackConnection;
         RtlGainMode gainMode;
         int gainIdx;
         uint32_t bandwidth;
@@ -105,6 +106,7 @@ public:
     struct
     {
         QVariant hwId;
+        bool fallbackConnection;
         AirspyGainStruct gain;
         bool biasT;
         bool dataPacking;
@@ -125,6 +127,7 @@ public:
     struct
     {
         QVariant hwId;
+        bool fallbackConnection;
         QString antenna;
         int channel;
         bool biasT;

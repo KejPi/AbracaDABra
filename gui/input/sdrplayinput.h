@@ -60,7 +60,7 @@ public:
     static int getNumRxChannels(const QVariant &hwId);
     static QStringList getRxAntennas(const QVariant &hwId, const int channel);
     explicit SdrPlayInput(QObject *parent = nullptr);
-    bool openDevice(const QVariant &hwId = QVariant()) override;
+    bool openDevice(const QVariant &hwId = QVariant(), bool fallbackConnection = true) override;
     void setGainMode(const SdrPlayGainStruct &gain);
     void setBiasT(bool ena) override;
     void setDevArgs(const QString &devArgs) = delete;

@@ -77,7 +77,7 @@ public:
 
     explicit AirspyInput(bool try4096kHz, QObject *parent = nullptr);
     ~AirspyInput();
-    bool openDevice(const QVariant &hwId = QVariant()) override;
+    bool openDevice(const QVariant &hwId = QVariant(), bool fallbackConnection = true) override;
     void tune(uint32_t frequency) override;
     InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
     void setGainMode(const AirspyGainStruct &gain);

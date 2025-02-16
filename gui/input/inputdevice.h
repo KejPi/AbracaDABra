@@ -143,7 +143,7 @@ public:
 
     InputDevice(QObject *parent = nullptr);
     ~InputDevice();
-    virtual bool openDevice(const QVariant &hwId = QVariant()) = 0;
+    virtual bool openDevice(const QVariant &hwId = QVariant(), bool fallbackConnection = true) = 0;
     const InputDevice::Description &deviceDescription() const { return m_deviceDescription; }
     virtual void tune(uint32_t freq) = 0;
     virtual void startStopRecording(bool start) = 0;

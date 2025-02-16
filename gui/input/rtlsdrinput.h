@@ -93,7 +93,7 @@ public:
 
     explicit RtlSdrInput(QObject *parent = nullptr);
     ~RtlSdrInput();
-    bool openDevice(const QVariant &hwId) override;
+    bool openDevice(const QVariant &hwId, bool fallbackConnection = true) override;
     void tune(uint32_t frequency) override;
     InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
     void setGainMode(RtlGainMode gainMode, int gainIdx = 0);

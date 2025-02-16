@@ -2574,7 +2574,7 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
             connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
-            if (m_inputDevice->openDevice(id))
+            if (m_inputDevice->openDevice(id, m_settings->rtlsdr.fallbackConnection))
             {  // rtl sdr is available
                 if ((InputDevice::Id::RAWFILE == m_inputDeviceId) || (InputDevice::Id::UNDEFINED == m_inputDeviceId))
                 {  // if switching from RAW or UNDEFINED load service list & rec schedule
@@ -2717,7 +2717,7 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             connect(m_inputDevice, &InputDevice::deviceReady, this, &MainWindow::onInputDeviceReady, Qt::QueuedConnection);
             connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
-            if (m_inputDevice->openDevice(id))
+            if (m_inputDevice->openDevice(id, m_settings->airspy.fallbackConnection))
             {  // airspy is available
                 if ((InputDevice::Id::RAWFILE == m_inputDeviceId) || (InputDevice::Id::UNDEFINED == m_inputDeviceId))
                 {  // if switching from RAW or UNDEFINED load service list & rec schedule
@@ -2820,7 +2820,7 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             dynamic_cast<SoapySdrInput *>(m_inputDevice)->setRxChannel(m_settings->sdrplay.channel);
             dynamic_cast<SoapySdrInput *>(m_inputDevice)->setAntenna(m_settings->sdrplay.antenna);
 
-            if (m_inputDevice->openDevice(id))
+            if (m_inputDevice->openDevice(id, m_settings->sdrplay.fallbackConnection))
             {  // SoapySDR is available
                 if ((InputDevice::Id::RAWFILE == m_inputDeviceId) || (InputDevice::Id::UNDEFINED == m_inputDeviceId))
                 {  // if switching from RAW or UNDEFINED load service list & rec schedule
@@ -3119,6 +3119,7 @@ void MainWindow::loadSettings()
     m_settings->epg.geometry = settings->value("EPG/windowGeometry").toByteArray();
 
     m_settings->rtlsdr.hwId = settings->value("RTL-SDR/lastDevice");
+    m_settings->rtlsdr.fallbackConnection = settings->value("RTL-SDR/fallbackConnection", true).toBool();
     m_settings->rtlsdr.gainIdx = settings->value("RTL-SDR/gainIndex", 0).toInt();
     m_settings->rtlsdr.gainMode = static_cast<RtlGainMode>(settings->value("RTL-SDR/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
     m_settings->rtlsdr.bandwidth = settings->value("RTL-SDR/bandwidth", 0).toUInt();
@@ -3141,6 +3142,7 @@ void MainWindow::loadSettings()
 
 #if HAVE_AIRSPY
     m_settings->airspy.hwId = settings->value("AIRSPY/lastDevice");
+    m_settings->airspy.fallbackConnection = settings->value("AIRSPY/fallbackConnection", true).toBool();
     m_settings->airspy.gain.sensitivityGainIdx = settings->value("AIRSPY/sensitivityGainIdx", 9).toInt();
     m_settings->airspy.gain.lnaGainIdx = settings->value("AIRSPY/lnaGainIdx", 0).toInt();
     m_settings->airspy.gain.mixerGainIdx = settings->value("AIRSPY/mixerGainIdx", 0).toInt();
@@ -3177,6 +3179,7 @@ void MainWindow::loadSettings()
     settings->endGroup();
 
     m_settings->sdrplay.hwId = settings->value("SDRPLAY/lastDevice");
+    m_settings->sdrplay.fallbackConnection = settings->value("SDRPLAY/fallbackConnection", true).toBool();
     m_settings->sdrplay.antenna = settings->value("SDRPLAY/antenna", QString("")).toString();
     m_settings->sdrplay.channel = settings->value("SDRPLAY/rxChannel", 0).toInt();
     m_settings->sdrplay.gain.mode =
@@ -3385,6 +3388,7 @@ void MainWindow::saveSettings()
     settings->setValue("UA-STORAGE/spiPattern", m_settings->uaDump.spiPattern);
 
     settings->setValue("RTL-SDR/lastDevice", m_settings->rtlsdr.hwId);
+    settings->setValue("RTL-SDR/fallbackConnection", m_settings->rtlsdr.fallbackConnection);
     settings->setValue("RTL-SDR/gainIndex", m_settings->rtlsdr.gainIdx);
     settings->setValue("RTL-SDR/gainMode", static_cast<int>(m_settings->rtlsdr.gainMode));
     settings->setValue("RTL-SDR/bandwidth", m_settings->rtlsdr.bandwidth);
@@ -3394,6 +3398,7 @@ void MainWindow::saveSettings()
 
 #if HAVE_AIRSPY
     settings->setValue("AIRSPY/lastDevice", m_settings->airspy.hwId);
+    settings->setValue("AIRSPY/fallbackConnection", m_settings->airspy.fallbackConnection);
     settings->setValue("AIRSPY/sensitivityGainIdx", m_settings->airspy.gain.sensitivityGainIdx);
     settings->setValue("AIRSPY/lnaGainIdx", m_settings->airspy.gain.lnaGainIdx);
     settings->setValue("AIRSPY/mixerGainIdx", m_settings->airspy.gain.mixerGainIdx);
@@ -3427,6 +3432,7 @@ void MainWindow::saveSettings()
         settings->endGroup();
     }
     settings->setValue("SDRPLAY/lastDevice", m_settings->sdrplay.hwId);
+    settings->setValue("SDRPLAY/fallbackConnection", m_settings->sdrplay.fallbackConnection);
     settings->setValue("SDRPLAY/rxChannel", m_settings->sdrplay.channel);
     settings->setValue("SDRPLAY/antenna", m_settings->sdrplay.antenna);
     settings->setValue("SDRPLAY/gainMode", static_cast<int>(m_settings->sdrplay.gain.mode));
