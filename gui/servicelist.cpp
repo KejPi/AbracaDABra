@@ -308,6 +308,9 @@ void ServiceList::load(const QString &filename)
     RadioControlServiceComponent item;
     RadioControlEnsemble ens;
 
+    int numUniqueServices = 0;
+    int numServices = 0;
+
     // doc is not null and is array
     QVariantList list = doc.toVariant().toList();
     for (auto it = list.cbegin(); it != list.cend(); ++it)
@@ -359,8 +362,11 @@ void ServiceList::load(const QString &filename)
             ens.labelShort = ensMap.value("ShortLabel").toString();
             // float snr = settings.value("SNR").toFloat();
             addService(ens, item, fav, currentEns);
+            numServices += 1;
         }
+        numUniqueServices += 1;
     }
+    qCInfo(serviceList, "Service list loaded: number of services in all ensembles %d, unique services %d", numServices, numUniqueServices);
 }
 
 void ServiceList::loadFromSettings(QSettings *settings)
@@ -416,6 +422,39 @@ void ServiceList::loadFromSettings(QSettings *settings)
         settings->endArray();
     }
     settings->endArray();
+}
+
+void ServiceList::exportCSV(const QString &filename)
+{
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        qCWarning(serviceList) << "Failed to export CSV file.";
+        return;
+    }
+
+    QTextStream out(&file);
+    // header
+    out << tr("Service name;Short label;SID;SCIdS;Number of ensembles") << Qt::endl;
+    // export in alphabetical order
+    QStringList labelList;
+    for (auto &s : m_serviceList)
+    {
+        labelList.append(s->label());
+    }
+    labelList.sort();
+
+    for (const auto &label : labelList)
+    {
+        auto it =
+            std::find_if(m_serviceList.cbegin(), m_serviceList.cend(), [&label](const ServiceListItem *item) { return item->label() == label; });
+        if (it != m_serviceList.cend())
+        {
+            out << it.value()->label() << ";" << it.value()->shortLabel() << ";" << QString::number(it.value()->SId().value(), 16).toUpper() << ";"
+                << it.value()->SCIdS() << ";" << it.value()->numEnsembles() << Qt::endl;
+        }
+    }
+    file.close();
 }
 
 // this marks all services as obsolete

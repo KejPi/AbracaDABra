@@ -409,6 +409,9 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     m_clearServiceListAction = new QAction(tr("Clear service list"), this);
     connect(m_clearServiceListAction, &QAction::triggered, this, &MainWindow::clearServiceList);
 
+    m_exportServiceListAction = new QAction(tr("Export service list..."), this);
+    connect(m_exportServiceListAction, &QAction::triggered, this, &MainWindow::exportServiceList);
+
     m_bandScanAction = new QAction(tr("Band scan..."), this);
     connect(m_bandScanAction, &QAction::triggered, this, &MainWindow::bandScan);
 
@@ -459,6 +462,7 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     m_menu->addSeparator();
     m_menu->addAction(m_setupAction);
     m_menu->addAction(m_bandScanAction);
+    m_menu->addAction(m_exportServiceListAction);
     m_menu->addAction(m_clearServiceListAction);
     m_menu->addSeparator();
     m_menu->addAction(m_epgAction);
@@ -3003,13 +3007,14 @@ void MainWindow::loadSettings()
         m_audioRecScheduleModel->save(m_audioRecScheduleFilename);
     }
     else
-    {  // new settings with dedicated JSON for service lis and audio recording schedule
+    {  // new settings with dedicated JSON for service list and audio recording schedule
+       // it will be loaded when device is initialized (this reduces duplication of service list information in log)
 
         // load servicelist
-        m_serviceList->load(m_serviceListFilename);
+        // m_serviceList->load(m_serviceListFilename);
 
         // load recording schedule
-        m_audioRecScheduleModel->load(m_audioRecScheduleFilename);
+        // m_audioRecScheduleModel->load(m_audioRecScheduleFilename);
     }
 
     m_audioVolume = settings->value("volume", 100).toInt();
@@ -3043,6 +3048,7 @@ void MainWindow::loadSettings()
     m_settings->updateCheckEna = settings->value("updateCheckEna", true).toBool();
     m_settings->updateCheckTime = settings->value("updateCheckTime", QDateTime::currentDateTime().addDays(-1)).value<QDateTime>();
     m_settings->uploadEnsembleInfo = settings->value("uploadEnsembleInfoEna", true).toBool();
+    m_settings->serviceListExportPath = settings->value("serviceListExportPath", QDir::homePath()).toString();
 #if (HAVE_PORTAUDIO)
     if (nullptr != dynamic_cast<AudioOutputPa *>(m_audioOutput))
     {
@@ -3326,6 +3332,7 @@ void MainWindow::saveSettings()
     settings->setValue("updateCheckTime", m_settings->updateCheckTime);
     settings->setValue("uploadEnsembleInfoEna", m_settings->uploadEnsembleInfo);
     settings->setValue("showTrayIcon", m_settings->trayIconEna);
+    settings->setValue("serviceListExportPath", m_settings->serviceListExportPath);
 
     settings->setValue("AudioRecording/folder", m_settings->audioRec.folder);
     settings->setValue("AudioRecording/captureOutput", m_settings->audioRec.captureOutput);
@@ -3896,6 +3903,7 @@ void MainWindow::setExpertMode(bool ena)
     m_tiiAction->setVisible(ena);
     m_scanningToolAction->setVisible(ena);
     m_signalDialogAction->setVisible(ena);
+    m_exportServiceListAction->setVisible(ena);
 
     // set tab order
     if (ena)
@@ -3971,6 +3979,18 @@ void MainWindow::stop()
 
         // tune to 0
         ui->channelCombo->setCurrentIndex(-1);
+    }
+}
+
+void MainWindow::exportServiceList()
+{
+    QString f =
+        QString("%1/%2.csv").arg(m_settings->serviceListExportPath, "servicelist_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Export CSV file"), QDir::toNativeSeparators(f), tr("CSV Files") + " (*.csv)");
+    if (!fileName.isEmpty())
+    {
+        m_settings->serviceListExportPath = QFileInfo(fileName).path();  // store path for next time
+        m_serviceList->exportCSV(fileName);
     }
 }
 

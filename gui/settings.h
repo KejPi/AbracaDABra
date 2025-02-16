@@ -159,6 +159,7 @@ public:
     bool updateCheckEna;
     QDateTime updateCheckTime;
     bool uploadEnsembleInfo;
+    QString serviceListExportPath;
 
     // audio recording settings
     struct AudioRec

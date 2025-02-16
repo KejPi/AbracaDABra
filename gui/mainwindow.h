@@ -167,6 +167,7 @@ private:
     QMenu *m_audioOutputMenu;
 
     QAction *m_setupAction;
+    QAction *m_exportServiceListAction;
     QAction *m_clearServiceListAction;
     QAction *m_bandScanAction;
     QAction *m_ensembleInfoAction;
@@ -268,6 +269,7 @@ private:
     void bandScan();
     void audioRecordingToggle();
     void setAudioRecordingUI();
+    void exportServiceList();
     void clearServiceList();
     void clearEnsembleInformationLabels();
     void clearServiceInformationLabels();
