@@ -27,13 +27,14 @@
 #ifndef RTLSDRINPUT_H
 #define RTLSDRINPUT_H
 
-#include <rtl-sdr.h>
-
+// clang-format off
+// keep order of includes for Windows
 #include <QObject>
 #include <QThread>
 #include <QTimer>
-
+#include <rtl-sdr.h>
 #include "inputdevice.h"
+// clang-format on
 
 #define RTLSDR_DOC_ENABLE 1  // enable DOC
 #define RTLSDR_AGC_ENABLE 1  // enable AGC

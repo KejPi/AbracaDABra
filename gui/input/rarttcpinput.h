@@ -11,10 +11,12 @@
 
 // socket
 #if defined(_WIN32)
-#include <windows.h>
+// clang-format off
+// keep order of includes for Windows
 #include <winsock2.h>
+#include <windows.h>
 #include <ws2tcpip.h>
-
+// clang-format on
 #else
 
 #include <arpa/inet.h>

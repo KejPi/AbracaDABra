@@ -27,19 +27,19 @@
 #ifndef RTLTCPINPUT_H
 #define RTLTCPINPUT_H
 
-#include <rtl-sdr.h>
-
+// clang-format off
+// keep order of includes for Windows
 #include <QObject>
 #include <QTcpSocket>
 #include <QThread>
 #include <QTimer>
-
+#include <rtl-sdr.h>
 #include "inputdevice.h"
 
 // socket
 #if defined(_WIN32)
-#include <windows.h>
 #include <winsock2.h>
+#include <windows.h>
 #include <ws2tcpip.h>
 
 #else
@@ -55,6 +55,7 @@
 #define SOCKET int
 #define INVALID_SOCKET (-1)
 #endif
+// clang-format on
 
 #define RTLTCP_CHUNK_SIZE (INPUT_CHUNK_IQ_SAMPLES * 2)  // was (16384 * 100)
 
