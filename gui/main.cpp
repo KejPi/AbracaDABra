@@ -46,6 +46,9 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_MACOS
         qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArrayView(QString(QCoreApplication::applicationDirPath() + "/../Plugins/SoapySDR").toUtf8()));
 #endif
+#ifdef Q_OS_WIN
+        qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArrayView(QString(QCoreApplication::applicationDirPath()).toUtf8()));
+#endif
         // qDebug() << qgetenv("SOAPY_SDR_PLUGIN_PATH");
 
         QCommandLineParser parser;
