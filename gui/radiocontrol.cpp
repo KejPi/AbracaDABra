@@ -1048,7 +1048,7 @@ QString RadioControl::ensembleConfigurationCSV() const
                 strOut << sc.label << QString("%1").arg(sc.SId.value(), 8, 16, QChar('0')).toUpper();
             }
 
-            strOut << DabTables::getLangNameEnglish(sc.lang) << DabTables::getCountryNameEnglish(sc.SId.value());
+            strOut << QString::number(sc.SCIdS) << DabTables::getLangNameEnglish(sc.lang) << DabTables::getCountryNameEnglish(sc.SId.value());
             if (sc.isAudioService())
             {  // audio service
                 strOut << DabTables::getPtyNameEnglish(s.pty.s);
