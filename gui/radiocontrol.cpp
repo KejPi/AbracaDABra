@@ -775,8 +775,8 @@ QString RadioControl::ensembleConfigurationString() const
     strOut << "<dt>Ensemble:</dt>";
     strOut << QString("<dd>0x%1 <b>%2</b> [ <i>%3</i> ]  ECC: 0x%4, UTC %5 min, INT: %6, alarm announcements: %7</dd>")
                   .arg(QString("%1").arg(m_ensemble.eid(), 4, 16, QChar('0')).toUpper())
-                  .arg(m_ensemble.label)
-                  .arg(m_ensemble.labelShort)
+                  .arg(m_ensemble.label.toHtmlEscaped())
+                  .arg(m_ensemble.labelShort.toHtmlEscaped())
                   .arg(QString("%1").arg(m_ensemble.ecc(), 2, 16, QChar('0')).toUpper())
                   .arg(m_ensemble.LTO * 30)
                   .arg(m_ensemble.intTable)
@@ -798,8 +798,8 @@ QString RadioControl::ensembleConfigurationString() const
         {  // programme service
             strOut << QString("0x%1 <b>%2</b> [ <i>%3</i> ] ECC: 0x%4, Country: %5,")
                           .arg(QString("%1").arg(s.SId.progSId(), 4, 16, QChar('0')).toUpper())
-                          .arg(s.label)
-                          .arg(s.labelShort)
+                          .arg(s.label.toHtmlEscaped())
+                          .arg(s.labelShort.toHtmlEscaped())
                           .arg(QString("%1").arg(s.SId.ecc(), 2, 16, QChar('0')).toUpper())
                           .arg(DabTables::getCountryNameEnglish(s.SId.value()));
 
@@ -851,8 +851,8 @@ QString RadioControl::ensembleConfigurationString() const
         {  // data service
             strOut << QString("0x%1 <b>%2</b> [ <i>%3</i> ]")
                           .arg(QString("%1").arg(s.SId.value(), 8, 16, QChar('0')).toUpper())
-                          .arg(s.label)
-                          .arg(s.labelShort);
+                          .arg(s.label.toHtmlEscaped())
+                          .arg(s.labelShort.toHtmlEscaped());
         }
         if (s.CAId)
         {
@@ -878,8 +878,8 @@ QString RadioControl::ensembleConfigurationString() const
                 strOut << QString(" SCIdS: %1,").arg(sc.SCIdS);
             }
 
-            QString scLabel = sc.label;
-            QString scLabelShort = sc.labelShort;
+            QString scLabel = sc.label.toHtmlEscaped();
+            QString scLabelShort = sc.labelShort.toHtmlEscaped();
             strOut << QString(" Label: '%1' [ '%2' ], ")
                           .arg(scLabel.replace(QRegularExpression("\\s"), "&nbsp;"), scLabelShort.replace(QRegularExpression("\\s"), "&nbsp;"));
 
@@ -966,7 +966,11 @@ QString RadioControl::ensembleConfigurationString() const
                 strOut << "<br>";
                 strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                 strOut << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-                strOut << QString("UserApp %1/%2: Label: '%3' [ '%4' ], ").arg(uaCntr++).arg(sc.userApps.size()).arg(ua.label).arg(ua.labelShort);
+                strOut << QString("UserApp %1/%2: Label: '%3' [ '%4' ], ")
+                              .arg(uaCntr++)
+                              .arg(sc.userApps.size())
+                              .arg(ua.label.toHtmlEscaped())
+                              .arg(ua.labelShort.toHtmlEscaped());
 
                 strOut
                     << QString("UAType: 0x%1 (%2)").arg(QString::number(int(ua.uaType), 16).toUpper(), DabTables::getUserApplicationName(ua.uaType));
