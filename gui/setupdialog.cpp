@@ -492,6 +492,7 @@ void SetupDialog::showEvent(QShowEvent *event)
     QTimer::singleShot(10, this,
                        [this]()
                        {
+                           setMinimumHeight(0);
                            resize(minimumSizeHint());
                            setMinimumHeight(height() + 10);
                            setFixedWidth(width());
