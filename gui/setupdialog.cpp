@@ -492,9 +492,9 @@ void SetupDialog::showEvent(QShowEvent *event)
     QTimer::singleShot(10, this,
                        [this]()
                        {
-                           //setMinimumHeight(0);
+                           // setMinimumHeight(0);
                            resize(minimumSizeHint());
-                           //setMinimumHeight(height() + 10);
+                           // setMinimumHeight(height() + 10);
                            setFixedWidth(width());
                        });
 }
@@ -1760,6 +1760,7 @@ void SetupDialog::setFmlistUploadInfoText()
                "it is anonymous and contains no personal data.<br>"
                "Please consider enabling this option to help the community."));
     }
+    ui->fmlistUploadInfotext->setMinimumWidth(ui->fmlistUploadInfotext->minimumSizeHint().width());
 }
 
 void SetupDialog::onInputChanged(int index)
@@ -2070,9 +2071,9 @@ void SetupDialog::onExpertModeChecked(bool checked)
     QTimer::singleShot(10, this,
                        [this]()
                        {
-                           //setMinimumHeight(0);
+                           // setMinimumHeight(0);
                            resize(minimumSizeHint());
-                           //setMinimumHeight(height() + 10);
+                           // setMinimumHeight(height() + 10);
                        });
 }
 
@@ -2099,9 +2100,9 @@ void SetupDialog::onLanguageChanged(int index)
         QTimer::singleShot(10, this,
                            [this]()
                            {
-                               //setMinimumHeight(0);
+                               // setMinimumHeight(0);
                                resize(minimumSizeHint());
-                               //setMinimumHeight(height() + 10);
+                               // setMinimumHeight(height() + 10);
                            });
     }
 }
@@ -2128,9 +2129,9 @@ void SetupDialog::onAudioOutChanged(int index)
         QTimer::singleShot(10, this,
                            [this]()
                            {
-                               //setMinimumHeight(0);
+                               // setMinimumHeight(0);
                                resize(minimumSizeHint());
-                               //setMinimumHeight(height() + 10);
+                               // setMinimumHeight(height() + 10);
                            });
     }
 }
@@ -2499,7 +2500,7 @@ void SetupDialog::reloadDeviceList(const InputDevice::Id inputDeviceId, QComboBo
             currentId = m_settings->rtlsdr.hwId;
 #ifdef Q_OS_WIN
             if (m_inputDeviceId == InputDevice::Id::RTLSDR)
-            {   // add current device to list
+            {  // add current device to list
                 list.prepend(m_device->deviceDesc());
             }
 #endif
@@ -2518,7 +2519,7 @@ void SetupDialog::reloadDeviceList(const InputDevice::Id inputDeviceId, QComboBo
             currentId = m_settings->airspy.hwId;
 #ifdef Q_OS_WIN
             if (m_inputDeviceId == InputDevice::Id::AIRSPY)
-            {   // add current device to list
+            {  // add current device to list
                 list.prepend(m_device->deviceDesc());
             }
 #endif

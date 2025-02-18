@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>530</width>
-    <height>736</height>
+    <height>762</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -2083,6 +2083,9 @@
        <string>TII</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="sizeConstraint">
+        <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
+       </property>
        <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
@@ -2665,6 +2668,9 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
           <string>FMLIST</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="sizeConstraint">
+           <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
+          </property>
           <item>
            <widget class="QCheckBox" name="fmlistUploadCheckBox">
             <property name="text">
@@ -2674,6 +2680,12 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
           </item>
           <item>
            <widget class="QLabel" name="fmlistUploadInfotext">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="font">
              <font>
               <italic>true</italic>
