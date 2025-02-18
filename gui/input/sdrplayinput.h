@@ -64,7 +64,7 @@ public:
     void setGainMode(const SdrPlayGainStruct &gain);
     void setBiasT(bool ena) override;
     void setDevArgs(const QString &devArgs) = delete;
-    virtual QVariant hwId() override { return m_hwId; }
+    virtual QVariant hwId() const override { return m_hwId; }
     QList<float> getRFGainList() const { return m_rfGainList; }
 
 private:

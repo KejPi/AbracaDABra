@@ -495,7 +495,7 @@ void AirspyInput::setDataPacking(bool ena)
     }
 }
 
-QVariant AirspyInput::hwId()
+QVariant AirspyInput::hwId() const
 {
     airspy_read_partid_serialno_t partid_serialno;
     if (AIRSPY_SUCCESS == airspy_board_partid_serialno_read(m_device, &partid_serialno))
@@ -503,6 +503,13 @@ QVariant AirspyInput::hwId()
         return QVariant(int64_t(partid_serialno.serial_no[2]) << 32 | partid_serialno.serial_no[3]);
     }
     return QVariant();
+}
+
+InputDeviceDesc AirspyInput::deviceDesc() const
+{
+    QVariant id = hwId();
+    QString dispName = QString("SN: %1").arg(id.toULongLong(), 0, 16).toUpper();
+    return InputDeviceDesc{.diplayName = dispName, .id = id};
 }
 
 void AirspyInput::doRecordBuffer(const float *buf, uint32_t len)

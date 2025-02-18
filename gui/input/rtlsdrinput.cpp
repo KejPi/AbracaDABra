@@ -654,7 +654,7 @@ void RtlSdrInput::setPPM(int ppm)
     }
 }
 
-QVariant RtlSdrInput::hwId()
+QVariant RtlSdrInput::hwId() const
 {
     if (m_device)
     {
@@ -667,6 +667,12 @@ QVariant RtlSdrInput::hwId()
         }
     }
     return QVariant();
+}
+
+InputDeviceDesc RtlSdrInput::deviceDesc() const
+{
+    QVariant id = hwId();
+    return InputDeviceDesc{.diplayName = id.toString(), .id = id};
 }
 
 void RtlSdrInput::setAgcLevelMax(float agcLevelMax)

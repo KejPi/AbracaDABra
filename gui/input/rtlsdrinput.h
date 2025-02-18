@@ -102,7 +102,8 @@ public:
     void setBW(uint32_t bw) override;
     void setBiasT(bool ena) override;
     void setPPM(int ppm) override;
-    virtual QVariant hwId() override;
+    virtual QVariant hwId() const override;
+    virtual InputDeviceDesc deviceDesc() const override;
     void setAgcLevelMax(float agcMaxValue);
     QList<float> getGainList() const;
 

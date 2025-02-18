@@ -2495,6 +2495,12 @@ void SetupDialog::reloadDeviceList(const InputDevice::Id inputDeviceId, QComboBo
         {
             list = RtlSdrInput::getDeviceList();
             currentId = m_settings->rtlsdr.hwId;
+#ifdef Q_OS_WIN
+            if (m_inputDeviceId == InputDevice::Id::RTLSDR)
+            {   // add current device to list
+                list.prepend(m_device->deviceDesc());
+            }
+#endif
         }
         break;
         case InputDevice::Id::RTLTCP:
@@ -2508,6 +2514,12 @@ void SetupDialog::reloadDeviceList(const InputDevice::Id inputDeviceId, QComboBo
 #if HAVE_AIRSPY
             list = AirspyInput::getDeviceList();
             currentId = m_settings->airspy.hwId;
+#ifdef Q_OS_WIN
+            if (m_inputDeviceId == InputDevice::Id::AIRSPY)
+            {   // add current device to list
+                list.prepend(m_device->deviceDesc());
+            }
+#endif
 #endif
         }
         break;
