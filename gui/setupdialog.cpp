@@ -492,9 +492,9 @@ void SetupDialog::showEvent(QShowEvent *event)
     QTimer::singleShot(10, this,
                        [this]()
                        {
-                           setMinimumHeight(0);
+                           //setMinimumHeight(0);
                            resize(minimumSizeHint());
-                           setMinimumHeight(height() + 10);
+                           //setMinimumHeight(height() + 10);
                            setFixedWidth(width());
                        });
 }
@@ -1748,14 +1748,16 @@ void SetupDialog::setFmlistUploadInfoText()
     {
         ui->fmlistUploadInfotext->setText(
             tr("Application automatically uploads ensemble information to <a href=\"https://www.fmlist.org/\">FMLIST</a>.<br>"
-               "Ensemble information is a small CSV file with list of services in the ensemble, it is anonymous and contains no personal data.<br>"
+               "Ensemble information is a small CSV file with list of services in the ensemble,<br>"
+               "it is anonymous and contains no personal data.<br>"
                "Thank you for supporting the community!"));
     }
     else
     {
         ui->fmlistUploadInfotext->setText(
             tr("Upload of ensemble information to <a href=\"https://www.fmlist.org/\">FMLIST</a> is currenly disabled.<br>"
-               "Ensemble information is a small CSV file with list of services in the ensemble, it is anonymous and contains no personal data.<br>"
+               "Ensemble information is a small CSV file with list of services in the ensemble,<br>"
+               "it is anonymous and contains no personal data.<br>"
                "Please consider enabling this option to help the community."));
     }
 }
@@ -2068,9 +2070,9 @@ void SetupDialog::onExpertModeChecked(bool checked)
     QTimer::singleShot(10, this,
                        [this]()
                        {
-                           setMinimumHeight(0);
+                           //setMinimumHeight(0);
                            resize(minimumSizeHint());
-                           setMinimumHeight(height() + 10);
+                           //setMinimumHeight(height() + 10);
                        });
 }
 
@@ -2097,9 +2099,9 @@ void SetupDialog::onLanguageChanged(int index)
         QTimer::singleShot(10, this,
                            [this]()
                            {
-                               setMinimumHeight(0);
+                               //setMinimumHeight(0);
                                resize(minimumSizeHint());
-                               setMinimumHeight(height() + 10);
+                               //setMinimumHeight(height() + 10);
                            });
     }
 }
@@ -2126,9 +2128,9 @@ void SetupDialog::onAudioOutChanged(int index)
         QTimer::singleShot(10, this,
                            [this]()
                            {
-                               setMinimumHeight(0);
+                               //setMinimumHeight(0);
                                resize(minimumSizeHint());
-                               setMinimumHeight(height() + 10);
+                               //setMinimumHeight(height() + 10);
                            });
     }
 }

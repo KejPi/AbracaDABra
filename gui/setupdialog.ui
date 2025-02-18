@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>530</width>
-    <height>714</height>
+    <height>736</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -2680,10 +2680,13 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
              </font>
             </property>
             <property name="text">
-             <string notr="true">Information text</string>
+             <string notr="true">Information text
+Information text
+Information text
+Information text</string>
             </property>
             <property name="wordWrap">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="openExternalLinks">
              <bool>true</bool>
