@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>913</width>
-    <height>557</height>
+    <width>917</width>
+    <height>553</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,7 +23,7 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QGridLayout" name="gridLayout" columnstretch="1,0,0,0">
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout_9">
       <item>
@@ -660,8 +660,8 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>343</width>
-         <height>104</height>
+         <width>344</width>
+         <height>100</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -908,7 +908,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>913</width>
+     <width>917</width>
      <height>24</height>
     </rect>
    </property>
