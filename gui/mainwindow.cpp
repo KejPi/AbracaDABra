@@ -3835,13 +3835,10 @@ void MainWindow::showScannerDialog()
                     ui->serviceListView->setEnabled(true);
                     ui->serviceTreeView->setEnabled(true);
 
-                    // tune to 0
-                    ui->channelCombo->setCurrentIndex(-1);
-
                     ServiceListId serviceToRestore = m_scannerDialog->getServiceToRestore();
                     if (serviceToRestore.isValid())
                     {
-                        QTimer::singleShot(1000, this, [this, serviceToRestore]() { selectService(serviceToRestore); });
+                        QTimer::singleShot(1500, this, [this, serviceToRestore]() { selectService(serviceToRestore); });
                     }
                     else
                     {
