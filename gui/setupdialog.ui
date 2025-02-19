@@ -2083,9 +2083,6 @@
        <string>TII</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
-       <property name="sizeConstraint">
-        <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
-       </property>
        <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
@@ -2369,34 +2366,28 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_8">
           <item>
-           <widget class="QLabel" name="tiiModeLabel">
+           <widget class="QLabel" name="tiiReliableLabel">
             <property name="text">
-             <string>Configuration:</string>
+             <string>Reliable</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="tiiModeCombo">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+           <widget class="QSlider" name="tiiModeSlider">
+            <property name="maximum">
+             <number>1</number>
             </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_16">
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>227</width>
-              <height>20</height>
-             </size>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="tiiSensLabel">
+            <property name="text">
+             <string>Sensitive</string>
             </property>
-           </spacer>
+           </widget>
           </item>
          </layout>
         </widget>

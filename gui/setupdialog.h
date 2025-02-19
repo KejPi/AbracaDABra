@@ -218,7 +218,7 @@ private:
     void onTiiSpectPlotClicked(bool checked);
     void onTiiUpdateDbClicked();
     void onTiiLogFolderButtonClicked();
-    void onTiiModeChanged(int index);
+    void onTiiModeChanged(int value);
 
     void onProxyConfigChanged(int index);
     void onProxyApplyButtonClicked();
