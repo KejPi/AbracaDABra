@@ -1078,7 +1078,9 @@ void SetupDialog::onConnectDeviceClicked()
     ui->airspyInfoWidget->setVisible(false);
     ui->soapysdrInfoWidget->setVisible(false);
     ui->sdrplayInfoWidget->setVisible(false);
+#if HAVE_SOAPYSDR
     setSoapySdrGainWidget(false);
+#endif
     m_inputDeviceId = InputDevice::Id::UNDEFINED;
     setStatusLabel(true);  // clear label
     m_settings->inputDevice = static_cast<InputDevice::Id>(ui->inputCombo->itemData(ui->inputCombo->currentIndex()).toInt());
@@ -1192,11 +1194,13 @@ void SetupDialog::onPPMChanged(int val)
 #endif
             break;
         case InputDevice::Id::SDRPLAY:
+#if HAVE_SOAPYSDR
             m_settings->sdrplay.ppm = val;
             if (m_device)
             {
                 m_device->setPPM(m_settings->sdrplay.ppm);
             }
+#endif
             break;
         case InputDevice::Id::AIRSPY:
         case InputDevice::Id::RARTTCP:

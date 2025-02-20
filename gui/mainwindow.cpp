@@ -423,10 +423,10 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
 
     m_scanningToolAction = new QAction(tr("Scanning tool..."), this);
     connect(m_scanningToolAction, &QAction::triggered, this, &MainWindow::showScannerDialog);
-
+#if HAVE_QCUSTOMPLOT
     m_signalDialogAction = new QAction(tr("DAB signal overview"), this);
     connect(m_signalDialogAction, &QAction::triggered, this, &MainWindow::showSignalDialog);
-
+#endif
     m_audioRecordingScheduleAction = new QAction(tr("Audio recording schedule..."), this);
     connect(m_audioRecordingScheduleAction, &QAction::triggered, this, &MainWindow::showAudioRecordingSchedule);
 
@@ -450,7 +450,7 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     m_menu = new QMenu(this);
 
 #ifdef Q_OS_LINUX
-    if (AudioFramework::Qt == audioFramework)
+    if (Settings::AudioFramework::Qt == audioFramework)
 #endif
     {
         m_audioOutputMenu = m_menu->addMenu(tr("Audio output"));
@@ -467,7 +467,9 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     m_menu->addSeparator();
     m_menu->addAction(m_epgAction);
     m_menu->addAction(m_ensembleInfoAction);
+#if HAVE_QCUSTOMPLOT
     m_menu->addAction(m_signalDialogAction);
+#endif
     m_menu->addAction(m_tiiAction);
     m_menu->addAction(m_scanningToolAction);
     m_menu->addAction(m_logAction);
@@ -2940,11 +2942,13 @@ void MainWindow::configureForInputDevice()
         // ensemble info dialog
         connect(m_inputDevice, &InputDevice::agcGain, m_ensembleInfoDialog, &EnsembleInfoDialog::updateAgcGain);
         connect(m_inputDevice, &InputDevice::rfLevel, m_ensembleInfoDialog, &EnsembleInfoDialog::updateRfLevel);
+#if HAVE_QCUSTOMPLOT
         if (m_signalDialog != nullptr)
         {
             m_signalDialog->setInputDevice(m_inputDeviceId);
             connect(m_inputDevice, &InputDevice::rfLevel, m_signalDialog, &SignalDialog::updateRfLevel);
         }
+#endif
         m_ensembleInfoDialog->enableRecording(hasRecording);
 
         // metadata & EPG
@@ -3248,10 +3252,14 @@ void MainWindow::loadSettings()
                 break;
             case InputDevice::Id::AIRSPY:
                 // try to init last device
+#if HAVE_AIRSPY
                 initInputDevice(m_settings->inputDevice, m_settings->airspy.hwId);
+#endif
                 break;
             case InputDevice::Id::SDRPLAY:
+#if HAVE_SOAPYSDR
                 initInputDevice(m_settings->inputDevice, m_settings->sdrplay.hwId);
+#endif
                 break;
             case InputDevice::Id::RTLTCP:
             case InputDevice::Id::RAWFILE:
@@ -3898,8 +3906,10 @@ void MainWindow::setExpertMode(bool ena)
     ui->slsView_Announcement->setExpertMode(ena);
     m_catSlsDialog->setExpertMode(ena);
     m_tiiAction->setVisible(ena);
-    m_scanningToolAction->setVisible(ena);
+    m_scanningToolAction->setVisible(ena);    
+#if HAVE_QCUSTOMPLOT
     m_signalDialogAction->setVisible(ena);
+#endif
     m_exportServiceListAction->setVisible(ena);
 
     // set tab order

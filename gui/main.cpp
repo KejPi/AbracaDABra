@@ -43,14 +43,18 @@ int main(int argc, char *argv[])
         QApplication a(argc, argv);
 
         // this is required for correct deployment of SDRplay
+        if (qgetenv("SOAPY_SDR_PLUGIN_PATH").isEmpty())
+        {
 #ifdef Q_OS_MACOS
-        qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArrayView(QString(QCoreApplication::applicationDirPath() + "/../Plugins/SoapySDR").toUtf8()));
+            qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArrayView(QString(QCoreApplication::applicationDirPath() + "/../Plugins/SoapySDR").toUtf8()));
 #endif
 #ifdef Q_OS_WIN
-        qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArrayView(QString(QCoreApplication::applicationDirPath()).toUtf8()));
+            qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArrayView(QString(QCoreApplication::applicationDirPath()).toUtf8()));
 #endif
-        // qDebug() << qgetenv("SOAPY_SDR_PLUGIN_PATH");
-
+#ifdef Q_OS_LINUX
+            qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArrayView(QString(QCoreApplication::applicationDirPath() + "/../lib/SoapySDR/").toUtf8()));
+#endif
+        }
         QCommandLineParser parser;
         parser.setApplicationDescription(QObject::tr("Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)"));
         parser.addHelpOption();

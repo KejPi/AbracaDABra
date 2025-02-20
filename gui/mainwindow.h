@@ -173,7 +173,9 @@ private:
     QAction *m_ensembleInfoAction;
     QAction *m_tiiAction;
     QAction *m_scanningToolAction;
+#if HAVE_QCUSTOMPLOT
     QAction *m_signalDialogAction;
+#endif
     QAction *m_aboutAction;
     QAction *m_logAction;
     QAction *m_audioRecordingAction;
