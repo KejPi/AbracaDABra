@@ -50,9 +50,13 @@ InputDeviceList AirspyInput::getDeviceList()
     int n = 0;
     while (n < deviceCount)
     {
+#ifdef Q_OS_LINUX
+        qDebug("#%d: %lX", n, serials[n]);
+#else
         qDebug("#%d: %llX", n, serials[n]);
+#endif
         QString dispName = QString("SN: %1").arg(serials[n], 0, 16).toUpper();
-        struct InputDeviceDesc desc = {.diplayName = dispName, .id = QVariant(serials[n])};
+        struct InputDeviceDesc desc = {.diplayName = dispName, .id = QVariant::fromValue<uint64_t>(serials[n])};
         list.append(desc);
         ++n;
     }
@@ -500,7 +504,7 @@ QVariant AirspyInput::hwId() const
     airspy_read_partid_serialno_t partid_serialno;
     if (AIRSPY_SUCCESS == airspy_board_partid_serialno_read(m_device, &partid_serialno))
     {
-        return QVariant(int64_t(partid_serialno.serial_no[2]) << 32 | partid_serialno.serial_no[3]);
+        return QVariant::fromValue<uint64_t>(uint64_t(partid_serialno.serial_no[2]) << 32 | partid_serialno.serial_no[3]);
     }
     return QVariant();
 }

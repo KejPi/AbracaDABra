@@ -35,6 +35,8 @@ make install DESTDIR=$APPDIR
 # Dirty hack - copying binary to be able to deploy library correctly, otherwise it does not work
 rm -Rf $APPDIR/usr/lib/*
 cp -f gui/AbracaDABra $APPDIR/usr/bin/
+mkdir -p $APPDIR/usr/lib/SoapySDR/
+cp ../../AbracaDABra-libs/lib/SoapySDR/modules0.8/libsdrPlaySupport.so $APPDIR/usr/lib/SoapySDR/
 
 if [ -z ${QT_PATH+x} ]; then
 	QML_SOURCES_PATHS=$QML_DIR QMAKE=$(which qmake6) VERSION=$VER EXTRA_QT_PLUGINS=location DEPLOY_PLATFORM_THEMES=true \

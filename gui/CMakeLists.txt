@@ -41,7 +41,7 @@ if (HAVE_AIRSPY)
     set(AIRSPY_SOURCES input/airspyinput.h input/airspyinput.cpp)
 endif(HAVE_AIRSPY)
 if (HAVE_SOAPYSDR)
-    set(SOAPYSDR_SOURCES input/soapysdrinput.h input/soapysdrinput.cpp)
+    set(SOAPYSDR_SOURCES input/soapysdrinput.h input/soapysdrinput.cpp input/sdrplayinput.h input/sdrplayinput.cpp)
 endif(HAVE_SOAPYSDR)
 if (HAVE_PORTAUDIO)
     set(PORTAUDIO_SOURCES audiooutputpa.h audiooutputpa.cpp)
@@ -132,9 +132,6 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     input/rtltcpinput.cpp
     input/rarttcpinput.h
     input/rarttcpinput.cpp
-    input/sdrplayinput.h
-    input/sdrplayinput.cpp
-
 
     # User applications
     data/mscdatagroup.h
