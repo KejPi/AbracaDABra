@@ -68,6 +68,14 @@ public:
     QList<float> getRFGainList() const { return m_rfGainList; }
 
 private:
+    enum SwAgcState
+    {
+        Idle = -1,
+        Converging = 0,
+        Running
+    };
+    SwAgcState m_agcState = Idle;
+
     QVariant m_hwId;
     float m_rfGR;
     float m_ifGR;

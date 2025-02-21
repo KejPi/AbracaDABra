@@ -229,9 +229,10 @@ void SdrPlayInput::resetAgc()
 {
     if (SdrPlayGainMode::Software == m_gainMode)
     {
-        setRFGR(1);
-        setIFGR(50);
-        m_rfGRchangeCntr = 1;
+        setRFGR(m_rfGainList.count() - 1);
+        setIFGR(40);
+        m_agcState = SwAgcState::Converging;
+        m_rfGRchangeCntr = 2;
         emit agcGain(m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) - m_ifGR);
     }
     m_levelEmitCntr = 0;
@@ -254,7 +255,7 @@ void SdrPlayInput::setRFGR(int rfGR)
         try
         {
             m_device->setGain(SOAPY_SDR_RX, m_rxChannel, "RFGR", m_rfGR);
-            // qDebug() << "RF gain =" << m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR);
+            qDebug() << "RF gain =" << m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR);
         }
         catch (const std::exception &ex)
         {
@@ -295,33 +296,67 @@ void SdrPlayInput::onAgcLevel(float agcLevel)
     m_rfGRchangeCntr = (m_rfGRchangeCntr > 0 ? m_rfGRchangeCntr - 1 : 0);
     if (SdrPlayGainMode::Software == m_gainMode)
     {
-        if (agcLevel > SDRPLAY_LEVEL_THR_MAX)
-        {  // decrease gain
-            setIFGR(m_ifGR + 1);
-            if (m_ifGR >= SDRPLAY_RFGR_UP_THR)
-            {
-                if (m_rfGRchangeCntr <= 0)
+        if (m_agcState == SwAgcState::Running)
+        {
+            if (agcLevel > SDRPLAY_LEVEL_THR_MAX)
+            {  // decrease gain
+                setIFGR(m_ifGR + 1);
+                if (m_ifGR >= SDRPLAY_RFGR_UP_THR)
                 {
-                    m_rfGRchangeCntr = 4;
-                    setRFGR(m_rfGR + 1);
-                    setIFGR(m_ifGR - 3);
+                    if (m_rfGRchangeCntr <= 0)
+                    {
+                        m_rfGRchangeCntr = 4;
+                        setRFGR(m_rfGR + 1);
+                        setIFGR(m_ifGR - 3);
+                    }
+                }
+            }
+            if (agcLevel < SDRPLAY_LEVEL_THR_MIN)
+            {
+                setIFGR(m_ifGR - 1);
+                if (m_ifGR < SDRPLAY_RFGR_DOWN_THR && m_rfGR > 0)
+                {
+                    if (m_rfGRchangeCntr <= 0)
+                    {
+                        m_rfGRchangeCntr = 4;
+                        setRFGR(m_rfGR - 1);
+                        setIFGR(m_ifGR + 3);
+                    }
                 }
             }
         }
-        if (agcLevel < SDRPLAY_LEVEL_THR_MIN)
+        else
         {
-            setIFGR(m_ifGR - 1);
-            if (m_ifGR < SDRPLAY_RFGR_DOWN_THR && m_rfGR > 0)
+            if (m_rfGRchangeCntr > 0)
             {
-                if (m_rfGRchangeCntr <= 0)
-                {
-                    m_rfGRchangeCntr = 4;
-                    setRFGR(m_rfGR - 1);
-                    setIFGR(m_ifGR + 3);
-                }
+                return;
             }
+
+            // calculate initial value of RF gain
+            float gain =
+                m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) - 10 * std::log10(2 * agcLevel / (SDRPLAY_LEVEL_THR_MAX - SDRPLAY_LEVEL_THR_MIN));
+            int idx = 0;
+            do
+            {
+                if (m_rfGainList.at(idx) > gain)
+                {  // found
+                    break;
+                }
+                else
+                {  // not found
+                }
+                idx += 1;
+            } while (idx < m_rfGainList.count());
+            // qDebug() << m_rfGR << gain << "====>" << idx << m_rfGainList.size() - 1 - idx;
+
+            setRFGR(m_rfGainList.size() - 1 - idx);
+            m_rfGRchangeCntr = 4;
+            m_agcState = SwAgcState::Running;
         }
     }
+    // qDebug() << agcLevel << -m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) << -m_ifGR
+    //          << 10 * std::log10(2 * agcLevel / (SDRPLAY_LEVEL_THR_MAX - SDRPLAY_LEVEL_THR_MIN));
+
     // qDebug() << Q_FUNC_INFO << agcLevel << -m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) << m_ifGR << 10 * std::log10(agcLevel)
     //          << m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) - m_ifGR
     //          << 10 * std::log10(agcLevel) - m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) + m_ifGR - 114;
