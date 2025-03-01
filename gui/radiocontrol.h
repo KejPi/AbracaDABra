@@ -182,6 +182,7 @@ struct RadioControlServiceComponent
     bool CAflag;         // CA flag: this 1-bit field flag shall indicate whether access control applies to the service component
 
     // int8_t numUserApps;   // Number of user applications
+    bool userAppsValid;  // flag that indicates that UA list was read (used to check is all UA were loaded already)
     QHash<DabUserApplicationType, RadioControlUserApp> userApps;
 
     QString label;       // Service label
@@ -407,7 +408,7 @@ signals:
     void ensembleRemoved(const RadioControlEnsemble &ens);
     void announcement(DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent &s);
     void announcementAudioAvailable();
-    void programmeTypeChanged(const DabSId &sid, const struct DabPTy &pty);
+    void programmeTypeChanged(const DabSId &sid, const DabPTy &pty);
     void tiiData(const RadioControlTIIData &data);
 
 private:
@@ -512,7 +513,7 @@ private:
     void dabTune(uint32_t freq) { dabsdrRequest_Tune(m_dabsdrHandle, freq); }
     void dabGetEnsembleInfo() { dabsdrRequest_GetEnsemble(m_dabsdrHandle); }
     void dabGetServiceList() { dabsdrRequest_GetServiceList(m_dabsdrHandle); }
-    void dabGetServiceComponent(uint32_t SId) { dabsdrRequest_GetServiceComponents(m_dabsdrHandle, SId); }
+    void dabGetServiceComponents(uint32_t SId) { dabsdrRequest_GetServiceComponents(m_dabsdrHandle, SId); }
     void dabGetUserApps(uint32_t SId, uint8_t SCIdS) { dabsdrRequest_GetUserAppList(m_dabsdrHandle, SId, SCIdS); }
     void dabGetAnnouncementSupport(uint32_t SId) { dabsdrRequest_GetAnnouncementSupport(m_dabsdrHandle, SId); }
     void dabEnableAutoNotification() { dabsdrRequest_SetPeriodicNotify(m_dabsdrHandle, RADIO_CONTROL_NOTIFICATION_PERIOD, 0); }

@@ -1713,19 +1713,28 @@ void MainWindow::selectService(const ServiceListId &serviceId)
 
 void MainWindow::uploadEnsembleCSV(const RadioControlEnsemble &ens, const QString &csv, bool isRequested)
 {
+#if 1
     if ((m_settings->uploadEnsembleInfo || isRequested) && m_fmlistInterface && (m_inputDeviceId != InputDevice::Id::UNDEFINED) &&
         (m_inputDevice->capabilities() & InputDevice::Capability::LiveStream))
     {
         if (m_dabTime.isValid() && m_dabTime.secsTo(QDateTime::currentDateTime()) < 24 * 3600)
         {  // protection from uploading ensemble information from some recording that is older than 1 day
-            // qDebug() << qPrintable(csv);
             qCInfo(application, "Uploading ensemble information (%lld bytes)", csv.length());
+            QString ensLabel = ens.label;
+            ensLabel.replace('/', '_');
             m_fmlistInterface->uploadEnsembleCSV(
                 QString("%1_%2_%3")
-                    .arg(DabTables::channelList.value(ens.frequency), ens.label, EPGTime::getInstance()->dabTime().toString("yyyy-MM-dd_hhmmss")),
+                    .arg(DabTables::channelList.value(ens.frequency), ensLabel, EPGTime::getInstance()->dabTime().toString("yyyy-MM-dd_hhmmss")),
                 csv);
         }
     }
+#else
+    QString ensLabel = ens.label;
+    ensLabel.replace('/', '_');
+    qDebug() << QString("%1_%2_%3")
+                    .arg(DabTables::channelList.value(ens.frequency), ensLabel, EPGTime::getInstance()->dabTime().toString("yyyy-MM-dd_hhmmss"));
+    qDebug() << qPrintable(csv);
+#endif
 }
 
 void MainWindow::onServiceListSelection(const QItemSelection &selected, const QItemSelection &deselected)
@@ -3906,7 +3915,7 @@ void MainWindow::setExpertMode(bool ena)
     ui->slsView_Announcement->setExpertMode(ena);
     m_catSlsDialog->setExpertMode(ena);
     m_tiiAction->setVisible(ena);
-    m_scanningToolAction->setVisible(ena);    
+    m_scanningToolAction->setVisible(ena);
 #if HAVE_QCUSTOMPLOT
     m_signalDialogAction->setVisible(ena);
 #endif

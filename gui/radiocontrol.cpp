@@ -1337,11 +1337,6 @@ void RadioControl::ensembleConfigurationUpdate()
 
 void RadioControl::ensembleConfigurationDispatch()
 {
-    if (!m_ensembleConfigurationSentCSV && m_ensemble.isValid())
-    {
-        m_ensembleConfigurationSentCSV = true;
-        emit ensembleCSV_FMLIST(m_ensemble, ensembleConfigurationCSV_FMLIST(), false);
-    }
     if (m_ensembleConfigurationUpdateRequest)
     {
         m_ensembleConfigurationUpdateRequest = false;
@@ -1443,7 +1438,7 @@ void RadioControl::eventHandler_serviceList(RadioControlEvent *pEvent)
             newService.ASu = 0;
             m_serviceList.insert(sid.value(), newService);
             m_numReqPendingServiceList++;
-            dabGetServiceComponent(sid.value());
+            dabGetServiceComponents(sid.value());
             if (sid.isProgServiceId())
             {  // only programme services support announcements
                 // get supported announcements -> delay request by 1 second
@@ -1562,13 +1557,14 @@ void RadioControl::eventHandler_serviceComponentList(RadioControlEvent *pEvent)
             {
                 serviceIt->serviceComponents.clear();
                 uint32_t sidVal = sid.value();
-                QTimer::singleShot(100, this, [this, sidVal]() { dabGetServiceComponent(sidVal); });
+                QTimer::singleShot(100, this, [this, sidVal]() { dabGetServiceComponents(sidVal); });
             }
             else
             {  // service list item information is complete
                 for (auto &serviceComp : serviceIt->serviceComponents)
                 {
                     serviceComp.userApps.clear();
+                    serviceComp.userAppsValid = false;
 
                     // request user apps -> wait 1 second before asking
                     uint32_t sid = serviceIt->SId.value();
@@ -1602,19 +1598,19 @@ void RadioControl::eventHandler_userAppList(RadioControlEvent *pEvent)
 {
     if (DABSDR_NSTAT_SUCCESS == pEvent->status)
     {
-        QList<dabsdrUserAppListItem_t> *pList = pEvent->pUserAppList;
-        if (!pList->isEmpty())
-        {  // all user apps belong to the same SId
-            DabSId sid(pEvent->SId, m_ensemble.ecc());
+        DabSId sid(pEvent->SId, m_ensemble.ecc());
 
-            // find service ID
-            serviceIterator serviceIt = m_serviceList.find(sid.value());
-            if (serviceIt != m_serviceList.end())
-            {  // SId found
-                // all user apps belong to the same SId+SCIdS
-                serviceComponentIterator scIt = serviceIt->serviceComponents.find(pEvent->SCIdS);
-                if (scIt != serviceIt->serviceComponents.end())
-                {  // service component found
+        // find service ID
+        serviceIterator serviceIt = m_serviceList.find(sid.value());
+        if (serviceIt != m_serviceList.end())
+        {  // SId found
+            // all user apps belong to the same SId+SCIdS
+            serviceComponentIterator scIt = serviceIt->serviceComponents.find(pEvent->SCIdS);
+            if (scIt != serviceIt->serviceComponents.end())
+            {  // service component found
+                QList<dabsdrUserAppListItem_t> *pList = pEvent->pUserAppList;
+                if (!pList->isEmpty())
+                {  // all user apps belong to the same SId
                     scIt->userApps.clear();
                     for (auto const &userApp : *pList)
                     {
@@ -1646,18 +1642,39 @@ void RadioControl::eventHandler_userAppList(RadioControlEvent *pEvent)
                     }
                 }
                 else
-                { /* SC not found - this should not happen */
+                {  // no user apps
+                   // TSI EN 300 401 V2.1.1 [6.1]
+                   // FIG 0/13 may be signalled at a slower rate but not less frequently than once per second.
                 }
+
+                scIt->userAppsValid = true;
             }
             else
-            {  // service not found - this should not happen
+            { /* SC not found - this should not happen */
                 return;
             }
         }
         else
-        {  // no user apps
-           // TSI EN 300 401 V2.1.1 [6.1]
-           // FIG 0/13 may be signalled at a slower rate but not less frequently than once per second.
+        {  // service not found - this should not happen
+            return;
+        }
+
+        if (!m_ensembleConfigurationSentCSV)
+        {
+            bool userApplicationsComplete = true;
+            for (auto slIt = m_serviceList.cbegin(); slIt != m_serviceList.cend(); ++slIt)
+            {
+                for (auto scIt = slIt->serviceComponents.cbegin(); scIt != slIt->serviceComponents.cend(); ++scIt)
+                {
+                    userApplicationsComplete = userApplicationsComplete && scIt->userAppsValid;
+                }
+            }
+            if (userApplicationsComplete)
+            {
+                qCDebug(radioControl) << "=========== UA info is complete ============";
+                emit ensembleCSV_FMLIST(m_ensemble, ensembleConfigurationCSV_FMLIST(), false);
+                m_ensembleConfigurationSentCSV = true;
+            }
         }
 
         if (isCurrentService(pEvent->SId, pEvent->SCIdS))
