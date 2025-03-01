@@ -316,6 +316,8 @@ void TxTableModel::clear()
 
 void TxTableModel::reloadTxTable()
 {
+    qDeleteAll(m_txList);
+    m_txList.clear();
     TxDataLoader::loadTable(m_txList);
 }
 
