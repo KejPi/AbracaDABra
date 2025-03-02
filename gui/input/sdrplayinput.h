@@ -33,8 +33,9 @@
 
 #include "soapysdrinput.h"
 
-#define SDRPLAY_LEVEL_THR_MIN (0.2)
-#define SDRPLAY_LEVEL_THR_MAX (0.4)
+// -30 dBFS = 0.31623
+#define SDRPLAY_LEVEL_THR_MIN (0.01)
+#define SDRPLAY_LEVEL_THR_MAX (0.06)
 #define SDRPLAY_RFGR_UP_THR (59 - 2)
 #define SDRPLAY_RFGR_DOWN_THR (50)
 
