@@ -180,6 +180,21 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
 
     m_isUserView = false;
 
+    auto menu = new QMenu(this);
+    auto syncSpectAction = new QAction(tr("Synchronous spectrum"), menu);
+    syncSpectAction->setCheckable(true);
+    syncSpectAction->setChecked(m_settings->signal.syncSpectrum);
+    connect(syncSpectAction, &QAction::toggled, this,
+            [this](bool checked)
+            {
+                m_settings->signal.syncSpectrum = checked;
+                emit setSignalSpectrum((m_settings->signal.syncSpectrum ? 2 : 1));
+            });
+
+    menu->addAction(syncSpectAction);
+    ui->menuLabel->setToolTip(tr("Configuration"));
+    ui->menuLabel->setMenu(menu);
+
     // render level icons
     m_snrLevelIcons[0].loadFromData(templateSvgFill.arg(snrLevelColors.at(0)).toUtf8(), "svg");
     for (int n = 1; n < 4; ++n)
@@ -260,8 +275,10 @@ void SignalDialog::setInputDevice(InputDevice::Id id)
             break;
     }
 
+    ui->menuLabel->setEnabled(id != InputDevice::Id::UNDEFINED);
+
     // enable spectrum
-    emit setSignalSpectrum(id != InputDevice::Id::UNDEFINED);
+    emit setSignalSpectrum(id == InputDevice::Id::UNDEFINED ? 0 : (m_settings->signal.syncSpectrum ? 2 : 1));
 }
 
 void SignalDialog::setSignalState(uint8_t sync, float snr)
@@ -370,6 +387,7 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
         }
 
         ui->spectrumPlot->replot();
+        ui->menuLabel->setIcon(":/resources/menu_dark.png");
     }
     else
     {
@@ -443,6 +461,7 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
         }
 
         ui->spectrumPlot->replot();
+        ui->menuLabel->setIcon(":/resources/menu.png");
     }
 }
 
@@ -641,7 +660,7 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
 
 void SignalDialog::closeEvent(QCloseEvent *event)
 {
-    emit setSignalSpectrum(false);
+    emit setSignalSpectrum(0);
 
     m_settings->signal.geometry = saveGeometry();
     m_settings->signal.splitterState = ui->splitter->saveState();

@@ -197,6 +197,7 @@ public:
     {
         QByteArray geometry;
         QByteArray splitterState;
+        bool syncSpectrum;
     } signal;
     struct EPGSettings
     {
