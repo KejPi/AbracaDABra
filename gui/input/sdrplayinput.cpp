@@ -314,7 +314,7 @@ void SdrPlayInput::onAgcLevel(float agcLevel)
             if (agcLevel < SDRPLAY_LEVEL_THR_MIN)
             {
                 setIFGR(m_ifGR - 1);
-                if (m_ifGR < SDRPLAY_RFGR_DOWN_THR && m_rfGR > 0)
+                if ((m_ifGR < SDRPLAY_RFGR_DOWN_THR) && (m_rfGR > 0))
                 {
                     if (m_rfGRchangeCntr <= 0)
                     {
