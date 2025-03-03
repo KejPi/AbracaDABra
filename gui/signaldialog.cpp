@@ -261,7 +261,7 @@ void SignalDialog::setInputDevice(InputDevice::Id id)
     }
 
     // enable spectrum
-    emit setSignalSpectrum(id != InputDevice::Id::UNDEFINED);
+    emit setSignalSpectrum(id == InputDevice::Id::UNDEFINED ? 0 : 1);
 }
 
 void SignalDialog::setSignalState(uint8_t sync, float snr)
@@ -466,7 +466,6 @@ void SignalDialog::reset()
     m_spectYRangeMax = 0;
     ui->spectrumPlot->yAxis->setRange(m_spectYRangeMin, m_spectYRangeMax);
     m_isUserView = false;
-    ui->menuLabel->setEnabled(false);
     updateRfLevel(NAN, NAN);
     setRfLevelVisible(false);
     setGainVisible(false);
@@ -516,7 +515,6 @@ void SignalDialog::onTuneDone(uint32_t freq)
     if (m_frequency != 0)
     {
         ui->freqValue->setText(QString::number(m_frequency) + " kHz");
-        ui->menuLabel->setEnabled(true);
     }
     else
     {
@@ -642,7 +640,7 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
 
 void SignalDialog::closeEvent(QCloseEvent *event)
 {
-    emit setSignalSpectrum(false);
+    emit setSignalSpectrum(0);
 
     m_settings->signal.geometry = saveGeometry();
     m_settings->signal.splitterState = ui->splitter->saveState();

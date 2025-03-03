@@ -57,7 +57,7 @@ public:
     void onSignalSpectrum(std::shared_ptr<std::vector<float>> data);
 
 signals:
-    void setSignalSpectrum(bool ena);
+    void setSignalSpectrum(int mode);
 
 protected:
     void closeEvent(QCloseEvent *event) override;
