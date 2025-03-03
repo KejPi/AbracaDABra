@@ -30,7 +30,7 @@
 #include <QDir>
 #include <QLoggingCategory>
 
-Q_LOGGING_CATEGORY(sdrPlayInput, "SDRPlayInput", QtDebugMsg)
+Q_LOGGING_CATEGORY(sdrPlayInput, "SDRPlayInput", QtInfoMsg)
 
 InputDeviceList SdrPlayInput::getDeviceList()
 {
