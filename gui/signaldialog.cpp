@@ -485,7 +485,7 @@ void SignalDialog::reset()
     m_spectYRangeMax = 0;
     ui->spectrumPlot->yAxis->setRange(m_spectYRangeMin, m_spectYRangeMax);
     m_isUserView = false;
-
+    ui->menuLabel->setEnabled(false);
     updateRfLevel(NAN, NAN);
     setRfLevelVisible(false);
     setGainVisible(false);
@@ -535,6 +535,7 @@ void SignalDialog::onTuneDone(uint32_t freq)
     if (m_frequency != 0)
     {
         ui->freqValue->setText(QString::number(m_frequency) + " kHz");
+        ui->menuLabel->setEnabled(true);
     }
     else
     {
@@ -629,29 +630,29 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
         if (m_isUserView == false)
         {
             auto range = ui->spectrumPlot->yAxis->range();
-            if (m_spectYRangeSet)
-            {
-                if (minVal < range.lower)
-                {  // set minumum to at least minVal + 10, use multiples of 10
-                    range.lower = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, m_spectYRangeMin);
-                }
-                if (range.upper < maxVal)
-                {
-                    range.upper = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, m_spectYRangeMax);
-                }
+            // if (m_spectYRangeSet)
+            // {
+            //     if (minVal < range.lower)
+            //     {  // set minumum to at least minVal + 10, use multiples of 10
+            //         range.lower = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, m_spectYRangeMin);
+            //     }
+            //     if (range.upper < maxVal)
+            //     {
+            //         range.upper = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, m_spectYRangeMax);
+            //     }
+            // }
+            // else
+            // {
+            if ((minVal - range.lower) < 0 || (minVal - range.lower) > 20)
+            {  // set minumum to at least minVal + 10, use multiples of 10
+                range.lower = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, m_spectYRangeMin);
             }
-            else
+            if ((range.upper - maxVal) < 0 || (range.upper - maxVal) > 20)
             {
-                if ((minVal - range.lower) < 0 || (minVal - range.lower) > 20)
-                {  // set minumum to at least minVal + 10, use multiples of 10
-                    range.lower = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, m_spectYRangeMin);
-                }
-                if ((range.upper - maxVal) < 0 || (range.upper - maxVal) > 20)
-                {
-                    range.upper = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, m_spectYRangeMax);
-                }
-                m_spectYRangeSet = true;
+                range.upper = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, m_spectYRangeMax);
             }
+            m_spectYRangeSet = true;
+            //            }
             ui->spectrumPlot->yAxis->setRange(range);
         }
         ui->spectrumPlot->replot();
@@ -845,27 +846,24 @@ void SignalDialog::showPointToolTip(QMouseEvent *event)
 
 void SignalDialog::onContextMenuRequest(QPoint pos)
 {
-    if (m_isUserView)
-    {
-        QMenu *menu = new QMenu(this);
-        menu->setAttribute(Qt::WA_DeleteOnClose);
-        auto restoreZoomAction = new QAction(tr("Restore view"), this);
-        restoreZoomAction->setEnabled(m_isUserView);
-        connect(restoreZoomAction, &QAction::triggered, this,
-                [this]()
-                {
-                    ui->spectrumPlot->rescaleAxes();
-                    ui->spectrumPlot->deselectAll();
-                    ui->spectrumPlot->replot();
-                    m_spectYRangeSet = false;
-                    m_isUserView = false;
-                });
+    QMenu *menu = new QMenu(this);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+    auto restoreZoomAction = new QAction(tr("Fit in view"), this);
+    // restoreZoomAction->setEnabled(m_isUserView);
+    connect(restoreZoomAction, &QAction::triggered, this,
+            [this]()
+            {
+                ui->spectrumPlot->rescaleAxes();
+                ui->spectrumPlot->deselectAll();
+                ui->spectrumPlot->replot();
+                m_spectYRangeSet = false;
+                m_isUserView = false;
+            });
 
-        connect(menu, &QWidget::destroyed, [=]() { // delete actions
+    connect(menu, &QWidget::destroyed, [=]() { // delete actions
             restoreZoomAction->deleteLater();
         });
 
-        menu->addAction(restoreZoomAction);
-        menu->popup(ui->spectrumPlot->mapToGlobal(pos));
-    }
+    menu->addAction(restoreZoomAction);
+    menu->popup(ui->spectrumPlot->mapToGlobal(pos));
 }
