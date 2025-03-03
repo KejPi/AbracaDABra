@@ -30,7 +30,7 @@
 #include <QDir>
 #include <QLoggingCategory>
 
-Q_LOGGING_CATEGORY(sdrPlayInput, "SDRPlayInput", QtInfoMsg)
+Q_LOGGING_CATEGORY(sdrPlayInput, "SDRPlayInput", QtDebugMsg)
 
 InputDeviceList SdrPlayInput::getDeviceList()
 {
@@ -229,7 +229,19 @@ void SdrPlayInput::resetAgc()
 {
     if (SdrPlayGainMode::Software == m_gainMode)
     {
-        setRFGR(m_rfGainList.count() - 1);
+        int idx = 0;
+        do
+        {
+            if (m_rfGainList.at(idx) > -40.0)
+            {
+                break;
+            }
+        } while (++idx > 0);
+
+        m_rfGR = -1;  // this is to force RF gain settings
+        m_ifGR = -1;  // this is to force IF gain settings
+
+        setRFGR(m_rfGainList.size() - 1 - idx);
         setIFGR(40);
         m_agcState = SwAgcState::Converging;
         m_rfGRchangeCntr = 2;
@@ -255,7 +267,7 @@ void SdrPlayInput::setRFGR(int rfGR)
         try
         {
             m_device->setGain(SOAPY_SDR_RX, m_rxChannel, "RFGR", m_rfGR);
-            // qDebug() << "RF gain =" << m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR);
+            qCDebug(sdrPlayInput) << "RF gain =" << m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR);
         }
         catch (const std::exception &ex)
         {
@@ -281,7 +293,7 @@ void SdrPlayInput::setIFGR(int ifGR)
         try
         {
             m_device->setGain(SOAPY_SDR_RX, m_rxChannel, "IFGR", m_ifGR);
-            // qDebug() << "IF gain =" << -m_ifGR;
+            qCDebug(sdrPlayInput) << "IF gain =" << -m_ifGR;
         }
         catch (const std::exception &ex)
         {

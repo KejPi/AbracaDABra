@@ -245,7 +245,7 @@ bool SoapySdrInput::openDevice(const QVariant &hwId, bool fallbackConnection)
         {
             auto range = m_device->getGainRange(SOAPY_SDR_RX, m_rxChannel, gainsNames.at(i));
             m_gains->append(QPair<QString, SoapySDR::Range>(QString::fromStdString(gainsNames.at(i)), range));
-            qDebug() << gainsNames.at(i) << range.minimum() << range.step() << range.maximum();
+            qCInfo(soapySdrInput, "Gain '%s' range:  %.1f : %.1f : %.1f", gainsNames.at(i).c_str(), range.minimum(), range.step(), range.maximum());
         }
     }
 
