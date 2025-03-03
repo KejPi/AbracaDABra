@@ -756,9 +756,9 @@ void RadioControl::setTii(int mode)
     dabSetTii(m_tiiEna > 0, m_tiiMode);
 }
 
-void RadioControl::setSignalSpectrum(int mode)
+void RadioControl::setSignalSpectrum(bool ena)
 {
-    dabEnableSignalSpectrum(static_cast<dabsdrSpectrumMode_t>(mode));
+    dabEnableSignalSpectrum(ena);
 }
 
 QString RadioControl::ensembleConfigurationString() const

@@ -377,7 +377,7 @@ public:
     void onSpiApplicationEnabled(bool enabled);
     void startTii(bool ena);
     void setTii(int mode);
-    void setSignalSpectrum(int mode);
+    void setSignalSpectrum(bool ena);
 
 signals:
     void dabEvent(RadioControlEvent *pEvent);
@@ -530,7 +530,7 @@ private:
         dabsdrRequest_XPadAppStart(m_dabsdrHandle, appType, start, decoderId);
     }
     void dabSetTii(bool ena, dabsdrTiiMode_t mode) { dabsdrRequest_SetTII(m_dabsdrHandle, ena, mode); }
-    void dabEnableSignalSpectrum(dabsdrSpectrumMode_t mode) { dabsdrRequest_SignalSpectrum(m_dabsdrHandle, mode); }
+    void dabEnableSignalSpectrum(bool ena) { dabsdrRequest_SignalSpectrum(m_dabsdrHandle, ena); }
 
     // wrappers used in callback functions (emit requires class instance)
     void emit_dabEvent(RadioControlEvent *pEvent) { emit dabEvent(pEvent); }
