@@ -251,7 +251,7 @@ void SignalDialog::setInputDevice(InputDevice::Id id)
 
             break;
         case InputDevice::Id::SDRPLAY:
-            m_offset_dB = m_offset_dB + 7;  // +7 is empirical correction factor -> not clear where it comes from
+            m_offset_dB = m_offset_dB + 8;  // +8 is empirical correction factor -> not clear where it comes from
             break;
         case InputDevice::Id::RARTTCP:
         case InputDevice::Id::AIRSPY:

@@ -376,7 +376,7 @@ void SdrPlayInput::onAgcLevel(float agcLevel)
     if (++m_levelEmitCntr > 4)
     {
         m_levelEmitCntr = 0;
-        float gain = 114 + m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) - m_ifGR;
+        float gain = 112 + m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) - m_ifGR;
         emit agcGain(gain);
         emit rfLevel(10 * std::log10(agcLevel) - gain, gain);
     }
