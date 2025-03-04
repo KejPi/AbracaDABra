@@ -50,6 +50,8 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent) : TxMapDialog(settings
     setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
 
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
+    m_lw = devicePixelRatio() == 1 ? 2 : 1;
+
     // TII plot
     m_tiiSpectrumPlot = new QCustomPlot(this);
     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -102,7 +104,7 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent) : TxMapDialog(settings
         verticalLine = new QCPItemStraightLine(m_tiiSpectrumPlot);
         verticalLine->point1->setCoords(n * 24, 0);  // location of point 1 in plot coordinate
         verticalLine->point2->setCoords(n * 24, 1);  // location of point 2 in plot coordinate
-        verticalLine->setPen(QPen(Qt::red, 1, Qt::SolidLine));
+        verticalLine->setPen(QPen(Qt::red, m_lw, Qt::SolidLine));
     }
 
     m_tiiSpectrumPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes);
@@ -258,23 +260,23 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
     if (darkModeEna)
     {
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
-        m_tiiSpectrumPlot->xAxis->setBasePen(QPen(Qt::white, 0));
-        m_tiiSpectrumPlot->yAxis->setBasePen(QPen(Qt::white, 0));
-        m_tiiSpectrumPlot->xAxis2->setBasePen(QPen(Qt::white, 0));
-        m_tiiSpectrumPlot->yAxis2->setBasePen(QPen(Qt::white, 0));
-        m_tiiSpectrumPlot->xAxis->setTickPen(QPen(Qt::white, 0));
-        m_tiiSpectrumPlot->yAxis->setTickPen(QPen(Qt::white, 0));
-        m_tiiSpectrumPlot->xAxis2->setTickPen(QPen(Qt::white, 0));
-        m_tiiSpectrumPlot->yAxis2->setTickPen(QPen(Qt::white, 0));
-        m_tiiSpectrumPlot->xAxis->setSubTickPen(QPen(Qt::white, 0));
-        m_tiiSpectrumPlot->yAxis->setSubTickPen(QPen(Qt::white, 0));
-        m_tiiSpectrumPlot->xAxis2->setSubTickPen(QPen(Qt::white, 0));
-        m_tiiSpectrumPlot->yAxis2->setSubTickPen(QPen(Qt::white, 0));
+        m_tiiSpectrumPlot->xAxis->setBasePen(QPen(Qt::white, m_lw));
+        m_tiiSpectrumPlot->yAxis->setBasePen(QPen(Qt::white, m_lw));
+        m_tiiSpectrumPlot->xAxis2->setBasePen(QPen(Qt::white, m_lw));
+        m_tiiSpectrumPlot->yAxis2->setBasePen(QPen(Qt::white, m_lw));
+        m_tiiSpectrumPlot->xAxis->setTickPen(QPen(Qt::white, m_lw));
+        m_tiiSpectrumPlot->yAxis->setTickPen(QPen(Qt::white, m_lw));
+        m_tiiSpectrumPlot->xAxis2->setTickPen(QPen(Qt::white, m_lw));
+        m_tiiSpectrumPlot->yAxis2->setTickPen(QPen(Qt::white, m_lw));
+        m_tiiSpectrumPlot->xAxis->setSubTickPen(QPen(Qt::white, m_lw));
+        m_tiiSpectrumPlot->yAxis->setSubTickPen(QPen(Qt::white, m_lw));
+        m_tiiSpectrumPlot->xAxis2->setSubTickPen(QPen(Qt::white, m_lw));
+        m_tiiSpectrumPlot->yAxis2->setSubTickPen(QPen(Qt::white, m_lw));
         m_tiiSpectrumPlot->xAxis->setTickLabelColor(Qt::white);
         m_tiiSpectrumPlot->yAxis->setTickLabelColor(Qt::white);
         m_tiiSpectrumPlot->xAxis2->setTickLabelColor(Qt::white);
         m_tiiSpectrumPlot->yAxis2->setTickLabelColor(Qt::white);
-        m_tiiSpectrumPlot->xAxis->grid()->setPen(QPen(QColor(190, 190, 190), 1, Qt::DotLine));
+        m_tiiSpectrumPlot->xAxis->grid()->setPen(QPen(QColor(190, 190, 190), m_lw, Qt::DotLine));
         m_tiiSpectrumPlot->yAxis->grid()->setPen(QPen(QColor(150, 150, 150), 0, Qt::DotLine));
         m_tiiSpectrumPlot->xAxis->grid()->setSubGridPen(QPen(QColor(190, 190, 190), 0, Qt::DotLine));
         m_tiiSpectrumPlot->yAxis->grid()->setSubGridPen(QPen(QColor(190, 190, 190), 0, Qt::DotLine));
@@ -282,27 +284,27 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
         m_tiiSpectrumPlot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
         m_tiiSpectrumPlot->setBackground(QBrush(Qt::black));
 
-        m_tiiSpectrumPlot->graph(GraphId::Spect)->setPen(QPen(Qt::lightGray, 1));
+        m_tiiSpectrumPlot->graph(GraphId::Spect)->setPen(QPen(Qt::lightGray, m_lw));
         m_tiiSpectrumPlot->graph(GraphId::Spect)->setBrush(QBrush(QColor(120, 120, 120, 100)));
-        m_tiiSpectrumPlot->graph(GraphId::TII)->setPen(QPen(Qt::cyan, 2));
+        m_tiiSpectrumPlot->graph(GraphId::TII)->setPen(QPen(Qt::cyan, m_lw + 1));
 
         QColor axisSelectionColor(Qt::red);
         axisSelectionColor = qApp->style()->standardPalette().color(QPalette::Active, QPalette::Link);
-        m_tiiSpectrumPlot->xAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->xAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->xAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        m_tiiSpectrumPlot->xAxis->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->xAxis->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->xAxis->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
         m_tiiSpectrumPlot->xAxis->setSelectedTickLabelColor(axisSelectionColor);
-        m_tiiSpectrumPlot->xAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->xAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->xAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        m_tiiSpectrumPlot->xAxis2->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->xAxis2->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->xAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
         m_tiiSpectrumPlot->xAxis2->setSelectedTickLabelColor(axisSelectionColor);
-        m_tiiSpectrumPlot->yAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->yAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->yAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        m_tiiSpectrumPlot->yAxis->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->yAxis->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->yAxis->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
         m_tiiSpectrumPlot->yAxis->setSelectedTickLabelColor(axisSelectionColor);
-        m_tiiSpectrumPlot->yAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->yAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->yAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        m_tiiSpectrumPlot->yAxis2->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->yAxis2->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->yAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
         m_tiiSpectrumPlot->yAxis2->setSelectedTickLabelColor(axisSelectionColor);
 
         m_tiiSpectrumPlot->replot();
@@ -312,23 +314,23 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
     else
     {
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
-        m_tiiSpectrumPlot->xAxis->setBasePen(QPen(Qt::black, 0));
-        m_tiiSpectrumPlot->yAxis->setBasePen(QPen(Qt::black, 0));
-        m_tiiSpectrumPlot->xAxis2->setBasePen(QPen(Qt::black, 0));
-        m_tiiSpectrumPlot->yAxis2->setBasePen(QPen(Qt::black, 0));
-        m_tiiSpectrumPlot->xAxis->setTickPen(QPen(Qt::black, 0));
-        m_tiiSpectrumPlot->yAxis->setTickPen(QPen(Qt::black, 0));
-        m_tiiSpectrumPlot->xAxis2->setTickPen(QPen(Qt::black, 0));
-        m_tiiSpectrumPlot->yAxis2->setTickPen(QPen(Qt::black, 0));
-        m_tiiSpectrumPlot->xAxis->setSubTickPen(QPen(Qt::black, 0));
-        m_tiiSpectrumPlot->yAxis->setSubTickPen(QPen(Qt::black, 0));
-        m_tiiSpectrumPlot->xAxis2->setSubTickPen(QPen(Qt::black, 0));
-        m_tiiSpectrumPlot->yAxis2->setSubTickPen(QPen(Qt::black, 0));
+        m_tiiSpectrumPlot->xAxis->setBasePen(QPen(Qt::black, m_lw));
+        m_tiiSpectrumPlot->yAxis->setBasePen(QPen(Qt::black, m_lw));
+        m_tiiSpectrumPlot->xAxis2->setBasePen(QPen(Qt::black, m_lw));
+        m_tiiSpectrumPlot->yAxis2->setBasePen(QPen(Qt::black, m_lw));
+        m_tiiSpectrumPlot->xAxis->setTickPen(QPen(Qt::black, m_lw));
+        m_tiiSpectrumPlot->yAxis->setTickPen(QPen(Qt::black, m_lw));
+        m_tiiSpectrumPlot->xAxis2->setTickPen(QPen(Qt::black, m_lw));
+        m_tiiSpectrumPlot->yAxis2->setTickPen(QPen(Qt::black, m_lw));
+        m_tiiSpectrumPlot->xAxis->setSubTickPen(QPen(Qt::black, m_lw));
+        m_tiiSpectrumPlot->yAxis->setSubTickPen(QPen(Qt::black, m_lw));
+        m_tiiSpectrumPlot->xAxis2->setSubTickPen(QPen(Qt::black, m_lw));
+        m_tiiSpectrumPlot->yAxis2->setSubTickPen(QPen(Qt::black, m_lw));
         m_tiiSpectrumPlot->xAxis->setTickLabelColor(Qt::black);
         m_tiiSpectrumPlot->yAxis->setTickLabelColor(Qt::black);
         m_tiiSpectrumPlot->xAxis2->setTickLabelColor(Qt::black);
         m_tiiSpectrumPlot->yAxis2->setTickLabelColor(Qt::black);
-        m_tiiSpectrumPlot->xAxis->grid()->setPen(QPen(QColor(60, 60, 60), 01, Qt::DotLine));
+        m_tiiSpectrumPlot->xAxis->grid()->setPen(QPen(QColor(60, 60, 60), m_lw, Qt::DotLine));
         m_tiiSpectrumPlot->yAxis->grid()->setPen(QPen(QColor(100, 100, 100), 0, Qt::DotLine));
         m_tiiSpectrumPlot->xAxis->grid()->setSubGridPen(QPen(QColor(60, 60, 60), 0, Qt::DotLine));
         m_tiiSpectrumPlot->yAxis->grid()->setSubGridPen(QPen(QColor(60, 60, 60), 0, Qt::DotLine));
@@ -336,27 +338,27 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
         m_tiiSpectrumPlot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
         m_tiiSpectrumPlot->setBackground(QBrush(Qt::white));
 
-        m_tiiSpectrumPlot->graph(GraphId::Spect)->setPen(QPen(Qt::gray, 1));
+        m_tiiSpectrumPlot->graph(GraphId::Spect)->setPen(QPen(Qt::gray, m_lw));
         m_tiiSpectrumPlot->graph(GraphId::Spect)->setBrush(QBrush(QColor(80, 80, 80, 100)));
-        m_tiiSpectrumPlot->graph(GraphId::TII)->setPen(QPen(Qt::blue, 2));
+        m_tiiSpectrumPlot->graph(GraphId::TII)->setPen(QPen(Qt::blue, m_lw + 1));
 
         QColor axisSelectionColor(48, 140, 198);
         axisSelectionColor = qApp->style()->standardPalette().color(QPalette::Active, QPalette::Link);
-        m_tiiSpectrumPlot->xAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->xAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->xAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        m_tiiSpectrumPlot->xAxis->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->xAxis->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->xAxis->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
         m_tiiSpectrumPlot->xAxis->setSelectedTickLabelColor(axisSelectionColor);
-        m_tiiSpectrumPlot->xAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->xAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->xAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        m_tiiSpectrumPlot->xAxis2->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->xAxis2->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->xAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
         m_tiiSpectrumPlot->xAxis2->setSelectedTickLabelColor(axisSelectionColor);
-        m_tiiSpectrumPlot->yAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->yAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->yAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        m_tiiSpectrumPlot->yAxis->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->yAxis->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->yAxis->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
         m_tiiSpectrumPlot->yAxis->setSelectedTickLabelColor(axisSelectionColor);
-        m_tiiSpectrumPlot->yAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->yAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
-        m_tiiSpectrumPlot->yAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+        m_tiiSpectrumPlot->yAxis2->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->yAxis2->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+        m_tiiSpectrumPlot->yAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
         m_tiiSpectrumPlot->yAxis2->setSelectedTickLabelColor(axisSelectionColor);
 
         m_tiiSpectrumPlot->replot();

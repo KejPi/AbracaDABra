@@ -80,6 +80,7 @@ private:
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     QCustomPlot *m_tiiSpectrumPlot;
     bool m_isZoomed;
+    int m_lw;
     QSplitter *m_splitter;
 #endif
     QQuickView *m_qmlView;

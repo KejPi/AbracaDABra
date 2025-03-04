@@ -46,6 +46,8 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
 #endif
 
+    m_lw = devicePixelRatio() == 1 ? 2 : 1;
+
     int w = ui->snrValue->fontMetrics().boundingRect(" 36.0 dB").width();
     ui->snrValue->setFixedWidth(w);
     ui->snrValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -320,18 +322,18 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
         auto plot = ui->snrPlot;
         for (int p = 0; p < 2; ++p)
         {
-            plot->xAxis->setBasePen(QPen(Qt::white, 0));
-            plot->yAxis->setBasePen(QPen(Qt::white, 0));
-            plot->xAxis2->setBasePen(QPen(Qt::white, 0));
-            plot->yAxis2->setBasePen(QPen(Qt::white, 0));
-            plot->xAxis->setTickPen(QPen(Qt::white, 0));
-            plot->yAxis->setTickPen(QPen(Qt::white, 0));
-            plot->xAxis2->setTickPen(QPen(Qt::white, 0));
-            plot->yAxis2->setTickPen(QPen(Qt::white, 0));
-            plot->xAxis->setSubTickPen(QPen(Qt::white, 0));
-            plot->yAxis->setSubTickPen(QPen(Qt::white, 0));
-            plot->xAxis2->setSubTickPen(QPen(Qt::white, 0));
-            plot->yAxis2->setSubTickPen(QPen(Qt::white, 0));
+            plot->xAxis->setBasePen(QPen(Qt::white, m_lw));
+            plot->yAxis->setBasePen(QPen(Qt::white, m_lw));
+            plot->xAxis2->setBasePen(QPen(Qt::white, m_lw));
+            plot->yAxis2->setBasePen(QPen(Qt::white, m_lw));
+            plot->xAxis->setTickPen(QPen(Qt::white, m_lw));
+            plot->yAxis->setTickPen(QPen(Qt::white, m_lw));
+            plot->xAxis2->setTickPen(QPen(Qt::white, m_lw));
+            plot->yAxis2->setTickPen(QPen(Qt::white, m_lw));
+            plot->xAxis->setSubTickPen(QPen(Qt::white, m_lw));
+            plot->yAxis->setSubTickPen(QPen(Qt::white, m_lw));
+            plot->xAxis2->setSubTickPen(QPen(Qt::white, m_lw));
+            plot->yAxis2->setSubTickPen(QPen(Qt::white, m_lw));
             plot->xAxis->setTickLabelColor(Qt::white);
             plot->yAxis->setTickLabelColor(Qt::white);
             plot->xAxis2->setTickLabelColor(Qt::white);
@@ -339,7 +341,7 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
             plot->xAxis->setLabelColor(Qt::white);
             plot->yAxis->setLabelColor(Qt::white);
             plot->xAxis->grid()->setPen(QPen(QColor(190, 190, 190), 0, Qt::DotLine));
-            plot->yAxis->grid()->setPen(QPen(QColor(150, 150, 150), 1, Qt::DotLine));
+            plot->yAxis->grid()->setPen(QPen(QColor(150, 150, 150), m_lw, Qt::DotLine));
             plot->xAxis->grid()->setSubGridPen(QPen(QColor(190, 190, 190), 0, Qt::DotLine));
             plot->yAxis->grid()->setSubGridPen(QPen(QColor(190, 190, 190), 0, Qt::DotLine));
             plot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
@@ -348,27 +350,27 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
 
             QColor axisSelectionColor(Qt::red);
             axisSelectionColor = qApp->style()->standardPalette().color(QPalette::Active, QPalette::Link);
-            plot->xAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
-            plot->xAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
-            plot->xAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->xAxis->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+            plot->xAxis->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+            plot->xAxis->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
             plot->xAxis->setSelectedTickLabelColor(axisSelectionColor);
-            plot->xAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
-            plot->xAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
-            plot->xAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->xAxis2->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+            plot->xAxis2->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+            plot->xAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
             plot->xAxis2->setSelectedTickLabelColor(axisSelectionColor);
-            plot->yAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
-            plot->yAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
-            plot->yAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->yAxis->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+            plot->yAxis->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+            plot->yAxis->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
             plot->yAxis->setSelectedTickLabelColor(axisSelectionColor);
-            plot->yAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
-            plot->yAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
-            plot->yAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->yAxis2->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+            plot->yAxis2->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+            plot->yAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
             plot->yAxis2->setSelectedTickLabelColor(axisSelectionColor);
 
             plot = ui->spectrumPlot;
         }
 
-        ui->snrPlot->graph(0)->setPen(QPen(Qt::cyan, 2));
+        ui->snrPlot->graph(0)->setPen(QPen(Qt::cyan, m_lw + 1));
         ui->snrPlot->graph(0)->setBrush(QBrush(QColor(0, 255, 255, 100)));
         ui->snrPlot->replot();
 
@@ -378,11 +380,11 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
         {
             if (n == 1)
             {
-                m_spectLineList.at(n)->setPen(QPen(Qt::magenta, 1, Qt::SolidLine));
+                m_spectLineList.at(n)->setPen(QPen(Qt::magenta, m_lw, Qt::SolidLine));
             }
             else
             {
-                m_spectLineList.at(n)->setPen(QPen(Qt::white, 1, Qt::DotLine));
+                m_spectLineList.at(n)->setPen(QPen(Qt::white, m_lw, Qt::DotLine));
             }
         }
 
@@ -394,18 +396,18 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
         auto plot = ui->snrPlot;
         for (int p = 0; p < 2; ++p)
         {
-            plot->xAxis->setBasePen(QPen(Qt::black, 0));
-            plot->yAxis->setBasePen(QPen(Qt::black, 0));
-            plot->xAxis2->setBasePen(QPen(Qt::black, 0));
-            plot->yAxis2->setBasePen(QPen(Qt::black, 0));
-            plot->xAxis->setTickPen(QPen(Qt::black, 0));
-            plot->yAxis->setTickPen(QPen(Qt::black, 0));
-            plot->xAxis2->setTickPen(QPen(Qt::black, 0));
-            plot->yAxis2->setTickPen(QPen(Qt::black, 0));
-            plot->xAxis->setSubTickPen(QPen(Qt::black, 0));
-            plot->yAxis->setSubTickPen(QPen(Qt::black, 0));
-            plot->xAxis2->setSubTickPen(QPen(Qt::black, 0));
-            plot->yAxis2->setSubTickPen(QPen(Qt::black, 0));
+            plot->xAxis->setBasePen(QPen(Qt::black, m_lw));
+            plot->yAxis->setBasePen(QPen(Qt::black, m_lw));
+            plot->xAxis2->setBasePen(QPen(Qt::black, m_lw));
+            plot->yAxis2->setBasePen(QPen(Qt::black, m_lw));
+            plot->xAxis->setTickPen(QPen(Qt::black, m_lw));
+            plot->yAxis->setTickPen(QPen(Qt::black, m_lw));
+            plot->xAxis2->setTickPen(QPen(Qt::black, m_lw));
+            plot->yAxis2->setTickPen(QPen(Qt::black, m_lw));
+            plot->xAxis->setSubTickPen(QPen(Qt::black, m_lw));
+            plot->yAxis->setSubTickPen(QPen(Qt::black, m_lw));
+            plot->xAxis2->setSubTickPen(QPen(Qt::black, m_lw));
+            plot->yAxis2->setSubTickPen(QPen(Qt::black, m_lw));
             plot->xAxis->setTickLabelColor(Qt::black);
             plot->yAxis->setTickLabelColor(Qt::black);
             plot->xAxis2->setTickLabelColor(Qt::black);
@@ -413,7 +415,7 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
             plot->xAxis->setLabelColor(Qt::black);
             plot->yAxis->setLabelColor(Qt::black);
             plot->xAxis->grid()->setPen(QPen(QColor(60, 60, 60), 0, Qt::DotLine));
-            plot->yAxis->grid()->setPen(QPen(QColor(100, 100, 100), 1, Qt::DotLine));
+            plot->yAxis->grid()->setPen(QPen(QColor(100, 100, 100), m_lw, Qt::DotLine));
             plot->xAxis->grid()->setSubGridPen(QPen(QColor(60, 60, 60), 0, Qt::DotLine));
             plot->yAxis->grid()->setSubGridPen(QPen(QColor(60, 60, 60), 0, Qt::DotLine));
             plot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
@@ -422,27 +424,27 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
 
             QColor axisSelectionColor(48, 140, 198);
             axisSelectionColor = qApp->style()->standardPalette().color(QPalette::Active, QPalette::Link);
-            plot->xAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
-            plot->xAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
-            plot->xAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->xAxis->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+            plot->xAxis->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+            plot->xAxis->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
             plot->xAxis->setSelectedTickLabelColor(axisSelectionColor);
-            plot->xAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
-            plot->xAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
-            plot->xAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->xAxis2->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+            plot->xAxis2->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+            plot->xAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
             plot->xAxis2->setSelectedTickLabelColor(axisSelectionColor);
-            plot->yAxis->setSelectedBasePen(QPen(axisSelectionColor, 1));
-            plot->yAxis->setSelectedTickPen(QPen(axisSelectionColor, 1));
-            plot->yAxis->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->yAxis->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+            plot->yAxis->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+            plot->yAxis->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
             plot->yAxis->setSelectedTickLabelColor(axisSelectionColor);
-            plot->yAxis2->setSelectedBasePen(QPen(axisSelectionColor, 1));
-            plot->yAxis2->setSelectedTickPen(QPen(axisSelectionColor, 1));
-            plot->yAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, 1));
+            plot->yAxis2->setSelectedBasePen(QPen(axisSelectionColor, m_lw));
+            plot->yAxis2->setSelectedTickPen(QPen(axisSelectionColor, m_lw));
+            plot->yAxis2->setSelectedSubTickPen(QPen(axisSelectionColor, m_lw));
             plot->yAxis2->setSelectedTickLabelColor(axisSelectionColor);
 
             plot = ui->spectrumPlot;
         }
 
-        ui->snrPlot->graph(0)->setPen(QPen(Qt::blue, 2));
+        ui->snrPlot->graph(0)->setPen(QPen(Qt::blue, m_lw + 1));
         ui->snrPlot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 100)));
         ui->snrPlot->replot();
 
@@ -452,11 +454,11 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
         {
             if (n == 1)
             {
-                m_spectLineList.at(n)->setPen(QPen(Qt::red, 1, Qt::SolidLine));
+                m_spectLineList.at(n)->setPen(QPen(Qt::red, m_lw, Qt::SolidLine));
             }
             else
             {
-                m_spectLineList.at(n)->setPen(QPen(Qt::darkGray, 1, Qt::DotLine));
+                m_spectLineList.at(n)->setPen(QPen(Qt::darkGray, m_lw, Qt::DotLine));
             }
         }
 
