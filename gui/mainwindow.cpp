@@ -235,6 +235,8 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     // set UI
     setWindowTitle("Abraca DAB Radio");
 
+    qCInfo(application, "Version: %s", PROJECT_VER);
+
 #ifdef Q_OS_WIN
     // this is Windows specific code, not portable - allows to bring window to front (used for alarm announcement)
     // does not exit on Qt6 yet
