@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>750</width>
+    <width>800</width>
     <height>500</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>750</width>
+    <width>775</width>
     <height>450</height>
    </size>
   </property>
@@ -215,6 +215,16 @@
        </item>
       </layout>
      </item>
+     <item>
+      <widget class="ClickableLabel" name="menuLabel">
+       <property name="toolTip">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string notr="true">M</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>
@@ -225,6 +235,11 @@
    <extends>QWidget</extends>
    <header location="global">qcustomplot.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ClickableLabel</class>
+   <extends>QLabel</extends>
+   <header>clickablelabel.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -3128,6 +3128,7 @@ void MainWindow::loadSettings()
 
     m_settings->signal.geometry = settings->value("SignalDialog/windowGeometry").toByteArray();
     m_settings->signal.splitterState = settings->value("SignalDialog/layout").toByteArray();
+    m_settings->signal.spectrumMode = settings->value("SignalDialog/spectrumMode", 1).toInt();
 
     m_settings->ensembleInfo.geometry = settings->value("EnsembleInfo/windowGeometry").toByteArray();
     m_settings->log.geometry = settings->value("Log/windowGeometry").toByteArray();
@@ -3403,6 +3404,7 @@ void MainWindow::saveSettings()
 
     settings->setValue("SignalDialog/windowGeometry", m_settings->signal.geometry);
     settings->setValue("SignalDialog/layout", m_settings->signal.splitterState);
+    settings->setValue("SignalDialog/spectrumMode", m_settings->signal.spectrumMode);
 
     settings->setValue("UA-STORAGE/folder", m_settings->uaDump.folder);
     settings->setValue("UA-STORAGE/overwriteEna", m_settings->uaDump.overwriteEna);

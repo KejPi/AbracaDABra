@@ -180,6 +180,21 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
 
     m_isUserView = false;
 
+    auto menu = new QMenu(this);
+    auto syncSpectAction = new QAction(tr("Frequency correction"), menu);
+    syncSpectAction->setCheckable(true);
+    syncSpectAction->setChecked(m_settings->signal.spectrumMode == 2);
+    connect(syncSpectAction, &QAction::triggered, this,
+            [this](bool checked)
+            {
+                m_settings->signal.spectrumMode = checked ? 2 : 1;
+                emit setSignalSpectrum((m_settings->signal.spectrumMode));
+            });
+
+    menu->addAction(syncSpectAction);
+    ui->menuLabel->setToolTip(tr("Configuration"));
+    ui->menuLabel->setMenu(menu);
+
     // render level icons
     m_snrLevelIcons[0].loadFromData(templateSvgFill.arg(snrLevelColors.at(0)).toUtf8(), "svg");
     for (int n = 1; n < 4; ++n)
@@ -260,8 +275,10 @@ void SignalDialog::setInputDevice(InputDevice::Id id)
             break;
     }
 
+    ui->menuLabel->setEnabled(id != InputDevice::Id::UNDEFINED);
+
     // enable spectrum
-    emit setSignalSpectrum(id == InputDevice::Id::UNDEFINED ? 0 : 1);
+    emit setSignalSpectrum(id == InputDevice::Id::UNDEFINED ? 0 : m_settings->signal.spectrumMode);
 }
 
 void SignalDialog::setSignalState(uint8_t sync, float snr)
@@ -370,6 +387,7 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
         }
 
         ui->spectrumPlot->replot();
+        ui->menuLabel->setIcon(":/resources/menu_dark.png");
     }
     else
     {
@@ -443,6 +461,7 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
         }
 
         ui->spectrumPlot->replot();
+        ui->menuLabel->setIcon(":/resources/menu.png");
     }
 }
 
@@ -466,6 +485,7 @@ void SignalDialog::reset()
     m_spectYRangeMax = 0;
     ui->spectrumPlot->yAxis->setRange(m_spectYRangeMin, m_spectYRangeMax);
     m_isUserView = false;
+    ui->menuLabel->setEnabled(false);
     updateRfLevel(NAN, NAN);
     setRfLevelVisible(false);
     setGainVisible(false);
@@ -515,6 +535,7 @@ void SignalDialog::onTuneDone(uint32_t freq)
     if (m_frequency != 0)
     {
         ui->freqValue->setText(QString::number(m_frequency) + " kHz");
+        ui->menuLabel->setEnabled(true);
     }
     else
     {
