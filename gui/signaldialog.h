@@ -73,7 +73,6 @@ private:
     static const QString templateSvgOutline;
     QPixmap m_snrLevelIcons[7];
     Ui::SignalDialog *ui;
-    int m_lw;
     Settings *m_settings = nullptr;
     QTime m_startTime;
     QTimer *m_timer = nullptr;
