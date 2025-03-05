@@ -93,6 +93,7 @@ private:
 
     void resetAgc() override;
     void setRFGR(int gain);
+    float getRFGain() const { return m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR); }
     void setIFGR(int gain);
 
     // used by worker
