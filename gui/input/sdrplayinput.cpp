@@ -315,7 +315,7 @@ void SdrPlayInput::onAgcLevel(float agcLevel)
                 {
                     if (m_rfGRchangeCntr <= 0)
                     {
-                        m_rfGRchangeCntr = 4;
+                        m_rfGRchangeCntr = 2;
                         float gain = getRFGain();
                         setRFGR(m_rfGR + 1);
                         setIFGR(m_ifGR - (gain - getRFGain()) - 1);
@@ -329,7 +329,7 @@ void SdrPlayInput::onAgcLevel(float agcLevel)
                 {
                     if (m_rfGRchangeCntr <= 0)
                     {
-                        m_rfGRchangeCntr = 4;
+                        m_rfGRchangeCntr = 2;
                         float gain = getRFGain();
                         setRFGR(m_rfGR - 1);
                         // setIFGR(m_ifGR + 3);
