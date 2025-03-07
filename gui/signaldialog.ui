@@ -83,7 +83,7 @@
        <item>
         <widget class="QLabel" name="snrValue">
          <property name="text">
-          <string>12.4 dB</string>
+          <string notr="true">12.4 dB</string>
          </property>
         </widget>
        </item>
@@ -136,7 +136,7 @@
           </font>
          </property>
          <property name="text">
-          <string notr="true">Gain:</string>
+          <string>Gain:</string>
          </property>
         </widget>
        </item>

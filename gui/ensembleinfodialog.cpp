@@ -81,8 +81,8 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(ne
     ui->snr->setToolTip(tr("Estimated SNR"));
     ui->agcGainLabel->setToolTip(tr("Current AGC gain<br>(only in software mode)"));
     ui->agcGain->setToolTip(tr("Current AGC gain<br>(only in software mode)"));
-    ui->rfLevelLabel->setToolTip(tr("Estimated RF level<br>(only RTL-SDR)"));
-    ui->rfLevel->setToolTip(tr("Estimated RF level<br>(only RTL-SDR)"));
+    ui->rfLevelLabel->setToolTip(tr("Estimated RF level<br>(only on supported devices)"));
+    ui->rfLevel->setToolTip(tr("Estimated RF level<br>(only on supported devices)"));
 
     ui->serviceLabel->setToolTip(tr("Current service name"));
     ui->service->setToolTip(tr("Current service name"));
