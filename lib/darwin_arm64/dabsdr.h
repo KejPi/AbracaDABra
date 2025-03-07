@@ -351,6 +351,19 @@ typedef  struct {
     uint8_t d;  // dynamic
 } dabsdrNtfPTy_t;
 
+typedef enum dabsdrTiiMode_e {
+    DABSDR_TII_MODE_CONSERVATIVE = 0,
+    DABSDR_TII_MODE_DEFAULT = 1,
+    DABSDR_TII_NUM_MODES
+} dabsdrTiiMode_t;
+
+typedef enum dabsdrSpectrumMode_e {
+    DABSDR_SPECTRUM_OFF = 0,
+    DABSDR_SPECTRUM_INPUT = 1,
+    DABSDR_SPECTRUM_INPUT_SYNC = 2,
+    DABSDR_SPECTRUM_NUM_MODES
+} dabsdrSpectrumMode_t;
+
 typedef struct {
     uint8_t main;   // main ID
     uint8_t sub;    // sub ID
@@ -406,8 +419,8 @@ DABSDR_API void dabsdrRequest_ServiceSelection(dabsdrHandle_t handle, uint32_t S
 DABSDR_API void dabsdrRequest_ServiceStop(dabsdrHandle_t handle, uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t id);
 DABSDR_API void dabsdrRequest_XPadAppStart(dabsdrHandle_t handle, uint8_t appType, int8_t startRequest, dabsdrDecoderId_t id);
 DABSDR_API void dabsdrRequest_SetPeriodicNotify(dabsdrHandle_t handle, uint8_t period, uint32_t cfg);
-DABSDR_API void dabsdrRequest_SetTII(dabsdrHandle_t handle, uint8_t ena);
-DABSDR_API void dabsdrRequest_SignalSpectrum(dabsdrHandle_t handle, uint8_t ena);
+DABSDR_API void dabsdrRequest_SetTII(dabsdrHandle_t handle, uint8_t ena, dabsdrTiiMode_t mode);
+DABSDR_API void dabsdrRequest_SignalSpectrum(dabsdrHandle_t handle, dabsdrSpectrumMode_t mode);
 DABSDR_API void dabsdrRequest_Exit(dabsdrHandle_t handle);
 
 
