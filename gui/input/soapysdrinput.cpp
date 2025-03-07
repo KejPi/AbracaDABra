@@ -52,7 +52,14 @@ SoapySdrInput::~SoapySdrInput()
     stop();
     if (nullptr != m_device)
     {
-        SoapySDR::Device::unmake(m_device);
+        try
+        {
+            SoapySDR::Device::unmake(m_device);
+        }
+        catch (const std::exception &ex)
+        {
+            qCCritical(soapySdrInput) << "Error unmaking device: " << ex.what();
+        }
     }
     if (nullptr != m_gains)
     {

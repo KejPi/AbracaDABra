@@ -322,7 +322,7 @@ void SdrPlayInput::onAgcLevel(float agcLevel)
                     }
                 }
             }
-            if (agcLevel < SDRPLAY_LEVEL_THR_MIN)
+            else if (agcLevel < SDRPLAY_LEVEL_THR_MIN)
             {
                 setIFGR(m_ifGR - 1);
                 if ((m_ifGR < SDRPLAY_RFGR_DOWN_THR) && (m_rfGR > 0))
@@ -332,9 +332,25 @@ void SdrPlayInput::onAgcLevel(float agcLevel)
                         m_rfGRchangeCntr = 2;
                         float gain = getRFGain();
                         setRFGR(m_rfGR - 1);
-                        // setIFGR(m_ifGR + 3);
                         setIFGR(m_ifGR + (gain - getRFGain()) + 1);
                     }
+                }
+            }
+            else if (m_rfGRchangeCntr <= 0)
+            {  // maintenance
+                if (m_ifGR >= SDRPLAY_RFGR_UP_THR)
+                {
+                    m_rfGRchangeCntr = 4;
+                    float gain = getRFGain();
+                    setRFGR(m_rfGR + 1);
+                    setIFGR(m_ifGR - (gain - getRFGain()));
+                }
+                else if ((m_ifGR < SDRPLAY_RFGR_DOWN_THR) && (m_rfGR > 0))
+                {
+                    m_rfGRchangeCntr = 4;
+                    float gain = getRFGain();
+                    setRFGR(m_rfGR - 1);
+                    setIFGR(m_ifGR + (gain - getRFGain()));
                 }
             }
         }

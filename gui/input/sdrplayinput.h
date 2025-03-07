@@ -37,7 +37,7 @@
 #define SDRPLAY_LEVEL_THR_MIN (0.01)
 #define SDRPLAY_LEVEL_THR_MAX (0.06)
 #define SDRPLAY_RFGR_UP_THR (59 - 2)
-#define SDRPLAY_RFGR_DOWN_THR (50)
+#define SDRPLAY_RFGR_DOWN_THR (SDRPLAY_RFGR_UP_THR - 12)
 
 enum class SdrPlayGainMode
 {
