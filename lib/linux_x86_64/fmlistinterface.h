@@ -19,13 +19,15 @@ class FMLISTINTERFACE_EXPORT FMListInterface  : public QObject
 {
     Q_OBJECT
 public:
-    FMListInterface(const QString & dbFile);
+    FMListInterface(const QString & appVersion, const QString & dbFile);
     ~FMListInterface();
     void updateTiiData();
+    void uploadEnsembleCSV(const QString &id, const QString &csv);
     QString version() const;
 
 signals:
     void updateTiiDataFinished(QNetworkReply::NetworkError err);
+    void ensembleCsvUploaded(QNetworkReply::NetworkError err);
 
 private:
     FMListInterfacePrivate* d_ptr;

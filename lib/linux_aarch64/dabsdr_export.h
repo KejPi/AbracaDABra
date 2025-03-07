@@ -33,7 +33,6 @@
 #  define DABSDR_DEPRECATED_NO_EXPORT DABSDR_NO_EXPORT DABSDR_DEPRECATED
 #endif
 
-/* NOLINTNEXTLINE(readability-avoid-unconditional-preprocessor-if) */
 #if 0 /* DEFINE_NO_DEPRECATED */
 #  ifndef DABSDR_NO_DEPRECATED
 #    define DABSDR_NO_DEPRECATED

@@ -351,6 +351,19 @@ typedef  struct {
     uint8_t d;  // dynamic
 } dabsdrNtfPTy_t;
 
+typedef enum dabsdrTiiMode_e {
+    DABSDR_TII_MODE_CONSERVATIVE = 0,
+    DABSDR_TII_MODE_DEFAULT = 1,
+    DABSDR_TII_NUM_MODES
+} dabsdrTiiMode_t;
+
+typedef enum dabsdrSpectrumMode_e {
+    DABSDR_SPECTRUM_OFF = 0,
+    DABSDR_SPECTRUM_INPUT = 1,
+    DABSDR_SPECTRUM_INPUT_SYNC = 2,
+    DABSDR_SPECTRUM_NUM_MODES
+} dabsdrSpectrumMode_t;
+
 typedef struct {
     uint8_t main;   // main ID
     uint8_t sub;    // sub ID
@@ -365,7 +378,6 @@ typedef struct
     int (*getSpectrumTii)(dabsdrHandle_t handle, float buffer[192]);
 } dabsdrNtfTii_t;
 
-
 // input functions
 typedef void (*dabsdrInputFunc_t)(float [], uint16_t);
 
@@ -373,6 +385,7 @@ typedef void (*dabsdrInputFunc_t)(float [], uint16_t);
 typedef void (*dabsdrAudioCBFunc_t)(dabsdrAudioCBData_t * p, void * ctx);
 typedef void (*dabsdrDynamicLabelCBFunc_t)(dabsdrDynamicLabelCBData_t * p, void * ctx);
 typedef void (*dabsdrDataGroupCBFunc_t)(dabsdrDataGroupCBData_t * p, void * ctx);
+typedef void (*dabsdrSpectrumCBFunc_t)(const float * p, void * ctx);
 typedef void (*dabsdrNotificationCBFunc_t)(dabsdrNotificationCBData_t * p, void * ctx);
 
 
@@ -391,6 +404,7 @@ DABSDR_API void dabsdrRegisterDummyInputFcn(dabsdrHandle_t handle, dabsdrInputFu
 DABSDR_API void dabsdrRegisterAudioCb(dabsdrHandle_t handle, dabsdrAudioCBFunc_t fcn, void * ctx);
 DABSDR_API void dabsdrRegisterDynamicLabelCb(dabsdrHandle_t handle, dabsdrDynamicLabelCBFunc_t fcn, void * ctx);
 DABSDR_API void dabsdrRegisterDataGroupCb(dabsdrHandle_t handle, dabsdrDataGroupCBFunc_t fcn, void * ctx);
+DABSDR_API void dabsdrRegisterSignalSpectrumCb(dabsdrHandle_t handle, dabsdrSpectrumCBFunc_t fcn, void * ctx);
 DABSDR_API void dabsdrRegisterNotificationCb(dabsdrHandle_t handle, dabsdrNotificationCBFunc_t fcn, void * ctx);
 
 
@@ -405,7 +419,8 @@ DABSDR_API void dabsdrRequest_ServiceSelection(dabsdrHandle_t handle, uint32_t S
 DABSDR_API void dabsdrRequest_ServiceStop(dabsdrHandle_t handle, uint32_t SId, uint8_t SCIdS, dabsdrDecoderId_t id);
 DABSDR_API void dabsdrRequest_XPadAppStart(dabsdrHandle_t handle, uint8_t appType, int8_t startRequest, dabsdrDecoderId_t id);
 DABSDR_API void dabsdrRequest_SetPeriodicNotify(dabsdrHandle_t handle, uint8_t period, uint32_t cfg);
-DABSDR_API void dabsdrRequest_SetTII(dabsdrHandle_t handle, uint8_t ena);
+DABSDR_API void dabsdrRequest_SetTII(dabsdrHandle_t handle, uint8_t ena, dabsdrTiiMode_t mode);
+DABSDR_API void dabsdrRequest_SignalSpectrum(dabsdrHandle_t handle, dabsdrSpectrumMode_t mode);
 DABSDR_API void dabsdrRequest_Exit(dabsdrHandle_t handle);
 
 
