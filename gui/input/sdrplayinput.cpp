@@ -177,6 +177,9 @@ bool SdrPlayInput::openDevice(const QVariant &hwId, bool fallbackConnection)
             }
         }
     }
+
+    m_device->setGainMode(SOAPY_SDR_RX, m_rxChannel, false);
+
     if (isConnected && m_rfGainMap.contains(m_deviceDescription.device.model))
     {
         m_rfGainList = m_rfGainMap.value(m_deviceDescription.device.model);
@@ -197,19 +200,19 @@ void SdrPlayInput::setGainMode(const SdrPlayGainStruct &gain)
             }
             m_gainMode = gain.mode;
             m_device->setGainMode(SOAPY_SDR_RX, m_rxChannel, false);
-            resetAgc();
             break;
         case SdrPlayGainMode::Manual:
             m_gainMode = gain.mode;
             setRFGR(m_rfGainList.size() - 1 - gain.rfGain);
-            m_device->setGainMode(SOAPY_SDR_RX, m_rxChannel, gain.ifAgcEna);
-            if (!gain.ifAgcEna)
+            m_ifAgcEna = gain.ifAgcEna;
+            if (m_ifAgcEna)
             {
                 setIFGR(-gain.ifGain);
             }
             emit agcGain(getRFGain() - m_ifGR);
             break;
     }
+    resetAgc();
     emit rfLevel(NAN, NAN);
 }
 
@@ -244,6 +247,10 @@ void SdrPlayInput::resetAgc()
         m_agcState = SwAgcState::Converging;
         m_rfGRchangeCntr = 2;
         emit agcGain(getRFGain() - m_ifGR);
+    }
+    else if (m_ifAgcEna)
+    {
+        setIFGR(59);
     }
     m_levelEmitCntr = 0;
     emit rfLevel(NAN, NAN);
@@ -381,6 +388,18 @@ void SdrPlayInput::onAgcLevel(float agcLevel)
             m_agcState = SwAgcState::Running;
         }
     }
+    else if (m_ifAgcEna)
+    {  // IF gain control
+        if (agcLevel > SDRPLAY_LEVEL_THR_MAX)
+        {  // decrease gain
+            setIFGR(m_ifGR + 1);
+        }
+        else if (agcLevel < SDRPLAY_LEVEL_THR_MIN)
+        {
+            setIFGR(m_ifGR - 1);
+        }
+    }
+
     // qDebug() << agcLevel << -m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) << -m_ifGR
     //          << 10 * std::log10(2 * agcLevel / (SDRPLAY_LEVEL_THR_MAX - SDRPLAY_LEVEL_THR_MIN));
 

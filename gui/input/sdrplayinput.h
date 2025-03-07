@@ -90,6 +90,7 @@ private:
     const QHash<QString, QList<float>> m_rfGainMap;
 
     SdrPlayGainMode m_gainMode = SdrPlayGainMode::Manual;
+    bool m_ifAgcEna = false;
 
     void resetAgc() override;
     void setRFGR(int gain);

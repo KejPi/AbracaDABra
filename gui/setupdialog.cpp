@@ -1610,6 +1610,8 @@ void SetupDialog::activateSdrplayControls(bool en)
     ui->sdrplayGainWidget->setEnabled(en && (SdrPlayGainMode::Manual == m_settings->sdrplay.gain.mode));
     ui->sdrplayExpertGroup->setEnabled(en);
     ui->sdrplayIFGainSlider->setEnabled(en && !m_settings->sdrplay.gain.ifAgcEna);
+    ui->sdrplayIFGainLabel->setEnabled(en && !m_settings->sdrplay.gain.ifAgcEna);
+    ui->sdrplayIFGain->setEnabled(en && !m_settings->sdrplay.gain.ifAgcEna);
     ui->sdrplayFallbackConnection->setEnabled(true);
 }
 
