@@ -1715,6 +1715,7 @@ void MainWindow::selectService(const ServiceListId &serviceId)
 
 void MainWindow::uploadEnsembleCSV(const RadioControlEnsemble &ens, const QString &csv, bool isRequested)
 {
+#if HAVE_FMLIST_INTERFACE
 #if 1
     if ((m_settings->uploadEnsembleInfo || isRequested) && m_fmlistInterface && (m_inputDeviceId != InputDevice::Id::UNDEFINED) &&
         (m_inputDevice->capabilities() & InputDevice::Capability::LiveStream))
@@ -1737,6 +1738,7 @@ void MainWindow::uploadEnsembleCSV(const RadioControlEnsemble &ens, const QStrin
                     .arg(DabTables::channelList.value(ens.frequency), ensLabel, EPGTime::getInstance()->dabTime().toString("yyyy-MM-dd_hhmmss"));
     qDebug() << qPrintable(csv);
 #endif
+#endif  // HAVE_FMLIST_INTERFACE
 }
 
 void MainWindow::onServiceListSelection(const QItemSelection &selected, const QItemSelection &deselected)
