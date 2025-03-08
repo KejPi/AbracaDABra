@@ -114,7 +114,7 @@ SdrPlayInput::SdrPlayInput(QObject *parent)
            {-84, -81, -78, -75, -72, -69, -66, -63, -60, -57, -54, -51, -48, -45, -42, -39, -36, -33, -30, -27, -24, -18, -15, -12, -9, -6, -3, 0}},
       }
 {
-    m_devArgs = "driver=sdrplay";
+    m_devArgs = "driver=sdrplay,rfnotch_ctrl=true,dabnotch_ctrl=false";
     m_biasT = false;
 }
 
@@ -145,7 +145,7 @@ bool SdrPlayInput::openDevice(const QVariant &hwId, bool fallbackConnection)
     bool isConnected = false;
     if (foundDevice)
     {
-        SoapySdrInput::setDevArgs(QString("driver=sdrplay,serial=%1").arg(hwId.toString()));
+        SoapySdrInput::setDevArgs(QString("driver=sdrplay,serial=%1,rfnotch_ctrl=true,dabnotch_ctrl=false").arg(hwId.toString()));
         isConnected = SoapySdrInput::openDevice(hwId);
         if (isConnected)
         {
@@ -166,7 +166,7 @@ bool SdrPlayInput::openDevice(const QVariant &hwId, bool fallbackConnection)
         {
             if (it->id.isValid() && !it->id.toString().isEmpty())
             {
-                SoapySdrInput::setDevArgs(QString("driver=sdrplay,serial=%1").arg(it->id.toString()));
+                SoapySdrInput::setDevArgs(QString("driver=sdrplay,serial=%1,rfnotch_ctrl=true,dabnotch_ctrl=false").arg(it->id.toString()));
                 isConnected = SoapySdrInput::openDevice(hwId);
                 if (isConnected)
                 {
