@@ -1311,7 +1311,10 @@ void SetupDialog::onRtlTcpGainSliderChanged(int val)
     {
         ui->rtltcpGainValueLabel->setText(QString("%1 dB").arg(m_rtltcpGainList.at(val)));
         m_settings->rtltcp.gainIdx = val;
-        dynamic_cast<RtlTcpInput *>(m_device)->setGainMode(m_settings->rtltcp.gainMode, m_settings->rtltcp.gainIdx);
+        if (ui->rtltcpGainSlider->isEnabled())
+        {  // user interaction
+            dynamic_cast<RtlTcpInput *>(m_device)->setGainMode(m_settings->rtltcp.gainMode, m_settings->rtltcp.gainIdx);
+        }
     }
     else
     { /* empy gain list => do nothing */
@@ -1902,6 +1905,7 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
             m_device->setPPM(m_settings->rtltcp.ppm);
             dynamic_cast<RtlTcpInput *>(m_device)->setGainMode(m_settings->rtltcp.gainMode, m_settings->rtltcp.gainIdx);
             dynamic_cast<RtlTcpInput *>(m_device)->setAgcLevelMax(m_settings->rtltcp.agcLevelMax);
+            connect(m_device, &InputDevice::gainIdx, ui->rtltcpGainSlider, &QSlider::setValue);
             activateRtlTcpControls(true);
             break;
         case InputDevice::Id::AIRSPY:

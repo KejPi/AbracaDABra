@@ -617,26 +617,27 @@ void RtlTcpInput::setPPM(int ppm)
     }
 }
 
-void RtlTcpInput::setGain(int gainIdx)
+void RtlTcpInput::setGain(int gIdx)
 {
     if (!m_gainList->empty())
     {
         // force index validity
-        if (gainIdx < 0)
+        if (gIdx < 0)
         {
-            gainIdx = 0;
+            gIdx = 0;
         }
-        if (gainIdx >= m_gainList->size())
+        if (gIdx >= m_gainList->size())
         {
-            gainIdx = m_gainList->size() - 1;
+            gIdx = m_gainList->size() - 1;
         }
 
-        if (gainIdx != m_gainIdx)
+        if (gIdx != m_gainIdx)
         {
-            m_gainIdx = gainIdx;
+            m_gainIdx = gIdx;
             m_agcLevelMin = m_agcLevelMinFactorList->at(m_gainIdx) * m_agcLevelMax;
             sendCommand(RtlTcpCommand::SET_GAIN_IDX, m_gainIdx);
             emit agcGain(m_gainList->at(m_gainIdx) * 0.1);
+            emit gainIdx(m_gainIdx);
         }
     }
     else
