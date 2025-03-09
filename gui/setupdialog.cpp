@@ -1254,7 +1254,10 @@ void SetupDialog::onRtlSdrGainSliderChanged(int val)
     {
         ui->rtlsdrGainValueLabel->setText(QString("%1 dB").arg(m_rtlsdrGainList.at(val)));
         m_settings->rtlsdr.gainIdx = val;
-        dynamic_cast<RtlSdrInput *>(m_device)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);
+        if (ui->rtlsdrGainSlider->isEnabled())
+        {  // user interaction
+            dynamic_cast<RtlSdrInput *>(m_device)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);
+        }
     }
     else
     { /* empy gain list => do nothing */
@@ -1891,6 +1894,7 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
             dynamic_cast<RtlSdrInput *>(m_device)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);
             dynamic_cast<RtlSdrInput *>(m_device)->setAgcLevelMax(m_settings->rtlsdr.agcLevelMax);
             m_settings->rtlsdr.hwId = m_device->hwId();
+            connect(dynamic_cast<RtlSdrInput *>(m_device), &RtlSdrInput::gainIdx, ui->rtlsdrGainSlider, &QSlider::setValue);
             activateRtlSdrControls(true);
             break;
         case InputDevice::Id::RTLTCP:

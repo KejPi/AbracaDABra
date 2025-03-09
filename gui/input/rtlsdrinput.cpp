@@ -495,6 +495,7 @@ void RtlSdrInput::setGain(int gIdx)
         else
         {
             emit agcGain(m_gainList->at(m_gainIdx) * 0.1);
+            emit gainIdx(m_gainIdx);
         }
     }
 }

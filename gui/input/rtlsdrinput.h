@@ -107,6 +107,9 @@ public:
     void setAgcLevelMax(float agcMaxValue);
     QList<float> getGainList() const;
 
+signals:
+    void gainIdx(int idx);
+
 private:
     uint32_t m_frequency;
     uint32_t m_bandwidth;
