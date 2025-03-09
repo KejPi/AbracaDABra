@@ -178,12 +178,14 @@ bool SdrPlayInput::openDevice(const QVariant &hwId, bool fallbackConnection)
         }
     }
 
-    m_device->setGainMode(SOAPY_SDR_RX, m_rxChannel, false);
-
-    if (isConnected && m_rfGainMap.contains(m_deviceDescription.device.model))
+    if (isConnected)
     {
-        m_rfGainList = m_rfGainMap.value(m_deviceDescription.device.model);
-        return true;
+        m_device->setGainMode(SOAPY_SDR_RX, m_rxChannel, false);
+        if (m_rfGainMap.contains(m_deviceDescription.device.model))
+        {
+            m_rfGainList = m_rfGainMap.value(m_deviceDescription.device.model);
+            return true;
+        }
     }
     return false;
 }
@@ -200,19 +202,23 @@ void SdrPlayInput::setGainMode(const SdrPlayGainStruct &gain)
             }
             m_gainMode = gain.mode;
             m_device->setGainMode(SOAPY_SDR_RX, m_rxChannel, false);
+            resetAgc();
             break;
         case SdrPlayGainMode::Manual:
             m_gainMode = gain.mode;
             setRFGR(m_rfGainList.size() - 1 - gain.rfGain);
             m_ifAgcEna = gain.ifAgcEna;
-            if (m_ifAgcEna)
+            if (!m_ifAgcEna)
             {
                 setIFGR(-gain.ifGain);
+            }
+            else
+            {
+                setIFGR(m_ifGRmax);
             }
             emit agcGain(getRFGain() - m_ifGR);
             break;
     }
-    resetAgc();
     emit rfLevel(NAN, NAN);
 }
 
@@ -273,6 +279,7 @@ void SdrPlayInput::setRFGR(int rfGR)
         {
             m_device->setGain(SOAPY_SDR_RX, m_rxChannel, "RFGR", m_rfGR);
             qCDebug(sdrPlayInput) << "RF gain =" << getRFGain();
+            emit rfGain(m_rfGainList.size() - 1 - m_rfGR);
         }
         catch (const std::exception &ex)
         {
@@ -299,6 +306,7 @@ void SdrPlayInput::setIFGR(int ifGR)
         {
             m_device->setGain(SOAPY_SDR_RX, m_rxChannel, "IFGR", m_ifGR);
             qCDebug(sdrPlayInput) << "IF gain =" << -m_ifGR;
+            emit ifGain(-m_ifGR);
         }
         catch (const std::exception &ex)
         {

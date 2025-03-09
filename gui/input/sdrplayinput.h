@@ -68,6 +68,10 @@ public:
     virtual QVariant hwId() const override { return m_hwId; }
     QList<float> getRFGainList() const { return m_rfGainList; }
 
+signals:
+    void rfGain(int rfGain);
+    void ifGain(int ifGain);
+
 private:
     enum SwAgcState
     {

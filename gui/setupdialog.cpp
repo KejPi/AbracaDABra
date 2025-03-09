@@ -1676,9 +1676,12 @@ void SetupDialog::onSdrplayRFGainSliderChanged(int val)
 {
     ui->sdrplayRFGainLabel->setText(QString("%1 dB  ").arg(m_sdrplayGainList.at(val)));
     m_settings->sdrplay.gain.rfGain = val;
-    if (dynamic_cast<SdrPlayInput *>(m_device))
-    {
-        dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
+    if (ui->sdrplayRFGainSlider->isEnabled())
+    {  // user interaction
+        if (dynamic_cast<SdrPlayInput *>(m_device))
+        {
+            dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
+        }
     }
 }
 
@@ -1686,9 +1689,12 @@ void SetupDialog::onSdrplayIFGainSliderChanged(int val)
 {
     ui->sdrplayIFGainLabel->setText(QString("%1 dB  ").arg(val));
     m_settings->sdrplay.gain.ifGain = val;
-    if (dynamic_cast<SdrPlayInput *>(m_device))
-    {
-        dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
+    if (ui->sdrplayIFGainSlider->isEnabled())
+    {  // user interaction
+        if (dynamic_cast<SdrPlayInput *>(m_device))
+        {
+            dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
+        }
     }
 }
 
@@ -1928,6 +1934,8 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
             dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
             m_device->setPPM(m_settings->sdrplay.ppm);
             m_device->setBiasT(m_settings->sdrplay.biasT);
+            connect(dynamic_cast<SdrPlayInput *>(m_device), &SdrPlayInput::rfGain, ui->sdrplayRFGainSlider, &QSlider::setValue);
+            connect(dynamic_cast<SdrPlayInput *>(m_device), &SdrPlayInput::ifGain, ui->sdrplayIFGainSlider, &QSlider::setValue);
             activateSdrplayControls(true);
 #endif
             break;
