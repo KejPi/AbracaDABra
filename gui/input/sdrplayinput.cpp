@@ -214,7 +214,7 @@ void SdrPlayInput::setGainMode(const SdrPlayGainStruct &gain)
             }
             else
             {
-                setIFGR(m_ifGRmax);
+                resetAgc();
             }
             emit agcGain(getRFGain() - m_ifGR);
             break;
@@ -256,7 +256,7 @@ void SdrPlayInput::resetAgc()
     }
     else if (m_ifAgcEna)
     {
-        setIFGR(59);
+        setIFGR(40);
     }
     m_levelEmitCntr = 0;
     emit rfLevel(NAN, NAN);
