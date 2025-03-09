@@ -463,7 +463,7 @@ void RtlSdrInput::setGainMode(RtlGainMode gainMode, int gainIdx)
         emit agcGain(m_gainList->at(gainIdx) * 0.1);
     }
 
-    if (RtlGainMode::Hardware == m_gainMode)
+    if (RtlGainMode::Hardware == m_gainMode || RtlGainMode::Driver == m_gainMode)
     {  // signalize that gain is not available
         emit agcGain(NAN);
     }

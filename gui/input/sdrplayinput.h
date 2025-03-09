@@ -69,7 +69,6 @@ public:
     QList<float> getRFGainList() const { return m_rfGainList; }
 
 signals:
-    void rfGain(int rfGain);
     void ifGain(int ifGain);
 
 private:

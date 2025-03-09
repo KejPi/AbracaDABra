@@ -1894,7 +1894,7 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
             dynamic_cast<RtlSdrInput *>(m_device)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);
             dynamic_cast<RtlSdrInput *>(m_device)->setAgcLevelMax(m_settings->rtlsdr.agcLevelMax);
             m_settings->rtlsdr.hwId = m_device->hwId();
-            connect(dynamic_cast<RtlSdrInput *>(m_device), &RtlSdrInput::gainIdx, ui->rtlsdrGainSlider, &QSlider::setValue);
+            connect(m_device, &InputDevice::gainIdx, ui->rtlsdrGainSlider, &QSlider::setValue);
             activateRtlSdrControls(true);
             break;
         case InputDevice::Id::RTLTCP:
@@ -1938,7 +1938,7 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
             dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
             m_device->setPPM(m_settings->sdrplay.ppm);
             m_device->setBiasT(m_settings->sdrplay.biasT);
-            connect(dynamic_cast<SdrPlayInput *>(m_device), &SdrPlayInput::rfGain, ui->sdrplayRFGainSlider, &QSlider::setValue);
+            connect(m_device, &InputDevice::gainIdx, ui->sdrplayRFGainSlider, &QSlider::setValue);
             connect(dynamic_cast<SdrPlayInput *>(m_device), &SdrPlayInput::ifGain, ui->sdrplayIFGainSlider, &QSlider::setValue);
             activateSdrplayControls(true);
 #endif

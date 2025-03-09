@@ -279,7 +279,7 @@ void SdrPlayInput::setRFGR(int rfGR)
         {
             m_device->setGain(SOAPY_SDR_RX, m_rxChannel, "RFGR", m_rfGR);
             qCDebug(sdrPlayInput) << "RF gain =" << getRFGain();
-            emit rfGain(m_rfGainList.size() - 1 - m_rfGR);
+            emit gainIdx(m_rfGainList.size() - 1 - m_rfGR);
         }
         catch (const std::exception &ex)
         {

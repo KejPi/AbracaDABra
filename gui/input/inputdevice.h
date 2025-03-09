@@ -158,6 +158,7 @@ signals:
     void deviceReady();
     void tuned(uint32_t freq);
     void agcGain(float gain);
+    void gainIdx(int idx);
     void rfLevel(float level, float gain);
     void recordBuffer(const uint8_t *buf, uint32_t len);
     void error(const InputDevice::ErrorCode errCode = InputDevice::ErrorCode::Undefined);
