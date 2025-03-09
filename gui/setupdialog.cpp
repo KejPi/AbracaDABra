@@ -1449,7 +1449,7 @@ void SetupDialog::onAirspySensitivityGainSliderChanged(int val)
 {
     ui->airspySensitivityGainLabel->setText(QString::number(val));
     m_settings->airspy.gain.sensitivityGainIdx = val;
-    if (dynamic_cast<AirspyInput *>(m_device))
+    if (dynamic_cast<AirspyInput *>(m_device) && ui->airspySensitivityGainSlider->isEnabled())
     {
         dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
     }
@@ -1459,7 +1459,7 @@ void SetupDialog::onAirspyIFGainSliderChanged(int val)
 {
     ui->airspyIFGainLabel->setText(QString::number(val));
     m_settings->airspy.gain.ifGainIdx = val;
-    if (dynamic_cast<AirspyInput *>(m_device))
+    if (dynamic_cast<AirspyInput *>(m_device) && ui->airspyIFGainSlider->isEnabled())
     {
         dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
     }
@@ -1913,6 +1913,18 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
             m_device->setBiasT(m_settings->airspy.biasT);
             dynamic_cast<AirspyInput *>(m_device)->setGainMode(m_settings->airspy.gain);
             m_settings->airspy.hwId = m_device->hwId();
+            connect(m_device, &InputDevice::gainIdx, this,
+                    [this](int idx)
+                    {
+                        if (m_settings->airspy.gain.mode == AirpyGainMode::Software)
+                        {
+                            ui->airspySensitivityGainSlider->setValue(idx);
+                        }
+                        else if (m_settings->airspy.gain.mode == AirpyGainMode::Hybrid)
+                        {
+                            ui->airspyIFGainSlider->setValue(idx);
+                        }
+                    });
             activateAirspyControls(true);
 #endif
             break;

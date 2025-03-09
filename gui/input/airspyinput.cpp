@@ -368,25 +368,25 @@ void AirspyInput::setGainMode(const AirspyGainStruct &gain)
     emit agcGain(NAN);
 }
 
-void AirspyInput::setGain(int gainIdx)
+void AirspyInput::setGain(int gIdx)
 {
     if (AirpyGainMode::Hybrid == m_gainMode)
     {
-        if (gainIdx < AIRSPY_HW_AGC_MIN)
+        if (gIdx < AIRSPY_HW_AGC_MIN)
         {
-            gainIdx = AIRSPY_HW_AGC_MIN;
+            gIdx = AIRSPY_HW_AGC_MIN;
         }
-        if (gainIdx > AIRSPY_HW_AGC_MAX)
+        if (gIdx > AIRSPY_HW_AGC_MAX)
         {
-            gainIdx = AIRSPY_HW_AGC_MAX;
+            gIdx = AIRSPY_HW_AGC_MAX;
         }
 
-        if (gainIdx == m_gainIdx)
+        if (gIdx == m_gainIdx)
         {
             return;
         }
         // else
-        m_gainIdx = gainIdx;
+        m_gainIdx = gIdx;
 
         if (AIRSPY_SUCCESS != airspy_set_vga_gain(m_device, m_gainIdx))
         {
@@ -394,28 +394,29 @@ void AirspyInput::setGain(int gainIdx)
         }
         else
         {
-            qCDebug(airspyInput) << "Tuner VGA gain set to" << gainIdx;
+            qCDebug(airspyInput) << "Tuner VGA gain set to" << gIdx;
             // emit agcGain(gainList->at(gainIdx));
+            emit gainIdx(m_gainIdx);
         }
         return;
     }
     if (AirpyGainMode::Software == m_gainMode)
     {
-        if (gainIdx < AIRSPY_SW_AGC_MIN)
+        if (gIdx < AIRSPY_SW_AGC_MIN)
         {
-            gainIdx = AIRSPY_SW_AGC_MIN;
+            gIdx = AIRSPY_SW_AGC_MIN;
         }
-        if (gainIdx > AIRSPY_SW_AGC_MAX)
+        if (gIdx > AIRSPY_SW_AGC_MAX)
         {
-            gainIdx = AIRSPY_SW_AGC_MAX;
+            gIdx = AIRSPY_SW_AGC_MAX;
         }
 
-        if (gainIdx == m_gainIdx)
+        if (gIdx == m_gainIdx)
         {
             return;
         }
         // else
-        m_gainIdx = gainIdx;
+        m_gainIdx = gIdx;
 
         if (AIRSPY_SUCCESS != airspy_set_sensitivity_gain(m_device, m_gainIdx))
         {
@@ -423,7 +424,8 @@ void AirspyInput::setGain(int gainIdx)
         }
         else
         {
-            qCDebug(airspyInput) << "Tuner Sensitivity gain set to" << gainIdx;
+            qCDebug(airspyInput) << "Tuner Sensitivity gain set to" << gIdx;
+            emit gainIdx(m_gainIdx);
         }
         return;
     }

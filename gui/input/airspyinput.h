@@ -109,7 +109,7 @@ private:
 
     // private function
     // gain is set from outside using setGainMode() function
-    void setGain(int gainIdx);
+    void setGain(int gIdx);
 
     void onAgcLevel(float level);
     void onWatchdogTimeout();
