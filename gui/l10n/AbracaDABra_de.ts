@@ -335,7 +335,7 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="168"/>
         <source>RF level:</source>
-        <translation type="unfinished"></translation>
+        <translation>RF-Pegel:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="206"/>
@@ -405,7 +405,7 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="556"/>
         <source>Upload to FMLIST</source>
-        <translation type="unfinished"></translation>
+        <translation>Upload zu FMLIST</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="583"/>
@@ -457,7 +457,7 @@
         <location filename="../ensembleinfodialog.cpp" line="84"/>
         <location filename="../ensembleinfodialog.cpp" line="85"/>
         <source>Estimated RF level&lt;br&gt;(only on supported devices)</source>
-        <translation type="unfinished"></translation>
+        <translation>Geschätzter RF-Pegel&lt;br&gt;(nur bei unterstützten Geräten)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="87"/>
@@ -545,7 +545,7 @@
     <message>
         <location filename="../ensembleinfodialog.cpp" line="116"/>
         <source>Upload ensemble information to FMLIST</source>
-        <translation type="unfinished"></translation>
+        <translation>Ensembleinformation zu FMLIST raufladen</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="147"/>
@@ -792,7 +792,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="429"/>
         <source>DAB signal overview</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB-Signal Übersicht</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="432"/>
@@ -1002,12 +1002,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="4009"/>
         <source>Export CSV file</source>
-        <translation type="unfinished">CSV Datei exportieren</translation>
+        <translation>CSV-Datei exportieren</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="4009"/>
         <source>CSV Files</source>
-        <translation type="unfinished">CSV Dateien</translation>
+        <translation>CSV-Dateien</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1641"/>
@@ -1017,12 +1017,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="382"/>
         <source>Show DAB signal overview</source>
-        <translation type="unfinished"></translation>
+        <translation>Übersicht über das DAB-Signal anzeigen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="414"/>
         <source>Export service list...</source>
-        <translation type="unfinished"></translation>
+        <translation>Serviceliste exportieren...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="541"/>
@@ -1196,7 +1196,8 @@ Datei: %1</translation>
         <location filename="../mainwindow.cpp" line="2344"/>
         <source>SPI MOT directory not complete
 Decoded %1 / %2 MOT objects</source>
-        <translation type="unfinished"></translation>
+        <translation>SPI MOT Verzeichnis nicht vollständig
+%1 / %2 MOT Objekte dekodiert</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2471"/>
@@ -1234,7 +1235,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../main.cpp" line="70"/>
         <source>Optional service list JSON file. If not specified ServiceList.json in system directory will be used.</source>
-        <translation type="unfinished"></translation>
+        <translation>Optionale Serviceliste JSON-Datei. Wenn nicht angegeben, wird die ServiceList.json im Systemverzeichnis verwendet.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="4581"/>
@@ -3460,32 +3461,32 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="180"/>
         <source>Save CSV</source>
-        <translation type="unfinished"></translation>
+        <translation>CSV speichern</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="183"/>
         <source>Load CSV</source>
-        <translation type="unfinished"></translation>
+        <translation>CSV laden</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="305"/>
         <source>Warning</source>
-        <translation type="unfinished">Warnung</translation>
+        <translation>Warnung</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="305"/>
         <source>Data in the table will be replaced.</source>
-        <translation type="unfinished"></translation>
+        <translation>Daten in der Tabelle werden ersetzt.</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="307"/>
         <source>You will loose current data, this action is irreversible.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sie werden Daten verlieren, diese Aktion kann nicht rückgängig gemacht werden.</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="328"/>
         <source>Load CSV file</source>
-        <translation type="unfinished"></translation>
+        <translation>Lade CSV-Datei</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="501"/>
@@ -3500,7 +3501,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="771"/>
         <source>Show ensemble information</source>
-        <translation type="unfinished"></translation>
+        <translation>Ensembleinformation anzeigen</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="809"/>
@@ -3670,17 +3671,17 @@ Decoded %1 / %2 MOT objects</source>
         <location filename="../setupdialog.ui" line="1115"/>
         <location filename="../setupdialog.cpp" line="1608"/>
         <source>Reload</source>
-        <translation type="unfinished"></translation>
+        <translation>Neu laden</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="331"/>
         <source>Driver</source>
-        <translation type="unfinished"></translation>
+        <translation>Treiber</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="364"/>
         <source>Use any available RTL-SDR device if the selected one fails</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeglichen RTL-SDR verwenden, falls ausgewählter misslingt</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="677"/>
@@ -3774,17 +3775,17 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../setupdialog.ui" line="1041"/>
         <source>Use any available Airspy device if the selected one fails</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeglichen Airspy verwenden, falls ausgewählter misslingt</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1293"/>
         <source>RF gain</source>
-        <translation type="unfinished"></translation>
+        <translation>RF Verstärkung</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1313"/>
         <source>Use any available SDRplay device if the selected one fails</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeglichen SDRplay verwenden, falls ausgewählter misslingt</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1324"/>
@@ -3794,12 +3795,12 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../setupdialog.ui" line="2662"/>
         <source>FMLIST</source>
-        <translation type="unfinished"></translation>
+        <translation>FMLIST</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2718"/>
         <source>Include XML header in raw data recording</source>
-        <translation type="unfinished"></translation>
+        <translation>XML-Kopfzeilen in Rohdaten einschließen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1223"/>
@@ -4011,17 +4012,17 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="1630"/>
         <source>Audio decoder</source>
-        <translation type="unfinished"></translation>
+        <translation>Audiodekoder</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2149"/>
         <source>Receiver location</source>
-        <translation type="unfinished"></translation>
+        <translation>Empfängerstandort</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2365"/>
         <source>Detector</source>
-        <translation type="unfinished"></translation>
+        <translation>Detektor</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2374"/>
@@ -4041,7 +4042,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="2465"/>
         <source>User interface</source>
-        <translation type="unfinished"></translation>
+        <translation>Benutzeroberfläche</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2559"/>
@@ -4076,7 +4077,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="1649"/>
         <source>Audio recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Audioaufnahme</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1730"/>
@@ -4091,23 +4092,23 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="1769"/>
         <source>Audio output framework:</source>
-        <translation type="unfinished"></translation>
+        <translation>Audioausgang Framework:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1776"/>
         <location filename="../setupdialog.ui" line="2531"/>
         <source>Restart</source>
-        <translation type="unfinished"></translation>
+        <translation>Neu starten</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1841"/>
         <source>SPI application</source>
-        <translation type="unfinished"></translation>
+        <translation>SPI-Anwendung</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1880"/>
         <source>Data storage</source>
-        <translation type="unfinished"></translation>
+        <translation>Speicherort</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1943"/>
@@ -4198,7 +4199,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="2089"/>
         <source>Transmitter database</source>
-        <translation type="unfinished"></translation>
+        <translation>Sendeanlagendatenbank</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2095"/>
@@ -4420,17 +4421,17 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="141"/>
         <source>Alarm announcements</source>
-        <translation type="unfinished"></translation>
+        <translation>Alarmdurchsagen</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="169"/>
         <source>Regular announcements</source>
-        <translation type="unfinished"></translation>
+        <translation>Reguläre Durchsagen</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="191"/>
         <source>Model:</source>
-        <translation type="unfinished"></translation>
+        <translation>Modell:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="218"/>
@@ -4439,14 +4440,14 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
         <location filename="../setupdialog.cpp" line="275"/>
         <location filename="../setupdialog.cpp" line="286"/>
         <source>Connected device:</source>
-        <translation type="unfinished"></translation>
+        <translation>Verbundenes Gerät:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="223"/>
         <location filename="../setupdialog.cpp" line="265"/>
         <location filename="../setupdialog.cpp" line="291"/>
         <source>Serial number:</source>
-        <translation type="unfinished"></translation>
+        <translation>Seriennummer:</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="324"/>
@@ -4466,7 +4467,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="341"/>
         <source>Audio output change will take effect after application restart.</source>
-        <translation type="unfinished"></translation>
+        <translation>Änderung des Audioausgangs wird erst nach Programmneustart wirksam.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="347"/>
@@ -4542,7 +4543,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="1608"/>
         <source>Disconnect</source>
-        <translation type="unfinished"></translation>
+        <translation>Trennen</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1717"/>
@@ -4572,12 +4573,12 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="1750"/>
         <source>Application automatically uploads ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;Ensemble information is a small CSV file with list of services in the ensemble,&lt;br&gt;it is anonymous and contains no personal data.&lt;br&gt;Thank you for supporting the community!</source>
-        <translation type="unfinished"></translation>
+        <translation>Das Programm lädt automatisch die Ensembleinformation auf &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;Die Ensembleinformation ist eine kleine CSV-Datei mit einer Liste von Services in einem Ensemble,&lt;br&gt;es ist anonym und enthält keine persönlichen Daten.&lt;br&gt;Danke, dass Sie die Community unterstützen!</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1758"/>
         <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currenly disabled.&lt;br&gt;Ensemble information is a small CSV file with list of services in the ensemble,&lt;br&gt;it is anonymous and contains no personal data.&lt;br&gt;Please consider enabling this option to help the community.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Upload der Ensembleinformation zu &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; ist aktuell deaktiviert.&lt;br&gt;Die Ensembleinformation ist eine kleine CSV-Datei mit einer Liste von Services in einem Ensemble,&lt;br&gt;es ist anonym und enthält keine persönlichen Daten.&lt;br&gt;Danke, dass Sie die Community unterstützen!</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1833"/>
@@ -4630,104 +4631,104 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../signaldialog.ui" line="20"/>
         <source>DAB Signal</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB-Signal</translation>
     </message>
     <message>
         <location filename="../signaldialog.ui" line="79"/>
         <source>SNR:</source>
-        <translation type="unfinished">SNR:</translation>
+        <translation>SNR:</translation>
     </message>
     <message>
         <location filename="../signaldialog.ui" line="109"/>
         <source>RF level:</source>
-        <translation type="unfinished"></translation>
+        <translation>RF-Pegel:</translation>
     </message>
     <message>
         <location filename="../signaldialog.ui" line="139"/>
         <source>Gain:</source>
-        <translation type="unfinished"></translation>
+        <translation>Verstärkung:</translation>
     </message>
     <message>
         <location filename="../signaldialog.ui" line="175"/>
         <source>Frequency:</source>
-        <translation type="unfinished">Frequenz:</translation>
+        <translation>Frequenz:</translation>
     </message>
     <message>
         <location filename="../signaldialog.ui" line="205"/>
         <source>Offset:</source>
-        <translation type="unfinished"></translation>
+        <translation>Offset:</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="32"/>
         <source>No signal</source>
-        <translation type="unfinished">Kein Signal</translation>
+        <translation>Kein Signal</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="32"/>
         <source>Signal found</source>
-        <translation type="unfinished">Signal gefunden</translation>
+        <translation>Signal gefunden</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="32"/>
         <source>Sync</source>
-        <translation type="unfinished">Sync</translation>
+        <translation>Sync</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="51"/>
         <source>DAB signal SNR</source>
-        <translation type="unfinished">DAB-Signal-SNR</translation>
+        <translation>DAB-Signal-SNR</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="58"/>
         <source>Estimated RF level</source>
-        <translation type="unfinished"></translation>
+        <translation>Geschätzer RF-Pegel</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="65"/>
         <source>Tuner gain</source>
-        <translation type="unfinished"></translation>
+        <translation>Tunerverstärkung</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="72"/>
         <source>Tuned frequency</source>
-        <translation type="unfinished">Verwendete Frequenz</translation>
+        <translation>Verwendete Frequenz</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="86"/>
         <source>Estimated frequency offset</source>
-        <translation type="unfinished">Geschätzter Frequenzoffset</translation>
+        <translation>Geschätzter Frequenzoffset</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="101"/>
         <source>SNR [dB]</source>
-        <translation type="unfinished">SNR [dB]</translation>
+        <translation>SNR [dB]</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="147"/>
         <source>frequency [MHz]</source>
-        <translation type="unfinished"></translation>
+        <translation>Frequenz [MHz]</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="184"/>
         <source>Frequency correction</source>
-        <translation type="unfinished"></translation>
+        <translation>Frequenzkorrektur</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="195"/>
         <source>Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Konfiguration</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="523"/>
         <location filename="../signaldialog.cpp" line="583"/>
         <location filename="../signaldialog.cpp" line="594"/>
         <source>N/A</source>
-        <translation type="unfinished">unzutreffend</translation>
+        <translation>unzutreffend</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="870"/>
         <source>%1 MHz&lt;br&gt;%2 %3</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 MHz&lt;br&gt;%2 %3</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="881"/>
@@ -4760,7 +4761,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../tii/tiidialog.cpp" line="638"/>
         <source>Restore default zoom</source>
-        <translation type="unfinished"></translation>
+        <translation>Standardzoom wiederherstellen</translation>
     </message>
 </context>
 <context>
