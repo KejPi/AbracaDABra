@@ -1,20 +1,21 @@
 # AbracaDABra
-Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks but also with Airspy R2 and Airspy Mini devices and with many devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
+Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks but also with Airspy devices, SDRplay devices and with many devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
 
-Application is based on Qt6 cross-platform software development framework and can run on any platform supported by Qt6 _(Qt version 6.5 or higher is required for full functionality since application version 2.5.90)_. 
-Prebuilt binaries are released for Windows, macOS (both Intel and Apple Silicon) and Linux x86-64 and AARCH64 (AppImage). 
+Application is based on Qt6 cross-platform software development framework and can run on any platform supported by Qt6 _(Qt version 6.5 or higher is required for full functionality)_. 
+Prebuilt binaries are released for Windows, macOS (both Intel and Apple Silicon) and Linux x86-64 and AARCH64 (AppImage). AARCH64 AppImage is built to run on Raspberry Pi4/5 with 64 bit OS.
 ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
 <p align="center" width="100%">
     <img width="889" alt="AbracaDABra application window" src="https://github.com/KejPi/AbracaDABra/assets/6438380/717ed65e-314b-4307-9e32-968c5582eeda"> 
 </p>
 
 ## Features
-* Following input devices are supported:
+* Following [input devices](#input-devices) are supported:
   * RTL-SDR (default device)
-  * [Airspy](https://airspy.com) (optional) - only Airspy Mini and R2 are supported, HF+ devices do not work due to limited bandwidth. If you have problems with Airspy devices, please check the firmware version. Firmware update maybe required for correct functionality.
+  * [Airspy](https://airspy.com) (optional)
   * [SoapySDR](https://github.com/pothosware/SoapySDR/wiki) (optional)
+  * [SDRplay](https://www.sdrplay.com) (optional, requires [SoapySDR](https://github.com/pothosware/SoapySDR/wiki))
   * RTL-TCP
-  * Raw file input (in expert mode only, INT16 or UINT8 format)
+  * Raw file input
 * Band scan with automatic service list
 * Service list management
 * DAB (mp2) and DAB+ (AAC) audio decoding
@@ -26,14 +27,19 @@ ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/
 * TII decoding and continuous scanning (DX)
 * Audio and data services reconfiguration
 * Dynamic programme type (PTy)
-* Ensemble structure view with all technical details
+* Ensemble structure view with all technical details, upload to [FMLIST](https://www.fmlist.org)
 * Raw file dumping (optionally with XML header)
 * Audio recording
-* Only band III and DAB mode 1 are supported.
+* DAB input signal spectrum visualization
+* RF level estimation on supported devices
+* Only band III and DAB mode 1 are supported
 * Simple user-friendly interface, trying to follow DAB _Rules of implementation (<a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>)_
 * Multiplatform (Windows, macOS and Linux)
 * Dark theme supported on all platforms
 * Localization to German, Czech and Polish (not complete)
+
+
+AbracaDABra desktop application is available for free and will remain so in the future. However, if you like it, you can [buy me a beer](https://www.buymeacoffee.com/kejpi) 🍺
 
 ## Basic mode
 <p align="center" width="100%">
@@ -46,13 +52,94 @@ Service can be easily added to favorites by clicking "star" icon.  Most of the e
 
 ## Expert mode
 <p align="center" width="100%">
-    <img width="889" alt="Snímek obrazovky 2024-09-19 v 21 56 20" src="https://github.com/user-attachments/assets/2d304694-5993-4c5b-acb3-416c1b1106b1">
-    <img width="968" alt="Snímek obrazovky 2024-09-19 v 21 46 44" src="https://github.com/user-attachments/assets/11a30a85-1cfe-4bba-b834-11171c6a8aba">
+    <img width="889" alt="Application in expert mode" src="https://github.com/user-attachments/assets/2d304694-5993-4c5b-acb3-416c1b1106b1">
+    <img width="968" alt="Ensemble information" src="https://github.com/user-attachments/assets/11a30a85-1cfe-4bba-b834-11171c6a8aba">
 </p>
 In addition to basic mode, expert mode shows ensemble tree with structure of services and additional details of currently tuned service. 
 Furthermore it is possible to change the DAB channel manually in this mode. 
 This is particularly useful when antenna adjustment is done in order to receive ensemble that is not captured during automatic band scan.
 Expert mode can be enabled in Settings dialog.
+
+## Input devices
+
+AbracaDABra supports multiple input devices, some of them are optional. Device specific settings are described in this section. 
+
+### RTL-SDR
+
+RTL-SDR is default input device. It is highly recommended to use [RTL-SDR driver by old-dab](https://github.com/old-dab/rtlsdr) when compiling application from source code. Prebuilt binaries are using this driver. 
+
+It is possible to select particular device when more devices are available. You can choose the device in settings (see screenshot below). When option called "Use any available RTL-SDR device if selected one fails" is active, application tries to connect the first functional RTL-SDR device if the selected device is not available, does not work or is already in use. Please note that all RTL-SDR devices have typically serial number 00000001 but you can modify it using `rtl_eeprom` tool to be able to distiguish your devices. Follow this [video guide](https://www.youtube.com/watch?v=xGEDglwOHng) to do it.  
+
+RTL-SDR device supports 3 or 4 gain control modes:
+* Software (default) - gain is controlled by the application
+* Driver - available only for [RTL-SDR driver by old-dab](https://github.com/old-dab/rtlsdr). Gain is controlled by the driver.
+* Hardware - internal RTL-SDR HW gain control. RF level estimation is not available in this mode
+* Manual - manual control of the gain
+
+_Note:_ SW AGC level threshold value can be adjusted to control maximum level threshold for automatic gain control. This control is more intended for debugging, default value is well tuned so it is typically not needed to be altered. Please do not report any issues when you change the value.
+
+[screenshot]
+
+### RTL-TCP
+
+RTL-TCP is a simple server that provides IQ signal stream. Application can connect to server running on localhost (127.0.0.1) as well as on remote server. Server implementation [by old-dab](https://github.com/old-dab/rtlsdr) supports also so called control port. Connection to this port is optional, but when it is connected application can estimate RF level in dBm. 
+
+RTL-TCP device supports 3 gain control modes:
+* Software (default) - gain is controlled by the application
+* Hardware - internal HW gain control by RTL-SDR device server is connected to. RF level estimation is not available in this mode
+* Manual - manual control of the gain
+
+_Note:_ SW AGC level threshold value can be adjusted to control maximum level threshold for automatic gain control. This control is more intended for debugging, default value is well tuned so it is typically not needed to be altered. Please do not report any issues when you change the value.
+
+[screenshot]
+
+### Airspy
+
+Airspy is optional device when you build application from the source code. It is available in prebuilt binaries. Only Airspy Mini and R2 are supported, other devices do not have sufficient bandwith for DAB reception. If you have problems with Airspy devices, please check the firmware version. Firmware update maybe required for correct functionality.
+
+It is possible to select particular device when more devices are available. You can choose the device in settings (see screenshot below). When option called "Use any available Airspy device if selected one fails" is active, application tries to connect the first functional Airspy device if the selected device is not available, does not work or is already in use.
+
+Airspy device supports 4 gain control modes:
+* Software (default) - gain is controlled by application. So called sensitivity gain is used for that.
+* Hybrid - application controls IF gain but other two gains are controlled by driver.
+* Sensitivity - manual control of sensitivity gain. Physical gain controls in the device are set by driver according to sensitivity gain index.
+* Manual - full manual control of all available gains. It is possible to enable AGC for selected gain controls in this mode. 
+
+_Note:_ RF level estimation is not available for Airspy devices.
+
+[screenshot]
+
+### SDRplay
+
+SDRplay is optional device. It is based on [SoapySDR](https://github.com/pothosware/SoapySDR/wiki) and requires [SoapySDR SDRplay3 plugin](https://github.com/pothosware/SoapySDRPlay3) to be in located in `SOAPY_SDR_PLUGIN_PATH`. Prebuilt binaries are distributed with necessary libraries and configured to find required plugin in the installation location. Nevertheless in order to make SDRplay device functional you also need to install [SDRplay API](https://www.sdrplay.com/api/) 3.15 with background service that is required to access SDRplay devices. 
+
+It is possible to select particular device when more devices are available. You can choose the device in settings (see screenshot below). When option called "Use any available SDRplay device if selected one fails" is active, application tries to connect the first functional SDRplay device if the selected device is not available, does not work or is already in use.
+
+SDRplay devices have 2 independent gain controls, application calls them RF and IF. RF gain controls LNA gain reduction and IF gain controls IF gain reduction. You can find more details about SDRplay devices in documentation available [online](https://www.sdrplay.com/apps-catalogue/).
+
+SDRplay device supports 2 gain modes:
+* Software (default) - RF and IF gain is controlled by application. Please note that control may fail in case of strong adjacent channel that could lead to LNA overload. 
+* Manual - both RF ad IF gain is in manual mode however you can enable AGC on IF gain. In this case IF gain will be controlled by the application. 
+
+[screenshot]
+
+### SoapySDR
+
+[SoapySDR](https://github.com/pothosware/SoapySDR/wiki) is an open-source generalized API and runtime library for interfacing with SDR devices. It supports many SDR devices through runtime-loadable modules. In order to use your device using this API, you need to get plugin library and set `SOAPY_SDR_PLUGIN_PATH` so that is is recognized by the application. Then you need to specify device parameters, antenna and RX channel and you can connect to the device. Screenshot below shows RSP1A device connected as SoapySDR device.
+
+SoapySDR device supports 2 gain modes: 
+* Device - gain control by device if available from SoapySDR API
+* Manual - all gain controls reported by API are exposed for manual control
+
+_Note:_ RF level estimation is not available for SoapySDR devices.
+
+[screenshot]
+
+### Raw file
+
+Raw file is a virtual device that is used to play files with raw IQ signal recording. This device is only available in [Expert mode](#expert-mode). You can create compatible recording from Ensemble information dialog. These files are particularly useful for debugging. Application supports files with 8 bit unsigned or 16 bit signed integer samples and sampling rate 2048kHz. It is possible to play the file in endless loop and seek within the file using controls in settings dialog. 
+
+[screenshot]
 
 ## DAB Announcements support
 An announcement is a period of elevated interest within an audio programme. It is typically a spoken audio message, often with a lead-in and lead-out 
@@ -76,7 +163,11 @@ Announcements from other service display a thematic placeholder. <a href="https:
 <a href="https://www.worlddab.org/dab/data-applications/service-and-programme-information">Service and programme information</a> (SPI) application is supported. 
 When SPI application is enabled in the settings and SPI is available for selected service and/or in the ensemble, application starts its decoding automatically.
 SPI from X-PAD, from secondary service and from dedicated data service is supported, it can be even decoded from more sources in parallel. 
-In general, SPI application is very slow and it takes several minutes to acquire all objects. AbracaDABra can use internet connection to download service logos and to retrieve service information using RadioDNS if it is supported by broadcaster of the selected service. 
+In general, SPI application is very slow and it takes several minutes to acquire all objects, decoding progress is indicated in main application window. 
+
+[screenshot]
+
+AbracaDABra can use internet connection to download service logos and to retrieve service information using RadioDNS if it is supported by broadcaster of the selected service. 
 Both internet connection and RadioDNS are optional features that are enabled by default.
 
 <p align="center" width="100%">
@@ -166,13 +257,34 @@ _Notes:_
 * When scheduled recording is about to start, the dialog with warning to user pops up (30 seconds before scheduled time) and then service to be recorded is selected about 10 seconds before scheduled time.
 * Application must run in order to make scheduled recoding happen. In other words, application does not automatically start when audio recording is scheduled.
 * Any ongoing recording is blocking scheduled item to start.
-* Application does not block user to define overlapping recording schedules. If user adds shedule items that are overlaping, conflict is indicated by red triangle icon in audio recording schedule table ("Schedule #3" in the screenshot below). In case of conflicting schedules, the first scheduled item is completed as defined ("Schedule #2" in screenshot) and then the conflicting item starts. Recording is always performed in the order shown in the table.
+* Application does not block user to define overlapping recording schedules. If user adds schedule items that are overlapping, conflict is indicated by red triangle icon in audio recording schedule table ("Schedule #3" in the screenshot below). In case of conflicting schedules, the first scheduled item is completed as defined ("Schedule #2" in screenshot) and then the conflicting item starts. Recording is always performed in the order shown in the table.
 * Ongoing scheduled audio recording can be stopped anytime from application menu or from status bar like any other audio recording.
 * If service to be recorded is available from more ensembles, the last used ensemble is used for recording (like when user selects services from the service list).
+* Audio recording schedule is stored in `AudioRecordingSchedule.json` file in INI file [location](#expert-settings)
 
 <p align="center" width="100%">
 <img width="738" alt="audioRecordingSchedule" src="https://github.com/KejPi/AbracaDABra/assets/6438380/7aa07e1f-ee41-44b2-bdb6-41e65d46261e">
 </p>
+
+## FMLIST upload
+
+AbracaDABra uploads information about currently tuned ensemble to [FMLIST](https://www.fmlist.org) as small CSV file with list of services in current ensemble. This file is anonymous and contains no personal data, this is example of such file:
+
+```text
+Ensemble Name;Ensemble ID;Channel;Frequency;Service Name;Service ID;Service Language;Service Country;PTY;Short Label;ECC;Component Label;Component Language;Type;Sub channel ID;Codec;Bitrate;CU;Protection level;User application
+COLOR DAB+ PHA;2117;6A;181936;Expres FM;203B;none;Czech Republic;none;ExpresFM;E22;Expres FM;none;Audio Stream DAB+;4;AAC+;96;72;EEP 3-A;SPI, MOT Slideshow
+COLOR DAB+ PHA;2117;6A;181936;COLOR MusicRadio;2442;Czech;Czech Republic;none;COLOR;E22;COLOR MusicRadio;Czech;Audio Stream DAB+;1;AAC+;96;72;EEP 3-A;SPI, MOT Slideshow
+COLOR DAB+ PHA;2117;6A;181936;Classic Praha;244A;none;Czech Republic;none;Classic;E22;Classic Praha;none;Audio Stream DAB+;10;AAC+;128;84;EEP 2-B;SPI, MOT Slideshow
+COLOR DAB+ PHA;2117;6A;181936;HEY Radio;24F8;none;Czech Republic;none;HEYRadio;E22;HEY Radio;none;Audio Stream DAB+;2;AAC+;96;72;EEP 3-A;SPI, MOT Slideshow
+COLOR DAB+ PHA;2117;6A;181936;DAB Test HQ;2F75;none;Czech Republic;none;TestHQ;E22;DAB Test HQ;none;Audio Stream DAB+;19;AAC+;128;96;EEP 3-A;SPI, MOT Slideshow
+COLOR DAB+ PHA;2117;6A;181936;ZUN radio;2F76;none;Czech Republic;none;ZUN;E22;ZUN radio;none;Audio Stream DAB+;14;AAC+;72;72;EEP 2-A;SPI, MOT Slideshow
+COLOR DAB+ PHA;2117;6A;181936;MUSICONLY;2F77;none;Czech Republic;none;MUSICONL;E22;MUSICONLY;none;Audio Stream DAB+;7;AAC+;72;54;EEP 3-A;SPI, MOT Slideshow
+COLOR DAB+ PHA;2117;6A;181936;'Rádio SÁZAVA;2FBA;none;Czech Republic;none;SÁZAVA;E22;'Rádio SÁZAVA;none;Audio Stream DAB+;D;AAC+;72;54;EEP 3-A;SPI, MOT Slideshow
+COLOR DAB+ PHA;2117;6A;181936;Americana Radio;2FBB;none;Czech Republic;none;American;E22;Americana Radio;none;Audio Stream DAB+;C;AAC+;64;42;EEP 2-B;SPI, MOT Slideshow
+COLOR DAB+ PHA;2117;6A;181936;Black Hornet;2FD1;none;Czech Republic;none;BHornet;E22;Black Hornet;none;Audio Stream DAB+;11;AAC+;64;32;EEP 4-A;SPI, MOT Slideshow
+```
+
+This feature can be disabled in settings but please consider keeping this option enabled to help the community.
 
 ## TII decoding
 TII decoder is considered to be advanced DX feature thus it is only available when application is in [Expert mode](#expert-mode). Before using it, the feature needs to be configured from application settings:
@@ -192,11 +304,13 @@ _Note:_ Map is centered in Prague when location is not valid.
 
 You can also configure default folder to be used to store TII log in CVS format. By default it is `Documents` folder. Logging can be started from TII dialog.
 
+TII detector can run in _Sensitive_ or in _Reliable_ mode. _Sensitive_ mode is default, it gives good results but in some corner cases the detected weak codes might be invalid. _Reliable_ option on the other hand uses more conservative criteria to evaluate the TII, thus it generally detects less codes but with lower probability of fake detection. 
+
 Last TII related option is a possibility to enable spectrum plot. This option is mostly for debug purposes. If enabled it displays spectrum-like plot in the TII Decoder dialog that shows sum of carrier pairs calculated from NULL symbol of DAB signal. 
 
 _Note:_ It is not a real spectrum of NULL symbol but rather preprocessed TII information extracted from it.
 
-Plot can be zoomed in both axes by mouse wheel or in one axis by clicking on the axis a zooming by mouse wheel. When zoomed plot can be dragged by mouse, zoom is reset do default by right click on plot area. _Note:_ Optional [QCustomPlot library](https://www.qcustomplot.com) is needed for this functionality.
+Plot can be zoomed in both axes by mouse wheel or in one axis by clicking on the axis a zooming by mouse wheel. When zoomed plot can be dragged by mouse, zoom is reset to default by right click on plot area. _Note:_ Optional [QCustomPlot library](https://www.qcustomplot.com) is needed for this functionality.
 
 <p align="center" width="100%">
 <img width="1185" alt="Snímek obrazovky 2024-12-28 v 17 30 49" src="https://github.com/user-attachments/assets/d2307701-0cab-4fdb-9dad-782d0987d7df" />
@@ -205,7 +319,7 @@ Plot can be zoomed in both axes by mouse wheel or in one axis by clicking on the
 TII Decoder dialog shows an interactive map provided by [OpenStreetMap](https://www.openstreetmap.org/copyright), table of detected transmitter codes and ensemble information. Blue dot shows location configured in Settings.
 Table shows TII code (Main & Sub), relative transmitter level, distance and azimuth if position of the transmitter is known. Table can be sorted by any column by clicking on its header, by default it is sorted by Level so that the strongest transmitter is on top.
 To see details of particular transmitter, you can either select it by clicking on the row in table or you can click on position bubble in the map. Transmitter details are shown above the map in bottom right corner like in the screenshot above. 
-It is also possible to record CVS log with recieved codes using "recording dot" button in bottom left corner of the dialog. Please note, that logs are stored to `Documents` folder unless the location is changed in Settings dialog (TII tab).
+It is also possible to record CVS log with received codes using "recording dot" button in bottom left corner of the dialog. Please note, that logs are stored to `Documents` folder unless the location is changed in Settings dialog (TII tab).
 
 ## Scanning tool
 AbracaDABra offers a possibility to run an unattended DAB band scan and to store all received transmitters. This is an advanced DX feature thus it is only available when application is in [Expert mode](#expert-mode). [TII decoding](#tii-decoding) configuration is required for correct functionality of the tool. 
@@ -221,20 +335,23 @@ Scanning tool can be configured to run in one of 3 different modes:
 
 Number of scan cycles can be configured. One scan cycle means scanning all selected channels once. You can let the Scanning tool to run "forever" by setting number of cycles to Inf (value 0). 
 
-By default all channels in band III are scanned (5A-13F, 38 channels in total) but you can scan only some channels using Select channels button.
+By default all channels in band III are scanned (5A-13F, 38 channels in total) but you can scan only some channels using "Select channels" button.
 
-Scanning results are displayed in the table as well as red circles on the map. Blue circle is location specified in TII settings. You can select any row in the table by clicking on it and corresponding transmitter is shown as bubble on map with detailed information in bottom right corner (see screenshot above). It works also the other way around by clicking the red circle on the map. Multiple rows selection is also supported. In this case corresponding bubles are shown on the map but no details about transmitters are available. Table can be sorted by any column by clicking on it. It is possible to display ensemble structure by double clicking on the row or from context menu on right mouse click (Precise mode only).
-Results can be stored to CVS file using Export as CSV button. Unlike TII dialog, Scanner tool does not store the results "on the fly" during scanning.
+Scanning results are displayed in the table as well as red circles on the map. Blue circle is location specified in TII settings. You can select any row in the table by clicking on it and corresponding transmitter is shown as bubble on map with detailed information in bottom right corner (see screenshot above). It works also the other way around by clicking the red circle on the map. Multiple rows selection is also supported. In this case corresponding bubbles are shown on the map but no details about transmitters are available. Table can be sorted by any column by clicking on it. It is possible to display ensemble structure by double clicking on the row or from context menu on right mouse click (Precise mode only).
 
-_Note:_ Application service list is preserved when Scannig tool is running. Use Band scan functionality if you want to update service list. Furthermore, iteractions with application are limited when Scanning tool performs scanning.
+Results can be stored to CVS file using Export as CSV button. Unlike TII dialog, Scanner tool does not store the results "on the fly" during scanning. You can also load previously stored CVS file to display the results in the dialog. Please note that this CSV file replaces the contents of the table and since location is not stored in the file, transmitter distances will be calculated using current location known by application. 
 
-## SNR Plot
-SNR Plot is considered to be advanced feature thus it is only available when application is in [Expert mode](#expert-mode). It needs optional [QCustomPlot library](https://www.qcustomplot.com).
-This feature can be accessed by clicking on SNR value in status bar. It displays time plot of SNR that might be particularly useful for antenna alignment. No user interractions with this plot are supported.
+_Note:_ Application service list is preserved when Scanning tool is running. Use Band scan functionality if you want to update service list. Furthermore, iterations with application are limited when Scanning tool performs scanning.
 
-<p align="center" width="100%">
-<img width="728" alt="SNR" src="https://github.com/user-attachments/assets/2e995e35-c199-4370-b811-0e0d22da0ea6">
-</p>
+## DAB signal overview
+DAB signal overview is considered to be advanced feature thus it is only available when application is in [Expert mode](#expert-mode). It needs optional [QCustomPlot library](https://www.qcustomplot.com).
+This feature can be accessed by clicking on SNR value in dB in status bar or from application menu. It displays spectrum of the input signal, time plot of SNR and other signal parameters known by application. Border between plots can be moved to very top or very bottom to hide spectrum or SNR plot respectively. It is possible to activate frequency correction of the spectrum (under tree dots at bottom right corner). This removes frequency offset of the signal and gives cleaner spectrum of DAB signal in general. 
+
+Spectrum plot can be zoomed in both axes by mouse wheel or in one axis by clicking on the axis a zooming by mouse wheel. Spectrum plot can be dragged by mouse, zoom is reset to default by right click on plot area.
+
+_Note:_ Spectrum calculation and visualization causes higher CPU load of the application. 
+
+[screenshot]
 
 ## Expert settings
 Some settings can only be changed by editing of the INI file. File location is OS dependent:
@@ -245,13 +362,14 @@ Some settings can only be changed by editing of the INI file. File location is O
 Following settings can be changed by editing AbracaDABra.ini:
 
       [General]
-      audioFramework=0             # 0 means PortAudio (default if available), 1 means Qt audio framework
       keepServiceListOnScan=false  # delete (false, default value) or keep (true) current service list when running band scan 
                                    # note: favorites are not deleted
       
 Application shall not run while changing INI file, otherwise the settings will be overwritten.
 
-It is also possible to use other than default INI file using `--ini` or `-i` command line parameter.
+It is also possible to use other than default INI file using `--ini` or `-i` command line parameter. 
+
+Service list is stored in dedicated `ServiceList.json` file since version 3.0.0. By default, application looks for it in the same folder as INI file but you can specify different file using `--service-list` or `-s` command line parameter. If the file does not exist, applications creates one and uses it for storing the service list. 
 
 ## How to install
 
@@ -296,7 +414,7 @@ For a fresh Ubuntu 22.04 installation you can use the following commands to inst
        sudo apt-get install libusb-dev librtlsdr-dev libfaad2 mpg123 libmpg123-dev libfaad-dev
        sudo apt-get install portaudio19-dev rtl-sdr    
 
-Ubuntu 24.04 or lower does not support Qt>=6.5.0 that is required for full applications features. If you want to compile the application you shall [install](https://doc.qt.io/qt-6/qt-online-installation.html) Qt using [online installer](https://www.qt.io/download-qt-installer-oss). Following modules are sufficcient to compile AbracaDABra:
+Ubuntu 24.04 or lower does not support Qt>=6.5.0 that is required for full applications features. If you want to compile the application you shall [install](https://doc.qt.io/qt-6/qt-online-installation.html) Qt using [online installer](https://www.qt.io/download-qt-installer-oss). Following modules are sufficient to compile AbracaDABra:
 
 ![Screenshot from 2024-11-08 19-51-02](https://github.com/user-attachments/assets/56c32368-9472-4f8a-8d18-4cc65120b88b)
 
@@ -322,7 +440,7 @@ Then clone the project:
    
 3. Export QT path
 
-         export QT_PATH=$HOME/Qt/6.7.2/gcc_64
+         export QT_PATH=$HOME/Qt/6.7.3/gcc_64
 
 3. Run cmake
 
@@ -349,10 +467,15 @@ Then clone the project:
        sudo make install
        sudo ldconfig
 
-
 _Note:_ `CMAKE_INSTALL_PREFIX` is `/usr/local` by default. It means that application installs to `/usr/local/bin` and library is installed to `/usr/local/lib`. Make sure that `/usr/local/lib` is in your `ldconfig` path, if it is not then use `LD_LIBRARY_PATH` environment variable when running AbracaDABra:
 
        LD_LIBRARY_PATH=/usr/local/lib:$QT_PATH/lib:$LD_LIBRARY_PATH /usr/local/bin/AbracaDABra &    
+
+Optional SDRplay support:
+
+SoapySDR is required, additionally SDRplay API](https://www.sdrplay.com/api/) 3.15 must be installed and [SoapySDR SDRplay3 plugin](https://github.com/pothosware/SoapySDRPlay3) needs to be built from source. Then specify `SOAPY_SDR_PLUGIN_PATH` when you run the application.
+
+
 
 ## USBFS buffer size
 
@@ -370,3 +493,5 @@ sudo bash -c 'echo 0 > /sys/module/usbcore/parameters/usbfs_memory_mb'
 ```
 There are instructions on the internet how to make this settings persistent, for example [here](https://github.com/OpenKinect/libfreenect2/issues/807)
        
+
+
