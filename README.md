@@ -53,7 +53,7 @@ Service can be easily added to favorites by clicking "star" icon.  Most of the e
 ## Expert mode
 <p align="center" width="100%">
     <img width="889" alt="Application in expert mode" src="https://github.com/user-attachments/assets/2d304694-5993-4c5b-acb3-416c1b1106b1">
-    <img width="968" alt="Ensemble information" src="https://github.com/user-attachments/assets/11a30a85-1cfe-4bba-b834-11171c6a8aba">
+    <img width="1152" alt="Ensemble information" src="https://github.com/user-attachments/assets/25eeef70-1d0c-422c-8a9c-c304fcb206f0" />
 </p>
 In addition to basic mode, expert mode shows ensemble tree with structure of services and additional details of currently tuned service. 
 Furthermore it is possible to change the DAB channel manually in this mode. 
@@ -78,7 +78,9 @@ RTL-SDR device supports 3 or 4 gain control modes:
 
 _Note:_ SW AGC level threshold value can be adjusted to control maximum level threshold for automatic gain control. This control is more intended for debugging, default value is well tuned so it is typically not needed to be altered. Please do not report any issues when you change the value.
 
-[screenshot]
+<p align="center" width="100%">
+    <img width="651" alt="RTL-SDR" src="https://github.com/user-attachments/assets/e76aaad8-5efa-412d-8673-dbae6f65d98e" />
+</p>
 
 ### RTL-TCP
 
@@ -91,7 +93,9 @@ RTL-TCP device supports 3 gain control modes:
 
 _Note:_ SW AGC level threshold value can be adjusted to control maximum level threshold for automatic gain control. This control is more intended for debugging, default value is well tuned so it is typically not needed to be altered. Please do not report any issues when you change the value.
 
-[screenshot]
+<p align="center" width="100%">
+    <img width="651" alt="RTL_TCP" src="https://github.com/user-attachments/assets/ddac7c26-e07a-461e-85c2-d835dd1c1967" />
+</p>
 
 ### Airspy
 
@@ -107,7 +111,9 @@ Airspy device supports 4 gain control modes:
 
 _Note:_ RF level estimation is not available for Airspy devices.
 
-[screenshot]
+<p align="center" width="100%">
+    <img width="651" alt="Airspy" src="https://github.com/user-attachments/assets/32ba4fb1-793e-4c8c-9ce8-c710b1cb3fbb" />
+</p>
 
 ### SDRplay
 
@@ -121,7 +127,9 @@ SDRplay device supports 2 gain modes:
 * Software (default) - RF and IF gain is controlled by application. Please note that control may fail in case of strong adjacent channel that could lead to LNA overload. 
 * Manual - both RF ad IF gain is in manual mode however you can enable AGC on IF gain. In this case IF gain will be controlled by the application. 
 
-[screenshot]
+<p align="center" width="100%">
+    <img width="651" alt="SDRplay" src="https://github.com/user-attachments/assets/fce9cd85-4bec-4bae-b5e4-243397372b53" />
+</p>
 
 ### SoapySDR
 
@@ -133,13 +141,17 @@ SoapySDR device supports 2 gain modes:
 
 _Note:_ RF level estimation is not available for SoapySDR devices.
 
-[screenshot]
+<p align="center" width="100%">
+    <img width="651" alt="SoapySDR" src="https://github.com/user-attachments/assets/afde7352-4964-45d5-a678-8c8571bc5b97" />
+</p>
 
 ### Raw file
 
 Raw file is a virtual device that is used to play files with raw IQ signal recording. This device is only available in [Expert mode](#expert-mode). You can create compatible recording from Ensemble information dialog. These files are particularly useful for debugging. Application supports files with 8 bit unsigned or 16 bit signed integer samples and sampling rate 2048kHz. It is possible to play the file in endless loop and seek within the file using controls in settings dialog. 
 
-[screenshot]
+<p align="center" width="100%">
+    <img width="651" alt="RawFile" src="https://github.com/user-attachments/assets/ae7e2a17-36b9-4279-b9d1-2e22770b8913" />
+</p>
 
 ## DAB Announcements support
 An announcement is a period of elevated interest within an audio programme. It is typically a spoken audio message, often with a lead-in and lead-out 
@@ -165,7 +177,9 @@ When SPI application is enabled in the settings and SPI is available for selecte
 SPI from X-PAD, from secondary service and from dedicated data service is supported, it can be even decoded from more sources in parallel. 
 In general, SPI application is very slow and it takes several minutes to acquire all objects, decoding progress is indicated in main application window. 
 
-[screenshot]
+<p align="center" width="100%">
+    <img width="892" alt="Snímek obrazovky 2025-03-09 v 21 57 58" src="https://github.com/user-attachments/assets/48ddbecb-1ffc-4e98-9681-d503da1b6eee" />
+</p>
 
 AbracaDABra can use internet connection to download service logos and to retrieve service information using RadioDNS if it is supported by broadcaster of the selected service. 
 Both internet connection and RadioDNS are optional features that are enabled by default.
@@ -290,7 +304,7 @@ This feature can be disabled in settings but please consider keeping this option
 TII decoder is considered to be advanced DX feature thus it is only available when application is in [Expert mode](#expert-mode). Before using it, the feature needs to be configured from application settings:
 
 <p align="center" width="100%">
-<img width="642" alt="Snímek obrazovky 2024-12-21 v 17 38 42" src="https://github.com/user-attachments/assets/8bc1e9b2-e234-4960-8176-8764b8502929" />
+<img width="651" alt="TII settings" src="https://github.com/user-attachments/assets/1c425f98-f2b2-4db1-bca4-6fef0e6b379e" />
 </p>
 
 First update the DAB transmitter database kindly provided by [FMLIST](https://www.fmlist.org). _Note:_ you might need to configure network proxy in Others tab. 
@@ -325,7 +339,7 @@ It is also possible to record CVS log with received codes using "recording dot" 
 AbracaDABra offers a possibility to run an unattended DAB band scan and to store all received transmitters. This is an advanced DX feature thus it is only available when application is in [Expert mode](#expert-mode). [TII decoding](#tii-decoding) configuration is required for correct functionality of the tool. 
 
 <p align="center" width="100%">
-<img width="1289" alt="Snímek obrazovky 2024-12-21 v 18 04 09" src="https://github.com/user-attachments/assets/08ca4130-e3ea-4c6f-a82b-abbee57cba74" />
+<img width="1323" alt="Snímek obrazovky 2025-03-11 v 20 27 27" src="https://github.com/user-attachments/assets/85f0e630-e138-4565-86c7-44f77a50c58f" />
 </p>
 
 Scanning tool can be configured to run in one of 3 different modes: 
@@ -351,7 +365,9 @@ Spectrum plot can be zoomed in both axes by mouse wheel or in one axis by clicki
 
 _Note:_ Spectrum calculation and visualization causes higher CPU load of the application. 
 
-[screenshot]
+<p align="center" width="100%">
+<img width="941" alt="DAB Signal Overview" src="https://github.com/user-attachments/assets/01b29563-ec8c-475d-86ad-5c8b6e5c358a" />
+</p>
 
 ## Expert settings
 Some settings can only be changed by editing of the INI file. File location is OS dependent:
