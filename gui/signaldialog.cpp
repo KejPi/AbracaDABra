@@ -105,7 +105,7 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     connect(ui->snrPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->snrPlot->yAxis2, SLOT(setRange(QCPRange)));
 
     QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
-    timeTicker->setTimeFormat("%m:%s");    
+    timeTicker->setTimeFormat("%m:%s");
     ui->snrPlot->xAxis->setTicker(timeTicker);
     ui->snrPlot->xAxis2->setTicker(timeTicker);
     ui->snrPlot->axisRect()->setupFullAxesBox();
@@ -143,7 +143,7 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
 
     ui->spectrumPlot->axisRect()->setupFullAxesBox();
     ui->spectrumPlot->xAxis->setRange(-1.024, 1.024);
-    ui->spectrumPlot->yAxis->setRange(m_spectYRangeMin, m_spectYRangeMax);    
+    ui->spectrumPlot->yAxis->setRange(m_spectYRangeMin, m_spectYRangeMax);
     ui->spectrumPlot->xAxis->setLabel(tr("frequency [MHz]"));
     ui->spectrumPlot->yAxis->setLabel("dBFS");
     ui->spectrumPlot->setMinimumHeight(200);
@@ -181,7 +181,7 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     m_isUserView = false;
 
     auto menu = new QMenu(this);
-    auto syncSpectAction = new QAction(tr("Frequency correction"), menu);
+    auto syncSpectAction = new QAction(tr("Frequency offset correction"), menu);
     syncSpectAction->setCheckable(true);
     syncSpectAction->setChecked(m_settings->signal.spectrumMode == 2);
     connect(syncSpectAction, &QAction::triggered, this,
@@ -337,7 +337,7 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
             plot->xAxis2->setTickLabelColor(Qt::white);
             plot->yAxis2->setTickLabelColor(Qt::white);
             plot->xAxis->setLabelColor(Qt::white);
-            plot->yAxis->setLabelColor(Qt::white);            
+            plot->yAxis->setLabelColor(Qt::white);
             plot->xAxis->grid()->setPen(QPen(QColor(190, 190, 190), 0, Qt::DotLine));
             if (devicePixelRatio() > 1)
             {
@@ -397,7 +397,6 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
                 {
                     m_spectLineList.at(n)->setPen(QPen(Qt::white, 1, Qt::DashLine));
                 }
-
             }
         }
 
@@ -491,7 +490,7 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
 
         ui->spectrumPlot->replot();
         ui->menuLabel->setIcon(":/resources/menu.png");
-    }    
+    }
 }
 
 void SignalDialog::setFreqRange()
