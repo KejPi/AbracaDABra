@@ -567,7 +567,10 @@ void RtlSdrInput::onWatchdogTimeout()
 
 void RtlSdrInput::startStopRecording(bool start)
 {
-    m_worker->startStopRecording(start);
+    if (nullptr != m_worker)
+    {
+        m_worker->startStopRecording(start);
+    }
 }
 
 void RtlSdrInput::setBW(uint32_t bw)

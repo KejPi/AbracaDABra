@@ -398,7 +398,10 @@ void RartTcpInput::onWatchdogTimeout()
 
 void RartTcpInput::startStopRecording(bool start)
 {
-    m_worker->startStopRecording(start);
+    if (nullptr != m_worker)
+    {
+        m_worker->startStopRecording(start);
+    }
 }
 
 void RartTcpInput::sendCommand(const RartTcpCommand &cmd, uint32_t param)

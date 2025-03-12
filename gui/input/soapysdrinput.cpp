@@ -469,7 +469,10 @@ void SoapySdrInput::onWatchdogTimeout()
 
 void SoapySdrInput::startStopRecording(bool start)
 {
-    m_worker->startStopRecording(start);
+    if (nullptr != m_worker)
+    {
+        m_worker->startStopRecording(start);
+    }
 }
 
 void SoapySdrInput::setBW(uint32_t bw)

@@ -756,7 +756,10 @@ void RtlTcpInput::readControlSocketData()
 
 void RtlTcpInput::startStopRecording(bool start)
 {
-    m_worker->startStopRecording(start);
+    if (nullptr != m_worker)
+    {
+        m_worker->startStopRecording(start);
+    }
 }
 
 QList<float> RtlTcpInput::getGainList() const
