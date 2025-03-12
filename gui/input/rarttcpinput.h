@@ -53,6 +53,8 @@ signals:
 private:
     SOCKET m_sock;
 
+    const float m_int2float = 1.0 / 0x8000;
+
     std::atomic<bool> m_isRecording;
     std::atomic<bool> m_enaCaptureIQ;
     std::atomic<bool> m_watchdogFlag;

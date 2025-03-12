@@ -581,8 +581,8 @@ void RartTcpWorker::processInputData(unsigned char *buf, uint32_t len)
     {
         float *outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
         for (uint64_t k = 0; k < numSamples; k++)
-        {                                 // convert to float
-            *outPtr++ = float(*inPtr++);  // I or Q
+        {                                               // convert to float
+            *outPtr++ = float(*inPtr++ * m_int2float);  // I or Q
         }
         inputBuffer.head = (inputBuffer.head + numSamples * sizeof(float));
     }
@@ -593,14 +593,14 @@ void RartTcpWorker::processInputData(unsigned char *buf, uint32_t len)
 
         float *outPtr = (float *)(inputBuffer.buffer + inputBuffer.head);
         for (uint64_t k = 0; k < samplesTillEnd; ++k)
-        {                                 // convert to float
-            *outPtr++ = float(*inPtr++);  // I or Q
+        {                                               // convert to float
+            *outPtr++ = float(*inPtr++ * m_int2float);  // I or Q
         }
 
         outPtr = (float *)(inputBuffer.buffer);
         for (uint64_t k = 0; k < numSamples - samplesTillEnd; ++k)
-        {                                 // convert to float
-            *outPtr++ = float(*inPtr++);  // I or Q
+        {                                               // convert to float
+            *outPtr++ = float(*inPtr++ * m_int2float);  // I or Q
         }
         inputBuffer.head = (numSamples - samplesTillEnd) * sizeof(float);
     }
