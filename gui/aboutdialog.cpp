@@ -98,7 +98,7 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AboutDia
                            " <a href=\"https://www.flaticon.com/authors/basic-miscellany/lineal-color\">Smashicons - Flaticon</a> " +
                            tr("and DAB transmitter database provided by") + " <a href=\"https://www.fmlist.org\">FMLIST</a>");
     ui->disclaimer->setText(
-        "<p>Copyright © 2019-2024 Petr Kopecký</p>"
+        "<p>Copyright © 2019-2025 Petr Kopecký</p>"
         "<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software "
         "and associated documentation files (the “Software”), to deal in the Software without restriction, "
         "including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, "
