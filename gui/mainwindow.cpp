@@ -2347,7 +2347,7 @@ void MainWindow::onSpiProgress(bool isEns, int decoded, int total)
     }
     else
     {
-        // label->setToolTip(QString(tr("SPI MOT directory complete\n%1 MOT objects decoded")).arg(total));
+        label->setToolTip(QString(tr("SPI MOT directory complete\n%1 MOT objects decoded")).arg(total));
     }
 }
 
@@ -2373,16 +2373,12 @@ void MainWindow::drawSpiProgressLabel(QLabel *label, int progress)
 <rect x="2" y="16" width="%1" height="4" fill="#505050" rx="2" ry="2" />
 </svg>)X";
 
-    if (progress < 100)
+    if (progress <= 100)
     {
         QPixmap p;
         p.loadFromData(svg.arg(int(20.0 * 0.01 * progress)).toUtf8(), "svg");
         label->setPixmap(p);
-        label->setVisible(true);
-    }
-    else
-    {
-        label->setVisible(false);
+        label->setVisible(progress < 100 || m_settings->spiIconEna);
     }
 }
 
@@ -3059,6 +3055,7 @@ void MainWindow::loadSettings()
     m_settings->noiseConcealmentLevel = settings->value("noiseConcealment", 0).toInt();
     m_settings->xmlHeaderEna = settings->value("rawFileXmlHeader", true).toBool();
     m_settings->spiAppEna = settings->value("spiAppEna", true).toBool();
+    m_settings->spiIconEna = settings->value("spiIconEna", false).toBool();
     m_settings->useInternet = settings->value("useInternet", true).toBool();
     m_settings->radioDnsEna = settings->value("radioDNS", true).toBool();
     m_settings->slsBackground = QColor::fromString(settings->value("slsBg", QString("#000000")).toString());
@@ -3347,6 +3344,7 @@ void MainWindow::saveSettings()
     settings->setValue("noiseConcealment", m_settings->noiseConcealmentLevel);
     settings->setValue("rawFileXmlHeader", m_settings->xmlHeaderEna);
     settings->setValue("spiAppEna", m_settings->spiAppEna);
+    settings->setValue("spiIconEna", m_settings->spiIconEna);
     settings->setValue("useInternet", m_settings->useInternet);
     settings->setValue("radioDNS", m_settings->radioDnsEna);
     settings->setValue("slsBg", m_settings->slsBackground.name(QColor::HexArgb));
