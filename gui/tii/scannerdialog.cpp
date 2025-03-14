@@ -615,6 +615,7 @@ void ScannerDialog::onTuneDone(uint32_t freq)
             break;
         default:
             // do nothing
+            m_startStopButton->setEnabled(true);
             break;
     }
 }
