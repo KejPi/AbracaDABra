@@ -694,8 +694,6 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
 
     ui->serviceTreeView->setVisible(false);
 
-    setupDarkMode();
-
     // focus polisy
     ui->channelCombo->setFocusPolicy(Qt::StrongFocus);
     ui->scrollArea->setFocusPolicy(Qt::ClickFocus);
@@ -953,6 +951,9 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
 
     loadSettings();
+
+    // set application style after loading settings
+    setupDarkMode();
 
     // setting focus to something harmless that does not do eny visual effects
     m_menuLabel->setFocus();
