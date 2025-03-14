@@ -286,7 +286,9 @@ void ScannerDialog::stopScan()
     m_progressBar->setValue(0);
     m_progressChannel->setText(tr("None"));
     m_startStopButton->setText(tr("Start"));
-    m_startStopButton->setEnabled(true);
+    // adding timeout to avoid timing issues due to double click on start button
+    m_startStopButton->setEnabled(false);
+    QTimer::singleShot(2500, this, [this]() { m_startStopButton->setEnabled(true); });
     m_importButton->setVisible(true);
     m_numCyclesSpinBox->setEnabled(true);
     m_channelListButton->setEnabled(true);
@@ -517,9 +519,10 @@ void ScannerDialog::startScan()
 
     // using timer for mainwindow to cleanup and tune to 0 potentially (no timeout in case)
     m_timer->start(2000);
-    emit scanStarts();
 
     qCInfo(scanner) << "Scanning starts";
+
+    emit scanStarts();
 }
 
 void ScannerDialog::scanStep()
