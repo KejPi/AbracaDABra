@@ -1723,7 +1723,7 @@ void MainWindow::uploadEnsembleCSV(const RadioControlEnsemble &ens, const QStrin
     {
         if (m_dabTime.isValid() && m_dabTime.secsTo(QDateTime::currentDateTime()) < 24 * 3600)
         {  // protection from uploading ensemble information from some recording that is older than 1 day
-            qCInfo(application, "Uploading ensemble information (%lld bytes)", csv.length());
+            qCInfo(application, "Uploading ensemble information to FMLIST (%lld bytes)", csv.length());
             QString ensLabel = ens.label;
             ensLabel.replace('/', '_');
             m_fmlistInterface->uploadEnsembleCSV(
