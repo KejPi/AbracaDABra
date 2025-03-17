@@ -38,7 +38,10 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AboutDia
 {
     ui->setupUi(this);
     ui->appName->setText("<b>Abraca DAB radio</b>");
-    ui->author->setText(tr("Developed by") + " Petr Kopecký (<a href=\"mailto:xkejpi@gmail.com\">xkejpi@gmail.com</a>)");
+    ui->author->setText(tr("Developed by") +
+                        " Petr Kopecký (<a href=\"mailto:xkejpi@gmail.com\">xkejpi@gmail.com</a>)<br>If you like the application you can <a "
+                        "href=\"https://www.buymeacoffee.com/kejpi\">buy me a beer</a>" +
+                        "🍺");
 
     dabsdrVersion_t dabsdrVer = {0};
     dabsdrGetVersion(&dabsdrVer);
@@ -114,11 +117,8 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AboutDia
     ui->disclaimer->setReadOnly(true);
 
     QObject::connect(ui->version, &QLabel::linkActivated, [=](const QString &link) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); });
-
     QObject::connect(ui->author, &QLabel::linkActivated, [=](const QString &link) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); });
     QObject::connect(ui->libraries, &QLabel::linkActivated, [=](const QString &link) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); });
-
-    // resize(minimumSizeHint());
 }
 
 AboutDialog::~AboutDialog()
