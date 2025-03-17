@@ -199,6 +199,7 @@ public:
         QByteArray geometry;
         QByteArray splitterState;
         int spectrumMode;
+        int spectrumUpdate;
     } signal;
     struct EPGSettings
     {

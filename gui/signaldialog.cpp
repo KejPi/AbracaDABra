@@ -192,7 +192,31 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
             });
 
     menu->addAction(syncSpectAction);
-    ui->menuLabel->setToolTip(tr("Configuration"));
+    menu->addSeparator();
+    auto norm = new QAction(tr("Normal update (500 msec)"), menu);
+    auto fast = new QAction(tr("Fast update (300 msec)"), menu);
+    auto faster = new QAction(tr("Very fast update (100 msec)"), menu);
+    norm->setData(SpectrumUpdateNormal);
+    fast->setData(SpectrumUpdateFast);
+    faster->setData(SpectrumUpdateVeryFast);
+    norm->setCheckable(true);
+    fast->setCheckable(true);
+    faster->setCheckable(true);
+    auto actGroup = new QActionGroup(menu);
+    actGroup->addAction(norm);
+    actGroup->addAction(fast);
+    actGroup->addAction(faster);
+    menu->addActions(actGroup->actions());
+
+    // using the fact that only one can be checked in the group
+    norm->setChecked(true);  // default
+    fast->setChecked(m_settings->signal.spectrumUpdate == SpectrumUpdateFast);
+    faster->setChecked(m_settings->signal.spectrumUpdate == SpectrumUpdateVeryFast);
+
+    connect(actGroup, &QActionGroup::triggered, this, [this](QAction *action) { setSpectrumUpdate(action->data().toInt()); });
+    setSpectrumUpdate(m_settings->signal.spectrumUpdate);
+
+    ui->menuLabel->setToolTip(tr("Spectrum configuration"));
     ui->menuLabel->setMenu(menu);
 
     // render level icons
@@ -239,9 +263,8 @@ SignalDialog::~SignalDialog()
 
 void SignalDialog::setInputDevice(InputDevice::Id id)
 {
-    // -10 dB is averaging factor 1/10
     // 66.227dB is FFT gain 2048
-    m_offset_dB = -10.0 - 66.227;
+    m_offset_dB = -66.227;
 
     switch (id)
     {
@@ -522,6 +545,28 @@ void SignalDialog::reset()
     ui->freqOffsetValue->setText(tr("N/A"));
 }
 
+void SignalDialog::setSpectrumUpdate(int mode)
+{
+    switch (mode)
+    {
+        case SpectrumUpdateFast:
+            m_settings->signal.spectrumUpdate = SpectrumUpdateFast;
+            m_numAvrg = 6;
+            m_avrgFactor_dB = -7.7815;  // 10 *log10(1/6)
+            break;
+        case SpectrumUpdateVeryFast:
+            m_settings->signal.spectrumUpdate = SpectrumUpdateVeryFast;
+            m_numAvrg = 2;
+            m_avrgFactor_dB = -3.0103;  // 10 *log10(1/2)
+            break;
+        default:
+            m_settings->signal.spectrumUpdate = SpectrumUpdateNormal;
+            m_numAvrg = 10;
+            m_avrgFactor_dB = -10;  // 10 *log10(1/10)
+            break;
+    }
+}
+
 void SignalDialog::setRfLevelVisible(bool visible)
 {
     if (visible != ui->rfLevelValue->isVisible())
@@ -620,12 +665,12 @@ void SignalDialog::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
         *it += data->at(idx++);
     }
 
-    if (++m_avrgCntr >= 10)
+    if (++m_avrgCntr >= m_numAvrg)
     {
         // qDebug() << *std::min_element(m_spectrumBuffer.cbegin(), m_spectrumBuffer.cend())*0.1 << *std::max_element(m_spectrumBuffer.cbegin(),
         // m_spectrumBuffer.cend())*0.1; qDebug() << Q_FUNC_INFO;
         m_avrgCntr = 0;
-        float offset_dB = m_offset_dB;
+        float offset_dB = m_offset_dB + m_avrgFactor_dB;
         if (!std::isnan(m_tunerGain))
         {
             offset_dB -= m_tunerGain;

@@ -67,6 +67,12 @@ private:
     {
         xPlotRange = 2 * 60
     };
+    enum
+    {
+        SpectrumUpdateNormal = 0,
+        SpectrumUpdateFast = 1,
+        SpectrumUpdateVeryFast = 2,
+    };
     static const char *syncLevelLabels[];
     static const QStringList snrLevelColors;
     static const QString templateSvgFill;
@@ -76,7 +82,6 @@ private:
     Settings *m_settings = nullptr;
     QTime m_startTime;
     QTimer *m_timer = nullptr;
-    int m_avrgCntr = 0;
     std::vector<float> m_spectrumBuffer;
     QList<QCPItemStraightLine *> m_spectLineList;
     int m_frequency = 0;
@@ -88,10 +93,15 @@ private:
     float m_spectYRangeMax;
     float m_spectYRangeMin;
     bool m_isUserView;
+    int m_avrgCntr = 0;
+    int m_numAvrg = 10;
+    float m_avrgFactor_dB = -10.0;
 
     void addToPlot(float snr);
     void setFreqRange();
     void reset();
+
+    void setSpectrumUpdate(int mode);
 
     void setRfLevelVisible(bool visible);
     void setGainVisible(bool visible);
