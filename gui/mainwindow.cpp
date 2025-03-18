@@ -1732,6 +1732,10 @@ void MainWindow::uploadEnsembleCSV(const RadioControlEnsemble &ens, const QStrin
                 csv);
         }
     }
+    else
+    {
+        m_ensembleInfoDialog->enableEnsembleInfoUpload();
+    }
 #else
     QString ensLabel = ens.label;
     ensLabel.replace('/', '_');

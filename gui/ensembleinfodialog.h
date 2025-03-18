@@ -65,6 +65,7 @@ public:
     void onEnsembleCSV(const QString &csvString);
     QString exportPath() const;
     void setExportPath(const QString &newExportPath);
+    void enableEnsembleInfoUpload();
     void setEnsembleInfoUploaded(bool newEnsembleInfoUploaded);
 
 signals:

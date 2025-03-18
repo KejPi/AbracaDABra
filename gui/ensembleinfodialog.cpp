@@ -155,7 +155,6 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString &txt)
             }
             ui->ensStructureTextEdit->setMinimumWidth(minWidth);
             ui->csvExportButton->setEnabled(true);
-            ui->uploadButton->setEnabled(!m_ensembleInfoUploaded);
         }
     }
 }
@@ -386,6 +385,11 @@ QString EnsembleInfoDialog::exportPath() const
 void EnsembleInfoDialog::setExportPath(const QString &newExportPath)
 {
     m_exportPath = newExportPath;
+}
+
+void EnsembleInfoDialog::enableEnsembleInfoUpload()
+{
+    ui->uploadButton->setEnabled(true);
 }
 
 void EnsembleInfoDialog::fibFrameContextMenu(const QPoint &pos)
