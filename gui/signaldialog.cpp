@@ -52,7 +52,7 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     ui->snrValue->setText("");
     ui->snrLabel->setToolTip(ui->snrValue->toolTip());
 
-    w = ui->rfLevelValue->fontMetrics().boundingRect(" -100.0 dBm").width();
+    w = ui->rfLevelValue->fontMetrics().boundingRect("-100.0 dBm").width();
     ui->rfLevelValue->setFixedWidth(w);
     ui->rfLevelValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     ui->rfLevelValue->setToolTip(QString(tr("Estimated RF level")));
@@ -80,7 +80,7 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     }
     ui->freqLabel->setToolTip(ui->freqValue->toolTip());
 
-    w = ui->freqOffsetValue->fontMetrics().boundingRect(" -12345.5 Hz").width();
+    w = ui->freqOffsetValue->fontMetrics().boundingRect("-12345.5 Hz").width();
     ui->freqOffsetValue->setFixedWidth(w);
     ui->freqOffsetValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     ui->freqOffsetValue->setToolTip(QString(tr("Estimated frequency offset")));
@@ -90,10 +90,6 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     ui->syncLabel->setText("");
     ui->syncLabel->setFixedSize(18 + 10, 18);
 
-    // ui->snrPlot->plotLayout()->insertRow(0);
-    // QCPTextElement *title = new QCPTextElement(ui->snrPlot, "SNR Plot", QFont("sans", 17, QFont::Bold));
-    // ui->snrPlot->plotLayout()->addElement(0, 0, title);
-
     ui->snrPlot->addGraph();
     ui->snrPlot->graph(0)->setLineStyle(QCPGraph::lsStepCenter);
     ui->snrPlot->xAxis->grid()->setSubGridVisible(true);
@@ -101,8 +97,10 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     ui->snrPlot->yAxis->setLabel(tr("SNR [dB]"));
 
     // make left and bottom axes transfer their ranges to right and top axes:
-    connect(ui->snrPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->snrPlot->xAxis2, SLOT(setRange(QCPRange)));
-    connect(ui->snrPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->snrPlot->yAxis2, SLOT(setRange(QCPRange)));
+    connect(ui->snrPlot->xAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), ui->snrPlot->xAxis2,
+            QOverload<const QCPRange &>::of(&QCPAxis::setRange));
+    connect(ui->snrPlot->yAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), ui->snrPlot->yAxis2,
+            QOverload<const QCPRange &>::of(&QCPAxis::setRange));
 
     QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
     timeTicker->setTimeFormat("%m:%s");
@@ -113,11 +111,14 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     ui->snrPlot->yAxis->setRange(0, 36);
     ui->snrPlot->setMinimumHeight(180);
 
-    m_spectrumBuffer.assign(2048, 0.0);
+    QFont font = ui->snrPlot->font();
+    font.setBold(true);
+    font.setPointSize(50);
+    m_snrPlotText = new QCPTextElement(ui->snrPlot, "", font);
+    m_snrPlotText->setMaximumSize(250, 10000);
+    m_snrPlotText->setVisible(false);
 
-    // ui->spectrumPlot->plotLayout()->insertRow(0);
-    // title = new QCPTextElement(ui->spectrumPlot, "Signal spectrum", QFont("sans", 17, QFont::Bold));
-    // ui->spectrumPlot->plotLayout()->addElement(0, 0, title);
+    m_spectrumBuffer.assign(2048, 0.0);
 
     ui->spectrumPlot->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));  // decimal point
     ui->spectrumPlot->setAttribute(Qt::WA_OpaquePaintEvent);
@@ -134,8 +135,8 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
             QOverload<const QCPRange &>::of(&QCPAxis::setRange));
     connect(ui->spectrumPlot->yAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), ui->spectrumPlot->yAxis2,
             QOverload<const QCPRange &>::of(&QCPAxis::setRange));
-    connect(ui->spectrumPlot->xAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), this, &SignalDialog::onXRangeChanged);
-    connect(ui->spectrumPlot->yAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), this, &SignalDialog::onYRangeChanged);
+    connect(ui->spectrumPlot->xAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), this, &SignalDialog::onSpectXRangeChanged);
+    connect(ui->spectrumPlot->yAxis, QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged), this, &SignalDialog::onSpectYRangeChanged);
 
     m_spectYRangeSet = false;
     m_spectYRangeMin = -140;
@@ -167,20 +168,24 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     setFreqRange();
 
     // connect slot that ties some axis selections together (especially opposite axes):
-    connect(ui->spectrumPlot, &QCustomPlot::selectionChangedByUser, this, &SignalDialog::onPlotSelectionChanged);
+    connect(ui->spectrumPlot, &QCustomPlot::selectionChangedByUser, this, &SignalDialog::onSpectPlotSelectionChanged);
     // connect slots that takes care that when an axis is selected, only that direction can be dragged and zoomed:
-    connect(ui->spectrumPlot, &QCustomPlot::mousePress, this, &SignalDialog::onPlotMousePress);
-    connect(ui->spectrumPlot, &QCustomPlot::mouseWheel, this, &SignalDialog::onPlotMouseWheel);
+    connect(ui->spectrumPlot, &QCustomPlot::mousePress, this, &SignalDialog::onSpectPlotMousePress);
+    connect(ui->spectrumPlot, &QCustomPlot::mouseWheel, this, &SignalDialog::onSpectPlotMouseWheel);
 
     // setup policy and connect slot for context menu popup:
     ui->spectrumPlot->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->spectrumPlot, &QCustomPlot::customContextMenuRequested, this, &SignalDialog::onContextMenuRequest);
-
-    connect(ui->spectrumPlot, &QCustomPlot::mouseMove, this, &SignalDialog::showPointToolTip);
+    connect(ui->spectrumPlot, &QCustomPlot::customContextMenuRequested, this, &SignalDialog::onSpectContextMenuRequest);
+    connect(ui->spectrumPlot, &QCustomPlot::mouseMove, this, &SignalDialog::spectShowPointToolTip);
 
     m_isUserView = false;
 
     auto menu = new QMenu(this);
+    auto fitInViewAction = new QAction(tr("Fit spectrum in view"), menu);
+    connect(fitInViewAction, &QAction::triggered, this, [this]() { spectFitInView(); });
+    menu->addAction(fitInViewAction);
+    menu->addSeparator();
+
     auto syncSpectAction = new QAction(tr("Frequency offset correction"), menu);
     syncSpectAction->setCheckable(true);
     syncSpectAction->setChecked(m_settings->signal.spectrumMode == 2);
@@ -207,6 +212,7 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     actGroup->addAction(fast);
     actGroup->addAction(faster);
     menu->addActions(actGroup->actions());
+    menu->addSeparator();
 
     // using the fact that only one can be checked in the group
     norm->setChecked(true);  // default
@@ -216,7 +222,22 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     connect(actGroup, &QActionGroup::triggered, this, [this](QAction *action) { setSpectrumUpdate(action->data().toInt()); });
     setSpectrumUpdate(m_settings->signal.spectrumUpdate);
 
-    ui->menuLabel->setToolTip(tr("Spectrum configuration"));
+    auto snrTextAction = new QAction(tr("Show SNR value"), menu);
+    snrTextAction->setCheckable(true);
+    snrTextAction->setChecked(m_settings->signal.showSNR);
+    if (m_settings->signal.showSNR)
+    {
+        setSnrValueText();
+    }
+    connect(snrTextAction, &QAction::triggered, this,
+            [this]()
+            {
+                m_settings->signal.showSNR = !m_settings->signal.showSNR;
+                setSnrValueText();
+            });
+    menu->addAction(snrTextAction);
+
+    ui->menuLabel->setToolTip(tr("Configuration"));
     ui->menuLabel->setMenu(menu);
 
     // render level icons
@@ -307,6 +328,7 @@ void SignalDialog::setInputDevice(InputDevice::Id id)
 void SignalDialog::setSignalState(uint8_t sync, float snr)
 {
     ui->snrValue->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
+    m_snrPlotText->setText(ui->snrValue->text());
     int syncSnrLevel = 0;
     if (sync > static_cast<int>(DabSyncLevel::NoSync))
     {
@@ -400,6 +422,7 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
 
         ui->snrPlot->graph(0)->setPen(QPen(Qt::cyan, 1 + 1));
         ui->snrPlot->graph(0)->setBrush(QBrush(QColor(0, 255, 255, 100)));
+        m_snrPlotText->setTextColor(Qt::white);
         ui->snrPlot->replot();
 
         ui->spectrumPlot->graph(0)->setPen(QPen(Qt::cyan));
@@ -488,6 +511,7 @@ void SignalDialog::setupDarkMode(bool darkModeEna)
 
         ui->snrPlot->graph(0)->setPen(QPen(Qt::blue, 1 + 1));
         ui->snrPlot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 100)));
+        m_snrPlotText->setTextColor(Qt::black);
         ui->snrPlot->replot();
 
         ui->spectrumPlot->setBackground(QBrush(Qt::white));
@@ -757,7 +781,7 @@ void SignalDialog::addToPlot(float snr)
 
     ui->snrPlot->graph(0)->addData(key, snr);
 
-    // make key axis range scroll with the data (at a constant range size of 8):
+    // make key axis range scroll with the data
     if (key < xPlotRange)
     {
         ui->snrPlot->xAxis->setRange(0, xPlotRange);
@@ -774,7 +798,24 @@ void SignalDialog::addToPlot(float snr)
     ui->snrPlot->replot();
 }
 
-void SignalDialog::onPlotSelectionChanged()
+void SignalDialog::setSnrValueText()
+{
+    if (m_settings->signal.showSNR)
+    {
+        ui->snrPlot->plotLayout()->insertColumn(ui->snrPlot->plotLayout()->columnCount());
+        ui->snrPlot->plotLayout()->addElement(0, ui->snrPlot->plotLayout()->columnCount() - 1, m_snrPlotText);
+        m_snrPlotText->setVisible(true);
+    }
+    else
+    {
+        m_snrPlotText->setVisible(false);
+        ui->snrPlot->plotLayout()->take(m_snrPlotText);
+        ui->snrPlot->plotLayout()->simplify();
+    }
+    ui->snrPlot->replot();
+}
+
+void SignalDialog::onSpectPlotSelectionChanged()
 {
     // normally, axis base line, axis tick labels and axis labels are selectable separately, but we want
     // the user only to be able to select the axis as a whole, so we tie the selected states of the tick labels
@@ -804,7 +845,7 @@ void SignalDialog::onPlotSelectionChanged()
     }
 }
 
-void SignalDialog::onPlotMousePress(QMouseEvent *event)
+void SignalDialog::onSpectPlotMousePress(QMouseEvent *event)
 {
     // if an axis is selected, only allow the direction of that axis to be dragged
     // if no axis is selected, both directions may be dragged
@@ -823,7 +864,7 @@ void SignalDialog::onPlotMousePress(QMouseEvent *event)
     }
 }
 
-void SignalDialog::onPlotMouseWheel(QWheelEvent *event)
+void SignalDialog::onSpectPlotMouseWheel(QWheelEvent *event)
 {
     // if an axis is selected, only allow the direction of that axis to be zoomed
     // if no axis is selected, both directions may be zoomed
@@ -842,7 +883,7 @@ void SignalDialog::onPlotMouseWheel(QWheelEvent *event)
     m_isUserView = true;
 }
 
-void SignalDialog::onXRangeChanged(const QCPRange &newRange)
+void SignalDialog::onSpectXRangeChanged(const QCPRange &newRange)
 {
     double lowerBound = (-1024 + m_frequency) * 0.001;
     double upperBound = (1024 + m_frequency) * 0.001;
@@ -871,7 +912,7 @@ void SignalDialog::onXRangeChanged(const QCPRange &newRange)
     }
 }
 
-void SignalDialog::onYRangeChanged(const QCPRange &newRange)
+void SignalDialog::onSpectYRangeChanged(const QCPRange &newRange)
 {
     double lowerBound = -200;
     double upperBound = 10;
@@ -900,7 +941,7 @@ void SignalDialog::onYRangeChanged(const QCPRange &newRange)
     }
 }
 
-void SignalDialog::showPointToolTip(QMouseEvent *event)
+void SignalDialog::spectShowPointToolTip(QMouseEvent *event)
 {
     double x = ui->spectrumPlot->xAxis->pixelToCoord(event->pos().x());
     auto xrange = ui->spectrumPlot->xAxis->range();
@@ -918,26 +959,26 @@ void SignalDialog::showPointToolTip(QMouseEvent *event)
     ui->spectrumPlot->setToolTip("");
 }
 
-void SignalDialog::onContextMenuRequest(QPoint pos)
+void SignalDialog::onSpectContextMenuRequest(QPoint pos)
 {
     QMenu *menu = new QMenu(this);
     menu->setAttribute(Qt::WA_DeleteOnClose);
-    auto restoreZoomAction = new QAction(tr("Fit in view"), this);
-    // restoreZoomAction->setEnabled(m_isUserView);
-    connect(restoreZoomAction, &QAction::triggered, this,
-            [this]()
-            {
-                ui->spectrumPlot->rescaleAxes();
-                ui->spectrumPlot->deselectAll();
-                ui->spectrumPlot->replot();
-                m_spectYRangeSet = false;
-                m_isUserView = false;
-            });
+    auto fitInViewAction = new QAction(tr("Fit in view"), this);
+    connect(fitInViewAction, &QAction::triggered, this, [this]() { spectFitInView(); });
 
     connect(menu, &QWidget::destroyed, [=]() { // delete actions
-            restoreZoomAction->deleteLater();
+            fitInViewAction->deleteLater();
         });
 
-    menu->addAction(restoreZoomAction);
+    menu->addAction(fitInViewAction);
     menu->popup(ui->spectrumPlot->mapToGlobal(pos));
+}
+
+void SignalDialog::spectFitInView()
+{
+    ui->spectrumPlot->rescaleAxes();
+    ui->spectrumPlot->deselectAll();
+    ui->spectrumPlot->replot();
+    m_spectYRangeSet = false;
+    m_isUserView = false;
 }

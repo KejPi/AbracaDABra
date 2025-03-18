@@ -82,6 +82,7 @@ private:
     Settings *m_settings = nullptr;
     QTime m_startTime;
     QTimer *m_timer = nullptr;
+    QCPTextElement *m_snrPlotText;
     std::vector<float> m_spectrumBuffer;
     QList<QCPItemStraightLine *> m_spectLineList;
     int m_frequency = 0;
@@ -106,14 +107,18 @@ private:
     void setRfLevelVisible(bool visible);
     void setGainVisible(bool visible);
 
-    // user interaction with plot
-    void onPlotSelectionChanged();
-    void onPlotMousePress(QMouseEvent *event);
-    void onPlotMouseWheel(QWheelEvent *event);
-    void onContextMenuRequest(QPoint pos);
-    void onXRangeChanged(const QCPRange &newRange);
-    void onYRangeChanged(const QCPRange &newRange);
-    void showPointToolTip(QMouseEvent *event);
+    // user interaction with SNR plot
+    void setSnrValueText();
+
+    // user interaction with spectrum plot
+    void onSpectPlotSelectionChanged();
+    void onSpectPlotMousePress(QMouseEvent *event);
+    void onSpectPlotMouseWheel(QWheelEvent *event);
+    void onSpectContextMenuRequest(QPoint pos);
+    void onSpectXRangeChanged(const QCPRange &newRange);
+    void onSpectYRangeChanged(const QCPRange &newRange);
+    void spectShowPointToolTip(QMouseEvent *event);
+    void spectFitInView();
 };
 
 #endif  // SIGNALDIALOG_H

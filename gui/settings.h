@@ -198,6 +198,7 @@ public:
     {
         QByteArray geometry;
         QByteArray splitterState;
+        bool showSNR;
         int spectrumMode;
         int spectrumUpdate;
     } signal;
