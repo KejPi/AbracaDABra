@@ -4025,8 +4025,26 @@ void MainWindow::exportServiceList()
 
 void MainWindow::clearServiceList()
 {
-    stop();
-    m_serviceList->clear();
+    QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, tr("Warning"), tr("Do you want to clear service list?"), {}, this);
+    msgBox->setWindowModality(Qt::WindowModal);
+    msgBox->setInformativeText(tr("You will loose current service list including favorites, this action is irreversible."));
+    msgBox->setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox->setDefaultButton(QMessageBox::Cancel);
+    connect(msgBox, &QMessageBox::finished, this,
+            [this, msgBox](int result)
+            {
+                if (result == QMessageBox::Ok)
+                {
+                    QTimer::singleShot(10, this,
+                                       [this]()
+                                       {
+                                           stop();
+                                           m_serviceList->clear();
+                                       });
+                }
+                msgBox->deleteLater();
+            });
+    msgBox->open();
 }
 
 void MainWindow::onApplicationStyleChanged(Settings::ApplicationStyle style)
