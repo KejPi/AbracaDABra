@@ -89,9 +89,26 @@ QVariant SLModelItem::data(int column, int role) const
                     ServiceListConstIterator it = m_slPtr->findService(m_id);
                     if (m_slPtr->serviceListEnd() != it)
                     {  // found
-                        QString tooltip =
-                            QString("<b>" + QObject::tr("Short label:") + "</b> %1<br><b>SId:</b> 0x%2")
-                                .arg(it.value()->shortLabel(), QString("%1").arg(it.value()->SId().countryServiceRef(), 4, 16, QChar('0')).toUpper());
+                        QString logo;
+                        if (!m_metadataMgrPtr->data(m_id, MetadataManager::SmallLogo).value<QPixmap>().isNull())
+                        {
+                            QBuffer buffer;
+                            buffer.open(QIODevice::WriteOnly);
+                            m_metadataMgrPtr->data(m_id, MetadataManager::SmallLogo).value<QPixmap>().save(&buffer, "PNG");
+                            logo = QString("<img src='data:image/png;base64, %1'/>").arg(QString(buffer.data().toBase64()));
+                        }
+                        QString tooltip = QString(
+                                              "<table border='0' cellspacing='2' cellpadding='2'>"
+                                              "<tr>"
+                                              "<td valign='middle'>%4</td>"
+                                              "<td valign='middle'>"
+                                              "<p style='margin: 0;'><b>%1</b> %2</p>"
+                                              "<p style='margin: 0;'><b>SId:</b> %3</p>"
+                                              "</td>"
+                                              "</tr>"
+                                              "</table>")
+                                              .arg(QObject::tr("Short label:"), it.value()->shortLabel().toHtmlEscaped(),
+                                                   QString("%1").arg(it.value()->SId().countryServiceRef(), 4, 16, QChar('0')).toUpper(), logo);
                         return QVariant(tooltip);
                     }
                 }
