@@ -156,6 +156,7 @@ public:
     bool useInternet;
     bool radioDnsEna;
     bool trayIconEna;
+    bool restoreWindows;
     QColor slsBackground = Qt::red;
     bool updateCheckEna;
     QDateTime updateCheckTime;
@@ -192,12 +193,14 @@ public:
         bool showSpectumPlot;
         QByteArray geometry;
         QByteArray splitterState;
+        bool restore;
         int mode;
     } tii;
     struct SignalDialog
     {
         QByteArray geometry;
         QByteArray splitterState;
+        bool restore;
         bool showSNR;
         int spectrumMode;
         int spectrumUpdate;
@@ -208,6 +211,7 @@ public:
         bool filterEnsemble;
         QPersistentModelIndex selectedItem;
         QByteArray geometry;
+        bool restore;
     } epg;
     struct Proxy
     {
@@ -220,20 +224,24 @@ public:
     struct EnsembleInfo
     {
         QByteArray geometry;
+        bool restore;
     } ensembleInfo;
     struct Log
     {
         QByteArray geometry;
+        bool restore;
     } log;
     struct CatSLS
     {
         QByteArray geometry;
+        bool restore;
     } catSls;
     struct ScannerSettings
     {
         QString exportPath;
         QByteArray geometry;
         QByteArray splitterState;
+        bool restore;
         QMap<uint32_t, bool> channelSelection;
         int mode;
         int numCycles;

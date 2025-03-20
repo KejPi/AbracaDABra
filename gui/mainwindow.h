@@ -255,6 +255,7 @@ private:
     void loadSettings();
     void saveSettings();
     Settings::AudioFramework getAudioFramework();
+    void restoreWindows();
 
     void showEnsembleInfo();
     void showEPG();

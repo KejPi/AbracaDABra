@@ -1071,6 +1071,17 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    if (!m_exitRequested)
+    {
+        m_settings->ensembleInfo.restore = m_ensembleInfoDialog->isVisible();
+        m_settings->log.restore = m_logDialog->isVisible();
+        m_settings->catSls.restore = m_catSlsDialog->isVisible();
+        m_settings->tii.restore = (m_tiiDialog != nullptr);
+        m_settings->signal.restore = (m_signalDialog != nullptr);
+        m_settings->scanner.restore = (m_scannerDialog != nullptr);
+        m_settings->epg.restore = (m_epgDialog != nullptr);
+    }
+
     if (m_scannerDialog)
     {
         m_scannerDialog->close();
@@ -1597,8 +1608,6 @@ void MainWindow::onTuneDone(uint32_t freq)
         // this can only happen when device is changed, or when exit is requested
         if (m_exitRequested)
         {  // processing in IDLE, close window
-            qDebug() << "Exit now";
-
             close();
             qApp->exit(m_exitCode);
             return;
@@ -2992,6 +3001,41 @@ Settings::AudioFramework MainWindow::getAudioFramework()
 #endif
 }
 
+void MainWindow::restoreWindows()
+{
+    if (m_settings->restoreWindows)
+    {
+        if (m_settings->ensembleInfo.restore)
+        {
+            showEnsembleInfo();
+        }
+        if (m_settings->log.restore)
+        {
+            showLog();
+        }
+        if (m_settings->catSls.restore)
+        {
+            showCatSLS();
+        }
+        if (m_settings->tii.restore)
+        {
+            showTiiDialog();
+        }
+        if (m_settings->signal.restore)
+        {
+            showSignalDialog();
+        }
+        if (m_settings->scanner.restore)
+        {
+            showScannerDialog();
+        }
+        if (m_settings->epg.restore)
+        {
+            showEPG();
+        }
+    }
+}
+
 void MainWindow::loadSettings()
 {
     QSettings *settings;
@@ -3091,6 +3135,8 @@ void MainWindow::loadSettings()
 #else
     m_settings->trayIconEna = settings->value("showTrayIcon", true).toBool();
 #endif
+    m_settings->restoreWindows = settings->value("restoreWindows", false).toBool();
+
     m_settings->uaDump.folder =
         settings->value("UA-STORAGE/folder", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + "/" + appName).toString();
     m_settings->uaDump.overwriteEna = settings->value("UA-STORAGE/overwriteEna", false).toBool();
@@ -3106,6 +3152,7 @@ void MainWindow::loadSettings()
     m_settings->tii.logFolder = settings->value("TII/logFolder", QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)).toString();
     m_settings->tii.showSpectumPlot = settings->value("TII/showSpectrumPlot", false).toBool();
     m_settings->tii.geometry = settings->value("TII/windowGeometry").toByteArray();
+    m_settings->tii.restore = settings->value("TII/restore", false).toBool();
     m_settings->tii.mode = settings->value("TII/configuration", 0).toInt();
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     m_settings->tii.splitterState = settings->value("TII/layout").toByteArray();
@@ -3113,6 +3160,7 @@ void MainWindow::loadSettings()
     m_settings->scanner.exportPath = settings->value("Scanner/exportPath", QDir::homePath()).toString();
     m_settings->scanner.splitterState = settings->value("Scanner/layout").toByteArray();
     m_settings->scanner.geometry = settings->value("Scanner/windowGeometry").toByteArray();
+    m_settings->scanner.restore = settings->value("Scanner/restore", false).toBool();
     m_settings->scanner.mode = settings->value("Scanner/mode", 0).toInt();
     m_settings->scanner.numCycles = settings->value("Scanner/numCycles", 1).toInt();
     m_settings->scanner.waitForSync = settings->value("Scanner/waitForSyncSec", 3).toInt();
@@ -3134,17 +3182,24 @@ void MainWindow::loadSettings()
 
     m_settings->signal.geometry = settings->value("SignalDialog/windowGeometry").toByteArray();
     m_settings->signal.splitterState = settings->value("SignalDialog/layout").toByteArray();
+    m_settings->signal.restore = settings->value("SignalDialog/restore", false).toBool();
     m_settings->signal.spectrumMode = settings->value("SignalDialog/spectrumMode", 1).toInt();
     m_settings->signal.spectrumUpdate = settings->value("SignalDialog/spectrumUpdate", 0).toInt();
     m_settings->signal.showSNR = settings->value("SignalDialog/showSNR", 0).toBool();
 
     m_settings->ensembleInfo.geometry = settings->value("EnsembleInfo/windowGeometry").toByteArray();
+    m_settings->ensembleInfo.restore = settings->value("EnsembleInfo/restore", false).toBool();
+
     m_settings->log.geometry = settings->value("Log/windowGeometry").toByteArray();
+    m_settings->log.restore = settings->value("Log/restore", false).toBool();
+
     m_settings->catSls.geometry = settings->value("CatSLS/windowGeometry").toByteArray();
+    m_settings->catSls.restore = settings->value("CatSLS/restore", false).toBool();
 
     m_settings->epg.filterEmptyEpg = settings->value("EPG/filterEmpty", false).toBool();
     m_settings->epg.filterEnsemble = settings->value("EPG/filterOtherEnsembles", false).toBool();
     m_settings->epg.geometry = settings->value("EPG/windowGeometry").toByteArray();
+    m_settings->epg.restore = settings->value("EPG/restore", false).toBool();
 
     m_settings->rtlsdr.hwId = settings->value("RTL-SDR/lastDevice");
     m_settings->rtlsdr.fallbackConnection = settings->value("RTL-SDR/fallbackConnection", true).toBool();
@@ -3253,6 +3308,7 @@ void MainWindow::loadSettings()
     {
         onApplicationStyleChanged(m_settings->applicationStyle);
     }
+    QTimer::singleShot(500, this, [this]() { restoreWindows(); });
 
     m_inputDeviceRecorder->setRecordingPath(settings->value("recordingPath", QVariant(QDir::homePath())).toString());
     m_ensembleInfoDialog->setExportPath(settings->value("EnsembleInfo/exportPath", QVariant(QDir::homePath())).toString());
@@ -3359,6 +3415,7 @@ void MainWindow::saveSettings()
     settings->setValue("updateCheckTime", m_settings->updateCheckTime);
     settings->setValue("uploadEnsembleInfoEna", m_settings->uploadEnsembleInfo);
     settings->setValue("showTrayIcon", m_settings->trayIconEna);
+    settings->setValue("restoreWindows", m_settings->restoreWindows);
     settings->setValue("serviceListExportPath", m_settings->serviceListExportPath);
 
     settings->setValue("AudioRecording/folder", m_settings->audioRec.folder);
@@ -3370,6 +3427,7 @@ void MainWindow::saveSettings()
     settings->setValue("EPG/filterEmpty", m_settings->epg.filterEmptyEpg);
     settings->setValue("EPG/filterOtherEnsembles", m_settings->epg.filterEnsemble);
     settings->setValue("EPG/windowGeometry", m_settings->epg.geometry);
+    settings->setValue("EPG/restore", m_settings->epg.restore);
 
     settings->setValue("TII/locationSource", static_cast<int>(m_settings->tii.locationSource));
     settings->setValue("TII/latitude", m_settings->tii.coordinates.latitude());
@@ -3378,6 +3436,7 @@ void MainWindow::saveSettings()
     settings->setValue("TII/logFolder", m_settings->tii.logFolder);
     settings->setValue("TII/showSpectrumPlot", m_settings->tii.showSpectumPlot);
     settings->setValue("TII/windowGeometry", m_settings->tii.geometry);
+    settings->setValue("TII/restore", m_settings->tii.restore);
     settings->setValue("TII/configuration", m_settings->tii.mode);
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     settings->setValue("TII/layout", m_settings->tii.splitterState);
@@ -3386,6 +3445,7 @@ void MainWindow::saveSettings()
     settings->setValue("Scanner/exportPath", m_settings->scanner.exportPath);
     settings->setValue("Scanner/windowGeometry", m_settings->scanner.geometry);
     settings->setValue("Scanner/layout", m_settings->scanner.splitterState);
+    settings->setValue("Scanner/restore", m_settings->scanner.restore);
     settings->setValue("Scanner/mode", m_settings->scanner.mode);
     settings->setValue("Scanner/numCycles", m_settings->scanner.numCycles);
 
@@ -3401,9 +3461,13 @@ void MainWindow::saveSettings()
 
     settings->setValue("EnsembleInfo/windowGeometry", m_settings->ensembleInfo.geometry);
     settings->setValue("EnsembleInfo/exportPath", m_ensembleInfoDialog->exportPath());
+    settings->setValue("EnsembleInfo/restore", m_settings->ensembleInfo.restore);
 
     settings->setValue("Log/windowGeometry", m_settings->log.geometry);
+    settings->setValue("Log/restore", m_settings->log.restore);
+
     settings->setValue("CatSLS/windowGeometry", m_settings->catSls.geometry);
+    settings->setValue("CatSLS/restore", m_settings->catSls.restore);
 
     settings->setValue("Proxy/config", static_cast<int>(m_settings->proxy.config));
     settings->setValue("Proxy/server", m_settings->proxy.server);
@@ -3413,6 +3477,7 @@ void MainWindow::saveSettings()
 
     settings->setValue("SignalDialog/windowGeometry", m_settings->signal.geometry);
     settings->setValue("SignalDialog/layout", m_settings->signal.splitterState);
+    settings->setValue("SignalDialog/restore", m_settings->signal.restore);
     settings->setValue("SignalDialog/spectrumMode", m_settings->signal.spectrumMode);
     settings->setValue("SignalDialog/spectrumUpdate", m_settings->signal.spectrumUpdate);
     settings->setValue("SignalDialog/showSNR", m_settings->signal.showSNR);

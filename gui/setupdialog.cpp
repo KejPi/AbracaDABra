@@ -577,6 +577,7 @@ void SetupDialog::setSettings(Settings *settings)
     connect(ui->loopCheckbox, &QCheckBox::stateChanged, this, [=](int val) { m_settings->rawfile.loopEna = (Qt::Unchecked != val); });
 #endif
     connect(ui->autoStopRecordingCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings->audioRec.autoStopEna = checked; });
+    connect(ui->restoreWindowsCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings->restoreWindows = checked; });
     connect(ui->checkForUpdates, &QCheckBox::toggled, this, &SetupDialog::setCheckUpdatesEna);
 
     setUiState();
@@ -945,6 +946,7 @@ void SetupDialog::setUiState()
     ui->tiiLogFolderLabel->setText(m_settings->tii.logFolder);
     ui->tiiModeSlider->setValue(static_cast<int>(m_settings->tii.mode));
 
+    ui->restoreWindowsCheckBox->setChecked(m_settings->restoreWindows);
     ui->checkForUpdates->setChecked(m_settings->updateCheckEna);
     ui->proxyConfigCombo->setCurrentIndex(static_cast<int>(m_settings->proxy.config));
     ui->proxyServerEdit->setText(m_settings->proxy.server);
