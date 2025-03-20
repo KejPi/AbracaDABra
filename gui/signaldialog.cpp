@@ -198,16 +198,20 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
 
     menu->addAction(syncSpectAction);
     menu->addSeparator();
+    auto slow = new QAction(tr("Slow update (1 sec)"), menu);
     auto norm = new QAction(tr("Normal update (500 msec)"), menu);
     auto fast = new QAction(tr("Fast update (300 msec)"), menu);
     auto faster = new QAction(tr("Very fast update (100 msec)"), menu);
+    slow->setData(SpectrumUpdateSlow);
     norm->setData(SpectrumUpdateNormal);
     fast->setData(SpectrumUpdateFast);
     faster->setData(SpectrumUpdateVeryFast);
+    slow->setCheckable(true);
     norm->setCheckable(true);
     fast->setCheckable(true);
     faster->setCheckable(true);
     auto actGroup = new QActionGroup(menu);
+    actGroup->addAction(slow);
     actGroup->addAction(norm);
     actGroup->addAction(fast);
     actGroup->addAction(faster);
@@ -216,6 +220,7 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
 
     // using the fact that only one can be checked in the group
     norm->setChecked(true);  // default
+    slow->setChecked(m_settings->signal.spectrumUpdate == SpectrumUpdateSlow);
     fast->setChecked(m_settings->signal.spectrumUpdate == SpectrumUpdateFast);
     faster->setChecked(m_settings->signal.spectrumUpdate == SpectrumUpdateVeryFast);
 
@@ -573,6 +578,11 @@ void SignalDialog::setSpectrumUpdate(int mode)
 {
     switch (mode)
     {
+        case SpectrumUpdateSlow:
+            m_settings->signal.spectrumUpdate = SpectrumUpdateSlow;
+            m_numAvrg = 20;
+            m_avrgFactor_dB = -13.010;  // 10 *log10(1/20)
+            break;
         case SpectrumUpdateFast:
             m_settings->signal.spectrumUpdate = SpectrumUpdateFast;
             m_numAvrg = 6;

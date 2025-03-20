@@ -3184,7 +3184,7 @@ void MainWindow::loadSettings()
     m_settings->signal.splitterState = settings->value("SignalDialog/layout").toByteArray();
     m_settings->signal.restore = settings->value("SignalDialog/restore", false).toBool();
     m_settings->signal.spectrumMode = settings->value("SignalDialog/spectrumMode", 1).toInt();
-    m_settings->signal.spectrumUpdate = settings->value("SignalDialog/spectrumUpdate", 0).toInt();
+    m_settings->signal.spectrumUpdate = settings->value("SignalDialog/spectrumUpdate", 1).toInt();
     m_settings->signal.showSNR = settings->value("SignalDialog/showSNR", 0).toBool();
 
     m_settings->ensembleInfo.geometry = settings->value("EnsembleInfo/windowGeometry").toByteArray();

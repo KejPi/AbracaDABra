@@ -69,9 +69,10 @@ private:
     };
     enum
     {
-        SpectrumUpdateNormal = 0,
-        SpectrumUpdateFast = 1,
-        SpectrumUpdateVeryFast = 2,
+        SpectrumUpdateSlow = 0,
+        SpectrumUpdateNormal = 1,
+        SpectrumUpdateFast = 2,
+        SpectrumUpdateVeryFast = 3,
     };
     static const char *syncLevelLabels[];
     static const QStringList snrLevelColors;
