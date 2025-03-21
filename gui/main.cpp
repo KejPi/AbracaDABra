@@ -99,11 +99,6 @@ int main(int argc, char *argv[])
 
         delete settings;
 
-        // QString filename = QLatin1String(":/i18n") + "/"  + QString("AbracaDABra_%1").arg(QLocale::languageToCode(lang))+".qm";
-        // QDirIterator it(":", QDirIterator::Subdirectories);
-        // while (it.hasNext()) {
-        //     qDebug() << it.next();
-        // }
         QTranslator translator;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0) && QT_VERSION < QT_VERSION_CHECK(6, 7, 2)
         if (QLocale::AnyLanguage == lang)
@@ -123,7 +118,9 @@ int main(int argc, char *argv[])
 #else
         if (QLocale::AnyLanguage == lang)
         {  // system default
-            if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n")))
+            // if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n")))
+            if (translator.load(QLocale().languageToCode(QLocale().language()), QLatin1String("AbracaDABra"), QLatin1String("_"),
+                                QLatin1String(":/i18n")))
             {
                 a.installTranslator(&translator);
             }
