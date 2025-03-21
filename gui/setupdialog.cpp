@@ -1759,24 +1759,21 @@ void SetupDialog::setStatusLabel(bool clearLabel)
 
 void SetupDialog::setFmlistUploadInfoText()
 {
+    ui->fmlistUploadInfotext_2->setText(tr("Ensemble information is a small CSV file with list of services in the ensemble,"));
+    ui->fmlistUploadInfotext_3->setText(tr("it is anonymous and contains no personal data."));
     m_settings->uploadEnsembleInfo = ui->fmlistUploadCheckBox->isChecked();
     if (ui->fmlistUploadCheckBox->isChecked())
     {
-        ui->fmlistUploadInfotext->setText(
-            tr("Application automatically uploads ensemble information to <a href=\"https://www.fmlist.org/\">FMLIST</a>.<br>"
-               "Ensemble information is a small CSV file with list of services in the ensemble,<br>"
-               "it is anonymous and contains no personal data.<br>"
-               "Thank you for supporting the community!"));
+        ui->fmlistUploadInfotext_1->setText(
+            tr("Application automatically uploads ensemble information to <a href=\"https://www.fmlist.org/\">FMLIST</a>."));
+        ui->fmlistUploadInfotext_4->setText(tr("Thank you for supporting the community!"));
     }
     else
     {
-        ui->fmlistUploadInfotext->setText(
-            tr("Upload of ensemble information to <a href=\"https://www.fmlist.org/\">FMLIST</a> is currenly disabled.<br>"
-               "Ensemble information is a small CSV file with list of services in the ensemble,<br>"
-               "it is anonymous and contains no personal data.<br>"
-               "Please consider enabling this option to help the community."));
+        ui->fmlistUploadInfotext_1->setText(
+            tr("Upload of ensemble information to <a href=\"https://www.fmlist.org/\">FMLIST</a> is currenly disabled."));
+        ui->fmlistUploadInfotext_4->setText(tr("Please consider enabling this option to help the community."));
     }
-    ui->fmlistUploadInfotext->setMinimumWidth(ui->fmlistUploadInfotext->minimumSizeHint().width());
 }
 
 void SetupDialog::onInputChanged(int index)
