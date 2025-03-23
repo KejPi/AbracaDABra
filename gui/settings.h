@@ -195,6 +195,9 @@ public:
         QByteArray splitterState;
         bool restore;
         int mode;
+        bool showInactiveTx;
+        bool inactiveTxTimeoutEna;
+        int inactiveTxTimeout;
     } tii;
     struct SignalDialog
     {

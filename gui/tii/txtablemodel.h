@@ -54,6 +54,7 @@ public:
         ItemRole,
         IdRole,
         SelectedTxRole,
+        IsActiveRole,
     };
 
     enum
@@ -86,6 +87,7 @@ public:
     void clear();
     void reloadTxTable();
     void setSelectedRows(const QSet<int> &rows);
+    void removeInactive(qint64 timeoutSec);
 
     void updateTiiData(const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel, int numServices, float snr);
     void appendEnsData(const QDateTime &time, const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel,

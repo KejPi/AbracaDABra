@@ -192,6 +192,7 @@ void TxMapDialog::onSettingsChanged()
     {
         startLocationUpdate();
     }
+    m_sortedFilteredModel->setInactiveTxFilter(m_settings->tii.showInactiveTx == false);
 }
 
 QGeoCoordinate TxMapDialog::currentPosition() const
@@ -314,16 +315,15 @@ void TxMapDialog::onSelectionChanged(const QItemSelection &selected, const QItem
 }
 
 void TxMapDialog::selectTx(int index)
-{  // index is row of source model !!!
+{
     if (index == -1)
     {
         m_tableSelectionModel->clear();
         return;
     }
 
-    // index is in source model while selection uses indexes of sort model!!!
     QModelIndexList selection = m_tableSelectionModel->selectedRows();
-    QModelIndex idx = m_sortedFilteredModel->mapFromSource(m_model->index(index, TxTableModel::ColMainId));
+    QModelIndex idx = m_sortedFilteredModel->index(index, 0);
     if (idx.isValid() && (selection.isEmpty() || selection.at(0) != idx))
     {
         m_tableSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current | QItemSelectionModel::Rows);

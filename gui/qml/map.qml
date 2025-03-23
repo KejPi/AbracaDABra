@@ -158,7 +158,7 @@ Item {
             }
 
             color: "white"
-            opacity: infoHoverHandler.hovered ? 1.0 : 0.6
+            opacity: infoHoverHandler.hovered ? 1.0 : 0.75
             width: infoLayout.width + 10
             height: infoLayout.height + 10
             anchors.right: parent.right
@@ -189,7 +189,7 @@ Item {
             }
 
             color: "white"
-            opacity: txInfoHoverHandler.hovered ? 1.0 : 0.6
+            opacity: txInfoHoverHandler.hovered ? 1.0 : 0.75
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.rightMargin: 10

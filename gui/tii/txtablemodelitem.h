@@ -71,6 +71,9 @@ public:
     QString ensConfig() const;
     QString ensConfigCSV() const;
 
+    bool isActive() const;
+    void setInactive();
+
 private:
     int m_id;                      // subId << 8 | mainId (this is unique)
     int8_t m_mainId = -1;          // main ID

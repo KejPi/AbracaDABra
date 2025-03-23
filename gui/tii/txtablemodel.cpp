@@ -93,6 +93,10 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
                 case ColSubId:
                     return (item.subId() != -1) ? QString::number(item.subId()) : "";
                 case ColLevel:
+                    if (item.isActive() == false)
+                    {
+                        return QString();
+                    }
                     return QString("%1 dB").arg(static_cast<double>(item.level()), 5, 'f',
                                                 1);  // QString::number(static_cast<double>(item.level()), 'f', 3);
                 case ColLocation:
@@ -174,6 +178,10 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
         case TxTableModelRoles::TiiRole:
             return (item.mainId() != -1) ? QVariant(QString("%1-%2").arg(item.mainId()).arg(item.subId())) : "";
         case TxTableModelRoles::LevelColorRole:
+            if (item.isActive() == false)
+            {
+                return QVariant(QColor(Qt::gray));
+            }
             if (item.level() > -6)
             {
                 // return QVariant(QColor(0x5b, 0xc2, 0x14));
@@ -190,6 +198,8 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
             return QVariant(item.id());
         case TxTableModelRoles::SelectedTxRole:
             return m_selectedRows.contains(index.row());
+        case TxTableModelRoles::IsActiveRole:
+            return QVariant(item.isActive());
         default:
             break;
     }
@@ -295,6 +305,7 @@ QHash<int, QByteArray> TxTableModel::roleNames() const
     roles[TxTableModelRoles::SubIdRole] = "subId";
     roles[TxTableModelRoles::LevelColorRole] = "levelColor";
     roles[TxTableModelRoles::SelectedTxRole] = "selectedTx";
+    roles[TxTableModelRoles::IsActiveRole] = "isActive";
 
     return roles;
 }
@@ -346,29 +357,23 @@ void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceLi
 
         if (row < m_modelData.size())
         {
-            int startIdx = row;
-            int numToRemove = 0;
             while ((row < m_modelData.size()) && (m_modelData.at(row).id() < item.id()))
-            {
+            {  // inactivate items
+                if (m_modelData.at(row).isActive() == true)
+                {
+                    m_modelData[row].setInactive();
+                    emit dataChanged(index(row, ColMainId), index(row, ColAzimuth));
+                }
                 row += 1;
-                numToRemove += 1;
-            }
-            if (numToRemove > 0)
-            {
-                beginRemoveRows(QModelIndex(), startIdx, startIdx + numToRemove - 1);
-                m_modelData.remove(startIdx, numToRemove);
-                endRemoveRows();
-                row = startIdx;
             }
 
             if (row < m_modelData.size())
-            {  // we are still not at the end
-                // all id < new id were removed
+            {
                 if (m_modelData.at(row).id() == item.id())
                 {  // equal ID ==> update item
                     m_modelData[row] = item;
                     // inform views
-                    emit dataChanged(index(row, ColLevel), index(row, ColAzimuth));
+                    emit dataChanged(index(row, ColMainId), index(row, ColAzimuth));
                 }
                 else
                 {  // insert item
@@ -392,11 +397,15 @@ void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceLi
     // final clean up
     if (appendList.isEmpty())
     {  // nothing to append
-        if (row < m_modelData.size())
-        {  // some rows to remove
-            beginRemoveRows(QModelIndex(), row, m_modelData.size() - 1);
-            m_modelData.remove(row, m_modelData.size() - row);
-            endRemoveRows();
+        while (row < m_modelData.size())
+        {
+            // qDebug() << "Current item:" << m_modelData.at(row).mainId() << m_modelData.at(row).subId();
+            if (m_modelData.at(row).isActive() == true)
+            {  // inactivate item
+                m_modelData[row].setInactive();
+                emit dataChanged(index(row, ColMainId), index(row, ColAzimuth));
+            }
+            row += 1;
         }
     }
     else
@@ -413,6 +422,28 @@ void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceLi
     //     Q_ASSERT(m_modelData.at(n).subId() == data.at(n).sub);
     //     Q_ASSERT(m_modelData.at(n).level() == data.at(n).level);
     // }
+}
+
+void TxTableModel::removeInactive(qint64 timeoutSec)
+{
+    // qDebug() << Q_FUNC_INFO;
+    auto currentTime = QDateTime::currentDateTime();
+    int row = 0;
+    while (row < m_modelData.count())
+    {
+        if (m_modelData.at(row).isActive() == false && m_modelData.at(row).rxTime().secsTo(currentTime) > timeoutSec)
+        {
+            // qDebug() << "Removing:" << m_modelData.at(row).mainId() << m_modelData.at(row).subId()
+            //          << "sec to current time:" << m_modelData.at(row).rxTime().secsTo(currentTime);
+            beginRemoveRows(QModelIndex(), row, row);
+            m_modelData.remove(row);
+            endRemoveRows();
+        }
+        else
+        {
+            row += 1;
+        }
+    }
 }
 
 void TxTableModel::appendEnsData(const QDateTime &time, const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel,

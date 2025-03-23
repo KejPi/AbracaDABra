@@ -38,15 +38,18 @@ class TxTableProxyModel : public QSortFilterProxyModel
     Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
 public:
     TxTableProxyModel(QObject *parent = nullptr);
-    void setFilter(bool newFilterCols);
+    void setColumnsFilter(bool filterCols);
+    void setInactiveTxFilter(bool filterInactiveTx);
 
 signals:
     void rowCountChanged();
 
 protected:
-    bool m_enaFilter = true;
+    bool m_filterCols = true;
+    bool m_filterInactiveTx = true;
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
     bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const override;
+    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
 
 #endif  // TXTABLEPROXYMODEL_H

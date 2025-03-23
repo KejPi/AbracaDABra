@@ -84,6 +84,7 @@ private:
     QSplitter *m_splitter;
 #endif
     QQuickView *m_qmlView;
+    QTimer *m_inactiveCleanupTimer = nullptr;
     QFile *m_logFile = nullptr;
     float m_snr = 0.0;
 

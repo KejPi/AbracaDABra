@@ -58,14 +58,13 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     // Set window flags to add maximize and minimize buttons
     setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
 
-    m_sortedFilteredModel->setFilter(false);
+    m_sortedFilteredModel->setColumnsFilter(false);
 
     // QML View
     m_qmlView = new QQuickView();
     QQmlContext *context = m_qmlView->rootContext();
     context->setContextProperty("tiiBackend", this);
-    context->setContextProperty("tiiTable", m_model);
-    context->setContextProperty("tiiTableSorted", m_sortedFilteredModel);
+    context->setContextProperty("tiiTable", m_sortedFilteredModel);
     context->setContextProperty("tiiTableSelectionModel", m_tableSelectionModel);
     m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map.qml"));
 

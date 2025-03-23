@@ -38,7 +38,7 @@ Item {
     readonly property int rowHeight: fontMetrics.font.pointSize + 10
     property bool isVisible: true
 
-    opacity: tiiTableItemHoverHandler.hovered ? 1.0 : 0.75
+    opacity: tiiTableItemHoverHandler.hovered ? 1.0 : 0.85
     width: 100
     height: Math.min((tiiTableItem.rowHeight * tiiTableView.model.rowCount) + horizontalHeader.height, parent.height-30)
     visible: isVisible && tiiTableView.model.rowCount > 0
@@ -116,7 +116,7 @@ Item {
         anchors.bottom: parent.bottom
         clip: true
         boundsBehavior: Flickable.StopAtBounds
-        model: tiiTableSorted
+        model: tiiTable
         selectionModel: tiiTableSelectionModel
         delegate: Rectangle {
             implicitWidth: 10
@@ -127,7 +127,8 @@ Item {
             Text {
                 anchors.centerIn: parent
                 text: display !== undefined ? display : ""
-                color: "#d8000000" // selected ? palette.highlightedText : palette.text
+                color: (isActive ? "#d8000000" : "#d8505050")  // "#d8000000"  // selected ? palette.highlightedText : palette.text
+                font.italic: !isActive
             }
 
             MouseArea {

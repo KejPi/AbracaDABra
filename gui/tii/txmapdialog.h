@@ -123,6 +123,7 @@ private:
     const bool m_isTii;
     bool m_isRecordingLog = false;
     int m_selectedRow = -1;  // source model row
+    bool m_showInactive;
 };
 
 #endif  // TXMAPDIALOG_H

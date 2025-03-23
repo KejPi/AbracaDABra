@@ -218,6 +218,17 @@ QString TxTableModelItem::ensConfigCSV() const
     return m_ensConfigCSV;
 }
 
+bool TxTableModelItem::isActive() const
+{
+    return (m_level > -1000);
+}
+
+void TxTableModelItem::setInactive()
+{
+    // artificial low value to indicate inactive item
+    m_level = -1000;
+}
+
 float TxTableModelItem::snr() const
 {
     return m_snr;

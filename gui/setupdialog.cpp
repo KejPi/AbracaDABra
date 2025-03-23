@@ -39,6 +39,7 @@
 #include "audiodecoder.h"
 #include "rtlsdrinput.h"
 #include "rtltcpinput.h"
+#include "ui_setupdialog.h"
 #if HAVE_SOAPYSDR
 #include "soapysdrinput.h"
 #endif
@@ -423,6 +424,17 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->tiiSpectPlotCheckBox->setVisible(false);
 #endif
 
+    connect(ui->tiiShowInactiveCheckbox, &QCheckBox::toggled, this, &SetupDialog::onTiiShowInactiveToggled);
+    connect(ui->tiiInactiveTimeoutCheckbox, &QCheckBox::toggled, this, &SetupDialog::onTiiInactiveTimeoutToggled);
+    connect(ui->tiiInactiveTimeout, &QSpinBox::valueChanged, this, &SetupDialog::onTiiInactiveTimeoutValueChanged);
+    // this is to block manual editing of the value in spinbox
+    // auto lineEdit = ui->tiiHideInactiveTimeout->findChild<QLineEdit *>();
+    // lineEdit->setReadOnly(true);
+    // lineEdit->setFocusPolicy(Qt::NoFocus);
+    // connect(
+    //     ui->tiiHideInactiveTimeout, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->tiiHideInactiveTimeout,
+    //     [&, lineEdit]() { lineEdit->deselect(); }, Qt::QueuedConnection);
+
     static const QRegularExpression coordRe("[+-]?[0-9]+(\\.[0-9]+)?\\s*,\\s*[+-]?[0-9]+(\\.[0-9]+)?");
     QRegularExpressionValidator *coordValidator = new QRegularExpressionValidator(coordRe, this);
     ui->coordinatesEdit->setValidator(coordValidator);
@@ -590,6 +602,7 @@ void SetupDialog::setSettings(Settings *settings)
     emit xmlHeaderToggled(m_settings->xmlHeaderEna);
     emit audioRecordingSettings(m_settings->audioRec.folder, m_settings->audioRec.captureOutput);
     emit uaDumpSettings(m_settings->uaDump);
+    onTiiShowInactiveToggled(m_settings->tii.showInactiveTx);
     emit tiiSettingsChanged();
     emit tiiModeChanged(m_settings->tii.mode);
     onUseInternetChecked(m_settings->useInternet);
@@ -945,6 +958,9 @@ void SetupDialog::setUiState()
     ui->tiiSpectPlotCheckBox->setChecked(m_settings->tii.showSpectumPlot);
     ui->tiiLogFolderLabel->setText(m_settings->tii.logFolder);
     ui->tiiModeSlider->setValue(static_cast<int>(m_settings->tii.mode));
+    ui->tiiShowInactiveCheckbox->setChecked(m_settings->tii.showInactiveTx);
+    ui->tiiInactiveTimeoutCheckbox->setChecked(m_settings->tii.inactiveTxTimeoutEna);
+    ui->tiiInactiveTimeout->setValue(m_settings->tii.inactiveTxTimeout);
 
     ui->restoreWindowsCheckBox->setChecked(m_settings->restoreWindows);
     ui->checkForUpdates->setChecked(m_settings->updateCheckEna);
@@ -2399,6 +2415,26 @@ void SetupDialog::onTiiModeChanged(int value)
 {
     m_settings->tii.mode = value;
     emit tiiModeChanged(value);
+}
+
+void SetupDialog::onTiiShowInactiveToggled(bool checked)
+{
+    ui->tiiInactiveTimeoutCheckbox->setEnabled(checked);
+    ui->tiiInactiveTimeout->setEnabled(checked);
+    m_settings->tii.showInactiveTx = checked;
+    emit tiiSettingsChanged();
+}
+
+void SetupDialog::onTiiInactiveTimeoutToggled(bool checked)
+{
+    m_settings->tii.inactiveTxTimeoutEna = checked;
+    emit tiiSettingsChanged();
+}
+
+void SetupDialog::onTiiInactiveTimeoutValueChanged(int value)
+{
+    m_settings->tii.inactiveTxTimeout = value;
+    emit tiiSettingsChanged();
 }
 
 void SetupDialog::onTiiUpdateFinished(QNetworkReply::NetworkError err)

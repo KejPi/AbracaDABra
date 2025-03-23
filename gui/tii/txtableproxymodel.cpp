@@ -35,9 +35,22 @@ TxTableProxyModel::TxTableProxyModel(QObject *parent) : QSortFilterProxyModel(pa
     connect(this, &QSortFilterProxyModel::modelReset, this, &TxTableProxyModel::rowCountChanged);
 }
 
-void TxTableProxyModel::setFilter(bool newFilterCols)
+void TxTableProxyModel::setColumnsFilter(bool filterCols)
 {
-    m_enaFilter = newFilterCols;
+    if (filterCols != m_filterCols)
+    {
+        m_filterCols = filterCols;
+        invalidateColumnsFilter();
+    }
+}
+
+void TxTableProxyModel::setInactiveTxFilter(bool filterInactiveTx)
+{
+    if (filterInactiveTx != m_filterInactiveTx)
+    {
+        m_filterInactiveTx = filterInactiveTx;
+        invalidateRowsFilter();
+    }
 }
 
 bool TxTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
@@ -50,7 +63,7 @@ bool TxTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &rig
         case TxTableModel::ColMainId:
             if (itemL.mainId() == itemR.mainId())
             {
-                if (!m_enaFilter && (itemL.subId() == itemR.subId()))
+                if (!m_filterCols && (itemL.subId() == itemR.subId()))
                 {
                     return itemL.rxTime() < itemR.rxTime();
                 }
@@ -58,25 +71,25 @@ bool TxTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &rig
             }
             return itemL.mainId() < itemR.mainId();
         case TxTableModel::ColSubId:
-            if (!m_enaFilter && (itemL.subId() == itemR.subId()))
+            if (!m_filterCols && (itemL.subId() == itemR.subId()))
             {
                 return itemL.rxTime() < itemR.rxTime();
             }
             return itemL.subId() < itemR.subId();
         case TxTableModel::ColLevel:
-            if (!m_enaFilter && (itemL.level() == itemR.level()))
+            if (!m_filterCols && (itemL.level() == itemR.level()))
             {
                 return itemL.rxTime() < itemR.rxTime();
             }
             return itemL.level() < itemR.level();
         case TxTableModel::ColDist:
-            if (!m_enaFilter && (itemL.distance() == itemR.distance()))
+            if (!m_filterCols && (itemL.distance() == itemR.distance()))
             {
                 return itemL.rxTime() < itemR.rxTime();
             }
             return itemL.distance() < itemR.distance();
         case TxTableModel::ColAzimuth:
-            if (!m_enaFilter && (itemL.azimuth() == itemR.azimuth()))
+            if (!m_filterCols && (itemL.azimuth() == itemR.azimuth()))
             {
                 return itemL.rxTime() < itemR.rxTime();
             }
@@ -132,7 +145,7 @@ bool TxTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex
 {
     Q_UNUSED(source_parent);
 
-    if (!m_enaFilter)
+    if (!m_filterCols)
     {
         return true;
     }
@@ -147,4 +160,10 @@ bool TxTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex
             return true;
     }
     return false;
+}
+
+bool TxTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
+{
+    QModelIndex idx = sourceModel()->index(source_row, 0);
+    return (m_filterInactiveTx == false) || sourceModel()->data(idx, TxTableModel::TxTableModelRoles::IsActiveRole).toBool();
 }

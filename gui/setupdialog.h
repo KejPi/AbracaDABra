@@ -219,6 +219,9 @@ private:
     void onTiiUpdateDbClicked();
     void onTiiLogFolderButtonClicked();
     void onTiiModeChanged(int value);
+    void onTiiShowInactiveToggled(bool checked);
+    void onTiiInactiveTimeoutToggled(bool checked);
+    void onTiiInactiveTimeoutValueChanged(int value);
 
     void onProxyConfigChanged(int index);
     void onProxyApplyButtonClicked();

@@ -64,8 +64,7 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent) : TxMapDialog(settings
     m_qmlView = new QQuickView();
     QQmlContext *context = m_qmlView->rootContext();
     context->setContextProperty("tiiBackend", this);
-    context->setContextProperty("tiiTable", m_model);
-    context->setContextProperty("tiiTableSorted", m_sortedFilteredModel);
+    context->setContextProperty("tiiTable", m_sortedFilteredModel);
     context->setContextProperty("tiiTableSelectionModel", m_tableSelectionModel);
     m_qmlView->setSource(QUrl("qrc:/app/qmlcomponents/map.qml"));
 
@@ -149,7 +148,7 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent) : TxMapDialog(settings
 
     connect(m_tiiSpectrumPlot, &QCustomPlot::mouseMove, this, &TIIDialog::showPointToolTip);
 
-    m_tiiSpectrumPlot->setVisible(m_settings->tii.showSpectumPlot);
+    onSettingsChanged();
 #endif
 
     QSize sz = size();
@@ -167,6 +166,11 @@ TIIDialog::~TIIDialog()
     {
         m_logFile->close();
         delete m_logFile;
+    }
+    if (m_inactiveCleanupTimer)
+    {
+        m_inactiveCleanupTimer->stop();
+        delete m_inactiveCleanupTimer;
     }
     delete m_qmlView;
     delete m_sortedFilteredModel;
@@ -276,7 +280,7 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
         m_tiiSpectrumPlot->xAxis->setTickLabelColor(Qt::white);
         m_tiiSpectrumPlot->yAxis->setTickLabelColor(Qt::white);
         m_tiiSpectrumPlot->xAxis2->setTickLabelColor(Qt::white);
-        m_tiiSpectrumPlot->yAxis2->setTickLabelColor(Qt::white);        
+        m_tiiSpectrumPlot->yAxis2->setTickLabelColor(Qt::white);
         if (devicePixelRatio() > 1)
         {
             m_tiiSpectrumPlot->xAxis->grid()->setPen(QPen(QColor(190, 190, 190), 1, Qt::DotLine));
@@ -341,7 +345,7 @@ void TIIDialog::setupDarkMode(bool darkModeEna)
         m_tiiSpectrumPlot->xAxis->setTickLabelColor(Qt::black);
         m_tiiSpectrumPlot->yAxis->setTickLabelColor(Qt::black);
         m_tiiSpectrumPlot->xAxis2->setTickLabelColor(Qt::black);
-        m_tiiSpectrumPlot->yAxis2->setTickLabelColor(Qt::black);        
+        m_tiiSpectrumPlot->yAxis2->setTickLabelColor(Qt::black);
         if (devicePixelRatio() > 1)
         {
             m_tiiSpectrumPlot->xAxis->grid()->setPen(QPen(QColor(60, 60, 60), 1, Qt::DotLine));
@@ -407,6 +411,30 @@ void TIIDialog::onSettingsChanged()
 {
     TxMapDialog::onSettingsChanged();
 
+    if (m_settings->tii.showInactiveTx && m_settings->tii.inactiveTxTimeoutEna)
+    {
+        if (m_inactiveCleanupTimer == nullptr)
+        {
+            m_inactiveCleanupTimer = new QTimer(this);
+            m_inactiveCleanupTimer->setTimerType(Qt::VeryCoarseTimer);
+            m_inactiveCleanupTimer->setInterval(10 * 1000);  // 10 seconds interval
+            connect(m_inactiveCleanupTimer, &QTimer::timeout, this, [this]() { m_model->removeInactive(m_settings->tii.inactiveTxTimeout * 60); });
+            m_inactiveCleanupTimer->start();
+        }
+        else
+        {
+            // do nothing, timer is already running
+        }
+    }
+    else
+    {
+        if (m_inactiveCleanupTimer)
+        {
+            m_inactiveCleanupTimer->stop();
+            delete m_inactiveCleanupTimer;
+            m_inactiveCleanupTimer = nullptr;
+        }
+    }
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     m_tiiSpectrumPlot->setVisible(m_settings->tii.showSpectumPlot);
 #endif
@@ -533,13 +561,16 @@ void TIIDialog::updateTiiPlot()
         for (int row = 0; row < m_model->rowCount(); ++row)
         {
             const auto &item = m_model->itemAt(row);
-            QList<int> subcar = DabTables::getTiiSubcarriers(item.mainId(), item.subId());
-            for (const auto &c : subcar)
+            if (item.isActive())
             {
-                float val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2 * c)->value;
-                m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c, val);
-                val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2 * c + 1)->value;
-                m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c + 0.5, val);
+                QList<int> subcar = DabTables::getTiiSubcarriers(item.mainId(), item.subId());
+                for (const auto &c : subcar)
+                {
+                    float val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2 * c)->value;
+                    m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c, val);
+                    val = m_tiiSpectrumPlot->graph(GraphId::Spect)->data()->at(2 * c + 1)->value;
+                    m_tiiSpectrumPlot->graph(GraphId::TII)->addData(c + 0.5, val);
+                }
             }
         }
     }

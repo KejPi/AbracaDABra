@@ -3157,6 +3157,10 @@ void MainWindow::loadSettings()
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     m_settings->tii.splitterState = settings->value("TII/layout").toByteArray();
 #endif
+    m_settings->tii.showInactiveTx = settings->value("TII/showInactiveTx", false).toBool();
+    m_settings->tii.inactiveTxTimeoutEna = settings->value("TII/inactiveTxTimeoutEna", false).toBool();
+    m_settings->tii.inactiveTxTimeout = settings->value("TII/inactiveTxTimeout", 5).toInt();
+
     m_settings->scanner.exportPath = settings->value("Scanner/exportPath", QDir::homePath()).toString();
     m_settings->scanner.splitterState = settings->value("Scanner/layout").toByteArray();
     m_settings->scanner.geometry = settings->value("Scanner/windowGeometry").toByteArray();
@@ -3441,6 +3445,9 @@ void MainWindow::saveSettings()
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     settings->setValue("TII/layout", m_settings->tii.splitterState);
 #endif
+    settings->setValue("TII/showInactiveTx", m_settings->tii.showInactiveTx);
+    settings->setValue("TII/inactiveTxTimeoutEna", m_settings->tii.inactiveTxTimeoutEna);
+    settings->setValue("TII/inactiveTxTimeout", m_settings->tii.inactiveTxTimeout);
 
     settings->setValue("Scanner/exportPath", m_settings->scanner.exportPath);
     settings->setValue("Scanner/windowGeometry", m_settings->scanner.geometry);
