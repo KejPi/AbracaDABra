@@ -3193,6 +3193,10 @@ void MainWindow::loadSettings()
 
     m_settings->ensembleInfo.geometry = settings->value("EnsembleInfo/windowGeometry").toByteArray();
     m_settings->ensembleInfo.restore = settings->value("EnsembleInfo/restore", false).toBool();
+    m_settings->ensembleInfo.exportPath = settings->value("EnsembleInfo/exportPath", QVariant(QDir::homePath())).toString();
+    m_settings->ensembleInfo.recordingTimeoutEna = settings->value("EnsembleInfo/recordingTimeoutEna", false).toBool();
+    m_settings->ensembleInfo.recordingTimeoutSec = settings->value("EnsembleInfo/recordingTimeoutSec", 10).toInt();
+    m_ensembleInfoDialog->loadSettings(m_settings);
 
     m_settings->log.geometry = settings->value("Log/windowGeometry").toByteArray();
     m_settings->log.restore = settings->value("Log/restore", false).toBool();
@@ -3315,7 +3319,6 @@ void MainWindow::loadSettings()
     QTimer::singleShot(500, this, [this]() { restoreWindows(); });
 
     m_inputDeviceRecorder->setRecordingPath(settings->value("recordingPath", QVariant(QDir::homePath())).toString());
-    m_ensembleInfoDialog->setExportPath(settings->value("EnsembleInfo/exportPath", QVariant(QDir::homePath())).toString());
     ui->slsView_Service->setSavePath(settings->value("slideSavePath", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)).toString());
     ui->slsView_Announcement->setSavePath(
         settings->value("slideSavePath", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)).toString());
@@ -3467,8 +3470,10 @@ void MainWindow::saveSettings()
     settings->endArray();
 
     settings->setValue("EnsembleInfo/windowGeometry", m_settings->ensembleInfo.geometry);
-    settings->setValue("EnsembleInfo/exportPath", m_ensembleInfoDialog->exportPath());
+    settings->setValue("EnsembleInfo/exportPath", m_settings->ensembleInfo.exportPath);
     settings->setValue("EnsembleInfo/restore", m_settings->ensembleInfo.restore);
+    settings->setValue("EnsembleInfo/recordingTimeoutEna", m_settings->ensembleInfo.recordingTimeoutEna);
+    settings->setValue("EnsembleInfo/recordingTimeoutSec", m_settings->ensembleInfo.recordingTimeoutSec);
 
     settings->setValue("Log/windowGeometry", m_settings->log.geometry);
     settings->setValue("Log/restore", m_settings->log.restore);
@@ -3736,10 +3741,6 @@ void MainWindow::toggleDLPlus(bool toggle)
 
 void MainWindow::showEnsembleInfo()
 {
-    if (!m_settings->ensembleInfo.geometry.isEmpty())
-    {
-        m_ensembleInfoDialog->restoreGeometry(m_settings->ensembleInfo.geometry);
-    }
     m_ensembleInfoDialog->show();
     m_ensembleInfoDialog->raise();
     m_ensembleInfoDialog->activateWindow();

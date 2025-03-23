@@ -44,7 +44,7 @@ public:
     const QString recordingPath() const;
     void setRecordingPath(const QString &recordingPath);
     void setDeviceDescription(const InputDevice::Description &desc);
-    void start(QWidget *callerWidget);
+    void start(QWidget *callerWidget, int timeoutSec);
     void stop();
     void writeBuffer(const uint8_t *buf, uint32_t len);
     void setCurrentFrequency(uint32_t frequency) { m_frequency = frequency; }
@@ -58,7 +58,9 @@ private:
     FILE *m_file;
     std::mutex m_fileMutex;
     uint64_t m_bytesRecorded = 0;
+    uint64_t m_bytesToRecord = 0;
     float m_bytes2ms;
+    uint64_t m_bytesPerSec;
     uint32_t m_frequency;
     QString m_recordingPath;
     bool m_xmlHeaderEna = true;

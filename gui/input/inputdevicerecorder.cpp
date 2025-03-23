@@ -29,6 +29,7 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QLoggingCategory>
+#include <QTimer>
 
 #include "config.h"
 #include "dabtables.h"
@@ -62,6 +63,7 @@ void InputDeviceRecorder::setDeviceDescription(const InputDevice::Description &d
 
     // 1 / (2 channels(IQ) * channel containerBits/8.0 * sampleRate/1000.0)
     m_bytes2ms = 8 * 1000.0 / (2 * m_deviceDescription.sample.containerBits * m_deviceDescription.sample.sampleRate);
+    m_bytesPerSec = (2 * m_deviceDescription.sample.containerBits * m_deviceDescription.sample.sampleRate) / 8;
 
     qCDebug(inputDeviceRecorder) << "name:" << m_deviceDescription.device.name;
     qCDebug(inputDeviceRecorder) << "model:" << m_deviceDescription.device.model;
@@ -70,7 +72,7 @@ void InputDeviceRecorder::setDeviceDescription(const InputDevice::Description &d
     qCDebug(inputDeviceRecorder) << "channelContainer:" << m_deviceDescription.sample.channelContainer;
 }
 
-void InputDeviceRecorder::start(QWidget *callerWidget)
+void InputDeviceRecorder::start(QWidget *callerWidget, int timeoutSec)
 {
     std::lock_guard<std::mutex> guard(m_fileMutex);
     if (nullptr == m_file)
@@ -98,6 +100,7 @@ void InputDeviceRecorder::start(QWidget *callerWidget)
         if (!fileName.isEmpty())
         {
             m_bytesRecorded = 0;
+            m_bytesToRecord = timeoutSec * m_bytesPerSec;
             m_recordingPath = QFileInfo(fileName).path();  // store path for next time
 
             m_file = fopen(QDir::toNativeSeparators(fileName).toUtf8().data(), "wb");
@@ -111,6 +114,7 @@ void InputDeviceRecorder::start(QWidget *callerWidget)
                     fwrite(padding, 1, INPUTDEVICERECORDER_XML_PADDING, m_file);
                     delete[] padding;
                 }
+                qCInfo(inputDeviceRecorder) << "IQ recording starts, timeout:" << timeoutSec << "sec, file:" << fileName;
                 emit recording(true);
             }
             else
@@ -151,6 +155,7 @@ void InputDeviceRecorder::stop()
         fclose(m_file);
         m_file = nullptr;
 
+        qCInfo(inputDeviceRecorder) << "IQ recording stopped";
         emit recording(false);
     }
 }
@@ -161,9 +166,37 @@ void InputDeviceRecorder::writeBuffer(const uint8_t *buf, uint32_t len)
 
     if (nullptr != m_file)
     {
-        ssize_t bytes = fwrite(buf, 1, len, m_file);
-        m_bytesRecorded += bytes;
-        emit bytesRecorded(m_bytesRecorded, m_bytesRecorded * m_bytes2ms);
+        if (m_bytesToRecord == 0)
+        {
+            ssize_t bytes = fwrite(buf, 1, len, m_file);
+            m_bytesRecorded += bytes;
+            emit bytesRecorded(m_bytesRecorded, m_bytesRecorded * m_bytes2ms);
+            return;
+        }
+
+        // else some timeout was set
+        {
+            if ((m_bytesRecorded + len) < m_bytesToRecord)
+            {  // no timeout yet
+                ssize_t bytes = fwrite(buf, 1, len, m_file);
+                m_bytesRecorded += bytes;
+                emit bytesRecorded(m_bytesRecorded, m_bytesRecorded * m_bytes2ms);
+                return;
+            }
+            // else timeout
+            {
+                ssize_t bytes = fwrite(buf, 1, m_bytesToRecord - m_bytesRecorded, m_file);
+                m_bytesRecorded += bytes;
+                emit bytesRecorded(m_bytesRecorded, m_bytesRecorded * m_bytes2ms);
+                if (m_bytesRecorded >= m_bytesToRecord)
+                {
+                    qCInfo(inputDeviceRecorder) << "IQ recording timeout reached";
+
+                    // this is to avoid deadlock due to mutex
+                    QTimer::singleShot(1, this, [this]() { stop(); });
+                }
+            }
+        }
     }
 }
 

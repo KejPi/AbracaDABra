@@ -32,6 +32,8 @@
 
 #include "radiocontrol.h"
 
+class Settings;
+
 namespace Ui
 {
 class EnsembleInfoDialog;
@@ -44,6 +46,7 @@ class EnsembleInfoDialog : public QDialog
 public:
     explicit EnsembleInfoDialog(QWidget *parent = nullptr);
     ~EnsembleInfoDialog();
+    void loadSettings(Settings *settings);
     void refreshEnsembleConfiguration(const QString &txt);
     void updateSnr(uint8_t, float snr);
     void updateFreqOffset(float offset);
@@ -63,13 +66,11 @@ public:
     void serviceChanged(const RadioControlServiceComponent &s);
     void onEnsembleInformation(const RadioControlEnsemble &ens) { m_ensembleName = ens.label; }
     void onEnsembleCSV(const QString &csvString);
-    QString exportPath() const;
-    void setExportPath(const QString &newExportPath);
     void enableEnsembleInfoUpload();
     void setEnsembleInfoUploaded(bool newEnsembleInfoUploaded);
 
 signals:
-    void recordingStart(QWidget *widgetParent);
+    void recordingStart(QWidget *widgetParent, int timeoutSec);
     void recordingStop();
     void requestEnsembleConfiguration();
     void requestEnsembleCSV();
@@ -81,10 +82,10 @@ protected:
 
 private:
     Ui::EnsembleInfoDialog *ui;
+    Settings *m_settings = nullptr;
 
     bool m_isRecordingActive = false;
     quint32 m_frequency;
-    QString m_exportPath;
     QString m_ensembleName;
     bool m_ensembleInfoUploaded;
 

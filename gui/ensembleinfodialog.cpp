@@ -33,6 +33,7 @@
 #include <QRegularExpression>
 #include <QScrollBar>
 
+#include "settings.h"
 #include "ui_ensembleinfodialog.h"
 
 EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(new Ui::EnsembleInfoDialog)
@@ -43,8 +44,6 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(ne
     // Set window flags to add minimize buttons
     setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
 #endif
-
-    m_exportPath = QDir::homePath();
 
     connect(ui->recordButton, &QPushButton::clicked, this, &EnsembleInfoDialog::onRecordingButtonClicked);
     connect(ui->csvExportButton, &QPushButton::clicked, this, &EnsembleInfoDialog::requestEnsembleCSV);
@@ -116,13 +115,36 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(ne
     ui->uploadButton->setToolTip(tr("Upload ensemble information to FMLIST"));
     ui->uploadButton->setEnabled(false);
     m_ensembleInfoUploaded = false;
+
+    ui->timeoutCheckBox->setToolTip(
+        tr("Enable or disable raw IQ stream recording timeout.<br>Recording stops automaticaly when timeout is reached."));
+    ui->timeoutSpinBox->setToolTip(tr("Raw IQ recording duration"));
+
     enableRecording(false);
     ui->recordButton->setDefault(true);
+    connect(ui->timeoutCheckBox, &QCheckBox::toggled, this,
+            [this](bool checked)
+            {
+                ui->timeoutSpinBox->setEnabled(checked);
+                m_settings->ensembleInfo.recordingTimeoutEna = checked;
+            });
+    connect(ui->timeoutSpinBox, &QSpinBox::valueChanged, this, [this](int value) { m_settings->ensembleInfo.recordingTimeoutSec = value; });
 }
 
 EnsembleInfoDialog::~EnsembleInfoDialog()
 {
     delete ui;
+}
+
+void EnsembleInfoDialog::loadSettings(Settings *settings)
+{
+    m_settings = settings;
+    ui->timeoutSpinBox->setValue(m_settings->ensembleInfo.recordingTimeoutSec);
+    ui->timeoutCheckBox->setChecked(m_settings->ensembleInfo.recordingTimeoutEna);
+    if (!m_settings->ensembleInfo.geometry.isEmpty())
+    {
+        restoreGeometry(m_settings->ensembleInfo.geometry);
+    }
 }
 
 void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString &txt)
@@ -165,15 +187,15 @@ void EnsembleInfoDialog::onEnsembleCSV(const QString &csvString)
     QString ensemblename = m_ensembleName;
     ensemblename.replace(regexp, "_");
 
-    QString f =
-        QString("%1/%2_%3_%4.csv")
-            .arg(m_exportPath, QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"), DabTables::channelList.value(m_frequency), ensemblename);
+    QString f = QString("%1/%2_%3_%4.csv")
+                    .arg(m_settings->ensembleInfo.exportPath, QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"),
+                         DabTables::channelList.value(m_frequency), ensemblename);
 
     QString fileName = QFileDialog::getSaveFileName(this, tr("Export CSV file"), QDir::toNativeSeparators(f), tr("CSV Files") + " (*.csv)");
 
     if (!fileName.isEmpty())
     {
-        m_exportPath = QFileInfo(fileName).path();  // store path for next time
+        m_settings->ensembleInfo.exportPath = QFileInfo(fileName).path();  // store path for next time
         QFile file(fileName);
         if (file.open(QIODevice::WriteOnly))
         {
@@ -197,6 +219,8 @@ void EnsembleInfoDialog::updateFreqOffset(float offset)
 void EnsembleInfoDialog::enableRecording(bool ena)
 {
     ui->recordButton->setVisible(ena);
+    ui->timeoutCheckBox->setVisible(ena);
+    ui->timeoutSpinBox->setVisible(ena);
     ui->dumpSize->setText("");
     ui->dumpLength->setText("");
     showRecordingStat(false);
@@ -212,7 +236,7 @@ void EnsembleInfoDialog::onRecordingButtonClicked()
     if (!m_isRecordingActive)
     {
         ui->recordButton->setEnabled(false);
-        emit recordingStart(this);
+        emit recordingStart(this, ui->timeoutCheckBox->isChecked() ? ui->timeoutSpinBox->value() : 0);
     }
     else
     {
@@ -377,16 +401,6 @@ void EnsembleInfoDialog::setEnsembleInfoUploaded(bool newEnsembleInfoUploaded)
     ui->uploadButton->setEnabled(!m_ensembleInfoUploaded);
 }
 
-QString EnsembleInfoDialog::exportPath() const
-{
-    return m_exportPath;
-}
-
-void EnsembleInfoDialog::setExportPath(const QString &newExportPath)
-{
-    m_exportPath = newExportPath;
-}
-
 void EnsembleInfoDialog::enableEnsembleInfoUpload()
 {
     ui->uploadButton->setEnabled(true);
@@ -449,5 +463,8 @@ void EnsembleInfoDialog::showRecordingStat(bool ena)
 {
     ui->dumpLengthLabel->setVisible(ena);
     ui->dumpSizeLabel->setVisible(ena);
-    ui->dumpVLine->setVisible(ena);
+    ui->dumpVLine1->setVisible(ena);
+    ui->dumpVLine2->setVisible(ena);
+    ui->timeoutCheckBox->setEnabled(!ena);
+    ui->timeoutSpinBox->setEnabled(!ena && ui->timeoutCheckBox->isChecked());
 }

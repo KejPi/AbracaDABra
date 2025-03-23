@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>854</width>
-    <height>666</height>
+    <width>1024</width>
+    <height>672</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -542,7 +542,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_21">
+    <layout class="QHBoxLayout" name="horizontalLayout_23">
      <item>
       <widget class="QPushButton" name="csvExportButton">
        <property name="text">
@@ -603,7 +603,7 @@
       </layout>
      </item>
      <item>
-      <widget class="QFrame" name="dumpVLine">
+      <widget class="QFrame" name="dumpVLine1">
        <property name="frameShape">
         <enum>QFrame::Shape::VLine</enum>
        </property>
@@ -639,6 +639,43 @@
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QFrame" name="dumpVLine2">
+       <property name="frameShape">
+        <enum>QFrame::Shape::VLine</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Raised</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_21">
+       <item>
+        <widget class="QCheckBox" name="timeoutCheckBox">
+         <property name="text">
+          <string>Timeout:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="timeoutSpinBox">
+         <property name="suffix">
+          <string> sec</string>
+         </property>
+         <property name="minimum">
+          <number>10</number>
+         </property>
+         <property name="maximum">
+          <number>7200</number>
+         </property>
+         <property name="singleStep">
+          <number>10</number>
          </property>
         </widget>
        </item>

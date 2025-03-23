@@ -228,6 +228,9 @@ public:
     {
         QByteArray geometry;
         bool restore;
+        QString exportPath;
+        bool recordingTimeoutEna;
+        int recordingTimeoutSec;
     } ensembleInfo;
     struct Log
     {
