@@ -263,13 +263,10 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
         ui->splitter->restoreState(m_settings->signal.splitterState);
     }
 
-    QSize sz = QSize(750, 500);
     if (!m_settings->signal.geometry.isEmpty())
     {
         restoreGeometry(m_settings->signal.geometry);
-        sz = size();
     }
-    QTimer::singleShot(10, this, [this, sz]() { resize(sz); });
 
     QTimer::singleShot(100, this,
                        [this]()

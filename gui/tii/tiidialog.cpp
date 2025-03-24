@@ -151,13 +151,10 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent) : TxMapDialog(settings
     onSettingsChanged();
 #endif
 
-    QSize sz = size();
     if (!m_settings->tii.geometry.isEmpty())
     {
         restoreGeometry(m_settings->tii.geometry);
-        sz = size();
     }
-    QTimer::singleShot(10, this, [this, sz]() { resize(sz); });
 }
 
 TIIDialog::~TIIDialog()

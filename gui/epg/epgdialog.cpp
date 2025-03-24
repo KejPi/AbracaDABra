@@ -48,8 +48,6 @@ EPGDialog::EPGDialog(SLModel *serviceListModel, QItemSelectionModel *slSelection
     if (!m_settings->epg.geometry.isEmpty())
     {
         restoreGeometry(m_settings->epg.geometry);
-        QSize sz = size();
-        QTimer::singleShot(10, this, [this, sz]() { resize(sz); });
     }
 
     m_slProxyModel = new SLProxyModel(this);
