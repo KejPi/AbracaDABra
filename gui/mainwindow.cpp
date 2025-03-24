@@ -282,6 +282,7 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, this, &MainWindow::onNewAnnouncementSettings);
     connect(m_setupDialog, &SetupDialog::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
     connect(m_setupDialog, &SetupDialog::proxySettingsChanged, this, &MainWindow::setProxy);
+    connect(m_setupDialog, &SetupDialog::spiIconSettingsChanged, this, &MainWindow::onSpiProgressSettingsChanged);
     connect(m_setupDialog, &SetupDialog::restartRequested, this,
             [this]()
             {
@@ -2338,6 +2339,22 @@ void MainWindow::onEpgEmpty()
     ui->epgLabel->setVisible(false);
 }
 
+void MainWindow::onSpiProgressSettingsChanged()
+{
+    if (m_settings->spiIconEna)
+    {  // enabled
+        ui->ensSPIProgressLabel->setVisible(m_settings->expertModeEna && m_settings->spiIconEna && (m_ensSpiProgress >= 0) &&
+                                            ((m_ensSpiProgress < 100) || !m_settings->spiIconHideComplete));
+        ui->serviceSPIProgressLabel->setVisible(m_settings->expertModeEna && m_settings->spiIconEna && (m_serviceSpiProgress >= 0) &&
+                                                ((m_serviceSpiProgress < 100) || !m_settings->spiIconHideComplete));
+    }
+    else
+    {  // disabled
+        ui->ensSPIProgressLabel->setVisible(false);
+        ui->serviceSPIProgressLabel->setVisible(false);
+    }
+}
+
 void MainWindow::onSpiProgress(bool isEns, int decoded, int total)
 {
     QLabel *label;
@@ -2392,7 +2409,7 @@ void MainWindow::drawSpiProgressLabel(QLabel *label, int progress)
         QPixmap p;
         p.loadFromData(svg.arg(int(20.0 * 0.01 * progress)).toUtf8(), "svg");
         label->setPixmap(p);
-        label->setVisible(progress < 100 || m_settings->spiIconEna);
+        label->setVisible(m_settings->spiIconEna && (progress < 100 || !m_settings->spiIconHideComplete));
     }
 }
 
@@ -3104,7 +3121,8 @@ void MainWindow::loadSettings()
     m_settings->noiseConcealmentLevel = settings->value("noiseConcealment", 0).toInt();
     m_settings->xmlHeaderEna = settings->value("rawFileXmlHeader", true).toBool();
     m_settings->spiAppEna = settings->value("spiAppEna", true).toBool();
-    m_settings->spiIconEna = settings->value("spiIconEna", false).toBool();
+    m_settings->spiIconEna = settings->value("spiProgressEna", true).toBool();
+    m_settings->spiIconHideComplete = settings->value("spiProgressHideComplete", true).toBool();
     m_settings->useInternet = settings->value("useInternet", true).toBool();
     m_settings->radioDnsEna = settings->value("radioDNS", true).toBool();
     m_settings->slsBackground = QColor::fromString(settings->value("slsBg", QString("#000000")).toString());
@@ -3414,7 +3432,8 @@ void MainWindow::saveSettings()
     settings->setValue("noiseConcealment", m_settings->noiseConcealmentLevel);
     settings->setValue("rawFileXmlHeader", m_settings->xmlHeaderEna);
     settings->setValue("spiAppEna", m_settings->spiAppEna);
-    settings->setValue("spiIconEna", m_settings->spiIconEna);
+    settings->setValue("spiProgressEna", m_settings->spiIconEna);
+    settings->setValue("spiProgressHideComplete", m_settings->spiIconHideComplete);
     settings->setValue("useInternet", m_settings->useInternet);
     settings->setValue("radioDNS", m_settings->radioDnsEna);
     settings->setValue("slsBg", m_settings->slsBackground.name(QColor::HexArgb));
@@ -3994,8 +4013,11 @@ void MainWindow::setExpertMode(bool ena)
     ui->channelUp->setVisible(ena);
     ui->programTypeLabel->setVisible(ena);
     ui->ensembleInfoLabel->setVisible(ena);
-    ui->ensSPIProgressLabel->setVisible(ena && m_ensSpiProgress >= 0);
-    ui->serviceSPIProgressLabel->setVisible(ena && m_serviceSpiProgress >= 0);
+    onSpiProgressSettingsChanged();
+    // ui->ensSPIProgressLabel->setVisible(ena && m_settings->spiIconEna && (m_ensSpiProgress >= 0) &&
+    //                                     ((m_ensSpiProgress < 100) || !m_settings->spiIconHideComplete));
+    // ui->serviceSPIProgressLabel->setVisible(ena && m_settings->spiIconEna && (m_serviceSpiProgress >= 0) &&
+    //                                         ((m_serviceSpiProgress < 100) || !m_settings->spiIconHideComplete));
 
     ui->slsView_Service->setExpertMode(ena);
     ui->slsView_Announcement->setExpertMode(ena);

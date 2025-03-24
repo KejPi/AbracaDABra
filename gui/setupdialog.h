@@ -77,7 +77,8 @@ signals:
     void noiseConcealmentLevelChanged(int level);
     void xmlHeaderToggled(bool enabled);
     void spiApplicationEnabled(bool enabled);
-    void spiApplicationSettingsChanged(bool useInterent, bool enaRadioDNS);
+    void spiApplicationSettingsChanged(bool useInternet, bool enaRadioDNS);
+    void spiIconSettingsChanged();
     void audioRecordingSettings(const QString &folder, bool doOutputRecording);
     void uaDumpSettings(const Settings::UADumpSettings &settings);
     void tiiSettingsChanged();
@@ -203,6 +204,8 @@ private:
     void onSpiAppChecked(bool checked);
     void onUseInternetChecked(bool checked);
     void onRadioDnsChecked(bool checked);
+    void onSpiIconChecked(bool checked);
+    void onSpiIconHideChecked(bool checked);
     void onAudioRecordingFolderButtonClicked();
     void onAudioRecordingChecked(bool checked);
     void onDataDumpFolderButtonClicked();

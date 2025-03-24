@@ -352,6 +352,7 @@ private:
     void onAudioRecordingCountdown(int numSec);
     void onMetadataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role);
     void onEpgEmpty();
+    void onSpiProgressSettingsChanged();
     void onSpiProgress(bool isEns, int decoded, int total);
     void drawSpiProgressLabel(QLabel *label, int progress);
     void setProxy();

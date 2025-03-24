@@ -153,6 +153,7 @@ public:
     bool xmlHeaderEna;
     bool spiAppEna;
     bool spiIconEna;
+    bool spiIconHideComplete;
     bool useInternet;
     bool radioDnsEna;
     bool trayIconEna;

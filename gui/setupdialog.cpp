@@ -365,6 +365,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->spiAppCheckBox, &QCheckBox::clicked, this, &SetupDialog::onSpiAppChecked);
     connect(ui->internetCheckBox, &QCheckBox::clicked, this, &SetupDialog::onUseInternetChecked);
     connect(ui->radioDNSCheckBox, &QCheckBox::clicked, this, &SetupDialog::onRadioDnsChecked);
+    connect(ui->spiShowProgressCheckbox, &QCheckBox::clicked, this, &SetupDialog::onSpiIconChecked);
+    connect(ui->spiHideCompletedCheckbox, &QCheckBox::clicked, this, &SetupDialog::onSpiIconHideChecked);
     connect(ui->audioRecordingFolderButton, &QPushButton::clicked, this, &SetupDialog::onAudioRecordingFolderButtonClicked);
     connect(ui->audioInRecordingRadioButton, &QRadioButton::clicked, this, &SetupDialog::onAudioRecordingChecked);
     connect(ui->audioOutRecordingRadioButton, &QRadioButton::clicked, this, &SetupDialog::onAudioRecordingChecked);
@@ -409,6 +411,11 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->audioDecoderGroupBox->setVisible(false);
 #endif
 
+    int labelW = qMax(ui->locationSourceLabel->sizeHint().width(), ui->coordinateLabel->sizeHint().width());
+    labelW = qMax(labelW, ui->serialPortLabel->sizeHint().width());
+    ui->locationSourceLabel->setMinimumWidth(labelW);
+    ui->coordinateLabel->setMinimumWidth(labelW);
+    ui->serialPortLabel->setMinimumWidth(labelW);
     ui->locationSourceCombo->addItem(tr("System"), QVariant::fromValue(Settings::GeolocationSource::System));
     ui->locationSourceCombo->addItem(tr("Manual"), QVariant::fromValue(Settings::GeolocationSource::Manual));
     ui->locationSourceCombo->addItem(tr("NMEA Serial Port"), QVariant::fromValue(Settings::GeolocationSource::SerialPort));
@@ -607,6 +614,7 @@ void SetupDialog::setSettings(Settings *settings)
     emit tiiModeChanged(m_settings->tii.mode);
     onUseInternetChecked(m_settings->useInternet);
     onSpiAppChecked(m_settings->spiAppEna);
+    onSpiIconChecked(m_settings->spiIconEna);
     onDlRecordingChecked(m_settings->audioRec.dl);
     emit proxySettingsChanged();
     emit trayIconToggled(m_settings->trayIconEna);
@@ -905,6 +913,8 @@ void SetupDialog::setUiState()
     ui->spiAppCheckBox->setChecked(m_settings->spiAppEna);
     ui->internetCheckBox->setChecked(m_settings->useInternet);
     ui->radioDNSCheckBox->setChecked(m_settings->radioDnsEna);
+    ui->spiShowProgressCheckbox->setChecked(m_settings->spiIconEna);
+    ui->spiHideCompletedCheckbox->setChecked(m_settings->spiIconHideComplete);
 
     index = ui->langComboBox->findData(QVariant(m_settings->lang));
     if (index < 0)
@@ -2212,6 +2222,19 @@ void SetupDialog::onRadioDnsChecked(bool checked)
 {
     m_settings->radioDnsEna = checked;
     emit spiApplicationSettingsChanged(m_settings->useInternet, m_settings->radioDnsEna);
+}
+
+void SetupDialog::onSpiIconChecked(bool checked)
+{
+    m_settings->spiIconEna = checked;
+    ui->spiHideCompletedCheckbox->setEnabled(checked);
+    emit spiIconSettingsChanged();
+}
+
+void SetupDialog::onSpiIconHideChecked(bool checked)
+{
+    m_settings->spiIconHideComplete = checked;
+    emit spiIconSettingsChanged();
 }
 
 void SetupDialog::onAudioRecordingFolderButtonClicked()
