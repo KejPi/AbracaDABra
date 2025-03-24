@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 #else
         if (QLocale::AnyLanguage == lang)
         {  // system default
-#ifdef Q_OS_MACX
+#ifdef Q_OS_MACOS
             if (translator.load(QLocale().languageToCode(QLocale().language()), QLatin1String("AbracaDABra"), QLatin1String("_"),
                                 QLatin1String(":/i18n")))
 #else
