@@ -26,7 +26,9 @@
 
 #include "servicelist.h"
 
+#include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QJsonDocument>
 #include <QLoggingCategory>
 
@@ -264,7 +266,7 @@ void ServiceList::save(const QString &filename)
     }
 
     // qDebug() << qPrintable(QJsonDocument::fromVariant(list).toJson());
-
+    QDir().mkpath(QFileInfo(filename).path());
     QFile saveFile(filename);
     if (!saveFile.open(QIODevice::WriteOnly))
     {

@@ -276,6 +276,7 @@ void AudioRecScheduleModel::save(const QString &filename)
         list.append(map);
     }
 
+    QDir().mkpath(QFileInfo(filename).path());
     QFile saveFile(filename);
     if (!saveFile.open(QIODevice::WriteOnly))
     {
