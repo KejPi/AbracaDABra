@@ -965,6 +965,7 @@ void SetupDialog::setUiState()
                                      .arg(m_settings->tii.coordinates.longitude(), 0, 'g', QLocale::FloatingPointShortest));
     ui->serialPortEdit->setText(m_settings->tii.serialPort);
     ui->locationSourceCombo->setCurrentIndex(static_cast<int>(m_settings->tii.locationSource));
+    onGeolocationSourceChanged(static_cast<int>(m_settings->tii.locationSource));
     ui->tiiSpectPlotCheckBox->setChecked(m_settings->tii.showSpectumPlot);
     ui->tiiLogFolderLabel->setText(m_settings->tii.logFolder);
     ui->tiiModeSlider->setValue(static_cast<int>(m_settings->tii.mode));
@@ -2348,6 +2349,8 @@ void SetupDialog::onGeolocationSourceChanged(int index)
     }
 
     ui->locationSrcWidget->setEnabled(srcInt > 0);
+    ui->coordHelpLabel->setEnabled(static_cast<Settings::GeolocationSource>(srcInt) == Settings::GeolocationSource::Manual);
+    ui->coordHelpLabel->setVisible(static_cast<Settings::GeolocationSource>(srcInt) != Settings::GeolocationSource::SerialPort);
     m_settings->tii.locationSource = static_cast<Settings::GeolocationSource>(srcInt);
 
     emit tiiSettingsChanged();
