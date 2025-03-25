@@ -254,12 +254,13 @@ QStringList TxMapDialog::ensembleInfo() const
 
     QStringList info;
     info.append(tr("Ensemble: <b>%1</b>").arg(m_currentEnsemble.label));
-    if (m_isTii && m_model->rowCount() > 0)
+    int numTx = m_settings->tii.showInactiveTx ? m_model->rowCount() : m_model->activeCount();
+    if (m_isTii && numTx > 0)
     {
         info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b> | TX: <b>%3</b>")
                         .arg(m_currentEnsemble.ecc(), 2, 16, QChar('0'))
                         .arg(m_currentEnsemble.eid(), 4, 16, QChar('0'))
-                        .arg(m_model->rowCount())
+                        .arg(numTx)
                         .toUpper());
     }
     else

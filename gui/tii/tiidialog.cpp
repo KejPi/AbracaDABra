@@ -432,6 +432,7 @@ void TIIDialog::onSettingsChanged()
             m_inactiveCleanupTimer = nullptr;
         }
     }
+    emit ensembleInfoChanged();
 #if HAVE_QCUSTOMPLOT && TII_SPECTRUM_PLOT
     m_tiiSpectrumPlot->setVisible(m_settings->tii.showSpectumPlot);
 #endif

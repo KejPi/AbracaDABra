@@ -55,6 +55,16 @@ int TxTableModel::columnCount(const QModelIndex &parent) const
     return NumCols;
 }
 
+int TxTableModel::activeCount() const
+{
+    int ret = 0;
+    for (const auto &item : m_modelData)
+    {
+        ret += (item.isActive());
+    }
+    return ret;
+}
+
 QVariant TxTableModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
