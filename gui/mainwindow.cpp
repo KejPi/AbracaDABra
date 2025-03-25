@@ -3863,7 +3863,10 @@ void MainWindow::showSignalDialog()
         connect(m_radioControl, &RadioControl::tuneDone, m_signalDialog, &SignalDialog::onTuneDone, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::freqOffset, m_signalDialog, &SignalDialog::updateFreqOffset, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::signalSpectrum, m_signalDialog, &SignalDialog::onSignalSpectrum, Qt::QueuedConnection);
-        connect(m_inputDevice, &InputDevice::rfLevel, m_signalDialog, &SignalDialog::updateRfLevel);
+        if (m_inputDevice)
+        {
+            connect(m_inputDevice, &InputDevice::rfLevel, m_signalDialog, &SignalDialog::updateRfLevel);
+        }
         connect(m_signalDialog, &QDialog::finished, m_signalDialog, &QObject::deleteLater);
         connect(m_signalDialog, &QDialog::destroyed, this, [this]() { m_signalDialog = nullptr; });
         m_signalDialog->setInputDevice(m_inputDeviceId);
