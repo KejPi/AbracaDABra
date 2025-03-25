@@ -194,6 +194,7 @@ void SPIApp::onUserAppData(const RadioControlUserAppData &data)
             m_decoderMap[data.SCId] = decoderPtr;
 
             qCDebug(spiApp) << "Adding MOT decoder for SCID" << data.SCId;
+            emit decodingStart(data.SCId != 0xFFFF);
         }
 
         // send data to decoder

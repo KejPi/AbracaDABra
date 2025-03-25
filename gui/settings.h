@@ -152,8 +152,8 @@ public:
     int noiseConcealmentLevel;
     bool xmlHeaderEna;
     bool spiAppEna;
-    bool spiIconEna;
-    bool spiIconHideComplete;
+    bool spiProgressEna;
+    bool spiProgressHideComplete;
     bool useInternet;
     bool radioDnsEna;
     bool trayIconEna;

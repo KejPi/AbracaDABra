@@ -927,6 +927,7 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_spiApp, &SPIApp::start);
     connect(this, &MainWindow::stopUserApps, m_spiApp, &SPIApp::stop, Qt::QueuedConnection);
     connect(this, &MainWindow::resetUserApps, m_spiApp, &SPIApp::reset, Qt::QueuedConnection);
+    connect(m_spiApp, &SPIApp::decodingStart, this, [this](bool isEns) { onSpiProgress(isEns, 0, 0); }, Qt::QueuedConnection);
     connect(m_spiApp, &SPIApp::decodingProgress, this, &MainWindow::onSpiProgress, Qt::QueuedConnection);
     connect(m_setupDialog, &SetupDialog::uaDumpSettings, m_spiApp, &SPIApp::setDataDumping, Qt::QueuedConnection);
 
@@ -2341,12 +2342,12 @@ void MainWindow::onEpgEmpty()
 
 void MainWindow::onSpiProgressSettingsChanged()
 {
-    if (m_settings->spiIconEna)
+    if (m_settings->spiProgressEna)
     {  // enabled
-        ui->ensSPIProgressLabel->setVisible(m_settings->expertModeEna && m_settings->spiIconEna && (m_ensSpiProgress >= 0) &&
-                                            ((m_ensSpiProgress < 100) || !m_settings->spiIconHideComplete));
-        ui->serviceSPIProgressLabel->setVisible(m_settings->expertModeEna && m_settings->spiIconEna && (m_serviceSpiProgress >= 0) &&
-                                                ((m_serviceSpiProgress < 100) || !m_settings->spiIconHideComplete));
+        ui->ensSPIProgressLabel->setVisible(m_settings->expertModeEna && m_settings->spiProgressEna && (m_ensSpiProgress >= 0) &&
+                                            ((m_ensSpiProgress < 100) || !m_settings->spiProgressHideComplete));
+        ui->serviceSPIProgressLabel->setVisible(m_settings->expertModeEna && m_settings->spiProgressEna && (m_serviceSpiProgress >= 0) &&
+                                                ((m_serviceSpiProgress < 100) || !m_settings->spiProgressHideComplete));
     }
     else
     {  // disabled
@@ -2358,7 +2359,7 @@ void MainWindow::onSpiProgressSettingsChanged()
 void MainWindow::onSpiProgress(bool isEns, int decoded, int total)
 {
     QLabel *label;
-    int progress = static_cast<int>(100.0 * decoded / total);
+    int progress = (total > 0) ? static_cast<int>(100.0 * decoded / total) : 0;
     if (isEns)
     {
         label = ui->ensSPIProgressLabel;
@@ -2372,13 +2373,20 @@ void MainWindow::onSpiProgress(bool isEns, int decoded, int total)
 
     drawSpiProgressLabel(label, progress);
 
-    if (decoded != total)
+    if (total > 0)
     {
-        label->setToolTip(QString(tr("SPI MOT directory not complete\nDecoded %1 / %2 MOT objects")).arg(decoded).arg(total));
+        if (decoded != total)
+        {
+            label->setToolTip(QString(tr("SPI MOT directory not complete\nDecoded %1 / %2 MOT objects")).arg(decoded).arg(total));
+        }
+        else
+        {
+            label->setToolTip(QString(tr("SPI MOT directory complete\n%1 MOT objects decoded")).arg(total));
+        }
     }
     else
-    {
-        label->setToolTip(QString(tr("SPI MOT directory complete\n%1 MOT objects decoded")).arg(total));
+    {  // this happens on decoding start
+        label->setToolTip(QString(tr("SPI MOT directory decoding started")));
     }
 }
 
@@ -2409,7 +2417,7 @@ void MainWindow::drawSpiProgressLabel(QLabel *label, int progress)
         QPixmap p;
         p.loadFromData(svg.arg(int(20.0 * 0.01 * progress)).toUtf8(), "svg");
         label->setPixmap(p);
-        label->setVisible(m_settings->spiIconEna && (progress < 100 || !m_settings->spiIconHideComplete));
+        label->setVisible(m_settings->spiProgressEna && (progress < 100 || !m_settings->spiProgressHideComplete));
     }
 }
 
@@ -3121,8 +3129,8 @@ void MainWindow::loadSettings()
     m_settings->noiseConcealmentLevel = settings->value("noiseConcealment", 0).toInt();
     m_settings->xmlHeaderEna = settings->value("rawFileXmlHeader", true).toBool();
     m_settings->spiAppEna = settings->value("spiAppEna", true).toBool();
-    m_settings->spiIconEna = settings->value("spiProgressEna", true).toBool();
-    m_settings->spiIconHideComplete = settings->value("spiProgressHideComplete", true).toBool();
+    m_settings->spiProgressEna = settings->value("spiProgressEna", true).toBool();
+    m_settings->spiProgressHideComplete = settings->value("spiProgressHideComplete", true).toBool();
     m_settings->useInternet = settings->value("useInternet", true).toBool();
     m_settings->radioDnsEna = settings->value("radioDNS", true).toBool();
     m_settings->slsBackground = QColor::fromString(settings->value("slsBg", QString("#000000")).toString());
@@ -3432,8 +3440,8 @@ void MainWindow::saveSettings()
     settings->setValue("noiseConcealment", m_settings->noiseConcealmentLevel);
     settings->setValue("rawFileXmlHeader", m_settings->xmlHeaderEna);
     settings->setValue("spiAppEna", m_settings->spiAppEna);
-    settings->setValue("spiProgressEna", m_settings->spiIconEna);
-    settings->setValue("spiProgressHideComplete", m_settings->spiIconHideComplete);
+    settings->setValue("spiProgressEna", m_settings->spiProgressEna);
+    settings->setValue("spiProgressHideComplete", m_settings->spiProgressHideComplete);
     settings->setValue("useInternet", m_settings->useInternet);
     settings->setValue("radioDNS", m_settings->radioDnsEna);
     settings->setValue("slsBg", m_settings->slsBackground.name(QColor::HexArgb));

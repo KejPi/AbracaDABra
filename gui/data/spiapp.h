@@ -78,6 +78,7 @@ signals:
     void xmlDocument(const QString &xmldocument, const QString &scopeId, uint16_t decoderId);
     void requestedFile(const QByteArray &data, const QString &requestId);
     void radioDNSAvailable();
+    void decodingStart(bool isEns);
     void decodingProgress(bool isEns, int decoded, int total);
 
 private:

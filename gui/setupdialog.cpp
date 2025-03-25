@@ -614,7 +614,7 @@ void SetupDialog::setSettings(Settings *settings)
     emit tiiModeChanged(m_settings->tii.mode);
     onUseInternetChecked(m_settings->useInternet);
     onSpiAppChecked(m_settings->spiAppEna);
-    onSpiIconChecked(m_settings->spiIconEna);
+    onSpiIconChecked(m_settings->spiProgressEna);
     onDlRecordingChecked(m_settings->audioRec.dl);
     emit proxySettingsChanged();
     emit trayIconToggled(m_settings->trayIconEna);
@@ -913,8 +913,8 @@ void SetupDialog::setUiState()
     ui->spiAppCheckBox->setChecked(m_settings->spiAppEna);
     ui->internetCheckBox->setChecked(m_settings->useInternet);
     ui->radioDNSCheckBox->setChecked(m_settings->radioDnsEna);
-    ui->spiShowProgressCheckbox->setChecked(m_settings->spiIconEna);
-    ui->spiHideCompletedCheckbox->setChecked(m_settings->spiIconHideComplete);
+    ui->spiShowProgressCheckbox->setChecked(m_settings->spiProgressEna);
+    ui->spiHideCompletedCheckbox->setChecked(m_settings->spiProgressHideComplete);
 
     index = ui->langComboBox->findData(QVariant(m_settings->lang));
     if (index < 0)
@@ -2226,14 +2226,14 @@ void SetupDialog::onRadioDnsChecked(bool checked)
 
 void SetupDialog::onSpiIconChecked(bool checked)
 {
-    m_settings->spiIconEna = checked;
+    m_settings->spiProgressEna = checked;
     ui->spiHideCompletedCheckbox->setEnabled(checked);
     emit spiIconSettingsChanged();
 }
 
 void SetupDialog::onSpiIconHideChecked(bool checked)
 {
-    m_settings->spiIconHideComplete = checked;
+    m_settings->spiProgressHideComplete = checked;
     emit spiIconSettingsChanged();
 }
 
