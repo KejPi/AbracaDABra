@@ -60,6 +60,9 @@ public:
     float power() const;
     void setPower(float newPower);
 
+    int antHeight() const;
+    void setAntHeight(int newAntHeight);
+
 private:
     // enum Polarization { Unknown = -1, Vertical, Horizontal };
     QString m_ensLabel;
@@ -69,7 +72,7 @@ private:
     uint8_t m_subId = -1;
     QGeoCoordinate m_coordinates;
     float m_power = -1.0;
-    // int m_antenna;
+    int m_antHeight = 0;
     // Polarization m_polarization;
 };
 

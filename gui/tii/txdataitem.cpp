@@ -98,3 +98,13 @@ void TxDataItem::setPower(float newPower)
 {
     m_power = newPower;
 }
+
+int TxDataItem::antHeight() const
+{
+    return m_antHeight;
+}
+
+void TxDataItem::setAntHeight(int newAntHeight)
+{
+    m_antHeight = newAntHeight;
+}

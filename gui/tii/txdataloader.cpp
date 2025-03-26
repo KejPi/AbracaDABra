@@ -67,6 +67,7 @@ void TxDataLoader::loadTable(QMultiHash<ServiceListId, TxDataItem *> &txList)
         ColLatitude = 7,
         ColLongitude = 8,
         ColAltitude = 9,
+        ColHeight = 10,
         ColPolarization = 11,
         ColFreq = 12,
         ColPower = 13,
@@ -117,6 +118,7 @@ void TxDataLoader::loadTable(QMultiHash<ServiceListId, TxDataItem *> &txList)
                         uint32_t ueid = (ecc << 16) | eid;
                         item->setEnsId(ServiceListId(freq, ueid));
 
+                        item->setAntHeight(columns.at(TiiTable::ColHeight).toInt());
                         item->setPower(columns.at(TiiTable::ColPower).toFloat());
                         // item->polarization = TxDataItem::Polarization::Unknown;
                         // if (!columns.at(TiiTable::ColPolarization).isEmpty())

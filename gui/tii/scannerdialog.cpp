@@ -844,6 +844,11 @@ void ScannerDialog::onSelectedRowChanged()
         {
             m_txInfo.append(QString(tr("Altitude: <b>%1 m</b>")).arg(static_cast<int>(alt)));
         }
+        int antHeight = item.transmitterData().antHeight();
+        if (antHeight)
+        {
+            m_txInfo.append(QString(tr("Antenna height: <b>%1 m</b>")).arg(static_cast<int>(antHeight)));
+        }
         m_txInfo.append(QString(tr("ERP: <b>%1 kW</b>")).arg(static_cast<double>(item.transmitterData().power()), 3, 'f', 1));
     }
     emit txInfoChanged();

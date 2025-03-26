@@ -100,6 +100,8 @@ void TxMapDialog::reset()
 {
     m_model->clear();
     m_tableSelectionModel->clear();
+    m_txInfo.clear();
+    emit txInfoChanged();
 }
 
 void TxMapDialog::startLocationUpdate()
