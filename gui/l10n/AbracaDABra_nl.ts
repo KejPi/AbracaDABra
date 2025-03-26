@@ -44,47 +44,57 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="49"/>
+        <location filename="../aboutdialog.cpp" line="42"/>
+        <source>If you like the application you can</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="42"/>
+        <source>buy me a beer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="51"/>
         <source>Based on Qt %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="50"/>
+        <location filename="../aboutdialog.cpp" line="52"/>
         <source>DAB SDR version %1.%2.%3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="52"/>
+        <location filename="../aboutdialog.cpp" line="54"/>
         <source>AbracaDABra &amp; DAB SDR library use following libraries (special thanks to):</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="85"/>
+        <location filename="../aboutdialog.cpp" line="87"/>
         <source>Contributors to the translation:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="88"/>
+        <location filename="../aboutdialog.cpp" line="90"/>
         <source>Czech</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="91"/>
+        <location filename="../aboutdialog.cpp" line="93"/>
         <source>German</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="94"/>
+        <location filename="../aboutdialog.cpp" line="96"/>
         <source>Polish</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="97"/>
+        <location filename="../aboutdialog.cpp" line="99"/>
         <source>AbracaDABra uses some artwork created by</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="99"/>
+        <location filename="../aboutdialog.cpp" line="101"/>
         <source>and DAB transmitter database provided by</source>
         <translation type="unfinished"></translation>
     </message>
@@ -423,191 +433,207 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.ui" line="650"/>
-        <location filename="../ensembleinfodialog.cpp" line="234"/>
+        <location filename="../ensembleinfodialog.ui" line="662"/>
+        <source>Timeout:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.ui" line="687"/>
+        <location filename="../ensembleinfodialog.cpp" line="256"/>
         <source>Record raw data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="73"/>
         <location filename="../ensembleinfodialog.cpp" line="74"/>
-        <location filename="../ensembleinfodialog.cpp" line="75"/>
         <source>Tuned frequency</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="75"/>
         <location filename="../ensembleinfodialog.cpp" line="76"/>
-        <location filename="../ensembleinfodialog.cpp" line="77"/>
         <source>Tuned DAB channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="77"/>
         <location filename="../ensembleinfodialog.cpp" line="78"/>
-        <location filename="../ensembleinfodialog.cpp" line="79"/>
         <source>Estimated frequency offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="79"/>
         <location filename="../ensembleinfodialog.cpp" line="80"/>
-        <location filename="../ensembleinfodialog.cpp" line="81"/>
         <source>Estimated SNR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="81"/>
         <location filename="../ensembleinfodialog.cpp" line="82"/>
-        <location filename="../ensembleinfodialog.cpp" line="83"/>
         <source>Current AGC gain&lt;br&gt;(only in software mode)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="83"/>
         <location filename="../ensembleinfodialog.cpp" line="84"/>
-        <location filename="../ensembleinfodialog.cpp" line="85"/>
         <source>Estimated RF level&lt;br&gt;(only on supported devices)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="86"/>
         <location filename="../ensembleinfodialog.cpp" line="87"/>
-        <location filename="../ensembleinfodialog.cpp" line="88"/>
         <source>Current service name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="88"/>
         <location filename="../ensembleinfodialog.cpp" line="89"/>
-        <location filename="../ensembleinfodialog.cpp" line="90"/>
         <source>Current Service Identifier</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="90"/>
         <location filename="../ensembleinfodialog.cpp" line="91"/>
-        <location filename="../ensembleinfodialog.cpp" line="92"/>
         <source>Service Component Identifier within the Service</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="92"/>
         <location filename="../ensembleinfodialog.cpp" line="93"/>
-        <location filename="../ensembleinfodialog.cpp" line="94"/>
         <source>Number of capacity units used by sub-channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="94"/>
         <location filename="../ensembleinfodialog.cpp" line="95"/>
-        <location filename="../ensembleinfodialog.cpp" line="96"/>
         <source>First capacity unit used by sub-channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="96"/>
         <location filename="../ensembleinfodialog.cpp" line="97"/>
-        <location filename="../ensembleinfodialog.cpp" line="98"/>
         <source>Sub-channel Identifier</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="99"/>
         <location filename="../ensembleinfodialog.cpp" line="100"/>
-        <location filename="../ensembleinfodialog.cpp" line="101"/>
         <source>Total number of FIB&apos;s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="101"/>
         <location filename="../ensembleinfodialog.cpp" line="102"/>
-        <location filename="../ensembleinfodialog.cpp" line="103"/>
         <source>Number of FIB&apos;s with CRC error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="103"/>
         <location filename="../ensembleinfodialog.cpp" line="104"/>
-        <location filename="../ensembleinfodialog.cpp" line="105"/>
         <source>FIB error rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="105"/>
         <location filename="../ensembleinfodialog.cpp" line="106"/>
-        <location filename="../ensembleinfodialog.cpp" line="107"/>
         <source>Total number of audio frames (AU for DAB+)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="107"/>
         <location filename="../ensembleinfodialog.cpp" line="108"/>
-        <location filename="../ensembleinfodialog.cpp" line="109"/>
         <source>Total number of audio frames with CRC error (AU for DAB+)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ensembleinfodialog.cpp" line="109"/>
         <location filename="../ensembleinfodialog.cpp" line="110"/>
-        <location filename="../ensembleinfodialog.cpp" line="111"/>
         <source>Audio frame (AU for DAB+) error rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="113"/>
-        <location filename="../ensembleinfodialog.cpp" line="235"/>
+        <location filename="../ensembleinfodialog.cpp" line="112"/>
+        <location filename="../ensembleinfodialog.cpp" line="257"/>
         <source>Record raw IQ stream to file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="114"/>
+        <location filename="../ensembleinfodialog.cpp" line="113"/>
         <source>Export ensemble information to CSV file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="116"/>
+        <location filename="../ensembleinfodialog.cpp" line="115"/>
         <source>Upload ensemble information to FMLIST</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="147"/>
+        <location filename="../ensembleinfodialog.cpp" line="119"/>
+        <source>When checked recording stops automaticaly when timeout is reached.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="120"/>
+        <source>Raw IQ recording duration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="168"/>
         <source>Ensemble information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="173"/>
+        <location filename="../ensembleinfodialog.cpp" line="193"/>
         <source>Export CSV file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="173"/>
+        <location filename="../ensembleinfodialog.cpp" line="193"/>
         <source>CSV Files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="229"/>
+        <location filename="../ensembleinfodialog.cpp" line="251"/>
         <source>Stop recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="230"/>
+        <location filename="../ensembleinfodialog.cpp" line="252"/>
         <source>Stop recording of raw IQ stream</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="247"/>
+        <location filename="../ensembleinfodialog.ui" line="669"/>
+        <location filename="../ensembleinfodialog.cpp" line="269"/>
         <source> sec</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="254"/>
-        <location filename="../ensembleinfodialog.cpp" line="264"/>
-        <location filename="../ensembleinfodialog.cpp" line="284"/>
-        <location filename="../ensembleinfodialog.cpp" line="301"/>
-        <location filename="../ensembleinfodialog.cpp" line="310"/>
-        <location filename="../ensembleinfodialog.cpp" line="319"/>
-        <location filename="../ensembleinfodialog.cpp" line="432"/>
-        <location filename="../ensembleinfodialog.cpp" line="433"/>
-        <location filename="../ensembleinfodialog.cpp" line="434"/>
-        <location filename="../ensembleinfodialog.cpp" line="435"/>
+        <location filename="../ensembleinfodialog.cpp" line="276"/>
+        <location filename="../ensembleinfodialog.cpp" line="286"/>
+        <location filename="../ensembleinfodialog.cpp" line="306"/>
+        <location filename="../ensembleinfodialog.cpp" line="323"/>
+        <location filename="../ensembleinfodialog.cpp" line="332"/>
+        <location filename="../ensembleinfodialog.cpp" line="341"/>
+        <location filename="../ensembleinfodialog.cpp" line="449"/>
+        <location filename="../ensembleinfodialog.cpp" line="450"/>
+        <location filename="../ensembleinfodialog.cpp" line="451"/>
+        <location filename="../ensembleinfodialog.cpp" line="452"/>
         <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="395"/>
+        <location filename="../ensembleinfodialog.cpp" line="412"/>
         <source>Reset statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="397"/>
+        <location filename="../ensembleinfodialog.cpp" line="414"/>
         <source>Reset FIB statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="398"/>
+        <location filename="../ensembleinfodialog.cpp" line="415"/>
         <source>Reset MSC statistics</source>
         <translation type="unfinished"></translation>
     </message>
@@ -615,22 +641,22 @@
 <context>
     <name>InputDeviceRecorder</name>
     <message>
-        <location filename="../input/inputdevicerecorder.cpp" line="86"/>
+        <location filename="../input/inputdevicerecorder.cpp" line="88"/>
         <source>Record IQ stream (Raw File XML Header)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../input/inputdevicerecorder.cpp" line="87"/>
+        <location filename="../input/inputdevicerecorder.cpp" line="89"/>
         <source>Binary XML files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../input/inputdevicerecorder.cpp" line="96"/>
+        <location filename="../input/inputdevicerecorder.cpp" line="98"/>
         <source>Record IQ stream</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../input/inputdevicerecorder.cpp" line="96"/>
+        <location filename="../input/inputdevicerecorder.cpp" line="98"/>
         <source>Binary files</source>
         <translation type="unfinished"></translation>
     </message>
@@ -728,493 +754,515 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="335"/>
+        <location filename="../mainwindow.cpp" line="336"/>
         <source>DAB time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="338"/>
+        <location filename="../mainwindow.cpp" line="339"/>
         <source>DAB signal quality</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="351"/>
-        <location filename="../mainwindow.cpp" line="2281"/>
+        <location filename="../mainwindow.cpp" line="352"/>
+        <location filename="../mainwindow.cpp" line="2299"/>
         <source>Stop audio recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="378"/>
-        <location filename="../mainwindow.cpp" line="386"/>
+        <location filename="../mainwindow.cpp" line="379"/>
+        <location filename="../mainwindow.cpp" line="387"/>
         <source>DAB signal SNR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="382"/>
+        <location filename="../mainwindow.cpp" line="383"/>
         <source>Show DAB signal overview</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="408"/>
+        <location filename="../mainwindow.cpp" line="409"/>
         <source>Settings...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="411"/>
+        <location filename="../mainwindow.cpp" line="412"/>
         <source>Clear service list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="414"/>
+        <location filename="../mainwindow.cpp" line="415"/>
         <source>Export service list...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="417"/>
+        <location filename="../mainwindow.cpp" line="418"/>
         <source>Band scan...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="420"/>
+        <location filename="../mainwindow.cpp" line="421"/>
         <source>Ensemble information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="423"/>
+        <location filename="../mainwindow.cpp" line="424"/>
         <source>TII decoder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="426"/>
+        <location filename="../mainwindow.cpp" line="427"/>
         <source>Scanning tool...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="429"/>
+        <location filename="../mainwindow.cpp" line="430"/>
         <source>DAB signal overview</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="432"/>
+        <location filename="../mainwindow.cpp" line="433"/>
         <source>Audio recording schedule...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="439"/>
+        <location filename="../mainwindow.cpp" line="440"/>
         <source>Program guide...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="443"/>
+        <location filename="../mainwindow.cpp" line="444"/>
         <source>Application log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="446"/>
+        <location filename="../mainwindow.cpp" line="447"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="458"/>
+        <location filename="../mainwindow.cpp" line="459"/>
         <source>Audio output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="483"/>
+        <location filename="../mainwindow.cpp" line="484"/>
         <source>Open menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="488"/>
+        <location filename="../mainwindow.cpp" line="489"/>
         <source>Mute audio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="489"/>
+        <location filename="../mainwindow.cpp" line="490"/>
         <source>Unmute audio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="496"/>
+        <location filename="../mainwindow.cpp" line="497"/>
         <source>Audio volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="526"/>
-        <location filename="../mainwindow.cpp" line="528"/>
-        <location filename="../mainwindow.cpp" line="536"/>
-        <location filename="../mainwindow.cpp" line="538"/>
+        <location filename="../mainwindow.cpp" line="527"/>
+        <location filename="../mainwindow.cpp" line="529"/>
+        <location filename="../mainwindow.cpp" line="537"/>
+        <location filename="../mainwindow.cpp" line="539"/>
         <source>Mute</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="528"/>
-        <location filename="../mainwindow.cpp" line="538"/>
+        <location filename="../mainwindow.cpp" line="529"/>
+        <location filename="../mainwindow.cpp" line="539"/>
         <source>Unmute</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="541"/>
+        <location filename="../mainwindow.cpp" line="542"/>
         <source>Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="670"/>
+        <location filename="../mainwindow.cpp" line="671"/>
         <source>Audio coding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="678"/>
+        <location filename="../mainwindow.cpp" line="679"/>
         <source>Ongoing announcement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="682"/>
+        <location filename="../mainwindow.cpp" line="683"/>
         <source>Browse categorized slides</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="685"/>
+        <location filename="../mainwindow.cpp" line="686"/>
         <source>Show program guide (EPG)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="690"/>
+        <location filename="../mainwindow.cpp" line="691"/>
         <source>Change service source (ensemble)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1038"/>
+        <location filename="../mainwindow.cpp" line="1041"/>
         <source>&lt;i&gt;DL text copied to clipboard&lt;/i&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1062"/>
+        <location filename="../mainwindow.cpp" line="1065"/>
         <source>&lt;i&gt;DL+ text copied to clipboard&lt;/i&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1089"/>
+        <location filename="../mainwindow.cpp" line="1103"/>
         <source>Stopping DAB processing, please wait...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1146"/>
+        <location filename="../mainwindow.cpp" line="1160"/>
         <source>&lt;b&gt;Ensemble:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1354"/>
+        <location filename="../mainwindow.cpp" line="1368"/>
         <source>&lt;b&gt;DAB audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1354"/>
+        <location filename="../mainwindow.cpp" line="1368"/>
         <source>MPEG-1 layer 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1358"/>
-        <location filename="../mainwindow.cpp" line="1362"/>
-        <location filename="../mainwindow.cpp" line="1366"/>
+        <location filename="../mainwindow.cpp" line="1372"/>
+        <location filename="../mainwindow.cpp" line="1376"/>
+        <location filename="../mainwindow.cpp" line="1380"/>
         <source>&lt;b&gt;DAB+ audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1358"/>
+        <location filename="../mainwindow.cpp" line="1372"/>
         <source>MPEG-4 Low Complexity AAC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1362"/>
+        <location filename="../mainwindow.cpp" line="1376"/>
         <source>MPEG-4 High Efficiency AAC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1366"/>
+        <location filename="../mainwindow.cpp" line="1380"/>
         <source>MPEG-4 High Efficiency AAC v2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1376"/>
+        <location filename="../mainwindow.cpp" line="1390"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Sample rate: %2 kHz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1380"/>
+        <location filename="../mainwindow.cpp" line="1394"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Sample rate: %2 kHz (SBR %3)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1381"/>
-        <location filename="../mainwindow.cpp" line="1383"/>
+        <location filename="../mainwindow.cpp" line="1395"/>
+        <location filename="../mainwindow.cpp" line="1397"/>
         <source>on</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1381"/>
-        <location filename="../mainwindow.cpp" line="1383"/>
+        <location filename="../mainwindow.cpp" line="1395"/>
+        <location filename="../mainwindow.cpp" line="1397"/>
         <source>off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1391"/>
+        <location filename="../mainwindow.cpp" line="1405"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1396"/>
+        <location filename="../mainwindow.cpp" line="1410"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz (SBR: %2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1415"/>
+        <location filename="../mainwindow.cpp" line="1429"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1 (dynamic)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1422"/>
+        <location filename="../mainwindow.cpp" line="1436"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1446"/>
+        <location filename="../mainwindow.cpp" line="1460"/>
         <source>Tuning...  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1481"/>
+        <location filename="../mainwindow.cpp" line="1495"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you change DAB channel.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1510"/>
-        <location filename="../mainwindow.cpp" line="1521"/>
+        <location filename="../mainwindow.cpp" line="1524"/>
+        <location filename="../mainwindow.cpp" line="1535"/>
         <source>Tune to %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1627"/>
+        <location filename="../mainwindow.cpp" line="1639"/>
         <source>End of file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1631"/>
+        <location filename="../mainwindow.cpp" line="1643"/>
         <source>Select any service to restart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1641"/>
+        <location filename="../mainwindow.cpp" line="1653"/>
         <source>Input device error: Device disconnected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1642"/>
-        <location filename="../mainwindow.cpp" line="1652"/>
+        <location filename="../mainwindow.cpp" line="1654"/>
+        <location filename="../mainwindow.cpp" line="1664"/>
         <source>Go to settings and try to reconnect the device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1651"/>
+        <location filename="../mainwindow.cpp" line="1663"/>
         <source>Input device error: No data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1670"/>
+        <location filename="../mainwindow.cpp" line="1682"/>
+        <location filename="../mainwindow.cpp" line="4134"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1670"/>
+        <location filename="../mainwindow.cpp" line="1682"/>
         <source>Do you want to stop audio recording?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1681"/>
+        <location filename="../mainwindow.cpp" line="1693"/>
         <source>Keep recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1682"/>
+        <location filename="../mainwindow.cpp" line="1694"/>
         <source>Stop recording and do not ask again</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1683"/>
+        <location filename="../mainwindow.cpp" line="1695"/>
         <source>Stop recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1758"/>
-        <location filename="../mainwindow.cpp" line="1826"/>
+        <location filename="../mainwindow.cpp" line="1776"/>
+        <location filename="../mainwindow.cpp" line="1844"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you switch current service.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1899"/>
+        <location filename="../mainwindow.cpp" line="1917"/>
         <source>&lt;b&gt;Ensemble %1/%2&lt;/b&gt;&lt;br&gt;Click for switching to:&lt;br&gt;&lt;i&gt;%3&lt;/i&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1908"/>
+        <location filename="../mainwindow.cpp" line="1926"/>
         <source>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Language:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1965"/>
+        <location filename="../mainwindow.cpp" line="1983"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Coderate: %2/%3&lt;br&gt;Capacity units: %4 CU</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1976"/>
+        <location filename="../mainwindow.cpp" line="1994"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Protection level: %2&lt;br&gt;Capacity units: %3 CU</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1986"/>
+        <location filename="../mainwindow.cpp" line="2004"/>
         <source>%1 kbps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1988"/>
+        <location filename="../mainwindow.cpp" line="2006"/>
         <source>&lt;b&gt;Service bitrate&lt;/b&gt;&lt;br&gt;Audio &amp; data: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2013"/>
+        <location filename="../mainwindow.cpp" line="2031"/>
         <source>Service currently unavailable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2014"/>
+        <location filename="../mainwindow.cpp" line="2032"/>
         <source>Service was removed from ensemble</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2050"/>
+        <location filename="../mainwindow.cpp" line="2068"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;on current service</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2063"/>
+        <location filename="../mainwindow.cpp" line="2081"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to suspend this announcement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2082"/>
+        <location filename="../mainwindow.cpp" line="2100"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Suspended announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to resume this announcement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2145"/>
+        <location filename="../mainwindow.cpp" line="2163"/>
         <source>Audio Output Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2146"/>
+        <location filename="../mainwindow.cpp" line="2164"/>
         <source>Try to select other service to recover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2198"/>
+        <location filename="../mainwindow.cpp" line="2216"/>
         <source>Audio recording: %1:%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2199"/>
+        <location filename="../mainwindow.cpp" line="2217"/>
         <source>Audio recording ongoing (%2 kBytes recorded)
 File: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2207"/>
+        <location filename="../mainwindow.cpp" line="2225"/>
         <source>Audio recording: 0:00</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2208"/>
+        <location filename="../mainwindow.cpp" line="2226"/>
         <source>Scheduled audio recording is getting ready</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2225"/>
+        <location filename="../mainwindow.cpp" line="2243"/>
         <source>Scheduled recording should start in %1 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2227"/>
+        <location filename="../mainwindow.cpp" line="2245"/>
         <source>Ongoing recording now prevents the start of a scheduled recording. The schedule will be cancelled if you do not choose otherwise. If you select to keep the schedule, the service might be switched.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2231"/>
+        <location filename="../mainwindow.cpp" line="2249"/>
         <source>Keep schedule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2232"/>
+        <location filename="../mainwindow.cpp" line="2250"/>
         <source>Keep current recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2238"/>
+        <location filename="../mainwindow.cpp" line="2256"/>
         <source>Scheduled recording starts in %1 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2240"/>
+        <location filename="../mainwindow.cpp" line="2258"/>
         <source>Recording is going to start according to the schedule. The service might be switched if it differs from the current one.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2242"/>
+        <location filename="../mainwindow.cpp" line="2260"/>
         <source>Cancel plan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2243"/>
+        <location filename="../mainwindow.cpp" line="2261"/>
         <source>Continue as planned</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2286"/>
+        <location filename="../mainwindow.cpp" line="2304"/>
         <source>Start audio recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2344"/>
+        <location filename="../mainwindow.cpp" line="2380"/>
         <source>SPI MOT directory not complete
 Decoded %1 / %2 MOT objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2471"/>
+        <location filename="../mainwindow.cpp" line="2384"/>
+        <source>SPI MOT directory complete
+%1 MOT objects decoded</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="2389"/>
+        <source>SPI MOT directory decoding started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="2508"/>
         <source>No ensemble</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2472"/>
+        <location filename="../mainwindow.cpp" line="2509"/>
         <source>No ensemble tuned</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2482"/>
+        <location filename="../mainwindow.cpp" line="2519"/>
         <source>No service</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2487"/>
+        <location filename="../mainwindow.cpp" line="2524"/>
         <source>No service playing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4009"/>
+        <location filename="../mainwindow.cpp" line="4124"/>
         <source>Export CSV file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4009"/>
+        <location filename="../mainwindow.cpp" line="4124"/>
         <source>CSV Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="4134"/>
+        <source>Do you want to clear service list?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="4136"/>
+        <source>You will loose current service list including favorites, this action is irreversible.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1236,279 +1284,279 @@ Decoded %1 / %2 MOT objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4581"/>
-        <location filename="../mainwindow.cpp" line="4589"/>
+        <location filename="../mainwindow.cpp" line="4714"/>
+        <location filename="../mainwindow.cpp" line="4722"/>
         <source>Open link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4666"/>
+        <location filename="../mainwindow.cpp" line="4799"/>
         <source>Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4669"/>
+        <location filename="../mainwindow.cpp" line="4802"/>
         <source>Album</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4672"/>
+        <location filename="../mainwindow.cpp" line="4805"/>
         <source>Track Number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4675"/>
+        <location filename="../mainwindow.cpp" line="4808"/>
         <source>Artist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4678"/>
+        <location filename="../mainwindow.cpp" line="4811"/>
         <source>Composition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4681"/>
+        <location filename="../mainwindow.cpp" line="4814"/>
         <source>Movement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4684"/>
+        <location filename="../mainwindow.cpp" line="4817"/>
         <source>Conductor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4687"/>
+        <location filename="../mainwindow.cpp" line="4820"/>
         <source>Composer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4690"/>
+        <location filename="../mainwindow.cpp" line="4823"/>
         <source>Band</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4693"/>
+        <location filename="../mainwindow.cpp" line="4826"/>
         <source>Comment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4696"/>
+        <location filename="../mainwindow.cpp" line="4829"/>
         <source>Genre</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4699"/>
+        <location filename="../mainwindow.cpp" line="4832"/>
         <location filename="../dabtables.cpp" line="178"/>
         <location filename="../dabtables.cpp" line="1737"/>
         <source>News</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4702"/>
+        <location filename="../mainwindow.cpp" line="4835"/>
         <source>News (local)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4705"/>
+        <location filename="../mainwindow.cpp" line="4838"/>
         <source>Stock Market</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4708"/>
+        <location filename="../mainwindow.cpp" line="4841"/>
         <location filename="../dabtables.cpp" line="184"/>
         <source>Sport</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4711"/>
+        <location filename="../mainwindow.cpp" line="4844"/>
         <source>Lottery</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4714"/>
+        <location filename="../mainwindow.cpp" line="4847"/>
         <source>Horoscope</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4717"/>
+        <location filename="../mainwindow.cpp" line="4850"/>
         <source>Daily Diversion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4720"/>
+        <location filename="../mainwindow.cpp" line="4853"/>
         <source>Health</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4723"/>
+        <location filename="../mainwindow.cpp" line="4856"/>
         <location filename="../dabtables.cpp" line="1741"/>
         <source>Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4726"/>
+        <location filename="../mainwindow.cpp" line="4859"/>
         <source>Scene</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4729"/>
+        <location filename="../mainwindow.cpp" line="4862"/>
         <source>Cinema</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4732"/>
+        <location filename="../mainwindow.cpp" line="4865"/>
         <source>TV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4738"/>
+        <location filename="../mainwindow.cpp" line="4871"/>
         <location filename="../dabtables.cpp" line="1739"/>
         <source>Weather</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4741"/>
+        <location filename="../mainwindow.cpp" line="4874"/>
         <source>Traffic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4744"/>
+        <location filename="../mainwindow.cpp" line="4877"/>
         <location filename="../dabtables.cpp" line="1729"/>
         <source>Alarm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4747"/>
+        <location filename="../mainwindow.cpp" line="4880"/>
         <source>Advertisment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4750"/>
+        <location filename="../mainwindow.cpp" line="4883"/>
         <source>URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4753"/>
+        <location filename="../mainwindow.cpp" line="4886"/>
         <source>Other</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4756"/>
+        <location filename="../mainwindow.cpp" line="4889"/>
         <source>Station (short)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4759"/>
+        <location filename="../mainwindow.cpp" line="4892"/>
         <source>Station</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4762"/>
+        <location filename="../mainwindow.cpp" line="4895"/>
         <source>Now</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4765"/>
+        <location filename="../mainwindow.cpp" line="4898"/>
         <source>Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4768"/>
+        <location filename="../mainwindow.cpp" line="4901"/>
         <source>Programme Part</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4771"/>
+        <location filename="../mainwindow.cpp" line="4904"/>
         <source>Host</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4774"/>
+        <location filename="../mainwindow.cpp" line="4907"/>
         <source>Editorial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4780"/>
+        <location filename="../mainwindow.cpp" line="4913"/>
         <source>Homepage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4786"/>
+        <location filename="../mainwindow.cpp" line="4919"/>
         <source>Phone (Hotline)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4789"/>
+        <location filename="../mainwindow.cpp" line="4922"/>
         <source>Phone (Studio)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4792"/>
+        <location filename="../mainwindow.cpp" line="4925"/>
         <source>Phone (Other)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4795"/>
+        <location filename="../mainwindow.cpp" line="4928"/>
         <source>SMS (Studio)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4798"/>
+        <location filename="../mainwindow.cpp" line="4931"/>
         <source>SMS (Other)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4801"/>
+        <location filename="../mainwindow.cpp" line="4934"/>
         <source>E-mail (Hotline)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4804"/>
+        <location filename="../mainwindow.cpp" line="4937"/>
         <source>E-mail (Studio)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4807"/>
+        <location filename="../mainwindow.cpp" line="4940"/>
         <source>E-mail (Other)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4810"/>
+        <location filename="../mainwindow.cpp" line="4943"/>
         <source>MMS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4813"/>
+        <location filename="../mainwindow.cpp" line="4946"/>
         <source>Chat Message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4816"/>
+        <location filename="../mainwindow.cpp" line="4949"/>
         <source>Chat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4819"/>
+        <location filename="../mainwindow.cpp" line="4952"/>
         <source>Vote Question</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4822"/>
+        <location filename="../mainwindow.cpp" line="4955"/>
         <source>Vote Here</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4827"/>
+        <location filename="../mainwindow.cpp" line="4960"/>
         <source>Private 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4830"/>
+        <location filename="../mainwindow.cpp" line="4963"/>
         <source>Private 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="4833"/>
+        <location filename="../mainwindow.cpp" line="4966"/>
         <source>Private 3</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3308,12 +3356,12 @@ Decoded %1 / %2 MOT objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../slmodelitem.cpp" line="93"/>
+        <location filename="../slmodelitem.cpp" line="110"/>
         <source>Short label:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../slmodelitem.cpp" line="103"/>
+        <location filename="../slmodelitem.cpp" line="120"/>
         <source>Channel %1&lt;br&gt;Frequency: %2 MHz</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3389,110 +3437,110 @@ Decoded %1 / %2 MOT objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="99"/>
+        <location filename="../tii/scannerdialog.cpp" line="98"/>
         <source>Mode:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="102"/>
+        <location filename="../tii/scannerdialog.cpp" line="101"/>
         <source>Fast</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="103"/>
+        <location filename="../tii/scannerdialog.cpp" line="102"/>
         <source>Normal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="104"/>
+        <location filename="../tii/scannerdialog.cpp" line="103"/>
         <source>Precise</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="114"/>
+        <location filename="../tii/scannerdialog.cpp" line="113"/>
         <source>Inf</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="116"/>
+        <location filename="../tii/scannerdialog.cpp" line="115"/>
         <source>Number of cycles:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="172"/>
-        <location filename="../tii/scannerdialog.cpp" line="288"/>
+        <location filename="../tii/scannerdialog.cpp" line="171"/>
+        <location filename="../tii/scannerdialog.cpp" line="284"/>
         <source>Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="176"/>
-        <location filename="../tii/scannerdialog.cpp" line="287"/>
+        <location filename="../tii/scannerdialog.cpp" line="175"/>
+        <location filename="../tii/scannerdialog.cpp" line="283"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="179"/>
+        <location filename="../tii/scannerdialog.cpp" line="178"/>
         <source>Select channels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="249"/>
+        <location filename="../tii/scannerdialog.cpp" line="245"/>
         <source>Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="285"/>
+        <location filename="../tii/scannerdialog.cpp" line="281"/>
         <source>Scanning finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="452"/>
+        <location filename="../tii/scannerdialog.cpp" line="450"/>
         <source>Export CSV file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="329"/>
-        <location filename="../tii/scannerdialog.cpp" line="452"/>
+        <location filename="../tii/scannerdialog.cpp" line="327"/>
+        <location filename="../tii/scannerdialog.cpp" line="450"/>
         <source>CSV Files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="180"/>
+        <location filename="../tii/scannerdialog.cpp" line="179"/>
         <source>Save CSV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="183"/>
+        <location filename="../tii/scannerdialog.cpp" line="182"/>
         <source>Load CSV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="305"/>
+        <location filename="../tii/scannerdialog.cpp" line="303"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="305"/>
+        <location filename="../tii/scannerdialog.cpp" line="303"/>
         <source>Data in the table will be replaced.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="307"/>
+        <location filename="../tii/scannerdialog.cpp" line="305"/>
         <source>You will loose current data, this action is irreversible.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="328"/>
+        <location filename="../tii/scannerdialog.cpp" line="326"/>
         <source>Load CSV file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="501"/>
+        <location filename="../tii/scannerdialog.cpp" line="499"/>
         <source>Scanning channel:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="573"/>
+        <location filename="../tii/scannerdialog.cpp" line="572"/>
         <source>%1  (cycle %2)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3512,7 +3560,12 @@ Decoded %1 / %2 MOT objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="847"/>
+        <location filename="../tii/scannerdialog.cpp" line="850"/>
+        <source>Antenna height: &lt;b&gt;%1 m&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerdialog.cpp" line="852"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3520,7 +3573,7 @@ Decoded %1 / %2 MOT objects</source>
 <context>
     <name>ServiceList</name>
     <message>
-        <location filename="../servicelist.cpp" line="438"/>
+        <location filename="../servicelist.cpp" line="440"/>
         <source>Service name;Short label;SID;SCIdS;Number of ensembles</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3546,7 +3599,7 @@ Decoded %1 / %2 MOT objects</source>
         <location filename="../setupdialog.ui" line="111"/>
         <location filename="../setupdialog.ui" line="846"/>
         <location filename="../setupdialog.ui" line="1115"/>
-        <location filename="../setupdialog.cpp" line="1608"/>
+        <location filename="../setupdialog.cpp" line="1643"/>
         <source>Reload</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3589,7 +3642,7 @@ Decoded %1 / %2 MOT objects</source>
         <location filename="../setupdialog.ui" line="341"/>
         <location filename="../setupdialog.ui" line="466"/>
         <location filename="../setupdialog.ui" line="1408"/>
-        <location filename="../setupdialog.cpp" line="54"/>
+        <location filename="../setupdialog.cpp" line="55"/>
         <source>Device</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3607,8 +3660,8 @@ Decoded %1 / %2 MOT objects</source>
         <location filename="../setupdialog.ui" line="830"/>
         <location filename="../setupdialog.ui" line="1068"/>
         <location filename="../setupdialog.ui" line="1418"/>
-        <location filename="../setupdialog.cpp" line="412"/>
-        <location filename="../setupdialog.cpp" line="447"/>
+        <location filename="../setupdialog.cpp" line="420"/>
+        <location filename="../setupdialog.cpp" line="466"/>
         <source>Manual</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3686,7 +3739,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../setupdialog.ui" line="398"/>
         <location filename="../setupdialog.ui" line="1577"/>
-        <location filename="../setupdialog.ui" line="2597"/>
+        <location filename="../setupdialog.ui" line="2695"/>
         <source>Port:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3812,12 +3865,67 @@ Decoded %1 / %2 MOT objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2662"/>
+        <location filename="../setupdialog.ui" line="1877"/>
+        <source>When checked SPI progress icon disappears when decoding is finished</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="1880"/>
+        <source>Hide when completed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="1887"/>
+        <source>Enable SPI decoding progress icon in application window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="1890"/>
+        <source>Show decoding progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="2441"/>
+        <source>When checked application shows all TII codes that were detected so far.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="2444"/>
+        <source>Keep no longer detected transmitters on map (grey marker)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="2469"/>
+        <source>Remove after:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="2479"/>
+        <source> min</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="2756"/>
         <source>FMLIST</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2718"/>
+        <location filename="../setupdialog.ui" line="2762"/>
+        <source>Upload ensemble information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="2863"/>
+        <source>Miscellaneous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="2869"/>
+        <source>Restore application windows on start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.ui" line="2883"/>
         <source>Include XML header in raw data recording</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3829,8 +3937,8 @@ Decoded %1 / %2 MOT objects</source>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1613"/>
-        <location filename="../setupdialog.cpp" line="87"/>
-        <location filename="../setupdialog.cpp" line="1723"/>
+        <location filename="../setupdialog.cpp" line="88"/>
+        <location filename="../setupdialog.cpp" line="1766"/>
         <source>No device connected</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3846,8 +3954,8 @@ Decoded %1 / %2 MOT objects</source>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1685"/>
-        <location filename="../setupdialog.ui" line="1919"/>
-        <location filename="../setupdialog.ui" line="2338"/>
+        <location filename="../setupdialog.ui" line="1939"/>
+        <location filename="../setupdialog.ui" line="2358"/>
         <source>Folder:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3892,22 +4000,22 @@ Decoded %1 / %2 MOT objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1847"/>
+        <location filename="../setupdialog.ui" line="1857"/>
         <source>Enable Service and Programme Information (SPI) application.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1850"/>
+        <location filename="../setupdialog.ui" line="1860"/>
         <source>Enable SPI application</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1857"/>
+        <location filename="../setupdialog.ui" line="1847"/>
         <source>Use internet connection to download data like station logo.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1860"/>
+        <location filename="../setupdialog.ui" line="1850"/>
         <source>Download data from internet</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3922,59 +4030,59 @@ Decoded %1 / %2 MOT objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1888"/>
+        <location filename="../setupdialog.ui" line="1908"/>
         <source>Change data storage folder.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1891"/>
+        <location filename="../setupdialog.ui" line="1911"/>
         <source>Change folder...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1943"/>
+        <location filename="../setupdialog.ui" line="1963"/>
         <source>If not checked, files with the same name will not be saved.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1946"/>
+        <location filename="../setupdialog.ui" line="1966"/>
         <source>Overwrite existing files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1960"/>
+        <location filename="../setupdialog.ui" line="1980"/>
         <source>Enables storing of all slides to selected folder. Slideshow data are stored in subfolder specified by pattern below.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1963"/>
+        <location filename="../setupdialog.ui" line="1983"/>
         <source>Slideshow data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1975"/>
-        <location filename="../setupdialog.ui" line="2002"/>
+        <location filename="../setupdialog.ui" line="1995"/>
+        <location filename="../setupdialog.ui" line="2022"/>
         <source>Restore default template</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1978"/>
-        <location filename="../setupdialog.ui" line="2005"/>
+        <location filename="../setupdialog.ui" line="1998"/>
+        <location filename="../setupdialog.ui" line="2025"/>
         <source>Reset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1987"/>
+        <location filename="../setupdialog.ui" line="2007"/>
         <source>Enables storing of all SPI data to selected folder. &lt;br&gt;SPI data are binary encoded files with services and program information, &lt;br&gt;these files decoded to XML format and service logos.&lt;br&gt;SPI data are stored in subfolder specified by pattern below.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1990"/>
+        <location filename="../setupdialog.ui" line="2010"/>
         <source>SPI data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2014"/>
+        <location filename="../setupdialog.ui" line="2034"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
 &lt;p&gt;Data storage path pattern supports these tokens  [&lt;a href=&quot;https://github.com/KejPi/AbracaDABra/blob/main/README.md#user-application-data-storage&quot;&gt;documentation&lt;/a&gt;]:&lt;/p&gt;
 &lt;p&gt;
@@ -4012,33 +4120,33 @@ Decoded %1 / %2 MOT objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2083"/>
-        <location filename="../setupdialog.cpp" line="58"/>
+        <location filename="../setupdialog.ui" line="2103"/>
+        <location filename="../setupdialog.cpp" line="59"/>
         <source>TII</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2095"/>
+        <location filename="../setupdialog.ui" line="2115"/>
         <source>Application uses DAB transmiter database provided by &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;By pressing &lt;i&gt;Update&lt;/i&gt; button you agree with data usage &lt;a href=&apos;https://www.fmlist.org/fmlist_copyright_disclaimer_legal_notice.php&apos;&gt;terms and conditions&lt;/a&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2137"/>
+        <location filename="../setupdialog.ui" line="2157"/>
         <source>Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2157"/>
+        <location filename="../setupdialog.ui" line="2177"/>
         <source>Geolocation source:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2216"/>
+        <location filename="../setupdialog.ui" line="2236"/>
         <source>GPS coordinates:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2232"/>
+        <location filename="../setupdialog.ui" line="2299"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
 &lt;p&gt;
 Enter coordinates in &quot;latitude, longitude&quot; format, for example: 1.234,-5.678&lt;/p&gt;
@@ -4055,52 +4163,52 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2302"/>
+        <location filename="../setupdialog.ui" line="2322"/>
         <source>Logging</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2310"/>
+        <location filename="../setupdialog.ui" line="2330"/>
         <source>Change CSV log folder...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2408"/>
+        <location filename="../setupdialog.ui" line="2427"/>
         <source>Show spectrum plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2471"/>
+        <location filename="../setupdialog.ui" line="2569"/>
         <source>Expert mode UI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2478"/>
+        <location filename="../setupdialog.ui" line="2576"/>
         <source>Dynamic Label Plus (DL+)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2485"/>
+        <location filename="../setupdialog.ui" line="2583"/>
         <source>Show tray icon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2524"/>
+        <location filename="../setupdialog.ui" line="2622"/>
         <source>Slideshow background:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2510"/>
+        <location filename="../setupdialog.ui" line="2608"/>
         <source>Language:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2711"/>
+        <location filename="../setupdialog.ui" line="2876"/>
         <source>Check for application update on start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2553"/>
+        <location filename="../setupdialog.ui" line="2651"/>
         <source>Network proxy configuration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4121,7 +4229,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1776"/>
-        <location filename="../setupdialog.ui" line="2531"/>
+        <location filename="../setupdialog.ui" line="2629"/>
         <source>Restart</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4131,454 +4239,475 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="1880"/>
+        <location filename="../setupdialog.ui" line="1900"/>
         <source>Data storage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2089"/>
+        <location filename="../setupdialog.ui" line="2109"/>
         <source>Transmitter database</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2149"/>
+        <location filename="../setupdialog.ui" line="2169"/>
         <source>Receiver location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2365"/>
+        <location filename="../setupdialog.ui" line="2385"/>
         <source>Detector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2374"/>
+        <location filename="../setupdialog.ui" line="2394"/>
         <source>Reliable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2391"/>
+        <location filename="../setupdialog.ui" line="2411"/>
         <source>Sensitive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2435"/>
+        <location filename="../setupdialog.ui" line="2533"/>
         <source>Visual style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2465"/>
+        <location filename="../setupdialog.ui" line="2421"/>
+        <location filename="../setupdialog.ui" line="2563"/>
         <source>User interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2559"/>
+        <location filename="../setupdialog.ui" line="2681"/>
         <source>Server:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2566"/>
+        <location filename="../setupdialog.ui" line="2723"/>
         <source>Password:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2606"/>
+        <location filename="../setupdialog.ui" line="2657"/>
         <source>Configuration:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2636"/>
+        <location filename="../setupdialog.ui" line="2674"/>
         <source>Apply</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.ui" line="2645"/>
+        <location filename="../setupdialog.ui" line="2709"/>
         <source>Username:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.h" line="132"/>
+        <location filename="../setupdialog.h" line="133"/>
         <source>No file selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="55"/>
+        <location filename="../setupdialog.cpp" line="56"/>
         <source>Announcements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="56"/>
+        <location filename="../setupdialog.cpp" line="57"/>
         <source>Audio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="59"/>
+        <location filename="../setupdialog.cpp" line="60"/>
         <source>Others</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="74"/>
-        <location filename="../setupdialog.cpp" line="2051"/>
+        <location filename="../setupdialog.cpp" line="75"/>
+        <location filename="../setupdialog.cpp" line="2107"/>
         <source>Raw file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="81"/>
+        <location filename="../setupdialog.cpp" line="82"/>
         <source>Unsigned 8 bits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="82"/>
+        <location filename="../setupdialog.cpp" line="83"/>
         <source>Signed 16 bits</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../setupdialog.cpp" line="97"/>
-        <location filename="../setupdialog.cpp" line="110"/>
-        <location filename="../setupdialog.cpp" line="115"/>
-        <source>Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="98"/>
         <location filename="../setupdialog.cpp" line="111"/>
         <location filename="../setupdialog.cpp" line="116"/>
+        <source>Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="99"/>
+        <location filename="../setupdialog.cpp" line="112"/>
+        <location filename="../setupdialog.cpp" line="117"/>
         <source>On</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="100"/>
+        <location filename="../setupdialog.cpp" line="101"/>
         <source>Enable/disable bias tee.&lt;br&gt;&lt;br&gt;&lt;b&gt;WARNING:&lt;/b&gt; Before using the bias tee please ensure that you understand that you should not use this option when the dongle is connected directly to a DC short circuited antenna unless you are using an LNA.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="106"/>
+        <location filename="../setupdialog.cpp" line="107"/>
         <source>Input signal bandwidth in kHz. Value &apos;0&apos; means default bandwidth %1 kHz.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="107"/>
+        <location filename="../setupdialog.cpp" line="108"/>
         <source>Input device XTAL frequency correction in PPM.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="139"/>
+        <location filename="../setupdialog.cpp" line="140"/>
         <source>&lt;br&gt;Note: Alarm announcement cannot be disabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="147"/>
+        <location filename="../setupdialog.cpp" line="148"/>
         <source>Bring window to foreground</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="148"/>
+        <location filename="../setupdialog.cpp" line="149"/>
         <source>Check to bring window to foreground when (test) alarm announcement starts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="57"/>
+        <location filename="../setupdialog.cpp" line="58"/>
         <source>User applications</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="119"/>
+        <location filename="../setupdialog.cpp" line="120"/>
         <source>Connect to control socket if available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="121"/>
+        <location filename="../setupdialog.cpp" line="122"/>
         <source>Enable connection to control socket.&lt;br&gt;This option requires rtl-tcp server implemented by old-dab.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="141"/>
+        <location filename="../setupdialog.cpp" line="142"/>
         <source>Alarm announcements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="169"/>
+        <location filename="../setupdialog.cpp" line="170"/>
         <source>Regular announcements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="179"/>
+        <location filename="../setupdialog.cpp" line="180"/>
         <source>Recording date:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="183"/>
+        <location filename="../setupdialog.cpp" line="184"/>
         <source>Recorder:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="187"/>
+        <location filename="../setupdialog.cpp" line="188"/>
         <source>Device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="191"/>
+        <location filename="../setupdialog.cpp" line="192"/>
         <source>Model:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="195"/>
+        <location filename="../setupdialog.cpp" line="196"/>
         <source>Sample rate [Hz]:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="199"/>
+        <location filename="../setupdialog.cpp" line="200"/>
         <source>Frequency [kHz]:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="203"/>
+        <location filename="../setupdialog.cpp" line="204"/>
         <source>Recording length [sec]:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="207"/>
-        <location filename="../setupdialog.cpp" line="233"/>
-        <location filename="../setupdialog.cpp" line="251"/>
+        <location filename="../setupdialog.cpp" line="208"/>
+        <location filename="../setupdialog.cpp" line="234"/>
+        <location filename="../setupdialog.cpp" line="252"/>
         <source>Sample format:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="218"/>
-        <location filename="../setupdialog.cpp" line="241"/>
-        <location filename="../setupdialog.cpp" line="260"/>
-        <location filename="../setupdialog.cpp" line="275"/>
-        <location filename="../setupdialog.cpp" line="286"/>
+        <location filename="../setupdialog.cpp" line="219"/>
+        <location filename="../setupdialog.cpp" line="242"/>
+        <location filename="../setupdialog.cpp" line="261"/>
+        <location filename="../setupdialog.cpp" line="276"/>
+        <location filename="../setupdialog.cpp" line="287"/>
         <source>Connected device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="223"/>
-        <location filename="../setupdialog.cpp" line="265"/>
-        <location filename="../setupdialog.cpp" line="291"/>
+        <location filename="../setupdialog.cpp" line="224"/>
+        <location filename="../setupdialog.cpp" line="266"/>
+        <location filename="../setupdialog.cpp" line="292"/>
         <source>Serial number:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="228"/>
-        <location filename="../setupdialog.cpp" line="246"/>
+        <location filename="../setupdialog.cpp" line="229"/>
+        <location filename="../setupdialog.cpp" line="247"/>
         <source>Tuner:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="319"/>
+        <location filename="../setupdialog.cpp" line="320"/>
         <source>Default style (OS dependent)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="320"/>
+        <location filename="../setupdialog.cpp" line="321"/>
         <source>Light style (Fusion with light colors)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="321"/>
+        <location filename="../setupdialog.cpp" line="322"/>
         <source>Dark style (Fusion with dark colors)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="324"/>
+        <location filename="../setupdialog.cpp" line="325"/>
         <source>System language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="331"/>
+        <location filename="../setupdialog.cpp" line="332"/>
         <source>User interface language, the change will take effect after application restart.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="332"/>
+        <location filename="../setupdialog.cpp" line="333"/>
         <source>Language change will take effect after application restart.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="341"/>
+        <location filename="../setupdialog.cpp" line="342"/>
         <source>Audio output change will take effect after application restart.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="347"/>
+        <location filename="../setupdialog.cpp" line="348"/>
         <source>Set default OS style.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="348"/>
+        <location filename="../setupdialog.cpp" line="349"/>
         <source>Force application light style.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="349"/>
+        <location filename="../setupdialog.cpp" line="350"/>
         <source>Force application dark style.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="351"/>
+        <location filename="../setupdialog.cpp" line="352"/>
         <source>User interface in expert mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="352"/>
+        <location filename="../setupdialog.cpp" line="353"/>
         <source>Show Dynamic Label Plus (DL+) tags like artist, song name, etc.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="353"/>
+        <location filename="../setupdialog.cpp" line="354"/>
         <source>Include raw file XML header in IQ recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="375"/>
+        <location filename="../setupdialog.cpp" line="378"/>
         <source>Storage path template for SLS application. Following tokens are supported:
 {serviceId, ensId, contentName, contentNameWithExt, transportId}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="378"/>
+        <location filename="../setupdialog.cpp" line="381"/>
         <source>Storage path template for SPI application. Following tokens are supported:
 {serviceId, ensId, scId, contentName, directoryId, transportId}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="401"/>
+        <location filename="../setupdialog.cpp" line="404"/>
         <source>Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="403"/>
+        <location filename="../setupdialog.cpp" line="406"/>
         <source>Select noise level that is generated during audio interruptions.&lt;br&gt;This may help to improve listening experience and make the audio interruptions less annoying.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="411"/>
-        <location filename="../setupdialog.cpp" line="446"/>
+        <location filename="../setupdialog.cpp" line="419"/>
+        <location filename="../setupdialog.cpp" line="465"/>
         <source>System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="413"/>
+        <location filename="../setupdialog.cpp" line="421"/>
         <source>NMEA Serial Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="417"/>
+        <location filename="../setupdialog.cpp" line="425"/>
         <source>Sensitive detector settings gives more TII codes but some may be wrong.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="445"/>
+        <location filename="../setupdialog.cpp" line="464"/>
         <source>No proxy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="459"/>
+        <location filename="../setupdialog.cpp" line="478"/>
         <source>Select slideshow background color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="475"/>
-        <location filename="../setupdialog.cpp" line="2385"/>
+        <location filename="../setupdialog.cpp" line="494"/>
+        <location filename="../setupdialog.cpp" line="2476"/>
         <source>Last update: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="479"/>
-        <location filename="../setupdialog.cpp" line="2389"/>
+        <location filename="../setupdialog.cpp" line="498"/>
+        <location filename="../setupdialog.cpp" line="2480"/>
         <source>Data not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="614"/>
-        <location filename="../setupdialog.cpp" line="2147"/>
+        <location filename="../setupdialog.cpp" line="636"/>
+        <location filename="../setupdialog.cpp" line="2203"/>
         <source>sec</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="680"/>
-        <location filename="../setupdialog.cpp" line="690"/>
+        <location filename="../setupdialog.cpp" line="702"/>
+        <location filename="../setupdialog.cpp" line="712"/>
         <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="827"/>
-        <location filename="../setupdialog.cpp" line="830"/>
+        <location filename="../setupdialog.cpp" line="849"/>
+        <location filename="../setupdialog.cpp" line="852"/>
         <source>N/A  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1608"/>
+        <location filename="../setupdialog.cpp" line="1643"/>
         <source>Disconnect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1717"/>
+        <location filename="../setupdialog.cpp" line="1760"/>
         <source>RTL SDR device connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1720"/>
+        <location filename="../setupdialog.cpp" line="1763"/>
         <source>RTL TCP device connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1726"/>
+        <location filename="../setupdialog.cpp" line="1769"/>
         <source>Raw file connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1729"/>
+        <location filename="../setupdialog.cpp" line="1772"/>
         <source>Airspy device connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1732"/>
+        <location filename="../setupdialog.cpp" line="1775"/>
         <source>Soapy SDR device connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1750"/>
-        <source>Application automatically uploads ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;Ensemble information is a small CSV file with list of services in the ensemble,&lt;br&gt;it is anonymous and contains no personal data.&lt;br&gt;Thank you for supporting the community!</source>
+        <location filename="../setupdialog.cpp" line="1789"/>
+        <source>Ensemble information is a small CSV file with list of services in the ensemble,</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1758"/>
-        <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currenly disabled.&lt;br&gt;Ensemble information is a small CSV file with list of services in the ensemble,&lt;br&gt;it is anonymous and contains no personal data.&lt;br&gt;Please consider enabling this option to help the community.</source>
+        <location filename="../setupdialog.cpp" line="1790"/>
+        <source>it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1833"/>
+        <location filename="../setupdialog.cpp" line="1795"/>
+        <source>Application automatically uploads ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="1796"/>
+        <source>Thank you for supporting the community!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="1801"/>
+        <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currenly disabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="1802"/>
+        <source>Please consider enabling this option to help the community.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="1873"/>
         <source>Open IQ stream</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1833"/>
+        <location filename="../setupdialog.cpp" line="1873"/>
         <source>Binary files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="2179"/>
+        <location filename="../setupdialog.cpp" line="2248"/>
         <source>Audio recording folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="2207"/>
+        <location filename="../setupdialog.cpp" line="2276"/>
         <source>Data storage folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="2355"/>
+        <location filename="../setupdialog.cpp" line="2426"/>
         <source>TII log folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="2394"/>
+        <location filename="../setupdialog.cpp" line="2485"/>
         <source>Update failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="2682"/>
+        <location filename="../setupdialog.cpp" line="2773"/>
         <source>Select SLS Background Color</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4656,39 +4785,69 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../signaldialog.cpp" line="101"/>
+        <location filename="../signaldialog.cpp" line="97"/>
         <source>SNR [dB]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../signaldialog.cpp" line="147"/>
+        <location filename="../signaldialog.cpp" line="148"/>
         <source>frequency [MHz]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="184"/>
-        <source>Frequency correction</source>
+        <source>Fit spectrum in view</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../signaldialog.cpp" line="195"/>
+        <location filename="../signaldialog.cpp" line="189"/>
+        <source>Frequency offset correction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../signaldialog.cpp" line="201"/>
+        <source>Slow update (1 sec)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../signaldialog.cpp" line="202"/>
+        <source>Normal update (500 msec)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../signaldialog.cpp" line="203"/>
+        <source>Fast update (300 msec)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../signaldialog.cpp" line="204"/>
+        <source>Very fast update (100 msec)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../signaldialog.cpp" line="230"/>
+        <source>Show SNR value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../signaldialog.cpp" line="245"/>
         <source>Configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../signaldialog.cpp" line="523"/>
-        <location filename="../signaldialog.cpp" line="583"/>
-        <location filename="../signaldialog.cpp" line="594"/>
+        <location filename="../signaldialog.cpp" line="571"/>
+        <location filename="../signaldialog.cpp" line="658"/>
+        <location filename="../signaldialog.cpp" line="669"/>
         <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../signaldialog.cpp" line="870"/>
+        <location filename="../signaldialog.cpp" line="962"/>
         <source>%1 MHz&lt;br&gt;%2 %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../signaldialog.cpp" line="881"/>
+        <location filename="../signaldialog.cpp" line="973"/>
         <source>Fit in view</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4701,22 +4860,27 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/tiidialog.cpp" line="436"/>
+        <location filename="../tii/tiidialog.cpp" line="462"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/tiidialog.cpp" line="438"/>
+        <location filename="../tii/tiidialog.cpp" line="467"/>
+        <source>Antenna height: &lt;b&gt;%1 m&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/tiidialog.cpp" line="469"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/tiidialog.cpp" line="511"/>
+        <location filename="../tii/tiidialog.cpp" line="542"/>
         <source>Carrier Pair: %1&lt;br&gt;SubId: %3&lt;br&gt;Level: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/tiidialog.cpp" line="638"/>
+        <location filename="../tii/tiidialog.cpp" line="672"/>
         <source>Restore default zoom</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4724,37 +4888,37 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
 <context>
     <name>TxMapDialog</name>
     <message>
-        <location filename="../tii/txmapdialog.cpp" line="126"/>
+        <location filename="../tii/txmapdialog.cpp" line="128"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txmapdialog.cpp" line="126"/>
+        <location filename="../tii/txmapdialog.cpp" line="128"/>
         <source>Device location access is denied.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txmapdialog.cpp" line="128"/>
+        <location filename="../tii/txmapdialog.cpp" line="130"/>
         <source>If you want to display current position on map, grant the location permission in Settings then open the app again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txmapdialog.cpp" line="255"/>
+        <location filename="../tii/txmapdialog.cpp" line="258"/>
         <source>Ensemble: &lt;b&gt;%1&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txmapdialog.cpp" line="258"/>
+        <location filename="../tii/txmapdialog.cpp" line="262"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt; | TX: &lt;b&gt;%3&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txmapdialog.cpp" line="266"/>
+        <location filename="../tii/txmapdialog.cpp" line="270"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txmapdialog.cpp" line="271"/>
+        <location filename="../tii/txmapdialog.cpp" line="275"/>
         <source>Channel: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4762,114 +4926,114 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
 <context>
     <name>TxTableModel</name>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="214"/>
+        <location filename="../tii/txtablemodel.cpp" line="234"/>
         <source>Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="216"/>
-        <location filename="../tii/txtablemodel.cpp" line="253"/>
+        <location filename="../tii/txtablemodel.cpp" line="236"/>
+        <location filename="../tii/txtablemodel.cpp" line="273"/>
         <source>Channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="218"/>
+        <location filename="../tii/txtablemodel.cpp" line="238"/>
         <source>Frequency</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="220"/>
-        <location filename="../tii/txtablemodel.cpp" line="257"/>
+        <location filename="../tii/txtablemodel.cpp" line="240"/>
+        <location filename="../tii/txtablemodel.cpp" line="277"/>
         <source>UEID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="222"/>
-        <location filename="../tii/txtablemodel.cpp" line="259"/>
+        <location filename="../tii/txtablemodel.cpp" line="242"/>
+        <location filename="../tii/txtablemodel.cpp" line="279"/>
         <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="224"/>
-        <location filename="../tii/txtablemodel.cpp" line="261"/>
+        <location filename="../tii/txtablemodel.cpp" line="244"/>
+        <location filename="../tii/txtablemodel.cpp" line="281"/>
         <source>Services</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="226"/>
+        <location filename="../tii/txtablemodel.cpp" line="246"/>
         <source>SNR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="228"/>
-        <location filename="../tii/txtablemodel.cpp" line="265"/>
+        <location filename="../tii/txtablemodel.cpp" line="248"/>
+        <location filename="../tii/txtablemodel.cpp" line="285"/>
         <source>Main</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="230"/>
-        <location filename="../tii/txtablemodel.cpp" line="267"/>
+        <location filename="../tii/txtablemodel.cpp" line="250"/>
+        <location filename="../tii/txtablemodel.cpp" line="287"/>
         <source>Sub</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="232"/>
+        <location filename="../tii/txtablemodel.cpp" line="252"/>
         <source>Level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="234"/>
-        <location filename="../tii/txtablemodel.cpp" line="271"/>
+        <location filename="../tii/txtablemodel.cpp" line="254"/>
+        <location filename="../tii/txtablemodel.cpp" line="291"/>
         <source>Location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="236"/>
+        <location filename="../tii/txtablemodel.cpp" line="256"/>
         <source>Power</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="238"/>
+        <location filename="../tii/txtablemodel.cpp" line="258"/>
         <source>Distance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="240"/>
+        <location filename="../tii/txtablemodel.cpp" line="260"/>
         <source>Azimuth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="251"/>
+        <location filename="../tii/txtablemodel.cpp" line="271"/>
         <source>Local Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="255"/>
+        <location filename="../tii/txtablemodel.cpp" line="275"/>
         <source>Frequency [kHz]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="263"/>
+        <location filename="../tii/txtablemodel.cpp" line="283"/>
         <source>SNR [dB]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="269"/>
+        <location filename="../tii/txtablemodel.cpp" line="289"/>
         <source>Level [dB]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="273"/>
+        <location filename="../tii/txtablemodel.cpp" line="293"/>
         <source>Power [kW]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="275"/>
+        <location filename="../tii/txtablemodel.cpp" line="295"/>
         <source>Distance [km]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="277"/>
+        <location filename="../tii/txtablemodel.cpp" line="297"/>
         <source>Azimuth [deg]</source>
         <translation type="unfinished"></translation>
     </message>
