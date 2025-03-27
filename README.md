@@ -39,7 +39,8 @@ ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/
 * Localization to German, Czech and Polish (not complete)
 
 
-AbracaDABra desktop application is available for free and will remain so in the future. However, if you like it, you can [buy me a beer](https://www.buymeacoffee.com/kejpi) 🍺
+AbracaDABra desktop application is available for free and will remain so in the future. 
+However, if you like it, you can [buy me a beer](https://www.buymeacoffee.com/kejpi) 🍺
 
 ## Basic mode
 <p align="center" width="100%">
@@ -175,7 +176,8 @@ Announcements from other service display a thematic placeholder. <a href="https:
 <a href="https://www.worlddab.org/dab/data-applications/service-and-programme-information">Service and programme information</a> (SPI) application is supported. 
 When SPI application is enabled in the settings and SPI is available for selected service and/or in the ensemble, application starts its decoding automatically.
 SPI from X-PAD, from secondary service and from dedicated data service is supported, it can be even decoded from more sources in parallel. 
-In general, SPI application is very slow and it takes several minutes to acquire all objects, decoding progress is indicated in main application window. 
+In general, SPI application is very slow and it takes several minutes to acquire all objects, decoding progress is indicated in main application window by default. 
+You can disable progress indication from Settings.
 
 <p align="center" width="100%">
     <img width="892" alt="Snímek obrazovky 2025-03-09 v 21 57 58" src="https://github.com/user-attachments/assets/48ddbecb-1ffc-4e98-9681-d503da1b6eee" />
@@ -320,9 +322,11 @@ You can also configure default folder to be used to store TII log in CVS format.
 
 TII detector can run in _Sensitive_ or in _Reliable_ mode. _Sensitive_ mode is default, it gives good results but in some corner cases the detected weak codes might be invalid. _Reliable_ option on the other hand uses more conservative criteria to evaluate the TII, thus it generally detects less codes but with lower probability of fake detection. 
 
-Last TII related option is a possibility to enable spectrum plot. This option is mostly for debug purposes. If enabled it displays spectrum-like plot in the TII Decoder dialog that shows sum of carrier pairs calculated from NULL symbol of DAB signal. 
+TII dialog user interface can be configured too. You can enable Spectrum plot option. This option is mostly for debug purposes. If enabled it displays spectrum-like plot in the TII Decoder dialog that shows sum of carrier pairs calculated from NULL symbol of DAB signal. 
 
 _Note:_ It is not a real spectrum of NULL symbol but rather preprocessed TII information extracted from it.
+
+Last option is to keep no longer detected transmitters on the map. When this option is enabled, all transmitters that were detected for current ensemble since the dialog was opened are shown on the map. Transmitters that were detected in last NULL symbol are shown with marker whose color depends on relative level of that transmitter. Transmitters that could not be detected in last NULL symbol have grey marker. If the option is enabled you can also configure timeout to remove undetectable transmitters from the map. For example, when timeout is set to 1 minute, transmitters that were not detected in NULL symbol during last minute will be removed from the map. Minimum timeout is 1 minute, maximum is 600 minutes, i.e. 10 hours.
 
 Plot can be zoomed in both axes by mouse wheel or in one axis by clicking on the axis a zooming by mouse wheel. When zoomed plot can be dragged by mouse, zoom is reset to default by right click on plot area. _Note:_ Optional [QCustomPlot library](https://www.qcustomplot.com) is needed for this functionality.
 
@@ -359,9 +363,9 @@ _Note:_ Application service list is preserved when Scanning tool is running. Use
 
 ## DAB signal overview
 DAB signal overview is considered to be advanced feature thus it is only available when application is in [Expert mode](#expert-mode). It needs optional [QCustomPlot library](https://www.qcustomplot.com).
-This feature can be accessed by clicking on SNR value in dB in status bar or from application menu. It displays spectrum of the input signal, time plot of SNR and other signal parameters known by application. Border between plots can be moved to very top or very bottom to hide spectrum or SNR plot respectively. It is possible to activate frequency correction of the spectrum (under tree dots at bottom right corner). This removes frequency offset of the signal and gives cleaner spectrum of DAB signal in general. 
+This feature can be accessed by clicking on SNR value in dB in status bar or from application menu. It displays spectrum of the input signal, time plot of SNR and other signal parameters known by application. Border between plots can be moved to very top or very bottom to hide spectrum or SNR plot respectively. It is possible to activate frequency offset correction of the spectrum in configuration menu (under tree dots at bottom right corner). This removes frequency offset of the signal and gives cleaner spectrum of DAB signal in general. Default refresh rate of the spectrum is about 500 ms but it can me modified in configuration menu. 
 
-Spectrum plot can be zoomed in both axes by mouse wheel or in one axis by clicking on the axis a zooming by mouse wheel. Spectrum plot can be dragged by mouse, zoom is reset to default by right click on plot area.
+Spectrum plot can be zoomed in both axes by mouse wheel or in one axis by clicking on the axis a zooming by mouse wheel. Spectrum plot can be dragged by mouse, zoom is reset to default by right click on plot area or from configuration menu.
 
 _Note:_ Spectrum calculation and visualization causes higher CPU load of the application. 
 
@@ -408,6 +412,8 @@ The simplest way is to download latest AppImage file from [release page](https:/
 make it executable and run it. 
 
 There are two versions of AppImage - one for Intel/AMD 64 bit CPU (x86_64) the other for ARM64 CPU (aarch64) so make sure you are downloading the one matching your hardware.
+
+AppImage for x86_64 is compatible with Ubuntu 22.04 or newer. If you run it on other Linux distribution, GLIBC version 2.35 or higher is required. AppImage for AARCH64 platform is built on Debian Bookworm for the compatibility with Raspberry Pi 4/5.
 
 ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
 
@@ -489,7 +495,7 @@ _Note:_ `CMAKE_INSTALL_PREFIX` is `/usr/local` by default. It means that applica
 
 Optional SDRplay support:
 
-SoapySDR is required, additionally SDRplay API](https://www.sdrplay.com/api/) 3.15 must be installed and [SoapySDR SDRplay3 plugin](https://github.com/pothosware/SoapySDRPlay3) needs to be built from source. Then specify `SOAPY_SDR_PLUGIN_PATH` when you run the application.
+SoapySDR is required, additionally [SDRplay API](https://www.sdrplay.com/api/) 3.15 must be installed and [SoapySDR SDRplay3 plugin](https://github.com/pothosware/SoapySDRPlay3) needs to be built from source. Then specify `SOAPY_SDR_PLUGIN_PATH` when you run the application.
 
 
 
