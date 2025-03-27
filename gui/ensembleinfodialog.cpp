@@ -116,7 +116,7 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(ne
     ui->uploadButton->setEnabled(false);
     m_ensembleInfoUploaded = false;
 
-    ui->timeoutCheckBox->setToolTip(tr("When checked recording stops automaticaly when timeout is reached."));
+    ui->timeoutCheckBox->setToolTip(tr("When checked recording stops automatically when timeout is reached."));
     ui->timeoutSpinBox->setToolTip(tr("Raw IQ recording duration"));
 
     enableRecording(false);

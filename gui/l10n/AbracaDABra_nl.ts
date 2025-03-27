@@ -569,7 +569,7 @@
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="119"/>
-        <source>When checked recording stops automaticaly when timeout is reached.</source>
+        <source>When checked recording stops automatically when timeout is reached.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4668,7 +4668,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1801"/>
-        <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currenly disabled.</source>
+        <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currently disabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

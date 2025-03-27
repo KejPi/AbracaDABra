@@ -575,7 +575,7 @@
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="119"/>
-        <source>When checked recording stops automaticaly when timeout is reached.</source>
+        <source>When checked recording stops automatically when timeout is reached.</source>
         <translation>Po zaznaczeniu tej opcji nagrywanie zatrzyma się automatycznie po przekroczeniu limitu czasu.</translation>
     </message>
     <message>
@@ -4672,11 +4672,6 @@ a następnie wkopjuj tutaj współrzędne.&lt;/i&gt;&lt;/p&gt;
         <translation>Dziękujemy za wspieranie społeczności!</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1801"/>
-        <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currenly disabled.</source>
-        <translation>Przesyłanie informacji o multipleksie do &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; jest obecnie wyłączone.</translation>
-    </message>
-    <message>
         <location filename="../setupdialog.cpp" line="1802"/>
         <source>Please consider enabling this option to help the community.</source>
         <translation>Prosimy o rozważenie włączenia tej opcji, aby pomóc społeczności.</translation>
@@ -4877,6 +4872,11 @@ a następnie wkopjuj tutaj współrzędne.&lt;/i&gt;&lt;/p&gt;
         <location filename="../setupdialog.cpp" line="1775"/>
         <source>Soapy SDR device connected</source>
         <translation>Podłączono urządzenie: Soapy SDR</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="1801"/>
+        <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currently disabled.</source>
+        <translation>Przesyłanie informacji o multipleksie do &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; jest obecnie wyłączone.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1873"/>

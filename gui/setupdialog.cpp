@@ -1798,7 +1798,7 @@ void SetupDialog::setFmlistUploadInfoText()
     else
     {
         ui->fmlistUploadInfotext_1->setText(
-            tr("Upload of ensemble information to <a href=\"https://www.fmlist.org/\">FMLIST</a> is currenly disabled."));
+            tr("Upload of ensemble information to <a href=\"https://www.fmlist.org/\">FMLIST</a> is currently disabled."));
         ui->fmlistUploadInfotext_4->setText(tr("Please consider enabling this option to help the community."));
     }
 }

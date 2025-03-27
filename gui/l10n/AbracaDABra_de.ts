@@ -564,7 +564,7 @@
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="119"/>
-        <source>When checked recording stops automaticaly when timeout is reached.</source>
+        <source>When checked recording stops automatically when timeout is reached.</source>
         <translation>Wenn ausgewählt, stoppt die Aufnahme bei Erreichen des Timeouts automatisch.</translation>
     </message>
     <message>
@@ -4504,11 +4504,6 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
         <translation>Danke, dass Sie die Community unterstützen!</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1801"/>
-        <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currenly disabled.</source>
-        <translation>Hochladen der Ensembleinformationen auf &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; ist aktuell deaktiviert.</translation>
-    </message>
-    <message>
         <location filename="../setupdialog.cpp" line="1802"/>
         <source>Please consider enabling this option to help the community.</source>
         <translation>Denken Sie bitte daran, diese Option zu aktivieren, um der Community zu helfen.</translation>
@@ -4709,6 +4704,11 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
         <location filename="../setupdialog.cpp" line="1775"/>
         <source>Soapy SDR device connected</source>
         <translation>Soapy SDR-Gerät verbunden</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="1801"/>
+        <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currently disabled.</source>
+        <translation>Hochladen der Ensembleinformationen auf &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; ist aktuell deaktiviert.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1873"/>

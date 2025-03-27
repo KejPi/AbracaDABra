@@ -569,7 +569,7 @@
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="119"/>
-        <source>When checked recording stops automaticaly when timeout is reached.</source>
+        <source>When checked recording stops automatically when timeout is reached.</source>
         <translation>Pokud je aktivní, záznam automaticky skončí po nastaveném čase.</translation>
     </message>
     <message>
@@ -4541,11 +4541,6 @@ a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&
         <translation>Děkujeme, že podporujete komunitu!</translation>
     </message>
     <message>
-        <location filename="../setupdialog.cpp" line="1801"/>
-        <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currenly disabled.</source>
-        <translation>Nahrávání informace o multiplexu na &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; není povoleno.</translation>
-    </message>
-    <message>
         <location filename="../setupdialog.cpp" line="1802"/>
         <source>Please consider enabling this option to help the community.</source>
         <translation>Zvažte prosím povolení tété volby, pomůžete tím komunitě.</translation>
@@ -4746,6 +4741,11 @@ a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&
         <location filename="../setupdialog.cpp" line="1775"/>
         <source>Soapy SDR device connected</source>
         <translation>Soapy SDR zařízení připojeno</translation>
+    </message>
+    <message>
+        <location filename="../setupdialog.cpp" line="1801"/>
+        <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currently disabled.</source>
+        <translation>Nahrávání informace o multiplexu na &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; není povoleno.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1873"/>
