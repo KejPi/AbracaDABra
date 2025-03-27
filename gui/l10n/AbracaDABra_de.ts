@@ -46,12 +46,12 @@
     <message>
         <location filename="../aboutdialog.cpp" line="42"/>
         <source>If you like the application you can</source>
-        <translation type="unfinished"></translation>
+        <translation>Falls Sie das Programm mögen, können Sie</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="42"/>
         <source>buy me a beer</source>
-        <translation type="unfinished"></translation>
+        <translation>ein Bier zahlen</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="51"/>
@@ -430,7 +430,7 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="662"/>
         <source>Timeout:</source>
-        <translation type="unfinished"></translation>
+        <translation>Timeout:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="687"/>
@@ -565,12 +565,12 @@
     <message>
         <location filename="../ensembleinfodialog.cpp" line="119"/>
         <source>When checked recording stops automaticaly when timeout is reached.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn ausgewählt, stoppt die Aufnahme bei Erreichen des Timeouts automatisch.</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="120"/>
         <source>Raw IQ recording duration</source>
-        <translation type="unfinished"></translation>
+        <translation>Dauer der Rohdaten-IQ-Aufnahme</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="168"/>
@@ -1029,12 +1029,13 @@
         <location filename="../mainwindow.cpp" line="2384"/>
         <source>SPI MOT directory complete
 %1 MOT objects decoded</source>
-        <translation type="unfinished"></translation>
+        <translation>SPI MOT Verzeichnis vollständig
+%1 MOT Objekte dekodiert</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2389"/>
         <source>SPI MOT directory decoding started</source>
-        <translation type="unfinished"></translation>
+        <translation>Dekodierung des SPI MOT Verzeichnisses gestartet</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="4124"/>
@@ -1049,12 +1050,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="4134"/>
         <source>Do you want to clear service list?</source>
-        <translation type="unfinished"></translation>
+        <translation>Wollen Sie die Serviceliste leeren?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="4136"/>
         <source>You will loose current service list including favorites, this action is irreversible.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sie werden die aktuelle Serviceliste inklusive der Favoriten verlieren, diese Aktion kann nicht rückgängig gemacht werden.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1653"/>
@@ -3564,7 +3565,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="850"/>
         <source>Antenna height: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Antennenhöhe: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="852"/>
@@ -3848,42 +3849,42 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../setupdialog.ui" line="1877"/>
         <source>When checked SPI progress icon disappears when decoding is finished</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn ausgewählt, erlischt beim vollständigen Dekodieren das SPI Fortschrittsicon</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1880"/>
         <source>Hide when completed</source>
-        <translation type="unfinished"></translation>
+        <translation>Nach Beenden verstecken</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1887"/>
         <source>Enable SPI decoding progress icon in application window</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeigt ein SPI Dekoderungsfortschrittsicon im Hauptfenster</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1890"/>
         <source>Show decoding progress</source>
-        <translation type="unfinished"></translation>
+        <translation>Dekodierungsfortschritt anzeigen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2441"/>
         <source>When checked application shows all TII codes that were detected so far.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn ausgewählt, zeigt das Programm alle bisher erkannten TII Codes.</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2444"/>
         <source>Keep no longer detected transmitters on map (grey marker)</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeige erkannte Sendestandorte nicht mehr auf der Karte an (graue Markierung)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2469"/>
         <source>Remove after:</source>
-        <translation type="unfinished"></translation>
+        <translation>Entfernen nach:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2479"/>
         <source> min</source>
-        <translation type="unfinished"></translation>
+        <translation> min</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2756"/>
@@ -3893,17 +3894,17 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../setupdialog.ui" line="2762"/>
         <source>Upload ensemble information</source>
-        <translation type="unfinished"></translation>
+        <translation>Ensembleinformationen hochladen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2863"/>
         <source>Miscellaneous</source>
-        <translation type="unfinished"></translation>
+        <translation>Verschiedenes</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2869"/>
         <source>Restore application windows on start</source>
-        <translation type="unfinished"></translation>
+        <translation>Programmfenster beim Start wiederherstellen</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2883"/>
@@ -4485,32 +4486,32 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="1789"/>
         <source>Ensemble information is a small CSV file with list of services in the ensemble,</source>
-        <translation type="unfinished"></translation>
+        <translation>Ensembleinformationen ist eine kleine CSV-Datei mit der Liste an Services im Ensemble,</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1790"/>
         <source>it is anonymous and contains no personal data.</source>
-        <translation type="unfinished"></translation>
+        <translation>es ist anonym und enthält keine persönlichen Daten.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1795"/>
         <source>Application automatically uploads ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Das Programm lädt automatisch die Ensembleinformationen auf &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1796"/>
         <source>Thank you for supporting the community!</source>
-        <translation type="unfinished"></translation>
+        <translation>Danke, dass Sie die Community unterstützen!</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1801"/>
         <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currenly disabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>Hochladen der Ensembleinformationen auf &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; ist aktuell deaktiviert.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1802"/>
         <source>Please consider enabling this option to help the community.</source>
-        <translation type="unfinished"></translation>
+        <translation>Denken Sie bitte daran, diese Option zu aktivieren, um der Community zu helfen.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="2248"/>
@@ -4840,37 +4841,37 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../signaldialog.cpp" line="184"/>
         <source>Fit spectrum in view</source>
-        <translation type="unfinished"></translation>
+        <translation>Spektrum an Ansicht anpassen</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="189"/>
         <source>Frequency offset correction</source>
-        <translation type="unfinished"></translation>
+        <translation>Frequenzoffsetkorrektur</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="201"/>
         <source>Slow update (1 sec)</source>
-        <translation type="unfinished"></translation>
+        <translation>Langsames Update (1 Sek.)</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="202"/>
         <source>Normal update (500 msec)</source>
-        <translation type="unfinished"></translation>
+        <translation>Normales Update (500 ms)</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="203"/>
         <source>Fast update (300 msec)</source>
-        <translation type="unfinished"></translation>
+        <translation>Schnelles Update (300 ms)</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="204"/>
         <source>Very fast update (100 msec)</source>
-        <translation type="unfinished"></translation>
+        <translation>Sehr schnelles Update (100 ms)</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="230"/>
         <source>Show SNR value</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeige SNR-Wert</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="245"/>
@@ -4892,7 +4893,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../signaldialog.cpp" line="973"/>
         <source>Fit in view</source>
-        <translation type="unfinished"></translation>
+        <translation>An Ansicht anpassen</translation>
     </message>
 </context>
 <context>
@@ -4910,7 +4911,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../tii/tiidialog.cpp" line="467"/>
         <source>Antenna height: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Antennenhöhe: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/tiidialog.cpp" line="469"/>
