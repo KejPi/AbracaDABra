@@ -54,7 +54,7 @@ Service can be easily added to favorites by clicking "star" icon.  Most of the e
 ## Expert mode
 <p align="center" width="100%">
     <img width="889" alt="Application in expert mode" src="https://github.com/user-attachments/assets/2d304694-5993-4c5b-acb3-416c1b1106b1">
-    <img width="1152" alt="Ensemble information" src="https://github.com/user-attachments/assets/25eeef70-1d0c-422c-8a9c-c304fcb206f0" />
+    <img width="1086" alt="Ensemble information" src="https://github.com/user-attachments/assets/66e39d7e-bd14-4934-848e-91c13cb56660" />
 </p>
 In addition to basic mode, expert mode shows ensemble tree with structure of services and additional details of currently tuned service. 
 Furthermore it is possible to change the DAB channel manually in this mode. 
@@ -187,7 +187,7 @@ AbracaDABra can use internet connection to download service logos and to retriev
 Both internet connection and RadioDNS are optional features that are enabled by default.
 
 <p align="center" width="100%">
-    <img width="659" alt="uaSettings_20240209" src="https://github.com/KejPi/AbracaDABra/assets/6438380/8680dc2c-3cce-47f1-a87d-525121ab6270">
+    <img width="692" alt="uaSettings_2025-03-27" src="https://github.com/user-attachments/assets/725e4c59-1c64-4581-9dfb-19a7e0790d66" />
 </p>
 
 Service logos, XML files and internet download cache are stored in dedicated directory on the disk. Location of the cache is OS dependent:
@@ -208,7 +208,7 @@ AbracaDABra can be configured to store all incoming data from slideshow (SLS) an
 and subfolder template configurable for each application individually. Storage of data can be enabled for each application individually.
 
 <p align="center" width="100%">
-    <img width="659" alt="uaSettings_20240209" src="https://github.com/KejPi/AbracaDABra/assets/6438380/8680dc2c-3cce-47f1-a87d-525121ab6270">
+    <img width="692" alt="uaSettings_2025-03-27" src="https://github.com/user-attachments/assets/725e4c59-1c64-4581-9dfb-19a7e0790d66" />
 </p>
 
 Default storage folder is OS dependent:
@@ -306,7 +306,7 @@ This feature can be disabled in settings but please consider keeping this option
 TII decoder is considered to be advanced DX feature thus it is only available when application is in [Expert mode](#expert-mode). Before using it, the feature needs to be configured from application settings:
 
 <p align="center" width="100%">
-<img width="651" alt="TII settings" src="https://github.com/user-attachments/assets/1c425f98-f2b2-4db1-bca4-6fef0e6b379e" />
+    <img width="692" alt="TII settings" src="https://github.com/user-attachments/assets/05e2183c-72f6-47b2-a7f6-76a848ff35ad" />
 </p>
 
 First update the DAB transmitter database kindly provided by [FMLIST](https://www.fmlist.org). _Note:_ you might need to configure network proxy in Others tab. 
@@ -331,7 +331,7 @@ Last option is to keep no longer detected transmitters on the map. When this opt
 Plot can be zoomed in both axes by mouse wheel or in one axis by clicking on the axis a zooming by mouse wheel. When zoomed plot can be dragged by mouse, zoom is reset to default by right click on plot area. _Note:_ Optional [QCustomPlot library](https://www.qcustomplot.com) is needed for this functionality.
 
 <p align="center" width="100%">
-<img width="1185" alt="Snímek obrazovky 2024-12-28 v 17 30 49" src="https://github.com/user-attachments/assets/d2307701-0cab-4fdb-9dad-782d0987d7df" />
+    <img width="1172" alt="TII decoding" src="https://github.com/user-attachments/assets/18a48563-cdde-4883-aa3c-7c71a6a208f8" />
 </p>
 
 TII Decoder dialog shows an interactive map provided by [OpenStreetMap](https://www.openstreetmap.org/copyright), table of detected transmitter codes and ensemble information. Blue dot shows location configured in Settings.
