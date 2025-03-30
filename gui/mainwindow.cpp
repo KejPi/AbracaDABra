@@ -3080,7 +3080,7 @@ void MainWindow::loadSettings()
     }
     m_audioRecScheduleFilename = fi.path() + "/AudioRecordingSchedule.json";
 
-    if (AppVersion(settings->value("version").toString()) < AppVersion("v2.9.2-75"))
+    if (AppVersion(settings->value("version", PROJECT_VER).toString()) < AppVersion("v2.9.2-75"))
     {  // old settings file detected
 
         // load servicelist
@@ -3990,7 +3990,7 @@ void MainWindow::showScannerDialog()
         connect(m_scannerDialog, &QDialog::destroyed, this, [this]() { m_scannerDialog = nullptr; });
     }
 
-    // force closing settings to avoti user changing input device while scanning
+    // force closing settings to avoid user changing input device while scanning
     m_scanningToolAction->setEnabled(false);
     m_bandScanAction->setEnabled(false);
     m_setupDialog->setInputDeviceEnabled(false);
