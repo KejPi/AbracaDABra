@@ -55,7 +55,7 @@ class SetupDialog : public QDialog
 public:
     SetupDialog(QWidget *parent = nullptr);
     void setupDarkMode(bool darkModeEna);
-    void setInputDeviceEnabled(bool ena);
+    void setInputDeviceEnabled(bool ena, InputDevice::Id id = InputDevice::Id::UNDEFINED);
     void setInputDevice(InputDevice::Id id, InputDevice *device);
     void resetInputDevice();
     void setSettings(Settings *settings);

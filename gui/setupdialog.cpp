@@ -582,9 +582,31 @@ void SetupDialog::setGainValues(const QList<float> &gainList)
     }
 }
 
-void SetupDialog::setInputDeviceEnabled(bool ena)
+void SetupDialog::setInputDeviceEnabled(bool ena, InputDevice::Id id)
 {
-    ui->inputCombo->setEnabled(ena);
+    if (id == InputDevice::Id::UNDEFINED)
+    {
+        ui->inputCombo->setEnabled(ena);
+        setConnectButton(ena ? ConnectButtonAuto : ConnectButtonOff);
+    }
+    else
+    {
+        QStandardItemModel *model = dynamic_cast<QStandardItemModel *>(ui->inputCombo->model());
+        if (model == nullptr)
+        {
+            return;
+        }
+        int idx = ui->inputCombo->findData(QVariant(static_cast<int>(id)));
+        if (idx < 0)
+        {
+            return;
+        }
+        QStandardItem *item = model->item(idx);
+        if (item)
+        {
+            item->setFlags(ena ? item->flags() | Qt::ItemIsEnabled : item->flags() & ~Qt::ItemIsEnabled);
+        }
+    }
 }
 
 void SetupDialog::setSettings(Settings *settings)

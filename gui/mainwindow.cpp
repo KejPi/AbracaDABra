@@ -3950,6 +3950,7 @@ void MainWindow::showScannerDialog()
                     m_hasTreeViewFocus = ui->serviceTreeView->hasFocus();
                     ui->serviceListView->setEnabled(false);
                     ui->serviceTreeView->setEnabled(false);
+                    m_setupDialog->setInputDeviceEnabled(false);
 
                     m_isScannerRunning = true;
 
@@ -3967,6 +3968,7 @@ void MainWindow::showScannerDialog()
                     ui->channelUp->setEnabled(true);
                     ui->serviceListView->setEnabled(true);
                     ui->serviceTreeView->setEnabled(true);
+                    m_setupDialog->setInputDeviceEnabled(true);
 
                     ServiceListId serviceToRestore = m_scannerDialog->getServiceToRestore();
                     if (serviceToRestore.isValid())
@@ -3982,6 +3984,7 @@ void MainWindow::showScannerDialog()
                 [this]()
                 {
                     // restore UI
+                    m_setupDialog->setInputDeviceEnabled(true, InputDevice::Id::RAWFILE);
                     m_setupDialog->setInputDeviceEnabled(true);
                     m_scanningToolAction->setEnabled(true);
                     m_bandScanAction->setEnabled(true);
@@ -3993,7 +3996,7 @@ void MainWindow::showScannerDialog()
     // force closing settings to avoid user changing input device while scanning
     m_scanningToolAction->setEnabled(false);
     m_bandScanAction->setEnabled(false);
-    m_setupDialog->setInputDeviceEnabled(false);
+    m_setupDialog->setInputDeviceEnabled(false, InputDevice::Id::RAWFILE);
     m_scannerDialog->show();
     m_scannerDialog->raise();
     m_scannerDialog->activateWindow();
