@@ -190,6 +190,7 @@ public:
         GeolocationSource locationSource;
         QGeoCoordinate coordinates;
         QString serialPort;
+        int serialPortBaudrate;
         QString logFolder;
         bool showSpectumPlot;
         QByteArray geometry;

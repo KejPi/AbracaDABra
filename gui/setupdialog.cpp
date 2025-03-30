@@ -420,6 +420,25 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->locationSourceCombo->addItem(tr("Manual"), QVariant::fromValue(Settings::GeolocationSource::Manual));
     ui->locationSourceCombo->addItem(tr("NMEA Serial Port"), QVariant::fromValue(Settings::GeolocationSource::SerialPort));
     connect(ui->locationSourceCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onGeolocationSourceChanged);
+
+    ui->serialPortBaudrateCombo->addItem(QString::number(1200), 1200);
+    ui->serialPortBaudrateCombo->addItem(QString::number(2400), 2400);
+    ui->serialPortBaudrateCombo->addItem(QString::number(4800), 4800);
+    ui->serialPortBaudrateCombo->addItem(QString::number(9600), 9600);
+    ui->serialPortBaudrateCombo->addItem(QString::number(192000), 192000);
+    ui->serialPortBaudrateCombo->addItem(QString::number(384000), 384000);
+    ui->serialPortBaudrateCombo->addItem(QString::number(576000), 576000);
+    ui->serialPortBaudrateCombo->addItem(QString::number(115200), 115200);
+    connect(ui->serialPortBaudrateCombo, &QComboBox::currentIndexChanged, this,
+            [this](int index)
+            {
+                if (index > 0)
+                {
+                    m_settings->tii.serialPortBaudrate = ui->serialPortBaudrateCombo->currentData().toInt();
+                    emit tiiSettingsChanged();
+                }
+            });
+
     ui->locationSrcWidget->setEnabled(false);
     ui->coordinatesEdit->setText("0.0, 0.0");
     ui->tiiModeSlider->setToolTip(tr("Sensitive detector settings gives more TII codes but some may be wrong."));
@@ -986,6 +1005,8 @@ void SetupDialog::setUiState()
                                      .arg(m_settings->tii.coordinates.latitude(), 0, 'g', QLocale::FloatingPointShortest)
                                      .arg(m_settings->tii.coordinates.longitude(), 0, 'g', QLocale::FloatingPointShortest));
     ui->serialPortEdit->setText(m_settings->tii.serialPort);
+    index = ui->serialPortBaudrateCombo->findData(m_settings->tii.serialPortBaudrate);
+    ui->serialPortBaudrateCombo->setCurrentIndex(index);
     ui->locationSourceCombo->setCurrentIndex(static_cast<int>(m_settings->tii.locationSource));
     onGeolocationSourceChanged(static_cast<int>(m_settings->tii.locationSource));
     ui->tiiSpectPlotCheckBox->setChecked(m_settings->tii.showSpectumPlot);

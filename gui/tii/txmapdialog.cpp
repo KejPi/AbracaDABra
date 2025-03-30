@@ -147,6 +147,11 @@ void TxMapDialog::startLocationUpdate()
                 qCDebug(txMap) << "Start position update";
                 connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &TxMapDialog::positionUpdated);
                 m_geopositionSource->startUpdates();
+                qCInfo(txMap) << "Location source system";
+            }
+            else
+            {
+                qCWarning(txMap) << "Failed to create location source: system";
             }
         }
         break;
@@ -157,18 +162,27 @@ void TxMapDialog::startLocationUpdate()
                 m_geopositionSource = nullptr;
             }
             positionUpdated(QGeoPositionInfo(m_settings->tii.coordinates, QDateTime::currentDateTime()));
+            qCInfo(txMap) << "Location source manual: latitude" << m_settings->tii.coordinates.latitude() << "| longitude"
+                          << m_settings->tii.coordinates.longitude();
             break;
         case Settings::GeolocationSource::SerialPort:
         {
             // serial port
             QVariantMap params;
             params["nmea.source"] = "serial:" + m_settings->tii.serialPort;
+            params["nmea.baudrate"] = m_settings->tii.serialPortBaudrate;
             m_geopositionSource = QGeoPositionInfoSource::createSource("nmea", params, this);
             if (m_geopositionSource != nullptr)
             {
                 qCDebug(txMap) << "Start position update";
                 connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &TxMapDialog::positionUpdated);
                 m_geopositionSource->startUpdates();
+                qCInfo(txMap) << "Location source serial port" << m_settings->tii.serialPort << "@" << m_settings->tii.serialPortBaudrate;
+            }
+            else
+            {
+                qCWarning(txMap) << "Failed to create location source: serial port" << m_settings->tii.serialPort << "@"
+                                 << m_settings->tii.serialPortBaudrate;
             }
         }
         break;

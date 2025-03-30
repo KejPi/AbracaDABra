@@ -3175,6 +3175,7 @@ void MainWindow::loadSettings()
         settings->value("TII/locationSource", static_cast<int>(Settings::GeolocationSource::System)).toInt());
     m_settings->tii.coordinates = QGeoCoordinate(settings->value("TII/latitude", 0.0).toDouble(), settings->value("TII/longitude", 0.0).toDouble());
     m_settings->tii.serialPort = settings->value("TII/serialPort", "").toString();
+    m_settings->tii.serialPortBaudrate = settings->value("TII/serialPortBaudrate", 4800).toInt();
     m_settings->tii.logFolder = settings->value("TII/logFolder", QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)).toString();
     m_settings->tii.showSpectumPlot = settings->value("TII/showSpectrumPlot", false).toBool();
     m_settings->tii.geometry = settings->value("TII/windowGeometry").toByteArray();
@@ -3467,6 +3468,7 @@ void MainWindow::saveSettings()
     settings->setValue("TII/latitude", m_settings->tii.coordinates.latitude());
     settings->setValue("TII/longitude", m_settings->tii.coordinates.longitude());
     settings->setValue("TII/serialPort", m_settings->tii.serialPort);
+    settings->setValue("TII/serialPortBaudrate", m_settings->tii.serialPortBaudrate);
     settings->setValue("TII/logFolder", m_settings->tii.logFolder);
     settings->setValue("TII/showSpectrumPlot", m_settings->tii.showSpectumPlot);
     settings->setValue("TII/windowGeometry", m_settings->tii.geometry);
