@@ -1079,7 +1079,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
         m_settings->log.restore = m_logDialog->isVisible();
         m_settings->catSls.restore = m_catSlsDialog->isVisible();
         m_settings->tii.restore = (m_tiiDialog != nullptr);
+#if HAVE_QCUSTOMPLOT
         m_settings->signal.restore = (m_signalDialog != nullptr);
+#endif
         m_settings->scanner.restore = (m_scannerDialog != nullptr);
         m_settings->epg.restore = (m_epgDialog != nullptr);
     }
