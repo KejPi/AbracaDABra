@@ -830,8 +830,7 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     connect(m_radioControl, &RadioControl::ensembleCSV, m_ensembleInfoDialog, &EnsembleInfoDialog::onEnsembleCSV, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::tuneDone, m_ensembleInfoDialog, &EnsembleInfoDialog::newFrequency, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::tuneDone, m_inputDeviceRecorder, &InputDeviceRecorder::setCurrentFrequency, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::fibCounter, m_ensembleInfoDialog, &EnsembleInfoDialog::updateFIBstatus, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::mscCounter, m_ensembleInfoDialog, &EnsembleInfoDialog::updateMSCstatus, Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::decodingStats, m_ensembleInfoDialog, &EnsembleInfoDialog::updatedDecodingStats, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::audioServiceSelection, m_ensembleInfoDialog, &EnsembleInfoDialog::serviceChanged, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleInformation, m_ensembleInfoDialog, &EnsembleInfoDialog::onEnsembleInformation,
             Qt::QueuedConnection);
@@ -1435,6 +1434,7 @@ void MainWindow::onAudioParametersInfo(const struct AudioParameters &params)
     }
     m_audioRecordingAction->setEnabled(true);
     m_audioRecManager->setHaveAudio(true);
+    m_ensembleInfoDialog->setAudioParameters(params);
 }
 
 void MainWindow::onProgrammeTypeChanged(const DabSId &sid, const DabPTy &pty)

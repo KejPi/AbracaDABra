@@ -305,8 +305,15 @@ void RadioControl::onDabEvent(RadioControlEvent *pEvent)
             updateSignalState(pData->syncLevel, pData->snr10);
 
             emit freqOffset(pData->freqOffset * 0.1);
-            emit fibCounter(RADIO_CONTROL_NOTIFICATION_FIB_EXPECTED, pData->fibErrorCntr);
-            emit mscCounter(pData->mscCrcOkCntr, pData->mscCrcErrorCntr);
+
+            RadioControlDecodingStats stats;
+            stats.fibCntr = RADIO_CONTROL_NOTIFICATION_FIB_EXPECTED;
+            stats.fibErrorCntr = pData->fibErrorCntr;
+            stats.mscCrcOkCntr = pData->mscCrcOkCntr;
+            stats.mscCrcErrorCntr = pData->mscCrcErrorCntr;
+            stats.audioServiceBytes = pData->audioServiceBytes;
+            stats.padBytes = pData->padBytes;
+            emit decodingStats(stats);
 
             qCDebug(radioControl, "AutoNotify: sync %d, freq offset = %.1f Hz, SNR = %.1f dB", pData->syncLevel, pData->freqOffset * 0.1,
                     pData->snr10 / 10.0);

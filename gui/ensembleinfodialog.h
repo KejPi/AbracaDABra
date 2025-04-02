@@ -30,6 +30,7 @@
 #include <QCloseEvent>
 #include <QDialog>
 
+#include "audiodecoder.h"
 #include "radiocontrol.h"
 
 class Settings;
@@ -58,8 +59,7 @@ public:
     void updateRecordingStatus(uint64_t bytes, float ms);
     void updateAgcGain(float gain);
     void updateRfLevel(float rfLevel, float);
-    void updateFIBstatus(int fibCount, int fibErrCount);
-    void updateMSCstatus(int crcOkCount, int crcErrCount);
+    void updatedDecodingStats(const RadioControlDecodingStats &stats);
     void resetFibStat();
     void resetMscStat();
     void newFrequency(quint32 f);
@@ -68,7 +68,7 @@ public:
     void onEnsembleCSV(const QString &csvString);
     void enableEnsembleInfoUpload();
     void setEnsembleInfoUploaded(bool newEnsembleInfoUploaded);
-
+    void setAudioParameters(const AudioParameters &params);
 signals:
     void recordingStart(QWidget *widgetParent, int timeoutSec);
     void recordingStop();
@@ -89,10 +89,13 @@ private:
     QString m_ensembleName;
     bool m_ensembleInfoUploaded;
 
-    quint32 m_fibCounter;
-    quint32 m_fibErrorCounter;
-    quint32 m_crcCounter;
-    quint32 m_crcErrorCounter;
+    quint64 m_fibCounter = 0;
+    quint64 m_fibErrorCounter = 0;
+    quint64 m_crcCounter = 0;
+    quint64 m_crcErrorCounter = 0;
+
+    int m_serviceBitrate = 0;
+    float m_serviceBitrateNet = 0;
 
     void onRecordingButtonClicked();
     void fibFrameContextMenu(const QPoint &pos);

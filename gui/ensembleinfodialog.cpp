@@ -289,38 +289,69 @@ void EnsembleInfoDialog::updateRfLevel(float rfLevel, float)
     ui->rfLevel->setText(QString::number(double(rfLevel), 'f', 1) + " dBm");
 }
 
-void EnsembleInfoDialog::updateFIBstatus(int fibCntr, int fibErrCount)
+void EnsembleInfoDialog::setAudioParameters(const AudioParameters &params)
 {
-    m_fibCounter += (fibCntr - fibErrCount);
-    m_fibCounter &= 0x7FFFFFFF;  // wrapping
-    m_fibErrorCounter += fibErrCount;
-    m_fibErrorCounter &= 0x7FFFFFFF;  // wrapping
+    if (params.coding == AudioCoding::MP2)
+    {
+        m_serviceBitrateNet = m_serviceBitrate;
+    }
+    else
+    {
+        int numAU = 3;
+        if (params.sampleRateKHz == 32)
+        {
+            numAU = 2;
+        }
+        if (!params.sbr)
+        {
+            numAU = 2 * numAU;
+        }
+        m_serviceBitrateNet = qRound(((m_serviceBitrate / 8 * 110) - 2 * numAU - 2 - qRound(1.5 * (numAU - 1)) - 1) / 120.0 * 8 * 10) * 0.1;
+    }
+    ui->serviceCapacity->setText(QString(tr("%1 kbps").arg(m_serviceBitrateNet, 1, 'f', 1)));
+}
+
+void EnsembleInfoDialog::updatedDecodingStats(const RadioControlDecodingStats &stats)
+{
+    m_fibCounter += (stats.fibCntr - stats.fibErrorCntr);
+    m_fibErrorCounter += stats.fibErrorCntr;
     ui->fibCount->setText(QString::number(m_fibCounter));
     ui->fibErrCount->setText(QString::number(m_fibErrorCounter));
     if (m_fibCounter > 0)
     {
         ui->fibErrRate->setText(QString::number(double(m_fibErrorCounter) / m_fibCounter, 'e', 4));
-        return;
     }
-    // else
-    ui->fibErrRate->setText(tr("N/A"));
-}
+    else
+    {
+        ui->fibErrRate->setText(tr("N/A"));
+    }
 
-void EnsembleInfoDialog::updateMSCstatus(int crcOkCount, int crcErrCount)
-{
-    m_crcCounter += (crcOkCount + crcErrCount);
-    m_crcCounter &= 0x7FFFFFFF;  // wrapping
-    m_crcErrorCounter += crcErrCount;
-    m_crcErrorCounter &= 0x7FFFFFFF;  // wrapping
+    m_crcCounter += (stats.mscCrcOkCntr + stats.mscCrcErrorCntr);
+    m_crcErrorCounter += stats.mscCrcErrorCntr;
     ui->crcCount->setText(QString::number(m_crcCounter));
     ui->crcErrCount->setText(QString::number(m_crcErrorCounter));
     if (m_crcCounter > 0)
     {
         ui->crcErrRate->setText(QString::number(double(m_crcErrorCounter) / m_crcCounter, 'e', 4));
-        return;
     }
-    // else
-    ui->crcErrRate->setText(tr("N/A"));
+    else
+    {
+        ui->crcErrRate->setText(tr("N/A"));
+    }
+
+    if (stats.audioServiceBytes > 0)
+    {
+        float padRatio = qRound(stats.padBytes * 1000.0 / stats.audioServiceBytes) * 0.1;
+        float padBitrate = qRound(m_serviceBitrateNet * padRatio * 0.1) * 0.1;
+        ui->padBitrate->setText(QString(tr("%1 kbps")).arg(padBitrate, 1, 'f', 1));
+        ui->padRatio->setText(QString("%1 %").arg(padRatio, 1, 'f', 1));
+        float audioRatio = 100.0 - padRatio;
+        float audioBitrate = qRound(m_serviceBitrateNet * audioRatio * 0.1) * 0.1;
+        ui->audioBitrate->setText(QString(tr("%1 kbps")).arg(audioBitrate, 1, 'f', 1));
+        ui->audioRatio->setText(QString("%1 %").arg(audioRatio, 1, 'f', 1));
+
+        // qDebug() << stats.audioServiceBytes << stats.padBytes << (stats.audioServiceBytes - stats.padBytes) * 100.0 / stats.audioServiceBytes;
+    }
 }
 
 void EnsembleInfoDialog::resetFibStat()
@@ -375,6 +406,8 @@ void EnsembleInfoDialog::serviceChanged(const RadioControlServiceComponent &s)
     ui->subChannel->setText(QString::number(s.SubChId));
     ui->startCU->setText(QString::number(s.SubChAddr));
     ui->numCU->setText(QString::number(s.SubChSize));
+    m_serviceBitrate = s.streamAudioData.bitRate;
+    ui->serviceBitrate->setText(QString(tr("%1 kbps").arg(m_serviceBitrate)));
 
     resetMscStat();
 }
@@ -442,6 +475,12 @@ void EnsembleInfoDialog::clearServiceInfo()
     ui->subChannel->setText("");
     ui->startCU->setText("");
     ui->numCU->setText("");
+    ui->serviceBitrate->setText("");
+    ui->serviceCapacity->setText("");
+    ui->audioBitrate->setText("");
+    ui->padBitrate->setText("");
+    ui->audioRatio->setText("");
+    ui->padRatio->setText("");
 }
 
 void EnsembleInfoDialog::clearSignalInfo()

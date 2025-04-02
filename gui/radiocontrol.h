@@ -277,6 +277,16 @@ struct RadioControlTIIData
     std::vector<float> spectrum;
 };
 
+struct RadioControlDecodingStats
+{
+    int fibCntr;            // number of FIB
+    int fibErrorCntr;       // number of FIB CRC errors during notification period
+    int mscCrcOkCntr;       // number of correct CRC [after RS (DAB+)]
+    int mscCrcErrorCntr;    // number of CRC errors [after RS (DAB+)]
+    int audioServiceBytes;  // number of audio service bytes
+    int padBytes;           // number of PAD bytes
+};
+
 enum class RadioControlEventType
 {
     SYNC_STATUS = 0,
@@ -383,8 +393,7 @@ signals:
     void dabEvent(RadioControlEvent *pEvent);
     void signalState(uint8_t sync, float snr);
     void freqOffset(float f);
-    void fibCounter(int expected, int errors);
-    void mscCounter(int correct, int errors);
+    void decodingStats(const RadioControlDecodingStats &stats);
     void tuneInputDevice(uint32_t freq);
     void tuneDone(uint32_t freq);
     void stopAudio();
