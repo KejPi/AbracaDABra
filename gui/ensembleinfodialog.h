@@ -64,6 +64,7 @@ public:
     void resetMscStat();
     void newFrequency(quint32 f);
     void serviceChanged(const RadioControlServiceComponent &s);
+    void setServiceInformation(const RadioControlServiceComponent &s);
     void onEnsembleInformation(const RadioControlEnsemble &ens) { m_ensembleName = ens.label; }
     void onEnsembleCSV(const QString &csvString);
     void enableEnsembleInfoUpload();

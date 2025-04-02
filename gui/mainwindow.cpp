@@ -2038,6 +2038,7 @@ void MainWindow::onAudioServiceReconfiguration(const RadioControlServiceComponen
     if (s.SId.isValid() && s.isAudioService() && (s.SId.value() == m_SId.value()))
     {  // set UI
         onAudioServiceSelection(s);
+        m_ensembleInfoDialog->setServiceInformation(s);
         emit getAudioInfo();
     }
     else

@@ -406,6 +406,12 @@ void EnsembleInfoDialog::newFrequency(quint32 f)
 
 void EnsembleInfoDialog::serviceChanged(const RadioControlServiceComponent &s)
 {
+    setServiceInformation(s);
+    resetMscStat();
+}
+
+void EnsembleInfoDialog::setServiceInformation(const RadioControlServiceComponent &s)
+{
     clearServiceInfo();
     if (!s.SId.isValid())
     {  // service component not valid -> can happen during reconfig
@@ -420,8 +426,6 @@ void EnsembleInfoDialog::serviceChanged(const RadioControlServiceComponent &s)
     ui->numCU->setText(QString::number(s.SubChSize));
     m_serviceBitrate = s.streamAudioData.bitRate;
     ui->serviceBitrate->setText(QString(tr("%1 kbps").arg(m_serviceBitrate)));
-
-    resetMscStat();
 }
 
 void EnsembleInfoDialog::showEvent(QShowEvent *event)
