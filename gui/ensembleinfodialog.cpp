@@ -293,7 +293,19 @@ void EnsembleInfoDialog::setAudioParameters(const AudioParameters &params)
 {
     if (params.coding == AudioCoding::MP2)
     {
-        m_serviceBitrateNet = m_serviceBitrate;
+        // ETSI TS 103 466 V1.2.1 (2019-09) [5.3.2.6]
+        // m_serviceBitrateNet = m_serviceBitrate;
+        int frameLenMs = 48;
+        int ScF_CRC = 4;
+        if (params.sampleRateKHz == 48)
+        {
+            frameLenMs = 24;
+            if (m_serviceBitrate < 56)
+            {
+                ScF_CRC = 2;
+            }
+        }
+        m_serviceBitrateNet = qRound(((m_serviceBitrate * frameLenMs / 8) - 4 - 2 - 2 - ScF_CRC) * 8 * 1.0 / frameLenMs * 10) * 0.1;
     }
     else
     {
@@ -339,7 +351,7 @@ void EnsembleInfoDialog::updatedDecodingStats(const RadioControlDecodingStats &s
         ui->crcErrRate->setText(tr("N/A"));
     }
 
-    if (stats.audioServiceBytes > 0)
+    if ((stats.audioServiceBytes > 0) && (m_serviceBitrateNet > 0))
     {
         float padRatio = qRound(stats.padBytes * 1000.0 / stats.audioServiceBytes) * 0.1;
         float padBitrate = qRound(m_serviceBitrateNet * padRatio * 0.1) * 0.1;
@@ -394,9 +406,9 @@ void EnsembleInfoDialog::newFrequency(quint32 f)
 
 void EnsembleInfoDialog::serviceChanged(const RadioControlServiceComponent &s)
 {
+    clearServiceInfo();
     if (!s.SId.isValid())
     {  // service component not valid -> can happen during reconfig
-        clearServiceInfo();
         return;
     }
 
@@ -481,6 +493,8 @@ void EnsembleInfoDialog::clearServiceInfo()
     ui->padBitrate->setText("");
     ui->audioRatio->setText("");
     ui->padRatio->setText("");
+    m_serviceBitrate = 0;
+    m_serviceBitrateNet = 0;
 }
 
 void EnsembleInfoDialog::clearSignalInfo()
