@@ -4402,19 +4402,82 @@ void MainWindow::onColorSchemeChanged(Qt::ColorScheme colorScheme)
 
 #endif
 }
+#endif
 
-#else  // QT version < 6.5.0 -> switching is supported only on MacOS
 void MainWindow::changeEvent(QEvent *e)
 {
-#ifdef Q_OS_MACX
+#if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0)) && defined(Q_OS_MACX)
+    // automatic dark mode support for macOS for Qt < 6.5.0
     if (e->type() == QEvent::PaletteChange)
     {
         setupDarkMode();
     }
 #endif
+#if 1
+    if (e->type() == QEvent::ActivationChange)
+    {
+        if (isActiveWindow())
+        {
+            if (m_setupDialog && m_setupDialog->isVisible())
+            {
+                m_setupDialog->raise();
+                m_setupDialog->activateWindow();
+            }
+            if (m_epgDialog && m_epgDialog->isVisible())
+            {
+                m_epgDialog->raise();
+                m_epgDialog->activateWindow();
+            }
+            if (m_ensembleInfoDialog && m_ensembleInfoDialog->isVisible())
+            {
+                m_ensembleInfoDialog->raise();
+                m_ensembleInfoDialog->activateWindow();
+            }
+            if (m_ensembleInfoDialog && m_ensembleInfoDialog->isVisible())
+            {
+                m_ensembleInfoDialog->raise();
+                m_ensembleInfoDialog->activateWindow();
+            }
+            if (m_ensembleInfoDialog && m_ensembleInfoDialog->isVisible())
+            {
+                m_ensembleInfoDialog->raise();
+                m_ensembleInfoDialog->activateWindow();
+            }
+            if (m_catSlsDialog && m_catSlsDialog->isVisible())
+            {
+                m_catSlsDialog->raise();
+                m_catSlsDialog->activateWindow();
+            }
+            if (m_logDialog && m_logDialog->isVisible())
+            {
+                m_logDialog->raise();
+                m_logDialog->activateWindow();
+            }
+            if (m_audioRecScheduleDialog && m_audioRecScheduleDialog->isVisible())
+            {
+                m_audioRecScheduleDialog->raise();
+                m_audioRecScheduleDialog->activateWindow();
+            }
+            if (m_tiiDialog && m_tiiDialog->isVisible())
+            {
+                m_tiiDialog->raise();
+                m_tiiDialog->activateWindow();
+            }
+            if (m_scannerDialog && m_scannerDialog->isVisible())
+            {
+                m_scannerDialog->raise();
+                m_scannerDialog->activateWindow();
+            }
+            if (m_signalDialog && m_signalDialog->isVisible())
+            {
+                m_signalDialog->raise();
+                m_signalDialog->activateWindow();
+            }
+        }
+    }
+#endif
     QMainWindow::changeEvent(e);
 }
-#endif
 
 bool MainWindow::isDarkMode()
 {

@@ -109,11 +109,10 @@ signals:
     void exit();
 
 protected:
-    void closeEvent(QCloseEvent *event);
-    void resizeEvent(QResizeEvent *event);
-#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
-    void changeEvent(QEvent *e);
-#endif
+    void closeEvent(QCloseEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
+    void changeEvent(QEvent *e) override;
+
 private:
     // constants
     enum Instance
