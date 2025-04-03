@@ -293,19 +293,7 @@ void EnsembleInfoDialog::setAudioParameters(const AudioParameters &params)
 {
     if (params.coding == AudioCoding::MP2)
     {
-        // ETSI TS 103 466 V1.2.1 (2019-09) [5.3.2.6]
-        // m_serviceBitrateNet = m_serviceBitrate;
-        int frameLenMs = 48;
-        int ScF_CRC = 4;
-        if (params.sampleRateKHz == 48)
-        {
-            frameLenMs = 24;
-            if (m_serviceBitrate < 56)
-            {
-                ScF_CRC = 2;
-            }
-        }
-        m_serviceBitrateNet = qRound(((m_serviceBitrate * frameLenMs / 8) - 4 - 2 - 2 - ScF_CRC) * 8 * 1.0 / frameLenMs * 10) * 0.1;
+        m_serviceBitrateNet = m_serviceBitrate;
     }
     else
     {
