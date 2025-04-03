@@ -92,7 +92,7 @@ public:
 
     MainWindow(const QString &iniFilename = QString(), const QString &iniSlFilename = QString(), QWidget *parent = nullptr);
     ~MainWindow();
-    bool eventFilter(QObject *o, QEvent *e);
+    bool eventFilter(QObject *o, QEvent *e) override;
 
 signals:
     void serviceRequest(uint32_t freq, uint32_t SId, uint8_t SCIdS);
