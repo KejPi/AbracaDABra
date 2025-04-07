@@ -4406,7 +4406,7 @@ void MainWindow::onColorSchemeChanged(Qt::ColorScheme colorScheme)
 
 void MainWindow::changeEvent(QEvent *e)
 {
-#if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0)) && defined(Q_OS_MACX)
+#if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0)) && defined(Q_OS_MACOS)
     // automatic dark mode support for macOS for Qt < 6.5.0
     if (e->type() == QEvent::PaletteChange)
     {
