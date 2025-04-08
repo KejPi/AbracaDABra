@@ -198,6 +198,8 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
 
     m_ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
 
+    onSettingsChanged();
+
     if (!m_settings->scanner.geometry.isEmpty())
     {
         restoreGeometry(m_settings->scanner.geometry);
