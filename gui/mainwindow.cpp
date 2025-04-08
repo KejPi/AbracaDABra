@@ -4425,58 +4425,40 @@ void MainWindow::changeEvent(QEvent *e)
             if (m_setupDialog && m_setupDialog->isVisible())
             {
                 m_setupDialog->raise();
-                m_setupDialog->activateWindow();
             }
             if (m_epgDialog && m_epgDialog->isVisible())
             {
                 m_epgDialog->raise();
-                m_epgDialog->activateWindow();
             }
             if (m_ensembleInfoDialog && m_ensembleInfoDialog->isVisible())
             {
                 m_ensembleInfoDialog->raise();
-                m_ensembleInfoDialog->activateWindow();
-            }
-            if (m_ensembleInfoDialog && m_ensembleInfoDialog->isVisible())
-            {
-                m_ensembleInfoDialog->raise();
-                m_ensembleInfoDialog->activateWindow();
-            }
-            if (m_ensembleInfoDialog && m_ensembleInfoDialog->isVisible())
-            {
-                m_ensembleInfoDialog->raise();
-                m_ensembleInfoDialog->activateWindow();
             }
             if (m_catSlsDialog && m_catSlsDialog->isVisible())
             {
                 m_catSlsDialog->raise();
-                m_catSlsDialog->activateWindow();
             }
             if (m_logDialog && m_logDialog->isVisible())
             {
                 m_logDialog->raise();
-                m_logDialog->activateWindow();
             }
             if (m_audioRecScheduleDialog && m_audioRecScheduleDialog->isVisible())
             {
                 m_audioRecScheduleDialog->raise();
-                m_audioRecScheduleDialog->activateWindow();
             }
             if (m_tiiDialog && m_tiiDialog->isVisible())
             {
                 m_tiiDialog->raise();
-                m_tiiDialog->activateWindow();
             }
             if (m_scannerDialog && m_scannerDialog->isVisible())
             {
                 m_scannerDialog->raise();
-                m_scannerDialog->activateWindow();
             }
             if (m_signalDialog && m_signalDialog->isVisible())
             {
                 m_signalDialog->raise();
-                m_signalDialog->activateWindow();
             }
+            raise();
         }
     }
 #endif
