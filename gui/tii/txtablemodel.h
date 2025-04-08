@@ -46,6 +46,7 @@ public:
     enum TxTableModelRoles
     {
         ExportRole = Qt::UserRole,
+        ExportRoleUTC,  // this role is the same as export role but time is in UTC
         CoordinatesRole,
         TiiRole,
         MainIdRole,
@@ -72,8 +73,13 @@ public:
         ColLocation,
         ColPower,
         ColDist,
-        ColAzimuth,  // keep order of these
-        NumCols
+        ColAzimuth,           // keep order of these
+        ColTxCoordinatesLat,  // this is used as first column for no coordinates case (do not add items below)
+        ColTxCoordinatesLon,
+        ColRxCoordinatesLat,
+        ColRxCoordinatesLon,
+        NumCols,
+        NumColsWithoutCoordinates = ColTxCoordinatesLat
     };
 
     explicit TxTableModel(QObject *parent = nullptr);
@@ -94,11 +100,12 @@ public:
     void appendEnsData(const QDateTime &time, const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel,
                        const QString &ensConfig, const QString &ensCSV, int numServices, float snr);
     void setCoordinates(const QGeoCoordinate &newCoordinates);
-
+    void setDisplayTimeInUTC(bool newDisplayTimeInUTC);
 signals:
     void rowCountChanged();
 
 private:
+    bool m_displayTimeInUTC = false;
     QList<TxTableModelItem> m_modelData;
     QSet<int> m_selectedRows;
     QMultiHash<ServiceListId, TxDataItem *> m_txList;

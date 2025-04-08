@@ -335,7 +335,7 @@ void ScannerDialog::loadCSV()
         if (file.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             QTextStream in(&file);
-            in.readLine();
+            bool timeIsUTC = in.readLine().contains("(UTC)");
             int lineNum = 2;
             bool res = true;
             while (!in.atEnd())
@@ -344,7 +344,7 @@ void ScannerDialog::loadCSV()
                 // qDebug() << line;
 
                 QStringList qsl = line.split(';');
-                if (qsl.size() == TxTableModel::NumCols)
+                if (qsl.size() == TxTableModel::NumColsWithoutCoordinates)
                 {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
                     QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yy-MM-dd hh:mm:ss").addYears(100);
@@ -356,6 +356,15 @@ void ScannerDialog::loadCSV()
                         qCWarning(scanner) << "Invalid time value" << qsl.at(TxTableModel::ColTime) << "line #" << lineNum;
                         res = false;
                         break;
+                    }
+
+                    if (timeIsUTC)
+                    {
+                        time.setTimeSpec(Qt::TimeSpec::UTC);
+                    }
+                    else
+                    {
+                        time.setTimeSpec(Qt::TimeSpec::LocalTime);
                     }
 
                     bool isOk = false;
@@ -417,7 +426,8 @@ void ScannerDialog::loadCSV()
                         tiiList.append(tiiItem);
                     }
 
-                    m_model->appendEnsData(time, tiiList, ServiceListId(freq, ueid), qsl.at(TxTableModel::ColEnsLabel), "", "", numServices, snr);
+                    m_model->appendEnsData(time.toLocalTime(), tiiList, ServiceListId(freq, ueid), qsl.at(TxTableModel::ColEnsLabel), "", "",
+                                           numServices, snr);
                 }
                 else
                 {
@@ -457,22 +467,24 @@ void ScannerDialog::exportClicked()
         {
             QTextStream out(&file);
 
+            auto exportRole =
+                m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTC : TxTableModel::TxTableModelRoles::ExportRole;
+
             // Header
-            for (int col = 0; col < TxTableModel::NumCols - 1; ++col)
+            for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
             {
-                out << m_model->headerData(col, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString() << ";";
+                out << m_model->headerData(col, Qt::Horizontal, exportRole).toString() << ";";
             }
-            out << m_model->headerData(TxTableModel::NumCols - 1, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString() << Qt::endl;
+            out << m_model->headerData(TxTableModel::NumColsWithoutCoordinates - 1, Qt::Horizontal, exportRole).toString() << Qt::endl;
 
             // Body
             for (int row = 0; row < m_model->rowCount(); ++row)
             {
-                for (int col = 0; col < TxTableModel::NumCols - 1; ++col)
+                for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
                 {
-                    out << m_model->data(m_model->index(row, col), TxTableModel::TxTableModelRoles::ExportRole).toString() << ";";
+                    out << m_model->data(m_model->index(row, col), exportRole).toString() << ";";
                 }
-                out << m_model->data(m_model->index(row, TxTableModel::NumCols - 1), TxTableModel::TxTableModelRoles::ExportRole).toString()
-                    << Qt::endl;
+                out << m_model->data(m_model->index(row, TxTableModel::NumColsWithoutCoordinates - 1), exportRole).toString() << Qt::endl;
             }
             file.close();
         }

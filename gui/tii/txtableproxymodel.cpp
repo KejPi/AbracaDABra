@@ -146,8 +146,8 @@ bool TxTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex
     Q_UNUSED(source_parent);
 
     if (!m_filterCols)
-    {
-        return true;
+    {  // we do not display coordinates, these are only used for export to CSV
+        return source_column < TxTableModel::NumColsWithoutCoordinates;
     }
 
     switch (source_column)

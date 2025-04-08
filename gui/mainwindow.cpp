@@ -3211,6 +3211,8 @@ void MainWindow::loadSettings()
     m_settings->tii.showInactiveTx = settings->value("TII/showInactiveTx", false).toBool();
     m_settings->tii.inactiveTxTimeoutEna = settings->value("TII/inactiveTxTimeoutEna", false).toBool();
     m_settings->tii.inactiveTxTimeout = settings->value("TII/inactiveTxTimeout", 5).toInt();
+    m_settings->tii.timestampInUTC = settings->value("TII/timestampInUTC", false).toBool();
+    m_settings->tii.saveCoordinates = settings->value("TII/saveCoordinates", false).toBool();
 
     m_settings->scanner.exportPath = settings->value("Scanner/exportPath", QDir::homePath()).toString();
     m_settings->scanner.splitterState = settings->value("Scanner/layout").toByteArray();
@@ -3504,6 +3506,8 @@ void MainWindow::saveSettings()
     settings->setValue("TII/showInactiveTx", m_settings->tii.showInactiveTx);
     settings->setValue("TII/inactiveTxTimeoutEna", m_settings->tii.inactiveTxTimeoutEna);
     settings->setValue("TII/inactiveTxTimeout", m_settings->tii.inactiveTxTimeout);
+    settings->setValue("TII/timestampInUTC", m_settings->tii.timestampInUTC);
+    settings->setValue("TII/saveCoordinates", m_settings->tii.saveCoordinates);
 
     settings->setValue("Scanner/exportPath", m_settings->scanner.exportPath);
     settings->setValue("Scanner/windowGeometry", m_settings->scanner.geometry);

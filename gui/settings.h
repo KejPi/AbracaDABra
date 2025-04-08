@@ -200,6 +200,8 @@ public:
         bool showInactiveTx;
         bool inactiveTxTimeoutEna;
         int inactiveTxTimeout;
+        bool timestampInUTC;
+        bool saveCoordinates;
     } tii;
     struct SignalDialog
     {

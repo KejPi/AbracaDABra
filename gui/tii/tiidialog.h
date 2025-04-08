@@ -88,6 +88,9 @@ private:
     QFile *m_logFile = nullptr;
     float m_snr = 0.0;
 
+    bool m_exportCoordinates = false;
+    TxTableModel::TxTableModelRoles m_exportRole = TxTableModel::TxTableModelRoles::ExportRole;
+
     void reset() override;
     void logTiiData() const;
 

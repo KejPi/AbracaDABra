@@ -241,17 +241,20 @@ void TIIDialog::logTiiData() const
     if (m_logFile)
     {
         QTextStream out(m_logFile);
+
+        int lastCol = m_exportCoordinates ? (TxTableModel::NumCols - 1) : (TxTableModel::NumColsWithoutCoordinates - 1);
+
         // Body
         for (int row = 0; row < m_model->rowCount(); ++row)
         {
-            for (int col = 0; col < TxTableModel::NumCols - 1; ++col)
+            for (int col = 0; col < lastCol; ++col)
             {
                 if (col != TxTableModel::ColNumServices)
                 {  // num services is not logged
-                    out << m_model->data(m_model->index(row, col), TxTableModel::TxTableModelRoles::ExportRole).toString() << ";";
+                    out << m_model->data(m_model->index(row, col), m_exportRole).toString() << ";";
                 }
             }
-            out << m_model->data(m_model->index(row, TxTableModel::NumCols - 1), TxTableModel::TxTableModelRoles::ExportRole).toString() << Qt::endl;
+            out << m_model->data(m_model->index(row, lastCol), m_exportRole).toString() << Qt::endl;
         }
         out.flush();
     }
@@ -495,16 +498,21 @@ void TIIDialog::startStopLog()
                 // write header
                 QTextStream out(m_logFile);
 
+                // need to keep local copy to avoid chnaging this settings during logging
+                m_exportCoordinates = m_settings->tii.saveCoordinates;
+                m_exportRole =
+                    m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTC : TxTableModel::TxTableModelRoles::ExportRole;
+
                 // Header
-                for (int col = 0; col < TxTableModel::NumCols - 1; ++col)
+                int lastCol = m_exportCoordinates ? (TxTableModel::NumCols - 1) : (TxTableModel::NumColsWithoutCoordinates - 1);
+                for (int col = 0; col < lastCol; ++col)
                 {
                     if (col != TxTableModel::ColNumServices)
                     {  // num services is not logged
-                        out << m_model->headerData(col, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString() << ";";
+                        out << m_model->headerData(col, Qt::Horizontal, m_exportRole).toString() << ";";
                     }
                 }
-                out << m_model->headerData(TxTableModel::NumCols - 1, Qt::Horizontal, TxTableModel::TxTableModelRoles::ExportRole).toString()
-                    << Qt::endl;
+                out << m_model->headerData(lastCol, Qt::Horizontal, m_exportRole).toString() << Qt::endl;
             }
             else
             {

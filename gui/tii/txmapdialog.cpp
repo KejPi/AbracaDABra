@@ -208,6 +208,7 @@ void TxMapDialog::onSettingsChanged()
     {
         startLocationUpdate();
     }
+    m_model->setDisplayTimeInUTC(m_settings->tii.timestampInUTC);
     m_sortedFilteredModel->setInactiveTxFilter(m_settings->tii.showInactiveTx == false);
 }
 

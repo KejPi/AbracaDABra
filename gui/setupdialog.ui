@@ -2098,11 +2098,11 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="tabTII">
       <attribute name="title">
        <string>TII</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_21">
+      <layout class="QVBoxLayout" name="verticalLayout_19">
        <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
@@ -2212,7 +2212,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="manualLocationPage">
              <layout class="QVBoxLayout" name="verticalLayout_16">
@@ -2318,7 +2318,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
          <property name="title">
           <string>Logging</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_19">
+         <layout class="QVBoxLayout" name="verticalLayout_10">
           <item>
            <layout class="QGridLayout" name="gridLayout_11">
             <item row="1" column="0">
@@ -2370,6 +2370,24 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
                </widget>
               </item>
              </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QCheckBox" name="tiiTimeUtcCheckBox">
+              <property name="text">
+               <string>Timestamp in UTC</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="tiiCoordinatesCheckBox">
+              <property name="text">
+               <string>GPS Coordinates</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>

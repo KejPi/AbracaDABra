@@ -460,6 +460,13 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     // connect(
     //     ui->tiiHideInactiveTimeout, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->tiiHideInactiveTimeout,
     //     [&, lineEdit]() { lineEdit->deselect(); }, Qt::QueuedConnection);
+    connect(ui->tiiTimeUtcCheckBox, &QCheckBox::toggled, this,
+            [this](bool checked)
+            {
+                m_settings->tii.timestampInUTC = checked;
+                emit tiiSettingsChanged();
+            });
+    connect(ui->tiiCoordinatesCheckBox, &QCheckBox::toggled, this, [this](bool checked) { m_settings->tii.saveCoordinates = checked; });
 
     static const QRegularExpression coordRe("[+-]?[0-9]+(\\.[0-9]+)?\\s*,\\s*[+-]?[0-9]+(\\.[0-9]+)?");
     QRegularExpressionValidator *coordValidator = new QRegularExpressionValidator(coordRe, this);
@@ -1015,6 +1022,8 @@ void SetupDialog::setUiState()
     ui->tiiShowInactiveCheckbox->setChecked(m_settings->tii.showInactiveTx);
     ui->tiiInactiveTimeoutCheckbox->setChecked(m_settings->tii.inactiveTxTimeoutEna);
     ui->tiiInactiveTimeout->setValue(m_settings->tii.inactiveTxTimeout);
+    ui->tiiTimeUtcCheckBox->setChecked(m_settings->tii.timestampInUTC);
+    ui->tiiCoordinatesCheckBox->setChecked(m_settings->tii.saveCoordinates);
 
     ui->restoreWindowsCheckBox->setChecked(m_settings->restoreWindows);
     ui->checkForUpdates->setChecked(m_settings->updateCheckEna);

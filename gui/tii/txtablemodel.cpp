@@ -85,7 +85,14 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
             switch (index.column())
             {
                 case ColTime:
-                    return item.rxTime().toString("yy-MM-dd hh:mm:ss");
+                    if (m_displayTimeInUTC)
+                    {
+                        return item.rxTime().toUTC().toString("yy-MM-dd hh:mm:ss");
+                    }
+                    else
+                    {
+                        return item.rxTime().toString("yy-MM-dd hh:mm:ss");
+                    }
                 case ColChannel:
                     return DabTables::channelList.value(item.ensId().freq(), 0);
                 case ColFreq:
@@ -129,15 +136,39 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
                         return QString("%1 kW").arg(static_cast<double>(item.power()), 0, 'f', 1);
                     }
                     return QVariant("");
+                case ColRxCoordinatesLat:
+                    return QString("%1").arg(static_cast<double>(m_coordinates.latitude()), 0, 'f');
+                case ColTxCoordinatesLat:
+                    if (item.hasTxData())
+                    {
+                        return QString("%1").arg(static_cast<double>(item.transmitterData().coordinates().latitude()), 0, 'f');
+                    }
+                    return QVariant("");
+                case ColRxCoordinatesLon:
+                    return QString("%1").arg(static_cast<double>(m_coordinates.longitude()), 0, 'f');
+                case ColTxCoordinatesLon:
+                    if (item.hasTxData())
+                    {
+                        return QString("%1").arg(static_cast<double>(item.transmitterData().coordinates().longitude()), 0, 'f');
+                    }
+                    return QVariant("");
             }
         }
         break;
         case TxTableModelRoles::ExportRole:
+        case TxTableModelRoles::ExportRoleUTC:
         {
             switch (index.column())
             {
                 case ColTime:
-                    return item.rxTime().toString("yy-MM-dd hh:mm:ss");
+                    if (role == TxTableModelRoles::ExportRoleUTC)
+                    {
+                        return item.rxTime().toUTC().toString("yy-MM-dd hh:mm:ss");
+                    }
+                    else
+                    {
+                        return item.rxTime().toString("yy-MM-dd hh:mm:ss");
+                    }
                 case ColChannel:
                     return DabTables::channelList.value(item.ensId().freq(), 0);
                 case ColFreq:
@@ -174,6 +205,22 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
                     if (item.hasTxData() && item.power() > 0)
                     {
                         return QString("%1").arg(static_cast<double>(item.power()), 0, 'f', 1);
+                    }
+                    return QVariant("");
+                case ColRxCoordinatesLat:
+                    return QString("%1").arg(static_cast<double>(m_coordinates.latitude()), 0, 'f');
+                case ColTxCoordinatesLat:
+                    if (item.hasTxData())
+                    {
+                        return QString("%1").arg(static_cast<double>(item.transmitterData().coordinates().latitude()), 0, 'f');
+                    }
+                    return QVariant("");
+                case ColRxCoordinatesLon:
+                    return QString("%1").arg(static_cast<double>(m_coordinates.longitude()), 0, 'f');
+                case ColTxCoordinatesLon:
+                    if (item.hasTxData())
+                    {
+                        return QString("%1").arg(static_cast<double>(item.transmitterData().coordinates().longitude()), 0, 'f');
                     }
                     return QVariant("");
             }
@@ -231,7 +278,14 @@ QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int 
             switch (section)
             {
                 case ColTime:
-                    return tr("Time");
+                    if (m_displayTimeInUTC)
+                    {
+                        return QString(tr("Time (UTC)"));
+                    }
+                    else
+                    {
+                        return QString(tr("Time"));
+                    }
                 case ColChannel:
                     return tr("Channel");
                 case ColFreq:
@@ -264,11 +318,19 @@ QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int 
         }
         break;
         case TxTableModelRoles::ExportRole:
+        case TxTableModelRoles::ExportRoleUTC:
         {
             switch (section)
             {
                 case ColTime:
-                    return QString(tr("Local Time"));
+                    if (role == TxTableModelRoles::ExportRoleUTC)
+                    {
+                        return QString(tr("Time") + " (UTC)");
+                    }
+                    else
+                    {
+                        return QString(tr("Time")) + QString(" (%1)").arg(QDateTime::currentDateTime().timeZoneAbbreviation());
+                    }
                 case ColChannel:
                     return tr("Channel");
                 case ColFreq:
@@ -295,6 +357,14 @@ QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int 
                     return tr("Distance [km]");
                 case ColAzimuth:
                     return tr("Azimuth [deg]");
+                case ColTxCoordinatesLat:
+                    return tr("Latitude (TX)");
+                case ColTxCoordinatesLon:
+                    return tr("Longitude (TX)");
+                case ColRxCoordinatesLat:
+                    return tr("Latitude (RX)");
+                case ColRxCoordinatesLon:
+                    return tr("Longitude (RX)");
                 default:
                     break;
             }
@@ -502,5 +572,15 @@ void TxTableModel::setCoordinates(const QGeoCoordinate &newCoordinates)
             }
             row += 1;
         }
+    }
+}
+
+void TxTableModel::setDisplayTimeInUTC(bool newDisplayTimeInUTC)
+{
+    if (m_displayTimeInUTC != newDisplayTimeInUTC)
+    {
+        m_displayTimeInUTC = newDisplayTimeInUTC;
+        emit headerDataChanged(Qt::Horizontal, ColTime, ColTime);
+        emit dataChanged(index(0, ColTime), index(m_modelData.count() - 1, ColTime));
     }
 }
