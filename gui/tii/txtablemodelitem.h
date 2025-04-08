@@ -78,7 +78,7 @@ private:
     int m_id;                      // subId << 8 | mainId (this is unique)
     int8_t m_mainId = -1;          // main ID
     int8_t m_subId = -1;           // sub ID
-    float m_level;                 // signal level
+    float m_level = 0;             // signal level
     float m_distance = -1.0;       // distance of the transmitter from current position (must be >= 0)
     float m_azimuth = -1.0;        // azimuth of the transmitter from current position
     TxDataItem m_transmitterData;  // information about transmitter
