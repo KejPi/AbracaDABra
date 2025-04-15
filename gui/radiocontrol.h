@@ -415,6 +415,7 @@ signals:
     void ensembleConfigurationAndCSV(const QString &, const QString &);
     void ensembleReconfiguration(const RadioControlEnsemble &ens);
     void ensembleRemoved(const RadioControlEnsemble &ens);
+    void serviceComponentsList(const QList<RadioControlServiceComponent> &scList);
     void announcement(DabAnnouncement id, const RadioControlAnnouncementState state, const RadioControlServiceComponent &s);
     void announcementAudioAvailable();
     void programmeTypeChanged(const DabSId &sid, const DabPTy &pty);
@@ -494,6 +495,7 @@ private:
     QString ensembleConfigurationString() const;
     QString ensembleConfigurationCSV() const;
     QString ensembleConfigurationCSV_FMLIST() const;
+    QList<RadioControlServiceComponent> serviceComponentList() const;
     void ensembleConfigurationUpdate();
     void ensembleConfigurationDispatch();
     bool isCurrentService(uint32_t sid, uint8_t scids) { return ((sid == m_currentService.SId) && (scids == m_currentService.SCIdS)); }

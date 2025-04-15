@@ -34,6 +34,7 @@
 #include "radiocontrol.h"
 
 class Settings;
+class QLabel;
 
 namespace Ui
 {
@@ -67,6 +68,8 @@ public:
     void setServiceInformation(const RadioControlServiceComponent &s);
     void onEnsembleInformation(const RadioControlEnsemble &ens) { m_ensembleName = ens.label; }
     void onEnsembleCSV(const QString &csvString);
+    void onServiceComponentsList(const QList<RadioControlServiceComponent> &scList);
+    void onSubchannelClicked(int subchId);
     void enableEnsembleInfoUpload();
     void setEnsembleInfoUploaded(bool newEnsembleInfoUploaded);
     void setAudioParameters(const AudioParameters &params);
@@ -82,6 +85,24 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
+    struct Subchannel
+    {
+        int id;       // Subchannel number
+        int startCU;  // Starting position (inclusive)
+        int numCU;    // Length in number of CU
+        DabProtection protection;
+        int bitrate;
+        enum
+        {
+            AAC,
+            MP2,
+            Data
+        } content;
+        QStringList services;
+    };
+    QHash<int, Subchannel> m_subchannelMap;
+    QLabel *m_subChServicesLabel[2];
+
     Ui::EnsembleInfoDialog *ui;
     Settings *m_settings = nullptr;
 
@@ -103,6 +124,7 @@ private:
     void clearServiceInfo();
     void clearSignalInfo();
     void clearFreqInfo();
+    void clearSubchInfo();
     void showRecordingStat(bool ena);
 };
 

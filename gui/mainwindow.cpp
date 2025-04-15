@@ -827,6 +827,8 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     connect(m_radioControl, &RadioControl::freqOffset, m_ensembleInfoDialog, &EnsembleInfoDialog::updateFreqOffset, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleConfiguration, m_ensembleInfoDialog, &EnsembleInfoDialog::refreshEnsembleConfiguration,
             Qt::QueuedConnection);
+    connect(m_radioControl, &RadioControl::serviceComponentsList, m_ensembleInfoDialog, &EnsembleInfoDialog::onServiceComponentsList,
+            Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::ensembleCSV, m_ensembleInfoDialog, &EnsembleInfoDialog::onEnsembleCSV, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::tuneDone, m_ensembleInfoDialog, &EnsembleInfoDialog::newFrequency, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::tuneDone, m_inputDeviceRecorder, &InputDeviceRecorder::setCurrentFrequency, Qt::QueuedConnection);

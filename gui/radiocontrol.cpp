@@ -1314,6 +1314,19 @@ QString RadioControl::ensembleConfigurationCSV_FMLIST() const
     return output;
 }
 
+QList<RadioControlServiceComponent> RadioControl::serviceComponentList() const
+{
+    QList<RadioControlServiceComponent> scList;
+    for (auto const &s : m_serviceList)
+    {
+        for (auto const &sc : s.serviceComponents)
+        {
+            scList.append(sc);
+        }
+    }
+    return scList;
+}
+
 void RadioControl::clearEnsemble()
 {
     m_ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
@@ -1591,6 +1604,7 @@ void RadioControl::eventHandler_serviceComponentList(RadioControlEvent *pEvent)
                     m_serviceRequest.SId = 0;
 
                     emit serviceListComplete(m_ensemble);
+                    emit serviceComponentsList(serviceComponentList());
                 }
             }
         }

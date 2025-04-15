@@ -57,6 +57,7 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(ne
     clearFreqInfo();
     clearSignalInfo();
     clearServiceInfo();
+    clearSubchInfo();
     resetFibStat();
     resetMscStat();
 
@@ -128,6 +129,10 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(ne
                 m_settings->ensembleInfo.recordingTimeoutEna = checked;
             });
     connect(ui->timeoutSpinBox, &QSpinBox::valueChanged, this, [this](int value) { m_settings->ensembleInfo.recordingTimeoutSec = value; });
+
+    m_subChServicesLabel[0] = ui->subChService1;
+    m_subChServicesLabel[1] = ui->subChService2;
+    connect(ui->subchStruct, &EnsembleBar::subchannelClicked, this, &EnsembleInfoDialog::onSubchannelClicked);
 }
 
 EnsembleInfoDialog::~EnsembleInfoDialog()
@@ -203,6 +208,173 @@ void EnsembleInfoDialog::onEnsembleCSV(const QString &csvString)
             file.close();
         }
     }
+}
+
+void EnsembleInfoDialog::onServiceComponentsList(const QList<RadioControlServiceComponent> &scList)
+{
+    clearSubchInfo();
+    m_subchannelMap.clear();
+
+    int allocatedCU = 0;
+    int audioCU = 0;
+    QHash<int, EnsembleBar::Subchannel> subchMap;
+    for (const auto &sc : scList)
+    {
+        if (m_subchannelMap.contains(sc.SubChId))
+        {  // subchannel is reused for more services
+            if (!sc.label.isEmpty())
+            {
+                m_subchannelMap[sc.SubChId].services.append(sc.label);
+            }
+        }
+        else
+        {
+            EnsembleBar::Subchannel ensembleBarSubch;
+            ensembleBarSubch.id = sc.SubChId;
+            ensembleBarSubch.startCU = sc.SubChAddr;
+            ensembleBarSubch.numCU = sc.SubChSize;
+            ensembleBarSubch.isAudio = sc.isAudioService();
+            subchMap[sc.SubChId] = ensembleBarSubch;
+
+            EnsembleInfoDialog::Subchannel ensInfoSubchannel;
+            ensInfoSubchannel.id = sc.SubChId;
+            ensInfoSubchannel.startCU = sc.SubChAddr;
+            ensInfoSubchannel.numCU = sc.SubChSize;
+            ensInfoSubchannel.protection = sc.protection;
+
+            if (sc.isDataPacketService())
+            {  // packet data
+                switch (sc.protection.level)
+                {
+                    case DabProtectionLevel::EEP_1A:
+                        ensInfoSubchannel.bitrate = sc.SubChSize / 12 * 8;
+                        break;
+                    case DabProtectionLevel::EEP_2A:
+                        ensInfoSubchannel.bitrate = sc.SubChSize / 8 * 8;
+                        break;
+                    case DabProtectionLevel::EEP_3A:
+                        ensInfoSubchannel.bitrate = sc.SubChSize / 6 * 8;
+                        break;
+                    case DabProtectionLevel::EEP_4A:
+                        ensInfoSubchannel.bitrate = sc.SubChSize / 4 * 8;
+                        break;
+                    case DabProtectionLevel::EEP_1B:
+                        ensInfoSubchannel.bitrate = sc.SubChSize / 27 * 32;
+                        break;
+                    case DabProtectionLevel::EEP_2B:
+                        ensInfoSubchannel.bitrate = sc.SubChSize / 21 * 32;
+                        break;
+                    case DabProtectionLevel::EEP_3B:
+                        ensInfoSubchannel.bitrate = sc.SubChSize / 18 * 32;
+                        break;
+                    case DabProtectionLevel::EEP_4B:
+                        ensInfoSubchannel.bitrate = sc.SubChSize / 25 * 32;
+                        break;
+                    default:
+                        ensInfoSubchannel.bitrate = 0;
+                        break;
+                }
+                ensInfoSubchannel.content = Subchannel::Data;
+            }
+            else
+            {  // stream data
+                ensInfoSubchannel.bitrate = sc.streamAudioData.bitRate;
+                if (sc.isAudioService())
+                {
+                    audioCU += sc.SubChSize;
+                    if (sc.streamAudioData.scType == DabAudioDataSCty::DABPLUS_AUDIO)
+                    {
+                        ensInfoSubchannel.content = Subchannel::AAC;
+                    }
+                    else
+                    {
+                        ensInfoSubchannel.content = Subchannel::MP2;
+                    }
+                }
+                else
+                {
+                    ensInfoSubchannel.content = Subchannel::Data;
+                }
+            }
+            ensInfoSubchannel.services = {sc.label};
+
+            m_subchannelMap[sc.SubChId] = ensInfoSubchannel;
+
+            allocatedCU += sc.SubChSize;
+        }
+    }
+    ui->subchStruct->setSubchannels(subchMap.values());
+    ui->ensAllocatedCU->setText(QString(tr("%1 CU (%2%)")).arg(allocatedCU).arg(allocatedCU * 100.0 / 864, 1, 'f', 1));
+    ui->ensFreeCU->setText(QString(tr("%1 CU (%2%)")).arg(864 - allocatedCU).arg((864 - allocatedCU) * 100.0 / 864, 1, 'f', 1));
+    ui->ensAudioCU->setText(QString(tr("%1 CU (%2%)")).arg(audioCU).arg(audioCU * 100.0 / 864, 1, 'f', 1));
+    ui->ensDataCU->setText(QString(tr("%1 CU (%2%)")).arg(allocatedCU - audioCU).arg((allocatedCU - audioCU) * 100.0 / 864, 1, 'f', 1));
+
+    ui->subChID->setText(tr("No subchannel selected"));
+}
+
+void EnsembleInfoDialog::onSubchannelClicked(int subchId)
+{
+    if (m_subchannelMap.contains(subchId))
+    {
+        const auto subCh = m_subchannelMap.value(subchId);
+        ui->subChID->setText(QString::number(subCh.id));
+        ui->subChCU->setText(tr("%1 CU [%2..%3]").arg(subCh.numCU).arg(subCh.startCU).arg(subCh.startCU + subCh.numCU - 1));
+        QString protection;
+        if (subCh.protection.isEEP())
+        {  // EEP
+            QString label;
+            if (subCh.protection.level < DabProtectionLevel::EEP_1B)
+            {  // EEP x-A
+                label = QString("EEP %1-%2").arg(int(subCh.protection.level) - int(DabProtectionLevel::EEP_1A) + 1).arg("A");
+            }
+            else
+            {  // EEP x+B
+                label = QString("EEP %1-%2").arg(int(subCh.protection.level) - int(DabProtectionLevel::EEP_1B) + 1).arg("B");
+            }
+            protection = QString(tr("%1 (coderate: %2/%3)")).arg(label).arg(subCh.protection.codeRateUpper).arg(subCh.protection.codeRateLower);
+        }
+        else
+        {  // UEP
+            QString label;
+            label = QString("UEP #%1").arg(subCh.protection.uepIndex);
+            protection = QString(tr("%1 (level: %2)")).arg(label).arg(int(subCh.protection.level));
+        }
+        ui->subChErrorProtection->setText(protection);
+
+        ui->subChBitrate->setText(QString(tr("%1 kbps")).arg(subCh.bitrate));
+        switch (subCh.content)
+        {
+            case Subchannel::AAC:
+                ui->subChContents->setText(tr("Audio AAC"));
+                break;
+            case Subchannel::MP2:
+                ui->subChContents->setText(tr("Audio MP2"));
+                break;
+            case Subchannel::Data:
+                ui->subChContents->setText(tr("Data"));
+                break;
+        }
+
+        ui->subChService0->setText("");
+        ui->subChService1->setText("");
+        ui->subChService2->setText("");
+
+        ui->subChService0->setText(subCh.services.first());
+        for (int n = 1; n < subCh.services.count(); ++n)
+        {
+            auto label = m_subChServicesLabel[(n - 1) % 2];
+            if (label->text().isEmpty())
+            {
+                label->setText(subCh.services.at(n));
+            }
+            else
+            {
+                label->setText(label->text() + ", " + subCh.services.at(n));
+            }
+        }
+    }
+    ui->subChFrame0->setEnabled(true);
+    ui->subChFrame1->setEnabled(true);
 }
 
 void EnsembleInfoDialog::updateSnr(uint8_t, float snr)
@@ -349,8 +521,6 @@ void EnsembleInfoDialog::updatedDecodingStats(const RadioControlDecodingStats &s
         float audioBitrate = qRound(m_serviceBitrateNet * audioRatio * 0.1) * 0.1;
         ui->audioBitrate->setText(QString(tr("%1 kbps")).arg(audioBitrate, 1, 'f', 1));
         ui->audioRatio->setText(QString("%1 %").arg(audioRatio, 1, 'f', 1));
-
-        // qDebug() << stats.audioServiceBytes << stats.padBytes << (stats.audioServiceBytes - stats.padBytes) * 100.0 / stats.audioServiceBytes;
     }
 }
 
@@ -380,6 +550,7 @@ void EnsembleInfoDialog::newFrequency(quint32 f)
 
         clearFreqInfo();
         clearServiceInfo();
+        clearSubchInfo();
         resetMscStat();
         resetFibStat();
         m_ensembleName.clear();
@@ -501,6 +672,25 @@ void EnsembleInfoDialog::clearFreqInfo()
 {
     ui->freq->setText("");
     ui->channel->setText("");
+}
+
+void EnsembleInfoDialog::clearSubchInfo()
+{
+    ui->subchStruct->clearSubchannels();
+    ui->ensAllocatedCU->setText("");
+    ui->ensFreeCU->setText("");
+    ui->ensAudioCU->setText("");
+    ui->ensDataCU->setText("");
+    ui->subChID->setText("");
+    ui->subChCU->setText("");
+    ui->subChErrorProtection->setText("");
+    ui->subChBitrate->setText("");
+    ui->subChContents->setText("");
+    ui->subChService0->setText("");
+    ui->subChService1->setText("");
+    ui->subChService2->setText("");
+    ui->subChFrame0->setEnabled(false);
+    ui->subChFrame1->setEnabled(false);
 }
 
 void EnsembleInfoDialog::showRecordingStat(bool ena)
