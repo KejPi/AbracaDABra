@@ -312,10 +312,25 @@ void EnsembleInfoDialog::onServiceComponentsList(const QList<RadioControlService
     ui->subChID->setText(tr("No subchannel selected"));
 }
 
-void EnsembleInfoDialog::onSubchannelClicked(int subchId)
+void EnsembleInfoDialog::onSubchannelClicked(int subchId, bool isSelected)
 {
     if (m_subchannelMap.contains(subchId))
     {
+        if (isSelected == false)
+        {  // unselection
+            ui->subChID->setText(tr("No subchannel selected"));
+            ui->subChCU->setText("");
+            ui->subChErrorProtection->setText("");
+            ui->subChBitrate->setText("");
+            ui->subChContents->setText("");
+            ui->subChService0->setText("");
+            ui->subChService1->setText("");
+            ui->subChService2->setText("");
+            ui->subChFrame0->setEnabled(false);
+            ui->subChFrame1->setEnabled(false);
+            return;
+        }
+
         const auto subCh = m_subchannelMap.value(subchId);
         ui->subChID->setText(QString::number(subCh.id));
         ui->subChCU->setText(tr("%1 CU [%2..%3]").arg(subCh.numCU).arg(subCh.startCU).arg(subCh.startCU + subCh.numCU - 1));

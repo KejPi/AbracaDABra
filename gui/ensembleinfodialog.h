@@ -69,7 +69,7 @@ public:
     void onEnsembleInformation(const RadioControlEnsemble &ens) { m_ensembleName = ens.label; }
     void onEnsembleCSV(const QString &csvString);
     void onServiceComponentsList(const QList<RadioControlServiceComponent> &scList);
-    void onSubchannelClicked(int subchId);
+    void onSubchannelClicked(int subchId, bool isSelected);
     void enableEnsembleInfoUpload();
     void setEnsembleInfoUploaded(bool newEnsembleInfoUploaded);
     void setAudioParameters(const AudioParameters &params);

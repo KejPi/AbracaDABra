@@ -65,7 +65,7 @@ public:
     void clearSubchannels();
 
 signals:
-    void subchannelClicked(int subchId);
+    void subchannelClicked(int subchId, bool isSelected);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -85,7 +85,7 @@ private:
 
     int findSubChAtPosition(const QPoint &pos) const;
     void assignAutoColors();
-    void setSelected(int id);
+    void toggleSelected(int id);
     void fillGaps();  // Add gap segments where needed
 };
 

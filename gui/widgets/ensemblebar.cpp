@@ -94,13 +94,20 @@ void EnsembleBar::assignAutoColors()
     }
 }
 
-void EnsembleBar::setSelected(int id)
+void EnsembleBar::toggleSelected(int id)
 {
     for (auto it = m_subchannels.begin(); it != m_subchannels.end(); ++it)
     {
         if (!it->isEmpty)
         {
-            it->isSelected = (id == it->id);
+            if (id == it->id)
+            {
+                it->isSelected = !it->isSelected;
+            }
+            else
+            {
+                it->isSelected = false;
+            }
         }
     }
 }
@@ -335,9 +342,9 @@ void EnsembleBar::mousePressEvent(QMouseEvent *event)
     {
         if (!m_subchannels[subchIndex].isEmpty)
         {
-            emit subchannelClicked(m_subchannels[subchIndex].id);
+            toggleSelected(m_subchannels[subchIndex].id);
 
-            setSelected(m_subchannels[subchIndex].id);
+            emit subchannelClicked(m_subchannels[subchIndex].id, m_subchannels[subchIndex].isSelected);
 
             // force repaint
             update();
