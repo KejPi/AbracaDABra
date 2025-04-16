@@ -1213,6 +1213,11 @@ void MainWindow::onServiceListComplete(const RadioControlEnsemble &ens)
 
     serviceListViewUpdateSelection();
     serviceTreeViewUpdateSelection();
+
+    if (m_frequency != 0 && m_SId.isValid())
+    {
+        emit serviceRequest(m_frequency, m_SId.value(), m_SCIdS);
+    }
 }
 
 void MainWindow::onEnsembleRemoved(const RadioControlEnsemble &ens)
@@ -2562,6 +2567,7 @@ void MainWindow::clearServiceInformationLabels()
     ui->serviceSPIProgressLabel->setToolTip("");
     m_serviceSpiProgress = -1;
     ui->slsWidget->setCurrentIndex(Instance::Service);
+    ui->slsView_Service->reset();
     ui->dlPlusWidget->setCurrentIndex(Instance::Service);
     ui->dlWidget->setCurrentIndex(Instance::Service);
     onDLReset_Service();
