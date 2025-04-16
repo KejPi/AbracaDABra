@@ -46,7 +46,7 @@ const QList<QColor> EnsembleBar::m_palette = {
 EnsembleBar::EnsembleBar(QWidget *parent) : QWidget(parent)
 {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    setMinimumHeight(20);
+    setMinimumHeight(26);
     setMouseTracking(true);            // Enable mouse tracking for hover effects
     setAttribute(Qt::WA_Hover, true);  // Enable hover events
 }
@@ -81,6 +81,21 @@ void EnsembleBar::clearSubchannels()
     update();
 }
 
+void EnsembleBar::selectSubchannel(int id)
+{
+    for (const auto &subch : m_subchannels)
+    {
+        if (!subch.isEmpty && subch.id == id)
+        {
+            if (!subch.isSelected)
+            {
+                toggleSelected(id);
+            }
+            return;
+        }
+    }
+}
+
 void EnsembleBar::assignAutoColors()
 {
     int colorIdx = 0;
@@ -103,6 +118,7 @@ void EnsembleBar::toggleSelected(int id)
             if (id == it->id)
             {
                 it->isSelected = !it->isSelected;
+                emit subchannelSelected(id, it->isSelected);
             }
             else
             {
@@ -110,6 +126,9 @@ void EnsembleBar::toggleSelected(int id)
             }
         }
     }
+
+    // force repaint
+    update();
 }
 
 void EnsembleBar::fillGaps()
@@ -178,6 +197,7 @@ void EnsembleBar::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
 
+    const int margin = 4;
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
@@ -225,11 +245,11 @@ void EnsembleBar::paintEvent(QPaintEvent *event)
             }
         }
         painter.setBrush(it->color);
-        painter.drawRect(QRect(startX, 0, segmentWidth, barHeight));  // No border
+        painter.drawRect(QRect(startX, 0 + margin, segmentWidth, barHeight - 2 * margin));  // No border
         if (!it->isEmpty && !it->isAudio)
         {
             painter.setBrush(QBrush(Qt::black, Qt::DiagCrossPattern));
-            painter.drawRect(QRect(startX, 0, segmentWidth, barHeight));  // No border
+            painter.drawRect(QRect(startX, 0 + margin, segmentWidth, barHeight - 2 * margin));  // No border
         }
     }
 
@@ -241,14 +261,17 @@ void EnsembleBar::paintEvent(QPaintEvent *event)
         int endX = qRound(static_cast<double>(selected->startCU + selected->numCU) / TotalNumCU * barWidth);
         int segmentWidth = endX - startX;
 
-        painter.setPen(QPen(Qt::white, 4));
+        const int selectionLineWidthHalf = margin / 2;
+        painter.setPen(QPen(Qt::white, 2 * selectionLineWidthHalf));
 
         painter.setBrush(selected->color);
-        painter.drawRect(QRect(startX, 0, segmentWidth, barHeight));  // No border
+        painter.drawRect(QRect(startX + selectionLineWidthHalf, selectionLineWidthHalf, segmentWidth - 2 * selectionLineWidthHalf,
+                               barHeight - 2 * selectionLineWidthHalf));  // No border
         if (!selected->isAudio)
         {
             painter.setBrush(QBrush(Qt::black, Qt::DiagCrossPattern));
-            painter.drawRect(QRect(startX, 0, segmentWidth, barHeight));  // No border
+            painter.drawRect(QRect(startX + selectionLineWidthHalf, selectionLineWidthHalf, segmentWidth - 2 * selectionLineWidthHalf,
+                                   barHeight - 2 * selectionLineWidthHalf));  // No border
         }
     }
 }
@@ -343,11 +366,6 @@ void EnsembleBar::mousePressEvent(QMouseEvent *event)
         if (!m_subchannels[subchIndex].isEmpty)
         {
             toggleSelected(m_subchannels[subchIndex].id);
-
-            emit subchannelClicked(m_subchannels[subchIndex].id, m_subchannels[subchIndex].isSelected);
-
-            // force repaint
-            update();
         }
     }
 }

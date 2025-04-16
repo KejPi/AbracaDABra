@@ -64,8 +64,11 @@ public:
     // Clear all segments
     void clearSubchannels();
 
+    // selects subchannel ID, emits subchannelSelected signal
+    void selectSubchannel(int id);
+
 signals:
-    void subchannelClicked(int subchId, bool isSelected);
+    void subchannelSelected(int subchId, bool isSelected);
 
 protected:
     void paintEvent(QPaintEvent *event) override;

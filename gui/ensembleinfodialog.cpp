@@ -132,7 +132,7 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(ne
 
     m_subChServicesLabel[0] = ui->subChService1;
     m_subChServicesLabel[1] = ui->subChService2;
-    connect(ui->subchStruct, &EnsembleBar::subchannelClicked, this, &EnsembleInfoDialog::onSubchannelClicked);
+    connect(ui->subchStruct, &EnsembleBar::subchannelSelected, this, &EnsembleInfoDialog::onSubchannelSelected);
 }
 
 EnsembleInfoDialog::~EnsembleInfoDialog()
@@ -312,7 +312,7 @@ void EnsembleInfoDialog::onServiceComponentsList(const QList<RadioControlService
     ui->subChID->setText(tr("No subchannel selected"));
 }
 
-void EnsembleInfoDialog::onSubchannelClicked(int subchId, bool isSelected)
+void EnsembleInfoDialog::onSubchannelSelected(int subchId, bool isSelected)
 {
     if (m_subchannelMap.contains(subchId))
     {
@@ -600,6 +600,8 @@ void EnsembleInfoDialog::setServiceInformation(const RadioControlServiceComponen
     ui->numCU->setText(QString::number(s.SubChSize));
     m_serviceBitrate = s.streamAudioData.bitRate;
     ui->serviceBitrate->setText(QString(tr("%1 kbps").arg(m_serviceBitrate)));
+
+    ui->subchStruct->selectSubchannel(s.SubChId);
 }
 
 void EnsembleInfoDialog::showEvent(QShowEvent *event)
