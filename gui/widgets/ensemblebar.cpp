@@ -210,7 +210,29 @@ void EnsembleBar::paintEvent(QPaintEvent *event)
 
     // Draw baseline
     painter.setPen(QPen(Qt::darkGray, lineThickness));
+#define COMPENSATE_BORDER 0
+#if COMPENSATE_BORDER
+    if (m_subchannels.empty())
+    {
+        painter.drawLine(0, lineY, barWidth, lineY);
+    }
+    else
+    {  // this is to make ends of the line invisible (in theory it should be -1 but experiments show it must be -3)
+        int start = 0;
+        int end = barWidth;
+        if (m_subchannels.first().isEmpty == false && m_subchannels.first().startCU == 0)
+        {
+            start += 3;
+        }
+        if (m_subchannels.last().isEmpty == false && (m_subchannels.last().startCU + m_subchannels.last().numCU) == TotalNumCU)
+        {
+            end -= 3;
+        }
+        painter.drawLine(start, lineY, end, lineY);
+    }
+#else
     painter.drawLine(0, lineY, barWidth, lineY);
+#endif
 
     if (m_subchannels.isEmpty())
     {
@@ -226,12 +248,17 @@ void EnsembleBar::paintEvent(QPaintEvent *event)
     for (auto it = m_subchannels.cbegin(); it != m_subchannels.cend(); ++it)
     {
         // Calculate segment position
+#if COMPENSATE_BORDER
+        int startX = qMax(qRound(static_cast<double>(it->startCU) / TotalNumCU * barWidth), 1);
+        int endX = qMin(qRound(static_cast<double>(it->startCU + it->numCU) / TotalNumCU * barWidth), barWidth - 1);
+#else
         int startX = qRound(static_cast<double>(it->startCU) / TotalNumCU * barWidth);
         int endX = qRound(static_cast<double>(it->startCU + it->numCU) / TotalNumCU * barWidth);
+#endif
+
         int segmentWidth = endX - startX;
 
         // Draw the segment
-        // painter.fillRect(QRect(startX, 0, segmentWidth, barHeight), segment.color);
         if (it->isEmpty)
         {
             painter.setPen(Qt::NoPen);
@@ -256,21 +283,23 @@ void EnsembleBar::paintEvent(QPaintEvent *event)
     // draw selected on top
     if (selected != m_subchannels.cend())
     {
+        const int selectionLineWidthHalf = margin / 2;
+
         // Calculate segment position
-        int startX = qRound(static_cast<double>(selected->startCU) / TotalNumCU * barWidth);
-        int endX = qRound(static_cast<double>(selected->startCU + selected->numCU) / TotalNumCU * barWidth);
+        int startX = qMax(qRound(static_cast<double>(selected->startCU) / TotalNumCU * barWidth), selectionLineWidthHalf);
+        int endX = qMin(qRound(static_cast<double>(selected->startCU + selected->numCU) / TotalNumCU * barWidth), barWidth - selectionLineWidthHalf);
+
         int segmentWidth = endX - startX;
 
-        const int selectionLineWidthHalf = margin / 2;
         painter.setPen(QPen(Qt::white, 2 * selectionLineWidthHalf, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin));
 
         painter.setBrush(selected->color);
-        painter.drawRect(QRect(startX + selectionLineWidthHalf, selectionLineWidthHalf, segmentWidth - 2 * selectionLineWidthHalf,
+        painter.drawRect(QRect(startX, selectionLineWidthHalf, segmentWidth,
                                barHeight - 2 * selectionLineWidthHalf));  // No border
         if (!selected->isAudio)
         {
             painter.setBrush(QBrush(Qt::black, Qt::DiagCrossPattern));
-            painter.drawRect(QRect(startX + selectionLineWidthHalf, selectionLineWidthHalf, segmentWidth - 2 * selectionLineWidthHalf,
+            painter.drawRect(QRect(startX, selectionLineWidthHalf, segmentWidth,
                                    barHeight - 2 * selectionLineWidthHalf));  // No border
         }
     }
