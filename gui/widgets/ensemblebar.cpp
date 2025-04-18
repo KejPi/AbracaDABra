@@ -238,7 +238,7 @@ void EnsembleBar::paintEvent(QPaintEvent *event)
         }
         else
         {
-            painter.setPen(QPen(Qt::black, 1));
+            painter.setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin));
             if (it->isSelected)
             {
                 selected = it;
@@ -262,7 +262,7 @@ void EnsembleBar::paintEvent(QPaintEvent *event)
         int segmentWidth = endX - startX;
 
         const int selectionLineWidthHalf = margin / 2;
-        painter.setPen(QPen(Qt::white, 2 * selectionLineWidthHalf));
+        painter.setPen(QPen(Qt::white, 2 * selectionLineWidthHalf, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin));
 
         painter.setBrush(selected->color);
         painter.drawRect(QRect(startX + selectionLineWidthHalf, selectionLineWidthHalf, segmentWidth - 2 * selectionLineWidthHalf,
