@@ -210,7 +210,7 @@ void EnsembleBar::paintEvent(QPaintEvent *event)
 
     // Draw baseline
     painter.setPen(QPen(Qt::darkGray, lineThickness));
-#define COMPENSATE_BORDER 0
+#define COMPENSATE_BORDER 1
 #if COMPENSATE_BORDER
     if (m_subchannels.empty())
     {
