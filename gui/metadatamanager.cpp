@@ -577,15 +577,29 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
             QRegularExpressionMatch match = re.match(requestId);
             if (match.hasMatch())
             {
-                uint32_t sid = match.captured(1).toUInt(nullptr, 16);
-                uint8_t scids = match.captured(2).toUInt();
-                QString size = match.captured(3);
-                MetadataRole role = MetadataRole::SLSLogo;
-                if (size == "32x32")
-                {
-                    role = MetadataRole::SmallLogo;
+                if (match.captured(2).isEmpty())
+                {  // ensemble
+                    uint32_t ueid = match.captured(1).toUInt(nullptr, 16);
+                    QString size = match.captured(4);
+                    MetadataRole role = MetadataRole::SLSLogo;
+                    if (size == "32x32")
+                    {
+                        role = MetadataRole::SmallLogo;
+                    }
+                    emit dataUpdated(ServiceListId(174928, ueid), role);  // using some frequency (5A)
                 }
-                emit dataUpdated(ServiceListId(sid, scids), role);
+                else
+                {
+                    uint32_t sid = match.captured(1).toUInt(nullptr, 16);
+                    uint8_t scids = match.captured(3).toUInt();
+                    QString size = match.captured(4);
+                    MetadataRole role = MetadataRole::SLSLogo;
+                    if (size == "32x32")
+                    {
+                        role = MetadataRole::SmallLogo;
+                    }
+                    emit dataUpdated(ServiceListId(sid, scids), role);
+                }
             }
         }
         else
