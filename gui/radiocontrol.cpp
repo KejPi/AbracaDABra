@@ -124,6 +124,7 @@ void RadioControl::onDabEvent(RadioControlEvent *pEvent)
                     clearEnsemble();
                     break;
                 case DABSDR_RESET_NEW_EID:
+                    qCInfo(radioControl) << "New ensemble ID (EID)";
                     emit ensembleRemoved(m_ensemble);
                     start(m_frequency);
 
