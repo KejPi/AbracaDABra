@@ -296,7 +296,10 @@ void EnsembleInfoDialog::onServiceComponentsList(const QList<RadioControlService
                     ensInfoSubchannel.content = Subchannel::Data;
                 }
             }
-            ensInfoSubchannel.services = {sc.label};
+            if (!sc.label.isEmpty())
+            {
+                ensInfoSubchannel.services = {sc.label};
+            }
 
             m_subchannelMap[sc.SubChId] = ensInfoSubchannel;
 
