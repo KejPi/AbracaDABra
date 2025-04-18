@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>917</width>
+    <width>933</width>
     <height>553</height>
    </rect>
   </property>
@@ -200,6 +200,16 @@
      <layout class="QVBoxLayout" name="verticalLayout_8">
       <item>
        <layout class="QHBoxLayout" name="ensembleNameLayout">
+        <item>
+         <widget class="QLabel" name="ensembleLogoLabel">
+          <property name="text">
+           <string notr="true">LOGO</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QLabel" name="ensembleLabel">
           <property name="sizePolicy">
@@ -908,7 +918,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>917</width>
+     <width>933</width>
      <height>24</height>
     </rect>
    </property>

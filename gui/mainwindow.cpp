@@ -713,6 +713,7 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     ui->switchSourceLabel->setHidden(true);
 
     ui->logoLabel->setHidden(true);
+    ui->ensembleLogoLabel->setHidden(true);
 
     ui->serviceTreeView->setVisible(false);
 
@@ -1191,6 +1192,19 @@ void MainWindow::onEnsembleInfo(const RadioControlEnsemble &ens)
                                       .arg(QString("%1").arg(ens.ecc(), 2, 16, QChar('0')).toUpper())
                                       .arg(QString("%1").arg(ens.eid(), 4, 16, QChar('0')).toUpper())
                                       .arg(DabTables::getCountryName(ens.ueid)));
+    m_ueid = ens.ueid;
+
+    QPixmap logo = m_metadataManager->data(ServiceListId(ens.frequency, ens.ueid), MetadataManager::SmallLogo).value<QPixmap>();
+    if (!logo.isNull())
+    {
+        ui->ensembleLogoLabel->setPixmap(logo);
+        ui->ensembleLogoLabel->setVisible(true);
+    }
+    else
+    {
+        ui->ensembleLogoLabel->setVisible(false);
+    }
+
     if (!m_isScannerRunning)
     {
         m_serviceList->beginEnsembleUpdate(ens);
@@ -2338,25 +2352,40 @@ void MainWindow::setAudioRecordingUI()
 
 void MainWindow::onMetadataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role)
 {
-    if ((id.sid() == m_SId.value()) && (id.scids() == m_SCIdS))
-    {  // current service data
-        switch (role)
-        {
-            case MetadataManager::MetadataRole::SLSLogo:
-                ui->slsView_Service->showServiceLogo(m_metadataManager->data(id, MetadataManager::SLSLogo).value<QPixmap>());
-                break;
-            case MetadataManager::SmallLogo:
+    if (id.isService())
+    {
+        if ((id.sid() == m_SId.value()) && (id.scids() == m_SCIdS))
+        {  // current service data
+            switch (role)
             {
-                QPixmap logo = m_metadataManager->data(id, MetadataManager::SmallLogo).value<QPixmap>();
-                if (!logo.isNull())
+                case MetadataManager::MetadataRole::SLSLogo:
+                    ui->slsView_Service->showServiceLogo(m_metadataManager->data(id, MetadataManager::SLSLogo).value<QPixmap>());
+                    break;
+                case MetadataManager::SmallLogo:
                 {
-                    ui->logoLabel->setPixmap(logo);
-                    ui->logoLabel->setVisible(true);
+                    QPixmap logo = m_metadataManager->data(id, MetadataManager::SmallLogo).value<QPixmap>();
+                    if (!logo.isNull())
+                    {
+                        ui->logoLabel->setPixmap(logo);
+                        ui->logoLabel->setVisible(true);
+                    }
                 }
-            }
-            break;
-            default:
                 break;
+                default:
+                    break;
+            }
+        }
+    }
+    else
+    {  // ensemble
+        if (id.ueid() == m_ueid && role == MetadataManager::SmallLogo)
+        {
+            QPixmap logo = m_metadataManager->data(id, MetadataManager::SmallLogo).value<QPixmap>();
+            if (!logo.isNull())
+            {
+                ui->ensembleLogoLabel->setPixmap(logo);
+                ui->ensembleLogoLabel->setVisible(true);
+            }
         }
     }
 }
@@ -2538,6 +2567,7 @@ void MainWindow::clearEnsembleInformationLabels()
     m_timeLabel->setText("");
     ui->ensembleLabel->setText(tr("No ensemble"));
     ui->ensembleLabel->setToolTip(tr("No ensemble tuned"));
+    ui->ensembleLogoLabel->setHidden(true);
     ui->frequencyLabel->setText("");
     ui->ensembleInfoLabel->setText("");
     ui->ensSPIProgressLabel->setVisible(false);

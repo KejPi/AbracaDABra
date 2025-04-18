@@ -40,7 +40,7 @@
 #include "epgtime.h"
 #include "spiapp.h"
 
-Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtDebugMsg)
+Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtInfoMsg)
 
 MetadataManager::MetadataManager(const ServiceList *serviceList, QObject *parent)
     : QObject(parent), m_serviceList(serviceList), m_isLoadingFromCache(false), m_cleanEpgCache(true)
@@ -551,7 +551,7 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
     QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + requestId;
     qCDebug(metadataManager) << requestId << filename;
 
-    static const QRegularExpression re("([0-9a-f]{6})\\.(\\d+)/(\\d+x\\d+)\\..*", QRegularExpression::CaseInsensitiveOption);
+    static const QRegularExpression re("([0-9a-f]{6})(\\.(\\d+))?/(\\d+x\\d+)\\..*", QRegularExpression::CaseInsensitiveOption);
 
     QDir dir;
     dir.mkpath(QFileInfo(filename).absolutePath());
@@ -602,15 +602,29 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
         QRegularExpressionMatch match = re.match(requestId);
         if (match.hasMatch())
         {
-            uint32_t sid = match.captured(1).toUInt(nullptr, 16);
-            uint8_t scids = match.captured(2).toUInt();
-            QString size = match.captured(3);
-            MetadataRole role = MetadataRole::SLSLogo;
-            if (size == "32x32")
-            {
-                role = MetadataRole::SmallLogo;
+            if (match.captured(2).isEmpty())
+            {  // ensemble
+                uint32_t ueid = match.captured(1).toUInt(nullptr, 16);
+                QString size = match.captured(4);
+                MetadataRole role = MetadataRole::SLSLogo;
+                if (size == "32x32")
+                {
+                    role = MetadataRole::SmallLogo;
+                }
+                emit dataUpdated(ServiceListId(174928, ueid), role);  // using some frequency (5A)
             }
-            emit dataUpdated(ServiceListId(sid, scids), role);
+            else
+            {
+                uint32_t sid = match.captured(1).toUInt(nullptr, 16);
+                uint8_t scids = match.captured(3).toUInt();
+                QString size = match.captured(4);
+                MetadataRole role = MetadataRole::SLSLogo;
+                if (size == "32x32")
+                {
+                    role = MetadataRole::SmallLogo;
+                }
+                emit dataUpdated(ServiceListId(sid, scids), role);
+            }
         }
     }
 }

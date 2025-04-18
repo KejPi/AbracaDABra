@@ -224,6 +224,7 @@ private:
     bool m_exitRequested = false;
     int m_exitCode = 0;
     uint32_t m_frequency = 0;
+    uint32_t m_ueid = 0;
     DabSId m_SId;
     uint8_t m_SCIdS = 0;
     bool m_hasListViewFocus;
