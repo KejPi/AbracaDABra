@@ -4492,10 +4492,12 @@ void MainWindow::changeEvent(QEvent *e)
             {
                 m_scannerDialog->raise();
             }
+#if HAVE_QCUSTOMPLOT
             if (m_signalDialog && m_signalDialog->isVisible())
             {
                 m_signalDialog->raise();
             }
+#endif
             raise();
         }
     }
