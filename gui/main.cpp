@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
         // this is required for correct deployment of SDRplay
         if (qgetenv("SOAPY_SDR_PLUGIN_PATH").isEmpty())
         {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
 #ifdef Q_OS_MACOS
             qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArrayView(QString(QCoreApplication::applicationDirPath() + "/../Plugins/SoapySDR").toUtf8()));
 #endif
@@ -53,6 +54,18 @@ int main(int argc, char *argv[])
 #endif
 #ifdef Q_OS_LINUX
             qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArrayView(QString(QCoreApplication::applicationDirPath() + "/../lib/SoapySDR/").toUtf8()));
+#endif
+#else
+            // Note: In Qt versions prior to 6.5, the value argument was QByteArray, not QByteArrayView.
+#ifdef Q_OS_MACOS
+            qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArray(QString(QCoreApplication::applicationDirPath() + "/../Plugins/SoapySDR").toUtf8()));
+#endif
+#ifdef Q_OS_WIN
+            qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArray(QString(QCoreApplication::applicationDirPath()).toUtf8()));
+#endif
+#ifdef Q_OS_LINUX
+            qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArray(QString(QCoreApplication::applicationDirPath() + "/../lib/SoapySDR/").toUtf8()));
+#endif
 #endif
         }
         QCommandLineParser parser;
