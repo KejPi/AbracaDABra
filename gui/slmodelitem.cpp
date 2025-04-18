@@ -102,8 +102,8 @@ QVariant SLModelItem::data(int column, int role) const
                                               "<tr>"
                                               "<td valign='middle'>%4</td>"
                                               "<td valign='middle'>"
-                                              "<p style='margin: 0;'><b>%1</b> %2</p>"
-                                              "<p style='margin: 0;'><b>SId:</b> %3</p>"
+                                              "<p style='margin: 0; white-space:pre'><b>%1</b> %2</p>"
+                                              "<p style='margin: 0; white-space:pre'><b>SId:</b> %3</p>"
                                               "</td>"
                                               "</tr>"
                                               "</table>")
@@ -112,14 +112,33 @@ QVariant SLModelItem::data(int column, int role) const
                         return QVariant(tooltip);
                     }
                 }
-                if (m_id.isEnsemble())
+                else
                 {  // ensemble item
                     EnsembleListConstIterator it = m_slPtr->findEnsemble(m_id);
                     if (m_slPtr->ensembleListEnd() != it)
                     {  // found
-                        return QVariant(QString(QObject::tr("Channel %1<br>Frequency: %2 MHz"))
-                                            .arg(DabTables::channelList.value(it.value()->frequency()))
-                                            .arg(it.value()->frequency() / 1000.0, 3, 'f', 3, QChar('0')));
+                        QString logo;
+                        if (!m_metadataMgrPtr->data(m_id, MetadataManager::SmallLogo).value<QPixmap>().isNull())
+                        {
+                            QBuffer buffer;
+                            buffer.open(QIODevice::WriteOnly);
+                            m_metadataMgrPtr->data(m_id, MetadataManager::SmallLogo).value<QPixmap>().save(&buffer, "PNG");
+                            logo = QString("<img src='data:image/png;base64, %1'/>").arg(QString(buffer.data().toBase64()));
+                        }
+                        QString tooltip =
+                            QString(
+                                "<table border='0' cellspacing='2' cellpadding='2'>"
+                                "<tr>"
+                                "<td valign='middle'>%4</td>"
+                                "<td valign='middle'>"
+                                "<p style='margin: 0; white-space:pre'>%1 %2</p>"
+                                "<p style='margin: 0; white-space:pre'>%3</p>"
+                                "</td>"
+                                "</tr>"
+                                "</table>")
+                                .arg(QObject::tr("Channel"), DabTables::channelList.value(it.value()->frequency()),
+                                     QString(QObject::tr("Frequency: %1 MHz")).arg(it.value()->frequency() / 1000.0, 3, 'f', 3, QChar('0')), logo);
+                        return QVariant(tooltip);
                     }
                 }
             }

@@ -40,7 +40,7 @@
 #include "epgtime.h"
 #include "spiapp.h"
 
-Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtInfoMsg)
+Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtDebugMsg)
 
 MetadataManager::MetadataManager(const ServiceList *serviceList, QObject *parent)
     : QObject(parent), m_serviceList(serviceList), m_isLoadingFromCache(false), m_cleanEpgCache(true)
@@ -235,6 +235,61 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
                                 if (element.hasAttribute("id"))
                                 {
                                     qCDebug(metadataManager) << "Ensemble" << element.attribute("id") << servicesElement.tagName();
+
+                                    QString eidStr = element.attribute("id");
+                                    bool isEidValid = (eidStr.length() == 6);
+                                    if (isEidValid)
+                                    {
+                                        eidStr.toInt(&isEidValid, 16);
+                                    }
+                                    if (isEidValid && "mediaDescription" == servicesElement.tagName())
+                                    {
+                                        QDomNode mediaDescNode = servicesElement.firstChild();
+                                        while (!mediaDescNode.isNull())
+                                        {
+                                            QDomElement mediaDescElement = mediaDescNode.toElement();  // try to convert the node to an element
+                                            if (!mediaDescElement.isNull())
+                                            {
+                                                if ("multimedia" == mediaDescElement.tagName())
+                                                {  // Ensemble logos shall be provided using the mediaDescription/multimedia element
+                                                    QString type = mediaDescElement.attribute("type");
+                                                    QString url = mediaDescElement.attribute("url");
+                                                    QString width = mediaDescElement.attribute("width");
+                                                    QString height = mediaDescElement.attribute("height");
+                                                    QString ext = "png";
+                                                    if ("logo_colour_square" == type)
+                                                    {
+                                                        width = height = "32";
+                                                    }
+                                                    else if ("logo_colour_rectangle" == type)
+                                                    {
+                                                        width = "112";
+                                                        height = "32";
+                                                    }
+                                                    else
+                                                    {
+                                                        if (mediaDescElement.attribute("mimeValue") == "image/jpeg")
+                                                        {
+                                                            ext = "jpg";
+                                                        }
+                                                    }
+                                                    int widthVal = width.toInt();
+                                                    int heightVal = height.toInt();
+
+                                                    // only SLS size or logo size is accepted
+                                                    if (((widthVal == 320) && (heightVal == 240)) || ((widthVal == 32) && (heightVal == 32)))
+                                                    {
+                                                        // ask for logo
+                                                        QString filename = QString("%1/%2x%3.%4").arg(eidStr, width, height, ext);
+                                                        qCDebug(metadataManager) << url << "===>" << filename;
+
+                                                        emit getFile(decoderId, url, filename);
+                                                    }
+                                                }
+                                            }
+                                            mediaDescNode = mediaDescNode.nextSibling();
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -567,12 +622,13 @@ QVariant MetadataManager::data(uint32_t sid, uint8_t SCIdS, MetadataRole role) c
 
 QVariant MetadataManager::data(const ServiceListId &id, MetadataRole role) const
 {
-    QString sidStr = QString("%1.%2").arg(id.sid(), 6, 16, QChar('0')).arg(id.scids());
+    QString idStr =
+        id.isService() ? QString("%1.%2").arg(id.sid(), 6, 16, QChar('0')).arg(id.scids()) : QString("%1").arg(id.ueid(), 6, 16, QChar('0'));
     switch (role)
     {
         case SLSLogo:
         {
-            QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + QString("%1/320x240.").arg(sidStr);
+            QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + QString("%1/320x240.").arg(idStr);
             if (QFileInfo::exists(filename + "png"))
             {
                 QPixmap pixmap;
@@ -589,7 +645,7 @@ QVariant MetadataManager::data(const ServiceListId &id, MetadataRole role) const
         break;
         case SmallLogo:
         {
-            QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + QString("%1/32x32.").arg(sidStr);
+            QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + QString("%1/32x32.").arg(idStr);
             if (QFileInfo::exists(filename + "png"))
             {
                 QPixmap pixmap;
