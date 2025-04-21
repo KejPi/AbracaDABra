@@ -158,6 +158,8 @@ typedef struct
     uint16_t fibErrorCntr;         // number of FIB CRC errors during notification period
     uint8_t mscCrcOkCntr;          // number of correct CRC [after RS (DAB+)]
     uint8_t mscCrcErrorCntr;       // number of CRC errors [after RS (DAB+)]
+    uint16_t audioServiceBytes;    // number of audio service bytes
+    uint16_t padBytes;             // number of PAD bytes
 } dabsdrNtfPeriodic_t;
 
 #define DAB_LABEL_MAX_LENGTH   (16)
