@@ -1031,12 +1031,9 @@
     <widget class="QTextEdit" name="ensStructureTextEdit">
      <property name="minimumSize">
       <size>
-       <width>550</width>
+       <width>0</width>
        <height>400</height>
       </size>
-     </property>
-     <property name="sizeAdjustPolicy">
-      <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
      </property>
      <property name="lineWrapMode">
       <enum>QTextEdit::LineWrapMode::NoWrap</enum>

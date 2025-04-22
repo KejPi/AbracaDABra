@@ -209,15 +209,6 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString &txt)
         else
         {
             ui->ensStructureTextEdit->setDocumentTitle(tr("Ensemble information"));
-
-            int minWidth = ui->ensStructureTextEdit->document()->idealWidth() + ui->ensStructureTextEdit->contentsMargins().left() +
-                           ui->ensStructureTextEdit->contentsMargins().right() + ui->ensStructureTextEdit->verticalScrollBar()->width();
-
-            if (minWidth > 1000)
-            {
-                minWidth = 1000;
-            }
-            ui->ensStructureTextEdit->setMinimumWidth(minWidth);
             ui->csvExportButton->setEnabled(true);
         }
     }
