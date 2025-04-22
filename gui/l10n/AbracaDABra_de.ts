@@ -129,7 +129,7 @@
     <message>
         <location filename="../audiorec/audiorecitemdialog.ui" line="161"/>
         <source>Service:</source>
-        <translation>Service:</translation>
+        <translation>Dienst:</translation>
     </message>
     <message>
         <location filename="../audiorec/audiorecitemdialog.cpp" line="57"/>
@@ -201,7 +201,7 @@
     <message>
         <location filename="../audiorec/audiorecschedulemodel.cpp" line="134"/>
         <source>Service</source>
-        <translation>Service</translation>
+        <translation>Dienst</translation>
     </message>
 </context>
 <context>
@@ -220,7 +220,7 @@
     <message>
         <location filename="../bandscandialog.ui" line="64"/>
         <source>Services found:</source>
-        <translation>Gefundene Services:</translation>
+        <translation>Gefundene Dienste:</translation>
     </message>
     <message>
         <location filename="../bandscandialog.ui" line="81"/>
@@ -292,22 +292,22 @@
     <message>
         <location filename="../widgets/ensemblebar.cpp" line="346"/>
         <source>&lt;p style=&apos;white-space:pre&apos;&gt;Unused&lt;br&gt;Capacity units: %1 CU [%2..%3]&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p style=&apos;white-space:pre&apos;&gt;Nicht verw.&lt;br&gt;Capacity units: %1 CU [%2..%3]&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../widgets/ensemblebar.cpp" line="353"/>
         <source>&lt;p style=&apos;white-space:pre&apos;&gt;SubChannel: %1 (%2)&lt;br&gt;Capacity units: %3 CU [%4..%5]&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p style=&apos;white-space:pre&apos;&gt;SubChannel: %1 (%2)&lt;br&gt;Capacity units: %3 CU [%4..%5]&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../widgets/ensemblebar.cpp" line="355"/>
         <source>audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio</translation>
     </message>
     <message>
         <location filename="../widgets/ensemblebar.cpp" line="355"/>
         <source>data</source>
-        <translation type="unfinished"></translation>
+        <translation>Daten</translation>
     </message>
 </context>
 <context>
@@ -404,32 +404,32 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="380"/>
         <source>Service bitrate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Servicebitrate:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="406"/>
         <source>Useful bitrate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nutzbitrate:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="432"/>
         <source>Audio bitrate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Audiobitrate:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="458"/>
         <source>PAD bitrate:</source>
-        <translation type="unfinished"></translation>
+        <translation>PAD-Bitrate:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="484"/>
         <source>Audio ratio:</source>
-        <translation type="unfinished"></translation>
+        <translation>Audioanteil:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="510"/>
         <source>PAD ratio:</source>
-        <translation type="unfinished"></translation>
+        <translation>PAD-Anteil:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="548"/>
@@ -464,47 +464,47 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="723"/>
         <source>Allocated:</source>
-        <translation type="unfinished"></translation>
+        <translation>Zugeteilt:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="749"/>
         <source>Free:</source>
-        <translation type="unfinished"></translation>
+        <translation>Frei:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="775"/>
         <source>Audio:</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="801"/>
         <source>Data:</source>
-        <translation type="unfinished"></translation>
+        <translation>Daten:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="865"/>
         <source>Capacity units:</source>
-        <translation type="unfinished"></translation>
+        <translation>Capacity units:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="891"/>
         <source>Error protection:</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehlerschutz:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="917"/>
         <source>Bitrate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitrate:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="955"/>
         <source>Content:</source>
-        <translation type="unfinished"></translation>
+        <translation>Inhalt:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="981"/>
         <source>Services:</source>
-        <translation type="unfinished"></translation>
+        <translation>Services:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="1054"/>
@@ -577,13 +577,13 @@
         <location filename="../ensembleinfodialog.cpp" line="87"/>
         <location filename="../ensembleinfodialog.cpp" line="88"/>
         <source>Current service name</source>
-        <translation>Derzeitiger Servicename</translation>
+        <translation>Aktueller Dienstname</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="89"/>
         <location filename="../ensembleinfodialog.cpp" line="90"/>
         <source>Current Service Identifier</source>
-        <translation>Derzeitige Servicekennung</translation>
+        <translation>Aktuelle Dienstkennung</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="91"/>
@@ -615,37 +615,37 @@
         <location filename="../ensembleinfodialog.cpp" line="100"/>
         <location filename="../ensembleinfodialog.cpp" line="101"/>
         <source>Gross bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Bruttobitrate</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="102"/>
         <location filename="../ensembleinfodialog.cpp" line="103"/>
         <source>Net bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Nettobitrate</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="104"/>
         <location filename="../ensembleinfodialog.cpp" line="105"/>
         <source>Net audio bitrate without PAD</source>
-        <translation type="unfinished"></translation>
+        <translation>Nettoaudiobitrate ohne PAD</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="106"/>
         <location filename="../ensembleinfodialog.cpp" line="107"/>
         <source>Net PAD bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Netto PAD-Bitrate</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="108"/>
         <location filename="../ensembleinfodialog.cpp" line="109"/>
         <source>Percentage of audio in useful bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Prozentsatz an Audio in Nutzbitrate</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="110"/>
         <location filename="../ensembleinfodialog.cpp" line="111"/>
         <source>Percentage of PAD in useful bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Prozentsatz an PAD in Nutzbitrate</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="113"/>
@@ -687,49 +687,49 @@
         <location filename="../ensembleinfodialog.cpp" line="126"/>
         <location filename="../ensembleinfodialog.cpp" line="127"/>
         <source>Used capacity units</source>
-        <translation type="unfinished"></translation>
+        <translation>Verwendete Capacity Units</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="128"/>
         <location filename="../ensembleinfodialog.cpp" line="129"/>
         <source>Unused capacity units</source>
-        <translation type="unfinished"></translation>
+        <translation>Nicht benötigte Capacity Units</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="130"/>
         <location filename="../ensembleinfodialog.cpp" line="131"/>
         <source>Capacity units for allocated for audio services</source>
-        <translation type="unfinished"></translation>
+        <translation>Zugeteilte Capacity Units für Audiodienste</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="132"/>
         <location filename="../ensembleinfodialog.cpp" line="133"/>
         <source>Capacity units for allocated for data services</source>
-        <translation type="unfinished"></translation>
+        <translation>Zugeteilte Capacity Units für Datendienste</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="137"/>
         <location filename="../ensembleinfodialog.cpp" line="138"/>
         <source>Sub-channel error protection</source>
-        <translation type="unfinished"></translation>
+        <translation>Subchannel Fehlerschutz</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="139"/>
         <location filename="../ensembleinfodialog.cpp" line="140"/>
         <source>Number of capacity units allocated to sub-channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Anzahl an zugeteilten Capacity Units des Subchannels</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="141"/>
         <location filename="../ensembleinfodialog.cpp" line="142"/>
         <source>Gross sub-channel bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Brutto-Subchannelbitrate</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="144"/>
         <location filename="../ensembleinfodialog.cpp" line="145"/>
         <source>Sub-channel content</source>
-        <translation type="unfinished"></translation>
+        <translation>Subchannel-Inhalt</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="146"/>
@@ -737,7 +737,7 @@
         <location filename="../ensembleinfodialog.cpp" line="148"/>
         <location filename="../ensembleinfodialog.cpp" line="149"/>
         <source>List of services transmitted in sub-channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Liste an im Subchannel übertragenen Dienste</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="151"/>
@@ -786,23 +786,23 @@
         <location filename="../ensembleinfodialog.cpp" line="350"/>
         <location filename="../ensembleinfodialog.cpp" line="351"/>
         <source>%1 CU (%2%)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 CU (%2%)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="353"/>
         <location filename="../ensembleinfodialog.cpp" line="362"/>
         <source>No subchannel selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Subchannel ausgewählt</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="377"/>
         <source>%1 CU [%2..%3]</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 CU [%2..%3]</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="390"/>
         <source>%1 (coderate: %2/%3)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 (Coderate: %2/%3)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="396"/>
@@ -816,22 +816,22 @@
         <location filename="../ensembleinfodialog.cpp" line="578"/>
         <location filename="../ensembleinfodialog.cpp" line="643"/>
         <source>%1 kbps</source>
-        <translation type="unfinished">%1 kbps</translation>
+        <translation>%1 kbps</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="404"/>
         <source>Audio AAC</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio AAC</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="407"/>
         <source>Audio MP2</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio MP2</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="410"/>
         <source>Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Daten</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="479"/>
@@ -992,12 +992,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="255"/>
         <source>Add service to favorites</source>
-        <translation>Service zu Favoriten hinzufügen</translation>
+        <translation>Dienst zu Favoriten hinzufügen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="256"/>
         <source>Remove service from favorites</source>
-        <translation>Service aus Favoriten entfernen</translation>
+        <translation>Dienst aus Favoriten entfernen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="357"/>
@@ -1029,7 +1029,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="433"/>
         <source>Clear service list</source>
-        <translation>Serviceliste leeren</translation>
+        <translation>Dienstliste leeren</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="439"/>
@@ -1263,7 +1263,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1687"/>
         <source>Select any service to restart</source>
-        <translation>Ein Service wählen um neu zu starten</translation>
+        <translation>Einen Dienst wählen um neu zu starten</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1698"/>
@@ -1358,7 +1358,7 @@
         <location filename="../mainwindow.cpp" line="1820"/>
         <location filename="../mainwindow.cpp" line="1888"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you switch current service.</source>
-        <translation>Audioaufnahme läuft. Sie wird beendet und gespeichert, falls das aktuelle Service gewechselt wird.</translation>
+        <translation>Audioaufnahme läuft. Sie wird beendet und gespeichert, falls  aktueller Dienst gewechselt wird.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1961"/>
@@ -1393,12 +1393,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="2076"/>
         <source>Service currently unavailable</source>
-        <translation>Service derzeit nicht verfügbar</translation>
+        <translation>Dienst derzeit nicht verfügbar</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2077"/>
         <source>Service was removed from ensemble</source>
-        <translation>Service wurde aus Ensemble entfernt</translation>
+        <translation>Dienst wurde aus Ensemble entfernt</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2113"/>
@@ -1408,7 +1408,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="2126"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to suspend this announcement</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Laufende Durchsage&lt;br&gt;Quellservice: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Klicken, um die Durchsage zu unterbrechen</translation>
+        <translation type="unfinished">&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Laufende Durchsage&lt;br&gt;Quelldienst: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Klicken, um die Durchsage zu unterbrechen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2145"/>
@@ -1423,7 +1423,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="2209"/>
         <source>Try to select other service to recover</source>
-        <translation>Ein anderes Service auswählen</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2261"/>
@@ -1455,7 +1455,7 @@ Datei: %1</translation>
     <message>
         <location filename="../mainwindow.cpp" line="2290"/>
         <source>Ongoing recording now prevents the start of a scheduled recording. The schedule will be cancelled if you do not choose otherwise. If you select to keep the schedule, the service might be switched.</source>
-        <translation>Laufende Aufnahme unterbindet jetzt den Start einer geplanten Aufnahme. Der Plan wird abgebrochen, wenn Sie sich nicht anderswertig entscheiden. Wenn Sie den Plan behalten, könnte der Service umgeschaltet werden.</translation>
+        <translation>Laufende Aufnahme unterbindet jetzt den Start einer geplanten Aufnahme. Der Plan wird abgebrochen, wenn Sie sich nicht anderswertig entscheiden. Wenn Sie den Plan behalten, könnte der Dienst umgeschaltet werden.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2294"/>
@@ -1475,7 +1475,7 @@ Datei: %1</translation>
     <message>
         <location filename="../mainwindow.cpp" line="2303"/>
         <source>Recording is going to start according to the schedule. The service might be switched if it differs from the current one.</source>
-        <translation>Aufnahme wird anhand des Plans beginnen. Der Service könnte umgeschaltet werden, wenn er vom aktuellen abweicht.</translation>
+        <translation>Aufnahme wird anhand des Plans beginnen. Der Dienst könnte umgeschaltet werden, wenn er vom aktuellen abweicht.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2305"/>
@@ -1507,12 +1507,12 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../mainwindow.cpp" line="2580"/>
         <source>No service</source>
-        <translation>Kein Service</translation>
+        <translation>Kein Dienst</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2585"/>
         <source>No service playing</source>
-        <translation>Kein Service wiedergegeben</translation>
+        <translation>Kein Dienst wiedergegeben</translation>
     </message>
 </context>
 <context>
@@ -1746,7 +1746,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../dabtables.cpp" line="176"/>
         <source>No programme type</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Programmtyp</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="180"/>
@@ -3366,12 +3366,12 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../slmodelitem.cpp" line="139"/>
         <source>Channel</source>
-        <translation type="unfinished">Kanal</translation>
+        <translation>Kanal</translation>
     </message>
     <message>
         <location filename="../slmodelitem.cpp" line="140"/>
         <source>Frequency: %1 MHz</source>
-        <translation type="unfinished"></translation>
+        <translation>Frequenz: %1 MHz</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="424"/>
@@ -3655,7 +3655,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../widgets/slsview.cpp" line="296"/>
         <source>Service logo</source>
-        <translation>Servicelogo</translation>
+        <translation>Dienstlogo</translation>
     </message>
     <message>
         <location filename="../widgets/slsview.cpp" line="343"/>
@@ -3829,7 +3829,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../servicelist.cpp" line="440"/>
         <source>Service name;Short label;SID;SCIdS;Number of ensembles</source>
-        <translation type="unfinished"></translation>
+        <translation>Servicename;Short Label;SID;SCIdS;Anzahl an Ensembles</translation>
     </message>
 </context>
 <context>
@@ -4120,22 +4120,22 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../setupdialog.ui" line="2280"/>
         <source>Baudrate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Baudrate:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2381"/>
         <source>Show and save timestamps in UTC</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeige und speichere Zeitstempel in UTC</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2384"/>
         <source>Timestamp in UTC</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeitstempel in UTC</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2394"/>
         <source>GPS Coordinates</source>
-        <translation type="unfinished"></translation>
+        <translation>GPS-Koordinaten</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2462"/>
@@ -4145,7 +4145,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../setupdialog.ui" line="2465"/>
         <source>Keep no longer detected transmitters on map (grey marker)</source>
-        <translation>Zeige erkannte Sendestandorte nicht mehr auf der Karte an (graue Markierung)</translation>
+        <translation>Zeige nicht mehr erkannte Sendestandorte auf der Karte an (graue Markierung)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2490"/>
@@ -4352,7 +4352,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="2391"/>
         <source>Append GPS coordinates to CSV log</source>
-        <translation type="unfinished"></translation>
+        <translation>Hänge GPS-Koordinaten an CSV-Log an</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2448"/>
@@ -4412,12 +4412,12 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="2415"/>
         <source>Reliable</source>
-        <translation type="unfinished"></translation>
+        <translation>Zuverlässig</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2432"/>
         <source>Sensitive</source>
-        <translation type="unfinished"></translation>
+        <translation>Empfindlich</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2554"/>
@@ -4468,12 +4468,12 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="1730"/>
         <source>Audio recording must be stopped when service changes.&lt;br&gt;If you select this option, application stops recording and saves the file automatically without asking.</source>
-        <translation>Eine Audioaufnahme muss beendet werden, falls sich das Service ändert.&lt;br&gt;Wenn diese Option ausgewählt wird, wird die Audioaufnahme beendet und die Datei ohne Rückfrage automatisch gespeichert.</translation>
+        <translation>Eine Audioaufnahme muss beendet werden, falls sich der Dienst ändert.&lt;br&gt;Wenn diese Option ausgewählt wird, wird die Audioaufnahme beendet und die Datei ohne Rückfrage automatisch gespeichert.</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1733"/>
         <source>Do not ask to stop audio recording when service changes</source>
-        <translation>Bei Serviceänderung nicht nachfragen, die Audioaufzeichnung zu beenden</translation>
+        <translation>Bei Dienständerung nicht nachfragen, die Audioaufzeichnung zu beenden</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1769"/>
@@ -4762,7 +4762,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="1841"/>
         <source>Ensemble information is a small CSV file with list of services in the ensemble,</source>
-        <translation>Ensembleinformationen ist eine kleine CSV-Datei mit der Liste an Services im Ensemble,</translation>
+        <translation>Ensembleinformationen ist eine kleine CSV-Datei mit der Liste an Diensten im Ensemble,</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1842"/>
@@ -4817,17 +4817,17 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="58"/>
         <source>User applications</source>
-        <translation type="unfinished"></translation>
+        <translation>Benutzeranwendungen</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="120"/>
         <source>Connect to control socket if available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Falls verfügbar, verbinde zu Kontrollsocket</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="122"/>
         <source>Enable connection to control socket.&lt;br&gt;This option requires rtl-tcp server implemented by old-dab.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktiviere Verbindung zu Kontrollsocket.&lt;br&gt;Diese Option erfordert den von old-dab umgesetzten rtl-tcp Server.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="142"/>
@@ -4937,7 +4937,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="444"/>
         <source>Sensitive detector settings gives more TII codes but some may be wrong.</source>
-        <translation type="unfinished"></translation>
+        <translation>Empfindliche Detektoreinstellung ergibt mehr TII-Codes, aber einige könnten falsch sein.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="750"/>
@@ -5248,7 +5248,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../tii/txtablemodel.cpp" line="283"/>
         <source>Time (UTC)</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit (UTC)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="287"/>
@@ -5284,7 +5284,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
         <location filename="../tii/txtablemodel.cpp" line="298"/>
         <location filename="../tii/txtablemodel.cpp" line="343"/>
         <source>Services</source>
-        <translation>Services</translation>
+        <translation>Dienste</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="300"/>
@@ -5332,22 +5332,22 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../tii/txtablemodel.cpp" line="361"/>
         <source>Latitude (TX)</source>
-        <translation type="unfinished"></translation>
+        <translation>Breitenkreis (TX)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="363"/>
         <source>Longitude (TX)</source>
-        <translation type="unfinished"></translation>
+        <translation>Längenkreis (TX)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="365"/>
         <source>Latitude (RX)</source>
-        <translation type="unfinished"></translation>
+        <translation>Breitenkreis (RX)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="367"/>
         <source>Longitude (RX)</source>
-        <translation type="unfinished"></translation>
+        <translation>Längenkreis (RX)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="337"/>
@@ -5423,7 +5423,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../qml/epg.qml" line="98"/>
         <source>Hide services without schedule</source>
-        <translation>Verstecke Services ohne Vorschau</translation>
+        <translation>Verstecke Dienste ohne Vorschau</translation>
     </message>
     <message>
         <location filename="../qml/epg.qml" line="106"/>
