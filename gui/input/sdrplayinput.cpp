@@ -232,23 +232,6 @@ void SdrPlayInput::setBiasT(bool ena)
     }
 }
 
-void SdrPlayInput::setAntenna(const QString &antenna)
-{
-    SoapySdrInput::setAntenna(antenna);
-    if (m_device)
-    {
-        try
-        {
-            m_device->setAntenna(SOAPY_SDR_RX, m_rxChannel, m_antenna.toStdString());
-        }
-        catch (const std::exception &ex)
-        {
-            qCWarning(sdrPlayInput) << "Failed to set antenna to" << m_antenna << ex.what();
-            return;
-        }
-    }
-}
-
 void SdrPlayInput::resetAgc()
 {
     if (SdrPlayGainMode::Software == m_gainMode)

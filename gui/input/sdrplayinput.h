@@ -64,7 +64,6 @@ public:
     bool openDevice(const QVariant &hwId = QVariant(), bool fallbackConnection = true) override;
     void setGainMode(const SdrPlayGainStruct &gain);
     void setBiasT(bool ena) override;
-    void setAntenna(const QString &antenna) override;
     void setDevArgs(const QString &devArgs) = delete;
     virtual QVariant hwId() const override { return m_hwId; }
     QList<float> getRFGainList() const { return m_rfGainList; }

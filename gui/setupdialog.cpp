@@ -315,7 +315,6 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->sdrplayDeviceListCombo, &QComboBox::activated, this, [this]() { setConnectButton(ConnectButtonAuto); });
     connect(ui->sdrplayDeviceListCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onSdrplayDeviceChanged);
     connect(ui->sdrplayChannelCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onSdrplayChannelChanged);
-    connect(ui->sdrplayAntennaCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onSdrplayAntennaChanged);
 #endif
 
     ui->defaultStyleRadioButton->setText(tr("Default style (OS dependent)"));
@@ -1694,7 +1693,6 @@ void SetupDialog::onSdrplayDeviceChanged(int idx)
 void SetupDialog::activateSdrplayControls(bool en)
 {
     ui->sdrplayReloadButton->setText(en ? tr("Disconnect") : tr("Reload"));
-    ui->sdrplayAntennaCombo->setEnabled(en);
     ui->sdrplayGainModeGroup->setEnabled(en);
     ui->sdrplayGainWidget->setEnabled(en && (SdrPlayGainMode::Manual == m_settings->sdrplay.gain.mode));
     ui->sdrplayExpertGroup->setEnabled(en);
@@ -1737,23 +1735,10 @@ void SetupDialog::onSdrplayChannelChanged(int idx)
 
                                ui->sdrplayDeviceListCombo->setEnabled(m_inputDeviceId != InputDevice::Id::SDRPLAY);
                                ui->sdrplayChannelCombo->setEnabled(m_inputDeviceId != InputDevice::Id::SDRPLAY);
-                               ui->sdrplayAntennaCombo->setEnabled(true);
+                               ui->sdrplayAntennaCombo->setEnabled(m_inputDeviceId != InputDevice::Id::SDRPLAY);
                                ui->sdrplayReloadButton->setEnabled(true);
                                setConnectButton(ConnectButtonAuto);
                            });
-    }
-}
-
-void SetupDialog::onSdrplayAntennaChanged(int idx)
-{
-    QString ant = ui->sdrplayAntennaCombo->currentData().toString();
-    if (m_inputDeviceId == InputDevice::Id::SDRPLAY && m_settings->sdrplay.antenna != ant)
-    {
-        if (dynamic_cast<SdrPlayInput *>(m_device))
-        {
-            m_settings->sdrplay.antenna = ant;
-            dynamic_cast<SdrPlayInput *>(m_device)->setAntenna(ant);
-        }
     }
 }
 
@@ -2042,7 +2027,7 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
             ui->sdrplayReloadButton->setEnabled(true);
             ui->sdrplayDeviceListCombo->setEnabled(false);
             ui->sdrplayChannelCombo->setEnabled(false);
-            ui->sdrplayAntennaCombo->setEnabled(true);
+            ui->sdrplayAntennaCombo->setEnabled(false);
             m_settings->sdrplay.hwId = m_device->hwId();
             dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
             m_device->setPPM(m_settings->sdrplay.ppm);

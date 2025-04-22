@@ -251,7 +251,6 @@ private:
     void onSdrplayReloadButtonClicked();
     void onSdrplayDeviceChanged(int idx);
     void onSdrplayChannelChanged(int idx);
-    void onSdrplayAntennaChanged(int idx);
 
     void onSdrplayModeToggled(bool checked);
     void onSdrplayAGCstateChanged(int state);
