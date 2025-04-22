@@ -105,6 +105,7 @@ QVariant SLModelItem::data(int column, int role) const
                                               "<p style='margin: 0; white-space:pre'><b>%1</b> %2</p>"
                                               "<p style='margin: 0; white-space:pre'><b>SId:</b> %3</p>"
                                               "</td>"
+                                              "<td valign='middle'></td>"
                                               "</tr>"
                                               "</table>")
                                               .arg(QObject::tr("Short label:"), it.value()->shortLabel().toHtmlEscaped(),
@@ -134,6 +135,7 @@ QVariant SLModelItem::data(int column, int role) const
                                 "<p style='margin: 0; white-space:pre'>%1 %2</p>"
                                 "<p style='margin: 0; white-space:pre'>%3</p>"
                                 "</td>"
+                                "<td valign='middle'></td>"
                                 "</tr>"
                                 "</table>")
                                 .arg(QObject::tr("Channel"), DabTables::channelList.value(it.value()->frequency()),
