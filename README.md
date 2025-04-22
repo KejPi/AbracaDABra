@@ -54,7 +54,6 @@ Service can be easily added to favorites by clicking "star" icon.  Most of the e
 ## Expert mode
 <p align="center" width="100%">
     <img width="889" alt="Application in expert mode" src="https://github.com/user-attachments/assets/2d304694-5993-4c5b-acb3-416c1b1106b1">
-    <img width="1086" alt="Ensemble information" src="https://github.com/user-attachments/assets/66e39d7e-bd14-4934-848e-91c13cb56660" />
 </p>
 In addition to basic mode, expert mode shows ensemble tree with structure of services and additional details of currently tuned service. 
 Furthermore it is possible to change the DAB channel manually in this mode. 
@@ -153,6 +152,27 @@ Raw file is a virtual device that is used to play files with raw IQ signal recor
 <p align="center" width="100%">
     <img width="651" alt="RawFile" src="https://github.com/user-attachments/assets/ae7e2a17-36b9-4279-b9d1-2e22770b8913" />
 </p>
+
+## Ensemble Information
+
+AbracaDABra shows technical information about ensemble structure in Ensemble Information dialog accessible from application menu in [Expert mode](#expert-mode). 
+
+<p align="center" width="100%">
+    <img width="1086" alt="Ensemble information" src="https://github.com/user-attachments/assets/66e39d7e-bd14-4934-848e-91c13cb56660" />
+</p>
+
+Following information is available in the dialog:
+* Current channel details like frequency, SNR, AGC gain, etc.
+* Current audio service and its subchannel parameters
+* Current audio service bitrate details
+* FIB and AU statistics - each of them can be reset from popup menu accessible by right click
+* Subchannel allocation with interactive colorful bar. You can click on any subchannel to display details below. Subchannels with data services are shown with cross pattern.
+* Details of all services in ensemble in text format. It is possible to select any part of the text and copy it to clipboard.
+
+Furthermore, this dialog allows to export ensemble structure in CSV format and to upload it to FMLIST. _NOTE:_ Upload to FMLIST is enabled only when automatic upload is disabled in Settings. 
+
+Last feature accessible from Ensemble Information is Raw data recording with optional timeout. This is used to record signal from tuner (IQ) that can be used as [Raw file input](#raw-file) later. _Note:_ The raw file grows very fast, for example RTL-SDR device stream with sample rate 2048kHz and 8 bit produces approximately 250 MByte file in 1 minute.
+
 
 ## DAB Announcements support
 An announcement is a period of elevated interest within an audio programme. It is typically a spoken audio message, often with a lead-in and lead-out 
