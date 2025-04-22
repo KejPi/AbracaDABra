@@ -409,22 +409,22 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="380"/>
         <source>Service bitrate:</source>
-        <translation>Bitový tok stanice:</translation>
+        <translation>Datový tok stanice:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="406"/>
         <source>Useful bitrate:</source>
-        <translation>Užitečný bitový tok:</translation>
+        <translation>Užitečný datový tok:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="432"/>
         <source>Audio bitrate:</source>
-        <translation>Bitový tok zvuku:</translation>
+        <translation>Datový tok zvuku:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="458"/>
         <source>PAD bitrate:</source>
-        <translation>Bitový tok PAD:</translation>
+        <translation>Datový tok PAD:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="484"/>
@@ -499,7 +499,7 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="917"/>
         <source>Bitrate:</source>
-        <translation>Bitový tok:</translation>
+        <translation>Datový tok:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="955"/>
@@ -538,7 +538,7 @@
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="1192"/>
-        <location filename="../ensembleinfodialog.cpp" line="446"/>
+        <location filename="../ensembleinfodialog.cpp" line="484"/>
         <source>Record raw data</source>
         <translation>Zaznamenat vstupní signál</translation>
     </message>
@@ -611,181 +611,275 @@
     <message>
         <location filename="../ensembleinfodialog.cpp" line="97"/>
         <location filename="../ensembleinfodialog.cpp" line="98"/>
+        <location filename="../ensembleinfodialog.cpp" line="135"/>
+        <location filename="../ensembleinfodialog.cpp" line="136"/>
         <source>Sub-channel Identifier</source>
         <translation>Číslo subkanálu</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="100"/>
         <location filename="../ensembleinfodialog.cpp" line="101"/>
-        <source>Total number of FIB&apos;s</source>
-        <translation>Celkový počet přijatých FIB</translation>
+        <source>Gross bitrate</source>
+        <translation>Celkový datový tok</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="102"/>
         <location filename="../ensembleinfodialog.cpp" line="103"/>
-        <source>Number of FIB&apos;s with CRC error</source>
-        <translation>Počet FIB s chybným kontrolním součtem CRC</translation>
+        <source>Net bitrate</source>
+        <translation>Užitečný datový tok</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="104"/>
         <location filename="../ensembleinfodialog.cpp" line="105"/>
-        <source>FIB error rate</source>
-        <translation>Chybovost FIB</translation>
+        <source>Net audio bitrate without PAD</source>
+        <translation>Užitečný datový tok zvuku bez PAD</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="106"/>
         <location filename="../ensembleinfodialog.cpp" line="107"/>
-        <source>Total number of audio frames (AU for DAB+)</source>
-        <translation>Celkový počet přijatých audio rámců (AU v DAB+)</translation>
+        <source>Net PAD bitrate</source>
+        <translation>Užitečný datový tok PAD</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="108"/>
         <location filename="../ensembleinfodialog.cpp" line="109"/>
-        <source>Total number of audio frames with CRC error (AU for DAB+)</source>
-        <translation>Celkový počet audio rámců s chybným kontrolním součtem CRC (AU v DAB+)</translation>
+        <source>Percentage of audio in useful bitrate</source>
+        <translation>Procento zvuku v užitečném datovém toku</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="110"/>
         <location filename="../ensembleinfodialog.cpp" line="111"/>
+        <source>Percentage of PAD in useful bitrate</source>
+        <translation>Procento PAD v užitečném datovém toku</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="113"/>
+        <location filename="../ensembleinfodialog.cpp" line="114"/>
+        <source>Total number of FIB&apos;s</source>
+        <translation>Celkový počet přijatých FIB</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="115"/>
+        <location filename="../ensembleinfodialog.cpp" line="116"/>
+        <source>Number of FIB&apos;s with CRC error</source>
+        <translation>Počet FIB s chybným kontrolním součtem CRC</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="117"/>
+        <location filename="../ensembleinfodialog.cpp" line="118"/>
+        <source>FIB error rate</source>
+        <translation>Chybovost FIB</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="119"/>
+        <location filename="../ensembleinfodialog.cpp" line="120"/>
+        <source>Total number of audio frames (AU for DAB+)</source>
+        <translation>Celkový počet přijatých audio rámců (AU v DAB+)</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="121"/>
+        <location filename="../ensembleinfodialog.cpp" line="122"/>
+        <source>Total number of audio frames with CRC error (AU for DAB+)</source>
+        <translation>Celkový počet audio rámců s chybným kontrolním součtem CRC (AU v DAB+)</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="123"/>
+        <location filename="../ensembleinfodialog.cpp" line="124"/>
         <source>Audio frame (AU for DAB+) error rate</source>
         <translation>Chybovost audio rámců (AU v DAB+)</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="113"/>
-        <location filename="../ensembleinfodialog.cpp" line="447"/>
+        <location filename="../ensembleinfodialog.cpp" line="126"/>
+        <location filename="../ensembleinfodialog.cpp" line="127"/>
+        <source>Used capacity units</source>
+        <translation>Využité kapacitní jednotky</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="128"/>
+        <location filename="../ensembleinfodialog.cpp" line="129"/>
+        <source>Unused capacity units</source>
+        <translation>Nevyužité kapacitní jednotky</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="130"/>
+        <location filename="../ensembleinfodialog.cpp" line="131"/>
+        <source>Capacity units for allocated for audio services</source>
+        <translation>Kapacitní jednotky vyžité pro audio služby (stanice)</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="132"/>
+        <location filename="../ensembleinfodialog.cpp" line="133"/>
+        <source>Capacity units for allocated for data services</source>
+        <translation>Kapacitní jednotky vyžité pro datové služby</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="137"/>
+        <location filename="../ensembleinfodialog.cpp" line="138"/>
+        <source>Sub-channel error protection</source>
+        <translation>Chybové zabezpečení subkanálu a kódový poměr</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="139"/>
+        <location filename="../ensembleinfodialog.cpp" line="140"/>
+        <source>Number of capacity units allocated to sub-channel</source>
+        <translation>Počet kapacitních jednotek alokovaných subkanálu</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="141"/>
+        <location filename="../ensembleinfodialog.cpp" line="142"/>
+        <source>Gross sub-channel bitrate</source>
+        <translation>Celkový datový tok subkanálu</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="144"/>
+        <location filename="../ensembleinfodialog.cpp" line="145"/>
+        <source>Sub-channel content</source>
+        <translation>Obsah subkanálu</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="146"/>
+        <location filename="../ensembleinfodialog.cpp" line="147"/>
+        <location filename="../ensembleinfodialog.cpp" line="148"/>
+        <location filename="../ensembleinfodialog.cpp" line="149"/>
+        <source>List of services transmitted in sub-channel</source>
+        <translation>Seznam služeb přenášených v subkanálu</translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfodialog.cpp" line="151"/>
+        <location filename="../ensembleinfodialog.cpp" line="485"/>
         <source>Record raw IQ stream to file</source>
         <translation>Zaznamenat vstupní IQ signál do souboru</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="114"/>
+        <location filename="../ensembleinfodialog.cpp" line="152"/>
         <source>Export ensemble information to CSV file</source>
         <translation>Exportovat informace o multiplexu do CVS souboru</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="116"/>
+        <location filename="../ensembleinfodialog.cpp" line="154"/>
         <source>Upload ensemble information to FMLIST</source>
         <translation>Nahrát informace o multiplexu na FMLIST</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="120"/>
+        <location filename="../ensembleinfodialog.cpp" line="158"/>
         <source>When checked recording stops automatically when timeout is reached.</source>
         <translation>Pokud je aktivní, záznam automaticky skončí po nastaveném čase.</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="121"/>
+        <location filename="../ensembleinfodialog.cpp" line="159"/>
         <source>Raw IQ recording duration</source>
         <translation>Trvání záznamu vstupního signálu</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="173"/>
+        <location filename="../ensembleinfodialog.cpp" line="211"/>
         <source>Ensemble information</source>
         <translation>Informace o multiplexu</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="198"/>
+        <location filename="../ensembleinfodialog.cpp" line="236"/>
         <source>Export CSV file</source>
         <translation>Exportovat CSV soubor</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="198"/>
+        <location filename="../ensembleinfodialog.cpp" line="236"/>
         <source>CSV Files</source>
         <translation>CSV soubory</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="310"/>
-        <location filename="../ensembleinfodialog.cpp" line="311"/>
-        <location filename="../ensembleinfodialog.cpp" line="312"/>
-        <location filename="../ensembleinfodialog.cpp" line="313"/>
+        <location filename="../ensembleinfodialog.cpp" line="348"/>
+        <location filename="../ensembleinfodialog.cpp" line="349"/>
+        <location filename="../ensembleinfodialog.cpp" line="350"/>
+        <location filename="../ensembleinfodialog.cpp" line="351"/>
         <source>%1 CU (%2%)</source>
         <translation>%1 CU (%2%)</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="315"/>
-        <location filename="../ensembleinfodialog.cpp" line="324"/>
+        <location filename="../ensembleinfodialog.cpp" line="353"/>
+        <location filename="../ensembleinfodialog.cpp" line="362"/>
         <source>No subchannel selected</source>
         <translation>Není vybraný subkanál</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="339"/>
+        <location filename="../ensembleinfodialog.cpp" line="377"/>
         <source>%1 CU [%2..%3]</source>
         <translation>%1 CU [%2..%3]</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="352"/>
+        <location filename="../ensembleinfodialog.cpp" line="390"/>
         <source>%1 (coderate: %2/%3)</source>
         <translation>%1 (poměr: %2/%3)</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="358"/>
+        <location filename="../ensembleinfodialog.cpp" line="396"/>
         <source>%1 (level: %2)</source>
         <translation>%1 (úroveň: %2)</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="362"/>
-        <location filename="../ensembleinfodialog.cpp" line="501"/>
-        <location filename="../ensembleinfodialog.cpp" line="536"/>
-        <location filename="../ensembleinfodialog.cpp" line="540"/>
-        <location filename="../ensembleinfodialog.cpp" line="605"/>
+        <location filename="../ensembleinfodialog.cpp" line="400"/>
+        <location filename="../ensembleinfodialog.cpp" line="539"/>
+        <location filename="../ensembleinfodialog.cpp" line="574"/>
+        <location filename="../ensembleinfodialog.cpp" line="578"/>
+        <location filename="../ensembleinfodialog.cpp" line="643"/>
         <source>%1 kbps</source>
         <translation>%1 kb/s</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="366"/>
+        <location filename="../ensembleinfodialog.cpp" line="404"/>
         <source>Audio AAC</source>
         <translation>Audio AAC</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="369"/>
+        <location filename="../ensembleinfodialog.cpp" line="407"/>
         <source>Audio MP2</source>
         <translation>Audio MP2</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="372"/>
+        <location filename="../ensembleinfodialog.cpp" line="410"/>
         <source>Data</source>
         <translation>Data</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="441"/>
+        <location filename="../ensembleinfodialog.cpp" line="479"/>
         <source>Stop recording</source>
         <translation>Ukončit záznam</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="442"/>
+        <location filename="../ensembleinfodialog.cpp" line="480"/>
         <source>Stop recording of raw IQ stream</source>
         <translation>Zastavit záznam vstupního IQ signálu</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="1174"/>
-        <location filename="../ensembleinfodialog.cpp" line="459"/>
+        <location filename="../ensembleinfodialog.cpp" line="497"/>
         <source> sec</source>
         <translation> s</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="466"/>
-        <location filename="../ensembleinfodialog.cpp" line="476"/>
-        <location filename="../ensembleinfodialog.cpp" line="516"/>
-        <location filename="../ensembleinfodialog.cpp" line="529"/>
-        <location filename="../ensembleinfodialog.cpp" line="551"/>
-        <location filename="../ensembleinfodialog.cpp" line="560"/>
-        <location filename="../ensembleinfodialog.cpp" line="685"/>
-        <location filename="../ensembleinfodialog.cpp" line="686"/>
-        <location filename="../ensembleinfodialog.cpp" line="687"/>
-        <location filename="../ensembleinfodialog.cpp" line="688"/>
+        <location filename="../ensembleinfodialog.cpp" line="504"/>
+        <location filename="../ensembleinfodialog.cpp" line="514"/>
+        <location filename="../ensembleinfodialog.cpp" line="554"/>
+        <location filename="../ensembleinfodialog.cpp" line="567"/>
+        <location filename="../ensembleinfodialog.cpp" line="589"/>
+        <location filename="../ensembleinfodialog.cpp" line="598"/>
+        <location filename="../ensembleinfodialog.cpp" line="723"/>
+        <location filename="../ensembleinfodialog.cpp" line="724"/>
+        <location filename="../ensembleinfodialog.cpp" line="725"/>
+        <location filename="../ensembleinfodialog.cpp" line="726"/>
         <source>N/A</source>
         <translation>Nedostupný</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="640"/>
+        <location filename="../ensembleinfodialog.cpp" line="678"/>
         <source>Reset statistics</source>
         <translation>Vynulovat statistiky</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="642"/>
+        <location filename="../ensembleinfodialog.cpp" line="680"/>
         <source>Reset FIB statistics</source>
         <translation>Vynulovat statistiku FIB</translation>
     </message>
     <message>
-        <location filename="../ensembleinfodialog.cpp" line="643"/>
+        <location filename="../ensembleinfodialog.cpp" line="681"/>
         <source>Reset MSC statistics</source>
         <translation>Vynulovat statistiku MSC</translation>
     </message>
@@ -1299,7 +1393,7 @@
         <location filename="../mainwindow.cpp" line="2050"/>
         <source>&lt;b&gt;Service bitrate&lt;/b&gt;&lt;br&gt;Audio &amp; data: %1</source>
         <translatorcomment>Bitrate stanice</translatorcomment>
-        <translation>&lt;b&gt;Bitový tok stanice&lt;/b&gt;&lt;br&gt;Audio a data: %1</translation>
+        <translation>&lt;b&gt;Datový tok stanice&lt;/b&gt;&lt;br&gt;Audio a data: %1</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2076"/>

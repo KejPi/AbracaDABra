@@ -97,6 +97,19 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(ne
     ui->subChannelLabel->setToolTip(tr("Sub-channel Identifier"));
     ui->subChannel->setToolTip(tr("Sub-channel Identifier"));
 
+    ui->serviceBitrateLabel->setToolTip(tr("Gross bitrate"));
+    ui->serviceBitrate->setToolTip(tr("Gross bitrate"));
+    ui->serviceCapacityLabel->setToolTip(tr("Net bitrate"));
+    ui->serviceCapacity->setToolTip(tr("Net bitrate"));
+    ui->audioBitrateLabel->setToolTip(tr("Net audio bitrate without PAD"));
+    ui->audioBitrate->setToolTip(tr("Net audio bitrate without PAD"));
+    ui->padBitrateLabel->setToolTip(tr("Net PAD bitrate"));
+    ui->padBitrate->setToolTip(tr("Net PAD bitrate"));
+    ui->audioRatioLabel->setToolTip(tr("Percentage of audio in useful bitrate"));
+    ui->audioRatio->setToolTip(tr("Percentage of audio in useful bitrate"));
+    ui->padRatioLabel->setToolTip(tr("Percentage of PAD in useful bitrate"));
+    ui->padRatio->setToolTip(tr("Percentage of PAD in useful bitrate"));
+
     ui->fibCountLabel->setToolTip(tr("Total number of FIB's"));
     ui->fibCount->setToolTip(tr("Total number of FIB's"));
     ui->fibErrCountLabel->setToolTip(tr("Number of FIB's with CRC error"));
@@ -109,6 +122,31 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(ne
     ui->crcErrCount->setToolTip(tr("Total number of audio frames with CRC error (AU for DAB+)"));
     ui->crcErrRateLabel->setToolTip(tr("Audio frame (AU for DAB+) error rate"));
     ui->crcErrRate->setToolTip(tr("Audio frame (AU for DAB+) error rate"));
+
+    ui->ensAllocatedCULabel->setToolTip(tr("Used capacity units"));
+    ui->ensAllocatedCU->setToolTip(tr("Used capacity units"));
+    ui->ensFreeCULabel->setToolTip(tr("Unused capacity units"));
+    ui->ensFreeCU->setToolTip(tr("Unused capacity units"));
+    ui->ensAudioCULabel->setToolTip(tr("Capacity units for allocated for audio services"));
+    ui->ensAudioCU->setToolTip(tr("Capacity units for allocated for audio services"));
+    ui->ensDataCULabel->setToolTip(tr("Capacity units for allocated for data services"));
+    ui->ensDataCU->setToolTip(tr("Capacity units for allocated for data services"));
+
+    ui->subChIDLabel->setToolTip(tr("Sub-channel Identifier"));
+    ui->subChID->setToolTip(tr("Sub-channel Identifier"));
+    ui->subChErrorProtectionLabel->setToolTip(tr("Sub-channel error protection"));
+    ui->subChErrorProtection->setToolTip(tr("Sub-channel error protection"));
+    ui->subChCULabel->setToolTip(tr("Number of capacity units allocated to sub-channel"));
+    ui->subChCU->setToolTip(tr("Number of capacity units allocated to sub-channel"));
+    ui->subChBitrateLabel->setToolTip(tr("Gross sub-channel bitrate"));
+    ui->subChBitrate->setToolTip(tr("Gross sub-channel bitrate"));
+
+    ui->subChContentsLabel->setToolTip(tr("Sub-channel content"));
+    ui->subChContents->setToolTip(tr("Sub-channel content"));
+    ui->subChService0Label->setToolTip(tr("List of services transmitted in sub-channel"));
+    ui->subChService0->setToolTip(tr("List of services transmitted in sub-channel"));
+    ui->subChService1->setToolTip(tr("List of services transmitted in sub-channel"));
+    ui->subChService2->setToolTip(tr("List of services transmitted in sub-channel"));
 
     ui->recordButton->setToolTip(tr("Record raw IQ stream to file"));
     ui->csvExportButton->setToolTip(tr("Export ensemble information to CSV file"));
