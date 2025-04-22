@@ -2377,6 +2377,9 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
            <layout class="QHBoxLayout" name="horizontalLayout_10">
             <item>
              <widget class="QCheckBox" name="tiiTimeUtcCheckBox">
+              <property name="toolTip">
+               <string>Show and save timestamps in UTC</string>
+              </property>
               <property name="text">
                <string>Timestamp in UTC</string>
               </property>
@@ -2384,6 +2387,9 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
             </item>
             <item>
              <widget class="QCheckBox" name="tiiCoordinatesCheckBox">
+              <property name="toolTip">
+               <string>Append GPS coordinates to CSV log</string>
+              </property>
               <property name="text">
                <string>GPS Coordinates</string>
               </property>

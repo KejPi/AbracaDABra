@@ -596,7 +596,7 @@ void EnsembleInfoDialog::setServiceInformation(const RadioControlServiceComponen
     }
 
     ui->service->setText(QString("%1").arg(s.label, 16));
-    ui->serviceId->setText("0x" + QString("%1").arg(s.SId.countryServiceRef(), 4, 16, QChar('0')).toUpper());
+    ui->serviceId->setText(QString("%1").arg(s.SId.countryServiceRef(), 4, 16, QChar('0')).toUpper());
     ui->scids->setText(QString::number(s.SCIdS));
     ui->subChannel->setText(QString::number(s.SubChId));
     ui->startCU->setText(QString::number(s.SubChAddr));
