@@ -1410,9 +1410,9 @@ void SetupDialog::onRtlTcpIpAddrEditFinished()
     }
 }
 
-void SetupDialog::onRtlTcpControlSocketChecked(Qt::CheckState state)
+void SetupDialog::onRtlTcpControlSocketChecked(bool checked)
 {
-    if ((state == Qt::Checked) != m_settings->rtltcp.controlSocketEna)
+    if (checked != m_settings->rtltcp.controlSocketEna)
     {
         setConnectButton(ConnectButtonOn);
     }

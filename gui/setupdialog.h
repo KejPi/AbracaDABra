@@ -183,7 +183,7 @@ private:
     void onTcpGainModeToggled(bool checked);
     void onRtlTcpGainSliderChanged(int val);
     void onRtlTcpIpAddrEditFinished();
-    void onRtlTcpControlSocketChecked(Qt::CheckState state);
+    void onRtlTcpControlSocketChecked(bool checked);
     void onRtlTcpPortValueChanged(int val);
     void onRtlTcpSwAgcMaxLevelChanged(int val);
     void activateRtlTcpControls(bool en);
