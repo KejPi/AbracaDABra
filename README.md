@@ -338,7 +338,7 @@ Then set your location, 3 options are available:
 
 _Note:_ Map is centered in Prague when location is not valid.
 
-You can also configure default folder to be used to store TII log in CVS format. By default it is `Documents` folder. Logging can be started from TII dialog.
+You can also configure default folder to be used to store TII log in CVS format. By default it is `Documents` folder. Logging can be started from TII dialog. You can set timestamps to be in UTC instead of local time. This settings affects TII CVS log and [Scanning tool](#scanning-tool) log. Additionally GPS coordinates of receiver (RX) and transmitters (TX) can be appended to TII CSV log file. This option is particularly useful in mobile reception with NMEA serial port GPS device.
 
 TII detector can run in _Sensitive_ or in _Reliable_ mode. _Sensitive_ mode is default, it gives good results but in some corner cases the detected weak codes might be invalid. _Reliable_ option on the other hand uses more conservative criteria to evaluate the TII, thus it generally detects less codes but with lower probability of fake detection. 
 
