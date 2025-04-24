@@ -26,7 +26,7 @@
     <message>
         <location filename="../aboutdialog.ui" line="48"/>
         <source>DAB SDR version 1.2.3</source>
-        <translation>DAB SDR Version 1.2.3</translation>
+        <translation>DAB-SDR-Version 1.2.3</translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="55"/>
@@ -61,7 +61,7 @@
     <message>
         <location filename="../aboutdialog.cpp" line="52"/>
         <source>DAB SDR version %1.%2.%3</source>
-        <translation>DAB SDR Version %1.%2.%3</translation>
+        <translation>DAB-SDR-Version %1.%2.%3</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="54"/>
@@ -96,7 +96,7 @@
     <message>
         <location filename="../aboutdialog.cpp" line="101"/>
         <source>and DAB transmitter database provided by</source>
-        <translation>und DAB Senderdatenbank zur Verfügung gestellt von</translation>
+        <translation>und die DAB Senderdatenbank zur Verfügung gestellt von</translation>
     </message>
 </context>
 <context>
@@ -245,7 +245,7 @@
     <message>
         <location filename="../bandscandialog.cpp" line="62"/>
         <source>&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Warning:&lt;/b&gt; Band scan deletes current service list!&lt;/span&gt;</source>
-        <translation>&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Warnung:&lt;/b&gt; Suchlauf löscht die aktuelle Serviceliste!&lt;/span&gt;</translation>
+        <translation>&lt;span style=&quot;color:red&quot;&gt;&lt;b&gt;Warnung:&lt;/b&gt; Suchlauf löscht die aktuelle Dienstliste!&lt;/span&gt;</translation>
     </message>
     <message>
         <location filename="../bandscandialog.cpp" line="116"/>
@@ -266,7 +266,7 @@
     <message>
         <location filename="../tii/channelselectiondialog.cpp" line="39"/>
         <source>Channel selection</source>
-        <translation>Kanalauswahl</translation>
+        <translation>Kanäle auswählen</translation>
     </message>
     <message>
         <location filename="../tii/channelselectiondialog.cpp" line="72"/>
@@ -292,12 +292,12 @@
     <message>
         <location filename="../widgets/ensemblebar.cpp" line="346"/>
         <source>&lt;p style=&apos;white-space:pre&apos;&gt;Unused&lt;br&gt;Capacity units: %1 CU [%2..%3]&lt;/p&gt;</source>
-        <translation>&lt;p style=&apos;white-space:pre&apos;&gt;Nicht verw.&lt;br&gt;Capacity units: %1 CU [%2..%3]&lt;/p&gt;</translation>
+        <translation>&lt;p style=&apos;white-space:pre&apos;&gt;Nicht verw.&lt;br&gt;Kapazitätseinh.: %1 CUs [%2..%3]&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../widgets/ensemblebar.cpp" line="353"/>
         <source>&lt;p style=&apos;white-space:pre&apos;&gt;SubChannel: %1 (%2)&lt;br&gt;Capacity units: %3 CU [%4..%5]&lt;/p&gt;</source>
-        <translation>&lt;p style=&apos;white-space:pre&apos;&gt;SubChannel: %1 (%2)&lt;br&gt;Capacity units: %3 CU [%4..%5]&lt;/p&gt;</translation>
+        <translation>&lt;p style=&apos;white-space:pre&apos;&gt;Unterkanal: %1 (%2)&lt;br&gt;Kapazitätseinheiten: %3 CUs [%4..%5]&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../widgets/ensemblebar.cpp" line="355"/>
@@ -335,7 +335,7 @@
     <message>
         <location filename="../tii/ensembleconfigdialog.cpp" line="58"/>
         <source>CSV Files</source>
-        <translation>CSV Dateien</translation>
+        <translation>CSV-Dateien</translation>
     </message>
 </context>
 <context>
@@ -358,7 +358,7 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="122"/>
         <source>Frequency offset:</source>
-        <translation>Frequenzoffset:</translation>
+        <translation>Frequenzversatz:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="148"/>
@@ -373,12 +373,12 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="212"/>
         <source>Service:</source>
-        <translation>Service:</translation>
+        <translation>Dienst:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="238"/>
         <source>Service ID:</source>
-        <translation>Service ID:</translation>
+        <translation>Dienst ID:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="264"/>
@@ -404,7 +404,7 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="380"/>
         <source>Service bitrate:</source>
-        <translation>Servicebitrate:</translation>
+        <translation>Dienstbitrate:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="406"/>
@@ -464,7 +464,7 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="723"/>
         <source>Allocated:</source>
-        <translation>Zugeteilt:</translation>
+        <translation>Belegt:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="749"/>
@@ -484,7 +484,7 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="865"/>
         <source>Capacity units:</source>
-        <translation>Capacity units:</translation>
+        <translation>Kapazitätseinheiten:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="891"/>
@@ -504,7 +504,7 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="981"/>
         <source>Services:</source>
-        <translation>Services:</translation>
+        <translation>Dienste:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="1054"/>
@@ -514,7 +514,7 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="1061"/>
         <source>Upload to FMLIST</source>
-        <translation>Upload zu FMLIST</translation>
+        <translation>Zu FMLIST hochladen</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="1088"/>
@@ -529,7 +529,7 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="1167"/>
         <source>Timeout:</source>
-        <translation>Timeout:</translation>
+        <translation>Zeitlimit:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="1192"/>
@@ -553,7 +553,7 @@
         <location filename="../ensembleinfodialog.cpp" line="78"/>
         <location filename="../ensembleinfodialog.cpp" line="79"/>
         <source>Estimated frequency offset</source>
-        <translation>Geschätzter Frequenzoffset</translation>
+        <translation>Geschätzter Frequenzversatz</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="80"/>
@@ -589,7 +589,7 @@
         <location filename="../ensembleinfodialog.cpp" line="91"/>
         <location filename="../ensembleinfodialog.cpp" line="92"/>
         <source>Service Component Identifier within the Service</source>
-        <translation>Servicekomponentenkennung innerhalb des Services</translation>
+        <translation>Komponentenkennung (SCId) innerhalb des Dienstes</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="93"/>
@@ -687,37 +687,37 @@
         <location filename="../ensembleinfodialog.cpp" line="126"/>
         <location filename="../ensembleinfodialog.cpp" line="127"/>
         <source>Used capacity units</source>
-        <translation>Verwendete Capacity Units</translation>
+        <translation>Verwendete Kapazitätseinheiten</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="128"/>
         <location filename="../ensembleinfodialog.cpp" line="129"/>
         <source>Unused capacity units</source>
-        <translation>Nicht benötigte Capacity Units</translation>
+        <translation>Nicht verwendete Kapazitätseinheiten</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="130"/>
         <location filename="../ensembleinfodialog.cpp" line="131"/>
         <source>Capacity units for allocated for audio services</source>
-        <translation>Zugeteilte Capacity Units für Audiodienste</translation>
+        <translation>Verwendete Kapazitätseinheiten für Audiodienste</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="132"/>
         <location filename="../ensembleinfodialog.cpp" line="133"/>
         <source>Capacity units for allocated for data services</source>
-        <translation>Zugeteilte Capacity Units für Datendienste</translation>
+        <translation>Verwendete Kapazitätseinheiten für Datendienste</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="137"/>
         <location filename="../ensembleinfodialog.cpp" line="138"/>
         <source>Sub-channel error protection</source>
-        <translation>Subchannel Fehlerschutz</translation>
+        <translation>Unterkanal-Fehlerschutz</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="139"/>
         <location filename="../ensembleinfodialog.cpp" line="140"/>
         <source>Number of capacity units allocated to sub-channel</source>
-        <translation>Anzahl an zugeteilten Capacity Units des Subchannels</translation>
+        <translation>Anzahl an verwendeten Kapazitätseinheiten des Unterkanals</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="141"/>
@@ -729,7 +729,7 @@
         <location filename="../ensembleinfodialog.cpp" line="144"/>
         <location filename="../ensembleinfodialog.cpp" line="145"/>
         <source>Sub-channel content</source>
-        <translation>Subchannel-Inhalt</translation>
+        <translation>Unterkanal-Inhalt</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="146"/>
@@ -753,12 +753,12 @@
     <message>
         <location filename="../ensembleinfodialog.cpp" line="154"/>
         <source>Upload ensemble information to FMLIST</source>
-        <translation>Ensembleinformation zu FMLIST raufladen</translation>
+        <translation>Ensembleinformation zu FMLIST hochladen</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="158"/>
         <source>When checked recording stops automatically when timeout is reached.</source>
-        <translation>Wenn ausgewählt, stoppt die Aufnahme bei Erreichen des Timeouts automatisch.</translation>
+        <translation>Wenn ausgewählt, stoppt die Aufnahme bei Erreichen des Zeitlimits automatisch.</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="159"/>
@@ -957,7 +957,7 @@
         <location filename="../mainwindow.ui" line="834"/>
         <location filename="../mainwindow.ui" line="872"/>
         <source>Right click to copy Dynamic Label +</source>
-        <translation>Rechtsklick, um Dynamic Label + zu kopieren</translation>
+        <translation>Rechtsklick, um Dynamic Label+ zu kopieren</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="97"/>
@@ -1253,7 +1253,7 @@
         <location filename="../mainwindow.cpp" line="1568"/>
         <location filename="../mainwindow.cpp" line="1579"/>
         <source>Tune to %1</source>
-        <translation>Tune auf %1</translation>
+        <translation>Gehe auf %1</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1683"/>
@@ -1296,12 +1296,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="4185"/>
         <source>Do you want to clear service list?</source>
-        <translation>Wollen Sie die Serviceliste leeren?</translation>
+        <translation>Wollen Sie die Dienstliste leeren?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="4187"/>
         <source>You will loose current service list including favorites, this action is irreversible.</source>
-        <translation>Sie werden die aktuelle Serviceliste inklusive der Favoriten verlieren, diese Aktion kann nicht rückgängig gemacht werden.</translation>
+        <translation>Sie werden die aktuelle Dienstliste inklusive der Favoriten verlieren, diese Aktion kann nicht rückgängig gemacht werden.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1697"/>
@@ -1316,7 +1316,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="436"/>
         <source>Export service list...</source>
-        <translation>Serviceliste exportieren...</translation>
+        <translation>Dienstliste exportieren...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="563"/>
@@ -1408,7 +1408,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="2126"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to suspend this announcement</source>
-        <translation type="unfinished">&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Laufende Durchsage&lt;br&gt;Quelldienst: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Klicken, um die Durchsage zu unterbrechen</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Laufende Durchsage&lt;br&gt;Quelldienst: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Klicken, um die Durchsage zu unterbrechen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2145"/>
@@ -1530,7 +1530,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../main.cpp" line="83"/>
         <source>Optional service list JSON file. If not specified ServiceList.json in system directory will be used.</source>
-        <translation>Optionale Serviceliste JSON-Datei. Wenn nicht angegeben, wird die ServiceList.json im Systemverzeichnis verwendet.</translation>
+        <translation>Optionale Dienstliste JSON-Datei. Wenn nicht angegeben, wird die ServiceList.json im Systemverzeichnis verwendet.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="4812"/>
@@ -3511,42 +3511,42 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../dabtables.cpp" line="1128"/>
         <source>Australia: Capital Cities (commercial and community broadcasters)</source>
-        <translation></translation>
+        <translation>Australien: Hauptstädte (Kommerzielle und Communityanbieter)</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="1130"/>
         <source>Australia: Regional New South Wales and ACT</source>
-        <translation type="unfinished"></translation>
+        <translation>Australien: Regional Neusüdwales und ACT</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="1132"/>
         <source>Australia: Capital Cities (national broadcasters)</source>
-        <translation type="unfinished"></translation>
+        <translation>Australien: Hauptstädte (nationale Anbieter)</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="1134"/>
         <source>Australia: Regional Queensland</source>
-        <translation type="unfinished"></translation>
+        <translation>Australien: Regional Queensland</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="1136"/>
         <source>Australia: Regional South Australia and Northern Territory</source>
-        <translation type="unfinished"></translation>
+        <translation>Australien: Regional Südaustralien und Nordterritorium</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="1138"/>
         <source>Australia: Regional Western Australia</source>
-        <translation type="unfinished"></translation>
+        <translation>Australien: Regional Westaustralien</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="1140"/>
         <source>Australia: Regional Victoria and Tasmania</source>
-        <translation type="unfinished"></translation>
+        <translation>Australien: Regional Victoria und Tasmanien</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="1142"/>
         <source>Australia: Regional (future)</source>
-        <translation type="unfinished"></translation>
+        <translation>Australien: Regional (zukünftig)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="4954"/>
@@ -4251,7 +4251,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../setupdialog.ui" line="1750"/>
         <source>By default DL messages are recorded with timestamp relative to recording time. DAB time (absolute time) will be also recorded by enabling this option.</source>
-        <translation>Standardmäßig werden DL Melduingen mit einem Zeitstempel relativ zur Aufnahmezeit aufgenommen. Die DAB-Zeit (absolute Zeit) wird auch aufgenommen, sobald diese Option gewählt wird.</translation>
+        <translation>Standardmäßig werden DL Meldungen mit einem Zeitstempel relativ zur Aufnahmezeit aufgenommen. Die DAB-Zeit (absolute Zeit) wird auch aufgenommen, sobald diese Option gewählt wird.</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1753"/>
@@ -4422,7 +4422,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="2554"/>
         <source>Visual style</source>
-        <translation type="unfinished"></translation>
+        <translation>Optischer Stil</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2442"/>
@@ -4777,12 +4777,12 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="1848"/>
         <source>Thank you for supporting the community!</source>
-        <translation>Danke, dass Sie die Community unterstützen!</translation>
+        <translation>Danke, dass Sie die Gemeinschaft unterstützen!</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1854"/>
         <source>Please consider enabling this option to help the community.</source>
-        <translation>Denken Sie bitte daran, diese Option zu aktivieren, um der Community zu helfen.</translation>
+        <translation>Denken Sie bitte daran, diese Option zu aktivieren, um der Gemeinschaft zu helfen.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="2300"/>
@@ -4949,7 +4949,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
         <location filename="../setupdialog.cpp" line="897"/>
         <location filename="../setupdialog.cpp" line="900"/>
         <source>N/A  </source>
-        <translation type="unfinished"></translation>
+        <translation>N/A  </translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1695"/>
@@ -5062,7 +5062,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../signaldialog.ui" line="205"/>
         <source>Offset:</source>
-        <translation>Offset:</translation>
+        <translation>Versatz:</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="32"/>
@@ -5102,7 +5102,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../signaldialog.cpp" line="86"/>
         <source>Estimated frequency offset</source>
-        <translation>Geschätzter Frequenzoffset</translation>
+        <translation>Geschätzter Frequenzversatz</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="97"/>
@@ -5122,7 +5122,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../signaldialog.cpp" line="189"/>
         <source>Frequency offset correction</source>
-        <translation>Frequenzoffsetkorrektur</translation>
+        <translation>Frequenzversatzkorrektur</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="201"/>
@@ -5225,7 +5225,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../tii/txmapdialog.cpp" line="273"/>
         <source>Ensemble: &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation>Ensembel: &lt;b&gt;%1&lt;/b&gt;</translation>
+        <translation>Ensemble: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/txmapdialog.cpp" line="277"/>
@@ -5451,12 +5451,12 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../qml/map.qml" line="302"/>
         <source>Stop logging</source>
-        <translation>Aufzeichnung der Logs beenden</translation>
+        <translation>Loggen beenden</translation>
     </message>
     <message>
         <location filename="../qml/map.qml" line="302"/>
         <source>Record CSV log</source>
-        <translation>CSV Logs aufzeichnen</translation>
+        <translation>CSV Log aufzeichnen</translation>
     </message>
 </context>
 </TS>
