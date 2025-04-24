@@ -292,22 +292,22 @@
     <message>
         <location filename="../widgets/ensemblebar.cpp" line="346"/>
         <source>&lt;p style=&apos;white-space:pre&apos;&gt;Unused&lt;br&gt;Capacity units: %1 CU [%2..%3]&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p style=&apos;white-space:pre&apos;&gt;Nieużywane&lt;br&gt;Jednostki pojemności: %1 CU [%2..%3]&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../widgets/ensemblebar.cpp" line="353"/>
         <source>&lt;p style=&apos;white-space:pre&apos;&gt;SubChannel: %1 (%2)&lt;br&gt;Capacity units: %3 CU [%4..%5]&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p style=&apos;white-space:pre&apos;&gt;Podkanał: %1 (%2)&lt;br&gt;Jednostki pojemności: %3 CU [%4..%5]&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../widgets/ensemblebar.cpp" line="355"/>
         <source>audio</source>
-        <translation type="unfinished"></translation>
+        <translation>dźwięk</translation>
     </message>
     <message>
         <location filename="../widgets/ensemblebar.cpp" line="355"/>
         <source>data</source>
-        <translation type="unfinished"></translation>
+        <translation>dane</translation>
     </message>
 </context>
 <context>
@@ -375,7 +375,7 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="174"/>
         <source>RF level:</source>
-        <translation>Poziom częstotliwości radiowej</translation>
+        <translation>Poziom częstotliwości radiowej:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="212"/>
@@ -413,32 +413,32 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="380"/>
         <source>Service bitrate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Szybkość transmisji danych usługi:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="406"/>
         <source>Useful bitrate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Przydatna szybkość transmisji:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="432"/>
         <source>Audio bitrate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Szybkość transmisji dźwięku:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="458"/>
         <source>PAD bitrate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Szybkość transmisji PAD:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="484"/>
         <source>Audio ratio:</source>
-        <translation type="unfinished"></translation>
+        <translation>Proporcja dźwięku:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="510"/>
         <source>PAD ratio:</source>
-        <translation type="unfinished"></translation>
+        <translation>Proporcja PAD:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="548"/>
@@ -475,47 +475,47 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="723"/>
         <source>Allocated:</source>
-        <translation type="unfinished"></translation>
+        <translation>Przydzielone:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="749"/>
         <source>Free:</source>
-        <translation type="unfinished"></translation>
+        <translation>Wolne:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="775"/>
         <source>Audio:</source>
-        <translation type="unfinished"></translation>
+        <translation>Dźwięk:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="801"/>
         <source>Data:</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="865"/>
         <source>Capacity units:</source>
-        <translation type="unfinished"></translation>
+        <translation>Jednostki pojemnościowe:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="891"/>
         <source>Error protection:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ochrona przed błędami:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="917"/>
         <source>Bitrate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Przepływność:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="955"/>
         <source>Content:</source>
-        <translation type="unfinished"></translation>
+        <translation>Treść:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="981"/>
         <source>Services:</source>
-        <translation type="unfinished"></translation>
+        <translation>Usługi:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="1054"/>
@@ -626,37 +626,37 @@
         <location filename="../ensembleinfodialog.cpp" line="100"/>
         <location filename="../ensembleinfodialog.cpp" line="101"/>
         <source>Gross bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Szybkość transmisji brutto</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="102"/>
         <location filename="../ensembleinfodialog.cpp" line="103"/>
         <source>Net bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Przepływność netto</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="104"/>
         <location filename="../ensembleinfodialog.cpp" line="105"/>
         <source>Net audio bitrate without PAD</source>
-        <translation type="unfinished"></translation>
+        <translation>Szybkość transmisji bitów dźwięku netto bez PAD</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="106"/>
         <location filename="../ensembleinfodialog.cpp" line="107"/>
         <source>Net PAD bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Szybkość transmisji PAD</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="108"/>
         <location filename="../ensembleinfodialog.cpp" line="109"/>
         <source>Percentage of audio in useful bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Procent dźwięku w użytecznej szybkości transmisji</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="110"/>
         <location filename="../ensembleinfodialog.cpp" line="111"/>
         <source>Percentage of PAD in useful bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Procent PAD w użytecznej szybkości transmisji</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="113"/>
@@ -698,49 +698,49 @@
         <location filename="../ensembleinfodialog.cpp" line="126"/>
         <location filename="../ensembleinfodialog.cpp" line="127"/>
         <source>Used capacity units</source>
-        <translation type="unfinished"></translation>
+        <translation>Używane jednostki pojemności</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="128"/>
         <location filename="../ensembleinfodialog.cpp" line="129"/>
         <source>Unused capacity units</source>
-        <translation type="unfinished"></translation>
+        <translation>Niewykorzystane jednostki pojemnościowe</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="130"/>
         <location filename="../ensembleinfodialog.cpp" line="131"/>
         <source>Capacity units for allocated for audio services</source>
-        <translation type="unfinished"></translation>
+        <translation>Jednostki pojemnościowe przeznaczone na usługi audio</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="132"/>
         <location filename="../ensembleinfodialog.cpp" line="133"/>
         <source>Capacity units for allocated for data services</source>
-        <translation type="unfinished"></translation>
+        <translation>Jednostki pojemności przeznaczone na usługi danych</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="137"/>
         <location filename="../ensembleinfodialog.cpp" line="138"/>
         <source>Sub-channel error protection</source>
-        <translation type="unfinished"></translation>
+        <translation>Ochrona przed błędami podkanału</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="139"/>
         <location filename="../ensembleinfodialog.cpp" line="140"/>
         <source>Number of capacity units allocated to sub-channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Liczba jednostek pojemnościowych przydzielonych do podkanału</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="141"/>
         <location filename="../ensembleinfodialog.cpp" line="142"/>
         <source>Gross sub-channel bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Całkowita przepływność podkanału</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="144"/>
         <location filename="../ensembleinfodialog.cpp" line="145"/>
         <source>Sub-channel content</source>
-        <translation type="unfinished"></translation>
+        <translation>Treść podkanału</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="146"/>
@@ -748,7 +748,7 @@
         <location filename="../ensembleinfodialog.cpp" line="148"/>
         <location filename="../ensembleinfodialog.cpp" line="149"/>
         <source>List of services transmitted in sub-channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Lista usług transmitowanych w podkanale</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="151"/>
@@ -797,28 +797,28 @@
         <location filename="../ensembleinfodialog.cpp" line="350"/>
         <location filename="../ensembleinfodialog.cpp" line="351"/>
         <source>%1 CU (%2%)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 CU (%2%)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="353"/>
         <location filename="../ensembleinfodialog.cpp" line="362"/>
         <source>No subchannel selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie wybrano żadnego podkanału</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="377"/>
         <source>%1 CU [%2..%3]</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 CU [%2..%3]</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="390"/>
         <source>%1 (coderate: %2/%3)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 (szybkość kodowania: %2/%3)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="396"/>
         <source>%1 (level: %2)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 (poziom: %2)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="400"/>
@@ -827,22 +827,22 @@
         <location filename="../ensembleinfodialog.cpp" line="578"/>
         <location filename="../ensembleinfodialog.cpp" line="643"/>
         <source>%1 kbps</source>
-        <translation type="unfinished">%1 kbps</translation>
+        <translation>%1 kbps</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="404"/>
         <source>Audio AAC</source>
-        <translation type="unfinished"></translation>
+        <translation>Dźwięk AAC</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="407"/>
         <source>Audio MP2</source>
-        <translation type="unfinished"></translation>
+        <translation>Dźwięk MP2</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="410"/>
         <source>Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="479"/>
@@ -3747,12 +3747,12 @@ Zdekodowano %1 / %2 obiektów MOT</translation>
     <message>
         <location filename="../slmodelitem.cpp" line="139"/>
         <source>Channel</source>
-        <translation type="unfinished">Kanał</translation>
+        <translation>Kanał</translation>
     </message>
     <message>
         <location filename="../slmodelitem.cpp" line="140"/>
         <source>Frequency: %1 MHz</source>
-        <translation type="unfinished"></translation>
+        <translation>Częstotliwość: %1 MHz</translation>
     </message>
 </context>
 <context>
@@ -4256,22 +4256,22 @@ Zdekodowano %1 / %2 obiektów MOT</translation>
     <message>
         <location filename="../setupdialog.ui" line="2280"/>
         <source>Baudrate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Szybkość transmisji:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2381"/>
         <source>Show and save timestamps in UTC</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokaż i zapisz znaczniki czasu w formacie UTC</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2384"/>
         <source>Timestamp in UTC</source>
-        <translation type="unfinished"></translation>
+        <translation>Znacznik czasu w UTC</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2394"/>
         <source>GPS Coordinates</source>
-        <translation type="unfinished"></translation>
+        <translation>Współrzędne GPS</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2462"/>
@@ -4450,7 +4450,7 @@ Zdekodowano %1 / %2 obiektów MOT</translation>
     <message>
         <location filename="../setupdialog.ui" line="2391"/>
         <source>Append GPS coordinates to CSV log</source>
-        <translation type="unfinished"></translation>
+        <translation>Dołącz współrzędne GPS do dziennika CSV</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2406"/>
@@ -5388,7 +5388,7 @@ Wysokość zawieszenia anteny: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="283"/>
         <source>Time (UTC)</source>
-        <translation type="unfinished"></translation>
+        <translation>Czas (UTC)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="287"/>
@@ -5472,22 +5472,22 @@ Wysokość zawieszenia anteny: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="361"/>
         <source>Latitude (TX)</source>
-        <translation type="unfinished"></translation>
+        <translation>Szerokość geograficzna (TX)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="363"/>
         <source>Longitude (TX)</source>
-        <translation type="unfinished"></translation>
+        <translation>Długość geograficzna (TX)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="365"/>
         <source>Latitude (RX)</source>
-        <translation type="unfinished"></translation>
+        <translation>Szerokość geograficzna (RX)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="367"/>
         <source>Longitude (RX)</source>
-        <translation type="unfinished"></translation>
+        <translation>Długość geograficzna (RX)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="337"/>
