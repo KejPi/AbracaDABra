@@ -53,7 +53,7 @@ Service can be easily added to favorites by clicking "star" icon.  Most of the e
 
 ## Expert mode
 <p align="center" width="100%">
-    <img width="889" alt="Application in expert mode" src="https://github.com/user-attachments/assets/2d304694-5993-4c5b-acb3-416c1b1106b1">
+    <img width="924" alt="Application in expert mode" src="https://github.com/user-attachments/assets/e5bb891a-e4b8-4479-a2be-7df09f1d55b6" />
 </p>
 In addition to basic mode, expert mode shows ensemble tree with structure of services and additional details of currently tuned service. 
 Furthermore it is possible to change the DAB channel manually in this mode. 
@@ -158,7 +158,7 @@ Raw file is a virtual device that is used to play files with raw IQ signal recor
 AbracaDABra shows technical information about ensemble structure in Ensemble Information dialog accessible from application menu in [Expert mode](#expert-mode). 
 
 <p align="center" width="100%">
-    <img width="1086" alt="Ensemble information" src="https://github.com/user-attachments/assets/66e39d7e-bd14-4934-848e-91c13cb56660" />
+    <img width="1112" alt="Ensemble information" src="https://github.com/user-attachments/assets/3ee53997-a38d-4b04-b9b1-e262cc933f70" />
 </p>
 
 Following information is available in the dialog:
@@ -326,7 +326,7 @@ This feature can be disabled in settings but please consider keeping this option
 TII decoder is considered to be advanced DX feature thus it is only available when application is in [Expert mode](#expert-mode). Before using it, the feature needs to be configured from application settings:
 
 <p align="center" width="100%">
-    <img width="692" alt="TII settings" src="https://github.com/user-attachments/assets/05e2183c-72f6-47b2-a7f6-76a848ff35ad" />
+    <img width="692" alt="TII settings" src="https://github.com/user-attachments/assets/84d122d9-c021-455e-98ae-e451049ed2d1" />
 </p>
 
 First update the DAB transmitter database kindly provided by [FMLIST](https://www.fmlist.org). _Note:_ you might need to configure network proxy in Others tab. 
@@ -500,6 +500,10 @@ Then clone the project:
 
        cmake .. -DQCUSTOMPLOT=OFF -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake
 
+   Optional disable FMLIST support:
+
+       cmake .. -DFMLIST=OFF -DCMAKE_PREFIX_PATH=$QT_PATH/lib/cmake
+   
 5. Run make
 
        make             
