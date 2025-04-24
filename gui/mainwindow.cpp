@@ -3120,6 +3120,10 @@ void MainWindow::restoreWindows()
         {
             showEPG();
         }
+        if (m_setupDialog && m_setupDialog->isVisible())
+        {
+            m_setupDialog->raise();
+        }
     }
 }
 
@@ -4460,10 +4464,6 @@ void MainWindow::changeEvent(QEvent *e)
     {
         if (isActiveWindow())
         {
-            if (m_setupDialog && m_setupDialog->isVisible())
-            {
-                m_setupDialog->raise();
-            }
             if (m_epgDialog && m_epgDialog->isVisible())
             {
                 m_epgDialog->raise();
@@ -4498,6 +4498,10 @@ void MainWindow::changeEvent(QEvent *e)
                 m_signalDialog->raise();
             }
 #endif
+            if (m_setupDialog && m_setupDialog->isVisible())
+            {
+                m_setupDialog->raise();
+            }
             raise();
         }
     }
