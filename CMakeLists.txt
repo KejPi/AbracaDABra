@@ -39,6 +39,9 @@ option (RARTTCP               "Enable RaRT TCP device"               OFF)
 # Plots
 option (QCUSTOMPLOT           "Enable QCustomPlot (GPLv3 license)"    ON)
 
+# FMLIST
+option (FMLIST                "Enable FMLIST interface"               ON)
+
 # Git submodule
 option(GIT_SUBMODULE          "Check submodules during build"         ON)
 
@@ -159,46 +162,52 @@ endif()
 
 #########################################################
 ## FMLIST library (backend)
-if(EXISTS "${PROJECT_SOURCE_DIR}/fmlist/CMakeLists.txt" AND NOT PROJECT_VERSION_RELEASE)
-    message (STATUS "libfmlist will be built from source")
-    set(FMLIST_DIR "${PROJECT_SOURCE_DIR}/fmlist")
+if(FMLIST)
+  if(EXISTS "${PROJECT_SOURCE_DIR}/fmlist/CMakeLists.txt" AND NOT PROJECT_VERSION_RELEASE)
+      message (STATUS "libfmlist will be built from source")
+      set(FMLIST_DIR "${PROJECT_SOURCE_DIR}/fmlist")
 
-    # fmlist library source code available
-    add_subdirectory(${FMLIST_DIR} fmlist)
+      # fmlist library source code available
+      add_subdirectory(${FMLIST_DIR} fmlist)
 
-    set(FMLIST_LINK_LIBRARIES fmlistInterface)
-    set(FMLIST_INCLUDE_DIRS ${FMLIST_DIR}/src ${PROJECT_BINARY_DIR}/fmlist/src)
+      set(FMLIST_LINK_LIBRARIES fmlistInterface)
+      set(FMLIST_INCLUDE_DIRS ${FMLIST_DIR}/src ${PROJECT_BINARY_DIR}/fmlist/src)
 
-    set(HAVE_FMLIST_INTERFACE ON)
-else()
-    # fmlist library
-    if (APPLE)
-        if(CMAKE_OSX_ARCHITECTURES MATCHES "^x86")
-            string(TOLOWER "${CMAKE_SYSTEM_NAME}_x86_64" PLATFORM)
-        elseif(CMAKE_OSX_ARCHITECTURES MATCHES "^arm")
-            string(TOLOWER "${CMAKE_SYSTEM_NAME}_${CMAKE_HOST_SYSTEM_PROCESSOR}" PLATFORM)
-        else()
-            if(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
-                string(TOLOWER "${CMAKE_SYSTEM_NAME}_${CMAKE_HOST_SYSTEM_PROCESSOR}" PLATFORM)
-            else()
-                string(TOLOWER "${CMAKE_SYSTEM_NAME}_x86_64" PLATFORM)
-            endif()
-        endif()
-    else()
-        string(TOLOWER "${CMAKE_SYSTEM_NAME}_${CMAKE_HOST_SYSTEM_PROCESSOR}" PLATFORM)
-    endif()
-    set(FMLIST_DIR "${PROJECT_SOURCE_DIR}/lib")
+      set(HAVE_FMLIST_INTERFACE ON)
+  else()
+      # fmlist library
+      if (APPLE)
+          if(CMAKE_OSX_ARCHITECTURES MATCHES "^x86")
+              string(TOLOWER "${CMAKE_SYSTEM_NAME}_x86_64" PLATFORM)
+          elseif(CMAKE_OSX_ARCHITECTURES MATCHES "^arm")
+              string(TOLOWER "${CMAKE_SYSTEM_NAME}_${CMAKE_HOST_SYSTEM_PROCESSOR}" PLATFORM)
+          else()
+              if(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
+                  string(TOLOWER "${CMAKE_SYSTEM_NAME}_${CMAKE_HOST_SYSTEM_PROCESSOR}" PLATFORM)
+              else()
+                  string(TOLOWER "${CMAKE_SYSTEM_NAME}_x86_64" PLATFORM)
+              endif()
+          endif()
+      else()
+          string(TOLOWER "${CMAKE_SYSTEM_NAME}_${CMAKE_HOST_SYSTEM_PROCESSOR}" PLATFORM)
+      endif()
+      set(FMLIST_DIR "${PROJECT_SOURCE_DIR}/lib")
 
-    if (EXISTS "${FMLIST_DIR}/${PLATFORM}/cmake/fmlistInterface.cmake")
-        message (STATUS "libfmlist found: ${FMLIST_DIR}/${PLATFORM}/cmake/fmlistInterface.cmake")
-        include(${FMLIST_DIR}/${PLATFORM}/cmake/fmlistInterface.cmake)
-        set(FMLIST_LINK_LIBRARIES fmlistInterface::fmlistInterface)
-        set(HAVE_FMLIST_INTERFACE ON)
-    else()
-        set(HAVE_FMLIST_INTERFACE OFF)
-        message (STATUS "libfmlistInterface not found.")
-    endif()
+      if (EXISTS "${FMLIST_DIR}/${PLATFORM}/cmake/fmlistInterface.cmake")
+          message (STATUS "libfmlist found: ${FMLIST_DIR}/${PLATFORM}/cmake/fmlistInterface.cmake")
+          include(${FMLIST_DIR}/${PLATFORM}/cmake/fmlistInterface.cmake)
+          set(FMLIST_LINK_LIBRARIES fmlistInterface::fmlistInterface)
+          set(HAVE_FMLIST_INTERFACE ON)
+      else()
+          set(HAVE_FMLIST_INTERFACE OFF)
+          message (STATUS "libfmlistInterface not found.")
+      endif()
+  endif()
+else(FMLIST)
+  set(HAVE_FMLIST_INTERFACE OFF)
+  message (STATUS "libfmlistInterface disabled.")
 endif()
+
 ###
 
 
