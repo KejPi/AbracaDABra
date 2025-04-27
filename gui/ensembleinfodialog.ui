@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>830</height>
+    <height>700</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -1032,7 +1032,7 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>400</height>
+       <height>200</height>
       </size>
      </property>
      <property name="lineWrapMode">
