@@ -807,7 +807,7 @@
     <message>
         <location filename="../ensembleinfodialog.cpp" line="396"/>
         <source>%1 (level: %2)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 (Pegel: %2)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="400"/>
@@ -1143,7 +1143,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="712"/>
         <source>Change service source (ensemble)</source>
-        <translation>Servicequelle ändern (Ensemble)</translation>
+        <translation>Dienstquelle ändern (Ensemble)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1064"/>
@@ -1368,7 +1368,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1970"/>
         <source>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Language:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %6</source>
-        <translation>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Kurzbezeichnung:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Sprache:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Land:&lt;/b&gt; %6</translation>
+        <translation>&lt;b&gt;Dienst:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Kurzbez.:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Sprache:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Land:&lt;/b&gt; %6</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2027"/>
@@ -1388,7 +1388,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="2050"/>
         <source>&lt;b&gt;Service bitrate&lt;/b&gt;&lt;br&gt;Audio &amp; data: %1</source>
-        <translation>&lt;b&gt;Servicebitrate&lt;/b&gt;&lt;br&gt;Audio &amp; Daten: %1</translation>
+        <translation>&lt;b&gt;Dienstbitrate&lt;/b&gt;&lt;br&gt;Audio &amp; Daten: %1</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2076"/>
@@ -1413,7 +1413,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="2145"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Suspended announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to resume this announcement</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Unterbrochene Durchsage&lt;br&gt;Quellservice: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Klicken, um die Durchsage fortzuführen</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Unterbrochene Durchsage&lt;br&gt;Quelldienst: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Klicken, um die Durchsage fortzuführen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2208"/>
@@ -1423,7 +1423,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="2209"/>
         <source>Try to select other service to recover</source>
-        <translation type="unfinished"></translation>
+        <translation>Versuchen Sie, einen anderen Dienst zur Wiederherstellung auszuwählen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2261"/>
@@ -3688,7 +3688,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="54"/>
         <source>DAB Scanning Tool</source>
-        <translation>DAB Scannertool</translation>
+        <translation>DAB-Scannertool</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="98"/>
@@ -3713,7 +3713,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="113"/>
         <source>Inf</source>
-        <translation type="unfinished"></translation>
+        <translation>Inf</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="115"/>
@@ -3740,7 +3740,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="247"/>
         <source>Stop</source>
-        <translation>Stop</translation>
+        <translation>Stopp</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="283"/>
@@ -3750,13 +3750,13 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="462"/>
         <source>Export CSV file</source>
-        <translation>CSV Datei exportieren</translation>
+        <translation>CSV-Datei exportieren</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="329"/>
         <location filename="../tii/scannerdialog.cpp" line="462"/>
         <source>CSV Files</source>
-        <translation>CSV Dateien</translation>
+        <translation>CSV-Dateien</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="179"/>
@@ -3781,7 +3781,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="307"/>
         <source>You will loose current data, this action is irreversible.</source>
-        <translation>Sie werden Daten verlieren, diese Aktion kann nicht rückgängig gemacht werden.</translation>
+        <translation>Sie werden Daten verlieren, diese Aktion ist unumkehrbar.</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="328"/>
@@ -3829,7 +3829,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../servicelist.cpp" line="440"/>
         <source>Service name;Short label;SID;SCIdS;Number of ensembles</source>
-        <translation>Servicename;Short Label;SID;SCIdS;Anzahl an Ensembles</translation>
+        <translation>Dienstname;Kurzbez.;SID;SCIdS;Anzahl an Ensembles</translation>
     </message>
 </context>
 <context>
@@ -4251,7 +4251,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../setupdialog.ui" line="1750"/>
         <source>By default DL messages are recorded with timestamp relative to recording time. DAB time (absolute time) will be also recorded by enabling this option.</source>
-        <translation>Standardmäßig werden DL Meldungen mit einem Zeitstempel relativ zur Aufnahmezeit aufgenommen. Die DAB-Zeit (absolute Zeit) wird auch aufgenommen, sobald diese Option gewählt wird.</translation>
+        <translation>Standardmäßig werden DL Meldungen mit einem Zeitstempel relativ zur Aufnahmezeit aufgenommen. Die DAB-Zeit (absolute Zeit) wird, sobald diese Option gewählt wird, auch aufgenommen.</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1753"/>
@@ -4309,7 +4309,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../setupdialog.ui" line="2177"/>
         <source>Geolocation source:</source>
-        <translation>Geolocation Quelle:</translation>
+        <translation>Quelle für Ortung:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2236"/>
@@ -4347,7 +4347,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="2327"/>
         <source>Change CSV log folder...</source>
-        <translation>Ordner für CSV Logs ändern...</translation>
+        <translation>Ordner für CSV-Logs ändern...</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2391"/>
@@ -4362,7 +4362,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="2590"/>
         <source>Expert mode UI</source>
-        <translation>Expertenmodus UI</translation>
+        <translation>Expertenmodus-Oberfläche</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2597"/>
@@ -4392,7 +4392,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="2672"/>
         <source>Network proxy configuration</source>
-        <translation>Netzwerkproxy Konfiguration</translation>
+        <translation>Netzwerkproxy-Konfiguration</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1630"/>
@@ -4407,7 +4407,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="2406"/>
         <source>Detector</source>
-        <translation>Detektor</translation>
+        <translation>Ortungsgerät</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2415"/>
@@ -4509,7 +4509,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.ui" line="2007"/>
         <source>Enables storing of all SPI data to selected folder. &lt;br&gt;SPI data are binary encoded files with services and program information, &lt;br&gt;these files decoded to XML format and service logos.&lt;br&gt;SPI data are stored in subfolder specified by pattern below.</source>
-        <translation>Ermöglicht alle SPI-Daten im ausgewählten Ordner zu speichern.&lt;br&gt;SPI-Daten sind binärkodierte Dateien mit Services- und Programminformationen,&lt;br&gt; diese Dateien und Servicelogos werden ins XML Format übertragen.&lt;br&gt;SPI-Daten werden im Unterordner gespeichert, wie im unten genannten Muster angegeben.</translation>
+        <translation>Ermöglicht alle SPI-Daten im ausgewählten Ordner zu speichern.&lt;br&gt;SPI-Daten sind binärkodierte Dateien mit Dienst- und Programminformationen,&lt;br&gt; diese Dateien und Dienstlogos werden ins XML Format übertragen.&lt;br&gt;SPI-Daten werden im Unterordner gespeichert, wie im unten genannten Muster angegeben.</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2034"/>
@@ -4553,7 +4553,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
 &lt;table style=&quot;width:100%&quot; border-width=&quot;1&quot;&gt;
 &lt;tr&gt;
 &lt;td&gt;&lt;b&gt;{serviceId}&lt;/b&gt; &lt;/td&gt;
-&lt;td&gt;aktuelle Audio Service ID (Hex-Nummer)&lt;/td&gt;
+&lt;td&gt;aktuelle Audio Dienst-ID (Hex-Nummer)&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td&gt;&lt;b&gt;{ensId}&lt;/b&gt; &lt;/td&gt;
@@ -4655,7 +4655,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="140"/>
         <source>&lt;br&gt;Note: Alarm announcement cannot be disabled.</source>
-        <translation>&lt;br&gt;Hinweis: Alarmdurchsagen können nicht deaktiviert werden.</translation>
+        <translation>&lt;br&gt;Hinweis: Alarmdurchsagen können nicht ausgeschaltet werden.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="148"/>
@@ -4822,12 +4822,12 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="120"/>
         <source>Connect to control socket if available</source>
-        <translation type="unfinished">Falls verfügbar, verbinde zu Kontrollsocket</translation>
+        <translation>Falls verfügbar, verbinde zu Kontrollsocket</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="122"/>
         <source>Enable connection to control socket.&lt;br&gt;This option requires rtl-tcp server implemented by old-dab.</source>
-        <translation>Aktiviere Verbindung zu Kontrollsocket.&lt;br&gt;Diese Option erfordert den von old-dab umgesetzten rtl-tcp Server.</translation>
+        <translation>Aktiviere Verbindung zu Kontrollsocket.&lt;br&gt;Diese Option erfordert den von old-dab erstellten rtl-tcp-Server.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="142"/>
@@ -4903,7 +4903,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="353"/>
         <source>Show Dynamic Label Plus (DL+) tags like artist, song name, etc.</source>
-        <translation>Zeige Dynamic Label Plus (DL+) Informationen wie Interpret, Titelname, usw.</translation>
+        <translation>Zeige Dynamic Label Plus (DL+) Informationen wie Interpret, Lied, usw.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="354"/>
@@ -4943,7 +4943,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
         <location filename="../setupdialog.cpp" line="750"/>
         <location filename="../setupdialog.cpp" line="760"/>
         <source>N/A</source>
-        <translation>unzutreffend</translation>
+        <translation>unzutreff.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="897"/>
@@ -4959,12 +4959,12 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="1812"/>
         <source>RTL SDR device connected</source>
-        <translation>RTL SDR Gerät verbunden</translation>
+        <translation>RTL-SDR-Gerät verbunden</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1815"/>
         <source>RTL TCP device connected</source>
-        <translation>RTL TCP Gerät verbunden</translation>
+        <translation>RTL-TCP-Gerät verbunden</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1821"/>
@@ -4984,7 +4984,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="1853"/>
         <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currently disabled.</source>
-        <translation>Hochladen der Ensembleinformationen auf &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; ist aktuell deaktiviert.</translation>
+        <translation>Hochladen der Ensembleinformationen auf &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; ist derzeit deaktiviert.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1925"/>
@@ -5169,7 +5169,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../signaldialog.cpp" line="973"/>
         <source>Fit in view</source>
-        <translation>An Ansicht anpassen</translation>
+        <translation>Ansicht anpassen</translation>
     </message>
 </context>
 <context>
