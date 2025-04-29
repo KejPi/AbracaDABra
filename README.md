@@ -47,7 +47,7 @@ However, if you like it, you can [buy me a beer](https://www.buymeacoffee.com/ke
     <img width="663" alt="Application in basic mode" src="https://github.com/KejPi/AbracaDABra/assets/6438380/a3d0a656-9a7c-47bd-a2e2-bc8d283d080b">
 </p>
 
-Basic mode provides a simple user interface that is focused on radio listening. Just select your favorite service from the service list on the right side 
+Basic mode provides a simple user interface that is focused on radio listening. Just select your favorite service from the service list on the right-hand side 
 and enjoy the music with slideshow and DL(+). 
 Services can be easily added to the favorites list by clicking "star" icon.  Most of the elements in UI have a tool tip with more information.
 
