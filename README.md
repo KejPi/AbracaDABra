@@ -1,5 +1,5 @@
 # AbracaDABra
-Abraca DAB radio is a DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks but also with Airspy devices, SDRplay devices and with the many devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
+Abraca DAB radio is a DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks, but also with Airspy devices, SDRplay devices and with devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
 
 The application is based on the Qt6 cross-platform software development framework and can run on any platform supported by Qt6 _(Qt version 6.5 or higher is required for full functionality)_. 
 Prebuilt binaries are released for Windows, macOS (both Intel and Apple Silicon) and Linux x86-64 and AARCH64 (AppImage). The AARCH64 AppImage is built to run on Raspberry Pi 4/5 with a 64 bit OS.
