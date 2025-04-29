@@ -1,31 +1,31 @@
 # AbracaDABra
-Abraca DAB radio is DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks but also with Airspy devices, SDRplay devices and with many devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
+Abraca DAB radio is a DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks but also with Airspy devices, SDRplay devices and with the many devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
 
-Application is based on Qt6 cross-platform software development framework and can run on any platform supported by Qt6 _(Qt version 6.5 or higher is required for full functionality)_. 
-Prebuilt binaries are released for Windows, macOS (both Intel and Apple Silicon) and Linux x86-64 and AARCH64 (AppImage). AARCH64 AppImage is built to run on Raspberry Pi4/5 with 64 bit OS.
-ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
+The application is based on the Qt6 cross-platform software development framework and can run on any platform supported by Qt6 _(Qt version 6.5 or higher is required for full functionality)_. 
+Prebuilt binaries are released for Windows, macOS (both Intel and Apple Silicon) and Linux x86-64 and AARCH64 (AppImage). The AARCH64 AppImage is built to run on Raspberry Pi 4/5 with a 64 bit OS.
+Arch Linux users can install AbracaDABra from the <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
 <p align="center" width="100%">
     <img width="889" alt="AbracaDABra application window" src="https://github.com/KejPi/AbracaDABra/assets/6438380/717ed65e-314b-4307-9e32-968c5582eeda"> 
 </p>
 
 ## Features
-* Following [input devices](#input-devices) are supported:
+* The following [input devices](#input-devices) are supported:
   * RTL-SDR (default device)
   * [Airspy](https://airspy.com) (optional)
   * [SoapySDR](https://github.com/pothosware/SoapySDR/wiki) (optional)
   * [SDRplay](https://www.sdrplay.com) (optional, requires [SoapySDR](https://github.com/pothosware/SoapySDR/wiki))
   * RTL-TCP
   * Raw file input
-* Band scan with automatic service list
+* Band scan with automatic service list creation
 * Service list management
-* DAB (mp2) and DAB+ (AAC) audio decoding
-* Announcements (all types including alarm test)
+* DAB (MP2) and DAB+ (AAC) audio decoding
+* Announcements (all types supported, including alarm tests)
 * Dynamic label (DL) and Dynamic label plus (DL+)
-* MOT slideshow (SLS) and categorized slideshow (CatSLS) from PAD or from secondary data service
+* MOT slideshow (SLS) and categorized slideshow (CatSLS) from PAD or from a secondary data service
 * SPI (Service and Programme information)
 * RadioDNS
 * TII decoding and continuous scanning (DX)
-* Audio and data services reconfiguration
+* Reconfiguration of audio and data services
 * Dynamic programme type (PTy)
 * Ensemble structure view with all technical details, upload to [FMLIST](https://www.fmlist.org)
 * Raw file dumping (optionally with XML header)
@@ -33,13 +33,13 @@ ArchLinux users can install AbracaDABra from <a href="https://aur.archlinux.org/
 * DAB input signal spectrum visualization
 * RF level estimation on supported devices
 * Only band III and DAB mode 1 are supported
-* Simple user-friendly interface, trying to follow DAB _Rules of implementation (<a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>)_
+* Simple user-friendly interface, that aims to follow the DAB _Rules of implementation (<a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>)_
 * Multiplatform (Windows, macOS and Linux)
-* Dark theme supported on all platforms
+* Dark theme is supported on all platforms
 * Localization to German, Czech and Polish (not complete)
 
 
-AbracaDABra desktop application is available for free and will remain so in the future. 
+The AbracaDABra desktop application is available for free and will remain so in the future. 
 However, if you like it, you can [buy me a beer](https://www.buymeacoffee.com/kejpi) 🍺
 
 ## Basic mode
@@ -47,18 +47,18 @@ However, if you like it, you can [buy me a beer](https://www.buymeacoffee.com/ke
     <img width="663" alt="Application in basic mode" src="https://github.com/KejPi/AbracaDABra/assets/6438380/a3d0a656-9a7c-47bd-a2e2-bc8d283d080b">
 </p>
 
-Simple user interface that is focused on radio listening. Just select your favorite service from service list on the right side 
+Basic mode provides a simple user interface that is focused on radio listening. Just select your favorite service from the service list on the right side 
 and enjoy the music with slideshow and DL(+). 
-Service can be easily added to favorites by clicking "star" icon.  Most of the elements in UI have tool tip with more information.
+Services can be easily added to the favorites list by clicking "star" icon.  Most of the elements in UI have a tool tip with more information.
 
 ## Expert mode
 <p align="center" width="100%">
     <img width="924" alt="Application in expert mode" src="https://github.com/user-attachments/assets/e5bb891a-e4b8-4479-a2be-7df09f1d55b6" />
 </p>
-In addition to basic mode, expert mode shows ensemble tree with structure of services and additional details of currently tuned service. 
-Furthermore it is possible to change the DAB channel manually in this mode. 
-This is particularly useful when antenna adjustment is done in order to receive ensemble that is not captured during automatic band scan.
-Expert mode can be enabled in Settings dialog.
+In addition to the information available in basic mode, expert mode shows the structure of services in an ensemble tree as well as additional details about the currently tuned service. 
+Furthermore it is also possible to change the DAB channel manually in this mode. 
+This is particularly useful when performing antenna adjustment in order to receive an ensemble that was not previously captured during an automatic band scan.
+Expert mode can be enabled in the Settings dialog.
 
 ## Input devices
 
@@ -66,17 +66,17 @@ AbracaDABra supports multiple input devices, some of them are optional. Device s
 
 ### RTL-SDR
 
-RTL-SDR is default input device. It is highly recommended to use [RTL-SDR driver by old-dab](https://github.com/old-dab/rtlsdr) when compiling application from source code. Prebuilt binaries are using this driver. 
+RTL-SDR is the default input device. It is highly recommended to use the [RTL-SDR driver by old-dab](https://github.com/old-dab/rtlsdr) when compiling the application from source code. Prebuilt binaries use this driver. 
 
-It is possible to select particular device when more devices are available. You can choose the device in settings (see screenshot below). When option called "Use any available RTL-SDR device if selected one fails" is active, application tries to connect the first functional RTL-SDR device if the selected device is not available, does not work or is already in use. Please note that all RTL-SDR devices have typically serial number 00000001 but you can modify it using `rtl_eeprom` tool to be able to distiguish your devices. Follow this [video guide](https://www.youtube.com/watch?v=xGEDglwOHng) to do it.  
+It is possible to select a particular device when more than one device is connected. You can choose the device to use in settings (see screenshot below). When the option "Use any available RTL-SDR device if selected one fails" is enabled, the application tries to connect to the first functional RTL-SDR device if the selected device is not available, does not work or is already in use. Please note that RTL-SDR devices typically have the serial number 00000001, but you can modify it using the `rtl_eeprom` tool to be able to distiguish your devices. Follow this [video guide](https://www.youtube.com/watch?v=xGEDglwOHng) to do it.  
 
-RTL-SDR device supports 3 or 4 gain control modes:
+RTL-SDR devices support 3 to 4 gain control modes, depending on the driver the application is compiled with:
 * Software (default) - gain is controlled by the application
-* Driver - available only for [RTL-SDR driver by old-dab](https://github.com/old-dab/rtlsdr). Gain is controlled by the driver.
-* Hardware - internal RTL-SDR HW gain control. RF level estimation is not available in this mode
+* Driver - available only for the [RTL-SDR driver by old-dab](https://github.com/old-dab/rtlsdr). Gain is controlled by the driver.
+* Hardware - uses the internal RTL-SDR HW gain control. RF level estimation is not available in this mode
 * Manual - manual control of the gain
 
-_Note:_ SW AGC level threshold value can be adjusted to control maximum level threshold for automatic gain control. This control is more intended for debugging, default value is well tuned so it is typically not needed to be altered. Please do not report any issues when you change the value.
+_Note:_ The SW AGC level threshold value can be adjusted to control the maximum level threshold for automatic gain control. This control is more intended for debugging, the default value is well tuned so it does typically not needed to be altered. Please do not report any issues if you have changed the value.
 
 <p align="center" width="100%">
     <img width="651" alt="RTL-SDR" src="https://github.com/user-attachments/assets/e76aaad8-5efa-412d-8673-dbae6f65d98e" />
@@ -84,14 +84,14 @@ _Note:_ SW AGC level threshold value can be adjusted to control maximum level th
 
 ### RTL-TCP
 
-RTL-TCP is a simple server that provides IQ signal stream. Application can connect to server running on localhost (127.0.0.1) as well as on remote server. Server implementation [by old-dab](https://github.com/old-dab/rtlsdr) supports also so called control port. Connection to this port is optional, but when it is connected application can estimate RF level in dBm. 
+RTL-TCP is a simple server that provides an IQ signal stream. The application can connect to a server running on localhost (127.0.0.1) as well as on a remote server. The server implementation [by old-dab](https://github.com/old-dab/rtlsdr) also supports the so called control port. Connection to this port is optional, but when it is connected, the application can estimate the RF level in dBm. 
 
-RTL-TCP device supports 3 gain control modes:
+RTL-TCP devices support 3 gain control modes:
 * Software (default) - gain is controlled by the application
-* Hardware - internal HW gain control by RTL-SDR device server is connected to. RF level estimation is not available in this mode
+* Hardware - internal HW gain control by the RTL-SDR device the server is connected to. RF level estimation is not available in this mode.
 * Manual - manual control of the gain
 
-_Note:_ SW AGC level threshold value can be adjusted to control maximum level threshold for automatic gain control. This control is more intended for debugging, default value is well tuned so it is typically not needed to be altered. Please do not report any issues when you change the value.
+_Note:_ The SW AGC level threshold value can be adjusted to control the maximum level threshold for automatic gain control. This control is more intended for debugging, the default value is well tuned so it does typically not needed to be altered. Please do not report any issues if you have changed the value.
 
 <p align="center" width="100%">
     <img width="651" alt="RTL_TCP" src="https://github.com/user-attachments/assets/ddac7c26-e07a-461e-85c2-d835dd1c1967" />
@@ -99,15 +99,15 @@ _Note:_ SW AGC level threshold value can be adjusted to control maximum level th
 
 ### Airspy
 
-Airspy is optional device when you build application from the source code. It is available in prebuilt binaries. Only Airspy Mini and R2 are supported, other devices do not have sufficient bandwith for DAB reception. If you have problems with Airspy devices, please check the firmware version. Firmware update maybe required for correct functionality.
+Airspy is an optional device when you build the application from the source code. It is available in prebuilt binaries. Only the Airspy Mini and R2 are supported, other devices do not have sufficient bandwith for DAB reception. If you have problems with Airspy devices, please check the firmware version. A firmware update may be required for correct functionality.
 
-It is possible to select particular device when more devices are available. You can choose the device in settings (see screenshot below). When option called "Use any available Airspy device if selected one fails" is active, application tries to connect the first functional Airspy device if the selected device is not available, does not work or is already in use.
+It is possible to select a particular device when more than one device is connected. You can choose the device to use in settings (see screenshot below). When the option "Use any available Airspy device if selected one fails" is enabled, the application tries to connect to the first functional Airspy device if the selected device is not available, does not work or is already in use.
 
-Airspy device supports 4 gain control modes:
-* Software (default) - gain is controlled by application. So called sensitivity gain is used for that.
-* Hybrid - application controls IF gain but other two gains are controlled by driver.
-* Sensitivity - manual control of sensitivity gain. Physical gain controls in the device are set by driver according to sensitivity gain index.
-* Manual - full manual control of all available gains. It is possible to enable AGC for selected gain controls in this mode. 
+Airspy devices support 4 gain control modes:
+* Software (default) - gain is controlled by the application. So called sensitivity gain is used.
+* Hybrid - the application controls IF gain but the other two gains are controlled by driver.
+* Sensitivity - manual control of sensitivity gain. Physical gain controls in the device are set by the driver according to the sensitivity gain index.
+* Manual - full manual control of all the available gains. It is possible to enable AGC for specific gain controls in this mode. 
 
 _Note:_ RF level estimation is not available for Airspy devices.
 
@@ -117,15 +117,15 @@ _Note:_ RF level estimation is not available for Airspy devices.
 
 ### SDRplay
 
-SDRplay is optional device. It is based on [SoapySDR](https://github.com/pothosware/SoapySDR/wiki) and requires [SoapySDR SDRplay3 plugin](https://github.com/pothosware/SoapySDRPlay3) to be in located in `SOAPY_SDR_PLUGIN_PATH`. Prebuilt binaries are distributed with necessary libraries and configured to find required plugin in the installation location. Nevertheless in order to make SDRplay device functional you also need to install [SDRplay API](https://www.sdrplay.com/api/) 3.15 with background service that is required to access SDRplay devices. 
+SDRplay is an optional device. It is based on [SoapySDR](https://github.com/pothosware/SoapySDR/wiki) and requires the [SoapySDR SDRplay3 plugin](https://github.com/pothosware/SoapySDRPlay3) to be in located in `SOAPY_SDR_PLUGIN_PATH`. Prebuilt binaries are distributed with the necessary libraries and configured to find the required plugin in the installation location. Nevertheless, in order to make SDRplay devices functional you also need to install [SDRplay API](https://www.sdrplay.com/api/) 3.15, with the background service that is required to access SDRplay devices. 
 
-It is possible to select particular device when more devices are available. You can choose the device in settings (see screenshot below). When option called "Use any available SDRplay device if selected one fails" is active, application tries to connect the first functional SDRplay device if the selected device is not available, does not work or is already in use.
+It is possible to select a particular device when more than one device is connected. You can choose the device to use in settings (see screenshot below). When the option "Use any available SDRplay device if selected one fails" is enabled, the application tries to connect to the first functional SDRplay device if the selected device is not available, does not work or is already in use.
 
-SDRplay devices have 2 independent gain controls, application calls them RF and IF. RF gain controls LNA gain reduction and IF gain controls IF gain reduction. You can find more details about SDRplay devices in documentation available [online](https://www.sdrplay.com/apps-catalogue/).
+SDRplay devices have 2 independent gain controls, the application calls them RF and IF. RF gain controls LNA gain reduction and IF gain controls IF gain reduction. You can find more details about SDRplay devices in the documentation available [online](https://www.sdrplay.com/apps-catalogue/).
 
-SDRplay device supports 2 gain modes:
-* Software (default) - RF and IF gain is controlled by application. Please note that control may fail in case of strong adjacent channel that could lead to LNA overload. 
-* Manual - both RF ad IF gain is in manual mode however you can enable AGC on IF gain. In this case IF gain will be controlled by the application. 
+SDRplay devices support 2 gain modes:
+* Software (default) - both RF and IF gain are controlled by the application. Please note that this may fail in case when there are strong adjacent channels that could overload the LNA. 
+* Manual - both RF ad IF gain is manual, however you can enable AGC for IF gain. In this case IF gain will be controlled by the application. 
 
 <p align="center" width="100%">
     <img width="651" alt="SDRplay" src="https://github.com/user-attachments/assets/fce9cd85-4bec-4bae-b5e4-243397372b53" />
@@ -133,10 +133,10 @@ SDRplay device supports 2 gain modes:
 
 ### SoapySDR
 
-[SoapySDR](https://github.com/pothosware/SoapySDR/wiki) is an open-source generalized API and runtime library for interfacing with SDR devices. It supports many SDR devices through runtime-loadable modules. In order to use your device using this API, you need to get plugin library and set `SOAPY_SDR_PLUGIN_PATH` so that is is recognized by the application. Then you need to specify device parameters, antenna and RX channel and you can connect to the device. Screenshot below shows RSP1A device connected as SoapySDR device.
+[SoapySDR](https://github.com/pothosware/SoapySDR/wiki) is an open-source generalized API and runtime library for interfacing with SDR devices. It supports many SDR devices through runtime-loadable modules. In order to use your device using this API, you need to get  a plugin library and set `SOAPY_SDR_PLUGIN_PATH` so that is is recognized by the application. Then you need to specify the device parameters, antenna and RX channel and then you can connect to the device. The screenshot below shows an RSP1A device connected as a SoapySDR device.
 
-SoapySDR device supports 2 gain modes: 
-* Device - gain control by device if available from SoapySDR API
+SoapySDR devices support 2 gain modes: 
+* Device - gain control is performed by the device if possible from the SoapySDR API
 * Manual - all gain controls reported by API are exposed for manual control
 
 _Note:_ RF level estimation is not available for SoapySDR devices.
@@ -147,7 +147,7 @@ _Note:_ RF level estimation is not available for SoapySDR devices.
 
 ### Raw file
 
-Raw file is a virtual device that is used to play files with raw IQ signal recording. This device is only available in [Expert mode](#expert-mode). You can create compatible recording from Ensemble information dialog. These files are particularly useful for debugging. Application supports files with 8 bit unsigned or 16 bit signed integer samples and sampling rate 2048kHz. It is possible to play the file in endless loop and seek within the file using controls in settings dialog. 
+Raw file is a virtual device that is used to play files with a raw IQ signal recording. This device is only available in [Expert mode](#expert-mode). You can create compatible recordings from the Ensemble information dialog. These files are particularly useful for debugging. The application supports files with 8 bit unsigned or 16 bit signed integer samples and a sampling rate of 2048kHz. It is possible to play the file in an endless loop and seek within the file using the controls in the settings dialog. 
 
 <p align="center" width="100%">
     <img width="651" alt="RawFile" src="https://github.com/user-attachments/assets/ae7e2a17-36b9-4279-b9d1-2e22770b8913" />
@@ -155,21 +155,21 @@ Raw file is a virtual device that is used to play files with raw IQ signal recor
 
 ## Ensemble Information
 
-AbracaDABra shows technical information about ensemble structure in Ensemble Information dialog accessible from application menu in [Expert mode](#expert-mode). 
+AbracaDABra shows technical information about the ensemble structure in the Ensemble Information dialog accessible from the application menu in [Expert mode](#expert-mode). 
 
 <p align="center" width="100%">
     <img width="1112" alt="Ensemble information" src="https://github.com/user-attachments/assets/3ee53997-a38d-4b04-b9b1-e262cc933f70" />
 </p>
 
-Following information is available in the dialog:
-* Current channel details like frequency, SNR, AGC gain, etc.
-* Current audio service and its subchannel parameters
-* Current audio service bitrate details
-* FIB and AU statistics - each of them can be reset from popup menu accessible by right click
-* Subchannel allocation with interactive colorful bar. You can click on any subchannel to display details below. Subchannels with data services are shown with cross pattern.
-* Details of all services in ensemble in text format. It is possible to select any part of the text and copy it to clipboard.
+The following information is available in the dialog:
+* Details for the current channel like its frequency, SNR, AGC gain, etc.
+* The current audio service and its subchannel parameters
+* The current audio service bitrate details
+* FIB and AU statistics - each of them can be reset from the popup menu accessible with a right click
+* Subchannel allocation with a interactive colorful bar. You can click on any subchannel to display its details below. Subchannels with data services are shown with cross pattern.
+* Details of all services in the ensemble in text format. It is possible to select any part of the text and copy it to the clipboard.
 
-Furthermore, this dialog allows to export ensemble structure in CSV format and to upload it to FMLIST. _NOTE:_ Upload to FMLIST is enabled only when automatic upload is disabled in Settings. 
+Furthermore, this dialog allows exporting the ensemble structure in CSV format and uploading it to FMLIST. _NOTE:_ The upload to FMLIST button is only enabled when automatic uploading is disabled in Settings. 
 
 Last feature accessible from Ensemble Information is Raw data recording with optional timeout. This is used to record signal from tuner (IQ) that can be used as [Raw file input](#raw-file) later. _Note:_ The raw file grows very fast, for example RTL-SDR device stream with sample rate 2048kHz and 8 bit produces approximately 250 MByte file in 1 minute.
 
