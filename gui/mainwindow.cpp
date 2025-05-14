@@ -3312,6 +3312,7 @@ void MainWindow::loadSettings()
     m_settings->rtlsdr.biasT = settings->value("RTL-SDR/bias-T", false).toBool();
     m_settings->rtlsdr.agcLevelMax = settings->value("RTL-SDR/agcLevelMax", 0).toInt();
     m_settings->rtlsdr.ppm = settings->value("RTL-SDR/ppm", 0).toInt();
+    m_settings->rtlsdr.rfLevelOffset = settings->value("RTL-SDR/rfLevelOffset", 0.0).toFloat();
 
     m_settings->rtltcp.gainIdx = settings->value("RTL-TCP/gainIndex", 0).toInt();
     m_settings->rtltcp.gainMode = static_cast<RtlGainMode>(settings->value("RTL-TCP/gainMode", static_cast<int>(RtlGainMode::Software)).toInt());
@@ -3320,6 +3321,7 @@ void MainWindow::loadSettings()
     m_settings->rtltcp.controlSocketEna = settings->value("RTL-TCP/controlSocket", true).toBool();
     m_settings->rtltcp.agcLevelMax = settings->value("RTL-TCP/agcLevelMax", 0).toInt();
     m_settings->rtltcp.ppm = settings->value("RTL-TCP/ppm", 0).toInt();
+    m_settings->rtltcp.rfLevelOffset = settings->value("RTL-TCP/rfLevelOffset", 0.0).toFloat();
 
 #if HAVE_RARTTCP
     m_settings->rarttcp.tcpAddress = settings->value("RART-TCP/address", QString("127.0.0.1")).toString();
@@ -3608,6 +3610,7 @@ void MainWindow::saveSettings()
     settings->setValue("RTL-SDR/bias-T", m_settings->rtlsdr.biasT);
     settings->setValue("RTL-SDR/agcLevelMax", m_settings->rtlsdr.agcLevelMax);
     settings->setValue("RTL-SDR/ppm", m_settings->rtlsdr.ppm);
+    settings->setValue("RTL-SDR/rfLevelOffset", m_settings->rtlsdr.rfLevelOffset);
 
 #if HAVE_AIRSPY
     settings->setValue("AIRSPY/lastDevice", m_settings->airspy.hwId);
@@ -3663,6 +3666,7 @@ void MainWindow::saveSettings()
     settings->setValue("RTL-TCP/controlSocket", m_settings->rtltcp.controlSocketEna);
     settings->setValue("RTL-TCP/agcLevelMax", m_settings->rtltcp.agcLevelMax);
     settings->setValue("RTL-TCP/ppm", m_settings->rtltcp.ppm);
+    settings->setValue("RTL-TCP/rfLevelOffset", m_settings->rtltcp.rfLevelOffset);
 
 #if HAVE_RARTTCP
     settings->setValue("RART-TCP/address", m_settings->rarttcp.tcpAddress);

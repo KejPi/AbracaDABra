@@ -237,6 +237,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->rtlsdrInfoWidgetLayout->addWidget(label, row++, 1, 1, 2);
     m_rtlSdrLabel.append(label);
     ui->rtlsdrInfoWidget->setVisible(false);
+    ui->rtlsdrRFLevelOffset->setToolTip(tr("This value is added to estimated RF level"));
 
     row = 0;
     label = new QLabel(tr("Connected device:"), ui->rtltcpInfoWidget);
@@ -255,6 +256,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->rtltcpInfoWidgetLayout->addWidget(label, row++, 1, 1, 2);
     m_rtlTcpLabel.append(label);
     ui->rtltcpInfoWidget->setVisible(false);
+    ui->rtltcpRFLevelOffset->setToolTip(ui->rtlsdrRFLevelOffset->toolTip());
+
 #if HAVE_AIRSPY
     // Airspy device info
     row = 0;
@@ -794,6 +797,7 @@ void SetupDialog::setUiState()
     ui->rtlsdrSwAgcMaxLevel->setValue(m_settings->rtlsdr.agcLevelMax);
     ui->rtlsdrSwAgcMaxLevelDefault->setEnabled(m_settings->rtlsdr.agcLevelMax != 0);
     ui->rtlsdrPPM->setValue(m_settings->rtlsdr.ppm);
+    ui->rtlsdrRFLevelOffset->setValue(m_settings->rtlsdr.rfLevelOffset);
     ui->rtlsdrFallbackConnection->setChecked(m_settings->rtlsdr.fallbackConnection);
 
     switch (m_settings->rtltcp.gainMode)
@@ -813,6 +817,7 @@ void SetupDialog::setUiState()
     ui->rtltcpSwAgcMaxLevel->setValue(m_settings->rtltcp.agcLevelMax);
     ui->rtltcpSwAgcMaxLevelDefault->setEnabled(m_settings->rtltcp.agcLevelMax != 0);
     ui->rtltcpPPM->setValue(m_settings->rtltcp.ppm);
+    ui->rtltcpRFLevelOffset->setValue(m_settings->rtltcp.rfLevelOffset);
 
 #if HAVE_AIRSPY
     switch (m_settings->airspy.gain.mode)
@@ -1056,6 +1061,7 @@ void SetupDialog::connectDeviceControlSignals()
     connect(ui->rtlsdrSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtlsdrSwAgcMaxLevel->setValue(0); });
     connect(ui->rtlsdrBiasTCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onBiasTChanged);
     connect(ui->rtlsdrPPM, &QSpinBox::valueChanged, this, &SetupDialog::onPPMChanged);
+    connect(ui->rtlsdrRFLevelOffset, &QDoubleSpinBox::valueChanged, this, &SetupDialog::onRfLevelOffsetChanged);
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
     connect(ui->rtlsdrFallbackConnection, &QCheckBox::checkStateChanged, this,
             [this](bool checked) { m_settings->rtlsdr.fallbackConnection = checked; });
@@ -1072,6 +1078,7 @@ void SetupDialog::connectDeviceControlSignals()
     connect(ui->rtltcpSwAgcMaxLevel, &QSpinBox::valueChanged, this, &SetupDialog::onRtlTcpSwAgcMaxLevelChanged);
     connect(ui->rtltcpSwAgcMaxLevelDefault, &QPushButton::clicked, this, [this]() { ui->rtltcpSwAgcMaxLevel->setValue(0); });
     connect(ui->rtltcpPPM, &QSpinBox::valueChanged, this, &SetupDialog::onPPMChanged);
+    connect(ui->rtltcpRFLevelOffset, &QDoubleSpinBox::valueChanged, this, &SetupDialog::onRfLevelOffsetChanged);
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
     connect(ui->rtltcpControlSocketCheckbox, &QCheckBox::checkStateChanged, this, &SetupDialog::onRtlTcpControlSocketChecked);
 #else
@@ -1321,6 +1328,34 @@ void SetupDialog::onBiasTChanged(int)
 #endif
             break;
         case InputDevice::Id::RTLTCP:
+        case InputDevice::Id::SOAPYSDR:
+        case InputDevice::Id::RARTTCP:
+        case InputDevice::Id::UNDEFINED:
+        case InputDevice::Id::RAWFILE:
+            break;
+    }
+}
+
+void SetupDialog::onRfLevelOffsetChanged(double val)
+{
+    switch (m_inputDeviceId)
+    {
+        case InputDevice::Id::RTLSDR:
+            m_settings->rtlsdr.rfLevelOffset = ui->rtlsdrRFLevelOffset->value();
+            if (m_device)
+            {
+                m_device->setRfLevelOffset(m_settings->rtlsdr.rfLevelOffset);
+            }
+            break;
+        case InputDevice::Id::RTLTCP:
+            m_settings->rtltcp.rfLevelOffset = ui->rtltcpRFLevelOffset->value();
+            if (m_device)
+            {
+                m_device->setRfLevelOffset(m_settings->rtltcp.rfLevelOffset);
+            }
+            break;
+        case InputDevice::Id::AIRSPY:
+        case InputDevice::Id::SDRPLAY:
         case InputDevice::Id::SOAPYSDR:
         case InputDevice::Id::RARTTCP:
         case InputDevice::Id::UNDEFINED:
@@ -1972,6 +2007,7 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
             m_device->setBW(m_settings->rtlsdr.bandwidth);
             m_device->setBiasT(m_settings->rtlsdr.biasT);
             m_device->setPPM(m_settings->rtlsdr.ppm);
+            m_device->setRfLevelOffset(m_settings->rtlsdr.rfLevelOffset);
             dynamic_cast<RtlSdrInput *>(m_device)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);
             dynamic_cast<RtlSdrInput *>(m_device)->setAgcLevelMax(m_settings->rtlsdr.agcLevelMax);
             m_settings->rtlsdr.hwId = m_device->hwId();
@@ -1981,6 +2017,7 @@ void SetupDialog::setInputDevice(InputDevice::Id id, InputDevice *device)
         case InputDevice::Id::RTLTCP:
             setGainValues(dynamic_cast<RtlTcpInput *>(m_device)->getGainList());
             m_device->setPPM(m_settings->rtltcp.ppm);
+            m_device->setRfLevelOffset(m_settings->rtltcp.rfLevelOffset);
             dynamic_cast<RtlTcpInput *>(m_device)->setGainMode(m_settings->rtltcp.gainMode, m_settings->rtltcp.gainIdx);
             dynamic_cast<RtlTcpInput *>(m_device)->setAgcLevelMax(m_settings->rtltcp.agcLevelMax);
             connect(m_device, &InputDevice::gainIdx, ui->rtltcpGainSlider, &QSlider::setValue);

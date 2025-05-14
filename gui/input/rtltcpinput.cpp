@@ -79,6 +79,7 @@ RtlTcpInput::RtlTcpInput(QObject *parent) : InputDevice(parent)
     m_agcLevelMax = RTLTCP_AGC_LEVEL_MAX_DEFAULT;
     m_agcLevelMin = 60;
     m_levelCalcCntr = 0;
+    m_rfLevelOffset = 0.0;
 
     m_frequency = 0;
     m_sock = INVALID_SOCKET;
@@ -669,7 +670,7 @@ void RtlTcpInput::onAgcLevel(float agcLevel)
         if (++m_levelCalcCntr > 2)
         {
             m_levelCalcCntr = 0;
-            emit rfLevel(m_20log10[static_cast<int>(std::roundf(agcLevel))] - m_deviceGain - 46, m_deviceGain);
+            emit rfLevel(m_20log10[static_cast<int>(std::roundf(agcLevel))] - m_deviceGain - 46 + m_rfLevelOffset, m_deviceGain);
         }
     }
 

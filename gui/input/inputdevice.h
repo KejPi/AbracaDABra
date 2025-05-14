@@ -151,6 +151,7 @@ public:
     virtual void setBW(uint32_t bw) { Q_UNUSED(bw) }
     virtual void setBiasT(bool ena) { Q_UNUSED(ena) }
     virtual void setPPM(int ppm) { Q_UNUSED(ppm) }
+    virtual void setRfLevelOffset(float offset) { Q_UNUSED(offset) }
     virtual QVariant hwId() const { return QVariant(); }
     virtual InputDeviceDesc deviceDesc() const { return InputDeviceDesc{}; }
 

@@ -174,6 +174,7 @@ private:
     void onBandwidthChanged(int val);
     void onPPMChanged(int val);
     void onBiasTChanged(int val);
+    void onRfLevelOffsetChanged(double val);
 
     void onRtlSdrGainModeToggled(bool checked);
     void onRtlSdrGainSliderChanged(int val);

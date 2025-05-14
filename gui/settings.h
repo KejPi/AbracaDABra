@@ -91,6 +91,7 @@ public:
         bool biasT;
         int agcLevelMax;
         int ppm;
+        float rfLevelOffset;
     } rtlsdr;
     struct
     {
@@ -101,6 +102,7 @@ public:
         bool controlSocketEna;
         int agcLevelMax;
         int ppm;
+        float rfLevelOffset;
     } rtltcp;
 #if HAVE_AIRSPY
     struct

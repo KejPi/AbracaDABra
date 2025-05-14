@@ -86,6 +86,7 @@ RtlSdrInput::RtlSdrInput(QObject *parent) : InputDevice(parent)
     m_frequency = 0;
     m_biasT = false;
     m_ppm = 0;
+    m_rfLevelOffset = 0.0;
     m_levelReadCntr = 0;
 
     connect(&m_watchdogTimer, &QTimer::timeout, this, &RtlSdrInput::onWatchdogTimeout);
@@ -525,7 +526,7 @@ void RtlSdrInput::onAgcLevel(float agcLevel)
             {
                 float gain = (tuner_gain + 5) * 0.1;
                 // qDebug() << agcLevel << gain << 20 * std::log10f(agcLevel) - gain - 46;
-                emit rfLevel(m_20log10[static_cast<int>(std::roundf(agcLevel))] - gain - 46, gain);
+                emit rfLevel(m_20log10[static_cast<int>(std::roundf(agcLevel))] - gain - 46 + m_rfLevelOffset, gain);
             }
             else
             {

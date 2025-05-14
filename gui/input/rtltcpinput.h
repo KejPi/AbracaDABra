@@ -152,6 +152,7 @@ public:
     void setGainMode(RtlGainMode gainMode, int gainIdx = 0);
     void setAgcLevelMax(float agcLevelMax);
     void setPPM(int ppm) override;
+    void setRfLevelOffset(float offset) override { m_rfLevelOffset = offset; }
     void setDAGC(bool ena);
     void startStopRecording(bool start) override;
     QList<float> getGainList() const;
@@ -176,6 +177,7 @@ private:
     int m_levelCalcCntr;
     int m_ppm;
     float m_deviceGain = 0.0;
+    float m_rfLevelOffset;
 
     void resetAgc();
 

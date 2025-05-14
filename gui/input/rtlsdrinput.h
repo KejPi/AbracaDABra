@@ -102,6 +102,7 @@ public:
     void setBW(uint32_t bw) override;
     void setBiasT(bool ena) override;
     void setPPM(int ppm) override;
+    void setRfLevelOffset(float offset) override { m_rfLevelOffset = offset; }
     virtual QVariant hwId() const override;
     virtual InputDeviceDesc deviceDesc() const override;
     void setAgcLevelMax(float agcMaxValue);
@@ -112,6 +113,7 @@ private:
     uint32_t m_bandwidth;
     bool m_biasT;
     int m_ppm;
+    float m_rfLevelOffset;
     struct rtlsdr_dev *m_device;
     RtlSdrWorker *m_worker;
     QTimer m_watchdogTimer;

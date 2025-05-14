@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -73,7 +73,7 @@
           <enum>QFrame::Shadow::Sunken</enum>
          </property>
          <property name="currentIndex">
-          <number>5</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="rtlsdrPage">
           <layout class="QGridLayout" name="gridLayout_14">
@@ -134,6 +134,22 @@
               <string>Expert settings</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_6">
+              <item row="6" column="1">
+               <widget class="QSpinBox" name="rtlsdrPPM">
+                <property name="suffix">
+                 <string notr="true"> PPM</string>
+                </property>
+                <property name="minimum">
+                 <number>-100</number>
+                </property>
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="singleStep">
+                 <number>1</number>
+                </property>
+               </widget>
+              </item>
               <item row="4" column="1">
                <widget class="QSpinBox" name="rtlsdrSwAgcMaxLevel">
                 <property name="toolTip">
@@ -169,39 +185,6 @@
                 </property>
                </widget>
               </item>
-              <item row="7" column="0">
-               <widget class="QLabel" name="rtlsdrBiasTLabel">
-                <property name="text">
-                 <string>Bias Tee:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="1">
-               <widget class="QSpinBox" name="rtlsdrPPM">
-                <property name="suffix">
-                 <string notr="true"> PPM</string>
-                </property>
-                <property name="minimum">
-                 <number>-100</number>
-                </property>
-                <property name="maximum">
-                 <number>100</number>
-                </property>
-                <property name="singleStep">
-                 <number>1</number>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="1">
-               <widget class="QComboBox" name="rtlsdrBiasTCombo"/>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="rtlsdrBandwidthLabel">
-                <property name="text">
-                 <string>Bandwidth:</string>
-                </property>
-               </widget>
-              </item>
               <item row="2" column="1">
                <widget class="QSpinBox" name="rtlsdrBandwidth">
                 <property name="specialValueText">
@@ -225,6 +208,23 @@
                 </property>
                </widget>
               </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="rtlsdrBiasTLabel">
+                <property name="text">
+                 <string>Bias Tee:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="rtlsdrBandwidthLabel">
+                <property name="text">
+                 <string>Bandwidth:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="1">
+               <widget class="QComboBox" name="rtlsdrBiasTCombo"/>
+              </item>
               <item row="2" column="5">
                <spacer name="horizontalSpacer_4">
                 <property name="orientation">
@@ -238,6 +238,26 @@
                 </property>
                </spacer>
               </item>
+              <item row="2" column="4">
+               <widget class="QPushButton" name="rtlsdrBandwidthDefault">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Set default</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="rtlsdrRFLevelLabel">
+                <property name="midLineWidth">
+                 <number>-3</number>
+                </property>
+                <property name="text">
+                 <string>RF level correction:</string>
+                </property>
+               </widget>
+              </item>
               <item row="4" column="4">
                <widget class="QPushButton" name="rtlsdrSwAgcMaxLevelDefault">
                 <property name="enabled">
@@ -248,13 +268,22 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="4">
-               <widget class="QPushButton" name="rtlsdrBandwidthDefault">
-                <property name="enabled">
-                 <bool>false</bool>
+              <item row="7" column="1">
+               <widget class="QDoubleSpinBox" name="rtlsdrRFLevelOffset">
+                <property name="locale">
+                 <locale language="C" country="AnyTerritory"/>
                 </property>
-                <property name="text">
-                 <string>Set default</string>
+                <property name="suffix">
+                 <string notr="true"> dB</string>
+                </property>
+                <property name="decimals">
+                 <number>1</number>
+                </property>
+                <property name="minimum">
+                 <double>-50.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>50.000000000000000</double>
                 </property>
                </widget>
               </item>
@@ -554,6 +583,26 @@
                 </property>
                </widget>
               </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="rtltcpSwAgcLevelLabel">
+                <property name="text">
+                 <string>SW AGC level threshold:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <spacer name="horizontalSpacer_9">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
               <item row="0" column="1">
                <widget class="QSpinBox" name="rtltcpSwAgcMaxLevel">
                 <property name="sizePolicy">
@@ -585,23 +634,6 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="2">
-               <widget class="QPushButton" name="rtltcpSwAgcMaxLevelDefault">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Set default</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="rtltcpSwAgcLevelLabel">
-                <property name="text">
-                 <string>SW AGC level threshold:</string>
-                </property>
-               </widget>
-              </item>
               <item row="1" column="1">
                <widget class="QSpinBox" name="rtltcpPPM">
                 <property name="sizePolicy">
@@ -630,18 +662,41 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="3">
-               <spacer name="horizontalSpacer_9">
-                <property name="orientation">
-                 <enum>Qt::Orientation::Horizontal</enum>
+              <item row="0" column="2">
+               <widget class="QPushButton" name="rtltcpSwAgcMaxLevelDefault">
+                <property name="enabled">
+                 <bool>false</bool>
                 </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
+                <property name="text">
+                 <string>Set default</string>
                 </property>
-               </spacer>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="rtltcpRFLevelLabel">
+                <property name="text">
+                 <string>RF level correction:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QDoubleSpinBox" name="rtltcpRFLevelOffset">
+                <property name="locale">
+                 <locale language="C" country="AnyTerritory"/>
+                </property>
+                <property name="suffix">
+                 <string notr="true"> dB</string>
+                </property>
+                <property name="decimals">
+                 <number>1</number>
+                </property>
+                <property name="minimum">
+                 <double>-50.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>50.000000000000000</double>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>
