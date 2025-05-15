@@ -44,6 +44,7 @@ TxMapDialog::TxMapDialog(Settings *settings, bool isTii, QWidget *parent) : QDia
     m_sortedFilteredModel = new TxTableProxyModel(this);
     m_sortedFilteredModel->setSourceModel(m_model);
     m_tableSelectionModel = new QItemSelectionModel(m_sortedFilteredModel, this);
+    m_mapCenter = QGeoCoordinate(50.08804, 14.42076);  // Prague
     connect(m_tableSelectionModel, &QItemSelectionModel::selectionChanged, this, &TxMapDialog::onSelectionChanged, Qt::QueuedConnection);
     connect(this, &TxMapDialog::selectedRowChanged, this, &TxMapDialog::onSelectedRowChanged);
 }
@@ -217,14 +218,19 @@ QGeoCoordinate TxMapDialog::currentPosition() const
     return m_currentPosition;
 }
 
-void TxMapDialog::setCurrentPosition(const QGeoCoordinate &newCurrentPosition)
+void TxMapDialog::setCurrentPosition(const QGeoCoordinate &currentPosition)
 {
-    if (m_currentPosition == newCurrentPosition)
+    if (m_currentPosition == currentPosition)
     {
         return;
     }
-    m_currentPosition = newCurrentPosition;
+    m_currentPosition = currentPosition;
     emit currentPositionChanged();
+
+    if (m_centerToCurrentPosition)
+    {
+        setMapCenter(m_currentPosition);
+    }
 }
 
 bool TxMapDialog::positionValid() const
@@ -361,4 +367,62 @@ void TxMapDialog::setIsRecordingLog(bool newIsRecordingLog)
     }
     m_isRecordingLog = newIsRecordingLog;
     emit isRecordingLogChanged();
+}
+
+float TxMapDialog::zoomLevel() const
+{
+    return m_zoomLevel;
+}
+
+void TxMapDialog::setZoomLevel(float newZoomLevel)
+{
+    if (qFuzzyCompare(m_zoomLevel, newZoomLevel))
+    {
+        return;
+    }
+    m_zoomLevel = newZoomLevel;
+    emit zoomLevelChanged();
+}
+
+QGeoCoordinate TxMapDialog::mapCenter() const
+{
+    return m_mapCenter;
+}
+
+void TxMapDialog::setMapCenter(const QGeoCoordinate &mapCenter)
+{
+    if (m_mapCenter == mapCenter)
+    {
+        return;
+    }
+    m_mapCenter = mapCenter;
+    emit mapCenterChanged();
+}
+
+bool TxMapDialog::centerToCurrentPosition() const
+{
+    return m_centerToCurrentPosition;
+}
+
+void TxMapDialog::setCenterToCurrentPosition(bool centerToCurrentPosition)
+{
+    if (m_centerToCurrentPosition == centerToCurrentPosition)
+    {
+        return;
+    }
+    m_centerToCurrentPosition = centerToCurrentPosition;
+
+    if (m_centerToCurrentPosition)
+    {
+        if (m_positionValid)
+        {
+            setMapCenter(m_currentPosition);  // Prague
+        }
+        else
+        {
+            setMapCenter(QGeoCoordinate(50.08804, 14.42076));  // Prague
+        }
+    }
+
+    emit centerToCurrentPositionChanged();
 }

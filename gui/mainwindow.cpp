@@ -3255,6 +3255,10 @@ void MainWindow::loadSettings()
     m_settings->tii.inactiveTxTimeout = settings->value("TII/inactiveTxTimeout", 5).toInt();
     m_settings->tii.timestampInUTC = settings->value("TII/timestampInUTC", false).toBool();
     m_settings->tii.saveCoordinates = settings->value("TII/saveCoordinates", false).toBool();
+    m_settings->tii.centerMapToCurrentPosition = settings->value("TII/mapCenterCurrPos", true).toBool();
+    m_settings->tii.mapCenter =
+        QGeoCoordinate(settings->value("TII/mapCenterLat", 50.08804).toDouble(), settings->value("TII/mapCenterLon", 14.42076).toDouble());
+    m_settings->tii.mapZoom = settings->value("TII/mapZoom", 9.0).toFloat();
 
     m_settings->scanner.exportPath = settings->value("Scanner/exportPath", QDir::homePath()).toString();
     m_settings->scanner.splitterState = settings->value("Scanner/layout").toByteArray();
@@ -3264,6 +3268,10 @@ void MainWindow::loadSettings()
     m_settings->scanner.numCycles = settings->value("Scanner/numCycles", 1).toInt();
     m_settings->scanner.waitForSync = settings->value("Scanner/waitForSyncSec", 3).toInt();
     m_settings->scanner.waitForEnsemble = settings->value("Scanner/waitForEnsembleSec", 6).toInt();
+    m_settings->scanner.centerMapToCurrentPosition = settings->value("Scanner/mapCenterCurrPos", true).toBool();
+    m_settings->scanner.mapCenter =
+        QGeoCoordinate(settings->value("Scanner/mapCenterLat", 50.08804).toDouble(), settings->value("Scanner/mapCenterLon", 14.42076).toDouble());
+    m_settings->scanner.mapZoom = settings->value("Scanner/mapZoom", 9.0).toFloat();
     int numCh = settings->beginReadArray("Scanner/channels");
     for (int ch = 0; ch < numCh; ++ch)
     {
@@ -3552,6 +3560,10 @@ void MainWindow::saveSettings()
     settings->setValue("TII/inactiveTxTimeout", m_settings->tii.inactiveTxTimeout);
     settings->setValue("TII/timestampInUTC", m_settings->tii.timestampInUTC);
     settings->setValue("TII/saveCoordinates", m_settings->tii.saveCoordinates);
+    settings->setValue("TII/mapCenterCurrPos", m_settings->tii.centerMapToCurrentPosition);
+    settings->setValue("TII/mapCenterLat", m_settings->tii.mapCenter.latitude());
+    settings->setValue("TII/mapCenterLon", m_settings->tii.mapCenter.longitude());
+    settings->setValue("TII/mapZoom", m_settings->tii.mapZoom);
 
     settings->setValue("Scanner/exportPath", m_settings->scanner.exportPath);
     settings->setValue("Scanner/windowGeometry", m_settings->scanner.geometry);
@@ -3559,6 +3571,10 @@ void MainWindow::saveSettings()
     settings->setValue("Scanner/restore", m_settings->scanner.restore);
     settings->setValue("Scanner/mode", m_settings->scanner.mode);
     settings->setValue("Scanner/numCycles", m_settings->scanner.numCycles);
+    settings->setValue("Scanner/mapCenterCurrPos", m_settings->scanner.centerMapToCurrentPosition);
+    settings->setValue("Scanner/mapCenterLat", m_settings->scanner.mapCenter.latitude());
+    settings->setValue("Scanner/mapCenterLon", m_settings->scanner.mapCenter.longitude());
+    settings->setValue("Scanner/mapZoom", m_settings->scanner.mapZoom);
 
     settings->beginWriteArray("Scanner/channels");
     int ch = 0;

@@ -49,6 +49,9 @@ class TxMapDialog : public QDialog
     Q_PROPERTY(QStringList txInfo READ txInfo NOTIFY txInfoChanged FINAL)
     Q_PROPERTY(bool isTii READ isTii CONSTANT FINAL)
     Q_PROPERTY(bool isRecordingLog READ isRecordingLog WRITE setIsRecordingLog NOTIFY isRecordingLogChanged FINAL)
+    Q_PROPERTY(bool centerToCurrentPosition READ centerToCurrentPosition WRITE setCenterToCurrentPosition NOTIFY centerToCurrentPositionChanged FINAL)
+    Q_PROPERTY(float zoomLevel READ zoomLevel WRITE setZoomLevel NOTIFY zoomLevelChanged FINAL)
+    Q_PROPERTY(QGeoCoordinate mapCenter READ mapCenter WRITE setMapCenter NOTIFY mapCenterChanged FINAL)
 
 public:
     explicit TxMapDialog(Settings *settings, bool isTii, QWidget *parent = nullptr);
@@ -83,6 +86,15 @@ public:
 
     void updateTxTable() { m_model->reloadTxTable(); }
 
+    float zoomLevel() const;
+    void setZoomLevel(float newZoomLevel);
+
+    QGeoCoordinate mapCenter() const;
+    void setMapCenter(const QGeoCoordinate &mapCenter);
+
+    bool centerToCurrentPosition() const;
+    void setCenterToCurrentPosition(bool centerToCurrentPosition);
+
 signals:
     void setTii(bool ena);
     void selectedRowChanged();
@@ -92,6 +104,9 @@ signals:
     void ensembleInfoChanged();
     void txInfoChanged();
     void isRecordingLogChanged();
+    void zoomLevelChanged();
+    void mapCenterChanged();
+    void centerToCurrentPositionChanged();
 
 protected:
     void showEvent(QShowEvent *event) override;
@@ -124,6 +139,9 @@ private:
     bool m_isRecordingLog = false;
     int m_selectedRow = -1;  // source model row
     bool m_showInactive;
+    float m_zoomLevel = 9.0;
+    QGeoCoordinate m_mapCenter;
+    bool m_centerToCurrentPosition = true;
 };
 
 #endif  // TXMAPDIALOG_H

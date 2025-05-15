@@ -34,15 +34,6 @@ import app.qmlcomponents 1.0
 Item {
     id: mainItem
     anchors.fill: parent
-    property bool centerToCurrentPosition: true
-    Connections {
-        target: tiiBackend
-        function onCurrentPositionChanged() {
-            if (tiiBackend.positionValid && centerToCurrentPosition) {
-                map.center = tiiBackend.currentPosition;
-            }
-        }
-    }
     Plugin {
         id: mapPlugin
         name: "osm"
@@ -54,13 +45,22 @@ Item {
         id: map
         anchors.fill: parent
         plugin: mapPlugin
-        center: tiiBackend.positionValid ? tiiBackend.currentPosition : QtPositioning.coordinate(50.08804, 14.42076) // Prague
-        zoomLevel: 9
+        center: tiiBackend.mapCenter
+        zoomLevel: tiiBackend.zoomLevel
         property geoCoordinate startCentroid
 
         activeMapType: map.supportedMapTypes[map.supportedMapTypes.length-1]
 
         onCopyrightLinkActivated: link => Qt.openUrlExternally(link)
+
+        onZoomLevelChanged: {
+            tiiBackend.zoomLevel = map.zoomLevel;
+        }
+        onCenterChanged: {
+            if (tiiBackend.mapCenter !== map.center) {
+                 tiiBackend.mapCenter = map.center;
+            }
+        }
 
         PinchHandler {
             id: pinch
@@ -94,7 +94,7 @@ Item {
             target: null
             onTranslationChanged: (delta) => {
                                       map.pan(-delta.x, -delta.y);
-                                      centerToCurrentPosition = false;
+                                      tiiBackend.centerToCurrentPosition = false;
                                   }
         }
         TapHandler {
@@ -228,6 +228,80 @@ Item {
             z: 3
             FontMetrics {
                 id: fMetrics
+            }
+            Item {
+                id: centerPosition
+                Layout.preferredWidth: 28
+                Layout.preferredHeight: 28
+                Rectangle {
+                    anchors.fill: parent
+                    color: "white"
+                    opacity: centerPosMouseArea.containsMouse ? 1.0 : 0.75
+                }
+
+                readonly property int m: 2
+                readonly property int l: 6
+                readonly property int w: 2
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 20
+                    height: width
+                    radius: width /2
+                    color: "transparent"
+                    border.width: centerPosition.w
+                    border.color: centerPosMouseArea.containsMouse ? "black" : "#707070"
+                }
+                Rectangle {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: centerPosition.m
+                    width: centerPosition.l
+                    height: centerPosition.w
+                    color: centerPosMouseArea.containsMouse ? "black" : "#707070"
+                }
+                Rectangle {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    anchors.rightMargin: centerPosition.m
+                    width: centerPosition.l
+                    height: centerPosition.w
+                    color: centerPosMouseArea.containsMouse ? "black" : "#707070"
+                }
+                Rectangle {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: centerPosition.m
+                    width: centerPosition.w
+                    height: centerPosition.l
+                    color: centerPosMouseArea.containsMouse ? "black" : "#707070"
+                }
+                Rectangle {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: centerPosition.m
+                    width: centerPosition.w
+                    height: centerPosition.l
+                    color: centerPosMouseArea.containsMouse ? "black" : "#707070"
+                }
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 8
+                    height: width
+                    radius: width /2
+                    color: centerPosMouseArea.containsMouse ? "black" : "#707070"
+                    visible: tiiBackend.centerToCurrentPosition
+                }
+                MouseArea {
+                    id: centerPosMouseArea
+                    hoverEnabled: true
+                    anchors.fill: parent
+                    onClicked: {
+                        tiiBackend.centerToCurrentPosition = true;
+                        // map.center = tiiBackend.positionValid ? tiiBackend.currentPosition : QtPositioning.coordinate(50.08804, 14.42076) // Prague
+                    }
+                }
             }
             Item {
                 id: plus

@@ -150,6 +150,12 @@ TIIDialog::TIIDialog(Settings *settings, QWidget *parent) : TxMapDialog(settings
 
     onSettingsChanged();
 #endif
+    setZoomLevel(m_settings->tii.mapZoom);
+    if (m_settings->tii.mapCenter.isValid())
+    {
+        setMapCenter(m_settings->tii.mapCenter);
+    }
+    setCenterToCurrentPosition(m_settings->tii.centerMapToCurrentPosition);
 
     if (!m_settings->tii.geometry.isEmpty())
     {
@@ -189,6 +195,9 @@ void TIIDialog::closeEvent(QCloseEvent *event)
     m_settings->tii.splitterState = m_splitter->saveState();
 #endif
     m_settings->tii.geometry = saveGeometry();
+    m_settings->tii.mapZoom = zoomLevel();
+    m_settings->tii.mapCenter = mapCenter();
+    m_settings->tii.centerMapToCurrentPosition = centerToCurrentPosition();
 
     TxMapDialog::closeEvent(event);
 }

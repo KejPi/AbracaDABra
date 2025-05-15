@@ -200,6 +200,13 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
 
     onSettingsChanged();
 
+    setZoomLevel(m_settings->scanner.mapZoom);
+    if (m_settings->scanner.mapCenter.isValid())
+    {
+        setMapCenter(m_settings->scanner.mapCenter);
+    }
+    setCenterToCurrentPosition(m_settings->scanner.centerMapToCurrentPosition);
+
     if (!m_settings->scanner.geometry.isEmpty())
     {
         restoreGeometry(m_settings->scanner.geometry);
@@ -902,6 +909,10 @@ void ScannerDialog::closeEvent(QCloseEvent *event)
     m_settings->scanner.numCycles = m_numCyclesSpinBox->value();
     m_settings->scanner.channelSelection = m_channelSelection;
     m_settings->scanner.mode = m_modeCombo->currentData().toInt();
+
+    m_settings->scanner.mapZoom = zoomLevel();
+    m_settings->scanner.mapCenter = mapCenter();
+    m_settings->scanner.centerMapToCurrentPosition = centerToCurrentPosition();
 
     TxMapDialog::closeEvent(event);
 }

@@ -204,6 +204,10 @@ public:
         int inactiveTxTimeout;
         bool timestampInUTC;
         bool saveCoordinates;
+
+        bool centerMapToCurrentPosition;
+        QGeoCoordinate mapCenter;
+        float mapZoom;
     } tii;
     struct SignalDialog
     {
@@ -259,6 +263,10 @@ public:
         int numCycles;
         int waitForSync;
         int waitForEnsemble;
+
+        bool centerMapToCurrentPosition;
+        QGeoCoordinate mapCenter;
+        float mapZoom;
     } scanner;
 };
 
