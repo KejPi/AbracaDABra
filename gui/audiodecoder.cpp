@@ -665,11 +665,17 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     dabsdrAudioFrameHeader_t header;
 
     header = inData->header;
-
     if (nullptr == m_aacDecoderHandle)
     {  // this can happen when format changes from MP2 to AAC or during init
+
+        // this is the case when subchannel with all zeros is transmitted
+        if (inData->data.size() == 1)
+        {  // wrong data
+            return;
+        }
+
 #if !HAVE_FDKAAC
-       // not necessary -> will be set in init state
+        // not necessary -> will be set in init state
         // memset(m_outBufferPtr, 0, AUDIO_DECODER_BUFFER_SIZE * sizeof(int16_t));
         m_state = OutputState::Init;
 #endif
@@ -701,7 +707,7 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
 #endif
     }
 
-    if ((header.raw != m_aacHeader.raw) || (inData->id != m_inputDataDecoderId))
+    if ((header.raw != m_aacHeader.raw && inData->data.size() > 1) || (inData->id != m_inputDataDecoderId))
     {  // this is stream reconfiguration or announcement (different instance)
 #if !HAVE_FDKAAC
        // not necessary -> will be set in init state
