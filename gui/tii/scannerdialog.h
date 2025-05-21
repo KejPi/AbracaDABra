@@ -41,6 +41,7 @@
 #include <QSplitter>
 #include <QTableView>
 
+#include "clickablelabel.h"
 #include "radiocontrol.h"
 #include "txmapdialog.h"
 
@@ -75,6 +76,7 @@ protected:
     void showEvent(QShowEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
     void onSelectedRowChanged() override;
+    void reset() override;
 
 private:
     enum class ScannerState
@@ -103,8 +105,10 @@ private:
     QPushButton *m_startStopButton;
     QLabel *m_scanningLabel;
     QLabel *m_progressChannel;
-    QPushButton *m_importButton;
-    QPushButton *m_exportButton;
+    ClickableLabel *m_menuLabel;
+    QAction *m_clearTableAction;
+    QAction *m_exportAction;
+    QAction *m_importAction;
     QPushButton *m_channelListButton;
     QSpinBox *m_numCyclesSpinBox;
     QComboBox *m_modeCombo;

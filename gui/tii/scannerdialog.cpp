@@ -84,15 +84,10 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     m_progressBar = new QProgressBar(this);
     m_progressBar->setTextVisible(false);
 
-    m_importButton = new QPushButton(this);
-    m_exportButton = new QPushButton(this);
     m_channelListButton = new QPushButton(this);
     m_startStopButton = new QPushButton(this);
     m_startStopButton->setDefault(true);
-
-    QFrame *line = new QFrame(this);
-    line->setFrameShape(QFrame::Shape::VLine);
-    line->setFrameShadow(QFrame::Shadow::Sunken);
+    m_menuLabel = new ClickableLabel(this);
 
     QLabel *labelMode = new QLabel(this);
     labelMode->setText(tr("Mode:"));
@@ -117,9 +112,6 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     controlsLayout->addWidget(m_scanningLabel);
     controlsLayout->addWidget(m_progressChannel);
     controlsLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum));
-    controlsLayout->addWidget(m_importButton);
-    controlsLayout->addWidget(m_exportButton);
-    controlsLayout->addWidget(line);
     controlsLayout->addWidget(labelMode);
     controlsLayout->addWidget(m_modeCombo);
     controlsLayout->addWidget(labelCycles);
@@ -127,6 +119,8 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
 
     controlsLayout->addWidget(m_channelListButton);
     controlsLayout->addWidget(m_startStopButton);
+    controlsLayout->addWidget(m_menuLabel);
+
     mainLayout->addLayout(controlsLayout);
 
     mainLayout->addWidget(m_progressBar);
@@ -176,12 +170,51 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     m_progressChannel->setVisible(false);
     m_scanningLabel->setText("");
     m_channelListButton->setText(tr("Select channels"));
-    m_exportButton->setText(tr("Save CSV"));
-    m_exportButton->setEnabled(false);
-    connect(m_exportButton, &QPushButton::clicked, this, &ScannerDialog::exportClicked);
-    m_importButton->setText(tr("Load CSV"));
-    m_importButton->setEnabled(true);
-    connect(m_importButton, &QPushButton::clicked, this, &ScannerDialog::importClicked);
+
+    auto menu = new QMenu(this);
+
+    auto clearOnStartAction = new QAction(tr("Clear scan results on start"), menu);
+    clearOnStartAction->setCheckable(true);
+    clearOnStartAction->setChecked(m_settings->scanner.clearOnStart);
+    connect(clearOnStartAction, &QAction::triggered, this, [this](bool checked) { m_settings->scanner.clearOnStart = checked; });
+    menu->addAction(clearOnStartAction);
+    menu->addSeparator();
+
+    m_exportAction = new QAction(tr("Save as CSV"), menu);
+    m_exportAction->setEnabled(false);
+    connect(m_exportAction, &QAction::triggered, this, &ScannerDialog::exportClicked);
+    menu->addAction(m_exportAction);
+    m_importAction = new QAction(tr("Load from CSV"), menu);
+    m_importAction->setEnabled(true);
+    connect(m_importAction, &QAction::triggered, this, &ScannerDialog::importClicked);
+    menu->addAction(m_importAction);
+
+    m_clearTableAction = new QAction(tr("Clear scan results"), menu);
+    m_clearTableAction->setEnabled(false);
+    connect(m_model, &QAbstractTableModel::rowsInserted, this, [this]() { m_clearTableAction->setEnabled(true); });
+    connect(m_clearTableAction, &QAction::triggered, this,
+            [this]()
+            {
+                QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, tr("Warning"), tr("Do you want to clear scan results?"), {}, this);
+                msgBox->setWindowModality(Qt::WindowModal);
+                msgBox->setInformativeText(tr("You will loose current scan results, this action is irreversible."));
+                msgBox->setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+                msgBox->setDefaultButton(QMessageBox::Cancel);
+                connect(msgBox, &QMessageBox::finished, this,
+                        [this, msgBox](int result)
+                        {
+                            if (result == QMessageBox::Ok)
+                            {
+                                QTimer::singleShot(10, this, [this]() { reset(); });
+                            }
+                            msgBox->deleteLater();
+                        });
+                msgBox->open();
+            });
+    menu->addAction(m_clearTableAction);
+
+    m_menuLabel->setMenu(menu);
+    m_menuLabel->setIcon(":/resources/menu.png");
 
     for (auto it = DabTables::channelList.cbegin(); it != DabTables::channelList.cend(); ++it)
     {
@@ -294,7 +327,7 @@ void ScannerDialog::stopScan()
     // adding timeout to avoid timing issues due to double click on start button
     m_startStopButton->setEnabled(false);
     QTimer::singleShot(2500, this, [this]() { m_startStopButton->setEnabled(true); });
-    m_importButton->setVisible(true);
+    m_importAction->setEnabled(true);
     m_numCyclesSpinBox->setEnabled(true);
     m_channelListButton->setEnabled(true);
     m_modeCombo->setEnabled(true);
@@ -515,12 +548,14 @@ void ScannerDialog::startScan()
 {
     m_isScanning = true;
 
-    reset();
+    if (m_settings->scanner.clearOnStart)
+    {
+        reset();
+    }
     m_scanStartTime = QDateTime::currentDateTime();
     m_scanningLabel->setText(tr("Scanning channel:"));
     m_progressChannel->setVisible(true);
-    m_importButton->setVisible(false);
-    m_exportButton->setEnabled(false);
+    m_importAction->setEnabled(false);
     m_channelListButton->setEnabled(false);
     m_scanCycleCntr = 0;
     m_frequency = 0;
@@ -730,7 +765,7 @@ void ScannerDialog::storeEnsembleData(const RadioControlTIIData &tiiData, const 
 
     m_model->appendEnsData(QDateTime::currentDateTime(), tiiData.idList, ServiceListId(m_ensemble), m_ensemble.label, conf, csvConf,
                            m_numServicesFound, m_snr / m_snrCntr);
-    m_exportButton->setEnabled(true);
+    m_exportAction->setEnabled(true);
 
     m_txTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     m_txTableView->horizontalHeader()->setSectionResizeMode(TxTableModel::ColLocation, QHeaderView::Stretch);
@@ -881,6 +916,13 @@ void ScannerDialog::onSelectedRowChanged()
     emit ensembleInfoChanged();
 
     m_txTableView->scrollTo(m_sortedFilteredModel->mapFromSource(m_model->index(selectedRow(), 0)));
+}
+
+void ScannerDialog::reset()
+{
+    TxMapDialog::reset();
+    m_clearTableAction->setEnabled(false);
+    m_exportAction->setEnabled(false);
 }
 
 void ScannerDialog::showEvent(QShowEvent *event)

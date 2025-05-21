@@ -3266,6 +3266,7 @@ void MainWindow::loadSettings()
     m_settings->scanner.restore = settings->value("Scanner/restore", false).toBool();
     m_settings->scanner.mode = settings->value("Scanner/mode", 0).toInt();
     m_settings->scanner.numCycles = settings->value("Scanner/numCycles", 1).toInt();
+    m_settings->scanner.clearOnStart = settings->value("Scanner/clearOnStart", true).toBool();
     m_settings->scanner.waitForSync = settings->value("Scanner/waitForSyncSec", 3).toInt();
     m_settings->scanner.waitForEnsemble = settings->value("Scanner/waitForEnsembleSec", 6).toInt();
     m_settings->scanner.centerMapToCurrentPosition = settings->value("Scanner/mapCenterCurrPos", true).toBool();
@@ -3571,6 +3572,7 @@ void MainWindow::saveSettings()
     settings->setValue("Scanner/restore", m_settings->scanner.restore);
     settings->setValue("Scanner/mode", m_settings->scanner.mode);
     settings->setValue("Scanner/numCycles", m_settings->scanner.numCycles);
+    settings->setValue("Scanner/clearOnStart", m_settings->scanner.clearOnStart);
     settings->setValue("Scanner/mapCenterCurrPos", m_settings->scanner.centerMapToCurrentPosition);
     settings->setValue("Scanner/mapCenterLat", m_settings->scanner.mapCenter.latitude());
     settings->setValue("Scanner/mapCenterLon", m_settings->scanner.mapCenter.longitude());

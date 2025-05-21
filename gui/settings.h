@@ -263,6 +263,7 @@ public:
         int numCycles;
         int waitForSync;
         int waitForEnsemble;
+        bool clearOnStart;
 
         bool centerMapToCurrentPosition;
         QGeoCoordinate mapCenter;
