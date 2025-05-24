@@ -717,6 +717,15 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
 
     ui->serviceTreeView->setVisible(false);
 
+    // size policy
+    QSizePolicy sizePolicy = ui->scrollArea->sizePolicy();
+    sizePolicy.setVerticalStretch(1);
+    ui->scrollArea->setSizePolicy(sizePolicy);
+
+    sizePolicy = ui->slsWidget->sizePolicy();
+    sizePolicy.setVerticalStretch(1);
+    ui->slsWidget->setSizePolicy(sizePolicy);
+
     // focus polisy
     ui->channelCombo->setFocusPolicy(Qt::StrongFocus);
     ui->scrollArea->setFocusPolicy(Qt::ClickFocus);
@@ -4248,15 +4257,6 @@ void MainWindow::onApplicationStyleChanged(Settings::ApplicationStyle style)
         case Settings::ApplicationStyle::Light:
         case Settings::ApplicationStyle::Dark:
             qApp->setStyle(QStyleFactory::create("Fusion"));
-
-            QSizePolicy sizePolicy = ui->scrollArea->sizePolicy();
-            sizePolicy.setVerticalStretch(1);
-            ui->scrollArea->setSizePolicy(sizePolicy);
-
-            sizePolicy = ui->slsWidget->sizePolicy();
-            sizePolicy.setVerticalStretch(1);
-            ui->slsWidget->setSizePolicy(sizePolicy);
-
             forceDarkStyle(Settings::ApplicationStyle::Dark == style);
 
             break;
