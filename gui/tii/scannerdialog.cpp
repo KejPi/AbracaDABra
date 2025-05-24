@@ -837,37 +837,52 @@ void ScannerDialog::showEnsembleConfig(const QModelIndex &index)
 
 void ScannerDialog::showContextMenu(const QPoint &pos)
 {
-    QModelIndex index = m_txTableView->indexAt(pos);
-    if (index.isValid())
+    QMenu *menu = new QMenu(this);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+
+    auto selectedRows = m_tableSelectionModel->selectedRows();
+    int isLocal = 0;
+    for (auto it = selectedRows.cbegin(); it != selectedRows.cend(); ++it)
     {
-        QModelIndex srcIndex = m_sortedFilteredModel->mapToSource(index);
+        QModelIndex srcIndex = m_sortedFilteredModel->mapToSource(*it);
         if (srcIndex.isValid())
-        {
-            QMenu *menu = new QMenu(this);
-            menu->setAttribute(Qt::WA_DeleteOnClose);
+        {  // local is +1, not local is -1
+            isLocal += m_model->data(srcIndex, TxTableModel::IsLocalRole).toBool() ? 1 : -1;
+        }
+    }
+    // isLocal > 0 means that more Tx in selection is marked as local
+    // isLocal < 0 means that more Tx in selection is NOT marked as local
+    // isLocal = 0 means the same number of loc and NOT local => offering marking as local
 
-            QAction *markAsLocalAction = new QAction(tr("Mark as local (known) transmitter"), this);
-            markAsLocalAction->setCheckable(true);
-            markAsLocalAction->setChecked(m_model->data(srcIndex, TxTableModel::IsLocalRole).toBool());
-            menu->addAction(markAsLocalAction);
+    QAction *markAsLocalAction = new QAction(isLocal > 0 ? tr("Unmark local (known) transmitter") : tr("Mark as local (known) transmitter"), this);
+    menu->addAction(markAsLocalAction);
 
-            QAction *showEnsInfoAction = new QAction(tr("Show ensemble information"), this);
-            showEnsInfoAction->setEnabled(m_isPreciseMode);
-            menu->addAction(showEnsInfoAction);
+    QAction *showEnsInfoAction = new QAction(tr("Show ensemble information"), this);
+    showEnsInfoAction->setEnabled(m_isPreciseMode && m_tableSelectionModel->selectedRows().count() == 1);
+    menu->addAction(showEnsInfoAction);
 
-            connect(menu, &QWidget::destroyed, this, [=]() { // delete actions
+    connect(menu, &QWidget::destroyed, this, [=]() { // delete actions
                 markAsLocalAction->deleteLater();
                 showEnsInfoAction->deleteLater();
             });
 
-            QAction *selectedItem = menu->exec(m_txTableView->viewport()->mapToGlobal(pos));
-            if (selectedItem == showEnsInfoAction)
+    QAction *selectedItem = menu->exec(m_txTableView->viewport()->mapToGlobal(pos));
+    if (selectedItem == showEnsInfoAction)
+    {
+        QModelIndex index = m_txTableView->indexAt(pos);
+        if (index.isValid())
+        {
+            showEnsembleConfig(index);
+        }
+    }
+    else if (selectedItem == markAsLocalAction)
+    {
+        for (auto it = selectedRows.cbegin(); it != selectedRows.cend(); ++it)
+        {
+            QModelIndex srcIndex = m_sortedFilteredModel->mapToSource(*it);
+            if (srcIndex.isValid())
             {
-                showEnsembleConfig(index);
-            }
-            else if (selectedItem == markAsLocalAction)
-            {
-                m_model->setAsLocalTx(srcIndex, markAsLocalAction->isChecked());
+                m_model->setAsLocalTx(srcIndex, isLocal <= 0);
             }
         }
     }
