@@ -28,8 +28,10 @@
 
 #include <QColor>
 #include <QFile>
+#include <QFont>
 
 #include "txdataloader.h"
+#include "txlocallist.h"
 
 TxTableModel::TxTableModel(QObject *parent) : QAbstractTableModel{parent}
 {
@@ -43,6 +45,11 @@ TxTableModel::TxTableModel(QObject *parent) : QAbstractTableModel{parent}
 TxTableModel::~TxTableModel()
 {
     qDeleteAll(m_txList);
+
+    if (m_localTxList != nullptr)
+    {
+        delete m_localTxList;
+    }
 }
 
 int TxTableModel::rowCount(const QModelIndex &parent) const
@@ -155,6 +162,16 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
             }
         }
         break;
+        case Qt::FontRole:
+        {
+            QFont font;
+            if (m_localTxList != nullptr)
+            {
+                font.setItalic(m_localTxList->get(item.ensId(), item.id()));
+            }
+            return QVariant(font);
+        }
+        break;
         case TxTableModelRoles::ExportRole:
         case TxTableModelRoles::ExportRoleUTC:
         {
@@ -257,6 +274,12 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
             return m_selectedRows.contains(index.row());
         case TxTableModelRoles::IsActiveRole:
             return QVariant(item.isActive());
+        case TxTableModelRoles::IsLocalRole:
+            if (m_localTxList != nullptr)
+            {
+                return QVariant(m_localTxList->get(item.ensId(), item.id()));
+            }
+            return false;
         default:
             break;
     }
@@ -386,6 +409,7 @@ QHash<int, QByteArray> TxTableModel::roleNames() const
     roles[TxTableModelRoles::LevelColorRole] = "levelColor";
     roles[TxTableModelRoles::SelectedTxRole] = "selectedTx";
     roles[TxTableModelRoles::IsActiveRole] = "isActive";
+    roles[TxTableModelRoles::IsLocalRole] = "isLocal";
 
     return roles;
 }
@@ -582,5 +606,40 @@ void TxTableModel::setDisplayTimeInUTC(bool newDisplayTimeInUTC)
         m_displayTimeInUTC = newDisplayTimeInUTC;
         emit headerDataChanged(Qt::Horizontal, ColTime, ColTime);
         emit dataChanged(index(0, ColTime), index(m_modelData.count() - 1, ColTime));
+    }
+}
+
+void TxTableModel::loadLocalTxList(const QString &filename)
+{
+    if (m_localTxList != nullptr)
+    {
+        delete m_localTxList;
+    }
+    m_localTxList = new TxLocalList(filename);
+}
+
+void TxTableModel::setAsLocalTx(const QModelIndex &idx, bool setAsLocal)
+{
+    if (!idx.isValid() || idx.row() >= m_modelData.size() || idx.row() < 0)
+    {
+        return;
+    }
+
+    Q_ASSERT(m_localTxList != nullptr);
+
+    auto ensId = m_modelData[idx.row()].ensId();
+    auto id = m_modelData[idx.row()].id();
+    if (m_localTxList->get(ensId, id) != setAsLocal)
+    {
+        m_localTxList->set(ensId, id, setAsLocal);
+
+        // go through the model and emit data changed signal
+        for (int row = 0; row < m_modelData.count(); ++row)
+        {
+            if (m_modelData.at(row).ensId() == ensId && m_modelData.at(row).id() == id)
+            {
+                emit dataChanged(index(row, 0), index(row, NumColsWithoutCoordinates - 1), {TxTableModelRoles::IsLocalRole});
+            }
+        }
     }
 }

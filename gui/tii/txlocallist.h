@@ -24,34 +24,28 @@
  * SOFTWARE.
  */
 
-#ifndef TXTABLEPROXYMODEL_H
-#define TXTABLEPROXYMODEL_H
+#ifndef TXLOCALLIST_H
+#define TXLOCALLIST_H
 
-#include <QAbstractTableModel>
-#include <QGeoPositionInfo>
-#include <QObject>
-#include <QSortFilterProxyModel>
+#include <QMap>
+#include <QString>
 
-class TxTableProxyModel : public QSortFilterProxyModel
+#include "servicelistid.h"
+
+class TxLocalList
 {
-    Q_OBJECT
-    Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
 public:
-    TxTableProxyModel(QObject *parent = nullptr);
-    void setColumnsFilter(bool filterCols);
-    void setInactiveTxFilter(bool filterInactiveTx);
-    void setLocalTxFilter(bool filterLocalTx);
+    TxLocalList(const QString &filename);
+    ~TxLocalList();
+    void load();
+    void save() const;
+    void set(ServiceListId ensId, int tii, bool markAsLocal);
+    bool get(ServiceListId ensId, int tii) const;
 
-signals:
-    void rowCountChanged();
-
-protected:
-    bool m_filterCols = true;
-    bool m_filterInactiveTx = true;
-    bool m_filterLocalTx = false;
-    bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
-    bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const override;
-    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
+private:
+    bool m_dataChanged = false;
+    QString m_jsonFilename;
+    QMap<ServiceListId, QList<int>> m_data;
 };
 
-#endif  // TXTABLEPROXYMODEL_H
+#endif  // TXLOCALLIST_H

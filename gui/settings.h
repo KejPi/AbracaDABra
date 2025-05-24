@@ -74,6 +74,7 @@ public:
 
     Settings() {};
 
+    QString filePath;
     InputDevice::Id inputDevice;
     struct
     {
@@ -264,6 +265,7 @@ public:
         int waitForSync;
         int waitForEnsemble;
         bool clearOnStart;
+        bool hideLocalTx;
 
         bool centerMapToCurrentPosition;
         QGeoCoordinate mapCenter;

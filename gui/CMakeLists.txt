@@ -211,11 +211,12 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     tii/txtableproxymodel.h tii/txtableproxymodel.cpp
     tii/txtablemodelitem.cpp tii/txtablemodelitem.h
     tii/txdataitem.h tii/txdataitem.cpp
-    tii/txdataloader.h tii/txdataloader.cpp      
+    tii/txdataloader.h tii/txdataloader.cpp
     # Scanner tool
     tii/scannerdialog.h tii/scannerdialog.cpp
     tii/channelselectiondialog.h tii/channelselectiondialog.cpp
     tii/ensembleconfigdialog.h tii/ensembleconfigdialog.cpp tii/ensembleconfigdialog.ui
+    tii/txlocallist.h tii/txlocallist.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

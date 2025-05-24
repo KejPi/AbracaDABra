@@ -37,6 +37,7 @@
 #include "txtablemodelitem.h"
 
 class TxDataItem;
+class TxLocalList;
 
 class TxTableModel : public QAbstractTableModel
 {
@@ -56,6 +57,7 @@ public:
         IdRole,
         SelectedTxRole,
         IsActiveRole,
+        IsLocalRole,
     };
 
     enum
@@ -101,6 +103,11 @@ public:
                        const QString &ensConfig, const QString &ensCSV, int numServices, float snr);
     void setCoordinates(const QGeoCoordinate &newCoordinates);
     void setDisplayTimeInUTC(bool newDisplayTimeInUTC);
+
+    // local TX management
+    void loadLocalTxList(const QString &filename);
+    void setAsLocalTx(const QModelIndex &index, bool setAsLocal);
+
 signals:
     void rowCountChanged();
 
@@ -110,6 +117,7 @@ private:
     QSet<int> m_selectedRows;
     QMultiHash<ServiceListId, TxDataItem *> m_txList;
     QGeoCoordinate m_coordinates;
+    TxLocalList *m_localTxList = nullptr;
 };
 
 #endif  // TXTABLEMODEL_H

@@ -53,6 +53,15 @@ void TxTableProxyModel::setInactiveTxFilter(bool filterInactiveTx)
     }
 }
 
+void TxTableProxyModel::setLocalTxFilter(bool filterLocalTx)
+{
+    if (filterLocalTx != m_filterLocalTx)
+    {
+        m_filterLocalTx = filterLocalTx;
+        invalidateRowsFilter();
+    }
+}
+
 bool TxTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
     TxTableModelItem itemL = sourceModel()->data(left, TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
@@ -165,5 +174,13 @@ bool TxTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex
 bool TxTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
 {
     QModelIndex idx = sourceModel()->index(source_row, 0);
-    return (m_filterInactiveTx == false) || sourceModel()->data(idx, TxTableModel::TxTableModelRoles::IsActiveRole).toBool();
+    if (m_filterLocalTx)
+    {  // filter known/local
+        return sourceModel()->data(idx, TxTableModel::TxTableModelRoles::IsLocalRole).toBool() == false;
+    }
+    if (m_filterInactiveTx)
+    {  // filter not active
+        return sourceModel()->data(idx, TxTableModel::TxTableModelRoles::IsActiveRole).toBool() == true;
+    }
+    return true;
 }

@@ -178,6 +178,19 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     clearOnStartAction->setChecked(m_settings->scanner.clearOnStart);
     connect(clearOnStartAction, &QAction::triggered, this, [this](bool checked) { m_settings->scanner.clearOnStart = checked; });
     menu->addAction(clearOnStartAction);
+
+    auto hideLocalTx = new QAction(tr("Hide local (known) transmitters"), menu);
+    hideLocalTx->setCheckable(true);
+    hideLocalTx->setChecked(m_settings->scanner.hideLocalTx);
+    m_sortedFilteredModel->setLocalTxFilter(m_settings->scanner.hideLocalTx);
+    connect(hideLocalTx, &QAction::triggered, this,
+            [this](bool checked)
+            {
+                m_sortedFilteredModel->setLocalTxFilter(checked);
+                m_settings->scanner.hideLocalTx = checked;
+            });
+    menu->addAction(hideLocalTx);
+
     menu->addSeparator();
 
     m_exportAction = new QAction(tr("Save as CSV"), menu);
@@ -228,6 +241,8 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
         }
     }
     connect(m_channelListButton, &QPushButton::clicked, this, &ScannerDialog::channelSelectionClicked);
+
+    m_model->loadLocalTxList(m_settings->filePath + "/LocalTx.json");
 
     m_ensemble.ueid = RADIO_CONTROL_UEID_INVALID;
 
@@ -522,6 +537,11 @@ void ScannerDialog::exportClicked()
             // Body
             for (int row = 0; row < m_model->rowCount(); ++row)
             {
+                if (m_settings->scanner.hideLocalTx && m_model->data(m_model->index(row, 0), TxTableModel::IsLocalRole).toBool())
+                {  // do not export local TX if local filter is set
+                    continue;
+                }
+
                 for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
                 {
                     out << m_model->data(m_model->index(row, col), exportRole).toString() << ";";
@@ -817,22 +837,37 @@ void ScannerDialog::showEnsembleConfig(const QModelIndex &index)
 
 void ScannerDialog::showContextMenu(const QPoint &pos)
 {
-    if (m_isPreciseMode)
+    QModelIndex index = m_txTableView->indexAt(pos);
+    if (index.isValid())
     {
-        QModelIndex index = m_txTableView->indexAt(pos);
-        if (index.isValid())
+        QModelIndex srcIndex = m_sortedFilteredModel->mapToSource(index);
+        if (srcIndex.isValid())
         {
             QMenu *menu = new QMenu(this);
             menu->setAttribute(Qt::WA_DeleteOnClose);
-            auto action = new QAction(tr("Show ensemble information"), this);
-            connect(menu, &QWidget::destroyed, [=]() { // delete actions
-                action->deleteLater();
+
+            QAction *markAsLocalAction = new QAction(tr("Mark as local (known) transmitter"), this);
+            markAsLocalAction->setCheckable(true);
+            markAsLocalAction->setChecked(m_model->data(srcIndex, TxTableModel::IsLocalRole).toBool());
+            menu->addAction(markAsLocalAction);
+
+            QAction *showEnsInfoAction = new QAction(tr("Show ensemble information"), this);
+            showEnsInfoAction->setEnabled(m_isPreciseMode);
+            menu->addAction(showEnsInfoAction);
+
+            connect(menu, &QWidget::destroyed, this, [=]() { // delete actions
+                markAsLocalAction->deleteLater();
+                showEnsInfoAction->deleteLater();
             });
-            menu->addAction(action);
+
             QAction *selectedItem = menu->exec(m_txTableView->viewport()->mapToGlobal(pos));
-            if (nullptr != selectedItem)
+            if (selectedItem == showEnsInfoAction)
             {
                 showEnsembleConfig(index);
+            }
+            else if (selectedItem == markAsLocalAction)
+            {
+                m_model->setAsLocalTx(srcIndex, markAsLocalAction->isChecked());
             }
         }
     }
