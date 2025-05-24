@@ -643,3 +643,10 @@ void TxTableModel::setAsLocalTx(const QModelIndex &idx, bool setAsLocal)
         }
     }
 }
+
+void TxTableModel::clearLocalTx()
+{
+    Q_ASSERT(m_localTxList != nullptr);
+    m_localTxList->clear();
+    emit dataChanged(index(0, 0), index(m_modelData.count() - 1, NumColsWithoutCoordinates - 1), {TxTableModelRoles::IsLocalRole});
+}

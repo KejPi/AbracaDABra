@@ -39,6 +39,7 @@ public:
     ~TxLocalList();
     void load();
     void save() const;
+    void clear();
     void set(ServiceListId ensId, int tii, bool markAsLocal);
     bool get(ServiceListId ensId, int tii) const;
 

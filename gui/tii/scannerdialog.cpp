@@ -226,6 +226,30 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
             });
     menu->addAction(m_clearTableAction);
 
+    auto clearLocalTx = new QAction(tr("Clear local (known) transmitter database"), menu);
+    clearLocalTx->setEnabled(true);
+    connect(clearLocalTx, &QAction::triggered, this,
+            [this]()
+            {
+                QMessageBox *msgBox =
+                    new QMessageBox(QMessageBox::Warning, tr("Warning"), tr("Do you want to clear local (known) transmitter database?"), {}, this);
+                msgBox->setWindowModality(Qt::WindowModal);
+                msgBox->setInformativeText(tr("You will loose all records in the database, this action is irreversible."));
+                msgBox->setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+                msgBox->setDefaultButton(QMessageBox::Cancel);
+                connect(msgBox, &QMessageBox::finished, this,
+                        [this, msgBox](int result)
+                        {
+                            if (result == QMessageBox::Ok)
+                            {
+                                QTimer::singleShot(10, this, [this]() { m_model->clearLocalTx(); });
+                            }
+                            msgBox->deleteLater();
+                        });
+                msgBox->open();
+            });
+    menu->addAction(clearLocalTx);
+
     m_menuLabel->setMenu(menu);
     m_menuLabel->setIcon(":/resources/menu.png");
 

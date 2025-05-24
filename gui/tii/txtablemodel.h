@@ -107,6 +107,7 @@ public:
     // local TX management
     void loadLocalTxList(const QString &filename);
     void setAsLocalTx(const QModelIndex &index, bool setAsLocal);
+    void clearLocalTx();
 
 signals:
     void rowCountChanged();

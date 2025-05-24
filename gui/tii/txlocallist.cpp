@@ -176,6 +176,14 @@ void TxLocalList::save() const
     }
 }
 
+void TxLocalList::clear()
+{
+    if (!m_data.empty())
+    {
+        m_data.clear();
+        m_dataChanged = true;
+    }
+}
 void TxLocalList::set(ServiceListId ensId, int tii, bool markAsLocal)
 {
     if (markAsLocal == true)
