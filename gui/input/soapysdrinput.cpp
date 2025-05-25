@@ -140,6 +140,7 @@ bool SoapySdrInput::openDevice(const QVariant &hwId, bool fallbackConnection)
     try
     {
         m_device->setAntenna(SOAPY_SDR_RX, m_rxChannel, m_antenna.toStdString());
+        qCInfo(soapySdrInput) << "Antenna:" << m_device->getAntenna(SOAPY_SDR_RX, m_rxChannel);
     }
     catch (const std::exception &ex)
     {

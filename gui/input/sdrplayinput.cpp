@@ -240,6 +240,7 @@ void SdrPlayInput::setAntenna(const QString &antenna)
         try
         {
             m_device->setAntenna(SOAPY_SDR_RX, m_rxChannel, m_antenna.toStdString());
+            qCInfo(sdrPlayInput) << "Antenna:" << m_device->getAntenna(SOAPY_SDR_RX, m_rxChannel);
         }
         catch (const std::exception &ex)
         {

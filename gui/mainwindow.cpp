@@ -2942,8 +2942,8 @@ void MainWindow::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             connect(m_inputDevice, &InputDevice::error, this, &MainWindow::onInputDeviceError, Qt::QueuedConnection);
 
             // set connection paramaters
-            dynamic_cast<SoapySdrInput *>(m_inputDevice)->setRxChannel(m_settings->sdrplay.channel);
-            dynamic_cast<SoapySdrInput *>(m_inputDevice)->setAntenna(m_settings->sdrplay.antenna);
+            dynamic_cast<SdrPlayInput *>(m_inputDevice)->setRxChannel(m_settings->sdrplay.channel);
+            dynamic_cast<SdrPlayInput *>(m_inputDevice)->setAntenna(m_settings->sdrplay.antenna);
 
             if (m_inputDevice->openDevice(id, m_settings->sdrplay.fallbackConnection))
             {  // SoapySDR is available
