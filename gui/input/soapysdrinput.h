@@ -94,7 +94,7 @@ public:
     InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
     void setDevArgs(const QString &devArgs) { m_devArgs = devArgs; }
     void setRxChannel(int rxChannel) { m_rxChannel = rxChannel; }
-    void setAntenna(const QString &antenna) { m_antenna = antenna; }
+    virtual void setAntenna(const QString &antenna) { m_antenna = antenna; }
     void setGainMode(const SoapyGainStruct &gain);
     void startStopRecording(bool start) override;
     void setBW(uint32_t bw) override;
