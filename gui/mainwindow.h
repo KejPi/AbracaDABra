@@ -232,9 +232,12 @@ private:
     int m_audioVolume = 100;
     bool m_keepServiceListOnScan;
     bool m_isScannerRunning = false;
-    QDateTime m_dabTime;
     int m_serviceSpiProgress = -1;
     int m_ensSpiProgress = -1;
+
+    // Time
+    QDateTime m_dabTime;
+    QTimer *m_sysTimeTimer = nullptr;
 
     // channel list combo
     DABChannelListFilteredModel *m_channelListModel;
@@ -268,6 +271,7 @@ private:
     void showTiiDialog();
     void showScannerDialog();
     void setExpertMode(bool ena);
+    void resetDabTime();
     void stop();
     void bandScan();
     void audioRecordingToggle();
@@ -314,6 +318,7 @@ private:
     void onAnnouncementClicked();
     void onApplicationStyleChanged(Settings::ApplicationStyle style);
     void onExpertModeToggled(bool checked);
+    void onShowSystemTimeToggled(bool ena);
     void onSignalState(uint8_t sync, float snr);
     void onServiceListEntry(const RadioControlEnsemble &ens, const RadioControlServiceComponent &slEntry);
     void onDLComplete_Service(const QString &dl);

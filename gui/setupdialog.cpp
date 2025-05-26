@@ -364,6 +364,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->darkStyleRadioButton, &QRadioButton::clicked, this, &SetupDialog::onStyleChecked);
     connect(ui->expertCheckBox, &QCheckBox::clicked, this, &SetupDialog::onExpertModeChecked);
     connect(ui->trayIconCheckBox, &QCheckBox::clicked, this, &SetupDialog::onTrayIconChecked);
+    connect(ui->showSystemTimeCheckbox, &QCheckBox::clicked, this, &SetupDialog::onShowSystemTimeChecked);
     connect(ui->dlPlusCheckBox, &QCheckBox::clicked, this, &SetupDialog::onDLPlusChecked);
     connect(ui->xmlHeaderCheckBox, &QCheckBox::clicked, this, &SetupDialog::onXmlHeaderChecked);
     connect(ui->spiAppCheckBox, &QCheckBox::clicked, this, &SetupDialog::onSpiAppChecked);
@@ -671,6 +672,7 @@ void SetupDialog::setSettings(Settings *settings)
     emit proxySettingsChanged();
     emit trayIconToggled(m_settings->trayIconEna);
     emit slsBgChanged(m_settings->slsBackground);
+    emit showSystemTimeToggled(m_settings->showSystemTime);
 }
 
 void SetupDialog::onFileLength(int msec)
@@ -955,6 +957,7 @@ void SetupDialog::setUiState()
     }
     ui->expertCheckBox->setChecked(m_settings->expertModeEna);
     ui->trayIconCheckBox->setChecked(m_settings->trayIconEna);
+    ui->showSystemTimeCheckbox->setChecked(m_settings->showSystemTime);
     ui->dlPlusCheckBox->setChecked(m_settings->dlPlusEna);
 
     index = ui->noiseConcealmentCombo->findData(QVariant(m_settings->noiseConcealmentLevel));
@@ -2241,6 +2244,12 @@ void SetupDialog::onTrayIconChecked(bool checked)
 {
     m_settings->trayIconEna = checked;
     emit trayIconToggled(checked);
+}
+
+void SetupDialog::onShowSystemTimeChecked(bool checked)
+{
+    m_settings->showSystemTime = checked;
+    emit showSystemTimeToggled(checked);
 }
 
 void SetupDialog::onDLPlusChecked(bool checked)

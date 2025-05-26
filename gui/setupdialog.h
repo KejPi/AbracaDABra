@@ -88,6 +88,7 @@ signals:
     void proxySettingsChanged();
     void slsBgChanged(const QColor &color);
     void restartRequested();
+    void showSystemTimeToggled(bool enabled);
 
 protected:
     void showEvent(QShowEvent *event);
@@ -196,6 +197,7 @@ private:
     void onStyleChecked(bool checked);
     void onExpertModeChecked(bool checked);
     void onTrayIconChecked(bool checked);
+    void onShowSystemTimeChecked(bool checked);
     void onDLPlusChecked(bool checked);
     void onLanguageChanged(int index);
     void onNoiseLevelChanged(int index);

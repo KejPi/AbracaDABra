@@ -166,6 +166,7 @@ public:
     QDateTime updateCheckTime;
     bool uploadEnsembleInfo;
     QString serviceListExportPath;
+    bool showSystemTime;
 
     // audio recording settings
     struct AudioRec

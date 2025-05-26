@@ -279,6 +279,7 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
                     ena ? m_trayIcon->show() : m_trayIcon->hide();
                 }
             });
+    connect(m_setupDialog, &SetupDialog::showSystemTimeToggled, this, &MainWindow::onShowSystemTimeToggled);
     connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, this, &MainWindow::onNewAnnouncementSettings);
     connect(m_setupDialog, &SetupDialog::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
     connect(m_setupDialog, &SetupDialog::proxySettingsChanged, this, &MainWindow::setProxy);
@@ -354,7 +355,6 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     QWidget *widget = new QWidget();
     m_timeLabel = new QLabel("");
     m_timeLabel->setMinimumWidth(150);
-    m_timeLabel->setToolTip(tr("DAB time"));
 
     m_basicSignalQualityLabel = new QLabel("");
     m_basicSignalQualityLabel->setToolTip(tr("DAB signal quality"));
@@ -1263,8 +1263,7 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
 {
     if (DabSyncLevel::FullSync > DabSyncLevel(sync))
     {  // hide time when no sync
-        m_timeLabel->setText("");
-        m_dabTime = QDateTime();  // set invalid
+        resetDabTime();
 
         // set no signal quality when no sync
         if (isDarkMode())
@@ -1408,7 +1407,30 @@ void MainWindow::onDabTime(const QDateTime &d)
 {
     m_dabTime = d;
     m_timeLabel->setText(m_timeLocale.toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
+    m_timeLabel->setDisabled(false);
     EPGTime::getInstance()->onDabTime(d);
+}
+
+void MainWindow::resetDabTime()
+{
+    m_dabTime = QDateTime();  // set invalid
+    if (m_settings->showSystemTime && (m_inputDeviceId != InputDevice::Id::UNDEFINED) &&
+        (m_inputDevice->capabilities() & InputDevice::Capability::LiveStream))
+    {
+        m_timeLabel->setText(m_timeLocale.toString(QDateTime::currentDateTime(), QString("dddd, dd.MM.yyyy, hh:mm")));
+        m_timeLabel->setDisabled(true);
+        m_timeLabel->setToolTip(tr("System time"));
+        if (m_sysTimeTimer != nullptr)
+        {
+            m_sysTimeTimer->start();
+        }
+    }
+    else
+    {
+        m_timeLabel->setToolTip(tr("DAB time"));
+        m_timeLabel->setText("");
+        m_timeLabel->setDisabled(false);
+    }
 }
 
 void MainWindow::onAudioParametersInfo(const struct AudioParameters &params)
@@ -1670,7 +1692,7 @@ void MainWindow::onTuneDone(uint32_t freq)
 
         ui->frequencyLabel->setText("");
         m_isPlaying = false;
-        m_dabTime = QDateTime();  // invalid time
+        resetDabTime();
         clearEnsembleInformationLabels();
         clearServiceInformationLabels();
         ui->serviceListView->setCurrentIndex(QModelIndex());
@@ -3238,6 +3260,7 @@ void MainWindow::loadSettings()
     m_settings->trayIconEna = settings->value("showTrayIcon", true).toBool();
 #endif
     m_settings->restoreWindows = settings->value("restoreWindows", false).toBool();
+    m_settings->showSystemTime = settings->value("showSystemTime", false).toBool();
 
     m_settings->uaDump.folder =
         settings->value("UA-STORAGE/folder", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + "/" + appName).toString();
@@ -3542,6 +3565,7 @@ void MainWindow::saveSettings()
     settings->setValue("showTrayIcon", m_settings->trayIconEna);
     settings->setValue("restoreWindows", m_settings->restoreWindows);
     settings->setValue("serviceListExportPath", m_settings->serviceListExportPath);
+    settings->setValue("showSystemTime", m_settings->showSystemTime);
 
     settings->setValue("AudioRecording/folder", m_settings->audioRec.folder);
     settings->setValue("AudioRecording/captureOutput", m_settings->audioRec.captureOutput);
@@ -4092,6 +4116,45 @@ void MainWindow::onExpertModeToggled(bool checked)
 {
     setExpertMode(checked);
     QTimer::singleShot(10, this, [this]() { resize(minimumSizeHint()); });
+}
+
+void MainWindow::onShowSystemTimeToggled(bool ena)
+{
+    if (ena)
+    {  // create times and start it if invalid time
+        if (m_sysTimeTimer == nullptr)
+        {
+            m_sysTimeTimer = new QTimer(this);
+        }
+        m_sysTimeTimer->setTimerType(Qt::VeryCoarseTimer);
+        m_sysTimeTimer->setInterval(2 * 1000);  // 2 sec interval
+        connect(m_sysTimeTimer, &QTimer::timeout, this,
+                [this]()
+                {
+                    if (m_dabTime.isValid() == false)
+                    {  // this shows system time
+                        resetDabTime();
+                    }
+                    else
+                    {
+                        m_timeLabel->setToolTip(tr("DAB time"));
+                        m_sysTimeTimer->stop();
+                    }
+                });
+    }
+    else
+    {  // delete timer
+        if (m_sysTimeTimer)
+        {
+            m_sysTimeTimer->stop();
+            delete m_sysTimeTimer;
+            m_sysTimeTimer = nullptr;
+        }
+    }
+    if (m_dabTime.isValid() == false)
+    {
+        resetDabTime();
+    }
 }
 
 void MainWindow::setExpertMode(bool ena)
