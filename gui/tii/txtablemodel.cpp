@@ -29,6 +29,10 @@
 #include <QColor>
 #include <QFile>
 #include <QFont>
+#if defined(Q_OS_WIN) && defined(main)
+// QFont includes definition of main under windows
+#undef main
+#endif
 
 #include "txdataloader.h"
 #include "txlocallist.h"
@@ -454,7 +458,7 @@ void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceLi
     QList<TxTableModelItem> appendList;
     for (int dataIdx = 0; dataIdx < data.count(); ++dataIdx)
     {
-        // create new item
+        // create new item        
         TxTableModelItem item(data.at(dataIdx).main, data.at(dataIdx).sub, data.at(dataIdx).level, m_coordinates, m_txList.values(ensId));
         item.setEnsData(ensId, ensLabel, numServices, snr);
         item.setRxTime(time);
