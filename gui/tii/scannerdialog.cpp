@@ -251,7 +251,6 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     menu->addAction(clearLocalTx);
 
     m_menuLabel->setMenu(menu);
-    m_menuLabel->setIcon(":/resources/menu.png");
 
     for (auto it = DabTables::channelList.cbegin(); it != DabTables::channelList.cend(); ++it)
     {
@@ -945,10 +944,12 @@ void ScannerDialog::setupDarkMode(bool darkModeEna)
     if (darkModeEna)
     {
         m_qmlView->setColor(Qt::black);
+        m_menuLabel->setIcon(":/resources/menu_dark.png");
     }
     else
     {
         m_qmlView->setColor(Qt::white);
+        m_menuLabel->setIcon(":/resources/menu.png");
     }
 }
 
