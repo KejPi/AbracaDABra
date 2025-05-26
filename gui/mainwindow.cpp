@@ -1407,7 +1407,6 @@ void MainWindow::onDabTime(const QDateTime &d)
 {
     m_dabTime = d;
     m_timeLabel->setText(m_timeLocale.toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
-    m_timeLabel->setDisabled(false);
     EPGTime::getInstance()->onDabTime(d);
 }
 
@@ -1417,8 +1416,8 @@ void MainWindow::resetDabTime()
     if (m_settings->showSystemTime && (m_inputDeviceId != InputDevice::Id::UNDEFINED) &&
         (m_inputDevice->capabilities() & InputDevice::Capability::LiveStream))
     {
-        m_timeLabel->setText(m_timeLocale.toString(QDateTime::currentDateTime(), QString("dddd, dd.MM.yyyy, hh:mm")));
-        m_timeLabel->setDisabled(true);
+        m_timeLabel->setText(
+            QString("<font color='#808080'>%1</font>").arg(m_timeLocale.toString(QDateTime::currentDateTime(), QString("dddd, dd.MM.yyyy, hh:mm"))));
         m_timeLabel->setToolTip(tr("System time"));
         if (m_sysTimeTimer != nullptr)
         {
@@ -1429,7 +1428,6 @@ void MainWindow::resetDabTime()
     {
         m_timeLabel->setToolTip(tr("DAB time"));
         m_timeLabel->setText("");
-        m_timeLabel->setDisabled(false);
     }
 }
 
