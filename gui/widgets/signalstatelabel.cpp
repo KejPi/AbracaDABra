@@ -37,7 +37,6 @@ const QString SignalStateLabel::templateSvgOutline =
 
 SignalStateLabel::SignalStateLabel(QWidget *parent) : QLabel{parent}
 {
-    setText("");
     setFixedSize(18, 18);
 
     // render level icons
@@ -52,6 +51,7 @@ SignalStateLabel::SignalStateLabel(QWidget *parent) : QLabel{parent}
 
 void SignalStateLabel::reset()
 {
+    setText(QString());
     setSignalState(0, 0.0);
 }
 

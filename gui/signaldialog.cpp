@@ -80,6 +80,7 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     ui->freqOffsetLabel->setToolTip(ui->freqOffsetValue->toolTip());
 
     ui->syncLabel->setFixedSize(18 + 10, 18);
+    ui->syncLabel->reset();
 
     ui->snrPlot->addGraph();
     ui->snrPlot->graph(0)->setLineStyle(QCPGraph::lsStepCenter);
