@@ -61,11 +61,11 @@ void SignalStateLabel::setSignalState(uint8_t sync, float snr)
     if (sync > static_cast<int>(DabSyncLevel::NoSync))
     {
         syncSnrLevel = 3;
-        if (snr < SNRThrehold::SNR_BAD)
+        if (snr < static_cast<float>(DabSnrThreshold::LowSNR))
         {
             syncSnrLevel = 1;
         }
-        else if (snr < SNRThrehold::SNR_GOOD)
+        else if (snr < static_cast<float>(DabSnrThreshold::GoodSNR))
         {
             syncSnrLevel = 2;
         }

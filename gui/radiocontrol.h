@@ -60,6 +60,12 @@ enum class DabSyncLevel
     FullSync = 2,
 };
 
+enum class DabSnrThreshold
+{
+    LowSNR = 7,
+    GoodSNR = 10
+};
+
 class DabSId
 {
 public:

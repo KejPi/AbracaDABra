@@ -38,12 +38,6 @@ public:
     void setSignalState(uint8_t sync, float snr);
 
 private:
-    enum SNRThrehold
-    {
-        SNR_BAD = 7,
-        SNR_GOOD = 10
-    };
-
     static const char *syncLevelLabels[];
     static const QStringList snrLevelColors;
     static const QString templateSvgFill;

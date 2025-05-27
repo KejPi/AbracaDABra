@@ -107,12 +107,6 @@ const QString MainWindow::spiDumpPatern("SPI/{ensId}/{scId}_{directoryId}/{conte
 
 int const MainWindow::EXIT_CODE_RESTART = -123456789;
 
-enum class SNR10Threhold
-{
-    SNR_BAD = 70,
-    SNR_GOOD = 100
-};
-
 static LogModel *logModel;
 
 // this is default log handler printing the sam format to log windows and to stderr
@@ -1296,7 +1290,7 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
 #endif
 
     // progressbar styling -> it does not look good on Apple
-    if (static_cast<int>(SNR10Threhold::SNR_BAD) > snr10)
+    if (static_cast<float>(DabSnrThreshold::LowSNR) > snr)
     {  // bad SNR
 #ifndef __APPLE__
         m_snrProgressbar->setStyleSheet(snrProgressStylesheet[0]);
@@ -1313,7 +1307,7 @@ void MainWindow::onSignalState(uint8_t sync, float snr)
             }
         }
     }
-    else if (static_cast<int>(SNR10Threhold::SNR_GOOD) > snr10)
+    else if (static_cast<float>(DabSnrThreshold::GoodSNR) > snr)
     {  // medium SNR
 #ifndef __APPLE__
         m_snrProgressbar->setStyleSheet(snrProgressStylesheet[1]);
