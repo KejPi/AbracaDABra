@@ -46,6 +46,7 @@
 #include "txmapdialog.h"
 
 class Settings;
+class SignalStateLabel;
 class ScannerDialog : public TxMapDialog
 {
     Q_OBJECT
@@ -112,6 +113,7 @@ private:
     QPushButton *m_channelListButton;
     QSpinBox *m_numCyclesSpinBox;
     QComboBox *m_modeCombo;
+    SignalStateLabel *m_signalStateLabel;
 
     QTimer *m_timer = nullptr;
 

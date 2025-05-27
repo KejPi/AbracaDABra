@@ -26,15 +26,7 @@
 
 #include "signaldialog.h"
 
-#include "radiocontrol.h"
 #include "ui_signaldialog.h"
-
-const char *SignalDialog::syncLevelLabels[] = {QT_TR_NOOP("No signal"), QT_TR_NOOP("Signal found"), QT_TR_NOOP("Sync")};
-const QStringList SignalDialog::snrLevelColors = {"white", "#ff4b4b", "#ffb527", "#5bc214"};
-const QString SignalDialog::templateSvgFill =
-    R"(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" fill="%1"/></svg>)";
-const QString SignalDialog::templateSvgOutline =
-    R"(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18"><circle cx="9" cy="9" r="6" stroke="%1" stroke-width="2" fill="white"/></svg>)";
 
 SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     : QDialog(parent), ui(new Ui::SignalDialog), m_settings(settings), m_frequency(freq)
@@ -87,7 +79,6 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     ui->freqOffsetValue->setText("");
     ui->freqOffsetLabel->setToolTip(ui->freqOffsetValue->toolTip());
 
-    ui->syncLabel->setText("");
     ui->syncLabel->setFixedSize(18 + 10, 18);
 
     ui->snrPlot->addGraph();
@@ -245,14 +236,6 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     ui->menuLabel->setToolTip(tr("Configuration"));
     ui->menuLabel->setMenu(menu);
 
-    // render level icons
-    m_snrLevelIcons[0].loadFromData(templateSvgFill.arg(snrLevelColors.at(0)).toUtf8(), "svg");
-    for (int n = 1; n < 4; ++n)
-    {
-        m_snrLevelIcons[n].loadFromData(templateSvgOutline.arg(snrLevelColors.at(n)).toUtf8(), "svg");
-        m_snrLevelIcons[n + 3].loadFromData(templateSvgFill.arg(snrLevelColors.at(n)).toUtf8(), "svg");
-    }
-
     m_timer = new QTimer;
     m_timer->setInterval(1500);
     connect(m_timer, &QTimer::timeout, this, [this]() { setSignalState(0, 0.0); });
@@ -331,30 +314,7 @@ void SignalDialog::setSignalState(uint8_t sync, float snr)
 {
     ui->snrValue->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
     m_snrPlotText->setText(ui->snrValue->text());
-    int syncSnrLevel = 0;
-    if (sync > static_cast<int>(DabSyncLevel::NoSync))
-    {
-        syncSnrLevel = 3;
-        if (snr < 7.0)
-        {
-            syncSnrLevel = 1;
-        }
-        else if (snr < 10.0)
-        {
-            syncSnrLevel = 2;
-        }
-        if (sync == static_cast<int>(DabSyncLevel::FullSync))
-        {
-            syncSnrLevel += 3;
-        }
-    }
-    if (syncSnrLevel != m_syncSnrLevel)
-    {
-        m_syncSnrLevel = syncSnrLevel;
-        ui->syncLabel->setPixmap(m_snrLevelIcons[m_syncSnrLevel]);
-        ui->syncLabel->setToolTip(syncLevelLabels[sync]);
-    }
-
+    ui->syncLabel->setSignalState(sync, snr);
     addToPlot(snr);
 
     m_timer->start();

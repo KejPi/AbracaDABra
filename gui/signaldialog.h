@@ -34,7 +34,6 @@
 #include <QTimer>
 
 #include "settings.h"
-
 namespace Ui
 {
 class SignalDialog;
@@ -74,11 +73,6 @@ private:
         SpectrumUpdateFast = 2,
         SpectrumUpdateVeryFast = 3,
     };
-    static const char *syncLevelLabels[];
-    static const QStringList snrLevelColors;
-    static const QString templateSvgFill;
-    static const QString templateSvgOutline;
-    QPixmap m_snrLevelIcons[7];
     Ui::SignalDialog *ui;
     Settings *m_settings = nullptr;
     QTime m_startTime;

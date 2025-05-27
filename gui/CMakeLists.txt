@@ -174,6 +174,8 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     widgets/elidedlabel.cpp
     widgets/ensemblebar.h
     widgets/ensemblebar.cpp
+    widgets/signalstatelabel.h
+    widgets/signalstatelabel.cpp
 
     # EPG related classes
     epg/epgmodel.h

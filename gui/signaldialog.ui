@@ -62,7 +62,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QLabel" name="syncLabel">
+        <widget class="SignalStateLabel" name="syncLabel">
          <property name="text">
           <string notr="true">X</string>
          </property>
@@ -240,6 +240,11 @@
    <class>ClickableLabel</class>
    <extends>QLabel</extends>
    <header>clickablelabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SignalStateLabel</class>
+   <extends>QLabel</extends>
+   <header location="global">signalstatelabel.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

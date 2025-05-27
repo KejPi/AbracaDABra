@@ -45,6 +45,7 @@
 #include "dabtables.h"
 #include "scannerdialog.h"
 #include "settings.h"
+#include "signalstatelabel.h"
 
 Q_LOGGING_CATEGORY(scanner, "Scanner", QtDebugMsg)
 
@@ -109,6 +110,9 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     m_numCyclesSpinBox->setValue(m_settings->scanner.numCycles);
     labelCycles->setText(tr("Number of cycles:"));
 
+    m_signalStateLabel = new SignalStateLabel();
+
+    controlsLayout->addWidget(m_signalStateLabel);
     controlsLayout->addWidget(m_scanningLabel);
     controlsLayout->addWidget(m_progressChannel);
     controlsLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum));
@@ -170,6 +174,7 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     m_progressChannel->setVisible(false);
     m_scanningLabel->setText("");
     m_channelListButton->setText(tr("Select channels"));
+    m_signalStateLabel->setVisible(false);
 
     auto menu = new QMenu(this);
 
@@ -358,6 +363,7 @@ void ScannerDialog::stopScan()
 
     // restore UI
     m_progressChannel->setVisible(false);
+    m_signalStateLabel->setVisible(false);
     m_scanningLabel->setText(tr("Scanning finished"));
     m_progressBar->setValue(0);
     m_progressChannel->setText(tr("None"));
@@ -600,6 +606,8 @@ void ScannerDialog::startScan()
     m_progressChannel->setVisible(true);
     m_importAction->setEnabled(false);
     m_channelListButton->setEnabled(false);
+    m_signalStateLabel->reset();
+    m_signalStateLabel->setVisible(true);
     m_scanCycleCntr = 0;
     m_frequency = 0;
 
@@ -717,6 +725,7 @@ void ScannerDialog::onTuneDone(uint32_t freq)
 
 void ScannerDialog::onSignalState(uint8_t sync, float snr)
 {
+    m_signalStateLabel->setSignalState(sync, snr);
     if (DabSyncLevel::NullSync <= DabSyncLevel(sync))
     {
         if (ScannerState::WaitForSync == m_state)
