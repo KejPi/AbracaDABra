@@ -114,6 +114,9 @@ private:
     QSpinBox *m_numCyclesSpinBox;
     QComboBox *m_modeCombo;
     SignalStateLabel *m_signalStateLabel;
+    QLabel *m_snrLabel;
+    QLabel *m_snrValue;
+    QFrame *m_snrLine;
 
     QTimer *m_timer = nullptr;
 

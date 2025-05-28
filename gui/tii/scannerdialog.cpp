@@ -111,10 +111,33 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     labelCycles->setText(tr("Number of cycles:"));
 
     m_signalStateLabel = new SignalStateLabel();
+    auto snrLayout = new QHBoxLayout();
+    snrLayout->addWidget(m_scanningLabel);
+    int w = m_progressChannel->fontMetrics().boundingRect("13C").width();
+    m_progressChannel->setFixedWidth(w);
+    m_progressChannel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    snrLayout->addWidget(m_progressChannel);
+    m_snrLine = new QFrame(this);
+    m_snrLine->setFrameShape(QFrame::Shape::VLine);
+    m_snrLine->setFrameShadow(QFrame::Shadow::Sunken);
+    snrLayout->addWidget(m_snrLine);
+    m_snrLabel = new QLabel(this);
+    m_snrLabel->setText(tr("SNR:"));
+    QFont boldFont;
+    boldFont.setBold(true);
+    m_snrLabel->setFont(boldFont);
+    m_snrValue = new QLabel(this);
+    w = m_snrValue->fontMetrics().boundingRect("36.0 dB").width();
+    m_snrValue->setFixedWidth(w);
+    m_snrValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    m_snrValue->setToolTip(QString(tr("DAB signal SNR")));
+    m_snrValue->setText("");
+    m_snrLabel->setToolTip(m_snrValue->toolTip());
+    snrLayout->addWidget(m_signalStateLabel);
+    snrLayout->addWidget(m_snrLabel);
+    snrLayout->addWidget(m_snrValue);
+    controlsLayout->addLayout(snrLayout);
 
-    controlsLayout->addWidget(m_signalStateLabel);
-    controlsLayout->addWidget(m_scanningLabel);
-    controlsLayout->addWidget(m_progressChannel);
     controlsLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum));
     controlsLayout->addWidget(labelMode);
     controlsLayout->addWidget(m_modeCombo);
@@ -170,11 +193,14 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     connect(m_startStopButton, &QPushButton::clicked, this, &ScannerDialog::startStopClicked);
     m_progressBar->setMinimum(0);
     m_progressBar->setValue(0);
-    m_progressChannel->setText(tr("None"));
+    m_progressChannel->setText("");
     m_progressChannel->setVisible(false);
     m_scanningLabel->setText("");
     m_channelListButton->setText(tr("Select channels"));
     m_signalStateLabel->setVisible(false);
+    m_snrLabel->setVisible(false);
+    m_snrValue->setVisible(false);
+    m_snrLine->setVisible(false);
 
     auto menu = new QMenu(this);
 
@@ -364,9 +390,12 @@ void ScannerDialog::stopScan()
     // restore UI
     m_progressChannel->setVisible(false);
     m_signalStateLabel->setVisible(false);
+    m_snrLabel->setVisible(false);
+    m_snrValue->setVisible(false);
+    m_snrLine->setVisible(false);
     m_scanningLabel->setText(tr("Scanning finished"));
     m_progressBar->setValue(0);
-    m_progressChannel->setText(tr("None"));
+    m_progressChannel->setText("");
     m_startStopButton->setText(tr("Start"));
     // adding timeout to avoid timing issues due to double click on start button
     m_startStopButton->setEnabled(false);
@@ -602,12 +631,15 @@ void ScannerDialog::startScan()
         reset();
     }
     m_scanStartTime = QDateTime::currentDateTime();
-    m_scanningLabel->setText(tr("Scanning channel:"));
+    m_scanningLabel->setText("<b>" + tr("Channel:") + "</b>");
     m_progressChannel->setVisible(true);
     m_importAction->setEnabled(false);
     m_channelListButton->setEnabled(false);
     m_signalStateLabel->reset();
     m_signalStateLabel->setVisible(true);
+    m_snrLabel->setVisible(true);
+    m_snrValue->setVisible(true);
+    m_snrLine->setVisible(true);
     m_scanCycleCntr = 0;
     m_frequency = 0;
 
@@ -726,6 +758,7 @@ void ScannerDialog::onTuneDone(uint32_t freq)
 void ScannerDialog::onSignalState(uint8_t sync, float snr)
 {
     m_signalStateLabel->setSignalState(sync, snr);
+    m_snrValue->setText(QString("%1 dB").arg(snr, 0, 'f', 1));
     if (DabSyncLevel::NullSync <= DabSyncLevel(sync))
     {
         if (ScannerState::WaitForSync == m_state)
