@@ -196,7 +196,6 @@ void EnsembleInfoDialog::refreshEnsembleConfiguration(const QString &txt)
         ui->ensStructureTextEdit->setHtml(txt);
         if (txt.isEmpty())
         {  // empty ensemble configuration means tuning to new frequency
-            clearSignalInfo();
             clearServiceInfo();
 
             resetFibStat();
@@ -538,7 +537,7 @@ void EnsembleInfoDialog::updatedDecodingStats(const RadioControlDecodingStats &s
     ui->fibErrCount->setText(QString::number(m_fibErrorCounter));
     if (m_fibCounter > 0)
     {
-        ui->fibErrRate->setText(QString::number(double(m_fibErrorCounter) / m_fibCounter, 'e', 4));
+        ui->fibErrRate->setText(QString("%1").arg(double(m_fibErrorCounter) / m_fibCounter, 0, 'e', 2));
     }
     else
     {
@@ -551,7 +550,7 @@ void EnsembleInfoDialog::updatedDecodingStats(const RadioControlDecodingStats &s
     ui->crcErrCount->setText(QString::number(m_crcErrorCounter));
     if (m_crcCounter > 0)
     {
-        ui->crcErrRate->setText(QString::number(double(m_crcErrorCounter) / m_crcCounter, 'e', 4));
+        ui->crcErrRate->setText(QString("%1").arg(double(m_crcErrorCounter) / m_crcCounter, 0, 'e', 2));
     }
     else
     {
@@ -596,6 +595,7 @@ void EnsembleInfoDialog::newFrequency(quint32 f)
         m_frequency = f;
 
         clearFreqInfo();
+        clearSignalInfo();
         clearServiceInfo();
         clearSubchInfo();
         resetMscStat();
