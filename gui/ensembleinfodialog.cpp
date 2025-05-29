@@ -513,6 +513,16 @@ void EnsembleInfoDialog::setAudioParameters(const AudioParameters &params)
     {
         m_serviceBitrateNet = m_serviceBitrate;
     }
+    else if (params.coding == AudioCoding::None)
+    {
+        ui->serviceCapacity->setText("");
+        ui->audioBitrate->setText("");
+        ui->padBitrate->setText("");
+        ui->audioRatio->setText("");
+        ui->padRatio->setText("");
+        m_serviceBitrateNet = 0;
+        return;
+    }
     else
     {
         int numAU = 3;

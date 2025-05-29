@@ -58,6 +58,7 @@
 
 enum class AudioCoding
 {
+    None = -1,
     MP2 = 0,
     AACLC,
     HEAAC,
@@ -117,6 +118,7 @@ private:
 #endif
     int m_ascLen;
     uint8_t m_asc[7];
+    bool m_streamDropout = false;
 
     float m_mp2DRC = 0;
     mpg123_handle *m_mp2DecoderHandle;

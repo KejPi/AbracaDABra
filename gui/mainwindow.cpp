@@ -1445,6 +1445,13 @@ void MainWindow::onAudioParametersInfo(const struct AudioParameters &params)
             ui->audioEncodingLabel->setText("HE-AACv2");
             ui->audioEncodingLabel->setToolTip(QString(tr("<b>DAB+ audio encoding</b><br>%1")).arg(tr("MPEG-4 High Efficiency AAC v2")));
             break;
+        case AudioCoding::None:
+            ui->audioEncodingLabel->setText("");
+            ui->audioEncodingLabel->setToolTip("");
+            ui->stereoLabel->setText("");
+            ui->stereoLabel->setToolTip("");
+            m_ensembleInfoDialog->setAudioParameters(params);
+            return;
     }
 
     if (params.stereo)

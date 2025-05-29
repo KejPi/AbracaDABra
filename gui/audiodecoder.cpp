@@ -224,6 +224,7 @@ void AudioDecoder::readAACHeader()
     m_audioParameters.sbr = m_aacHeader.bits.sbr_flag;
 
     m_recorder->setDataFormat(m_audioParameters.sampleRateKHz, true);
+    m_streamDropout = false;
     emit audioParametersInfo(m_audioParameters);
 
     qCInfo(audioDecoder, "%s %d kHz %s", (m_aacHeader.bits.sbr_flag ? (m_aacHeader.bits.ps_flag ? "HE-AAC v2" : "HE-AAC") : "AAC-LC"),
@@ -690,6 +691,20 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
     uint8_t conceal = header.bits.conceal;
     if (conceal)
     {
+        // check if this is stream dropout
+        uint64_t sum = 0;
+        for (auto it = inData->data.cbegin(); it != inData->data.cend(); ++it)
+        {
+            sum += *it;
+        }
+        if (sum == 0 && !m_streamDropout)  // all zero
+        {
+            m_streamDropout = true;
+            auto audioParams = m_audioParameters;
+            audioParams.coding = AudioCoding::None;
+            emit audioParametersInfo(audioParams);
+        }
+
 #if HAVE_FDKAAC
         // clear concealment bit
 #if AUDIO_DECODER_FDKAAC_CONCEALMENT
@@ -706,8 +721,13 @@ void AudioDecoder::processAAC(RadioControlAudioData *inData)
         header = m_aacHeader;
 #endif
     }
+    else if (m_streamDropout)
+    {
+        m_streamDropout = false;
+        emit audioParametersInfo(m_audioParameters);
+    }
 
-    if ((header.raw != m_aacHeader.raw && inData->data.size() > 1) || (inData->id != m_inputDataDecoderId))
+    if ((header.raw != m_aacHeader.raw && inData->data.size() > 10) || (inData->id != m_inputDataDecoderId))
     {  // this is stream reconfiguration or announcement (different instance)
 #if !HAVE_FDKAAC
        // not necessary -> will be set in init state
