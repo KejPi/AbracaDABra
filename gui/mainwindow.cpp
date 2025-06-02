@@ -274,6 +274,7 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
                 }
             });
     connect(m_setupDialog, &SetupDialog::showSystemTimeToggled, this, &MainWindow::onShowSystemTimeToggled);
+    connect(m_setupDialog, &SetupDialog::showCountryFlagToggled, this, &MainWindow::onShowCountryFlagToggled);
     connect(m_setupDialog, &SetupDialog::newAnnouncementSettings, this, &MainWindow::onNewAnnouncementSettings);
     connect(m_setupDialog, &SetupDialog::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
     connect(m_setupDialog, &SetupDialog::proxySettingsChanged, this, &MainWindow::setProxy);
@@ -708,6 +709,8 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
 
     ui->logoLabel->setHidden(true);
     ui->ensembleLogoLabel->setHidden(true);
+    ui->flagLabel->setHidden(true);
+    ui->ensembleFlagLabel->setHidden(true);
 
     ui->serviceTreeView->setVisible(false);
 
@@ -1212,6 +1215,7 @@ void MainWindow::onEnsembleInfo(const RadioControlEnsemble &ens)
     {
         m_serviceList->beginEnsembleUpdate(ens);
     }
+    onShowCountryFlagToggled(m_settings->showFlag);
 }
 
 void MainWindow::onEnsembleReconfiguration(const RadioControlEnsemble &ens) const
@@ -1519,6 +1523,7 @@ void MainWindow::onProgrammeTypeChanged(const DabSId &sid, const DabPTy &pty)
 
 void MainWindow::channelSelected()
 {
+    m_ueid = 0;  // no ensemble
     m_hasListViewFocus = ui->serviceListView->hasFocus();
     m_hasTreeViewFocus = ui->serviceTreeView->hasFocus();
     if (InputDevice::Id::RAWFILE != m_inputDeviceId)
@@ -2026,6 +2031,21 @@ void MainWindow::onAudioServiceSelection(const RadioControlServiceComponent &s)
         }
 
         ui->slsView_Service->showServiceLogo(m_metadataManager->data(s.SId.value(), s.SCIdS, MetadataManager::SLSLogo).value<QPixmap>(), true);
+
+        // if (m_settings->showFlag)
+        // {
+        //     QPixmap countryFlag = m_metadataManager->data(s.SId.value(), s.SCIdS, MetadataManager::CountryFlag).value<QPixmap>();
+        //     if (!countryFlag.isNull())
+        //     {
+        //         ui->flagLabel->setPixmap(countryFlag);
+        //         ui->flagLabel->setVisible(true);
+        //     }
+        //     else
+        //     {
+        //         ui->flagLabel->setVisible(false);
+        //     }
+        // }
+        onShowCountryFlagToggled(m_settings->showFlag);
     }
     else
     {  // not audio service
@@ -2401,6 +2421,20 @@ void MainWindow::onMetadataUpdated(const ServiceListId &id, MetadataManager::Met
                     }
                 }
                 break;
+                case MetadataManager::CountryFlag:
+                {
+                    if (m_settings->showFlag)
+                    {
+                        QPixmap logo = m_metadataManager->data(id, MetadataManager::CountryFlag).value<QPixmap>();
+                        if (!logo.isNull())
+                        {
+                            ui->flagLabel->setPixmap(logo);
+                            ui->flagLabel->setToolTip(QString("<b>Country:</b> %1").arg(DabTables::getCountryName(m_SId.value())));
+                            ui->flagLabel->setVisible(true);
+                        }
+                    }
+                }
+                break;
                 default:
                     break;
             }
@@ -2408,13 +2442,36 @@ void MainWindow::onMetadataUpdated(const ServiceListId &id, MetadataManager::Met
     }
     else
     {  // ensemble
-        if (id.ueid() == m_ueid && role == MetadataManager::SmallLogo)
+        if (id.ueid() == m_ueid)
         {
-            QPixmap logo = m_metadataManager->data(id, MetadataManager::SmallLogo).value<QPixmap>();
-            if (!logo.isNull())
+            switch (role)
             {
-                ui->ensembleLogoLabel->setPixmap(logo);
-                ui->ensembleLogoLabel->setVisible(true);
+                case MetadataManager::SmallLogo:
+                {
+                    QPixmap logo = m_metadataManager->data(id, MetadataManager::SmallLogo).value<QPixmap>();
+                    if (!logo.isNull())
+                    {
+                        ui->ensembleLogoLabel->setPixmap(logo);
+                        ui->ensembleFlagLabel->setToolTip(QString("<b>Country:</b> %1").arg(DabTables::getCountryName(m_ueid)));
+                        ui->ensembleLogoLabel->setVisible(true);
+                    }
+                }
+                break;
+
+                case MetadataManager::CountryFlag:
+                {
+                    QPixmap logo = m_metadataManager->data(id, MetadataManager::CountryFlag).value<QPixmap>();
+                    if (!logo.isNull())
+                    {
+                        ui->ensembleFlagLabel->setPixmap(logo);
+                        ui->ensembleFlagLabel->setVisible(true);
+                    }
+                }
+                break;
+
+                default:
+                    // do nothing
+                    break;
             }
         }
     }
@@ -2597,9 +2654,9 @@ void MainWindow::clearEnsembleInformationLabels()
     m_timeLabel->setText("");
     ui->ensembleLabel->setText(tr("No ensemble"));
     ui->ensembleLabel->setToolTip(tr("No ensemble tuned"));
-    ui->ensembleLogoLabel->setHidden(true);
     ui->frequencyLabel->setText("");
-    ui->ensembleInfoLabel->setText("");
+    ui->ensembleLogoLabel->setHidden(true);
+    ui->ensembleFlagLabel->setHidden(true);
     ui->ensSPIProgressLabel->setVisible(false);
     ui->ensSPIProgressLabel->setToolTip("");
     m_ensSpiProgress = -1;
@@ -2611,6 +2668,7 @@ void MainWindow::clearServiceInformationLabels()
     ui->favoriteLabel->setChecked(false);
     ui->catSlsLabel->setHidden(true);
     ui->logoLabel->setHidden(true);
+    ui->flagLabel->setHidden(true);
     ui->announcementLabel->setHidden(true);
     ui->serviceLabel->setToolTip(tr("No service playing"));
     ui->programTypeLabel->setText("");
@@ -3260,6 +3318,7 @@ void MainWindow::loadSettings()
 #endif
     m_settings->restoreWindows = settings->value("restoreWindows", false).toBool();
     m_settings->showSystemTime = settings->value("showSystemTime", false).toBool();
+    m_settings->showFlag = settings->value("showCountryFlag", false).toBool();
 
     m_settings->uaDump.folder =
         settings->value("UA-STORAGE/folder", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + "/" + appName).toString();
@@ -3565,6 +3624,7 @@ void MainWindow::saveSettings()
     settings->setValue("restoreWindows", m_settings->restoreWindows);
     settings->setValue("serviceListExportPath", m_settings->serviceListExportPath);
     settings->setValue("showSystemTime", m_settings->showSystemTime);
+    settings->setValue("showCountryFlag", m_settings->showFlag);
 
     settings->setValue("AudioRecording/folder", m_settings->audioRec.folder);
     settings->setValue("AudioRecording/captureOutput", m_settings->audioRec.captureOutput);
@@ -4156,6 +4216,55 @@ void MainWindow::onShowSystemTimeToggled(bool ena)
     }
 }
 
+void MainWindow::onShowCountryFlagToggled(bool ena)
+{
+    if (ena && m_settings->expertModeEna)
+    {
+        if (m_SId.isValid())
+        {  // valid service
+            QPixmap countryFlag = m_metadataManager->data(m_SId.value(), m_SCIdS, MetadataManager::CountryFlag).value<QPixmap>();
+            if (!countryFlag.isNull())
+            {
+                ui->flagLabel->setPixmap(countryFlag);
+                ui->flagLabel->setToolTip(QString("<b>Country:</b> %1").arg(DabTables::getCountryName(m_SId.value())));
+                ui->flagLabel->setVisible(true);
+            }
+            else
+            {
+                ui->flagLabel->setVisible(false);
+            }
+        }
+        else
+        {
+            ui->flagLabel->setVisible(false);
+        }
+
+        if (m_ueid != 0)
+        {  // valid ensemble
+            QPixmap countryFlag = m_metadataManager->data(ServiceListId(m_frequency, m_ueid), MetadataManager::CountryFlag).value<QPixmap>();
+            if (!countryFlag.isNull())
+            {
+                ui->ensembleFlagLabel->setPixmap(countryFlag);
+                ui->ensembleFlagLabel->setToolTip(QString("<b>Country:</b> %1").arg(DabTables::getCountryName(m_ueid)));
+                ui->ensembleFlagLabel->setVisible(true);
+            }
+            else
+            {
+                ui->ensembleFlagLabel->setVisible(false);
+            }
+        }
+        else
+        {
+            ui->ensembleFlagLabel->setVisible(false);
+        }
+    }
+    else
+    {
+        ui->flagLabel->setVisible(false);
+        ui->ensembleFlagLabel->setVisible(false);
+    }
+}
+
 void MainWindow::setExpertMode(bool ena)
 {
     ui->channelFrame->setVisible(ena);
@@ -4174,13 +4283,9 @@ void MainWindow::setExpertMode(bool ena)
     ui->channelDown->setVisible(ena);
     ui->channelUp->setVisible(ena);
     ui->programTypeLabel->setVisible(ena);
-    ui->ensembleInfoLabel->setVisible(ena);
+    ui->dummyEnsELabel->setVisible(ena);
+    onShowCountryFlagToggled(m_settings->showFlag);
     onSpiProgressSettingsChanged();
-    // ui->ensSPIProgressLabel->setVisible(ena && m_settings->spiIconEna && (m_ensSpiProgress >= 0) &&
-    //                                     ((m_ensSpiProgress < 100) || !m_settings->spiIconHideComplete));
-    // ui->serviceSPIProgressLabel->setVisible(ena && m_settings->spiIconEna && (m_serviceSpiProgress >= 0) &&
-    //                                         ((m_serviceSpiProgress < 100) || !m_settings->spiIconHideComplete));
-
     ui->slsView_Service->setExpertMode(ena);
     ui->slsView_Announcement->setExpertMode(ena);
     m_catSlsDialog->setExpertMode(ena);

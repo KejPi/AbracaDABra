@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>933</width>
+    <width>944</width>
     <height>553</height>
    </rect>
   </property>
@@ -138,8 +138,36 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <property name="spacing">
-         <number>0</number>
+         <number>-1</number>
         </property>
+        <item>
+         <widget class="QLabel" name="flagLabel">
+          <property name="minimumSize">
+           <size>
+            <width>20</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>0</width>
+            <height>15</height>
+           </size>
+          </property>
+          <property name="text">
+           <string notr="true">FLG</string>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+          <property name="margin">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QLabel" name="programTypeLabel">
           <property name="minimumSize">
@@ -271,8 +299,33 @@
         <property name="spacing">
          <number>0</number>
         </property>
+        <property name="leftMargin">
+         <number>1</number>
+        </property>
         <item>
-         <widget class="QLabel" name="ensembleInfoLabel">
+         <widget class="QLabel" name="ensembleFlagLabel">
+          <property name="minimumSize">
+           <size>
+            <width>20</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>0</width>
+            <height>15</height>
+           </size>
+          </property>
+          <property name="text">
+           <string notr="true">FLG</string>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="dummyEnsELabel">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -280,7 +333,7 @@
            </size>
           </property>
           <property name="text">
-           <string notr="true">Info</string>
+           <string notr="true"/>
           </property>
          </widget>
         </item>
@@ -670,7 +723,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>344</width>
+         <width>349</width>
          <height>100</height>
         </rect>
        </property>
@@ -918,7 +971,7 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>933</width>
+     <width>944</width>
      <height>24</height>
     </rect>
    </property>
@@ -927,14 +980,14 @@ QScrollBar::add-page:vertical, .QScrollBar::sub-page:vertical {
  </widget>
  <customwidgets>
   <customwidget>
-   <class>SLSView</class>
-   <extends>QGraphicsView</extends>
-   <header>slsview.h</header>
-  </customwidget>
-  <customwidget>
    <class>ClickableLabel</class>
    <extends>QLabel</extends>
    <header>clickablelabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SLSView</class>
+   <extends>QGraphicsView</extends>
+   <header>slsview.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

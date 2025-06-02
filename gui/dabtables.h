@@ -151,6 +151,7 @@ public:
     static QString getLangName(int lang);
     static QString getLangNameEnglish(int lang);
     static QString getCountryName(uint32_t SId);
+    static QString getCountryCodeISO3166(uint32_t SId);
     static QString getCountryNameEnglish(uint32_t SId);
     static QString getAnnouncementName(DabAnnouncement announcement);
     static QString getAnnouncementNameEnglish(DabAnnouncement announcement);

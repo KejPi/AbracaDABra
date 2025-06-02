@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>580</width>
-    <height>786</height>
+    <height>828</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -2664,6 +2664,13 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
            <widget class="QCheckBox" name="showSystemTimeCheckbox">
             <property name="text">
              <string>Show system time when DAB time is not available</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="countryFlagCheckBox">
+            <property name="text">
+             <string>Show ensemble and service country flag (internet connection required)</string>
             </property>
            </widget>
           </item>

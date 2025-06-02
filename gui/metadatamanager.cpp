@@ -33,6 +33,7 @@
 #include <QFileInfo>
 #include <QIODevice>
 #include <QLoggingCategory>
+#include <QNetworkReply>
 #include <QRegularExpression>
 #include <QStandardPaths>
 #include <QThread>
@@ -685,6 +686,48 @@ QVariant MetadataManager::data(const ServiceListId &id, MetadataRole role) const
                 QPixmap pixmap;
                 pixmap.load(filename + "jpg");
                 return QVariant(pixmap);
+            }
+        }
+        break;
+        case CountryFlag:
+        {
+            QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/flags/" +
+                               QString("%1.png").arg(DabTables::getCountryCodeISO3166(id.sid()));
+            if (QFileInfo::exists(filename))
+            {
+                QPixmap pixmap;
+                pixmap.load(filename);
+                return QVariant(pixmap);
+            }
+            else
+            {  // download flag
+                QString countryCode = DabTables::getCountryCodeISO3166(id.sid());
+                if (!countryCode.isEmpty())
+                {
+                    QNetworkAccessManager *manager = new QNetworkAccessManager();
+                    connect(manager, &QNetworkAccessManager::finished, this,
+                            [=](QNetworkReply *reply)
+                            {
+                                if (reply->error() == QNetworkReply::NoError)
+                                {
+                                    QDir dir;
+
+                                    dir.mkpath(QFileInfo(filename).absolutePath());
+                                    QFile file(filename);
+                                    if (file.open(QIODevice::WriteOnly))
+                                    {
+                                        file.write(reply->readAll());
+                                        file.close();
+                                        emit dataUpdated(id, MetadataManager::CountryFlag);
+                                    }
+                                }
+                                reply->deleteLater();
+                            });
+                    connect(manager, &QNetworkAccessManager::finished, manager, &QNetworkAccessManager::deleteLater);
+                    QNetworkRequest *request = new QNetworkRequest();
+                    request->setUrl(QUrl("https://flagcdn.com/40x30/" + QString("%1.png").arg(countryCode)));
+                    manager->get(*request);
+                }
             }
         }
         break;

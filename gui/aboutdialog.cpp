@@ -97,8 +97,9 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AboutDia
                            ": Marek Schirmer</li>"
                            "</ul>" +
                            tr("AbracaDABra uses some artwork created by") +
-                           " <a href=\"https://www.flaticon.com/authors/basic-miscellany/lineal-color\">Smashicons - Flaticon</a> " +
-                           tr("and DAB transmitter database provided by") + " <a href=\"https://www.fmlist.org\">FMLIST</a>");
+                           " <a href=\"https://www.flaticon.com/authors/basic-miscellany/lineal-color\">Smashicons - Flaticon</a>, " +
+                           tr("DAB transmitter database provided by") + " <a href=\"https://www.fmlist.org\">FMLIST</a> " +
+                           tr("and country flags provided by") + " <a href=\" https://flagpedia.net\">flagpedia.net</a>");
     ui->disclaimer->setText(
         "<p>Copyright © 2019-2025 Petr Kopecký</p>"
         "<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software "

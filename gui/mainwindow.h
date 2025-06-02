@@ -319,6 +319,7 @@ private:
     void onApplicationStyleChanged(Settings::ApplicationStyle style);
     void onExpertModeToggled(bool checked);
     void onShowSystemTimeToggled(bool ena);
+    void onShowCountryFlagToggled(bool ena);
     void onSignalState(uint8_t sync, float snr);
     void onServiceListEntry(const RadioControlEnsemble &ens, const RadioControlServiceComponent &slEntry);
     void onDLComplete_Service(const QString &dl);

@@ -89,6 +89,7 @@ signals:
     void slsBgChanged(const QColor &color);
     void restartRequested();
     void showSystemTimeToggled(bool enabled);
+    void showCountryFlagToggled(bool enabled);
 
 protected:
     void showEvent(QShowEvent *event);
@@ -198,6 +199,7 @@ private:
     void onExpertModeChecked(bool checked);
     void onTrayIconChecked(bool checked);
     void onShowSystemTimeChecked(bool checked);
+    void onCountryFlagChecked(bool checked);
     void onDLPlusChecked(bool checked);
     void onLanguageChanged(int index);
     void onNoiseLevelChanged(int index);

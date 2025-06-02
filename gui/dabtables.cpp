@@ -1720,6 +1720,482 @@ QString DabTables::getCountryNameEnglish(uint32_t SId)
     }
 }
 
+QString DabTables::getCountryCodeISO3166(uint32_t SId)
+{
+    int countryId = 0;  // [ECC 8 bits | country code 4 bits]
+
+    // ETSI EN 300 401 V2.1.1 (2017-01) [6.3.1  Basic service and service component definition ]
+    if (SId > 0x00FFFFFF)
+    {  // data service
+        countryId = (SId >> 20) & 0x0FFF;
+    }
+    else
+    {  // program service
+        countryId = (SId >> 12) & 0x0FFF;
+    }
+    switch (countryId)
+    {
+        case 0xA01:
+        case 0xA02:
+        case 0xA03:
+        case 0xA04:
+        case 0xA05:
+        case 0xA06:
+        case 0xA07:
+        case 0xA08:
+        case 0xA09:
+        case 0xA0A:
+        case 0xA0B:
+        case 0xA0D:
+        case 0xA0E:
+            return QString("us");  // USA/Puerto Rico
+        case 0xA1B:
+        case 0xA1C:
+        case 0xA1D:
+        case 0xA1E:
+            return QString("ca");  // Canada
+        case 0xA1F:
+            return QString("gl");  // Greenland
+        case 0xA21:
+            return QString("ai");  // Anguilla
+        case 0xA22:
+            return QString("ag");  // Antigua and Barbuda
+        case 0xA23:
+            return QString("ec");  // Ecuador
+        case 0xA24:
+            return QString("fk");  // Falkland Islands
+        case 0xA25:
+            return QString("bb");  // Barbados
+        case 0xA26:
+            return QString("bz");  // Belize
+        case 0xA27:
+            return QString("ky");  // Cayman Islands
+        case 0xA28:
+            return QString("cr");  // Costa Rica
+        case 0xA29:
+            return QString("cu");  // Cuba
+        case 0xA2A:
+            return QString("ar");  // Argentina
+        case 0xA2B:
+            return QString("br");  // Brazil
+        case 0xA2C:
+            return QString("bm");  // Bermuda
+        case 0xA2D:
+            return QString("an");  // Netherlands Antilles (historical)
+        case 0xA2E:
+            return QString("gp");  // Guadeloupe
+        case 0xA2F:
+            return QString("bs");  // Bahamas
+        case 0xA31:
+            return QString("bo");  // Bolivia
+        case 0xA32:
+            return QString("co");  // Colombia
+        case 0xA33:
+            return QString("jm");  // Jamaica
+        case 0xA34:
+            return QString("mq");  // Martinique
+        case 0xA36:
+            return QString("py");  // Paraguay
+        case 0xA37:
+            return QString("ni");  // Nicaragua
+        case 0xA39:
+            return QString("pa");  // Panama
+        case 0xA3A:
+            return QString("dm");  // Dominica
+        case 0xA3B:
+            return QString("do");  // Dominican Republic
+        case 0xA3C:
+            return QString("cl");  // Chile
+        case 0xA3D:
+            return QString("gd");  // Grenada
+        case 0xA3E:
+            return QString("tc");  // Turks and Caicos islands
+        case 0xA3F:
+            return QString("gy");  // Guyana
+        case 0xA41:
+            return QString("gt");  // Guatemala
+        case 0xA42:
+            return QString("hn");  // Honduras
+        case 0xA43:
+            return QString("aw");  // Aruba
+        case 0xA45:
+            return QString("ms");  // Montserrat
+        case 0xA46:
+            return QString("tt");  // Trinidad and Tobago
+        case 0xA47:
+            return QString("pe");  // Peru
+        case 0xA48:
+            return QString("sr");  // Suriname
+        case 0xA49:
+            return QString("uy");  // Uruguay
+        case 0xA4A:
+            return QString("kn");  // St. Kitts and Nevis
+        case 0xA4B:
+            return QString("lc");  // St. Lucia
+        case 0xA4C:
+            return QString("sv");  // El Salvador
+        case 0xA4D:
+            return QString("ht");  // Haiti
+        case 0xA4E:
+            return QString("ve");  // Venezuela
+        case 0xA5B:
+            return QString("mx");  // Mexico
+        case 0xA5C:
+            return QString("vc");  // St. Vincent and the Grenadines
+        case 0xA5D:
+        case 0xA5E:
+        case 0xA5F:
+            return QString("mx");  // Mexico
+        // case 0xA5F: return QString("vg"); // Virgin Islands (British) - if needed separately
+        case 0xA63:
+        case 0xA6C:
+        case 0xA6D:
+            return QString("br");  // Brazil
+        case 0xA6F:
+            return QString("pm");  // St. Pierre and Miquelon
+
+        case 0xD01:
+            return QString("cm");  // Cameroon
+        case 0xD02:
+            return QString("cf");  // Central African Republic
+        case 0xD03:
+            return QString("dj");  // Djibouti
+        case 0xD04:
+            return QString("mg");  // Madagascar
+        case 0xD05:
+            return QString("ml");  // Mali
+        case 0xD06:
+            return QString("ao");  // Angola
+        case 0xD07:
+            return QString("gq");  // Equatorial Guinea
+        case 0xD08:
+            return QString("ga");  // Gabon
+        case 0xD09:
+            return QString("gn");  // Republic of Guinea
+        case 0xD0A:
+            return QString("za");  // South Africa
+        case 0xD0B:
+            return QString("bf");  // Burkina Faso
+        case 0xD0C:
+            return QString("cg");  // Congo
+        case 0xD0D:
+            return QString("tg");  // Togo
+        case 0xD0E:
+            return QString("bj");  // Benin
+        case 0xD0F:
+            return QString("mw");  // Malawi
+        case 0xD11:
+            return QString("na");  // Namibia
+        case 0xD12:
+            return QString("lr");  // Liberia
+        case 0xD13:
+            return QString("gh");  // Ghana
+        case 0xD14:
+            return QString("mr");  // Mauritania
+        case 0xD15:
+            return QString("st");  // Sao Tome and Principe
+        case 0xD16:
+            return QString("cv");  // Cape Verde
+        case 0xD17:
+            return QString("sn");  // Senegal
+        case 0xD18:
+            return QString("gm");  // Gambia
+        case 0xD19:
+            return QString("bi");  // Burundi
+        case 0xD1A:
+            return QString("ac");  // Ascension Island (non-standard code)
+        case 0xD1B:
+            return QString("bw");  // Botswana
+        case 0xD1C:
+            return QString("km");  // Comoros
+        case 0xD1D:
+            return QString("tz");  // Tanzania
+        case 0xD1E:
+            return QString("et");  // Ethiopia
+        case 0xD1F:
+            return QString("ng");  // Nigeria
+        case 0xD21:
+            return QString("sl");  // Sierra Leone
+        case 0xD22:
+            return QString("zw");  // Zimbabwe
+        case 0xD23:
+            return QString("mz");  // Mozambique
+        case 0xD24:
+            return QString("ug");  // Uganda
+        case 0xD25:
+            return QString("sz");  // Eswatini (formerly Swaziland)
+        case 0xD26:
+            return QString("ke");  // Kenya
+        case 0xD27:
+            return QString("so");  // Somalia
+        case 0xD28:
+            return QString("ne");  // Niger
+        case 0xD29:
+            return QString("td");  // Chad
+        case 0xD2A:
+            return QString("gw");  // Guinea-Bissau
+        case 0xD2B:
+            return QString("cd");  // Democratic Republic of Congo (formerly Zaire)
+        case 0xD2C:
+            return QString("ci");  // Cote d'Ivoire
+        case 0xD2D:
+            return QString("tz");  // Zanzibar (part of Tanzania)
+        case 0xD2E:
+            return QString("zm");  // Zambia
+        case 0xD33:
+            return QString("eh");  // Western Sahara
+        case 0xD35:
+            return QString("rw");  // Rwanda
+        case 0xD36:
+            return QString("ls");  // Lesotho
+        case 0xD38:
+            return QString("sc");  // Seychelles
+        case 0xD3A:
+            return QString("mu");  // Mauritius
+        case 0xD3C:
+            return QString("sd");  // Sudan
+
+        case 0xE01:
+            return QString("de");  // Germany
+        case 0xE02:
+            return QString("dz");  // Algeria
+        case 0xE03:
+            return QString("ad");  // Andorra
+        case 0xE04:
+            return QString("il");  // Israel
+        case 0xE05:
+            return QString("it");  // Italy
+        case 0xE06:
+            return QString("be");  // Belgium
+        case 0xE07:
+            return QString("ru");  // Russian Federation
+        case 0xE08:
+            return QString("ps");  // Palestine
+        case 0xE09:
+            return QString("al");  // Albania
+        case 0xE0A:
+            return QString("at");  // Austria
+        case 0xE0B:
+            return QString("hu");  // Hungary
+        case 0xE0C:
+            return QString("mt");  // Malta
+        case 0xE0D:
+            return QString("de");  // Germany
+        case 0xE0F:
+            return QString("eg");  // Egypt
+        case 0xE11:
+            return QString("gr");  // Greece
+        case 0xE12:
+            return QString("cy");  // Cyprus
+        case 0xE13:
+            return QString("sm");  // San Marino
+        case 0xE14:
+            return QString("ch");  // Switzerland
+        case 0xE15:
+            return QString("jo");  // Jordan
+        case 0xE16:
+            return QString("fi");  // Finland
+        case 0xE17:
+            return QString("lu");  // Luxembourg
+        case 0xE18:
+            return QString("bg");  // Bulgaria
+        case 0xE19:
+            return QString("dk");  // Denmark
+        // case 0xE19: return QString("fo"); // Faroe Islands - if needed separately
+        case 0xE1A:
+            return QString("gi");  // Gibraltar
+        case 0xE1B:
+            return QString("iq");  // Iraq
+        case 0xE1C:
+            return QString("gb");  // United Kingdom
+        case 0xE1D:
+            return QString("ly");  // Libya
+        case 0xE1E:
+            return QString("ro");  // Romania
+        case 0xE1F:
+            return QString("fr");  // France
+        case 0xE21:
+            return QString("ma");  // Morocco
+        case 0xE22:
+            return QString("cz");  // Czech Republic
+        case 0xE23:
+            return QString("pl");  // Poland
+        case 0xE24:
+            return QString("va");  // Vatican
+        case 0xE25:
+            return QString("sk");  // Slovakia
+        case 0xE26:
+            return QString("sy");  // Syria
+        case 0xE27:
+            return QString("tn");  // Tunisia
+        case 0xE29:
+            return QString("li");  // Liechtenstein
+        case 0xE2A:
+            return QString("is");  // Iceland
+        case 0xE2B:
+            return QString("mc");  // Monaco
+        case 0xE2C:
+            return QString("lt");  // Lithuania
+        case 0xE2D:
+            return QString("rs");  // Serbia
+        case 0xE2E:
+            return QString("es");  // Spain
+        // case 0xE2E: return QString("ic"); // Canary Islands - non-standard code
+        case 0xE2F:
+            return QString("no");  // Norway
+        case 0xE31:
+            return QString("me");  // Montenegro
+        case 0xE32:
+            return QString("ie");  // Ireland
+        case 0xE33:
+            return QString("tr");  // Turkey
+        case 0xE35:
+            return QString("tj");  // Tajikistan
+        case 0xE38:
+            return QString("nl");  // Netherlands
+        case 0xE39:
+            return QString("lv");  // Latvia
+        case 0xE3A:
+            return QString("lb");  // Lebanon
+        case 0xE3B:
+            return QString("az");  // Azerbaijan
+        case 0xE3C:
+            return QString("hr");  // Croatia
+        case 0xE3D:
+            return QString("kz");  // Kazakhstan
+        case 0xE3E:
+            return QString("se");  // Sweden
+        case 0xE3F:
+            return QString("by");  // Belarus
+        case 0xE41:
+            return QString("md");  // Moldova
+        case 0xE42:
+            return QString("ee");  // Estonia
+        case 0xE43:
+            return QString("mk");  // North Macedonia
+        case 0xE46:
+            return QString("ua");  // Ukraine
+        case 0xE47:
+            return QString("xk");  // Kosovo (non-standard code)
+        // case 0xE48: return QString("pt"); // Azores/Madeira - part of Portugal
+        case 0xE48:
+            return QString("pt");  // Portugal
+        case 0xE49:
+            return QString("si");  // Slovenia
+        case 0xE4A:
+            return QString("am");  // Armenia
+        case 0xE4B:
+            return QString("uz");  // Uzbekistan
+        case 0xE4C:
+            return QString("ge");  // Georgia
+        case 0xE4E:
+            return QString("tm");  // Turkmenistan
+        case 0xE4F:
+            return QString("ba");  // Bosnia and Herzegovina
+        case 0xE53:
+            return QString("kg");  // Kyrgyzstan
+        case 0xF01:
+        case 0xF02:
+        case 0xF03:
+        case 0xF04:
+        case 0xF05:
+        case 0xF06:
+        case 0xF07:
+        case 0xF08:
+            return QString("au");  // Australia
+        case 0xF09:
+            return QString("sa");  // Saudi Arabia
+        case 0xF0A:
+            return QString("af");  // Afghanistan
+        case 0xF0B:
+            return QString("mm");  // Myanmar (Burma)
+        case 0xF0C:
+            return QString("cn");  // China
+        case 0xF0D:
+            return QString("kp");  // Korea (North)
+        case 0xF0E:
+            return QString("bh");  // Bahrain
+        case 0xF0F:
+            return QString("my");  // Malaysia
+        case 0xF11:
+            return QString("ki");  // Kiribati
+        case 0xF12:
+            return QString("bt");  // Bhutan
+        case 0xF13:
+            return QString("bd");  // Bangladesh
+        case 0xF14:
+            return QString("pk");  // Pakistan
+        case 0xF15:
+            return QString("fj");  // Fiji
+        case 0xF16:
+            return QString("om");  // Oman
+        case 0xF17:
+            return QString("nr");  // Nauru
+        case 0xF18:
+            return QString("ir");  // Iran
+        case 0xF19:
+            return QString("nz");  // New Zealand
+        case 0xF1A:
+            return QString("sb");  // Solomon Islands
+        case 0xF1B:
+            return QString("bn");  // Brunei Darussalam
+        case 0xF1C:
+            return QString("lk");  // Sri Lanka
+        case 0xF1D:
+            return QString("tw");  // Taiwan
+        case 0xF1E:
+            return QString("kr");  // Korea (South)
+        case 0xF1F:
+            return QString("hk");  // Hong Kong
+        case 0xF21:
+            return QString("kw");  // Kuwait
+        case 0xF22:
+            return QString("qa");  // Qatar
+        case 0xF23:
+            return QString("kh");  // Cambodia
+        case 0xF24:
+            return QString("ws");  // Western Samoa
+        case 0xF25:
+            return QString("in");  // India
+        case 0xF26:
+            return QString("mo");  // Macau
+        case 0xF27:
+            return QString("vn");  // Vietnam
+        case 0xF28:
+            return QString("ph");  // Philippines
+        case 0xF29:
+            return QString("jp");  // Japan
+        case 0xF2A:
+            return QString("sg");  // Singapore
+        case 0xF2B:
+            return QString("mv");  // Maldives
+        case 0xF2C:
+            return QString("id");  // Indonesia
+        case 0xF2D:
+            return QString("ae");  // United Arab Emirates
+        case 0xF2E:
+            return QString("np");  // Nepal
+        case 0xF2F:
+            return QString("vu");  // Vanuatu
+        case 0xF31:
+            return QString("la");  // Laos
+        case 0xF32:
+            return QString("th");  // Thailand
+        case 0xF33:
+            return QString("to");  // Tonga
+        case 0xF39:
+            return QString("pg");  // Papua New Guinea
+        case 0xF3B:
+            return QString("ye");  // Yemen
+        case 0xF3E:
+            return QString("fm");  // Micronesia
+        case 0xF3F:
+            return QString("mn");  // Mongolia
+        default:
+            return QString("");  // Unknown - using xx as per ISO 3166 for user-assigned codes
+    }
+}
+
 QString DabTables::getAnnouncementName(DabAnnouncement announcement)
 {
     // ETSI TS 101 756 V2.4.1 [Table 15]

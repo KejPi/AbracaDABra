@@ -50,6 +50,7 @@ public:
         ShortName,
         MediumName,
         LongName,
+        CountryFlag,
     };
 
     explicit MetadataManager(const ServiceList *serviceList, QObject *parent = nullptr);
@@ -76,7 +77,7 @@ signals:
     void getFile(uint16_t decoderId, const QString &url, const QString &requestId);
     void getSI(const ServiceListId &servId, const uint32_t &ueid);
     void getPI(const ServiceListId &servId, const QList<uint32_t> &ueidList, const QDate &date);
-    void dataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role);
+    void dataUpdated(const ServiceListId &id, MetadataManager::MetadataRole role) const;
     void epgModelChanged(const ServiceListId &id);
     void epgDatesListChanged();
     void epgAvailable();
