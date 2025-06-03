@@ -111,22 +111,18 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     labelCycles->setText(tr("Number of cycles:"));
 
     m_scanningLabel = new QLabel(this);
-    m_scanningLabel->setMinimumHeight(20);
-    m_scanningLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    m_scanningLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
     m_signalStateLabel = new SignalStateLabel();
-    m_signalStateLabel->setMinimumHeight(20);
-    m_signalStateLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    int w = m_progressChannel->fontMetrics().boundingRect(" 13C").width();
+    m_signalStateLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
+    int w = m_progressChannel->fontMetrics().boundingRect("13C").width();
     m_progressChannel->setMinimumWidth(w);
-    m_progressChannel->setMinimumHeight(20);
-    m_progressChannel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    m_progressChannel->setAlignment(Qt::AlignmentFlag::AlignCenter);
     m_snrLine = new QFrame(this);
     m_snrLine->setFrameShape(QFrame::Shape::VLine);
     m_snrLine->setFrameShadow(QFrame::Shadow::Sunken);
 
     m_snrLabel = new QLabel(this);
     m_snrLabel->setText(tr("SNR:"));
-    m_snrLabel->setMinimumHeight(20);
     m_snrLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     QFont boldFont;
     boldFont.setBold(true);
@@ -134,22 +130,26 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     m_snrValue = new QLabel(this);
     w = m_snrValue->fontMetrics().boundingRect("36.0 dB").width();
     m_snrValue->setFixedWidth(w);
-    m_snrValue->setMinimumHeight(20);
-    m_snrValue->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    m_snrValue->setAlignment(Qt::AlignmentFlag::AlignCenter);
     m_snrValue->setToolTip(QString(tr("DAB signal SNR")));
     m_snrValue->setText("");
     m_snrLabel->setToolTip(m_snrValue->toolTip());
 
     auto snrLayout = new QHBoxLayout();
     snrLayout->addWidget(m_scanningLabel);
+    snrLayout->setAlignment(m_scanningLabel, Qt::AlignmentFlag::AlignCenter);
     snrLayout->addWidget(m_progressChannel);
+    snrLayout->setAlignment(m_progressChannel, Qt::AlignmentFlag::AlignCenter);
     snrLayout->addWidget(m_snrLine);
     snrLayout->addWidget(m_signalStateLabel);
+    snrLayout->setAlignment(m_signalStateLabel, Qt::AlignmentFlag::AlignCenter);
     snrLayout->addWidget(m_snrLabel);
+    snrLayout->setAlignment(m_snrLabel, Qt::AlignmentFlag::AlignCenter);
     snrLayout->addWidget(m_snrValue);
+    snrLayout->setAlignment(m_snrValue, Qt::AlignmentFlag::AlignCenter);
     controlsLayout->addLayout(snrLayout);
 
-    controlsLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum));
+    controlsLayout->addItem(new QSpacerItem(40, 2, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum));
     controlsLayout->addWidget(labelMode);
     controlsLayout->addWidget(m_modeCombo);
     controlsLayout->addWidget(labelCycles);
