@@ -84,6 +84,7 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
 
     m_progressBar = new QProgressBar(this);
     m_progressBar->setTextVisible(false);
+    m_progressBar->setFixedHeight(20);
 
     m_channelListButton = new QPushButton(this);
     m_startStopButton = new QPushButton(this);
@@ -111,18 +112,17 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     labelCycles->setText(tr("Number of cycles:"));
 
     m_signalStateLabel = new SignalStateLabel();
-    auto snrLayout = new QHBoxLayout();
-    snrLayout->addWidget(m_scanningLabel);
-    int w = m_progressChannel->fontMetrics().boundingRect("13C").width();
-    m_progressChannel->setFixedWidth(w);
+    m_signalStateLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    int w = m_progressChannel->fontMetrics().boundingRect(" 13C").width();
+    m_progressChannel->setMinimumWidth(w);
     m_progressChannel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    snrLayout->addWidget(m_progressChannel);
     m_snrLine = new QFrame(this);
     m_snrLine->setFrameShape(QFrame::Shape::VLine);
     m_snrLine->setFrameShadow(QFrame::Shadow::Sunken);
-    snrLayout->addWidget(m_snrLine);
+
     m_snrLabel = new QLabel(this);
     m_snrLabel->setText(tr("SNR:"));
+    m_snrLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     QFont boldFont;
     boldFont.setBold(true);
     m_snrLabel->setFont(boldFont);
@@ -133,6 +133,11 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     m_snrValue->setToolTip(QString(tr("DAB signal SNR")));
     m_snrValue->setText("");
     m_snrLabel->setToolTip(m_snrValue->toolTip());
+
+    auto snrLayout = new QHBoxLayout();
+    snrLayout->addWidget(m_scanningLabel);
+    snrLayout->addWidget(m_progressChannel);
+    snrLayout->addWidget(m_snrLine);
     snrLayout->addWidget(m_signalStateLabel);
     snrLayout->addWidget(m_snrLabel);
     snrLayout->addWidget(m_snrValue);
