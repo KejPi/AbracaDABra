@@ -79,12 +79,11 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QHBoxLayout *controlsLayout = new QHBoxLayout();
 
-    m_scanningLabel = new QLabel(this);
     m_progressChannel = new QLabel(this);
 
     m_progressBar = new QProgressBar(this);
     m_progressBar->setTextVisible(false);
-    m_progressBar->setFixedHeight(20);
+    m_progressBar->setFixedHeight(15);
 
     m_channelListButton = new QPushButton(this);
     m_startStopButton = new QPushButton(this);
@@ -111,10 +110,15 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     m_numCyclesSpinBox->setValue(m_settings->scanner.numCycles);
     labelCycles->setText(tr("Number of cycles:"));
 
+    m_scanningLabel = new QLabel(this);
+    m_scanningLabel->setMinimumHeight(20);
+    m_scanningLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     m_signalStateLabel = new SignalStateLabel();
+    m_signalStateLabel->setMinimumHeight(20);
     m_signalStateLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     int w = m_progressChannel->fontMetrics().boundingRect(" 13C").width();
     m_progressChannel->setMinimumWidth(w);
+    m_progressChannel->setMinimumHeight(20);
     m_progressChannel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     m_snrLine = new QFrame(this);
     m_snrLine->setFrameShape(QFrame::Shape::VLine);
@@ -122,6 +126,7 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
 
     m_snrLabel = new QLabel(this);
     m_snrLabel->setText(tr("SNR:"));
+    m_snrLabel->setMinimumHeight(20);
     m_snrLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     QFont boldFont;
     boldFont.setBold(true);
@@ -129,7 +134,8 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     m_snrValue = new QLabel(this);
     w = m_snrValue->fontMetrics().boundingRect("36.0 dB").width();
     m_snrValue->setFixedWidth(w);
-    m_snrValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    m_snrValue->setMinimumHeight(20);
+    m_snrValue->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     m_snrValue->setToolTip(QString(tr("DAB signal SNR")));
     m_snrValue->setText("");
     m_snrLabel->setToolTip(m_snrValue->toolTip());
