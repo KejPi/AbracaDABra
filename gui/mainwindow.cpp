@@ -709,7 +709,7 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
 
     ui->logoLabel->setHidden(true);
     ui->ensembleLogoLabel->setHidden(true);
-    ui->flagLabel->setHidden(true);
+    ui->serviceFlagLabel->setHidden(true);
     ui->ensembleFlagLabel->setHidden(true);
 
     ui->serviceTreeView->setVisible(false);
@@ -2415,9 +2415,9 @@ void MainWindow::onMetadataUpdated(const ServiceListId &id, MetadataManager::Met
                         QPixmap logo = m_metadataManager->data(id, MetadataManager::CountryFlag).value<QPixmap>();
                         if (!logo.isNull())
                         {
-                            ui->flagLabel->setPixmap(logo);
-                            ui->flagLabel->setToolTip(QString("<b>Country:</b> %1").arg(DabTables::getCountryName(m_SId.value())));
-                            ui->flagLabel->setVisible(true);
+                            ui->serviceFlagLabel->setPixmap(logo);
+                            ui->serviceFlagLabel->setToolTip(QString("<b>Country:</b> %1").arg(DabTables::getCountryName(m_SId.value())));
+                            ui->serviceFlagLabel->setVisible(true);
                         }
                     }
                 }
@@ -2658,7 +2658,7 @@ void MainWindow::clearServiceInformationLabels()
     ui->favoriteLabel->setChecked(false);
     ui->catSlsLabel->setHidden(true);
     ui->logoLabel->setHidden(true);
-    ui->flagLabel->setHidden(true);
+    ui->serviceFlagLabel->setHidden(true);
     ui->announcementLabel->setHidden(true);
     ui->serviceLabel->setToolTip(tr("No service playing"));
     ui->programTypeLabel->setText("");
@@ -4217,18 +4217,18 @@ void MainWindow::onShowCountryFlagToggled()
             QPixmap countryFlag = m_metadataManager->data(m_SId.value(), m_SCIdS, MetadataManager::CountryFlag).value<QPixmap>();
             if (!countryFlag.isNull())
             {
-                ui->flagLabel->setPixmap(countryFlag);
-                ui->flagLabel->setToolTip(QString("<b>Country:</b> %1").arg(DabTables::getCountryName(m_SId.value())));
-                ui->flagLabel->setVisible(true);
+                ui->serviceFlagLabel->setPixmap(countryFlag);
+                ui->serviceFlagLabel->setToolTip(QString("<b>Country:</b> %1").arg(DabTables::getCountryName(m_SId.value())));
+                ui->serviceFlagLabel->setVisible(true);
             }
             else
             {
-                ui->flagLabel->setVisible(false);
+                ui->serviceFlagLabel->setVisible(false);
             }
         }
         else
         {
-            ui->flagLabel->setVisible(false);
+            ui->serviceFlagLabel->setVisible(false);
         }
 
         if (m_settings->showEnsFlag && m_ueid != 0)
@@ -4252,7 +4252,7 @@ void MainWindow::onShowCountryFlagToggled()
     }
     else
     {
-        ui->flagLabel->setVisible(false);
+        ui->serviceFlagLabel->setVisible(false);
         ui->ensembleFlagLabel->setVisible(false);
     }
 }
