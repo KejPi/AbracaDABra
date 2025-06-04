@@ -114,7 +114,7 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
     m_scanningLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
     m_signalStateLabel = new SignalStateLabel();
     m_signalStateLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
-    int w = m_progressChannel->fontMetrics().boundingRect("13C").width();
+    int w = m_progressChannel->fontMetrics().boundingRect(" 13C").width();
     m_progressChannel->setMinimumWidth(w);
     m_progressChannel->setAlignment(Qt::AlignmentFlag::AlignCenter);
     m_snrLine = new QFrame(this);
@@ -137,16 +137,11 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
 
     auto snrLayout = new QHBoxLayout();
     snrLayout->addWidget(m_scanningLabel);
-    snrLayout->setAlignment(m_scanningLabel, Qt::AlignmentFlag::AlignCenter);
     snrLayout->addWidget(m_progressChannel);
-    snrLayout->setAlignment(m_progressChannel, Qt::AlignmentFlag::AlignCenter);
     snrLayout->addWidget(m_snrLine);
     snrLayout->addWidget(m_signalStateLabel);
-    snrLayout->setAlignment(m_signalStateLabel, Qt::AlignmentFlag::AlignCenter);
     snrLayout->addWidget(m_snrLabel);
-    snrLayout->setAlignment(m_snrLabel, Qt::AlignmentFlag::AlignCenter);
     snrLayout->addWidget(m_snrValue);
-    snrLayout->setAlignment(m_snrValue, Qt::AlignmentFlag::AlignCenter);
     controlsLayout->addLayout(snrLayout);
 
     controlsLayout->addItem(new QSpacerItem(40, 2, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum));
@@ -405,6 +400,7 @@ void ScannerDialog::stopScan()
     m_snrValue->setVisible(false);
     m_snrLine->setVisible(false);
     m_scanningLabel->setText(tr("Scanning finished"));
+    m_scanningLabel->setFont(QFont());
     m_progressBar->setValue(0);
     m_progressChannel->setText("");
     m_startStopButton->setText(tr("Start"));
@@ -642,7 +638,10 @@ void ScannerDialog::startScan()
         reset();
     }
     m_scanStartTime = QDateTime::currentDateTime();
-    m_scanningLabel->setText("<b>" + tr("Channel:") + "</b>");
+    m_scanningLabel->setText(tr("Channel:"));
+    QFont boldFont;
+    boldFont.setBold(true);
+    m_scanningLabel->setFont(boldFont);
     m_progressChannel->setVisible(true);
     m_importAction->setEnabled(false);
     m_channelListButton->setEnabled(false);
@@ -989,6 +988,7 @@ void ScannerDialog::onInputDeviceError(const InputDevice::ErrorCode)
         }
         stopScan();
         m_scanningLabel->setText(tr("Scanning failed"));
+        m_scanningLabel->setFont(QFont());
     }
 }
 
