@@ -365,7 +365,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->expertCheckBox, &QCheckBox::clicked, this, &SetupDialog::onExpertModeChecked);
     connect(ui->trayIconCheckBox, &QCheckBox::clicked, this, &SetupDialog::onTrayIconChecked);
     connect(ui->showSystemTimeCheckbox, &QCheckBox::clicked, this, &SetupDialog::onShowSystemTimeChecked);
-    connect(ui->countryFlagCheckBox, &QCheckBox::clicked, this, &SetupDialog::onCountryFlagChecked);
+    connect(ui->ensCountryFlagCheckBox, &QCheckBox::clicked, this, &SetupDialog::onCountryFlagChecked);
+    connect(ui->serviceCountryFlagCheckBox, &QCheckBox::clicked, this, &SetupDialog::onCountryFlagChecked);
     connect(ui->dlPlusCheckBox, &QCheckBox::clicked, this, &SetupDialog::onDLPlusChecked);
     connect(ui->xmlHeaderCheckBox, &QCheckBox::clicked, this, &SetupDialog::onXmlHeaderChecked);
     connect(ui->spiAppCheckBox, &QCheckBox::clicked, this, &SetupDialog::onSpiAppChecked);
@@ -674,7 +675,7 @@ void SetupDialog::setSettings(Settings *settings)
     emit trayIconToggled(m_settings->trayIconEna);
     emit slsBgChanged(m_settings->slsBackground);
     emit showSystemTimeToggled(m_settings->showSystemTime);
-    emit showCountryFlagToggled(m_settings->showFlag);
+    emit showCountryFlagToggled();
 }
 
 void SetupDialog::onFileLength(int msec)
@@ -960,7 +961,8 @@ void SetupDialog::setUiState()
     ui->expertCheckBox->setChecked(m_settings->expertModeEna);
     ui->trayIconCheckBox->setChecked(m_settings->trayIconEna);
     ui->showSystemTimeCheckbox->setChecked(m_settings->showSystemTime);
-    ui->countryFlagCheckBox->setChecked(m_settings->showFlag);
+    ui->ensCountryFlagCheckBox->setChecked(m_settings->showEnsFlag);
+    ui->serviceCountryFlagCheckBox->setChecked(m_settings->showServiceFlag);
     ui->dlPlusCheckBox->setChecked(m_settings->dlPlusEna);
 
     index = ui->noiseConcealmentCombo->findData(QVariant(m_settings->noiseConcealmentLevel));
@@ -2204,7 +2206,8 @@ void SetupDialog::onExpertModeChecked(bool checked)
     ui->tiiGroup->setVisible(checked);
     ui->audioExpertGroup->setVisible(checked);
     ui->showSystemTimeCheckbox->setVisible(checked);
-    ui->countryFlagCheckBox->setVisible(checked);
+    ui->ensCountryFlagCheckBox->setVisible(checked);
+    ui->serviceCountryFlagCheckBox->setVisible(checked);
     ui->spiShowProgressCheckbox->setVisible(checked);
     ui->spiHideCompletedCheckbox->setVisible(checked);
 
@@ -2260,10 +2263,11 @@ void SetupDialog::onShowSystemTimeChecked(bool checked)
     emit showSystemTimeToggled(checked);
 }
 
-void SetupDialog::onCountryFlagChecked(bool checked)
+void SetupDialog::onCountryFlagChecked(bool)
 {
-    m_settings->showFlag = checked;
-    emit showCountryFlagToggled(checked);
+    m_settings->showEnsFlag = ui->ensCountryFlagCheckBox->isChecked();
+    m_settings->showServiceFlag = ui->serviceCountryFlagCheckBox->isChecked();
+    emit showCountryFlagToggled();
 }
 
 void SetupDialog::onDLPlusChecked(bool checked)

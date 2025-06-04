@@ -2668,16 +2668,51 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="countryFlagCheckBox">
+           <widget class="QCheckBox" name="ensCountryFlagCheckBox">
             <property name="text">
-             <string>Show ensemble and service country flag (internet connection required)</string>
+             <string>Show ensemble country flag (internet connection required)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="serviceCountryFlagCheckBox">
+            <property name="text">
+             <string>Show service country flag (internet connection required)</string>
             </property>
            </widget>
           </item>
           <item>
            <layout class="QGridLayout" name="gridLayout_10">
+            <item row="0" column="1">
+             <widget class="QPushButton" name="slsBgButton">
+              <property name="text">
+               <string notr="true"/>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="langLabel">
+              <property name="text">
+               <string>Language:</string>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="1">
              <widget class="QComboBox" name="langComboBox"/>
+            </item>
+            <item row="1" column="4">
+             <widget class="QPushButton" name="langRestartButton">
+              <property name="text">
+               <string>Restart</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="slsBgLabel">
+              <property name="text">
+               <string>Slideshow background:</string>
+              </property>
+             </widget>
             </item>
             <item row="1" column="3">
              <spacer name="horizontalSpacer_13">
@@ -2691,34 +2726,6 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
                </size>
               </property>
              </spacer>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="langLabel">
-              <property name="text">
-               <string>Language:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QPushButton" name="slsBgButton">
-              <property name="text">
-               <string notr="true"/>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="slsBgLabel">
-              <property name="text">
-               <string>Slideshow background:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="4">
-             <widget class="QPushButton" name="langRestartButton">
-              <property name="text">
-               <string>Restart</string>
-              </property>
-             </widget>
             </item>
            </layout>
           </item>

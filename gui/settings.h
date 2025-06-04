@@ -167,7 +167,8 @@ public:
     bool uploadEnsembleInfo;
     QString serviceListExportPath;
     bool showSystemTime;
-    bool showFlag;
+    bool showEnsFlag;
+    bool showServiceFlag;
 
     // audio recording settings
     struct AudioRec
