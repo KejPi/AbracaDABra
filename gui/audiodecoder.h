@@ -34,27 +34,11 @@
 #include <QFile>
 #include <QObject>
 
-#include "config.h"
-
-#if HAVE_FDKAAC
-#include <fdk-aac/aacdecoder_lib.h>
-#else
-#include <neaacdec.h>
-
-#endif  // HAVE_FDKAAC
-
 #include "audiofifo.h"
 #include "audiorecorder.h"
 #include "radiocontrol.h"
 
 #define AUDIO_DECODER_BUFFER_SIZE 3840  // this is maximum buffer size for HE-AAC
-#if HAVE_FDKAAC
-#define AUDIO_DECODER_FDKAAC_CONCEALMENT 1
-#define AUDIO_DECODER_NOISE_CONCEALMENT 0  // keep 0 here
-#else                                      // HAVE_FDKAAC
-#define AUDIO_DECODER_FADE_TIME_MS 20      // maximum is 20 ms
-#define AUDIO_DECODER_NOISE_CONCEALMENT 1
-#endif  // HAVE_FDKAAC
 
 enum class AudioCoding
 {
@@ -86,7 +70,7 @@ public:
     void stop();
     void decodeData(RadioControlAudioData *inData);
     void getAudioParameters();
-    void setNoiseConcealment(int level);
+    virtual void setNoiseConcealment(int level) = 0;
 
 signals:
     void startAudio(audioFifo_t *buffer);
@@ -94,63 +78,44 @@ signals:
     void stopAudio();
     void audioParametersInfo(const AudioParameters &params);
 
-private:
+protected:
     enum class PlaybackState
     {
         Stopped = 0,
         WaitForInit,
         Running
     } m_playbackState;
-
-    AudioRecorder *m_recorder;
+    bool m_streamDropout = false;
 
     dabsdrAudioFrameHeader_t m_aacHeader;
+    int m_ascLen;
+    uint8_t m_asc[7];
+
+    AudioRecorder *m_recorder;
     AudioParameters m_audioParameters;
 
     int16_t *m_outBufferPtr;
     size_t m_outputBufferSamples;
-#if HAVE_FDKAAC
-    HANDLE_AACDECODER m_aacDecoderHandle;
-#else
-    NeAACDecHandle m_aacDecoderHandle;
-    NeAACDecFrameInfo m_aacDecFrameInfo;
-    void handleAudioOutputFAAD(const NeAACDecFrameInfo &frameInfo, const uint8_t *inFramePtr);
-#endif
-    int m_ascLen;
-    uint8_t m_asc[7];
-    bool m_streamDropout = false;
-
-    float m_mp2DRC = 0;
-    mpg123_handle *m_mp2DecoderHandle;
 
     dabsdrDecoderId_t m_inputDataDecoderId;
     int m_outFifoIdx;
     audioFifo_t *m_outFifoPtr;
 
-#if !HAVE_FDKAAC
-    int m_numChannels;
-    std::vector<float> m_muteRamp;
-    enum class OutputState
-    {
-        Init = 0,
-        Muted,
-        Unmuted
-    } m_state;
-#if AUDIO_DECODER_NOISE_CONCEALMENT
-    QFile *m_noiseFile = nullptr;
-    int16_t *m_noiseBufferPtr;
-    float m_noiseLevel;
-#endif
-#endif
     void setOutput(int sampleRate, int numChannels);
 
+    virtual bool isAACHandleValid() const = 0;
     void readAACHeader();
-    void initAACDecoder();
-    void deinitAACDecoder();
-    void processAAC(RadioControlAudioData *inData);
+    virtual void initAACDecoder() = 0;
+    virtual void deinitAACDecoder() = 0;
+    virtual void processAAC(RadioControlAudioData *inData) = 0;
 
     void initMPG123();
     void deinitMPG123();
+
+private:
+    float m_mp2DRC = 0;
+    mpg123_handle *m_mp2DecoderHandle;
+
     void processMP2(RadioControlAudioData *inData);
     void getFormatMP2();
 };

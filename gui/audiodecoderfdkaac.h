@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,33 +24,41 @@
  * SOFTWARE.
  */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef AUDIODECODERFDKAAC_H
+#define AUDIODECODERFDKAAC_H
 
-#define PROJECT_VER  "@PROJECT_GIT_VERSION@"
-#define PROJECT_VER_MAJOR  @VER_MAJOR@
-#define PROJECT_VER_MINOR  @VER_MINOR@
-#define PROJECT_VER_PATCH  @VER_PATCH@
-#define PROJECT_VER_GIT    @VER_GIT@
+#include <fdk-aac/aacdecoder_lib.h>
+#include <mpg123.h>
 
-#cmakedefine01 HAVE_FAAD
-#cmakedefine01 HAVE_FDKAAC
-#cmakedefine01 HAVE_PORTAUDIO
-#cmakedefine01 HAVE_QCUSTOMPLOT
-#cmakedefine01 HAVE_QTLOCATION
-#cmakedefine01 HAVE_FMLIST_INTERFACE
+#include <QByteArray>
+#include <QDataStream>
+#include <QFile>
+#include <QObject>
 
+#include "audiodecoder.h"
+#include "audiorecorder.h"
+#include "radiocontrol.h"
 
-/* Optional devices */
-#cmakedefine01 HAVE_AIRSPY
-#cmakedefine01 HAVE_SOAPYSDR
-#cmakedefine01 HAVE_RARTTCP
+#define AUDIO_DECODER_FDKAAC_CONCEALMENT 1
+#define AUDIO_DECODER_FDKAAC_NOISE_CONCEALMENT 0  // keep 0 here
 
-/* Debug */
-#cmakedefine01 TII_SPECTRUM_PLOT
+class AudioDecoderFDKAAC : public AudioDecoder
+{
+    Q_OBJECT
+public:
+    explicit AudioDecoderFDKAAC(AudioRecorder *recorder, QObject *parent = nullptr);
+    ~AudioDecoderFDKAAC();
+    void setNoiseConcealment(int level) override;
 
-#endif // CONFIG_H
+private:
+    HANDLE_AACDECODER m_aacDecoderHandle;
 
+    void setOutput(int sampleRate, int numChannels);
 
+    bool isAACHandleValid() const override { return m_aacDecoderHandle != nullptr; }
+    void initAACDecoder() override;
+    void deinitAACDecoder() override;
+    void processAAC(RadioControlAudioData *inData) override;
+};
 
-
+#endif  // AUDIODECODERFDKAAC_H

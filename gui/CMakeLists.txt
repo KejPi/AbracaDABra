@@ -37,6 +37,12 @@ endif(APPLE)
 
 configure_file (config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
+if (HAVE_FAAD)
+    set(FAAD_SOURCES audiodecoderfaad.cpp audiodecoderfaad.h)
+endif(HAVE_FAAD)
+if (HAVE_FDKAAC)
+    set(FDKAAC_SOURCES audiodecoderfdkaac.cpp audiodecoderfdkaac.h)
+endif(HAVE_FDKAAC)
 if (HAVE_AIRSPY)
     set(AIRSPY_SOURCES input/airspyinput.h input/airspyinput.cpp)
 endif(HAVE_AIRSPY)
@@ -65,6 +71,8 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     ${PORTAUDIO_SOURCES}
     ${APPLE_SOURCES}
     ${QCUSTOMPLOT_SOURCES}
+    ${FAAD_SOURCES}
+    ${FDKAAC_SOURCES}
     main.cpp
     mainwindow.cpp
     mainwindow.h
@@ -75,6 +83,8 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     radiocontrol.cpp
     audiodecoder.h
     audiodecoder.cpp
+    audiodecoder.h
+
     audiofifo.h
     audiofifo.cpp
     audiooutput.h
@@ -297,11 +307,12 @@ if (HAVE_FDKAAC)
     # FDKAAC
     include_directories ( ${LIBFDKAAC_INCLUDE_DIRS} )
     target_link_libraries(${TARGET} PRIVATE "${LIBFDKAAC_LINK_LIBRARIES}" )
-else (HAVE_FDKAAC)
+endif (HAVE_FDKAAC)
+if (HAVE_FAAD)
     # FAAD
     include_directories ( ${LIBFAAD2_INCLUDE_DIRS} )
     target_link_libraries(${TARGET} PRIVATE "${LIBFAAD2_LINK_LIBRARIES}" )
-endif (HAVE_FDKAAC)
+endif (HAVE_FAAD)
 
 # MPG123
 include_directories ( ${LIBMPG123_INCLUDE_DIRS} )

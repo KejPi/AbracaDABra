@@ -349,6 +349,18 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     connect(ui->audioOutCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onAudioOutChanged);
     connect(ui->audioOutRestartButton, &QPushButton::clicked, this, [this]() { emit restartRequested(); });
 
+#if (HAVE_FAAD)
+    ui->audioDecCombo->addItem("FAAD2", Settings::AudioDecoder::FAAD);
+#endif
+#if (HAVE_FDKAAC)
+    ui->audioDecCombo->addItem("FDK-AAC", Settings::AudioDecoder::FDKAAC);
+#endif
+    ui->audioDecWarnLabel->setText("<span style=\"color:red\">" + tr("Audio decoder change will take effect after application restart.") + "</span>");
+    ui->audioDecWarnLabel->setVisible(false);
+    ui->audioDecRestartButton->setVisible(false);
+    connect(ui->audioDecCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onAudioDecChanged);
+    connect(ui->audioDecRestartButton, &QPushButton::clicked, this, [this]() { emit restartRequested(); });
+
     ui->defaultStyleRadioButton->setToolTip(tr("Set default OS style."));
     ui->lightStyleRadioButton->setToolTip(tr("Force application light style."));
     ui->darkStyleRadioButton->setToolTip(tr("Force application dark style."));
@@ -412,11 +424,8 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
     ui->noiseConcealmentCombo->setToolTip(
         tr("Select noise level that is generated during audio interruptions.<br>"
            "This may help to improve listening experience and make the audio interruptions less annoying."));
-#if AUDIO_DECODER_NOISE_CONCEALMENT
+
     connect(ui->noiseConcealmentCombo, &QComboBox::currentIndexChanged, this, &SetupDialog::onNoiseLevelChanged);
-#else
-    ui->audioDecoderGroupBox->setVisible(false);
-#endif
 
     int labelW = qMax(ui->locationSourceLabel->sizeHint().width(), ui->coordinateLabel->sizeHint().width());
     labelW = qMax(labelW, ui->serialPortLabel->sizeHint().width());
@@ -991,6 +1000,14 @@ void SetupDialog::setUiState()
         index = 0;
     }
     ui->audioOutCombo->setCurrentIndex(index);
+
+    index = ui->audioDecCombo->findData(QVariant(m_settings->audioDecoder));
+    if (index < 0)
+    {  // not found
+        index = 0;
+    }
+    ui->audioDecCombo->setCurrentIndex(index);
+    ui->audioDecoderGroupBox->setVisible(m_settings->audioDecoder == Settings::AudioDecoder::FAAD);
 
     ui->audioRecordingFolderLabel->setText(m_settings->audioRec.folder);
     if (m_settings->audioRec.captureOutput)
@@ -2319,6 +2336,26 @@ void SetupDialog::onAudioOutChanged(int index)
                                // setMinimumHeight(0);
                                resize(minimumSizeHint());
                                // setMinimumHeight(height() + 10);
+                           });
+    }
+}
+
+void SetupDialog::onAudioDecChanged(int index)
+{
+    Settings::AudioDecoder decoder = static_cast<Settings::AudioDecoder>(ui->audioDecCombo->currentData().toInt());
+    if (decoder != m_settings->audioDecoder)
+    {
+        m_settings->audioDecoder = decoder;
+        ui->audioDecWarnLabel->setVisible(true);
+        ui->audioDecRestartButton->setVisible(true);
+        ui->audioDecoderGroupBox->setVisible(decoder == Settings::AudioDecoder::FAAD);
+
+        QTimer::singleShot(10, this,
+                           [this]()
+                           {
+                               setMinimumHeight(0);
+                               resize(minimumSizeHint());
+                               setMinimumHeight(height() + 10);
                            });
     }
 }

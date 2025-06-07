@@ -257,7 +257,7 @@ private:
     // methods
     void loadSettings();
     void saveSettings();
-    Settings::AudioFramework getAudioFramework();
+    void getAudioSettings(Settings::AudioFramework &framework, Settings::AudioDecoder &decoder);
     void restoreWindows();
 
     void showEnsembleInfo();

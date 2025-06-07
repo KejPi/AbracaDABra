@@ -71,6 +71,11 @@ public:
         Pa = 0,
         Qt = 1
     };
+    enum AudioDecoder
+    {
+        FAAD = 0,
+        FDKAAC = 1
+    };
 
     Settings() {};
 
@@ -150,6 +155,7 @@ public:
     ApplicationStyle applicationStyle;
     QLocale::Language lang;
     AudioFramework audioFramework;
+    AudioDecoder audioDecoder;
     bool expertModeEna;
     bool dlPlusEna;
     int noiseConcealmentLevel;

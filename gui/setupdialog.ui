@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>580</width>
-    <height>828</height>
+    <height>849</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabDevice">
       <attribute name="title">
@@ -1819,20 +1819,57 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_17">
           <item row="0" column="0">
+           <widget class="QLabel" name="audioDecLabel">
+            <property name="text">
+             <string>AAC audio decoder:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="audioDecCombo">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="audioDecRestartButton">
+            <property name="text">
+             <string>Restart</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <spacer name="horizontalSpacer_18">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>72</width>
+              <height>23</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="1" column="0" colspan="4">
+           <widget class="QLabel" name="audioDecWarnLabel">
+            <property name="text">
+             <string notr="true">Audio decoder change will take effect after application restart.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
            <widget class="QLabel" name="audioOutLabel">
             <property name="text">
              <string>Audio output framework:</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="2">
-           <widget class="QPushButton" name="audioOutRestartButton">
-            <property name="text">
-             <string>Restart</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
+          <item row="2" column="1">
            <widget class="QComboBox" name="audioOutCombo">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -1842,7 +1879,14 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="3">
+          <item row="2" column="2">
+           <widget class="QPushButton" name="audioOutRestartButton">
+            <property name="text">
+             <string>Restart</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
            <spacer name="horizontalSpacer_17">
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>
@@ -1855,7 +1899,7 @@
             </property>
            </spacer>
           </item>
-          <item row="1" column="0" colspan="4">
+          <item row="3" column="0" colspan="4">
            <widget class="QLabel" name="audioOutWarnLabel">
             <property name="text">
              <string notr="true">Audio output change will take effect after application restart.</string>

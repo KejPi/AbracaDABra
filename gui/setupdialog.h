@@ -204,6 +204,7 @@ private:
     void onLanguageChanged(int index);
     void onNoiseLevelChanged(int index);
     void onAudioOutChanged(int index);
+    void onAudioDecChanged(int index);
     void onXmlHeaderChecked(bool checked);
     void onRawFileProgressChanged(int val);
     void onSpiAppChecked(bool checked);

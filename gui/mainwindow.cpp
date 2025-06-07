@@ -87,6 +87,13 @@
 #include "rarttcpinput.h"
 #endif
 
+#if HAVE_FDKAAC
+#include "audiodecoderfdkaac.h"
+#endif
+#if HAVE_FAAD
+#include "audiodecoderfaad.h"
+#endif
+
 #ifdef Q_OS_MACOS
 #include "mac.h"
 #endif
@@ -463,8 +470,10 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     m_aboutAction = new QAction(tr("About"), this);
     connect(m_aboutAction, &QAction::triggered, this, &MainWindow::showAboutDialog);
 
-    // load audio framework setting from ini file
-    Settings::AudioFramework audioFramework = getAudioFramework();
+    // load audio setting from ini file
+    Settings::AudioFramework audioFramework;
+    Settings::AudioDecoder audioDecoder;
+    getAudioSettings(audioFramework, audioDecoder);
 
     m_menu = new QMenu(this);
 
@@ -747,7 +756,23 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
     }
 
     AudioRecorder *audioRecorder = new AudioRecorder();
-    m_audioDecoder = new AudioDecoder(audioRecorder);
+
+#if (!HAVE_FAAD)
+    m_audioDecoder = new AudioDecoderFDKAAC(audioRecorder);
+#elif (!HAVE_FDKAAC)
+    m_audioDecoder = new AudioDecoderFAAD(audioRecorder);
+#else
+    if (Settings::AudioDecoder::FDKAAC == audioDecoder)
+    {
+        m_audioDecoder = new AudioDecoderFDKAAC(audioRecorder);
+        qCInfo(application) << "AAC audio decoder: FDK-AAC";
+    }
+    else
+    {
+        m_audioDecoder = new AudioDecoderFAAD(audioRecorder);
+        qCInfo(application) << "AAC audio decoder: FAAD";
+    }
+#endif
     m_audioDecoderThread = new QThread(this);
     m_audioDecoderThread->setObjectName("audioDecoderThr");
     m_audioDecoder->moveToThread(m_audioDecoderThread);
@@ -781,7 +806,7 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
         connect(this, &MainWindow::audioOutput, m_audioOutput, &AudioOutput::setAudioDevice);
         onAudioDevicesList(m_audioOutput->getAudioDevices());
 
-        qCInfo(application) << "Using PortAudio output";
+        qCInfo(application) << "Audio output: PortAudio";
 #endif
     }
     else
@@ -800,7 +825,7 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
         connect(m_audioOutputThread, &QThread::finished, m_audioOutput, &QObject::deleteLater);
         m_audioOutputThread->start();
 
-        qCInfo(application) << "Using Qt audio output";
+        qCInfo(application) << "Audio output: Qt";
     }
     connect(this, &MainWindow::audioVolume, m_audioOutput, &AudioOutput::setVolume, Qt::QueuedConnection);
     connect(this, &MainWindow::audioMute, m_audioOutput, &AudioOutput::mute, Qt::QueuedConnection);
@@ -3144,9 +3169,8 @@ void MainWindow::configureForInputDevice()
     }
 }
 
-Settings::AudioFramework MainWindow::getAudioFramework()
+void MainWindow::getAudioSettings(Settings::AudioFramework &framework, Settings::AudioDecoder &decoder)
 {
-#if (HAVE_PORTAUDIO)
     QSettings *settings;
     if (m_iniFilename.isEmpty())
     {
@@ -3157,13 +3181,17 @@ Settings::AudioFramework MainWindow::getAudioFramework()
         settings = new QSettings(m_iniFilename, QSettings::IniFormat);
     }
 
+#if (HAVE_PORTAUDIO)
     int val = settings->value("audioFramework", Settings::AudioFramework::Pa).toInt();
-    delete settings;
-
-    return static_cast<Settings::AudioFramework>(val);
+    framework = static_cast<Settings::AudioFramework>(val);
 #else
-    return AudioFramework::Qt;
+    framework = AudioFramework::Qt;
 #endif
+
+    val = settings->value("audioDecoderAAC", Settings::AudioDecoder::FAAD).toInt();
+    decoder = static_cast<Settings::AudioDecoder>(val);
+
+    delete settings;
 }
 
 void MainWindow::restoreWindows()
@@ -3293,6 +3321,14 @@ void MainWindow::loadSettings()
     {
         m_settings->audioFramework = Settings::AudioFramework::Qt;
     }
+    m_settings->audioDecoder = Settings::AudioDecoder::FAAD;
+#if (!HAVE_FAAD)
+    m_settings->audioDecoder = Settings::AudioDecoder::FDKAAC;
+#elif (!HAVE_FDKAAC)
+    m_settings->audioDecoder = Settings::AudioDecoder::FAAD;
+#else
+    m_settings->audioDecoder = static_cast<Settings::AudioDecoder>(settings->value("audioDecoderAAC", Settings::AudioDecoder::FAAD).toInt());
+#endif
 
     m_settings->audioRec.folder =
         settings->value("AudioRecording/folder", QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).toString();
@@ -3590,6 +3626,7 @@ void MainWindow::saveSettings()
         settings->setValue("audioDevice", m_audioDevicesGroup->checkedAction()->data().value<QAudioDevice>().id());
     }
     settings->setValue("audioFramework", m_settings->audioFramework);
+    settings->setValue("audioDecoderAAC", m_settings->audioDecoder);
     settings->setValue("volume", m_audioVolume);
     settings->setValue("mute", m_muteLabel->isChecked());
     settings->setValue("keepServiceListOnScan", m_keepServiceListOnScan);

@@ -72,7 +72,7 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AboutDia
 
                            "<li><a href=\"https://www.mpg123.de\">mpg123</a> by Michael Hipp, Thomas Orgis and others</li>"
 #if HAVE_FDKAAC
-                           "<li><a href=\"https://github.com/mstorsjo/fdk-aac\">fdk-aac</a> Copyright © 1995 - 2018 Fraunhofer-Gesellschaft "
+                           "<li><a href=\"https://github.com/mstorsjo/fdk-aac\">fdk-aac</a> Copyright © 1995-2018 Fraunhofer-Gesellschaft "
                            "zur Förderung der angewandten Forschung e.V.</li>"
 #else
                            "<li><a href=\"https://github.com/knik0/faad2\">FAAD2</a> Copyright © 2003-2005 M. Bakker, Nero AG</li>"
