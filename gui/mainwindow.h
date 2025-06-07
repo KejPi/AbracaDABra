@@ -227,6 +227,7 @@ private:
     uint32_t m_ueid = 0;
     DabSId m_SId;
     uint8_t m_SCIdS = 0;
+    bool m_ensembleRemoved = false;
     bool m_hasListViewFocus;
     bool m_hasTreeViewFocus;
     int m_audioVolume = 100;

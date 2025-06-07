@@ -1260,14 +1260,16 @@ void MainWindow::onServiceListComplete(const RadioControlEnsemble &ens)
     serviceListViewUpdateSelection();
     serviceTreeViewUpdateSelection();
 
-    if (m_frequency != 0 && m_SId.isValid())
-    {
+    if (m_ensembleRemoved && m_frequency != 0 && m_SId.isValid())
+    {  // ensemble reappeared -> restoring last service
+        m_ensembleRemoved = false;
         emit serviceRequest(m_frequency, m_SId.value(), m_SCIdS);
     }
 }
 
 void MainWindow::onEnsembleRemoved(const RadioControlEnsemble &ens)
-{
+{  // this happens when UEID in currently tuned channel changes
+    m_ensembleRemoved = true;
     emit resetUserApps();
 
     m_dlDecoder[Instance::Service]->reset();
@@ -1576,6 +1578,7 @@ void MainWindow::channelSelected()
 
 void MainWindow::serviceSelected()
 {
+    m_ensembleRemoved = false;  // clearing ensemble removed flag, new service was selected
     emit stopUserApps();
     m_audioRecManager->doAudioRecording(false);
     m_dlDecoder[Instance::Service]->reset();
