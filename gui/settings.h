@@ -275,6 +275,7 @@ public:
         int waitForEnsemble;
         bool clearOnStart;
         bool hideLocalTx;
+        bool autoSave;
 
         bool centerMapToCurrentPosition;
         QGeoCoordinate mapCenter;

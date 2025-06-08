@@ -150,6 +150,7 @@ private:
     void importClicked();
     void loadCSV();
     void exportClicked();
+    void saveToFile(const QString &fileName);
     void channelSelectionClicked();
     void storeEnsembleData(const RadioControlTIIData &tiiData, const QString &conf, const QString &csvConf);
     void showEnsembleConfig(const QModelIndex &index);

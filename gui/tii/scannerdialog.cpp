@@ -228,6 +228,12 @@ ScannerDialog::ScannerDialog(Settings *settings, QWidget *parent) : TxMapDialog(
             });
     menu->addAction(hideLocalTx);
 
+    auto autoSave = new QAction(tr("AutoSave CSV"), menu);
+    autoSave->setCheckable(true);
+    autoSave->setChecked(m_settings->scanner.autoSave);
+    connect(autoSave, &QAction::triggered, this, [this](bool checked) { m_settings->scanner.autoSave = checked; });
+    menu->addAction(autoSave);
+
     menu->addSeparator();
 
     m_exportAction = new QAction(tr("Save as CSV"), menu);
@@ -386,6 +392,12 @@ void ScannerDialog::stopScan()
     {
         emit setTii(false);
         m_isTiiActive = false;
+    }
+
+    if (m_settings->scanner.autoSave)
+    {  // auto save log
+        QString fileName = QString("%1/%2_scan.csv").arg(m_settings->tii.logFolder, m_scanStartTime.toString("yyyy-MM-dd_hhmmss"));
+        saveToFile(fileName);
     }
 
     if (m_exitRequested)
@@ -584,37 +596,43 @@ void ScannerDialog::exportClicked()
     if (!fileName.isEmpty())
     {
         m_settings->scanner.exportPath = QFileInfo(fileName).path();  // store path for next time
-        QFile file(fileName);
-        if (file.open(QIODevice::WriteOnly))
+        saveToFile(fileName);
+    }
+}
+
+void ScannerDialog::saveToFile(const QString &fileName)
+{
+    QFile file(fileName);
+    if (file.open(QIODevice::WriteOnly))
+    {
+        QTextStream out(&file);
+
+        auto exportRole =
+            m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTC : TxTableModel::TxTableModelRoles::ExportRole;
+
+        // Header
+        for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
         {
-            QTextStream out(&file);
+            out << m_model->headerData(col, Qt::Horizontal, exportRole).toString() << ";";
+        }
+        out << m_model->headerData(TxTableModel::NumColsWithoutCoordinates - 1, Qt::Horizontal, exportRole).toString() << Qt::endl;
 
-            auto exportRole =
-                m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTC : TxTableModel::TxTableModelRoles::ExportRole;
+        // Body
+        for (int row = 0; row < m_model->rowCount(); ++row)
+        {
+            if (m_settings->scanner.hideLocalTx && m_model->data(m_model->index(row, 0), TxTableModel::IsLocalRole).toBool())
+            {  // do not export local TX if local filter is set
+                continue;
+            }
 
-            // Header
             for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
             {
-                out << m_model->headerData(col, Qt::Horizontal, exportRole).toString() << ";";
+                out << m_model->data(m_model->index(row, col), exportRole).toString() << ";";
             }
-            out << m_model->headerData(TxTableModel::NumColsWithoutCoordinates - 1, Qt::Horizontal, exportRole).toString() << Qt::endl;
-
-            // Body
-            for (int row = 0; row < m_model->rowCount(); ++row)
-            {
-                if (m_settings->scanner.hideLocalTx && m_model->data(m_model->index(row, 0), TxTableModel::IsLocalRole).toBool())
-                {  // do not export local TX if local filter is set
-                    continue;
-                }
-
-                for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
-                {
-                    out << m_model->data(m_model->index(row, col), exportRole).toString() << ";";
-                }
-                out << m_model->data(m_model->index(row, TxTableModel::NumColsWithoutCoordinates - 1), exportRole).toString() << Qt::endl;
-            }
-            file.close();
+            out << m_model->data(m_model->index(row, TxTableModel::NumColsWithoutCoordinates - 1), exportRole).toString() << Qt::endl;
         }
+        file.close();
+        qCInfo(scanner) << "Log was saved to file:" << fileName;
     }
 }
 
