@@ -3529,6 +3529,13 @@ void MainWindow::loadSettings()
         sz = minimumSizeHint();
     }
 
+    // restore layout
+    geometry = settings->value("layout").toByteArray();
+    if (!geometry.isEmpty())
+    {
+        ui->splitter->restoreState(geometry);
+    }
+
     // this is workaround to force size when window appears (not clear why it is necessary)
     QTimer::singleShot(10, this, [this, sz]() { resize(sz); });
 
@@ -3634,6 +3641,7 @@ void MainWindow::saveSettings()
     settings->setValue("mute", m_muteLabel->isChecked());
     settings->setValue("keepServiceListOnScan", m_keepServiceListOnScan);
     settings->setValue("windowGeometry", saveGeometry());
+    settings->setValue("layout", ui->splitter->saveState());
     settings->setValue("style", static_cast<int>(m_settings->applicationStyle));
     settings->setValue("announcementEna", m_settings->announcementEna);
     settings->setValue("bringWindowToForegroundOnAlarm", m_settings->bringWindowToForeground);
