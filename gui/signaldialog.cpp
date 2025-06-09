@@ -101,7 +101,7 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     ui->snrPlot->axisRect()->setupFullAxesBox();
     ui->snrPlot->xAxis->setRange(0, xPlotRange);
     ui->snrPlot->yAxis->setRange(0, 36);
-    ui->snrPlot->setMinimumHeight(180);
+    ui->snrPlot->setMinimumHeight(120);
 
     QFont font = ui->snrPlot->font();
     font.setBold(true);
@@ -241,6 +241,10 @@ SignalDialog::SignalDialog(Settings *settings, int freq, QWidget *parent)
     m_timer->setInterval(1500);
     connect(m_timer, &QTimer::timeout, this, [this]() { setSignalState(0, 0.0); });
     setSignalState(0, 0.0);
+
+    QSize layoutSize = ui->signalInfoLayout->sizeHint();
+    int dialogMargins = contentsMargins().left() + contentsMargins().right();
+    setMinimumWidth(layoutSize.width() + dialogMargins);
 
     if (!m_settings->signal.splitterState.isEmpty())
     {
