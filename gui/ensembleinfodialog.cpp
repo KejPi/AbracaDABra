@@ -585,6 +585,10 @@ void EnsembleInfoDialog::updatedDecodingStats(const RadioControlDecodingStats &s
     else
     {
         ui->rsBer->setText(tr("N/A"));
+        if (stats.rsBitErrorCntr == 0)
+        {
+            ui->rsUncorr->setText(ui->rsBer->text());
+        }
     }
 
     if ((stats.audioServiceBytes > 0) && (m_serviceBitrateNet > 0))
@@ -605,8 +609,8 @@ void EnsembleInfoDialog::resetFibStat()
     m_fibStatsErrSum = 0;
     m_fibStatsSum = 0;
     m_fibErrorCounter = 0;
-    ui->fibErrCount->setText("0");
-    ui->fibErrRate->setText(tr("N/A"));
+    ui->fibErrCount->setText("");
+    ui->fibErrRate->setText("");
     memset(m_fibStats, 0, sizeof(uint16_t) * StatsHistorySize * 2);
 }
 
@@ -616,10 +620,10 @@ void EnsembleInfoDialog::resetMscStat()
     m_mscStatsErrSum = 0;
     m_crcErrorCounter = 0;
     m_rsUncorrCounter = 0;
-    ui->crcErrCount->setText("0");
-    ui->crcErrRate->setText(tr("N/A"));
-    ui->rsUncorr->setText("0");
-    ui->rsBer->setText(tr("N/A"));
+    ui->crcErrCount->setText("");
+    ui->crcErrRate->setText("");
+    ui->rsUncorr->setText("");
+    ui->rsBer->setText("");
     memset(m_mscStats, 0, sizeof(uint16_t) * StatsHistorySize * 2);
 }
 

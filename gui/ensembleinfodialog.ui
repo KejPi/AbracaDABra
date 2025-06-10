@@ -649,7 +649,7 @@
              </font>
             </property>
             <property name="text">
-             <string>AU CRC errors:</string>
+             <string>Audio CRC errors:</string>
             </property>
            </widget>
           </item>
@@ -675,7 +675,7 @@
              </font>
             </property>
             <property name="text">
-             <string>AU error rate:</string>
+             <string>Audio error rate:</string>
             </property>
            </widget>
           </item>
