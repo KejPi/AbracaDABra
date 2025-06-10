@@ -118,8 +118,8 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(ne
     ui->fibErrRate->setToolTip(tr("FIB error rate"));
     ui->rsUncorrCountLabel->setToolTip(tr("Total number of uncorrectable Reed-Solomon code words (DAB+ only)"));
     ui->rsUncorr->setToolTip(tr("Total number of uncorrectable Reed-Solomon code words (DAB+ only)"));
-    ui->rsBerLabel->setToolTip(tr("Estimated BER before Reed-Solomon decoder (DAB+ only)"));
-    ui->rsBer->setToolTip(tr("Estimated BER before Reed-Solomon decoder (DAB+ only)"));
+    ui->rsBerLabel->setToolTip(tr("BER before Reed-Solomon decoder (DAB+ only)"));
+    ui->rsBer->setToolTip(tr("BER before Reed-Solomon decoder (DAB+ only)"));
     ui->crcErrCountLabel->setToolTip(tr("Total number of audio frames with CRC error (AU for DAB+)"));
     ui->crcErrCount->setToolTip(tr("Total number of audio frames with CRC error (AU for DAB+)"));
     ui->crcErrRateLabel->setToolTip(tr("Audio frame (AU for DAB+) error rate"));
@@ -558,7 +558,7 @@ void EnsembleInfoDialog::updatedDecodingStats(const RadioControlDecodingStats &s
     }
     else
     {
-        ui->fibErrRate->setText(tr("N/A"));
+        ui->fibErrRate->setText("");
     }
 
     m_crcErrorCounter += stats.mscCrcErrorCntr;
@@ -574,7 +574,11 @@ void EnsembleInfoDialog::updatedDecodingStats(const RadioControlDecodingStats &s
     }
     else
     {
-        ui->crcErrRate->setText(tr("N/A"));
+        ui->crcErrRate->setText("");
+        if (m_crcErrorCounter == 0)
+        {
+            ui->crcErrCount->setText(ui->crcErrRate->text());
+        }
     }
     m_rsUncorrCounter += stats.rsUncorrectableCntr;
     ui->rsUncorr->setText(QString::number(m_rsUncorrCounter));
@@ -584,7 +588,7 @@ void EnsembleInfoDialog::updatedDecodingStats(const RadioControlDecodingStats &s
     }
     else
     {
-        ui->rsBer->setText(tr("N/A"));
+        ui->rsBer->setText("");
         if (stats.rsBitErrorCntr == 0)
         {
             ui->rsUncorr->setText(ui->rsBer->text());
