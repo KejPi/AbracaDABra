@@ -2568,7 +2568,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
           <item>
            <layout class="QHBoxLayout" name="tiiHideTxLayout">
             <item>
-             <spacer name="horizontalSpacer_18">
+             <spacer name="horizontalSpacer_181">
               <property name="orientation">
                <enum>Qt::Orientation::Horizontal</enum>
               </property>

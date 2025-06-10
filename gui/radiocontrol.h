@@ -291,6 +291,9 @@ struct RadioControlDecodingStats
     int mscCrcErrorCntr;    // number of CRC errors [after RS (DAB+)]
     int audioServiceBytes;  // number of audio service bytes
     int padBytes;           // number of PAD bytes
+    int rsBytes;            // number of bytes decoded by RS
+    int rsBitErrorCntr;     // number of bit errors
+    int rsUncorrectableCntr;  // number of uncorrected code words
 };
 
 enum class RadioControlEventType

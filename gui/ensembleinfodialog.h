@@ -111,10 +111,23 @@ private:
     QString m_ensembleName;
     bool m_ensembleInfoUploaded;
 
-    quint64 m_fibCounter = 0;
+    enum
+    {
+        StatsHistorySize = 32,                      // N numbers are stored in history to calculate the error rate (must be power of 2)
+        StatsIdxMask = (2 * StatsHistorySize - 1),  // (2*N - 1) mask used to wrap index
+    };
+    int m_fibStatsIdx = 0;
+    int m_mscStatsIdx = 0;
+    uint16_t *m_fibStats = nullptr;
+    uint16_t *m_mscStats = nullptr;
+    qint64 m_fibStatsSum = 0;
+    qint64 m_fibStatsErrSum = 0;
     quint64 m_fibErrorCounter = 0;
-    quint64 m_crcCounter = 0;
+    qint64 m_mscStatsSum = 0;
+    qint64 m_mscStatsErrSum = 0;
     quint64 m_crcErrorCounter = 0;
+
+    quint64 m_rsUncorrCounter = 0;
 
     int m_serviceBitrate = 0;
     float m_serviceBitrateNet = 0;

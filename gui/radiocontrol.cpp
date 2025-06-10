@@ -314,6 +314,9 @@ void RadioControl::onDabEvent(RadioControlEvent *pEvent)
             stats.mscCrcErrorCntr = pData->mscCrcErrorCntr;
             stats.audioServiceBytes = pData->audioServiceBytes;
             stats.padBytes = pData->padBytes;
+            stats.rsBytes = pData->rsBytes;
+            stats.rsUncorrectableCntr = pData->rsUncorrectableCntr;
+            stats.rsBitErrorCntr = pData->rsBitErrors;
             emit decodingStats(stats);
 
             qCDebug(radioControl, "AutoNotify: sync %d, freq offset = %.1f Hz, SNR = %.1f dB", pData->syncLevel, pData->freqOffset * 0.1,

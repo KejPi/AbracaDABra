@@ -536,32 +536,6 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_12">
-          <item>
-           <widget class="QLabel" name="fibCountLabel">
-            <property name="font">
-             <font>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>FIB counter:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="fibCount">
-            <property name="text">
-             <string notr="true">123456789</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_13">
           <item>
            <widget class="QLabel" name="fibErrCountLabel">
@@ -614,23 +588,49 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_15">
+         <layout class="QHBoxLayout" name="horizontalLayout_12">
           <item>
-           <widget class="QLabel" name="crcCountLabel">
+           <widget class="QLabel" name="rsUncorrCountLabel">
             <property name="font">
              <font>
               <bold>true</bold>
              </font>
             </property>
             <property name="text">
-             <string>AU counter:</string>
+             <string>RS uncorrectable:</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="crcCount">
+           <widget class="QLabel" name="rsUncorr">
             <property name="text">
              <string notr="true">123456789</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_15">
+          <item>
+           <widget class="QLabel" name="rsBerLabel">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>RS BER:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="rsBer">
+            <property name="text">
+             <string notr="true">0.00123</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>

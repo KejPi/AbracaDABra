@@ -44,6 +44,8 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(ne
     // Set window flags to add minimize buttons
     setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
 #endif
+    m_fibStats = new uint16_t[StatsHistorySize * 2];
+    m_mscStats = new uint16_t[StatsHistorySize * 2];
 
     connect(ui->recordButton, &QPushButton::clicked, this, &EnsembleInfoDialog::onRecordingButtonClicked);
     connect(ui->csvExportButton, &QPushButton::clicked, this, &EnsembleInfoDialog::requestEnsembleCSV);
@@ -110,14 +112,14 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(ne
     ui->padRatioLabel->setToolTip(tr("Percentage of PAD in useful bitrate"));
     ui->padRatio->setToolTip(tr("Percentage of PAD in useful bitrate"));
 
-    ui->fibCountLabel->setToolTip(tr("Total number of FIB's"));
-    ui->fibCount->setToolTip(tr("Total number of FIB's"));
-    ui->fibErrCountLabel->setToolTip(tr("Number of FIB's with CRC error"));
-    ui->fibErrCount->setToolTip(tr("Number of FIB's with CRC error"));
+    ui->fibErrCountLabel->setToolTip(tr("Total number of FIB's with CRC error"));
+    ui->fibErrCount->setToolTip(tr("Total number of FIB's with CRC error"));
     ui->fibErrRateLabel->setToolTip(tr("FIB error rate"));
     ui->fibErrRate->setToolTip(tr("FIB error rate"));
-    ui->crcCountLabel->setToolTip(tr("Total number of audio frames (AU for DAB+)"));
-    ui->crcCount->setToolTip(tr("Total number of audio frames (AU for DAB+)"));
+    ui->rsUncorrCountLabel->setToolTip(tr("Total number of uncorrectable Reed-Solomon code words (DAB+ only)"));
+    ui->rsUncorr->setToolTip(tr("Total number of uncorrectable Reed-Solomon code words (DAB+ only)"));
+    ui->rsBerLabel->setToolTip(tr("Estimated BER before Reed-Solomon decoder (DAB+ only)"));
+    ui->rsBer->setToolTip(tr("Estimated BER before Reed-Solomon decoder (DAB+ only)"));
     ui->crcErrCountLabel->setToolTip(tr("Total number of audio frames with CRC error (AU for DAB+)"));
     ui->crcErrCount->setToolTip(tr("Total number of audio frames with CRC error (AU for DAB+)"));
     ui->crcErrRateLabel->setToolTip(tr("Audio frame (AU for DAB+) error rate"));
@@ -175,6 +177,8 @@ EnsembleInfoDialog::EnsembleInfoDialog(QWidget *parent) : QDialog(parent), ui(ne
 
 EnsembleInfoDialog::~EnsembleInfoDialog()
 {
+    delete[] m_mscStats;
+    delete[] m_fibStats;
     delete ui;
 }
 
@@ -541,30 +545,46 @@ void EnsembleInfoDialog::setAudioParameters(const AudioParameters &params)
 
 void EnsembleInfoDialog::updatedDecodingStats(const RadioControlDecodingStats &stats)
 {
-    m_fibCounter += (stats.fibCntr - stats.fibErrorCntr);
     m_fibErrorCounter += stats.fibErrorCntr;
-    ui->fibCount->setText(QString::number(m_fibCounter));
+    m_fibStatsSum += stats.fibCntr - m_fibStats[m_fibStatsIdx];
+    m_fibStats[m_fibStatsIdx++] = stats.fibCntr;
+    m_fibStatsErrSum += stats.fibErrorCntr - m_fibStats[m_fibStatsIdx];
+    m_fibStats[m_fibStatsIdx] = stats.fibErrorCntr;
     ui->fibErrCount->setText(QString::number(m_fibErrorCounter));
-    if (m_fibCounter > 0)
+    m_fibStatsIdx = (m_fibStatsIdx + 1) & StatsIdxMask;
+    if (m_fibStatsSum > 0)
     {
-        ui->fibErrRate->setText(QString("%1").arg(double(m_fibErrorCounter) / m_fibCounter, 0, 'e', 2));
+        ui->fibErrRate->setText(QString("%1").arg(double(m_fibStatsErrSum) / m_fibStatsSum, 0, 'e', 2));
     }
     else
     {
         ui->fibErrRate->setText(tr("N/A"));
     }
 
-    m_crcCounter += (stats.mscCrcOkCntr + stats.mscCrcErrorCntr);
     m_crcErrorCounter += stats.mscCrcErrorCntr;
-    ui->crcCount->setText(QString::number(m_crcCounter));
+    m_mscStatsSum += (stats.mscCrcOkCntr + stats.mscCrcErrorCntr) - m_mscStats[m_mscStatsIdx];
+    m_mscStats[m_mscStatsIdx++] = (stats.mscCrcOkCntr + stats.mscCrcErrorCntr);
+    m_mscStatsErrSum += stats.mscCrcErrorCntr - m_mscStats[m_mscStatsIdx];
+    m_mscStats[m_mscStatsIdx] = stats.mscCrcErrorCntr;
+    m_mscStatsIdx = (m_mscStatsIdx + 1) & StatsIdxMask;
     ui->crcErrCount->setText(QString::number(m_crcErrorCounter));
-    if (m_crcCounter > 0)
+    if (m_mscStatsSum > 0)
     {
-        ui->crcErrRate->setText(QString("%1").arg(double(m_crcErrorCounter) / m_crcCounter, 0, 'e', 2));
+        ui->crcErrRate->setText(QString("%1").arg(double(m_mscStatsErrSum) / m_mscStatsSum, 0, 'e', 2));
     }
     else
     {
         ui->crcErrRate->setText(tr("N/A"));
+    }
+    m_rsUncorrCounter += stats.rsUncorrectableCntr;
+    ui->rsUncorr->setText(QString::number(m_rsUncorrCounter));
+    if (stats.rsBytes > 0)
+    {
+        ui->rsBer->setText(QString("%1").arg(stats.rsBitErrorCntr * 0.125 / stats.rsBytes, 0, 'e', 2));
+    }
+    else
+    {
+        ui->rsBer->setText(tr("N/A"));
     }
 
     if ((stats.audioServiceBytes > 0) && (m_serviceBitrateNet > 0))
@@ -582,20 +602,25 @@ void EnsembleInfoDialog::updatedDecodingStats(const RadioControlDecodingStats &s
 
 void EnsembleInfoDialog::resetFibStat()
 {
-    m_fibCounter = 0;
+    m_fibStatsErrSum = 0;
+    m_fibStatsSum = 0;
     m_fibErrorCounter = 0;
-    ui->fibCount->setText("0");
     ui->fibErrCount->setText("0");
     ui->fibErrRate->setText(tr("N/A"));
+    memset(m_fibStats, 0, sizeof(uint16_t) * StatsHistorySize * 2);
 }
 
 void EnsembleInfoDialog::resetMscStat()
 {
-    m_crcCounter = 0;
+    m_mscStatsSum = 0;
+    m_mscStatsErrSum = 0;
     m_crcErrorCounter = 0;
-    ui->crcCount->setText("0");
+    m_rsUncorrCounter = 0;
     ui->crcErrCount->setText("0");
     ui->crcErrRate->setText(tr("N/A"));
+    ui->rsUncorr->setText("0");
+    ui->rsBer->setText(tr("N/A"));
+    memset(m_mscStats, 0, sizeof(uint16_t) * StatsHistorySize * 2);
 }
 
 void EnsembleInfoDialog::newFrequency(quint32 f)
@@ -689,6 +714,7 @@ void EnsembleInfoDialog::fibFrameContextMenu(const QPoint &pos)
     if (selectedItem == mscResetAction)
     {  // msc reset
         resetMscStat();
+        m_rsUncorrCounter = 0;
     }
     else if (selectedItem == fibResetAction)
     {  // fib reset
