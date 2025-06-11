@@ -37,6 +37,10 @@
 AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
+#ifdef Q_OS_MAC
+    ui->dialogLayout->setContentsMargins(12, 12, 12, 12);
+#endif
+
     ui->appName->setText("<b>Abraca DAB radio</b>");
     ui->author->setText(tr("Developed by") + " Petr Kopecký (<a href=\"mailto:xkejpi@gmail.com\">xkejpi@gmail.com</a>)<br>" +
                         tr("If you like the application you can") + " <a href=\"https://www.buymeacoffee.com/kejpi\">" + tr("buy me a beer") +

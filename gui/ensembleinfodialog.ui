@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Ensemble Information</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_8">
+  <layout class="QVBoxLayout" name="dialogLayout">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_18">
      <item>

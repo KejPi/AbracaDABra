@@ -48,6 +48,9 @@
 SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDialog)
 {
     ui->setupUi(this);
+#ifdef Q_OS_MAC
+    ui->dialogLayout->setContentsMargins(12, 12, 12, 12);
+#endif
 
     // remove question mark from titlebar
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);

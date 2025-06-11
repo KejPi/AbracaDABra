@@ -42,6 +42,9 @@ Q_DECLARE_LOGGING_CATEGORY(application)
 LogDialog::LogDialog(QWidget *parent) : QDialog(parent), ui(new Ui::LogDialog)
 {
     ui->setupUi(this);
+#ifdef Q_OS_MAC
+    ui->dialogLayout->setContentsMargins(12, 12, 12, 12);
+#endif
 
     m_dataModel = new LogModel(this);
     ui->logListView->setModel(m_dataModel);

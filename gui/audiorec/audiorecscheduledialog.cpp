@@ -35,6 +35,10 @@ AudioRecScheduleDialog::AudioRecScheduleDialog(AudioRecScheduleModel *model, SLM
     : QDialog(parent), ui(new Ui::AudioRecScheduleDialog), m_model(model), m_slModel(slModel)
 {
     ui->setupUi(this);
+#ifdef Q_OS_MAC
+    ui->dialogLayout->setContentsMargins(12, 12, 12, 12);
+#endif
+
     m_locale = QLocale::C;
 
     ui->scheduleTableView->setModel(m_model);

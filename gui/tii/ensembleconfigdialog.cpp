@@ -35,6 +35,9 @@ EnsembleConfigDialog::EnsembleConfigDialog(const TxTableModelItem &item, QWidget
     : QDialog(parent), ui(new Ui::EnsembleConfigDialog), m_txTableModelItem(item)
 {
     ui->setupUi(this);
+#ifdef Q_OS_MAC
+    ui->dialogLayout->setContentsMargins(12, 12, 12, 12);
+#endif
     ui->ensStructureTextEdit->setHtml(item.ensConfig());
     ui->closeButton->setDefault(true);
     connect(ui->exportButton, &QPushButton::clicked, this, &EnsembleConfigDialog::onExportCSV);

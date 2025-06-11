@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Audio Recording Schedule</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="dialogLayout">
    <item row="1" column="2">
     <widget class="QPushButton" name="deleteButton">
      <property name="text">
@@ -27,7 +27,7 @@
    <item row="1" column="4">
     <spacer name="horizontalSpacer">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>

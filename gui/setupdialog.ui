@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Settings</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_15">
+  <layout class="QVBoxLayout" name="dialogLayout">
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">

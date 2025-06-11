@@ -27,6 +27,7 @@
 #include "catslsdialog.h"
 
 #include <QDebug>
+#include <QStandardItemModel>
 
 #include "slsview.h"
 #include "ui_catslsdialog.h"
@@ -35,7 +36,9 @@ CatSLSDialog::CatSLSDialog(QWidget *parent) : QDialog(parent), ui(new Ui::CatSLS
 {
     ui->setupUi(this);
 
-#ifndef Q_OS_MAC
+#ifdef Q_OS_MAC
+    ui->dialogLayout->setContentsMargins(12, 12, 12, 12);
+#else
     // Set window flags to add minimize buttons
     setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
 #endif

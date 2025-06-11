@@ -36,6 +36,9 @@ UpdateDialog::UpdateDialog(const QString &version, const QString &releaseNotes, 
     : QDialog(parent, f), ui(new Ui::UpdateDialog)
 {
     ui->setupUi(this);
+#ifdef Q_OS_MAC
+    ui->dialogLayout->setContentsMargins(12, 12, 12, 12);
+#endif
     setModal(true);
     setWindowTitle(tr("Application update"));
     ui->title->setText(tr("AbracaDABra update available"));

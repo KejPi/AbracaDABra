@@ -34,6 +34,9 @@ AudioRecItemDialog::AudioRecItemDialog(QLocale locale, SLModel *slModel, QWidget
     : QDialog(parent), ui(new Ui::AudioRecItemDialog), m_locale(locale), m_slModel(slModel)
 {
     ui->setupUi(this);
+#ifdef Q_OS_MAC
+    ui->dialogLayout->setContentsMargins(12, 12, 12, 12);
+#endif
 
     // initialize item using current time if not valid
     QDateTime startDateTime = QDateTime::currentDateTime().toOffsetFromUtc(QDateTime::currentDateTime().offsetFromUtc());

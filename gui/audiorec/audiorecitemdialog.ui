@@ -6,21 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>415</width>
+    <width>422</width>
     <height>396</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string notr="true">Dialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,1000">
+  <layout class="QGridLayout" name="dialogLayout" columnstretch="0,1000">
    <item row="3" column="1">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>
@@ -35,7 +35,7 @@
         </sizepolicy>
        </property>
        <property name="verticalHeaderFormat">
-        <enum>QCalendarWidget::NoVerticalHeader</enum>
+        <enum>QCalendarWidget::VerticalHeaderFormat::NoVerticalHeader</enum>
        </property>
        <property name="navigationBarVisible">
         <bool>true</bool>
@@ -74,7 +74,7 @@
           <string notr="true">HH:mm</string>
          </property>
          <property name="timeSpec">
-          <enum>Qt::UTC</enum>
+          <enum>Qt::TimeSpec::UTC</enum>
          </property>
         </widget>
        </item>
@@ -97,7 +97,7 @@
      <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Orientation::Vertical</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -151,7 +151,7 @@
       <string>Start date:</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
      </property>
     </widget>
    </item>
@@ -161,7 +161,7 @@
       <string>Service:</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
      </property>
     </widget>
    </item>

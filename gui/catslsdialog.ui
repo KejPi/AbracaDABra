@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Categorized Slideshow</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="dialogLayout">
    <item row="0" column="1">
     <widget class="QListView" name="categoryView">
      <property name="minimumSize">
@@ -23,7 +23,7 @@
       </size>
      </property>
      <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
+      <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
      </property>
     </widget>
    </item>
@@ -45,7 +45,7 @@
         <string notr="true"> 1 / 8</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignCenter</set>
+        <set>Qt::AlignmentFlag::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -77,7 +77,7 @@
   <customwidget>
    <class>SLSView</class>
    <extends>QGraphicsView</extends>
-   <header>mainwindow.h</header>
+   <header>slsview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

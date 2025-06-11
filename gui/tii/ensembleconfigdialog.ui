@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Ensemble Information</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="dialogLayout">
    <item>
     <widget class="QTextEdit" name="ensStructureTextEdit">
      <property name="sizeAdjustPolicy">
