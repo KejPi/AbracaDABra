@@ -78,13 +78,23 @@ void CatSLSDialog::onCategoryUpdate(int catId, const QString &title)
 {
     // find category
     QStandardItemModel *model = qobject_cast<QStandardItemModel *>(ui->categoryView->model());
-    QModelIndexList list = model->match(model->index(0, 0), Qt::UserRole, catId);
+
+    QModelIndex catIdIdx = QModelIndex();
+    for (int row = 0; row < model->rowCount(); ++row)
+    {
+        QModelIndex index = model->index(row, 0);
+        if (model->data(index, Qt::UserRole).toInt() == catId)
+        {  // found
+            catIdIdx = index;
+            break;
+        }
+    }
 
     if (title.isEmpty())
     {  // remove category
-        if (!list.empty())
+        if (catIdIdx.isValid())
         {  // found
-            model->removeRow(list.first().row());
+            model->removeRow(catIdIdx.row());
         }
         else
         { /* category not found */
@@ -92,7 +102,7 @@ void CatSLSDialog::onCategoryUpdate(int catId, const QString &title)
     }
     else
     {  // add category
-        if (list.empty())
+        if (catIdIdx.isValid() == false)
         {  // not found - add new category
             QStandardItem *item = new QStandardItem(title);
             item->setData(catId, Qt::UserRole);
@@ -101,7 +111,7 @@ void CatSLSDialog::onCategoryUpdate(int catId, const QString &title)
         }
         else
         {  // found - rename category
-            model->itemFromIndex(list.first())->setText(title);
+            model->itemFromIndex(catIdIdx)->setText(title);
         }
     }
 
