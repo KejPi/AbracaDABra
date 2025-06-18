@@ -398,13 +398,28 @@ void SlideShowApp::onNewMOTObject(const MOTObject &obj)
 
         // adding new slide to cache
         m_cache.insert(slide.getContentName(), slide);
-#if (USER_APPLICATION_VERBOSE > 1)
-        qCDebug(slideShowApp) << "Cache contains" << m_cache.size() << "slides";
-#endif
+
         // adding new slide to category
         addSlideToCategory(slide);
 
+        // Any other slide with the same CategoryID/SlideID value shall be decategorized.
+        for (auto cacheIt = m_cache.cbegin(); cacheIt != m_cache.cend(); ++cacheIt)
+        {
+            if ((cacheIt->getCategoryID() == slide.getCategoryID()) && (cacheIt->getSlideID() == slide.getSlideID()) &&
+                cacheIt->getContentName() != slide.getContentName())
+            {
 #if (USER_APPLICATION_VERBOSE > 1)
+                qCDebug(slideShowApp) << "Removing slide from cache" << cacheIt->getContentName();
+#endif
+                // delete old slide from cache
+                m_cache.erase(cacheIt);
+                break;
+            }
+        }
+
+#if (USER_APPLICATION_VERBOSE > 1)
+        qCDebug(slideShowApp) << "Cache contains" << m_cache.size() << "slides";
+
         //---------------------------------
         // print categories
         qCDebug(slideShowApp) << "Categories:";

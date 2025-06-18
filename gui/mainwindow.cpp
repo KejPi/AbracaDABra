@@ -3209,10 +3209,11 @@ void MainWindow::restoreWindows()
         {
             showLog();
         }
-        if (m_settings->catSls.restore)
-        {
-            showCatSLS();
-        }
+        // it makes no sense to restore catSLS dialog because no slides are available on start
+        // if (m_settings->catSls.restore)
+        // {
+        //     showCatSLS();
+        // }
         if (m_settings->tii.restore)
         {
             showTiiDialog();
