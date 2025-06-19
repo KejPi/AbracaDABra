@@ -182,5 +182,10 @@ bool TxTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &sour
     {  // filter not active
         return sourceModel()->data(idx, TxTableModel::TxTableModelRoles::IsActiveRole).toBool() == true;
     }
+    else
+    {
+        auto item = sourceModel()->data(idx, TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
+        return sourceModel()->data(idx, TxTableModel::TxTableModelRoles::IsActiveRole).toBool() == true || item.hasTxData();
+    }
     return true;
 }
