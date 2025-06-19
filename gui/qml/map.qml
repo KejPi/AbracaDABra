@@ -217,10 +217,13 @@ Item {
             anchors.top: parent.top
             anchors.leftMargin: 10
             anchors.topMargin: 10
+            anchors.bottom: buttonsLayout.top
+            anchors.bottomMargin: 10
             z: 3
         }
 
         ColumnLayout {
+            id: buttonsLayout
             anchors.left: parent.left
             anchors.bottom: parent.bottom
             anchors.leftMargin: 10

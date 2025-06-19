@@ -350,7 +350,8 @@ void TxMapDialog::selectTx(int index)
     QModelIndex idx = m_sortedFilteredModel->index(index, 0);
     if (idx.isValid() && (selection.isEmpty() || selection.at(0) != idx))
     {
-        m_tableSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current | QItemSelectionModel::Rows);
+        m_tableSelectionModel->setCurrentIndex(idx, QItemSelectionModel::NoUpdate);  // Set current index
+        m_tableSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     }
 }
 

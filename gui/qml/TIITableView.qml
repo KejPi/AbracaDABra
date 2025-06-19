@@ -40,7 +40,7 @@ Item {
 
     opacity: tiiTableItemHoverHandler.hovered ? 1.0 : 0.85
     width: 100
-    height: Math.min((tiiTableItem.rowHeight * tiiTableView.model.rowCount) + horizontalHeader.height, parent.height-30)
+    //height: Math.min((tiiTableItem.rowHeight * tiiTableView.model.rowCount) + horizontalHeader.height, parent.height-30)
     visible: isVisible && tiiTableView.model.rowCount > 0
 
     property var columnWidths: []
@@ -60,7 +60,7 @@ Item {
 
     HorizontalHeaderView {
         id: horizontalHeader
-        anchors.left: tiiTableView.left
+        anchors.left: tiiTableViewArea.left
         anchors.top: parent.top
         syncView: tiiTableView
         clip: true
@@ -108,38 +108,59 @@ Item {
             }
         }
     }
-    TableView {
-        id: tiiTableView
+    MouseArea {
+        id: tiiTableViewArea
         anchors.left: parent.left
         anchors.top: horizontalHeader.bottom
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-        model: tiiTable
-        selectionModel: tiiTableSelectionModel
-        delegate: Rectangle {
-            implicitWidth: 10
-            implicitHeight: tiiTableItem.rowHeight
-            required property bool current
-            required property bool selected
-            color: selected ? "#a5cdff" : "#ffffff" // palette.highlight : palette.base
-            Text {
-                anchors.centerIn: parent
-                text: display !== undefined ? display : ""
-                color: (isActive ? "#d8000000" : "#d8505050")  // "#d8000000"  // selected ? palette.highlightedText : palette.text
-                font.italic: !isActive
+        acceptedButtons: Qt.NoButton
+        onWheel: (wheel) => {
+            // Consume the wheel event to prevent propagation
+            wheel.accepted = true
+        }
+        TableView {
+            id: tiiTableView
+            anchors.fill: parent
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+            model: tiiTable
+            selectionModel: tiiTableSelectionModel
+            delegate: Rectangle {
+                implicitWidth: 10
+                implicitHeight: tiiTableItem.rowHeight
+                required property bool current
+                required property bool selected
+                color: selected ? "#a5cdff" : "#ffffff" // palette.highlight : palette.base
+                Text {
+                    anchors.centerIn: parent
+                    text: display !== undefined ? display : ""
+                    color: (isActive ? "#d8000000" : "#d8505050")  // "#d8000000"  // selected ? palette.highlightedText : palette.text
+                    font.italic: !isActive
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        tiiTableView.selectionModel.select(tiiTableView.model.index(row, 0), ItemSelectionModel.ClearAndSelect | ItemSelectionModel.Current | ItemSelectionModel.Rows);
+
+                    }
+                }
             }
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    tiiTableView.selectionModel.select(tiiTableView.model.index(row, 0), ItemSelectionModel.ClearAndSelect | ItemSelectionModel.Current | ItemSelectionModel.Rows);
+            columnWidthProvider: function (column) { return tiiTableItem.columnWidths[column] }
 
+            ScrollBar.vertical: ScrollBar {
+                active: true
+                visible: tiiTableView.contentHeight > tiiTableView.height
+                policy: ScrollBar.AlwaysOn
+            }
+            Connections {
+                target: tiiTableSelectionModel
+                function onCurrentChanged(current, previous) {
+                    tiiTableView.positionViewAtRow(current.row, TableView.Contain)
                 }
             }
         }
-
-        columnWidthProvider: function (column) { return tiiTableItem.columnWidths[column] }
     }
 }
