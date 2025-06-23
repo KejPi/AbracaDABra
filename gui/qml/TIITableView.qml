@@ -151,9 +151,16 @@ Item {
             columnWidthProvider: function (column) { return tiiTableItem.columnWidths[column] }
 
             ScrollBar.vertical: ScrollBar {
+                id: control
                 active: true
                 visible: tiiTableView.contentHeight > tiiTableView.height
                 policy: ScrollBar.AlwaysOn
+                contentItem: Rectangle {
+                    implicitWidth: 6
+                    implicitHeight: 100
+                    radius: width / 2
+                    color: control.pressed ? "#969696" : "#BEBEBE"
+                }
             }
             Connections {
                 target: tiiTableSelectionModel
