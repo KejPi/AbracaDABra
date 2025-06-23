@@ -320,7 +320,7 @@ if (USE_SYSTEM_FAAD)
     find_library (LIBFAAD2_LINK_LIBRARIES faad)
     find_path(LIBFAAD2_INCLUDE_DIRS neaacdec.h)
     if (NOT WIN32)
-        pkg_search_module (LIBFAAD2 faad)
+        pkg_search_module(LIBFAAD2 faad)
     endif()
     if (NOT LIBFAAD2_LINK_LIBRARIES)
         # not found is system -> trying ${EXTERNAL_LIBS_DIR}
@@ -337,7 +337,7 @@ if (USE_SYSTEM_FAAD)
             set (HAVE_FAAD OFF)
         endif()
     else()
-        set (HAVE_FAAD OFF)
+	set (HAVE_FAAD ON)
     endif()
 else(USE_SYSTEM_FAAD)
     find_library(LIBFAAD2_LINK_LIBRARIES faad PATHS ${EXTERNAL_LIBS_DIR}/lib NO_DEFAULT_PATH)
@@ -353,7 +353,7 @@ endif (USE_SYSTEM_FAAD)
 
 # Check if we have at least one audio decoder
 if ((NOT HAVE_FAAD) AND (NOT HAVE_FDKAAC))
-    message (FATAL "Neither FAAD nor FDKAAC library found. Build from source and install to: ${EXTERNAL_LIBS_DIR}")
+	message (FATAL_ERROR "Neither FAAD nor FDKAAC library found. Build from source and install to: ${EXTERNAL_LIBS_DIR}")
 endif()
 
 #########################################################

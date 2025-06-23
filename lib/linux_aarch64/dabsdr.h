@@ -160,6 +160,9 @@ typedef struct
     uint8_t mscCrcErrorCntr;       // number of CRC errors [after RS (DAB+)]
     uint16_t audioServiceBytes;    // number of audio service bytes
     uint16_t padBytes;             // number of PAD bytes
+    uint16_t rsUncorrectableCntr;  // number of uncorrectable RS code words
+    uint16_t rsBitErrors;          // RS number of bit errors
+    uint16_t rsBytes;              // number of bytes decoded by RS
 } dabsdrNtfPeriodic_t;
 
 #define DAB_LABEL_MAX_LENGTH   (16)
