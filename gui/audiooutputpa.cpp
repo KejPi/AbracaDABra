@@ -712,24 +712,46 @@ void AudioOutputPa::onStreamFinished()
 
 void AudioOutputPa::setAudioDevice(const QByteArray &deviceId)
 {
-    if ((!deviceId.isEmpty()) && (deviceId == m_currentAudioDevice.id()))
+    m_useDefaultDevice = deviceId.isEmpty();
+    if (deviceId.isEmpty())
+    {  // default audio device to be used
+        emit audioDeviceChanged({});
+        if (m_currentAudioDevice.id() == m_devices->defaultAudioOutput().id())
+        {  // do nothing
+            return;
+        }
+    }
+    else if (deviceId == m_currentAudioDevice.id())
     {  // do nothing
         return;
     }
 
     m_currentAudioDevice = m_devices->defaultAudioOutput();
-
-    QList<QAudioDevice> list = getAudioDevices();
-    for (const auto &dev : list)
+    if (m_useDefaultDevice == false)
     {
-        if (dev.id() == deviceId)
+        QList<QAudioDevice> list = getAudioDevices();
+        bool found = false;
+        for (const auto &dev : list)
         {
-            m_currentAudioDevice = dev;
-            break;
+            if (dev.id() == deviceId)
+            {
+                m_currentAudioDevice = dev;
+                found = true;
+                emit audioDeviceChanged(m_currentAudioDevice.id());
+                break;
+            }
+        }
+        if (!found)
+        {
+            m_useDefaultDevice = true;
+            emit audioDeviceChanged({});  // default device
         }
     }
+    else
+    {
+        emit audioDeviceChanged({});  // default device
+    }
 
-    emit audioDeviceChanged(m_currentAudioDevice.id());
     // change output device to newly selected
     m_reloadDevice = true;
 

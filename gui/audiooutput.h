@@ -92,11 +92,18 @@ signals:
 protected:
     QMediaDevices *m_devices;
     QAudioDevice m_currentAudioDevice;
+    bool m_useDefaultDevice = true;
     void updateAudioDevices()
     {
         QList<QAudioDevice> list = getAudioDevices();
 
         emit audioDevicesList(list);
+
+        if (m_useDefaultDevice)
+        {
+            setAudioDevice({});
+            return;
+        }
 
         bool currentDeviceFound = false;
         for (auto &dev : list)
@@ -110,9 +117,12 @@ protected:
 
         if (!currentDeviceFound)
         {  // current device no longer exists => default is used
-            m_currentAudioDevice = m_devices->defaultAudioOutput();
+            setAudioDevice({});
         }
-        emit audioDeviceChanged(m_currentAudioDevice.id());
+        else
+        {
+            emit audioDeviceChanged(m_currentAudioDevice.id());
+        }
     }
 };
 

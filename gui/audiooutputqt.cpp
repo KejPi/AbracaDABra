@@ -140,10 +140,25 @@ void AudioOutputQt::setVolume(int value)
 
 void AudioOutputQt::setAudioDevice(const QByteArray &deviceId)
 {
-    if ((!deviceId.isEmpty()) && (deviceId == m_currentAudioDevice.id()))
-    {  // do nothing
+    if (deviceId.isEmpty())
+    {  // default audio device to be used
+        m_useDefaultDevice = true;
+        emit audioDeviceChanged({});
+        if (m_currentAudioDevice.id() != m_devices->defaultAudioOutput().id())
+        {
+            m_currentAudioDevice = m_devices->defaultAudioOutput();
+            restart(m_currentFifoPtr);
+        }
         return;
     }
+    else if (deviceId == m_currentAudioDevice.id())
+    {  // do nothing
+        m_useDefaultDevice = false;
+        return;
+    }
+
+    m_useDefaultDevice = false;
+
     QList<QAudioDevice> list = getAudioDevices();
     for (const auto &dev : list)
     {

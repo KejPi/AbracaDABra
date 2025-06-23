@@ -2255,9 +2255,14 @@ void MainWindow::onAudioDevicesList(QList<QAudioDevice> list)
         delete m_audioDevicesGroup;
     }
     m_audioDevicesGroup = new QActionGroup(m_audioOutputMenu);
+
+    QAction *action = new QAction(tr("Default audio device"), m_audioDevicesGroup);  // follow default audio device
+    action->setData(QVariant::fromValue(QAudioDevice()));
+    action->setCheckable(true);
+
     for (const QAudioDevice &device : list)
     {
-        QAction *action = new QAction(device.description(), m_audioDevicesGroup);
+        action = new QAction(device.description(), m_audioDevicesGroup);
         action->setData(QVariant::fromValue(device));
         action->setCheckable(true);
     }
@@ -2283,6 +2288,12 @@ void MainWindow::onAudioOutputSelected(QAction *action)
 
 void MainWindow::onAudioDeviceChanged(const QByteArray &id)
 {
+    if (id.isEmpty())
+    {  // default audio device
+        m_audioDevicesGroup->actions().at(0)->setChecked(true);
+        return;
+    }
+
     for (const auto &action : m_audioDevicesGroup->actions())
     {
         if (action->data().value<QAudioDevice>().id() == id)
@@ -2292,11 +2303,8 @@ void MainWindow::onAudioDeviceChanged(const QByteArray &id)
         }
     }
 
-    if (m_audioDevicesGroup->actions().size() > 0)
-    {
-        qCWarning(application) << "Default audio device selected" << m_audioDevicesGroup->actions().at(0)->data().value<QAudioDevice>().description();
-        m_audioDevicesGroup->actions().at(0)->setChecked(true);
-    }
+    qCWarning(application) << "Default audio device selected" << m_audioDevicesGroup->actions().at(0)->data().value<QAudioDevice>().description();
+    m_audioDevicesGroup->actions().at(0)->setChecked(true);
 }
 
 void MainWindow::audioRecordingToggle()
