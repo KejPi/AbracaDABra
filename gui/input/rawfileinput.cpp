@@ -727,7 +727,15 @@ void RawFileWorker::run()
         {
             qCInfo(rawFileInput) << "RAW-FILE: End of file";
             m_bytesRead = 0;
-            bool status = m_inputFile->seek(0);
+            bool status = false;
+            if (m_inputFile->size() > input_chunk_iq_samples * 2)
+            {
+                status = m_inputFile->seek(0);
+            }
+            else
+            {  // short file cannot be seeked
+            }
+
             emit endOfFile(status);
             emit bytesRead(m_bytesRead);
             if (!status)

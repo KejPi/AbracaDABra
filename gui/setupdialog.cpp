@@ -705,6 +705,7 @@ void SetupDialog::onFileLength(int msec)
     int labelWidth = ui->rawFileTime->fontMetrics().boundingRect(QString("%1 / %1 " + tr("sec")).arg(msec / 1000.0, 0, 'f', 1)).width() + 10;
     ui->rawFileTime->setMinimumWidth(labelWidth);
     ui->rawFileTime->setVisible(0 != msec);
+    ui->loopCheckbox->setEnabled(0 != msec);
 }
 
 void SetupDialog::onFileProgress(int msec)
