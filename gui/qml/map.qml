@@ -217,8 +217,7 @@ Item {
             anchors.top: parent.top
             anchors.leftMargin: 10
             anchors.topMargin: 10
-            anchors.bottom: buttonsLayout.top
-            anchors.bottomMargin: 10
+            maxHeight: buttonsLayout.y - parent.y - 20
             z: 3
         }
 

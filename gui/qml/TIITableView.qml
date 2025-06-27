@@ -37,10 +37,11 @@ Item {
     }
     readonly property int rowHeight: fontMetrics.font.pointSize + 10
     property bool isVisible: true
+    property int maxHeight: parent.height-30
 
     opacity: tiiTableItemHoverHandler.hovered ? 1.0 : 0.85
-    width: 100
-    //height: Math.min((tiiTableItem.rowHeight * tiiTableView.model.rowCount) + horizontalHeader.height, parent.height-30)
+    width: 100    
+    height: Math.min((tiiTableItem.rowHeight * tiiTableView.model.rowCount) + horizontalHeader.height, maxHeight)
     visible: isVisible && tiiTableView.model.rowCount > 0
 
     property var columnWidths: []
