@@ -681,8 +681,11 @@ void ScannerDialog::startScan()
     m_state = ScannerState::Init;
 
     // using timer for mainwindow to cleanup and tune to 0 potentially (no timeout in case)
+#ifdef Q_OS_WIN
+    m_timer->start(6000);
+#else
     m_timer->start(2000);
-
+#endif
     qCInfo(scanner) << "Scanning starts";
 
     emit scanStarts();
