@@ -96,12 +96,12 @@
     <message>
         <location filename="../aboutdialog.cpp" line="106"/>
         <source>DAB transmitter database provided by</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB Senderdatenbank bereitgestellt von</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="107"/>
         <source>and country flags provided by</source>
-        <translation type="unfinished"></translation>
+        <translation>und Länderflaggen bereitgestellt von</translation>
     </message>
 </context>
 <context>
@@ -439,22 +439,22 @@
     <message>
         <location filename="../ensembleinfodialog.ui" line="600"/>
         <source>RS uncorrectable:</source>
-        <translation type="unfinished"></translation>
+        <translation>RS unkorrigierbar:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="626"/>
         <source>RS BER:</source>
-        <translation type="unfinished"></translation>
+        <translation>RS-Fehlerrate:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="652"/>
         <source>Audio CRC errors:</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio CRC-Fehler:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="678"/>
         <source>Audio error rate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio Fehlerrate:</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.ui" line="548"/>
@@ -662,19 +662,19 @@
         <location filename="../ensembleinfodialog.cpp" line="116"/>
         <location filename="../ensembleinfodialog.cpp" line="117"/>
         <source>Total number of FIB&apos;s with CRC error</source>
-        <translation type="unfinished"></translation>
+        <translation>Gesamtzahl von FIBs mit CRC-Fehlern</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="120"/>
         <location filename="../ensembleinfodialog.cpp" line="121"/>
         <source>Total number of uncorrectable Reed-Solomon code words (DAB+ only)</source>
-        <translation type="unfinished"></translation>
+        <translation>Gesamtzahl unkorrigierbarer Reed Solomon Codewörtern (nur DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="122"/>
         <location filename="../ensembleinfodialog.cpp" line="123"/>
         <source>BER before Reed-Solomon decoder (DAB+ only)</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehlerrate vor Reed-Solomon-Dekoder (nur DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="124"/>
@@ -862,7 +862,7 @@
         <location filename="../ensembleinfodialog.cpp" line="761"/>
         <location filename="../ensembleinfodialog.cpp" line="762"/>
         <source>N/A</source>
-        <translation>unzutreffend</translation>
+        <translation>unzutreff.</translation>
     </message>
     <message>
         <location filename="../ensembleinfodialog.cpp" line="713"/>
@@ -1170,7 +1170,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1446"/>
         <source>System time</source>
-        <translation type="unfinished"></translation>
+        <translation>Systemzeit</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1465"/>
@@ -1281,7 +1281,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="2259"/>
         <source>Default audio device</source>
-        <translation type="unfinished"></translation>
+        <translation>Standard-Audiogerät</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="2557"/>
@@ -3735,12 +3735,12 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="125"/>
         <source>SNR:</source>
-        <translation type="unfinished">SNR:</translation>
+        <translation>SNR:</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="134"/>
         <source>DAB signal SNR</source>
-        <translation type="unfinished">DAB-Signal-SNR</translation>
+        <translation>DAB-Signal-SNR</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="198"/>
@@ -3756,57 +3756,57 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="213"/>
         <source>Clear scan results on start</source>
-        <translation type="unfinished"></translation>
+        <translation>Scanergebnisse bei Start leeren</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="219"/>
         <source>Hide local (known) transmitters</source>
-        <translation type="unfinished"></translation>
+        <translation>Blende lokale (bekannte) Sendeanlagen aus</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="231"/>
         <source>AutoSave CSV</source>
-        <translation type="unfinished"></translation>
+        <translation>Autom. Speichern CSV</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="239"/>
         <source>Save as CSV</source>
-        <translation type="unfinished"></translation>
+        <translation>Speichern als CSV</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="243"/>
         <source>Load from CSV</source>
-        <translation type="unfinished"></translation>
+        <translation>Lade von CSV</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="248"/>
         <source>Clear scan results</source>
-        <translation type="unfinished"></translation>
+        <translation>Scanergebnisse leeren</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="254"/>
         <source>Do you want to clear scan results?</source>
-        <translation type="unfinished"></translation>
+        <translation>Wollen Sie wirklich die Scanergebnisse leeren?</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="256"/>
         <source>You will loose current scan results, this action is irreversible.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sie werden die Scanergebnisse verlieren, diese Aktion ist unumkehrbar.</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="272"/>
         <source>Clear local (known) transmitter database</source>
-        <translation type="unfinished"></translation>
+        <translation>Datenbank lokaler (bekannter) Sendeanlagen leeren</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="278"/>
         <source>Do you want to clear local (known) transmitter database?</source>
-        <translation type="unfinished"></translation>
+        <translation>Wollen Sie wirklich die Datenbank lokaler (bekannter) Sendeanlagen leeren?</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="280"/>
         <source>You will loose all records in the database, this action is irreversible.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sie werden alle Einträgen in der Datenbank verlieren, diese Aktion ist unumkehrbar.</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="368"/>
@@ -3826,7 +3826,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="659"/>
         <source>Channel:</source>
-        <translation type="unfinished">Kanal:</translation>
+        <translation>Kanal:</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="461"/>
@@ -3864,12 +3864,12 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="950"/>
         <source>Unmark local (known) transmitter</source>
-        <translation type="unfinished"></translation>
+        <translation>Markierung lokaler (bekannter) Sendeanlagen entfernen</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="950"/>
         <source>Mark as local (known) transmitter</source>
-        <translation type="unfinished"></translation>
+        <translation>Als lokale (benannte) Sendeanlage markieren</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="953"/>
@@ -4179,7 +4179,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../setupdialog.ui" line="1824"/>
         <source>AAC audio decoder:</source>
-        <translation type="unfinished"></translation>
+        <translation>AAC Audiodekoder:</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="1976"/>
@@ -4244,17 +4244,17 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../setupdialog.ui" line="2710"/>
         <source>Show system time when DAB time is not available</source>
-        <translation type="unfinished"></translation>
+        <translation>Systemzeit anzeigen, falls DAB-Zeit nicht verfügbar</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2717"/>
         <source>Show ensemble country flag (internet connection required)</source>
-        <translation type="unfinished"></translation>
+        <translation>Länderflagge des Ensembles anzeigen (Internetverbindung nötig)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2724"/>
         <source>Show service country flag (internet connection required)</source>
-        <translation type="unfinished"></translation>
+        <translation>Länderflagge der Dienste anzeigen (Internetverbindung nötig)</translation>
     </message>
     <message>
         <location filename="../setupdialog.ui" line="2897"/>
@@ -4813,7 +4813,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="243"/>
         <source>This value is added to estimated RF level</source>
-        <translation type="unfinished"></translation>
+        <translation>Dieser WErt wird zum geschätzten RF Pegel addiert</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="327"/>
@@ -4828,7 +4828,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="361"/>
         <source>Audio decoder change will take effect after application restart.</source>
-        <translation type="unfinished"></translation>
+        <translation>Änderung des Audiodekoders wird er beim Neustart des Programms wirksam.</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="438"/>
@@ -5059,7 +5059,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
         <location filename="../setupdialog.cpp" line="921"/>
         <location filename="../setupdialog.cpp" line="924"/>
         <source>N/A  </source>
-        <translation>N/A  </translation>
+        <translation>unzutreff.  </translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="1760"/>
@@ -5254,7 +5254,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
         <location filename="../signaldialog.cpp" line="623"/>
         <location filename="../signaldialog.cpp" line="634"/>
         <source>N/A</source>
-        <translation>unzutreffend</translation>
+        <translation>unzutreff.</translation>
     </message>
     <message>
         <location filename="../signaldialog.cpp" line="927"/>
@@ -5272,17 +5272,17 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../widgets/signalstatelabel.cpp" line="31"/>
         <source>No signal</source>
-        <translation type="unfinished">Kein Signal</translation>
+        <translation>Kein Signal</translation>
     </message>
     <message>
         <location filename="../widgets/signalstatelabel.cpp" line="31"/>
         <source>Signal found</source>
-        <translation type="unfinished">Signal gefunden</translation>
+        <translation>Signal gefunden</translation>
     </message>
     <message>
         <location filename="../widgets/signalstatelabel.cpp" line="31"/>
         <source>Sync</source>
-        <translation type="unfinished">Sync</translation>
+        <translation>Sync</translation>
     </message>
 </context>
 <context>
