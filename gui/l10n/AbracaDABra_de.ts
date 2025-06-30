@@ -3806,7 +3806,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="280"/>
         <source>You will loose all records in the database, this action is irreversible.</source>
-        <translation>Sie werden alle Einträgen in der Datenbank verlieren, diese Aktion ist unumkehrbar.</translation>
+        <translation>Sie werden alle Einträge in der Datenbank verlieren, diese Aktion ist unumkehrbar.</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="368"/>
@@ -3869,7 +3869,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="950"/>
         <source>Mark as local (known) transmitter</source>
-        <translation>Als lokale (benannte) Sendeanlage markieren</translation>
+        <translation>Als lokale (bekannte) Sendeanlage markieren</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="953"/>
@@ -4813,7 +4813,7 @@ Rechtsklick auf Ihren Standort, auf die Koordinaten im Popupmenü klicken, um si
     <message>
         <location filename="../setupdialog.cpp" line="243"/>
         <source>This value is added to estimated RF level</source>
-        <translation>Dieser WErt wird zum geschätzten RF Pegel addiert</translation>
+        <translation>Dieser Wert wird zum geschätzten RF Pegel addiert</translation>
     </message>
     <message>
         <location filename="../setupdialog.cpp" line="327"/>
