@@ -33,10 +33,10 @@
 #include <QGeoCoordinate>
 #include <QMovie>
 #include <QRandomGenerator>
+#include <QScrollBar>
 #include <QStandardItemModel>
 
 #include "./ui_setupdialog.h"
-#include "audiodecoder.h"
 #include "rtlsdrinput.h"
 #include "rtltcpinput.h"
 #include "ui_setupdialog.h"
@@ -176,7 +176,40 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 
     QSpacerItem *verticalSpacer = new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     vLayout->addItem(verticalSpacer);
-    ui->tabAnnouncement->setLayout(vLayout);
+
+    ui->announcementSaWidget->setLayout(vLayout);
+
+    // configure scroll areas
+    ui->audioScrollArea->viewport()->setAutoFillBackground(false);
+    ui->announcementScrollArea->viewport()->setAutoFillBackground(false);
+    ui->uaScrollArea->viewport()->setAutoFillBackground(false);
+    ui->tiiScrollArea->viewport()->setAutoFillBackground(false);
+    ui->othersScrollArea->viewport()->setAutoFillBackground(false);
+    ui->audioSaWidget->setAutoFillBackground(false);
+    ui->announcementSaWidget->setAutoFillBackground(false);
+    ui->uaSaWidget->setAutoFillBackground(false);
+    ui->tiiSaWidget->setAutoFillBackground(false);
+    ui->othersSaWidget->setAutoFillBackground(false);
+
+    // all margins are the same
+    const int saMargins = ui->audioScrollArea->contentsMargins().left() + ui->audioScrollArea->contentsMargins().right() + 20;
+    ui->audioScrollArea->setMinimumWidth(ui->audioSaWidget->sizeHint().width() + saMargins);
+    ui->announcementScrollArea->setMinimumWidth(ui->announcementSaWidget->sizeHint().width() + saMargins);
+    ui->uaScrollArea->setMinimumWidth(ui->uaSaWidget->sizeHint().width() + saMargins);
+    ui->tiiScrollArea->setMinimumWidth(ui->tiiSaWidget->sizeHint().width() + saMargins);
+    ui->othersScrollArea->setMinimumWidth(ui->othersSaWidget->sizeHint().width() + saMargins);
+
+    for (int n = 0; n < SetupDialogTabs::NumTabs; ++n)
+    {
+        if (n != SetupDialogTabs::Device)
+        {
+            auto widget = ui->tabWidget->widget(n);
+            if (widget != nullptr)
+            {
+                widget->layout()->setContentsMargins(12, 12, 12, 12);
+            }
+        }
+    }
 
     // gridLayout_4->addWidget(xmlHeaderWidget, 3, 0, 1, 3);
     gridLayout = new QGridLayout;
@@ -527,8 +560,7 @@ SetupDialog::SetupDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SetupDia
 #else
     connect(ui->fmlistUploadCheckBox, &QCheckBox::stateChanged, this, &SetupDialog::setFmlistUploadInfoText);
 #endif
-
-    QTimer::singleShot(10, this, [this]() { resize(minimumSizeHint()); });
+    resize(minimumSizeHint());
 }
 
 void SetupDialog::showEvent(QShowEvent *event)
@@ -547,16 +579,6 @@ void SetupDialog::showEvent(QShowEvent *event)
 #endif
     ui->tabWidget->setFocus();
     QDialog::showEvent(event);
-
-    // QTimer::singleShot(10, this, [this](){ adjustSize(); } );
-    QTimer::singleShot(10, this,
-                       [this]()
-                       {
-                           // setMinimumHeight(0);
-                           resize(minimumSizeHint());
-                           // setMinimumHeight(height() + 10);
-                           setFixedWidth(width());
-                       });
 }
 
 void SetupDialog::setSpiDumpPaternDefault(const QString &newSpiDumpPaternDefault)
@@ -1917,20 +1939,20 @@ void SetupDialog::setStatusLabel(bool clearLabel)
 
 void SetupDialog::setFmlistUploadInfoText()
 {
-    ui->fmlistUploadInfotext_2->setText(tr("Ensemble information is a small CSV file with list of services in the ensemble,"));
-    ui->fmlistUploadInfotext_3->setText(tr("it is anonymous and contains no personal data."));
+    ui->fmlistUploadInfotext_2->setText(
+        tr("Ensemble information is a small CSV file with list of services in the ensemble, it is anonymous and contains no personal data."));
     m_settings->uploadEnsembleInfo = ui->fmlistUploadCheckBox->isChecked();
     if (ui->fmlistUploadCheckBox->isChecked())
     {
         ui->fmlistUploadInfotext_1->setText(
             tr("Application automatically uploads ensemble information to <a href=\"https://www.fmlist.org/\">FMLIST</a>."));
-        ui->fmlistUploadInfotext_4->setText(tr("Thank you for supporting the community!"));
+        ui->fmlistUploadInfotext_3->setText(tr("Thank you for supporting the community!"));
     }
     else
     {
         ui->fmlistUploadInfotext_1->setText(
             tr("Upload of ensemble information to <a href=\"https://www.fmlist.org/\">FMLIST</a> is currently disabled."));
-        ui->fmlistUploadInfotext_4->setText(tr("Please consider enabling this option to help the community."));
+        ui->fmlistUploadInfotext_3->setText(tr("Please consider enabling this option to help the community."));
     }
 }
 
@@ -2262,14 +2284,6 @@ void SetupDialog::onExpertModeChecked(bool checked)
     ui->tabWidget->adjustSize();
 
     emit expertModeToggled(checked);
-
-    QTimer::singleShot(10, this,
-                       [this]()
-                       {
-                           // setMinimumHeight(0);
-                           resize(minimumSizeHint());
-                           // setMinimumHeight(height() + 10);
-                       });
 }
 
 void SetupDialog::onTrayIconChecked(bool checked)
@@ -2304,14 +2318,6 @@ void SetupDialog::onLanguageChanged(int index)
         m_settings->lang = lang;
         ui->langWarningLabel->setVisible(true);
         ui->langRestartButton->setVisible(true);
-
-        QTimer::singleShot(10, this,
-                           [this]()
-                           {
-                               // setMinimumHeight(0);
-                               resize(minimumSizeHint());
-                               // setMinimumHeight(height() + 10);
-                           });
     }
 }
 
@@ -2333,14 +2339,6 @@ void SetupDialog::onAudioOutChanged(int index)
         m_settings->audioFramework = framework;
         ui->audioOutWarnLabel->setVisible(true);
         ui->audioOutRestartButton->setVisible(true);
-
-        QTimer::singleShot(10, this,
-                           [this]()
-                           {
-                               // setMinimumHeight(0);
-                               resize(minimumSizeHint());
-                               // setMinimumHeight(height() + 10);
-                           });
     }
 }
 
@@ -2353,14 +2351,6 @@ void SetupDialog::onAudioDecChanged(int index)
         ui->audioDecWarnLabel->setVisible(true);
         ui->audioDecRestartButton->setVisible(true);
         ui->audioDecoderGroupBox->setVisible(decoder == Settings::AudioDecoder::FAAD);
-
-        QTimer::singleShot(10, this,
-                           [this]()
-                           {
-                               setMinimumHeight(0);
-                               resize(minimumSizeHint());
-                               setMinimumHeight(height() + 10);
-                           });
     }
 }
 

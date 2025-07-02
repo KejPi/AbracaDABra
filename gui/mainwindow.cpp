@@ -292,6 +292,7 @@ MainWindow::MainWindow(const QString &iniFilename, const QString &iniSlFilename,
                 m_exitCode = MainWindow::EXIT_CODE_RESTART;
                 close();
             });
+    connect(m_setupDialog, &QDialog::finished, this, [this]() { m_settings->setupDialog.geometry = m_setupDialog->saveGeometry(); });
 
     m_ensembleInfoDialog = new EnsembleInfoDialog();
     connect(this, &MainWindow::exit,
@@ -1130,6 +1131,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if (!m_exitRequested)
     {
         m_settings->ensembleInfo.restore = m_ensembleInfoDialog->isVisible();
+        m_settings->setupDialog.restore = m_setupDialog->isVisible();
         m_settings->log.restore = m_logDialog->isVisible();
         m_settings->catSls.restore = m_catSlsDialog->isVisible();
         m_settings->tii.restore = (m_tiiDialog != nullptr);
@@ -3238,9 +3240,9 @@ void MainWindow::restoreWindows()
         {
             showEPG();
         }
-        if (m_setupDialog && m_setupDialog->isVisible())
+        if (m_settings->setupDialog.restore)
         {
-            m_setupDialog->raise();
+            showSetupDialog();
         }
     }
 }
@@ -3436,6 +3438,9 @@ void MainWindow::loadSettings()
 
     m_settings->log.geometry = settings->value("Log/windowGeometry").toByteArray();
     m_settings->log.restore = settings->value("Log/restore", false).toBool();
+
+    m_settings->setupDialog.geometry = settings->value("SetupDialog/windowGeometry").toByteArray();
+    m_settings->setupDialog.restore = settings->value("SetupDialog/restore", false).toBool();
 
     m_settings->catSls.geometry = settings->value("CatSLS/windowGeometry").toByteArray();
     m_settings->catSls.restore = settings->value("CatSLS/restore", false).toBool();
@@ -3743,6 +3748,9 @@ void MainWindow::saveSettings()
     settings->setValue("Log/windowGeometry", m_settings->log.geometry);
     settings->setValue("Log/restore", m_settings->log.restore);
 
+    settings->setValue("SetupDialog/windowGeometry", m_settings->setupDialog.geometry);
+    settings->setValue("SetupDialog/restore", m_settings->setupDialog.restore);
+
     settings->setValue("CatSLS/windowGeometry", m_settings->catSls.geometry);
     settings->setValue("CatSLS/restore", m_settings->catSls.restore);
 
@@ -4046,6 +4054,10 @@ void MainWindow::showAboutDialog()
 
 void MainWindow::showSetupDialog()
 {
+    if (!m_settings->setupDialog.geometry.isEmpty())
+    {
+        m_setupDialog->restoreGeometry(m_settings->setupDialog.geometry);
+    }
     m_setupDialog->show();
     m_setupDialog->raise();
     m_setupDialog->activateWindow();

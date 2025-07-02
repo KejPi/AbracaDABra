@@ -252,6 +252,11 @@ public:
         bool recordingTimeoutEna;
         int recordingTimeoutSec;
     } ensembleInfo;
+    struct SetupDialog
+    {
+        QByteArray geometry;
+        bool restore;
+    } setupDialog;
     struct Log
     {
         QByteArray geometry;

@@ -102,7 +102,8 @@ private:
         Announcement,
         UserApps,
         Tii,
-        Other
+        Other,
+        NumTabs
     };
     enum SetupDialogXmlHeader
     {
