@@ -481,9 +481,18 @@ void ScannerDialog::loadCSV()
                 if (qsl.size() == TxTableModel::NumColsWithoutCoordinates)
                 {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
-                    QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yy-MM-dd hh:mm:ss").addYears(100);
+                    QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yyyy-MM-dd hh:mm:ss").addYears(100);
+                    if (time.isValid() == false)
+                    {  // old format
+                        time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yy-MM-dd hh:mm:ss").addYears(100);
+                    }
+
 #else
-                    QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yy-MM-dd hh:mm:ss", 2000);
+                    QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yyyy-MM-dd hh:mm:ss", 2000);
+                    if (time.isValid() == false)
+                    {  // old format
+                        time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yy-MM-dd hh:mm:ss", 2000);
+                    }
 #endif
                     if (!time.isValid())
                     {

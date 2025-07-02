@@ -184,11 +184,11 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
                 case ColTime:
                     if (role == TxTableModelRoles::ExportRoleUTC)
                     {
-                        return item.rxTime().toUTC().toString("yy-MM-dd hh:mm:ss");
+                        return item.rxTime().toUTC().toString("yyyy-MM-dd hh:mm:ss");
                     }
                     else
                     {
-                        return item.rxTime().toString("yy-MM-dd hh:mm:ss");
+                        return item.rxTime().toString("yyyy-MM-dd hh:mm:ss");
                     }
                 case ColChannel:
                     return DabTables::channelList.value(item.ensId().freq(), 0);
@@ -458,7 +458,7 @@ void TxTableModel::updateTiiData(const QList<dabsdrTii_t> &data, const ServiceLi
     QList<TxTableModelItem> appendList;
     for (int dataIdx = 0; dataIdx < data.count(); ++dataIdx)
     {
-        // create new item        
+        // create new item
         TxTableModelItem item(data.at(dataIdx).main, data.at(dataIdx).sub, data.at(dataIdx).level, m_coordinates, m_txList.values(ensId));
         item.setEnsData(ensId, ensLabel, numServices, snr);
         item.setRxTime(time);
