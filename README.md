@@ -165,7 +165,7 @@ The following information is available in the dialog:
 * Details for the current channel like its frequency, SNR, AGC gain, etc.
 * The current audio service and its subchannel parameters
 * The current audio service bitrate details
-* FIB and AU statistics - each of them can be reset from the popup menu accessible with a right click
+* FIB, AAC RC decoder and AU statistics - they can be reset from the popup menu accessible with a right click
 * Subchannel allocation with a interactive colorful bar. You can click on any subchannel to display its details below. Subchannels with data services are shown with cross pattern.
 * Details of all services in the ensemble in text format. It is possible to select any part of the text and copy it to the clipboard.
 
@@ -375,9 +375,11 @@ The number of scan cycles can be configured. One scan cycle means scanning all s
 
 By default all the channels in band III are scanned (5A-13F, 38 channels in total) but you can only scan some channels using the "Select channels" button.
 
-The scanning results are displayed in the table as well as as red circles on the map. The blue circle is the location specified in the TII settings. You can select any row in the table by clicking on it and the corresponding transmitter is shown as a bubble on the map with detailed information shown in the bottom right corner (see screenshot above). It also works the other way around by clicking the red circle on the map. Selection of multiple rowsis also supported. In this case the corresponding dots are shown on the map but no details about the transmitters are available. The table can be sorted by any column by clicking on it. It is possible to display the ensemble structure by double clicking on the row or from the context menu shown with a right mouse click (Precise mode only).
+The scanning results are displayed in the table as well as as red circles on the map. The blue circle is the location specified in the TII settings. You can select any row in the table by clicking on it and the corresponding transmitter is shown as a bubble on the map with detailed information shown in the bottom right corner (see screenshot above). It also works the other way around by clicking the red circle on the map. Selection of multiple rows is also supported. In this case the corresponding dots are shown on the map but no details about the transmitters are available. The table can be sorted by any column by clicking on it. It is possible to display the ensemble structure by double clicking on the row or from the context menu shown with a right mouse click (Precise mode only).
 
-Results of scanning can be stored to a CSV file using the "Export as CSV" button. Unlike the TII dialog, the scanner tool does not store the results "on the fly" during scanning. You can also load previously stored CSV files to display the results in the dialog. Please note that this CSV file replaces the contents of the table and since reciever location is not stored in the file, transmitter distances will be calculated using the current location known by application. 
+Results of scanning can be stored to a CSV file using the "Save as CSV" menu item. Unlike the TII dialog, the scanner tool does not store the results "on the fly" during scanning but it can be configured to save the results when scan stops automatically (AutoSave option in menu). In this case, the CVS is stored to TII log location. You can also load previously stored CSV files to display the results in the dialog. Please note that this CSV file replaces the contents of the table and since receiver location is not stored in the file, transmitter distances will be calculated using the current location known by application. 
+
+Individual transmitters in scanning results can be marked as local (known) transmitters using context menu (multiple transmitters can be selected and marked as local at once). These local (known) transmitters can be excluded from results view using "Hide local (known) transmitters" option in Scanner tool menu. Furthermore, when local transmitters are hidden, they are not exported to CSV. 
 
 _Note:_ The application service list is preserved when the Scanning tool is running. Use the band scan functionality if you want to update the service list. Furthermore, iterations with the application are limited when scanning tool performs scanning.
 
