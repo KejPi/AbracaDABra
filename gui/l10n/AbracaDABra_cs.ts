@@ -3825,18 +3825,18 @@ Dekódováno %1 / %2 MOT objektů</translation>
         <translation>Prohledávání ukončeno</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="594"/>
+        <location filename="../tii/scannerdialog.cpp" line="603"/>
         <source>Export CSV file</source>
         <translation>Exportovat CSV soubor</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="659"/>
+        <location filename="../tii/scannerdialog.cpp" line="668"/>
         <source>Channel:</source>
         <translation>Kanál:</translation>
     </message>
     <message>
         <location filename="../tii/scannerdialog.cpp" line="461"/>
-        <location filename="../tii/scannerdialog.cpp" line="594"/>
+        <location filename="../tii/scannerdialog.cpp" line="603"/>
         <source>CSV Files</source>
         <translation>CSV soubory</translation>
     </message>
@@ -3863,42 +3863,42 @@ Dekódováno %1 / %2 MOT objektů</translation>
         <translation>Načíst CSV soubor</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="742"/>
+        <location filename="../tii/scannerdialog.cpp" line="751"/>
         <source>%1  (cycle %2)</source>
         <translation>%1  (cyklus %2)</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="953"/>
+        <location filename="../tii/scannerdialog.cpp" line="962"/>
         <source>Unmark local (known) transmitter</source>
         <translation>Odznačit místní (známý) vysílač</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="953"/>
+        <location filename="../tii/scannerdialog.cpp" line="962"/>
         <source>Mark as local (known) transmitter</source>
         <translation>Označit jako místní (známý) vysílač</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="956"/>
+        <location filename="../tii/scannerdialog.cpp" line="965"/>
         <source>Show ensemble information</source>
         <translation>Zobrazit informace o multipelxu</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="1011"/>
+        <location filename="../tii/scannerdialog.cpp" line="1020"/>
         <source>Scanning failed</source>
         <translation>Prohledávání selhalo</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="1050"/>
+        <location filename="../tii/scannerdialog.cpp" line="1059"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
         <translation>Nadmořská výška: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="1055"/>
+        <location filename="../tii/scannerdialog.cpp" line="1064"/>
         <source>Antenna height: &lt;b&gt;%1 m&lt;/b&gt;</source>
         <translation>Výška antény: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../tii/scannerdialog.cpp" line="1057"/>
+        <location filename="../tii/scannerdialog.cpp" line="1066"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
         <translation>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
     </message>
