@@ -158,7 +158,7 @@ Raw file is a virtual device that is used to play files with a raw IQ signal rec
 AbracaDABra shows technical information about the ensemble structure in the Ensemble Information dialog accessible from the application menu in [Expert mode](#expert-mode). 
 
 <p align="center" width="100%">
-    <img width="1112" alt="Ensemble information" src="https://github.com/user-attachments/assets/3ee53997-a38d-4b04-b9b1-e262cc933f70" />
+    <img width="1112" alt="Ensemble information" src="https://github.com/user-attachments/assets/26e58ea9-64a0-4a7d-bad1-86c972a7f84e" />
 </p>
 
 The following information is available in the dialog:
@@ -273,7 +273,7 @@ AbracaDABra features audio recording. Two options are available:
 Audio recording can be started and stopped from the application menu. It can be also stopped from the status bar. The recording files are stored automatically in a predefined folder. The application stores also a plain text file containg Dynamic label messages (DL) with timestamps. 
 
 <p align="center" width="100%">
-<img width="1326" alt="Snímek obrazovky 2023-12-03 v 16 56 59" src="https://github.com/KejPi/AbracaDABra/assets/6438380/92bddcfe-614d-45ea-bb8d-10ede37b61cb">
+<img width="1385" alt="AudiRec" src="https://github.com/user-attachments/assets/9e74d151-4983-4d37-ae90-ba9affaef8fc" />
 </p>
 
 _Note:_  Audio recording stops when an ensemble reconfigures or when any tuning operation is performed. 
@@ -363,7 +363,7 @@ It is also possible to record a CSV log with received codes using the "recording
 AbracaDABra offers the possibility to run an unattended DAB band scan and to store all received transmitters. This is an advanced DX feature thus it is only available when application is in [Expert mode](#expert-mode). [TII decoding](#tii-decoding) configuration is required for the tool to function correctly. 
 
 <p align="center" width="100%">
-<img width="1323" alt="Snímek obrazovky 2025-03-11 v 20 27 27" src="https://github.com/user-attachments/assets/85f0e630-e138-4565-86c7-44f77a50c58f" />
+<img width="1312" alt="Scanning tool" src="https://github.com/user-attachments/assets/43e2a746-73f8-4e47-9665-b3d9ee62fc1d" />
 </p>
 
 The scanning tool can be configured to run in one of 3 different modes: 
