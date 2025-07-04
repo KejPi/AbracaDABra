@@ -372,7 +372,7 @@ void AudioDecoderFAAD::handleAudioOutput(const NeAACDecFrameInfo &frameInfo, con
 
         if (OutputState::Muted == m_state)
         {  // do unmute
-            qCInfo(audioDecoder) << "Umuting audio";
+            qCInfo(audioDecoder) << "Unmuting audio";
 #if AUDIO_DECODER_FAAD_NOISE_CONCEALMENT
             // read noise
             int valuesToRead = m_muteRamp.size() * m_numChannels;
