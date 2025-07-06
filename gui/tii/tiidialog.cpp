@@ -411,9 +411,12 @@ void TIIDialog::onChannelSelection()
 
 void TIIDialog::onEnsembleInformation(const RadioControlEnsemble &ens)
 {
-    m_currentEnsemble = ens;
-
-    emit ensembleInfoChanged();
+    if (ens.ueid != m_currentEnsemble.ueid)
+    {
+        m_model->clear();
+        m_currentEnsemble = ens;
+        emit ensembleInfoChanged();
+    }
 }
 
 void TIIDialog::onSettingsChanged()
