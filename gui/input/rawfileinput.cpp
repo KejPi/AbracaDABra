@@ -136,9 +136,9 @@ bool RawFileInput::openDevice(const QVariant &hwId, bool fallbackConnection)
     else
     {  // this looks like named pipe (FIFO) - using ReadWrite since is it non-blocking
         // https://forum.qt.io/topic/159028/accessing-named-pipe-fifo-on-linux-as-regular-file
-        if (!m_inputFile->open(QIODevice::ReadWrite))
+        if (!m_inputFile->exists() || !m_inputFile->open(QIODevice::ReadWrite))
         {
-            qCCritical(rawFileInput) << "RAW-FILE: Unable to open file: " << m_fileName;
+            qCCritical(rawFileInput) << "RAW-FILE: Unable to open file:" << m_fileName;
             delete m_inputFile;
             m_inputFile = nullptr;
 
