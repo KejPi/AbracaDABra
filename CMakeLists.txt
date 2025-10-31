@@ -599,7 +599,8 @@ if (QCUSTOMPLOT_SUBMODULE)
 endif()
 
 # Qt Location is used to display detected transmitters on map in TII dialog
-if(QT_VERSION LESS 6.5.0)
+#if(QT_VERSION LESS 6.5.0)
+if(QT_VERSION_MINOR LESS 5) # < 6.5.0
     message(WARNING "Qt version < 6.5.0, transmitter map will not be available in TII dialog")
     set(HAVE_QTLOCATION OFF)
 else()
