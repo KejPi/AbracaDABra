@@ -662,13 +662,21 @@ QVariant MetadataManager::data(const ServiceListId &id, MetadataRole role) const
             {
                 QPixmap pixmap;
                 pixmap.load(filename + "png");
-                return QVariant(pixmap);
+                if (pixmap.width() <= 320 && pixmap.height() <= 240)
+                {
+                    return QVariant(pixmap);
+                }
+                return QVariant();
             }
             else if (QFileInfo::exists(filename + "jpg"))
             {
                 QPixmap pixmap;
                 pixmap.load(filename + "jpg");
-                return QVariant(pixmap);
+                if (pixmap.width() <= 320 && pixmap.height() <= 240)
+                {
+                    return QVariant(pixmap);
+                }
+                return QVariant();
             }
         }
         break;
@@ -679,13 +687,21 @@ QVariant MetadataManager::data(const ServiceListId &id, MetadataRole role) const
             {
                 QPixmap pixmap;
                 pixmap.load(filename + "png");
-                return QVariant(pixmap);
+                if (pixmap.width() <= 32 && pixmap.height() <= 32)
+                {
+                    return QVariant(pixmap);
+                }
+                return QVariant();
             }
             else if (QFileInfo::exists(filename + "jpg"))
             {
                 QPixmap pixmap;
                 pixmap.load(filename + "jpg");
-                return QVariant(pixmap);
+                if (pixmap.width() <= 32 && pixmap.height() <= 32)
+                {
+                    return QVariant(pixmap);
+                }
+                return QVariant();
             }
         }
         break;
