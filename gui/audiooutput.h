@@ -62,6 +62,10 @@ public:
         m_devices = new QMediaDevices(this);
         connect(m_devices, &QMediaDevices::audioOutputsChanged, this, &AudioOutput::updateAudioDevices);
     }
+    ~AudioOutput()
+    {
+        stopDummyOutput();
+    }
     virtual void start(audioFifo_t *buffer) = 0;
     virtual void restart(audioFifo_t *buffer) = 0;
     virtual void stop() = 0;
@@ -71,14 +75,17 @@ public:
     QList<QAudioDevice> getAudioDevices()
     {
         QList<QAudioDevice> list;
-        const QAudioDevice &defaultDeviceInfo = m_devices->defaultAudioOutput();
-        list.append(defaultDeviceInfo);
-
-        for (auto &deviceInfo : m_devices->audioOutputs())
+        if (!m_devices->audioOutputs().isEmpty())
         {
-            if (deviceInfo != defaultDeviceInfo)
+            const QAudioDevice &defaultDeviceInfo = m_devices->defaultAudioOutput();
+            list.append(defaultDeviceInfo);
+
+            for (auto &deviceInfo : m_devices->audioOutputs())
             {
-                list.append(deviceInfo);
+                if (deviceInfo != defaultDeviceInfo)
+                {
+                    list.append(deviceInfo);
+                }
             }
         }
         return list;
@@ -90,6 +97,9 @@ signals:
     void audioDeviceChanged(const QByteArray &id);
 
 protected:
+    QTimer * m_dummyOutputTimer = nullptr;
+    audioFifo_t *m_currentFifoPtr = nullptr;
+    audioFifo_t *m_restartFifoPtr = nullptr;
     QMediaDevices *m_devices;
     QAudioDevice m_currentAudioDevice;
     bool m_useDefaultDevice = true;
@@ -122,6 +132,39 @@ protected:
         else
         {
             emit audioDeviceChanged(m_currentAudioDevice.id());
+        }
+    }
+    void startDummyOutput()
+    {
+        if (m_dummyOutputTimer)
+        {
+            m_dummyOutputTimer->stop();
+            delete m_dummyOutputTimer;
+        }
+        m_dummyOutputTimer = new QTimer(this);
+        m_dummyOutputTimer->setInterval(50);
+        connect(m_dummyOutputTimer, &QTimer::timeout, this, &AudioOutput::dummyOutput);
+        m_dummyOutputTimer->start();
+    }
+    void stopDummyOutput()
+    {
+        if (m_dummyOutputTimer)
+        {  // dummy audio output
+            m_dummyOutputTimer->stop();
+            delete m_dummyOutputTimer;
+            m_dummyOutputTimer = nullptr;
+        }
+    }
+    void dummyOutput()
+    {   // this method is used when no audio device is available
+        if (m_currentFifoPtr) {
+            // read samples from input buffer
+            m_currentFifoPtr->mutex.lock();
+            // shifting buffer pointers
+            m_currentFifoPtr->tail = (m_currentFifoPtr->tail + m_currentFifoPtr->count) % AUDIO_FIFO_SIZE;
+            m_currentFifoPtr->count = 0;
+            m_currentFifoPtr->countChanged.wakeAll();
+            m_currentFifoPtr->mutex.unlock();
         }
     }
 };

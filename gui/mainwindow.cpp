@@ -2256,19 +2256,22 @@ void MainWindow::onAudioDevicesList(QList<QAudioDevice> list)
     {
         delete m_audioDevicesGroup;
     }
-    m_audioDevicesGroup = new QActionGroup(m_audioOutputMenu);
+    if (!list.isEmpty())
+    {   // create menu if list is not empty
+        m_audioDevicesGroup = new QActionGroup(m_audioOutputMenu);
 
-    QAction *action = new QAction(tr("Default audio device"), m_audioDevicesGroup);  // follow default audio device
-    action->setData(QVariant::fromValue(QAudioDevice()));
-    action->setCheckable(true);
-
-    for (const QAudioDevice &device : list)
-    {
-        action = new QAction(device.description(), m_audioDevicesGroup);
-        action->setData(QVariant::fromValue(device));
+        QAction *action = new QAction(tr("Default audio device"), m_audioDevicesGroup);  // follow default audio device
+        action->setData(QVariant::fromValue(QAudioDevice()));
         action->setCheckable(true);
+
+        for (const QAudioDevice &device : list)
+        {
+            action = new QAction(device.description(), m_audioDevicesGroup);
+            action->setData(QVariant::fromValue(device));
+            action->setCheckable(true);
+        }
+        m_audioOutputMenu->addActions(m_audioDevicesGroup->actions());
     }
-    m_audioOutputMenu->addActions(m_audioDevicesGroup->actions());
 }
 
 void MainWindow::onAudioOutputError()
@@ -2292,7 +2295,10 @@ void MainWindow::onAudioDeviceChanged(const QByteArray &id)
 {
     if (id.isEmpty())
     {  // default audio device
-        m_audioDevicesGroup->actions().at(0)->setChecked(true);
+        if (m_audioDevicesGroup && m_audioDevicesGroup->actions().count() > 0)
+        {
+            m_audioDevicesGroup->actions().at(0)->setChecked(true);
+        }
         return;
     }
 

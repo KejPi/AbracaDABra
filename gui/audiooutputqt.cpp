@@ -55,6 +55,14 @@ AudioOutputQt::~AudioOutputQt()
 
 void AudioOutputQt::start(audioFifo_t *buffer)
 {
+    // check if we have valid audio device
+    if (m_currentAudioDevice.isNull())
+    {  // invalid
+        m_currentFifoPtr = buffer;
+        startDummyOutput();
+        return;
+    }
+
     uint32_t sRate = buffer->sampleRate;
     uint8_t numCh = buffer->numChannels;
 
@@ -181,6 +189,12 @@ void AudioOutputQt::setAudioDevice(const QByteArray &deviceId)
 
 void AudioOutputQt::stop()
 {
+    if (m_dummyOutputTimer)
+    {  // dummy audio output
+        stopDummyOutput();
+        return;
+    }
+
     if (nullptr != m_audioSink)
     {
         if (!m_ioDevice->isMuted())

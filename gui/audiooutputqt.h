@@ -60,8 +60,6 @@ private:
     AudioIODevice *m_ioDevice;
     QAudioSink *m_audioSink;
     float m_linearVolume;
-    audioFifo_t *m_currentFifoPtr = nullptr;
-    audioFifo_t *m_restartFifoPtr = nullptr;
 
     void handleStateChanged(QAudio::State newState);
     int64_t bytesAvailable();

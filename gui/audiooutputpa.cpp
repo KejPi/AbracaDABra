@@ -36,7 +36,7 @@ Q_DECLARE_LOGGING_CATEGORY(audioOutput)
 
 AudioOutputPa::AudioOutputPa(QObject *parent) : AudioOutput(parent)
 {
-    m_inFifoPtr = nullptr;
+    m_currentFifoPtr = nullptr;
     m_outStream = nullptr;
     m_numChannels = m_sampleRate_kHz = 0;
     m_linearVolume = 1.0;
@@ -86,6 +86,14 @@ AudioOutputPa::~AudioOutputPa()
 
 void AudioOutputPa::start(audioFifo_t *buffer)
 {
+    int deviceIdx = getCurrentDeviceIdx();
+    if (deviceIdx < 0)
+    {   // no audio device was found
+        m_currentFifoPtr = buffer;
+        startDummyOutput();
+        return;
+    }
+
     uint32_t sRate = buffer->sampleRate;
     uint8_t numCh = buffer->numChannels;
 
@@ -132,7 +140,7 @@ void AudioOutputPa::start(audioFifo_t *buffer)
                                            (void *)this);
 #else
         PaStreamParameters outputParameters;
-        outputParameters.device = getCurrentDeviceIdx();
+        outputParameters.device = deviceIdx;
         outputParameters.channelCount = numCh;
         outputParameters.sampleFormat = paInt16;
         outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultLowOutputLatency;
@@ -172,7 +180,7 @@ void AudioOutputPa::start(audioFifo_t *buffer)
         }
     }
 
-    m_inFifoPtr = buffer;
+    m_currentFifoPtr = buffer;
     m_playbackState = AudioOutputPlaybackState::Muted;
     m_cbRequest &= ~(Request::Stop | Request::Restart);  // reset stop and restart bits
 
@@ -194,6 +202,12 @@ void AudioOutputPa::restart(audioFifo_t *buffer)
 
 void AudioOutputPa::stop()
 {
+    if (m_dummyOutputTimer)
+    {  // dummy audio output
+        stopDummyOutput();
+        return;
+    }
+
     if (nullptr != m_outStream)
     {
         m_cbRequest |= Request::Stop;  // set stop bit
@@ -246,9 +260,9 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
     // qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
 
     // read samples from input buffer
-    m_inFifoPtr->mutex.lock();
-    uint64_t count = m_inFifoPtr->count;
-    m_inFifoPtr->mutex.unlock();
+    m_currentFifoPtr->mutex.lock();
+    uint64_t count = m_currentFifoPtr->count;
+    m_currentFifoPtr->mutex.unlock();
 
     uint64_t bytesToRead = m_bytesPerFrame * nBufferFrames;
     uint32_t availableSamples = nBufferFrames;
@@ -266,11 +280,11 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
                 memset(outputBuffer, 0, bytesToRead);
 
                 // shifting buffer pointers
-                m_inFifoPtr->tail = (m_inFifoPtr->tail + bytesToRead) % AUDIO_FIFO_SIZE;
-                m_inFifoPtr->mutex.lock();
-                m_inFifoPtr->count -= bytesToRead;
-                m_inFifoPtr->countChanged.wakeAll();
-                m_inFifoPtr->mutex.unlock();
+                m_currentFifoPtr->tail = (m_currentFifoPtr->tail + bytesToRead) % AUDIO_FIFO_SIZE;
+                m_currentFifoPtr->mutex.lock();
+                m_currentFifoPtr->count -= bytesToRead;
+                m_currentFifoPtr->countChanged.wakeAll();
+                m_currentFifoPtr->mutex.unlock();
 
                 if (request & (Request::Stop | Request::Restart))
                 {  // stop or restart requested ==> finish playback
@@ -285,20 +299,20 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
             }
 
             // at this point we have enough sample to unmute and there is no request => preparing data
-            uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
+            uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_currentFifoPtr->tail;
             if (bytesToEnd < bytesToRead)
             {
                 float volume = m_linearVolume;
                 if (volume > 0.9)
                 {  // only copy here
-                    memcpy((uint8_t *)outputBuffer, m_inFifoPtr->buffer + m_inFifoPtr->tail, bytesToEnd);
-                    memcpy((uint8_t *)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (bytesToRead - bytesToEnd));
-                    m_inFifoPtr->tail = bytesToRead - bytesToEnd;
+                    memcpy((uint8_t *)outputBuffer, m_currentFifoPtr->buffer + m_currentFifoPtr->tail, bytesToEnd);
+                    memcpy((uint8_t *)outputBuffer + bytesToEnd, m_currentFifoPtr->buffer, (bytesToRead - bytesToEnd));
+                    m_currentFifoPtr->tail = bytesToRead - bytesToEnd;
                 }
                 else
                 {
-                    // memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
-                    int16_t *inDataPtr = (int16_t *)(m_inFifoPtr->buffer + m_inFifoPtr->tail);
+                    // memcpy((uint8_t*)outputBuffer, m_currentFifoPtr->buffer+m_currentFifoPtr->tail, bytesToEnd);
+                    int16_t *inDataPtr = (int16_t *)(m_currentFifoPtr->buffer + m_currentFifoPtr->tail);
                     int16_t *outDataPtr = (int16_t *)outputBuffer;
                     // each sample is int16 => 2 bytes per samples
                     uint_fast32_t numSamples = (bytesToEnd >> 1);
@@ -315,7 +329,7 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
                     }
 
                     // memcpy((uint8_t*)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (bytesToRead - bytesToEnd));
-                    inDataPtr = (int16_t *)m_inFifoPtr->buffer;
+                    inDataPtr = (int16_t *)m_currentFifoPtr->buffer;
                     outDataPtr = (int16_t *)((uint8_t *)outputBuffer + bytesToEnd);
                     // each sample is int16 => 2 bytes per samples
                     numSamples = ((bytesToRead - bytesToEnd) >> 1);
@@ -330,7 +344,7 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
                         *outDataPtr++ = int16_t(volume * *inDataPtr++);
 #endif
                     }
-                    m_inFifoPtr->tail = bytesToRead - bytesToEnd;
+                    m_currentFifoPtr->tail = bytesToRead - bytesToEnd;
                 }
             }
             else
@@ -338,13 +352,13 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
                 float volume = m_linearVolume;
                 if (volume > 0.9)
                 {  // only copy here
-                    memcpy((uint8_t *)outputBuffer, m_inFifoPtr->buffer + m_inFifoPtr->tail, bytesToRead);
-                    m_inFifoPtr->tail += bytesToRead;
+                    memcpy((uint8_t *)outputBuffer, m_currentFifoPtr->buffer + m_currentFifoPtr->tail, bytesToRead);
+                    m_currentFifoPtr->tail += bytesToRead;
                 }
                 else
                 {
-                    // memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToRead);
-                    int16_t *inDataPtr = (int16_t *)(m_inFifoPtr->buffer + m_inFifoPtr->tail);
+                    // memcpy((uint8_t*) outputBuffer, m_currentFifoPtr->buffer+m_currentFifoPtr->tail, bytesToRead);
+                    int16_t *inDataPtr = (int16_t *)(m_currentFifoPtr->buffer + m_currentFifoPtr->tail);
                     int16_t *outDataPtr = (int16_t *)outputBuffer;
                     // each sample is int16 => 2 bytes per samples
                     uint_fast32_t numSamples = (bytesToRead >> 1);
@@ -360,13 +374,13 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
 #endif
                     }
 
-                    m_inFifoPtr->tail += bytesToRead;
+                    m_currentFifoPtr->tail += bytesToRead;
                 }
             }
-            m_inFifoPtr->mutex.lock();
-            m_inFifoPtr->count -= bytesToRead;
-            m_inFifoPtr->countChanged.wakeAll();
-            m_inFifoPtr->mutex.unlock();
+            m_currentFifoPtr->mutex.lock();
+            m_currentFifoPtr->count -= bytesToRead;
+            m_currentFifoPtr->countChanged.wakeAll();
+            m_currentFifoPtr->mutex.unlock();
 
             // unmute request
             request = Request::None;
@@ -407,20 +421,20 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
             Q_ASSERT(count == availableSamples * m_bytesPerFrame);
 
             // copy all available samples to output buffer
-            uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
+            uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_currentFifoPtr->tail;
             if (bytesToEnd < count)
             {
                 float volume = m_linearVolume;
                 if (volume > 0.9)
                 {  // only copy here
-                    memcpy((uint8_t *)outputBuffer, m_inFifoPtr->buffer + m_inFifoPtr->tail, bytesToEnd);
-                    memcpy((uint8_t *)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (count - bytesToEnd));
-                    m_inFifoPtr->tail = count - bytesToEnd;
+                    memcpy((uint8_t *)outputBuffer, m_currentFifoPtr->buffer + m_currentFifoPtr->tail, bytesToEnd);
+                    memcpy((uint8_t *)outputBuffer + bytesToEnd, m_currentFifoPtr->buffer, (count - bytesToEnd));
+                    m_currentFifoPtr->tail = count - bytesToEnd;
                 }
                 else
                 {
-                    // memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
-                    int16_t *inDataPtr = (int16_t *)(m_inFifoPtr->buffer + m_inFifoPtr->tail);
+                    // memcpy((uint8_t*)outputBuffer, m_currentFifoPtr->buffer+m_currentFifoPtr->tail, bytesToEnd);
+                    int16_t *inDataPtr = (int16_t *)(m_currentFifoPtr->buffer + m_currentFifoPtr->tail);
                     int16_t *outDataPtr = (int16_t *)outputBuffer;
                     // each sample is int16 => 2 bytes per samples
                     uint_fast32_t numSamples = (bytesToEnd >> 1);
@@ -436,7 +450,7 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
 #endif
                     }
                     // memcpy((uint8_t*)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (count - bytesToEnd));
-                    inDataPtr = (int16_t *)m_inFifoPtr->buffer;
+                    inDataPtr = (int16_t *)m_currentFifoPtr->buffer;
                     // each sample is int16 => 2 bytes per samples
                     numSamples = ((count - bytesToEnd) >> 1);
 
@@ -450,7 +464,7 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
                         *outDataPtr++ = int16_t(volume * *inDataPtr++);
 #endif
                     }
-                    m_inFifoPtr->tail = count - bytesToEnd;
+                    m_currentFifoPtr->tail = count - bytesToEnd;
                 }
             }
             else
@@ -458,13 +472,13 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
                 float volume = m_linearVolume;
                 if (volume > 0.9)
                 {  // only copy here
-                    memcpy((uint8_t *)outputBuffer, m_inFifoPtr->buffer + m_inFifoPtr->tail, count);
-                    m_inFifoPtr->tail += count;
+                    memcpy((uint8_t *)outputBuffer, m_currentFifoPtr->buffer + m_currentFifoPtr->tail, count);
+                    m_currentFifoPtr->tail += count;
                 }
                 else
                 {
-                    // memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, count);
-                    int16_t *inDataPtr = (int16_t *)(m_inFifoPtr->buffer + m_inFifoPtr->tail);
+                    // memcpy((uint8_t*) outputBuffer, m_currentFifoPtr->buffer+m_currentFifoPtr->tail, count);
+                    int16_t *inDataPtr = (int16_t *)(m_currentFifoPtr->buffer + m_currentFifoPtr->tail);
                     int16_t *outDataPtr = (int16_t *)outputBuffer;
                     // each sample is int16 => 2 bytes per samples
                     uint_fast32_t numSamples = (count >> 1);
@@ -479,36 +493,36 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
                         *outDataPtr++ = int16_t(volume * *inDataPtr++);
 #endif
                     }
-                    m_inFifoPtr->tail += count;
+                    m_currentFifoPtr->tail += count;
                 }
             }
             // set rest of the samples to be 0
             memset((uint8_t *)outputBuffer + count, 0, bytesToRead - count);
 
-            m_inFifoPtr->mutex.lock();
-            m_inFifoPtr->count -= count;
-            m_inFifoPtr->countChanged.wakeAll();
-            m_inFifoPtr->mutex.unlock();
+            m_currentFifoPtr->mutex.lock();
+            m_currentFifoPtr->count -= count;
+            m_currentFifoPtr->countChanged.wakeAll();
+            m_currentFifoPtr->mutex.unlock();
 
             // request to apply mute ramp
             request = Request::Mute;
         }
         else
         {  // enough sample available -> reading samples
-            uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_inFifoPtr->tail;
+            uint64_t bytesToEnd = AUDIO_FIFO_SIZE - m_currentFifoPtr->tail;
             if (bytesToEnd < bytesToRead)
             {
                 float volume = m_linearVolume;
                 if (volume > 0.9)
                 {  // only copy here
-                    memcpy((uint8_t *)outputBuffer, m_inFifoPtr->buffer + m_inFifoPtr->tail, bytesToEnd);
-                    memcpy((uint8_t *)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (bytesToRead - bytesToEnd));
-                    m_inFifoPtr->tail = bytesToRead - bytesToEnd;
+                    memcpy((uint8_t *)outputBuffer, m_currentFifoPtr->buffer + m_currentFifoPtr->tail, bytesToEnd);
+                    memcpy((uint8_t *)outputBuffer + bytesToEnd, m_currentFifoPtr->buffer, (bytesToRead - bytesToEnd));
+                    m_currentFifoPtr->tail = bytesToRead - bytesToEnd;
                 }
                 else
                 {
-                    // memcpy((uint8_t*)outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToEnd);
-                    int16_t *inDataPtr = (int16_t *)(m_inFifoPtr->buffer + m_inFifoPtr->tail);
+                    // memcpy((uint8_t*)outputBuffer, m_currentFifoPtr->buffer+m_currentFifoPtr->tail, bytesToEnd);
+                    int16_t *inDataPtr = (int16_t *)(m_currentFifoPtr->buffer + m_currentFifoPtr->tail);
                     int16_t *outDataPtr = (int16_t *)outputBuffer;
                     // each sample is int16 => 2 bytes per samples
                     uint_fast32_t numSamples = (bytesToEnd >> 1);
@@ -525,7 +539,7 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
                     }
 
                     // memcpy((uint8_t*)outputBuffer + bytesToEnd, m_inFifoPtr->buffer, (bytesToRead - bytesToEnd));
-                    inDataPtr = (int16_t *)m_inFifoPtr->buffer;
+                    inDataPtr = (int16_t *)m_currentFifoPtr->buffer;
                     outDataPtr = (int16_t *)((uint8_t *)outputBuffer + bytesToEnd);
                     // each sample is int16 => 2 bytes per samples
                     numSamples = ((bytesToRead - bytesToEnd) >> 1);
@@ -540,7 +554,7 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
                         *outDataPtr++ = int16_t(volume * *inDataPtr++);
 #endif
                     }
-                    m_inFifoPtr->tail = bytesToRead - bytesToEnd;
+                    m_currentFifoPtr->tail = bytesToRead - bytesToEnd;
                 }
             }
             else
@@ -548,13 +562,13 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
                 float volume = m_linearVolume;
                 if (volume > 0.9)
                 {
-                    memcpy((uint8_t *)outputBuffer, m_inFifoPtr->buffer + m_inFifoPtr->tail, bytesToRead);
-                    m_inFifoPtr->tail += bytesToRead;
+                    memcpy((uint8_t *)outputBuffer, m_currentFifoPtr->buffer + m_currentFifoPtr->tail, bytesToRead);
+                    m_currentFifoPtr->tail += bytesToRead;
                 }
                 else
                 {
-                    // memcpy((uint8_t*) outputBuffer, m_inFifoPtr->buffer+m_inFifoPtr->tail, bytesToRead);
-                    int16_t *inDataPtr = (int16_t *)(m_inFifoPtr->buffer + m_inFifoPtr->tail);
+                    // memcpy((uint8_t*) outputBuffer, m_currentFifoPtr->buffer+m_currentFifoPtr->tail, bytesToRead);
+                    int16_t *inDataPtr = (int16_t *)(m_currentFifoPtr->buffer + m_currentFifoPtr->tail);
                     int16_t *outDataPtr = (int16_t *)outputBuffer;
                     // each sample is int16 => 2 bytes per samples
                     uint_fast32_t numSamples = (bytesToRead >> 1);
@@ -569,13 +583,13 @@ int AudioOutputPa::portAudioCbPrivate(void *outputBuffer, unsigned long nBufferF
                         *outDataPtr++ = int16_t(volume * *inDataPtr++);
 #endif
                     }
-                    m_inFifoPtr->tail += bytesToRead;
+                    m_currentFifoPtr->tail += bytesToRead;
                 }
             }
-            m_inFifoPtr->mutex.lock();
-            m_inFifoPtr->count -= bytesToRead;
-            m_inFifoPtr->countChanged.wakeAll();
-            m_inFifoPtr->mutex.unlock();
+            m_currentFifoPtr->mutex.lock();
+            m_currentFifoPtr->count -= bytesToRead;
+            m_currentFifoPtr->countChanged.wakeAll();
+            m_currentFifoPtr->mutex.unlock();
 
             //            if ((Request::Restart & request) && (count >= 4*bytesToRead))
             //            {   // removing restart flag ==> play all samples we have
@@ -703,7 +717,7 @@ void AudioOutputPa::onStreamFinished()
             qCCritical(audioOutput) << "Pa_Initialize error:" << Pa_GetErrorText(err);
         }
         m_reloadDevice = true;
-        start(m_inFifoPtr);
+        start(m_currentFifoPtr);
     }
     else
     { /* do nothing */
@@ -771,7 +785,7 @@ PaDeviceIndex AudioOutputPa::getCurrentDeviceIdx()
     if (idx < 0)
     {
         qCCritical(audioOutput) << "Pa_GetDefaultOutputDevice error:" << Pa_GetErrorText(idx);
-        return 0;
+        return -1;
     }
 
     for (int d = 0; d < Pa_GetDeviceCount(); ++d)

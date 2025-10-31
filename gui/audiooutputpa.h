@@ -71,10 +71,7 @@ private:
         Restart = (1 << 2)  // bit #2
     };
     std::atomic<unsigned int> m_cbRequest = Request::None;
-
     PaStream *m_outStream = nullptr;
-    audioFifo_t *m_inFifoPtr = nullptr;
-    audioFifo_t *m_restartFifoPtr = nullptr;
     uint8_t m_numChannels;
     uint32_t m_sampleRate_kHz;
     unsigned int m_bufferFrames;
