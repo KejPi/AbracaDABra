@@ -30,6 +30,7 @@
 #include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QFile>
 #include <QGeoPositionInfoSource>
 #include <QItemSelectionModel>
 #include <QLabel>
@@ -155,6 +156,13 @@ private:
     void storeEnsembleData(const RadioControlTIIData &tiiData, const QString &conf, const QString &csvConf);
     void showEnsembleConfig(const QModelIndex &index);
     void showContextMenu(const QPoint &pos);
+
+    // Real-time CSV auto-save
+    QFile *m_autoSaveFile = nullptr;
+    int m_autoSaveExportRole = 0;
+    void startAutoSaveCsv();
+    void appendAutoSaveRows(int firstRow, int lastRow);
+    void stopAutoSaveCsv();
 };
 
 #endif  // SCANNERDIALOG_H
