@@ -31,7 +31,7 @@ import abracaComponents
 RadioButton {
     id: control
 
-    text: qsTr("RadioButton")
+    text: "RadioButton"
     checked: true
 
     property int elideMode: Text.ElideRight
