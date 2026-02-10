@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +48,6 @@ public:
             {
                 m_git = verMatch.captured(5).toUInt();
             }
-            // qDebug() << m_major << m_minor << m_patch << m_git;
         }
     }
     bool operator==(const AppVersion& other) const { return toUInt64() == other.toUInt64(); }

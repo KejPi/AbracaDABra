@@ -3,9 +3,9 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * Permission is hereby granted, free of charge, to any person obtaining guiApp copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
@@ -24,28 +24,60 @@
  * SOFTWARE.
  */
 
-#include <QApplication>
 #include <QByteArrayView>
 #include <QCommandLineParser>
+#include <QFontDatabase>
 #include <QLibraryInfo>
+#include <QQmlApplicationEngine>
 #include <QTranslator>
 
+#include "application.h"
 #include "config.h"
-#include "mainwindow.h"
+
+#if HAVE_QTWIDGETS
+#include <QApplication>
+#else
+#include <QGuiApplication>
+#endif
 
 int main(int argc, char *argv[])
 {
     QCoreApplication::setApplicationName("AbracaDABra");
     QCoreApplication::setApplicationVersion(PROJECT_VER);
+
+#if HAVE_QTWIDGETS
+    QApplication guiApp(argc, argv);
+#else
+    QGuiApplication guiApp(argc, argv);
+#endif
+#if 0
+    // Load and set custom fonts
+    // int fontId = QFontDatabase::addApplicationFont(":/resources/fonts/OpenSans-VariableFont.ttf");
+    // int fontId = QFontDatabase::addApplicationFont(":/resources/fonts/PublicSans-VariableFont_wght.ttf");
+    int fontId = QFontDatabase::addApplicationFont(":/resources/fonts/DMSans-VariableFont_opsz,wght.ttf");
+    if (fontId != -1)
+    {
+        QFont systemFont = guiApp.font();
+        QStringList fontFamilies = QFontDatabase::applicationFontFamilies(fontId);
+        if (!fontFamilies.isEmpty())
+        {
+            QFont font(fontFamilies.at(0));
+            font.setWeight(QFont::Medium);              // Set default weight
+            font.setPointSize(systemFont.pointSize());  // Set default size
+            guiApp.setFont(font);
+        }
+    }
+    // Load italic variant
+    // QFontDatabase::addApplicationFont(":/resources/fonts/OpenSans-Italic-VariableFont.ttf");
+    // QFontDatabase::addApplicationFont(":/resources/fonts/PublicSans-VariableFont_wght.ttf");
+    QFontDatabase::addApplicationFont(":/resources/fonts/DMSans-Italic-VariableFont_opsz,wght.ttf");
+#endif
     int currentExitCode = 0;
     do
     {
-        QApplication a(argc, argv);
-
         // this is required for correct deployment of SDRplay
-        if (qgetenv("SOAPY_SDR_PLUGIN_PATH").isEmpty())
+        if (qEnvironmentVariableIsEmpty("SOAPY_SDR_PLUGIN_PATH"))
         {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
 #ifdef Q_OS_MACOS
             qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArrayView(QString(QCoreApplication::applicationDirPath() + "/../Plugins/SoapySDR").toUtf8()));
 #endif
@@ -54,18 +86,6 @@ int main(int argc, char *argv[])
 #endif
 #ifdef Q_OS_LINUX
             qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArrayView(QString(QCoreApplication::applicationDirPath() + "/../lib/SoapySDR/").toUtf8()));
-#endif
-#else
-            // Note: In Qt versions prior to 6.5, the value argument was QByteArray, not QByteArrayView.
-#ifdef Q_OS_MACOS
-            qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArray(QString(QCoreApplication::applicationDirPath() + "/../Plugins/SoapySDR").toUtf8()));
-#endif
-#ifdef Q_OS_WIN
-            qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArray(QString(QCoreApplication::applicationDirPath()).toUtf8()));
-#endif
-#ifdef Q_OS_LINUX
-            qputenv("SOAPY_SDR_PLUGIN_PATH", QByteArray(QString(QCoreApplication::applicationDirPath() + "/../lib/SoapySDR/").toUtf8()));
-#endif
 #endif
         }
         QCommandLineParser parser;
@@ -85,14 +105,14 @@ int main(int argc, char *argv[])
         parser.addOption(slFileOption);
 
         // Process the actual command line arguments given by the user
-        parser.process(a);
+        parser.process(guiApp);
 
         QString iniFile = parser.value(iniFileOption);
         QString slFile = parser.value(slFileOption);
 
 #ifdef Q_OS_LINUX
         // Set icon
-        a.setWindowIcon(QIcon(":/resources/appIcon-linux.png"));
+        guiApp.setWindowIcon(QIcon(":/resources/appIcon-linux.png"));
 #endif
 
         // loading of translation
@@ -118,14 +138,14 @@ int main(int argc, char *argv[])
         {  // system default
             if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n/gui")))
             {
-                a.installTranslator(&translator);
+                guiApp.installTranslator(&translator);
             }
         }
         else if (QLocale::English != lang)
         {  // user selected translation
             if (translator.load(QString("AbracaDABra_%1").arg(QLocale::languageToCode(lang)), QLatin1String(":/i18n/gui")))
             {
-                a.installTranslator(&translator);
+                guiApp.installTranslator(&translator);
             }
         }
 #else
@@ -137,21 +157,24 @@ int main(int argc, char *argv[])
             if (translator.load(QLocale(), QLatin1String("AbracaDABra"), QLatin1String("_"), QLatin1String(":/i18n")))
 #endif
             {
-                a.installTranslator(&translator);
+                guiApp.installTranslator(&translator);
             }
         }
         else if (QLocale::English != lang)
         {  // user selected translation
             if (translator.load(QString("AbracaDABra_%1").arg(QLocale::languageToCode(lang)), QLatin1String(":/i18n")))
             {
-                a.installTranslator(&translator);
+                guiApp.installTranslator(&translator);
             }
         }
 #endif
-        MainWindow w(iniFile, slFile);
-        w.show();
-        currentExitCode = a.exec();
-    } while (currentExitCode == MainWindow::EXIT_CODE_RESTART);
+
+        Application app(iniFile, slFile);
+        QObject::connect(
+            app.qmlEngine(), &QQmlApplicationEngine::objectCreationFailed, &guiApp, []() { QCoreApplication::exit(-1); }, Qt::QueuedConnection);
+
+        currentExitCode = guiApp.exec();
+    } while (currentExitCode == Application::EXIT_CODE_RESTART);
 
     return currentExitCode;
 }

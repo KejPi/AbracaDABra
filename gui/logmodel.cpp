@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,8 +44,6 @@ QVariant LogModel::data(const QModelIndex &index, int role) const
     {
         switch (role)
         {
-            case Qt::FontRole:
-                return QVariant(fixedFont);
             case Qt::ForegroundRole:
                 if (m_isDarkMode)
                 {
@@ -94,53 +92,36 @@ QVariant LogModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-bool LogModel::setData(const QModelIndex &index, const QVariant &value, int role)
+QHash<int, QByteArray> LogModel::roleNames() const
 {
-    if (!index.isValid())
-    {
-        return false;
-    }
-    if (m_msgList.size() > index.row())
-    {
-        m_msgList[index.row()].msg = value.toString();
-        m_msgList[index.row()].type = static_cast<QtMsgType>(role);
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    QHash<int, QByteArray> roles;
+
+    roles[Qt::ForegroundRole] = "textColor";
+    roles[Qt::DisplayRole] = "logMsg";
+    return roles;
 }
 
-bool LogModel::insertRows(int position, int rows, const QModelIndex &index)
+void LogModel::setupDarkMode(bool darkModeEna)
 {
-    beginInsertRows(QModelIndex(), position, position + rows - 1);
-
-    for (int row = 0; row < rows; ++row)
+    m_isDarkMode = darkModeEna;
+    if (rowCount() > 0)
     {
-        m_msgList.insert(position, LogItem());
+        emit dataChanged(index(0, 0), index(rowCount() - 1, 0), {Qt::ForegroundRole});
     }
-
-    endInsertRows();
-    return true;
-}
-
-bool LogModel::removeRows(int position, int rows, const QModelIndex &index)
-{
-    beginRemoveRows(QModelIndex(), position, position + rows - 1);
-
-    for (int row = 0; row < rows; ++row)
-    {
-        m_msgList.removeAt(position);
-    }
-
-    endRemoveRows();
-    return true;
 }
 
 void LogModel::appendRow(const QString &rowTxt, int role)
 {
     int row = rowCount();
-    insertRow(row);
-    setData(index(row, 0), rowTxt, role);
+    auto item = LogItem{rowTxt, static_cast<QtMsgType>(role)};
+    beginInsertRows(QModelIndex(), row, row);
+    m_msgList.append(item);
+    endInsertRows();
+}
+
+void LogModel::clear()
+{
+    beginResetModel();
+    m_msgList.clear();
+    endResetModel();
 }

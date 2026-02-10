@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,12 @@
 #include <QMutex>
 #include <QWaitCondition>
 
+#ifdef Q_OS_ANDROID
+// #define AUDIO_DEBUG_STATS
+#define AUDIO_FIFO_CHUNK_MS (200)
+#else
 #define AUDIO_FIFO_CHUNK_MS (60)
+#endif
 #define AUDIO_FIFO_MS (32 * AUDIO_FIFO_CHUNK_MS)
 #define AUDIO_FIFO_SIZE (48 * AUDIO_FIFO_MS * 2 * sizeof(int16_t))  // FS - 48kHz, stereo, int16_t samples
 

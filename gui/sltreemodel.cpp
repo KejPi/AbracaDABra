@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,8 @@
 #include "sltreemodel.h"
 
 #include <QLoggingCategory>
+
+#include "slmodel.h"
 
 Q_DECLARE_LOGGING_CATEGORY(serviceList)
 
@@ -54,8 +56,21 @@ QVariant SLTreeModel::data(const QModelIndex &index, int role) const
     }
 
     SLModelItem *item = static_cast<SLModelItem *>(index.internalPointer());
-
-    return item->data(index.column(), role);
+    switch (role)
+    {
+        case Qt::DisplayRole:
+        case Qt::ToolTipRole:
+        case SLModelRole::IdRole:
+        case SLModelRole::SmallLogoRole:
+        case SLModelRole::SmallLogoIdRole:
+        case SLModelRole::EpgModelRole:
+        case SLModelRole::EnsembleListRole:
+        case SLModelRole::IsFavoriteRole:
+        case SLModelRole::SIdHexRole:
+        case SLModelRole::ChannelRole:
+            return item->data(index.column(), role);
+    }
+    return QVariant();
 }
 
 bool SLTreeModel::isService(const QModelIndex &index) const
@@ -290,4 +305,21 @@ void SLTreeModel::sort(int column, Qt::SortOrder order)
     endResetModel();
 
     emit dataChanged(QModelIndex(), QModelIndex());
+}
+
+QHash<int, QByteArray> SLTreeModel::roleNames() const
+{
+    QHash<int, QByteArray> roles = QAbstractItemModel::roleNames();
+
+    roles[Qt::DisplayRole] = "serviceName";
+    roles[SLModelRole::IsFavoriteRole] = "isFavorite";
+    roles[SLModelRole::IdRole] = "serviceId";
+    roles[SLModelRole::SIdHexRole] = "sidHex";
+    roles[SLModelRole::SmallLogoRole] = "smallLogo";
+    roles[SLModelRole::SmallLogoIdRole] = "smallLogoId";
+    roles[SLModelRole::EpgModelRole] = "epgModelRole";
+    roles[SLModelRole::EnsembleListRole] = "ueidList";
+    roles[SLModelRole::ChannelRole] = "channel";
+
+    return roles;
 }

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -69,11 +69,7 @@ void EPGTime::setTime(const QDateTime &time)
         }
         // qDebug() << "LTO [minutes]" << m_ltoSec/60;
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
         m_currentTime = time.toTimeZone(QTimeZone::fromSecondsAheadOfUtc(m_ltoSec));
-#else
-        m_currentTime = time.toTimeZone(QTimeZone(m_ltoSec));
-#endif
         setSecSinceEpoch(m_currentTime.toSecsSinceEpoch());
         setCurrentDateString(m_currentTime.date().toString("dd.MM.yyyy"));
         setCurrentTimeString(m_currentTime.time().toString("HH:mm"));
@@ -83,11 +79,7 @@ void EPGTime::setTime(const QDateTime &time)
         return;
     }
     m_dabTime = time;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     m_currentTime = time.toTimeZone(QTimeZone::fromSecondsAheadOfUtc(m_ltoSec));
-#else
-    m_currentTime = time.toTimeZone(QTimeZone(m_ltoSec));
-#endif
     setSecSinceEpoch(m_currentTime.toSecsSinceEpoch());
     setCurrentDateString(m_currentTime.date().toString("d. M."));
     setCurrentTimeString(m_currentTime.time().toString("HH:mm"));

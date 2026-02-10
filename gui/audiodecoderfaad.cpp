@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -335,6 +335,10 @@ void AudioDecoderFAAD::handleAudioOutput(const NeAACDecFrameInfo &frameInfo, con
     m_outFifoPtr->mutex.lock();
     m_outFifoPtr->count += bytesToWrite;
     m_outFifoPtr->mutex.unlock();
+
+#ifdef AUDIO_DEBUG_STATS
+    m_byteCounter += bytesToWrite;
+#endif
 
     // copy new data to buffer
     if (frameInfo.samples != m_outputBufferSamples)

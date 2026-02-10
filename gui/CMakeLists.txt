@@ -52,15 +52,14 @@ endif(HAVE_SOAPYSDR)
 if (HAVE_PORTAUDIO)
     set(PORTAUDIO_SOURCES audiooutputpa.h audiooutputpa.cpp)
 endif(HAVE_PORTAUDIO)
-if (HAVE_QCUSTOMPLOT)
-    set(QCUSTOMPLOT_SOURCES
-        signaldialog.h signaldialog.cpp signaldialog.ui
-    )
-endif(HAVE_QCUSTOMPLOT)
 
 
 #########################################################
 ## SOURCES & HEADERS
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
+
 qt_add_executable(${TARGET} MANUAL_FINALIZATION
     ${GUI_TYPE}
     ${RCC_SOURCES}
@@ -70,13 +69,12 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     ${CMAKE_CURRENT_BINARY_DIR}/config.h    
     ${PORTAUDIO_SOURCES}
     ${APPLE_SOURCES}
-    ${QCUSTOMPLOT_SOURCES}
     ${FAAD_SOURCES}
     ${FDKAAC_SOURCES}
     main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
+    application.cpp
+    application.h
+
     dabtables.h
     dabtables.cpp
     radiocontrol.h
@@ -100,30 +98,7 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     servicelistitem.h
     servicelistitem.cpp   
 
-    slmodel.h
-    slmodel.cpp    
-    slmodelitem.h
-    slmodelitem.cpp   
-    sltreemodel.h
-    sltreemodel.cpp
-    slproxymodel.h
-    slproxymodel.cpp
     settings.h
-    setupdialog.h
-    setupdialog.cpp
-    setupdialog.ui
-    bandscandialog.h
-    bandscandialog.cpp
-    bandscandialog.ui
-    logdialog.h
-    logdialog.cpp
-    logdialog.ui
-    logmodel.h
-    logmodel.cpp
-
-    ensembleinfodialog.h
-    ensembleinfodialog.cpp
-    ensembleinfodialog.ui
 
     # Input devices
     ${AIRSPY_SOURCES}
@@ -159,135 +134,285 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     data/spiapp.h
     data/spiapp.cpp
 
-    catslsdialog.h
-    catslsdialog.cpp
-    catslsdialog.ui
-
-    aboutdialog.h
-    aboutdialog.cpp
-    aboutdialog.ui
-
     updatechecker.h updatechecker.cpp
-    updatedialog.h updatedialog.cpp updatedialog.ui
-
     metadatamanager.h
     metadatamanager.cpp
 
     appversion.h
 
-    # customized widgets
-    widgets/slsview.h
-    widgets/slsview.cpp
-    widgets/clickablelabel.h
-    widgets/clickablelabel.cpp
-    widgets/elidedlabel.h
-    widgets/elidedlabel.cpp
-    widgets/ensemblebar.h
-    widgets/ensemblebar.cpp
-    widgets/signalstatelabel.h
-    widgets/signalstatelabel.cpp
+    # TII
+    tii/txdataitem.h tii/txdataitem.cpp
+    tii/txdataloader.h tii/txdataloader.cpp
+    tii/txlocallist.h tii/txlocallist.cpp
+    tii/txtablemodelitem.cpp tii/txtablemodelitem.h
 
-    # EPG related classes
-    epg/epgmodel.h
-    epg/epgmodel.cpp
+    # EPG
     epg/epgmodelitem.h
     epg/epgmodelitem.cpp
-    epg/epgdialog.h
-    epg/epgdialog.cpp
-    epg/epgdialog.ui
-    epg/epgproxymodel.h
-    epg/epgproxymodel.cpp
     epg/epgtime.h
     epg/epgtime.cpp
 
-    # audio recording features
-    audiorec/audiorecorder.h
-    audiorec/audiorecorder.cpp
-    audiorec/audiorecscheduledialog.h
-    audiorec/audiorecscheduledialog.cpp
-    audiorec/audiorecscheduledialog.ui
-    audiorec/audiorecschedulemodel.h
-    audiorec/audiorecschedulemodel.cpp
+    # Audiorec
     audiorec/audiorecscheduleitem.h
     audiorec/audiorecscheduleitem.cpp
-    audiorec/audiorecitemdialog.h
-    audiorec/audiorecitemdialog.cpp
-    audiorec/audiorecitemdialog.ui
-    audiorec/audiorecmanager.h
-    audiorec/audiorecmanager.cpp
-
-    # TII decoder
-    tii/txmapdialog.h tii/txmapdialog.cpp
-    tii/tiidialog.h tii/tiidialog.cpp
-    tii/txtablemodel.cpp tii/txtablemodel.h
-    tii/txtableproxymodel.h tii/txtableproxymodel.cpp
-    tii/txtablemodelitem.cpp tii/txtablemodelitem.h
-    tii/txdataitem.h tii/txdataitem.cpp
-    tii/txdataloader.h tii/txdataloader.cpp
-    # Scanner tool
-    tii/scannerdialog.h tii/scannerdialog.cpp
-    tii/channelselectiondialog.h tii/channelselectiondialog.cpp
-    tii/ensembleconfigdialog.h tii/ensembleconfigdialog.cpp tii/ensembleconfigdialog.ui
-    tii/txlocallist.h tii/txlocallist.cpp
+    audiorec/audiorecorder.h
+    audiorec/audiorecorder.cpp
 )
+
+target_link_libraries(AbracaDABra PRIVATE Qt${QT_VERSION_MAJOR}::Core)
+target_link_libraries(AbracaDABra PRIVATE Qt${QT_VERSION_MAJOR}::Core)
+target_link_libraries(AbracaDABra PRIVATE Qt${QT_VERSION_MAJOR}::Core)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/audiorec)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/epg)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/data)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/charts)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/input)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/tii)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/scanner)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets)
 
 # QML
-set_source_files_properties(qml/EPGColors.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
-set_source_files_properties(qml/epg.qml PROPERTIES QT_RESOURCE_ALIAS epg.qml)
-set_source_files_properties(qml/EPGItem.qml PROPERTIES QT_RESOURCE_ALIAS EPGItem.qml)
-set_source_files_properties(qml/EPGSwitch.qml PROPERTIES QT_RESOURCE_ALIAS EPGSwitch.qml)
-set_source_files_properties(qml/EPGTabBar.qml PROPERTIES QT_RESOURCE_ALIAS EPGTabBar.qml)
-set_source_files_properties(qml/EPGTabButton.qml PROPERTIES QT_RESOURCE_ALIAS EPGTabButton.qml)
-set_source_files_properties(qml/EPGButton.qml PROPERTIES QT_RESOURCE_ALIAS EPGButton.qml)
-set_source_files_properties(qml/EPGColors.qml PROPERTIES QT_RESOURCE_ALIAS EPGColors.qml)
-set_source_files_properties(qml/EPGHorizontalShadow.qml PROPERTIES QT_RESOURCE_ALIAS EPGHorizontalShadow.qml)
-set_source_files_properties(qml/EPGScrollableText.qml PROPERTIES QT_RESOURCE_ALIAS EPGScrollableText.qml)
-
-if(HAVE_QTLOCATION)
-    set(MAP_QML_FILE qml/map.qml)
-else()
-    set(MAP_QML_FILE qml/map_blank.qml)
+if(QT_VERSION_MINOR GREATER_EQUAL 8)
+    qt_policy(SET QTP0004 NEW)
 endif()
-set_source_files_properties(${MAP_QML_FILE} PROPERTIES QT_RESOURCE_ALIAS map.qml)
-set_source_files_properties(qml/TransmitterMarker.qml PROPERTIES QT_RESOURCE_ALIAS TransmitterMarker.qml)
-set_source_files_properties(qml/TIITableView.qml PROPERTIES QT_RESOURCE_ALIAS TIITableView.qml)
 
-
-qt6_add_qml_module(${TARGET}
-    URI app.qmlcomponents
-    QML_FILES
-        qml/epg.qml
-        qml/EPGItem.qml
-        qml/EPGSwitch.qml
-        qml/EPGTabBar.qml
-        qml/EPGTabButton.qml
-        qml/EPGButton.qml
-        qml/EPGColors.qml
-        qml/EPGHorizontalShadow.qml
-        qml/EPGScrollableText.qml
-
-        ${MAP_QML_FILE}
-        qml/TransmitterMarker.qml
-        qml/TIITableView.qml
-    RESOURCES
-        resources/map_marker_3.png
-        resources/map_marker_4.png
-        resources/map_marker_5.png
-        resources/Europe_blank_laea_location_map.svg
-        resources/sort-up.svg
-        resources/sort-down.svg
-    VERSION 1.0
-    RESOURCE_PREFIX "/"
+set(QML_SINGLETONS
+    qml/UI.qml
 )
+set_source_files_properties(${QML_SINGLETONS}
+    PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+
+qt_add_qml_module(${TARGET}
+    URI abracaComponents
+    VERSION 1.0
+    RESOURCES
+        qml/images/map_marker_3.png
+        qml/images/map_marker_4.png
+        qml/images/map_marker_5.png
+        qml/images/sort-up.svg
+        qml/images/sort-down.svg
+        qml/images/reload.svg
+        qml/images/close.svg
+        qml/images/icon-cat-sls.svg
+        qml/images/icon-others.svg
+        qml/images/icon-settings.svg
+        qml/images/chevron-left.svg
+        qml/images/chevron-right.svg
+        qml/images/chevron-down.svg
+        qml/images/icon-multi-ens.svg
+        qml/images/star.svg
+        qml/images/starEmpty.svg
+        qml/images/announcement-active.svg
+        qml/images/announcement-suspended.svg
+        qml/images/volume-0.svg
+        qml/images/volume-1.svg
+        qml/images/volume-2.svg
+        qml/images/volume-3.svg        
+        qml/images/diagonal-line-pattern.svg
+        qml/images/alert.svg
+        qml/images/icon-recording.svg
+        qml/images/trayIcon.svg
+        qml/images/icon-service.svg
+        qml/images/icon-info.svg
+        qml/images/icon-signal-overview.svg
+        qml/images/icon-scanner.svg
+        qml/images/icon-tii.svg
+        qml/images/icon-epg.svg
+        qml/images/check.svg
+        qml/images/icon-off.svg
+        qml/images/icon-about.svg
+        qml/images/icon-log.svg
+        qml/images/icon-bandscan.svg
+        qml/images/icon-list.svg
+        qml/images/icon-list-clear.svg
+        qml/images/icon-list-export.svg
+        qml/images/icon-rec-schedule.svg
+        qml/images/icon-rec-start.svg
+        qml/images/icon-dock.svg
+        qml/images/icon-undock.svg
+        qml/images/icon-audio.svg
+        qml/images/icon-config.svg
+        qml/images/placeholder-undocked.svg
+
+        resources/appIcon.png
+    QML_FILES
+        ${QML_SINGLETONS}
+        qml/Main.qml
+        qml/UndockablePage.qml
+        qml/DetachedWindow.qml
+        qml/DynamicPage.qml
+
+        qml/ServiceList.qml
+        qml/SignalState.qml
+        qml/Navigation.qml        
+        qml/ServiceView.qml        
+        qml/ContentView.qml
+        qml/EnsembleInfoView.qml
+        qml/EnsembleConfigDialog.qml
+        qml/EnsembleConfigDrawer.qml
+        qml/SubchannelsView.qml
+        qml/ServicePanel.qml
+        qml/StatusBar.qml
+        qml/SPIProgress.qml
+        qml/SLSView.qml
+        qml/CatSLS.qml
+        qml/CatSLSView.qml
+        qml/AppLog.qml
+        qml/AppLogView.qml
+        qml/About.qml
+        qml/AboutView.qml
+        qml/BandScan.qml
+        qml/MessageBox.qml
+        qml/DabSignal.qml
+        qml/DabSignalView.qml
+        qml/UpdateDialog.qml        
+        qml/SystemTray.qml
+
+        qml/audiorec/AudioRecordingStatus.qml
+        qml/audiorec/AudioRecording.qml
+        qml/audiorec/AudioRecordingView.qml
+        qml/audiorec/AudioRecordingItemDialog.qml
+
+        qml/tii/TII.qml
+        qml/tii/TIIView.qml
+        qml/tii/TIIMap.qml
+        qml/tii/TIITableView.qml
+        qml/tii/TransmitterMarker.qml
+        qml/tii/Scanner.qml
+        qml/tii/ScannerView.qml
+        qml/tii/ScannerSetupDialog.qml
+        qml/tii/ScannerSetupDrawer.qml
+        qml/tii/ChannelSelectionDialog.qml
+
+        qml/epg/EPG.qml
+        qml/epg/EPGView.qml
+        qml/epg/EPGItem.qml
+
+        qml/controls/AbracaButton.qml
+        qml/controls/AbracaImgButton.qml
+        qml/controls/AbracaLabel.qml
+        qml/controls/AbracaComboBox.qml
+        qml/controls/AbracaCheckBox.qml
+        qml/controls/AbracaSwitch.qml
+        qml/controls/AbracaSlider.qml
+        qml/controls/AbracaProgressBar.qml
+        qml/controls/AbracaRadioButton.qml
+        qml/controls/AbracaGroupBox.qml
+        qml/controls/AbracaScrollIndicator.qml
+        qml/controls/AbracaPane.qml
+        qml/controls/AbracaTabBar.qml
+        qml/controls/AbracaTabButton.qml
+        qml/controls/AbracaItemDelegate.qml
+        qml/controls/AbracaColorizedImage.qml
+        qml/controls/AbracaDrawer.qml
+        qml/controls/AbracaTextField.qml
+        qml/controls/AbracaScrollBar.qml
+        qml/controls/AbracaMenu.qml
+        qml/controls/AbracaMenuItem.qml
+        qml/controls/AbracaTextArea.qml
+        qml/controls/AbracaToolTip.qml
+        qml/controls/AbracaSpinBox.qml
+        qml/controls/AbracaDoubleSpinBox.qml
+        qml/controls/AbracaScrollableText.qml
+        qml/controls/AbracaHorizontalShadow.qml
+        qml/controls/AbracaContextMenu.qml
+        qml/controls/AbracaBusyIndicator.qml
+        qml/controls/AbracaTableView.qml
+        qml/controls/AbracaDatePicker.qml
+        qml/controls/AbracaTimePicker.qml
+        qml/controls/AbracaRecordingButton.qml
+        qml/controls/AbracaLine.qml
+        qml/controls/AbracaMenuSeparator.qml
+        qml/controls/AbracaDialog.qml
+        qml/controls/AbracaSplitView.qml
+        qml/controls/AbracaScrollView.qml
+
+        qml/settings/Settings.qml
+        qml/settings/SettingsView.qml
+        qml/settings/DeviceSettings.qml
+        qml/settings/RtlSdrDevice.qml
+        qml/settings/RtlTcpDevice.qml
+        qml/settings/SoapySdrDevice.qml
+        qml/settings/AirspyDevice.qml
+        qml/settings/RartTcpDevice.qml
+        qml/settings/SdrPlayDevice.qml
+        qml/settings/RawFileDevice.qml
+        qml/settings/AudioSettings.qml
+        qml/settings/AnnouncementSettings.qml
+        qml/settings/UaSettings.qml
+        qml/settings/TiiSettings.qml
+        qml/settings/OtherSettings.qml
+
+        qml/charts/ChartView.qml
+
+    SOURCES
+        itemmodel.h itemmodel.cpp
+        charts/linechartitem.cpp
+        charts/linechartitem.h
+        charts/lineseries.h
+        charts/markerline.h
+
+        navigationmodel.h navigationmodel.cpp
+        navigationproxymodel.h navigationproxymodel.cpp
+
+        # TII decoder
+        tii/txmapbackend.h tii/txmapbackend.cpp
+        tii/tiibackend.cpp tii/tiibackend.h
+
+        # Scanner tool
+        tii/scannerbackend.cpp tii/scannerbackend.h
+        tii/txtablemodel.cpp tii/txtablemodel.h
+        tii/txtableproxymodel.h tii/txtableproxymodel.cpp
+
+        # application.h application.cpp
+        uicontrolprovider.h
+
+        dlplusmodel.h dlplusmodel.cpp
+        slsbackend.h slsbackend.cpp
+        catslsbackend.cpp catslsbackend.h
+        logbackend.cpp logbackend.h
+        aboutui.h aboutui.cpp
+        bandscanbackend.cpp bandscanbackend.h
+        settingsbackend.cpp settingsbackend.h        
+        soapysdrgainmodel.h soapysdrgainmodel.cpp
+
+        messageboxbackend.h messageboxbackend.cpp
+        contextmenumodel.h contextmenumodel.cpp
+
+        signalbackend.h signalbackend.cpp
+
+        # EPG related classes
+        epg/epgbackend.h epg/epgbackend.cpp
+        epg/epgmodel.h
+        epg/epgmodel.cpp
+        epg/epgproxymodel.h
+        epg/epgproxymodel.cpp
+
+        # audio recording features
+        audiorec/audiorecschedulemodel.h
+        audiorec/audiorecschedulemodel.cpp
+        audiorec/audiorecmanager.h
+        audiorec/audiorecmanager.cpp        
+
+        slproxymodel.h
+        slproxymodel.cpp
+        slmodel.h
+        slmodel.cpp
+        slmodelitem.h
+        slmodelitem.cpp
+        sltreemodel.h
+        sltreemodel.cpp
+
+        logmodel.h
+        logmodel.cpp
+
+        ensembleinfobackend.h ensembleinfobackend.cpp
+        ensemblesubchmodel.h ensemblesubchmodel.cpp
+        androidfilehelper.h androidfilehelper.cpp
+)
+
+# add_subdirectory(qml)
 
 #add_definitions(-fsanitize=undefined)
 #target_link_options(${TARGET} PUBLIC -fsanitize=undefined)
@@ -342,14 +467,6 @@ if (HAVE_SOAPYSDR)
     target_link_libraries(${TARGET} PRIVATE "${SOAPYSDR_LINK_LIBRARIES}" )
 endif(HAVE_SOAPYSDR)
 
-# QCUSTOMPLOT
-if (HAVE_QCUSTOMPLOT)
-    # QCUSTOMPLOT
-    add_compile_definitions(QCUSTOMPLOT_USE_LIBRARY)
-    include_directories ( ${QCUSTOMPLOT_INCLUDE_DIRS} )
-    target_link_libraries(${TARGET} PRIVATE "${QCUSTOMPLOT_LINK_LIBRARIES}" )
-endif(HAVE_QCUSTOMPLOT)
-
 # FMLIST
 if (HAVE_FMLIST_INTERFACE)
     include_directories ( ${FMLIST_INCLUDE_DIRS} )
@@ -364,7 +481,6 @@ endif(WIN32)
 
 include_directories ( ${CMAKE_SOURCE_DIR} )
 target_link_libraries(${TARGET} PRIVATE
-    Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Multimedia
     Qt${QT_VERSION_MAJOR}::Svg
     Qt${QT_VERSION_MAJOR}::Xml
@@ -372,12 +488,13 @@ target_link_libraries(${TARGET} PRIVATE
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::QuickControls2
     Qt${QT_VERSION_MAJOR}::Positioning
+    Qt${QT_VERSION_MAJOR}::Location
 )
-if(HAVE_QTLOCATION)
+if(HAVE_QTWIDGETS)
     target_link_libraries(${TARGET} PRIVATE
-        Qt${QT_VERSION_MAJOR}::Location
+        Qt${QT_VERSION_MAJOR}::Widgets
     )
-endif(HAVE_QTLOCATION)
+endif(HAVE_QTWIDGETS)
 
 set(TSFILES
     l10n/${TARGET}_cs.ts
@@ -403,3 +520,56 @@ if(APPLE AND APPLE_APP_BUNDLE)
         add_custom_command(TARGET ${TARGET} POST_BUILD COMMAND codesign -s - ${TARGET}.app)
     endif()
 endif(APPLE AND APPLE_APP_BUNDLE)
+
+# Android-specific settings
+if(ANDROID)
+    # Bundle external shared libraries into the APK
+    set(ANDROID_EXTRA_LIBS "")
+
+    # Add RTL-SDR library
+    if(EXISTS "${EXTERNAL_LIBS_DIR}/lib/librtlsdr.so")
+        list(APPEND ANDROID_EXTRA_LIBS "${EXTERNAL_LIBS_DIR}/lib/librtlsdr.so")
+    endif()
+    
+    # Add libusb library (required by RTL-SDR)
+    if(EXISTS "${EXTERNAL_LIBS_DIR}/lib/libusb-1.0.so")
+        list(APPEND ANDROID_EXTRA_LIBS "${EXTERNAL_LIBS_DIR}/lib/libusb-1.0.so")
+    endif()
+    
+    # Add other required libraries if they exist
+    if(HAVE_FAAD AND EXISTS "${EXTERNAL_LIBS_DIR}/lib/libfaad.so")
+        list(APPEND ANDROID_EXTRA_LIBS "${EXTERNAL_LIBS_DIR}/lib/libfaad.so")
+    endif()
+    
+    if(HAVE_FDKAAC AND EXISTS "${EXTERNAL_LIBS_DIR}/lib/libfdk-aac.so")
+        list(APPEND ANDROID_EXTRA_LIBS "${EXTERNAL_LIBS_DIR}/lib/libfdk-aac.so")
+    endif()
+    
+    if(EXISTS "${EXTERNAL_LIBS_DIR}/lib/libmpg123.so")
+        list(APPEND ANDROID_EXTRA_LIBS "${EXTERNAL_LIBS_DIR}/lib/libmpg123.so")
+    endif()
+    
+    # Add Airspy library if enabled
+    if(HAVE_AIRSPY AND EXISTS "${EXTERNAL_LIBS_DIR}/lib/libairspy.so")
+        list(APPEND ANDROID_EXTRA_LIBS "${EXTERNAL_LIBS_DIR}/lib/libairspy.so")
+    endif()
+    
+    if(ANDROID_EXTRA_LIBS)
+        message(STATUS "Android extra libs: ${ANDROID_EXTRA_LIBS}")
+        set_property(TARGET ${TARGET} PROPERTY QT_ANDROID_EXTRA_LIBS "${ANDROID_EXTRA_LIBS}")
+    endif()
+    
+    # Set Android package properties
+    set_target_properties(${TARGET} PROPERTIES
+        QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android"
+    )
+    
+    # Add OpenSSL libraries if ANDROID_OPENSSL_DIR is set
+    # Must be called BEFORE qt_finalize_executable
+    if(ANDROID_OPENSSL_DIR)
+        add_android_openssl_libraries(${TARGET})
+    endif()
+    
+    # For Android, qt_finalize_executable must be called from the same directory as the target
+    qt_finalize_executable(${TARGET})
+endif(ANDROID)

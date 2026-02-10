@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,6 +36,14 @@
 #include "config.h"
 #include "inputdevice.h"
 #include "rawfileinput.h"
+
+#define ENSEMBLE_DIR_NAME "ensemble"
+#define SCANNER_DIR_NAME "scanner"
+#define TII_DIR_NAME "tii"
+#define SLIDES_DIR_NAME "slides"
+#define UA_DIR_NAME "userApps"
+#define AUDIO_DIR_NAME "audio"
+#define RAW_DIR_NAME "raw"
 
 #if HAVE_AIRSPY
 #include "airspyinput.h"
@@ -156,7 +164,7 @@ public:
     QLocale::Language lang;
     AudioFramework audioFramework;
     AudioDecoder audioDecoder;
-    bool expertModeEna;
+    bool keepServiceListOnScan;
     bool dlPlusEna;
     int noiseConcealmentLevel;
     bool xmlHeaderEna;
@@ -171,15 +179,23 @@ public:
     bool updateCheckEna;
     QDateTime updateCheckTime;
     bool uploadEnsembleInfo;
-    QString serviceListExportPath;
     bool showSystemTime;
     bool showEnsFlag;
     bool showServiceFlag;
+    QString dataStoragePath;
+
+    struct
+    {
+        int x;
+        int y;
+        int width;
+        int height;
+        bool fullscreen;
+    } appWindow;
 
     // audio recording settings
     struct AudioRec
     {
-        QString folder;
         bool captureOutput;
         bool autoStopEna;
         bool dl;
@@ -189,7 +205,7 @@ public:
     // this is settings for UA data dumping (storage)
     struct UADumpSettings
     {
-        QString folder;
+        QString dataStoragePath;  // duplicates Settings::dataStoragePath
         bool overwriteEna;
         bool slsEna;
         bool spiEna;
@@ -203,26 +219,22 @@ public:
         QGeoCoordinate coordinates;
         QString serialPort;
         int serialPortBaudrate;
-        QString logFolder;
         bool showSpectumPlot;
-        QByteArray geometry;
-        QByteArray splitterState;
         bool restore;
+        QVariant splitterState;
         int mode;
         bool showInactiveTx;
         bool inactiveTxTimeoutEna;
         int inactiveTxTimeout;
         bool timestampInUTC;
         bool saveCoordinates;
-
         bool centerMapToCurrentPosition;
         QGeoCoordinate mapCenter;
         float mapZoom;
     } tii;
     struct SignalDialog
     {
-        QByteArray geometry;
-        QByteArray splitterState;
+        QVariant splitterState;
         bool restore;
         bool showSNR;
         int spectrumMode;
@@ -233,7 +245,6 @@ public:
         bool filterEmptyEpg;
         bool filterEnsemble;
         QPersistentModelIndex selectedItem;
-        QByteArray geometry;
         bool restore;
     } epg;
     struct Proxy
@@ -246,32 +257,25 @@ public:
     } proxy;
     struct EnsembleInfo
     {
-        QByteArray geometry;
         bool restore;
-        QString exportPath;
         bool recordingTimeoutEna;
         int recordingTimeoutSec;
     } ensembleInfo;
     struct SetupDialog
     {
-        QByteArray geometry;
         bool restore;
     } setupDialog;
     struct Log
     {
-        QByteArray geometry;
         bool restore;
     } log;
     struct CatSLS
     {
-        QByteArray geometry;
         bool restore;
     } catSls;
     struct ScannerSettings
     {
-        QString exportPath;
-        QByteArray geometry;
-        QByteArray splitterState;
+        QVariant splitterState;
         bool restore;
         QMap<uint32_t, bool> channelSelection;
         int mode;
@@ -281,7 +285,6 @@ public:
         bool clearOnStart;
         bool hideLocalTx;
         bool autoSave;
-
         bool centerMapToCurrentPosition;
         QGeoCoordinate mapCenter;
         float mapZoom;

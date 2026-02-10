@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,17 +27,19 @@
 #include "audiorecorder.h"
 
 #include <QDebug>
+#include <QDir>
 #include <QLoggingCategory>
 #include <QRegularExpression>
 #include <QStandardPaths>
+
+#include "androidfilehelper.h"
+#include "settings.h"
 
 Q_LOGGING_CATEGORY(audioRecorder, "AudioRecorder", QtInfoMsg)
 
 AudioRecorder::AudioRecorder(QObject *parent)
     : QObject{parent}, m_sid(0), m_doOutputRecording(false), m_file(nullptr), m_recordingState(RecordingState::Stopped)
-{
-    m_recordingPath = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
-}
+{}
 
 AudioRecorder::~AudioRecorder()
 {
@@ -143,9 +145,9 @@ void AudioRecorder::writeMP2(const std::vector<uint8_t> &data)
 
 void AudioRecorder::writeAAC(const std::vector<uint8_t> &data, const dabsdrAudioFrameHeader_t &aacHeader)
 {
-    uint8_t adts_sfreqidx;
-    uint8_t audioFs;
-    int timeMs;
+    uint8_t adts_sfreqidx = 0;
+    uint8_t audioFs = 0;
+    int timeMs = 0;
     if ((aacHeader.bits.dac_rate == 0) && (aacHeader.bits.sbr_flag == 1))
     {
         adts_sfreqidx = 0x8;  // 16 kHz
@@ -291,15 +293,34 @@ void AudioRecorder::start()
     static const QRegularExpression regexp("[" + QRegularExpression::escape("/:*?\"<>|") + "]");
     if (nullptr == m_file)
     {
+        const QString recPath = AndroidFileHelper::buildSubdirPath(m_recordingPath, AUDIO_DIR_NAME);
+
+        // Ensure directory exists and is writable
+        if (!AndroidFileHelper::mkpath(m_recordingPath, AUDIO_DIR_NAME))
+        {
+            qCCritical(audioRecorder) << "Failed to create audio recording directory:" << AndroidFileHelper::lastError();
+            return;
+        }
+
+        if (!AndroidFileHelper::hasWritePermission(recPath))
+        {
+            qCCritical(audioRecorder) << "No permission to write to:" << recPath;
+            qCCritical(audioRecorder) << "Please select a new data storage folder in settings.";
+            return;
+        }
+
         QString servicename = m_serviceName;
         servicename.replace(regexp, "_");
-        QString fileName  // = m_recordingPath + "/" + QDateTime::currentDateTime().toString("yyyy-MM-dd-hhmmss");
-            = m_recordingPath + QString("/%1_%2_%3")
-                                    .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd-hhmmss"),
-                                         QString("%1").arg(m_sid.value(), 6, 16, QChar('0')).toUpper(), servicename);
+
+        QString fileName = QString("%1_%2_%3")
+                               .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd-hhmmss"),
+                                    QString("%1").arg(m_sid.value(), 6, 16, QChar('0')).toUpper(), servicename);
+
+        QString mimeType;
         if (m_doOutputRecording)
         {
             fileName += ".wav";
+            mimeType = "audio/wav";
             m_recordingState = RecordingState::RecordingWav;
         }
         else
@@ -307,20 +328,21 @@ void AudioRecorder::start()
             if (m_isAAC)
             {
                 fileName += ".aac";
+                mimeType = "audio/aac";
                 m_recordingState = RecordingState::RecordingAAC;
             }
             else
             {
                 fileName += ".mp2";
+                mimeType = "audio/mpeg";
                 m_recordingState = RecordingState::RecordingMP2;
             }
         }
 
-        qCInfo(audioRecorder) << "Recording file:" << fileName;
-
-        m_file = new QFile(fileName);
-        if (m_file->open(QIODevice::WriteOnly))
+        m_file = AndroidFileHelper::openFileForWriting(recPath, fileName, mimeType);
+        if (m_file)
         {
+            qCInfo(audioRecorder) << "Recording file:" << fileName;
             m_bytesWritten = 0;
             m_timeWrittenMs = 0;
             m_timeSec = 0;

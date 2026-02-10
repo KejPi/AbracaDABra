@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,14 +28,10 @@
 #define EPGMODEL_H
 
 #include <QAbstractListModel>
-
-#include "servicelistid.h"
-#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
 #include <QtQmlIntegration>
-#else
-#include <qqml.h>
-#endif
+
 #include "epgmodelitem.h"
+#include "servicelistid.h"
 
 enum EPGModelRoles
 {
@@ -65,9 +61,9 @@ public:
     explicit EPGModel(QObject *parent = nullptr);
     ~EPGModel();
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const { return m_itemList.count(); }
-    QHash<int, QByteArray> roleNames() const;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override { return m_itemList.count(); }
+    QHash<int, QByteArray> roleNames() const override;
     bool addItem(EPGModelItem *item);
     ServiceListId serviceId() const;
     void setServiceId(const ServiceListId &newServiceId);

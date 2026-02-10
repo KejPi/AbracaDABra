@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,34 +27,24 @@
 #include "inputdevicerecorder.h"
 
 #include <QDir>
-#include <QFileDialog>
 #include <QLoggingCategory>
 #include <QTimer>
 
+#include "androidfilehelper.h"
 #include "config.h"
 #include "dabtables.h"
+#include "settings.h"
 
 Q_LOGGING_CATEGORY(inputDeviceRecorder, "InputDeviceRecorder", QtInfoMsg)
 
-InputDeviceRecorder::InputDeviceRecorder()
+InputDeviceRecorder::InputDeviceRecorder(Settings *settings) : m_settings(settings)
 {
     m_file = nullptr;
-    m_recordingPath = QDir::homePath();
 }
 
 InputDeviceRecorder::~InputDeviceRecorder()
 {
     stop();
-}
-
-const QString InputDeviceRecorder::recordingPath() const
-{
-    return m_recordingPath;
-}
-
-void InputDeviceRecorder::setRecordingPath(const QString &recordingPath)
-{
-    m_recordingPath = recordingPath;
 }
 
 void InputDeviceRecorder::setDeviceDescription(const InputDevice::Description &desc)
@@ -72,58 +62,60 @@ void InputDeviceRecorder::setDeviceDescription(const InputDevice::Description &d
     qCDebug(inputDeviceRecorder) << "channelContainer:" << m_deviceDescription.sample.channelContainer;
 }
 
-void InputDeviceRecorder::start(QWidget *callerWidget, int timeoutSec)
+void InputDeviceRecorder::start(int timeoutSec)
 {
     std::lock_guard<std::mutex> guard(m_fileMutex);
     if (nullptr == m_file)
     {
-        // dialog needs parrent => prvided from caller widget
+        const QString rawPath = AndroidFileHelper::buildSubdirPath(m_settings->dataStoragePath, RAW_DIR_NAME);
+
+        // Ensure directory exists and is writable
+        if (!AndroidFileHelper::mkpath(m_settings->dataStoragePath, RAW_DIR_NAME))
+        {
+            qCCritical(inputDeviceRecorder) << "Failed to create raw recording directory:" << AndroidFileHelper::lastError();
+            emit recording(false);
+            return;
+        }
+
+        if (!AndroidFileHelper::hasWritePermission(rawPath))
+        {
+            qCCritical(inputDeviceRecorder) << "No permission to write to:" << rawPath;
+            qCCritical(inputDeviceRecorder) << "Please select a new data storage folder in settings.";
+            emit recording(false);
+            return;
+        }
+
         QString fileName;
         if (m_xmlHeaderEna)
         {
-            QString f =
-                QString("%1/%2_%3.uff")
-                    .arg(m_recordingPath, QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"), DabTables::channelList.value(m_frequency));
-
-            fileName = QFileDialog::getSaveFileName(callerWidget, tr("Record IQ stream (Raw File XML Header)"), QDir::toNativeSeparators(f),
-                                                    tr("Binary XML files") + " (*.uff)");
-        }
-        else
-        {
-            QString f =
-                QString("%1/%2_%3.raw")
-                    .arg(m_recordingPath, QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"), DabTables::channelList.value(m_frequency));
-
             fileName =
-                QFileDialog::getSaveFileName(callerWidget, tr("Record IQ stream"), QDir::toNativeSeparators(f), tr("Binary files") + " (*.raw)");
-        }
-        if (!fileName.isEmpty())
-        {
-            m_bytesRecorded = 0;
-            m_bytesToRecord = timeoutSec * m_bytesPerSec;
-            m_recordingPath = QFileInfo(fileName).path();  // store path for next time
-
-            m_file = fopen(QDir::toNativeSeparators(fileName).toUtf8().data(), "wb");
-            if (nullptr != m_file)
-            {
-                if (m_xmlHeaderEna)
-                {
-                    startXmlHeader();
-                    char *padding = new char[INPUTDEVICERECORDER_XML_PADDING];
-                    memset(padding, 0, INPUTDEVICERECORDER_XML_PADDING);
-                    fwrite(padding, 1, INPUTDEVICERECORDER_XML_PADDING, m_file);
-                    delete[] padding;
-                }
-                qCInfo(inputDeviceRecorder) << "IQ recording starts, timeout:" << timeoutSec << "sec, file:" << fileName;
-                emit recording(true);
-            }
-            else
-            {  // error
-                emit recording(false);
-            }
+                QString("%1_%2.uff").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"), DabTables::channelList.value(m_frequency));
         }
         else
         {
+            fileName =
+                QString("%1_%2.raw").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"), DabTables::channelList.value(m_frequency));
+        }
+
+        m_bytesRecorded = 0;
+        m_bytesToRecord = timeoutSec * m_bytesPerSec;
+
+        m_file = AndroidFileHelper::openFileForWritingRaw(rawPath, fileName, "application/octet-stream");
+        if (nullptr != m_file)
+        {
+            if (m_xmlHeaderEna)
+            {
+                startXmlHeader();
+                char *padding = new char[INPUTDEVICERECORDER_XML_PADDING];
+                memset(padding, 0, INPUTDEVICERECORDER_XML_PADDING);
+                fwrite(padding, 1, INPUTDEVICERECORDER_XML_PADDING, m_file);
+                delete[] padding;
+            }
+            qCInfo(inputDeviceRecorder) << "IQ recording starts, timeout:" << timeoutSec << "sec, file:" << QString("%1/%2").arg(rawPath, fileName);
+            emit recording(true);
+        }
+        else
+        {  // error
             emit recording(false);
         }
     }

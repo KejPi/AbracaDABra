@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,9 +33,8 @@
 Q_LOGGING_CATEGORY(audioRecMgr, "AudioRecSchedule", QtInfoMsg)
 
 AudioRecManager::AudioRecManager(AudioRecScheduleModel *model, SLModel *slModel, AudioRecorder *recorder, Settings *settings, QObject *parent)
-    : QObject{parent}, m_model(model), m_slModel(slModel), m_recorder(recorder), m_settings(settings)
+    : UIControlProvider{parent}, m_scheduleModel(model), m_slModel(slModel), m_recorder(recorder), m_settings(settings)
 {
-    m_isAudioRecordingActive = false;
     m_haveTimeConnection = false;
     m_haveAudio = false;
     m_scheduleTimeSecSinceEpoch = 0;
@@ -44,16 +43,133 @@ AudioRecManager::AudioRecManager(AudioRecScheduleModel *model, SLModel *slModel,
     m_dlLogFile = nullptr;
 
     // pass service list mode to schedule model
-    m_model->setSlModel(m_slModel);
-
+    m_scheduleModel->setSlModel(m_slModel);
+    m_serviceSelectionModel = new QItemSelectionModel(m_slModel, this);
     connect(this, &AudioRecManager::startRecording, m_recorder, &AudioRecorder::start, Qt::QueuedConnection);
     connect(this, &AudioRecManager::stopRecording, m_recorder, &AudioRecorder::stop, Qt::QueuedConnection);
     connect(m_recorder, &AudioRecorder::recordingStarted, this, &AudioRecManager::onAudioRecordingStarted, Qt::QueuedConnection);
     connect(m_recorder, &AudioRecorder::recordingStopped, this, &AudioRecManager::onAudioRecordingStopped, Qt::QueuedConnection);
     connect(m_recorder, &AudioRecorder::recordingProgress, this, &AudioRecManager::onAudioRecordingProgress, Qt::QueuedConnection);
 
-    connect(m_model, &QAbstractItemModel::modelReset, this, &AudioRecManager::onModelReset);
-    connect(m_model, &QAbstractItemModel::rowsRemoved, this, &AudioRecManager::onModelRowsRemoved);
+    connect(m_scheduleModel, &QAbstractItemModel::modelReset, this, &AudioRecManager::onModelReset);
+    connect(m_scheduleModel, &QAbstractItemModel::rowsRemoved, this, &AudioRecManager::onModelRowsRemoved);
+    connect(m_scheduleModel, &AudioRecScheduleModel::currentIndexChanged, this, &AudioRecManager::onCurrentIndexChanged);
+
+    connect(this, &AudioRecManager::startDateChanged, this, &AudioRecManager::updateStopTime);
+    connect(this, &AudioRecManager::startTimeChanged, this, &AudioRecManager::updateStopTime);
+    connect(this, &AudioRecManager::durationChanged, this, &AudioRecManager::updateStopTime);
+}
+
+void AudioRecManager::requestItemDialog(bool isEdit)
+{
+    if (isEdit == false)
+    {
+        m_scheduleModel->setCurrentIndex(-1);
+    }
+    else if (m_scheduleModel->currentIndex() < 0)
+    {
+        return;
+    }
+    emit showRecordingItemDialog();
+}
+
+void AudioRecManager::addOrEditItem()
+{
+    if (m_scheduleModel->currentIndex() >= 0)
+    {
+        editItem();
+    }
+    else
+    {
+        addItem();
+    }
+}
+
+void AudioRecManager::addItem()
+{
+    AudioRecScheduleItem item;
+    QDateTime start;
+    start.setDate(startDate());
+    start.setTime(startTime());
+    item.setStartTime(start);
+    item.setDurationSec(QTime(0, 0).secsTo(duration()));
+    auto selection = m_serviceSelectionModel->selection();
+    if (!selection.isEmpty())
+    {
+        QModelIndex index = selection.indexes().first();
+        item.setServiceId(m_slModel->id(index));
+        if (label().isEmpty())
+        {  // using service name as fallback
+            item.setName(m_slModel->data(index, Qt::DisplayRole).toString());
+        }
+        else
+        {
+            item.setName(label());
+        }
+
+        m_scheduleModel->insertItem(item);
+
+        // clear data
+        onCurrentIndexChanged();
+    }
+}
+
+void AudioRecManager::editItem()
+{
+    AudioRecScheduleItem item;
+    QDateTime start;
+    start.setDate(startDate());
+    start.setTime(startTime());
+    item.setStartTime(start);
+    item.setDurationSec(QTime(0, 0).secsTo(duration()));
+    auto selection = m_serviceSelectionModel->selection();
+    if (!selection.isEmpty())
+    {
+        QModelIndex index = selection.indexes().first();
+        item.setServiceId(m_slModel->id(index));
+        if (label().isEmpty())
+        {  // using service name as fallback
+            item.setName(m_slModel->data(index, Qt::DisplayRole).toString());
+        }
+        else
+        {
+            item.setName(label());
+        }
+        m_scheduleModel->replaceItemAtIndex(m_scheduleModel->index(m_scheduleModel->currentIndex(), 0), item);
+    }
+}
+
+void AudioRecManager::removeItem()
+{
+    m_scheduleModel->removeRows(m_scheduleModel->currentIndex(), 1, QModelIndex());
+}
+
+void AudioRecManager::deleteAll()
+{
+    m_scheduleModel->clear();
+}
+
+void AudioRecManager::addItem(const AudioRecScheduleItem &item)
+{
+    m_scheduleModel->setCurrentIndex(-1);
+
+    // set UI
+    label(item.name());
+    startDate(item.startTime().date());
+    startTime(item.startTime().time());
+    duration(QTime(0, 0).addSecs(item.durationSec()));
+    stopTime(item.startTime().addSecs(item.durationSec()).toString("dd.MM.yyyy, hh:mm"));
+
+    for (int r = 0; r < m_slModel->rowCount(); ++r)
+    {
+        QModelIndex index = m_slModel->index(r, 0);
+        if (m_slModel->id(index) == item.serviceId())
+        {  // found
+            m_serviceSelectionModel->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current);
+            break;
+        }
+    }
+    emit showRecordingItemDialog();
 }
 
 void AudioRecManager::timerEvent(QTimerEvent *event)
@@ -74,16 +190,16 @@ void AudioRecManager::timerEvent(QTimerEvent *event)
                     m_timer.stop();
                     m_scheduledRecordingState = ScheduledRecordingState::StateIdle;
                     m_scheduleTimeSecSinceEpoch = 0;
-                    if (!m_model->isEmpty())
+                    if (!m_scheduleModel->isEmpty())
                     {
-                        m_model->removeRows(0, 1);
+                        m_scheduleModel->removeRows(0, 1);
                     }
                 }
                 else
                 {
                     m_timer.start(1000, Qt::PreciseTimer, this);
 
-                    int numSec = m_scheduleTimeSecSinceEpoch - QDateTime::currentDateTime().toSecsSinceEpoch();
+                    int numSec = m_scheduleTimeSecSinceEpoch - QDateTime::currentSecsSinceEpoch();
                     qCInfo(audioRecMgr) << "Recording countdown" << numSec << "sec:" << m_currentItem.name();
                     emit audioRecordingCountdown(numSec - SERVICESELECTION_SEC);
                     m_scheduledRecordingState = ScheduledRecordingState::StateCountdown;
@@ -92,7 +208,7 @@ void AudioRecManager::timerEvent(QTimerEvent *event)
             }
             case StateCountdown:
             {
-                int numSec = m_scheduleTimeSecSinceEpoch - QDateTime::currentDateTime().toSecsSinceEpoch();
+                int numSec = m_scheduleTimeSecSinceEpoch - QDateTime::currentSecsSinceEpoch();
                 if (numSec <= SERVICESELECTION_SEC)
                 {
                     emit stopRecording();
@@ -110,9 +226,9 @@ void AudioRecManager::timerEvent(QTimerEvent *event)
                     m_timer.stop();
                     m_scheduledRecordingState = ScheduledRecordingState::StateIdle;
                     m_scheduleTimeSecSinceEpoch = 0;
-                    if (!m_model->isEmpty())
+                    if (!m_scheduleModel->isEmpty())
                     {
-                        m_model->removeRows(0, 1);
+                        m_scheduleModel->removeRows(0, 1);
                     }
                 }
                 else
@@ -125,31 +241,31 @@ void AudioRecManager::timerEvent(QTimerEvent *event)
             break;
             case StateReady:
             {
-                int numSec = m_scheduleTimeSecSinceEpoch - QDateTime::currentDateTime().toSecsSinceEpoch();
+                int numSec = m_scheduleTimeSecSinceEpoch - QDateTime::currentSecsSinceEpoch();
                 if ((numSec <= STARTADVANCE_SEC) && (m_serviceId == m_currentItem.serviceId()) && m_haveAudio)
                 {
                     qCInfo(audioRecMgr) << "Recording started:" << m_currentItem.name();
                     emit startRecording();
-                    m_model->setData(m_model->index(0, 0), true, Qt::EditRole);
+                    m_scheduleModel->setData(m_scheduleModel->index(0, 0), true, AudioRecScheduleModel::AudioRecScheduleRoles::StateRole);
                     m_scheduleTimeSecSinceEpoch = m_currentItem.endTime().toSecsSinceEpoch();
                     m_scheduledRecordingState = ScheduledRecordingState::StateRecording;
                 }
-                else if (QDateTime::currentDateTime().toSecsSinceEpoch() >= m_currentItem.endTime().toSecsSinceEpoch())
+                else if (QDateTime::currentSecsSinceEpoch() >= m_currentItem.endTime().toSecsSinceEpoch())
                 {  // stop
                     emit audioRecordingStopped();
                     m_timer.stop();
                     m_scheduledRecordingState = ScheduledRecordingState::StateIdle;
                     m_scheduleTimeSecSinceEpoch = 0;
-                    if (!m_model->isEmpty())
+                    if (!m_scheduleModel->isEmpty())
                     {
-                        m_model->removeRows(0, 1);
+                        m_scheduleModel->removeRows(0, 1);
                     }
                 }
             }
             break;
             case StateRecording:
             {
-                int numSec = m_scheduleTimeSecSinceEpoch - QDateTime::currentDateTime().toSecsSinceEpoch();
+                int numSec = m_scheduleTimeSecSinceEpoch - QDateTime::currentSecsSinceEpoch();
                 if (numSec <= 0)
                 {
                     qCInfo(audioRecMgr) << "Recording finished:" << m_currentItem.name();
@@ -157,9 +273,9 @@ void AudioRecManager::timerEvent(QTimerEvent *event)
                     m_timer.stop();
                     m_scheduledRecordingState = ScheduledRecordingState::StateIdle;
                     m_scheduleTimeSecSinceEpoch = 0;
-                    if (!m_model->isEmpty())
+                    if (!m_scheduleModel->isEmpty())
                     {
-                        m_model->removeRows(0, 1);
+                        m_scheduleModel->removeRows(0, 1);
                     }
                 }
             }
@@ -189,14 +305,62 @@ void AudioRecManager::stopCurrentSchedule()
     m_scheduledRecordingState = ScheduledRecordingState::StateIdle;
 }
 
+void AudioRecManager::onCurrentIndexChanged()
+{
+    if (m_scheduleModel->currentIndex() >= 0)
+    {
+        const auto &item = m_scheduleModel->itemAtIndex(m_scheduleModel->index(m_scheduleModel->currentIndex(), 0));
+        label(item.name());
+        startTime(item.startTime().time());
+        startDate(item.startTime().date());
+        duration(item.duration());
+        stopTime(item.startTime().addSecs(item.durationSec()).toString("dd.MM.yyyy, hh:mm"));
+
+        m_serviceSelectionModel->clearSelection();
+
+        for (int r = 0; r < m_slModel->rowCount(); ++r)
+        {
+            QModelIndex index = m_slModel->index(r, 0);
+            if (m_slModel->id(index) == item.serviceId())
+            {  // found
+                m_serviceSelectionModel->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current);
+                break;
+            }
+        }
+    }
+    else
+    {
+        label("");
+
+        QDateTime startDateTime = QDateTime::currentDateTime().addSecs(60);
+
+        // Ceil to minutes by setting seconds and milliseconds to 0, then adding 1 minute if needed
+        QTime time = startDateTime.time();
+        if (time.second() > 0 || time.msec() > 0)
+        {
+            startDateTime.setTime(QTime(time.hour(), time.minute(), 0, 0));
+            startDateTime = startDateTime.addSecs(60);
+        }
+        startTime(startDateTime.time());
+        startDate(startDateTime.date());
+        duration(QTime(0, 10));
+        stopTime(startDateTime.addSecs(10 * 60).toString("dd.MM.yyyy, hh:mm"));
+        m_serviceSelectionModel->clearSelection();
+    }
+}
+
+void AudioRecManager::updateStopTime()
+{
+    QDateTime start;
+    start.setDate(startDate());
+    start.setTime(startTime());
+    QDateTime end = start.addSecs(duration().hour() * 3600 + duration().minute() * 60 + duration().second());
+    stopTime(end.toString("dd.MM.yyyy, hh:mm"));
+}
+
 bool AudioRecManager::isAudioScheduleActive() const
 {
     return m_scheduledRecordingState >= ScheduledRecordingState::StateReady;
-}
-
-bool AudioRecManager::isAudioRecordingActive() const
-{
-    return m_isAudioRecordingActive;
 }
 
 QString AudioRecManager::audioRecordingFile() const
@@ -207,7 +371,7 @@ QString AudioRecManager::audioRecordingFile() const
 void AudioRecManager::onAudioRecordingStarted(const QString &filename)
 {
     m_audioRecordingFile = filename;
-    m_isAudioRecordingActive = true;
+    isAudioRecordingActive(true);
     if (m_settings->audioRec.dl && (nullptr == m_dlLogFile))
     {
         QFileInfo fi(filename);
@@ -250,7 +414,7 @@ void AudioRecManager::onAudioRecordingProgress(size_t bytes, size_t timeSec)
 
 void AudioRecManager::onAudioRecordingStopped()
 {
-    m_isAudioRecordingActive = false;
+    isAudioRecordingActive(false);
     if (m_dlLogFile)
     {
         m_dlLogFile->close();
@@ -266,6 +430,7 @@ void AudioRecManager::doAudioRecording(bool start)
     {
         m_recTimeSec = 0;
         emit startRecording();
+        isAudioRecordingActive(true);
     }
     else
     {
@@ -274,6 +439,7 @@ void AudioRecManager::doAudioRecording(bool start)
             requestCancelSchedule();
         }
         emit stopRecording();
+        isAudioRecordingActive(false);
     }
 }
 
@@ -284,7 +450,7 @@ void AudioRecManager::requestCancelSchedule()
         qCInfo(audioRecMgr) << "Recording cancelled:" << m_currentItem.name();
         m_scheduledRecordingState = ScheduledRecordingState::StateIdle;
         m_scheduleTimeSecSinceEpoch = 0;
-        m_model->removeRows(0, 1);
+        m_scheduleModel->removeRows(0, 1);
         emit audioRecordingStopped();
     }
 }
@@ -324,13 +490,13 @@ void AudioRecManager::onDLComplete(const QString &dl)
 
 void AudioRecManager::updateScheduledRecording()
 {
-    if (m_model->isEmpty())
+    if (m_scheduleModel->isEmpty())
     {
         stopCurrentSchedule();
     }
     else
     {  // there is something in schedule => get first item
-        const AudioRecScheduleItem item = m_model->itemAtIndex(m_model->index(0, 0, QModelIndex()));
+        const AudioRecScheduleItem item = m_scheduleModel->itemAtIndex(m_scheduleModel->index(0, 0, QModelIndex()));
         if (m_scheduledRecordingState == ScheduledRecordingState::StateRecording)
         {
             if ((item.serviceId() == m_currentItem.serviceId()) && (item.startTime() == m_currentItem.startTime()))
@@ -345,7 +511,7 @@ void AudioRecManager::updateScheduledRecording()
         stopCurrentSchedule();
         m_currentItem = item;
         m_scheduleTimeSecSinceEpoch = m_currentItem.startTime().toSecsSinceEpoch();
-        qint64 now = QDateTime::currentDateTime().toSecsSinceEpoch();
+        qint64 now = QDateTime::currentSecsSinceEpoch();
         qint64 secToSchedule = m_scheduleTimeSecSinceEpoch - now - COUNTDOWN_SEC;
         if (secToSchedule > 0)
         {  // run timer

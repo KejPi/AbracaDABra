@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 10x10 transparent SVG tile with white 2px diagonal lines (seamless when tiled) -->
+<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" preserveAspectRatio="xMidYMid meet">
+  <!-- transparent background -->
+  <rect width="10" height="10" fill="none" />
+
+  <!-- long diagonal stroke that crosses the tile; when the SVGs are placed side-by-side the strokes connect into a continuous 45° striped pattern -->
+  <g stroke="#ffffff" stroke-width="1" stroke-linecap="butt" fill="none">
+    <line x1="-5" y1="10" x2="10" y2="-5" />
+	<line x1="0" y1="15" x2="15" y2="0" />
+	
+    <line x1="0" y1="10" x2="10" y2="0" />
+	<line x1="0" y1="20" x2="20" y2="0" />
+	<line x1="-10" y1="10" x2="10" y2="-10" />
+  </g>
+</svg>

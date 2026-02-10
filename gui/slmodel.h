@@ -44,12 +44,16 @@ enum SLModelRole
     SmallLogoIdRole,  // this role is used to trick QML for loading the logo when available
     EpgModelRole,
     EnsembleListRole,
+    IsFavoriteRole,
+    SIdHexRole,
+    ChannelRole,
 };
 
 class SLModel : public QAbstractItemModel
 {
     Q_OBJECT
     QML_ELEMENT
+    QML_UNCREATABLE("SLModel cannot be instantiated")
 
 public:
     explicit SLModel(const ServiceList *sl, const MetadataManager *mm, QObject *parent = 0);
@@ -80,9 +84,6 @@ private:
     const ServiceList *m_slPtr;
     const MetadataManager *m_metadataMgrPtr;
     QList<SLModelItem *> m_serviceItems;
-
-    QIcon m_favIcon;
-    QIcon m_noIcon;
 };
 
 #endif  // SLMODEL_H

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -176,7 +176,7 @@ void RawFileInput::setFile(const QString &fileName, const RawFileInputFormat &sa
     m_deviceDescription.rawFile.frequency_kHz = 0;
     QString basename = QFileInfo(m_fileName).baseName();
     QStringList qsl = basename.split('_');
-    for (const QString &token : qsl)
+    for (const QString &token : std::as_const(qsl))
     {
         for (auto it = DabTables::channelList.cbegin(); it != DabTables::channelList.cend(); ++it)
         {

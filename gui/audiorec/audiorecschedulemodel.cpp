@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,17 +33,17 @@
 
 Q_DECLARE_LOGGING_CATEGORY(audioRecMgr)
 
-AudioRecScheduleModel::AudioRecScheduleModel(QObject *parent) : QAbstractTableModel{parent}, m_slModel(nullptr)
-{}
+AudioRecScheduleModel::AudioRecScheduleModel(QObject *parent) : QAbstractListModel{parent}, m_slModel(nullptr)
+{
+    connect(this, &QAbstractListModel::rowsInserted, this, &AudioRecScheduleModel::rowCountChanged);
+    connect(this, &QAbstractListModel::rowsRemoved, this, &AudioRecScheduleModel::rowCountChanged);
+    connect(this, &QAbstractListModel::modelReset, this, &AudioRecScheduleModel::rowCountChanged);
+    connect(this, &AudioRecScheduleModel::rowCountChanged, this, [this]() { setCurrentIndex(-1); });
+}
 
 int AudioRecScheduleModel::rowCount(const QModelIndex &parent) const
 {
-    return parent.isValid() ? 0 : m_modelData.size();
-}
-
-int AudioRecScheduleModel::columnCount(const QModelIndex &parent) const
-{
-    return parent.isValid() ? 0 : NumColumns;
+    return m_modelData.size();
 }
 
 QVariant AudioRecScheduleModel::data(const QModelIndex &index, int role) const
@@ -59,94 +59,46 @@ QVariant AudioRecScheduleModel::data(const QModelIndex &index, int role) const
     }
 
     const auto &item = m_modelData.at(index.row());
-    if (role == Qt::DisplayRole)
+    switch (role)
     {
-        switch (index.column())
-        {
-            case ColState:
-                break;
-            case ColLabel:
-                return item.name();
-            case ColStartTime:
-                return item.startTime();
-            case ColEndTime:
-                return item.endTime();
-            case ColDuration:
-                return item.duration();
-            case ColService:
+        case StateRole:
+            if (item.isRecorded())
             {
-                if (m_slModel == nullptr)
-                {
-                    return QString("%1").arg(item.serviceId().sid(), 6, 16, QChar('0')).toUpper();
-                }
-                const ServiceList *slPtr = m_slModel->getServiceList();
-                const auto it = slPtr->findService(item.serviceId());
-                if (it != slPtr->serviceListEnd())
-                {
-                    return it.value()->label();
-                }
-                else
-                {
-                    return QString("%1").arg(item.serviceId().sid(), 6, 16, QChar('0')).toUpper();
-                }
+                return QString("icon-recording.svg");
             }
-            break;
-            default:
-                break;
-        }
-    }
-    else if (role == Qt::DecorationRole)
-    {
-        if ((index.column() == ColState) && item.isRecorded())
+            if (item.hasConflict())
+            {
+                return QString("alert.svg");
+            }
+            return QString();
+        case LabelRole:
+            return item.name();
+        case StartTimeRole:
+            return item.startTime().toString("dd.MM.yyyy hh:mm");
+        case EndTimeRole:
+            return item.endTime().toString("dd.MM.yyyy hh:mm");
+        case DurationRole:
+            return item.duration().toString("hh:mm");
+        case ServiceRole:
         {
-            return QPixmap(":/resources/record.png");
+            if (m_slModel == nullptr)
+            {
+                return QString("%1").arg(item.serviceId().sid(), 6, 16, QChar('0')).toUpper();
+            }
+            const ServiceList *slPtr = m_slModel->getServiceList();
+            const auto it = slPtr->findService(item.serviceId());
+            if (it != slPtr->serviceListEnd())
+            {
+                return it.value()->label();
+            }
+            else
+            {
+                return QString("%1").arg(item.serviceId().sid(), 6, 16, QChar('0')).toUpper();
+            }
         }
-        if ((index.column() == ColState) && item.hasConflict())
-        {
-            return QPixmap(":/resources/conflict.png");
-        }
+        default:
+            return QVariant();
     }
-    return QVariant();
-}
-
-QVariant AudioRecScheduleModel::headerData(int section, Qt::Orientation orientation, int role) const
-{
-    if (role != Qt::DisplayRole)
-    {
-        return QVariant();
-    }
-
-    if (orientation == Qt::Horizontal)
-    {
-        switch (section)
-        {
-            case ColState:
-                return "";
-            case ColLabel:
-                return tr("Name");
-            case ColStartTime:
-                return tr("Start time");
-            case ColEndTime:
-                return tr("End time");
-            case ColDuration:
-                return tr("Duration");
-            case ColService:
-                return tr("Service");
-            default:
-                break;
-        }
-    }
-    return QVariant();
-}
-
-Qt::ItemFlags AudioRecScheduleModel::flags(const QModelIndex &index) const
-{
-    if (!index.isValid())
-    {
-        return Qt::ItemIsEnabled;
-    }
-
-    return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
 }
 
 bool AudioRecScheduleModel::removeRows(int position, int rows, const QModelIndex &index)
@@ -162,11 +114,6 @@ bool AudioRecScheduleModel::removeRows(int position, int rows, const QModelIndex
     return true;
 }
 
-const QList<AudioRecScheduleItem> &AudioRecScheduleModel::getSchedule() const
-{
-    return m_modelData;
-}
-
 void AudioRecScheduleModel::insertItem(const AudioRecScheduleItem &item)
 {
     beginResetModel();
@@ -177,10 +124,17 @@ void AudioRecScheduleModel::insertItem(const AudioRecScheduleItem &item)
 
 void AudioRecScheduleModel::replaceItemAtIndex(const QModelIndex &index, const AudioRecScheduleItem &item)
 {
-    beginResetModel();
-    m_modelData[index.row()] = item;
-    sortFindConflicts();
-    endResetModel();
+    if (index.isValid())
+    {
+        beginResetModel();
+        m_modelData[index.row()] = item;
+        sortFindConflicts();
+        endResetModel();
+    }
+    else
+    {
+        qDebug() << "Invalid index in replaceItemAtIndex";
+    }
 }
 
 const AudioRecScheduleItem &AudioRecScheduleModel::itemAtIndex(const QModelIndex &index) const
@@ -266,7 +220,7 @@ void AudioRecScheduleModel::loadFromSettings(QSettings *settings)
 void AudioRecScheduleModel::save(const QString &filename)
 {
     QVariantList list;
-    for (const auto &item : m_modelData)
+    for (const auto &item : std::as_const(m_modelData))
     {
         QVariantMap map;
         map["Name"] = item.name();
@@ -308,6 +262,20 @@ void AudioRecScheduleModel::clear()
     beginResetModel();
     m_modelData.clear();
     endResetModel();
+
+    setCurrentIndex(-1);
+}
+
+QHash<int, QByteArray> AudioRecScheduleModel::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+    roles[StateRole] = "stateIcon";
+    roles[LabelRole] = "label";
+    roles[StartTimeRole] = "startTime";
+    roles[EndTimeRole] = "endTime";
+    roles[DurationRole] = "duration";
+    roles[ServiceRole] = "service";
+    return roles;
 }
 
 void AudioRecScheduleModel::sortFindConflicts()
@@ -335,21 +303,22 @@ void AudioRecScheduleModel::sortFindConflicts()
 
 bool AudioRecScheduleModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (index.isValid() && role == Qt::EditRole)
+    if (index.isValid() && role == StateRole)
     {
         const int row = index.row();
-        switch (index.column())
-        {
-            case ColState:
-                m_modelData[row].setIsRecorded(value.toBool());
-                break;
-            default:
-                return false;
-        }
-        emit dataChanged(index, index, {Qt::DisplayRole, Qt::EditRole});
-
+        m_modelData[row].setIsRecorded(value.toBool());
+        emit dataChanged(index, index, {StateRole});
         return true;
     }
-
     return false;
+}
+
+void AudioRecScheduleModel::setCurrentIndex(int currentIndex)
+{
+    if (m_currentIndex == currentIndex || currentIndex >= rowCount())
+    {
+        return;
+    }
+    m_currentIndex = currentIndex;
+    emit currentIndexChanged();
 }

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -161,11 +161,7 @@ QDateTime DabTables::dabTimeToUTC(uint32_t dateHoursMinutes, uint16_t secMsec)
 
     int32_t sec = secMsec >> 10;
     int32_t msec = secMsec & 0x3FF;
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
     return QDateTime(QDate(Y, M, D), QTime(h, minute, sec, msec), QTimeZone::fromSecondsAheadOfUtc(0));
-#else
-    return QDateTime(QDate(Y, M, D), QTime(h, minute, sec, msec), Qt::UTC);
-#endif
 }
 
 QString DabTables::getPtyName(const uint8_t pty)

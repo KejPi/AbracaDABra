@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -78,6 +78,24 @@ void AudioDecoder::start(const RadioControlServiceComponent &s)
         }
         m_playbackState = PlaybackState::WaitForInit;
         m_recorder->setAudioService(s);
+
+#ifdef AUDIO_DEBUG_STATS
+        if (m_statsTimer)
+        {
+            m_statsTimer->stop();
+            delete m_statsTimer;
+        }
+        m_statsTimer = new QTimer(this);
+        connect(m_statsTimer, &QTimer::timeout, this,
+                [this]()
+                {
+                    qDebug() << "Processed " << m_byteCounter * 0.1;
+                    m_byteCounter = 0;
+                });
+
+        m_statsTimer->setInterval(10000);
+        m_statsTimer->start();
+#endif
     }
     else
     {  // no audio service -> can happen during reconfiguration

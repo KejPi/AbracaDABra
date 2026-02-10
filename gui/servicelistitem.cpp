@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -79,9 +79,9 @@ bool ServiceListItem::removeEnsemble(EnsembleListItem *ensPtr)
     return true;
 }
 
-const EnsembleListItem *ServiceListItem::switchEnsemble(const ServiceListId &id)
+const EnsembleListItem *ServiceListItem::switchEnsemble(const ServiceListId &ensId)
 {
-    if (!id.isValid())
+    if (!ensId.isValid())
     {
         if (m_ensembleList.size() > 0)
         {
@@ -93,7 +93,7 @@ const EnsembleListItem *ServiceListItem::switchEnsemble(const ServiceListId &id)
     {
         for (int n = 0; n < m_ensembleList.size(); ++n)
         {
-            if (m_ensembleList.at(n)->id() == id)
+            if (m_ensembleList.at(n)->id() == ensId)
             {
                 m_currentEnsemble = n;
                 break;

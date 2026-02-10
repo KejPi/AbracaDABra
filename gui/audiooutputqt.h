@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -65,6 +65,12 @@ private:
     int64_t bytesAvailable();
     void doStop();
     void doRestart(audioFifo_t *buffer);
+
+#ifdef Q_OS_ANDROID
+    void acquireAndroidWakeLock();
+    void releaseAndroidWakeLock();
+    void updateAndroidNotification(const QString &title, const QString &text);
+#endif
 };
 
 class AudioIODevice : public QIODevice
@@ -94,6 +100,13 @@ private:
 
     std::atomic<bool> m_muteFlag = false;
     std::atomic<bool> m_stopFlag = false;
+
+#ifdef AUDIO_DEBUG_STATS
+    QTimer *m_statsTimer = nullptr;
+    int m_byteCounter = 0;
+    int64_t m_bufferFullnessAvrg = 0;
+    int m_avrgCntr = 0;
+#endif
 };
 
 #endif  // AUDIOOUTPUTQT_H

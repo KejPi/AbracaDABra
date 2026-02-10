@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -145,15 +145,6 @@ QVariant SLModelItem::data(int column, int role) const
                 }
             }
             break;
-            case Qt::FontRole:
-                if (m_id.isEnsemble())
-                {
-                    QFont f;
-                    f.setBold(true);
-                    return QVariant(f);
-                }
-                return QVariant();
-                break;
             case SLModelRole::IdRole:
                 return QVariant::fromValue(m_id.value());
             case SLModelRole::SmallLogoRole:
@@ -182,6 +173,20 @@ QVariant SLModelItem::data(int column, int role) const
                     return QVariant::fromValue(ensList);
                 }
             }
+            case IsFavoriteRole:
+                return isFavoriteService();
+            case SIdHexRole:
+                return QString("%1").arg(m_id.value(), 6, 16, QChar('0')).toUpper();
+            case ChannelRole:
+                if (m_id.isService() == false)
+                {  // ensemble item
+                    EnsembleListConstIterator it = m_slPtr->findEnsemble(m_id);
+                    if (m_slPtr->ensembleListEnd() != it)
+                    {  // found
+                        return DabTables::channelList.value(it.value()->frequency());
+                    }
+                }
+                break;
         }
     }
     return QVariant();
@@ -325,7 +330,7 @@ void SLModelItem::sort(Qt::SortOrder order)
                   });
     }
 
-    for (auto child : m_childItems)
+    for (auto child : std::as_const(m_childItems))
     {
         child->sort(order);
     }

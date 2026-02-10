@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,16 +35,17 @@
 
 #define INPUTDEVICERECORDER_XML_PADDING 2048
 
+class Settings;
 class InputDeviceRecorder : public QObject
 {
     Q_OBJECT
 public:
-    InputDeviceRecorder();
+    InputDeviceRecorder(Settings *settings);
     ~InputDeviceRecorder();
     const QString recordingPath() const;
     void setRecordingPath(const QString &recordingPath);
     void setDeviceDescription(const InputDevice::Description &desc);
-    void start(QWidget *callerWidget, int timeoutSec);
+    void start(int timeoutSec);
     void stop();
     void writeBuffer(const uint8_t *buf, uint32_t len);
     void setCurrentFrequency(uint32_t frequency) { m_frequency = frequency; }
@@ -55,6 +56,7 @@ signals:
 
 private:
     InputDevice::Description m_deviceDescription;
+    Settings *m_settings;
     FILE *m_file;
     std::mutex m_fileMutex;
     uint64_t m_bytesRecorded = 0;
@@ -62,7 +64,6 @@ private:
     float m_bytes2ms;
     uint64_t m_bytesPerSec;
     uint32_t m_frequency;
-    QString m_recordingPath;
     bool m_xmlHeaderEna = true;
     QDomDocument m_xmlHeader;
     void startXmlHeader();

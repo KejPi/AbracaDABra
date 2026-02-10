@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -566,9 +566,16 @@ void TxTableModel::appendEnsData(const QDateTime &time, const QList<dabsdrTii_t>
             item.setEnsData(ensId, ensLabel, numServices, snr);
             item.setEnsConfig(ensConfig, ensCSV);
             item.setRxTime(time);
-            beginInsertRows(QModelIndex(), m_modelData.size(), m_modelData.size());
-            m_modelData.append(item);
-            endInsertRows();
+            if (m_loadingFromFile)
+            {
+                m_modelData.append(item);
+            }
+            else
+            {
+                beginInsertRows(QModelIndex(), m_modelData.size(), m_modelData.size());
+                m_modelData.append(item);
+                endInsertRows();
+            }
         }
     }
     else
@@ -578,9 +585,16 @@ void TxTableModel::appendEnsData(const QDateTime &time, const QList<dabsdrTii_t>
         item.setEnsData(ensId, ensLabel, numServices, snr);
         item.setEnsConfig(ensConfig, ensCSV);
         item.setRxTime(time);
-        beginInsertRows(QModelIndex(), m_modelData.size(), m_modelData.size());
-        m_modelData.append(item);
-        endInsertRows();
+        if (m_loadingFromFile)
+        {
+            m_modelData.append(item);
+        }
+        else
+        {
+            beginInsertRows(QModelIndex(), m_modelData.size(), m_modelData.size());
+            m_modelData.append(item);
+            endInsertRows();
+        }
     }
 }
 
@@ -653,4 +667,18 @@ void TxTableModel::clearLocalTx()
     Q_ASSERT(m_localTxList != nullptr);
     m_localTxList->clear();
     emit dataChanged(index(0, 0), index(m_modelData.count() - 1, NumColsWithoutCoordinates - 1), {TxTableModelRoles::IsLocalRole});
+}
+
+void TxTableModel::beginLoadingFromFile()
+{
+    beginResetModel();
+    m_modelData.clear();
+    m_selectedRows.clear();
+    m_loadingFromFile = true;
+}
+
+void TxTableModel::endLoadingFromFile()
+{
+    m_loadingFromFile = false;
+    endResetModel();
 }

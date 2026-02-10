@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,6 +53,14 @@ QVariant DABChannelListModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+QHash<int, QByteArray> DABChannelListModel::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+    roles[Qt::DisplayRole] = "display";
+    roles[Roles::FrequencyRole] = "frequency";
+    return roles;
+}
+
 DABChannelListFilteredModel::DABChannelListFilteredModel(QObject *parent) : QSortFilterProxyModel(parent), m_frequencyFilter(0)
 {}
 
@@ -67,6 +75,19 @@ void DABChannelListFilteredModel::setChannelFilter(int freq)
         m_frequencyFilter = 0;
     }
     invalidateFilter();
+}
+
+int DABChannelListFilteredModel::findFrequency(int freq)
+{
+    for (int row = 0; row < rowCount(); ++row)
+    {
+        QModelIndex idx = index(row, 0);
+        if (data(idx, DABChannelListModel::Roles::FrequencyRole).toUInt() == freq)
+        {
+            return row;
+        }
+    }
+    return -1;  // Not found
 }
 
 bool DABChannelListFilteredModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const

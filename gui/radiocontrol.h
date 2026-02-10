@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -285,14 +285,14 @@ struct RadioControlTIIData
 
 struct RadioControlDecodingStats
 {
-    int fibCntr;            // number of FIB
-    int fibErrorCntr;       // number of FIB CRC errors during notification period
-    int mscCrcOkCntr;       // number of correct CRC [after RS (DAB+)]
-    int mscCrcErrorCntr;    // number of CRC errors [after RS (DAB+)]
-    int audioServiceBytes;  // number of audio service bytes
-    int padBytes;           // number of PAD bytes
-    int rsBytes;            // number of bytes decoded by RS
-    int rsBitErrorCntr;     // number of bit errors
+    int fibCntr;              // number of FIB
+    int fibErrorCntr;         // number of FIB CRC errors during notification period
+    int mscCrcOkCntr;         // number of correct CRC [after RS (DAB+)]
+    int mscCrcErrorCntr;      // number of CRC errors [after RS (DAB+)]
+    int audioServiceBytes;    // number of audio service bytes
+    int padBytes;             // number of PAD bytes
+    int rsBytes;              // number of bytes decoded by RS
+    int rsBitErrorCntr;       // number of bit errors
     int rsUncorrectableCntr;  // number of uncorrected code words
 };
 

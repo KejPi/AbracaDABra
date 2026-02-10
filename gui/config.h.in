@@ -36,8 +36,7 @@
 #cmakedefine01 HAVE_FAAD
 #cmakedefine01 HAVE_FDKAAC
 #cmakedefine01 HAVE_PORTAUDIO
-#cmakedefine01 HAVE_QCUSTOMPLOT
-#cmakedefine01 HAVE_QTLOCATION
+#cmakedefine01 HAVE_QTWIDGETS
 #cmakedefine01 HAVE_FMLIST_INTERFACE
 
 

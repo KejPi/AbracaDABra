@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -111,7 +111,12 @@ protected:
 
     void initMPG123();
     void deinitMPG123();
-
+#ifdef AUDIO_DEBUG_STATS
+    QTimer *m_statsTimer = nullptr;
+    int m_byteCounter = 0;
+    float m_avrg = 0;
+    int m_avrgCntr;
+#endif
 private:
     float m_mp2DRC = 0;
     mpg123_handle *m_mp2DecoderHandle;

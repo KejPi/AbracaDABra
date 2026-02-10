@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@
 #include <QGeoPositionInfo>
 #include <QObject>
 #include <QSortFilterProxyModel>
+#include <QtQml>
 
 #include "dabsdr.h"
 #include "servicelistid.h"
@@ -42,6 +43,7 @@ class TxLocalList;
 class TxTableModel : public QAbstractTableModel
 {
     Q_OBJECT
+    QML_ELEMENT
     Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
 public:
     enum TxTableModelRoles
@@ -60,7 +62,7 @@ public:
         IsLocalRole,
     };
 
-    enum
+    enum TxTableCols
     {
         ColTime,
         ColChannel,
@@ -83,6 +85,7 @@ public:
         NumCols,
         NumColsWithoutCoordinates = ColTxCoordinatesLat
     };
+    Q_ENUM(TxTableCols)
 
     explicit TxTableModel(QObject *parent = nullptr);
     ~TxTableModel();
@@ -109,11 +112,15 @@ public:
     void setAsLocalTx(const QModelIndex &index, bool setAsLocal);
     void clearLocalTx();
 
+    // loading from file
+    void beginLoadingFromFile();
+    void endLoadingFromFile();
 signals:
     void rowCountChanged();
 
 private:
     bool m_displayTimeInUTC = false;
+    bool m_loadingFromFile = false;
     QList<TxTableModelItem> m_modelData;
     QSet<int> m_selectedRows;
     QMultiHash<ServiceListId, TxDataItem *> m_txList;

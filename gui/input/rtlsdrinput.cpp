@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,10 @@
 #include <QDebug>
 #include <QDir>
 #include <QLoggingCategory>
+#ifdef Q_OS_ANDROID
+#include <QCoreApplication>
+#include <QJniObject>
+#endif
 
 Q_LOGGING_CATEGORY(rtlsdrInput, "RtlSdrInput", QtInfoMsg)
 
@@ -36,6 +40,42 @@ InputDeviceList RtlSdrInput::getDeviceList()
 {
     InputDeviceList list;
 
+#ifdef Q_OS_ANDROID
+    QStringList deviceIds;
+
+    QJniObject context = QNativeInterface::QAndroidApplication::context();
+    QJniObject javaArray = QJniObject::callStaticObjectMethod("org/qtproject/abracadabra/UsbPermissionHelper", "getRtlSdrDeviceIds",
+                                                              "(Landroid/content/Context;)[Ljava/lang/String;", context.object<jobject>());
+
+    if (javaArray.isValid())
+    {
+        QJniEnvironment env;
+        jobjectArray array = javaArray.object<jobjectArray>();
+        int length = env->GetArrayLength(array);
+        for (int i = 0; i < length; ++i)
+        {
+            jstring jstr = static_cast<jstring>(env->GetObjectArrayElement(array, i));
+            const char *str = env->GetStringUTFChars(jstr, nullptr);
+            deviceIds << QString::fromUtf8(str);
+            env->ReleaseStringUTFChars(jstr, str);
+            env->DeleteLocalRef(jstr);
+        }
+    }
+
+    for (const QString &deviceId : deviceIds)
+    {
+        auto parts = deviceId.split(":");
+        if (parts.size() == 5)
+        {
+            QString dispName = getDeviceId(parts[0].toUtf8().constData(), parts[1].toUtf8().constData(), parts.last().toUtf8().constData());
+
+            // creating generic name, using java id as unique identifier
+            list.append({.diplayName = dispName, .id = QVariant(deviceId)});
+
+            qCInfo(rtlsdrInput) << dispName << " | " << deviceId;
+        }
+    }
+#else
     // Get all devices
     uint32_t deviceCount = rtlsdr_get_device_count();
     if (deviceCount == 0)
@@ -63,6 +103,7 @@ InputDeviceList RtlSdrInput::getDeviceList()
             list.append({.diplayName = dispName, .id = QVariant(dispName)});
         }
     }
+#endif
     return list;
 }
 
@@ -98,6 +139,11 @@ RtlSdrInput::~RtlSdrInput()
     if (nullptr != m_device)
     {
         rtlsdr_close(m_device);
+
+#ifdef Q_OS_ANDROID
+        // Close the Java-side connection
+        QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/UsbPermissionHelper", "closeSdrDevice", "()V");
+#endif
     }
     if (nullptr != m_gainList)
     {
@@ -152,7 +198,40 @@ void RtlSdrInput::tune(uint32_t frequency)
 bool RtlSdrInput::openDevice(const QVariant &hwId, bool fallbackConnection)
 {
     int ret = 0;
+    const char *deviceName = nullptr;
 
+#ifdef Q_OS_ANDROID
+    QString idToOpen = hwId.toString();
+
+    // Call Java to open the device and get file descriptor
+    QJniObject context = QNativeInterface::QAndroidApplication::context();
+    jint fd = QJniObject::callStaticMethod<jint>("org/qtproject/abracadabra/UsbPermissionHelper", "openSdrDevice",
+                                                 "(Landroid/content/Context;Ljava/lang/String;ZZ)I", context.object<jobject>(),
+                                                 QJniObject::fromString(idToOpen).object<jstring>(), static_cast<jboolean>(false),
+                                                 static_cast<jboolean>(fallbackConnection));
+
+    if (fd < 0)
+    {
+        qCCritical(rtlsdrInput) << "Failed to get USB file descriptor from Android";
+        return false;
+    }
+
+    qCInfo(rtlsdrInput) << "Got USB file descriptor:" << fd;
+
+    // Open rtlsdr device using the file descriptor
+    ret = rtlsdr_open_fd(&m_device, fd);
+    if (ret < 0)
+    {
+        qCCritical(rtlsdrInput) << "Failed to open RTL-SDR device with fd:" << fd;
+        // Close the Java-side connection
+        QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/UsbPermissionHelper", "closeSdrDevice", "()V");
+        return false;
+    }
+
+    deviceName = "RTL-SDR (Android)";
+    qCInfo(rtlsdrInput) << "Opened RTL-SDR device via Android USB";
+
+#else
     // Get all devices
     uint32_t deviceCount = rtlsdr_get_device_count();
     if (deviceCount == 0)
@@ -166,7 +245,6 @@ bool RtlSdrInput::openDevice(const QVariant &hwId, bool fallbackConnection)
     }
 
     ret = -1;
-    const char *deviceName;
     QString idToOpen = hwId.toString();
     if (!idToOpen.isEmpty())
     {  // go through the devices and open selected
@@ -238,7 +316,7 @@ bool RtlSdrInput::openDevice(const QVariant &hwId, bool fallbackConnection)
             }
         }
     }
-
+#endif
     if (ret < 0)
     {  // no device found
         m_device = nullptr;
@@ -380,6 +458,7 @@ void RtlSdrInput::stop()
         rtlsdr_cancel_async(m_device);
 
         m_worker->wait(QDeadlineTimer(2000));
+        int cntr = 0;
         while (!m_worker->isFinished())
         {
             qCWarning(rtlsdrInput) << "Worker thread not finished after timeout - this should not happen :-(";
@@ -389,7 +468,14 @@ void RtlSdrInput::stop()
             inputBuffer.count = 0;
             pthread_cond_signal(&inputBuffer.countCondition);
             pthread_mutex_unlock(&inputBuffer.countMutex);
-            m_worker->wait(2000);
+            m_worker->wait(QDeadlineTimer(2000));
+#ifdef Q_OS_ANDROID
+            if (cntr++ > 5)
+            {
+                qCCritical(rtlsdrInput) << "Worker thread not finished after multiple timeouts - giving up.";
+                m_worker->terminate();
+            }
+#endif
         }
     }
     else
@@ -663,6 +749,18 @@ QVariant RtlSdrInput::hwId() const
 {
     if (m_device)
     {
+#ifdef Q_OS_ANDROID
+        QJniObject deviceId =
+            QJniObject::callStaticObjectMethod("org/qtproject/abracadabra/UsbPermissionHelper", "getCurrentDeviceId", "()Ljava/lang/String;");
+        if (deviceId.isValid())
+        {
+            QString id = deviceId.toString();
+            if (!id.isEmpty())
+            {
+                return QVariant(id);
+            }
+        }
+#else
         char manufact[256];
         char product[256];
         char serial[256];
@@ -670,6 +768,7 @@ QVariant RtlSdrInput::hwId() const
         {
             return getDeviceId(manufact, product, serial);
         }
+#endif
     }
     return QVariant();
 }
@@ -715,7 +814,8 @@ void RtlSdrWorker::run()
     m_watchdogFlag = false;  // first callback sets it to true
     m_captureStartCntr = 1;  // first callback resets buffer
 
-    rtlsdr_read_async(m_device, callback, (void *)this, 0, INPUT_CHUNK_IQ_SAMPLES * 2 * sizeof(uint8_t));
+    rtlsdr_reset_buffer(m_device);
+    rtlsdr_read_async(m_device, callback, (void *)this, 16, INPUT_CHUNK_IQ_SAMPLES * 2 * sizeof(uint8_t));
 }
 
 void RtlSdrWorker::startStopRecording(bool ena)

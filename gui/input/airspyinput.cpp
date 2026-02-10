@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,10 @@
 #include <QDebug>
 #include <QDir>
 #include <QLoggingCategory>
+#ifdef Q_OS_ANDROID
+#include <QCoreApplication>
+#include <QJniObject>
+#endif
 
 Q_LOGGING_CATEGORY(airspyInput, "AirspyInput", QtInfoMsg)
 
@@ -36,6 +40,42 @@ InputDeviceList AirspyInput::getDeviceList()
 {
     InputDeviceList list;
 
+#ifdef Q_OS_ANDROID
+    QStringList deviceIds;
+
+    QJniObject context = QNativeInterface::QAndroidApplication::context();
+    QJniObject javaArray = QJniObject::callStaticObjectMethod("org/qtproject/abracadabra/UsbPermissionHelper", "getAirspyDeviceIds",
+                                                              "(Landroid/content/Context;)[Ljava/lang/String;", context.object<jobject>());
+
+    if (javaArray.isValid())
+    {
+        QJniEnvironment env;
+        jobjectArray array = javaArray.object<jobjectArray>();
+        int length = env->GetArrayLength(array);
+        for (int i = 0; i < length; ++i)
+        {
+            jstring jstr = static_cast<jstring>(env->GetObjectArrayElement(array, i));
+            const char *str = env->GetStringUTFChars(jstr, nullptr);
+            deviceIds << QString::fromUtf8(str);
+            env->ReleaseStringUTFChars(jstr, str);
+            env->DeleteLocalRef(jstr);
+        }
+    }
+
+    for (const QString &deviceId : deviceIds)
+    {
+        auto parts = deviceId.split("|");
+        if (parts.size() == 3)
+        {
+            QString dispName = parts.last();
+
+            // creating generic name, using java id as unique identifier
+            list.append({.diplayName = dispName, .id = QVariant(deviceId)});
+
+            qCInfo(airspyInput) << dispName << " | " << deviceId;
+        }
+    }
+#else
     uint64_t serials[8];
     int deviceCount = airspy_list_devices(serials, 8);
     if (0 == deviceCount)
@@ -60,6 +100,7 @@ InputDeviceList AirspyInput::getDeviceList()
         list.append(desc);
         ++n;
     }
+#endif
     return list;
 }
 
@@ -86,7 +127,11 @@ AirspyInput::~AirspyInput()
     {
         stop();
         airspy_close(m_device);
-        airspy_exit();
+
+#ifdef Q_OS_ANDROID
+        // Close the Java-side connection
+        QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/UsbPermissionHelper", "closeSdrDevice", "()V");
+#endif
     }
 
     if (nullptr != m_filterOutBuffer)
@@ -119,6 +164,35 @@ void AirspyInput::tune(uint32_t frequency)
 
 bool AirspyInput::openDevice(const QVariant &hwId, bool fallbackConnection)
 {
+#ifdef Q_OS_ANDROID
+    QString idToOpen = hwId.toString();
+
+    // Call Java to open the device and get file descriptor
+    QJniObject context = QNativeInterface::QAndroidApplication::context();
+    jint fd = QJniObject::callStaticMethod<jint>("org/qtproject/abracadabra/UsbPermissionHelper", "openSdrDevice",
+                                                 "(Landroid/content/Context;Ljava/lang/String;ZZ)I", context.object<jobject>(),
+                                                 QJniObject::fromString(idToOpen).object<jstring>(), static_cast<jboolean>(true),
+                                                 static_cast<jboolean>(fallbackConnection));
+
+    if (fd < 0)
+    {
+        qCCritical(airspyInput) << "Failed to get USB file descriptor from Android";
+        return false;
+    }
+
+    qCInfo(airspyInput) << "Got USB file descriptor:" << fd;
+
+    // Open airspy device using the file descriptor
+    if (AIRSPY_SUCCESS != airspy_open_fd(&m_device, fd))
+    {
+        qCCritical(airspyInput) << "Failed to open Airspy device with fd:" << fd;
+        // Close the Java-side connection
+        QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/UsbPermissionHelper", "closeSdrDevice", "()V");
+        return false;
+    }
+
+    qCInfo(airspyInput) << "Opened Airspy device via Android USB";
+#else
     bool found = false;
     if (hwId.isValid())
     {  // try to open selected device
@@ -151,6 +225,7 @@ bool AirspyInput::openDevice(const QVariant &hwId, bool fallbackConnection)
             return false;
         }
     }
+#endif
 
     // set sample type
     if (AIRSPY_SUCCESS != airspy_set_sample_type(m_device, AIRSPY_SAMPLE_FLOAT32_IQ))
@@ -503,10 +578,26 @@ void AirspyInput::setDataPacking(bool ena)
 
 QVariant AirspyInput::hwId() const
 {
-    airspy_read_partid_serialno_t partid_serialno;
-    if (AIRSPY_SUCCESS == airspy_board_partid_serialno_read(m_device, &partid_serialno))
+    if (m_device)
     {
-        return QVariant::fromValue<uint64_t>(uint64_t(partid_serialno.serial_no[2]) << 32 | partid_serialno.serial_no[3]);
+#ifdef Q_OS_ANDROID
+        QJniObject deviceId =
+            QJniObject::callStaticObjectMethod("org/qtproject/abracadabra/UsbPermissionHelper", "getCurrentDeviceId", "()Ljava/lang/String;");
+        if (deviceId.isValid())
+        {
+            QString id = deviceId.toString();
+            if (!id.isEmpty())
+            {
+                return QVariant(id);
+            }
+        }
+#else
+        airspy_read_partid_serialno_t partid_serialno;
+        if (AIRSPY_SUCCESS == airspy_board_partid_serialno_read(m_device, &partid_serialno))
+        {
+            return QVariant::fromValue<uint64_t>(uint64_t(partid_serialno.serial_no[2]) << 32 | partid_serialno.serial_no[3]);
+        }
+#endif
     }
     return QVariant();
 }

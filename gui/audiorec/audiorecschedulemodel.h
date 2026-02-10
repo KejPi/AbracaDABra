@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,26 +27,35 @@
 #ifndef AUDIORECSCHEDULEMODEL_H
 #define AUDIORECSCHEDULEMODEL_H
 
-#include <QAbstractTableModel>
+#include <QAbstractListModel>
 #include <QList>
 #include <QObject>
 
 #include "audiorecscheduleitem.h"
 #include "slmodel.h"
 
-class AudioRecScheduleModel : public QAbstractTableModel
+class AudioRecScheduleModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
+    Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL)
 public:
+    enum AudioRecScheduleRoles
+    {
+        StateRole = Qt::UserRole + 1,
+        LabelRole,
+        StartTimeRole,
+        EndTimeRole,
+        DurationRole,
+        ServiceRole
+    };
+    Q_ENUMS(AudioRecScheduleRoles)
+
     explicit AudioRecScheduleModel(QObject *parent = nullptr);
 
-    int rowCount(const QModelIndex &parent) const override;
-    int columnCount(const QModelIndex &parent) const override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
-    Qt::ItemFlags flags(const QModelIndex &index) const override;
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
-    const QList<AudioRecScheduleItem> &getSchedule() const;
     bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
     void insertItem(const AudioRecScheduleItem &item);
@@ -59,26 +68,25 @@ public:
     void cleanup(const QDateTime &currentTime);
     void clear();
     bool isEmpty() const { return m_modelData.isEmpty(); }
+    int currentIndex() const { return m_currentIndex; }
+    void setCurrentIndex(int currentIndex);
+
+    QHash<int, QByteArray> roleNames() const override;
+
+signals:
+    void rowCountChanged();
+    void currentIndexChanged();
 
 private:
     enum
     {
         NumColumns = 6
     };
-    enum
-    {
-        ColState,
-        ColLabel,
-        ColStartTime,
-        ColEndTime,
-        ColDuration,
-        ColService
-    };
-
     QList<AudioRecScheduleItem> m_modelData;
     SLModel *m_slModel;
 
     void sortFindConflicts();
+    int m_currentIndex;
 };
 
 #endif  // AUDIORECSCHEDULEMODEL_H

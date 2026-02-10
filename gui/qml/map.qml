@@ -29,7 +29,7 @@ import QtQuick
 import QtLocation
 import QtPositioning
 import QtQuick.Layouts
-import app.qmlcomponents 1.0
+import abracaComponents 1.0
 
 Item {
     id: mainItem

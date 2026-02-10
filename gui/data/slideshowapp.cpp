@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@
 #include <QRegularExpression>
 #include <QStandardPaths>
 
+#include "androidfilehelper.h"
 #include "dabtables.h"
 
 Q_LOGGING_CATEGORY(slideShowApp, "SlideShowApp", QtInfoMsg)
@@ -95,7 +96,7 @@ void SlideShowApp::setDataDumping(const Settings::UADumpSettings &settings)
 {
     m_dumpEna = settings.slsEna;
     m_dumpOverwrite = settings.overwriteEna;
-    m_dumpPath = settings.folder;
+    m_dumpPath = settings.dataStoragePath;
     if (settings.slsPattern.startsWith('/'))
     {
         m_dumpPattern = settings.slsPattern;
@@ -104,8 +105,6 @@ void SlideShowApp::setDataDumping(const Settings::UADumpSettings &settings)
     {
         m_dumpPattern = "/" + settings.slsPattern;
     }
-
-    qCDebug(slideShowApp) << m_dumpPath + m_dumpPattern;
 }
 
 void SlideShowApp::onUserAppData(const RadioControlUserAppData &data)
@@ -520,34 +519,72 @@ void SlideShowApp::removeSlideFromCategory(const Slide &slide)
 
 void SlideShowApp::dumpSlide(const Slide &slide)
 {
-    QString filename = m_dumpPattern;
-    filename.replace("{ensId}", QString("%1").arg(m_ueid, 6, 16, QChar('0')));
-    filename.replace("{serviceId}", QString("%1").arg(m_SId.value(), 6, 16, QChar('0')));
-    filename.replace("{transportId}", QString().setNum(slide.getTransportID()));
+    QString filenameWithPath = m_dumpPattern;
+    filenameWithPath.replace("{ensId}", QString("%1").arg(m_ueid, 6, 16, QChar('0')));
+    filenameWithPath.replace("{serviceId}", QString("%1").arg(m_SId.value(), 6, 16, QChar('0')));
+    filenameWithPath.replace("{transportId}", QString().setNum(slide.getTransportID()));
 
     QString contentName = slide.getContentName();
     // remove problematic characters
     static const QRegularExpression regexp("[" + QRegularExpression::escape("/:*?\"<>|") + "]");
     contentName.replace(regexp, "_");
-    filename.replace("{contentName}", contentName);
+    filenameWithPath.replace("{contentName}", contentName);
 
     if (QFileInfo(contentName).suffix().isEmpty())
     {
         contentName.append(QString(".%1").arg(slide.getFormat().toLower()));
     }
-    filename.replace("{contentNameWithExt}", contentName);
+    filenameWithPath.replace("{contentNameWithExt}", contentName);
 
-    // qDebug() << filename << m_dumpPath + filename;
-    QFile file(m_dumpPath + filename);
-    if (!file.exists() || m_dumpOverwrite)
-    {  // file does not exist of overwriting is enabled == > store file
-        QDir dir;
-        dir.mkpath(QFileInfo(file).absolutePath());
-        if (file.open(QIODevice::WriteOnly))
+    if (!filenameWithPath.isEmpty())
+    {
+        // split filename path to dirs and file
+        QString filename;
+        QString fileSubdir;
+        int lastSlashIdx = filenameWithPath.lastIndexOf('/');
+        if (lastSlashIdx >= 0)
         {
-            qCInfo(slideShowApp) << "Storing slide:" << file.fileName();
-            file.write(slide.getRawData());
-            file.close();
+            filename = filenameWithPath.mid(lastSlashIdx + 1);
+            fileSubdir = filenameWithPath.left(lastSlashIdx);
+        }
+        else
+        {  // no path in filename ==> error
+            qCWarning(slideShowApp) << "Cannot store slide:" << filenameWithPath;
+            return;
+        }
+
+        // prepend UA directory
+        fileSubdir = QString("%1%2").arg(UA_DIR_NAME, fileSubdir);
+
+        const QString slidePath = AndroidFileHelper::buildSubdirPath(m_dumpPath, fileSubdir);
+
+        // Ensure directory exists and is writable
+        if (!AndroidFileHelper::mkpath(m_dumpPath, fileSubdir))
+        {
+            qCWarning(slideShowApp) << "Failed to create slide export directory:" << AndroidFileHelper::lastError();
+            return;
+        }
+
+        if (!AndroidFileHelper::hasWritePermission(slidePath))
+        {
+            qCWarning(slideShowApp) << "No permission to write to:" << slidePath;
+            qCWarning(slideShowApp) << "Please select a new data storage folder in settings.";
+            return;
+        }
+
+        QString mime = "image/jpeg";
+        if (slide.getFormat() == "PNG")
+        {
+            mime = "image/png";
+        }
+
+        if (AndroidFileHelper::writeBinaryFile(slidePath, filename, slide.getRawData(), mime, m_dumpOverwrite))
+        {
+            qCInfo(slideShowApp) << "Slide saved to file:" << QString("%1/%2").arg(slidePath, filename);
+        }
+        else
+        {
+            qCWarning(slideShowApp) << "Failed to save slide to file:" << AndroidFileHelper::lastError();
         }
     }
 }

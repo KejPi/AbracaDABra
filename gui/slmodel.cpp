@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,31 +35,6 @@ SLModel::SLModel(const ServiceList *sl, const MetadataManager *mm, QObject *pare
 
     QPixmap nopic(20, 20);
     nopic.fill(Qt::transparent);
-    m_noIcon = QIcon(nopic);
-
-    QPixmap pic;
-#ifdef Q_OS_LINUX
-    // SVG is too big on linux, using PNG instead
-    if (pic.load(":/resources/star.png"))
-    {
-        m_favIcon = QIcon(pic);
-    }
-    else
-    {
-        m_favIcon = m_noIcon;
-        qDebug() << "Unable to load :/resources/star.png";
-    }
-#else
-    if (pic.load(":/resources/star.svg"))
-    {
-        m_favIcon = QIcon(pic);
-    }
-    else
-    {
-        m_favIcon = m_noIcon;
-        qDebug() << "Unable to load :/resources/star.svg";
-    }
-#endif
 }
 
 SLModel::~SLModel()
@@ -91,20 +66,9 @@ QVariant SLModel::data(const QModelIndex &index, int role) const
             case SLModelRole::SmallLogoIdRole:
             case SLModelRole::EpgModelRole:
             case SLModelRole::EnsembleListRole:
+            case SLModelRole::IsFavoriteRole:
+            case SLModelRole::SIdHexRole:
                 return item->data(index.column(), role);
-            case Qt::DecorationRole:
-            {
-                if (item->isFavoriteService())
-                {
-                    return QVariant(m_favIcon);
-                }
-                else
-                {
-                    return QVariant(m_noIcon);
-                }
-                return QVariant();
-            }
-            break;
         }
     }
     return QVariant();
@@ -298,7 +262,10 @@ QHash<int, QByteArray> SLModel::roleNames() const
 {
     QHash<int, QByteArray> roles = QAbstractItemModel::roleNames();
 
+    roles[Qt::DisplayRole] = "serviceName";
+    roles[SLModelRole::IsFavoriteRole] = "isFavorite";
     roles[SLModelRole::IdRole] = "serviceId";
+    roles[SLModelRole::SIdHexRole] = "sidHex";
     roles[SLModelRole::SmallLogoRole] = "smallLogo";
     roles[SLModelRole::SmallLogoIdRole] = "smallLogoId";
     roles[SLModelRole::EpgModelRole] = "epgModelRole";

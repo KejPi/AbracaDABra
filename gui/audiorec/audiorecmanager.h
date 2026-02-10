@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,15 +32,32 @@
 #include "audiorecorder.h"
 #include "audiorecschedulemodel.h"
 #include "settings.h"
+#include "uicontrolprovider.h"
 
-class AudioRecManager : public QObject
+class AudioRecManager : public UIControlProvider
 {
     Q_OBJECT
+    Q_PROPERTY(AudioRecScheduleModel *scheduleModel READ scheduleModel CONSTANT FINAL)
+    Q_PROPERTY(QItemSelectionModel *serviceSelectionModel READ serviceSelectionModel CONSTANT FINAL)
+    UI_PROPERTY(QString, label)
+    UI_PROPERTY(QDate, startDate)
+    UI_PROPERTY(QTime, startTime)
+    UI_PROPERTY(QTime, duration)
+    UI_PROPERTY(QString, stopTime)
+    UI_PROPERTY_DEFAULT(bool, isAudioRecordingActive, false)
+
 public:
     explicit AudioRecManager(AudioRecScheduleModel *model, SLModel *slModel, AudioRecorder *recorder, Settings *settings, QObject *parent = nullptr);
+
+    Q_INVOKABLE void requestItemDialog(bool isEdit);
+    Q_INVOKABLE void addOrEditItem();
+    Q_INVOKABLE void removeItem();
+    Q_INVOKABLE void deleteAll();
+
+    void addItem(const AudioRecScheduleItem &item);  // this slot is used to create new recording from EPG
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
 
-    bool isAudioRecordingActive() const;
+    // bool isAudioRecordingActive() const;
     QString audioRecordingFile() const;
 
     void doAudioRecording(bool start);
@@ -52,7 +69,11 @@ public:
     void onDLComplete(const QString &dl);
     void onDLReset() { m_dlText.clear(); }
 
+    AudioRecScheduleModel *scheduleModel() const { return m_scheduleModel; }
+    QItemSelectionModel *serviceSelectionModel() const { return m_serviceSelectionModel; }
+
 signals:
+    void showRecordingItemDialog();
     void audioRecordingCountdown(int numSec);
     void audioRecordingStarted();
     void audioRecordingStopped();
@@ -86,9 +107,8 @@ private:
 
     Settings *m_settings;
     SLModel *m_slModel;
-    AudioRecScheduleModel *m_model;
+    AudioRecScheduleModel *m_scheduleModel;
     AudioRecorder *m_recorder;
-    bool m_isAudioRecordingActive;
     QString m_audioRecordingFile;
     bool m_haveTimeConnection;
 
@@ -103,6 +123,8 @@ private:
     ServiceListId m_serviceId;
     bool m_haveAudio;
 
+    void addItem();
+    void editItem();
     void updateScheduledRecording();
     void onModelReset();
     void onModelRowsRemoved(const QModelIndex &, int first, int last);
@@ -110,6 +132,9 @@ private:
     void onAudioRecordingProgress(size_t bytes, size_t timeSec);
     void onAudioRecordingStopped();
     void stopCurrentSchedule();
+    void onCurrentIndexChanged();
+    void updateStopTime();
+    QItemSelectionModel *m_serviceSelectionModel = nullptr;
 };
 
 #endif  // AUDIORECMANAGER_H

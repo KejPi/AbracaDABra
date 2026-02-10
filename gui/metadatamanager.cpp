@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,7 +54,7 @@ MetadataManager::~MetadataManager()
         QDir directory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/EPG/");
         QStringList xmlFiles = directory.entryList({"*_PI.xml"}, QDir::Files);
         QString currentDateStr2 = EPGTime::getInstance()->currentDate().addDays(-2).toString("yyyyMMdd");
-        for (const QString &filename : xmlFiles)
+        for (const QString &filename : std::as_const(xmlFiles))
         {
             if (filename.first(8) < currentDateStr2)
             {  // scope is out of range
@@ -68,11 +68,7 @@ MetadataManager::~MetadataManager()
 void MetadataManager::processXML(const QString &xml, const QString &scopeId, uint16_t decoderId)
 {
     QDomDocument xmldocument;
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
     if (!xmldocument.setContent(xml, QDomDocument::ParseOption::UseNamespaceProcessing))
-#else
-    if (!xmldocument.setContent(xml, true))
-#endif
     {
         qCWarning(metadataManager) << "Failed to parse SPI document for:" << scopeId;
         qCDebug(metadataManager) << xml;

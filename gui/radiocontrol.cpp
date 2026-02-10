@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -94,11 +94,7 @@ bool RadioControl::init()
     }
     else
     {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
         qCFatal(radioControl) << "DAB processing init failed";
-#else
-        qCCritical(radioControl) << "DAB processing init failed";
-#endif
         m_dabsdrHandle = nullptr;
 
         return false;
@@ -401,7 +397,7 @@ void RadioControl::onDabEvent(RadioControlEvent *pEvent)
         case RadioControlEventType::TII:
         {
             float maxLevel = 0.0;
-            for (const auto &item : pEvent->pTII->idList)
+            for (const auto &item : std::as_const(pEvent->pTII->idList))
             {
                 maxLevel = std::fmaxf(maxLevel, item.level);
             }
@@ -785,13 +781,12 @@ QString RadioControl::ensembleConfigurationString() const
     strOut << "<dl>";
     strOut << "<dt>Ensemble:</dt>";
     strOut << QString("<dd>0x%1 <b>%2</b> [ <i>%3</i> ]  ECC: 0x%4, UTC %5 min, INT: %6, alarm announcements: %7</dd>")
-                  .arg(QString("%1").arg(m_ensemble.eid(), 4, 16, QChar('0')).toUpper())
-                  .arg(m_ensemble.label.toHtmlEscaped())
-                  .arg(m_ensemble.labelShort.toHtmlEscaped())
-                  .arg(QString("%1").arg(m_ensemble.ecc(), 2, 16, QChar('0')).toUpper())
+                  .arg(QString("%1").arg(m_ensemble.eid(), 4, 16, QChar('0')).toUpper(), m_ensemble.label.toHtmlEscaped(),
+                       m_ensemble.labelShort.toHtmlEscaped(), QString("%1").arg(m_ensemble.ecc(), 2, 16, QChar('0')).toUpper())
                   .arg(m_ensemble.LTO * 30)
                   .arg(m_ensemble.intTable)
                   .arg(m_ensemble.alarm);
+
     strOut << "</dl>";
 
     strOut << "<dl>";
@@ -808,11 +803,8 @@ QString RadioControl::ensembleConfigurationString() const
         if (s.SId.isProgServiceId())
         {  // programme service
             strOut << QString("0x%1 <b>%2</b> [ <i>%3</i> ] ECC: 0x%4, Country: %5,")
-                          .arg(QString("%1").arg(s.SId.progSId(), 4, 16, QChar('0')).toUpper())
-                          .arg(s.label.toHtmlEscaped())
-                          .arg(s.labelShort.toHtmlEscaped())
-                          .arg(QString("%1").arg(s.SId.ecc(), 2, 16, QChar('0')).toUpper())
-                          .arg(DabTables::getCountryNameEnglish(s.SId.value()));
+                          .arg(QString("%1").arg(s.SId.progSId(), 4, 16, QChar('0')).toUpper(), s.label.toHtmlEscaped(), s.labelShort.toHtmlEscaped(),
+                               QString("%1").arg(s.SId.ecc(), 2, 16, QChar('0')).toUpper(), DabTables::getCountryNameEnglish(s.SId.value()));
 
             // ETSI EN 300 401 V2.1.1 [8.1.5]
             // At any one time, the PTy shall be either Static or Dynamic;
@@ -861,9 +853,7 @@ QString RadioControl::ensembleConfigurationString() const
         else
         {  // data service
             strOut << QString("0x%1 <b>%2</b> [ <i>%3</i> ]")
-                          .arg(QString("%1").arg(s.SId.value(), 8, 16, QChar('0')).toUpper())
-                          .arg(s.label.toHtmlEscaped())
-                          .arg(s.labelShort.toHtmlEscaped());
+                          .arg(QString("%1").arg(s.SId.value(), 8, 16, QChar('0')).toUpper(), s.label.toHtmlEscaped(), s.labelShort.toHtmlEscaped());
         }
         if (s.CAId)
         {
@@ -980,8 +970,7 @@ QString RadioControl::ensembleConfigurationString() const
                 strOut << QString("UserApp %1/%2: Label: '%3' [ '%4' ], ")
                               .arg(uaCntr++)
                               .arg(sc.userApps.size())
-                              .arg(ua.label.toHtmlEscaped())
-                              .arg(ua.labelShort.toHtmlEscaped());
+                              .arg(ua.label.toHtmlEscaped(), ua.labelShort.toHtmlEscaped());
 
                 strOut
                     << QString("UAType: 0x%1 (%2)").arg(QString::number(int(ua.uaType), 16).toUpper(), DabTables::getUserApplicationName(ua.uaType));
@@ -2483,14 +2472,8 @@ void RadioControl::dabNotificationCb(dabsdrNotificationCBData_t *p, void *ctx)
         {
             const dabsdrNtfTii_t *pInfo = static_cast<const dabsdrNtfTii_t *>(p->pData);
             RadioControlTIIData *pData = new RadioControlTIIData;
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 6, 0))
+
             pData->idList.assign(pInfo->id, pInfo->id + pInfo->numIds);
-#else
-            for (int n = 0; n < pInfo->numIds; ++n)
-            {
-                pData->idList.append(pInfo->id[n]);
-            }
-#endif
             pInfo->getSpectrumTii(radioCtrl->m_dabsdrHandle, pData->spectrum.data());
 
             RadioControlEvent *pEvent = new RadioControlEvent;

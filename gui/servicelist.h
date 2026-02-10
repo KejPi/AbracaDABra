@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -74,7 +74,7 @@ public:
     void save(const QString &filename);
     void load(const QString &filename);
     void loadFromSettings(QSettings *settings);
-    void exportCSV(const QString &filename);
+    void exportCSV(const QString &path, const QString &filename);
 
     void beginEnsembleUpdate(const RadioControlEnsemble &e);
     void endEnsembleUpdate(const RadioControlEnsemble &e);

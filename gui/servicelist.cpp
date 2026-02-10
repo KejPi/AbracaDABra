@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,9 @@
 #include <QFileInfo>
 #include <QJsonDocument>
 #include <QLoggingCategory>
+
+#include "androidfilehelper.h"
+#include "settings.h"
 
 Q_LOGGING_CATEGORY(serviceList, "ServiceList", QtInfoMsg)
 
@@ -426,16 +429,12 @@ void ServiceList::loadFromSettings(QSettings *settings)
     settings->endArray();
 }
 
-void ServiceList::exportCSV(const QString &filename)
+void ServiceList::exportCSV(const QString &path, const QString &filename)
 {
-    QFile file(filename);
-    if (!file.open(QIODevice::WriteOnly))
-    {
-        qCWarning(serviceList) << "Failed to export CSV file.";
-        return;
-    }
+    // Build CSV content
+    QString csvContent;
+    QTextStream out(&csvContent);
 
-    QTextStream out(&file);
     // header
     out << tr("Service name;Short label;SID;SCIdS;Number of ensembles") << Qt::endl;
     // export in alphabetical order
@@ -456,7 +455,32 @@ void ServiceList::exportCSV(const QString &filename)
                 << it.value()->SCIdS() << ";" << it.value()->numEnsembles() << Qt::endl;
         }
     }
-    file.close();
+
+    // Ensure path exists and writable
+    if (!AndroidFileHelper::mkpath(path))
+    {
+        qCWarning(serviceList) << "Failed to create export directory:" << AndroidFileHelper::lastError();
+        return;
+    }
+
+    if (AndroidFileHelper::isContentUri(path))
+    {
+        // No additional subdir, just ensure trailing encoding handled
+        if (!AndroidFileHelper::hasWritePermission(path))
+        {
+            qCWarning(serviceList) << "No permission to write to:" << path;
+            return;
+        }
+    }
+
+    if (AndroidFileHelper::writeTextFile(path, filename, csvContent, "text/csv"))
+    {
+        qCInfo(serviceList) << "Service list exported to:" << QString("%1/%2").arg(path, filename);
+    }
+    else
+    {
+        qCWarning(serviceList) << "Failed to save log CSV:" << AndroidFileHelper::lastError();
+    }
 }
 
 // this marks all services as obsolete

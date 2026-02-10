@@ -1,0 +1,137 @@
+{
+    "version": 3,
+    "vendor": {
+        "example": {
+            "autoFormat": false
+        }
+    },
+    "configurePresets": [
+        {
+            "name": "Qt-6.7.3-macos",
+            "displayName": "Qt 6.7.3 macOS Base",
+            "description": "Base configuration for Qt 6.7.3 on macOS",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_PREFIX_PATH": "$env{HOME}/Devel/Qt/6.7.3/macos/lib/cmake"
+            }
+        },
+        {
+            "name": "macos-debug-6.7.3",
+            "displayName": "macOS Debug Qt 6.7.3",
+            "description": "Debug build for macOS with Qt 6.7.3",
+            "binaryDir": "${sourceDir}/build/macos-debug-6.7.3",
+            "inherits": "Qt-6.7.3-macos",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_OSX_DEPLOYMENT_TARGET": "11",
+                "APPLE_APP_BUNDLE": "ON",
+                "USE_PORTAUDIO": "ON",
+                "AIRSPY": "OFF",
+                "SOAPYSDR": "OFF",
+                "RARTTCP": "OFF"
+            },
+            "environment": {
+                "CC": "clang",
+                "CXX": "clang++"
+            }
+        },
+        {
+            "name": "macos-release-6.7.3",
+            "displayName": "macOS Release Qt 6.7.3",
+            "description": "Release build for macOS with Qt 6.7.3",
+            "binaryDir": "${sourceDir}/build/macos-release-6.7.3",
+            "inherits": "Qt-6.7.3-macos",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_OSX_DEPLOYMENT_TARGET": "11",
+                "APPLE_APP_BUNDLE": "ON",
+                "USE_PORTAUDIO": "ON",
+                "AIRSPY": "OFF",
+                "SOAPYSDR": "OFF",
+                "RARTTCP": "OFF"
+            },
+            "environment": {
+                "CC": "clang",
+                "CXX": "clang++"
+            }
+        },
+        {
+            "name": "android-arm64-qt-6.8.3",
+            "displayName": "Qt 6.8.3 Android arm64 Base",
+            "description": "Base configuration for Android arm64 with Qt 6.8.3",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_WARN_DEPRECATED": "OFF",
+                "CMAKE_TOOLCHAIN_FILE": "$env{ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake",
+                "ANDROID_ABI": "arm64-v8a",
+                "ANDROID_PLATFORM": "android-30",
+                "ANDROID_STL": "c++_shared",
+                "CMAKE_FIND_ROOT_PATH": "$env{QT_PATH_ANDROID}/",
+                "CMAKE_PREFIX_PATH": "$env{QT_PATH_ANDROID}/",
+                "ANDROID_USE_LEGACY_TOOLCHAIN_FILE": "OFF",
+                "ANDROID_SDK_ROOT": "$env{ANDROID_SDK_ROOT}",
+                "QT_HOST_PATH": "$env{HOME}/Devel/Qt/6.8.3/macos",
+                "QT_NO_GLOBAL_APK_TARGET_PART_OF_ALL": "ON",
+                "QT_USE_TARGET_ANDROID_BUILD_DIR": "ON",
+                "ANDROID_OPENSSL_DIR": "$env{HOME}/Library/Android/sdk/android_openssl"
+            },
+            "environment": {
+                "ANDROID_SDK_ROOT": "$env{HOME}/Library/Android/sdk",
+                "ANDROID_NDK_ROOT": "$env{HOME}/Library/Android/sdk/ndk/27.2.12479018",
+                "QT_PATH_ANDROID": "$env{HOME}/Devel/Qt/6.8.3/android_arm64_v8a",
+                "ANDROID_LIBS_DIR": "$env{HOME}/Devel/AbracaDABra-libs-android_arm64-v8a"
+            }
+        },
+        {
+            "name": "android-arm64-debug",
+            "displayName": "Android arm64-v8a Debug",
+            "description": "Debug build for Android arm64",
+            "inherits": "android-arm64-qt-6.8.3",
+            "binaryDir": "${sourceDir}/build/android-arm64-debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_FLAGS_INIT": "-DQT_QML_DEBUG",
+                "EXTERNAL_LIBS_DIR": "$env{ANDROID_LIBS_DIR}",
+                "AIRSPY": "ON",
+                "SOAPYSDR": "OFF",
+                "RARTTCP": "OFF",
+                "USE_PORTAUDIO": "OFF"
+            }
+        },
+        {
+            "name": "android-arm64-release",
+            "displayName": "Android arm64-v8a Release",
+            "description": "Release build for Android arm64",
+            "inherits": "android-arm64-qt-6.8.3",
+            "binaryDir": "${sourceDir}/build/android-arm64-release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "EXTERNAL_LIBS_DIR": "$env{ANDROID_LIBS_DIR}",
+                "AIRSPY": "ON",
+                "SOAPYSDR": "OFF",
+                "RARTTCP": "OFF",
+                "USE_PORTAUDIO": "OFF"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "macos-debug",
+            "configurePreset": "macos-debug-6.7.3"
+        },
+        {
+            "name": "macos-release",
+            "configurePreset": "macos-release-6.7.3"
+        },
+        {
+            "name": "android-arm64-debug",
+            "configurePreset": "android-arm64-debug"
+        },
+        {
+            "name": "android-arm64-release",
+            "configurePreset": "android-arm64-release"
+        }
+    ]
+}

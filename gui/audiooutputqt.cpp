@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,11 @@
 #include <QDebug>
 #include <QLoggingCategory>
 #include <QThread>
+
+#ifdef Q_OS_ANDROID
+#include <QCoreApplication>
+#include <QJniObject>
+#endif
 
 Q_LOGGING_CATEGORY(audioOutput, "AudioOutput", QtInfoMsg)
 
@@ -168,7 +173,7 @@ void AudioOutputQt::setAudioDevice(const QByteArray &deviceId)
     m_useDefaultDevice = false;
 
     QList<QAudioDevice> list = getAudioDevices();
-    for (const auto &dev : list)
+    for (const auto &dev : std::as_const(list))
     {
         if (dev.id() == deviceId)
         {
@@ -206,6 +211,11 @@ void AudioOutputQt::stop()
         { /* were are already muted - doStop now */
         }
 
+#ifdef Q_OS_ANDROID
+        // Mark this as user-initiated stop on Android
+        QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", "onUserStoppedPlayback", "()V");
+#endif
+
         doStop();
     }
     else
@@ -217,6 +227,11 @@ void AudioOutputQt::doStop()
 {
     m_audioSink->stop();
     m_ioDevice->close();
+
+#ifdef Q_OS_ANDROID
+    // Release wake lock when audio stops on Android
+    releaseAndroidWakeLock();
+#endif
 }
 
 void AudioOutputQt::doRestart(audioFifo_t *buffer)
@@ -300,6 +315,25 @@ void AudioIODevice::start()
 
     // for testing of error
     // QTimer::singleShot(10000, this, [this](){ m_doStop = true; } );
+#ifdef AUDIO_DEBUG_STATS
+    if (m_statsTimer)
+    {
+        m_statsTimer->stop();
+        delete m_statsTimer;
+    }
+    m_statsTimer = new QTimer(this);
+    connect(m_statsTimer, &QTimer::timeout, this,
+            [this]()
+            {
+                qDebug() << "Output    " << m_byteCounter * 0.1 << m_bufferFullnessAvrg * 1.0 / (AUDIO_FIFO_SIZE * m_avrgCntr);
+                m_bufferFullnessAvrg = 0;
+                m_avrgCntr = 0;
+                m_byteCounter = 0;
+            });
+
+    m_statsTimer->setInterval(10000);
+    m_statsTimer->start();
+#endif
 }
 
 void AudioIODevice::stop()
@@ -326,13 +360,23 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
 
     uint64_t numSamples = len / m_bytesPerFrame;
 
-    // qDebug() << Q_FUNC_INFO << len << count;
+#ifdef AUDIO_DEBUG_STATS
+    m_byteCounter += len;
+    m_bufferFullnessAvrg += count;
+    m_avrgCntr++;
+#endif
+    // qDebug() << "Audio:" << len << count << count * 1.0 / AUDIO_FIFO_SIZE;
 
     if (AudioOutputPlaybackState::Muted == m_playbackState)
     {  // muted
-        // condition to unmute is enough samples
-        if (count > 500 * m_sampleRate_kHz * m_bytesPerFrame)  // 800ms of signal
-        {                                                      // enough samples => reading data from input fifo
+       // condition to unmute is enough samples
+#ifdef Q_OS_ANDROID
+       // if (count > 1000 * m_sampleRate_kHz * m_bytesPerFrame)  // 1000ms of signal
+        if (count > 10 * len)  // dynamic condition. depends how much is requested
+#else
+        if (count > 500 * m_sampleRate_kHz * m_bytesPerFrame)  // 500ms of signal
+#endif
+        {  // enough samples => reading data from input fifo
             if (muteRequest)
             {  // staying muted -> setting output buffer to 0
                 memset(data, 0, bytesToRead);
@@ -561,6 +605,69 @@ qint64 AudioIODevice::writeData(const char *data, qint64 len)
 
     return 0;
 }
+
+#ifdef Q_OS_ANDROID
+void AudioOutputQt::acquireAndroidWakeLock()
+{
+    try
+    {
+        QJniObject context = QNativeInterface::QAndroidApplication::context();
+        if (context.isValid())
+        {
+            QJniObject::callStaticMethod<jboolean>("org/qtproject/abracadabra/AudioServiceHelper", "acquireWakeLock", "(Landroid/content/Context;)Z",
+                                                   context.object<jobject>());
+            qCInfo(audioOutput) << "Android wake lock acquired for background audio playback";
+        }
+        else
+        {
+            qCWarning(audioOutput) << "Failed to get Android context for wake lock";
+        }
+    }
+    catch (...)
+    {
+        qCWarning(audioOutput) << "Exception while acquiring Android wake lock";
+    }
+}
+
+void AudioOutputQt::releaseAndroidWakeLock()
+{
+    try
+    {
+        QJniObject context = QNativeInterface::QAndroidApplication::context();
+        if (context.isValid())
+        {
+            QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", "releaseWakeLock", "(Landroid/content/Context;)V",
+                                               context.object<jobject>());
+            qCInfo(audioOutput) << "Android wake lock released";
+        }
+    }
+    catch (...)
+    {
+        qCWarning(audioOutput) << "Exception while releasing Android wake lock";
+    }
+}
+
+void AudioOutputQt::updateAndroidNotification(const QString &title, const QString &text)
+{
+    try
+    {
+        QJniObject context = QNativeInterface::QAndroidApplication::context();
+        if (context.isValid())
+        {
+            QJniObject jTitle = QJniObject::fromString(title);
+            QJniObject jText = QJniObject::fromString(text);
+
+            QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", "updateNotification",
+                                               "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V", context.object<jobject>(),
+                                               jTitle.object<jstring>(), jText.object<jstring>());
+        }
+    }
+    catch (...)
+    {
+        qCWarning(audioOutput) << "Exception while updating Android notification";
+    }
+}
+#endif
 
 qint64 AudioIODevice::bytesAvailable() const
 {

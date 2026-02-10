@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2025 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,8 @@
 #include <QSaveFile>
 #include <QStandardPaths>
 
+#include "androidfilehelper.h"
+
 Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtInfoMsg)
 
 SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
@@ -46,13 +48,18 @@ SPIApp::SPIApp(QObject *parent) : UserApplication(parent)
     m_netAccessManager = nullptr;
     m_useInternet = false;
     m_enaRadioDNS = false;
+#ifdef Q_OS_ANDROID
+    // QDnsLookup does not work on Android, so we have to use DoH for RadioDNS lookups on Android
+    m_useDoH = true;
+#else
     m_useDoH = false;
+#endif
 }
 
 SPIApp::~SPIApp()
 {
     // delete all decoders
-    for (const auto &decoder : m_decoderMap)
+    for (const auto &decoder : std::as_const(m_decoderMap))
     {
         delete decoder;
     }
@@ -89,11 +96,7 @@ void SPIApp::start()
         connect(m_netAccessManager, &QNetworkAccessManager::finished, this, &SPIApp::onFileDownloaded);
 
         QNetworkDiskCache *diskCache = new QNetworkDiskCache(this);
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
         QString directory = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1StringView("/cacheDir/");
-#else
-        QString directory = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QString("/cacheDir/");
-#endif
         diskCache->setCacheDirectory(directory);
         m_netAccessManager->setCache(diskCache);
     }
@@ -145,7 +148,7 @@ void SPIApp::setDataDumping(const Settings::UADumpSettings &settings)
 {
     m_dumpEna = settings.spiEna;
     m_dumpOverwrite = settings.overwriteEna;
-    m_dumpPath = settings.folder;
+    m_dumpPath = settings.dataStoragePath;
     if (settings.spiPattern.startsWith('/'))
     {
         m_dumpPattern = settings.spiPattern;
@@ -154,8 +157,6 @@ void SPIApp::setDataDumping(const Settings::UADumpSettings &settings)
     {
         m_dumpPattern = "/" + settings.spiPattern;
     }
-
-    qCDebug(spiApp) << m_dumpPath + m_dumpPattern;
 }
 
 void SPIApp::enable(bool ena)
@@ -352,28 +353,61 @@ void SPIApp::processObject(uint16_t decoderId, MOTObjectCache::const_iterator ob
 
 void SPIApp::dumpFile(uint16_t decoderId, int transportId, QString contentName, const QByteArray &data)
 {
-    QString filename = m_dumpPattern;
-    filename.replace("{ensId}", QString("%1").arg(m_ueid, 6, 16, QChar('0')));
-    filename.replace("{serviceId}", QString("%1").arg(m_SId.value(), 6, 16, QChar('0')));
-    filename.replace("{transportId}", QString().setNum(transportId));
-    filename.replace("{scId}", QString().setNum(decoderId));
-    filename.replace("{directoryId}", QString().setNum(m_decoderMap[decoderId]->getDirectoryId()));
+    QString filenameWithPath = m_dumpPattern;
+    filenameWithPath.replace("{ensId}", QString("%1").arg(m_ueid, 6, 16, QChar('0')));
+    filenameWithPath.replace("{serviceId}", QString("%1").arg(m_SId.value(), 6, 16, QChar('0')));
+    filenameWithPath.replace("{transportId}", QString().setNum(transportId));
+    filenameWithPath.replace("{scId}", QString().setNum(decoderId));
+    filenameWithPath.replace("{directoryId}", QString().setNum(m_decoderMap[decoderId]->getDirectoryId()));
 
     // remove problematic characters
     static const QRegularExpression regexp("[" + QRegularExpression::escape("/:*?\"<>|") + "]");
     contentName.replace(regexp, "_");
-    filename.replace("{contentName}", contentName);
+    filenameWithPath.replace("{contentName}", contentName);
 
-    QFile file(m_dumpPath + filename);
-    if (!file.exists() || m_dumpOverwrite)
-    {  // file does not exist of overwriting is enabled == > store file
-        QDir dir;
-        dir.mkpath(QFileInfo(file).absolutePath());
-        if (file.open(QIODevice::WriteOnly))
+    if (!filenameWithPath.isEmpty())
+    {
+        // split filename path to dirs and file
+        QString filename;
+        QString fileSubdir;
+        int lastSlashIdx = filenameWithPath.lastIndexOf('/');
+        if (lastSlashIdx >= 0)
         {
-            qCInfo(spiApp) << "Storing file:" << file.fileName();
-            file.write(data);
-            file.close();
+            filename = filenameWithPath.mid(lastSlashIdx + 1);
+            fileSubdir = filenameWithPath.left(lastSlashIdx);
+        }
+        else
+        {  // no path in filename ==> error
+            qCWarning(spiApp) << "Cannot store slide:" << filenameWithPath;
+            return;
+        }
+
+        // prepend UA directory
+        fileSubdir = QString("%1%2").arg(UA_DIR_NAME, fileSubdir);
+
+        const QString dataPath = AndroidFileHelper::buildSubdirPath(m_dumpPath, fileSubdir);
+
+        // Ensure directory exists and is writable
+        if (!AndroidFileHelper::mkpath(m_dumpPath, fileSubdir))
+        {
+            qCWarning(spiApp) << "Failed to create slide export directory:" << AndroidFileHelper::lastError();
+            return;
+        }
+
+        if (!AndroidFileHelper::hasWritePermission(dataPath))
+        {
+            qCWarning(spiApp) << "No permission to write to:" << dataPath;
+            qCWarning(spiApp) << "Please select a new data storage folder in settings.";
+            return;
+        }
+
+        if (AndroidFileHelper::writeBinaryFile(dataPath, filename, data, "application/octet-stream", m_dumpOverwrite))
+        {
+            qCInfo(spiApp) << "Storing file:" << QString("%1/%2").arg(dataPath, filename);
+        }
+        else
+        {
+            qCWarning(spiApp) << "Failed to file:" << AndroidFileHelper::lastError();
         }
     }
 }
@@ -1590,7 +1624,7 @@ void SPIApp::radioDNSLookup(const QString &fqdn)
 
                 if (!m_dnsCache[fqdn].isEmpty())
                 {  // valid address
-                    downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(m_dnsCache[fqdn]).arg(file), "XML|" + file);
+                    downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(m_dnsCache[fqdn], file), "XML|" + file);
                 }
                 else
                 {
@@ -1731,7 +1765,7 @@ void SPIApp::handleRadioDNSLookup()
             }
             m_dnsCache[fqdn] = address;
             QString file = request.second;
-            downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(address).arg(file), "XML|" + file);
+            downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(address, file), "XML|" + file);
             if (!m_radioDnsDownloadQueue.isEmpty())
             {
                 QString fqdn = m_radioDnsDownloadQueue.head().first;
