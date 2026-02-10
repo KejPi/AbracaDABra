@@ -1,7 +1,3 @@
-# Debug options
-option (TII_SPECTRUM_PLOT "Enable spectrum plot for TII"  ON)
-
-
 #########################################################
 ## Pictures
 list (APPEND RESOURCES resources.qrc)

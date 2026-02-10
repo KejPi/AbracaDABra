@@ -79,9 +79,7 @@ void TIIBackend::onTiiData(const RadioControlTIIData &data)
 
     emit ensembleInfoChanged();
 
-#if TII_SPECTRUM_PLOT
     addToPlot(data);
-#endif
     logTiiData();
 }
 
