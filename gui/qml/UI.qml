@@ -74,7 +74,7 @@ QtObject {
     readonly property int navigationButtonSize: isAndroid ? 54 : 60
     readonly property int navigationSmallButtonSize: isAndroid ? 48 : 44
 
-    readonly property int smallFontPointSize: Qt.application.font.pointSize - 2
+    readonly property int smallFontPointSize: Qt.application.font.pointSize - (isWindows ? 1 : 2)
     readonly property int biggerFontPointSize: Qt.application.font.pointSize + 2
     readonly property int largeFontPointSize: Qt.application.font.pointSize + 4
     readonly property int toolTipOffsetX: 15
