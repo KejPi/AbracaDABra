@@ -41,17 +41,17 @@
     <message>
         <location filename="../aboutui.cpp" line="79"/>
         <source>Czech</source>
-        <translation>čeština</translation>
+        <translation>Čeština</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="82"/>
         <source>German</source>
-        <translation>němčina</translation>
+        <translation>Němčina</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="85"/>
         <source>Polish</source>
-        <translation>polština</translation>
+        <translation>Polština</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="88"/>
@@ -82,7 +82,7 @@
     <message>
         <location filename="../qml/controls/AbracaRecordingButton.qml" line="60"/>
         <source>Stop recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukončit záznam</translation>
     </message>
 </context>
 <context>
@@ -90,7 +90,7 @@
     <message>
         <location filename="../qml/controls/AbracaTimePicker.qml" line="38"/>
         <source>Time</source>
-        <translation type="unfinished">Čas</translation>
+        <translation>Čas</translation>
     </message>
     <message>
         <location filename="../qml/controls/AbracaTimePicker.qml" line="147"/>
@@ -113,83 +113,83 @@
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="63"/>
         <source>Reload</source>
-        <translation type="unfinished">Obnovit</translation>
+        <translation>Obnovit</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="73"/>
         <source>Use any available Airspy device if the selected one fails</source>
-        <translation type="unfinished">Použít jakékoli Airspy zařízení, pokud vybrané nelze připojit</translation>
+        <translation>Použít jakékoli Airspy zařízení, pokud vybrané nelze připojit</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="94"/>
         <source>Connected device:</source>
-        <translation type="unfinished">Připojené zařízení:</translation>
+        <translation>Připojené zařízení:</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="97"/>
         <source>Serial number:</source>
-        <translation type="unfinished">Sériové číslo:</translation>
+        <translation>Sériové číslo:</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="115"/>
         <source>Gain control</source>
-        <translation type="unfinished">Ovládání zesílení</translation>
+        <translation>Ovládání zesílení</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
         <source>Software</source>
-        <translation type="unfinished">Software</translation>
+        <translation>Software</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
         <source>Hybrid</source>
-        <translation type="unfinished">Hybridní</translation>
+        <translation>Hybridní</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
         <source>Sensitivity</source>
-        <translation type="unfinished">Citlivost</translation>
+        <translation>Citlivost</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
         <source>Manual</source>
-        <translation type="unfinished">Manuálně</translation>
+        <translation>Manuálně</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="151"/>
         <source>Sensitivity gain</source>
-        <translation type="unfinished">Zesílení citlivosti</translation>
+        <translation>Zesílení citlivosti</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="172"/>
         <source>LNA gain</source>
-        <translation type="unfinished">Zesílení LNA</translation>
+        <translation>Zesílení LNA</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="193"/>
         <location filename="../qml/settings/AirspyDevice.qml" line="222"/>
         <source>AGC</source>
-        <translation type="unfinished">AGC</translation>
+        <translation>AGC</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="202"/>
         <source>Mixer gain</source>
-        <translation type="unfinished">Zesílení mixeru</translation>
+        <translation>Zesílení mixeru</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="231"/>
         <source>IF gain</source>
-        <translation type="unfinished">Zesílení IF</translation>
+        <translation>Zesílení IF</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="260"/>
         <source>Expert settings</source>
-        <translation type="unfinished">Pokročilá nastavení</translation>
+        <translation>Pokročilá nastavení</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="271"/>
         <source>Bias Tee:</source>
-        <translation type="unfinished">Bias Tee:</translation>
+        <translation>Bias Tee:</translation>
     </message>
 </context>
 <context>
@@ -197,12 +197,12 @@
     <message>
         <location filename="../qml/settings/AnnouncementSettings.qml" line="68"/>
         <source>Alarm announcements</source>
-        <translation type="unfinished">Hlášení alarmu</translation>
+        <translation>Hlášení alarmu</translation>
     </message>
     <message>
         <location filename="../qml/settings/AnnouncementSettings.qml" line="98"/>
         <source>&lt;br&gt;Note: Alarm announcement cannot be disabled.</source>
-        <translation type="unfinished">&lt;br&gt;Poznámka: Hlášení alarmu nelze deaktivovat.</translation>
+        <translation>&lt;br&gt;Poznámka: Hlášení alarmu nelze deaktivovat.</translation>
     </message>
     <message>
         <location filename="../qml/settings/AnnouncementSettings.qml" line="103"/>
@@ -212,7 +212,7 @@
     <message>
         <location filename="../qml/settings/AnnouncementSettings.qml" line="123"/>
         <source>Regular announcements</source>
-        <translation type="unfinished">Běžná hlášení</translation>
+        <translation>Běžná hlášení</translation>
     </message>
 </context>
 <context>
@@ -220,7 +220,7 @@
     <message>
         <location filename="../qml/AppLog.qml" line="34"/>
         <source>Application log</source>
-        <translation type="unfinished">Log aplikace</translation>
+        <translation>Log aplikace</translation>
     </message>
 </context>
 <context>
@@ -233,7 +233,7 @@
     <message>
         <location filename="../qml/AppLogView.qml" line="70"/>
         <source>Copy to clipboard</source>
-        <translation type="unfinished">Kopírovat do schránky</translation>
+        <translation>Kopírovat do schránky</translation>
     </message>
     <message>
         <location filename="../qml/AppLogView.qml" line="75"/>
@@ -246,169 +246,169 @@
     <message>
         <location filename="../application.cpp" line="121"/>
         <source>No signal</source>
-        <translation type="unfinished">Bez signálu</translation>
+        <translation>Bez signálu</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="121"/>
         <source>Signal found</source>
-        <translation type="unfinished">Detekován signál</translation>
+        <translation>Detekován signál</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="121"/>
         <source>Sync</source>
-        <translation type="unfinished">Sync</translation>
+        <translation>Sync</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="122"/>
         <source>DAB signal not detected&lt;br&gt;Looking for signal...</source>
-        <translation type="unfinished">DAB signál nenalezen&lt;br&gt;Hledám signál...</translation>
+        <translation>DAB signál nenalezen&lt;br&gt;Hledám signál...</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="123"/>
         <source>Found DAB signal,&lt;br&gt;trying to synchronize...</source>
-        <translation type="unfinished">DAB signál detekován,&lt;br&gt;zkouším synchronizovat...</translation>
+        <translation>DAB signál detekován,&lt;br&gt;zkouším synchronizovat...</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="123"/>
         <source>Synchronized to DAB signal</source>
-        <translation type="unfinished">Přijímám DAB signál</translation>
+        <translation>Přijímám DAB signál</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="351"/>
         <location filename="../application.cpp" line="353"/>
         <source>Mute</source>
-        <translation type="unfinished">Vypnout zvuk</translation>
+        <translation>Vypnout zvuk</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="353"/>
         <source>Unmute</source>
-        <translation type="unfinished">Zapnout zvuk</translation>
+        <translation>Zapnout zvuk</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="408"/>
         <source>Audio coding</source>
-        <translation type="unfinished">Kódování zvuku</translation>
+        <translation>Kódování zvuku</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="413"/>
         <source>Ongoing announcement</source>
-        <translation type="unfinished">Probíhá hlášení</translation>
+        <translation>Probíhá hlášení</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="825"/>
         <source>&lt;b&gt;Ensemble:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %5</source>
-        <translation type="unfinished">&lt;b&gt;Multiplex:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Krátký název:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Stát:&lt;/b&gt; %5</translation>
+        <translation>&lt;b&gt;Multiplex:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Krátký název:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Stát:&lt;/b&gt; %5</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1005"/>
         <source>System time</source>
-        <translation type="unfinished">Systémový čas</translation>
+        <translation>Systémový čas</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1015"/>
         <location filename="../application.cpp" line="4044"/>
         <source>DAB time</source>
-        <translation type="unfinished">Čas z DAB vysílání</translation>
+        <translation>Čas z DAB vysílání</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1025"/>
         <source>&lt;b&gt;DAB audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
-        <translation type="unfinished">&lt;b&gt;Kódování zvuku DAB&lt;/b&gt;&lt;br&gt;%1</translation>
+        <translation>&lt;b&gt;Kódování zvuku DAB&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1025"/>
         <source>MPEG-1 layer 2</source>
-        <translation type="unfinished">MPEG-1 layer 2</translation>
+        <translation>MPEG-1 layer 2</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1029"/>
         <location filename="../application.cpp" line="1033"/>
         <location filename="../application.cpp" line="1037"/>
         <source>&lt;b&gt;DAB+ audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
-        <translation type="unfinished">&lt;b&gt;Kódování zvuku DAB+&lt;/b&gt;&lt;br&gt;%1</translation>
+        <translation>&lt;b&gt;Kódování zvuku DAB+&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1029"/>
         <source>MPEG-4 Low Complexity AAC</source>
-        <translation type="unfinished">MPEG-4 Low Complexity AAC</translation>
+        <translation>MPEG-4 Low Complexity AAC</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1033"/>
         <source>MPEG-4 High Efficiency AAC</source>
-        <translation type="unfinished">MPEG-4 High Efficiency AAC</translation>
+        <translation>MPEG-4 High Efficiency AAC</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1037"/>
         <source>MPEG-4 High Efficiency AAC v2</source>
-        <translation type="unfinished">MPEG-4 High Efficiency AAC v2</translation>
+        <translation>MPEG-4 High Efficiency AAC v2</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1054"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Sample rate: %2 kHz</source>
-        <translation type="unfinished">&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Vzorkovací frekvence: %2 kHz</translation>
+        <translation>&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Vzorkovací frekvence: %2 kHz</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1058"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Sample rate: %2 kHz (SBR %3)</source>
-        <translation type="unfinished">&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Vzorkovací frekvence: %2 kHz (SBR %3)</translation>
+        <translation>&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Vzorkovací frekvence: %2 kHz (SBR %3)</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1059"/>
         <location filename="../application.cpp" line="1061"/>
         <source>on</source>
-        <translation type="unfinished">zapnuto</translation>
+        <translation>zapnuto</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1059"/>
         <location filename="../application.cpp" line="1061"/>
         <source>off</source>
-        <translation type="unfinished">vypnuto</translation>
+        <translation>vypnuto</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1069"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz</source>
-        <translation type="unfinished">&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Vzorkovací frekvence: %1 kHz</translation>
+        <translation>&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Vzorkovací frekvence: %1 kHz</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1074"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz (SBR: %2)</source>
-        <translation type="unfinished">&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Vzorkovací frekvence: %1 kHz (SBR: %2)</translation>
+        <translation>&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Vzorkovací frekvence: %1 kHz (SBR: %2)</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1095"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1 (dynamic)</source>
-        <translation type="unfinished">&lt;b&gt;Typ programu (PTY)&lt;/b&gt;&lt;br&gt;%1 (dynamický)</translation>
+        <translation>&lt;b&gt;Typ programu (PTY)&lt;/b&gt;&lt;br&gt;%1 (dynamický)</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1102"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1</source>
-        <translation type="unfinished">&lt;b&gt;Typ programu (PTY)&lt;/b&gt;&lt;br&gt;%1</translation>
+        <translation>&lt;b&gt;Typ programu (PTY)&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1122"/>
         <source>Tuning...  </source>
-        <translation type="unfinished">Ladím...  </translation>
+        <translation>Ladím...  </translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1185"/>
         <location filename="../application.cpp" line="1198"/>
         <source>Tune to %1</source>
-        <translation type="unfinished">Přeladit na %1</translation>
+        <translation>Přeladit na %1</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1285"/>
         <source>End of file</source>
-        <translation type="unfinished">Konec soubory</translation>
+        <translation>Konec soubory</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1286"/>
         <source>Select any service to restart</source>
-        <translation type="unfinished">Přehrávání se restartuje po zvolení stanice</translation>
+        <translation>Přehrávání se restartuje po zvolení stanice</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1300"/>
         <source>Input device error: Device disconnected</source>
-        <translation type="unfinished">Chyba vstupního zařízení: Zařízení odpojeno</translation>
+        <translation>Chyba vstupního zařízení: Zařízení odpojeno</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1301"/>
@@ -419,17 +419,17 @@
     <message>
         <location filename="../application.cpp" line="1312"/>
         <source>Input device error: No data</source>
-        <translation type="unfinished">Chyba vstupního zařízení: Žádná data</translation>
+        <translation>Chyba vstupního zařízení: Žádná data</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1336"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you change DAB channel.</source>
-        <translation type="unfinished">Probíhá nahrávání zvuku. Záznam bude ukončen a uložen pokud přeladíte na jiný DAB kanál.</translation>
+        <translation>Probíhá nahrávání zvuku. Záznam bude ukončen a uložen pokud přeladíte na jiný DAB kanál.</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1339"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you switch current service.</source>
-        <translation type="unfinished">Probíhá nahrávání zvuku. Záznam bude ukončen a uložen pokud přepnete na jinou stanici.</translation>
+        <translation>Probíhá nahrávání zvuku. Záznam bude ukončen a uložen pokud přepnete na jinou stanici.</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1344"/>
@@ -439,173 +439,173 @@
     <message>
         <location filename="../application.cpp" line="1361"/>
         <source>Keep recording</source>
-        <translation type="unfinished">Pokračovat v nahrávání</translation>
+        <translation>Pokračovat v nahrávání</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1362"/>
         <source>Stop recording and do not ask again</source>
-        <translation type="unfinished">Ukončit nahrávání a příště se neptat</translation>
+        <translation>Ukončit nahrávání a příště se neptat</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1363"/>
         <source>Stop recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukončit záznam</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1602"/>
         <source>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Language:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %6</source>
-        <translation type="unfinished">&lt;b&gt;Stanice:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Krátký název:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Jazyk:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Stát:&lt;/b&gt; %6</translation>
+        <translation>&lt;b&gt;Stanice:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Krátký název:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Jazyk:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Stát:&lt;/b&gt; %6</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1656"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Coderate: %2/%3&lt;br&gt;Capacity units: %4 CU</source>
-        <translation type="unfinished">&lt;B&gt;Chybové zabezpečení&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Kódový poměr: %2/%3&lt;br&gt;Kapacitní jednotky: %4 CU</translation>
+        <translation>&lt;B&gt;Chybové zabezpečení&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Kódový poměr: %2/%3&lt;br&gt;Kapacitní jednotky: %4 CU</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1667"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Protection level: %2&lt;br&gt;Capacity units: %3 CU</source>
-        <translation type="unfinished">&lt;B&gt;Chybové zabezpečení&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Kódový poměr: %2&lt;br&gt;Kapacitní jednotky: %3 CU</translation>
+        <translation>&lt;B&gt;Chybové zabezpečení&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Kódový poměr: %2&lt;br&gt;Kapacitní jednotky: %3 CU</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1677"/>
         <source>%1 kbps</source>
-        <translation type="unfinished">%1 kb/s</translation>
+        <translation>%1 kb/s</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1679"/>
         <source>&lt;b&gt;Service bitrate&lt;/b&gt;&lt;br&gt;Audio &amp; data: %1</source>
-        <translation type="unfinished">&lt;b&gt;Datový tok stanice&lt;/b&gt;&lt;br&gt;Audio a data: %1</translation>
+        <translation>&lt;b&gt;Datový tok stanice&lt;/b&gt;&lt;br&gt;Audio a data: %1</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1705"/>
         <source>Service currently unavailable</source>
-        <translation type="unfinished">Stanice je nedostupná</translation>
+        <translation>Stanice je nedostupná</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1706"/>
         <source>Service was removed from ensemble</source>
-        <translation type="unfinished">Stanice byla odebraná z multiplexu</translation>
+        <translation>Stanice byla odebraná z multiplexu</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1738"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;on current service</source>
-        <translation type="unfinished">&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Probíhá hlášení&lt;br&gt;na současné stanici</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Probíhá hlášení&lt;br&gt;na současné stanici</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1752"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to suspend this announcement</source>
-        <translation type="unfinished">&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Probíhá hlášení&lt;br&gt;Na stanici: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknutím pozastavíte toho hlášení</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Probíhá hlášení&lt;br&gt;Na stanici: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknutím pozastavíte toho hlášení</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1769"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Suspended announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to resume this announcement</source>
-        <translation type="unfinished">&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Pozastavené hlášení&lt;br&gt;Na stanici: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknutím obnovíte toto hlášení</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Pozastavené hlášení&lt;br&gt;Na stanici: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknutím obnovíte toto hlášení</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1814"/>
         <source>Default audio device</source>
-        <translation type="unfinished">Výchozí audio zařízení</translation>
+        <translation>Výchozí audio zařízení</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1891"/>
         <source>Stop audio recording</source>
-        <translation type="unfinished">Ukončit nahrávání zvuku</translation>
+        <translation>Ukončit nahrávání zvuku</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1897"/>
         <source>Start audio recording</source>
-        <translation type="unfinished">Spustit nahrávání zvuku</translation>
+        <translation>Spustit nahrávání zvuku</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1907"/>
         <source>Audio recording ongoing (%2 kBytes recorded)
 File: %1</source>
-        <translation type="unfinished">Probíhá nahrávání audia (uloženo %2 kByte)
+        <translation>Probíhá nahrávání audia (uloženo %2 kByte)
 Soubor: %1</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1915"/>
         <source>Scheduled audio recording is getting ready</source>
-        <translation type="unfinished">Připravuje se plánované nahrávání</translation>
+        <translation>Připravuje se plánované nahrávání</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1927"/>
         <source>Scheduled recording should start in %1 seconds</source>
-        <translation type="unfinished">Plánované nahrávání by mělo začít za %1 sekund</translation>
+        <translation>Plánované nahrávání by mělo začít za %1 sekund</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1930"/>
         <source>Ongoing recording now prevents the start of a scheduled recording. The schedule will be cancelled if you do not choose otherwise. If you select to keep the schedule, the service might be switched.</source>
-        <translation type="unfinished">Probíhající nahrávání znemožňuje spuštění plánovaného nahrávání. Plán bude zrušen, pokud nezvolíte jinak.Pokud vyberete pokračovat podle plánu, stanice může být přepnuta.</translation>
+        <translation>Probíhající nahrávání znemožňuje spuštění plánovaného nahrávání. Plán bude zrušen, pokud nezvolíte jinak.Pokud vyberete pokračovat podle plánu, stanice může být přepnuta.</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1943"/>
         <source>Keep current recording</source>
-        <translation type="unfinished">Pokračovat v nahrávání</translation>
+        <translation>Pokračovat v nahrávání</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1944"/>
         <source>Keep schedule</source>
-        <translation type="unfinished">Pokračovat podle plánu</translation>
+        <translation>Pokračovat podle plánu</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1953"/>
         <source>Scheduled recording starts in %1 seconds</source>
-        <translation type="unfinished">Plánované nahrávání začne za %1 sekund</translation>
+        <translation>Plánované nahrávání začne za %1 sekund</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1956"/>
         <source>Recording is going to start according to the schedule. The service might be switched if it differs from the current one.</source>
-        <translation type="unfinished">Nahrávání začne podle plánu. Stanice může být přepnuta, pokud je jiná než současná stanice.</translation>
+        <translation>Nahrávání začne podle plánu. Stanice může být přepnuta, pokud je jiná než současná stanice.</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1967"/>
         <source>Continue as planned</source>
-        <translation type="unfinished">Pokračovat podle plánu</translation>
+        <translation>Pokračovat podle plánu</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1968"/>
         <source>Cancel plan</source>
-        <translation type="unfinished">Zrušit plán</translation>
+        <translation>Zrušit plán</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2116"/>
         <source>SPI MOT directory not complete
 Decoded %1 / %2 MOT objects</source>
-        <translation type="unfinished">SPI MOT directory není kompletní
+        <translation>SPI MOT directory není kompletní
 Dekódováno %1 / %2 MOT objektů</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2120"/>
         <source>SPI MOT directory complete
 %1 MOT objects decoded</source>
-        <translation type="unfinished">SPI MOT directory je kompletní
+        <translation>SPI MOT directory je kompletní
 %1 MOT objektů dekódováno</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2125"/>
         <source>SPI MOT directory decoding started</source>
-        <translation type="unfinished">Dekódování SPI MOT directory zahájeno</translation>
+        <translation>Dekódování SPI MOT directory zahájeno</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2334"/>
         <source>No ensemble</source>
-        <translation type="unfinished">Žádný multiplex</translation>
+        <translation>Žádný multiplex</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2335"/>
         <source>No ensemble tuned</source>
-        <translation type="unfinished">Není naladěný žádný multiplex</translation>
+        <translation>Není naladěný žádný multiplex</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2346"/>
         <source>No service</source>
-        <translation type="unfinished">Žádná stanice</translation>
+        <translation>Žádná stanice</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2352"/>
         <source>No service playing</source>
-        <translation type="unfinished">Nepřehrává žádnou stanici</translation>
+        <translation>Nepřehrává žádnou stanici</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4152"/>
@@ -620,12 +620,12 @@ Dekódováno %1 / %2 MOT objektů</translation>
     <message>
         <location filename="../application.cpp" line="4166"/>
         <source>Clear</source>
-        <translation type="unfinished">Vymazat</translation>
+        <translation>Vymazat</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4167"/>
         <source>Cancel</source>
-        <translation type="unfinished">Zrušit</translation>
+        <translation>Zrušit</translation>
     </message>
 </context>
 <context>
@@ -653,7 +653,7 @@ Dekódováno %1 / %2 MOT objektů</translation>
     <message>
         <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="220"/>
         <source>Cancel</source>
-        <translation type="unfinished">Zrušit</translation>
+        <translation>Zrušit</translation>
     </message>
 </context>
 <context>
@@ -676,22 +676,22 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/audiorec/AudioRecordingView.qml" line="145"/>
         <source>Add</source>
-        <translation type="unfinished">Přidat</translation>
+        <translation>Přidat</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingView.qml" line="150"/>
         <source>Edit</source>
-        <translation type="unfinished">Upravit</translation>
+        <translation>Upravit</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingView.qml" line="155"/>
         <source>Delete</source>
-        <translation type="unfinished">Smazat</translation>
+        <translation>Smazat</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingView.qml" line="164"/>
         <source>Delete all</source>
-        <translation type="unfinished">Smazat vše</translation>
+        <translation>Smazat vše</translation>
     </message>
 </context>
 <context>
@@ -699,78 +699,78 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="65"/>
         <source>Audio decoder</source>
-        <translation type="unfinished">Audio dekodér</translation>
+        <translation>Audio dekodér</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="70"/>
         <source>Noise level during audio drop-out:</source>
-        <translation type="unfinished">Úroveň šumu při výpadku zvuku:</translation>
+        <translation>Úroveň šumu při výpadku zvuku:</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="95"/>
         <source>Audio recording</source>
-        <translation type="unfinished">Záznam zvuku</translation>
+        <translation>Záznam zvuku</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="108"/>
         <source>Folder:</source>
-        <translation type="unfinished">Složka:</translation>
+        <translation>Složka:</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="123"/>
         <source>Record encoded DAB/DAB+ stream (MP2 or AAC format)</source>
-        <translation type="unfinished">Nahrávat kodovaná DAB/DAB+ data (MP2 nebo AAC formát)</translation>
+        <translation>Nahrávat kodovaná DAB/DAB+ data (MP2 nebo AAC formát)</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="136"/>
         <source>Record decoded audio (WAV format)</source>
-        <translation type="unfinished">Nahrávat dekodované audio (WAV formát)</translation>
+        <translation>Nahrávat dekodované audio (WAV formát)</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="150"/>
         <source>Do not ask to stop audio recording when service changes</source>
-        <translation type="unfinished">Neptat se na ukončení nahrávání audia při změně stanice</translation>
+        <translation>Neptat se na ukončení nahrávání audia při změně stanice</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="160"/>
         <source>Record DL messages</source>
-        <translation type="unfinished">Zaznamenávat Dynamic Labels (DL)</translation>
+        <translation>Zaznamenávat Dynamic Labels (DL)</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="169"/>
         <source>Record DAB time for DL messages</source>
-        <translation type="unfinished">Zaznamenávat DAB čas příjmu zpráv DL</translation>
+        <translation>Zaznamenávat DAB čas příjmu zpráv DL</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="189"/>
         <source>Expert settings</source>
-        <translation type="unfinished">Pokročilá nastavení</translation>
+        <translation>Pokročilá nastavení</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="202"/>
         <source>AAC audio decoder:</source>
-        <translation type="unfinished">Dekodér AAC audia:</translation>
+        <translation>Dekodér AAC audia:</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="215"/>
         <location filename="../qml/settings/AudioSettings.qml" line="248"/>
         <source>Restart</source>
-        <translation type="unfinished">Restartovat</translation>
+        <translation>Restartovat</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="227"/>
         <source>Audio decoder change will take effect after application restart.</source>
-        <translation type="unfinished">Změna audio dekodéru se projeví po restartu aplikace.</translation>
+        <translation>Změna audio dekodéru se projeví po restartu aplikace.</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="233"/>
         <source>Audio output framework:</source>
-        <translation type="unfinished">Framework pro audio výstup:</translation>
+        <translation>Framework pro audio výstup:</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="259"/>
         <source>Audio output change will take effect after application restart.</source>
-        <translation type="unfinished">Změna audio výstupu se projeví po restartu aplikace.</translation>
+        <translation>Změna audio výstupu se projeví po restartu aplikace.</translation>
     </message>
 </context>
 <context>
@@ -778,17 +778,17 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/BandScan.qml" line="47"/>
         <source>Band scan</source>
-        <translation type="unfinished">Hledání stanic</translation>
+        <translation>Hledání stanic</translation>
     </message>
     <message>
         <location filename="../qml/BandScan.qml" line="90"/>
         <source>Ensembles found:</source>
-        <translation type="unfinished">Počet multiplexů:</translation>
+        <translation>Počet multiplexů:</translation>
     </message>
     <message>
         <location filename="../qml/BandScan.qml" line="99"/>
         <source>Services found:</source>
-        <translation type="unfinished">Počet stanic:</translation>
+        <translation>Počet stanic:</translation>
     </message>
     <message>
         <location filename="../qml/BandScan.qml" line="114"/>
@@ -798,17 +798,17 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/BandScan.qml" line="129"/>
         <source>Stop</source>
-        <translation type="unfinished">Stop</translation>
+        <translation>Stop</translation>
     </message>
     <message>
         <location filename="../qml/BandScan.qml" line="129"/>
         <source>Cancel</source>
-        <translation type="unfinished">Zrušit</translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <location filename="../qml/BandScan.qml" line="143"/>
         <source>Start</source>
-        <translation type="unfinished">Start</translation>
+        <translation>Start</translation>
     </message>
 </context>
 <context>
@@ -821,7 +821,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../bandscanbackend.cpp" line="121"/>
         <source>Scanning channel:</source>
-        <translation type="unfinished">Prohledávám kanál:</translation>
+        <translation>Prohledávám kanál:</translation>
     </message>
 </context>
 <context>
@@ -857,7 +857,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/tii/ChannelSelectionDialog.qml" line="117"/>
         <source>Cancel</source>
-        <translation type="unfinished">Zrušit</translation>
+        <translation>Zrušit</translation>
     </message>
 </context>
 <context>
@@ -865,7 +865,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/charts/ChartView.qml" line="295"/>
         <source>Reset</source>
-        <translation type="unfinished">Obnovit</translation>
+        <translation>Obnovit</translation>
     </message>
     <message>
         <location filename="../qml/charts/ChartView.qml" line="323"/>
@@ -883,7 +883,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/ContentView.qml" line="392"/>
         <source>Audio output</source>
-        <translation type="unfinished">Zvukový výstup</translation>
+        <translation>Zvukový výstup</translation>
     </message>
 </context>
 <context>
@@ -891,7 +891,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignal.qml" line="34"/>
         <source>DAB Signal</source>
-        <translation type="unfinished">DAB signál</translation>
+        <translation>DAB signál</translation>
     </message>
 </context>
 <context>
@@ -904,7 +904,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="203"/>
         <source>Estimated RF level</source>
-        <translation type="unfinished">Odhadovaná úroveň signálu</translation>
+        <translation>Odhadovaná úroveň signálu</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="220"/>
@@ -914,7 +914,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="221"/>
         <source>Tuner gain</source>
-        <translation type="unfinished">Zisk tuneru</translation>
+        <translation>Zisk tuneru</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="238"/>
@@ -924,7 +924,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="239"/>
         <source>Tuned frequency</source>
-        <translation type="unfinished">Naladěná frekvence</translation>
+        <translation>Naladěná frekvence</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="256"/>
@@ -934,37 +934,37 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="257"/>
         <source>Estimated frequency offset</source>
-        <translation type="unfinished">Odhadovaná frekvenční odchylka</translation>
+        <translation>Odhadovaná frekvenční odchylka</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="289"/>
         <source>Frequency offset correction</source>
-        <translation type="unfinished">Korekce frekvenční odchylky</translation>
+        <translation>Korekce frekvenční odchylky</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="296"/>
         <source>Slow update (1 sec)</source>
-        <translation type="unfinished">Pomalu (1 s)</translation>
+        <translation>Pomalu (1 s)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="302"/>
         <source>Normal update (500 msec)</source>
-        <translation type="unfinished">Normální rychlost (500 ms)</translation>
+        <translation>Normální rychlost (500 ms)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="308"/>
         <source>Fast update (300 msec)</source>
-        <translation type="unfinished">Rychle (300 ms)</translation>
+        <translation>Rychle (300 ms)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="314"/>
         <source>Very fast update (100 msec)</source>
-        <translation type="unfinished">Velmi rychle (100 ms)</translation>
+        <translation>Velmi rychle (100 ms)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="321"/>
         <source>Show SNR value</source>
-        <translation type="unfinished">Zobrazit hodnotu SNR</translation>
+        <translation>Zobrazit hodnotu SNR</translation>
     </message>
 </context>
 <context>
@@ -972,12 +972,12 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/DeviceSettings.qml" line="53"/>
         <source>Input device:</source>
-        <translation type="unfinished">Vstupní zařízení:</translation>
+        <translation>Vstupní zařízení:</translation>
     </message>
     <message>
         <location filename="../qml/settings/DeviceSettings.qml" line="79"/>
         <source>Connect</source>
-        <translation type="unfinished">Připojit</translation>
+        <translation>Připojit</translation>
     </message>
 </context>
 <context>
@@ -993,32 +993,32 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="72"/>
         <source>Today</source>
-        <translation type="unfinished">Dnes</translation>
+        <translation>Dnes</translation>
     </message>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="99"/>
         <source>Hide services without schedule</source>
-        <translation type="unfinished">Skrýt stanice bez programu</translation>
+        <translation>Skrýt stanice bez programu</translation>
     </message>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="107"/>
         <source>Show only current ensemble</source>
-        <translation type="unfinished">Zobrazit jen současný multiplex</translation>
+        <translation>Zobrazit jen současný multiplex</translation>
     </message>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="136"/>
         <source>Current time: </source>
-        <translation type="unfinished">Aktuální čas: </translation>
+        <translation>Aktuální čas: </translation>
     </message>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="324"/>
         <source>No program available</source>
-        <translation type="unfinished">Program není k dispozici</translation>
+        <translation>Program není k dispozici</translation>
     </message>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="450"/>
         <source>Schedule audio recording</source>
-        <translation type="unfinished">Naplánovat nahrávání zvuku</translation>
+        <translation>Naplánovat nahrávání zvuku</translation>
     </message>
 </context>
 <context>
@@ -1031,7 +1031,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/EnsembleConfigDialog.qml" line="80"/>
         <source>Upload to FMLIST</source>
-        <translation type="unfinished">Nahrát na FMLIST</translation>
+        <translation>Nahrát na FMLIST</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleConfigDialog.qml" line="88"/>
@@ -1044,17 +1044,17 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/EnsembleConfigDrawer.qml" line="60"/>
         <source>Upload to FMLIST</source>
-        <translation type="unfinished">Nahrát na FMLIST</translation>
+        <translation>Nahrát na FMLIST</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleConfigDrawer.qml" line="69"/>
         <source>Export as CSV</source>
-        <translation type="unfinished">Exportovat do CSV</translation>
+        <translation>Exportovat do CSV</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleConfigDrawer.qml" line="86"/>
         <source>Ensemble Information</source>
-        <translation type="unfinished">Informace o multiplexu</translation>
+        <translation>Informace o multiplexu</translation>
     </message>
 </context>
 <context>
@@ -1062,32 +1062,32 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="46"/>
         <source>Frequency</source>
-        <translation type="unfinished">Frekvence</translation>
+        <translation>Frekvence</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="46"/>
         <source>Tuned frequency</source>
-        <translation type="unfinished">Naladěná frekvence</translation>
+        <translation>Naladěná frekvence</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="47"/>
         <source>Channel</source>
-        <translation type="unfinished">Kanál</translation>
+        <translation>Kanál</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="47"/>
         <source>Tuned DAB channel</source>
-        <translation type="unfinished">Naladěný kanál</translation>
+        <translation>Naladěný kanál</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="48"/>
         <source>SNR</source>
-        <translation type="unfinished">SNR</translation>
+        <translation>SNR</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="48"/>
         <source>Estimated SNR</source>
-        <translation type="unfinished">Odhadovaný odstup signálu od šumu</translation>
+        <translation>Odhadovaný odstup signálu od šumu</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="49"/>
@@ -1097,7 +1097,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="49"/>
         <source>Estimated frequency offset</source>
-        <translation type="unfinished">Odhadovaná frekvenční odchylka</translation>
+        <translation>Odhadovaná frekvenční odchylka</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="50"/>
@@ -1107,7 +1107,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="50"/>
         <source>Current AGC gain&lt;br&gt;(only in software mode)</source>
-        <translation type="unfinished">Současný zisk AGC&lt;br&gt;(jen pro SW mód)</translation>
+        <translation>Současný zisk AGC&lt;br&gt;(jen pro SW mód)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="51"/>
@@ -1117,17 +1117,17 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="51"/>
         <source>Estimated RF level&lt;br&gt;(only on supported devices)</source>
-        <translation type="unfinished">Odhadovaná úroveň signálu&lt;br&gt;(pouze podporovaná zařízení)</translation>
+        <translation>Odhadovaná úroveň signálu&lt;br&gt;(pouze podporovaná zařízení)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="54"/>
         <source>Service</source>
-        <translation type="unfinished">Stanice</translation>
+        <translation>Stanice</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="54"/>
         <source>Current service name</source>
-        <translation type="unfinished">Název současné stanice</translation>
+        <translation>Název současné stanice</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="55"/>
@@ -1137,7 +1137,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="55"/>
         <source>Current Service Identifier</source>
-        <translation type="unfinished">Identifikátor současné stanice (SId)</translation>
+        <translation>Identifikátor současné stanice (SId)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="56"/>
@@ -1148,7 +1148,7 @@ Click &apos;Add&apos; to create a new recording.</source>
         <location filename="../ensembleinfobackend.cpp" line="56"/>
         <location filename="../ensembleinfobackend.cpp" line="57"/>
         <source>Service Component Identifier within the Service</source>
-        <translation type="unfinished">Identifikátor komponenty současné stanice (SCIdS)</translation>
+        <translation>Identifikátor komponenty současné stanice (SCIdS)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="57"/>
@@ -1164,7 +1164,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="58"/>
         <source>First capacity unit used by sub-channel</source>
-        <translation type="unfinished">První kapacitni jednotka (CU) subkanálu</translation>
+        <translation>První kapacitni jednotka (CU) subkanálu</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="59"/>
@@ -1174,7 +1174,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="59"/>
         <source>Number of capacity units used by sub-channel</source>
-        <translation type="unfinished">Počet kapacitních jednotek (CU) obsazených subkanálem</translation>
+        <translation>Počet kapacitních jednotek (CU) obsazených subkanálem</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="62"/>
@@ -1184,7 +1184,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="62"/>
         <source>Gross bitrate</source>
-        <translation type="unfinished">Celkový datový tok</translation>
+        <translation>Celkový datový tok</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="63"/>
@@ -1194,7 +1194,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="63"/>
         <source>Net bitrate</source>
-        <translation type="unfinished">Užitečný datový tok</translation>
+        <translation>Užitečný datový tok</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="64"/>
@@ -1204,7 +1204,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="64"/>
         <source>Net audio bitrate without PAD</source>
-        <translation type="unfinished">Užitečný datový tok zvuku bez PAD</translation>
+        <translation>Užitečný datový tok zvuku bez PAD</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="65"/>
@@ -1214,7 +1214,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="65"/>
         <source>Net PAD bitrate</source>
-        <translation type="unfinished">Užitečný datový tok PAD</translation>
+        <translation>Užitečný datový tok PAD</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="66"/>
@@ -1224,7 +1224,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="66"/>
         <source>Percentage of audio in useful bitrate</source>
-        <translation type="unfinished">Procento zvuku v užitečném datovém toku</translation>
+        <translation>Procento zvuku v užitečném datovém toku</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="67"/>
@@ -1234,7 +1234,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="67"/>
         <source>Percentage of PAD in useful bitrate</source>
-        <translation type="unfinished">Procento PAD v užitečném datovém toku</translation>
+        <translation>Procento PAD v užitečném datovém toku</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="70"/>
@@ -1244,12 +1244,12 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="70"/>
         <source>Total number of FIB&apos;s with CRC error</source>
-        <translation type="unfinished">Počet FIB s chybným kontrolním součtem CRC</translation>
+        <translation>Počet FIB s chybným kontrolním součtem CRC</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="71"/>
         <source>FIB error rate</source>
-        <translation type="unfinished">Chybovost FIB</translation>
+        <translation>Chybovost FIB</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="72"/>
@@ -1259,7 +1259,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="72"/>
         <source>Total number of uncorrectable Reed-Solomon code words (DAB+ only)</source>
-        <translation type="unfinished">Počed neopravidelných slov Reed-Solomonova kód (jen DAB+)</translation>
+        <translation>Počed neopravidelných slov Reed-Solomonova kód (jen DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="73"/>
@@ -1269,7 +1269,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="73"/>
         <source>BER before Reed-Solomon decoder (DAB+ only)</source>
-        <translation type="unfinished">Bitová chybovost před Reed-Solomonovým dekodérem (jne DAB+)</translation>
+        <translation>Bitová chybovost před Reed-Solomonovým dekodérem (jne DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="74"/>
@@ -1279,7 +1279,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="74"/>
         <source>Total number of audio frames with CRC error (AU for DAB+)</source>
-        <translation type="unfinished">Celkový počet audio rámců s chybným kontrolním součtem CRC (AU v DAB+)</translation>
+        <translation>Celkový počet audio rámců s chybným kontrolním součtem CRC (AU v DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="75"/>
@@ -1289,7 +1289,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="75"/>
         <source>Audio frame (AU for DAB+) error rate</source>
-        <translation type="unfinished">Chybovost audio rámců (AU v DAB+)</translation>
+        <translation>Chybovost audio rámců (AU v DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="78"/>
@@ -1299,7 +1299,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="78"/>
         <source>Used capacity units</source>
-        <translation type="unfinished">Využité kapacitní jednotky</translation>
+        <translation>Využité kapacitní jednotky</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="79"/>
@@ -1309,32 +1309,32 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="79"/>
         <source>Unused capacity units</source>
-        <translation type="unfinished">Nevyužité kapacitní jednotky</translation>
+        <translation>Nevyužité kapacitní jednotky</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="80"/>
         <source>Audio</source>
-        <translation type="unfinished">Audio</translation>
+        <translation>Audio</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="80"/>
         <source>Capacity units for allocated for audio services</source>
-        <translation type="unfinished">Kapacitní jednotky vyžité pro audio služby (stanice)</translation>
+        <translation>Kapacitní jednotky vyžité pro audio služby (stanice)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="81"/>
         <source>Data</source>
-        <translation type="unfinished">Data</translation>
+        <translation>Data</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="81"/>
         <source>Capacity units for allocated for data services</source>
-        <translation type="unfinished">Kapacitní jednotky vyžité pro datové služby</translation>
+        <translation>Kapacitní jednotky vyžité pro datové služby</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="83"/>
         <source>Sub-channel Identifier</source>
-        <translation type="unfinished">Číslo subkanálu</translation>
+        <translation>Číslo subkanálu</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="84"/>
@@ -1344,7 +1344,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="84"/>
         <source>Number of capacity units allocated to sub-channel</source>
-        <translation type="unfinished">Počet kapacitních jednotek alokovaných subkanálu</translation>
+        <translation>Počet kapacitních jednotek alokovaných subkanálu</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="85"/>
@@ -1354,7 +1354,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="85"/>
         <source>Sub-channel error protection</source>
-        <translation type="unfinished">Chybové zabezpečení subkanálu a kódový poměr</translation>
+        <translation>Chybové zabezpečení subkanálu a kódový poměr</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="86"/>
@@ -1364,7 +1364,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="86"/>
         <source>Gross sub-channel bitrate</source>
-        <translation type="unfinished">Celkový datový tok subkanálu</translation>
+        <translation>Celkový datový tok subkanálu</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="88"/>
@@ -1374,19 +1374,19 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="88"/>
         <source>Sub-channel content</source>
-        <translation type="unfinished">Obsah subkanálu</translation>
+        <translation>Obsah subkanálu</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="89"/>
         <source>Services</source>
-        <translation type="unfinished">Stanice</translation>
+        <translation>Stanice</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="89"/>
         <location filename="../ensembleinfobackend.cpp" line="90"/>
         <location filename="../ensembleinfobackend.cpp" line="91"/>
         <source>List of services transmitted in sub-channel</source>
-        <translation type="unfinished">Seznam služeb přenášených v subkanálu</translation>
+        <translation>Seznam služeb přenášených v subkanálu</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="185"/>
@@ -1394,12 +1394,12 @@ Click &apos;Add&apos; to create a new recording.</source>
         <location filename="../ensembleinfobackend.cpp" line="187"/>
         <location filename="../ensembleinfobackend.cpp" line="189"/>
         <source>%1 CU (%2%)</source>
-        <translation type="unfinished">%1 CU (%2%)</translation>
+        <translation>%1 CU (%2%)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="258"/>
         <source>No subchannel selected</source>
-        <translation type="unfinished">Není vybraný subkanál</translation>
+        <translation>Není vybraný subkanál</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="322"/>
@@ -1407,19 +1407,19 @@ Click &apos;Add&apos; to create a new recording.</source>
         <location filename="../ensembleinfobackend.cpp" line="457"/>
         <location filename="../ensembleinfobackend.cpp" line="461"/>
         <source>%1 kbps</source>
-        <translation type="unfinished">%1 kb/s</translation>
+        <translation>%1 kb/s</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="379"/>
         <location filename="../ensembleinfobackend.cpp" line="391"/>
         <location filename="../ensembleinfobackend.cpp" line="482"/>
         <source>N/A</source>
-        <translation type="unfinished">Nedostupný</translation>
+        <translation>Nedostupný</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="556"/>
         <source> sec</source>
-        <translation type="unfinished"> s</translation>
+        <translation> s</translation>
     </message>
 </context>
 <context>
@@ -1432,12 +1432,12 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="284"/>
         <source>Export as CSV</source>
-        <translation type="unfinished">Exportovat do CSV</translation>
+        <translation>Exportovat do CSV</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="291"/>
         <source>Upload to FMLIST</source>
-        <translation type="unfinished">Nahrát na FMLIST</translation>
+        <translation>Nahrát na FMLIST</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="298"/>
@@ -1447,29 +1447,29 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="299"/>
         <source>When checked recording stops automatically when timeout is reached.</source>
-        <translation type="unfinished">Pokud je aktivní, záznam automaticky skončí po nastaveném čase.</translation>
+        <translation>Pokud je aktivní, záznam automaticky skončí po nastaveném čase.</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="326"/>
         <location filename="../qml/EnsembleInfoView.qml" line="328"/>
         <source>Stop recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukončit záznam</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="326"/>
         <location filename="../qml/EnsembleInfoView.qml" line="329"/>
         <source>Record raw data</source>
-        <translation type="unfinished">Zaznamenat vstupní signál</translation>
+        <translation>Zaznamenat vstupní signál</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="351"/>
         <source>Length:</source>
-        <translation type="unfinished">Délka:</translation>
+        <translation>Délka:</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="359"/>
         <source>File size:</source>
-        <translation type="unfinished">Velikost souboru:</translation>
+        <translation>Velikost souboru:</translation>
     </message>
 </context>
 <context>
@@ -1477,37 +1477,37 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="65"/>
         <source>%1 CU [%2..%3]</source>
-        <translation type="unfinished">%1 CU [%2..%3]</translation>
+        <translation>%1 CU [%2..%3]</translation>
     </message>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="86"/>
         <source>%1 (coderate: %2/%3)</source>
-        <translation type="unfinished">%1 (poměr: %2/%3)</translation>
+        <translation>%1 (poměr: %2/%3)</translation>
     </message>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="92"/>
         <source>%1 (level: %2)</source>
-        <translation type="unfinished">%1 (úroveň: %2)</translation>
+        <translation>%1 (úroveň: %2)</translation>
     </message>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="97"/>
         <source>%1 kbps</source>
-        <translation type="unfinished">%1 kb/s</translation>
+        <translation>%1 kb/s</translation>
     </message>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="103"/>
         <source>Audio AAC</source>
-        <translation type="unfinished">Audio AAC</translation>
+        <translation>Audio AAC</translation>
     </message>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="105"/>
         <source>Audio MP2</source>
-        <translation type="unfinished">Audio MP2</translation>
+        <translation>Audio MP2</translation>
     </message>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="107"/>
         <source>Data</source>
-        <translation type="unfinished">Data</translation>
+        <translation>Data</translation>
     </message>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="116"/>
@@ -1533,7 +1533,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../messageboxbackend.cpp" line="183"/>
         <source>Cancel</source>
-        <translation type="unfinished">Zrušit</translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <location filename="../messageboxbackend.cpp" line="185"/>
@@ -1571,7 +1571,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="38"/>
         <source>Service</source>
-        <translation type="unfinished">Stanice</translation>
+        <translation>Stanice</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="44"/>
@@ -1581,7 +1581,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="44"/>
         <source>Ensemble information</source>
-        <translation type="unfinished">Informace o multiplexu</translation>
+        <translation>Informace o multiplexu</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="50"/>
@@ -1606,7 +1606,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="63"/>
         <source>TII</source>
-        <translation type="unfinished">TII</translation>
+        <translation>TII</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="69"/>
@@ -1631,12 +1631,12 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="82"/>
         <source>Settings</source>
-        <translation type="unfinished">Nastavení</translation>
+        <translation>Nastavení</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="88"/>
         <source>Others</source>
-        <translation type="unfinished">Ostatní</translation>
+        <translation>Ostatní</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="95"/>
@@ -1646,22 +1646,22 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="95"/>
         <source>Audio recording schedule...</source>
-        <translation type="unfinished">Plán nahrávání zvuku...</translation>
+        <translation>Plán nahrávání zvuku...</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="99"/>
         <source>Start audio recording</source>
-        <translation type="unfinished">Spustit nahrávání zvuku</translation>
+        <translation>Spustit nahrávání zvuku</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="105"/>
         <source>Band scan</source>
-        <translation type="unfinished">Hledání stanic</translation>
+        <translation>Hledání stanic</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="105"/>
         <source>Band scan...</source>
-        <translation type="unfinished">Vyhledat stanice...</translation>
+        <translation>Vyhledat stanice...</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="107"/>
@@ -1671,7 +1671,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="109"/>
         <source>Clear service list</source>
-        <translation type="unfinished">Vymazat seznam stanic</translation>
+        <translation>Vymazat seznam stanic</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="115"/>
@@ -1681,22 +1681,22 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="115"/>
         <source>Application log</source>
-        <translation type="unfinished">Log aplikace</translation>
+        <translation>Log aplikace</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="117"/>
         <source>About</source>
-        <translation type="unfinished">O AbracaDABra</translation>
+        <translation>O AbracaDABra</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="117"/>
         <source>About AbracaDABra</source>
-        <translation type="unfinished">O AbracaDABra</translation>
+        <translation>O AbracaDABra</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="123"/>
         <source>Quit</source>
-        <translation type="unfinished">Ukončit</translation>
+        <translation>Ukončit</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="123"/>
@@ -1709,12 +1709,12 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="71"/>
         <source>Visual style</source>
-        <translation type="unfinished">Vzhled aplikace</translation>
+        <translation>Vzhled aplikace</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="80"/>
         <source>System</source>
-        <translation type="unfinished">Systém</translation>
+        <translation>Systém</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="80"/>
@@ -1729,7 +1729,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="105"/>
         <source>User interface</source>
-        <translation type="unfinished">Uživatelské rozhraní</translation>
+        <translation>Uživatelské rozhraní</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="115"/>
@@ -1739,57 +1739,57 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="128"/>
         <source>Dynamic Label Plus (DL+)</source>
-        <translation type="unfinished">Dynamic Label Plus (DL+)</translation>
+        <translation>Dynamic Label Plus (DL+)</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="140"/>
         <source>Show tray icon</source>
-        <translation type="unfinished">Zobrazit ikonu v systémové části panelu</translation>
+        <translation>Zobrazit ikonu v systémové části panelu</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="151"/>
         <source>Show system time when DAB time is not available</source>
-        <translation type="unfinished">Zobrazit systémový čas, pokud DAB čas není k dispozici</translation>
+        <translation>Zobrazit systémový čas, pokud DAB čas není k dispozici</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="163"/>
         <source>Show ensemble country flag (internet connection required)</source>
-        <translation type="unfinished">Zobrazit vlajku státu multiplexu (vyžaduje připojení k internetu)</translation>
+        <translation>Zobrazit vlajku státu multiplexu (vyžaduje připojení k internetu)</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="175"/>
         <source>Show service country flag (internet connection required)</source>
-        <translation type="unfinished">Zobrazit vlajku státu stanice (vyžaduje připojení k internetu)</translation>
+        <translation>Zobrazit vlajku státu stanice (vyžaduje připojení k internetu)</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="192"/>
         <source>Slideshow background:</source>
-        <translation type="unfinished">Pozadí slideshow:</translation>
+        <translation>Pozadí slideshow:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="214"/>
         <source>Language:</source>
-        <translation type="unfinished">Jazyk:</translation>
+        <translation>Jazyk:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="230"/>
         <source>Restart</source>
-        <translation type="unfinished">Restartovat</translation>
+        <translation>Restartovat</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="238"/>
         <source>Language change will take effect after application restart.</source>
-        <translation type="unfinished">Změna jazyka se projeví po restartu aplikace.</translation>
+        <translation>Změna jazyka se projeví po restartu aplikace.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="254"/>
         <source>Data storage</source>
-        <translation type="unfinished">Ukládání dat</translation>
+        <translation>Ukládání dat</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="271"/>
         <source>Folder:</source>
-        <translation type="unfinished">Složka:</translation>
+        <translation>Složka:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="282"/>
@@ -1804,7 +1804,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="306"/>
         <source>Network proxy configuration</source>
-        <translation type="unfinished">Nastavení proxy serveru</translation>
+        <translation>Nastavení proxy serveru</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="318"/>
@@ -1814,37 +1814,37 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="334"/>
         <source>Apply</source>
-        <translation type="unfinished">Použít</translation>
+        <translation>Použít</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="343"/>
         <source>Server:</source>
-        <translation type="unfinished">Server:</translation>
+        <translation>Server:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="359"/>
         <source>Port:</source>
-        <translation type="unfinished">Port:</translation>
+        <translation>Port:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="380"/>
         <source>Username:</source>
-        <translation type="unfinished">Jméno:</translation>
+        <translation>Jméno:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="396"/>
         <source>Password:</source>
-        <translation type="unfinished">Heslo:</translation>
+        <translation>Heslo:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="422"/>
         <source>FMLIST</source>
-        <translation type="unfinished">FMLIST</translation>
+        <translation>FMLIST</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="433"/>
         <source>Upload ensemble information</source>
-        <translation type="unfinished">Nahrávat na server informace o multiplexu</translation>
+        <translation>Nahrávat na server informace o multiplexu</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="447"/>
@@ -1855,47 +1855,47 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="454"/>
         <source>Application automatically uploads ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</source>
-        <translation type="unfinished">Aplikace automaticky nahraje informace o multiplexu na &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</translation>
+        <translation>Aplikace automaticky nahraje informace o multiplexu na &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="455"/>
         <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currently disabled.</source>
-        <translation type="unfinished">Nahrávání informace o multiplexu na &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; není povoleno.</translation>
+        <translation>Nahrávání informace o multiplexu na &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; není povoleno.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="463"/>
         <source>Thank you for supporting the community!</source>
-        <translation type="unfinished">Děkujeme, že podporujete komunitu!</translation>
+        <translation>Děkujeme, že podporujete komunitu!</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="464"/>
         <source>Please consider enabling this option to help the community.</source>
-        <translation type="unfinished">Zvažte prosím povolení tété volby, pomůžete tím komunitě.</translation>
+        <translation>Zvažte prosím povolení tété volby, pomůžete tím komunitě.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="478"/>
         <source>Restore application windows on start</source>
-        <translation type="unfinished">Po startu obnovit naposledy otevřená okna</translation>
+        <translation>Po startu obnovit naposledy otevřená okna</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="490"/>
         <source>Check for application update on start</source>
-        <translation type="unfinished">Zkontrolovat aktualizace při startu aplikace</translation>
+        <translation>Zkontrolovat aktualizace při startu aplikace</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="502"/>
         <source>Include XML header in raw data recording</source>
-        <translation type="unfinished">Vkládat XML záhlaví na začátek souboru při záznamu vstupního signálu</translation>
+        <translation>Vkládat XML záhlaví na začátek souboru při záznamu vstupního signálu</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="537"/>
         <source>Select SLS Background Color</source>
-        <translation type="unfinished">Vybrat pozadí SLS</translation>
+        <translation>Vybrat pozadí SLS</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="551"/>
         <source>Data storage folder</source>
-        <translation type="unfinished">Složka pro ukládání dat</translation>
+        <translation>Složka pro ukládání dat</translation>
     </message>
 </context>
 <context>
@@ -2371,7 +2371,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../dabtables.cpp" line="330"/>
         <source>Czech</source>
-        <translation>čeština</translation>
+        <translation>Čeština</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="332"/>
@@ -2381,7 +2381,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../dabtables.cpp" line="334"/>
         <source>German</source>
-        <translation>němčina</translation>
+        <translation>Němčina</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="336"/>
@@ -2501,7 +2501,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../dabtables.cpp" line="382"/>
         <source>Polish</source>
-        <translation>polština</translation>
+        <translation>Polština</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="384"/>
@@ -4019,7 +4019,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RartTcpDevice.qml" line="64"/>
         <source>Port:</source>
-        <translation type="unfinished">Port:</translation>
+        <translation>Port:</translation>
     </message>
 </context>
 <context>
@@ -4032,57 +4032,57 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="77"/>
         <source>Loop file</source>
-        <translation type="unfinished">Opakování</translation>
+        <translation>Opakování</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="92"/>
         <source>No file selected</source>
-        <translation type="unfinished">Není vybraný soubor</translation>
+        <translation>Není vybraný soubor</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="130"/>
         <source>Recording date:</source>
-        <translation type="unfinished">Datum záznamu:</translation>
+        <translation>Datum záznamu:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="133"/>
         <source>Recorder:</source>
-        <translation type="unfinished">Zaznamenáno pomocí:</translation>
+        <translation>Zaznamenáno pomocí:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="136"/>
         <source>Device:</source>
-        <translation type="unfinished">Zařízení:</translation>
+        <translation>Zařízení:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="139"/>
         <source>Model:</source>
-        <translation type="unfinished">Model:</translation>
+        <translation>Model:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="142"/>
         <source>Sample rate [Hz]:</source>
-        <translation type="unfinished">Vzorkovací frekvence [Hz]:</translation>
+        <translation>Vzorkovací frekvence [Hz]:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="145"/>
         <source>Frequency [kHz]:</source>
-        <translation type="unfinished">Frekvence [kHz]:</translation>
+        <translation>Frekvence [kHz]:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="148"/>
         <source>Recording length [sec]:</source>
-        <translation type="unfinished">Délka záznamu [s]:</translation>
+        <translation>Délka záznamu [s]:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="151"/>
         <source>Sample format:</source>
-        <translation type="unfinished">Formát vzorků:</translation>
+        <translation>Formát vzorků:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="174"/>
         <source>Binary files</source>
-        <translation type="unfinished">Binární soubory</translation>
+        <translation>Binární soubory</translation>
     </message>
 </context>
 <context>
@@ -4090,110 +4090,110 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="63"/>
         <source>Reload</source>
-        <translation type="unfinished">Obnovit</translation>
+        <translation>Obnovit</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="73"/>
         <source>Use any available RTL-SDR device if the selected one fails</source>
-        <translation type="unfinished">Použít jakékoli RTL-SDR zařízení, pokud vybrané nelze připojit</translation>
+        <translation>Použít jakékoli RTL-SDR zařízení, pokud vybrané nelze připojit</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="100"/>
         <source>Connected device:</source>
-        <translation type="unfinished">Připojené zařízení:</translation>
+        <translation>Připojené zařízení:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="103"/>
         <source>Serial number:</source>
-        <translation type="unfinished">Sériové číslo:</translation>
+        <translation>Sériové číslo:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="106"/>
         <source>Tuner:</source>
-        <translation type="unfinished">Tuner:</translation>
+        <translation>Tuner:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="109"/>
         <source>Sample format:</source>
-        <translation type="unfinished">Formát vzorků:</translation>
+        <translation>Formát vzorků:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="127"/>
         <source>Gain control</source>
-        <translation type="unfinished">Ovládání zesílení</translation>
+        <translation>Ovládání zesílení</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
         <source>Software</source>
-        <translation type="unfinished">Software</translation>
+        <translation>Software</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
         <source>Driver</source>
-        <translation type="unfinished">Ovladač</translation>
+        <translation>Ovladač</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
         <source>Device</source>
-        <translation type="unfinished">Zařízení</translation>
+        <translation>Zařízení</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
         <source>Manual</source>
-        <translation type="unfinished">Manuálně</translation>
+        <translation>Manuálně</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="158"/>
         <source>Gain</source>
-        <translation type="unfinished">Zesílení</translation>
+        <translation>Zesílení</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="191"/>
         <source>Expert settings</source>
-        <translation type="unfinished">Pokročilá nastavení</translation>
+        <translation>Pokročilá nastavení</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="207"/>
         <source>Bandwidth:</source>
-        <translation type="unfinished">Šířka pásma:</translation>
+        <translation>Šířka pásma:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="222"/>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="254"/>
         <source>Default</source>
-        <translation type="unfinished">Výchozí</translation>
+        <translation>Výchozí</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="228"/>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="260"/>
         <source>Set default</source>
-        <translation type="unfinished">Nastavit výchozí</translation>
+        <translation>Nastavit výchozí</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="240"/>
         <source>SW AGC level threshold:</source>
-        <translation type="unfinished">SW AGC práh úrovně:</translation>
+        <translation>SW AGC práh úrovně:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="272"/>
         <source>Frequency correction:</source>
-        <translation type="unfinished">Korekce frekvence:</translation>
+        <translation>Korekce frekvence:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="292"/>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="326"/>
         <source>Reset</source>
-        <translation type="unfinished">Obnovit</translation>
+        <translation>Obnovit</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="304"/>
         <source>RF level correction:</source>
-        <translation type="unfinished">Korekce úrovně signálu:</translation>
+        <translation>Korekce úrovně signálu:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="338"/>
         <source>Bias Tee:</source>
-        <translation type="unfinished">Bias Tee:</translation>
+        <translation>Bias Tee:</translation>
     </message>
 </context>
 <context>
@@ -4211,88 +4211,88 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="66"/>
         <source>Port:</source>
-        <translation type="unfinished">Port:</translation>
+        <translation>Port:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="80"/>
         <source>Connect to control socket if available</source>
-        <translation type="unfinished">Připojit řídicí socket, pokud je k dispozici</translation>
+        <translation>Připojit řídicí socket, pokud je k dispozici</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="100"/>
         <source>Connected device:</source>
-        <translation type="unfinished">Připojené zařízení:</translation>
+        <translation>Připojené zařízení:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="103"/>
         <source>Tuner:</source>
-        <translation type="unfinished">Tuner:</translation>
+        <translation>Tuner:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="106"/>
         <source>Sample format:</source>
-        <translation type="unfinished">Formát vzorků:</translation>
+        <translation>Formát vzorků:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="124"/>
         <source>Gain control</source>
-        <translation type="unfinished">Ovládání zesílení</translation>
+        <translation>Ovládání zesílení</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="132"/>
         <source>Software</source>
-        <translation type="unfinished">Software</translation>
+        <translation>Software</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="132"/>
         <source>Device</source>
-        <translation type="unfinished">Zařízení</translation>
+        <translation>Zařízení</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="132"/>
         <source>Manual</source>
-        <translation type="unfinished">Manuálně</translation>
+        <translation>Manuálně</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="153"/>
         <source>Gain</source>
-        <translation type="unfinished">Zesílení</translation>
+        <translation>Zesílení</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="186"/>
         <source>Expert settings</source>
-        <translation type="unfinished">Pokročilá nastavení</translation>
+        <translation>Pokročilá nastavení</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="199"/>
         <source>SW AGC level threshold:</source>
-        <translation type="unfinished">SW AGC práh úrovně:</translation>
+        <translation>SW AGC práh úrovně:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="213"/>
         <source>Default</source>
-        <translation type="unfinished">Výchozí</translation>
+        <translation>Výchozí</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="219"/>
         <source>Set default</source>
-        <translation type="unfinished">Nastavit výchozí</translation>
+        <translation>Nastavit výchozí</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="231"/>
         <source>Frequency correction:</source>
-        <translation type="unfinished">Korekce frekvence:</translation>
+        <translation>Korekce frekvence:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="250"/>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="284"/>
         <source>Reset</source>
-        <translation type="unfinished">Obnovit</translation>
+        <translation>Obnovit</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="262"/>
         <source>RF level correction:</source>
-        <translation type="unfinished">Korekce úrovně signálu:</translation>
+        <translation>Korekce úrovně signálu:</translation>
     </message>
 </context>
 <context>
@@ -4300,32 +4300,32 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../slsbackend.cpp" line="105"/>
         <source>Ongoing announcement:</source>
-        <translation type="unfinished">Probíhá hlášení:</translation>
+        <translation>Probíhá hlášení:</translation>
     </message>
     <message>
         <location filename="../slsbackend.cpp" line="151"/>
         <source>&lt;b&gt;Category:&lt;/b&gt; %1</source>
-        <translation type="unfinished">&lt;b&gt;Kategorie:&lt;/b&gt; %1</translation>
+        <translation>&lt;b&gt;Kategorie:&lt;/b&gt; %1</translation>
     </message>
     <message>
         <location filename="../slsbackend.cpp" line="161"/>
         <source>&lt;b&gt;Resolution:&lt;/b&gt; %1x%2 pixels&lt;br&gt;</source>
-        <translation type="unfinished">&lt;b&gt;Rozlišení:&lt;/b&gt; %1x%2 pixelů&lt;br&gt;</translation>
+        <translation>&lt;b&gt;Rozlišení:&lt;/b&gt; %1x%2 pixelů&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../slsbackend.cpp" line="162"/>
         <source>&lt;b&gt;Size:&lt;/b&gt; %1 bytes&lt;br&gt;</source>
-        <translation type="unfinished">&lt;b&gt;Velikost:&lt;/b&gt; %1 byte&lt;br&gt;</translation>
+        <translation>&lt;b&gt;Velikost:&lt;/b&gt; %1 byte&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../slsbackend.cpp" line="163"/>
         <source>&lt;b&gt;Format:&lt;/b&gt; %1&lt;br&gt;</source>
-        <translation type="unfinished">&lt;b&gt;Formát:&lt;/b&gt; %1&lt;br&gt;</translation>
+        <translation>&lt;b&gt;Formát:&lt;/b&gt; %1&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../slsbackend.cpp" line="164"/>
         <source>&lt;b&gt;Content name:&lt;/b&gt; &quot;%1&quot;</source>
-        <translation type="unfinished">&lt;b&gt;Název:&lt;/b&gt; &quot;%1&quot;</translation>
+        <translation>&lt;b&gt;Název:&lt;/b&gt; &quot;%1&quot;</translation>
     </message>
 </context>
 <context>
@@ -4346,7 +4346,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/Scanner.qml" line="34"/>
         <source>DAB Scanning Tool</source>
-        <translation type="unfinished">DAB scanner</translation>
+        <translation>DAB scanner</translation>
     </message>
 </context>
 <context>
@@ -4354,7 +4354,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="143"/>
         <source>Scanning finished</source>
-        <translation type="unfinished">Prohledávání ukončeno</translation>
+        <translation>Prohledávání ukončeno</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="162"/>
@@ -4376,52 +4376,52 @@ it is anonymous and contains no personal data.</source>
         <location filename="../tii/scannerbackend.cpp" line="864"/>
         <location filename="../tii/scannerbackend.cpp" line="884"/>
         <source>Cancel</source>
-        <translation type="unfinished">Zrušit</translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="417"/>
         <source>Channel:</source>
-        <translation type="unfinished">Kanál:</translation>
+        <translation>Kanál:</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="490"/>
         <source>%1  (cycle %2)</source>
-        <translation type="unfinished">%1  (cyklus %2)</translation>
+        <translation>%1  (cyklus %2)</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="671"/>
         <source>Mark as local (known) transmitter</source>
-        <translation type="unfinished">Označit jako místní (známý) vysílač</translation>
+        <translation>Označit jako místní (známý) vysílač</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="671"/>
         <source>Unmark local (known) transmitter</source>
-        <translation type="unfinished">Odznačit místní (známý) vysílač</translation>
+        <translation>Odznačit místní (známý) vysílač</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="673"/>
         <source>Show ensemble information</source>
-        <translation type="unfinished">Zobrazit informace o multipelxu</translation>
+        <translation>Zobrazit informace o multipelxu</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="784"/>
         <source>Scanning failed</source>
-        <translation type="unfinished">Prohledávání selhalo</translation>
+        <translation>Prohledávání selhalo</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="831"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished">Nadmořská výška: &lt;b&gt;%1 m&lt;/b&gt;</translation>
+        <translation>Nadmořská výška: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="836"/>
         <source>Antenna height: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished">Výška antény: &lt;b&gt;%1 m&lt;/b&gt;</translation>
+        <translation>Výška antény: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="838"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
-        <translation type="unfinished">ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
+        <translation>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="852"/>
@@ -4431,13 +4431,13 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="852"/>
         <source>You will loose current scan results, this action is irreversible.</source>
-        <translation type="unfinished">Ztratíte současné výsledky, tato akce je nevratná.</translation>
+        <translation>Ztratíte současné výsledky, tato akce je nevratná.</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="863"/>
         <location filename="../tii/scannerbackend.cpp" line="883"/>
         <source>Clear</source>
-        <translation type="unfinished">Vymazat</translation>
+        <translation>Vymazat</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="872"/>
@@ -4447,7 +4447,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="872"/>
         <source>You will loose all records in the database, this action is irreversible.</source>
-        <translation type="unfinished">Ztratíte všechny záznamy v databázi, tata akce je nevratná.</translation>
+        <translation>Ztratíte všechny záznamy v databázi, tata akce je nevratná.</translation>
     </message>
 </context>
 <context>
@@ -4460,32 +4460,32 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="54"/>
         <source>Mode:</source>
-        <translation type="unfinished">Mód:</translation>
+        <translation>Mód:</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="62"/>
         <source>Fast</source>
-        <translation type="unfinished">Rychlý</translation>
+        <translation>Rychlý</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="66"/>
         <source>Normal</source>
-        <translation type="unfinished">Normální</translation>
+        <translation>Normální</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="70"/>
         <source>Precise</source>
-        <translation type="unfinished">Přesný</translation>
+        <translation>Přesný</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="90"/>
         <source>Number of cycles:</source>
-        <translation type="unfinished">Počet cyklů:</translation>
+        <translation>Počet cyklů:</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="107"/>
         <source>Inf</source>
-        <translation type="unfinished">Inf</translation>
+        <translation>Inf</translation>
     </message>
 </context>
 <context>
@@ -4493,82 +4493,82 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="76"/>
         <source>Mode:</source>
-        <translation type="unfinished">Mód:</translation>
+        <translation>Mód:</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="84"/>
         <source>Fast</source>
-        <translation type="unfinished">Rychlý</translation>
+        <translation>Rychlý</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="88"/>
         <source>Normal</source>
-        <translation type="unfinished">Normální</translation>
+        <translation>Normální</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="92"/>
         <source>Precise</source>
-        <translation type="unfinished">Přesný</translation>
+        <translation>Přesný</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="112"/>
         <source>Number of cycles:</source>
-        <translation type="unfinished">Počet cyklů:</translation>
+        <translation>Počet cyklů:</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="129"/>
         <source>Inf</source>
-        <translation type="unfinished">Inf</translation>
+        <translation>Inf</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="141"/>
         <source>Channel selection</source>
-        <translation type="unfinished">Výběr kanálů</translation>
+        <translation>Výběr kanálů</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="173"/>
         <source>Select all</source>
-        <translation type="unfinished">Vybrat vše</translation>
+        <translation>Vybrat vše</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="184"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Zrušit výběr</translation>
+        <translation>Zrušit výběr</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="202"/>
         <source>Clear scan results on start</source>
-        <translation type="unfinished">Vymazat výsledky při startu</translation>
+        <translation>Vymazat výsledky při startu</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="208"/>
         <source>Hide local (known) transmitters</source>
-        <translation type="unfinished">Skrýt místní (známé) vysílače</translation>
+        <translation>Skrýt místní (známé) vysílače</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="214"/>
         <source>AutoSave CSV</source>
-        <translation type="unfinished">Automaticky uložit CSV</translation>
+        <translation>Automaticky uložit CSV</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="226"/>
         <source>Save as CSV</source>
-        <translation type="unfinished">Uložit jako CSV</translation>
+        <translation>Uložit jako CSV</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="231"/>
         <source>Load from CSV</source>
-        <translation type="unfinished">Načíst CSV soubor</translation>
+        <translation>Načíst CSV soubor</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="236"/>
         <source>Clear scan results</source>
-        <translation type="unfinished">Vymazat výsledky prohledávání</translation>
+        <translation>Vymazat výsledky prohledávání</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="241"/>
         <source>Clear local (known) transmitter database</source>
-        <translation type="unfinished">Vymazat databázi místních (známých) vysílačů</translation>
+        <translation>Vymazat databázi místních (známých) vysílačů</translation>
     </message>
 </context>
 <context>
@@ -4581,82 +4581,82 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="159"/>
         <source>Mode:</source>
-        <translation type="unfinished">Mód:</translation>
+        <translation>Mód:</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="166"/>
         <source>Fast</source>
-        <translation type="unfinished">Rychlý</translation>
+        <translation>Rychlý</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="170"/>
         <source>Normal</source>
-        <translation type="unfinished">Normální</translation>
+        <translation>Normální</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="174"/>
         <source>Precise</source>
-        <translation type="unfinished">Přesný</translation>
+        <translation>Přesný</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="195"/>
         <source>Number of cycles:</source>
-        <translation type="unfinished">Počet cyklů:</translation>
+        <translation>Počet cyklů:</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="212"/>
         <source>Inf</source>
-        <translation type="unfinished">Inf</translation>
+        <translation>Inf</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="219"/>
         <source>Select channels</source>
-        <translation type="unfinished">Vybrat kanály</translation>
+        <translation>Vybrat kanály</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="226"/>
         <source>Stop</source>
-        <translation type="unfinished">Stop</translation>
+        <translation>Stop</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="226"/>
         <source>Start</source>
-        <translation type="unfinished">Start</translation>
+        <translation>Start</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="257"/>
         <source>Clear scan results on start</source>
-        <translation type="unfinished">Vymazat výsledky při startu</translation>
+        <translation>Vymazat výsledky při startu</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="263"/>
         <source>Hide local (known) transmitters</source>
-        <translation type="unfinished">Skrýt místní (známé) vysílače</translation>
+        <translation>Skrýt místní (známé) vysílače</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="269"/>
         <source>AutoSave CSV</source>
-        <translation type="unfinished">Automaticky uložit CSV</translation>
+        <translation>Automaticky uložit CSV</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="276"/>
         <source>Save as CSV</source>
-        <translation type="unfinished">Uložit jako CSV</translation>
+        <translation>Uložit jako CSV</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="281"/>
         <source>Load from CSV</source>
-        <translation type="unfinished">Načíst CSV soubor</translation>
+        <translation>Načíst CSV soubor</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="286"/>
         <source>Clear scan results</source>
-        <translation type="unfinished">Vymazat výsledky prohledávání</translation>
+        <translation>Vymazat výsledky prohledávání</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="291"/>
         <source>Clear local (known) transmitter database</source>
-        <translation type="unfinished">Vymazat databázi místních (známých) vysílačů</translation>
+        <translation>Vymazat databázi místních (známých) vysílačů</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="469"/>
@@ -4669,92 +4669,92 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="74"/>
         <source>Disconnect</source>
-        <translation type="unfinished">Odpojit</translation>
+        <translation>Odpojit</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="74"/>
         <source>Reload</source>
-        <translation type="unfinished">Obnovit</translation>
+        <translation>Obnovit</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="79"/>
         <source>RX channel number:</source>
-        <translation type="unfinished">Číslo RX kanálu:</translation>
+        <translation>Číslo RX kanálu:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="99"/>
         <source>Antenna:</source>
-        <translation type="unfinished">Anténa:</translation>
+        <translation>Anténa:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="123"/>
         <source>Use any available SDRplay device if the selected one fails</source>
-        <translation type="unfinished">Použít jakékoli SDRplay zařízení, pokud vybrané nelze připojit</translation>
+        <translation>Použít jakékoli SDRplay zařízení, pokud vybrané nelze připojit</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="142"/>
         <source>Connected device:</source>
-        <translation type="unfinished">Připojené zařízení:</translation>
+        <translation>Připojené zařízení:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="145"/>
         <source>Serial number:</source>
-        <translation type="unfinished">Sériové číslo:</translation>
+        <translation>Sériové číslo:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="163"/>
         <source>Gain control</source>
-        <translation type="unfinished">Ovládání zesílení</translation>
+        <translation>Ovládání zesílení</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="171"/>
         <source>Software</source>
-        <translation type="unfinished">Software</translation>
+        <translation>Software</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="171"/>
         <source>Manual</source>
-        <translation type="unfinished">Manuálně</translation>
+        <translation>Manuálně</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="199"/>
         <source>RF gain</source>
-        <translation type="unfinished">Zesílení RF</translation>
+        <translation>Zesílení RF</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="230"/>
         <source>IF gain</source>
-        <translation type="unfinished">Zesílení IF</translation>
+        <translation>Zesílení IF</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="248"/>
         <source>N/A</source>
-        <translation type="unfinished">Nedostupný</translation>
+        <translation>Nedostupný</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="252"/>
         <source>AGC</source>
-        <translation type="unfinished">AGC</translation>
+        <translation>AGC</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="269"/>
         <source>Expert settings</source>
-        <translation type="unfinished">Pokročilá nastavení</translation>
+        <translation>Pokročilá nastavení</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="283"/>
         <source>Frequency correction:</source>
-        <translation type="unfinished">Korekce frekvence:</translation>
+        <translation>Korekce frekvence:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="302"/>
         <source>Reset</source>
-        <translation type="unfinished">Obnovit</translation>
+        <translation>Obnovit</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="314"/>
         <source>Bias Tee:</source>
-        <translation type="unfinished">Bias Tee:</translation>
+        <translation>Bias Tee:</translation>
     </message>
 </context>
 <context>
@@ -4768,18 +4768,18 @@ it is anonymous and contains no personal data.</source>
         <location filename="../qml/ServiceList.qml" line="339"/>
         <location filename="../qml/ServiceList.qml" line="503"/>
         <source>Remove service from favorites</source>
-        <translation type="unfinished">Odebraz stanici z oblíbených</translation>
+        <translation>Odebraz stanici z oblíbených</translation>
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="340"/>
         <location filename="../qml/ServiceList.qml" line="504"/>
         <source>Add service to favorites</source>
-        <translation type="unfinished">Přidat stanici k oblíbeným</translation>
+        <translation>Přidat stanici k oblíbeným</translation>
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="654"/>
         <source>Services</source>
-        <translation type="unfinished">Stanice</translation>
+        <translation>Stanice</translation>
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="657"/>
@@ -4792,12 +4792,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/ServiceView.qml" line="146"/>
         <source>Remove service from favorites</source>
-        <translation type="unfinished">Odebraz stanici z oblíbených</translation>
+        <translation>Odebraz stanici z oblíbených</translation>
     </message>
     <message>
         <location filename="../qml/ServiceView.qml" line="147"/>
         <source>Add service to favorites</source>
-        <translation type="unfinished">Přidat stanici k oblíbeným</translation>
+        <translation>Přidat stanici k oblíbeným</translation>
     </message>
     <message>
         <location filename="../qml/ServiceView.qml" line="207"/>
@@ -4821,7 +4821,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/Settings.qml" line="34"/>
         <source>Settings</source>
-        <translation type="unfinished">Nastavení</translation>
+        <translation>Nastavení</translation>
     </message>
 </context>
 <context>
@@ -4839,59 +4839,59 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../settingsbackend.cpp" line="60"/>
         <source>Device</source>
-        <translation type="unfinished">Zařízení</translation>
+        <translation>Zařízení</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="61"/>
         <source>Audio</source>
-        <translation type="unfinished">Audio</translation>
+        <translation>Audio</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="62"/>
         <source>Announcements</source>
-        <translation type="unfinished">Hlášení</translation>
+        <translation>Hlášení</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="63"/>
         <source>User applications</source>
-        <translation type="unfinished">Aplikace</translation>
+        <translation>Aplikace</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="64"/>
         <source>TII</source>
-        <translation type="unfinished">TII</translation>
+        <translation>TII</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="65"/>
         <source>Others</source>
-        <translation type="unfinished">Ostatní</translation>
+        <translation>Ostatní</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="84"/>
         <source>Unsigned 8 bits</source>
-        <translation type="unfinished">8 bitů bez znaménka</translation>
+        <translation>8 bitů bez znaménka</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="85"/>
         <source>Signed 16 bits</source>
-        <translation type="unfinished">16 bitů se znaménkem</translation>
+        <translation>16 bitů se znaménkem</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="168"/>
         <source>Disabled</source>
-        <translation type="unfinished">Zakázáno</translation>
+        <translation>Zakázáno</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="229"/>
         <location filename="../settingsbackend.cpp" line="278"/>
         <source>System</source>
-        <translation type="unfinished">Systém</translation>
+        <translation>Systém</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="230"/>
         <location filename="../settingsbackend.cpp" line="279"/>
         <source>Manual</source>
-        <translation type="unfinished">Manuálně</translation>
+        <translation>Manuálně</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="232"/>
@@ -4901,74 +4901,74 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../settingsbackend.cpp" line="268"/>
         <source>System language</source>
-        <translation type="unfinished">Jazyk systému</translation>
+        <translation>Jazyk systému</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="277"/>
         <source>No proxy</source>
-        <translation type="unfinished">Nepoužívat proxy</translation>
+        <translation>Nepoužívat proxy</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="848"/>
         <location filename="../settingsbackend.cpp" line="886"/>
         <location filename="../settingsbackend.cpp" line="2013"/>
         <source>N/A</source>
-        <translation type="unfinished">Nedostupný</translation>
+        <translation>Nedostupný</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="901"/>
         <source>RTL SDR device connected</source>
-        <translation type="unfinished">RTL SDR zařízení připojeno</translation>
+        <translation>RTL SDR zařízení připojeno</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="904"/>
         <source>RTL TCP device connected</source>
-        <translation type="unfinished">RTL TCP zařízení připojeno</translation>
+        <translation>RTL TCP zařízení připojeno</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="907"/>
         <source>No device connected</source>
-        <translation type="unfinished">Žádné zařízení není připojeno</translation>
+        <translation>Žádné zařízení není připojeno</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="910"/>
         <source>Raw file connected</source>
-        <translation type="unfinished">Raw soubor připojen</translation>
+        <translation>Raw soubor připojen</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="913"/>
         <source>Airspy device connected</source>
-        <translation type="unfinished">Airspy zařízení připojeno</translation>
+        <translation>Airspy zařízení připojeno</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="916"/>
         <source>Soapy SDR device connected</source>
-        <translation type="unfinished">Soapy SDR zařízení připojeno</translation>
+        <translation>Soapy SDR zařízení připojeno</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="1370"/>
         <source>Update failed</source>
-        <translation type="unfinished">Aktualizace selhala</translation>
+        <translation>Aktualizace selhala</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="1380"/>
         <source>Last update: </source>
-        <translation type="unfinished">Poslední aktualizace: </translation>
+        <translation>Poslední aktualizace: </translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="1384"/>
         <source>Data not available</source>
-        <translation type="unfinished">Není k dispozici</translation>
+        <translation>Není k dispozici</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="1720"/>
         <source>sec</source>
-        <translation type="unfinished">s</translation>
+        <translation>s</translation>
     </message>
     <message>
         <location filename="../settingsbackend.h" line="398"/>
         <source>No file selected</source>
-        <translation type="unfinished">Není vybraný soubor</translation>
+        <translation>Není vybraný soubor</translation>
     </message>
 </context>
 <context>
@@ -4986,19 +4986,19 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../signalbackend.cpp" line="145"/>
         <source>Time</source>
-        <translation type="unfinished">Čas</translation>
+        <translation>Čas</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="146"/>
         <source>SNR [dB]</source>
-        <translation type="unfinished">SNR [dB]</translation>
+        <translation>SNR [dB]</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="276"/>
         <location filename="../signalbackend.cpp" line="348"/>
         <location filename="../signalbackend.cpp" line="359"/>
         <source>N/A</source>
-        <translation type="unfinished">Nedostupný</translation>
+        <translation>Nedostupný</translation>
     </message>
 </context>
 <context>
@@ -5006,27 +5006,27 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/SignalState.qml" line="75"/>
         <source>DAB signal not detected&lt;br&gt;Looking for signal...</source>
-        <translation type="unfinished">DAB signál nenalezen&lt;br&gt;Hledám signál...</translation>
+        <translation>DAB signál nenalezen&lt;br&gt;Hledám signál...</translation>
     </message>
     <message>
         <location filename="../qml/SignalState.qml" line="77"/>
         <source>Synchronized to DAB signal</source>
-        <translation type="unfinished">Přijímám DAB signál</translation>
+        <translation>Přijímám DAB signál</translation>
     </message>
     <message>
         <location filename="../qml/SignalState.qml" line="78"/>
         <source>Found DAB signal,&lt;br&gt;trying to synchronize...</source>
-        <translation type="unfinished">DAB signál detekován,&lt;br&gt;zkouším synchronizovat...</translation>
+        <translation>DAB signál detekován,&lt;br&gt;zkouším synchronizovat...</translation>
     </message>
     <message>
         <location filename="../qml/SignalState.qml" line="84"/>
         <source>SNR</source>
-        <translation type="unfinished">SNR</translation>
+        <translation>SNR</translation>
     </message>
     <message>
         <location filename="../qml/SignalState.qml" line="91"/>
         <source>DAB signal SNR</source>
-        <translation type="unfinished">Odstup DAB signálu od šumu</translation>
+        <translation>Odstup DAB signálu od šumu</translation>
     </message>
 </context>
 <context>
@@ -5034,7 +5034,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="54"/>
         <source>Device arguments:</source>
-        <translation type="unfinished">Parametry zařízení:</translation>
+        <translation>Parametry zařízení:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="59"/>
@@ -5044,62 +5044,62 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="67"/>
         <source>RX channel number:</source>
-        <translation type="unfinished">Číslo RX kanálu:</translation>
+        <translation>Číslo RX kanálu:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="83"/>
         <source>Antenna:</source>
-        <translation type="unfinished">Anténa:</translation>
+        <translation>Anténa:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="104"/>
         <source>Connected device:</source>
-        <translation type="unfinished">Připojené zařízení:</translation>
+        <translation>Připojené zařízení:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="122"/>
         <source>Gain control</source>
-        <translation type="unfinished">Ovládání zesílení</translation>
+        <translation>Ovládání zesílení</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="130"/>
         <source>Device</source>
-        <translation type="unfinished">Zařízení</translation>
+        <translation>Zařízení</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="130"/>
         <source>Manual</source>
-        <translation type="unfinished">Manuálně</translation>
+        <translation>Manuálně</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="211"/>
         <source>Expert settings</source>
-        <translation type="unfinished">Pokročilá nastavení</translation>
+        <translation>Pokročilá nastavení</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="225"/>
         <source>Bandwidth:</source>
-        <translation type="unfinished">Šířka pásma:</translation>
+        <translation>Šířka pásma:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="240"/>
         <source>Default</source>
-        <translation type="unfinished">Výchozí</translation>
+        <translation>Výchozí</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="246"/>
         <source>Set default</source>
-        <translation type="unfinished">Nastavit výchozí</translation>
+        <translation>Nastavit výchozí</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="258"/>
         <source>Frequency correction:</source>
-        <translation type="unfinished">Korekce frekvence:</translation>
+        <translation>Korekce frekvence:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="277"/>
         <source>Reset</source>
-        <translation type="unfinished">Obnovit</translation>
+        <translation>Obnovit</translation>
     </message>
 </context>
 <context>
@@ -5107,12 +5107,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/StatusBar.qml" line="97"/>
         <source>Unmute audio</source>
-        <translation type="unfinished">Zapnout zvuk</translation>
+        <translation>Zapnout zvuk</translation>
     </message>
     <message>
         <location filename="../qml/StatusBar.qml" line="98"/>
         <source>Mute audio</source>
-        <translation type="unfinished">Vypnout zvuk</translation>
+        <translation>Vypnout zvuk</translation>
     </message>
 </context>
 <context>
@@ -5128,17 +5128,17 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/SystemTray.qml" line="45"/>
         <source>Unmute</source>
-        <translation type="unfinished">Zapnout zvuk</translation>
+        <translation>Zapnout zvuk</translation>
     </message>
     <message>
         <location filename="../qml/SystemTray.qml" line="45"/>
         <source>Mute</source>
-        <translation type="unfinished">Vypnout zvuk</translation>
+        <translation>Vypnout zvuk</translation>
     </message>
     <message>
         <location filename="../qml/SystemTray.qml" line="51"/>
         <source>Quit</source>
-        <translation type="unfinished">Ukončit</translation>
+        <translation>Ukončit</translation>
     </message>
 </context>
 <context>
@@ -5146,7 +5146,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/TII.qml" line="34"/>
         <source>TII</source>
-        <translation type="unfinished">TII</translation>
+        <translation>TII</translation>
     </message>
 </context>
 <context>
@@ -5154,17 +5154,17 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/tiibackend.cpp" line="197"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished">Nadmořská výška: &lt;b&gt;%1 m&lt;/b&gt;</translation>
+        <translation>Nadmořská výška: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="202"/>
         <source>Antenna height: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished">Výška antény: &lt;b&gt;%1 m&lt;/b&gt;</translation>
+        <translation>Výška antény: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="204"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
-        <translation type="unfinished">ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
+        <translation>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="302"/>
@@ -5177,12 +5177,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/TIIMap.qml" line="396"/>
         <source>Stop logging</source>
-        <translation type="unfinished">Zastavit logování</translation>
+        <translation>Zastavit logování</translation>
     </message>
     <message>
         <location filename="../qml/tii/TIIMap.qml" line="396"/>
         <source>Record CSV log</source>
-        <translation type="unfinished">Zaznamenat CSV log</translation>
+        <translation>Zaznamenat CSV log</translation>
     </message>
 </context>
 <context>
@@ -5190,57 +5190,57 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="67"/>
         <source>Transmitter database</source>
-        <translation type="unfinished">Databáze vysílačů</translation>
+        <translation>Databáze vysílačů</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="79"/>
         <source>Application uses DAB transmiter database provided by &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;By pressing &lt;i&gt;Update&lt;/i&gt; button you agree with data usage &lt;a href=&apos;https://www.fmlist.org/fmlist_copyright_disclaimer_legal_notice.php&apos;&gt;terms and conditions&lt;/a&gt;.</source>
-        <translation type="unfinished">Aplikace využívá databázi DAB vysílačů od &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;Kliknutím na tlačítko &lt;i&gt;Aktualizovat&lt;/i&gt; souhlasíte s &lt;a href=&apos;https://www.fmlist.org/fmlist_copyright_disclaimer_legal_notice.php&apos;&gt;všeobecnými smluvními podmínkami&lt;/a&gt; služby.</translation>
+        <translation>Aplikace využívá databázi DAB vysílačů od &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;Kliknutím na tlačítko &lt;i&gt;Aktualizovat&lt;/i&gt; souhlasíte s &lt;a href=&apos;https://www.fmlist.org/fmlist_copyright_disclaimer_legal_notice.php&apos;&gt;všeobecnými smluvními podmínkami&lt;/a&gt; služby.</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="98"/>
         <source>Update</source>
-        <translation type="unfinished">Aktualizovat</translation>
+        <translation>Aktualizovat</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="114"/>
         <source>Receiver location</source>
-        <translation type="unfinished">Poloha prijímače</translation>
+        <translation>Poloha prijímače</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="130"/>
         <source>Geolocation source:</source>
-        <translation type="unfinished">Určení polohy:</translation>
+        <translation>Určení polohy:</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="154"/>
         <source>GPS coordinates:</source>
-        <translation type="unfinished">Souřadnice GPS:</translation>
+        <translation>Souřadnice GPS:</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="178"/>
         <source>Serial port:</source>
-        <translation type="unfinished">Sériový port:</translation>
+        <translation>Sériový port:</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="191"/>
         <source>Baudrate:</source>
-        <translation type="unfinished">Přenosová rychlost:</translation>
+        <translation>Přenosová rychlost:</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="226"/>
         <source>Logging</source>
-        <translation type="unfinished">Logování</translation>
+        <translation>Logování</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="240"/>
         <source>Folder:</source>
-        <translation type="unfinished">Složka:</translation>
+        <translation>Složka:</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="255"/>
         <source>Timestamp in UTC</source>
-        <translation type="unfinished">Časová značka v UTC</translation>
+        <translation>Časová značka v UTC</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="265"/>
@@ -5250,37 +5250,37 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="284"/>
         <source>Detector</source>
-        <translation type="unfinished">Detektor</translation>
+        <translation>Detektor</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="290"/>
         <source>Reliable</source>
-        <translation type="unfinished">Spolehlivý</translation>
+        <translation>Spolehlivý</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="306"/>
         <source>Sensitive</source>
-        <translation type="unfinished">Citlivý</translation>
+        <translation>Citlivý</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="318"/>
         <source>User interface</source>
-        <translation type="unfinished">Uživatelské rozhraní</translation>
+        <translation>Uživatelské rozhraní</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="329"/>
         <source>Show spectrum plot</source>
-        <translation type="unfinished">Zobrazovat spektrum</translation>
+        <translation>Zobrazovat spektrum</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="340"/>
         <source>Keep no longer detected transmitters on map (grey marker)</source>
-        <translation type="unfinished">Zobrazovat v mapě i vysílače, které se už nedetekují (šedá značka)</translation>
+        <translation>Zobrazovat v mapě i vysílače, které se už nedetekují (šedá značka)</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="358"/>
         <source>Remove after:</source>
-        <translation type="unfinished">Odstranit po:</translation>
+        <translation>Odstranit po:</translation>
     </message>
 </context>
 <context>
@@ -5288,22 +5288,22 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/txmapbackend.cpp" line="249"/>
         <source>Ensemble: &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation type="unfinished">Multiplex: &lt;b&gt;%1&lt;/b&gt;</translation>
+        <translation>Multiplex: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/txmapbackend.cpp" line="253"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt; | TX: &lt;b&gt;%3&lt;/b&gt;</source>
-        <translation type="unfinished">ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt; | TX: &lt;b&gt;%3&lt;/b&gt;</translation>
+        <translation>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt; | TX: &lt;b&gt;%3&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/txmapbackend.cpp" line="261"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</source>
-        <translation type="unfinished">ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</translation>
+        <translation>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/txmapbackend.cpp" line="266"/>
         <source>Channel: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</source>
-        <translation type="unfinished">Kanál: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</translation>
+        <translation>Kanál: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</translation>
     </message>
 </context>
 <context>
@@ -5448,27 +5448,27 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="68"/>
         <source>SPI application</source>
-        <translation type="unfinished">SPI aplikace</translation>
+        <translation>SPI aplikace</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="79"/>
         <source>Enable SPI application</source>
-        <translation type="unfinished">Povolit SPI aplikaci</translation>
+        <translation>Povolit SPI aplikaci</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="91"/>
         <source>Download data from internet</source>
-        <translation type="unfinished">Stahovat data z internetu</translation>
+        <translation>Stahovat data z internetu</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="104"/>
         <source>RadioDNS</source>
-        <translation type="unfinished">RadioDNS</translation>
+        <translation>RadioDNS</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="117"/>
         <source>Show decoding progress</source>
-        <translation type="unfinished">Zobrazit průběh dekódování</translation>
+        <translation>Zobrazit průběh dekódování</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="129"/>
@@ -5478,22 +5478,22 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="148"/>
         <source>Data storage</source>
-        <translation type="unfinished">Ukládání dat</translation>
+        <translation>Ukládání dat</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="161"/>
         <source>Folder:</source>
-        <translation type="unfinished">Složka:</translation>
+        <translation>Složka:</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="173"/>
         <source>Overwrite existing files</source>
-        <translation type="unfinished">Přepisovat soubory</translation>
+        <translation>Přepisovat soubory</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="193"/>
         <source>Slideshow data</source>
-        <translation type="unfinished">Obrázky slideshow (SLS)</translation>
+        <translation>Obrázky slideshow (SLS)</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="204"/>
@@ -5503,7 +5503,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="215"/>
         <source>SPI data</source>
-        <translation type="unfinished">Data SPI</translation>
+        <translation>Data SPI</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="227"/>
@@ -5605,7 +5605,7 @@ Use the &apos;Dock Page&apos; button above to bring it back.</source>
     <message>
         <location filename="../qml/UpdateDialog.qml" line="124"/>
         <source>Close</source>
-        <translation type="unfinished">Zavřít</translation>
+        <translation>Zavřít</translation>
     </message>
 </context>
 </TS>

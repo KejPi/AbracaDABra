@@ -6,67 +6,67 @@
     <message>
         <location filename="../aboutui.cpp" line="40"/>
         <source>Based on Qt %1</source>
-        <translation type="unfinished">Opierają się na Qt %1</translation>
+        <translation>Opierają się na Qt %1</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="41"/>
         <source>DAB SDR version %1.%2.%3</source>
-        <translation type="unfinished">DAB SDR wersja %1.%2.%3</translation>
+        <translation>DAB SDR wersja %1.%2.%3</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="42"/>
         <source>Developed by</source>
-        <translation type="unfinished">Opracowany przez</translation>
+        <translation>Opracowany przez</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="43"/>
         <source>If you like the application you can</source>
-        <translation type="unfinished">Jeśli podoba Ci się ta aplikacja, możesz</translation>
+        <translation>Jeśli podoba Ci się ta aplikacja, możesz</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="43"/>
         <source>buy me a beer</source>
-        <translation type="unfinished">kup mi piwo</translation>
+        <translation>kup mi piwo</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="45"/>
         <source>AbracaDABra &amp; DAB SDR library use following libraries (special thanks to):</source>
-        <translation type="unfinished">Biblioteka AbracaDABra &amp; DAB SDR wykorzystuje nastepujące biblioteki (szczególne podziękowania dla):</translation>
+        <translation>Biblioteka AbracaDABra &amp; DAB SDR wykorzystuje nastepujące biblioteki (szczególne podziękowania dla):</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="76"/>
         <source>Contributors to the translation:</source>
-        <translation type="unfinished">Współtwórcy tłumaczenia na język:</translation>
+        <translation>Współtwórcy tłumaczenia na język:</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="79"/>
         <source>Czech</source>
-        <translation type="unfinished">Język czeski</translation>
+        <translation>czeski</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="82"/>
         <source>German</source>
-        <translation type="unfinished">język niemiecki</translation>
+        <translation>niemiecki</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="85"/>
         <source>Polish</source>
-        <translation type="unfinished">Język polski</translation>
+        <translation>polski</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="88"/>
         <source>AbracaDABra uses some artwork created by</source>
-        <translation type="unfinished">AbracaDABra korzystania z grafik utworzonych przez</translation>
+        <translation>AbracaDABra korzystania z grafik utworzonych przez</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="90"/>
         <source>DAB transmitter database provided by</source>
-        <translation type="unfinished">Baza nadajników DAB dostarczona przez</translation>
+        <translation>Baza nadajników DAB dostarczona przez</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="91"/>
         <source>and country flags provided by</source>
-        <translation type="unfinished">i flagi państwowe dostarczone przez</translation>
+        <translation>i flagi państwowe dostarczone przez</translation>
     </message>
 </context>
 <context>
@@ -82,7 +82,7 @@
     <message>
         <location filename="../qml/controls/AbracaRecordingButton.qml" line="60"/>
         <source>Stop recording</source>
-        <translation type="unfinished"></translation>
+        <translation>zatrzymaj nagrywanie</translation>
     </message>
 </context>
 <context>
@@ -90,7 +90,7 @@
     <message>
         <location filename="../qml/controls/AbracaTimePicker.qml" line="38"/>
         <source>Time</source>
-        <translation type="unfinished">Czas</translation>
+        <translation>Czas</translation>
     </message>
     <message>
         <location filename="../qml/controls/AbracaTimePicker.qml" line="147"/>
@@ -113,83 +113,83 @@
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="63"/>
         <source>Reload</source>
-        <translation type="unfinished">Przeładuj</translation>
+        <translation>Przeładuj</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="73"/>
         <source>Use any available Airspy device if the selected one fails</source>
-        <translation type="unfinished">Użyj dowolnego dostępnego urządzenia Airspy, jeśli wybrane zawiedzie</translation>
+        <translation>Użyj dowolnego dostępnego urządzenia Airspy, jeśli wybrane zawiedzie</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="94"/>
         <source>Connected device:</source>
-        <translation type="unfinished">Podłączone urządzenie:</translation>
+        <translation>Podłączone urządzenie:</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="97"/>
         <source>Serial number:</source>
-        <translation type="unfinished">Numer seryjny:</translation>
+        <translation>Numer seryjny:</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="115"/>
         <source>Gain control</source>
-        <translation type="unfinished">Wzmocnienie sygnału regulowane jest</translation>
+        <translation>Wzmocnienie sygnału regulowane jest</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
         <source>Software</source>
-        <translation type="unfinished">Oprogramowanie</translation>
+        <translation>Oprogramowanie</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
         <source>Hybrid</source>
-        <translation type="unfinished">Hybrydowy</translation>
+        <translation>Hybrydowy</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
         <source>Sensitivity</source>
-        <translation type="unfinished">Wrażliwość</translation>
+        <translation>Wrażliwość</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
         <source>Manual</source>
-        <translation type="unfinished">Ręcznie</translation>
+        <translation>Ręcznie</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="151"/>
         <source>Sensitivity gain</source>
-        <translation type="unfinished">Wzmocnienie czułości</translation>
+        <translation>Wzmocnienie czułości</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="172"/>
         <source>LNA gain</source>
-        <translation type="unfinished">Wzmocnienie LNA</translation>
+        <translation>Wzmocnienie LNA</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="193"/>
         <location filename="../qml/settings/AirspyDevice.qml" line="222"/>
         <source>AGC</source>
-        <translation type="unfinished">AGC</translation>
+        <translation>AGC</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="202"/>
         <source>Mixer gain</source>
-        <translation type="unfinished">Wzmocnienie miksera</translation>
+        <translation>Wzmocnienie miksera</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="231"/>
         <source>IF gain</source>
-        <translation type="unfinished">Wzmocnienie IF</translation>
+        <translation>Wzmocnienie IF</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="260"/>
         <source>Expert settings</source>
-        <translation type="unfinished">Ustawienia eksperckie</translation>
+        <translation>Ustawienia eksperckie</translation>
     </message>
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="271"/>
         <source>Bias Tee:</source>
-        <translation type="unfinished">Zasilanie zdalne:</translation>
+        <translation>Zasilanie zdalne:</translation>
     </message>
 </context>
 <context>
@@ -197,12 +197,12 @@
     <message>
         <location filename="../qml/settings/AnnouncementSettings.qml" line="68"/>
         <source>Alarm announcements</source>
-        <translation type="unfinished">Ogłoszenia alarmowe</translation>
+        <translation>Ogłoszenia alarmowe</translation>
     </message>
     <message>
         <location filename="../qml/settings/AnnouncementSettings.qml" line="98"/>
         <source>&lt;br&gt;Note: Alarm announcement cannot be disabled.</source>
-        <translation type="unfinished">&lt;br&gt;Uwaga: Komunikat alarmowy nie można wyłączyć.</translation>
+        <translation>&lt;br&gt;Uwaga: Komunikat alarmowy nie można wyłączyć.</translation>
     </message>
     <message>
         <location filename="../qml/settings/AnnouncementSettings.qml" line="103"/>
@@ -212,7 +212,7 @@
     <message>
         <location filename="../qml/settings/AnnouncementSettings.qml" line="123"/>
         <source>Regular announcements</source>
-        <translation type="unfinished">Regularne zapowiedzi</translation>
+        <translation>Regularne zapowiedzi</translation>
     </message>
 </context>
 <context>
@@ -220,7 +220,7 @@
     <message>
         <location filename="../qml/AppLog.qml" line="34"/>
         <source>Application log</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejestr zdarzeń</translation>
     </message>
 </context>
 <context>
@@ -233,7 +233,7 @@
     <message>
         <location filename="../qml/AppLogView.qml" line="70"/>
         <source>Copy to clipboard</source>
-        <translation type="unfinished">Skopiuj do schowka</translation>
+        <translation>Skopiuj do schowka</translation>
     </message>
     <message>
         <location filename="../qml/AppLogView.qml" line="75"/>
@@ -246,169 +246,169 @@
     <message>
         <location filename="../application.cpp" line="121"/>
         <source>No signal</source>
-        <translation type="unfinished">Brak sygnału</translation>
+        <translation>Brak sygnału</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="121"/>
         <source>Signal found</source>
-        <translation type="unfinished">Sygnał znaleziony</translation>
+        <translation>Sygnał znaleziony</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="121"/>
         <source>Sync</source>
-        <translation type="unfinished">Synchronizacja</translation>
+        <translation>Synchronizacja</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="122"/>
         <source>DAB signal not detected&lt;br&gt;Looking for signal...</source>
-        <translation type="unfinished">Nie wykryto sygnału DAB&lt;br&gt;Trwa strojenie...</translation>
+        <translation>Nie wykryto sygnału DAB&lt;br&gt;Trwa strojenie...</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="123"/>
         <source>Found DAB signal,&lt;br&gt;trying to synchronize...</source>
-        <translation type="unfinished">Znaleziono sygnał DAB,&lt;br&gt;próba synchronizacji...</translation>
+        <translation>Znaleziono sygnał DAB,&lt;br&gt;próba synchronizacji...</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="123"/>
         <source>Synchronized to DAB signal</source>
-        <translation type="unfinished">Dodaj do listy ulubionych stacji</translation>
+        <translation>Dodaj do listy ulubionych stacji</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="351"/>
         <location filename="../application.cpp" line="353"/>
         <source>Mute</source>
-        <translation type="unfinished">Wycisz</translation>
+        <translation>Wycisz</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="353"/>
         <source>Unmute</source>
-        <translation type="unfinished">Włącz dźwięk</translation>
+        <translation>Włącz dźwięk</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="408"/>
         <source>Audio coding</source>
-        <translation type="unfinished">Kodowanie audio</translation>
+        <translation>Kodowanie audio</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="413"/>
         <source>Ongoing announcement</source>
-        <translation type="unfinished">Komunikat na żywo</translation>
+        <translation>Komunikat na żywo</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="825"/>
         <source>&lt;b&gt;Ensemble:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %5</source>
-        <translation type="unfinished">&lt;b&gt;Multipleks:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Krótka nazwa multipleksu:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Kraj:&lt;/b&gt; %5</translation>
+        <translation>&lt;b&gt;Multipleks:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Krótka nazwa multipleksu:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Kraj:&lt;/b&gt; %5</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1005"/>
         <source>System time</source>
-        <translation type="unfinished">Czas systemowy</translation>
+        <translation>Czas systemowy</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1015"/>
         <location filename="../application.cpp" line="4044"/>
         <source>DAB time</source>
-        <translation type="unfinished">Czas</translation>
+        <translation>Czas</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1025"/>
         <source>&lt;b&gt;DAB audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
-        <translation type="unfinished">&lt;b&gt;DAB kodowanie audio&lt;/b&gt;&lt;br&gt;%1</translation>
+        <translation>&lt;b&gt;DAB kodowanie audio&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1025"/>
         <source>MPEG-1 layer 2</source>
-        <translation type="unfinished">MPEG-1 warstwa 2</translation>
+        <translation>MPEG-1 warstwa 2</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1029"/>
         <location filename="../application.cpp" line="1033"/>
         <location filename="../application.cpp" line="1037"/>
         <source>&lt;b&gt;DAB+ audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
-        <translation type="unfinished">&lt;b&gt;DAB+ kodowanie audio&lt;/b&gt;&lt;br&gt;%1</translation>
+        <translation>&lt;b&gt;DAB+ kodowanie audio&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1029"/>
         <source>MPEG-4 Low Complexity AAC</source>
-        <translation type="unfinished">MPEG-4 Low Complexity AAC</translation>
+        <translation>MPEG-4 Low Complexity AAC</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1033"/>
         <source>MPEG-4 High Efficiency AAC</source>
-        <translation type="unfinished">MPEG-4 High Efficiency AAC</translation>
+        <translation>MPEG-4 High Efficiency AAC</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1037"/>
         <source>MPEG-4 High Efficiency AAC v2</source>
-        <translation type="unfinished">MPEG-4 High Efficiency AAC v2</translation>
+        <translation>MPEG-4 High Efficiency AAC v2</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1054"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Sample rate: %2 kHz</source>
-        <translation type="unfinished">&lt;b&gt;Typ dźwięku&lt;/b&gt;&lt;br&gt;%1stereo&lt;br&gt;Częstotliwość próbkowania: %2 kHz</translation>
+        <translation>&lt;b&gt;Typ dźwięku&lt;/b&gt;&lt;br&gt;%1stereo&lt;br&gt;Częstotliwość próbkowania: %2 kHz</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1058"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Sample rate: %2 kHz (SBR %3)</source>
-        <translation type="unfinished">&lt;b&gt;Typ dźwięku&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Częstotliwość próbkowania: %2 kHz (SBR %3)</translation>
+        <translation>&lt;b&gt;Typ dźwięku&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Częstotliwość próbkowania: %2 kHz (SBR %3)</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1059"/>
         <location filename="../application.cpp" line="1061"/>
         <source>on</source>
-        <translation type="unfinished">włączony</translation>
+        <translation>włączony</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1059"/>
         <location filename="../application.cpp" line="1061"/>
         <source>off</source>
-        <translation type="unfinished">wyłączony</translation>
+        <translation>wyłączony</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1069"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz</source>
-        <translation type="unfinished">&lt;b&gt;Sygnał audio&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Częstotliwość próbkowania: %1 kHz</translation>
+        <translation>&lt;b&gt;Sygnał audio&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Częstotliwość próbkowania: %1 kHz</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1074"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz (SBR: %2)</source>
-        <translation type="unfinished">&lt;b&gt;Sygnał audio&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Częstotliwość próbkowania: %1 kHz (SBR: %2)</translation>
+        <translation>&lt;b&gt;Sygnał audio&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Częstotliwość próbkowania: %1 kHz (SBR: %2)</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1095"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1 (dynamic)</source>
-        <translation type="unfinished">&lt;b&gt;Charakter programu&lt;/b&gt;&lt;br&gt;%1 (dynamiczny)</translation>
+        <translation>&lt;b&gt;Charakter programu&lt;/b&gt;&lt;br&gt;%1 (dynamiczny)</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1102"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1</source>
-        <translation type="unfinished">&lt;b&gt;Charakter programu&lt;/b&gt;&lt;br&gt;%1</translation>
+        <translation>&lt;b&gt;Charakter programu&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1122"/>
         <source>Tuning...  </source>
-        <translation type="unfinished">Strojenie…  </translation>
+        <translation>Strojenie…  </translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1185"/>
         <location filename="../application.cpp" line="1198"/>
         <source>Tune to %1</source>
-        <translation type="unfinished">Dostrój do %1</translation>
+        <translation>Dostrój do %1</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1285"/>
         <source>End of file</source>
-        <translation type="unfinished">Koniec pliku</translation>
+        <translation>Koniec pliku</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1286"/>
         <source>Select any service to restart</source>
-        <translation type="unfinished">Wybierz dowolną usługę, którą chcesz ponownie uruchomić</translation>
+        <translation>Wybierz dowolną usługę, którą chcesz ponownie uruchomić</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1300"/>
         <source>Input device error: Device disconnected</source>
-        <translation type="unfinished">Błąd urządzenia wejściowego: Urządzenie odłączone</translation>
+        <translation>Błąd urządzenia wejściowego: Urządzenie odłączone</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1301"/>
@@ -419,17 +419,17 @@
     <message>
         <location filename="../application.cpp" line="1312"/>
         <source>Input device error: No data</source>
-        <translation type="unfinished">Błąd urządzenia wejściowego: Brak danych</translation>
+        <translation>Błąd urządzenia wejściowego: Brak danych</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1336"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you change DAB channel.</source>
-        <translation type="unfinished">Nagrywanie dźwięku jest w toku. Zostanie zatrzymane i zapisane, jeśli zmienisz kanał DAB.</translation>
+        <translation>Nagrywanie dźwięku jest w toku. Zostanie zatrzymane i zapisane, jeśli zmienisz kanał DAB.</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1339"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you switch current service.</source>
-        <translation type="unfinished">Nagrywanie dźwięku jest w toku. Zostanie zatrzymane i zapisane, jeśli zmienisz bieżący program.</translation>
+        <translation>Nagrywanie dźwięku jest w toku. Zostanie zatrzymane i zapisane, jeśli zmienisz bieżący program.</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1344"/>
@@ -439,173 +439,173 @@
     <message>
         <location filename="../application.cpp" line="1361"/>
         <source>Keep recording</source>
-        <translation type="unfinished">Kontynuuj nagrywanie</translation>
+        <translation>Kontynuuj nagrywanie</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1362"/>
         <source>Stop recording and do not ask again</source>
-        <translation type="unfinished">Zatrzymaj nagrywanie i nie pytaj ponownie</translation>
+        <translation>Zatrzymaj nagrywanie i nie pytaj ponownie</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1363"/>
         <source>Stop recording</source>
-        <translation type="unfinished"></translation>
+        <translation>zatrzymaj nagrywanie</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1602"/>
         <source>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Language:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %6</source>
-        <translation type="unfinished">&lt;b&gt;Stacja:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Skrót nazwy stacji:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Język:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Kraj:&lt;/b&gt; %6</translation>
+        <translation>&lt;b&gt;Stacja:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Skrót nazwy stacji:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Język:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Kraj:&lt;/b&gt; %6</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1656"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Coderate: %2/%3&lt;br&gt;Capacity units: %4 CU</source>
-        <translation type="unfinished">&lt;B&gt;Korekcja błędów&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Sprawność kodowania: %2/%3&lt;br&gt;Jednostki pojemności: %4 CU</translation>
+        <translation>&lt;B&gt;Korekcja błędów&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Sprawność kodowania: %2/%3&lt;br&gt;Jednostki pojemności: %4 CU</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1667"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Protection level: %2&lt;br&gt;Capacity units: %3 CU</source>
-        <translation type="unfinished">&lt;B&gt;Korekcja błędów&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Poziom ochrony: %2&lt;br&gt;Jednostki pojemności: %3 CU</translation>
+        <translation>&lt;B&gt;Korekcja błędów&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Poziom ochrony: %2&lt;br&gt;Jednostki pojemności: %3 CU</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1677"/>
         <source>%1 kbps</source>
-        <translation type="unfinished">%1 kbps</translation>
+        <translation>%1 kbps</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1679"/>
         <source>&lt;b&gt;Service bitrate&lt;/b&gt;&lt;br&gt;Audio &amp; data: %1</source>
-        <translation type="unfinished">&lt;b&gt;Przepływność&lt;/b&gt;&lt;br&gt;Dźwięk i dane związane z programem: %1</translation>
+        <translation>&lt;b&gt;Przepływność&lt;/b&gt;&lt;br&gt;Dźwięk i dane związane z programem: %1</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1705"/>
         <source>Service currently unavailable</source>
-        <translation type="unfinished">Usługa obecnie niedostępna</translation>
+        <translation>Usługa obecnie niedostępna</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1706"/>
         <source>Service was removed from ensemble</source>
-        <translation type="unfinished">Usługa została usunięta z multipleksu</translation>
+        <translation>Usługa została usunięta z multipleksu</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1738"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;on current service</source>
-        <translation type="unfinished">&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Bieżący komunikat&lt;br&gt;na włączonej stacji</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Bieżący komunikat&lt;br&gt;na włączonej stacji</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1752"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to suspend this announcement</source>
-        <translation type="unfinished">&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Bieżący komunikat&lt;br&gt;Źródło: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknij, aby wstrzymać odtwarzanie</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Bieżący komunikat&lt;br&gt;Źródło: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknij, aby wstrzymać odtwarzanie</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1769"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Suspended announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to resume this announcement</source>
-        <translation type="unfinished">&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Wstrzymany komunikat&lt;br&gt;Źródło: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknij, aby wznowić odtwarzanie komunikatu</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Wstrzymany komunikat&lt;br&gt;Źródło: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknij, aby wznowić odtwarzanie komunikatu</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1814"/>
         <source>Default audio device</source>
-        <translation type="unfinished">Domyślne urządzenie audio</translation>
+        <translation>Domyślne urządzenie audio</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1891"/>
         <source>Stop audio recording</source>
-        <translation type="unfinished">Zatrzymaj nagrywanie dźwięku</translation>
+        <translation>Zatrzymaj nagrywanie dźwięku</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1897"/>
         <source>Start audio recording</source>
-        <translation type="unfinished">Włącz nagrywanie audio</translation>
+        <translation>Włącz nagrywanie audio</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1907"/>
         <source>Audio recording ongoing (%2 kBytes recorded)
 File: %1</source>
-        <translation type="unfinished">Nagrywanie dźwięku w toku (nagrano %2 kBytes)
+        <translation>Nagrywanie dźwięku w toku (nagrano %2 kBytes)
 Plik: %1</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1915"/>
         <source>Scheduled audio recording is getting ready</source>
-        <translation type="unfinished">Zaplanowane nagrywanie dźwięku jest w trakcie przygotowania</translation>
+        <translation>Zaplanowane nagrywanie dźwięku jest w trakcie przygotowania</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1927"/>
         <source>Scheduled recording should start in %1 seconds</source>
-        <translation type="unfinished">Zaplanowane nagrywanie powinno rozpocząć się za %1 sekund</translation>
+        <translation>Zaplanowane nagrywanie powinno rozpocząć się za %1 sekund</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1930"/>
         <source>Ongoing recording now prevents the start of a scheduled recording. The schedule will be cancelled if you do not choose otherwise. If you select to keep the schedule, the service might be switched.</source>
-        <translation type="unfinished">Trwające nagrywanie teraz uniemożliwia rozpoczęcie zaplanowanego nagrywania. Harmonogram zostanie anulowany, jeśli nie wybierzesz inaczej. Jeśli wybierzesz zachowanie harmonogramu, program może zostać przełączona.</translation>
+        <translation>Trwające nagrywanie teraz uniemożliwia rozpoczęcie zaplanowanego nagrywania. Harmonogram zostanie anulowany, jeśli nie wybierzesz inaczej. Jeśli wybierzesz zachowanie harmonogramu, program może zostać przełączona.</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1943"/>
         <source>Keep current recording</source>
-        <translation type="unfinished">Zachowaj bieżące nagrywanie</translation>
+        <translation>Zachowaj bieżące nagrywanie</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1944"/>
         <source>Keep schedule</source>
-        <translation type="unfinished">Zachowaj harmonogram</translation>
+        <translation>Zachowaj harmonogram</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1953"/>
         <source>Scheduled recording starts in %1 seconds</source>
-        <translation type="unfinished">Zaplanowane nagrywanie rozpocznie się za %1 sekund</translation>
+        <translation>Zaplanowane nagrywanie rozpocznie się za %1 sekund</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1956"/>
         <source>Recording is going to start according to the schedule. The service might be switched if it differs from the current one.</source>
-        <translation type="unfinished">Nagrywanie rozpocznie się zgodnie z harmonogramem. Program może zostać przełączony, jeśli będzie się różnić od obecnego.</translation>
+        <translation>Nagrywanie rozpocznie się zgodnie z harmonogramem. Program może zostać przełączony, jeśli będzie się różnić od obecnego.</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1967"/>
         <source>Continue as planned</source>
-        <translation type="unfinished">Kontynuuj zgodnie z planem</translation>
+        <translation>Kontynuuj zgodnie z planem</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1968"/>
         <source>Cancel plan</source>
-        <translation type="unfinished">Anuluj plan</translation>
+        <translation>Anuluj plan</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2116"/>
         <source>SPI MOT directory not complete
 Decoded %1 / %2 MOT objects</source>
-        <translation type="unfinished">Katalog SPI MOT jest niekompletny
+        <translation>Katalog SPI MOT jest niekompletny
 Zdekodowano %1 / %2 obiektów MOT</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2120"/>
         <source>SPI MOT directory complete
 %1 MOT objects decoded</source>
-        <translation type="unfinished">Katalog SPI MOT ukończony
+        <translation>Katalog SPI MOT ukończony
 %1 obiektów MOT zdekodowanych</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2125"/>
         <source>SPI MOT directory decoding started</source>
-        <translation type="unfinished">Rozpoczęto dekodowanie katalogu SPI MOT</translation>
+        <translation>Rozpoczęto dekodowanie katalogu SPI MOT</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2334"/>
         <source>No ensemble</source>
-        <translation type="unfinished">Brak multipleksu</translation>
+        <translation>Brak multipleksu</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2335"/>
         <source>No ensemble tuned</source>
-        <translation type="unfinished">Nie dostrojono żadnego multipleksu</translation>
+        <translation>Nie dostrojono żadnego multipleksu</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2346"/>
         <source>No service</source>
-        <translation type="unfinished">Brak stacji</translation>
+        <translation>Brak stacji</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2352"/>
         <source>No service playing</source>
-        <translation type="unfinished">Stacja nie gra, wybrać stację z listy</translation>
+        <translation>Stacja nie gra, wybrać stację z listy</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4152"/>
@@ -620,12 +620,12 @@ Zdekodowano %1 / %2 obiektów MOT</translation>
     <message>
         <location filename="../application.cpp" line="4166"/>
         <source>Clear</source>
-        <translation type="unfinished">Wyczyść</translation>
+        <translation>Wyczyść</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4167"/>
         <source>Cancel</source>
-        <translation type="unfinished">Anuluj</translation>
+        <translation>Anuluj</translation>
     </message>
 </context>
 <context>
@@ -653,7 +653,7 @@ Zdekodowano %1 / %2 obiektów MOT</translation>
     <message>
         <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="220"/>
         <source>Cancel</source>
-        <translation type="unfinished">Anuluj</translation>
+        <translation>Anuluj</translation>
     </message>
 </context>
 <context>
@@ -676,22 +676,22 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/audiorec/AudioRecordingView.qml" line="145"/>
         <source>Add</source>
-        <translation type="unfinished">Dodaj</translation>
+        <translation>Dodaj</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingView.qml" line="150"/>
         <source>Edit</source>
-        <translation type="unfinished">Edytuj</translation>
+        <translation>Edytuj</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingView.qml" line="155"/>
         <source>Delete</source>
-        <translation type="unfinished">Anuluj</translation>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingView.qml" line="164"/>
         <source>Delete all</source>
-        <translation type="unfinished">Anuluj wszystko</translation>
+        <translation>Anuluj wszystko</translation>
     </message>
 </context>
 <context>
@@ -699,78 +699,78 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="65"/>
         <source>Audio decoder</source>
-        <translation type="unfinished">Dekoder dźwięku</translation>
+        <translation>Dekoder dźwięku</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="70"/>
         <source>Noise level during audio drop-out:</source>
-        <translation type="unfinished">Poziom hałasu podczas zaniku dźwięku:</translation>
+        <translation>Poziom hałasu podczas zaniku dźwięku:</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="95"/>
         <source>Audio recording</source>
-        <translation type="unfinished">Nagrywanie dźwięku</translation>
+        <translation>Nagrywanie dźwięku</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="108"/>
         <source>Folder:</source>
-        <translation type="unfinished">Folder:</translation>
+        <translation>Folder:</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="123"/>
         <source>Record encoded DAB/DAB+ stream (MP2 or AAC format)</source>
-        <translation type="unfinished">Nagrywaj zakodowany strumień DAB/DAB+ (format MP2 lub AAC)</translation>
+        <translation>Nagrywaj zakodowany strumień DAB/DAB+ (format MP2 lub AAC)</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="136"/>
         <source>Record decoded audio (WAV format)</source>
-        <translation type="unfinished">Nagrywaj zdekodowane audio (format WAV)</translation>
+        <translation>Nagrywaj zdekodowane audio (format WAV)</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="150"/>
         <source>Do not ask to stop audio recording when service changes</source>
-        <translation type="unfinished">Nie pytaj o zatrzymanie nagrywania dźwięku w przypadku zmiany stacji</translation>
+        <translation>Nie pytaj o zatrzymanie nagrywania dźwięku w przypadku zmiany stacji</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="160"/>
         <source>Record DL messages</source>
-        <translation type="unfinished">Nagrywaj wiadomości DL</translation>
+        <translation>Nagrywaj wiadomości DL</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="169"/>
         <source>Record DAB time for DL messages</source>
-        <translation type="unfinished">Rejestruj czas DAB] dla wiadomości DL</translation>
+        <translation>Rejestruj czas DAB] dla wiadomości DL</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="189"/>
         <source>Expert settings</source>
-        <translation type="unfinished">Ustawienia eksperckie</translation>
+        <translation>Ustawienia eksperckie</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="202"/>
         <source>AAC audio decoder:</source>
-        <translation type="unfinished">Dekoder audio AAC:</translation>
+        <translation>Dekoder audio AAC:</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="215"/>
         <location filename="../qml/settings/AudioSettings.qml" line="248"/>
         <source>Restart</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="227"/>
         <source>Audio decoder change will take effect after application restart.</source>
-        <translation type="unfinished">Zmiana dekodera audio zostanie wprowadzona po ponownym uruchomieniu aplikacji.</translation>
+        <translation>Zmiana dekodera audio zostanie wprowadzona po ponownym uruchomieniu aplikacji.</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="233"/>
         <source>Audio output framework:</source>
-        <translation type="unfinished">Struktura wyjścia dźwięku:</translation>
+        <translation>Struktura wyjścia dźwięku:</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="259"/>
         <source>Audio output change will take effect after application restart.</source>
-        <translation type="unfinished">Zmiana wyjścia dźwiękowe zostanie zastosowana po ponownym uruchomieniu aplikacji.</translation>
+        <translation>Zmiana wyjścia dźwiękowe zostanie zastosowana po ponownym uruchomieniu aplikacji.</translation>
     </message>
 </context>
 <context>
@@ -778,17 +778,17 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/BandScan.qml" line="47"/>
         <source>Band scan</source>
-        <translation type="unfinished">Przeszukiwanie pasma</translation>
+        <translation>Przeszukiwanie pasma</translation>
     </message>
     <message>
         <location filename="../qml/BandScan.qml" line="90"/>
         <source>Ensembles found:</source>
-        <translation type="unfinished">Znaleziono multipleks/-y/-ów:</translation>
+        <translation>Znaleziono multipleks/-y/-ów:</translation>
     </message>
     <message>
         <location filename="../qml/BandScan.qml" line="99"/>
         <source>Services found:</source>
-        <translation type="unfinished">Znaleziono stację/-e:</translation>
+        <translation>Znaleziono stację/-e:</translation>
     </message>
     <message>
         <location filename="../qml/BandScan.qml" line="114"/>
@@ -798,17 +798,17 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/BandScan.qml" line="129"/>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Stop</translation>
     </message>
     <message>
         <location filename="../qml/BandScan.qml" line="129"/>
         <source>Cancel</source>
-        <translation type="unfinished">Anuluj</translation>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <location filename="../qml/BandScan.qml" line="143"/>
         <source>Start</source>
-        <translation type="unfinished"></translation>
+        <translation>Start</translation>
     </message>
 </context>
 <context>
@@ -821,7 +821,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../bandscanbackend.cpp" line="121"/>
         <source>Scanning channel:</source>
-        <translation type="unfinished">Skanowanie kanału:</translation>
+        <translation>Skanowanie kanału:</translation>
     </message>
 </context>
 <context>
@@ -857,7 +857,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/tii/ChannelSelectionDialog.qml" line="117"/>
         <source>Cancel</source>
-        <translation type="unfinished">Anuluj</translation>
+        <translation>Anuluj</translation>
     </message>
 </context>
 <context>
@@ -865,7 +865,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/charts/ChartView.qml" line="295"/>
         <source>Reset</source>
-        <translation type="unfinished">Zresetuj</translation>
+        <translation>Zresetuj</translation>
     </message>
     <message>
         <location filename="../qml/charts/ChartView.qml" line="323"/>
@@ -883,7 +883,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/ContentView.qml" line="392"/>
         <source>Audio output</source>
-        <translation type="unfinished">Wyjście dźwiękowe</translation>
+        <translation>Wyjście dźwiękowe</translation>
     </message>
 </context>
 <context>
@@ -891,7 +891,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignal.qml" line="34"/>
         <source>DAB Signal</source>
-        <translation type="unfinished">Sygnał DAB+</translation>
+        <translation>Sygnał DAB+</translation>
     </message>
 </context>
 <context>
@@ -904,7 +904,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="203"/>
         <source>Estimated RF level</source>
-        <translation type="unfinished">Szacowany poziom RF</translation>
+        <translation>Szacowany poziom RF</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="220"/>
@@ -914,7 +914,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="221"/>
         <source>Tuner gain</source>
-        <translation type="unfinished">Wzmocnienie tunera</translation>
+        <translation>Wzmocnienie tunera</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="238"/>
@@ -924,7 +924,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="239"/>
         <source>Tuned frequency</source>
-        <translation type="unfinished">Dostrojona częstotliwość</translation>
+        <translation>Dostrojona częstotliwość</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="256"/>
@@ -934,37 +934,37 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="257"/>
         <source>Estimated frequency offset</source>
-        <translation type="unfinished">Szacowane przesunięcie częstotliwości</translation>
+        <translation>Szacowane przesunięcie częstotliwości</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="289"/>
         <source>Frequency offset correction</source>
-        <translation type="unfinished">Korekta przesunięcia częstotliwości</translation>
+        <translation>Korekta przesunięcia częstotliwości</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="296"/>
         <source>Slow update (1 sec)</source>
-        <translation type="unfinished">Powolna aktualizacja (1 sek.)</translation>
+        <translation>Powolna aktualizacja (1 sek.)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="302"/>
         <source>Normal update (500 msec)</source>
-        <translation type="unfinished">Normalna aktualizacja (500 ms)</translation>
+        <translation>Normalna aktualizacja (500 ms)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="308"/>
         <source>Fast update (300 msec)</source>
-        <translation type="unfinished">Szybka aktualizacja (300 ms)</translation>
+        <translation>Szybka aktualizacja (300 ms)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="314"/>
         <source>Very fast update (100 msec)</source>
-        <translation type="unfinished">Bardzo szybka aktualizacja (100 ms)</translation>
+        <translation>Bardzo szybka aktualizacja (100 ms)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="321"/>
         <source>Show SNR value</source>
-        <translation type="unfinished">Pokaż wartość SNR</translation>
+        <translation>Pokaż wartość SNR</translation>
     </message>
 </context>
 <context>
@@ -972,12 +972,12 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/DeviceSettings.qml" line="53"/>
         <source>Input device:</source>
-        <translation type="unfinished">Urządzenie wejściowe:</translation>
+        <translation>Urządzenie wejściowe:</translation>
     </message>
     <message>
         <location filename="../qml/settings/DeviceSettings.qml" line="79"/>
         <source>Connect</source>
-        <translation type="unfinished">Połącz</translation>
+        <translation>Połącz</translation>
     </message>
 </context>
 <context>
@@ -993,32 +993,32 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="72"/>
         <source>Today</source>
-        <translation type="unfinished">Dzisiaj</translation>
+        <translation>Dzisiaj</translation>
     </message>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="99"/>
         <source>Hide services without schedule</source>
-        <translation type="unfinished">Ukryj usługi bez harmonogramu</translation>
+        <translation>Ukryj usługi bez harmonogramu</translation>
     </message>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="107"/>
         <source>Show only current ensemble</source>
-        <translation type="unfinished">Pokaż tylko bieżący multipleks</translation>
+        <translation>Pokaż tylko bieżący multipleks</translation>
     </message>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="136"/>
         <source>Current time: </source>
-        <translation type="unfinished">Obecny czas: </translation>
+        <translation>Obecny czas: </translation>
     </message>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="324"/>
         <source>No program available</source>
-        <translation type="unfinished">Brak dostępnego programu</translation>
+        <translation>Brak dostępnego programu</translation>
     </message>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="450"/>
         <source>Schedule audio recording</source>
-        <translation type="unfinished">Zaplanuj nagrywanie dźwięku</translation>
+        <translation>Zaplanuj nagrywanie dźwięku</translation>
     </message>
 </context>
 <context>
@@ -1031,7 +1031,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/EnsembleConfigDialog.qml" line="80"/>
         <source>Upload to FMLIST</source>
-        <translation type="unfinished">Prześlij do FMLIST</translation>
+        <translation>Prześlij do FMLIST</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleConfigDialog.qml" line="88"/>
@@ -1044,17 +1044,17 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/EnsembleConfigDrawer.qml" line="60"/>
         <source>Upload to FMLIST</source>
-        <translation type="unfinished">Prześlij do FMLIST</translation>
+        <translation>Prześlij do FMLIST</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleConfigDrawer.qml" line="69"/>
         <source>Export as CSV</source>
-        <translation type="unfinished">Eksportuj jako CSV</translation>
+        <translation>Eksportuj jako CSV</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleConfigDrawer.qml" line="86"/>
         <source>Ensemble Information</source>
-        <translation type="unfinished">Informacje o multipleksie</translation>
+        <translation>Informacje o multipleksie</translation>
     </message>
 </context>
 <context>
@@ -1062,32 +1062,32 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="46"/>
         <source>Frequency</source>
-        <translation type="unfinished">Częstotliwość</translation>
+        <translation>Częstotliwość</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="46"/>
         <source>Tuned frequency</source>
-        <translation type="unfinished">Dostrojona częstotliwość</translation>
+        <translation>Dostrojona częstotliwość</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="47"/>
         <source>Channel</source>
-        <translation type="unfinished">Kanał</translation>
+        <translation>Kanał</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="47"/>
         <source>Tuned DAB channel</source>
-        <translation type="unfinished">Dostrojony kanał</translation>
+        <translation>Dostrojony kanał</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="48"/>
         <source>SNR</source>
-        <translation type="unfinished">SNR</translation>
+        <translation>SNR</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="48"/>
         <source>Estimated SNR</source>
-        <translation type="unfinished">Szacowany stosunek sygnału do szumu</translation>
+        <translation>Szacowany stosunek sygnału do szumu</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="49"/>
@@ -1097,7 +1097,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="49"/>
         <source>Estimated frequency offset</source>
-        <translation type="unfinished">Szacowane przesunięcie częstotliwości</translation>
+        <translation>Szacowane przesunięcie częstotliwości</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="50"/>
@@ -1107,7 +1107,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="50"/>
         <source>Current AGC gain&lt;br&gt;(only in software mode)</source>
-        <translation type="unfinished">Bieżąca automatyczna regulacja wzmocnienia&lt;br&gt;(tylko w trybie programowym)</translation>
+        <translation>Bieżąca automatyczna regulacja wzmocnienia&lt;br&gt;(tylko w trybie programowym)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="51"/>
@@ -1117,17 +1117,17 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="51"/>
         <source>Estimated RF level&lt;br&gt;(only on supported devices)</source>
-        <translation type="unfinished">Szacowany poziom częstotliwości radiowej&lt;br&gt;(tylko na obsługiwanych urządzeniach)</translation>
+        <translation>Szacowany poziom częstotliwości radiowej&lt;br&gt;(tylko na obsługiwanych urządzeniach)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="54"/>
         <source>Service</source>
-        <translation type="unfinished">Usługa</translation>
+        <translation>Usługa</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="54"/>
         <source>Current service name</source>
-        <translation type="unfinished">Bieżąca nazwa usługi</translation>
+        <translation>Bieżąca nazwa usługi</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="55"/>
@@ -1137,7 +1137,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="55"/>
         <source>Current Service Identifier</source>
-        <translation type="unfinished">Bieżący identyfikator usługi</translation>
+        <translation>Bieżący identyfikator usługi</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="56"/>
@@ -1148,7 +1148,7 @@ Click &apos;Add&apos; to create a new recording.</source>
         <location filename="../ensembleinfobackend.cpp" line="56"/>
         <location filename="../ensembleinfobackend.cpp" line="57"/>
         <source>Service Component Identifier within the Service</source>
-        <translation type="unfinished">Identyfikator komponentu usługi w ramach usługi</translation>
+        <translation>Identyfikator komponentu usługi w ramach usługi</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="57"/>
@@ -1164,7 +1164,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="58"/>
         <source>First capacity unit used by sub-channel</source>
-        <translation type="unfinished">Pierwsza jednostka pojemności używana przez podkanał</translation>
+        <translation>Pierwsza jednostka pojemności używana przez podkanał</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="59"/>
@@ -1174,7 +1174,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="59"/>
         <source>Number of capacity units used by sub-channel</source>
-        <translation type="unfinished">Liczba jednostek pojemności używanych przez podkanał</translation>
+        <translation>Liczba jednostek pojemności używanych przez podkanał</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="62"/>
@@ -1184,7 +1184,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="62"/>
         <source>Gross bitrate</source>
-        <translation type="unfinished">Szybkość transmisji brutto</translation>
+        <translation>Szybkość transmisji brutto</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="63"/>
@@ -1194,7 +1194,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="63"/>
         <source>Net bitrate</source>
-        <translation type="unfinished">Przepływność netto</translation>
+        <translation>Przepływność netto</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="64"/>
@@ -1204,7 +1204,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="64"/>
         <source>Net audio bitrate without PAD</source>
-        <translation type="unfinished">Szybkość transmisji bitów dźwięku netto bez PAD</translation>
+        <translation>Szybkość transmisji bitów dźwięku netto bez PAD</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="65"/>
@@ -1214,7 +1214,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="65"/>
         <source>Net PAD bitrate</source>
-        <translation type="unfinished">Szybkość transmisji PAD</translation>
+        <translation>Szybkość transmisji PAD</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="66"/>
@@ -1224,7 +1224,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="66"/>
         <source>Percentage of audio in useful bitrate</source>
-        <translation type="unfinished">Procent dźwięku w użytecznej szybkości transmisji</translation>
+        <translation>Procent dźwięku w użytecznej szybkości transmisji</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="67"/>
@@ -1234,7 +1234,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="67"/>
         <source>Percentage of PAD in useful bitrate</source>
-        <translation type="unfinished">Procent PAD w użytecznej szybkości transmisji</translation>
+        <translation>Procent PAD w użytecznej szybkości transmisji</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="70"/>
@@ -1244,12 +1244,12 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="70"/>
         <source>Total number of FIB&apos;s with CRC error</source>
-        <translation type="unfinished">Całkowita liczba FIB z błędem CRC</translation>
+        <translation>Całkowita liczba FIB z błędem CRC</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="71"/>
         <source>FIB error rate</source>
-        <translation type="unfinished">Wskaźnik błędów FIB</translation>
+        <translation>Wskaźnik błędów FIB</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="72"/>
@@ -1259,7 +1259,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="72"/>
         <source>Total number of uncorrectable Reed-Solomon code words (DAB+ only)</source>
-        <translation type="unfinished">Całkowita liczba niepoprawnych słów kodowych Reeda-Solomona (tylko DAB+)</translation>
+        <translation>Całkowita liczba niepoprawnych słów kodowych Reeda-Solomona (tylko DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="73"/>
@@ -1269,7 +1269,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="73"/>
         <source>BER before Reed-Solomon decoder (DAB+ only)</source>
-        <translation type="unfinished">BER przed dekoderem Reed-Solomon (tylko DAB+)</translation>
+        <translation>BER przed dekoderem Reed-Solomon (tylko DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="74"/>
@@ -1279,7 +1279,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="74"/>
         <source>Total number of audio frames with CRC error (AU for DAB+)</source>
-        <translation type="unfinished">Całkowita liczba ramek audio z błędem CRC (AU dla DAB+)</translation>
+        <translation>Całkowita liczba ramek audio z błędem CRC (AU dla DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="75"/>
@@ -1289,7 +1289,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="75"/>
         <source>Audio frame (AU for DAB+) error rate</source>
-        <translation type="unfinished">Wskaźnik błędów ramki audio (AU dla DAB+)</translation>
+        <translation>Wskaźnik błędów ramki audio (AU dla DAB+)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="78"/>
@@ -1299,7 +1299,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="78"/>
         <source>Used capacity units</source>
-        <translation type="unfinished">Używane jednostki pojemności</translation>
+        <translation>Używane jednostki pojemności</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="79"/>
@@ -1309,32 +1309,32 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="79"/>
         <source>Unused capacity units</source>
-        <translation type="unfinished">Niewykorzystane jednostki pojemnościowe</translation>
+        <translation>Niewykorzystane jednostki pojemnościowe</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="80"/>
         <source>Audio</source>
-        <translation type="unfinished">Dźwięk</translation>
+        <translation>Dźwięk</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="80"/>
         <source>Capacity units for allocated for audio services</source>
-        <translation type="unfinished">Jednostki pojemnościowe przeznaczone na usługi audio</translation>
+        <translation>Jednostki pojemnościowe przeznaczone na usługi audio</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="81"/>
         <source>Data</source>
-        <translation type="unfinished">Dane</translation>
+        <translation>Dane</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="81"/>
         <source>Capacity units for allocated for data services</source>
-        <translation type="unfinished">Jednostki pojemności przeznaczone na usługi danych</translation>
+        <translation>Jednostki pojemności przeznaczone na usługi danych</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="83"/>
         <source>Sub-channel Identifier</source>
-        <translation type="unfinished">Identyfikator podkanału</translation>
+        <translation>Identyfikator podkanału</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="84"/>
@@ -1344,7 +1344,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="84"/>
         <source>Number of capacity units allocated to sub-channel</source>
-        <translation type="unfinished">Liczba jednostek pojemnościowych przydzielonych do podkanału</translation>
+        <translation>Liczba jednostek pojemnościowych przydzielonych do podkanału</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="85"/>
@@ -1354,7 +1354,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="85"/>
         <source>Sub-channel error protection</source>
-        <translation type="unfinished">Ochrona przed błędami podkanału</translation>
+        <translation>Ochrona przed błędami podkanału</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="86"/>
@@ -1364,7 +1364,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="86"/>
         <source>Gross sub-channel bitrate</source>
-        <translation type="unfinished">Całkowita przepływność podkanału</translation>
+        <translation>Całkowita przepływność podkanału</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="88"/>
@@ -1374,19 +1374,19 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="88"/>
         <source>Sub-channel content</source>
-        <translation type="unfinished">Treść podkanału</translation>
+        <translation>Treść podkanału</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="89"/>
         <source>Services</source>
-        <translation type="unfinished">Usługi</translation>
+        <translation>Usługi</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="89"/>
         <location filename="../ensembleinfobackend.cpp" line="90"/>
         <location filename="../ensembleinfobackend.cpp" line="91"/>
         <source>List of services transmitted in sub-channel</source>
-        <translation type="unfinished">Lista usług transmitowanych w podkanale</translation>
+        <translation>Lista usług transmitowanych w podkanale</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="185"/>
@@ -1394,12 +1394,12 @@ Click &apos;Add&apos; to create a new recording.</source>
         <location filename="../ensembleinfobackend.cpp" line="187"/>
         <location filename="../ensembleinfobackend.cpp" line="189"/>
         <source>%1 CU (%2%)</source>
-        <translation type="unfinished">%1 CU (%2%)</translation>
+        <translation>%1 CU (%2%)</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="258"/>
         <source>No subchannel selected</source>
-        <translation type="unfinished">Nie wybrano żadnego podkanału</translation>
+        <translation>Nie wybrano żadnego podkanału</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="322"/>
@@ -1407,19 +1407,19 @@ Click &apos;Add&apos; to create a new recording.</source>
         <location filename="../ensembleinfobackend.cpp" line="457"/>
         <location filename="../ensembleinfobackend.cpp" line="461"/>
         <source>%1 kbps</source>
-        <translation type="unfinished">%1 kbps</translation>
+        <translation>%1 kbps</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="379"/>
         <location filename="../ensembleinfobackend.cpp" line="391"/>
         <location filename="../ensembleinfobackend.cpp" line="482"/>
         <source>N/A</source>
-        <translation type="unfinished">Nie dotyczy</translation>
+        <translation>Nie dotyczy</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="556"/>
         <source> sec</source>
-        <translation type="unfinished"> s</translation>
+        <translation> s</translation>
     </message>
 </context>
 <context>
@@ -1432,12 +1432,12 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="284"/>
         <source>Export as CSV</source>
-        <translation type="unfinished">Eksportuj jako CSV</translation>
+        <translation>Eksportuj jako CSV</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="291"/>
         <source>Upload to FMLIST</source>
-        <translation type="unfinished">Prześlij do FMLIST</translation>
+        <translation>Prześlij do FMLIST</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="298"/>
@@ -1447,29 +1447,29 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="299"/>
         <source>When checked recording stops automatically when timeout is reached.</source>
-        <translation type="unfinished">Po zaznaczeniu tej opcji nagrywanie zatrzyma się automatycznie po przekroczeniu limitu czasu.</translation>
+        <translation>Po zaznaczeniu tej opcji nagrywanie zatrzyma się automatycznie po przekroczeniu limitu czasu.</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="326"/>
         <location filename="../qml/EnsembleInfoView.qml" line="328"/>
         <source>Stop recording</source>
-        <translation type="unfinished"></translation>
+        <translation>zatrzymaj nagrywanie</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="326"/>
         <location filename="../qml/EnsembleInfoView.qml" line="329"/>
         <source>Record raw data</source>
-        <translation type="unfinished">Zapisz surowe dane</translation>
+        <translation>Zapisz surowe dane</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="351"/>
         <source>Length:</source>
-        <translation type="unfinished">Długość:</translation>
+        <translation>Długość:</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="359"/>
         <source>File size:</source>
-        <translation type="unfinished">Rozmiar pliku:</translation>
+        <translation>Rozmiar pliku:</translation>
     </message>
 </context>
 <context>
@@ -1477,37 +1477,37 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="65"/>
         <source>%1 CU [%2..%3]</source>
-        <translation type="unfinished">%1 CU [%2..%3]</translation>
+        <translation>%1 CU [%2..%3]</translation>
     </message>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="86"/>
         <source>%1 (coderate: %2/%3)</source>
-        <translation type="unfinished">%1 (szybkość kodowania: %2/%3)</translation>
+        <translation>%1 (szybkość kodowania: %2/%3)</translation>
     </message>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="92"/>
         <source>%1 (level: %2)</source>
-        <translation type="unfinished">%1 (poziom: %2)</translation>
+        <translation>%1 (poziom: %2)</translation>
     </message>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="97"/>
         <source>%1 kbps</source>
-        <translation type="unfinished">%1 kbps</translation>
+        <translation>%1 kbps</translation>
     </message>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="103"/>
         <source>Audio AAC</source>
-        <translation type="unfinished">Dźwięk AAC</translation>
+        <translation>Dźwięk AAC</translation>
     </message>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="105"/>
         <source>Audio MP2</source>
-        <translation type="unfinished">Dźwięk MP2</translation>
+        <translation>Dźwięk MP2</translation>
     </message>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="107"/>
         <source>Data</source>
-        <translation type="unfinished">Dane</translation>
+        <translation>Dane</translation>
     </message>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="116"/>
@@ -1533,7 +1533,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../messageboxbackend.cpp" line="183"/>
         <source>Cancel</source>
-        <translation type="unfinished">Anuluj</translation>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <location filename="../messageboxbackend.cpp" line="185"/>
@@ -1571,7 +1571,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="38"/>
         <source>Service</source>
-        <translation type="unfinished">Usługa</translation>
+        <translation>Usługa</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="44"/>
@@ -1581,7 +1581,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="44"/>
         <source>Ensemble information</source>
-        <translation type="unfinished"></translation>
+        <translation>O multipleksie</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="50"/>
@@ -1606,7 +1606,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="63"/>
         <source>TII</source>
-        <translation type="unfinished">TII</translation>
+        <translation>TII</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="69"/>
@@ -1631,12 +1631,12 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="82"/>
         <source>Settings</source>
-        <translation type="unfinished">Ustawienia</translation>
+        <translation>Ustawienia</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="88"/>
         <source>Others</source>
-        <translation type="unfinished">Inne</translation>
+        <translation>Inne</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="95"/>
@@ -1646,22 +1646,22 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="95"/>
         <source>Audio recording schedule...</source>
-        <translation type="unfinished">Harmonogram nagrywania dźwięku...</translation>
+        <translation>Harmonogram nagrywania dźwięku...</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="99"/>
         <source>Start audio recording</source>
-        <translation type="unfinished">Włącz nagrywanie audio</translation>
+        <translation>Włącz nagrywanie audio</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="105"/>
         <source>Band scan</source>
-        <translation type="unfinished">Przeszukiwanie pasma</translation>
+        <translation>Przeszukiwanie pasma</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="105"/>
         <source>Band scan...</source>
-        <translation type="unfinished">Strojenie…</translation>
+        <translation>Strojenie…</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="107"/>
@@ -1671,7 +1671,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="109"/>
         <source>Clear service list</source>
-        <translation type="unfinished">Wyczyść listę usług</translation>
+        <translation>Wyczyść listę usług</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="115"/>
@@ -1681,22 +1681,22 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="115"/>
         <source>Application log</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejestr zdarzeń</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="117"/>
         <source>About</source>
-        <translation type="unfinished">O oprogramowaniu</translation>
+        <translation>O oprogramowaniu</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="117"/>
         <source>About AbracaDABra</source>
-        <translation type="unfinished">O AbracaDABra</translation>
+        <translation>O AbracaDABra</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="123"/>
         <source>Quit</source>
-        <translation type="unfinished">Wyjdź</translation>
+        <translation>Wyjdź</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="123"/>
@@ -1709,12 +1709,12 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="71"/>
         <source>Visual style</source>
-        <translation type="unfinished">Styl wizualny</translation>
+        <translation>Styl wizualny</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="80"/>
         <source>System</source>
-        <translation type="unfinished">system</translation>
+        <translation>system</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="80"/>
@@ -1729,7 +1729,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="105"/>
         <source>User interface</source>
-        <translation type="unfinished">Interfejs użytkownika</translation>
+        <translation>Interfejs użytkownika</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="115"/>
@@ -1739,57 +1739,57 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="128"/>
         <source>Dynamic Label Plus (DL+)</source>
-        <translation type="unfinished">Dynamic Label Plus (DL+)</translation>
+        <translation>Dynamic Label Plus (DL+)</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="140"/>
         <source>Show tray icon</source>
-        <translation type="unfinished">Pokaż ikonę na pasku zadań</translation>
+        <translation>Pokaż ikonę na pasku zadań</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="151"/>
         <source>Show system time when DAB time is not available</source>
-        <translation type="unfinished">Pokaż czas systemowy, gdy czas DAB jest niedostępny</translation>
+        <translation>Pokaż czas systemowy, gdy czas DAB jest niedostępny</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="163"/>
         <source>Show ensemble country flag (internet connection required)</source>
-        <translation type="unfinished">Pokaż flagę kraju multipleksu (wymagane połączenie internetowe)</translation>
+        <translation>Pokaż flagę kraju multipleksu (wymagane połączenie internetowe)</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="175"/>
         <source>Show service country flag (internet connection required)</source>
-        <translation type="unfinished">Pokaż flagę kraju (wymagane połączenie internetowe)</translation>
+        <translation>Pokaż flagę kraju (wymagane połączenie internetowe)</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="192"/>
         <source>Slideshow background:</source>
-        <translation type="unfinished">Tło pokazu slajdów:</translation>
+        <translation>Tło pokazu slajdów:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="214"/>
         <source>Language:</source>
-        <translation type="unfinished">Język:</translation>
+        <translation>Język:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="230"/>
         <source>Restart</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="238"/>
         <source>Language change will take effect after application restart.</source>
-        <translation type="unfinished">Zmiana języka wymaga ponownego uruchomienia programu.</translation>
+        <translation>Zmiana języka wymaga ponownego uruchomienia programu.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="254"/>
         <source>Data storage</source>
-        <translation type="unfinished">Przechowywanie danych</translation>
+        <translation>Przechowywanie danych</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="271"/>
         <source>Folder:</source>
-        <translation type="unfinished">Folder:</translation>
+        <translation>Folder:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="282"/>
@@ -1804,7 +1804,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="306"/>
         <source>Network proxy configuration</source>
-        <translation type="unfinished">Konfiguracja proxy sieciowego</translation>
+        <translation>Konfiguracja proxy sieciowego</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="318"/>
@@ -1814,37 +1814,37 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="334"/>
         <source>Apply</source>
-        <translation type="unfinished">Zastosuj</translation>
+        <translation>Zastosuj</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="343"/>
         <source>Server:</source>
-        <translation type="unfinished">Serwer:</translation>
+        <translation>Serwer:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="359"/>
         <source>Port:</source>
-        <translation type="unfinished">Port sprzętowy:</translation>
+        <translation>Port sprzętowy:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="380"/>
         <source>Username:</source>
-        <translation type="unfinished">Nazwa użytkownika:</translation>
+        <translation>Nazwa użytkownika:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="396"/>
         <source>Password:</source>
-        <translation type="unfinished">Hasło:</translation>
+        <translation>Hasło:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="422"/>
         <source>FMLIST</source>
-        <translation type="unfinished">FMLIST</translation>
+        <translation>FMLIST</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="433"/>
         <source>Upload ensemble information</source>
-        <translation type="unfinished">Prześlij informacje o multipleksie</translation>
+        <translation>Prześlij informacje o multipleksie</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="447"/>
@@ -1855,47 +1855,47 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="454"/>
         <source>Application automatically uploads ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</source>
-        <translation type="unfinished">Aplikacja automatycznie przesyła informacje o multipleksie do &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</translation>
+        <translation>Aplikacja automatycznie przesyła informacje o multipleksie do &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="455"/>
         <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currently disabled.</source>
-        <translation type="unfinished">Przesyłanie informacji o multipleksie do &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; jest obecnie wyłączone.</translation>
+        <translation>Przesyłanie informacji o multipleksie do &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; jest obecnie wyłączone.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="463"/>
         <source>Thank you for supporting the community!</source>
-        <translation type="unfinished">Dziękujemy za wspieranie społeczności!</translation>
+        <translation>Dziękujemy za wspieranie społeczności!</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="464"/>
         <source>Please consider enabling this option to help the community.</source>
-        <translation type="unfinished">Prosimy o rozważenie włączenia tej opcji, aby pomóc społeczności.</translation>
+        <translation>Prosimy o rozważenie włączenia tej opcji, aby pomóc społeczności.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="478"/>
         <source>Restore application windows on start</source>
-        <translation type="unfinished">Przywróć okna aplikacji podczas uruchamiania</translation>
+        <translation>Przywróć okna aplikacji podczas uruchamiania</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="490"/>
         <source>Check for application update on start</source>
-        <translation type="unfinished">Sprawdź dostępność aktualizacji aplikacji podczas uruchamiania</translation>
+        <translation>Sprawdź dostępność aktualizacji aplikacji podczas uruchamiania</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="502"/>
         <source>Include XML header in raw data recording</source>
-        <translation type="unfinished">Dołącz nagłówki XML do zapisu danych surowych</translation>
+        <translation>Dołącz nagłówki XML do zapisu danych surowych</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="537"/>
         <source>Select SLS Background Color</source>
-        <translation type="unfinished">Wybierz kolor tła SLS</translation>
+        <translation>Wybierz kolor tła SLS</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="551"/>
         <source>Data storage folder</source>
-        <translation type="unfinished">Folder do przechowywania danych</translation>
+        <translation>Folder do przechowywania danych</translation>
     </message>
 </context>
 <context>
@@ -2337,7 +2337,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../dabtables.cpp" line="236"/>
         <source>None</source>
-        <translation>Brak typu programu</translation>
+        <translation>Brak</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="318"/>
@@ -2372,7 +2372,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../dabtables.cpp" line="330"/>
         <source>Czech</source>
-        <translation>Język czeski</translation>
+        <translation>czeski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="332"/>
@@ -2382,7 +2382,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../dabtables.cpp" line="334"/>
         <source>German</source>
-        <translation>język niemiecki</translation>
+        <translation>niemiecki</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="336"/>
@@ -2503,7 +2503,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../dabtables.cpp" line="382"/>
         <source>Polish</source>
-        <translation>Język polski</translation>
+        <translation>polski</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="384"/>
@@ -4147,7 +4147,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RartTcpDevice.qml" line="64"/>
         <source>Port:</source>
-        <translation type="unfinished">Port sprzętowy:</translation>
+        <translation>Port sprzętowy:</translation>
     </message>
 </context>
 <context>
@@ -4160,57 +4160,57 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="77"/>
         <source>Loop file</source>
-        <translation type="unfinished">Plik pętli</translation>
+        <translation>Plik pętli</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="92"/>
         <source>No file selected</source>
-        <translation type="unfinished">Nie wybrano pliku</translation>
+        <translation>Nie wybrano pliku</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="130"/>
         <source>Recording date:</source>
-        <translation type="unfinished">Data nagrania:</translation>
+        <translation>Data nagrania:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="133"/>
         <source>Recorder:</source>
-        <translation type="unfinished">Rejestrator:</translation>
+        <translation>Rejestrator:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="136"/>
         <source>Device:</source>
-        <translation type="unfinished">Urządzenie:</translation>
+        <translation>Urządzenie:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="139"/>
         <source>Model:</source>
-        <translation type="unfinished">Model:</translation>
+        <translation>Model:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="142"/>
         <source>Sample rate [Hz]:</source>
-        <translation type="unfinished">Częstotliwość próbkowania [Hz]:</translation>
+        <translation>Częstotliwość próbkowania [Hz]:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="145"/>
         <source>Frequency [kHz]:</source>
-        <translation type="unfinished">Częstotliwość [kHz]:</translation>
+        <translation>Częstotliwość [kHz]:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="148"/>
         <source>Recording length [sec]:</source>
-        <translation type="unfinished">Długość nagrywania [s]:</translation>
+        <translation>Długość nagrywania [s]:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="151"/>
         <source>Sample format:</source>
-        <translation type="unfinished">Przykładowy format:</translation>
+        <translation>Przykładowy format:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="174"/>
         <source>Binary files</source>
-        <translation type="unfinished">Pliki binarne</translation>
+        <translation>Pliki binarne</translation>
     </message>
 </context>
 <context>
@@ -4218,110 +4218,110 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="63"/>
         <source>Reload</source>
-        <translation type="unfinished">Przeładuj</translation>
+        <translation>Przeładuj</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="73"/>
         <source>Use any available RTL-SDR device if the selected one fails</source>
-        <translation type="unfinished">Użyj dowolnego dostępnego urządzenia RTL-SDR, jeśli wybrane zawiedzie</translation>
+        <translation>Użyj dowolnego dostępnego urządzenia RTL-SDR, jeśli wybrane zawiedzie</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="100"/>
         <source>Connected device:</source>
-        <translation type="unfinished">Podłączone urządzenie:</translation>
+        <translation>Podłączone urządzenie:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="103"/>
         <source>Serial number:</source>
-        <translation type="unfinished">Numer seryjny:</translation>
+        <translation>Numer seryjny:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="106"/>
         <source>Tuner:</source>
-        <translation type="unfinished">Odbiornik:</translation>
+        <translation>Odbiornik:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="109"/>
         <source>Sample format:</source>
-        <translation type="unfinished">Przykładowy format:</translation>
+        <translation>Przykładowy format:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="127"/>
         <source>Gain control</source>
-        <translation type="unfinished">Wzmocnienie sygnału regulowane jest</translation>
+        <translation>Wzmocnienie sygnału regulowane jest</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
         <source>Software</source>
-        <translation type="unfinished">Oprogramowanie</translation>
+        <translation>Oprogramowanie</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
         <source>Driver</source>
-        <translation type="unfinished">Sterownik</translation>
+        <translation>Sterownik</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
         <source>Device</source>
-        <translation type="unfinished">Urządzenie</translation>
+        <translation>Urządzenie</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
         <source>Manual</source>
-        <translation type="unfinished">Ręcznie</translation>
+        <translation>Ręcznie</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="158"/>
         <source>Gain</source>
-        <translation type="unfinished">Wzmocnienie</translation>
+        <translation>Wzmocnienie</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="191"/>
         <source>Expert settings</source>
-        <translation type="unfinished">Ustawienia eksperckie</translation>
+        <translation>Ustawienia eksperckie</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="207"/>
         <source>Bandwidth:</source>
-        <translation type="unfinished">Pasmo przenoszenia:</translation>
+        <translation>Pasmo przenoszenia:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="222"/>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="254"/>
         <source>Default</source>
-        <translation type="unfinished">Domyślny</translation>
+        <translation>Domyślny</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="228"/>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="260"/>
         <source>Set default</source>
-        <translation type="unfinished">Ustaw domyślne</translation>
+        <translation>Ustaw domyślne</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="240"/>
         <source>SW AGC level threshold:</source>
-        <translation type="unfinished">Wartość progowa poziomu AGC:</translation>
+        <translation>Wartość progowa poziomu AGC:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="272"/>
         <source>Frequency correction:</source>
-        <translation type="unfinished">Korekcja częstotliwości:</translation>
+        <translation>Korekcja częstotliwości:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="292"/>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="326"/>
         <source>Reset</source>
-        <translation type="unfinished">Zresetuj</translation>
+        <translation>Zresetuj</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="304"/>
         <source>RF level correction:</source>
-        <translation type="unfinished">Korekta poziomu RF:</translation>
+        <translation>Korekta poziomu RF:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="338"/>
         <source>Bias Tee:</source>
-        <translation type="unfinished">Zasilanie zdalne:</translation>
+        <translation>Zasilanie zdalne:</translation>
     </message>
 </context>
 <context>
@@ -4339,88 +4339,88 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="66"/>
         <source>Port:</source>
-        <translation type="unfinished">Port sprzętowy:</translation>
+        <translation>Port sprzętowy:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="80"/>
         <source>Connect to control socket if available</source>
-        <translation type="unfinished">Podłącz do gniazda sterującego, jeśli jest dostępne</translation>
+        <translation>Podłącz do gniazda sterującego, jeśli jest dostępne</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="100"/>
         <source>Connected device:</source>
-        <translation type="unfinished">Podłączone urządzenie:</translation>
+        <translation>Podłączone urządzenie:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="103"/>
         <source>Tuner:</source>
-        <translation type="unfinished">Odbiornik:</translation>
+        <translation>Odbiornik:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="106"/>
         <source>Sample format:</source>
-        <translation type="unfinished">Przykładowy format:</translation>
+        <translation>Przykładowy format:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="124"/>
         <source>Gain control</source>
-        <translation type="unfinished">Wzmocnienie sygnału regulowane jest</translation>
+        <translation>Wzmocnienie sygnału regulowane jest</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="132"/>
         <source>Software</source>
-        <translation type="unfinished">Oprogramowanie</translation>
+        <translation>Oprogramowanie</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="132"/>
         <source>Device</source>
-        <translation type="unfinished">Urządzenie</translation>
+        <translation>Urządzenie</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="132"/>
         <source>Manual</source>
-        <translation type="unfinished">Ręcznie</translation>
+        <translation>Ręcznie</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="153"/>
         <source>Gain</source>
-        <translation type="unfinished">Wzmocnienie</translation>
+        <translation>Wzmocnienie</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="186"/>
         <source>Expert settings</source>
-        <translation type="unfinished">Ustawienia eksperckie</translation>
+        <translation>Ustawienia eksperckie</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="199"/>
         <source>SW AGC level threshold:</source>
-        <translation type="unfinished">Wartość progowa poziomu AGC:</translation>
+        <translation>Wartość progowa poziomu AGC:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="213"/>
         <source>Default</source>
-        <translation type="unfinished">Domyślny</translation>
+        <translation>Domyślny</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="219"/>
         <source>Set default</source>
-        <translation type="unfinished">Ustaw domyślne</translation>
+        <translation>Ustaw domyślne</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="231"/>
         <source>Frequency correction:</source>
-        <translation type="unfinished">Korekcja częstotliwości:</translation>
+        <translation>Korekcja częstotliwości:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="250"/>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="284"/>
         <source>Reset</source>
-        <translation type="unfinished">Zresetuj</translation>
+        <translation>Zresetuj</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="262"/>
         <source>RF level correction:</source>
-        <translation type="unfinished">Korekta poziomu RF:</translation>
+        <translation>Korekta poziomu RF:</translation>
     </message>
 </context>
 <context>
@@ -4428,32 +4428,32 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../slsbackend.cpp" line="105"/>
         <source>Ongoing announcement:</source>
-        <translation type="unfinished">Bieżący komunikat:</translation>
+        <translation>Bieżący komunikat:</translation>
     </message>
     <message>
         <location filename="../slsbackend.cpp" line="151"/>
         <source>&lt;b&gt;Category:&lt;/b&gt; %1</source>
-        <translation type="unfinished">&lt;b&gt;Kategoria:&lt;/b&gt; %1</translation>
+        <translation>&lt;b&gt;Kategoria:&lt;/b&gt; %1</translation>
     </message>
     <message>
         <location filename="../slsbackend.cpp" line="161"/>
         <source>&lt;b&gt;Resolution:&lt;/b&gt; %1x%2 pixels&lt;br&gt;</source>
-        <translation type="unfinished">&lt;b&gt;Rozdzielczość:&lt;/b&gt; %1 x %2 pikseli&lt;br&gt;</translation>
+        <translation>&lt;b&gt;Rozdzielczość:&lt;/b&gt; %1 x %2 pikseli&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../slsbackend.cpp" line="162"/>
         <source>&lt;b&gt;Size:&lt;/b&gt; %1 bytes&lt;br&gt;</source>
-        <translation type="unfinished">&lt;b&gt;Rozmiar:&lt;/b&gt; %1 bajtów&lt;br&gt;</translation>
+        <translation>&lt;b&gt;Rozmiar:&lt;/b&gt; %1 bajtów&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../slsbackend.cpp" line="163"/>
         <source>&lt;b&gt;Format:&lt;/b&gt; %1&lt;br&gt;</source>
-        <translation type="unfinished">&lt;b&gt;Format:&lt;/b&gt; %1&lt;br&gt;</translation>
+        <translation>&lt;b&gt;Format:&lt;/b&gt; %1&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../slsbackend.cpp" line="164"/>
         <source>&lt;b&gt;Content name:&lt;/b&gt; &quot;%1&quot;</source>
-        <translation type="unfinished">&lt;b&gt;Nazwa treści:&lt;/b&gt; &quot;%1&quot;</translation>
+        <translation>&lt;b&gt;Nazwa treści:&lt;/b&gt; &quot;%1&quot;</translation>
     </message>
 </context>
 <context>
@@ -4474,7 +4474,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/Scanner.qml" line="34"/>
         <source>DAB Scanning Tool</source>
-        <translation type="unfinished">Narzędzie do skanowania pasma VHF III</translation>
+        <translation>Narzędzie do skanowania pasma VHF III</translation>
     </message>
 </context>
 <context>
@@ -4482,7 +4482,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="143"/>
         <source>Scanning finished</source>
-        <translation type="unfinished">Skanowanie zakończone</translation>
+        <translation>Skanowanie zakończone</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="162"/>
@@ -4504,52 +4504,52 @@ it is anonymous and contains no personal data.</source>
         <location filename="../tii/scannerbackend.cpp" line="864"/>
         <location filename="../tii/scannerbackend.cpp" line="884"/>
         <source>Cancel</source>
-        <translation type="unfinished">Anuluj</translation>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="417"/>
         <source>Channel:</source>
-        <translation type="unfinished">Kanał:</translation>
+        <translation>Kanał:</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="490"/>
         <source>%1  (cycle %2)</source>
-        <translation type="unfinished">%1 (cykl %2)</translation>
+        <translation>%1 (cykl %2)</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="671"/>
         <source>Mark as local (known) transmitter</source>
-        <translation type="unfinished">Oznacz jako lokalny (znany) nadajnik</translation>
+        <translation>Oznacz jako lokalny (znany) nadajnik</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="671"/>
         <source>Unmark local (known) transmitter</source>
-        <translation type="unfinished">Odznacz lokalny (znany) nadajnik</translation>
+        <translation>Odznacz lokalny (znany) nadajnik</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="673"/>
         <source>Show ensemble information</source>
-        <translation type="unfinished">Pokaż informacje o multipleksie</translation>
+        <translation>Pokaż informacje o multipleksie</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="784"/>
         <source>Scanning failed</source>
-        <translation type="unfinished">Skanowanie nie udało się</translation>
+        <translation>Skanowanie nie udało się</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="831"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished">Wysokość: &lt;b&gt;%1 m&lt;/b&gt;</translation>
+        <translation>Wysokość: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="836"/>
         <source>Antenna height: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Wysokość zawieszenia anteny: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="838"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
-        <translation type="unfinished">Moc ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
+        <translation>Moc ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="852"/>
@@ -4559,13 +4559,13 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="852"/>
         <source>You will loose current scan results, this action is irreversible.</source>
-        <translation type="unfinished">Utracisz bieżące wyniki skanowania. Ta operacja jest nieodwracalna.</translation>
+        <translation>Utracisz bieżące wyniki skanowania. Ta operacja jest nieodwracalna.</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="863"/>
         <location filename="../tii/scannerbackend.cpp" line="883"/>
         <source>Clear</source>
-        <translation type="unfinished">Wyczyść</translation>
+        <translation>Wyczyść</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="872"/>
@@ -4575,7 +4575,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="872"/>
         <source>You will loose all records in the database, this action is irreversible.</source>
-        <translation type="unfinished">Stracisz wszystkie rekordy w bazie danych. Ta operacja jest nieodwracalna.</translation>
+        <translation>Stracisz wszystkie rekordy w bazie danych. Ta operacja jest nieodwracalna.</translation>
     </message>
 </context>
 <context>
@@ -4588,32 +4588,32 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="54"/>
         <source>Mode:</source>
-        <translation type="unfinished">Tryb:</translation>
+        <translation>Tryb:</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="62"/>
         <source>Fast</source>
-        <translation type="unfinished">Szybki</translation>
+        <translation>Szybki</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="66"/>
         <source>Normal</source>
-        <translation type="unfinished">Normalny</translation>
+        <translation>Normalny</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="70"/>
         <source>Precise</source>
-        <translation type="unfinished">Precyzyjny</translation>
+        <translation>Precyzyjny</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="90"/>
         <source>Number of cycles:</source>
-        <translation type="unfinished">Liczba cykli:</translation>
+        <translation>Liczba cykli:</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="107"/>
         <source>Inf</source>
-        <translation type="unfinished">Informacje</translation>
+        <translation>Informacje</translation>
     </message>
 </context>
 <context>
@@ -4621,82 +4621,82 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="76"/>
         <source>Mode:</source>
-        <translation type="unfinished">Tryb:</translation>
+        <translation>Tryb:</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="84"/>
         <source>Fast</source>
-        <translation type="unfinished">Szybki</translation>
+        <translation>Szybki</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="88"/>
         <source>Normal</source>
-        <translation type="unfinished">Normalny</translation>
+        <translation>Normalny</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="92"/>
         <source>Precise</source>
-        <translation type="unfinished">Precyzyjny</translation>
+        <translation>Precyzyjny</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="112"/>
         <source>Number of cycles:</source>
-        <translation type="unfinished">Liczba cykli:</translation>
+        <translation>Liczba cykli:</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="129"/>
         <source>Inf</source>
-        <translation type="unfinished">Informacje</translation>
+        <translation>Informacje</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="141"/>
         <source>Channel selection</source>
-        <translation type="unfinished">Wybór kanału</translation>
+        <translation>Wybór kanału</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="173"/>
         <source>Select all</source>
-        <translation type="unfinished">Wybierz wszystkie</translation>
+        <translation>Wybierz wszystkie</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="184"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Odznacz wszystko</translation>
+        <translation>Odznacz wszystko</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="202"/>
         <source>Clear scan results on start</source>
-        <translation type="unfinished">Wyczyść wyniki skanowania przy starcie</translation>
+        <translation>Wyczyść wyniki skanowania przy starcie</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="208"/>
         <source>Hide local (known) transmitters</source>
-        <translation type="unfinished">Ukryj lokalne (znane) nadajniki</translation>
+        <translation>Ukryj lokalne (znane) nadajniki</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="214"/>
         <source>AutoSave CSV</source>
-        <translation type="unfinished">Automatyczne zapisywanie pliku CSV</translation>
+        <translation>Automatyczne zapisywanie pliku CSV</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="226"/>
         <source>Save as CSV</source>
-        <translation type="unfinished">Zapisz jako CSV</translation>
+        <translation>Zapisz jako CSV</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="231"/>
         <source>Load from CSV</source>
-        <translation type="unfinished">Załaduj z pliku CSV</translation>
+        <translation>Załaduj z pliku CSV</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="236"/>
         <source>Clear scan results</source>
-        <translation type="unfinished">Wyczyść wyniki skanowania</translation>
+        <translation>Wyczyść wyniki skanowania</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="241"/>
         <source>Clear local (known) transmitter database</source>
-        <translation type="unfinished">Wyczyść bazę danych wszystkich znanych lokalnych nadajników</translation>
+        <translation>Wyczyść bazę danych wszystkich znanych lokalnych nadajników</translation>
     </message>
 </context>
 <context>
@@ -4709,82 +4709,82 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="159"/>
         <source>Mode:</source>
-        <translation type="unfinished">Tryb:</translation>
+        <translation>Tryb:</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="166"/>
         <source>Fast</source>
-        <translation type="unfinished">Szybki</translation>
+        <translation>Szybki</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="170"/>
         <source>Normal</source>
-        <translation type="unfinished">Normalny</translation>
+        <translation>Normalny</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="174"/>
         <source>Precise</source>
-        <translation type="unfinished">Precyzyjny</translation>
+        <translation>Precyzyjny</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="195"/>
         <source>Number of cycles:</source>
-        <translation type="unfinished">Liczba cykli:</translation>
+        <translation>Liczba cykli:</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="212"/>
         <source>Inf</source>
-        <translation type="unfinished">Informacje</translation>
+        <translation>Informacje</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="219"/>
         <source>Select channels</source>
-        <translation type="unfinished">Wybierz kanały</translation>
+        <translation>Wybierz kanały</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="226"/>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Stop</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="226"/>
         <source>Start</source>
-        <translation type="unfinished"></translation>
+        <translation>Start</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="257"/>
         <source>Clear scan results on start</source>
-        <translation type="unfinished">Wyczyść wyniki skanowania przy starcie</translation>
+        <translation>Wyczyść wyniki skanowania przy starcie</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="263"/>
         <source>Hide local (known) transmitters</source>
-        <translation type="unfinished">Ukryj lokalne (znane) nadajniki</translation>
+        <translation>Ukryj lokalne (znane) nadajniki</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="269"/>
         <source>AutoSave CSV</source>
-        <translation type="unfinished">Automatyczne zapisywanie pliku CSV</translation>
+        <translation>Automatyczne zapisywanie pliku CSV</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="276"/>
         <source>Save as CSV</source>
-        <translation type="unfinished">Zapisz jako CSV</translation>
+        <translation>Zapisz jako CSV</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="281"/>
         <source>Load from CSV</source>
-        <translation type="unfinished">Załaduj z pliku CSV</translation>
+        <translation>Załaduj z pliku CSV</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="286"/>
         <source>Clear scan results</source>
-        <translation type="unfinished">Wyczyść wyniki skanowania</translation>
+        <translation>Wyczyść wyniki skanowania</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="291"/>
         <source>Clear local (known) transmitter database</source>
-        <translation type="unfinished">Wyczyść bazę danych wszystkich znanych lokalnych nadajników</translation>
+        <translation>Wyczyść bazę danych wszystkich znanych lokalnych nadajników</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="469"/>
@@ -4797,92 +4797,92 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="74"/>
         <source>Disconnect</source>
-        <translation type="unfinished">Odłącz</translation>
+        <translation>Odłącz</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="74"/>
         <source>Reload</source>
-        <translation type="unfinished">Przeładuj</translation>
+        <translation>Przeładuj</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="79"/>
         <source>RX channel number:</source>
-        <translation type="unfinished">Numer kanału RX:</translation>
+        <translation>Numer kanału RX:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="99"/>
         <source>Antenna:</source>
-        <translation type="unfinished">Antena:</translation>
+        <translation>Antena:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="123"/>
         <source>Use any available SDRplay device if the selected one fails</source>
-        <translation type="unfinished">Jeśli wybrane urządzenie SDRplay zawiedzie, użyj dowolnego dostępnego urządzenia SDRplay</translation>
+        <translation>Jeśli wybrane urządzenie SDRplay zawiedzie, użyj dowolnego dostępnego urządzenia SDRplay</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="142"/>
         <source>Connected device:</source>
-        <translation type="unfinished">Podłączone urządzenie:</translation>
+        <translation>Podłączone urządzenie:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="145"/>
         <source>Serial number:</source>
-        <translation type="unfinished">Numer seryjny:</translation>
+        <translation>Numer seryjny:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="163"/>
         <source>Gain control</source>
-        <translation type="unfinished">Wzmocnienie sygnału regulowane jest</translation>
+        <translation>Wzmocnienie sygnału regulowane jest</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="171"/>
         <source>Software</source>
-        <translation type="unfinished">Oprogramowanie</translation>
+        <translation>Oprogramowanie</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="171"/>
         <source>Manual</source>
-        <translation type="unfinished">Ręcznie</translation>
+        <translation>Ręcznie</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="199"/>
         <source>RF gain</source>
-        <translation type="unfinished">Wzmocnienie szgnału radiowego</translation>
+        <translation>Wzmocnienie szgnału radiowego</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="230"/>
         <source>IF gain</source>
-        <translation type="unfinished">Wzmocnienie IF</translation>
+        <translation>Wzmocnienie IF</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="248"/>
         <source>N/A</source>
-        <translation type="unfinished">Nie dotyczy</translation>
+        <translation>Nie dotyczy</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="252"/>
         <source>AGC</source>
-        <translation type="unfinished">AGC</translation>
+        <translation>AGC</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="269"/>
         <source>Expert settings</source>
-        <translation type="unfinished">Ustawienia eksperckie</translation>
+        <translation>Ustawienia eksperckie</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="283"/>
         <source>Frequency correction:</source>
-        <translation type="unfinished">Korekcja częstotliwości:</translation>
+        <translation>Korekcja częstotliwości:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="302"/>
         <source>Reset</source>
-        <translation type="unfinished">Zresetuj</translation>
+        <translation>Zresetuj</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="314"/>
         <source>Bias Tee:</source>
-        <translation type="unfinished">Zasilanie zdalne:</translation>
+        <translation>Zasilanie zdalne:</translation>
     </message>
 </context>
 <context>
@@ -4896,18 +4896,18 @@ it is anonymous and contains no personal data.</source>
         <location filename="../qml/ServiceList.qml" line="339"/>
         <location filename="../qml/ServiceList.qml" line="503"/>
         <source>Remove service from favorites</source>
-        <translation type="unfinished">Usuń z listy ulubionych stacji</translation>
+        <translation>Usuń z listy ulubionych stacji</translation>
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="340"/>
         <location filename="../qml/ServiceList.qml" line="504"/>
         <source>Add service to favorites</source>
-        <translation type="unfinished">Dodaj program do ulubionych</translation>
+        <translation>Dodaj program do ulubionych</translation>
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="654"/>
         <source>Services</source>
-        <translation type="unfinished">Usługi</translation>
+        <translation>Usługi</translation>
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="657"/>
@@ -4920,12 +4920,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/ServiceView.qml" line="146"/>
         <source>Remove service from favorites</source>
-        <translation type="unfinished">Usuń z listy ulubionych stacji</translation>
+        <translation>Usuń z listy ulubionych stacji</translation>
     </message>
     <message>
         <location filename="../qml/ServiceView.qml" line="147"/>
         <source>Add service to favorites</source>
-        <translation type="unfinished">Dodaj program do ulubionych</translation>
+        <translation>Dodaj program do ulubionych</translation>
     </message>
     <message>
         <location filename="../qml/ServiceView.qml" line="207"/>
@@ -4949,7 +4949,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/Settings.qml" line="34"/>
         <source>Settings</source>
-        <translation type="unfinished">Ustawienia</translation>
+        <translation>Ustawienia</translation>
     </message>
 </context>
 <context>
@@ -4967,59 +4967,59 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../settingsbackend.cpp" line="60"/>
         <source>Device</source>
-        <translation type="unfinished">Urządzenie</translation>
+        <translation>Urządzenie</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="61"/>
         <source>Audio</source>
-        <translation type="unfinished">Dźwięk</translation>
+        <translation>Dźwięk</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="62"/>
         <source>Announcements</source>
-        <translation type="unfinished">Ogłoszenia</translation>
+        <translation>Ogłoszenia</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="63"/>
         <source>User applications</source>
-        <translation type="unfinished">Aplikacje użytkownika</translation>
+        <translation>Aplikacje użytkownika</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="64"/>
         <source>TII</source>
-        <translation type="unfinished">TII</translation>
+        <translation>TII</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="65"/>
         <source>Others</source>
-        <translation type="unfinished">Inne</translation>
+        <translation>Inne</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="84"/>
         <source>Unsigned 8 bits</source>
-        <translation type="unfinished">8-bitowy bez znaku</translation>
+        <translation>8-bitowy bez znaku</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="85"/>
         <source>Signed 16 bits</source>
-        <translation type="unfinished">8-bitowy z znakiem</translation>
+        <translation>8-bitowy z znakiem</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="168"/>
         <source>Disabled</source>
-        <translation type="unfinished">Wyłączony</translation>
+        <translation>Wyłączony</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="229"/>
         <location filename="../settingsbackend.cpp" line="278"/>
         <source>System</source>
-        <translation type="unfinished">system</translation>
+        <translation>system</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="230"/>
         <location filename="../settingsbackend.cpp" line="279"/>
         <source>Manual</source>
-        <translation type="unfinished">Ręcznie</translation>
+        <translation>Ręcznie</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="232"/>
@@ -5029,74 +5029,74 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../settingsbackend.cpp" line="268"/>
         <source>System language</source>
-        <translation type="unfinished">Język systemowy</translation>
+        <translation>Język systemowy</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="277"/>
         <source>No proxy</source>
-        <translation type="unfinished">Brak serwera proxy</translation>
+        <translation>Brak serwera proxy</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="848"/>
         <location filename="../settingsbackend.cpp" line="886"/>
         <location filename="../settingsbackend.cpp" line="2013"/>
         <source>N/A</source>
-        <translation type="unfinished">Nie dotyczy</translation>
+        <translation>Nie dotyczy</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="901"/>
         <source>RTL SDR device connected</source>
-        <translation type="unfinished">Podłączono urządzenie: RTL SDR</translation>
+        <translation>Podłączono urządzenie: RTL SDR</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="904"/>
         <source>RTL TCP device connected</source>
-        <translation type="unfinished">Podłączono urządzenie: RTL TCP</translation>
+        <translation>Podłączono urządzenie: RTL TCP</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="907"/>
         <source>No device connected</source>
-        <translation type="unfinished">Brak podłączonego urządzenia</translation>
+        <translation>Brak podłączonego urządzenia</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="910"/>
         <source>Raw file connected</source>
-        <translation type="unfinished">Plik surowy podłączony</translation>
+        <translation>Plik surowy podłączony</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="913"/>
         <source>Airspy device connected</source>
-        <translation type="unfinished">Podłączono urządzenie: Airspy</translation>
+        <translation>Podłączono urządzenie: Airspy</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="916"/>
         <source>Soapy SDR device connected</source>
-        <translation type="unfinished">Podłączono urządzenie: Soapy SDR</translation>
+        <translation>Podłączono urządzenie: Soapy SDR</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="1370"/>
         <source>Update failed</source>
-        <translation type="unfinished">Aktualizacja nie powiodła się</translation>
+        <translation>Aktualizacja nie powiodła się</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="1380"/>
         <source>Last update: </source>
-        <translation type="unfinished">Ostatnia aktualizacja: </translation>
+        <translation>Ostatnia aktualizacja: </translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="1384"/>
         <source>Data not available</source>
-        <translation type="unfinished">Dane niedostępne</translation>
+        <translation>Dane niedostępne</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="1720"/>
         <source>sec</source>
-        <translation type="unfinished">s</translation>
+        <translation>s</translation>
     </message>
     <message>
         <location filename="../settingsbackend.h" line="398"/>
         <source>No file selected</source>
-        <translation type="unfinished">Nie wybrano pliku</translation>
+        <translation>Nie wybrano pliku</translation>
     </message>
 </context>
 <context>
@@ -5114,19 +5114,19 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../signalbackend.cpp" line="145"/>
         <source>Time</source>
-        <translation type="unfinished">Czas</translation>
+        <translation>Czas</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="146"/>
         <source>SNR [dB]</source>
-        <translation type="unfinished">SNR [dB]</translation>
+        <translation>SNR [dB]</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="276"/>
         <location filename="../signalbackend.cpp" line="348"/>
         <location filename="../signalbackend.cpp" line="359"/>
         <source>N/A</source>
-        <translation type="unfinished">Nie dotyczy</translation>
+        <translation>Nie dotyczy</translation>
     </message>
 </context>
 <context>
@@ -5134,27 +5134,27 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/SignalState.qml" line="75"/>
         <source>DAB signal not detected&lt;br&gt;Looking for signal...</source>
-        <translation type="unfinished">Nie wykryto sygnału DAB&lt;br&gt;Trwa strojenie...</translation>
+        <translation>Nie wykryto sygnału DAB&lt;br&gt;Trwa strojenie...</translation>
     </message>
     <message>
         <location filename="../qml/SignalState.qml" line="77"/>
         <source>Synchronized to DAB signal</source>
-        <translation type="unfinished">Dodaj do listy ulubionych stacji</translation>
+        <translation>Dodaj do listy ulubionych stacji</translation>
     </message>
     <message>
         <location filename="../qml/SignalState.qml" line="78"/>
         <source>Found DAB signal,&lt;br&gt;trying to synchronize...</source>
-        <translation type="unfinished">Znaleziono sygnał DAB,&lt;br&gt;próba synchronizacji...</translation>
+        <translation>Znaleziono sygnał DAB,&lt;br&gt;próba synchronizacji...</translation>
     </message>
     <message>
         <location filename="../qml/SignalState.qml" line="84"/>
         <source>SNR</source>
-        <translation type="unfinished">SNR</translation>
+        <translation>SNR</translation>
     </message>
     <message>
         <location filename="../qml/SignalState.qml" line="91"/>
         <source>DAB signal SNR</source>
-        <translation type="unfinished">Jakość stosunek sygnału do szumu</translation>
+        <translation>Jakość stosunek sygnału do szumu</translation>
     </message>
 </context>
 <context>
@@ -5162,7 +5162,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="54"/>
         <source>Device arguments:</source>
-        <translation type="unfinished">Argumenty urządzenia:</translation>
+        <translation>Argumenty urządzenia:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="59"/>
@@ -5172,62 +5172,62 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="67"/>
         <source>RX channel number:</source>
-        <translation type="unfinished">Numer kanału RX:</translation>
+        <translation>Numer kanału RX:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="83"/>
         <source>Antenna:</source>
-        <translation type="unfinished">Antena:</translation>
+        <translation>Antena:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="104"/>
         <source>Connected device:</source>
-        <translation type="unfinished">Podłączone urządzenie:</translation>
+        <translation>Podłączone urządzenie:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="122"/>
         <source>Gain control</source>
-        <translation type="unfinished">Wzmocnienie sygnału regulowane jest</translation>
+        <translation>Wzmocnienie sygnału regulowane jest</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="130"/>
         <source>Device</source>
-        <translation type="unfinished">Urządzenie</translation>
+        <translation>Urządzenie</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="130"/>
         <source>Manual</source>
-        <translation type="unfinished">Ręcznie</translation>
+        <translation>Ręcznie</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="211"/>
         <source>Expert settings</source>
-        <translation type="unfinished">Ustawienia eksperckie</translation>
+        <translation>Ustawienia eksperckie</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="225"/>
         <source>Bandwidth:</source>
-        <translation type="unfinished">Pasmo przenoszenia:</translation>
+        <translation>Pasmo przenoszenia:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="240"/>
         <source>Default</source>
-        <translation type="unfinished">Domyślny</translation>
+        <translation>Domyślny</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="246"/>
         <source>Set default</source>
-        <translation type="unfinished">Ustaw domyślne</translation>
+        <translation>Ustaw domyślne</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="258"/>
         <source>Frequency correction:</source>
-        <translation type="unfinished">Korekcja częstotliwości:</translation>
+        <translation>Korekcja częstotliwości:</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="277"/>
         <source>Reset</source>
-        <translation type="unfinished">Zresetuj</translation>
+        <translation>Zresetuj</translation>
     </message>
 </context>
 <context>
@@ -5235,12 +5235,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/StatusBar.qml" line="97"/>
         <source>Unmute audio</source>
-        <translation type="unfinished">Anuluj wyciszenie dźwięku</translation>
+        <translation>Anuluj wyciszenie dźwięku</translation>
     </message>
     <message>
         <location filename="../qml/StatusBar.qml" line="98"/>
         <source>Mute audio</source>
-        <translation type="unfinished">Wyciszenie dźwięku</translation>
+        <translation>Wyciszenie dźwięku</translation>
     </message>
 </context>
 <context>
@@ -5256,17 +5256,17 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/SystemTray.qml" line="45"/>
         <source>Unmute</source>
-        <translation type="unfinished">Włącz dźwięk</translation>
+        <translation>Włącz dźwięk</translation>
     </message>
     <message>
         <location filename="../qml/SystemTray.qml" line="45"/>
         <source>Mute</source>
-        <translation type="unfinished">Wycisz</translation>
+        <translation>Wycisz</translation>
     </message>
     <message>
         <location filename="../qml/SystemTray.qml" line="51"/>
         <source>Quit</source>
-        <translation type="unfinished">Wyjdź</translation>
+        <translation>Wyjdź</translation>
     </message>
 </context>
 <context>
@@ -5274,7 +5274,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/TII.qml" line="34"/>
         <source>TII</source>
-        <translation type="unfinished">TII</translation>
+        <translation>TII</translation>
     </message>
 </context>
 <context>
@@ -5282,17 +5282,17 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/tiibackend.cpp" line="197"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished">Wysokość: &lt;b&gt;%1 m&lt;/b&gt;</translation>
+        <translation>Wysokość: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="202"/>
         <source>Antenna height: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Wysokość zawieszenia anteny: &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="204"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
-        <translation type="unfinished">Moc ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
+        <translation>Moc ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="302"/>
@@ -5305,12 +5305,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/TIIMap.qml" line="396"/>
         <source>Stop logging</source>
-        <translation type="unfinished">Zatrzymaj rejestrowanie</translation>
+        <translation>Zatrzymaj rejestrowanie</translation>
     </message>
     <message>
         <location filename="../qml/tii/TIIMap.qml" line="396"/>
         <source>Record CSV log</source>
-        <translation type="unfinished">Zapisz dziennik CSV</translation>
+        <translation>Zapisz dziennik CSV</translation>
     </message>
 </context>
 <context>
@@ -5318,57 +5318,57 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="67"/>
         <source>Transmitter database</source>
-        <translation type="unfinished">Baza danych nadajników</translation>
+        <translation>Baza danych nadajników</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="79"/>
         <source>Application uses DAB transmiter database provided by &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;By pressing &lt;i&gt;Update&lt;/i&gt; button you agree with data usage &lt;a href=&apos;https://www.fmlist.org/fmlist_copyright_disclaimer_legal_notice.php&apos;&gt;terms and conditions&lt;/a&gt;.</source>
-        <translation type="unfinished">Aplikacja korzysta z bazy danych nadajników DAB udostępnionej przez &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;Klikając przycisk &lt;i&gt;Aktualizuj&lt;/i&gt; zgadzasz się na &lt;a href=&apos;https://www.fmlist.org/fmlist_copyright_disclaimer_legal_notice.php&apos;&gt;warunki&lt;/a&gt; korzystania z danych.</translation>
+        <translation>Aplikacja korzysta z bazy danych nadajników DAB udostępnionej przez &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;Klikając przycisk &lt;i&gt;Aktualizuj&lt;/i&gt; zgadzasz się na &lt;a href=&apos;https://www.fmlist.org/fmlist_copyright_disclaimer_legal_notice.php&apos;&gt;warunki&lt;/a&gt; korzystania z danych.</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="98"/>
         <source>Update</source>
-        <translation type="unfinished">Aktualizacja</translation>
+        <translation>Aktualizacja</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="114"/>
         <source>Receiver location</source>
-        <translation type="unfinished">Lokalizacja odbiornika</translation>
+        <translation>Lokalizacja odbiornika</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="130"/>
         <source>Geolocation source:</source>
-        <translation type="unfinished">Źródło geolokalizacji:</translation>
+        <translation>Źródło geolokalizacji:</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="154"/>
         <source>GPS coordinates:</source>
-        <translation type="unfinished">Współrzędne GPS:</translation>
+        <translation>Współrzędne GPS:</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="178"/>
         <source>Serial port:</source>
-        <translation type="unfinished">Port szeregowy:</translation>
+        <translation>Port szeregowy:</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="191"/>
         <source>Baudrate:</source>
-        <translation type="unfinished">Szybkość transmisji:</translation>
+        <translation>Szybkość transmisji:</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="226"/>
         <source>Logging</source>
-        <translation type="unfinished">Rejestrowanie</translation>
+        <translation>Rejestrowanie</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="240"/>
         <source>Folder:</source>
-        <translation type="unfinished">Folder:</translation>
+        <translation>Folder:</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="255"/>
         <source>Timestamp in UTC</source>
-        <translation type="unfinished">Znacznik czasu w UTC</translation>
+        <translation>Znacznik czasu w UTC</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="265"/>
@@ -5378,37 +5378,37 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="284"/>
         <source>Detector</source>
-        <translation type="unfinished">Detektor</translation>
+        <translation>Detektor</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="290"/>
         <source>Reliable</source>
-        <translation type="unfinished">Niezawodny</translation>
+        <translation>Niezawodny</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="306"/>
         <source>Sensitive</source>
-        <translation type="unfinished">Wrażliwy</translation>
+        <translation>Wrażliwy</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="318"/>
         <source>User interface</source>
-        <translation type="unfinished">Interfejs użytkownika</translation>
+        <translation>Interfejs użytkownika</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="329"/>
         <source>Show spectrum plot</source>
-        <translation type="unfinished">Pokaż wykres widmowy</translation>
+        <translation>Pokaż wykres widmowy</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="340"/>
         <source>Keep no longer detected transmitters on map (grey marker)</source>
-        <translation type="unfinished">Zachowaj na mapie nadajniki, których już nie wykryto (szary znacznik)</translation>
+        <translation>Zachowaj na mapie nadajniki, których już nie wykryto (szary znacznik)</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="358"/>
         <source>Remove after:</source>
-        <translation type="unfinished">Usuń po:</translation>
+        <translation>Usuń po:</translation>
     </message>
 </context>
 <context>
@@ -5416,22 +5416,22 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/txmapbackend.cpp" line="249"/>
         <source>Ensemble: &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation type="unfinished">Multipleks: &lt;b&gt;%1&lt;/b&gt;</translation>
+        <translation>Multipleks: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/txmapbackend.cpp" line="253"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt; | TX: &lt;b&gt;%3&lt;/b&gt;</source>
-        <translation type="unfinished">ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt; | TX: &lt;b&gt;%3&lt;/b&gt;</translation>
+        <translation>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt; | TX: &lt;b&gt;%3&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/txmapbackend.cpp" line="261"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</source>
-        <translation type="unfinished">ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</translation>
+        <translation>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/txmapbackend.cpp" line="266"/>
         <source>Channel: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</source>
-        <translation type="unfinished">Kanał: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</translation>
+        <translation>Kanał: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</translation>
     </message>
 </context>
 <context>
@@ -5576,27 +5576,27 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="68"/>
         <source>SPI application</source>
-        <translation type="unfinished">Aplikacja SPI</translation>
+        <translation>Aplikacja SPI</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="79"/>
         <source>Enable SPI application</source>
-        <translation type="unfinished">Włącz aplikację SPI</translation>
+        <translation>Włącz aplikację SPI</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="91"/>
         <source>Download data from internet</source>
-        <translation type="unfinished">Pobierz dane z internetu</translation>
+        <translation>Pobierz dane z internetu</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="104"/>
         <source>RadioDNS</source>
-        <translation type="unfinished">RadioDNS</translation>
+        <translation>RadioDNS</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="117"/>
         <source>Show decoding progress</source>
-        <translation type="unfinished">Pokaż postęp dekodowania</translation>
+        <translation>Pokaż postęp dekodowania</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="129"/>
@@ -5606,22 +5606,22 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="148"/>
         <source>Data storage</source>
-        <translation type="unfinished">Przechowywanie danych</translation>
+        <translation>Przechowywanie danych</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="161"/>
         <source>Folder:</source>
-        <translation type="unfinished">Folder:</translation>
+        <translation>Folder:</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="173"/>
         <source>Overwrite existing files</source>
-        <translation type="unfinished">Zastąp istniejące pliki</translation>
+        <translation>Zastąp istniejące pliki</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="193"/>
         <source>Slideshow data</source>
-        <translation type="unfinished">Dane pokazów slajdów</translation>
+        <translation>Dane pokazów slajdów</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="204"/>
@@ -5631,7 +5631,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="215"/>
         <source>SPI data</source>
-        <translation type="unfinished">Dane SPI</translation>
+        <translation>Dane SPI</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="227"/>
@@ -5733,7 +5733,7 @@ Use the &apos;Dock Page&apos; button above to bring it back.</source>
     <message>
         <location filename="../qml/UpdateDialog.qml" line="124"/>
         <source>Close</source>
-        <translation type="unfinished">Zamknij</translation>
+        <translation>Zamknij</translation>
     </message>
 </context>
 </TS>
