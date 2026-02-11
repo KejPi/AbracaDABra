@@ -114,19 +114,21 @@ Rectangle {
                     id: emptyFilterSwitch
                     text: qsTr("Hide services without schedule")
                     checked: epgBackend.filterEmptyEpg
-                    onToggled: {
-                        epgBackend.filterEmptyEpg = checked;
+                    onCheckedChanged: {
+                        if (epgBackend.filterEmptyEpg !== checked) {
+                            epgBackend.filterEmptyEpg = checked;
+                        }
                     }
                 }
                 AbracaSwitch {
                     id: ensembleFilterSwitch
                     text: qsTr("Show only current ensemble")
                     checked: epgBackend.filterEnsemble
-                    // onToggled: {
-                    //     if (epgBackend.filterEnsemble !== checked) {
-                    //         epgBackend.filterEnsemble = checked;
-                    //     }
-                    // }
+                    onCheckedChanged: {
+                        if (epgBackend.filterEnsemble !== checked) {
+                            epgBackend.filterEnsemble = checked;
+                        }
+                    }
                 }
             }
         }
