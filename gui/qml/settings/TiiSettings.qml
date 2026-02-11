@@ -156,7 +156,7 @@ Item {
                                         AbracaTextField {
                                             id: coordinatesTextField
                                             Layout.fillWidth: true
-                                            readonly property regexp coordRegExp: /[+-]?[0-9]+(\\.[0-9]+)?\\s*,\\s*[+-]?[0-9]+(\\.[0-9]+)?/
+                                            readonly property regexp coordRegExp: /^\s*[+-]?\d+(?:\.\d+)?\s*,\s*[+-]?\d+(?:\.\d+)?\s*$/
                                             validator: RegularExpressionValidator { regularExpression: coordinatesTextField.coordRegExp }
                                             text: settingsBackend.locationCoordinates
                                             onEditingFinished: {
