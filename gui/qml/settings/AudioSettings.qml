@@ -89,6 +89,7 @@ Item {
                         isVertical: false
                         Layout.topMargin: UI.standardMargin
                         Layout.bottomMargin: 2*UI.standardMargin
+                        visible: settingsBackend.audioDecoderModel.currentIndex === 0  // FAAD2
                     }
                     AbracaGroupBox {
                         id: recGroupBox
