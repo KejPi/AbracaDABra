@@ -32,7 +32,7 @@
 
 EPGBackend::EPGBackend(SLModel *serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager *metadataManager, Settings *settings,
                        QObject *parent)
-    : QObject(parent), m_metadataManager(metadataManager), m_settings(settings), m_currentUEID(0), m_slSelectionModel(slSelectionModel)
+    : UIControlProvider(parent), m_metadataManager(metadataManager), m_settings(settings), m_currentUEID(0), m_slSelectionModel(slSelectionModel)
 {
     m_slProxyModel = new SLProxyModel(this);
     m_slProxyModel->setSourceModel(serviceListModel);

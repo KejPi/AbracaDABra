@@ -245,6 +245,7 @@ public:
         bool filterEmptyEpg;
         bool filterEnsemble;
         QPersistentModelIndex selectedItem;
+        QVariant splitterState;
         bool restore;
     } epg;
     struct Proxy

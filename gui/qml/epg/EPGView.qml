@@ -49,15 +49,31 @@ Rectangle {
     property string programDetail: ""
     property bool scheduleRecEnable: false
 
-    //SystemPalette { id: sysPaletteActive; colorGroup: SystemPalette.Active }
+
+    function storeSplitterState() {
+        epgBackend.splitterState = splitView.saveState();
+    }
+    Component.onCompleted: {
+        splitView.restoreState(epgBackend.splitterState);
+    }
+    Component.onDestruction: {
+        storeSplitterState();
+    }
+    Connections {
+        target: appWindow
+        function onClosing() {
+            storeSplitterState();
+        }
+    }
+
 
     RowLayout {
         id: controlLayout
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.rightMargin: 10
-        anchors.topMargin: 10
+        anchors.rightMargin: UI.standardMargin
+        anchors.topMargin: UI.standardMargin
         spacing: 5
         AbracaTabBar {
             id: dayTabBar
@@ -115,250 +131,261 @@ Rectangle {
             }
         }
     }
-    Item {
-        id: epgViewItem
+    AbracaSplitView {
+        id: splitView
         anchors.top: controlLayout.bottom
+        anchors.topMargin: UI.standardMargin
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: progDetails.top
-        anchors.topMargin: 10
-        anchors.bottomMargin: 20
-        Text {
-            id: currentTimeText
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.leftMargin: 14
-            width: implicitWidth
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            color: UI.colors.textPrimary
-            text: qsTr("Current time: ") + epgBackend.epgTime.currentTimeString
-        }
+        anchors.bottom: parent.bottom
 
-        Flickable {
-            id: timelinebox
-            height: 20
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.leftMargin: serviceListWidth
-            contentHeight: timeline.height
-            contentWidth: timeline.width
-            //contentX: epgTable.contentX
-            boundsBehavior: Flickable.StopAtBounds
-            //boundsBehavior: Flickable.DragAndOvershootBounds
-            flickableDirection: Flickable.HorizontalFlick
-            //clip: true
-            Item {
-                id: timeline
+        orientation: Qt.Vertical
+        snapThreshold: 50
+        minVisibleSize: 80
+
+        Item {
+            id: epgViewItem
+            SplitView.fillWidth: true
+            SplitView.fillHeight: true
+            SplitView.minimumHeight: 300
+
+            Text {
+                id: currentTimeText
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 14
+                width: implicitWidth
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                color: UI.colors.textPrimary
+                text: qsTr("Current time: ") + epgBackend.epgTime.currentTimeString
+            }
+
+            Flickable {
+                id: timelinebox
                 height: 20
-                width: 24 * 3600 * pointsPerSecond
-                Row {
-                    Repeater {
-                        model: 24
-                        delegate: Row {
-                            Text {
-                                id: tst
-                                text: modelData + ":00"
-                                width: 60 * 30 * pointsPerSecond
-                                height: 20
-                                horizontalAlignment: Text.AlignLeft
-                                opacity: 1 - Math.min(timelinebox.contentX - modelData * 3600 * pointsPerSecond, 50) / 50
-                                color: UI.colors.textDisabled
-                            }
-                            Text {
-                                text: modelData + ":30"
-                                width: 60 * 30 * pointsPerSecond
-                                height: 20
-                                horizontalAlignment: Text.AlignLeft
-                                opacity: 1 - Math.min(timelinebox.contentX - (modelData + 0.5) * 3600 * pointsPerSecond, 50) / 50
-                                color: UI.colors.textDisabled
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: serviceListWidth
+                contentHeight: timeline.height
+                contentWidth: timeline.width
+                //contentX: epgTable.contentX
+                boundsBehavior: Flickable.StopAtBounds
+                //boundsBehavior: Flickable.DragAndOvershootBounds
+                flickableDirection: Flickable.HorizontalFlick
+                //clip: true
+                Item {
+                    id: timeline
+                    height: 20
+                    width: 24 * 3600 * pointsPerSecond
+                    Row {
+                        Repeater {
+                            model: 24
+                            delegate: Row {
+                                Text {
+                                    id: tst
+                                    text: modelData + ":00"
+                                    width: 60 * 30 * pointsPerSecond
+                                    height: 20
+                                    horizontalAlignment: Text.AlignLeft
+                                    opacity: 1 - Math.min(timelinebox.contentX - modelData * 3600 * pointsPerSecond, 50) / 50
+                                    color: UI.colors.textDisabled
+                                }
+                                Text {
+                                    text: modelData + ":30"
+                                    width: 60 * 30 * pointsPerSecond
+                                    height: 20
+                                    horizontalAlignment: Text.AlignLeft
+                                    opacity: 1 - Math.min(timelinebox.contentX - (modelData + 0.5) * 3600 * pointsPerSecond, 50) / 50
+                                    color: UI.colors.textDisabled
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-        Rectangle {
-            anchors.top: timelinebox.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            color: "transparent"
-            border.color: UI.colors.divider
-            border.width: 1
-            Flickable {
-                id: mainView
-                flickableDirection: Flickable.VerticalFlick
-                boundsBehavior: Flickable.StopAtBounds
-                anchors.fill: parent
-                //anchors.margins: 2
-                contentHeight: epgItem.height
-                contentWidth: epgItem.width
-                clip: true
-                Rectangle {
-                    id: epgItem
-                    color: "transparent"
-                    height: serviceColumnId.height
-                    width: epgViewItem.width
-                    Column {
-                        id: serviceColumnId
-                        Repeater {
-                            id: serviceList
-                            model: epgBackend.slProxyModel
-                            delegate: Rectangle {
-                                color: "transparent"
-                                border.color: UI.colors.divider
-                                border.width: 1
-                                height: lineHeight
-                                width: serviceListWidth
-                                Row {
-                                    anchors.fill: parent
-                                    anchors.margins: 10
-                                    spacing: 10
-                                    Rectangle {
-                                        color: "transparent"
-                                        border.width: 2
-                                        border.color: selectedServiceIndex == index ? UI.colors.highlight : "transparent"
-                                        width: logoLoader.width + 8
-                                        height: logoLoader.height + 8
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        Loader {
-                                            id: logoLoader
-                                            anchors.centerIn: parent
-                                            sourceComponent: smallLogoId == 0 ? placeholderComponent : logoComponent
-                                        }
-                                        Component {
-                                            id: logoComponent
-                                            Image {
-                                                id: logoId
-                                                source: "image://metadata/logo/" + smallLogoId
-                                                cache: false
+            Rectangle {
+                anchors.top: timelinebox.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                color: "transparent"
+                border.color: UI.colors.divider
+                border.width: 1
+                Flickable {
+                    id: mainView
+                    flickableDirection: Flickable.VerticalFlick
+                    boundsBehavior: Flickable.StopAtBounds
+                    anchors.fill: parent
+                    //anchors.margins: 2
+                    contentHeight: epgItem.height
+                    contentWidth: epgItem.width
+                    clip: true
+                    Rectangle {
+                        id: epgItem
+                        color: "transparent"
+                        height: serviceColumnId.height
+                        width: epgViewItem.width
+                        Column {
+                            id: serviceColumnId
+                            Repeater {
+                                id: serviceList
+                                model: epgBackend.slProxyModel
+                                delegate: Rectangle {
+                                    color: "transparent"
+                                    border.color: UI.colors.divider
+                                    border.width: 1
+                                    height: lineHeight
+                                    width: serviceListWidth
+                                    Row {
+                                        anchors.fill: parent
+                                        anchors.margins: 10
+                                        spacing: 10
+                                        Rectangle {
+                                            color: "transparent"
+                                            border.width: 2
+                                            border.color: selectedServiceIndex == index ? UI.colors.highlight : "transparent"
+                                            width: logoLoader.width + 8
+                                            height: logoLoader.height + 8
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            Loader {
+                                                id: logoLoader
+                                                anchors.centerIn: parent
+                                                sourceComponent: smallLogoId == 0 ? placeholderComponent : logoComponent
+                                            }
+                                            Component {
+                                                id: logoComponent
+                                                Image {
+                                                    id: logoId
+                                                    source: "image://metadata/logo/" + smallLogoId
+                                                    cache: false
+                                                }
+                                            }
+                                            Component {
+                                                id: placeholderComponent
+                                                Rectangle {
+                                                    color: UI.colors.emptyLogoColor
+                                                    width: 32
+                                                    height: 32
+                                                }
                                             }
                                         }
-                                        Component {
-                                            id: placeholderComponent
-                                            Rectangle {
-                                                color: UI.colors.emptyLogoColor
-                                                width: 32
-                                                height: 32
-                                            }
+                                        Text {
+                                            id: labelId
+                                            text: serviceName
+                                            color: UI.colors.textPrimary
+                                            font.bold: selectedServiceIndex == index
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            verticalAlignment: Text.AlignVCenter
+                                            horizontalAlignment: Text.AlignLeft
                                         }
                                     }
-                                    Text {
-                                        id: labelId
-                                        text: serviceName
-                                        color: UI.colors.textPrimary
-                                        font.bold: selectedServiceIndex == index
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                        horizontalAlignment: Text.AlignLeft
-                                    }
-                                }
-                                MouseArea {
-                                    anchors.fill: parent
-                                    onClicked: {
-                                        epgBackend.slSelectionModel.select(epgBackend.slProxyModel.mapToSource(epgBackend.slProxyModel.index(index, 0)), ItemSelectionModel.Select | ItemSelectionModel.Current);
-                                        epgBackend.slSelectionModel.setCurrentIndex(epgBackend.slProxyModel.mapToSource(epgBackend.slProxyModel.index(index, 0)), ItemSelectionModel.Select | ItemSelectionModel.Current);
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            epgBackend.slSelectionModel.select(epgBackend.slProxyModel.mapToSource(epgBackend.slProxyModel.index(index, 0)), ItemSelectionModel.Select | ItemSelectionModel.Current);
+                                            epgBackend.slSelectionModel.setCurrentIndex(epgBackend.slProxyModel.mapToSource(epgBackend.slProxyModel.index(index, 0)), ItemSelectionModel.Select | ItemSelectionModel.Current);
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    StackLayout {
-                        id: stackLayoutId
-                        anchors.left: serviceColumnId.right
-                        height: serviceColumnId.height
-                        width: mainView.width - serviceColumnId.width
-                        currentIndex: dayTabBar.currentIndex
-                        clip: true
+                        StackLayout {
+                            id: stackLayoutId
+                            anchors.left: serviceColumnId.right
+                            height: serviceColumnId.height
+                            width: mainView.width - serviceColumnId.width
+                            currentIndex: dayTabBar.currentIndex
+                            clip: true
 
-                        Repeater {
-                            id: dateRepeater
-                            model: epgBackend.metadataManager.epgDatesList
-                            Loader {
-                                id: dayLoader
-                                active: dayTabBar.currentIndex == index
-                                sourceComponent: Flickable {
-                                    id: epgTable
-                                    property int dateIndex: index
-                                    property bool needsToSetContentX: true
-                                    contentWidth: colId.width
-                                    contentHeight: colId.height
-                                    boundsBehavior: Flickable.StopAtBounds
-                                    flickableDirection: Flickable.HorizontalFlick
-                                    contentX: timelinebox.contentX
-                                    clip: true
-                                    Column {
-                                        id: colId
-                                        Repeater {
-                                            model: epgBackend.slProxyModel
-                                            Item {
-                                                height: lineHeight
-                                                anchors.left: parent.left
-                                                width: 24 * 3600 * pointsPerSecond
+                            Repeater {
+                                id: dateRepeater
+                                model: epgBackend.metadataManager.epgDatesList
+                                Loader {
+                                    id: dayLoader
+                                    active: dayTabBar.currentIndex == index
+                                    sourceComponent: Flickable {
+                                        id: epgTable
+                                        property int dateIndex: index
+                                        property bool needsToSetContentX: true
+                                        contentWidth: colId.width
+                                        contentHeight: colId.height
+                                        boundsBehavior: Flickable.StopAtBounds
+                                        flickableDirection: Flickable.HorizontalFlick
+                                        contentX: timelinebox.contentX
+                                        clip: true
+                                        Column {
+                                            id: colId
+                                            Repeater {
+                                                model: epgBackend.slProxyModel
+                                                Item {
+                                                    height: lineHeight
+                                                    anchors.left: parent.left
+                                                    width: 24 * 3600 * pointsPerSecond
 
-                                                Rectangle {
-                                                    id: epgForService
-                                                    property bool isCurrentService: selectedServiceIndex == index
+                                                    Rectangle {
+                                                        id: epgForService
+                                                        property bool isCurrentService: selectedServiceIndex == index
 
-                                                    color: "transparent"
-                                                    border.color: UI.colors.divider
-                                                    border.width: 1
-                                                    anchors.fill: parent
-                                                    clip: true
+                                                        color: "transparent"
+                                                        border.color: UI.colors.divider
+                                                        border.width: 1
+                                                        anchors.fill: parent
+                                                        clip: true
 
-                                                    EPGProxyModel {
-                                                        id: proxyModel
-                                                        sourceModel: epgModelRole
-                                                        dateFilter: epgBackend.metadataManager.epgDate(epgTable.dateIndex)
-                                                    }
+                                                        EPGProxyModel {
+                                                            id: proxyModel
+                                                            sourceModel: epgModelRole
+                                                            dateFilter: epgBackend.metadataManager.epgDate(epgTable.dateIndex)
+                                                        }
 
-                                                    Text {
-                                                        anchors.top: parent.top
-                                                        anchors.bottom: parent.bottom
-                                                        verticalAlignment: Text.AlignVCenter
-                                                        x: epgTable.contentX + 5
-                                                        text: qsTr("No program available")
-                                                        color: UI.colors.textDisabled
-                                                        visible: epgItemRepeater.count === 0
-                                                    }
-                                                    Repeater {
-                                                        id: epgItemRepeater
-                                                        model: proxyModel
-                                                        delegate: EPGItem {
-                                                            itemHeight: lineHeight
-                                                            pointsPerSec: pointsPerSecond
-                                                            viewX: epgTable.contentX
-                                                            isSelected: selectedEpgItemIndex.valid && (selectedEpgItemIndex.model === proxyModel.mapToSource(proxyModel.index(index, 0)).model) && (selectedEpgItemIndex.row === proxyModel.mapToSource(proxyModel.index(index, 0)).row)
-                                                            onClicked: {
-                                                                //console.log("clicked")
-                                                                programDetail = (longDescription !== "") ? longDescription : shortDescription;
-                                                                programName = (longName !== "") ? longName : mediumName;
-                                                                programStartToEndTime = startToEndTimeString;
-                                                                scheduleRecEnable = (startTimeSecSinceEpoch > currentTimeSec);
+                                                        Text {
+                                                            anchors.top: parent.top
+                                                            anchors.bottom: parent.bottom
+                                                            verticalAlignment: Text.AlignVCenter
+                                                            x: epgTable.contentX + 5
+                                                            text: qsTr("No program available")
+                                                            color: UI.colors.textDisabled
+                                                            visible: epgItemRepeater.count === 0
+                                                        }
+                                                        Repeater {
+                                                            id: epgItemRepeater
+                                                            model: proxyModel
+                                                            delegate: EPGItem {
+                                                                itemHeight: lineHeight
+                                                                pointsPerSec: pointsPerSecond
+                                                                viewX: epgTable.contentX
+                                                                isSelected: selectedEpgItemIndex.valid && (selectedEpgItemIndex.model === proxyModel.mapToSource(proxyModel.index(index, 0)).model) && (selectedEpgItemIndex.row === proxyModel.mapToSource(proxyModel.index(index, 0)).row)
+                                                                onClicked: {
+                                                                    //console.log("clicked")
+                                                                    programDetail = (longDescription !== "") ? longDescription : shortDescription;
+                                                                    programName = (longName !== "") ? longName : mediumName;
+                                                                    programStartToEndTime = startToEndTimeString;
+                                                                    scheduleRecEnable = (startTimeSecSinceEpoch > currentTimeSec);
 
-                                                                epgBackend.selectedEpgItem = proxyModel.mapToSource(proxyModel.index(index, 0));
-                                                            }
-                                                            Component.onCompleted: {
-                                                                if (selectedEpgItemIndex.valid) {
-                                                                    if ((selectedEpgItemIndex.model === proxyModel.mapToSource(proxyModel.index(index, 0)).model) && (selectedEpgItemIndex.row === proxyModel.mapToSource(proxyModel.index(index, 0)).row)) {
-                                                                        programDetail = (longDescription !== "") ? longDescription : shortDescription;
-                                                                        programName = (longName !== "") ? longName : mediumName;
-                                                                        programStartToEndTime = startToEndTimeString;
-                                                                        scheduleRecEnable = (startTimeSecSinceEpoch > currentTimeSec);
-                                                                        console.log(startTimeSecSinceEpoch, currentTimeSec, scheduleRecEnable);
-                                                                    }
-                                                                } else {
-                                                                    if (epgForService.isCurrentService) {
-                                                                        if ((startTimeSecSinceEpoch <= currentTimeSec) && (endTimeSecSinceEpoch > currentTimeSec)) {   // if it is ongoing programme select it
-                                                                            epgBackend.selectedEpgItem = proxyModel.mapToSource(proxyModel.index(index, 0));
+                                                                    epgBackend.selectedEpgItem = proxyModel.mapToSource(proxyModel.index(index, 0));
+                                                                }
+                                                                Component.onCompleted: {
+                                                                    if (selectedEpgItemIndex.valid) {
+                                                                        if ((selectedEpgItemIndex.model === proxyModel.mapToSource(proxyModel.index(index, 0)).model) && (selectedEpgItemIndex.row === proxyModel.mapToSource(proxyModel.index(index, 0)).row)) {
                                                                             programDetail = (longDescription !== "") ? longDescription : shortDescription;
                                                                             programName = (longName !== "") ? longName : mediumName;
                                                                             programStartToEndTime = startToEndTimeString;
                                                                             scheduleRecEnable = (startTimeSecSinceEpoch > currentTimeSec);
+                                                                            console.log(startTimeSecSinceEpoch, currentTimeSec, scheduleRecEnable);
+                                                                        }
+                                                                    } else {
+                                                                        if (epgForService.isCurrentService) {
+                                                                            if ((startTimeSecSinceEpoch <= currentTimeSec) && (endTimeSecSinceEpoch > currentTimeSec)) {   // if it is ongoing programme select it
+                                                                                epgBackend.selectedEpgItem = proxyModel.mapToSource(proxyModel.index(index, 0));
+                                                                                programDetail = (longDescription !== "") ? longDescription : shortDescription;
+                                                                                programName = (longName !== "") ? longName : mediumName;
+                                                                                programStartToEndTime = startToEndTimeString;
+                                                                                scheduleRecEnable = (startTimeSecSinceEpoch > currentTimeSec);
+                                                                            }
                                                                         }
                                                                     }
                                                                 }
@@ -368,23 +395,23 @@ Rectangle {
                                                 }
                                             }
                                         }
-                                    }
-                                    onWidthChanged: {
-                                        if (needsToSetContentX && (width !== 0)) {
-                                            if (epgBackend.epgTime.isCurrentDate(epgBackend.metadataManager.epgDate(epgTable.dateIndex))) {
-                                                const w = mainItemId.width - serviceListWidth;
-                                                const cX = Math.max(epgBackend.epgTime.secSinceMidnight() * pointsPerSecond - w / 3, 0);
-                                                timelinebox.contentX = Math.min(cX, (3600 * 24) * pointsPerSecond - w);
-                                            } else {
-                                                timelinebox.contentX = 0;
+                                        onWidthChanged: {
+                                            if (needsToSetContentX && (width !== 0)) {
+                                                if (epgBackend.epgTime.isCurrentDate(epgBackend.metadataManager.epgDate(epgTable.dateIndex))) {
+                                                    const w = mainItemId.width - serviceListWidth;
+                                                    const cX = Math.max(epgBackend.epgTime.secSinceMidnight() * pointsPerSecond - w / 3, 0);
+                                                    timelinebox.contentX = Math.min(cX, (3600 * 24) * pointsPerSecond - w);
+                                                } else {
+                                                    timelinebox.contentX = 0;
+                                                }
+                                                needsToSetContentX = false;
                                             }
-                                            needsToSetContentX = false;
                                         }
-                                    }
-                                    onContentXChanged: {
-                                        //console.log(timelinebox.contentX)
-                                        if (timelinebox.contentX != contentX) {
-                                            timelinebox.contentX = contentX;
+                                        onContentXChanged: {
+                                            //console.log(timelinebox.contentX)
+                                            if (timelinebox.contentX != contentX) {
+                                                timelinebox.contentX = contentX;
+                                            }
                                         }
                                     }
                                 }
@@ -392,71 +419,69 @@ Rectangle {
                         }
                     }
                 }
-            }
-            AbracaHorizontalShadow {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: parent.top
-                width: parent.width
-                topDownDirection: true
-                shadowDistance: mainView.contentY
-            }
-            AbracaHorizontalShadow {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.bottom: parent.bottom
-                width: parent.width
-                topDownDirection: false
-                shadowDistance: mainView.contentHeight - mainView.height - mainView.contentY
+                AbracaHorizontalShadow {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    width: parent.width
+                    topDownDirection: true
+                    shadowDistance: mainView.contentY
+                }
+                AbracaHorizontalShadow {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.bottom: parent.bottom
+                    width: parent.width
+                    topDownDirection: false
+                    shadowDistance: mainView.contentHeight - mainView.height - mainView.contentY
+                }
             }
         }
-    }
-    Rectangle {
-        id: progDetails
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.leftMargin: 14
-        anchors.rightMargin: 14
-        anchors.bottomMargin: 14
-        color: "transparent"
-        height: 150
-        ColumnLayout {
-            id: progDetailsLayout
-            anchors.fill: parent
-            spacing: 5
-            RowLayout {
-                Layout.fillWidth: true
-                ColumnLayout {
+        Item {
+            id: progDetails
+            SplitView.fillWidth: true
+            SplitView.preferredHeight: 150
+            SplitView.minimumHeight: 0
+
+            ColumnLayout {
+                id: progDetailsLayout
+                anchors.fill: parent
+                anchors.leftMargin: UI.standardMargin
+                anchors.rightMargin: UI.standardMargin
+                spacing: 5
+                RowLayout {
                     Layout.fillWidth: true
-                    Text {
-                        id: programNameLabel
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        text: programName
-                        font.bold: true
-                        font.pointSize: 16
-                        color: UI.colors.textPrimary
+                        Text {
+                            id: programNameLabel
+                            Layout.fillWidth: true
+                            text: programName
+                            font.bold: true
+                            font.pointSize: 16
+                            color: UI.colors.textPrimary
+                        }
+                        Text {
+                            visible: programStartToEndTime
+                            Layout.fillWidth: true
+                            Layout.bottomMargin: 3
+                            text: programStartToEndTime
+                            verticalAlignment: Text.AlignVCenter
+                            color: UI.colors.textSecondary
+                        }
                     }
-                    Text {
-                        visible: programStartToEndTime
-                        Layout.fillWidth: true
-                        Layout.bottomMargin: 3
-                        text: programStartToEndTime
-                        verticalAlignment: Text.AlignVCenter
-                        color: UI.colors.textSecondary
+                    AbracaButton {
+                        id: scheduleRecButton
+                        Layout.alignment: Qt.AlignTop
+                        text: qsTr("Schedule audio recording")
+                        visible: programStartToEndTime !== "" && scheduleRecEnable
+                        onClicked: epgBackend.scheduleRecording()
                     }
                 }
-                AbracaButton {
-                    id: scheduleRecButton
-                    Layout.alignment: Qt.AlignTop
-                    text: qsTr("Schedule audio recording")
-                    visible: programStartToEndTime !== "" && scheduleRecEnable
-                    onClicked: epgBackend.scheduleRecording()
+                AbracaScrollableText {
+                    id: serviceScrollViewId
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    text: programDetail
                 }
-            }
-            AbracaScrollableText {
-                id: serviceScrollViewId
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                text: programDetail
             }
         }
     }

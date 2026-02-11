@@ -3087,6 +3087,7 @@ void Application::loadSettings()
 
     m_settings->epg.filterEmptyEpg = settings->value("EPG/filterEmpty", false).toBool();
     m_settings->epg.filterEnsemble = settings->value("EPG/filterOtherEnsembles", false).toBool();
+    m_settings->epg.splitterState = settings->value("EPG/layout");
     m_settings->epg.restore = settings->value("EPG/restore", false).toBool();
 
     m_settings->rtlsdr.hwId = settings->value("RTL-SDR/lastDevice");
@@ -3315,6 +3316,7 @@ void Application::saveSettings()
 
     settings->setValue("EPG/filterEmpty", m_settings->epg.filterEmptyEpg);
     settings->setValue("EPG/filterOtherEnsembles", m_settings->epg.filterEnsemble);
+    settings->setValue("EPG/layout", m_settings->epg.splitterState);
     settings->setValue("EPG/restore", m_settings->epg.restore);
 
     settings->setValue("TII/locationSource", static_cast<int>(m_settings->tii.locationSource));

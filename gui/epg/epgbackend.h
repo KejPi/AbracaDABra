@@ -37,8 +37,9 @@
 #include "settings.h"
 #include "slmodel.h"
 #include "slproxymodel.h"
+#include "uicontrolprovider.h"
 
-class EPGBackend : public QObject
+class EPGBackend : public UIControlProvider
 {
     Q_OBJECT
     Q_PROPERTY(SLProxyModel *slProxyModel READ slProxyModel CONSTANT FINAL)
@@ -48,9 +49,11 @@ class EPGBackend : public QObject
     Q_PROPERTY(QPersistentModelIndex selectedEpgItem READ selectedEpgItem WRITE setSelectedEpgItem NOTIFY selectedEpgItemChanged FINAL)
     Q_PROPERTY(bool filterEmptyEpg READ filterEmptyEpg WRITE setFilterEmptyEpg NOTIFY filterEmptyEpgChanged FINAL)
     Q_PROPERTY(bool filterEnsemble READ filterEnsemble WRITE setFilterEnsemble NOTIFY filterEnsembleChanged FINAL)
+    UI_PROPERTY_SETTINGS(QVariant, splitterState, m_settings->epg.splitterState)
 
 public:
-    explicit EPGBackend(SLModel *serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager *metadataManager, Settings *settings, QObject *parent = nullptr);
+    explicit EPGBackend(SLModel *serviceListModel, QItemSelectionModel *slSelectionModel, MetadataManager *metadataManager, Settings *settings,
+                        QObject *parent = nullptr);
     ~EPGBackend();
 
     QPersistentModelIndex selectedEpgItem() const;
