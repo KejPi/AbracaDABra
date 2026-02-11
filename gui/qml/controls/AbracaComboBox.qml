@@ -96,7 +96,7 @@ ComboBox {
         id: popupMenu
         y: control.height + 1
         width: control.width
-        height: Math.min(implicitHeight, control.Window.height - y - control.mapToItem(null, 0, 0).y - (UI.isAndroid ? 0 : UI.controlHeightSmaller))
+        height: (implicitHeight > 5*control.height) ? Math.min(implicitHeight, control.Window.height - y - control.mapToItem(null, 0, 0).y) : implicitHeight
         padding: 1
         contentItem: ListView {
             clip: true
