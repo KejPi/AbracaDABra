@@ -132,13 +132,13 @@ void TIIBackend::onEnsembleInformation(const RadioControlEnsemble &ens)
 
 void TIIBackend::loadSettings()
 {
+    TIIBackend::onSettingsChanged();
     setZoomLevel(m_settings->tii.mapZoom);
     if (m_settings->tii.mapCenter.isValid())
     {
         setMapCenter(m_settings->tii.mapCenter);
     }
     setCenterToCurrentPosition(m_settings->tii.centerMapToCurrentPosition);
-    setShowSpetrumPlot(m_settings->tii.showSpectumPlot);
 }
 
 void TIIBackend::onSettingsChanged()
