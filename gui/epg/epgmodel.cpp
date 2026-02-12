@@ -89,6 +89,8 @@ QVariant EPGModel::data(const QModelIndex &index, int role) const
             return QVariant(item->shortName());
         case StartTimeRole:
             return QVariant(item->startTime());
+        case EndTimeRole:
+            return QVariant(item->endTime());
         case StartTimeStringRole:
             return QVariant(EPGTime::getInstance()->timeLocale().toString(item->startTime(), QString("dddd, dd.MM.yyyy, hh:mm")));
         case StartTimeSecRole:
@@ -140,6 +142,7 @@ QHash<int, QByteArray> EPGModel::roleNames() const
     roles[EPGModelRoles::StartTimeStringRole] = "startTimeString";
     roles[EPGModelRoles::StartTimeSecRole] = "startTimeSec";
     roles[EPGModelRoles::StartTimeSecSinceEpochRole] = "startTimeSecSinceEpoch";
+    roles[EPGModelRoles::EndTimeRole] = "endTime";
     roles[EPGModelRoles::EndTimeSecRole] = "endTimeSec";
     roles[EPGModelRoles::EndTimeStringRole] = "endTimeString";
     roles[EPGModelRoles::EndTimeSecSinceEpochRole] = "endTimeSecSinceEpoch";

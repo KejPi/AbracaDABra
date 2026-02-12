@@ -25,10 +25,9 @@
  */
 
 import QtQuick
-//import Qt5Compat.GraphicalEffects   // required for Qt < 6.5
- import QtQuick.Effects              // not available in Qt < 6.5
+import QtQuick.Effects              // not available in Qt < 6.5
 
-import abracaComponents 1.0
+import abracaComponents
 
 Item {
     id: progItem
@@ -38,6 +37,7 @@ Item {
     property bool isSelected: false
     property int itemHeight: 50
     property int viewX: 0
+    property int dateSecSinceEpoch: 0
 
     property color pastProgColor:  UI.colors.backgroundDark
     property color nextProgColor: UI.colors.backgroundLight
@@ -46,10 +46,17 @@ Item {
     property color borderColor: UI.colors.divider
     property color selectedBorderColor: UI.colors.selectionColor
 
+    // this is to handle case when program starts day before and ends current day, so start time is greater than end time
+    // in this case start time is considered as 0 and duration is reduced by the time before midnight
+    readonly property int startTimeSecInDay: startTimeSecSinceEpoch < dateSecSinceEpoch ? 0 : startTimeSec
+    readonly property int durationSecInDay: startTimeSecSinceEpoch < dateSecSinceEpoch ? (durationSec - (dateSecSinceEpoch - startTimeSecSinceEpoch))
+                                                                    : (endTimeSecSinceEpoch > dateSecSinceEpoch + 24 * 3600 ? (dateSecSinceEpoch + 24 * 3600 - startTimeSecSinceEpoch)
+                                                                                                                            : durationSec)
+
     height: itemHeight
     clip: true
-    width: mouseAreaId.containsMouse ? Math.max(textId.x + textId.width + 5, durationSec * pointsPerSec) : durationSec * pointsPerSec
-    x:  startTimeSec * pointsPerSec
+    width: mouseAreaId.containsMouse ? Math.max(textId.x + textId.width + 5, durationSecInDay * pointsPerSec) : durationSecInDay * pointsPerSec
+    x:  startTimeSecInDay * pointsPerSec
     z: mouseAreaId.containsMouse ? 1000 : index
 
     Rectangle {
@@ -63,7 +70,7 @@ Item {
         border.color: isSelected ? selectedBorderColor : borderColor
         border.width: isSelected ? 2 : 1
         anchors.fill: parent
-        x:  startTimeSec * pointsPerSec
+        x:  startTimeSecInDay * pointsPerSec
 
         Rectangle {
             id: remainingTime
@@ -78,7 +85,7 @@ Item {
                 leftMargin: isSelected ? 2 : 1
             }
             width: mouseAreaId.containsMouse
-                   ? ((currentTimeSec - startTimeSecSinceEpoch) / durationSec) * parent.width - (isSelected ? 2 : 1)
+                   ? ((currentTimeSec - startTimeSecSinceEpoch) / durationSecInDay) * parent.width - (isSelected ? 2 : 1)
                    : ((currentTimeSec - startTimeSecSinceEpoch) * pointsPerSec - 1)
         }
         Text {
@@ -89,8 +96,8 @@ Item {
                 top: parent.top
                 bottom: parent.bottom
             }
-            x: (viewX > startTimeSec * pointsPerSec) && (viewX < (endTimeSec * pointsPerSec + 20))
-                ? (viewX - startTimeSec * pointsPerSec + 5) : (parent.x + 5)
+            x: (viewX > startTimeSecInDay * pointsPerSec) && (viewX < (endTimeSec * pointsPerSec + 20))
+                ? (viewX - startTimeSecInDay * pointsPerSec + 5) : (parent.x + 5)
             text: name
             color: UI.colors.textPrimary
             verticalAlignment: Text.AlignVCenter

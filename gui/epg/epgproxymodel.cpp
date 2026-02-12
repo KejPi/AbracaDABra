@@ -34,8 +34,10 @@ EPGProxyModel::EPGProxyModel(QObject *parent) : QSortFilterProxyModel{parent}
 bool EPGProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
-    QDate date = sourceModel()->data(index, EPGModelRoles::StartTimeRole).value<QDateTime>().date();
-    return date == m_dateFilter;
+    QDate dateStart = sourceModel()->data(index, EPGModelRoles::StartTimeRole).value<QDateTime>().date();
+    QDateTime dateTimeEnd = sourceModel()->data(index, EPGModelRoles::EndTimeRole).value<QDateTime>();
+
+    return dateStart == m_dateFilter || ((dateTimeEnd.date() == m_dateFilter) && (dateTimeEnd.time() > QTime(0, 0, 0)));
 }
 
 QDate EPGProxyModel::dateFilter() const

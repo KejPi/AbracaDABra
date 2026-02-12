@@ -989,9 +989,16 @@ Dot before space example.com... then words (only domain should link, not the dot
 
 void Application::onDabTime(const QDateTime &d)
 {
+#if 1
     m_dabTime = d;
     m_ui->timeLabel(m_timeLocale.toString(d, QString("dddd, dd.MM.yyyy, hh:mm")));
     EPGTime::getInstance()->onDabTime(d);
+#else
+    auto dd = QDateTime::currentDateTime();
+    m_dabTime = dd;
+    m_ui->timeLabel(m_timeLocale.toString(dd, QString("dddd, dd.MM.yyyy, hh:mm")));
+    EPGTime::getInstance()->onDabTime(dd);
+#endif
 }
 
 void Application::resetDabTime()

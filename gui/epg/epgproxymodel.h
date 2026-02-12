@@ -36,6 +36,7 @@ class EPGProxyModel : public QSortFilterProxyModel
     Q_OBJECT
     QML_ELEMENT
     Q_PROPERTY(QDate dateFilter READ dateFilter WRITE setDateFilter NOTIFY dateFilterChanged FINAL)
+    Q_PROPERTY(qint64 dateSecSinceEpoch READ dateSecSinceEpoch CONSTANT FINAL)
 public:
     explicit EPGProxyModel(QObject *parent = nullptr);
 
@@ -43,6 +44,8 @@ public:
 
     QDate dateFilter() const;
     void setDateFilter(const QDate &newDateFilter);
+
+    qint64 dateSecSinceEpoch() const { return m_dateFilter.startOfDay().toSecsSinceEpoch(); }
 
 signals:
     void dateFilterChanged();

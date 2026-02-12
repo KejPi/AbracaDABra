@@ -27,9 +27,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import abracaComponents 1.0
-//import Qt5Compat.GraphicalEffects   // required for Qt < 6.5
-import QtQuick.Effects              // not available in Qt < 6.5
+import abracaComponents
+import QtQuick.Effects
 
 Rectangle {
     id: mainItemId
@@ -360,9 +359,10 @@ Rectangle {
                                                                 itemHeight: lineHeight
                                                                 pointsPerSec: pointsPerSecond
                                                                 viewX: epgTable.contentX
+                                                                dateSecSinceEpoch: proxyModel.dateSecSinceEpoch
                                                                 isSelected: selectedEpgItemIndex.valid && (selectedEpgItemIndex.model === proxyModel.mapToSource(proxyModel.index(index, 0)).model) && (selectedEpgItemIndex.row === proxyModel.mapToSource(proxyModel.index(index, 0)).row)
                                                                 onClicked: {
-                                                                    //console.log("clicked")
+                                                                    // console.log("clicked")
                                                                     programDetail = (longDescription !== "") ? longDescription : shortDescription;
                                                                     programName = (longName !== "") ? longName : mediumName;
                                                                     programStartToEndTime = startToEndTimeString;
@@ -371,13 +371,14 @@ Rectangle {
                                                                     epgBackend.selectedEpgItem = proxyModel.mapToSource(proxyModel.index(index, 0));
                                                                 }
                                                                 Component.onCompleted: {
+                                                                    // console.log(startToEndTimeString)
                                                                     if (selectedEpgItemIndex.valid) {
                                                                         if ((selectedEpgItemIndex.model === proxyModel.mapToSource(proxyModel.index(index, 0)).model) && (selectedEpgItemIndex.row === proxyModel.mapToSource(proxyModel.index(index, 0)).row)) {
                                                                             programDetail = (longDescription !== "") ? longDescription : shortDescription;
                                                                             programName = (longName !== "") ? longName : mediumName;
                                                                             programStartToEndTime = startToEndTimeString;
                                                                             scheduleRecEnable = (startTimeSecSinceEpoch > currentTimeSec);
-                                                                            console.log(startTimeSecSinceEpoch, currentTimeSec, scheduleRecEnable);
+                                                                            // console.log(startTimeSecSinceEpoch, currentTimeSec, scheduleRecEnable);
                                                                         }
                                                                     } else {
                                                                         if (epgForService.isCurrentService) {
