@@ -121,7 +121,7 @@ ComboBox {
         required property int index
 
         width: control.width - 2
-        // height: control.height
+        height: control.height
         contentItem: AbracaLabel {
             text: delegate.model[control.textRole]
             elide: control.elideMode
