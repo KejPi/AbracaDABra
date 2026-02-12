@@ -4369,12 +4369,12 @@ void ApplicationUI::setupDarkMode(bool isDarkMode)
         m_colors[ButtonNeutralClicked] = QColor(0xd4d6d8).darker(120);
         m_colors[ButtonPositiveClicked] = QColor("lightgreen").darker(120);
         m_colors[ButtonNegativeClicked] = QColor(0xE6543D).darker(120);
-        m_colors[TextPrimary] = QColor("black");
+        m_colors[TextPrimary] = QColor(0x26282a);
         m_colors[TextSecondary] = QColor(0x637381);
         m_colors[TextDisabled] = QColor(0x919eab);
         m_colors[TextSelected] = QColor("white");
         m_colors[Link] = QColor(0x1976D2);
-        m_colors[Icon] = QColor("black");
+        m_colors[Icon] = QColor(0x26282a);
         m_colors[IconInactive] = QColor(0x637381);
         m_colors[IconDisabled] = QColor(0x919eab);
         m_colors[InputBackground] = QColor("white");
