@@ -33,8 +33,8 @@ UndockablePage {
     pageId: "dabSignalPage"
     title: qsTr("DAB Signal")
 
-    minWidth: 800
-    minHeight: 480
+    minWidth: 720
+    minHeight: 400
 
     content: DabSignalView {
         id: dabSignalView
