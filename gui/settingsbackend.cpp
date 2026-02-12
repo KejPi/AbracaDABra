@@ -1307,7 +1307,7 @@ QString SettingsBackend::getDisplayPath(const QString &uriPath) const
 
     return displayPath;
 #else
-    return uriPath;
+    return QDir::toNativeSeparators(uriPath);
 #endif
 }
 
