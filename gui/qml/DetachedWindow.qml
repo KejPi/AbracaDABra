@@ -45,6 +45,7 @@ Window {
     title: windowTitle
 
     flags: Qt.Window // | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint
+    transientParent: null
 
     onIsPageEnabledChanged: {
         if (isPageEnabled === false) { close() }
