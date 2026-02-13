@@ -102,6 +102,7 @@ Item {
             source: pageIsUndocked ? UI.imagesUrl +  "icon-dock.svg" : UI.imagesUrl + "icon-undock.svg"
             iconSize: UI.controlHeight
             colorizationColor: UI.colors.iconInactive
+            toolTipText: pageIsUndocked ? qsTr("Dock page back to main window") : qsTr("Undock page to separate window")
         }
 
     }
