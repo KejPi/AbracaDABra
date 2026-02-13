@@ -167,6 +167,13 @@ private:
     void storeEnsembleData(const RadioControlTIIData &tiiData, const QString &conf, const QString &csvConf);
     void handleContextMenuAction(int actionId, const QVariant &data);
     ContextMenuModel *m_contextMenuModel = nullptr;
+
+    // Real-time CSV auto-save
+    QFile *m_autoSaveFile = nullptr;
+    int m_autoSaveExportRole = 0;
+    void startAutoSaveCsv();
+    void appendAutoSaveRows(int firstRow, int lastRow);
+    void stopAutoSaveCsv();
 };
 
 class ChannelSelectionModel : public QAbstractListModel

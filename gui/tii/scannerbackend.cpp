@@ -69,6 +69,8 @@ ScannerBackend::ScannerBackend(Settings *settings, QObject *parent) : TxMapBacke
 
 ScannerBackend::~ScannerBackend()
 {
+    stopAutoSaveCsv();
+
     delete m_channelSelectionModel;
     delete m_messageBoxBackend;
     if (nullptr != m_timer)
@@ -127,11 +129,7 @@ void ScannerBackend::stopScan()
         m_isTiiActive = false;
     }
 
-    if (m_settings->scanner.autoSave)
-    {  // auto save log
-        const QString fileName = QString("%1_scan.csv").arg(m_scanStartTime.toString("yyyy-MM-dd_hhmmss"));
-        saveToFile(fileName);
-    }
+    stopAutoSaveCsv();
 
     if (m_exitRequested)
     {
@@ -405,6 +403,98 @@ void ScannerBackend::saveToFile(const QString &fileName)
     }
 }
 
+void ScannerBackend::startAutoSaveCsv()
+{
+    stopAutoSaveCsv();  // close any previously open file
+
+    const QString fileName = QString("%1.csv").arg(m_scanStartTime.toString("yyyy-MM-dd_hhmmss"));
+
+    // Ensure path exists and writable
+    const QString basePath = AndroidFileHelper::buildSubdirPath(m_settings->dataStoragePath, SCANNER_DIR_NAME);
+    if (!AndroidFileHelper::mkpath(basePath))
+    {
+        qCWarning(scanner) << "Failed to create export directory:" << AndroidFileHelper::lastError();
+        return;
+    }
+
+    if (AndroidFileHelper::isContentUri(basePath))
+    {
+        // No additional subdir, just ensure trailing encoding handled
+        if (!AndroidFileHelper::hasWritePermission(basePath))
+        {
+            qCWarning(scanner) << "No permission to write to:" << basePath;
+            return;
+        }
+    }
+
+    m_autoSaveFile = AndroidFileHelper::openFileForWriting(basePath, fileName);
+    if (m_autoSaveFile == nullptr)
+    {
+        qCWarning(scanner) << "Failed to open auto-save file:" << AndroidFileHelper::lastError();
+        return;
+    }
+
+    m_autoSaveExportRole =
+        m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTC : TxTableModel::TxTableModelRoles::ExportRole;
+
+    // Write header
+    QTextStream out(m_autoSaveFile);
+    for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
+    {
+        out << m_model->headerData(col, Qt::Horizontal, m_autoSaveExportRole).toString() << ";";
+    }
+    out << m_model->headerData(TxTableModel::NumColsWithoutCoordinates - 1, Qt::Horizontal, m_autoSaveExportRole).toString() << Qt::endl;
+    out.flush();
+    m_autoSaveFile->flush();
+
+    // If model already has rows (clearOnStart == false), write them now
+    if (m_model->rowCount() > 0)
+    {
+        appendAutoSaveRows(0, m_model->rowCount() - 1);
+    }
+
+    qCInfo(scanner) << "Auto-save CSV started:" << fileName;
+}
+
+void ScannerBackend::appendAutoSaveRows(int firstRow, int lastRow)
+{
+    if (m_autoSaveFile == nullptr || !m_autoSaveFile->isOpen())
+    {
+        return;
+    }
+
+    QTextStream out(m_autoSaveFile);
+    for (int row = firstRow; row <= lastRow; ++row)
+    {
+        if (m_settings->scanner.hideLocalTx && m_model->data(m_model->index(row, 0), TxTableModel::IsLocalRole).toBool())
+        {  // do not export local TX if local filter is set
+            continue;
+        }
+
+        for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
+        {
+            out << m_model->data(m_model->index(row, col), m_autoSaveExportRole).toString() << ";";
+        }
+        out << m_model->data(m_model->index(row, TxTableModel::NumColsWithoutCoordinates - 1), m_autoSaveExportRole).toString() << Qt::endl;
+    }
+    out.flush();
+    m_autoSaveFile->flush();
+}
+
+void ScannerBackend::stopAutoSaveCsv()
+{
+    if (m_autoSaveFile != nullptr)
+    {
+        if (m_autoSaveFile->isOpen())
+        {
+            m_autoSaveFile->close();
+            qCInfo(scanner) << "Auto-save CSV closed:" << m_autoSaveFile->fileName();
+        }
+        delete m_autoSaveFile;
+        m_autoSaveFile = nullptr;
+    }
+}
+
 void ScannerBackend::startScan()
 {
     isScanning(true);
@@ -426,6 +516,11 @@ void ScannerBackend::startScan()
         m_timer = new QTimer(this);
         m_timer->setSingleShot(true);
         connect(m_timer, &QTimer::timeout, this, &ScannerBackend::scanStep);
+    }
+
+    if (m_settings->scanner.autoSave)
+    {
+        startAutoSaveCsv();
     }
 
     m_state = ScannerState::Init;
@@ -625,8 +720,16 @@ void ScannerBackend::storeEnsembleData(const RadioControlTIIData &tiiData, const
 {
     qCDebug(scanner) << "Storing results @" << m_frequency;
 
+    int firstNewRow = m_model->rowCount();
+
     m_model->appendEnsData(QDateTime::currentDateTime(), tiiData.idList, ServiceListId(m_ensemble), m_ensemble.label, conf, csvConf,
                            m_numServicesFound, m_snr / m_snrCntr);
+
+    int lastNewRow = m_model->rowCount() - 1;
+    if (m_autoSaveFile != nullptr && lastNewRow >= firstNewRow)
+    {
+        appendAutoSaveRows(firstNewRow, lastNewRow);
+    }
 
     if (m_isTiiActive && m_numSelectedChannels > 1)
     {
@@ -781,6 +884,7 @@ void ScannerBackend::onInputDeviceError(const InputDevice::ErrorCode)
             m_timer->stop();
         }
         stopScan();
+        stopAutoSaveCsv();
         scanningLabel(tr("Scanning failed"));
     }
 }
