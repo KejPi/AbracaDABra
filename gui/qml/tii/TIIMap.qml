@@ -36,6 +36,9 @@ Item {
     property var backend: undefined
     property bool dragEnabled: true
     property bool showTable: true
+
+    readonly property int buttonsSize: UI.isAndroid ? UI.controlHeight : UI.controlHeight - 4
+
     Plugin {
         id: mapPlugin
         name: "osm"
@@ -166,7 +169,7 @@ Item {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.rightMargin: 10
-            anchors.bottomMargin: 25
+            anchors.bottomMargin: UI.isMobile ? 25 : 10
             visible: backend.ensembleInfo[0] !== ""
             z: 3
             // Behavior on width {
@@ -240,8 +243,8 @@ Item {
             }
             Item {
                 id: centerPosition
-                Layout.preferredWidth: UI.controlHeight
-                Layout.preferredHeight: UI.controlHeight
+                Layout.preferredWidth: mainItem.buttonsSize
+                Layout.preferredHeight: mainItem.buttonsSize
                 Rectangle {
                     anchors.fill: parent
                     radius: UI.controlRadius
@@ -316,8 +319,8 @@ Item {
             Item {
                 id: plus
                 visible: UI.isDesktop
-                Layout.preferredWidth: UI.controlHeight
-                Layout.preferredHeight: UI.controlHeight
+                Layout.preferredWidth: mainItem.buttonsSize
+                Layout.preferredHeight: mainItem.buttonsSize
                 Rectangle {
                     anchors.fill: parent
                     radius: UI.controlRadius
@@ -348,8 +351,8 @@ Item {
             Item {
                 id: minus
                 visible: UI.isDesktop
-                Layout.preferredWidth: UI.controlHeight
-                Layout.preferredHeight: UI.controlHeight
+                Layout.preferredWidth: mainItem.buttonsSize
+                Layout.preferredHeight: mainItem.buttonsSize
                 Rectangle {
                     radius: UI.controlRadius
                     anchors.fill: parent
@@ -374,8 +377,8 @@ Item {
             Item {
                 id: logButtonItem
                 readonly property int spacing: 7
-                Layout.preferredHeight: UI.controlHeight
-                Layout.preferredWidth: Math.max(logText.width + recSymbol.width + 2*spacing + (logText.visible ? spacing : 0), UI.controlHeight)
+                Layout.preferredHeight: mainItem.buttonsSize
+                Layout.preferredWidth: Math.max(logText.width + recSymbol.width + 2*spacing + (logText.visible ? spacing : 0), mainItem.buttonsSize)
                 visible: backend.isTii
                 Rectangle {
                     id: logButton
@@ -400,12 +403,12 @@ Item {
                 Rectangle {
                     id: recSymbol
                     color: backend.isRecordingLog ? "#ff4b4b" : logMouseArea.containsMouse ? "black" : "#707070"
-                    height: UI.controlHeight / 2
+                    height: mainItem.buttonsSize / 2
                     width: height
                     radius: 50
                     anchors.verticalCenter: logButton.verticalCenter
                     anchors.left: logButton.left
-                    anchors.leftMargin: (UI.controlHeight- height) / 2
+                    anchors.leftMargin: (mainItem.buttonsSize- height) / 2
                     SequentialAnimation on opacity {
                         loops: Animation.Infinite
                         PropertyAnimation { from: 1.0; to: 0.5; duration: 1000 }

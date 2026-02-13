@@ -75,7 +75,7 @@ Item {
                 backend: tiiBackend
                 SplitView.fillWidth: true
                 SplitView.fillHeight: true
-                SplitView.minimumHeight: 300
+                SplitView.minimumHeight: 250
             }
             ChartView {
                 id: tiiSpectrumView

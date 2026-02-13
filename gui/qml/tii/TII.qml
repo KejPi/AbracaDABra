@@ -33,8 +33,8 @@ UndockablePage {
     pageId: "tiiPage"
     title: qsTr("TII")
 
-    minWidth: 640
-    minHeight: 480
+    minWidth: 600
+    minHeight: 400
 
     content: TIIView {
         id: mapView
