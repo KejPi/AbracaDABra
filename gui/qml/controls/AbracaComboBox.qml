@@ -38,6 +38,20 @@ ComboBox {
     editable: false
     property int elideMode: Text.ElideRight
 
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.NoButton
+        enabled: !control.popup.opened
+        onWheel: (event) => {
+            let newIndex = control.currentIndex;
+            if (event.angleDelta.y > 0) {
+                decrementCurrentIndex();
+            } else if (event.angleDelta.y < 0) {
+                incrementCurrentIndex();
+            }
+        }
+    }
+
     indicator: AbracaColorizedImage {
         id: indicatorImage
         source: UI.imagesUrl + "chevron-down.svg"
