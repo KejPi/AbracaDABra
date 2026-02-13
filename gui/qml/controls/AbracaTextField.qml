@@ -45,7 +45,7 @@ TextField {
 
     background: Rectangle {
         implicitWidth: 100
-        implicitHeight: 40
+        implicitHeight: UI.controlHeight
         color: UI.colors.inputBackground
         border.color: control.enabled && (control.hovered || control.activeFocus) ? UI.colors.accent : UI.colors.inactive
         border.width: 1
