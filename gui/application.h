@@ -209,6 +209,7 @@ public:
     UI_PROPERTY(QString, messageInfoTitle)
     UI_PROPERTY(QString, messageInfoDetails)
     UI_PROPERTY_DEFAULT(bool, isSystemDarkMode, false)
+    UI_PROPERTY_DEFAULT(bool, isCompact, false)
 
     QString fixedFontFamily() const { return QFontDatabase::systemFont(QFontDatabase::FixedFont).family(); }
     QList<QColor> colors() const { return m_colors; }

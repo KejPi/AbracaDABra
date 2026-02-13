@@ -28,12 +28,12 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import abracaComponents 1.0
+import abracaComponents
 
 Item {
     id: mainItem
     property bool isPortrait: appUI.isPortraitView
-    property int itemHeight: 32 + 2 * UI.standardMargin
+    property int itemHeight: appUI.isCompact ? UI.controlHeight : 32 + 2 * UI.standardMargin
     property int listWidth: minWidth
 
     readonly property int minWidth: channelCombo.width + channelUpDownRow.width
@@ -286,7 +286,7 @@ Item {
 
             text: serviceName
 
-            topPadding: (itemHeight - 32) / 2
+            topPadding: appUI.isCompact ? 0 : (itemHeight - 32) / 2
             leftPadding: topPadding
             rightPadding: 0 // topPadding
             bottomPadding: topPadding
@@ -295,34 +295,52 @@ Item {
                 id: contentItem
                 width: parent.width - leftPadding - rightPadding
                 height: parent.height - topPadding - bottomPadding
-                AbracaColorizedImage {
-                    id: logoImage
-                    width: 32
-                    height: 32
-                    anchors.verticalCenter: contentItem.verticalCenter
-                    source: smallLogoId !== 0 ? "image://metadata/logo/" + smallLogoId : UI.imagesUrl + "icon-service.svg"
-                    cache: false
-                    colorizationEnabled: smallLogoId === 0
-                    colorizationColor: UI.colors.disabled
+                // Normal view
+                Item {
+                    id: normalViewItem
+                    visible: !appUI.isCompact
+                    anchors.fill: parent
+
+                    AbracaColorizedImage {
+                        id: logoImage
+                        width: 32
+                        height: 32
+                        anchors.verticalCenter: normalViewItem.verticalCenter
+                        source: smallLogoId !== 0 ? "image://metadata/logo/" + smallLogoId : UI.imagesUrl + "icon-service.svg"
+                        cache: false
+                        colorizationEnabled: smallLogoId === 0
+                        colorizationColor: UI.colors.disabled
+                    }
+                    Column {
+                        anchors.verticalCenter: normalViewItem.verticalCenter
+                        // anchors.left: favoriteIcon.right
+                        anchors.left: logoImage.right
+                        anchors.leftMargin: UI.standardMargin
+                        spacing: 2
+                        AbracaLabel {
+                            text: serviceName
+                            font.bold: isSelectedItem
+                            color: isSelectedItem ? UI.colors.listItemSelected : UI.colors.textPrimary
+                        }
+                        AbracaLabel {
+                            text: "SID: " + sidHex
+                            role: UI.LabelRole.Secondary
+                        }
+                    }
                 }
-                Column {
+                // Slim view
+                AbracaLabel {
+                    id: slimLabel
+                    visible: appUI.isCompact
                     anchors.verticalCenter: contentItem.verticalCenter
-                    // anchors.left: favoriteIcon.right
-                    anchors.left: logoImage.right
+                    anchors.left: contentItem.left
                     anchors.leftMargin: UI.standardMargin
-                    spacing: 2
-                    AbracaLabel {
-                        text: serviceName
-                        font.bold: isSelectedItem
-                        //font.weight: highlighted ? Font.Bold : Font.Medium
-                        color: isSelectedItem ? UI.colors.listItemSelected : UI.colors.textPrimary
-                    }
-                    AbracaLabel {
-                        text: "SID: " + sidHex
-                        role: UI.LabelRole.Secondary
-                        //role: highlighted ? UI.LabelRole.Primary : UI.LabelRole.Secondary
-                    }
+                    text: serviceName
+                    font.bold: isSelectedItem
+                    color: isSelectedItem ? UI.colors.listItemSelected : UI.colors.textPrimary
                 }
+
+                // Shared favorite button (used by both views)
                 AbracaImgButton {
                     id: favoriteIcon
                     anchors.verticalCenter: contentItem.verticalCenter

@@ -182,6 +182,7 @@ public:
     bool showSystemTime;
     bool showEnsFlag;
     bool showServiceFlag;
+    bool compactUi;
     QString dataStoragePath;
 
     struct

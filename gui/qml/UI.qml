@@ -62,7 +62,7 @@ QtObject {
     readonly property bool isMobile: isAndroid && (Math.min(Screen.width, Screen.height) < narrowViewWidth)
 
     readonly property int standardMargin: 8
-    readonly property int controlHeight: isAndroid ? 40 : 32
+    readonly property int controlHeight: isAndroid ? 40 : (appUI.isCompact ? 28 : 32)
     readonly property int controlHeightSmaller: isAndroid ? 30 : 24
     readonly property int controlHeightSmall: isAndroid ? 20 : 16
     readonly property int controlWidth: 100

@@ -266,6 +266,7 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     connect(m_settingsBackend, &SettingsBackend::proxySettingsChanged, this, &Application::setProxy);
     connect(m_settingsBackend, &SettingsBackend::spiIconSettingsChanged, this, &Application::onSpiProgressSettingsChanged);
     connect(m_settingsBackend, &SettingsBackend::applicationStyleChanged, this, &Application::setColorTheme);
+    connect(m_settingsBackend, &SettingsBackend::compactUiChanged, this, [this]() { m_ui->isCompact(m_settings->compactUi); });
     connect(m_settingsBackend, &SettingsBackend::restartRequested, this,
             [this]()
             {
@@ -3011,6 +3012,7 @@ void Application::loadSettings()
 #else
     m_settings->trayIconEna = settings->value("showTrayIcon", true).toBool();
 #endif
+    m_settings->compactUi = settings->value("compactUi", false).toBool();
     m_settings->restoreWindows = settings->value("restoreWindows", false).toBool();
     m_settings->showSystemTime = settings->value("showSystemTime", false).toBool();
     m_settings->showEnsFlag = settings->value("showEnsembleCountryFlag", false).toBool();
@@ -3309,6 +3311,7 @@ void Application::saveSettings()
     settings->setValue("showEnsembleCountryFlag", m_settings->showEnsFlag);
     settings->setValue("showServiceCountryFlag", m_settings->showServiceFlag);
     settings->setValue("dataStoragePath", m_settings->dataStoragePath);
+    settings->setValue("compactUi", m_settings->compactUi);
 
     settings->setValue("AppWindow/x", m_settings->appWindow.x);
     settings->setValue("AppWindow/y", m_settings->appWindow.y);

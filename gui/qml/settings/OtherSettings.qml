@@ -125,6 +125,18 @@ Item {
                                 }
                                 AbracaSwitch {
                                     Layout.fillWidth: true
+                                    text: qsTr("Compact mode")
+                                    checked: settingsBackend.compactUi
+                                    onCheckedChanged: {
+                                        if (settingsBackend.compactUi !== checked) {
+                                            settingsBackend.compactUi = checked
+                                        }
+                                    }
+                                    wrapMode: Text.WordWrap
+                                    elideMode: Text.ElideNone
+                                }
+                                AbracaSwitch {
+                                    Layout.fillWidth: true
                                     text: qsTr("Dynamic Label Plus (DL+)")
                                     checked: settingsBackend.showDlPlus
                                     onCheckedChanged: {
