@@ -36,9 +36,9 @@ TextField {
     property string defaultText: ""
 
     selectByMouse: true
-    color: UI.colors.textPrimary
-    selectionColor: UI.colors.selectionColor
-    selectedTextColor: UI.colors.textSelected
+    color: control.enabled ? UI.colors.textPrimary : UI.colors.textDisabled
+    selectionColor: control.enabled ? UI.colors.selectionColor : UI.colors.inputBackground
+    selectedTextColor: control.enabled ? UI.colors.textSelected : control.color
     rightPadding: 2*UI.standardMargin + UI.iconSize
 
     readonly property bool iconActive: defaultText.length > 0 ? control.text !== defaultText : control.text.length > 0
