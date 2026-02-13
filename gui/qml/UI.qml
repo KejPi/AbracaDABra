@@ -71,7 +71,7 @@ QtObject {
     readonly property int iconSizeSmall: isAndroid ? 20 : 16
 
     // Navigation buttons
-    readonly property int navigationButtonSize: isAndroid ? 54 : 60
+    readonly property int navigationButtonSize: appUI.isCompact ? (isAndroid ? 48 : 54) : (isAndroid ? 54 : 60)
     readonly property int navigationSmallButtonSize: isAndroid ? 48 : 44
 
     readonly property int smallFontPointSize: Qt.application.font.pointSize - (isWindows ? 1 : 2)
