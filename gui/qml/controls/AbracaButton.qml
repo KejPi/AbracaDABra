@@ -146,7 +146,11 @@ Button {
         mirrored: control.mirrored
         display: control.display
 
-        icon: control.icon
+        //icon: control.icon
+        icon.source: control.iconSource
+        icon.height: UI.iconSize
+        icon.width: UI.iconSize
+        icon.color: control.enabled ? control.textColor : UI.colors.iconDisabled
         text: control.text
 
         font.pointSize: control.font.pointSize
