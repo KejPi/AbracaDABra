@@ -35,6 +35,8 @@ TabButton {
     implicitHeight: UI.controlHeight
     implicitWidth: fontMetrics.boundingRect(control.text).width + 40
 
+    onPressed: forceActiveFocus()
+
     FontMetrics {
         id: fontMetrics
         font: control.font

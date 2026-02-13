@@ -34,6 +34,8 @@ import abracaComponents
 CheckBox {
     id: control
 
+    onPressed: forceActiveFocus()
+
     indicator: Item {
         id: indicatorItem
         implicitWidth: UI.controlHeightSmaller
