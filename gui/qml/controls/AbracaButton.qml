@@ -42,6 +42,8 @@ Button {
 
     hoverEnabled: true
 
+    onPressed: forceActiveFocus()
+
     Keys.onReturnPressed: clicked()
     Keys.onEnterPressed: clicked()
     Keys.onSpacePressed: clicked()

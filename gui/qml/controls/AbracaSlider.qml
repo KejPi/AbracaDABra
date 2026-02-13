@@ -36,6 +36,8 @@ Slider {
     layer.enabled: !control.enabled    // for correct opacity handling
     opacity: control.enabled ? 1.0 : 0.5
 
+    onPressedChanged: if (pressed) { forceActiveFocus(); }
+
     background: Rectangle {
         x: control.leftPadding
         y: control.topPadding + control.availableHeight / 2 - height / 2

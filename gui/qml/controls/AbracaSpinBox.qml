@@ -40,9 +40,11 @@ SpinBox {
         regularExpression: control.numberExtractionRegExp
     }
 
+    up.onPressedChanged: if (up.pressed) { forceActiveFocus(); }
+    down.onPressedChanged: if (down.pressed) { forceActiveFocus(); }
+
     // Hint for numeric input on virtual keyboards.
     inputMethodHints: Qt.ImhDigitsOnly
-
 
     readonly property color buttonIconColor: UI.colors.textSecondary
     readonly property regexp numberExtractionRegExp: /\D*?(-?\d*\.?\d*)\D*$/

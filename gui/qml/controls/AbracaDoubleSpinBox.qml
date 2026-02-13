@@ -56,6 +56,9 @@ SpinBox {
 
     readonly property int decimalFactor: Math.pow(10, decimals)
 
+    up.onPressedChanged: if (up.pressed) { forceActiveFocus(); }
+    down.onPressedChanged: if (down.pressed) { forceActiveFocus(); }
+
     function decimalToInt(decimal) {
         return Math.round(decimal * decimalFactor);
     }

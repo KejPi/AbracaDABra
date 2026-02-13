@@ -42,6 +42,8 @@ Switch {
     // ToolTip
     hoverEnabled: true        
 
+    onPressed: forceActiveFocus()
+
     indicator: Rectangle {
         id: indicatorRect
 
