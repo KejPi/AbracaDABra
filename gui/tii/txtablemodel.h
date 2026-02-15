@@ -73,6 +73,7 @@ public:
         ColSnr,
         ColMainId,
         ColSubId,
+        ColCode,
         ColLevel,
         ColLocation,
         ColPower,

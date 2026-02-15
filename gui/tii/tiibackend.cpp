@@ -96,8 +96,8 @@ void TIIBackend::logTiiData() const
         {
             for (int col = 0; col < lastCol; ++col)
             {
-                if (col != TxTableModel::ColNumServices)
-                {  // num services is not logged
+                if (col != TxTableModel::ColNumServices && col != TxTableModel::ColCode)
+                {  // num services and code is not logged
                     out << m_model->data(m_model->index(row, col), m_exportRole).toString() << ";";
                 }
             }
@@ -188,18 +188,21 @@ void TIIBackend::onSelectedRowChanged()
     {
         m_txInfo.append(QString("<b>%1</b>").arg(item.transmitterData().location()));
         QGeoCoordinate coord = QGeoCoordinate(item.transmitterData().coordinates().latitude(), item.transmitterData().coordinates().longitude());
-        m_txInfo.append(QString("GPS: <b>%1</b>").arg(coord.toString(QGeoCoordinate::DegreesWithHemisphere)));
+        m_txInfo.append(QString(tr("ERP: <b>%1 kW</b>")).arg(static_cast<double>(item.transmitterData().power()), 3, 'f', 1));
         float alt = item.transmitterData().coordinates().altitude();
         if (alt)
         {
-            m_txInfo.append(QString(tr("Altitude: <b>%1 m</b>")).arg(static_cast<int>(alt)));
+            int antHeight = item.transmitterData().antHeight();
+            if (antHeight)
+            {
+                m_txInfo.append(QString(tr("Altitude: <b>%1 m</b> + <b>%2 m</b>")).arg(static_cast<int>(alt)).arg(static_cast<int>(antHeight)));
+            }
+            else
+            {
+                m_txInfo.append(QString(tr("Altitude: <b>%1 m</b>")).arg(static_cast<int>(alt)));
+            }
         }
-        int antHeight = item.transmitterData().antHeight();
-        if (antHeight)
-        {
-            m_txInfo.append(QString(tr("Antenna height: <b>%1 m</b>")).arg(static_cast<int>(antHeight)));
-        }
-        m_txInfo.append(QString(tr("ERP: <b>%1 kW</b>")).arg(static_cast<double>(item.transmitterData().power()), 3, 'f', 1));
+        m_txInfo.append(QString("GPS: <b>%1</b>").arg(coord.toString(QGeoCoordinate::DegreesWithHemisphere)));
     }
     emit txInfoChanged();
     updateTiiPlot();
@@ -251,8 +254,8 @@ void TIIBackend::startStopLog()
             int lastCol = m_exportCoordinates ? (TxTableModel::NumCols - 1) : (TxTableModel::NumColsWithoutCoordinates - 1);
             for (int col = 0; col < lastCol; ++col)
             {
-                if (col != TxTableModel::ColNumServices)
-                {  // num services is not logged
+                if (col != TxTableModel::ColNumServices && col != TxTableModel::ColCode)
+                {  // num services and code is not logged
                     out << m_model->headerData(col, Qt::Horizontal, m_exportRole).toString() << ";";
                 }
             }

@@ -48,6 +48,7 @@ protected:
     bool m_filterCols = true;
     bool m_filterInactiveTx = true;
     bool m_filterLocalTx = false;
+    // QList<int> m_sortColumns = {};  // this si list of columns used for sorting
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
     bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const override;
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;

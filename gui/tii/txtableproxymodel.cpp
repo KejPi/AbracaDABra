@@ -85,6 +85,16 @@ bool TxTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &rig
                 return itemL.rxTime() < itemR.rxTime();
             }
             return itemL.subId() < itemR.subId();
+        case TxTableModel::ColCode:
+            if (itemL.mainId() == itemR.mainId())
+            {
+                if (!m_filterCols && (itemL.subId() == itemR.subId()))
+                {
+                    return itemL.rxTime() < itemR.rxTime();
+                }
+                return itemL.subId() < itemR.subId();
+            }
+            return itemL.mainId() < itemR.mainId();
         case TxTableModel::ColLevel:
             if (!m_filterCols && (itemL.level() == itemR.level()))
             {
@@ -156,13 +166,15 @@ bool TxTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex
 
     if (!m_filterCols)
     {  // we do not display coordinates, these are only used for export to CSV
-        return source_column < TxTableModel::NumColsWithoutCoordinates;
+        // we do not display code in scanner mode
+        return source_column < TxTableModel::NumColsWithoutCoordinates && source_column != TxTableModel::ColCode;
     }
 
     switch (source_column)
     {
-        case TxTableModel::ColMainId:
-        case TxTableModel::ColSubId:
+        case TxTableModel::ColCode:
+        // case TxTableModel::ColMainId:
+        // case TxTableModel::ColSubId:
         case TxTableModel::ColLevel:
         case TxTableModel::ColDist:
         case TxTableModel::ColAzimuth:

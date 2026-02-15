@@ -120,6 +120,8 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
                     return (item.mainId() != -1) ? QString::number(item.mainId()) : "";
                 case ColSubId:
                     return (item.subId() != -1) ? QString::number(item.subId()) : "";
+                case ColCode:
+                    return (item.mainId() != -1 && item.subId() != -1) ? QString("%1-%2").arg(item.mainId()).arg(item.subId()) : "";
                 case ColLevel:
                     if (item.isActive() == false)
                     {
@@ -329,6 +331,8 @@ QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int 
                     return tr("Main");
                 case ColSubId:
                     return tr("Sub");
+                case ColCode:
+                    return tr("Code");
                 case ColLevel:
                     return tr("Level");
                 case ColLocation:

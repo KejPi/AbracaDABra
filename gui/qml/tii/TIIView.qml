@@ -227,7 +227,7 @@ Item {
                         model: tiiBackend.tableModel
                         selectionModel: tiiBackend.tableSelectionModel
                         sortingEnabled: true
-                        sortIndicatorColumn: 2
+                        sortIndicatorColumn: 1
                         sortIndicatorOrder: Qt.DescendingOrder
                         visible: height > 90
                         width: SwipeView.view.width

@@ -72,7 +72,7 @@ Item {
         anchors.top: parent.top
         syncView: tiiTableView
         clip: true
-        property int sortIndicatorColumn: 2
+        property int sortIndicatorColumn: 1
         property int sortIndicatorOrder: Qt.DescendingOrder
         Component.onCompleted: {
             if (isVisible) {

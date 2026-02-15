@@ -79,7 +79,7 @@ Item {
                                                                             + startStopButton.implicitWidth
                                                                             + menuButton.implicitWidth
                                                                             + channelSelectButton.implicitWidth
-                                                                            + 270 /*signal state, label, margins and spacings*/)
+                                                                            + 290 /*signal state, label, margins and spacings*/)
 
             // dynamic menu creation
             Component {

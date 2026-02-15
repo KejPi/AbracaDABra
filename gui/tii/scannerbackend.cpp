@@ -354,7 +354,10 @@ void ScannerBackend::saveToFile(const QString &fileName)
     // Header
     for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
     {
-        out << m_model->headerData(col, Qt::Horizontal, exportRole).toString() << ";";
+        if (col != TxTableModel::ColCode)  // code is not exported
+        {
+            out << m_model->headerData(col, Qt::Horizontal, exportRole).toString() << ";";
+        }
     }
     out << m_model->headerData(TxTableModel::NumColsWithoutCoordinates - 1, Qt::Horizontal, exportRole).toString() << Qt::endl;
 
@@ -368,7 +371,10 @@ void ScannerBackend::saveToFile(const QString &fileName)
 
         for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
         {
-            out << m_model->data(m_model->index(row, col), exportRole).toString() << ";";
+            if (col != TxTableModel::ColCode)
+            {  // code is not exported
+                out << m_model->data(m_model->index(row, col), exportRole).toString() << ";";
+            }
         }
         out << m_model->data(m_model->index(row, TxTableModel::NumColsWithoutCoordinates - 1), exportRole).toString() << Qt::endl;
     }
@@ -441,7 +447,10 @@ void ScannerBackend::startAutoSaveCsv()
     QTextStream out(m_autoSaveFile);
     for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
     {
-        out << m_model->headerData(col, Qt::Horizontal, m_autoSaveExportRole).toString() << ";";
+        if (col != TxTableModel::ColCode)  // code is not exported
+        {
+            out << m_model->headerData(col, Qt::Horizontal, m_autoSaveExportRole).toString() << ";";
+        }
     }
     out << m_model->headerData(TxTableModel::NumColsWithoutCoordinates - 1, Qt::Horizontal, m_autoSaveExportRole).toString() << Qt::endl;
     out.flush();
@@ -473,7 +482,10 @@ void ScannerBackend::appendAutoSaveRows(int firstRow, int lastRow)
 
         for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
         {
-            out << m_model->data(m_model->index(row, col), m_autoSaveExportRole).toString() << ";";
+            if (col != TxTableModel::ColCode)  // code is not exported
+            {
+                out << m_model->data(m_model->index(row, col), m_autoSaveExportRole).toString() << ";";
+            }
         }
         out << m_model->data(m_model->index(row, TxTableModel::NumColsWithoutCoordinates - 1), m_autoSaveExportRole).toString() << Qt::endl;
     }
@@ -488,7 +500,6 @@ void ScannerBackend::stopAutoSaveCsv()
         if (m_autoSaveFile->isOpen())
         {
             m_autoSaveFile->close();
-            qCInfo(scanner) << "Auto-save CSV closed:" << m_autoSaveFile->fileName();
         }
         delete m_autoSaveFile;
         m_autoSaveFile = nullptr;
@@ -928,18 +939,21 @@ void ScannerBackend::onSelectedRowChanged()
     {
         m_txInfo.append(QString("<b>%1</b>").arg(item.transmitterData().location()));
         QGeoCoordinate coord = QGeoCoordinate(item.transmitterData().coordinates().latitude(), item.transmitterData().coordinates().longitude());
-        m_txInfo.append(QString("GPS: <b>%1</b>").arg(coord.toString(QGeoCoordinate::DegreesWithHemisphere)));
+        m_txInfo.append(QString(tr("ERP: <b>%1 kW</b>")).arg(static_cast<double>(item.transmitterData().power()), 3, 'f', 1));
         float alt = item.transmitterData().coordinates().altitude();
         if (alt)
         {
-            m_txInfo.append(QString(tr("Altitude: <b>%1 m</b>")).arg(static_cast<int>(alt)));
+            int antHeight = item.transmitterData().antHeight();
+            if (antHeight)
+            {
+                m_txInfo.append(QString(tr("Altitude: <b>%1 m</b> + <b>%2 m</b>")).arg(static_cast<int>(alt)).arg(static_cast<int>(antHeight)));
+            }
+            else
+            {
+                m_txInfo.append(QString(tr("Altitude: <b>%1 m</b>")).arg(static_cast<int>(alt)));
+            }
         }
-        int antHeight = item.transmitterData().antHeight();
-        if (antHeight)
-        {
-            m_txInfo.append(QString(tr("Antenna height: <b>%1 m</b>")).arg(static_cast<int>(antHeight)));
-        }
-        m_txInfo.append(QString(tr("ERP: <b>%1 kW</b>")).arg(static_cast<double>(item.transmitterData().power()), 3, 'f', 1));
+        m_txInfo.append(QString("GPS: <b>%1</b>").arg(coord.toString(QGeoCoordinate::DegreesWithHemisphere)));
     }
     emit txInfoChanged();
 

@@ -248,6 +248,7 @@ QStringList TxMapBackend::ensembleInfo() const
     QStringList info;
     info.append(tr("Ensemble: <b>%1</b>").arg(m_currentEnsemble.label));
     int numTx = m_settings->tii.showInactiveTx ? m_model->rowCount() : m_model->activeCount();
+    info.append(QString(tr("Channel: <b>%1 (%2 kHz)</b>")).arg(DabTables::channelList[m_currentEnsemble.frequency]).arg(m_currentEnsemble.frequency));
     if (m_isTii && numTx > 0)
     {
         info.append(tr("ECC: <b>%1</b> | EID: <b>%2</b> | TX: <b>%3</b>")
@@ -263,7 +264,6 @@ QStringList TxMapBackend::ensembleInfo() const
                         .arg(m_currentEnsemble.eid(), 4, 16, QChar('0'))
                         .toUpper());
     }
-    info.append(QString(tr("Channel: <b>%1 (%2 kHz)</b>")).arg(DabTables::channelList[m_currentEnsemble.frequency]).arg(m_currentEnsemble.frequency));
     return info;
 }
 
