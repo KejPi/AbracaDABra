@@ -125,7 +125,7 @@ Item {
                                 }
                                 AbracaSwitch {
                                     Layout.fillWidth: true
-                                    text: qsTr("Compact mode")
+                                    text: qsTr("Compact view (smaller controls, etc.)")
                                     checked: settingsBackend.compactUi
                                     onCheckedChanged: {
                                         if (settingsBackend.compactUi !== checked) {
