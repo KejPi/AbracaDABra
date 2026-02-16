@@ -88,6 +88,8 @@ private:
     LineChartItem *m_tiiSpectrumPlot = nullptr;
     int m_sSpect = -1;
     int m_sTii = -1;
+
+    TxTableColumnProxyModel *m_columnProxyModel;
 };
 
 #endif  // TIIBACKEND_H

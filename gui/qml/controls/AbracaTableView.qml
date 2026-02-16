@@ -338,11 +338,6 @@ Item {
 
             property int anchorRow: -1
 
-            onContentHeightChanged: {
-                // show/hide vertical scrollbar based on content height
-                console.log("Content height changed: " + contentHeight + ", view height: " + height);
-            }
-
             delegate: Rectangle {
                 required property string display
                 required property bool selected

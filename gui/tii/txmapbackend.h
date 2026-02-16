@@ -53,7 +53,7 @@ class TxMapBackend : public UIControlProvider
     Q_PROPERTY(bool centerToCurrentPosition READ centerToCurrentPosition WRITE setCenterToCurrentPosition NOTIFY centerToCurrentPositionChanged FINAL)
     Q_PROPERTY(float zoomLevel READ zoomLevel WRITE setZoomLevel NOTIFY zoomLevelChanged FINAL)
     Q_PROPERTY(QGeoCoordinate mapCenter READ mapCenter WRITE setMapCenter NOTIFY mapCenterChanged FINAL)
-    Q_PROPERTY(TxTableProxyModel *tableModel READ tableModel CONSTANT FINAL)
+    Q_PROPERTY(QAbstractItemModel *tableModel READ tableModel CONSTANT FINAL)
     Q_PROPERTY(QItemSelectionModel *tableSelectionModel READ tableSelectionModel CONSTANT FINAL)
     Q_PROPERTY(bool showSpetrumPlot READ showSpetrumPlot WRITE setShowSpetrumPlot NOTIFY showSpetrumPlotChanged FINAL)
 
@@ -93,7 +93,7 @@ public:
     bool centerToCurrentPosition() const;
     void setCenterToCurrentPosition(bool centerToCurrentPosition);
 
-    TxTableProxyModel *tableModel() const { return m_sortedFilteredModel; }
+    QAbstractItemModel *tableModel() const { return m_tableModel; }
     QItemSelectionModel *tableSelectionModel() const { return m_tableSelectionModel; }
 
     bool showSpetrumPlot() const { return m_showSpetrumPlot; }
@@ -123,6 +123,7 @@ protected:
     Settings *m_settings;
     TxTableModel *m_model;
     TxTableProxyModel *m_sortedFilteredModel;
+    QAbstractItemModel *m_tableModel;  // exposed model (m_sortedFilteredModel or column proxy on top)
     QItemSelectionModel *m_tableSelectionModel;
 
     // UI
@@ -133,6 +134,8 @@ protected:
     void positionUpdated(const QGeoPositionInfo &position);
     void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void doLocationUpdate(bool en);
+    QModelIndex mapToSourceModel(const QModelIndex &proxyIndex) const;
+    void setupSelectionModel();
 
 private:
     QGeoPositionInfoSource *m_geopositionSource = nullptr;

@@ -28,24 +28,13 @@
 
 #include "txtablemodel.h"
 
+// ========== TxTableProxyModel ==========
+
 TxTableProxyModel::TxTableProxyModel(QObject *parent) : QSortFilterProxyModel(parent)
 {
     connect(this, &QSortFilterProxyModel::rowsInserted, this, &TxTableProxyModel::rowCountChanged);
     connect(this, &QSortFilterProxyModel::rowsRemoved, this, &TxTableProxyModel::rowCountChanged);
     connect(this, &QSortFilterProxyModel::modelReset, this, &TxTableProxyModel::rowCountChanged);
-}
-
-void TxTableProxyModel::setSourceModel(QAbstractItemModel *model)
-{
-    if (sourceModel())
-    {
-        disconnect(sourceModel(), &QAbstractItemModel::dataChanged, this, &TxTableProxyModel::onSourceDataChanged);
-    }
-    QSortFilterProxyModel::setSourceModel(model);
-    if (model)
-    {
-        connect(model, &QAbstractItemModel::dataChanged, this, &TxTableProxyModel::onSourceDataChanged);
-    }
 }
 
 void TxTableProxyModel::setColumnsFilter(bool filterCols)
@@ -75,54 +64,9 @@ void TxTableProxyModel::setLocalTxFilter(bool filterLocalTx)
     }
 }
 
-void TxTableProxyModel::setColumns(const Settings::TIISettings::TxTableSettings &settings)
-{
-    if (m_filterCols == false)
-    {
-        return;
-    }
-    // settings is only applied when columns are filtered by the model => TII table
-    m_columnsSettings = settings;
-
-    // Code and Level are always included
-    QMap<int, int> orderMap;  // order -> source column
-    orderMap.insert(m_columnsSettings.code.order, TxTableModel::ColCode);
-    orderMap.insert(m_columnsSettings.level.order, TxTableModel::ColLevel);
-    if (m_columnsSettings.location.enabled)
-    {
-        orderMap.insert(m_columnsSettings.location.order, TxTableModel::ColLocation);
-    }
-    if (m_columnsSettings.power.enabled)
-    {
-        orderMap.insert(m_columnsSettings.power.order, TxTableModel::ColPower);
-    }
-    if (m_columnsSettings.dist.enabled)
-    {
-        orderMap.insert(m_columnsSettings.dist.order, TxTableModel::ColDist);
-    }
-    if (m_columnsSettings.azimuth.enabled)
-    {
-        orderMap.insert(m_columnsSettings.azimuth.order, TxTableModel::ColAzimuth);
-    }
-
-    QList<int> colOrder = orderMap.values();
-    if (colOrder != m_columnOrder)
-    {
-        beginResetModel();
-        m_columnOrder = colOrder;
-        endResetModel();
-    }
-    invalidateColumnsFilter();
-}
-
 bool TxTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
     int sourceCol = left.column();
-    if (m_filterCols)
-    {
-        int sortCol = sortColumn();
-        sourceCol = sourceColumnForProxyColumn(sortCol);
-    }
 
     TxTableModelItem itemL = sourceModel()->data(left, TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
     TxTableModelItem itemR = sourceModel()->data(right, TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
@@ -230,13 +174,14 @@ bool TxTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex
         return source_column < TxTableModel::NumColsWithoutCoordinates && source_column != TxTableModel::ColCode;
     }
 
-    // When m_filterCols is true, accept ALL source columns.
-    // Column filtering + reordering is handled by columnCount() + mapToSource()/mapFromSource().
+    // When m_filterCols is true (TII mode), accept all columns.
+    // Column filtering and reordering is handled by TxTableColumnProxyModel on top.
     return true;
 }
 
 bool TxTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
 {
+    Q_UNUSED(source_parent);
     QModelIndex idx = sourceModel()->index(source_row, 0);
     if (m_filterLocalTx)
     {  // filter known/local
@@ -254,68 +199,96 @@ bool TxTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &sour
     return true;
 }
 
-int TxTableProxyModel::sourceColumnForProxyColumn(int proxyColumn) const
+// ========== TxTableColumnProxyModel ==========
+
+TxTableColumnProxyModel::TxTableColumnProxyModel(QObject *parent)
+    : QAbstractProxyModel(parent)
 {
-    if (!m_filterCols || proxyColumn < 0 || proxyColumn >= m_columnOrder.size())
-    {
-        return proxyColumn;
-    }
-    return m_columnOrder.at(proxyColumn);
 }
 
-int TxTableProxyModel::proxyColumnForSourceColumn(int sourceColumn) const
+void TxTableColumnProxyModel::setSourceModel(QAbstractItemModel *model)
 {
-    if (!m_filterCols)
+    if (sourceModel())
     {
-        return sourceColumn;
+        disconnect(sourceModel(), nullptr, this, nullptr);
     }
-    return m_columnOrder.indexOf(sourceColumn);
+
+    QAbstractProxyModel::setSourceModel(model);
+
+    if (model)
+    {
+        connect(model, &QAbstractItemModel::dataChanged,
+                this, &TxTableColumnProxyModel::onSourceDataChanged);
+        connect(model, &QAbstractItemModel::rowsAboutToBeInserted,
+                this, &TxTableColumnProxyModel::onSourceRowsAboutToBeInserted);
+        connect(model, &QAbstractItemModel::rowsInserted,
+                this, &TxTableColumnProxyModel::onSourceRowsInserted);
+        connect(model, &QAbstractItemModel::rowsAboutToBeRemoved,
+                this, &TxTableColumnProxyModel::onSourceRowsAboutToBeRemoved);
+        connect(model, &QAbstractItemModel::rowsRemoved,
+                this, &TxTableColumnProxyModel::onSourceRowsRemoved);
+        connect(model, &QAbstractItemModel::modelAboutToBeReset,
+                this, &TxTableColumnProxyModel::onSourceModelAboutToBeReset);
+        connect(model, &QAbstractItemModel::modelReset,
+                this, &TxTableColumnProxyModel::onSourceModelReset);
+        connect(model, &QAbstractItemModel::layoutAboutToBeChanged,
+                this, &TxTableColumnProxyModel::onSourceLayoutAboutToBeChanged);
+        connect(model, &QAbstractItemModel::layoutChanged,
+                this, &TxTableColumnProxyModel::onSourceLayoutChanged);
+    }
 }
 
-QModelIndex TxTableProxyModel::mapToSource(const QModelIndex &proxyIndex) const
+void TxTableColumnProxyModel::setColumns(const Settings::TIISettings::TxTableSettings &settings)
 {
-    if (!proxyIndex.isValid())
+    // Build column order only from enabled columns
+    // Code and Level are always included
+    QMap<int, int> orderMap;  // order -> source column
+    orderMap.insert(settings.code.order, TxTableModel::ColCode);
+    orderMap.insert(settings.level.order, TxTableModel::ColLevel);
+    if (settings.location.enabled)
+    {
+        orderMap.insert(settings.location.order, TxTableModel::ColLocation);
+    }
+    if (settings.power.enabled)
+    {
+        orderMap.insert(settings.power.order, TxTableModel::ColPower);
+    }
+    if (settings.dist.enabled)
+    {
+        orderMap.insert(settings.dist.order, TxTableModel::ColDist);
+    }
+    if (settings.azimuth.enabled)
+    {
+        orderMap.insert(settings.azimuth.order, TxTableModel::ColAzimuth);
+    }
+
+    QList<int> colOrder = orderMap.values();
+    if (colOrder != m_columnOrder)
+    {
+        beginResetModel();
+        m_columnOrder = colOrder;
+        endResetModel();
+    }
+}
+
+QModelIndex TxTableColumnProxyModel::mapToSource(const QModelIndex &proxyIndex) const
+{
+    if (!proxyIndex.isValid() || !sourceModel())
     {
         return QModelIndex();
     }
 
-    if (!m_filterCols)
-    {
-        return QSortFilterProxyModel::mapToSource(proxyIndex);
-    }
-
-    // Create a new proxy index with the remapped column, then let the base class handle row mapping
     int sourceCol = sourceColumnForProxyColumn(proxyIndex.column());
-    QModelIndex remapped = createIndex(proxyIndex.row(), sourceCol, proxyIndex.internalPointer());
-
-    // We need to use the base class but with the remapped column
-    // The base class handles row filtering/sorting, so we map row first then fix column
-    QModelIndex baseMapped = QSortFilterProxyModel::mapToSource(index(proxyIndex.row(), 0, proxyIndex.parent()));
-
-    if (!baseMapped.isValid())
+    if (sourceCol < 0)
     {
         return QModelIndex();
     }
-
-    return sourceModel()->index(baseMapped.row(), sourceCol, baseMapped.parent());
+    return sourceModel()->index(proxyIndex.row(), sourceCol, proxyIndex.parent());
 }
 
-QModelIndex TxTableProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
+QModelIndex TxTableColumnProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
 {
     if (!sourceIndex.isValid())
-    {
-        return QModelIndex();
-    }
-
-    if (!m_filterCols)
-    {
-        return QSortFilterProxyModel::mapFromSource(sourceIndex);
-    }
-
-    // Map row through base class (using column 0 for reliable mapping)
-    QModelIndex baseMapped = QSortFilterProxyModel::mapFromSource(sourceModel()->index(sourceIndex.row(), 0, sourceIndex.parent()));
-
-    if (!baseMapped.isValid())
     {
         return QModelIndex();
     }
@@ -325,50 +298,147 @@ QModelIndex TxTableProxyModel::mapFromSource(const QModelIndex &sourceIndex) con
     {
         return QModelIndex();
     }
-
-    return index(baseMapped.row(), proxyCol, baseMapped.parent());
+    return createIndex(sourceIndex.row(), proxyCol);
 }
 
-int TxTableProxyModel::columnCount(const QModelIndex &parent) const
+int TxTableColumnProxyModel::rowCount(const QModelIndex &parent) const
 {
-    if (m_filterCols)
+    if (!sourceModel())
     {
-        return m_columnOrder.size();
+        return 0;
     }
-    return QSortFilterProxyModel::columnCount(parent);
+    return sourceModel()->rowCount(parent);
 }
 
-QVariant TxTableProxyModel::headerData(int section, Qt::Orientation orientation, int role) const
+int TxTableColumnProxyModel::columnCount(const QModelIndex &parent) const
 {
-    if (orientation == Qt::Horizontal && m_filterCols)
+    Q_UNUSED(parent);
+    return m_columnOrder.size();
+}
+
+QModelIndex TxTableColumnProxyModel::index(int row, int column, const QModelIndex &parent) const
+{
+    Q_UNUSED(parent);
+    if (row < 0 || column < 0 || column >= m_columnOrder.size())
+    {
+        return QModelIndex();
+    }
+    if (!sourceModel() || row >= sourceModel()->rowCount())
+    {
+        return QModelIndex();
+    }
+    return createIndex(row, column);
+}
+
+QModelIndex TxTableColumnProxyModel::parent(const QModelIndex &child) const
+{
+    Q_UNUSED(child);
+    return QModelIndex();  // flat table, no parent
+}
+
+QVariant TxTableColumnProxyModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (!sourceModel())
+    {
+        return QVariant();
+    }
+    if (orientation == Qt::Horizontal)
     {
         int sourceCol = sourceColumnForProxyColumn(section);
+        if (sourceCol < 0)
+        {
+            return QVariant();
+        }
         return sourceModel()->headerData(sourceCol, orientation, role);
     }
-    return QSortFilterProxyModel::headerData(section, orientation, role);
+    return sourceModel()->headerData(section, orientation, role);
 }
 
-void TxTableProxyModel::onSourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QList<int> &roles)
+void TxTableColumnProxyModel::sort(int column, Qt::SortOrder order)
 {
-    if (!m_filterCols)
+    // Map proxy column to source column and delegate sorting to the source (TxTableProxyModel)
+    int sourceCol = sourceColumnForProxyColumn(column);
+    if (sourceCol >= 0 && sourceModel())
     {
-        // Non-reordered mode: the base class handles it
+        sourceModel()->sort(sourceCol, order);
+    }
+}
+
+int TxTableColumnProxyModel::sourceColumnForProxyColumn(int proxyColumn) const
+{
+    if (proxyColumn < 0 || proxyColumn >= m_columnOrder.size())
+    {
+        return -1;
+    }
+    return m_columnOrder.at(proxyColumn);
+}
+
+int TxTableColumnProxyModel::proxyColumnForSourceColumn(int sourceColumn) const
+{
+    return m_columnOrder.indexOf(sourceColumn);
+}
+
+void TxTableColumnProxyModel::onSourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QList<int> &roles)
+{
+    if (m_columnOrder.isEmpty())
+    {
         return;
     }
 
-    // Map source rows to proxy rows
-    QModelIndex proxyTopLeft = mapFromSource(sourceModel()->index(topLeft.row(), 0));
-    QModelIndex proxyBottomRight = mapFromSource(sourceModel()->index(bottomRight.row(), 0));
+    int firstRow = topLeft.row();
+    int lastRow = bottomRight.row();
+    int lastCol = m_columnOrder.size() - 1;
 
-    if (!proxyTopLeft.isValid() || !proxyBottomRight.isValid())
-    {
-        return;
-    }
+    emit dataChanged(createIndex(firstRow, 0), createIndex(lastRow, lastCol), roles);
+}
 
-    // Emit dataChanged for the full proxy column range
-    int firstProxyRow = qMin(proxyTopLeft.row(), proxyBottomRight.row());
-    int lastProxyRow = qMax(proxyTopLeft.row(), proxyBottomRight.row());
-    int lastProxyCol = columnCount() - 1;
+void TxTableColumnProxyModel::onSourceRowsAboutToBeInserted(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+    beginInsertRows(QModelIndex(), first, last);
+}
 
-    emit dataChanged(index(firstProxyRow, 0), index(lastProxyRow, lastProxyCol), roles);
+void TxTableColumnProxyModel::onSourceRowsInserted(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+    Q_UNUSED(first);
+    Q_UNUSED(last);
+    endInsertRows();
+    emit rowCountChanged();
+}
+
+void TxTableColumnProxyModel::onSourceRowsAboutToBeRemoved(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+    beginRemoveRows(QModelIndex(), first, last);
+}
+
+void TxTableColumnProxyModel::onSourceRowsRemoved(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+    Q_UNUSED(first);
+    Q_UNUSED(last);
+    endRemoveRows();
+    emit rowCountChanged();
+}
+
+void TxTableColumnProxyModel::onSourceModelAboutToBeReset()
+{
+    beginResetModel();
+}
+
+void TxTableColumnProxyModel::onSourceModelReset()
+{
+    endResetModel();
+    emit rowCountChanged();
+}
+
+void TxTableColumnProxyModel::onSourceLayoutAboutToBeChanged()
+{
+    emit layoutAboutToBeChanged();
+}
+
+void TxTableColumnProxyModel::onSourceLayoutChanged()
+{
+    emit layoutChanged();
 }

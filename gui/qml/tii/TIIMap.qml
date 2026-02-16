@@ -213,19 +213,6 @@ Item {
                 }
             }
         }
-/*
-        TIITableView {
-            model: backend.tableModel
-            selectionModel: backend.tableSelectionModel
-            isVisible: backend.isTii && showTable
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.rightMargin: (parent.width - width) > width/2 ? 10 : (parent.width - width) / 2
-            anchors.topMargin: 10
-            maxHeight: parent.width > 3*width ? infoBox.y - parent.y - 20 : Math.min(infoBox.y - parent.y - 20, parent.height * 0.4)
-            z: 3
-        }
-*/
         AbracaTableView {
             id: tiiTableView
             model: backend.tableModel

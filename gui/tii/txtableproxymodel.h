@@ -27,6 +27,7 @@
 #ifndef TXTABLEPROXYMODEL_H
 #define TXTABLEPROXYMODEL_H
 
+#include <QAbstractProxyModel>
 #include <QAbstractTableModel>
 #include <QGeoPositionInfo>
 #include <QObject>
@@ -34,21 +35,16 @@
 
 #include "settings.h"
 
+// Row filtering and sorting proxy model (used directly for scanner, and as source for TxTableColumnProxyModel for TII)
 class TxTableProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
     Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
 public:
     TxTableProxyModel(QObject *parent = nullptr);
-    void setSourceModel(QAbstractItemModel *sourceModel) override;
     void setColumnsFilter(bool filterCols);
     void setInactiveTxFilter(bool filterInactiveTx);
     void setLocalTxFilter(bool filterLocalTx);
-    void setColumns(const Settings::TIISettings::TxTableSettings &settings);
-    QModelIndex mapToSource(const QModelIndex &proxyIndex) const override;
-    QModelIndex mapFromSource(const QModelIndex &sourceIndex) const override;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
 signals:
     void rowCountChanged();
@@ -57,17 +53,50 @@ protected:
     bool m_filterCols = true;
     bool m_filterInactiveTx = true;
     bool m_filterLocalTx = false;
-    Settings::TIISettings::TxTableSettings m_columnsSettings;
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
     bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const override;
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
+};
+
+// Column filtering+reordering proxy model (sits on top of TxTableProxyModel for TII table)
+class TxTableColumnProxyModel : public QAbstractProxyModel
+{
+    Q_OBJECT
+    Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
+public:
+    explicit TxTableColumnProxyModel(QObject *parent = nullptr);
+    void setSourceModel(QAbstractItemModel *sourceModel) override;
+    void setColumns(const Settings::TIISettings::TxTableSettings &settings);
+
+    QModelIndex mapToSource(const QModelIndex &proxyIndex) const override;
+    QModelIndex mapFromSource(const QModelIndex &sourceIndex) const override;
+
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
+    QModelIndex parent(const QModelIndex &child) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+
+    Q_INVOKABLE void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
+
+    int sourceColumnForProxyColumn(int proxyColumn) const;
+    int proxyColumnForSourceColumn(int sourceColumn) const;
+
+signals:
+    void rowCountChanged();
 
 private:
     QList<int> m_columnOrder;
 
-    int proxyColumnForSourceColumn(int sourceColumn) const;
-    int sourceColumnForProxyColumn(int proxyColumn) const;
     void onSourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QList<int> &roles);
+    void onSourceRowsAboutToBeInserted(const QModelIndex &parent, int first, int last);
+    void onSourceRowsInserted(const QModelIndex &parent, int first, int last);
+    void onSourceRowsAboutToBeRemoved(const QModelIndex &parent, int first, int last);
+    void onSourceRowsRemoved(const QModelIndex &parent, int first, int last);
+    void onSourceModelAboutToBeReset();
+    void onSourceModelReset();
+    void onSourceLayoutAboutToBeChanged();
+    void onSourceLayoutChanged();
 };
 
 #endif  // TXTABLEPROXYMODEL_H

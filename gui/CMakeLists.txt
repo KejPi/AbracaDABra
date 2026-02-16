@@ -274,7 +274,6 @@ qt_add_qml_module(${TARGET}
         qml/tii/TII.qml
         qml/tii/TIIView.qml
         qml/tii/TIIMap.qml
-        qml/tii/TIITableView.qml
         qml/tii/TransmitterMarker.qml
         qml/tii/Scanner.qml
         qml/tii/ScannerView.qml

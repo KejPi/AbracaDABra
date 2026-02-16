@@ -771,7 +771,7 @@ void ScannerBackend::createContextMenu(int row)
     int isLocal = 0;
     for (auto it = selectedRows.cbegin(); it != selectedRows.cend(); ++it)
     {
-        QModelIndex srcIndex = m_sortedFilteredModel->mapToSource(*it);
+        QModelIndex srcIndex = mapToSourceModel(*it);
         if (srcIndex.isValid())
         {  // local is +1, not local is -1
             isLocal += m_model->data(srcIndex, TxTableModel::IsLocalRole).toBool() ? 1 : -1;
@@ -790,10 +790,10 @@ void ScannerBackend::createContextMenu(int row)
 
 void ScannerBackend::showEnsembleConfig(int row)
 {
-    auto index = m_sortedFilteredModel->index(row, 0);
+    auto index = m_tableModel->index(row, 0);
     if (index.isValid() && m_isPreciseMode)
     {
-        QModelIndex srcIndex = m_sortedFilteredModel->mapToSource(index);
+        QModelIndex srcIndex = mapToSourceModel(index);
         if (srcIndex.isValid())
         {
             emit showEnsembleConfigDialog(srcIndex.row(), m_model->itemAt(srcIndex.row()).ensConfig());
@@ -810,7 +810,7 @@ void ScannerBackend::handleContextMenuAction(int actionId, const QVariant &data)
             auto selectedRows = m_tableSelectionModel->selectedRows();
             for (auto it = selectedRows.cbegin(); it != selectedRows.cend(); ++it)
             {
-                QModelIndex srcIndex = m_sortedFilteredModel->mapToSource(*it);
+                QModelIndex srcIndex = mapToSourceModel(*it);
                 if (srcIndex.isValid())
                 {
                     m_model->setAsLocalTx(srcIndex, data.toBool());

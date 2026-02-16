@@ -43,12 +43,36 @@ TxMapBackend::TxMapBackend(Settings *settings, bool isTii, QObject *parent) : UI
     m_model = new TxTableModel(this);
     m_sortedFilteredModel = new TxTableProxyModel(this);
     m_sortedFilteredModel->setSourceModel(m_model);
-    m_tableSelectionModel = new QItemSelectionModel(m_sortedFilteredModel, this);
+    m_tableModel = m_sortedFilteredModel;
+    m_tableSelectionModel = nullptr;
+    setupSelectionModel();
     m_mapCenter = QGeoCoordinate(50.08804, 14.42076);  // Prague
-    connect(m_tableSelectionModel, &QItemSelectionModel::selectionChanged, this, &TxMapBackend::onSelectionChanged, Qt::QueuedConnection);
     connect(this, &TxMapBackend::selectedRowChanged, this, &TxMapBackend::onSelectedRowChanged);
 
     // qmlRegisterUncreatableType<TxTableModel>("abracaBackend", 1, 0, "TxTableModel", "TxTableModel cannot be instantiated");
+}
+
+void TxMapBackend::setupSelectionModel()
+{
+    if (m_tableSelectionModel)
+    {
+        disconnect(m_tableSelectionModel, &QItemSelectionModel::selectionChanged, this, &TxMapBackend::onSelectionChanged);
+        delete m_tableSelectionModel;
+    }
+    m_tableSelectionModel = new QItemSelectionModel(m_tableModel, this);
+    connect(m_tableSelectionModel, &QItemSelectionModel::selectionChanged, this, &TxMapBackend::onSelectionChanged, Qt::QueuedConnection);
+}
+
+QModelIndex TxMapBackend::mapToSourceModel(const QModelIndex &proxyIndex) const
+{
+    QModelIndex idx = proxyIndex;
+    QAbstractProxyModel *proxy = qobject_cast<QAbstractProxyModel *>(m_tableModel);
+    while (proxy)
+    {
+        idx = proxy->mapToSource(idx);
+        proxy = qobject_cast<QAbstractProxyModel *>(proxy->sourceModel());
+    }
+    return idx;
 }
 
 void TxMapBackend::positionUpdated(const QGeoPositionInfo &position)
@@ -288,7 +312,7 @@ void TxMapBackend::onSelectionChanged(const QItemSelection &selected, const QIte
     QSet<int> selectedTx;
     for (const auto &index : std::as_const(selectedRows))
     {
-        auto srcIdx = m_sortedFilteredModel->mapToSource(index);
+        auto srcIdx = mapToSourceModel(index);
         if (srcIdx.isValid())
         {
             // qDebug() << m_model->data(srcIdx, TxTableModel::TiiRole);
@@ -304,7 +328,7 @@ void TxMapBackend::onSelectionChanged(const QItemSelection &selected, const QIte
     }
 
     QModelIndex currentIndex = selectedRows.at(0);
-    currentIndex = m_sortedFilteredModel->mapToSource(currentIndex);
+    currentIndex = mapToSourceModel(currentIndex);
     setSelectedRow(currentIndex.row());
 }
 
@@ -317,7 +341,7 @@ void TxMapBackend::selectTx(int index)
     }
 
     QModelIndexList selection = m_tableSelectionModel->selectedRows();
-    QModelIndex idx = m_sortedFilteredModel->index(index, 0);
+    QModelIndex idx = m_tableModel->index(index, 0);
     if (idx.isValid() && (selection.isEmpty() || selection.at(0) != idx))
     {
         m_tableSelectionModel->setCurrentIndex(idx, QItemSelectionModel::NoUpdate);  // Set current index

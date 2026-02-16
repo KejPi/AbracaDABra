@@ -41,6 +41,11 @@ Q_LOGGING_CATEGORY(tii, "TII", QtInfoMsg)
 
 TIIBackend::TIIBackend(Settings *settings, QObject *parent) : TxMapBackend(settings, true, parent)
 {
+    m_columnProxyModel = new TxTableColumnProxyModel(this);
+    m_columnProxyModel->setSourceModel(m_sortedFilteredModel);
+    m_tableModel = m_columnProxyModel;
+    setupSelectionModel();
+
     loadSettings();
     connect(this, &TxMapBackend::centerToCurrentPositionChanged, this,
             [this]() { m_settings->tii.centerMapToCurrentPosition = centerToCurrentPosition(); });
@@ -60,7 +65,6 @@ TIIBackend::~TIIBackend()
         m_inactiveCleanupTimer->stop();
         delete m_inactiveCleanupTimer;
     }
-    delete m_sortedFilteredModel;
 }
 
 void TIIBackend::onTiiData(const RadioControlTIIData &data)
@@ -133,7 +137,7 @@ void TIIBackend::onEnsembleInformation(const RadioControlEnsemble &ens)
 void TIIBackend::loadSettings()
 {
     TIIBackend::onSettingsChanged();
-    m_sortedFilteredModel->setColumns(m_settings->tii.txTable);
+    m_columnProxyModel->setColumns(m_settings->tii.txTable);
     setZoomLevel(m_settings->tii.mapZoom);
     if (m_settings->tii.mapCenter.isValid())
     {
@@ -176,7 +180,7 @@ void TIIBackend::onSettingsChanged()
 
 void TIIBackend::onTxTableSettingsChanged()
 {
-    m_sortedFilteredModel->setColumns(m_settings->tii.txTable);
+    m_columnProxyModel->setColumns(m_settings->tii.txTable);
     emit txTableColChanged();
 }
 
