@@ -811,6 +811,7 @@ void RtlSdrWorker::run()
     m_dcI = 0.0;
     m_dcQ = 0.0;
     m_agcLevel = 0.0;
+    m_agcLevelEmitCntr = 0;
     m_watchdogFlag = false;  // first callback sets it to true
     m_captureStartCntr = 1;  // first callback resets buffer
 
@@ -1056,7 +1057,10 @@ void RtlSdrWorker::processInputData(unsigned char *buf, uint32_t len)
     // store memory
     m_agcLevel = agcLev;
 
-    emit agcLevel(agcLev);
+    if (0 == (++m_agcLevelEmitCntr & 0x03))
+    {
+        emit agcLevel(agcLev);
+    }
 #endif
 
     pthread_mutex_lock(&inputBuffer.countMutex);

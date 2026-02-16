@@ -76,6 +76,7 @@ private:
 #endif
 
     // AGC memory
+    uint_fast8_t m_agcLevelEmitCntr = 0;
     float m_agcLevel = 0.0;
 #if (RTLSDR_AGC_ENABLE > 0)
     constexpr static const float m_agcLevel_catt = 0.1;

@@ -35,12 +35,12 @@
 #include <QWaitCondition>
 
 // this is chunk that is received from input device to be stored in input FIFO
-#define INPUT_CHUNK_MS (200)
+#define INPUT_CHUNK_MS (50)
 #define INPUT_CHUNK_IQ_SAMPLES (2048 * INPUT_CHUNK_MS)
 
 // Input FIFO size in bytes - FIFO contains float _Complex samples => [float float]
-// total capacity is 8 input chunks
-#define INPUT_FIFO_SIZE (INPUT_CHUNK_IQ_SAMPLES * (2 * sizeof(float)) * 8)
+// total capacity is 16 input chunks = 32x50 ms = 1600 msec of input stream at 2048 kHz
+#define INPUT_FIFO_SIZE (INPUT_CHUNK_IQ_SAMPLES * (2 * sizeof(float)) * 32)
 
 #define INPUTDEVICE_WDOG_TIMEOUT_SEC 3  // watchdog timeout in seconds (if implemented and enabled)
 
