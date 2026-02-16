@@ -112,7 +112,14 @@ Item {
                 }
             }
             AbracaLabel {
+                id: progressValueLabel
                 text: settingsBackend.rawFileProgressLabel
+                Layout.preferredWidth: fontMetrics.boundingRect(" 999.0/1000.0 sec").width
+                horizontalAlignment: Text.AlignRight
+                FontMetrics {
+                    id: fontMetrics
+                    font: progressValueLabel.font
+                }
             }
         }
 
