@@ -2,8 +2,8 @@
 
 APPDIR=AppDir
 ICON_DIR=$APPDIR/usr/share/icons/hicolor/512x512/apps
-RESOURCES_DIR=$PWD/gui/resources
-QML_DIR=$PWD/gui/qml
+RESOURCES_DIR=$PWD/src/resources
+QML_DIR=$PWD/src/qml
 VER=`git describe`
 
 if [ -z ${QT_PATH+x} ]; then
@@ -34,7 +34,7 @@ make install DESTDIR=$APPDIR
 
 # Dirty hack - copying binary to be able to deploy library correctly, otherwise it does not work
 rm -Rf $APPDIR/usr/lib/*
-cp -f gui/AbracaDABra $APPDIR/usr/bin/
+cp -f src/AbracaDABra $APPDIR/usr/bin/
 mkdir -p $APPDIR/usr/lib/SoapySDR/
 cp ../../AbracaDABra-libs/lib/SoapySDR/modules0.8/libsdrPlaySupport.so $APPDIR/usr/lib/SoapySDR/
 

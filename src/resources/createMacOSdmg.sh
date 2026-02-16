@@ -14,7 +14,7 @@ function createDmg () {
 	[[ -f "${DMG_FILE_NAME}" ]] && rm "${DMG_FILE_NAME}"
 
 	mkdir app
-	mv gui/${APP_NAME}.app app/
+	mv src/${APP_NAME}.app app/
 
 	# Create the DMG
     # --background "installer_background.png" \
@@ -22,7 +22,7 @@ function createDmg () {
 	  --volname "${VOLUME_NAME}" \
 	  --window-pos 200 120 \
 	  --window-size 640 440 \
-      --background ${DIR}/gui/resources/macos_dmg_bg.png \
+      --background ${DIR}/src/resources/macos_dmg_bg.png \
 	  --icon-size 100 \
 	  --icon "${APP_NAME}.app" 140 250 \
 	  --hide-extension "${APP_NAME}.app" \
@@ -47,12 +47,12 @@ cmake -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=11 
 cmake --build $BUILD_DIR --config Release
 
 # Deploy SDRplay
-mkdir -p $BUILD_DIR/gui/AbracaDABra.app/Contents/Plugins/SoapySDR
-cp $DIR/../AbracaDABra-libs-aarch64/lib/SoapySDR/modules0.8-3/libsdrPlaySupport.so $BUILD_DIR/gui/AbracaDABra.app/Contents/Plugins/SoapySDR/
-install_name_tool -change libsdrplay_api.so.3 /usr/local/lib/libsdrplay_api.so.3 $BUILD_DIR/gui/AbracaDABra.app/Contents/Plugins/SoapySDR/libsdrPlaySupport.so
+mkdir -p $BUILD_DIR/src/AbracaDABra.app/Contents/Plugins/SoapySDR
+cp $DIR/../AbracaDABra-libs-aarch64/lib/SoapySDR/modules0.8-3/libsdrPlaySupport.so $BUILD_DIR/src/AbracaDABra.app/Contents/Plugins/SoapySDR/
+install_name_tool -change libsdrplay_api.so.3 /usr/local/lib/libsdrplay_api.so.3 $BUILD_DIR/src/AbracaDABra.app/Contents/Plugins/SoapySDR/libsdrPlaySupport.so
 
-cd $BUILD_DIR/gui
-$QT_PATH/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/gui/qml -libpath=$DIR/../AbracaDABra-libs-aarch64/lib/ -codesign="-" # -dmg
+cd $BUILD_DIR/src
+$QT_PATH/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/src/qml -libpath=$DIR/../AbracaDABra-libs-aarch64/lib/ -codesign="-" # -dmg
 
 cd ..
 createDmg
@@ -73,12 +73,12 @@ cmake -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=11 
 cmake --build $BUILD_DIR --config Release
 
 # Deploy SDRplay
-mkdir -p $BUILD_DIR/gui/AbracaDABra.app/Contents/Plugins/SoapySDR
-cp $DIR/../AbracaDABra-libs-x86/lib/SoapySDR/modules0.8-3/libsdrPlaySupport.so $BUILD_DIR/gui/AbracaDABra.app/Contents/Plugins/SoapySDR/
-install_name_tool -change libsdrplay_api.so.3 /usr/local/lib/libsdrplay_api.so.3 $BUILD_DIR/gui/AbracaDABra.app/Contents/Plugins/SoapySDR/libsdrPlaySupport.so
+mkdir -p $BUILD_DIR/src/AbracaDABra.app/Contents/Plugins/SoapySDR
+cp $DIR/../AbracaDABra-libs-x86/lib/SoapySDR/modules0.8-3/libsdrPlaySupport.so $BUILD_DIR/src/AbracaDABra.app/Contents/Plugins/SoapySDR/
+install_name_tool -change libsdrplay_api.so.3 /usr/local/lib/libsdrplay_api.so.3 $BUILD_DIR/src/AbracaDABra.app/Contents/Plugins/SoapySDR/libsdrPlaySupport.so
 
-cd $BUILD_DIR/gui
-$QT_PATH/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/gui/qml  -libpath=$DIR/../AbracaDABra-libs-x86/lib/ -codesign="-" # -dmg
+cd $BUILD_DIR/src
+$QT_PATH/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/src/qml  -libpath=$DIR/../AbracaDABra-libs-x86/lib/ -codesign="-" # -dmg
 
 cd ..
 createDmg

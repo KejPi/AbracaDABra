@@ -650,10 +650,10 @@ qt_standard_project_setup(REQUIRES 6.7)
 
 #########################################################
 ## AbracaDABra GUI
-add_subdirectory(gui)
+add_subdirectory(src)
 
 ## This is required for localization permissions to work
-## For Android, finalization is handled in gui/CMakeLists.txt due to directory scope requirements
+## For Android, finalization is handled in src/CMakeLists.txt due to directory scope requirements
 if(NOT ANDROID)
     qt_finalize_executable(${TARGET})
 endif()
@@ -671,8 +671,8 @@ else ()
 
     if(UNIX AND NOT APPLE)        
         include(GNUInstallDirs)
-        INSTALL (FILES ${PROJECT_SOURCE_DIR}/gui/resources/AbracaDABra.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications/ RENAME ${TARGET}.desktop)
-        INSTALL (FILES ${PROJECT_SOURCE_DIR}/gui/resources/appIcon-linux-512x512.png DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/512x512/apps/ RENAME ${TARGET}.png)
+        INSTALL (FILES ${PROJECT_SOURCE_DIR}/src/resources/AbracaDABra.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications/ RENAME ${TARGET}.desktop)
+        INSTALL (FILES ${PROJECT_SOURCE_DIR}/src/resources/appIcon-linux-512x512.png DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/512x512/apps/ RENAME ${TARGET}.png)
     endif()
 endif()
 if(NOT ANDROID AND (NOT EXISTS "${PROJECT_SOURCE_DIR}/dabsdr/CMakeLists.txt" OR PROJECT_VERSION_RELEASE))
