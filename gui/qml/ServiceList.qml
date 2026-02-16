@@ -662,6 +662,7 @@ Item {
                 target: ensembleInfo
             }
             LayoutItemProxy {
+                Layout.topMargin: UI.standardMargin
                 target: channelControl
             }
             AbracaTabBar {
