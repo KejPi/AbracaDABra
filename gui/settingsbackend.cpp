@@ -34,7 +34,9 @@
 #include <QRandomGenerator>
 #include <QStandardPaths>
 
+#ifdef Q_OS_ANDROID
 #include "androidfilehelper.h"
+#endif
 #include "itemmodel.h"
 #include "rtlsdrinput.h"
 #include "rtltcpinput.h"
@@ -280,6 +282,9 @@ SettingsBackend::SettingsBackend(QQmlApplicationEngine *qmlEngine, QObject *pare
     connect(m_proxyConfigModel, &ItemModel::currentIndexChanged, this, [this]()
             { isProxyApplyEnabled(static_cast<Settings::ProxyConfig>(m_proxyConfigModel->currentData().toInt()) != m_settings->proxy.config); });
     connect(this, &SettingsBackend::isXmlHeaderEnabledChanged, this, [this]() { emit xmlHeaderToggled(m_settings->xmlHeaderEna); });
+
+    m_tiiTableColsModel = new TiiTableColsSettingsModel(this);
+    connect(m_tiiTableColsModel, &TiiTableColsSettingsModel::colSettingsChanged, this, &SettingsBackend::tiiTableSettingsChanged);
 }
 
 QUrl SettingsBackend::rawFilePath() const
@@ -566,6 +571,8 @@ void SettingsBackend::setSettings(Settings *settings)
     dataDumpPath(getDisplayPath(m_settings->uaDump.dataStoragePath + '/' + UA_DIR_NAME));
     tiiLogPath(getDisplayPath(m_settings->uaDump.dataStoragePath + '/' + TII_DIR_NAME));
     audioRecPath(getDisplayPath(m_settings->uaDump.dataStoragePath + '/' + AUDIO_DIR_NAME));
+
+    m_tiiTableColsModel->init(m_settings);
 
     setStatusLabel();
 

@@ -3044,6 +3044,20 @@ void Application::loadSettings()
         QGeoCoordinate(settings->value("TII/mapCenterLat", 50.08804).toDouble(), settings->value("TII/mapCenterLon", 14.42076).toDouble());
     m_settings->tii.mapZoom = settings->value("TII/mapZoom", 9.0).toFloat();
 
+    // TxTable settings
+    m_settings->tii.txTable.code.enabled = true;  // code column is always enabled
+    m_settings->tii.txTable.code.order = settings->value("TII/txTable/codeIdx", 0).toInt();
+    m_settings->tii.txTable.level.enabled = true;  // level column is always enabled
+    m_settings->tii.txTable.level.order = settings->value("TII/txTable/levelIdx", 1).toInt();
+    m_settings->tii.txTable.dist.enabled = settings->value("TII/txTable/distEna", true).toBool();
+    m_settings->tii.txTable.dist.order = settings->value("TII/txTable/distIdx", 2).toInt();
+    m_settings->tii.txTable.azimuth.enabled = settings->value("TII/txTable/azimuthEna", true).toBool();
+    m_settings->tii.txTable.azimuth.order = settings->value("TII/txTable/azimuthIdx", 3).toInt();
+    m_settings->tii.txTable.power.enabled = settings->value("TII/txTable/powerEna", false).toBool();
+    m_settings->tii.txTable.power.order = settings->value("TII/txTable/powerIdx", 4).toInt();
+    m_settings->tii.txTable.location.enabled = settings->value("TII/txTable/locationEna", false).toBool();
+    m_settings->tii.txTable.location.order = settings->value("TII/txTable/locationIdx", 5).toInt();
+
     m_settings->scanner.splitterState = settings->value("Scanner/layout");
     m_settings->scanner.restore = settings->value("Scanner/restore", false).toBool();
     m_settings->scanner.mode = settings->value("Scanner/mode", 0).toInt();
@@ -3347,6 +3361,17 @@ void Application::saveSettings()
     settings->setValue("TII/mapCenterLat", m_settings->tii.mapCenter.latitude());
     settings->setValue("TII/mapCenterLon", m_settings->tii.mapCenter.longitude());
     settings->setValue("TII/mapZoom", m_settings->tii.mapZoom);
+
+    settings->setValue("TII/txTable/codeIdx", m_settings->tii.txTable.code.order);
+    settings->setValue("TII/txTable/levelIdx", m_settings->tii.txTable.level.order);
+    settings->setValue("TII/txTable/distEna", m_settings->tii.txTable.dist.enabled);
+    settings->setValue("TII/txTable/distIdx", m_settings->tii.txTable.dist.order);
+    settings->setValue("TII/txTable/azimuthEna", m_settings->tii.txTable.azimuth.enabled);
+    settings->setValue("TII/txTable/azimuthIdx", m_settings->tii.txTable.azimuth.order);
+    settings->setValue("TII/txTable/powerEna", m_settings->tii.txTable.power.enabled);
+    settings->setValue("TII/txTable/powerIdx", m_settings->tii.txTable.power.order);
+    settings->setValue("TII/txTable/locationEna", m_settings->tii.txTable.location.enabled);
+    settings->setValue("TII/txTable/locationIdx", m_settings->tii.txTable.location.order);
 
     settings->setValue("Scanner/layout", m_settings->scanner.splitterState);
     settings->setValue("Scanner/restore", m_settings->scanner.restore);
@@ -3897,9 +3922,8 @@ QObject *Application::createTiiBackend()
     if (m_tiiBackend == nullptr)
     {
         m_tiiBackend = new TIIBackend(m_settings, this);
-        // connect(this, &MainWindow::exit, m_tiiDialog, &TIIDialog::close);
-        //  m_tiiDialog->setupDarkMode(isDarkMode());
         connect(m_settingsBackend, &SettingsBackend::tiiSettingsChanged, m_tiiBackend, &TIIBackend::onSettingsChanged);
+        connect(m_settingsBackend, &SettingsBackend::tiiTableSettingsChanged, m_tiiBackend, &TIIBackend::onTxTableSettingsChanged);
         connect(m_tiiBackend, &TIIBackend::setTii, m_radioControl, &RadioControl::startTii, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::signalState, m_tiiBackend, &TIIBackend::onSignalState, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tiiData, m_tiiBackend, &TIIBackend::onTiiData, Qt::QueuedConnection);
@@ -3915,7 +3939,6 @@ QObject *Application::createSignalBackend()
     if (m_signalBackend == nullptr)
     {
         m_signalBackend = new SignalBackend(m_settings, m_frequency);
-        // connect(this, &MainWindow::exit, m_signalBackend, &SignalBackend::close);
         connect(m_signalBackend, &SignalBackend::setSignalSpectrum, m_radioControl, &RadioControl::setSignalSpectrum, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tuneDone, m_signalBackend, &SignalBackend::onTuneDone, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::freqOffset, m_signalBackend, &SignalBackend::updateFreqOffset, Qt::QueuedConnection);
@@ -3927,8 +3950,6 @@ QObject *Application::createSignalBackend()
         m_signalBackend->setIsActive(m_navigationModel->isActive(NavigationModel::DabSignal));
 
         m_signalBackend->setInputDevice(m_inputDeviceId);
-
-        // emit signalBackendChanged();
     }
     return m_signalBackend;
 }

@@ -110,7 +110,7 @@ signals:
     void zoomLevelChanged();
     void mapCenterChanged();
     void centerToCurrentPositionChanged();
-
+    void txTableColChanged();
     void showSpetrumPlotChanged();
 
 protected:

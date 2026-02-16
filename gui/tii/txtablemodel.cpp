@@ -178,6 +178,14 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
             return QVariant(font);
         }
         break;
+        case Qt::TextAlignmentRole:
+        {
+            if (index.column() == ColLocation)
+            {
+                return 0;  // left
+            }
+            return 1;  // center
+        }
         case TxTableModelRoles::ExportRole:
         case TxTableModelRoles::ExportRoleUTC:
         {
@@ -418,6 +426,7 @@ QHash<int, QByteArray> TxTableModel::roleNames() const
     roles[TxTableModelRoles::SelectedTxRole] = "selectedTx";
     roles[TxTableModelRoles::IsActiveRole] = "isActive";
     roles[TxTableModelRoles::IsLocalRole] = "isLocal";
+    roles[Qt::TextAlignmentRole] = "textAlignment";
 
     return roles;
 }

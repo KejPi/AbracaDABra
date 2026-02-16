@@ -213,7 +213,7 @@ Item {
                 }
             }
         }
-
+/*
         TIITableView {
             model: backend.tableModel
             selectionModel: backend.tableSelectionModel
@@ -224,11 +224,36 @@ Item {
             anchors.topMargin: 10
             maxHeight: parent.width > 3*width ? infoBox.y - parent.y - 20 : Math.min(infoBox.y - parent.y - 20, parent.height * 0.4)
             z: 3
-            // Behavior on height {
-            //     SmoothedAnimation {
-            //         velocity: 1000
-            //     }
-            // }
+        }
+*/
+        AbracaTableView {
+            id: tiiTableView
+            model: backend.tableModel
+            selectionModel: backend.tableSelectionModel
+            visible: backend.isTii && showTable && backend.tableModel.rowCount > 0
+
+            sortingEnabled: true
+            sortIndicatorColumn: 1
+            sortIndicatorOrder: Qt.DescendingOrder
+            cellsLeftAligned: false
+            maxColumnWidth: 200
+
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.rightMargin: (parent.width - width) > width/2 ? 10 : (parent.width - width) / 2
+            anchors.topMargin: 10
+            height: parent.width > 3*width ? infoBox.y - parent.y - 20 : Math.min(infoBox.y - parent.y - 20, parent.height * 0.4)
+            width: Math.min(preferedWidth, parent.width - 20)
+        }
+        Connections {
+            target: backend
+            function onTxTableColChanged() {
+                if (tiiTableView.visible) {
+                    backend.selectTx(-1); // deselection of transmitter
+                    tiiTableView.calculatePreferedWidth();
+                    tiiTableView.autoAdjustColumns();
+                }
+            }
         }
 
         ColumnLayout {

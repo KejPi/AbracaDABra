@@ -324,6 +324,8 @@ Item {
                                 id: uiLayout
                                 anchors.fill: parent
                                 spacing: UI.standardMargin
+
+
                                 AbracaSwitch {
                                     Layout.fillWidth: true
                                     text: qsTr("Show spectrum plot")
@@ -373,6 +375,150 @@ Item {
                                         suffix: " min"
                                         onValueChanged: if (value !== settingsBackend.tiiInactiveTimeout) {
                                             settingsBackend.tiiInactiveTimeout = value;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    AbracaLine {
+                        Layout.fillWidth: true
+                        isVertical: false
+                        Layout.topMargin: UI.standardMargin
+                        Layout.bottomMargin: 2*UI.standardMargin
+                    }
+                    AbracaGroupBox {
+                        id: txTableGroupBox
+                        title: qsTr("Transmitter table columns")
+                        Layout.fillWidth: true
+                        Item {
+                            width: txTableGroupBox.width
+                            implicitHeight: tiiTableColsView.implicitHeight
+
+                            ListView {
+                                id: tiiTableColsView
+                                // anchors.fill: parent
+                                anchors.top: parent.top
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                width: Math.min(parent.width, 430)
+
+                                implicitHeight: 6*UI.controlHeight + 5*4  // 6 items + 5 spacings
+                                model: settingsBackend.tiiTableColsModel
+                                spacing: 4
+                                clip: true
+                                interactive: false
+
+                                property int dragFromIndex: -1
+
+                                displaced: Transition {
+                                    NumberAnimation { properties: "y"; duration: 150; easing.type: Easing.OutQuad }
+                                }
+
+                                delegate: DropArea {
+                                    id: dropArea
+                                    width: tiiTableColsView.width
+                                    height: UI.controlHeight
+
+                                    required property int index
+                                    required property string name
+                                    required property bool enabled
+                                    required property bool editable
+
+                                    onEntered: (drag) => {
+                                        let from = drag.source.visualIndex
+                                        let to = dropArea.index
+                                        if (from !== to) {
+                                            settingsBackend.tiiTableColsModel.move(from, to)
+                                        }
+                                    }
+
+                                    Rectangle {
+                                        id: content
+                                        width: dropArea.width
+                                        height: dropArea.height
+                                        radius: UI.controlRadius
+                                        color: mouseArea.held ? UI.colors.highlight : UI.colors.backgroundLight
+                                        border.color: mouseArea.held || mouseArea.containsMouse ? UI.colors.accent : UI.colors.controlBorder
+                                        border.width: 1
+                                        //opacity: dropArea.enabled ? 1.0 : 0.5
+                                        //layer.enabled: !dropArea.enabled
+
+                                        // Track which model index this delegate currently represents
+                                        property int visualIndex: dropArea.index
+
+                                        Drag.active: mouseArea.held
+                                        Drag.source: content
+                                        Drag.hotSpot.x: width / 2
+                                        Drag.hotSpot.y: height / 2
+
+                                        MouseArea {
+                                            id: mouseArea
+                                            anchors.fill: parent
+                                            // Only left 40px acts as drag handle; rest passes through for checkbox
+                                            //anchors.rightMargin: parent.width - 40
+
+                                            property bool held: drag.active
+                                            hoverEnabled: true
+                                            //acceptedButtons: Qt.NoButton
+
+                                            drag.target: content
+                                            drag.axis: Drag.YAxis
+
+                                            onPressed: event=> {
+                                                content.z = 10
+                                            }
+                                            onReleased: {
+                                                content.z = 0
+                                            }
+                                        }
+
+                                        states: State {
+                                            when: mouseArea.held
+                                            ParentChange {
+                                                target: content
+                                                parent: tiiTableColsView
+                                            }
+                                            AnchorChanges {
+                                                target: content
+                                                anchors.horizontalCenter: undefined
+                                                anchors.verticalCenter: undefined
+                                            }
+                                        }
+
+                                        RowLayout {
+                                            anchors.fill: parent
+                                            anchors.leftMargin: 8
+                                            anchors.rightMargin: 8
+                                            spacing: 8
+
+                                            // Drag handle
+                                            AbracaColorizedImage {
+                                                width: UI.iconSizel
+                                                height: UI.iconSize
+                                                source: UI.imagesUrl + "icon-drag.svg"
+                                                cache: true
+                                                colorizationEnabled: true
+                                                colorizationColor: UI.colors.textPrimary
+                                            }
+                                            AbracaLabel {
+                                                role: UI.LabelRole.Primary
+                                                text: dropArea.name
+                                                enabled: dropArea.enabled
+                                                Layout.fillWidth: true
+                                            }
+
+                                            AbracaSwitch {
+                                                id: colSwitch
+                                                text: ""
+                                                checked: dropArea.enabled
+                                                enabled: editable
+                                                onToggled: {
+                                                    settingsBackend.tiiTableColsModel.setData(
+                                                        settingsBackend.tiiTableColsModel.index(dropArea.index, 0),
+                                                        checked, Qt.UserRole + 3  // EnabledRole
+                                                    )
+                                                }
+                                            }
                                         }
                                     }
                                 }

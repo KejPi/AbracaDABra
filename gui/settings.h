@@ -232,6 +232,21 @@ public:
         bool centerMapToCurrentPosition;
         QGeoCoordinate mapCenter;
         float mapZoom;
+        struct TxTableSettings
+        {
+            struct TxTableCol
+            {
+                bool enabled;
+                int order;
+            };
+
+            TxTableCol code;
+            TxTableCol level;
+            TxTableCol location;
+            TxTableCol power;
+            TxTableCol dist;
+            TxTableCol azimuth;
+        } txTable;
     } tii;
     struct SignalDialog
     {

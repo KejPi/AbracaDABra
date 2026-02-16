@@ -32,15 +32,24 @@
 #include <QObject>
 #include <QSortFilterProxyModel>
 
+#include "settings.h"
+
 class TxTableProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
     Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
 public:
     TxTableProxyModel(QObject *parent = nullptr);
+    void setSourceModel(QAbstractItemModel *sourceModel) override;
     void setColumnsFilter(bool filterCols);
     void setInactiveTxFilter(bool filterInactiveTx);
     void setLocalTxFilter(bool filterLocalTx);
+    void setColumns(const Settings::TIISettings::TxTableSettings &settings);
+    QModelIndex mapToSource(const QModelIndex &proxyIndex) const override;
+    QModelIndex mapFromSource(const QModelIndex &sourceIndex) const override;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+
 signals:
     void rowCountChanged();
 
@@ -48,10 +57,17 @@ protected:
     bool m_filterCols = true;
     bool m_filterInactiveTx = true;
     bool m_filterLocalTx = false;
-    // QList<int> m_sortColumns = {};  // this si list of columns used for sorting
+    Settings::TIISettings::TxTableSettings m_columnsSettings;
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
     bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const override;
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
+
+private:
+    QList<int> m_columnOrder;
+
+    int proxyColumnForSourceColumn(int sourceColumn) const;
+    int sourceColumnForProxyColumn(int proxyColumn) const;
+    void onSourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QList<int> &roles);
 };
 
 #endif  // TXTABLEPROXYMODEL_H

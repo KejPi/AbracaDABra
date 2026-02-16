@@ -34,13 +34,17 @@ import abracaComponents
 
 Item {
     id: tableItem
+
     objectName: "tableItem"
     property alias model: tableView.model
     property alias selectionModel: tableView.selectionModel
     property alias contextMenuModel: contextMenu.menuModel
     property int shrinkColumnIndex: -1
     property int minColumnWidth: 30
+    property int maxColumnWidth: 0
     property bool sortingEnabled: false
+    property bool cellsLeftAligned: true
+    property int preferedWidth: 100
 
     signal doubleClickedRow(int row)
     signal populateContextMenu(int row)
@@ -68,6 +72,47 @@ Item {
         tableItem.autoAdjustColumns();
     }
 
+    function calculatePreferedWidth() {
+        // compute preferred widths from headers/content
+        var totalPref = 0;          // sum of preferred widths
+
+        var cols = tableView.model ? tableView.model.columnCount() : 0;
+
+        if (cols === 0)
+            return;
+
+        for (var c = 0; c < cols; ++c) {
+            // header width
+            var header = tableView.model.headerData(c, Qt.Horizontal, Qt.DisplayRole);
+            var hdrw = Math.ceil(fontMetrics.boundingRect(header).width);
+            // define minimum width per column as header width + small padding
+            var minw = Math.max(tableItem.minColumnWidth, hdrw + 2*UI.standardMargin + fontMetrics.font.pointSize * 0.5);
+            var maxw = tableView.maxColumnWidth > 0 ? Math.min(hdrw, tableView.maxColumnWidth) : hdrw;
+            // measure content up to sampleLimit rows
+            var rows = tableView.model.rowCount;
+            var sampleLimit = Math.min(rows, 200);
+            for (var r = 0; r < sampleLimit; ++r) {
+                var idx = tableView.model.index(r, c);
+                var val = tableView.model.data ? tableView.model.data(idx, Qt.DisplayRole) : undefined;
+                if (val !== undefined && val !== null) {
+                    var s = String(val);
+                    var w = Math.ceil(fontMetrics.boundingRect(s).width);
+                    if (tableView.maxColumnWidth > 0) {
+                        w = Math.min(w, tableView.maxColumnWidth)
+                    }
+                    if (w > maxw) {
+                        maxw = w;
+                    }
+                }
+            }
+            // add padding depending on column (first columns may need less)
+            totalPref += Math.max(minw, maxw + 2*UI.standardMargin);
+        }
+        if (tableItem.preferedWidth !== totalPref) {
+            tableItem.preferedWidth = totalPref;
+        }
+    }
+
     // Call from C++: find the QML object and invoke this method to auto-adjust columns
     function autoAdjustColumns() {
         // compute preferred widths from headers/content
@@ -89,7 +134,7 @@ Item {
             var minw = Math.max(tableItem.minColumnWidth, hdrw + 2*UI.standardMargin + fontMetrics.font.pointSize * 0.5);
             minColumnWidths[c] = minw;
             totalMin += minw;
-            var maxw = hdrw;
+            var maxw = tableView.maxColumnWidth > 0 ? Math.min(hdrw, tableView.maxColumnWidth) : hdrw;
             // measure content up to sampleLimit rows
             var rows = tableView.model.rowCount;
             var sampleLimit = Math.min(rows, 200);
@@ -99,8 +144,12 @@ Item {
                 if (val !== undefined && val !== null) {
                     var s = String(val);
                     var w = Math.ceil(fontMetrics.boundingRect(s).width);
-                    if (w > maxw)
+                    if (tableView.maxColumnWidth > 0) {
+                        w = Math.min(w, tableView.maxColumnWidth)
+                    }
+                    if (w > maxw) {
                         maxw = w;
+                    }
                 }
             }
             // add padding depending on column (first columns may need less)
@@ -187,10 +236,6 @@ Item {
             totalContent += tableItem.columnWidths[t];
         }
 
-        //onsole.log("autoAdjustColumns: totalContent=", totalContent, "avail=", avail, "tableView.width=", tableView.width, "totalMin=", totalMin);
-        // console.log(pref)
-        // console.log(minColumnWidths)
-
         tableView.contentWidth = totalContent + sbw;
     }
 
@@ -207,6 +252,7 @@ Item {
             tableItem.columnWidths[n] = Math.max(minColumnWidth, Math.ceil(fontMetrics.boundingRect(hdr).width) + UI.standardMargin);
         }
         tableView.forceLayout();
+        tableItem.calculatePreferedWidth()
         // ensure sizes account for content and scrollbars
         tableItem.autoAdjustColumns();
     }
@@ -292,10 +338,17 @@ Item {
 
             property int anchorRow: -1
 
+            onContentHeightChanged: {
+                // show/hide vertical scrollbar based on content height
+                console.log("Content height changed: " + contentHeight + ", view height: " + height);
+            }
+
             delegate: Rectangle {
                 required property string display
                 required property bool selected
+                required property bool isActive
                 required property int row
+                required property int textAlignment
 
                 implicitHeight: tableItem.rowHeight
                 color: selected ? UI.colors.highlight : UI.colors.background
@@ -304,8 +357,10 @@ Item {
                     anchors.leftMargin: UI.standardMargin
                     text: display
                     verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: tableItem.cellsLeftAligned ? Text.AlignLeft : (textAlignment == 0 ? Text.AlignLeft : (textAlignment == 1 ? Text.AlignHCenter : Text.AlignRight))
                     elide: Text.ElideRight
-                    color: UI.colors.textPrimary
+                    color: isActive ? UI.colors.textPrimary : UI.colors.textSecondary
+                    font.italic: !isActive
                 }
                 MouseArea {
                     anchors.fill: parent
@@ -405,7 +460,8 @@ Item {
                 // target the underlying model object exposed to the TableView
                 target: tableView.model
                 function onRowCountChanged() {
-                    tableItem.autoAdjustColumns();
+                    tableItem.calculatePreferedWidth();
+                    tableItem.autoAdjustColumns();                    
                 }
             }
 

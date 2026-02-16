@@ -39,6 +39,7 @@
 #include "itemmodel.h"
 #include "settings.h"
 #include "soapysdrgainmodel.h"
+#include "tiitablecolssettingsmodel.h"
 #include "uicontrolprovider.h"
 
 class SettingsBackend : public UIControlProvider
@@ -60,6 +61,7 @@ class SettingsBackend : public UIControlProvider
     Q_PROPERTY(ItemModel *serialPortBaudrateModel READ serialPortBaudrateModel CONSTANT FINAL)
     Q_PROPERTY(ItemModel *languageSelectionModel READ languageSelectionModel CONSTANT FINAL)
     Q_PROPERTY(ItemModel *proxyConfigModel READ proxyConfigModel CONSTANT FINAL)
+    Q_PROPERTY(TiiTableColsSettingsModel *tiiTableColsModel READ tiiTableColsModel CONSTANT FINAL)
     Q_PROPERTY(SoapySdrGainModel *soapySdrGainModel READ soapySdrGainModel CONSTANT FINAL)
     Q_PROPERTY(QString slsDumpPaternDefault READ slsDumpPaternDefault CONSTANT FINAL)
     Q_PROPERTY(QString spiDumpPaternDefault READ spiDumpPaternDefault CONSTANT FINAL)
@@ -261,6 +263,7 @@ public:
     ItemModel *serialPortBaudrateModel() const { return m_serialPortBaudrateModel; }
     ItemModel *languageSelectionModel() const { return m_languageSelectionModel; }
     ItemModel *proxyConfigModel() const { return m_proxyConfigModel; }
+    TiiTableColsSettingsModel *tiiTableColsModel() const { return m_tiiTableColsModel; }
 
     void setInputDevice(InputDevice::Id id, InputDevice *device);
     void resetInputDevice();
@@ -337,6 +340,7 @@ signals:
     void audioRecordingSettings(const QString &folder, bool doOutputRecording);
     void uaDumpSettings(const Settings::UADumpSettings &settings);
     void tiiSettingsChanged();
+    void tiiTableSettingsChanged();
     void tiiModeChanged(int mode);
     void rawFileSeek(int msec);
     void updateTxDb();
@@ -476,6 +480,7 @@ private:
     QString m_locationCoordinates;
     ItemModel *m_languageSelectionModel = nullptr;
     ItemModel *m_proxyConfigModel = nullptr;
+    TiiTableColsSettingsModel *m_tiiTableColsModel = nullptr;
 };
 
 class AnnouncementsProxyModel : public QSortFilterProxyModel

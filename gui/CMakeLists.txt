@@ -229,6 +229,7 @@ qt_add_qml_module(${TARGET}
         qml/images/icon-undock.svg
         qml/images/icon-audio.svg
         qml/images/icon-config.svg
+        qml/images/icon-drag.svg
         qml/images/placeholder-undocked.svg
 
         resources/appIcon.png
@@ -406,6 +407,7 @@ qt_add_qml_module(${TARGET}
         ensembleinfobackend.h ensembleinfobackend.cpp
         ensemblesubchmodel.h ensemblesubchmodel.cpp
         androidfilehelper.h androidfilehelper.cpp
+        SOURCES tii/tiitablecolssettingsmodel.h tii/tiitablecolssettingsmodel.cpp
 )
 
 # add_subdirectory(qml)

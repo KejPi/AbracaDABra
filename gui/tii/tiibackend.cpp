@@ -133,6 +133,7 @@ void TIIBackend::onEnsembleInformation(const RadioControlEnsemble &ens)
 void TIIBackend::loadSettings()
 {
     TIIBackend::onSettingsChanged();
+    m_sortedFilteredModel->setColumns(m_settings->tii.txTable);
     setZoomLevel(m_settings->tii.mapZoom);
     if (m_settings->tii.mapCenter.isValid())
     {
@@ -171,6 +172,12 @@ void TIIBackend::onSettingsChanged()
     }
     emit ensembleInfoChanged();
     setShowSpetrumPlot(m_settings->tii.showSpectumPlot);
+}
+
+void TIIBackend::onTxTableSettingsChanged()
+{
+    m_sortedFilteredModel->setColumns(m_settings->tii.txTable);
+    emit txTableColChanged();
 }
 
 void TIIBackend::onSelectedRowChanged()
