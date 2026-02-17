@@ -1337,7 +1337,8 @@ void RadioControl::clearEnsemble()
 void RadioControl::ensembleConfigurationUpdate()
 {
     if (m_ensembleConfigurationTimer->isActive())
-    {  // will be done on timer timeout
+    {                                           // will be done on timer timeout
+        m_ensembleConfigurationTimer->start();  // restart timer
         m_ensembleConfigurationUpdateRequest = true;
     }
     else
@@ -1583,6 +1584,9 @@ void RadioControl::eventHandler_serviceComponentList(RadioControlEvent *pEvent)
                     uint32_t sid = serviceIt->SId.value();
                     uint8_t scids = serviceComp.SCIdS;
                     QTimer::singleShot(1000, this, [this, sid, scids]() { dabGetUserApps(sid, scids); });
+
+                    // when there ar no user apps, we will not receive any event and thus need to trigger update here (Issue 276)
+                    ensembleConfigurationUpdate();
                 }
                 if (--m_numReqPendingServiceList == 0)
                 {  // service list is complete
