@@ -41,9 +41,11 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.margins: 2*UI.standardMargin
-        RowLayout {
+        GridLayout {
             Layout.fillWidth: true
-            spacing: UI.standardMargin
+            columnSpacing: UI.standardMargin
+            rowSpacing: UI.standardMargin
+            columns: UI.isMobile ? 2 : 4
             AbracaLabel {
                 text: qsTr("IP address:")
             }
