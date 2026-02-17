@@ -97,9 +97,10 @@ Item {
             Layout.fillWidth: true
             visible: settingsBackend.isRawFileProgressVisible
             AbracaSlider {
+                id: progressSlider
                 Layout.fillWidth: true
                 stepSize: 1
-                live: false
+                live: true
                 from: 0
                 to: settingsBackend.rawFileProgressMax
                 value: pressed ? value : settingsBackend.rawFileProgressValue
@@ -113,12 +114,21 @@ Item {
             }
             AbracaLabel {
                 id: progressValueLabel
-                text: settingsBackend.rawFileProgressLabel
-                Layout.preferredWidth: fontMetrics.boundingRect(" 999.0/1000.0 sec").width
+                // Show slider position while dragging, otherwise show backend progress label
+                text: progressSlider.pressed ? formatSeekPosition(progressSlider.value, settingsBackend.rawFileProgressMax) : settingsBackend.rawFileProgressLabel
+                Layout.preferredWidth: fontMetrics.boundingRect("999.0 / 999.0 sec").width
                 horizontalAlignment: Text.AlignRight
                 FontMetrics {
                     id: fontMetrics
                     font: progressValueLabel.font
+                }
+                
+                function formatSeekPosition(value, max) {
+                    // Format the seek position in seconds similar to backend format
+                    // Assuming backend provides format like "123.4 / 1000.0 sec"
+                    let seekSeconds = value * 0.001;
+                    let maxSeconds = max * 0.001;
+                    return qsTr("%1 / %2 sec").arg(seekSeconds.toFixed(1)).arg(maxSeconds.toFixed(1));
                 }
             }
         }
