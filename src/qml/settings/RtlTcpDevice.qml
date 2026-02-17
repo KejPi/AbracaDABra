@@ -78,6 +78,7 @@ Item {
         }
         AbracaSwitch {
             text: qsTr("Connect to control socket if available")
+            wrapMode: Text.WordWrap
             checked: settingsBackend.isRtlTcpControlSocketChecked
             onCheckedChanged: {
                 if (settingsBackend.isRtlTcpControlSocketChecked !== checked) {

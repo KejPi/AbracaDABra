@@ -77,6 +77,7 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.minimumWidth: implicitWidth
                                 text: qsTr("Enable SPI application")
+                                wrapMode: Text.WordWrap
                                 checked: settingsBackend.isSpiAppEnabled
                                 onCheckedChanged: {
                                     if (settingsBackend.isSpiAppEnabled !== checked) {
@@ -89,6 +90,7 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.minimumWidth: implicitWidth
                                 text: qsTr("Download data from internet")
+                                wrapMode: Text.WordWrap
                                 enabled: enableSpiSwitch.checked
                                 checked: settingsBackend.isSpiInternetEnabled
                                 onCheckedChanged: {
@@ -115,6 +117,7 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.minimumWidth: implicitWidth
                                 text: qsTr("Show decoding progress")
+                                wrapMode: Text.WordWrap
                                 enabled: enableSpiSwitch.checked
                                 checked: settingsBackend.isSpiProgressEnabled
                                 onCheckedChanged: {
@@ -127,6 +130,7 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.minimumWidth: implicitWidth
                                 text: qsTr("Hide progress when completed")
+                                wrapMode: Text.WordWrap
                                 enabled: enableSpiSwitch.checked && progressSwitch.checked
                                 checked: settingsBackend.spiProgressHideComplete
                                 onCheckedChanged: {
@@ -171,6 +175,7 @@ Item {
                                     Layout.fillWidth: true
                                     Layout.minimumWidth: implicitWidth
                                     text: qsTr("Overwrite existing files")
+                                    wrapMode: Text.WordWrap
                                     checked: settingsBackend.isUaDumpOverwiteEnabled
                                     onCheckedChanged: {
                                         if (settingsBackend.isUaDumpOverwiteEnabled !== checked) {
@@ -191,6 +196,7 @@ Item {
                                     Layout.fillWidth: true
                                     // Layout.minimumWidth: implicitWidth
                                     text: qsTr("Slideshow data")
+                                    wrapMode: Text.WordWrap
                                     checked: settingsBackend.isUaDumpSlsEnabled
                                     onCheckedChanged: {
                                         if (settingsBackend.isUaDumpSlsEnabled !== checked) {
@@ -213,6 +219,7 @@ Item {
                                     Layout.fillWidth: true
                                     Layout.minimumWidth: implicitWidth
                                     text: qsTr("SPI data")
+                                    wrapMode: Text.WordWrap
                                     enabled: enableSpiSwitch.checked
                                     checked: settingsBackend.isUaDumpSpiEnabled
                                     onCheckedChanged: {

@@ -160,6 +160,7 @@ Item {
                                 AbracaSwitch {
                                     text: qsTr("Record DL messages")
                                     checked: settingsBackend.audioRecDl
+                                    wrapMode: Text.WordWrap
                                     onCheckedChanged: {
                                         if (settingsBackend.audioRecDl !== checked) {
                                             settingsBackend.audioRecDl = checked
@@ -168,6 +169,7 @@ Item {
                                 }
                                 AbracaSwitch {
                                     text: qsTr("Record DAB time for DL messages")
+                                    wrapMode: Text.WordWrap
                                     enabled: settingsBackend.audioRecDl
                                     checked: settingsBackend.audioRecDlAbsTime
                                     onCheckedChanged: {

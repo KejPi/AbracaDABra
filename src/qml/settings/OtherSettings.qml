@@ -99,7 +99,7 @@ Item {
                         isVertical: false
                         Layout.topMargin: UI.standardMargin
                         Layout.bottomMargin: 2*UI.standardMargin
-                    }
+                    }                
                     AbracaGroupBox {
                         id: uiGroupBox
                         title: qsTr("User interface")
@@ -156,6 +156,7 @@ Item {
                                             settingsBackend.showTrayIcon = checked
                                         }
                                     }
+                                    wrapMode: Text.WordWrap
                                     visible: UI.isAndroid === false
                                 }
                                 AbracaSwitch {
@@ -443,6 +444,7 @@ Item {
                                     Layout.fillWidth: true
                                     Layout.minimumWidth: implicitWidth
                                     text: qsTr("Upload ensemble information")
+                                    wrapMode: Text.WordWrap
                                     checked: settingsBackend.uploadEnsembleInfo
                                     onCheckedChanged: {
                                         if (settingsBackend.uploadEnsembleInfo !== checked) {
@@ -486,8 +488,9 @@ Item {
                     }
                     AbracaSwitch {
                         Layout.fillWidth: true
-                        Layout.minimumWidth: implicitWidth
+                        //Layout.minimumWidth: implicitWidth
                         text: qsTr("Restore application windows on start")
+                        wrapMode: Text.WordWrap
                         checked: settingsBackend.restoreWindowsOnStart
                         onCheckedChanged: {
                             if (settingsBackend.restoreWindowsOnStart !== checked) {
@@ -498,8 +501,9 @@ Item {
                     }
                     AbracaSwitch {
                         Layout.fillWidth: true
-                        Layout.minimumWidth: implicitWidth
+                        //Layout.minimumWidth: implicitWidth
                         text: qsTr("Check for application update on start")
+                        wrapMode: Text.WordWrap
                         checked: settingsBackend.isCheckForUpdatesEnabled
                         onCheckedChanged: {
                             if (settingsBackend.isCheckForUpdatesEnabled !== checked) {
@@ -510,8 +514,9 @@ Item {
 
                     AbracaSwitch {
                         Layout.fillWidth: true
-                        Layout.minimumWidth: implicitWidth
+                        //Layout.minimumWidth: implicitWidth
                         text: qsTr("Include XML header in raw data recording")
+                        wrapMode: Text.WordWrap
                         checked: settingsBackend.isXmlHeaderEnabled
                         onCheckedChanged: {
                             if (settingsBackend.isXmlHeaderEnabled !== checked) {

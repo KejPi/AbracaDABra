@@ -253,6 +253,7 @@ Item {
                                     AbracaSwitch {
                                         Layout.fillWidth: true
                                         text: qsTr("Timestamp in UTC")
+                                        wrapMode: Text.WordWrap
                                         checked: settingsBackend.tiiLogUtcTimestamp
                                         onCheckedChanged: {
                                             if (settingsBackend.tiiLogUtcTimestamp !== checked) {
@@ -263,6 +264,7 @@ Item {
                                     AbracaSwitch {
                                         Layout.fillWidth: true
                                         text: qsTr("GPS coordinates")
+                                        wrapMode: Text.WordWrap
                                         checked: settingsBackend.tiiLogCoordinates
                                         onCheckedChanged: {
                                             if (settingsBackend.tiiLogCoordinates !== checked) {
@@ -329,6 +331,7 @@ Item {
                                 AbracaSwitch {
                                     Layout.fillWidth: true
                                     text: qsTr("Show spectrum plot")
+                                    wrapMode: Text.WordWrap
                                     checked: settingsBackend.tiiShowSpectrumPlot
                                     onCheckedChanged: {
                                         if (settingsBackend.tiiShowSpectrumPlot !== checked) {
@@ -358,6 +361,7 @@ Item {
                                     AbracaSwitch {
                                         id: timeoutSwitch
                                         text: qsTr("Remove after:")
+                                        wrapMode: Text.WordWrap
                                         checked: settingsBackend.isTiiInactiveTimeoutEnabled
                                         onCheckedChanged: {
                                             if (settingsBackend.isTiiInactiveTimeoutEnabled !== checked) {
