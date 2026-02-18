@@ -91,7 +91,7 @@ private:
     };
 
     Settings *m_settings = nullptr;
-    QTime m_startTime;
+    qint64 m_startTimeMsec = 0;
     QTimer *m_timer = nullptr;
 
     bool m_isUndocked = false;  // this flag holds the information if the page is undocked

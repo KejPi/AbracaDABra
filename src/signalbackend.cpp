@@ -166,7 +166,7 @@ void SignalBackend::registerSnrPlot(QQuickItem *item)
         // m_snrPlot->addMarkerLine(false, static_cast<double>(DabSnrThreshold::LowSNR), "LowSNR", Qt::white, 1.0);
         // m_snrPlot->addMarkerLine(false, static_cast<double>(DabSnrThreshold::GoodSNR), "GoodSNR", Qt::white, 1.0);
 
-        m_startTime = QTime();
+        m_startTimeMsec = QDateTime::currentMSecsSinceEpoch();
         m_timer->start();
     }
 }
@@ -449,13 +449,13 @@ void SignalBackend::addToPlot(float snr)
         return;
     }
     double key = 0.0;
-    if (m_startTime.isNull())
+    if (m_startTimeMsec == 0)
     {
-        m_startTime = QTime::currentTime();
+        m_startTimeMsec = QDateTime::currentMSecsSinceEpoch();
     }
     else
     {
-        key = m_startTime.msecsTo(QTime::currentTime()) / 1000.0;
+        key = (QDateTime::currentMSecsSinceEpoch() - m_startTimeMsec) * 0.001;  // convert to seconds
     }
 
     m_snrPlot->appendPoints(m_snrSeriesId, {QPointF(key, snr)});
