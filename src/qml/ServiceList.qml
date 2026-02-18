@@ -394,6 +394,7 @@ Item {
             anchors.fill: serviceTreeItem
             topMargin: UI.standardMargin
             bottomMargin: UI.standardMargin
+            leftMargin: 0
 
             signal restartTreeHighlightAnimation()
 
@@ -479,9 +480,13 @@ Item {
                 font.bold: highlighted
 
                 topPadding: 0
-                //leftPadding: topPadding
+                // leftPadding: topPadding
                 rightPadding: topPadding
                 bottomPadding: topPadding
+
+                spacing: 0
+                leftMargin: 0
+                indentation: UI.controlHeight - 10
 
                 onClicked: {
                     let index = serviceTree.index(row, column);
@@ -541,10 +546,10 @@ Item {
                     id: indicatorItem
                     width: UI.controlHeight
                     height: UI.controlHeight
+                    x: leftMargin + (treeViewDelegate.depth * treeViewDelegate.indentation)
                     AbracaColorizedImage {
                         id: indicatorImage
                         anchors.centerIn: indicatorItem
-                        x: treeViewDelegate.depth * treeViewDelegate.indentation
                         source: UI.imagesUrl + "chevron-right.svg"
                         width: UI.iconSize
                         height: UI.iconSize
@@ -569,20 +574,6 @@ Item {
                     radius: UI.controlRadius
                     color: treeViewDelegate.highlighted ? UI.colors.highlight : treeViewDelegate.hovered ? UI.colors.listItemHovered : "transparent"
                     anchors.leftMargin: treeViewDelegate.depth * treeViewDelegate.indentation
-                    // Rectangle {
-                    //     color: treeViewDelegate.selected ? "green" : "transparent"
-                    //     anchors.left: parent.left
-                    //     anchors.top: parent.top
-                    //     width: 4
-                    //     height: 4
-                    // }
-                    // Rectangle {
-                    //     color: treeViewDelegate.current ? "red" : "transparent"
-                    //     anchors.left: parent.left
-                    //     anchors.bottom: parent.bottom
-                    //     width: 4
-                    //     height: 4
-                    // }
                 }
             }
             ScrollIndicator.vertical: AbracaScrollIndicator {}
@@ -596,7 +587,7 @@ Item {
                 border.width: 1
                 height: UI.controlHeight
                 width: serviceTree.width - UI.standardMargin - x
-                x: serviceTree.currentRow >= 0 ? serviceTree.depth(serviceTree.currentRow) * (UI.controlHeight) : 0
+                x: serviceTree.currentRow >= 0 ? serviceTree.depth(serviceTree.currentRow) * (UI.controlHeight - 10) : 0
                 y: serviceTree.currentRow >= 0 ? serviceTree.currentRow * UI.controlHeight : 0
                 Behavior on y {
                     enabled: serviceTree.shouldAnimate

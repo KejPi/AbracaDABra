@@ -176,7 +176,18 @@ QVariant SLModelItem::data(int column, int role) const
             case IsFavoriteRole:
                 return isFavoriteService();
             case SIdHexRole:
-                return QString("%1").arg(m_id.value(), 6, 16, QChar('0')).toUpper();
+                if (m_id.isService())
+                {
+                    if (m_id.scids() == 0)
+                    {
+                        return QString("%1").arg(m_id.value(), 6, 16, QChar('0')).toUpper();
+                    }
+                    else
+                    {
+                        return QString("%1.%2").arg(m_id.sid(), 6, 16, QChar('0')).arg(m_id.scids()).toUpper();
+                    }
+                }
+                return QString();
             case ChannelRole:
                 if (m_id.isService() == false)
                 {  // ensemble item
