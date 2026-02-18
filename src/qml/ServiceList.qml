@@ -465,6 +465,12 @@ Item {
                 }
             }
 
+            onExpanded: (row, depth) => {
+                if (depth === 1) {
+                    expandRecursively(row)
+                }
+            }
+
             alternatingRows: false
             delegate: TreeViewDelegate {
                 id: treeViewDelegate
