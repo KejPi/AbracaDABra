@@ -166,7 +166,7 @@ void SignalBackend::registerSnrPlot(QQuickItem *item)
         // m_snrPlot->addMarkerLine(false, static_cast<double>(DabSnrThreshold::LowSNR), "LowSNR", Qt::white, 1.0);
         // m_snrPlot->addMarkerLine(false, static_cast<double>(DabSnrThreshold::GoodSNR), "GoodSNR", Qt::white, 1.0);
 
-        m_startTimeMsec = QDateTime::currentMSecsSinceEpoch();
+        m_startTimeMsec = 0;
         m_timer->start();
     }
 }
