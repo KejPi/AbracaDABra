@@ -552,7 +552,7 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
 
     // service:  "e21234.0/e22139/320x240.jpg"
     // ensemble: "e24321/320x240.jpg"
-    static const QRegularExpression re("([0-9a-f]{6})(\\.(\\d+))?/([0-9a-f]{6})?/(\\d+x\\d+)\\..*", QRegularExpression::CaseInsensitiveOption);
+    static const QRegularExpression re("([0-9a-f]{6})(\\.(\\d+))?(/[0-9a-f]{6})?/(\\d+x\\d+)\\..*", QRegularExpression::CaseInsensitiveOption);
 
     QDir dir;
     dir.mkpath(QFileInfo(filename).absolutePath());

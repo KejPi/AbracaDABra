@@ -57,6 +57,13 @@ Item {
                 visible: appUI.isEnsembleLogoVisible
                 source: "image://metadata/logo/" + appUI.ensembleId + "/0"
                 cache: false
+                onVisibleChanged: {
+                    if (visible) {
+                        // Force reload of the logo when it becomes visible, to reflect possible changes
+                        ensembleLogoImage.source = ""
+                        ensembleLogoImage.source = "image://metadata/logo/" + appUI.ensembleId + "/0"
+                    }
+                }
             }
             AbracaLabel {
                 text: appUI.ensembleLabel

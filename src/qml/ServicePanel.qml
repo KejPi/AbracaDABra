@@ -58,6 +58,13 @@ Item {
                 visible: appUI.isServiceLogoVisible
                 source: "image://metadata/logo/" + appUI.ensembleId + "/" + appUI.serviceId
                 cache: false
+                onVisibleChanged: {
+                    if (visible) {
+                        // Force reload of the logo when it becomes visible, to reflect possible changes
+                        serviceLogoImage.source = ""
+                        serviceLogoImage.source = "image://metadata/logo/" + appUI.ensembleId + "/" + appUI.serviceId
+                    }
+                }
             }
             ColumnLayout {
                 Layout.fillWidth: true
