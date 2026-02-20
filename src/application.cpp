@@ -663,6 +663,7 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     connect(m_metadataManager, &MetadataManager::getFile, m_spiApp, &SPIApp::onFileRequest, Qt::QueuedConnection);
     connect(m_spiApp, &SPIApp::requestedFile, m_metadataManager, &MetadataManager::onFileReceived, Qt::QueuedConnection);
     connect(m_spiApp, &SPIApp::radioDNSAvailable, m_metadataManager, &MetadataManager::getEpgData);
+    connect(m_spiApp, &SPIApp::radioDNSAvailable, m_metadataManager, &MetadataManager::getSiData);
     connect(m_settingsBackend, &SettingsBackend::spiApplicationEnabled, m_radioControl, &RadioControl::onSpiApplicationEnabled, Qt::QueuedConnection);
     connect(m_settingsBackend, &SettingsBackend::spiApplicationEnabled, m_spiApp, &SPIApp::enable, Qt::QueuedConnection);
     connect(m_settingsBackend, &SettingsBackend::spiApplicationSettingsChanged, m_spiApp, &SPIApp::onSettingsChanged, Qt::QueuedConnection);
@@ -1183,6 +1184,8 @@ void Application::setChannelIndex(int index)
 
             channelSelected();
 
+            m_ui->tuneEnabled(index < 0);  // this index is set when service list is cleared by user -> we want tune enabled
+
             emit serviceRequest(freq, 0, 0);
         }
 
@@ -1274,7 +1277,7 @@ void Application::onTuneDone(uint32_t freq)
         m_isPlaying = false;
         resetDabTime();
         clearEnsembleInformationLabels();
-        clearEnsembleInformationLabels();
+        clearServiceInformationLabels();
         m_slSelectionModel->setCurrentIndex(QModelIndex(), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current);
         m_navigationModel->setEnabled(NavigationModel::AudioRecording, false);
         if (m_deviceChangeRequested)

@@ -842,6 +842,26 @@ void MetadataManager::loadEpg(const ServiceListId &servId, const QList<uint32_t>
     }
 }
 
+void MetadataManager::getSiData()
+{
+    for (ServiceListConstIterator sIt = m_serviceList->serviceListBegin(); sIt != m_serviceList->serviceListEnd(); ++sIt)
+    {
+        QList<uint32_t> ueidList;
+        for (int e = 0; e < (*sIt)->numEnsembles(); ++e)
+        {
+            uint32_t ueid = (*sIt)->getEnsemble(e)->id().ueid();
+            if (!ueidList.contains(ueid))
+            {
+                ueidList.append(ueid);
+            }
+        }
+        for (const auto &ueid : ueidList)
+        {
+            emit getSI((*sIt)->id(), ueid);
+        }
+    }
+}
+
 void MetadataManager::getEpgData()
 {
     for (ServiceListConstIterator sIt = m_serviceList->serviceListBegin(); sIt != m_serviceList->serviceListEnd(); ++sIt)
@@ -871,6 +891,7 @@ void MetadataManager::onAudioServiceSelection(const RadioControlServiceComponent
 
 void MetadataManager::addServiceEpg(const ServiceListId &ensId, const ServiceListId &servId)
 {
+    emit getSI(servId, ensId.ueid());
     loadEpg(servId, QList<uint32_t>{ensId.ueid()});
 }
 
