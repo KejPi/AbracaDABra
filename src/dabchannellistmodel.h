@@ -54,6 +54,7 @@ class DABChannelListFilteredModel : public QSortFilterProxyModel
 public:
     DABChannelListFilteredModel(QObject *parent = nullptr);
     void setChannelFilter(int freq);
+    void setCableChannelFilter(bool ena);
     int findFrequency(int freq);
 
 protected:
@@ -61,6 +62,7 @@ protected:
 
 private:
     int m_frequencyFilter;
+    bool m_showCableChannels = false;
 };
 
 #endif  // DABCHANNELLISTMODEL_H

@@ -88,6 +88,7 @@ private:
 
     BandScanState m_state = BandScanState::Idle;
 
+    int m_numChannels = 0;
     int m_channelCounter = 0;
     int m_numEnsemblesFound = 0;
     int m_numServicesFound = 0;

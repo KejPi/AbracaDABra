@@ -205,6 +205,7 @@ class SettingsBackend : public UIControlProvider
     UI_PROPERTY_SETTINGS(bool, showServiceCountryFlag, m_settings->showServiceFlag)
     UI_PROPERTY_SETTINGS(bool, fullscreen, m_settings->appWindow.fullscreen)
     UI_PROPERTY_SETTINGS(bool, compactUi, m_settings->compactUi)
+    UI_PROPERTY_SETTINGS(bool, cableChannelsEna, m_settings->cableChannelsEna)
     UI_PROPERTY_SETTINGS(QColor, slsBackgroundColor, m_settings->slsBackground)
     UI_PROPERTY_DEFAULT(bool, languageChanged, false)
     UI_PROPERTY(QString, proxyServer)

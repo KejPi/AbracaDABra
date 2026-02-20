@@ -524,6 +524,18 @@ Item {
                             }
                         }
                     }
+                    AbracaSwitch {
+                        Layout.fillWidth: true
+                        //Layout.minimumWidth: implicitWidth
+                        text: qsTr("DAB cable channels (16A - 17D)")
+                        wrapMode: Text.WordWrap
+                        checked: settingsBackend.cableChannelsEna
+                        onCheckedChanged: {
+                            if (settingsBackend.cableChannelsEna !== checked) {
+                                settingsBackend.cableChannelsEna = checked
+                            }
+                        }
+                    }
                 }
             }
         }

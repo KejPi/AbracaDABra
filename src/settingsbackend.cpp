@@ -594,6 +594,7 @@ void SettingsBackend::setSettings(Settings *settings)
     emit spiApplicationSettingsChanged(m_settings->useInternet && m_settings->spiAppEna, m_settings->radioDnsEna && m_settings->spiAppEna);
     emit fullscreenChanged();
     emit compactUiChanged();
+    emit cableChannelsEnaChanged();
 }
 
 void SettingsBackend::setRawFileLength(int msec)
