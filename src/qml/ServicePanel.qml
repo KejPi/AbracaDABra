@@ -56,15 +56,15 @@ Item {
                 Layout.preferredWidth: 32
                 Layout.preferredHeight: Layout.preferredWidth
                 visible: appUI.isServiceLogoVisible
-                source: "image://metadata/logo/" + appUI.ensembleId + "/" + appUI.serviceId
+                source: appUI.isServiceLogoVisible ? "image://metadata/logo/" + appUI.ensembleId + "/" + appUI.serviceId : ""
                 cache: false
-                onVisibleChanged: {
-                    if (visible) {
-                        // Force reload of the logo when it becomes visible, to reflect possible changes
-                        serviceLogoImage.source = ""
-                        serviceLogoImage.source = "image://metadata/logo/" + appUI.ensembleId + "/" + appUI.serviceId
-                    }
-                }
+                // onVisibleChanged: {
+                //     if (visible) {
+                //         // Force reload of the logo when it becomes visible, to reflect possible changes
+                //         serviceLogoImage.source = ""
+                //         serviceLogoImage.source = "image://metadata/logo/" + appUI.ensembleId + "/" + appUI.serviceId
+                //     }
+                // }
             }
             ColumnLayout {
                 Layout.fillWidth: true
