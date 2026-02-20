@@ -561,15 +561,15 @@ private:
             }
             if (list.first() == "flag")
             {
-                ServiceListId id = ServiceListId(static_cast<uint64_t>(list.at(1).toULong()));
+                ServiceListId servId = ServiceListId(static_cast<uint64_t>(list.at(1).toULong()));
                 QPixmap flag;
-                if (id.isService())
+                if (servId.isService())
                 {
-                    flag = m_metadataManager->data(ServiceListId(), id, MetadataManager::MetadataRole::CountryFlag).value<QPixmap>();
+                    flag = m_metadataManager->data(ServiceListId(), servId, MetadataManager::MetadataRole::CountryFlag).value<QPixmap>();
                 }
                 else
                 {
-                    flag = m_metadataManager->data(id, ServiceListId(), MetadataManager::MetadataRole::CountryFlag).value<QPixmap>();
+                    flag = m_metadataManager->data(servId, ServiceListId(), MetadataManager::MetadataRole::CountryFlag).value<QPixmap>();
                 }
                 if (flag.isNull())
                 {

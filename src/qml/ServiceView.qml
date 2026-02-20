@@ -167,6 +167,13 @@ Item {
                         Layout.preferredHeight: countryFlagImage.height
                         Layout.preferredWidth: countryFlagImage.width
                         visible: appUI.isServiceFlagVisible
+                        onVisibleChanged: {
+                            if (visible) {
+                                // Force reload flag
+                                countryFlagImage.source = ""
+                                countryFlagImage.source = "image://metadata/flag/" + appUI.serviceId
+                            }
+                        }
                         Image {
                             id: countryFlagImage
                             height: 16
