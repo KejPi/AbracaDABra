@@ -535,29 +535,42 @@ private:
         {
             QStringList list = id.split('/');
 
-            Q_ASSERT(list.count() == 2);
-
-            ServiceListId serviceId = ServiceListId(static_cast<uint64_t>(list.at(1).toULong()));
-            if (list.first() == "logo")
+            Q_ASSERT(list.size() >= 2);  // at least type and serviceId should be present
+            if (list.size() == 3)
             {
-                QPixmap logo = m_metadataManager->data(serviceId, MetadataManager::MetadataRole::SmallLogo).value<QPixmap>();
-                if (logo.isNull())
+                // uint32_t ueid = list.at(1).toUInt();
+                ServiceListId ensId = ServiceListId(static_cast<uint64_t>(list.at(1).toULong()));  // ServiceListId(0, ueid);
+                ServiceListId serviceId = ServiceListId(static_cast<uint64_t>(list.at(2).toULong()));
+                if (list.first() == "logo")
                 {
-                    logo = QPixmap(requestedSize.width() > 0 ? requestedSize.width() : 32, requestedSize.height() > 0 ? requestedSize.height() : 32);
-                    logo.fill(QColor(0, 0, 0, 0));
-                }
+                    QPixmap logo = m_metadataManager->data(ensId, serviceId, MetadataManager::MetadataRole::SmallLogo).value<QPixmap>();
+                    if (logo.isNull())
+                    {
+                        logo =
+                            QPixmap(requestedSize.width() > 0 ? requestedSize.width() : 32, requestedSize.height() > 0 ? requestedSize.height() : 32);
+                        logo.fill(QColor(0, 0, 0, 0));
+                    }
 
-                if (size)
-                {
-                    *size = QSize(logo.width(), logo.height());
-                }
+                    if (size)
+                    {
+                        *size = QSize(logo.width(), logo.height());
+                    }
 
-                return logo;
+                    return logo;
+                }
             }
-
             if (list.first() == "flag")
             {
-                QPixmap flag = m_metadataManager->data(serviceId, MetadataManager::MetadataRole::CountryFlag).value<QPixmap>();
+                ServiceListId id = ServiceListId(static_cast<uint64_t>(list.at(1).toULong()));
+                QPixmap flag;
+                if (id.isService())
+                {
+                    flag = m_metadataManager->data(ServiceListId(), id, MetadataManager::MetadataRole::CountryFlag).value<QPixmap>();
+                }
+                else
+                {
+                    flag = m_metadataManager->data(id, ServiceListId(), MetadataManager::MetadataRole::CountryFlag).value<QPixmap>();
+                }
                 if (flag.isNull())
                 {
                     flag = QPixmap(requestedSize.width() > 0 ? requestedSize.width() : 40, requestedSize.height() > 0 ? requestedSize.height() : 30);

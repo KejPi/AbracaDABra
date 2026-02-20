@@ -55,7 +55,7 @@ Item {
                 Layout.preferredWidth: 32
                 Layout.preferredHeight: Layout.preferredWidth
                 visible: appUI.isEnsembleLogoVisible
-                source: "image://metadata/logo/" + appUI.ensembleId
+                source: "image://metadata/logo/" + appUI.ensembleId + "/0"
                 cache: false
             }
             AbracaLabel {
@@ -268,7 +268,7 @@ Item {
             required property int index
             required property string sidHex
             required property bool isFavorite
-            required property int smallLogoId
+            required property string smallLogoId
 
             readonly property bool isSelectedItem: index === serviceList.selectedItemIndex
 
@@ -306,9 +306,9 @@ Item {
                         width: 32
                         height: 32
                         anchors.verticalCenter: normalViewItem.verticalCenter
-                        source: smallLogoId !== 0 ? "image://metadata/logo/" + smallLogoId : UI.imagesUrl + "icon-service.svg"
+                        source: smallLogoId !== "" ? "image://metadata/logo/" + smallLogoId : UI.imagesUrl + "icon-service.svg"
                         cache: false
-                        colorizationEnabled: smallLogoId === 0
+                        colorizationEnabled: smallLogoId === ""
                         colorizationColor: UI.colors.disabled
                     }
                     Column {

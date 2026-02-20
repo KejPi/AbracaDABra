@@ -56,7 +56,7 @@ Item {
                 Layout.preferredWidth: 32
                 Layout.preferredHeight: Layout.preferredWidth
                 visible: appUI.isServiceLogoVisible
-                source: "image://metadata/logo/"  + appUI.serviceId
+                source: "image://metadata/logo/" + appUI.ensembleId + "/" + appUI.serviceId
                 cache: false
             }
             ColumnLayout {

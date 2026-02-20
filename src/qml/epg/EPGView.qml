@@ -254,7 +254,7 @@ Rectangle {
                                             Loader {
                                                 id: logoLoader
                                                 anchors.centerIn: parent
-                                                sourceComponent: smallLogoId == 0 ? placeholderComponent : logoComponent
+                                                sourceComponent: smallLogoId === "" ? placeholderComponent : logoComponent
                                             }
                                             Component {
                                                 id: logoComponent

@@ -321,7 +321,11 @@ void SPIApp::processObject(uint16_t decoderId, MOTObjectCache::const_iterator ob
             if (m_motObjRequestList[decoderId].contains(objIt->getContentName()))
             {
                 qCDebug(spiApp) << "Found requested file" << objIt->getContentName();
-                emit requestedFile(objIt->getBody(), m_motObjRequestList[decoderId][objIt->getContentName()]);
+                auto requests = m_motObjRequestList[decoderId].values(objIt->getContentName());
+                for (const auto &requestId : requests)
+                {
+                    emit requestedFile(objIt->getBody(), requestId);
+                }
                 m_motObjRequestList[decoderId].remove(objIt->getContentName());
             }
         }
@@ -435,7 +439,7 @@ void SPIApp::onFileRequest(uint16_t decoderId, const QString &url, const QString
     // not found
     if (decoderId != SPI_APP_INVALID_DECODER_ID)
     {
-        m_motObjRequestList[decoderId][url] = requestId;
+        m_motObjRequestList[decoderId].insert(url, requestId);
     }
 
     // not found -> try to download it if not relative URL

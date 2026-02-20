@@ -57,8 +57,8 @@ public:
     ~MetadataManager();
     void processXML(const QString &xmldocument, const QString &scopeId, uint16_t decoderId);
     void onFileReceived(const QByteArray &data, const QString &requestId);
-    QVariant data(uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role) const;
-    QVariant data(const ServiceListId &id, MetadataManager::MetadataRole role) const;
+    QVariant data(uint32_t ueid, uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role) const;
+    QVariant data(const ServiceListId &endId, const ServiceListId &id, MetadataManager::MetadataRole role) const;
 
     EPGModel *epgModel(const ServiceListId &id) const;
 

@@ -71,7 +71,7 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
     if (!xmldocument.setContent(xml, QDomDocument::ParseOption::UseNamespaceProcessing))
     {
         qCWarning(metadataManager) << "Failed to parse SPI document for:" << scopeId;
-        qCDebug(metadataManager) << xml;
+        qCDebug(metadataManager) << qPrintable(xmldocument.toString());
         return;
     }
 
@@ -103,6 +103,30 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
                                 // Service element describes metadata and available bearers for a service.
                                 QStringList sidList;
                                 serviceInfo_t serviceInfo;
+
+                                // first analyze bearer(s)
+                                QDomNodeList bearerList = servicesElement.elementsByTagName("bearer");
+                                for (int b = 0; b < bearerList.count(); ++b)
+                                {
+                                    QDomElement bearerElement = bearerList.at(b).toElement();  // try to convert the node to an element
+                                    if (!bearerElement.isNull())
+                                    {
+                                        QString bearer = bearerElement.attribute("id", "");
+                                        static const QRegularExpression sidRegex("dab:[a-f0-9]([a-f0-9]{2}).(\\w{4}).(\\w{4}.\\d+)",
+                                                                                 QRegularExpression::CaseInsensitiveOption);
+                                        QRegularExpressionMatch match = sidRegex.match(bearer);
+                                        if (match.hasMatch())
+                                        {  // found valid DAB SId ==> service is available in DAB
+                                            QString sidStr = QString("%1%2/%1%3").arg(match.captured(1), match.captured(3), match.captured(2));
+                                            // this creates string like e2abcd.1/E22004 for SId with ECC=E2, SID=ABCD and SCIds=1 and ens ID 2004
+                                            if (!sidList.contains(sidStr))
+                                            {  // append if not in list
+                                                sidList.append(sidStr);
+                                            }
+                                        }
+                                    }
+                                }
+
                                 QDomNode serviceNode = servicesElement.firstChild();
                                 while (!serviceNode.isNull())
                                 {  // ETSI TS 102 818 V3.4.1 [6.5]
@@ -118,28 +142,6 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
                                     // * radiodns;
                                     // * geolocation;
                                     // * serviceGroupMember
-
-                                    // first analyze bearer(s)
-                                    QDomNodeList bearerList = servicesElement.elementsByTagName("bearer");
-                                    for (int b = 0; b < bearerList.count(); ++b)
-                                    {
-                                        QDomElement bearerElement = bearerList.at(b).toElement();  // try to convert the node to an element
-                                        if (!bearerElement.isNull())
-                                        {
-                                            QString bearer = bearerElement.attribute("id", "");
-                                            static const QRegularExpression sidRegex("dab:[a-f0-9]([a-f0-9]{2}).\\w{4}.(\\w{4}.\\d+)",
-                                                                                     QRegularExpression::CaseInsensitiveOption);
-                                            QRegularExpressionMatch match = sidRegex.match(bearer);
-                                            if (match.hasMatch())
-                                            {  // found valid DAB SId ==> service is available in DAB
-                                                QString sidStr = match.captured(1) + match.captured(2);
-                                                if (!sidList.contains(sidStr))
-                                                {  // append if not in list
-                                                    sidList.append(sidStr);
-                                                }
-                                            }
-                                        }
-                                    }
 
                                     if (!sidList.isEmpty())
                                     {  // at least one valid DAB SId was found => go through elements
@@ -548,7 +550,9 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
     QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + requestId;
     qCDebug(metadataManager) << requestId << filename;
 
-    static const QRegularExpression re("([0-9a-f]{6})(\\.(\\d+))?/(\\d+x\\d+)\\..*", QRegularExpression::CaseInsensitiveOption);
+    // service:  "e21234.0/e22139/320x240.jpg"
+    // ensemble: "e24321/320x240.jpg"
+    static const QRegularExpression re("([0-9a-f]{6})(\\.(\\d+))?/([0-9a-f]{6})?/(\\d+x\\d+)\\..*", QRegularExpression::CaseInsensitiveOption);
 
     QDir dir;
     dir.mkpath(QFileInfo(filename).absolutePath());
@@ -577,7 +581,7 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
                 if (match.captured(2).isEmpty())
                 {  // ensemble
                     uint32_t ueid = match.captured(1).toUInt(nullptr, 16);
-                    QString size = match.captured(4);
+                    QString size = match.captured(5);
                     MetadataRole role = MetadataRole::SLSLogo;
                     if (size == "32x32")
                     {
@@ -589,7 +593,7 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
                 {
                     uint32_t sid = match.captured(1).toUInt(nullptr, 16);
                     uint8_t scids = match.captured(3).toUInt();
-                    QString size = match.captured(4);
+                    QString size = match.captured(5);
                     MetadataRole role = MetadataRole::SLSLogo;
                     if (size == "32x32")
                     {
@@ -616,7 +620,7 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
             if (match.captured(2).isEmpty())
             {  // ensemble
                 uint32_t ueid = match.captured(1).toUInt(nullptr, 16);
-                QString size = match.captured(4);
+                QString size = match.captured(5);
                 MetadataRole role = MetadataRole::SLSLogo;
                 if (size == "32x32")
                 {
@@ -628,7 +632,7 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
             {
                 uint32_t sid = match.captured(1).toUInt(nullptr, 16);
                 uint8_t scids = match.captured(3).toUInt();
-                QString size = match.captured(4);
+                QString size = match.captured(5);
                 MetadataRole role = MetadataRole::SLSLogo;
                 if (size == "32x32")
                 {
@@ -640,71 +644,105 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
     }
 }
 
-QVariant MetadataManager::data(uint32_t sid, uint8_t SCIdS, MetadataRole role) const
+QVariant MetadataManager::data(uint32_t ueid, uint32_t sid, uint8_t SCIdS, MetadataRole role) const
 {
-    return data(ServiceListId(sid, SCIdS), role);
+    return data(ServiceListId(0, ueid), ServiceListId(sid, SCIdS), role);
 }
 
-QVariant MetadataManager::data(const ServiceListId &id, MetadataRole role) const
+QVariant MetadataManager::data(const ServiceListId &ensId, const ServiceListId &servId, MetadataRole role) const
 {
-    QString idStr =
-        id.isService() ? QString("%1.%2").arg(id.sid(), 6, 16, QChar('0')).arg(id.scids()) : QString("%1").arg(id.ueid(), 6, 16, QChar('0'));
     switch (role)
     {
         case SLSLogo:
-        {
-            QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + QString("%1/320x240.").arg(idStr);
-            if (QFileInfo::exists(filename + "png"))
-            {
-                QPixmap pixmap;
-                pixmap.load(filename + "png");
-                if (pixmap.width() <= 320 && pixmap.height() <= 240)
-                {
-                    return QVariant(pixmap);
-                }
-                return QVariant();
-            }
-            else if (QFileInfo::exists(filename + "jpg"))
-            {
-                QPixmap pixmap;
-                pixmap.load(filename + "jpg");
-                if (pixmap.width() <= 320 && pixmap.height() <= 240)
-                {
-                    return QVariant(pixmap);
-                }
-                return QVariant();
-            }
-        }
-        break;
         case SmallLogo:
         {
-            QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + QString("%1/32x32.").arg(idStr);
-            if (QFileInfo::exists(filename + "png"))
-            {
-                QPixmap pixmap;
-                pixmap.load(filename + "png");
-                if (pixmap.width() <= 32 && pixmap.height() <= 32)
-                {
-                    return QVariant(pixmap);
-                }
+            QString baseDir;
+            QString subDir;
+            if (servId.isValid() && ensId.isValid())
+            {  // service logo
+                baseDir = QString("%1.%2").arg(servId.sid(), 6, 16, QChar('0')).arg(servId.scids());
+                subDir = QString("/%1").arg(ensId.ueid(), 6, 16, QChar('0'));
+            }
+            else if (ensId.isValid())
+            {  // ensemble logo
+                baseDir = QString("%1").arg(ensId.ueid(), 6, 16, QChar('0'));
+            }
+            else
+            {  // invalid combination
                 return QVariant();
             }
-            else if (QFileInfo::exists(filename + "jpg"))
+            int w = 32;
+            int h = 32;
+            if (role == SLSLogo)
             {
-                QPixmap pixmap;
-                pixmap.load(filename + "jpg");
-                if (pixmap.width() <= 32 && pixmap.height() <= 32)
-                {
-                    return QVariant(pixmap);
-                }
-                return QVariant();
+                w = 320;
+                h = 240;
             }
+
+            QDir dir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + baseDir);
+            if (dir.exists())
+            {
+                QString filename =
+                    QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + baseDir + subDir + QString("/%1x%2.").arg(w).arg(h);
+                if (QFileInfo::exists(filename + "png"))
+                {
+                    QPixmap pixmap;
+                    pixmap.load(filename + "png");
+                    if (pixmap.width() <= w && pixmap.height() <= h)
+                    {
+                        return QVariant(pixmap);
+                    }
+                    return QVariant();
+                }
+                else if (QFileInfo::exists(filename + "jpg"))
+                {
+                    QPixmap pixmap;
+                    pixmap.load(filename + "jpg");
+                    if (pixmap.width() <= w && pixmap.height() <= h)
+                    {
+                        return QVariant(pixmap);
+                    }
+                    return QVariant();
+                }
+                else  // neither png nor jpg exists
+                {     // fallback for service -> going through subdirs and looking for files with correct name
+                    if (servId.isValid())
+                    {  // iterate through subdirs and find file with correct name
+                        QDirIterator it(dir.absolutePath(), QStringList() << QString("%1x%2.png").arg(w).arg(h) << QString("%1x%2.jpg").arg(w).arg(h),
+                                        QDir::Files, QDirIterator::Subdirectories);
+                        while (it.hasNext())
+                        {
+                            QString filePath = it.next();
+                            QPixmap pixmap;
+                            pixmap.load(filePath);
+                            if (pixmap.width() <= w && pixmap.height() <= h)
+                            {
+                                return QVariant(pixmap);
+                            }
+                        }
+                    }
+                }
+            }
+            return QVariant();
         }
         break;
         case CountryFlag:
         {
-            QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/flags/" +
-                               QString("%1.png").arg(DabTables::getCountryCodeISO3166(id.sid()));
+            QString countryCode;
+            if (servId.isValid())
+            {
+                countryCode = DabTables::getCountryCodeISO3166(servId.sid());
+            }
+            else if (ensId.isValid())
+            {
+                countryCode = DabTables::getCountryCodeISO3166(ensId.ueid());
+            }
+            else
+            {  // this should not happen
+                return QVariant();
+            }
+
+            QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/flags/" + QString("%1.png").arg(countryCode);
             if (QFileInfo::exists(filename))
             {
                 QPixmap pixmap;
@@ -713,7 +751,6 @@ QVariant MetadataManager::data(const ServiceListId &id, MetadataRole role) const
             }
             else
             {  // download flag
-                QString countryCode = DabTables::getCountryCodeISO3166(id.sid());
                 if (!countryCode.isEmpty())
                 {
                     QNetworkAccessManager *manager = new QNetworkAccessManager();
@@ -730,7 +767,7 @@ QVariant MetadataManager::data(const ServiceListId &id, MetadataRole role) const
                                     {
                                         file.write(reply->readAll());
                                         file.close();
-                                        emit dataUpdated(id, MetadataManager::CountryFlag);
+                                        emit dataUpdated(servId, MetadataManager::CountryFlag);
                                     }
                                 }
                                 reply->deleteLater();

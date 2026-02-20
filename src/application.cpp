@@ -834,7 +834,7 @@ void Application::onEnsembleInfo(const RadioControlEnsemble &ens)
 
     m_ui->ensembleId(ServiceListId(ens.frequency, ens.ueid));
 
-    QPixmap logo = m_metadataManager->data(ServiceListId(ens.frequency, ens.ueid), MetadataManager::SmallLogo).value<QPixmap>();
+    QPixmap logo = m_metadataManager->data(ServiceListId(ens.frequency, ens.ueid), ServiceListId(), MetadataManager::SmallLogo).value<QPixmap>();
     if (!logo.isNull())
     {
         m_ui->isEnsembleLogoVisible(true);
@@ -1622,7 +1622,7 @@ void Application::onAudioServiceSelection(const RadioControlServiceComponent &s)
         m_ui->infoLabelIndex(0);
 
         m_ui->serviceId(ServiceListId(s.SId.value(), s.SCIdS).value());
-        QPixmap logo = m_metadataManager->data(s.SId.value(), s.SCIdS, MetadataManager::SmallLogo).value<QPixmap>();
+        QPixmap logo = m_metadataManager->data(m_ueid, s.SId.value(), s.SCIdS, MetadataManager::SmallLogo).value<QPixmap>();
         if (!logo.isNull())
         {
             m_ui->isServiceLogoVisible(true);
@@ -1631,9 +1631,11 @@ void Application::onAudioServiceSelection(const RadioControlServiceComponent &s)
         {
             m_ui->isServiceLogoVisible(false);
         }
-        m_slsBackend[Instance::Service]->showServiceLogo(m_metadataManager->data(s.SId.value(), s.SCIdS, MetadataManager::SLSLogo).value<QPixmap>(),
-                                                         true);
-
+        logo = m_metadataManager->data(m_ueid, s.SId.value(), s.SCIdS, MetadataManager::SLSLogo).value<QPixmap>();
+        if (!logo.isNull())
+        {
+            m_slsBackend[Instance::Service]->showServiceLogo(logo, true);
+        }
         onShowCountryFlagChanged();
     }
     else
@@ -2013,11 +2015,17 @@ void Application::onMetadataUpdated(const ServiceListId &id, MetadataManager::Me
             switch (role)
             {
                 case MetadataManager::MetadataRole::SLSLogo:
-                    m_slsBackend[Instance::Service]->showServiceLogo(m_metadataManager->data(id, MetadataManager::SLSLogo).value<QPixmap>());
-                    break;
+                {
+                    QPixmap logo = m_metadataManager->data(ServiceListId(0, m_ueid), id, MetadataManager::SLSLogo).value<QPixmap>();
+                    if (logo.isNull() == false)
+                    {
+                        m_slsBackend[Instance::Service]->showServiceLogo(logo);
+                    }
+                }
+                break;
                 case MetadataManager::SmallLogo:
                 {
-                    QPixmap logo = m_metadataManager->data(id, MetadataManager::SmallLogo).value<QPixmap>();
+                    QPixmap logo = m_metadataManager->data(ServiceListId(0, m_ueid), id, MetadataManager::SmallLogo).value<QPixmap>();
                     if (!logo.isNull())
                     {
                         m_ui->isServiceLogoVisible(true);
@@ -2032,7 +2040,7 @@ void Application::onMetadataUpdated(const ServiceListId &id, MetadataManager::Me
                 {
                     if (m_settings->showServiceFlag)
                     {
-                        QPixmap logo = m_metadataManager->data(id, MetadataManager::CountryFlag).value<QPixmap>();
+                        QPixmap logo = m_metadataManager->data(ServiceListId(), id, MetadataManager::CountryFlag).value<QPixmap>();
                         if (!logo.isNull())
                         {
                             m_ui->isServiceFlagVisible(true);
@@ -2054,7 +2062,7 @@ void Application::onMetadataUpdated(const ServiceListId &id, MetadataManager::Me
             {
                 case MetadataManager::SmallLogo:
                 {
-                    QPixmap logo = m_metadataManager->data(id, MetadataManager::SmallLogo).value<QPixmap>();
+                    QPixmap logo = m_metadataManager->data(id, ServiceListId(), MetadataManager::SmallLogo).value<QPixmap>();
                     if (!logo.isNull())
                     {
                         m_ui->isEnsembleLogoVisible(true);
@@ -2070,7 +2078,7 @@ void Application::onMetadataUpdated(const ServiceListId &id, MetadataManager::Me
                 {
                     if (m_settings->showEnsFlag)
                     {
-                        QPixmap flag = m_metadataManager->data(id, MetadataManager::CountryFlag).value<QPixmap>();
+                        QPixmap flag = m_metadataManager->data(id, ServiceListId(), MetadataManager::CountryFlag).value<QPixmap>();
                         if (!flag.isNull())
                         {
                             m_ui->isEnsembleFlagVisible(true);
@@ -4098,7 +4106,8 @@ void Application::onShowCountryFlagChanged()
 {
     if (m_settings->showServiceFlag && m_SId.isValid())
     {  // valid service
-        QPixmap countryFlag = m_metadataManager->data(m_SId.value(), m_SCIdS, MetadataManager::CountryFlag).value<QPixmap>();
+        QPixmap countryFlag =
+            m_metadataManager->data(ServiceListId(), ServiceListId(m_SId.value(), m_SCIdS), MetadataManager::CountryFlag).value<QPixmap>();
         if (!countryFlag.isNull())
         {
             m_ui->isServiceFlagVisible(true);
@@ -4116,7 +4125,8 @@ void Application::onShowCountryFlagChanged()
 
     if (m_settings->showEnsFlag && m_ueid != 0)
     {  // valid ensemble
-        QPixmap countryFlag = m_metadataManager->data(ServiceListId(m_frequency, m_ueid), MetadataManager::CountryFlag).value<QPixmap>();
+        QPixmap countryFlag =
+            m_metadataManager->data(ServiceListId(m_frequency, m_ueid), ServiceListId(), MetadataManager::CountryFlag).value<QPixmap>();
         if (!countryFlag.isNull())
         {
             m_ui->isEnsembleFlagVisible(true);

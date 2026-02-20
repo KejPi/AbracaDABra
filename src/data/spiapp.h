@@ -119,7 +119,7 @@ private:
     QNetworkAccessManager *m_netAccessManager;
     QQueue<QPair<QString, QString>> m_downloadReqQueue;
     QQueue<QPair<QString, QString>> m_radioDnsDownloadQueue;
-    QHash<uint16_t, QHash<QString, QString>> m_motObjRequestList;
+    QHash<uint16_t, QMultiHash<QString, QString>> m_motObjRequestList;
     void radioDNSLookup(const QString &fqdn);
     QString radioDNSFQDN(const ServiceListId &servId, const uint32_t &ueid) const;
     QString radioDNSServiceIdentifier(const ServiceListId &servId, const uint32_t &ueid) const;

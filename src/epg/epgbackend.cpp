@@ -62,19 +62,6 @@ void EPGBackend::setSelectedEpgItem(const QPersistentModelIndex &newSelectedEpgI
     emit selectedEpgItemChanged();
 }
 
-// void EPGBackend::showEvent(QShowEvent *event)
-// {
-//     setIsVisible(true);
-//     QDialog::showEvent(event);
-// }
-
-// void EPGBackend::closeEvent(QCloseEvent *event)
-// {
-//     m_settings->epg.geometry = saveGeometry();
-//     setIsVisible(false);
-//     QDialog::closeEvent(event);
-// }
-
 bool EPGBackend::filterEmptyEpg() const
 {
     return m_settings->epg.filterEmptyEpg;

@@ -98,10 +98,10 @@ Item {
                             if (visible) {
                                 // Force reload of the logo when it becomes visible, to reflect possible changes
                                 serviceLogoImage.source = ""
-                                serviceLogoImage.source = "image://metadata/logo/"  + appUI.serviceId
+                                serviceLogoImage.source = "image://metadata/logo/" + appUI.ensembleId + "/" + appUI.serviceId
                             }
                         }
-                        source: "image://metadata/logo/"  + appUI.serviceId
+                        source: "image://metadata/logo/" + appUI.ensembleId + "/" + appUI.serviceId
                         cache: false
                     }
                     AbracaLabel {
