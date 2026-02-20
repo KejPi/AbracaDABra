@@ -150,10 +150,16 @@ Item {
                     onClicked: application.onChannelDownClicked()
                 }
                 AbracaLabel {
+                    id: frequencyLabel
                     Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                     text: appUI.frequencyLabel
-                    Layout.preferredWidth: 100
+                    Layout.preferredWidth: metrics.width
                     horizontalAlignment: Qt.AlignHCenter
+                    TextMetrics {
+                        id: metrics
+                        text: "000.000 MHz"
+                        font: frequencyLabel.font
+                    }
                 }
                 AbracaImgButton {
                     id: channelUp
