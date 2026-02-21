@@ -539,8 +539,8 @@ private:
             if (list.size() == 3)
             {
                 // uint32_t ueid = list.at(1).toUInt();
-                ServiceListId ensId = ServiceListId(static_cast<uint64_t>(list.at(1).toULong()));  // ServiceListId(0, ueid);
-                ServiceListId serviceId = ServiceListId(static_cast<uint64_t>(list.at(2).toULong()));
+                ServiceListId ensId = ServiceListId(static_cast<uint64_t>(list.at(1).toULongLong()));  // ServiceListId(0, ueid);
+                ServiceListId serviceId = ServiceListId(static_cast<uint64_t>(list.at(2).toULongLong()));
                 if (list.first() == "logo")
                 {
                     QPixmap logo = m_metadataManager->data(ensId, serviceId, MetadataManager::MetadataRole::SmallLogo).value<QPixmap>();
@@ -561,7 +561,7 @@ private:
             }
             if (list.first() == "flag")
             {
-                ServiceListId servId = ServiceListId(static_cast<uint64_t>(list.at(1).toULong()));
+                ServiceListId servId = ServiceListId(static_cast<uint64_t>(list.at(1).toULongLong()));
                 QPixmap flag;
                 if (servId.isService())
                 {
