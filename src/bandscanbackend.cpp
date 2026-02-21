@@ -217,6 +217,6 @@ void BandScanBackend::onServiceListComplete(const RadioControlEnsemble &)
     if ((nullptr != m_timer) && (m_timer->isActive()))
     {
         m_timer->stop();
-        scanStep();
+        QTimer::singleShot(500, this, [this]() { scanStep(); });
     }
 }
