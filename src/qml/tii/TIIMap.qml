@@ -213,24 +213,30 @@ Item {
                 }
             }
         }
-        AbracaTableView {
-            id: tiiTableView
-            model: backend.tableModel
-            selectionModel: backend.tableSelectionModel
-            visible: backend.isTii && showTable && backend.tableModel.rowCount > 0
+        Loader {
+            active: backend.isTii && showTable
+            asynchronous: true
 
-            sortingEnabled: true
-            sortIndicatorColumn: 1
-            sortIndicatorOrder: Qt.DescendingOrder
-            cellsLeftAligned: false
-            maxColumnWidth: 200
-
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.rightMargin: (parent.width - width) > width/2 ? 10 : (parent.width - width) / 2
+            anchors.right: map.right
+            anchors.top: map.top
+            anchors.rightMargin: (map.width - width) > width/2 ? 10 : (map.width - width) / 2
             anchors.topMargin: 10
-            height: parent.width > 3*width ? infoBox.y - parent.y - 20 : Math.min(infoBox.y - parent.y - 20, parent.height * 0.4)
-            width: Math.min(preferedWidth, parent.width - 20)
+
+            sourceComponent: AbracaTableView {
+                id: tiiTableView
+                model: backend.tableModel
+                selectionModel: backend.tableSelectionModel
+                visible: backend.tableModel.rowCount > 0
+
+                sortingEnabled: true
+                sortIndicatorColumn: 1
+                sortIndicatorOrder: Qt.DescendingOrder
+                cellsLeftAligned: false
+                maxColumnWidth: 200
+
+                height: map.width > 3*width ? infoBox.y - map.y - 20 : Math.min(infoBox.y - map.y - 20, map.height * 0.4)
+                width: Math.min(preferedWidth, map.width - 20)
+            }
         }
         Connections {
             target: backend
