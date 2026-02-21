@@ -37,77 +37,19 @@
 #include "inputdevice.h"
 
 // socket
-#if defined(_WIN32)
-#include <winsock2.h>
-#include <windows.h>
-#include <ws2tcpip.h>
-
-#else
-
+#if !defined(_WIN32)
 #include <arpa/inet.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <poll.h>
-#include <sys/socket.h>
-#include <unistd.h>
-
-#define SOCKET int
-#define INVALID_SOCKET (-1)
 #endif
+
 // clang-format on
 
-#define RTLTCP_CHUNK_SIZE (INPUT_CHUNK_IQ_SAMPLES * 2)  // was (16384 * 100)
+#define RTLTCP_CHUNK_SIZE (INPUT_CHUNK_IQ_SAMPLES / 2)  // 25ms of IQ samples at 2048 kHz
 
 #define RTLTCP_DOC_ENABLE 1          // enable DOC
 #define RTLTCP_AGC_ENABLE 1          // enable AGC
-#define RTLTCP_START_COUNTER_INIT 2  // init value of the counter used to reset buffer after tune
+#define RTLTCP_START_COUNTER_INIT 8  // init value of the counter used to reset buffer after tune
 
 #define RTLTCP_AGC_LEVEL_MAX_DEFAULT 105
-
-class RtlTcpWorker : public QThread
-{
-    Q_OBJECT
-public:
-    explicit RtlTcpWorker(SOCKET sock, QObject *parent = nullptr);
-    void captureIQ(bool ena);
-    void startStopRecording(bool ena);
-    bool isRunning();
-
-protected:
-    void run() override;
-signals:
-    void agcLevel(float level);
-    void recordBuffer(const uint8_t *buf, uint32_t len);
-    void dataReady();
-
-private:
-    SOCKET m_sock;
-
-    std::atomic<bool> m_isRecording;
-    std::atomic<bool> m_enaCaptureIQ;
-    std::atomic<bool> m_watchdogFlag;
-    std::atomic<int8_t> m_captureStartCntr;
-
-    // DOC memory
-    float m_dcI = 0.0;
-    float m_dcQ = 0.0;
-#if (RTLTCP_DOC_ENABLE > 0)
-    constexpr static const float m_doc_c = 0.05;
-#endif
-
-    // AGC memory
-    float m_agcLevel = 0.0;
-#if (RTLTCP_AGC_ENABLE > 0)
-    constexpr static const float m_agcLevel_catt = 0.1;
-    constexpr static const float m_agcLevel_crel = 0.00005;
-#endif
-
-    // input buffer
-    uint8_t m_bufferIQ[RTLTCP_CHUNK_SIZE];
-
-    void processInputData(unsigned char *buf, uint32_t len);
-};
 
 class RtlTcpInput : public InputDevice
 {
@@ -159,15 +101,13 @@ public:
 
 private:
     uint32_t m_frequency;
-    SOCKET m_sock;
     QString m_address;
     int m_port;
-    QTcpSocket *m_controlSocket;
+    QTcpSocket *m_streamSocket = nullptr;
+    QTcpSocket *m_controlSocket = nullptr;
     bool m_controlSocketEna;
     bool m_haveControlSocket;
 
-    RtlTcpWorker *m_worker;
-    QTimer m_watchdogTimer;
     RtlGainMode m_gainMode = RtlGainMode::Undefined;
     int m_gainIdx;
     QList<int> *m_gainList;
@@ -185,15 +125,40 @@ private:
     // gain is set from outside using setGainMode() function
     void setGain(int gainIdx);
 
-    // used by worker
     void onAgcLevel(float agcLevel);
 
     void sendCommand(const RtlTcpCommand &cmd, uint32_t param);
-    void onReadThreadStopped();
-    void onWatchdogTimeout();
+    void onSocketError(QAbstractSocket::SocketError socketError);
 
     void initControlSocket();
     void readControlSocketData();
+
+    bool m_isRecording = false;
+    bool m_enaCaptureIQ = false;
+    int8_t m_captureStartCntr = 0;
+    void captureIQ(bool ena);
+
+    // DOC memory
+    float m_dcI = 0.0;
+    float m_dcQ = 0.0;
+#if (RTLTCP_DOC_ENABLE > 0)
+    constexpr static const float m_doc_c = 0.05;
+#endif
+
+    // AGC memory
+    int m_agcLevelEmitCntr = 0;
+    float m_agcLevel = 0.0;
+#if (RTLTCP_AGC_ENABLE > 0)
+    constexpr static const float m_agcLevel_catt = 0.1;
+    constexpr static const float m_agcLevel_crel = 0.00005;
+#endif
+
+    // input buffer
+    qint64 m_bytesReceived = 0;
+    uint8_t m_bufferIQ[RTLTCP_CHUNK_SIZE];
+
+    void readFromSocket();
+    void processInputData(unsigned char *buf, uint32_t len);
 };
 
 #endif  // RTLTCPINPUT_H
