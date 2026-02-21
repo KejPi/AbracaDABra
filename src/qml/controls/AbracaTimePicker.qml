@@ -149,32 +149,52 @@ Item {
                         role: UI.LabelRole.Secondary
                     }
 
-                    Tumbler {
-                        id: hourTumbler
+                    Item {
                         width: use24HourFormat ? 70 : 60
                         height: 150
-                        visibleItemCount: 5
 
-                        model: use24HourFormat ? 24 : 12
+                        Tumbler {
+                            id: hourTumbler
+                            anchors.fill: parent
+                            visibleItemCount: 5
 
-                        delegate: AbracaLabel {
-                            text: use24HourFormat ?
-                                  String(modelData).padStart(2, '0') :
-                                  (modelData === 0 ? "12" : String(modelData).padStart(2, '0'))
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            opacity: 1.0 - Math.abs(Tumbler.displacement) / (Tumbler.tumbler.visibleItemCount / 2)
+                            model: use24HourFormat ? 24 : 12
+
+                            delegate: AbracaLabel {
+                                text: use24HourFormat ?
+                                      String(modelData).padStart(2, '0') :
+                                      (modelData === 0 ? "12" : String(modelData).padStart(2, '0'))
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                opacity: 1.0 - Math.abs(Tumbler.displacement) / (Tumbler.tumbler.visibleItemCount / 2)
+
+                                TapHandler {
+                                    onTapped: hourTumbler.currentIndex = index
+                                }
+                            }
+
+                            onCurrentIndexChanged: updateTimeFromTumblers()
+
+                            Component.onCompleted: {
+                                var hours = root.selectedTime.getHours()
+                                if (use24HourFormat) {
+                                    currentIndex = hours
+                                } else {
+                                    var hour12 = hours % 12
+                                    currentIndex = hour12
+                                }
+                            }
                         }
 
-                        onCurrentIndexChanged: updateTimeFromTumblers()
-
-                        Component.onCompleted: {
-                            var hours = root.selectedTime.getHours()
-                            if (use24HourFormat) {
-                                currentIndex = hours
-                            } else {
-                                var hour12 = hours % 12
-                                currentIndex = hour12
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.NoButton
+                            onWheel: (wheel) => {
+                                if (wheel.angleDelta.y > 0) {
+                                    hourTumbler.currentIndex = (hourTumbler.currentIndex - 1 + hourTumbler.count) % hourTumbler.count
+                                } else if (wheel.angleDelta.y < 0) {
+                                    hourTumbler.currentIndex = (hourTumbler.currentIndex + 1) % hourTumbler.count
+                                }
                             }
                         }
                     }
@@ -199,26 +219,45 @@ Item {
                         role: UI.LabelRole.Secondary
                     }
 
-                    Tumbler {
-                        id: minuteTumbler
+                    Item {
                         width: 60
                         height: 150
-                        visibleItemCount: 5
 
-                        model: 60
+                        Tumbler {
+                            id: minuteTumbler
+                            anchors.fill: parent
+                            visibleItemCount: 5
 
-                        delegate: AbracaLabel {
-                            text: String(modelData).padStart(2, '0')
-                            //font.pixelSize: 18
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            opacity: 1.0 - Math.abs(Tumbler.displacement) / (Tumbler.tumbler.visibleItemCount / 2)
+                            model: 60
+
+                            delegate: AbracaLabel {
+                                text: String(modelData).padStart(2, '0')
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                opacity: 1.0 - Math.abs(Tumbler.displacement) / (Tumbler.tumbler.visibleItemCount / 2)
+
+                                TapHandler {
+                                    onTapped: minuteTumbler.currentIndex = index
+                                }
+                            }
+
+                            onCurrentIndexChanged: updateTimeFromTumblers()
+
+                            Component.onCompleted: {
+                                currentIndex = root.selectedTime.getMinutes()
+                            }
                         }
 
-                        onCurrentIndexChanged: updateTimeFromTumblers()
-
-                        Component.onCompleted: {
-                            currentIndex = root.selectedTime.getMinutes()
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.NoButton
+                            onWheel: (wheel) => {
+                                if (wheel.angleDelta.y > 0) {
+                                    minuteTumbler.currentIndex = (minuteTumbler.currentIndex - 1 + minuteTumbler.count) % minuteTumbler.count
+                                } else if (wheel.angleDelta.y < 0) {
+                                    minuteTumbler.currentIndex = (minuteTumbler.currentIndex + 1) % minuteTumbler.count
+                                }
+                            }
                         }
                     }
                 }
@@ -234,26 +273,45 @@ Item {
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
 
-                    Tumbler {
-                        id: amPmTumbler
+                    Item {
                         width: 60
                         height: 150
-                        visibleItemCount: 5
 
-                        model: ["AM", "PM"]
+                        Tumbler {
+                            id: amPmTumbler
+                            anchors.fill: parent
+                            visibleItemCount: 5
 
-                        delegate: AbracaLabel {
-                            text: modelData
-                            // font.pixelSize: 18
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            opacity: 1.0 - Math.abs(Tumbler.displacement) / (Tumbler.tumbler.visibleItemCount / 2)
+                            model: ["AM", "PM"]
+
+                            delegate: AbracaLabel {
+                                text: modelData
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                opacity: 1.0 - Math.abs(Tumbler.displacement) / (Tumbler.tumbler.visibleItemCount / 2)
+
+                                TapHandler {
+                                    onTapped: amPmTumbler.currentIndex = index
+                                }
+                            }
+
+                            onCurrentIndexChanged: updateTimeFromTumblers()
+
+                            Component.onCompleted: {
+                                currentIndex = root.selectedTime.getHours() >= 12 ? 1 : 0
+                            }
                         }
 
-                        onCurrentIndexChanged: updateTimeFromTumblers()
-
-                        Component.onCompleted: {
-                            currentIndex = root.selectedTime.getHours() >= 12 ? 1 : 0
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.NoButton
+                            onWheel: (wheel) => {
+                                if (wheel.angleDelta.y > 0) {
+                                    amPmTumbler.currentIndex = (amPmTumbler.currentIndex - 1 + amPmTumbler.count) % amPmTumbler.count
+                                } else if (wheel.angleDelta.y < 0) {
+                                    amPmTumbler.currentIndex = (amPmTumbler.currentIndex + 1) % amPmTumbler.count
+                                }
+                            }
                         }
                     }
                 }
