@@ -43,7 +43,7 @@
 
 // clang-format on
 
-#define RTLTCP_CHUNK_SIZE (INPUT_CHUNK_IQ_SAMPLES / 2)  // 25ms of IQ samples at 2048 kHz
+#define RTLTCP_CHUNK_SIZE (INPUT_CHUNK_IQ_SAMPLES / 4 * 2 * sizeof(uint8_t))  // 12.5ms of IQ samples at 2048 kHz
 
 #define RTLTCP_DOC_ENABLE 1          // enable DOC
 #define RTLTCP_AGC_ENABLE 1          // enable AGC

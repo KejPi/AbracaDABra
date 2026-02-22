@@ -777,9 +777,8 @@ void RtlTcpInput::processInputData(unsigned char *buf, uint32_t len)
 #if (RTLTCP_AGC_ENABLE > 0)
     // store memory
     m_agcLevel = agcLev;
-    if (0 == (++m_agcLevelEmitCntr & 0x07))
+    if (0 == (++m_agcLevelEmitCntr & 0x0F))
     {
-        // emit agcLevel(agcLev);
         onAgcLevel(agcLev);
     }
 #endif
