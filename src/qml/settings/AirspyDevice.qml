@@ -257,8 +257,7 @@ Item {
         }
         AbracaGroupBox {
             id: expertGroupBox
-            title: qsTr("Expert settings")
-            enabled: settingsBackend.isAirspyControlEnabled
+            title: qsTr("Expert settings")            
             Layout.fillWidth: true
             GridLayout {
                 anchors.fill: parent
@@ -274,9 +273,26 @@ Item {
                     //Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
                     text: ""
+                    enabled: settingsBackend.isAirspyControlEnabled
                     checked: settingsBackend.airspyBiasT
                     onCheckedChanged: if (settingsBackend.airspyBiasT !== checked) {
                         settingsBackend.airspyBiasT = checked
+                    }
+                }
+                Item {
+                    Layout.fillWidth: true
+                }
+                AbracaLabel {
+                    text: qsTr("Prefer 4096kHz rate:")
+                }
+                AbracaSwitch {
+                    //Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
+                    text: ""
+                    enabled: settingsBackend.isAirspyControlEnabled === false
+                    checked: settingsBackend.airspyPrefer4096kHz
+                    onCheckedChanged: if (settingsBackend.airspyPrefer4096kHz !== checked) {
+                        settingsBackend.airspyPrefer4096kHz = checked
                     }
                 }
                 Item {

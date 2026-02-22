@@ -133,6 +133,7 @@ class SettingsBackend : public UIControlProvider
     UI_PROPERTY_DEFAULT(bool, isAirspyManualGainEnabled, false);
     UI_PROPERTY_DEFAULT(bool, airspyBiasT, false)
     UI_PROPERTY_SETTINGS(bool, isAirspyFallbackChecked, m_settings->airspy.fallbackConnection);
+    UI_PROPERTY_SETTINGS(bool, airspyPrefer4096kHz, m_settings->airspy.prefer4096kHz)
 #endif
 #if HAVE_SOAPYSDR
     UI_PROPERTY(QStringList, soapySdrDeviceDesc)

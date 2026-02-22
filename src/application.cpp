@@ -2600,11 +2600,7 @@ void Application::initInputDevice(const InputDevice::Id &d, const QVariant &id)
         case InputDevice::Id::AIRSPY:
         {
 #if HAVE_AIRSPY
-#ifdef Q_OS_ANDROID
-            m_inputDevice = new AirspyInput(true);
-#else
             m_inputDevice = new AirspyInput(m_settings->airspy.prefer4096kHz);
-#endif
 
             // signals have to be connected before calling isAvailable
 
