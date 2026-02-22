@@ -37,7 +37,10 @@
 #include "inputdevice.h"
 
 // socket
-#if !defined(_WIN32)
+#if defined(_WIN32)
+// ntohl
+#include <winsock2.h>
+#else
 #include <arpa/inet.h>
 #endif
 
