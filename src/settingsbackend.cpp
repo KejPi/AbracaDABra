@@ -1039,7 +1039,7 @@ void SettingsBackend::selectRawFile(const QUrl &fileUrl)
     { /* format cannot be guessed from extension - if XML header is recognized, then it will be set automatically */
     }
 
-    setConnectButton(ConnectButtonOn);
+    setConnectButton(ConnectButtonAuto);
     isRawFileFormatSelectionEnabled(true);
 
     // we do not know the length yet
