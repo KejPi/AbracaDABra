@@ -63,6 +63,7 @@ Item {
                 onEditingFinished: if (settingsBackend.rtlTcpIpAddress !== text) {
                     settingsBackend.rtlTcpIpAddress = text;
                 }
+                inputMethodHints: Qt.ImhDigitsOnly
             }
             AbracaLabel {
                 text: qsTr("Port:")
