@@ -112,17 +112,11 @@ SettingsBackend::SettingsBackend(QQmlApplicationEngine *qmlEngine, QObject *pare
                 }
             });
 #endif
+
     connect(this, &SettingsBackend::rawFileProgressValueChanged, this, &SettingsBackend::updateRawFileProgressLabel);
     connect(this, &SettingsBackend::rawFileProgressMaxChanged, this, &SettingsBackend::updateRawFileProgressLabel);
     connect(m_inputsModel, &ItemModel::currentIndexChanged, this, &SettingsBackend::onCurrentDeviceChanged);
-    connect(m_rawFileFormatModel, &ItemModel::currentIndexChanged, this,
-            [this]()
-            {
-                if (static_cast<RawFileInputFormat>(m_rawFileFormatModel->currentData().toInt()) != m_settings->rawfile.format)
-                {
-                    setConnectButton(ConnectButtonOn);
-                }
-            });
+    connect(m_rawFileFormatModel, &ItemModel::currentIndexChanged, this, [this]() { setConnectButton(ConnectButtonAuto); });
     connect(m_rtlSdrDevicesModel, &ItemModel::currentIndexChanged, this, [this]() { setConnectButton(ConnectButtonAuto); });
     connect(this, &SettingsBackend::rtlSdrGainIndexChanged, this, &SettingsBackend::updateRtlSdrGainLabel);
     connect(this, &SettingsBackend::rtlSdrGainIndexMaxChanged, this, &SettingsBackend::updateRtlSdrGainLabel);
@@ -626,57 +620,67 @@ QLocale::Language SettingsBackend::applicationLanguage() const
     }
 }
 
-void SettingsBackend::requestConnectDevice()
+void SettingsBackend::requestConnectDisconnectDevice()
 {
-    setConnectButton(ConnectButtonOff);
+    if (isConnectButton())
+    {  // connect device
+        setConnectButton(ConnectButtonOff);
 #if HAVE_SOAPYSDR
-    setSoapySdrGainModel(false);
+        setSoapySdrGainModel(false);
 #endif
-    m_inputDeviceId = InputDevice::Id::UNDEFINED;
-    setStatusLabel(true);  // clear label
-    m_settings->inputDevice = static_cast<InputDevice::Id>(m_inputsModel->currentData().toInt());
-    QVariant id;
-    switch (m_settings->inputDevice)
-    {
-        case InputDevice::Id::RTLSDR:
-            id = m_rtlSdrDevicesModel->currentData();
-            isRtlSdrDeviceSelectionEnabled(false);
-            break;
-        case InputDevice::Id::RTLTCP:
-            m_settings->rtltcp.tcpAddress = m_rtlTcpIpAddress;
-            m_settings->rtltcp.tcpPort = m_rtlTcpPort;
-            m_settings->rtltcp.controlSocketEna = m_isRtlTcpControlSocketChecked;
-            break;
-        case InputDevice::Id::RARTTCP:
-            break;
-        case InputDevice::Id::UNDEFINED:
-            break;
-        case InputDevice::Id::RAWFILE:
-            m_settings->rawfile.file = m_rawFileName;
-            m_settings->rawfile.format = static_cast<RawFileInputFormat>(m_rawFileFormatModel->currentData().toInt());
-            break;
-        case InputDevice::Id::AIRSPY:
+        m_inputDeviceId = InputDevice::Id::UNDEFINED;
+        setStatusLabel(true);  // clear label
+        m_settings->inputDevice = static_cast<InputDevice::Id>(m_inputsModel->currentData().toInt());
+        QVariant id;
+        switch (m_settings->inputDevice)
+        {
+            case InputDevice::Id::RTLSDR:
+                id = m_rtlSdrDevicesModel->currentData();
+                isRtlSdrDeviceSelectionEnabled(false);
+                break;
+            case InputDevice::Id::RTLTCP:
+                m_settings->rtltcp.tcpAddress = m_rtlTcpIpAddress;
+                m_settings->rtltcp.tcpPort = m_rtlTcpPort;
+                m_settings->rtltcp.controlSocketEna = m_isRtlTcpControlSocketChecked;
+                break;
+            case InputDevice::Id::RARTTCP:
+                break;
+            case InputDevice::Id::UNDEFINED:
+                break;
+            case InputDevice::Id::RAWFILE:
+                m_settings->rawfile.file = m_rawFileName;
+                m_settings->rawfile.format = static_cast<RawFileInputFormat>(m_rawFileFormatModel->currentData().toInt());
+                break;
+            case InputDevice::Id::AIRSPY:
 #if HAVE_AIRSPY
-            id = m_airspyDevicesModel->currentData();
-            isAirspyDeviceSelectionEnabled(false);
+                id = m_airspyDevicesModel->currentData();
+                isAirspyDeviceSelectionEnabled(false);
 #endif
-            break;
-        case InputDevice::Id::SOAPYSDR:
+                break;
+            case InputDevice::Id::SOAPYSDR:
 #if HAVE_SOAPYSDR
-            m_settings->soapysdr.devArgs = m_soapySdrDevArgs.trimmed();
-            m_settings->soapysdr.channel = m_soapySdrChannelNum;
-            m_settings->soapysdr.antenna = m_soapySdrAntenna.trimmed();
+                m_settings->soapysdr.devArgs = m_soapySdrDevArgs.trimmed();
+                m_settings->soapysdr.channel = m_soapySdrChannelNum;
+                m_settings->soapysdr.antenna = m_soapySdrAntenna.trimmed();
 #endif
-            break;
-        case InputDevice::Id::SDRPLAY:
+                break;
+            case InputDevice::Id::SDRPLAY:
 #if HAVE_SOAPYSDR
-            id = m_sdrplayDevicesModel->currentData();
-            m_settings->sdrplay.channel = m_sdrplayChannelModel->currentData().toInt();
-            m_settings->sdrplay.antenna = m_sdrplayAntennaModel->currentData().toString();
+                id = m_sdrplayDevicesModel->currentData();
+                m_settings->sdrplay.channel = m_sdrplayChannelModel->currentData().toInt();
+                m_settings->sdrplay.antenna = m_sdrplayAntennaModel->currentData().toString();
 #endif
-            break;
+                break;
+        }
+        emit inputDeviceChanged(m_settings->inputDevice, id);
     }
-    emit inputDeviceChanged(m_settings->inputDevice, id);
+    else
+    {  // disconnect device
+        resetInputDevice();
+        m_inputDeviceId = InputDevice::Id::UNDEFINED;
+        emit inputDeviceChanged(InputDevice::Id::UNDEFINED, QVariant{});
+        setConnectButton(ConnectButtonAuto);
+    }
 }
 
 void SettingsBackend::onBandwidthChanged()
@@ -1128,7 +1132,7 @@ void SettingsBackend::setInputDevice(InputDevice::Id id, InputDevice *device)
         case InputDevice::Id::UNDEFINED:
             break;
     }
-    setConnectButton(ConnectButtonOff);
+    setConnectButton(ConnectButtonAuto);
     setDeviceDescription(m_device->deviceDescription());
 }
 
@@ -1562,6 +1566,7 @@ void SettingsBackend::setConnectButton(SettingsBackendConnectButtonState state)
     switch (state)
     {
         case ConnectButtonOn:
+            isConnectButton(m_settings->inputDevice == InputDevice::Id::UNDEFINED);
             isConnectButtonEnabled(true);
             break;
         case ConnectButtonOff:
@@ -1569,45 +1574,70 @@ void SettingsBackend::setConnectButton(SettingsBackendConnectButtonState state)
             break;
         case ConnectButtonAuto:
         {
+            if (m_settings->inputDevice == InputDevice::Id::UNDEFINED)
+            {
+                isConnectButtonEnabled(true);
+                isConnectButton(true);
+                break;
+            }
+
             auto selectedInputDevice = static_cast<InputDevice::Id>(m_inputsModel->currentData().toInt());
-            bool showButton = m_settings->inputDevice != selectedInputDevice;
+            bool isCurrentSelected = m_settings->inputDevice == selectedInputDevice;
+            bool buttonEna = false;
+            bool isConnect = (isCurrentSelected == false);
+
+            // this is input device selected in combo, it can be different than currently used device (m_settings->inputDevice), so we need to check
+            // if selected device is different than currently used device, if yes, then button is "Connect", otherwise "Disconnect"
             switch (selectedInputDevice)
             {
                 case InputDevice::Id::RTLSDR:
-                    showButton =
-                        (m_rtlSdrDevicesModel->rowCount() > 0) && (showButton || (m_rtlSdrDevicesModel->currentData() != m_settings->rtlsdr.hwId));
-                    break;
+                {
+                    buttonEna = (m_rtlSdrDevicesModel->rowCount() > 0);  // when some devices are available, button is enabled
+                    isConnect = (isCurrentSelected == false || m_rtlSdrDevicesModel->currentData() != m_settings->rtlsdr.hwId);
+                }
+                break;
                 case InputDevice::Id::AIRSPY:
+                {
 #if HAVE_AIRSPY
-                    showButton =
-                        (m_airspyDevicesModel->rowCount() > 0) && (showButton || (m_airspyDevicesModel->currentData() != m_settings->airspy.hwId));
+                    buttonEna = (m_airspyDevicesModel->rowCount() > 0);  // when some devices are available, button is enabled
+                    isConnect = (isCurrentSelected == false || m_airspyDevicesModel->currentData() != m_settings->airspy.hwId);
 #endif
-                    break;
+                }
+                break;
                 case InputDevice::Id::SOAPYSDR:
 #if HAVE_SOAPYSDR
-                    showButton = !m_soapySdrDevArgs.isEmpty() && (showButton || m_soapySdrDevArgs.trimmed() != m_settings->soapysdr.devArgs ||
-                                                                  m_soapySdrAntenna.trimmed() != m_settings->soapysdr.antenna ||
-                                                                  m_soapySdrChannelNum != m_settings->soapysdr.channel);
+                    buttonEna = (m_soapySdrDevArgs.isEmpty() == false);
+                    isConnect = (isCurrentSelected == false || m_soapySdrDevArgs.trimmed() != m_settings->soapysdr.devArgs ||
+                                 m_soapySdrAntenna.trimmed() != m_settings->soapysdr.antenna || m_soapySdrChannelNum != m_settings->soapysdr.channel);
 
 #endif
                     break;
                 case InputDevice::Id::SDRPLAY:
 #if HAVE_SOAPYSDR
-                    showButton =
-                        (m_sdrplayDevicesModel->rowCount() > 0) && (showButton || (m_sdrplayDevicesModel->currentData() != m_settings->sdrplay.hwId));
+                    buttonEna = (m_sdrplayDevicesModel->rowCount() > 0);
+                    isConnect = (isCurrentSelected == false || m_sdrplayDevicesModel->currentData() != m_settings->sdrplay.hwId);
 #endif
                     break;
                 case InputDevice::Id::RTLTCP:
-                    showButton = !m_rtlTcpIpAddress.isEmpty() && (showButton || m_rtlTcpIpAddress.trimmed() != m_settings->rtltcp.tcpAddress ||
-                                                                  m_rtlTcpPort != m_settings->rtltcp.tcpPort ||
-                                                                  m_isRtlTcpControlSocketChecked != m_settings->rtltcp.controlSocketEna);
-                    break;
+                {
+                    buttonEna = (m_rtlTcpIpAddress.isEmpty() == false);
+                    isConnect = (isCurrentSelected == false || m_rtlTcpIpAddress.trimmed() != m_settings->rtltcp.tcpAddress ||
+                                 m_rtlTcpPort != m_settings->rtltcp.tcpPort || m_isRtlTcpControlSocketChecked != m_settings->rtltcp.controlSocketEna);
+                }
+                break;
                 case InputDevice::Id::RAWFILE:
+                {
+                    buttonEna = (m_rawFileName.isEmpty() == false && QFileInfo::exists(m_rawFileName));
+                    isConnect = (isCurrentSelected == false || m_rawFileName.trimmed() != m_settings->rawfile.file ||
+                                 static_cast<RawFileInputFormat>(m_rawFileFormatModel->currentData().toInt()) != m_settings->rawfile.format);
+                }
+                break;
                 case InputDevice::Id::RARTTCP:
                 case InputDevice::Id::UNDEFINED:
                     break;
             }
-            isConnectButtonEnabled(showButton);
+            isConnectButtonEnabled(buttonEna);
+            isConnectButton(isConnect);
         }
 
         break;
@@ -2104,25 +2134,14 @@ void SettingsBackend::onSdrplayDeviceChanged()
 
 void SettingsBackend::activateSdrplayControls(bool en)
 {
-    isSdrplayDeviceConnected(en);
     isSdrplayControlEnabled(en);
 }
 
-void SettingsBackend::sdrplayReloadOrDisconnectRequest()
+void SettingsBackend::sdrplayReloadRequest()
 {
     isSdrplayDeviceSelectionEnabled(false);
-    if (m_inputDeviceId != InputDevice::Id::SDRPLAY)
-    {
-        // ui->sdrplayReloadButton->setEnabled(false);
-        reloadDeviceList(InputDevice::Id::SDRPLAY, m_sdrplayDevicesModel);
-    }
-    else
-    {  // sdrplay is connected now -> need to disconnect
-        resetInputDevice();
-        m_inputDeviceId = InputDevice::Id::UNDEFINED;
-        emit inputDeviceChanged(InputDevice::Id::UNDEFINED, m_settings->sdrplay.hwId);
-        // ui->sdrplayReloadButton->setEnabled(false);
-    }
+    // ui->sdrplayReloadButton->setEnabled(false);
+    reloadDeviceList(InputDevice::Id::SDRPLAY, m_sdrplayDevicesModel);
 }
 
 void SettingsBackend::onSdrplayChannelChanged()

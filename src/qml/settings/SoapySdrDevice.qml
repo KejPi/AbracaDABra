@@ -61,6 +61,7 @@ Item {
                 onEditingFinished: if (settingsBackend.soapySdrDevArgs !== text) {
                     settingsBackend.soapySdrDevArgs = text;
                 }
+                enabled: settingsBackend.isSoapySdrControlEnabled === false
             }
 
             AbracaLabel {
@@ -73,6 +74,7 @@ Item {
                 onValueChanged: if (settingsBackend.soapySdrChannelNum !== value) {
                     settingsBackend.soapySdrChannelNum = value;
                 }
+                enabled: settingsBackend.isSoapySdrControlEnabled === false
             }
             Item {
                 Layout.fillWidth: true
@@ -87,6 +89,7 @@ Item {
                 onEditingFinished: if (settingsBackend.soapySdrAntenna !== text) {
                     settingsBackend.soapySdrAntenna = text;
                 }
+                enabled: settingsBackend.isSoapySdrControlEnabled === false
             }
         }
         Item {

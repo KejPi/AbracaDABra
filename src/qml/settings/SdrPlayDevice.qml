@@ -60,7 +60,7 @@ Item {
                 Layout.columnSpan: 4
                 Layout.fillWidth: true
                 model: settingsBackend.sdrplayDevicesModel
-                enabled: mainItem.isDeviceInfoLoaded && !settingsBackend.isSdrplayDeviceConnected
+                enabled: mainItem.isDeviceInfoLoaded && !settingsBackend.isSdrplayControlEnabled
                 textRole: "itemName"
                 currentIndex: settingsBackend.sdrplayDevicesModel.currentIndex
                 onActivated: {
@@ -71,16 +71,17 @@ Item {
             }
             AbracaButton {
                 Layout.preferredWidth: antennaCombo.width
-                text: settingsBackend.isSdrplayDeviceConnected ? qsTr("Disconnect") : qsTr("Reload")
-                onClicked: settingsBackend.sdrplayReloadOrDisconnectRequest()
+                enabled: settingsBackend.isSdrplayControlEnabled === false
+                text: qsTr("Reload")
+                onClicked: settingsBackend.sdrplayReloadRequest()
             }
 
             AbracaLabel {
                 text: qsTr("RX channel number:")
-                enabled: mainItem.isDeviceInfoLoaded && !settingsBackend.isSdrplayDeviceConnected
+                enabled: mainItem.isDeviceInfoLoaded && !settingsBackend.isSdrplayControlEnabled
             }
             AbracaComboBox {
-                enabled: mainItem.isDeviceInfoLoaded && !settingsBackend.isSdrplayDeviceConnected
+                enabled: mainItem.isDeviceInfoLoaded && !settingsBackend.isSdrplayControlEnabled
                 // Layout.columnSpan: deviceSelectionGrid.mobileView ? 3 : 1
                 model: settingsBackend.sdrplayChannelModel
                 textRole: "itemName"

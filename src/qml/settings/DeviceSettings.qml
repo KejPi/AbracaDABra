@@ -76,9 +76,9 @@ Item {
         Item { Layout.fillHeight: true; Layout.fillWidth: inputDeviceSelectionRow.mobileView;  }
         AbracaButton {
             id: connectButton
-            text: qsTr("Connect")
+            text: settingsBackend.isConnectButton ? qsTr("Connect") : qsTr("Disconnect")
             enabled: settingsBackend.isConnectButtonEnabled
-            onClicked: settingsBackend.requestConnectDevice()
+            onClicked: settingsBackend.requestConnectDisconnectDevice()
             buttonRole: UI.ButtonRole.Primary
         }
         AbracaLabel {

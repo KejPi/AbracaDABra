@@ -64,6 +64,7 @@ Item {
                     settingsBackend.rtlTcpIpAddress = text;
                 }
                 inputMethodHints: Qt.ImhDigitsOnly
+                enabled: settingsBackend.isRtlTcpControlEnabled === false
             }
             AbracaLabel {
                 text: qsTr("Port:")
@@ -77,6 +78,7 @@ Item {
                     settingsBackend.rtlTcpPort = value;
                 }
                 editable: true
+                enabled: settingsBackend.isRtlTcpControlEnabled === false
             }
         }
         AbracaSwitch {
@@ -88,6 +90,7 @@ Item {
                     settingsBackend.isRtlTcpControlSocketChecked = checked;
                 }
             }
+            enabled: settingsBackend.isRtlTcpControlEnabled === false
         }
         Item {
             Layout.fillWidth: true

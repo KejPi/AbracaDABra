@@ -82,6 +82,7 @@ class SettingsBackend : public UIControlProvider
     UI_PROPERTY_DEFAULT(bool, isInputDeviceSelectionEnabled, true);
 
     UI_PROPERTY_DEFAULT(int, rawFileProgressMax, 0)
+    UI_PROPERTY_DEFAULT(bool, isConnectButton, true)
     UI_PROPERTY_DEFAULT(bool, isConnectButtonEnabled, false)
     UI_PROPERTY_DEFAULT(bool, isRawFileProgressVisible, false)
     UI_PROPERTY_DEFAULT(bool, isRawFileProgressEnabled, false)
@@ -151,7 +152,6 @@ class SettingsBackend : public UIControlProvider
     Q_PROPERTY(int sdrplayIfGain READ sdrplayIfGain WRITE setSdrplayIfGain NOTIFY sdrplayIfGainChanged FINAL)
     UI_PROPERTY(QStringList, sdrplayDeviceDesc)
     UI_PROPERTY_DEFAULT(bool, isSdrplayDeviceSelectionEnabled, false);
-    UI_PROPERTY_DEFAULT(bool, isSdrplayDeviceConnected, false);
     UI_PROPERTY_DEFAULT(bool, isSdrplayControlEnabled, false);
     UI_PROPERTY_DEFAULT(int, sdrplayGainMode, 0)
     UI_PROPERTY_DEFAULT(int, sdrplayRfGainIndexMax, -1)
@@ -226,7 +226,7 @@ public:
     Q_INVOKABLE QUrl rawFilePath() const;
     Q_INVOKABLE void selectRawFile(const QUrl &fileUrl);
     Q_INVOKABLE void requestRawFileSeek(int msec) { emit rawFileSeek(msec); };
-    Q_INVOKABLE void requestConnectDevice();
+    Q_INVOKABLE void requestConnectDisconnectDevice();
     Q_INVOKABLE void rtlSdrReloadDeviceList() { reloadDeviceList(InputDevice::Id::RTLSDR, m_rtlSdrDevicesModel); }
     Q_INVOKABLE void requestRtlSdrGainMode(int modeIdx);
     Q_INVOKABLE void requestRtlTcpGainMode(int modeIdx);
@@ -237,7 +237,7 @@ public:
 #if HAVE_SOAPYSDR
     Q_INVOKABLE void requestSoapySdrGainMode(int modeIdx);
     Q_INVOKABLE void requestSdrplayGainMode(int modeIdx);
-    Q_INVOKABLE void sdrplayReloadOrDisconnectRequest();
+    Q_INVOKABLE void sdrplayReloadRequest();
 #endif
     Q_INVOKABLE void requestRestart() { emit restartRequested(); }
     Q_INVOKABLE QUrl dataStoragePathUrl() const;
@@ -331,7 +331,7 @@ public:
 #endif
 
 signals:
-    void inputDeviceChanged(const InputDevice::Id &inputDevice, QVariant &id);
+    void inputDeviceChanged(const InputDevice::Id &inputDevice, const QVariant &id);
     void newAnnouncementSettings();
     void applicationStyleChanged();
     void noiseConcealmentLevelChanged(int level);
