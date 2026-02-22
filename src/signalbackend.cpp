@@ -270,7 +270,7 @@ void SignalBackend::reset()
     m_isUserView = false;
     // ui->menuLabel->setEnabled(false);
     updateRfLevel(NAN, NAN);
-    setRfLevelVisible(false);
+    isRfLevelVisible(false);
     setGainVisible(false);
     setSignalState(0, 0.0);
     frequencyOffsetLabel(tr("N/A"));
@@ -296,14 +296,6 @@ void SignalBackend::setSpectrumUpdate()
             m_numAvrg = 10;
             m_avrgFactor_dB = -10;  // 10 *log10(1/10)
             break;
-    }
-}
-
-void SignalBackend::setRfLevelVisible(bool visible)
-{
-    if (visible == false)
-    {
-        rfLevelLabel("");
     }
 }
 
@@ -357,14 +349,14 @@ void SignalBackend::updateRfLevel(float rfLevel, float gain)
     if (std::isnan(rfLevel))
     {  // level is not available (input device in HW mode or not RTL-SDR)
         rfLevelLabel(tr("N/A"));
-        setRfLevelVisible(false);
+        isRfLevelVisible(false);
         m_spectYRangeMin = -140;
         m_spectYRangeMax = 0;
     }
     else
     {
         rfLevelLabel(QString::number(double(rfLevel), 'f', 1) + " dBm");
-        setRfLevelVisible(true);
+        isRfLevelVisible(true);
         m_spectYRangeMin = floorf((-100 + rfLevel) / 10.0) * 10.0;
         m_spectYRangeMax = ceilf((0 + rfLevel) / 10.0) * 10.0;
     }

@@ -156,7 +156,7 @@ Rectangle {
                 signalInfoRowNoGain.visible = false
             }
             else {
-                if (signalBackend.rfLevelLabel === "") {
+                if (signalBackend.isRfLevelVisible === false) {
                     signalInfoRowUndocked.visible = false
                     signalInfoRow.visible = false
                     signalInfoGrid.visible = false
@@ -183,6 +183,9 @@ Rectangle {
             function onIsUndockedChanged() {
                 signalInfo.setFittingLayout();
             }
+             function onIsRfLevelVisibleChanged() {
+                signalInfo.setFittingLayout();
+            }
         }
 
         FontMetrics {
@@ -203,7 +206,7 @@ Rectangle {
                 toolTipText: qsTr("Estimated RF level")
                 role: UI.LabelRole.Secondary
                 Layout.fillWidth: true
-                visible: signalBackend.rfLevelLabel !== ""
+                visible: signalBackend.isRfLevelVisible
             }
             AbracaLabel {
                 Layout.preferredWidth: fontMetrics.boundingRect("-100.0 dBm").width
@@ -221,7 +224,7 @@ Rectangle {
                 toolTipText: qsTr("Tuner gain")
                 Layout.fillWidth: true
                 role: UI.LabelRole.Secondary
-                visible: signalBackend.rfLevelLabel !== ""
+                visible: signalBackend.isRfLevelVisible
             }
             AbracaLabel {
                 Layout.preferredWidth: fontMetrics.boundingRect(" 88 dB").width

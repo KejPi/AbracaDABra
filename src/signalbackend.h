@@ -43,6 +43,7 @@ class SignalBackend : public UIControlProvider
     Q_PROPERTY(bool isUndocked READ isUndocked NOTIFY isUndockedChanged FINAL)
     UI_PROPERTY(QString, frequencyLabel)
     UI_PROPERTY(QString, frequencyOffsetLabel)
+    UI_PROPERTY_DEFAULT(bool, isRfLevelVisible, false)
     UI_PROPERTY(QString, rfLevelLabel)
     UI_PROPERTY(QString, gainLabel)
     UI_PROPERTY(QString, snrValue)
@@ -125,7 +126,6 @@ private:
 
     void setSpectrumUpdate();
 
-    void setRfLevelVisible(bool visible);
     void setGainVisible(bool visible);
 };
 
