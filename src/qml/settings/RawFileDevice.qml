@@ -43,8 +43,10 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.margins: 2 * UI.standardMargin
-        RowLayout {
-            Layout.fillWidth: true
+        RowLayout {            
+            Layout.fillWidth: UI.isMobile
+            uniformCellSizes: true
+            Layout.alignment: contentLayout.width > 2*implicitWidth ? Qt.AlignLeft : Qt.AlignHCenter
             AbracaButton {
                 Layout.fillWidth: true
                 text: qsTr("Open file")
@@ -54,31 +56,15 @@ Item {
                 }
             }
             AbracaComboBox {
+                Layout.preferredWidth: 1.5*implicitWidth
                 Layout.fillWidth: true
-                // Layout.preferredWidth: 1.5*implicitWidth
                 model: settingsBackend.rawFileFormatModel
                 textRole: "itemName"
                 enabled: settingsBackend.isRawFileFormatSelectionEnabled
                 currentIndex: settingsBackend.rawFileFormatModel.currentIndex
                 onActivated: {
-                    // if (currentIndex >= 0) {
-                    //     var formatId = model.data(model.index(currentIndex, 0), ItemModel.DataRole)
-                    //     if (formatId !== settingsBackend.rawFileFormat) {
-                    //         settingsBackend.rawFileFormat = formatId
-                    //     }
-                    // }
                     if (settingsBackend.rawFileFormatModel.currentIndex !== currentIndex) {
                         settingsBackend.rawFileFormatModel.currentIndex = currentIndex;
-                    }
-                }
-            }
-            AbracaSwitch {
-                Layout.fillWidth: true
-                text: qsTr("Loop file")
-                checked: settingsBackend.isRawFileLoopActive
-                onCheckedChanged: {
-                    if (checked !== settingsBackend.isRawFileLoopActive) {
-                        settingsBackend.isRawFileLoopActive = checked;
                     }
                 }
             }
@@ -129,6 +115,26 @@ Item {
                     let seekSeconds = value * 0.001;
                     let maxSeconds = max * 0.001;
                     return qsTr("%1 / %2 sec").arg(seekSeconds.toFixed(1)).arg(maxSeconds.toFixed(1));
+                }
+            }
+            AbracaImgButton {
+                id: favoriteIcon
+                Layout.preferredWidth: implicitWidth
+                Layout.alignment: Qt.AlignVCenter
+                // Layout.preferredHeight: UI.controlHeight
+                iconSize: UI.controlHeightSmaller
+                colorizationEnabled: true
+                colorizationColor: checked ? UI.colors.accent : UI.colors.inactive
+                checkable: true
+                checked: settingsBackend.isRawFileLoopActive
+                sourceChecked: UI.imagesUrl + "icon-loop-file.svg"
+                sourceUnchecked: UI.imagesUrl + "icon-loop-file.svg"
+                toolTipChecked: qsTr("Disable repeat")
+                toolTipUnchecked: qsTr("Enable repeat")
+                onToggled: {
+                    if (checked !== settingsBackend.isRawFileLoopActive) {
+                        settingsBackend.isRawFileLoopActive = checked;
+                    }
                 }
             }
         }

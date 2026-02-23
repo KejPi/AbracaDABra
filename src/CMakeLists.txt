@@ -230,6 +230,7 @@ qt_add_qml_module(${TARGET}
         qml/images/icon-audio.svg
         qml/images/icon-config.svg
         qml/images/icon-drag.svg
+        qml/images/icon-loop-file.svg
         qml/images/placeholder-undocked.svg
 
         resources/appIcon.png
