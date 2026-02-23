@@ -248,11 +248,19 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
 
                 if (timeIsUTC)
                 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+                    time.setTimeZone(QTimeZone(QTimeZone::UTC));
+#else
                     time.setTimeSpec(Qt::TimeSpec::UTC);
+#endif
                 }
                 else
                 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+                    time.setTimeZone(QTimeZone(QTimeZone::LocalTime));
+#else
                     time.setTimeSpec(Qt::TimeSpec::LocalTime);
+#endif
                 }
 
                 bool isOk = false;

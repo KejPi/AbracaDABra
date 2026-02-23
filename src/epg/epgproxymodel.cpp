@@ -51,7 +51,16 @@ void EPGProxyModel::setDateFilter(const QDate &newDateFilter)
     {
         return;
     }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+#endif
+
     m_dateFilter = newDateFilter;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    endFilterChange();
+#else
     invalidateFilter();
+#endif
     emit dateFilterChanged();
 }

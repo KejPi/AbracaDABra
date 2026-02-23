@@ -66,6 +66,9 @@ DABChannelListFilteredModel::DABChannelListFilteredModel(QObject *parent) : QSor
 
 void DABChannelListFilteredModel::setChannelFilter(int freq)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+#endif
     if (DabTables::channelList.contains(freq))
     {  // this is protection from setting invalid DAB frequency
         m_frequencyFilter = freq;
@@ -74,13 +77,26 @@ void DABChannelListFilteredModel::setChannelFilter(int freq)
     {
         m_frequencyFilter = 0;
     }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    endFilterChange();
+#else
     invalidateFilter();
+#endif
 }
 
 void DABChannelListFilteredModel::setCableChannelFilter(bool ena)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+#endif
+
     m_showCableChannels = ena;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    endFilterChange();
+#else
     invalidateFilter();
+#endif
 }
 
 int DABChannelListFilteredModel::findFrequency(int freq)

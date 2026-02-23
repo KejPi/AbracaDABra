@@ -636,10 +636,17 @@ void EnsembleInfoModel::setGroup(int group)
     {
         return;
     }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+#endif
     m_group = group;
     emit groupChanged();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    endFilterChange();
+#else
     invalidateFilter();
+#endif
 }
 
 bool EnsembleInfoModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const

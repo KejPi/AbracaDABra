@@ -119,10 +119,20 @@ void NavigationProxyModel::setFilterFlags(const NavigationModel::NavigationOptio
     {
         return;
     }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+#endif
+
     m_filterFlags = newFilterFlags;
     emit filterFlagsChanged();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    endFilterChange();
+#else
     invalidateFilter();
+#endif
+
     QTimer::singleShot(50, this, [this]() { setRowForCurrentNavigationId(); });
 }
 

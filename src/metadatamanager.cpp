@@ -368,10 +368,12 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
                             QFile file(filename);
                             if (!file.exists())
                             {
-                                file.open(QIODevice::WriteOnly);
-                                QTextStream output(&file);
-                                output << xml;
-                                file.close();
+                                if (file.open(QIODevice::WriteOnly))
+                                {
+                                    QTextStream output(&file);
+                                    output << xml;
+                                    file.close();
+                                }
                             }
                             else
                             {
@@ -562,18 +564,22 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
     {
         QCryptographicHash md5gen(QCryptographicHash::Md5);
         QFile file(filename);
-        file.open(QIODevice::ReadOnly);
-        md5gen.addData(file.readAll());
-        file.close();
+        if (file.open(QIODevice::ReadOnly))
+        {
+            md5gen.addData(file.readAll());
+            file.close();
+        }
 
         QByteArray md5FileInCache = md5gen.result();
         md5gen.reset();
         md5gen.addData(data);
         if (md5gen.result() != md5FileInCache)
         {  // different file => overwrite
-            file.open(QIODevice::WriteOnly);
-            file.write(data);
-            file.close();
+            if (file.open(QIODevice::WriteOnly))
+            {
+                file.write(data);
+                file.close();
+            }
 
             QRegularExpressionMatch match = re.match(requestId);
             if (match.hasMatch())
@@ -610,9 +616,11 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
     }
     else
     {
-        file.open(QIODevice::WriteOnly);
-        file.write(data);
-        file.close();
+        if (file.open(QIODevice::WriteOnly))
+        {
+            file.write(data);
+            file.close();
+        }
 
         QRegularExpressionMatch match = re.match(requestId);
         if (match.hasMatch())

@@ -41,8 +41,17 @@ void TxTableProxyModel::setColumnsFilter(bool filterCols)
 {
     if (filterCols != m_filterCols)
     {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+        beginFilterChange();
+#endif
+
         m_filterCols = filterCols;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+        endFilterChange(QSortFilterProxyModel::Direction::Columns);
+#else
         invalidateColumnsFilter();
+#endif
     }
 }
 
@@ -50,8 +59,17 @@ void TxTableProxyModel::setInactiveTxFilter(bool filterInactiveTx)
 {
     if (filterInactiveTx != m_filterInactiveTx)
     {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+        beginFilterChange();
+#endif
+
         m_filterInactiveTx = filterInactiveTx;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+        endFilterChange(QSortFilterProxyModel::Direction::Rows);
+#else
         invalidateRowsFilter();
+#endif
     }
 }
 
@@ -59,8 +77,16 @@ void TxTableProxyModel::setLocalTxFilter(bool filterLocalTx)
 {
     if (filterLocalTx != m_filterLocalTx)
     {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+        beginFilterChange();
+#endif
         m_filterLocalTx = filterLocalTx;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+        endFilterChange(QSortFilterProxyModel::Direction::Rows);
+#else
         invalidateRowsFilter();
+#endif
     }
 }
 
@@ -201,10 +227,8 @@ bool TxTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &sour
 
 // ========== TxTableColumnProxyModel ==========
 
-TxTableColumnProxyModel::TxTableColumnProxyModel(QObject *parent)
-    : QAbstractProxyModel(parent)
-{
-}
+TxTableColumnProxyModel::TxTableColumnProxyModel(QObject *parent) : QAbstractProxyModel(parent)
+{}
 
 void TxTableColumnProxyModel::setSourceModel(QAbstractItemModel *model)
 {
@@ -217,24 +241,15 @@ void TxTableColumnProxyModel::setSourceModel(QAbstractItemModel *model)
 
     if (model)
     {
-        connect(model, &QAbstractItemModel::dataChanged,
-                this, &TxTableColumnProxyModel::onSourceDataChanged);
-        connect(model, &QAbstractItemModel::rowsAboutToBeInserted,
-                this, &TxTableColumnProxyModel::onSourceRowsAboutToBeInserted);
-        connect(model, &QAbstractItemModel::rowsInserted,
-                this, &TxTableColumnProxyModel::onSourceRowsInserted);
-        connect(model, &QAbstractItemModel::rowsAboutToBeRemoved,
-                this, &TxTableColumnProxyModel::onSourceRowsAboutToBeRemoved);
-        connect(model, &QAbstractItemModel::rowsRemoved,
-                this, &TxTableColumnProxyModel::onSourceRowsRemoved);
-        connect(model, &QAbstractItemModel::modelAboutToBeReset,
-                this, &TxTableColumnProxyModel::onSourceModelAboutToBeReset);
-        connect(model, &QAbstractItemModel::modelReset,
-                this, &TxTableColumnProxyModel::onSourceModelReset);
-        connect(model, &QAbstractItemModel::layoutAboutToBeChanged,
-                this, &TxTableColumnProxyModel::onSourceLayoutAboutToBeChanged);
-        connect(model, &QAbstractItemModel::layoutChanged,
-                this, &TxTableColumnProxyModel::onSourceLayoutChanged);
+        connect(model, &QAbstractItemModel::dataChanged, this, &TxTableColumnProxyModel::onSourceDataChanged);
+        connect(model, &QAbstractItemModel::rowsAboutToBeInserted, this, &TxTableColumnProxyModel::onSourceRowsAboutToBeInserted);
+        connect(model, &QAbstractItemModel::rowsInserted, this, &TxTableColumnProxyModel::onSourceRowsInserted);
+        connect(model, &QAbstractItemModel::rowsAboutToBeRemoved, this, &TxTableColumnProxyModel::onSourceRowsAboutToBeRemoved);
+        connect(model, &QAbstractItemModel::rowsRemoved, this, &TxTableColumnProxyModel::onSourceRowsRemoved);
+        connect(model, &QAbstractItemModel::modelAboutToBeReset, this, &TxTableColumnProxyModel::onSourceModelAboutToBeReset);
+        connect(model, &QAbstractItemModel::modelReset, this, &TxTableColumnProxyModel::onSourceModelReset);
+        connect(model, &QAbstractItemModel::layoutAboutToBeChanged, this, &TxTableColumnProxyModel::onSourceLayoutAboutToBeChanged);
+        connect(model, &QAbstractItemModel::layoutChanged, this, &TxTableColumnProxyModel::onSourceLayoutChanged);
     }
 }
 

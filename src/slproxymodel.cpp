@@ -59,8 +59,18 @@ void SLProxyModel::setEmptyEpgFilter(bool newEmptyEpgFilter)
     {
         return;
     }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+#endif
+
     m_emptyEpgFilter = newEmptyEpgFilter;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    endFilterChange();
+#else
     invalidateFilter();
+#endif
     emit emptyEpgFilterChanged();
 }
 
@@ -75,7 +85,18 @@ void SLProxyModel::setUeidFilter(int newUeidFilter)
     {
         return;
     }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+#endif
+
     m_ueidFilter = newUeidFilter;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    endFilterChange();
+#else
     invalidateFilter();
+#endif
+
     emit ueidFilterChanged();
 }
