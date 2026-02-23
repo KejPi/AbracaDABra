@@ -40,7 +40,7 @@ ApplicationWindow {
     title: qsTr("AbracaDABra")
     // minimumHeight: 400
     // minimumWidth: 380
-    minimumHeight: 600
+    minimumHeight: appUI.isCompact ? 500 : 600
     minimumWidth: 675
 
 

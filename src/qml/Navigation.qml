@@ -97,7 +97,7 @@ FocusScope {
             id: mouseArea
             readonly property ListView listview: ListView.view
             required property string iconName
-            required property string shortLabel
+            required property string shortLabel            
             required property var model
             required property int functionalityId
             required property bool isEnabled
@@ -126,7 +126,7 @@ FocusScope {
                     text: shortLabel
                     anchors.bottom: parent.bottom
                     anchors.horizontalCenter: parent.horizontalCenter
-                    enabled: isEnabled
+                    enabled: isEnabled                    
                     font.pointSize: UI.smallFontPointSize
                     color: isSelectedItem ? UI.colors.listItemSelected : (isEnabled ? UI.colors.textPrimary : UI.colors.textDisabled)
                     visible: appUI.currentView !== ApplicationUI.PortraitNarrowView
@@ -159,6 +159,7 @@ FocusScope {
             readonly property ListView listview: ListView.view
             required property string iconName
             required property string shortLabel
+            required property string longLabel
             required property var model
             required property int functionalityId
             required property bool isEnabled
@@ -177,20 +178,25 @@ FocusScope {
                 anchors.margins: 5
                 AbracaColorizedImage {
                     image.source: UI.imagesUrl + iconName
-                    height: parent.height - text_label.height - 4
+                    height: parent.height - (text_label.visible ? (text_label.height + 4) : 8)
                     width: height
                     sourceSize: Qt.size(height, height)
                     anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: rect_button.top
+                    anchors.topMargin: text_label.visible ? 0 : (rect_button.height - height)/2
                     colorizationColor: isEnabled ? (isSelectedItem ? UI.colors.listItemSelected : UI.colors.icon) : UI.colors.iconDisabled
                 }
                 AbracaLabel {
                     id: text_label
                     text: shortLabel
                     anchors.bottom: parent.bottom
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: parent.width
+                    horizontalAlignment: Text.AlignHCenter
                     enabled: isEnabled
+                    elide: Text.ElideRight
                     font.pointSize: UI.smallFontPointSize
                     color: isSelectedItem ? UI.colors.listItemSelected : (isEnabled ? UI.colors.textPrimary : UI.colors.textDisabled)
+                    visible: appUI.isCompact === false
                 }
             }
             onClicked: mouse => {
@@ -210,6 +216,11 @@ FocusScope {
                 color: UI.colors.listItemHovered
                 visible: mouseArea.containsMouse && isEnabled && !isSelectedItem
             }
+            AbracaToolTip {
+                text: longLabel
+                hoverMouseArea: mouseArea
+            }
+
             function selectItem() {
                 listview.currentIndex = index;
                 functionalityClicked(functionalityId);
