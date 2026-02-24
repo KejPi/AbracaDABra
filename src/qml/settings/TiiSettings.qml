@@ -130,12 +130,28 @@ Item {
                                         text: qsTr("Geolocation source:")
                                     }
                                     AbracaComboBox {
+                                        id: geoLocationComboBox
                                         model: settingsBackend.locationSourceModel
                                         textRole: "itemName"
                                         currentIndex: settingsBackend.locationSourceModel.currentIndex
                                         onActivated: {
                                             if (settingsBackend.locationSourceModel.currentIndex !== currentIndex) {
                                                 settingsBackend.locationSourceModel.currentIndex = currentIndex;
+                                            }
+                                        }
+                                    }
+                                    Item { Layout.fillWidth: true }
+                                    AbracaButton {
+                                        text: qsTr("Apply")
+                                        visible: geoLocationComboBox.currentIndex > 0
+                                        enabled: (geoLocationComboBox.currentIndex === 1 && coordinatesTextField.text !== settingsBackend.locationCoordinates)
+                                                 || (geoLocationComboBox.currentIndex === 2 && serialPortTextField.text !== settingsBackend.tiiSerialPort)
+                                        onClicked: {
+                                            if (geoLocationComboBox.currentIndex === 1) {
+                                                settingsBackend.locationCoordinates = coordinatesTextField.text.trim();
+                                            }
+                                            else if (geoLocationComboBox.currentIndex === 2) {
+                                                settingsBackend.tiiSerialPort = serialPortTextField.text.trim();
                                             }
                                         }
                                     }
@@ -159,12 +175,12 @@ Item {
                                             readonly property regexp coordRegExp: /^\s*[+-]?\d+(?:\.\d+)?\s*,\s*[+-]?\d+(?:\.\d+)?\s*$/
                                             validator: RegularExpressionValidator { regularExpression: coordinatesTextField.coordRegExp }
                                             text: settingsBackend.locationCoordinates
-                                            onEditingFinished: {
-                                                var txt = text.trim();
-                                                if (settingsBackend.locationCoordinates !== txt) {
-                                                    settingsBackend.locationCoordinates = txt
-                                                }
-                                            }
+                                            // onEditingFinished: {
+                                            //     var txt = text.trim();
+                                            //     if (settingsBackend.locationCoordinates !== txt) {
+                                            //         settingsBackend.locationCoordinates = txt
+                                            //     }
+                                            // }
                                         }
                                     }
                                     GridLayout {
@@ -178,14 +194,15 @@ Item {
                                             text: qsTr("Serial port:")
                                         }
                                         AbracaTextField {
+                                            id: serialPortTextField
                                             Layout.fillWidth: true
                                             text: settingsBackend.tiiSerialPort
-                                            onEditingFinished: {
-                                                var txt = text.trim();
-                                                if (settingsBackend.tiiSerialPort !== txt) {
-                                                    settingsBackend.tiiSerialPort = txt
-                                                }
-                                            }
+                                            // onEditingFinished: {
+                                            //     var txt = text.trim();
+                                            //     if (settingsBackend.tiiSerialPort !== txt) {
+                                            //         settingsBackend.tiiSerialPort = txt
+                                            //     }
+                                            // }
                                         }
                                         AbracaLabel {
                                             text: qsTr("Baudrate:")
